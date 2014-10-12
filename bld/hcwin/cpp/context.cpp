@@ -65,7 +65,7 @@ protected:
 
     // Redefinitions of the BtreeData virtual functions.
     BtreeData       *myKey();
-    int         lessThan( BtreeData *other );
+    bool            lessThan( BtreeData *other );
     virtual uint_32 size() { return sizeof( uint_32 ); };
     virtual int     dump( OutFile * dest );
 
@@ -104,12 +104,12 @@ BtreeData *ContextKey::myKey()
 
 //  ContextKey::lessThan    --Overrides BtreeData::lessThan
 
-int ContextKey::lessThan( BtreeData *other )
+bool ContextKey::lessThan( BtreeData *other )
 {
     ContextKey  *true_other = (ContextKey*) other;
 
     // WinHelp hash values are signed ints, and are sorted as such.
-    return ((int_32) _hashValue) < ((int_32) true_other->_hashValue);
+    return( (int_32)_hashValue < (int_32)true_other->_hashValue );
 }
 
 

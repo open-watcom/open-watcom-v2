@@ -136,7 +136,7 @@ void RTFparser::skipSection()
             break;
         case TOK_END:
             HCWarning( RTF_BADEOF, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
             return;
         }
     }
@@ -177,9 +177,9 @@ uint_16 RTFparser::closeBraces()
 //  RTFparser::isParCommand --Identify commands which affect paragraph
 //                attributes (tab stops, indents, ...)
 
-int RTFparser::isParCommand()
+bool RTFparser::isParCommand()
 {
-    int result=0;
+    bool result = false;
     if( _input->look(1)->_type == TOK_COMMAND ) {
         switch( FindCommand( _input->look(1)->_text ) ) {
         case RC_BOX:
@@ -197,7 +197,7 @@ int RTFparser::isParCommand()
         case RC_SB:
         case RC_SL:
         case RC_TX:
-            result = 1;
+            result = true;
         }
     }
     return result;
@@ -208,9 +208,9 @@ int RTFparser::isParCommand()
 //                the corresponding font change.
 //                The new font is stored in "newfont".
 
-int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
+bool RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
 {
-    int result;
+    bool result;
     int num = FindCommand( tok->_text );
     uint_8  style = 0;
 
@@ -235,7 +235,7 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
         } else {
             *newfont = _fontFile->clearAttribs( style );
         }
-        result = 1;
+        result = true;
         break;
 
     default:
@@ -244,24 +244,24 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
         case RC_F:
             if( tok->_hasValue ) {
                 *newfont = _fontFile->selectFont( (short)tok->_value, tok->_lineNum, _input->file()->name() );
-                result = 1;
+                result = true;
             } else {
                 HCWarning( FONT_NONUM, tok->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
                 tok->_type = TOK_NONE;
-                result = 0;
+                result = false;
             }
             break;
 
         case RC_FS:
             if( tok->_hasValue ) {
                 *newfont = _fontFile->newSize( (uint_8)(tok->_value) );
-                result = 1;
+                result = true;
             } else {
                 HCWarning( RTF_NOARG, (const char *)tok->_text, tok->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
                 tok->_type = TOK_NONE;
-                result = 0;
+                result = false;
             }
             break;
 
@@ -273,7 +273,7 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
                 pos = 6;
             }
             *newfont = _fontFile->newSupPos( pos );
-            result = 1;
+            result = true;
             break;
 
         case RC_DN:
@@ -283,16 +283,16 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
                 pos = 6;
             }
             *newfont = _fontFile->newSubPos( pos );
-            result = 1;
+            result = true;
             break;
 
         case RC_PLAIN:
             *newfont = _fontFile->clearAttribs( 0xFF );
-            result = 1;
+            result = true;
             break;
 
         default:
-            result = 0;
+            result = false;
             break;
         }
         break;
@@ -310,7 +310,7 @@ void RTFparser::handleCommand()
 
     // two variables we may need to deal with a \par command.
     uint_16 temp_font;
-    int     is_new_topic;
+    bool    is_new_topic;
 
     // Certain commands may necessitate a new node in the |TOPIC file.
     if( _writeState == HEADER ) {
@@ -351,7 +351,7 @@ void RTFparser::handleCommand()
     case RC_DEFF:   // The "Set Default Font" command
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             _defFont = (uint_16)_current->_value;
         }
@@ -360,11 +360,11 @@ void RTFparser::handleCommand()
     case RC_FI: // The "First Line Indent" command
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             if( !_topFile->setPar( TOP_FIRST_INDENT, _current->_value ) ) {
                 HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             }
         }
         break;
@@ -387,18 +387,18 @@ void RTFparser::handleCommand()
             _writeState = NON_SCROLL;
         } else if( _writeState == SCROLL ) {
             HCWarning( RTF_LATEKEEPN, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         }
         break;
 
     case RC_LI: // The "Left Indent" command.
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             if( !_topFile->setPar( TOP_LEFT_INDENT, _current->_value ) ) {
                 HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             }
         }
         break;
@@ -426,7 +426,7 @@ void RTFparser::handleCommand()
         // a paragraph command, or if the current topic has grown
         // too large for comfort.
 
-        is_new_topic = _topFile->presentSize() >= TOPIC_LIMIT || isParCommand();
+        is_new_topic = ( _topFile->presentSize() >= TOPIC_LIMIT || isParCommand() );
         if( is_new_topic || _curFont != temp_font ) {
             if( is_new_topic ) {
                 _topFile->newNode(0);
@@ -468,11 +468,11 @@ void RTFparser::handleCommand()
     case RC_RI: // The "Right Indent" command.
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             if( !_topFile->setPar( TOP_RIGHT_INDENT, _current->_value ) ) {
                 HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             }
         }
         break;
@@ -480,11 +480,11 @@ void RTFparser::handleCommand()
     case RC_SA: // The "Space After Paragraph" command.
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             if( !_topFile->setPar( TOP_SPACE_AFTER, _current->_value ) ) {
                 HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             }
         }
         break;
@@ -492,11 +492,11 @@ void RTFparser::handleCommand()
     case RC_SB: // The "Space Before Paragraph" command.
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             if( !_topFile->setPar( TOP_SPACE_BEFORE, _current->_value ) ) {
                 HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             }
         }
         break;
@@ -504,11 +504,11 @@ void RTFparser::handleCommand()
     case RC_SL: // "Line Spacing".
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             if( !_topFile->setPar( TOP_LINE_SPACE, _current->_value ) ) {
                 HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             }
         }
         break;
@@ -528,11 +528,11 @@ void RTFparser::handleCommand()
     case RC_TX: // "Set Tab Stop"
         if( !_current->_hasValue ) {
             HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         } else {
             if( !_topFile->setTab( _current->_value, _tabType ) ) {
                 HCWarning( TOP_BADTAB, _current->_value, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             } else {
                 _tabType = TAB_LEFT;
             }
@@ -556,7 +556,7 @@ void RTFparser::handleCommand()
 
     default:
         HCWarning( RTF_UNKNOWN, (const char *)_current->_text, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+        _wereWarnings = true;
     }
 }
 
@@ -571,7 +571,7 @@ void RTFparser::Go()
 
     // Make sure the first three tokens are an RTF header.
     _input->next();
-    _wereWarnings = 1;
+    _wereWarnings = true;
     if( _input->look(0)->_type != TOK_PUSH_STATE ) {
         HCWarning( RTF_HEADER, _fname );
     } else if( _input->look(1)->_type != TOK_COMMAND
@@ -586,7 +586,7 @@ void RTFparser::Go()
             command != RC_WINDOWS ) {
             HCWarning( RTF_CHARSET, _fname );
         } else {
-            _wereWarnings = 0;
+            _wereWarnings = false;
         }
     }
     if( _wereWarnings ) {
@@ -718,13 +718,13 @@ void RTFparser::Go()
                         _topFile->addAttr( bmtype, bmnum );
                     } catch( HFBitmaps::ImageNotFound ) {
                         HCWarning( RTF_NOSUCHIMAGE, string, _current->_lineNum, _fname );
-                        _wereWarnings = 1;
+                        _wereWarnings = true;
                     } catch( HFBitmaps::ImageNotSupported ) {
                         HCWarning( UNKNOWN_IMAGE, string, _current->_lineNum, _fname );
-                        _wereWarnings = 1;
+                        _wereWarnings = true;
                     } catch( HFBitmaps::ImageNotValid ) {
                         HCWarning( RTF_USEDBADIMAGE, string, _current->_lineNum, _fname );
-                        _wereWarnings = 1;
+                        _wereWarnings = true;
                     }
         
                     _input->next();
@@ -788,14 +788,14 @@ void RTFparser::Go()
     // Now we clean up...check the nesting level, close the topic text...
     if( _nestLevel != 0 ) {
         HCWarning( RTF_BADEOF, _fname );
-        _wereWarnings = 1;
+        _wereWarnings = true;
     } else {
         do {
             _current = _input->next();
         } while( _current->_type == TOK_NONE );
         if( _current->_type != TOK_END ) {
             HCWarning( RTF_EXTRATEXT, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         }
     }
     _fontFile->clearFonts();
@@ -804,7 +804,7 @@ void RTFparser::Go()
 
     if( _wereWarnings ) {
         HCWarning( PROBLEM_RTF, _fname );
-        _wereWarnings = 1;
+        _wereWarnings = true;
     }
 }
 
@@ -850,7 +850,7 @@ void RTFparser::handleFootnote( char Fchar )
     }
     if( _current->_type == TOK_END ) {
         HCWarning( RTF_BADEOF, _fname );
-        _wereWarnings = 1;
+        _wereWarnings = true;
         return;
     }
 
@@ -861,20 +861,20 @@ void RTFparser::handleFootnote( char Fchar )
     if( *start == Fchar )
         ++start;
     char *end;
-    int finished = 0;
+    bool finished = false;
     switch( Fchar ) {
     case '#':   // Context string
         start = skipSpaces( start );
         if( *start == '\0' ) {
             HCWarning( CON_MISSING, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
             break;
         }
         end = start;
         while( *end != '\0' && !isspace( *end ) ) {
             if( !isalnum( *end ) && *end != '.' && *end != '_' ) {
                 HCWarning( CON_BADCHAR, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
                 break;
             }
             ++end;
@@ -901,7 +901,7 @@ void RTFparser::handleFootnote( char Fchar )
             _topFile->addText( start );
         } else {
             HCWarning( TTL_TOOLATE, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
         }
         break;
 
@@ -916,7 +916,7 @@ void RTFparser::handleFootnote( char Fchar )
                 ++end;
             }
             if( *end == '\0' )
-                finished = 1;
+                finished = true;
             do {
                 --end;
             } while( end >= start && isspace( *end ) );
@@ -946,7 +946,7 @@ void RTFparser::handleFootnote( char Fchar )
     case '!':   // Macros.
         if( _writeState != HEADER ) {
             HCWarning( MAC_TOOLATE, _current->_lineNum, _fname );
-            _wereWarnings = 1;
+            _wereWarnings = true;
             break;
         }
         start = skipSpaces( start );
@@ -979,7 +979,7 @@ void RTFparser::handleHidden( int IsHotLink )
     uint_8  attribs;
     char    *pstorage, *pwindow, *pfile;
     int     target = _nestLevel-1;
-    int     done = 0;
+    bool    done = false;
 
     enum { NORMAL, INVISIBLE, UNDERLINED } hotlink_type;
     enum { TO_WINDOW = 0x01, TO_FILE = 0x04, TO_BOTH = 0x06 };
@@ -1010,7 +1010,7 @@ void RTFparser::handleHidden( int IsHotLink )
             if( isFontCommand( _current, &result ) ) {
                 result = closeBraces();
             } else if( FindCommand( _current->_text ) == RC_V && _current->_hasValue && _current->_value == 0 ) {
-                done = 1;
+                done = true;
             }
             break;
     
@@ -1037,7 +1037,7 @@ void RTFparser::handleHidden( int IsHotLink )
     _storage[_storSize] = '\0';
     if( _current->_type == TOK_END ) {
         HCWarning( RTF_BADEOF, _fname );
-        _wereWarnings = 1;
+        _wereWarnings = true;
     } else if( IsHotLink ) {
         // Parse the destination context string.
         hotlink_type = NORMAL;
@@ -1197,9 +1197,9 @@ void RTFparser::handleHidden( int IsHotLink )
 void RTFparser::handleFonts()
 {
     int target = _nestLevel-1;
-    int done = 0;
+    bool done = false;
     int com_num;
-    int ok2read = 1;
+    bool ok2read = true;
     short   cur_num = 0;
     uint_8  cur_family = 0;
     char    cur_name[FONT_NAME_SIZE];
@@ -1219,7 +1219,7 @@ void RTFparser::handleFonts()
         if( _current->_type == TOK_NONE )
             continue;
     
-        ok2read = 1;    // the default behaviour
+        ok2read = true;    // the default behaviour
         switch( _current->_type ) {
         case TOK_POP_STATE:
             // Note we have to keep track of font changes caused
@@ -1228,7 +1228,7 @@ void RTFparser::handleFonts()
             --_nestLevel;
             if( state != NUMBER ) {  // Incomplete font definition.
                 HCWarning( FONT_CUTOFF, _current->_lineNum, _fname );
-                _wereWarnings = 1;
+                _wereWarnings = true;
             }
             break;
     
@@ -1240,10 +1240,10 @@ void RTFparser::handleFonts()
         case TOK_COMMAND:
             com_num = FindCommand( _current->_text );
             if( com_num == RC_FONTTBL && _current->_hasValue && _current->_value == 0 ) {
-                done = 1;
+                done = true;
                 if( state != NUMBER ) {  // Incomplete font definition.
                     HCWarning( FONT_CUTOFF, _current->_lineNum, _fname );
-                    _wereWarnings = 1;
+                    _wereWarnings = true;
                 }
                 continue;
             }
@@ -1253,7 +1253,7 @@ void RTFparser::handleFonts()
                 if( com_num == RC_F ) {
                     if( !_current->_hasValue ) {
                         HCWarning( FONT_NONUM, _current->_lineNum, _fname );
-                        _wereWarnings = 0;
+                        _wereWarnings = false;
                         continue;
                     } else {
                         cur_num = (short) _current->_value;
@@ -1291,9 +1291,9 @@ void RTFparser::handleFonts()
             case NAME:  // We're looking for the font name.
                 if( com_num == RC_F ) {
                     HCWarning( FONT_CUTOFF, _current->_lineNum, _fname );
-                    _wereWarnings = 1;
+                    _wereWarnings = true;
                     state = NUMBER;
-                    ok2read = 0;
+                    ok2read = false;
                     if( name_size > 0 ) {
                         cur_name[name_size] = '\0';
                         _fontFile->addFont( cur_name, cur_family, cur_num );

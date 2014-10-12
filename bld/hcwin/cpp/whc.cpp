@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
     // Parse the command line.
     char    cmdline[80];
     char    *pfilename, *temp;
-    int     quiet = 0;
+    bool    quiet = false;
 
     getcmd( cmdline );
     temp = cmdline;
@@ -85,7 +85,7 @@ int main( int argc, char *argv[] )
             HCWarning( USAGE );
             return( -1 );
         } else {
-            quiet = 1;
+            quiet = true;
             temp++;
             while( *temp != '\0' && isspace( *temp ) ) {
                 temp++;
@@ -117,7 +117,7 @@ int main( int argc, char *argv[] )
                     HCWarning( USAGE );
                     return( -1 );
                 } else {
-                    quiet = 1;
+                    quiet = true;
                 }
             }
         }

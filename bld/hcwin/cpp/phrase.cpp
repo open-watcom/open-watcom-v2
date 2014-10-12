@@ -339,13 +339,13 @@ Phrase *PTable::match( char * &start )
                 start++;
             }
         } else {
-            int found_text = 0;
+            bool found_text = false;
             while( *start != '\0' ) {
                 if( found_text && isspace(*start) ) {
                     start++;
                     break;
                 } else if( !found_text && !isspace(*start) ) {
-                    found_text = 1;
+                    found_text = true;
                 }
                 start++;
             }
@@ -735,13 +735,14 @@ char* HFPhrases::nextInput()
             _scanner = new Scanner( input );
     
         } else if( next->_type != TOK_TEXT ) {
-            int push_level, done = 0;
+            int push_level;
+            bool done = false;
     
             for( ;; ) {
                 switch( next->_type ) {
                 case TOK_END:
                 case TOK_TEXT:  // deliberate fall-through
-                    done = 1;
+                    done = true;
                     break;
         
                 case TOK_COMMAND:
@@ -814,7 +815,7 @@ void HFPhrases::readPhrases()
 {
     char    *block = NULL;
     char    *end;
-    int     found_text;
+    bool    found_text;
     int     count;
     int     getnext;
     Phrase  phr;
@@ -835,14 +836,14 @@ void HFPhrases::readPhrases()
     while( (block = nextInput()) != NULL ) {
         last = NULL;
         while( *block != '\0' ) {
-            found_text = 0;
+            found_text = false;
             phr._len = 0;
             end = block;
             while( *end != '\0' ) {
                 if( found_text && isspace(*end) ) {
                     break;
                 } else if( !found_text && !isspace(*end) ) {
-                    found_text = 1;
+                    found_text = true;
                 }
                 if( phr._len == phr._bufLen ) {
                     phr._str = (char *) renew(phr._str, 2*phr._bufLen );

@@ -183,9 +183,9 @@ int Scanner::isSpecial( int c )
 //  Scanner::isFootnoteChar  --Check if c is a "footnote" character.
 //               This is a feature specific to the .HLP format.
 
-int Scanner::isFootnoteChar( int c )
+bool Scanner::isFootnoteChar( int c )
 {
-    int result = 0;
+    bool result = false;
     switch( c ) {
     case '#':   // Context string
     case '$':   // Title
@@ -193,7 +193,7 @@ int Scanner::isFootnoteChar( int c )
     case '+':   // Macros
     case '!':   // Browse Sequence Identifiers
     case '*':   // Build Tags (not supported)
-        result = 1;
+        result = true;
     }
     return( result );
 }

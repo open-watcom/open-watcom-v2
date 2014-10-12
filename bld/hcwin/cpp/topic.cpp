@@ -1148,7 +1148,7 @@ void HFTopic::dumpBrowse()
 //  HFTopic::newNode    --Start a new current node.  Also dump the old one,
 //            update the linked list, check the compression, ...
 
-void HFTopic::newNode( int is_new_topic )
+void HFTopic::newNode( bool is_new_topic )
 {
     int         forget_node = 0;
     unsigned    i;

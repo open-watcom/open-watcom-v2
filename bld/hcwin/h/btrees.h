@@ -72,7 +72,7 @@ public:
 
     // Virtual functions to override in a derived class.
     virtual BtreeData   *myKey() = 0;
-    virtual int     lessThan( BtreeData *other ) = 0;
+    virtual bool    lessThan( BtreeData *other ) = 0;
 
     virtual uint_32 size() = 0;
     virtual int     dump( OutFile * dest ) = 0;

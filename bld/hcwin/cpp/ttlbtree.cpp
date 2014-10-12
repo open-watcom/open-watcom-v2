@@ -49,7 +49,7 @@ protected:
 
     // Overriding the BtreeData virtual functions.
     BtreeData       *myKey();
-    int         lessThan( BtreeData *other );
+    bool            lessThan( BtreeData *other );
     virtual uint_32 size();
     virtual int     dump( OutFile * dest );
 
@@ -88,10 +88,10 @@ BtreeData *TTLKey::myKey()
 
 //  TTLKey::lessThan    --Overrides BtreeData::lessThan.
 
-int TTLKey::lessThan( BtreeData * other )
+bool TTLKey::lessThan( BtreeData * other )
 {
     TTLKey  *trueother = (TTLKey*) other;
-    return _offset < trueother->_offset;
+    return( _offset < trueother->_offset );
 }
 
 

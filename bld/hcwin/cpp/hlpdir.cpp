@@ -56,7 +56,7 @@ protected:
     virtual uint_32 size() { return strlen(_name)+1; };
     virtual int     dump( OutFile * dest );
     BtreeData       *myKey();
-    int         lessThan( BtreeData *other );
+    bool            lessThan( BtreeData *other );
 
 public:
     HFSkey( char const n[] ) { strcpy( _name, n ); };
@@ -102,10 +102,10 @@ inline BtreeData *HFSkey::myKey()
 
 //  HFSkey::lessThan    --Overrides BtreeData::lessThan.
 
-int HFSkey::lessThan( BtreeData *other )
+bool HFSkey::lessThan( BtreeData *other )
 {
     HFSkey  *trueother = (HFSkey*) other;
-    return ( strcmp( _name, trueother->_name ) < 0 );
+    return( strcmp( _name, trueother->_name ) < 0 );
 }
 
 

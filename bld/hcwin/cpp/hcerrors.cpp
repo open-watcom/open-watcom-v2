@@ -110,15 +110,15 @@ void HCWarning( int err_num, ... )
 // The next seven functions are to reassure the user that something is
 // happening at any given time.
 
-static int printOutput = 1;
+static bool printOutput = true;
 
-void SetQuiet( int be_quiet )
+void SetQuiet( bool be_quiet )
 {
     // Shut up if output is redirected
     if( isatty( STDERR_FILENO ) )
         printOutput = !be_quiet;
     else
-        printOutput = 0;
+        printOutput = false;
     return;
 }
 

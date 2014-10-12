@@ -68,7 +68,7 @@ HFCtxomap::HFCtxomap( HFSDirectory *d_file, HFContext *offsets )
       _lastRec( NULL ),
       _size( sizeof( uint_16 ) ),   // size of _numRecords
       _offsetFile( offsets ),
-      _resolved( 0 )
+      _resolved( false )
 {
     d_file->addFile( this, "|CTXOMAP" );
 }
@@ -121,7 +121,7 @@ uint_32 HFCtxomap::size()
                 current->_offset = true_offset;
             }
         }
-        _resolved = 1;
+        _resolved = true;
     }
     return _size;
 }

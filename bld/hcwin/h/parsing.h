@@ -84,7 +84,7 @@ class RTFparser
     int     _storSize, _maxStor;
 
     Token   *_current;
-    int     _wereWarnings;
+    bool    _wereWarnings;
 
     // The current "tab stop type".
     TabTypes    _tabType;
@@ -104,10 +104,10 @@ class RTFparser
     uint_16 closeBraces();      // Concatenate successive font changes.
 
     // Identify and process font commands.
-    int     isFontCommand( Token * tok, uint_16 *newfont );
+    bool    isFontCommand( Token * tok, uint_16 *newfont );
 
     // Identify (but don't process) paragraph commands.
-    int     isParCommand();
+    bool    isParCommand();
 
     // Utility function
     char *  skipSpaces( char * start );

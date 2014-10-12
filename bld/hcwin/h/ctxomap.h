@@ -66,8 +66,8 @@ class HFCtxomap : public Dumpable
     uint_16     _numRecords;
     CmapRec     *_firstRec, *_lastRec;
     uint_16     _size;
-    HFContext       *_offsetFile;
-    int         _resolved;
+    HFContext   *_offsetFile;
+    bool        _resolved;
 
     // Assignment of HFCtxomap's is not permitted.
     HFCtxomap( HFCtxomap const & ) {};

@@ -57,8 +57,7 @@ BlockFile::BlockFile( char const fname[] ) : File( fname, File::READ )
 
 size_t BlockFile::get_block( char * dest )
 {
-    size_t result = fread( dest, 1, BLOCK_SIZE, fp );
-    return result;
+    return( fread( dest, 1, BLOCK_SIZE, _fp ) );
 }
 
 static Memory bogus;

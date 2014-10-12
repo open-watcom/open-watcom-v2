@@ -52,7 +52,7 @@ extern void HCError( int err_num, ... );
 extern void HCWarning( int err_num, ... );
 
 // Some informative messages.
-extern void SetQuiet( int be_quiet );
+extern void SetQuiet( bool be_quiet );
 extern void HCStartFile( char const name[] );
 extern void HCTick();
 extern void HCDoneTick();

@@ -63,13 +63,7 @@ Bitmap::Bitmap( InFile *fp ) : Bmx( fp )
     _fp->readbuf( &filesize, 1, sizeof( uint_32 ) );
     _fp->reset( 0, SEEK_END );
     _fileSize = (uint_32)_fp->tell();
-
-    if( magic != BITMAP_MAGIC || filesize != _fileSize ) {
-        _isValidImage = 0;
-    } else {
-        _isValidImage = 1;
-    }
-
+    _isValidImage = ( magic == BITMAP_MAGIC && filesize == _fileSize );
     _fp->close();   // To conserve file handles.
 }
 
@@ -301,11 +295,7 @@ SegGraph::SegGraph( InFile * fp ) : Bmx( fp )
 
     _fp->reset();
     _fp->readbuf( &magic, 1, sizeof( uint_16 ) );
-    if( magic == SHG1_MAGIC || magic == SHG2_MAGIC ) {
-        _isValidImage = 1;
-    } else {
-        _isValidImage = 0;
-    }
+    _isValidImage = ( magic == SHG1_MAGIC || magic == SHG2_MAGIC );
     _fp->reset( 0, SEEK_END );
     _size = (uint_32)_fp->tell();
     _fp->close();    // to preserve file handles.

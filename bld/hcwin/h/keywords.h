@@ -56,7 +56,7 @@ class HFKwbtree : public Dumpable
     Btree       *_words;
     HFKwdata    *_dataFile;
     HFKwmap     *_mapFile;
-    int         _haveSetOffsets;
+    bool        _haveSetOffsets;
     static char const   _keyMagic[];
 
     // Assignment of HFKwbtree's is not allowed.

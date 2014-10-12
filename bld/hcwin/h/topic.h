@@ -187,7 +187,7 @@ public:
 
     void        startNonScroll();
     void        startScroll();
-    void        newNode( int is_new_topic = 0 );
+    void        newNode( bool is_new_topic = false );
 
     // Function to change paragraph attributes.
     int         setTab( int val, TabTypes flags = TAB_LEFT );

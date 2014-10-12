@@ -65,7 +65,7 @@ protected:
 
     // Override the BtreeData virtual functions.
     BtreeData           *myKey();
-    int                 lessThan( BtreeData * other );
+    bool                lessThan( BtreeData * other );
     virtual uint_32     size();
     virtual int         dump( OutFile * dest );
 
@@ -142,7 +142,7 @@ BtreeData *KWKey::myKey()
 
 //  KWKey::lessThan     --Overrides BtreeData::lessThan.
 
-int KWKey::lessThan( BtreeData * other )
+bool KWKey::lessThan( BtreeData * other )
 {
     KWKey *trueother = (KWKey*) other;
     char *pleft = _keyword;
@@ -161,11 +161,11 @@ int KWKey::lessThan( BtreeData * other )
         }
     } while( left == right && left != '\0' );
 
-    int result = left < right;
+    bool result = ( left < right );
     if( isalnum( left ) && !isalnum( right ) ) {
-        result = 0;
+        result = false;
     } else if( !isalnum( left ) && isalnum( right ) ) {
-        result = 1;
+        result = true;
     }
 
     return result;
@@ -282,7 +282,7 @@ HFKwbtree::HFKwbtree( HFSDirectory * d_file )
     _words = new Btree( _keyMagic );
     _dataFile = new HFKwdata( d_file, this );
     _mapFile = new HFKwmap( d_file, this );
-    _haveSetOffsets = 0;
+    _haveSetOffsets = false;
 
     d_file->addFile( this, "|KWBTREE" );
 }
@@ -315,7 +315,7 @@ uint_32 HFKwbtree::size()
             offset += sizeof( uint_32 )*record->_count;
             _iterator++;
         }
-        _haveSetOffsets = 1;
+        _haveSetOffsets = true;
     }
     return _words->size();
 }

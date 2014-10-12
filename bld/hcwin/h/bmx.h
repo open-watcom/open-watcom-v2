@@ -57,12 +57,12 @@ class Bmx : public Dumpable
 
 protected:
     InFile  *_fp;
-    int     _isValidImage;
+    bool    _isValidImage;
 public:
-    Bmx( InFile *fp ) : _fp(fp), _isValidImage(0) {};
+    Bmx( InFile *fp ) : _fp(fp), _isValidImage(false) {};
     ~Bmx() { delete _fp; };
 
-    int validImage() { return _isValidImage; };
+    bool validImage() { return _isValidImage; };
 };
 
 

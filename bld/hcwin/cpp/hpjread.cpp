@@ -126,7 +126,7 @@ int HPJScanner::open( char const filename[] )
 int HPJScanner::getLine()
 {
     int     current;
-    int     has_text;
+    bool    has_text;
     int     cur_len=0;
 
     // Loop until we've identified a single line.
@@ -134,7 +134,7 @@ int HPJScanner::getLine()
         ++_lineNum;
         current = 0;
         cur_len = 0;
-        has_text = 0;
+        has_text = false;
         for( ;; ) {
             current = _input->nextch();
             if( current == ';' && cur_len == 0 )
@@ -142,7 +142,7 @@ int HPJScanner::getLine()
             if( current == EOF || current == '\n' )
                 break;
             if( !isspace( current ) ) {
-                has_text = 1;
+                has_text = true;
             }
     
             if( cur_len == _lineSize ) {
@@ -270,7 +270,7 @@ HPJReader::HPJReader( HFSDirectory * d_file, Pointers *other_files,
     } else {
         _bagFiles = new Baggage*[NB_FILES];
     }
-    _oldPhrases = 0;
+    _oldPhrases = false;
 }
 
 
@@ -537,12 +537,7 @@ int HPJReader::handleOptions()
         } else if( strcmp( option, SOldKeyPhrase ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
-                if( stricmp( arg, STrue ) == 0 ||
-                    stricmp( arg, SYes  ) == 0 ) {
-                    _oldPhrases = 1;
-                } else {
-                    _oldPhrases = 0;
-                }
+                _oldPhrases = ( stricmp( arg, STrue ) == 0 || stricmp( arg, SYes  ) == 0 );
             }
         } else if( strcmp( option, SContents ) == 0 || strcmp( option, SIndex    ) == 0 ) {
             arg = _scanner.getArg( i );
@@ -704,7 +699,7 @@ int HPJReader::handleWindows()
     int     result;
     int     i, limit;
     char    *arg;
-    int     bad_param;
+    bool    bad_param;
     int     red, green, blue;
     uint_16 wflags;
     char    name[HLP_SYS_NAME];
@@ -760,12 +755,12 @@ int HPJReader::handleWindows()
             wflags |= VALID_CAPTION;
         }
 
-        bad_param = 0;
+        bad_param = false;
         arg = nextWinParam();
         if( *arg != '\0' ) {
             x = (uint_16) strtol( arg, NULL, 0 );
             if( x > PARAM_MAX ) {
-                bad_param = 1;
+                bad_param = true;
             } else {
                 wflags |= VALID_X;
             }
@@ -774,7 +769,7 @@ int HPJReader::handleWindows()
         if( *arg != '\0' ) {
             y = (uint_16) strtol( arg, NULL, 0 );
             if( y > PARAM_MAX ) {
-                bad_param = 1;
+                bad_param = true;
             } else {
                 wflags |= VALID_Y;
             }
@@ -783,7 +778,7 @@ int HPJReader::handleWindows()
         if( *arg != '\0' ) {
             width = (uint_16) strtol( arg, NULL, 0 );
             if( width > PARAM_MAX ) {
-                bad_param = 1;
+                bad_param = true;
             } else {
                 wflags |= VALID_WIDTH;
             }
@@ -792,7 +787,7 @@ int HPJReader::handleWindows()
         if( *arg != '\0' ) {
             height = (uint_16) strtol( arg, NULL, 0 );
             if( height > PARAM_MAX ) {
-                bad_param = 1;
+                bad_param = true;
             } else {
                 wflags |= VALID_HEIGHT;
             }
@@ -809,13 +804,13 @@ int HPJReader::handleWindows()
         }
 
         red = green = blue = 0;
-        bad_param = 0;
+        bad_param = false;
 
         arg = nextWinParam();
         if( *arg != '\0' ) {
             red = strtol( arg, NULL, 0 );
             if( red < 0 || red > 255 ) {
-                bad_param = 1;
+                bad_param = true;
             }
             wflags |= VALID_RGB1;
         }
@@ -823,7 +818,7 @@ int HPJReader::handleWindows()
         if( *arg != '\0' ) {
             green = strtol( arg, NULL, 0 );
             if( green < 0 || green > 255 ) {
-                bad_param = 1;
+                bad_param = true;
             }
             wflags |= VALID_RGB1;
         }
@@ -831,7 +826,7 @@ int HPJReader::handleWindows()
         if( *arg != '\0' ) {
             blue = strtol( arg, NULL, 0 );
             if( blue < 0 || blue > 255 ) {
-                bad_param = 1;
+                bad_param = true;
             }
             wflags |= VALID_RGB1;
         }
@@ -844,13 +839,13 @@ int HPJReader::handleWindows()
         }
 
         red = green = blue = 0;
-        bad_param = 0;
+        bad_param = false;
 
         arg = nextWinParam();
         if( *arg != '\0' ) {
             red = strtol( arg, NULL, 0 );
             if( red < 0 || red > 255 ) {
-                bad_param = 1;
+                bad_param = true;
             }
             wflags |= VALID_RGB2;
         }
@@ -858,7 +853,7 @@ int HPJReader::handleWindows()
         if( *arg != '\0' ) {
             green = strtol( arg, NULL, 0 );
             if( green < 0 || green > 255 ) {
-                bad_param = 1;
+                bad_param = true;
             }
             wflags |= VALID_RGB2;
         }
@@ -866,7 +861,7 @@ int HPJReader::handleWindows()
         if( *arg != '\0' ) {
             blue = strtol( arg, NULL, 0 );
             if( blue < 0 || blue > 255 ) {
-                bad_param = 1;
+                bad_param = true;
             }
             wflags |= VALID_RGB2;
         }
@@ -942,7 +937,8 @@ int HPJReader::handleMap()
     char    *token;
     uint_32 hash_value;
     int     con_num;
-    int     is_good_string, i;
+    bool    is_good_string;
+    int     i;
     for( ;; ) {
         result = _scanner.getLine();
         if( !result || _scanner[0] == '[' )
@@ -965,10 +961,10 @@ int HPJReader::handleMap()
             continue;
     
         // verify that the current token at this point is a context string.
-        is_good_string = 1;
+        is_good_string = true;
         for( i=0; token[i] != '\0'; ++i ) {
             if( !isalnum( token[i] ) && token[i] != '.' && token[i] != '_' ) {
-                is_good_string = 0;
+                is_good_string = false;
             }
         }
         if( !is_good_string ) {
@@ -1048,12 +1044,13 @@ void HPJReader::includeMapFile( char i_str[] )
 
     // Now parse the secondary file.
     HPJScanner  input( &source );
-    int     not_done;
+    bool    not_done;
     char    *token;
-    int     is_good_str, con_num;
+    bool    is_good_str;
+    int     con_num;
     uint_32 hash_value;
     for( ;; ) {
-        not_done = input.getLine();
+        not_done = ( input.getLine() != 0 );
         if( !not_done )
             break;
     
@@ -1070,10 +1067,10 @@ void HPJReader::includeMapFile( char i_str[] )
             token = input.tokLine();
             if( token == NULL )
                 continue;
-            is_good_str = 1;
+            is_good_str = true;
             for( i=0; token[i] != '\0'; ++i ) {
                 if( !isalnum( token[i] ) && token[i] != '.' && token[i] != '_' ) {
-                    is_good_str = 0;
+                    is_good_str = false;
                 }
             }
             if( !is_good_str ) {
@@ -1098,7 +1095,7 @@ void HPJReader::includeMapFile( char i_str[] )
                     token = input.tokLine();
                     if( token != NULL )
                         break;
-                    not_done = input.getLine();
+                    not_done = ( input.getLine() != 0 );
                 } while( not_done );
             }
     

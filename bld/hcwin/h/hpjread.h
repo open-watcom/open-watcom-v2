@@ -113,7 +113,7 @@ class HPJReader
 
     char    *_homeDir;  // The home directory (used when searching)
 
-    int     _oldPhrases;    // Flag -- Use old phrase table?
+    bool    _oldPhrases;    // Flag -- Use old phrase table?
 
     Baggage     **_bagFiles;    // List of baggage files.
     int         _numBagFiles;   // number of baggage files specified.

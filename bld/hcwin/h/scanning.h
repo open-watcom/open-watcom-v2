@@ -113,7 +113,7 @@ public:
     Token   *look( int i ) { return i<3?tokens[i]:NULL; };
 
     // Check if a certain character can start a .HLP "footnote".
-    int     isFootnoteChar( int c );
+    bool    isFootnoteChar( int c );
 
     // Access function.
     InFile  const *file() { return _source; };
