@@ -424,7 +424,7 @@ void HFBitmaps::note( char const name[] )
     StrNode *curdir;
     uint_16 magic;
 
-    InFile  *bmp = new InFile( name, 1 );
+    InFile  *bmp = new InFile( name, true );
     for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
         chdir( curdir->_name );
         bmp->open( name );
@@ -518,10 +518,10 @@ uint_16 HFBitmaps::use( char const name[] )
         }
     } else {
         // Now we have to search for the file.
-        bmp = new InFile( name, 1 );
+        bmp = new InFile( name, true );
         for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
             chdir( curdir->_name );
-            bmp->open( name, 1 );
+            bmp->open( name, true );
             chdir( _startDir );
         }
     

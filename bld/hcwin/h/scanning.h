@@ -62,7 +62,7 @@ struct Token
 {
     TokenTypes      _type;
     Buffer<char>    _text;
-    int             _hasValue;
+    bool            _hasValue;
     int             _value;
     int             _lineNum;
     Token();
@@ -89,7 +89,7 @@ class Scanner
 
     // Various helper functions to handle specific cases.
     TokenTypes  handleSlash( Token * tok );
-    int     isSpecial( int c );
+    bool    isSpecial( int c );
     void    pullCommand( Token * tok );
     void    pullText( Token * tok );
     void    pullHex( Token * tok );

@@ -166,7 +166,7 @@ TokenTypes Scanner::handleSlash( Token * tok )
 
 //  Scanner::isSpecial  --Check if the argument is a special character.
 
-int Scanner::isSpecial( int c )
+bool Scanner::isSpecial( int c )
 {
     static uint_8 const specials[] = "-:\\_{|}\"";
     unsigned            i;
@@ -218,9 +218,9 @@ void Scanner::pullCommand( Token * tok )
     tok->_text[i] = '\0';
 
     if( current == S_ENDC || (!isdigit(current) && current != '-') ) {
-        tok->_hasValue = 0;
+        tok->_hasValue = false;
     } else {
-        tok->_hasValue = 1;
+        tok->_hasValue = true;
         for( i=0; i<6; i++ ) {
             num_string[i] = static_cast<char>(current);
             current = nextch();
@@ -303,7 +303,7 @@ void Scanner::pullHex( Token * tok )
     if( i==0 ) {
         tok->_type = TOK_NONE;
     } else {
-        tok->_hasValue = 1;
+        tok->_hasValue = true;
         tok->_value = strtol( result, NULL, 16 );
     }
 }

@@ -153,7 +153,7 @@ uint_16 RTFparser::closeBraces()
     TokenTypes  t_type;
 
     for( ;; ) {
-        t_type = _input->look(1)->_type;
+        t_type = _input->look( 1 )->_type;
         if( t_type == TOK_PUSH_STATE ) {
             _fontFile->push();
             ++_nestLevel;
@@ -161,7 +161,7 @@ uint_16 RTFparser::closeBraces()
             result = _fontFile->pop();
             --_nestLevel;
         } else if( t_type == TOK_COMMAND ) {
-            if( !isFontCommand( _input->look(1), &result ) ) {
+            if( !isFontCommand( _input->look( 1 ), &result ) ) {
                 break;
             }
         } else {
@@ -180,8 +180,8 @@ uint_16 RTFparser::closeBraces()
 bool RTFparser::isParCommand()
 {
     bool result = false;
-    if( _input->look(1)->_type == TOK_COMMAND ) {
-        switch( FindCommand( _input->look(1)->_text ) ) {
+    if( _input->look( 1 )->_type == TOK_COMMAND ) {
+        switch( FindCommand( _input->look( 1 )->_text ) ) {
         case RC_BOX:
         case RC_FI:
         case RC_LI:
@@ -544,12 +544,12 @@ void RTFparser::handleCommand()
             attribs = _fontFile->getAttribs( _curFont );
             if( attribs & FNT_UNDERLINE ) {
                 _linkType = POPUP;
-                handleHidden(1);
+                handleHidden( true );
             } else if( attribs & (FNT_STRIKEOUT | FNT_DBL_UNDER ) ) {
                 _linkType = JUMP;
-                handleHidden(1);
+                handleHidden( true );
             } else {
-                handleHidden(0);
+                handleHidden( false );
             }
         }
         break;
@@ -572,15 +572,15 @@ void RTFparser::Go()
     // Make sure the first three tokens are an RTF header.
     _input->next();
     _wereWarnings = true;
-    if( _input->look(0)->_type != TOK_PUSH_STATE ) {
+    if( _input->look( 0 )->_type != TOK_PUSH_STATE ) {
         HCWarning( RTF_HEADER, _fname );
-    } else if( _input->look(1)->_type != TOK_COMMAND
-      || FindCommand( _input->look(1)->_text ) != RC_RTF ) {
+    } else if( _input->look( 1 )->_type != TOK_COMMAND
+      || FindCommand( _input->look( 1 )->_text ) != RC_RTF ) {
         HCWarning( RTF_RTF, _fname );
-    } else if( _input->look(2)->_type != TOK_COMMAND ) {
+    } else if( _input->look( 2 )->_type != TOK_COMMAND ) {
         HCWarning( RTF_CHARSET, _fname );
     } else {
-        int command = FindCommand( _input->look(2)->_text );
+        int command = FindCommand( _input->look( 2 )->_text );
         if( command != RC_ANSI &&
             command != RC_PC &&
             command != RC_WINDOWS ) {
@@ -626,7 +626,7 @@ void RTFparser::Go()
                 _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
                 _topFile->startScroll();
             }
-            _topFile->addText( _current->_text, 1 );
+            _topFile->addText( _current->_text, true );
             break;
     
     
@@ -635,7 +635,7 @@ void RTFparser::Go()
             for( ;; ) {
                 _fontFile->push();
                 ++_nestLevel;
-                if( _input->look(1)->_type != TOK_PUSH_STATE )
+                if( _input->look( 1 )->_type != TOK_PUSH_STATE )
                     break;
                 _input->next();
             }
@@ -650,16 +650,16 @@ void RTFparser::Go()
     
             // If the next command is "\v" we may have just terminated
             // a hotlink.
-            if( _input->look(1)->_type == TOK_COMMAND && FindCommand( _input->look(1)->_text ) == RC_V && ( !_input->look(1)->_hasValue || _input->look(1)->_value != 0 ) ) {
+            if( _input->look( 1 )->_type == TOK_COMMAND && FindCommand( _input->look( 1 )->_text ) == RC_V && ( !_input->look( 1 )->_hasValue || _input->look( 1 )->_value != 0 ) ) {
                 attribs = _fontFile->getAttribs( _curFont );
                 if( attribs & FNT_UNDERLINE ) {
                     _linkType = POPUP;
-                    handleHidden(1);
+                    handleHidden( true );
                 } else if( attribs & (FNT_STRIKEOUT | FNT_DBL_UNDER ) ) {
                     _linkType = JUMP;
-                    handleHidden(1);
+                    handleHidden( true );
                 } else {
-                    handleHidden(0);
+                    handleHidden( false );
                 }
             } else if( temp_font != _curFont ) {
                 // We may also be just starting a hotlink.
@@ -677,9 +677,9 @@ void RTFparser::Go()
         case TOK_SPEC_CHAR:
             // This character may start a footnote.
             if( _input->isFootnoteChar( (char) _current->_value ) ) {
-                if( _input->look(1)->_type == TOK_PUSH_STATE
-                  && _input->look(2)->_type == TOK_COMMAND
-                  && FindCommand( _input->look(2)->_text ) == RC_FOOTNOTE ) {
+                if( _input->look( 1 )->_type == TOK_PUSH_STATE
+                  && _input->look( 2 )->_type == TOK_COMMAND
+                  && FindCommand( _input->look( 2 )->_text ) == RC_FOOTNOTE ) {
                     char fchar = (char) _current->_value;
                     _input->next();
                     _input->next();
@@ -689,13 +689,13 @@ void RTFparser::Go()
                     _topFile->addText( smallstr );
                 }
             } else if( _current->_value == '{'
-              && _input->look(1)->_type == TOK_TEXT
-              && _input->look(2)->_type == TOK_SPEC_CHAR
-              && _input->look(2)->_value == '}' ) {
+              && _input->look( 1 )->_type == TOK_TEXT
+              && _input->look( 2 )->_type == TOK_SPEC_CHAR
+              && _input->look( 2 )->_value == '}' ) {
                 // We must perform a special check for the
                 // "\{bm* image_file\}" construct.
         
-                char const  *string = _input->look(1)->_text;
+                char const  *string = _input->look( 1 )->_text;
                 uint_16     bmnum;
         
                 FontFlags   bmtype = NOT_A_BITMAP;
@@ -756,18 +756,18 @@ void RTFparser::Go()
                     _writeState = SCROLL;
                 }
                 temp_font = closeBraces();
-                if( _input->look(1)->_type == TOK_COMMAND
-                  && FindCommand( _input->look(1)->_text ) == RC_V
-                  && ( !_input->look(1)->_hasValue || _input->look(1)->_value != 0 ) ) {
+                if( _input->look( 1 )->_type == TOK_COMMAND
+                  && FindCommand( _input->look( 1 )->_text ) == RC_V
+                  && ( !_input->look( 1 )->_hasValue || _input->look( 1 )->_value != 0 ) ) {
                     attribs = _fontFile->getAttribs( _curFont );
                     if( attribs & FNT_UNDERLINE ) {
                         _linkType = POPUP;
-                        handleHidden(1);
+                        handleHidden( true );
                     } else if( attribs & (FNT_STRIKEOUT | FNT_DBL_UNDER ) ) {
                         _linkType = JUMP;
-                        handleHidden(1);
+                        handleHidden( true );
                     } else {
-                        handleHidden(0);
+                        handleHidden( false );
                     }
                 } else if( temp_font != _curFont ) {
                     _lastFont = _curFont;
@@ -970,7 +970,7 @@ void RTFparser::handleFootnote( char Fchar )
 //  RTFparser::handleHidden --Parse hidden text (which may be a
 //                hotlink).
 
-void RTFparser::handleHidden( int IsHotLink )
+void RTFparser::handleHidden( bool IsHotLink )
 {
     uint_16 result = _fontFile->currentFont();
     uint_16 new_font;

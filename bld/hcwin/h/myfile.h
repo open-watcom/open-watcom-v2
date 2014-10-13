@@ -62,7 +62,7 @@ class File
 
 protected:
     FILE    *_fp;
-    int     _badFile;
+    bool    _badFile;
     char    *_fullName;     // Path + name
     char    *_shortName;        // Name as passed to the object.
 
@@ -76,11 +76,11 @@ public:
     enum { READ=0x01, WRITE=0x02, TEXT=0x04, BIN=0x08 };
 
     // Access functions.
-    int     bad() const { return _badFile; };
+    bool    bad() const { return _badFile; };
     char const *name() const { return (char const*) _shortName; };
 
-    int     open( char const filename[], uint_8 type=READ|BIN );
-    int     open();         // Re-open the previous file.
+    bool    open( char const filename[], uint_8 type=READ|BIN );
+    bool    open();         // Re-open the previous file.
     void    close();        // Close the current file.
 
     int reset( long pos = 0, int where = SEEK_SET )
@@ -121,11 +121,11 @@ public:
 class InFile : public File
 {
 public:
-    InFile( char const filename[], int is_binary=0 );
+    InFile( char const filename[], bool is_binary=false );
     InFile() : File() {};
 
-    int open( char const filename[], int is_binary=0 );
-    int open() { return File::open(); };
+    bool open( char const filename[], bool is_binary=false );
+    bool open() { return File::open(); };
 
     int nextch()
         { return fgetc( _fp ); };

@@ -133,7 +133,7 @@ class HFTopic : public Dumpable
     uint_32     _size;
     unsigned    _numPages;
     unsigned    _numTopics;
-    int         _useCompress;
+    bool        _useCompress;
     TopicLink   *_head, *_tail;
     PageHeader  *_phead, *_ptail;
 
@@ -165,7 +165,7 @@ class HFTopic : public Dumpable
     uint_32     _lastTopic;
     uint_32     _lastLink;
 
-    int         _haveCleanedUp;
+    bool        _haveCleanedUp;
 
     // A private function called by the appendAttr() functions.
     void        addZero( unsigned index );
@@ -196,7 +196,7 @@ public:
     void        clearPar();
 
     // Various ways to add things to the |TOPIC file.
-    void        addText( char const source[], int use_phr=0 );
+    void        addText( char const source[], bool use_phr=false );
     unsigned    addAttr( FontFlags type, uint_32 val=0 );
     unsigned    addAttr( FontFlags type, char const str[], uint_16 len );
     unsigned    addAttr( FontFlags type, char const str[], uint_16 len, uint_32 val );

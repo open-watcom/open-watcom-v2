@@ -164,7 +164,7 @@ CompReader::CompReader( CompWriter *riter )
 //  CompReader::flush   --Throw out the buffered text and
 //            start compressing from scratch.
 
-void CompReader::flush( int nodump )
+void CompReader::flush( bool nodump )
 {
     _last = 0;
     _first = 0;
@@ -176,7 +176,7 @@ void CompReader::flush( int nodump )
     _indices[0] = HTABLE_NIL;
 
     if( !nodump ) {
-    _dest->dump();
+        _dest->dump();
     }
     return;
 }
@@ -184,7 +184,7 @@ void CompReader::flush( int nodump )
 
 //  CompReader::reset   --Switch to a new CompWriter.
 
-void CompReader::reset( CompWriter *riter, int nodump )
+void CompReader::reset( CompWriter *riter, bool nodump )
 {
     flush( nodump );
     _dest = riter;

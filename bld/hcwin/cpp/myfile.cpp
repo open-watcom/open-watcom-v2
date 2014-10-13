@@ -72,14 +72,14 @@ File::File( char const filename[], uint_8 type )
 File::File()
     : _flags( 0 ),
       _fp( NULL ),
-      _badFile( 1 ),
+      _badFile( true ),
       _fullName( NULL ),
       _shortName( NULL )
 {
     // empty
 }
 
-int File::open( char const filename[], uint_8 type )
+bool File::open( char const filename[], uint_8 type )
 // Open the file and record the name.
 {
     char mode[3] = "rb";
@@ -131,7 +131,7 @@ File::~File()
     }
 }
 
-int File::open()
+bool File::open()
 // Reopen a file closed with the close() function.
 {
     if( !( _flags & _isOpen ) ) {
@@ -147,7 +147,7 @@ int File::open()
             _flags |= _isOpen;
         }
     }
-    return _fp != NULL;
+    return( _fp != NULL );
 }
 
 void File::close()
@@ -160,15 +160,15 @@ void File::close()
     }
 }
 
-InFile::InFile( char const filename[], int is_binary )
-    : File( filename, is_binary?(READ|BIN):(READ|TEXT) )
+InFile::InFile( char const filename[], bool is_binary )
+    : File( filename, is_binary ? (READ|BIN) : (READ|TEXT) )
 {
     // empty;
 }
 
-int InFile::open( char const filename[], int is_binary )
+bool InFile::open( char const filename[], bool is_binary )
 {
-    return File::open( filename, is_binary?(READ|BIN):(READ|TEXT) );
+    return File::open( filename, is_binary ? (READ|BIN) : (READ|TEXT) );
 }
 
 

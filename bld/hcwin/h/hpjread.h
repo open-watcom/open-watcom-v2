@@ -83,7 +83,7 @@ public:
     char    *tokLine();         // Tokenize a line.
     char    *endTok();
 
-    int     open( char const filename[] );
+    bool    open( char const filename[] );
     void    close() { _input->close(); };
     char const  *name() const { return _input->name(); };
 };

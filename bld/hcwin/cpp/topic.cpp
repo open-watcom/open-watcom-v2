@@ -59,7 +59,7 @@ struct TopicLink
 {
     TopicLink       *_next;
     uint_32         _size;
-    int             _isFirstLink;
+    bool            _isFirstLink;
     Buffer<char>    _myData;
 
     TopicLink( uint_32 s );
@@ -243,7 +243,7 @@ class TextHolder
 
 //  TopicLink::TopicLink
 
-TopicLink::TopicLink( uint_32 s ) : _size( s ), _isFirstLink(0), _myData( s )
+TopicLink::TopicLink( uint_32 s ) : _size( s ), _isFirstLink(false), _myData( s )
 {
     // empty
 }
@@ -842,10 +842,10 @@ HFTopic::HFTopic( HFSDirectory * d_file, HFPhrases *ph )
       _curCharOffset( 0 ),
       _lastTopic( NULLVAL32 ),
       _lastLink( NULLVAL32 ),
-      _haveCleanedUp( 0 )
+      _haveCleanedUp( false )
 {
     _size = PAGE_HEADER_SIZE;
-    _useCompress = (ph != NULL);
+    _useCompress = ( ph != NULL );
     _phead = new PageHeader;
     _ptail = _phead;
 
@@ -931,7 +931,7 @@ uint_32 HFTopic::size()
     if( !_haveCleanedUp ) {
         // Dump the last linked-list node, if necessary.
         newNode();
-        _haveCleanedUp = 1;
+        _haveCleanedUp = true;
     }
     return _size;
 }
@@ -1150,7 +1150,7 @@ void HFTopic::dumpBrowse()
 
 void HFTopic::newNode( bool is_new_topic )
 {
-    int         forget_node = 0;
+    bool        forget_node = false;
     unsigned    i;
     unsigned    j,k,zero_pos;
     FontFlags   the_flag;
@@ -1163,7 +1163,7 @@ void HFTopic::newNode( bool is_new_topic )
             }
         }
         if( i == _curPar->_numAttribs ) {
-            forget_node = 1;
+            forget_node = true;
         }
     }
 
@@ -1275,7 +1275,7 @@ void HFTopic::newNode( bool is_new_topic )
             } else {
                 _size += first->_size + second->_size + third->_size;
             }
-            first->_isFirstLink = 1;
+            first->_isFirstLink = true;
         }
 
         // Update linked list pointers in old nodes we've been saving,
@@ -1336,7 +1336,7 @@ void HFTopic::newNode( bool is_new_topic )
 //  HFTopic::addText    --Adds text (assumed to be zero-terminated)
 //            to the |TOPIC file.
 
-void HFTopic::addText( char const source[], int use_phr )
+void HFTopic::addText( char const source[], bool use_phr )
 {
     int length;
     if( source[0] == '\0' ) {

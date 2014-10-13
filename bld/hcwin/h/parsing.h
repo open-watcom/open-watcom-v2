@@ -100,7 +100,7 @@ class RTFparser
     void    handleCommand();    // Process non-font commands.
     void    handleFonts();      // Process the font table.
     void    handleFootnote( char Fchar );   // Process footnotes.
-    void    handleHidden( int IsHotLink );  // Process hidden text.
+    void    handleHidden( bool IsHotLink );  // Process hidden text.
     uint_16 closeBraces();      // Concatenate successive font changes.
 
     // Identify and process font commands.

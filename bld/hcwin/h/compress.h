@@ -104,7 +104,7 @@ public:
     unsigned add( char const source[], size_t amount );
     unsigned skip( size_t amount );
 
-    void    flush( int nodump = 0 );
+    void    flush( bool nodump = false );
 
-    void    reset( CompWriter *riter, int nodump = 0 );
+    void    reset( CompWriter *riter, bool nodump = false );
 };

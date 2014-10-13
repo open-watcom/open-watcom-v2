@@ -108,9 +108,9 @@ HPJScanner::~HPJScanner()
 
 //  HPJScanner::open    --Initialize the parser on a given filename.
 
-int HPJScanner::open( char const filename[] )
+bool HPJScanner::open( char const filename[] )
 {
-    int result = _input->open( filename, File::READ|File::TEXT );
+    bool result = _input->open( filename, File::READ|File::TEXT );
     if( !result ) {
         if( _curLine == NULL ) {
             _curLine = new char[120];   // Overflow possibility

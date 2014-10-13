@@ -197,9 +197,9 @@ void HFSystem::setCompress( int val )
 
 //  HFSystem::isCompressed  --Get the compression level.
 
-int HFSystem::isCompressed()
+bool HFSystem::isCompressed()
 {
-    return _compLevel != NO_COMPRESSION;
+    return( _compLevel != NO_COMPRESSION );
 }
 
 

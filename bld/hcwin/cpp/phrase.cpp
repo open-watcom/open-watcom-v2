@@ -817,7 +817,7 @@ void HFPhrases::readPhrases()
     char    *end;
     bool    found_text;
     int     count;
-    int     getnext;
+    bool    getnext;
     Phrase  phr;
     Phrase  *p_phr, *last, *next, *lookahead;
     PTable  *temp;
@@ -889,7 +889,7 @@ void HFPhrases::readPhrases()
         startInput();
         while( (block = nextInput()) != NULL ) {
             last = next = lookahead = NULL;
-            getnext = 1;
+            getnext = true;
             while( *block != '\0' ) {
                 if( getnext ) {
                     next = _oldPtable->match( block );
@@ -915,7 +915,7 @@ void HFPhrases::readPhrases()
                         p_phr = NULL;
                     }
                     next = lookahead;
-                    getnext = 0;
+                    getnext = false;
                 } else {
                     // Set phr to (next + lookahead).
                     phr._len = next->_len + lookahead->_len + 1;
@@ -939,7 +939,7 @@ void HFPhrases::readPhrases()
         
                     next = NULL;
                     lookahead = NULL;
-                    getnext = 1;
+                    getnext = true;
                 }
                 last = p_phr;
             }

@@ -54,13 +54,13 @@ class HFCtxomap : public Dumpable
     // Structure to store map records internally.
     struct CmapRec : public Dumpable
     {
-    uint_32     _mapnum;
-    uint_32     _offset;
-    CmapRec     *_nextRec;
+        uint_32     _mapnum;
+        uint_32     _offset;
+        CmapRec     *_nextRec;
 
-    CmapRec( uint_32 num, uint_32 h_val );
-    uint_32     size() { return 8L; };
-    int     dump( OutFile * dest );
+        CmapRec( uint_32 num, uint_32 h_val );
+        uint_32     size() { return 8L; };
+        int         dump( OutFile * dest );
     };
 
     uint_16     _numRecords;

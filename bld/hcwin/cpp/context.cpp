@@ -234,17 +234,15 @@ void HFContext::recordContext( char const str[] )
 
     FutureHash  *current;
     size_t  length = strlen( str ) + 1;
-    int     comparison = 1;
 
     // Check to see if this topic has already been referenced.
     for( current = _head; current != NULL; current = current->_next ) {
-        comparison = stricmp( current->_string, str );
-        if( comparison >= 0 ) {
+        int comparison = stricmp( current->_string, str );
+        if( comparison == 0 )   // string was already in list
+            return;
+        if( comparison > 0 ) {
             break;
         }
-    }
-    if( comparison == 0 ) {  // string was already in list
-        return;
     }
 
     // If this topic has not been referenced or defined before,

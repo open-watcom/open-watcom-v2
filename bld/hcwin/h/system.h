@@ -173,7 +173,7 @@ public:
 
     // Set the compression level.
     void        setCompress( int val );
-    int         isCompressed();
+    bool        isCompressed();
     void        setContents( uint_32 hval );
 
     // Add a new system record.
