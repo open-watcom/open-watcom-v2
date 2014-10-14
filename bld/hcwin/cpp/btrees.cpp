@@ -60,7 +60,7 @@ struct BtreePage
     // Split a page which has gotten too large into two pages.
     int         split();
 
-    int         needSplit( uint_32 size );
+    bool        needSplit( uint_32 size );
 
     BtreePage( uint_32 max_size, BtreePage *ancestor, BtreePage *descendant=NULL );
     ~BtreePage();
@@ -332,7 +332,7 @@ int BtreePage::split()
 
 //  BtreePage::needSplit    --Check if page size overflow.
 
-int BtreePage::needSplit( uint_32 size )
+bool BtreePage::needSplit( uint_32 size )
 {
     uint_32     cur_size = _size + size;
     uint_32     num      = _numEntries;
@@ -451,13 +451,14 @@ uint_32 Btree::size()
 
 int Btree::dump( OutFile *dest )
 {
-    static const int hsize = 6;
-    uint_16     header[hsize] = {  0x0000, _numSplits, _root->_thisPage,
-                                   0xFFFF, _numPages, _numLevels };
+    uint_16     header[6] = {
+        0x0000, _numSplits, _root->_thisPage,
+        0xFFFF, _numPages, _numLevels
+    };
 
     // Write the magic number and header information.
     dest->write( _magic, 1, _magNumSize );
-    dest->write( header, sizeof( uint_16 ), hsize );
+    dest->write( header, sizeof( uint_16 ), 6 );
     dest->write( _totalEntries );
 
     // Dump all of the pages recursively.

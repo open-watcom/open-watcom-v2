@@ -120,11 +120,11 @@ int HFSnode::dump( OutFile * dest )
 
 
 char const HFSDirectory::_dirMagic[Btree::_magNumSize] = {
-                          0x3B, 0x29, 0x02, 0x04, 0x00,
-                      0x04, 0x7A, 0x34, 0x00, 0x00,
-                      0x00, 0x00, 0x00, 0x00, 0x00,
-                      0x00, 0x00, 0x00, 0x00, 0x00,
-                      0x00, 0x00
+    0x3B, 0x29, 0x02, 0x04, 0x00,
+    0x04, 0x7A, 0x34, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00
 };
 
 
@@ -173,9 +173,10 @@ void HFSDirectory::dump()
     }
 
     // Write out the .HLP file header.
-    static const uint_32    header[3] = {   0x00035F3F,
-                        0x00000010,
-                        0xFFFFFFFF
+    static const uint_32    header[3] = {
+        0x00035F3F,
+        0x00000010,
+        0xFFFFFFFF
     };
 
     _output.write( header, sizeof( uint_32 ), 3 );
@@ -198,7 +199,7 @@ void HFSDirectory::dump()
         _output.write( cursize );
         cursize -= FILE_HEADER_SIZE;
         _output.write( cursize );
-        _output.write( (uint_8)0x00 );    // Again, keeping WinHelp happy.
+        _output.write( (uint_8)0 );     // Again, keeping WinHelp happy.
         ((HFSnode*)current)->_pointer->dump( &_output );
     }
     HCDoneTick();

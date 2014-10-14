@@ -135,11 +135,11 @@ int ContextRec::dump( OutFile * dest )
 // The 'magic number' for the |CONTEXT btree.
 
 char const HFContext::_conMagic[Btree::_magNumSize] = {
-                        0x3B, 0x29, 0x02, 0x00, 0x00,
-                        0x08, 0x4C, 0x34, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00
+    0x3B, 0x29, 0x02, 0x00, 0x00,
+    0x08, 0x4C, 0x34, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00
 };
 
 
@@ -248,7 +248,7 @@ void HFContext::recordContext( char const str[] )
     // If this topic has not been referenced or defined before,
     // add it to the list of references.
     FutureHash  *newnode = new FutureHash( length );
-    strncpy( newnode->_string, str, length );
+    memcpy( newnode->_string, str, length );
     if( current == NULL ) {
         newnode->_prev = _tail;
         _tail = newnode;

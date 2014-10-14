@@ -56,44 +56,43 @@ struct P_String;
 
 class HFPhrases : public Dumpable
 {
-    PTable  *_oldPtable;
-    PTable  *_newPtable;
+    PTable      *_oldPtable;
+    PTable      *_newPtable;
 
     P_String    **_result;
     P_String    **_htable;
-    int     _resultSize;
+    int         _resultSize;
 
-    uint_16 _numPhrases;
-    uint_32 _phSize;
-    uint_32 _size;
+    uint_16     _numPhrases;
+    uint_32     _phSize;
+    uint_32     _size;
 
-    InFile* (*_nextf)();
-    InFile* (*_firstf)();
+    InFile      *(*_nextf)();
+    InFile      *(*_firstf)();
 
-    Scanner *_scanner;
-    void    startInput();
-    char*   nextInput();
-    void    initHashTable();
+    Scanner     *_scanner;
+    void        startInput();
+    char        *nextInput();
+    void        initHashTable();
 
     // Assignment of HFPhrases is not allowed.
     HFPhrases( HFPhrases const & ) {};
     HFPhrases & operator=( HFPhrases const & ) { return *this; };
 
 public:
-    HFPhrases( HFSDirectory * d_file, InFile* (*firstf)(),
-               InFile* (*nextf)() );
+    HFPhrases( HFSDirectory *d_file, InFile *(*firstf)(), InFile *(*nextf)() );
     ~HFPhrases();
 
     // Overrides of the "Dumpable" virtual functions.
-    uint_32 size();
-    int     dump( OutFile * dest );
+    uint_32     size();
+    int         dump( OutFile * dest );
 
     // Functions of the phrase handler.
-    void    readPhrases();
-    void    createQueue( char const *path );
-    int     oldTable( char const *path );
+    void        readPhrases();
+    void        createQueue( char const *path );
+    int         oldTable( char const *path );
 
-    void    replace( char *dst, char const *src, int &len );
+    void        replace( char *dst, char const *src, int &len );
 };
 
 #endif

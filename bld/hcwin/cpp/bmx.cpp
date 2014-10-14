@@ -178,7 +178,7 @@ uint_32 Bitmap::size()
     if( _pixSize >= MIN_32BIT ) {
         _objOffset += 2;
     }
-    _size = _objOffset+OBJ_OFFSET+_pixSize;
+    _size = _objOffset + OBJ_OFFSET + _pixSize;
 
     delete[] buffer;
 
@@ -326,7 +326,7 @@ HFBitmaps::HFBitmaps( HFSDirectory *d_file ) : _dfile(d_file)
     _files = NULL;
     _usedFiles = NULL;
 
-    _startDir = new char[_MAX_PATH];    // Arbitrary-length large string
+    _startDir = new char[_MAX_PATH];
     getcwd( _startDir, _MAX_PATH );
 
     _numImages = 0;
@@ -391,7 +391,7 @@ void HFBitmaps::addToPath( char const path[] )
         }
         temp = new StrNode;
         temp->_name = new char[j + 1];
-        strncpy( temp->_name, arg, j );
+        memcpy( temp->_name, arg, j );
         temp->_name[j] = '\0';
         temp->_next = NULL;
         if( chdir( temp->_name ) == 0 ) {

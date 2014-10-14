@@ -68,11 +68,11 @@ enum
 
 class FontName
 {
-    char    *_name;
+    char        *_name;
     FontName    *_nextName, *_prevName;
-    short   _userNum;
-    uint_16 _sysNum;
-    uint_8  _family;
+    short       _userNum;
+    uint_16     _sysNum;
+    uint_8      _family;
 
     // Assignment of FontName's is not allowed.
     FontName( FontName const & ) {};
@@ -81,7 +81,7 @@ class FontName
     FontName( char const fontname[], short num1, uint_16 num2, uint_8 fam );
     ~FontName();
 
-    int     dump( OutFile * dest );
+    int         dump( OutFile * dest );
 
     friend class HFFont;
 };
@@ -93,13 +93,13 @@ class FontName
 
 class FontDesc
 {
-    uint_8  _flags;
-    uint_8  _halfPoints;
-    uint_8  _family;
-    uint_16 _index;
-    uint_32 _rgb;
-    uint_8  _supPos;
-    uint_8  _subPos;
+    uint_8      _flags;
+    uint_8      _halfPoints;
+    uint_8      _family;
+    uint_16     _index;
+    uint_32     _rgb;
+    uint_8      _supPos;
+    uint_8      _subPos;
     FontDesc    *_nextDesc;
     FontDesc    *_prevDesc;
 
@@ -107,7 +107,7 @@ class FontDesc
               uint_16 ind, uint_32 colour );
     FontDesc( FontDesc &other );
 
-    int     dump( OutFile * dest );
+    int         dump( OutFile * dest );
 
     friend class HFFont;
 };
@@ -119,7 +119,7 @@ class FontDesc
 
 class FontState
 {
-    uint_16 _index;
+    uint_16     _index;
     FontState   *_next;
 
     FontState( unsigned short ind ) : _index(ind), _next(NULL) {};
@@ -134,18 +134,18 @@ class FontState
 
 class HFFont : public Dumpable
 {
-    uint_16 _numFonts;
-    uint_16 _numDescs;
-    uint_16 _defDesc;
+    uint_16     _numFonts;
+    uint_16     _numDescs;
+    uint_16     _defDesc;
     FontState   *_head;
     FontName    *_firstName;
     FontName    *_lastName;
     FontDesc    *_firstDesc;
     FontDesc    *_lastDesc;
     FontDesc    *_curDesc;
-    uint_16 _curNum;
+    uint_16     _curNum;
 
-    uint_16 findDesc( FontDesc * wanted );
+    uint_16     findDesc( FontDesc * wanted );
 
     // Assignment of HFFont's is not permitted.
     HFFont( HFFont const & ) {};
@@ -155,28 +155,28 @@ public:
     HFFont( HFSDirectory *d_file );
     ~HFFont();
 
-    void    addFont( char const fontname[], uint_8 family, short num );
+    void        addFont( char const fontname[], uint_8 family, short num );
 
     // Clear the font numbers.  Does NOT erase the names, just
     // clears the user-assigned indices.
-    void    clearFonts();
+    void        clearFonts();
 
-    void    setFont( uint_16 font );
-    uint_16 selectFont( short index, int lnum, char const fname[] );
-    uint_16 currentFont() { return _curNum; };
+    void        setFont( uint_16 font );
+    uint_16     selectFont( short index, int lnum, char const fname[] );
+    uint_16     currentFont() { return _curNum; };
 
-    uint_8  getAttribs( uint_16 font );
-    uint_16 setAttribs( uint_8 attrs );
-    uint_16 clearAttribs( uint_8 attrs );
+    uint_8      getAttribs( uint_16 font );
+    uint_16     setAttribs( uint_8 attrs );
+    uint_16     clearAttribs( uint_8 attrs );
 
-    uint_16 newSize( uint_8 hpsize );
-    uint_16 newSupPos( uint_8 pos );
-    uint_16 newSubPos( uint_8 pos );
-    void    push();
-    uint_16 pop();
+    uint_16     newSize( uint_8 hpsize );
+    uint_16     newSupPos( uint_8 pos );
+    uint_16     newSubPos( uint_8 pos );
+    void        push();
+    uint_16     pop();
 
-    uint_32 size();         // Overrides Dumpable::size
-    int     dump( OutFile * dest ); // Overrides Dumpable::dump
+    uint_32     size();                 // Overrides Dumpable::size
+    int         dump( OutFile * dest ); // Overrides Dumpable::dump
 };
 
 #endif

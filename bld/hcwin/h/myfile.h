@@ -174,10 +174,10 @@ class HFBitmaps;
 
 struct Pointers
 {
-    HFTopic *_topFile;
+    HFTopic     *_topFile;
     HFPhrases   *_phrFile;
     HFSystem    *_sysFile;
-    HFFont  *_fontFile;
+    HFFont      *_fontFile;
     HFContext   *_hashFile;
     HFCtxomap   *_mapFile;
     HFKwbtree   *_keyFile;

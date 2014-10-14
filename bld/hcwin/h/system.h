@@ -140,16 +140,16 @@ public:
 
 class HFSystem : public Dumpable
 {
-    uint_16 _compLevel; // Compression level.
-    uint_32 _size;      // size of the entire |SYSTEM file.
-    uint_32 _contentNum;
+    uint_16     _compLevel; // Compression level.
+    uint_32     _size;      // size of the entire |SYSTEM file.
+    uint_32     _contentNum;
     HFContext   *_hashFile;
 
 
     // All system records are kept in a linked list.
 
-    SystemRec       *_first;
-    SystemRec       *_last;
+    SystemRec   *_first;
+    SystemRec   *_last;
 
     // Assignment of HFSystem's is not allowed.
     HFSystem( HFSystem const & ) {};
@@ -159,13 +159,13 @@ public:
 
     // Record types.
     enum {
-    SYS_TITLE   = 0x0001,
-    SYS_COPYRIGHT   = 0x0002,
-    SYS_CONTENTS    = 0x0003,
-    SYS_MACRO   = 0x0004,
-    SYS_ICON    = 0x0005,
-    SYS_WINDOW  = 0x0006,
-    SYS_CITATION    = 0x0008
+        SYS_TITLE       = 0x0001,
+        SYS_COPYRIGHT   = 0x0002,
+        SYS_CONTENTS    = 0x0003,
+        SYS_MACRO       = 0x0004,
+        SYS_ICON        = 0x0005,
+        SYS_WINDOW      = 0x0006,
+        SYS_CITATION    = 0x0008
     };
 
     HFSystem( HFSDirectory *d_file, HFContext *h_file );
@@ -185,8 +185,8 @@ public:
     static const int    NoSuchWin;
 
     // Overrided version of the Dumpable functions.
-    uint_32 size() { return _size ; };
-    int     dump( OutFile * dest );
+    uint_32     size() { return _size ; };
+    int         dump( OutFile * dest );
 };
 
 #endif

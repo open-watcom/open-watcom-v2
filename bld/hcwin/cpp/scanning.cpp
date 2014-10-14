@@ -134,7 +134,7 @@ TokenTypes Scanner::handleSlash( Token * tok )
 
         // A "\" just before a new-line is the same as "\par".
 
-        strncpy( tok->_text, "par", 4 );
+        memcpy( tok->_text, "par", 4 );
         result = TOK_COMMAND;
         ++_lineNum;
     } else if( isSpecial( current ) ) {
@@ -275,7 +275,7 @@ void Scanner::pullText( Token * tok )
     }
     tok->_text[i] = '\0';
     tok->_value = i;
-    if( current != S_ENDC && i<BUF_SIZE-1 ) {
+    if( current != S_ENDC && i < BUF_SIZE - 1 ) {
         putback( current );
     }
 }
@@ -300,7 +300,7 @@ void Scanner::pullHex( Token * tok )
     if( i < 2 && current != S_ENDC ) {
         putback( current );
     }
-    if( i==0 ) {
+    if( i == 0 ) {
         tok->_type = TOK_NONE;
     } else {
         tok->_hasValue = true;
@@ -350,7 +350,7 @@ void Scanner::getToken( Token * tok )
 
     case '\t':
         tok->_type = TOK_COMMAND;
-        strncpy( tok->_text, "tab", 4 );
+        memcpy( tok->_text, "tab", 4 );
         break;
 
     default:

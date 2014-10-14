@@ -347,17 +347,17 @@ void TextHeader::reset()
 
 //  The bitfields corresponding to paragraph attributes.
 const uint_32 TextHeader::_parBits[] = {
-                0x00020000,
-            0x00040000,
-            0x00080000,
-            0x00100000,
-            0x00200000,
-            0x00400000,
-            0x01000000,
-            0x02000000,
-            0x04000000,
-            0x08000000,
-            0x10000000
+    0x00020000,
+    0x00040000,
+    0x00080000,
+    0x00100000,
+    0x00200000,
+    0x00400000,
+    0x01000000,
+    0x02000000,
+    0x04000000,
+    0x08000000,
+    0x10000000
 };
 
 
@@ -1047,9 +1047,9 @@ void HFTopic::addBrowse( char const str[] )
         HCWarning( TOP_TWOBROWSE, _browseStr, str );
         delete[] _browseStr;
     }
-    size_t length = strlen( str );
-    _browseStr = new char[length + 1];
-    strncpy( _browseStr, str, length + 1 );
+    size_t length = strlen( str ) + 1;
+    _browseStr = new char[length];
+    memcpy( _browseStr, str, length );
     _browseOffset = _curCharOffset;
 }
 
@@ -1338,7 +1338,8 @@ void HFTopic::newNode( bool is_new_topic )
 
 void HFTopic::addText( char const source[], bool use_phr )
 {
-    int length;
+    int      length;
+
     if( source[0] == '\0' ) {
         length = 1;
     } else {

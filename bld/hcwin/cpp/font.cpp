@@ -240,7 +240,6 @@ void HFFont::clearFonts()
     for( current = _firstName; current != NULL; current = current->_nextName ) {
         current->_userNum = -1;
     }
-    return;
 }
 
 
@@ -248,9 +247,13 @@ void HFFont::clearFonts()
 
 void HFFont::setFont( uint_16 font )
 {
-    FontDesc    *newdesc = _firstDesc;
-    for( uint_16 i=0; newdesc!=NULL && i<font; newdesc=newdesc->_nextDesc, ++i ) {
-        // empty
+    FontDesc    *newdesc;
+    uint_16     i;
+
+    for( i = 0, newdesc = _firstDesc; newdesc != NULL; newdesc = newdesc->_nextDesc, ++i ) {
+        if( i >= font ) {
+            break;
+        }
     }
 
     if( newdesc == NULL ) {
@@ -284,8 +287,8 @@ uint_16 HFFont::selectFont( short index, int lnum, char const fname[] )
     } else {
         // Now, find the first font descriptor with that index.
         _curDesc->_index = current->_sysNum;
-        FontDesc    *newdesc = _firstDesc;
-        for( i=0; newdesc != NULL; newdesc = newdesc->_nextDesc, ++i ) {
+        FontDesc    *newdesc;
+        for( i = 0, newdesc = _firstDesc; newdesc != NULL; newdesc = newdesc->_nextDesc, ++i ) {
             if( newdesc->_index != _curDesc->_index ) continue;
             if( newdesc->_flags != _curDesc->_flags ) continue;
             if( newdesc->_halfPoints != _curDesc->_halfPoints ) continue;
@@ -302,7 +305,7 @@ uint_16 HFFont::selectFont( short index, int lnum, char const fname[] )
             result = _numDescs++;
         } else {
             _curDesc->_family = newdesc->_family;
-            result = (uint_16) i;
+            result = (uint_16)i;
         }
     }
 
@@ -317,9 +320,12 @@ uint_8 HFFont::getAttribs( uint_16 font )
 {
     uint_8      result;
     FontDesc    *current;
-    int         i = 0;
-    for( current = _firstDesc; i < font && current != NULL; current = current->_nextDesc ) {
-        ++i;
+    int         i;
+
+    for( i = 0, current = _firstDesc; current != NULL; current = current->_nextDesc, ++i ) {
+        if( i >= font ) {
+            break;
+        }
     }
     if( current == NULL ) {
         result = 0;
@@ -336,9 +342,10 @@ uint_8 HFFont::getAttribs( uint_16 font )
 
 uint_16 HFFont::findDesc( FontDesc * wanted )
 {
-    uint_16 result = (uint_16) 0;
-    FontDesc    *current = _firstDesc;
-    for( ; current != NULL; current=current->_nextDesc, ++result ) {
+    uint_16     result;
+    FontDesc    *current;
+
+    for( result = 0, current = _firstDesc; current != NULL; current = current->_nextDesc, ++result ) {
         if( current->_index != wanted->_index ) continue;
         if( current->_flags != wanted->_flags ) continue;
         if( current->_halfPoints != wanted->_halfPoints ) continue;
@@ -369,7 +376,8 @@ uint_16 HFFont::setAttribs( uint_8 attrs )
         _lastDesc->_nextDesc->_prevDesc = _lastDesc;
         _lastDesc = _lastDesc->_nextDesc;
     }
-    return _curNum=result;
+    _curNum = result;
+    return result;
 }
 
 
@@ -387,7 +395,8 @@ uint_16 HFFont::clearAttribs( uint_8 attrs )
         _lastDesc->_nextDesc->_prevDesc = _lastDesc;
         _lastDesc = _lastDesc->_nextDesc;
     }
-    return _curNum = result;
+    _curNum = result;
+    return result;
 }
 
 
@@ -405,7 +414,8 @@ uint_16 HFFont::newSize( uint_8 hpsize )
         _lastDesc->_nextDesc->_prevDesc = _lastDesc;
         _lastDesc = _lastDesc->_nextDesc;
     }
-    return _curNum = result;
+    _curNum = result;
+    return result;
 }
 
 
@@ -423,7 +433,8 @@ uint_16 HFFont::newSupPos( uint_8 pos )
         _lastDesc->_nextDesc->_prevDesc = _lastDesc;
         _lastDesc = _lastDesc->_nextDesc;
     }
-    return _curNum = result;
+    _curNum = result;
+    return result;
 }
 
 //  HFFont::newSupPos --Set a new subscript position.
@@ -440,7 +451,8 @@ uint_16 HFFont::newSubPos( uint_8 pos )
         _lastDesc->_nextDesc->_prevDesc = _lastDesc;
         _lastDesc = _lastDesc->_nextDesc;
     }
-    return _curNum = result;
+    _curNum = result;
+    return result;
 }
 
 //  HFFont::push    --Store the current font state for later retrieval.
@@ -451,7 +463,6 @@ void HFFont::push()
     FontState   *newstate = new FontState( index );
     newstate->_next = _head;
     _head = newstate;
-    return;
 }
 
 
@@ -466,10 +477,13 @@ uint_16 HFFont::pop()
         result = old_state->_index;
         delete old_state;
     }
-    FontDesc *current = _firstDesc;
-    for( uint_16 i=0; i<result && current!=NULL;
-         ++i, current=current->_nextDesc ) {
-        // empty
+    FontDesc    *current;
+    uint_16     i;
+
+    for( i = 0, current = _firstDesc; current != NULL; current = current->_nextDesc, ++i ) {
+        if( i >= result ) {
+            break;
+        }
     }
     delete _curDesc;
     if( current==NULL ) {
@@ -486,7 +500,7 @@ uint_16 HFFont::pop()
 
 uint_32 HFFont::size()
 {
-    return _numFonts*FONT_NAME_LEN + _numDescs*FONT_DESC_LEN + 4*sizeof( uint_16 );
+    return _numFonts * FONT_NAME_LEN + _numDescs * FONT_DESC_LEN + 4 * sizeof( uint_16 );
 }
 
 
@@ -497,17 +511,17 @@ int HFFont::dump( OutFile * dest )
     dest->write( _numFonts );
     dest->write( _numDescs );
     dest->write( _defDesc );
-    uint_16 desc_offset = (uint_16) (_numFonts*FONT_NAME_LEN + 4*sizeof( uint_16 ));
+    uint_16 desc_offset = (uint_16)( _numFonts * FONT_NAME_LEN + 4 * sizeof( uint_16 ) );
     dest->write( desc_offset );
 
-    FontName *cur_name;
-    for( cur_name = _firstName; cur_name != NULL; cur_name = cur_name->_nextName ) {
-        cur_name->dump( dest );
+    FontName *current_name;
+    for( current_name = _firstName; current_name != NULL; current_name = current_name->_nextName ) {
+        current_name->dump( dest );
     }
 
-    FontDesc *desc_current;
-    for( desc_current = _firstDesc; desc_current != NULL; desc_current = desc_current->_nextDesc ) {
-        desc_current->dump( dest );
+    FontDesc *current_desc;
+    for( current_desc = _firstDesc; current_desc != NULL; current_desc = current_desc->_nextDesc ) {
+        current_desc->dump( dest );
     }
     return 1;
 }

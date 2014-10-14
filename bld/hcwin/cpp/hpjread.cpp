@@ -52,31 +52,31 @@
 char const  HpjExt[] = ".HPJ";
 
 // Other string resources.
-static char const   SBaggage[]  = "BAGGAGE";
-static char const   SOptions[]  = "OPTIONS";
-static char const   SConfig[]   = "CONFIG";
-static char const   SFiles[]    = "FILES";
-static char const   SMap[]      = "MAP";
-static char const   SBitmaps[]  = "BITMAPS";
-static char const   SWindows[]  = "WINDOWS";
-static char const   STitle[]    = "TITLE";
+static char const   SBaggage[]      = "BAGGAGE";
+static char const   SOptions[]      = "OPTIONS";
+static char const   SConfig[]       = "CONFIG";
+static char const   SFiles[]        = "FILES";
+static char const   SMap[]          = "MAP";
+static char const   SBitmaps[]      = "BITMAPS";
+static char const   SWindows[]      = "WINDOWS";
+static char const   STitle[]        = "TITLE";
 static char const   SCopyright[]    = "COPYRIGHT";
-static char const   SCompress[] = "COMPRESS";
-static char const   STrue[]     = "TRUE";
-static char const   SHigh[]     = "HIGH";
-static char const   SMedium[]   = "MEDIUM";
-static char const   SYes[]      = "YES";
-static char const   SFalse[]    = "FALSE";
-static char const   SLow[]      = "LOW";
-static char const   SNo[]       = "NO";
+static char const   SCompress[]     = "COMPRESS";
+static char const   STrue[]         = "TRUE";
+static char const   SHigh[]         = "HIGH";
+static char const   SMedium[]       = "MEDIUM";
+static char const   SYes[]          = "YES";
+static char const   SFalse[]        = "FALSE";
+static char const   SLow[]          = "LOW";
+static char const   SNo[]           = "NO";
 static char const   SOldKeyPhrase[] = "OLDKEYPHRASE";
-static char const   SContents[] = "CONTENTS";
-static char const   SIndex[]    = "INDEX";
-static char const   SBmRoot[]   = "BMROOT";
-static char const   SRoot[]     = "ROOT";
-static char const   Sinclude[]  = "#include";
-static char const   Sdefine[]   = "#define";
-static char const   Smain[]     = "main";
+static char const   SContents[]     = "CONTENTS";
+static char const   SIndex[]        = "INDEX";
+static char const   SBmRoot[]       = "BMROOT";
+static char const   SRoot[]         = "ROOT";
+static char const   Sinclude[]      = "#include";
+static char const   Sdefine[]       = "#define";
+static char const   Smain[]         = "main";
 static char const   Ssecondary[]    = "secondary";
 static char const   SstartComment[] = "/*";
 static char const   SendComment[]   = "*/";
@@ -262,7 +262,8 @@ HPJReader::HPJReader( HFSDirectory * d_file, Pointers *other_files,
     _theFiles = other_files;
     _sysFile = other_files->_sysFile;
     _numBagFiles = 0;
-    _rtfFiles = _root = NULL;
+    _rtfFiles = NULL;
+    _root = NULL;
     _homeDir = new char[_MAX_PATH];
     getcwd( _homeDir, _MAX_PATH );
     if( input->bad() ) {
@@ -291,7 +292,7 @@ HPJReader::~HPJReader()
         delete current;
     }
 
-    if( _bagFiles ) {
+    if( _bagFiles != NULL ) {
         for( int i = 0; i < _numBagFiles; i++ ) {
             delete _bagFiles[i];
         }
@@ -570,7 +571,7 @@ int HPJReader::handleOptions()
                     }
                     temp = new StrNode;
                     temp->_name = new char[j + 1];
-                    strncpy( temp->_name, arg, j );
+                    memcpy( temp->_name, arg, j );
                     temp->_name[j] = '\0';
                     temp->_next = NULL;
                     if( chdir( temp->_name ) == 0 ) {
@@ -632,7 +633,7 @@ int HPJReader::handleFiles()
         result = _scanner.getLine();
         if( !result || _scanner[0] == '[' )
             break;
-        for( i=0; _scanner[i] != '\0'; ++i ) {
+        for( i = 0; _scanner[i] != '\0'; ++i ) {
             if( isspace( _scanner[i] ) ) {
                 break;
             }
@@ -640,7 +641,7 @@ int HPJReader::handleFiles()
         _scanner[i] = '\0';
         temp = new StrNode;
         temp->_name = new char[i + 1];
-        strncpy( temp->_name, _scanner, i+1 );
+        memcpy( temp->_name, _scanner, i + 1 );
         temp->_next = NULL;
         if( current == NULL ) {
             current = _rtfFiles = temp;
@@ -680,19 +681,19 @@ int HPJReader::handleBitmaps()
 
 
 //  HPJReader::handleWindows    --Parse the [WINDOWS] section.
-#define VALID_TYPE  0x0001
-#define VALID_NAME  0x0002
+#define VALID_TYPE      0x0001
+#define VALID_NAME      0x0002
 #define VALID_CAPTION   0x0004
-#define VALID_X     0x0008
-#define VALID_Y     0x0010
-#define VALID_WIDTH 0x0020
+#define VALID_X         0x0008
+#define VALID_Y         0x0010
+#define VALID_WIDTH     0x0020
 #define VALID_HEIGHT    0x0040
-#define VALID_MAX   0x0080
-#define VALID_RGB1  0x0100
-#define VALID_RGB2  0x0200
-#define VALID_ONTOP 0x0400
+#define VALID_MAX       0x0080
+#define VALID_RGB1      0x0100
+#define VALID_RGB2      0x0200
+#define VALID_ONTOP     0x0400
 
-#define PARAM_MAX   1023
+#define PARAM_MAX       1023
 
 int HPJReader::handleWindows()
 {
@@ -1023,11 +1024,11 @@ void HPJReader::includeMapFile( char i_str[] )
     StrNode *current;
     InFile  source;
     if( _root == NULL ) {
-        source.open( i_str+i );
+        source.open( i_str + i );
     } else {
         for( current = _root; current != NULL; current = current->_next ) {
             chdir( current->_name );
-            source.open( i_str+i );
+            source.open( i_str + i );
             chdir( _homeDir );
             if( !source.bad() ) {
                 break;

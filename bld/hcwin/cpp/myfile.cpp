@@ -46,10 +46,10 @@ File::File( char const filename[], uint_8 type )
 // Open the file and record the name.
 {
     char    mode[3] = "rb";
-    size_t  length = strlen( filename );
+    size_t  length = strlen( filename ) + 1;
 
-    _shortName = new char[length + 1];
-    strncpy( _shortName, filename, length + 1 );
+    _shortName = new char[length];
+    memcpy( _shortName, filename, length );
 
     if( type & WRITE ) {
         mode[0] = 'w';
@@ -83,14 +83,14 @@ bool File::open( char const filename[], uint_8 type )
 // Open the file and record the name.
 {
     char mode[3] = "rb";
-    size_t length = strlen( filename );
+    size_t length = strlen( filename ) + 1;
 
     if( _shortName != NULL ) {
-        renew( _shortName, length + 1 );
+        renew( _shortName, length );
     } else {
-        _shortName = new char[length + 1];
+        _shortName = new char[length];
     }
-    strncpy( _shortName, filename, length + 1 );
+    memcpy( _shortName, filename, length );
 
     if( type & WRITE ) {
         mode[0] = 'w';

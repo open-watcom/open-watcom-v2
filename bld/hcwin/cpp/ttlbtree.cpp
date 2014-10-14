@@ -45,7 +45,7 @@ TTLBTREE:  topic-offset-to-topic-title mapping
 class TTLKey : public BtreeData
 {
 protected:
-    uint_32     _offset;
+    uint_32         _offset;
 
     // Overriding the BtreeData virtual functions.
     BtreeData       *myKey();
@@ -119,7 +119,7 @@ TTLRec::TTLRec( uint_32 off, char const string[] )
 {
     size_t len = strlen( string ) + 1;
     _title = new char[len];
-    strncpy( _title, string, len );
+    memcpy( _title, string, len );
 }
 
 

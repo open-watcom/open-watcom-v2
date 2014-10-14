@@ -98,8 +98,8 @@ class HPJReader
     // Structure for storing lists of names (like search paths)
     struct  StrNode
     {
-    char    *_name;
-    StrNode *_next;
+        char    *_name;
+        StrNode *_next;
     };
 
     HPJScanner      _scanner;
