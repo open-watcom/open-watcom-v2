@@ -86,7 +86,7 @@ bool File::open( char const filename[], uint_8 type )
     size_t length = strlen( filename ) + 1;
 
     if( _shortName != NULL ) {
-        renew( _shortName, length );
+        _shortName = (char *)renew( _shortName, length );
     } else {
         _shortName = new char[length];
     }

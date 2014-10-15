@@ -147,7 +147,7 @@ int HPJScanner::getLine()
     
             if( cur_len == _lineSize ) {
                 _lineSize += LINE_BLOCK;
-                renew( _curLine, _lineSize );
+                _curLine = (char *)renew( _curLine, _lineSize );
             }
     
             _curLine[cur_len++] = (char)current;
@@ -163,7 +163,7 @@ int HPJScanner::getLine()
         if( current != EOF || cur_len > 0 ) {
             if( cur_len == _lineSize ) {
                 _lineSize += LINE_BLOCK;
-                renew( _curLine, _lineSize );
+                _curLine = (char *)renew( _curLine, _lineSize );
             }
             _curLine[cur_len++] = '\0';
         } else {
