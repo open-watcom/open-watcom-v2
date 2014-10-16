@@ -303,41 +303,40 @@ HPJReader::~HPJReader()
 
 //  HPJReader::firstFile    --Callback function for the phrase handler.
 
-InFile *HPJReader::firstFile()
+bool HPJReader::firstFile( InFile *input )
 {
     _curFile = _topFile;
-    return nextFile();
+    return nextFile( input );
 }
 
 
 //  HPJReader::nextFile --Callback function for the phrase handler.
 
-InFile *HPJReader::nextFile()
+bool HPJReader::nextFile( InFile *input )
 {
-    static InFile   result;
     StrNode         *curdir;
+    char            *filename;
 
-    do {
-        if( _curFile == NULL ) {
-            return NULL;
-        }
-    
+    while( _curFile != NULL ) {
+        filename = _curFile->_name;
+        _curFile = _curFile->_next;
         if( _firstDir == NULL ) {
-            result.open( _curFile->_name );
+            input->open( filename );
+            if( !input->bad() ) {
+                return true;
+            }
         } else {
             for( curdir = _firstDir; curdir != NULL; curdir = curdir->_next ) {
                 chdir( curdir->_name );
-                result.open( _curFile->_name );
+                input->open( filename );
                 chdir( _startDir );
-                if( !result.bad() ) {
-                    break;
+                if( !input->bad() ) {
+                    return true;
                 }
             }
         }
-        _curFile = _curFile->_next;
-    } while( result.bad() );
-
-    return &result;
+    }
+    return false;
 }
 
 
@@ -399,10 +398,6 @@ void HPJReader::parseFile()
     }
 
     // Now parse individual RTF files.
-    StrNode *curfile = _rtfFiles;
-    StrNode *curdir;
-    InFile  source;
-
     // First, implement phrase replacement if desired.
     if( _theFiles->_sysFile->isCompressed() ) {
         _topFile = _rtfFiles;
@@ -431,11 +426,12 @@ void HPJReader::parseFile()
 
     // For each file, search the ROOT path, and create a RTFparser
     // to deal with it.
-    for( curfile = _rtfFiles; curfile != NULL; curfile = curfile->_next ) {
+    for( StrNode *curfile = _rtfFiles; curfile != NULL; curfile = curfile->_next ) {
+        InFile  source;
         if( _root == NULL ) {
             source.open( curfile->_name );
         } else {
-            for( curdir = _root; curdir != NULL; curdir = curdir->_next ) {
+            for( StrNode *curdir = _root; curdir != NULL; curdir = curdir->_next ) {
                 chdir( curdir->_name );
                 source.open( curfile->_name );
                 chdir( _homeDir );

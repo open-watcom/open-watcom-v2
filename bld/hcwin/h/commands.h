@@ -93,4 +93,4 @@ _COMMAND( RC_V,         "v"             ),
 _COMMAND( RC_WINDOWS,   "windows"       ),
 
 // The last entry is a terminator, please leave it in.
-_COMMAND( RC_DUMMY, "zzzzz"  )
+_COMMAND( RC_DUMMY,     "zzzzz"         )

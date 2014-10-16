@@ -46,7 +46,6 @@ char const  PhExt[] = ".ph";
 
 struct Edge;    // Forward declaration.
 
-
 //
 //  Phrase  --specialized string class for storing
 //        candidate strings.
@@ -66,18 +65,18 @@ struct Phrase
     int         _val;
 
     static Pool *_pool;
-    static void initPool() { _pool = new Pool( sizeof(Phrase) , PTBL_SIZE ); };
+    static void initPool() { _pool = new Pool( sizeof( Phrase ) , PTBL_SIZE ); };
     static void freePool() { delete _pool; };
 
     void *operator new( size_t ) { return _pool->get(); };
-    void operator delete( void *p, size_t ) { _pool->release(p); };
+    void operator delete( void *p, size_t ) { _pool->release( p ); };
 
     Phrase();
     Phrase( Phrase const &p );
     ~Phrase();
 
     Phrase &    operator=( Phrase const &p );
-    int     operator>( Phrase const &p );
+    int         operator>( Phrase const &p );
 };
 
 Pool *Phrase::_pool = NULL;
@@ -244,15 +243,15 @@ PTable::PTable()
       _maxSize( PTBL_SIZE ),
       _iterPos( -1 )
 {
-    _edges = new Pool( sizeof(Edge) );
+    _edges = new Pool( sizeof( Edge ) );
 
     _phrases = new Phrase *[_maxSize];
     // Set all of _phrases to NULL.
-    memset( _phrases, 0, _maxSize*sizeof(Phrase *) );
+    memset( _phrases, 0, _maxSize * sizeof( Phrase * ) );
 
     _htable = new Phrase *[HASH_SIZE];
     // Set all of _phrases to NULL.
-    memset( _htable, 0, HASH_SIZE*sizeof(Phrase *) );
+    memset( _htable, 0, HASH_SIZE * sizeof( Phrase * ) );
 }
 
 
@@ -262,7 +261,7 @@ PTable::~PTable()
 {
     // Delete any phrases remaining in the Pool.
     if( _phrases ) {
-        for( int i=0; i<_size; i++ ) {
+        for( int i = 0; i < _size; i++ ) {
             delete _phrases[i];
         }
         delete[] _phrases;
@@ -342,10 +341,10 @@ Phrase *PTable::match( char * &start )
         } else {
             bool found_text = false;
             while( *start != '\0' ) {
-                if( found_text && isspace(*start) ) {
+                if( found_text && isspace( *start ) ) {
                     start++;
                     break;
-                } else if( !found_text && !isspace(*start) ) {
+                } else if( !found_text && !isspace( *start ) ) {
                     found_text = true;
                 }
                 start++;
@@ -496,8 +495,8 @@ void PTable::heapify( int start )
     Phrase  *temp;
 
     for( ;; ) {
-        left = 2*start+1;
-        right = left+1;
+        left = 2 * start + 1;
+        right = left + 1;
     
         if( left < _size && (*_phrases[left]) > (*_phrases[start]) ) {
             max = left;
@@ -541,7 +540,7 @@ void PTable::prune()
         firstc = _phrases[i]->_str;
         startc = _phrases[i]->_str;
         while( firstc - startc < _phrases[i]->_len ) {
-            if( isspace(*firstc) ) {
+            if( isspace( *firstc ) ) {
                 firstc++;
             } else {
                 break;
@@ -592,7 +591,7 @@ void PTable::prune()
 
 //  HFPhrases::HFPhrases()  --Default constructor.
 
-HFPhrases::HFPhrases( HFSDirectory * d_file, InFile* (*firstf)(), InFile* (*nextf)() )
+HFPhrases::HFPhrases( HFSDirectory * d_file, bool (*firstf)(InFile *), bool (*nextf)(InFile *) )
     : _oldPtable( NULL ),
       _newPtable( NULL ),
       _result( NULL ),
@@ -648,10 +647,10 @@ uint_32 HFPhrases::size()
     _size = 10;     // Size of the phrase table header.
     _phSize = 0;
 
-    for( i=0; i<_numPhrases; i++ ) {
+    for( i = 0; i < _numPhrases; i++ ) {
         string = _result[i];
         _phSize += string->_len;
-        _size += sizeof(uint_16) + reader.compress( string->_str, string->_len );
+        _size += sizeof( uint_16 ) + reader.compress( string->_str, string->_len );
     }
 
     return _size;
@@ -671,7 +670,7 @@ int HFPhrases::dump( OutFile *dest )
     dest->write( _phSize );
 
     uint_16 curr_size = (uint_16)( (_numPhrases+1) * sizeof( uint_16 ) );
-    for( i=0; i<_numPhrases; i++ ) {
+    for( i = 0; i < _numPhrases; i++ ) {
         dest->write( curr_size );
         curr_size = (uint_16)( curr_size + _result[i]->_len );
     }
@@ -681,7 +680,7 @@ int HFPhrases::dump( OutFile *dest )
     CompReader  reader( &riter );
     P_String    *string;
 
-    for( i=0; i<_numPhrases; i++ ) {
+    for( i = 0; i < _numPhrases; i++ ) {
         string = _result[i];
         reader.compress( string->_str, string->_len );
     }
@@ -691,19 +690,26 @@ int HFPhrases::dump( OutFile *dest )
 }
 
 
+//  removeScanner   --Remove input source scanner and file.
+
+void HFPhrases::removeScanner()
+{
+    if( _scanner != NULL ) {
+        _scanner->file()->close();
+        delete _scanner;
+        _scanner = NULL;
+    }
+}
+
+
 
 //  HFPhrases::startInput   --Prepare to read the first block
 //                of input.
 
-void HFPhrases::startInput()
+void HFPhrases::startInput( InFile *input )
 {
-    InFile  *input;
-
-    if( _scanner )
-        delete _scanner;
-    _scanner = NULL;
-    input = (*_firstf)();
-    if( input == NULL )
+    removeScanner();
+    if( !(*_firstf)( input ) )
         return;
     _scanner = new Scanner( input );
 }
@@ -712,9 +718,8 @@ void HFPhrases::startInput()
 //  HFPhrases::nextInput    --Get the next block of input.
 //
 
-char* HFPhrases::nextInput()
+char* HFPhrases::nextInput( InFile *input )
 {
-    InFile  *input;
     Token   *next;
     char    *result;
 
@@ -725,26 +730,17 @@ char* HFPhrases::nextInput()
         next = _scanner->next();
     
         if( next->_type == TOK_END ) {
-            delete _scanner;
-            _scanner = NULL;
-            input = (*_nextf)();
-            if( input == NULL ) {
+            removeScanner();
+            if( !(*_nextf)( input ) ) {
                 return NULL;
             }
             _scanner = new Scanner( input );
     
         } else if( next->_type != TOK_TEXT ) {
             int push_level;
-            bool done = false;
     
-            for( ;; ) {
-                switch( next->_type ) {
-                case TOK_END:
-                case TOK_TEXT:  // deliberate fall-through
-                    done = true;
-                    break;
-        
-                case TOK_COMMAND:
+            for( ; next->_type != TOK_END && next->_type != TOK_TEXT; next = _scanner->next() ) {
+                if( next->_type == TOK_COMMAND ) {
                     if( strcmp( next->_text, "colortbl" ) == 0
                       || strcmp( next->_text, "fonttbl" ) == 0
                       || strcmp( next->_text, "footnote" ) == 0
@@ -778,18 +774,11 @@ char* HFPhrases::nextInput()
                             }
                         } while( push_level >= 0 );
                     }
-                    break;
                 }
-        
-                if( done ) break;
-        
-                next = _scanner->next();
             }
             if( next->_type == TOK_END ) {
-                delete _scanner;
-                _scanner = NULL;
-                input = (*_nextf)();
-                if( input == NULL ) {
+                removeScanner();
+                if( !(*_nextf)( input ) ) {
                     return NULL;
                 }
                 _scanner = new Scanner( input );
@@ -821,6 +810,7 @@ void HFPhrases::readPhrases()
     Phrase  *p_phr, *last, *next, *lookahead;
     PTable  *temp;
     Edge    *current;
+    InFile  input;
 
 
     Phrase::initPool();
@@ -831,17 +821,17 @@ void HFPhrases::readPhrases()
     // Put all of the words in the file in a dictionary.
     HCStartPhrase();
     HCPhraseLoop(1);
-    startInput();
-    while( (block = nextInput()) != NULL ) {
+    startInput( &input );
+    while( (block = nextInput( &input )) != NULL ) {
         last = NULL;
         while( *block != '\0' ) {
             found_text = false;
             phr._len = 0;
             end = block;
             while( *end != '\0' ) {
-                if( found_text && isspace(*end) ) {
+                if( found_text && isspace( *end ) ) {
                     break;
-                } else if( !found_text && !isspace(*end) ) {
+                } else if( !found_text && !isspace( *end ) ) {
                     found_text = true;
                 }
                 if( phr._len == phr._bufLen ) {
@@ -856,7 +846,8 @@ void HFPhrases::readPhrases()
             if( p_phr != NULL ) {
                 p_phr->_numUses += 1;
             } else {
-                _newPtable->insert( p_phr = new Phrase( phr ) );
+                p_phr = new Phrase( phr );
+                _newPtable->insert( p_phr );
             }
     
             if( last != NULL ) {
@@ -872,22 +863,23 @@ void HFPhrases::readPhrases()
         }
     }
 
-
     // Build up longer phrases iteratively with extra
     // passes over the file.
 
     // NOTE THE ARBITRARY CUTOFF.  I have reason to suspect this
     // algorithm is non-terminating in certain cases.
-    for( count=1; count<10; count++ ) {
+    for( count = 1; count < 10; count++ ) {
         HCPhraseLoop( count+1 );
     
         temp = _oldPtable;
         _oldPtable = _newPtable;
         _newPtable = temp;
     
-        startInput();
-        while( (block = nextInput()) != NULL ) {
-            last = next = lookahead = NULL;
+        startInput( &input );
+        while( (block = nextInput( &input )) != NULL ) {
+            last = NULL;
+            next = NULL;
+            lookahead = NULL;
             getnext = true;
             while( *block != '\0' ) {
                 if( getnext ) {
@@ -905,7 +897,8 @@ void HFPhrases::readPhrases()
                         if( p_phr != NULL ) {
                             p_phr->_numUses++;
                         } else {
-                            _newPtable->insert( p_phr = new Phrase(*next) );
+                            p_phr = new Phrase( *next );
+                            _newPtable->insert( p_phr );
                         }
                         if( last != NULL ) {
                             _newPtable->follows( last, p_phr ) += 1;
@@ -930,7 +923,8 @@ void HFPhrases::readPhrases()
                     if( p_phr != NULL ) {
                         p_phr->_numUses++;
                     } else {
-                        _newPtable->insert( p_phr = new Phrase(phr) );
+                        p_phr = new Phrase( phr );
+                        _newPtable->insert( p_phr );
                     }
                     if( last != NULL ) {
                         _newPtable->follows( last, p_phr ) += 1;
@@ -947,7 +941,8 @@ void HFPhrases::readPhrases()
                 if( p_phr != NULL ) {
                     p_phr->_numUses++;
                 } else {
-                    _newPtable->insert( p_phr = new Phrase(*next) );
+                    p_phr = new Phrase( *next );
+                    _newPtable->insert( p_phr );
                 }
                 if( last != NULL ) {
                     _newPtable->follows( last, p_phr ) += 1;
@@ -992,7 +987,7 @@ void HFPhrases::initHashTable()
     }
     memset( _htable, 0, HASH_SIZE * sizeof( P_String * ) );
 
-    for( int i=0; i<_resultSize; i++ ) {
+    for( int i = 0; i < _resultSize; i++ ) {
         curr_str = _result[i];
         memcpy( &hvalue, curr_str->_str, PH_MIN_LEN );
         hvalue &= 0xFFFFFF;
@@ -1024,7 +1019,7 @@ void HFPhrases::createQueue( char const *path )
     if( ph_file.bad() ) {
         HCError( FILE_ERR, path );
     }
-    for( i=0; (current = _newPtable->next()) != NULL; i++ ) {
+    for( i = 0; (current = _newPtable->next()) != NULL; i++ ) {
         _result[i] = new P_String( *current );
     
         ph_file.write( _result[i]->_str, 1, _result[i]->_len );

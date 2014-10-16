@@ -804,7 +804,7 @@ TextHolder::TextHolder()
     : _size( 0 ),
       _uncompSize( 0 ),
       _maxSize( TEXT_BLOCK_SIZE ),
-      _text( TEXT_BLOCK_SIZE+1 ),
+      _text( TEXT_BLOCK_SIZE + 1 ),
       _zeroes( TEXT_ZERO_SIZE ),
       _numZeroes( 0 ),
       _maxZeroes( TEXT_ZERO_SIZE )

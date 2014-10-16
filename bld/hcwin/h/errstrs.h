@@ -34,8 +34,8 @@
 #undef  _MSGERR
 #endif
 
-#define _MSGERR(num,str)        str
-
 static char const *err_strings[] = {
-#include "msgerr.h"
+    #define _MSGERR(num,str)    str
+    #include "msgerr.h"
+    #undef  _MSGERR
 };

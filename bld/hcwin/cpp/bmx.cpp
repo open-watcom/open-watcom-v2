@@ -561,7 +561,7 @@ uint_16 HFBitmaps::use( char const name[] )
     } else {
         _usedFiles = current;
     }
-    sprintf( filename + 3, "%d", result );
+    sprintf( filename + 3, "%u", result );
     _dfile->addFile( current->_image, filename );
 
     _numImages += 1;

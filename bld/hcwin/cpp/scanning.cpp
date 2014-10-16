@@ -35,7 +35,7 @@
 #include "scanning.h"
 #include "hcerrors.h"
 
-#define BUF_SIZE    512
+#define BUF_SIZE    4096
 
 
 //  Token::Token
@@ -81,15 +81,15 @@ inline int Scanner::nextch()
         return( S_ENDC );
     }
     if( _curPos == _maxBuf ) {
-        _maxBuf = _source->readbuf( &_buffer[0], BUF_SIZE );
+        _maxBuf = _source->readbuf( _buffer, BUF_SIZE );
         if( _maxBuf == 0 ) {
             return( S_ENDC );
         } else {
             _curPos = 0;
         }
-    } else if( _curPos == _maxBuf-1 ) {
+    } else if( _curPos == _maxBuf - 1 ) {
         _buffer[0] = _buffer[_curPos];
-        _maxBuf = _source->readbuf( &_buffer[1], BUF_SIZE-1 ) + 1;
+        _maxBuf = _source->readbuf( _buffer + 1, BUF_SIZE - 1 ) + 1;
         _curPos = 0;
     }
     return( _buffer[_curPos++] );
@@ -315,10 +315,7 @@ void Scanner::getToken( Token * tok )
 {
     int     current;
 
-    for( ;; ) {
-        current = nextch();
-        if( current != '\n' )
-            break;
+    while( (current = nextch()) == '\n' ) {
         ++_lineNum;
     }
 

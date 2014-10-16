@@ -38,13 +38,13 @@
 //  Generate the list of supported RTF commands.
 enum com_nums {
     #define _COMMAND( n, s ) n
-    #include "../h/commands.h"
+    #include "commands.h"
     #undef _COMMAND
 };
 
 static char const *com_strs[] = {
     #define _COMMAND( n, s ) s
-    #include "../h/commands.h"
+    #include "commands.h"
     #undef _COMMAND
 };
 
@@ -565,6 +565,8 @@ void RTFparser::handleCommand()
 
 #define NOT_A_BITMAP ((FontFlags) 0)
 
+#define HARD_SPACE  '\xA0'
+
 void RTFparser::Go()
 {
     HCStartFile( _fname );
@@ -735,7 +737,7 @@ void RTFparser::Go()
                 }
             } else {
                 if( _current->_value == '~' ) {
-                    smallstr[0] = '\xA0';
+                    smallstr[0] = HARD_SPACE;
                 } else {
                     smallstr[0] = (char)_current->_value;
                 }

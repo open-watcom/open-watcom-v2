@@ -69,7 +69,7 @@ int main( int argc, char *argv[] )
     }
 
     // Parse the command line.
-    char    cmdline[80];
+    char    cmdline[_MAX_PATH];
     char    *pfilename, *temp;
     bool    quiet = false;
 
@@ -148,56 +148,57 @@ int main( int argc, char *argv[] )
     char    destpath[_MAX_PATH];
     _makepath( destpath, drive, dir, fname, HlpExt );
 
-    InFile  input( path );
-    if( input.bad() ) {
-        HCWarning( FILE_ERR, pfilename );
-        return( -1 );
-    }
-
-
-    //  Set up and start the help compiler.
-
-    try {
-        HFSDirectory    helpfile( destpath );
-        HFFont          fontfile( &helpfile );
-        HFContext       contfile( &helpfile );
-        HFSystem        sysfile( &helpfile, &contfile );
-        HFCtxomap       ctxfile( &helpfile, &contfile );
-        HFTtlbtree      ttlfile( &helpfile );
-        HFKwbtree       keyfile( &helpfile );
-        HFBitmaps       bitfiles( &helpfile );
-
-        Pointers        my_files = {
-                            NULL,
-                            NULL,
-                            &sysfile,
-                            &fontfile,
-                            &contfile,
-                            &ctxfile,
-                            &keyfile,
-                            &ttlfile,
-                            &bitfiles,
-        };
-
-        if( stricmp( ext, RtfExt ) == 0 ) {
-            my_files._topFile = new HFTopic( &helpfile );
-            RTFparser   rtfhandler( &my_files, &input );
-            rtfhandler.Go();
-        } else {
-            HPJReader   projfile( &helpfile, &my_files, &input );
-            projfile.parseFile();
+    {
+        InFile  input( path );
+        if( input.bad() ) {
+            HCWarning( FILE_ERR, pfilename );
+            return( -1 );
         }
-
-        helpfile.dump();
-        if( my_files._topFile != NULL ) {
-            delete my_files._topFile;
+    
+        //  Set up and start the help compiler.
+    
+        try {
+            HFSDirectory    helpfile( destpath );
+            HFFont          fontfile( &helpfile );
+            HFContext       contfile( &helpfile );
+            HFSystem        sysfile( &helpfile, &contfile );
+            HFCtxomap       ctxfile( &helpfile, &contfile );
+            HFTtlbtree      ttlfile( &helpfile );
+            HFKwbtree       keyfile( &helpfile );
+            HFBitmaps       bitfiles( &helpfile );
+    
+            Pointers        my_files = {
+                                NULL,
+                                NULL,
+                                &sysfile,
+                                &fontfile,
+                                &contfile,
+                                &ctxfile,
+                                &keyfile,
+                                &ttlfile,
+                                &bitfiles,
+            };
+    
+            if( stricmp( ext, RtfExt ) == 0 ) {
+                my_files._topFile = new HFTopic( &helpfile );
+                RTFparser   rtfhandler( &my_files, &input );
+                rtfhandler.Go();
+            } else {
+                HPJReader   projfile( &helpfile, &my_files, &input );
+                projfile.parseFile();
+            }
+    
+            helpfile.dump();
+            if( my_files._topFile != NULL ) {
+                delete my_files._topFile;
+            }
+            if( my_files._phrFile != NULL ) {
+                delete my_files._phrFile;
+            }
+        } catch( HCException ) {
+            HCWarning( PROGRAM_STOPPED );
+            return( -1 );
         }
-        if( my_files._phrFile != NULL ) {
-            delete my_files._phrFile;
-        }
-    } catch( HCException ) {
-        HCWarning( PROGRAM_STOPPED );
-        return( -1 );
     }
     mem_statistic();
     return( 0 );

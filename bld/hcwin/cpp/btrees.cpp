@@ -50,9 +50,9 @@ struct BtreePage
     uint_16     _thisPage;      // Index # of this page.
     uint_32     _size;          // Size of the page
     uint_32     _maxSize;       // The page size; used for dumping
-    BtreeData   *_entries;              // Pointer to BtreeData list.
-    BtreePage   *_parent;               // Parent page.
-    BtreePage   *_firstChild;           // First child page.
+    BtreeData   *_entries;      // Pointer to BtreeData list.
+    BtreePage   *_parent;       // Parent page.
+    BtreePage   *_firstChild;   // First child page.
 
     // Dump this page to an output file.
     int         dump( OutFile *dest );

@@ -67,20 +67,22 @@ class HFPhrases : public Dumpable
     uint_32     _phSize;
     uint_32     _size;
 
-    InFile      *(*_nextf)();
-    InFile      *(*_firstf)();
+    bool        (*_nextf)( InFile * );
+    bool        (*_firstf)( InFile * );
 
     Scanner     *_scanner;
-    void        startInput();
-    char        *nextInput();
+    void        startInput( InFile * );
+    char        *nextInput( InFile * );
     void        initHashTable();
 
     // Assignment of HFPhrases is not allowed.
     HFPhrases( HFPhrases const & ) {};
     HFPhrases & operator=( HFPhrases const & ) { return *this; };
 
+    void        removeScanner();
+
 public:
-    HFPhrases( HFSDirectory *d_file, InFile *(*firstf)(), InFile *(*nextf)() );
+    HFPhrases( HFSDirectory *d_file, bool (*firstf)(InFile *), bool (*nextf)(InFile *) );
     ~HFPhrases();
 
     // Overrides of the "Dumpable" virtual functions.

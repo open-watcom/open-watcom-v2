@@ -130,11 +130,12 @@ class HPJReader
     char    *_winParamBuf;
     char    *nextWinParam();    // Helper function for handleWindows().
 
-    static InFile   *firstFile();
-    static InFile   *nextFile();
+    static bool         firstFile( InFile * );
+    static bool         nextFile( InFile * );
 
-    static StrNode  *_topFile, *_curFile;
-    static StrNode  *_firstDir;
+    static StrNode      *_topFile;
+    static StrNode      *_curFile;
+    static StrNode      *_firstDir;
     static char const   *_startDir;
 
     // A recursive function for dealing with nested MAP files.
@@ -145,8 +146,7 @@ class HPJReader
     HPJReader & operator=( HPJReader const & ) { return *this; };
 
 public:
-    HPJReader( HFSDirectory *d_file, Pointers *other_files,
-               InFile *src );
+    HPJReader( HFSDirectory *d_file, Pointers *other_files, InFile *src );
     ~HPJReader();
 
     // The "Do it!" function.

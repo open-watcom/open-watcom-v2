@@ -116,7 +116,7 @@ public:
     bool    isFootnoteChar( int c );
 
     // Access function.
-    InFile  const *file() { return _source; };
+    InFile  *file() { return _source; };
 };
 
 #endif
