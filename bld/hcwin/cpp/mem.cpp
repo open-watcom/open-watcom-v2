@@ -60,24 +60,36 @@ void PrintLine( void *parm, const char *buf, size_t len )
 //                     functions for the mem. tracker.
 //
 
-void *x_malloc( size_t size )
+#if ( __WATCOMC__ == 1290 )
+
+// temporary fix for bug in OW 1.9 C++ compiler
+
+void *my_malloc( size_t size )
 {
     return( malloc( size ) );
 }
 
-void x_free( void *p )
+void my_free( void *p )
 {
     return( free( p ) );
 }
 
-void *x_realloc( void *p, size_t size )
+void *my_realloc( void *p, size_t size )
 {
     return( realloc( p, size ) );
 }
 
+#else
+
+#define my_malloc   malloc
+#define my_free     free
+#define my_realloc  realloc
+
+#endif
+
 Memory::Memory()
 {
-    TrHdl = _trmem_open( x_malloc, x_free, x_realloc, NULL, NULL, PrintLine,
+    TrHdl = _trmem_open( my_malloc, my_free, my_realloc, NULL, NULL, PrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
             _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 }
