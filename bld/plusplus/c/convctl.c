@@ -900,7 +900,8 @@ static void checkFuncLinkages(  // WARN IF INCOMPATIBLE FUNC. LINKAGES
     if( NULL != pted_arg ) {
         pted_pro = FunctionDeclarationType( pted_pro );
         if( NULL != pted_pro ) {
-            if( pted_pro->u.f.pragma != pted_arg->u.f.pragma ) {
+            if( pted_pro->u.f.pragma != pted_arg->u.f.pragma
+              && !PragmasTypeEquivalent( pted_pro->u.f.pragma, pted_arg->u.f.pragma ) ) {
                 PTreeWarnExpr( expr, WARN_CNV_FUNC_PRAGMA );
             }
             if( pted_arg->flag & TF1_PLUSPLUS ) {
