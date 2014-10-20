@@ -110,7 +110,7 @@ HPJScanner::~HPJScanner()
 
 bool HPJScanner::open( char const filename[] )
 {
-    bool result = _input->open( filename, File::READ|File::TEXT );
+    bool result = _input->open( filename );
     if( !result ) {
         if( _curLine == NULL ) {
             _curLine = new char[120];   // Overflow possibility
@@ -984,16 +984,16 @@ int HPJReader::handleMap()
 
 //  HPJReader::includeMapFile   --Parse an #include-d MAP file.
 
-void HPJReader::includeMapFile( char i_str[] )
+void HPJReader::includeMapFile( char *str )
 {
-    int i = 0;
     char seek_char;
+    char *name;
 
     // Get the filename.
-    while( i_str[i] != '\0' && isspace( i_str[i] ) ) {
-        ++i;
+    while( *str != '\0' && isspace( *str ) ) {
+        ++str;
     }
-    switch( i_str[i] ) {
+    switch( *str++ ) {
     case '"':
         seek_char = '"';
         break;
@@ -1005,26 +1005,25 @@ void HPJReader::includeMapFile( char i_str[] )
         return;
     }
 
-    ++i;
-    int j = i;
-    while( i_str[j] != '\0' && i_str[j] != seek_char ) {
-        ++j;
+    name = str;
+    while( *str != '\0' && *str != seek_char ) {
+        ++str;
     }
-    if( j == '\0' ) {
+    if( str == name ) {
         HCWarning( HPJ_BADINCLUDE, _scanner.lineNum(), _scanner.name() );
         return;
     }
 
     // Now try to find it in the ROOT path and/or current directory.
-    i_str[j] = '\0';
+    *str = '\0';
     StrNode *current;
     InFile  source;
     if( _root == NULL ) {
-        source.open( i_str + i );
+        source.open( name );
     } else {
         for( current = _root; current != NULL; current = current->_next ) {
             chdir( current->_name );
-            source.open( i_str + i );
+            source.open( name );
             chdir( _homeDir );
             if( !source.bad() ) {
                 break;
@@ -1033,11 +1032,11 @@ void HPJReader::includeMapFile( char i_str[] )
     }
 
     if( source.bad() ) {
-        HCWarning(INCLUDE_ERR, (const char *)(i_str+i), _scanner.lineNum(), _scanner.name() );
+        HCWarning(INCLUDE_ERR, name, _scanner.lineNum(), _scanner.name() );
         return;
     }
 
-    HCStartFile( i_str+i );
+    HCStartFile( name );
 
     // Now parse the secondary file.
     HPJScanner  input( &source );

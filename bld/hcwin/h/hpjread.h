@@ -139,7 +139,7 @@ class HPJReader
     static char const   *_startDir;
 
     // A recursive function for dealing with nested MAP files.
-    void    includeMapFile( char i_str[] );
+    void    includeMapFile( char *str );
 
     // Assignment of HPJReader's is not allowed.
     HPJReader( HPJReader const & ) : _scanner(NULL) {};
