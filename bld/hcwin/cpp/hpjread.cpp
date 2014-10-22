@@ -1064,7 +1064,7 @@ void HPJReader::includeMapFile( char *str )
             if( token == NULL )
                 continue;
             is_good_str = true;
-            for( i=0; token[i] != '\0'; ++i ) {
+            for( int i = 0; token[i] != '\0'; ++i ) {
                 if( !isalnum( token[i] ) && token[i] != '.' && token[i] != '_' ) {
                     is_good_str = false;
                 }
