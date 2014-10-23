@@ -467,7 +467,8 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
     char    *p3;
     BOOL    have_ext;
     BOOL    have_path;
-    char    envbuf[512];
+    char    *envbuf;
+    DWORD   envlen;
 
     have_ext = FALSE;
     have_path = FALSE;
@@ -493,7 +494,11 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
     if( have_path ) {
         return( TRUE );
     }
-    GetEnvironmentVariable( "PATH", envbuf, sizeof( envbuf ) );
+    envlen = GetEnvironmentVariable( "PATH", NULL, 0 );
+    if( envlen == 0 )
+        return( -1 );
+    envbuf = LocalAlloc( LMEM_FIXED, envlen );
+    GetEnvironmentVariable( "PATH", envbuf, envlen );
     p = envbuf;
     for( ;; ) {
         if( *p == '\0' ) {
@@ -512,6 +517,7 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
         for( p3 = pgm; (*p2 = *p3) != 0; ++p2, ++p3 ) {
         }
         if( !tryPath( buffer, p2, ext_list ) ) {
+            LocalFree( envbuf );
             return( 0 );
         }
         if( *p == '\0' ) {
@@ -519,6 +525,7 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
         }
         ++p;
     }
+    LocalFree( envbuf );
     return( -1 );
 }
 
