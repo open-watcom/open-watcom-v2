@@ -13,7 +13,7 @@ to_os_path=/=\
 !include ../mif/depends.mif
 !include ../mif/books.mif
 
-wgml_cmdl_params = "$(book_src) ( file $(wgml_optfile)"
+wgml_cmdl_params = $(book_src) ( file $(wgml_optfile)
 
 !include wgmlcmd.mif
 

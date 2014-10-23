@@ -49,15 +49,15 @@ GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
 !else ifeq bld_os linux
 
 !ifdef %WINE_CMD
-WGMLCMD = wine cmd $(docs_dir)/gml/dos/wgml $(wgml_cmdl_params)
-GENDEVCMD = wine cmd $(docs_dir)/gml/dos/gendev $(gendev_cmdl_params)
+WGMLCMD = wine cmd $(docs_dir)/gml/dos/wgml "$(wgml_cmdl_params)"
+GENDEVCMD = wine cmd $(docs_dir)/gml/dos/gendev "$(gendev_cmdl_params)"
 !else
 !ifdef %OWDOSBOX
-WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_wgml_batch) $(wgml_cmdl_params)" -noconsole
+WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_wgml_batch)" -noconsole
 GENDEVCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
 !else
-WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) $(wgml_cmdl_params)
+WGMLCMD = dosemu -dumb $(dosemu_wgml_batch)
 GENDEVCMD = dosemu -dumb $(dosemu_gendev_batch)
 use_dosemu = dosemu
 !endif
