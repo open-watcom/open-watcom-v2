@@ -79,20 +79,23 @@ void *my_realloc( void *p, size_t size )
     return( realloc( p, size ) );
 }
 
-#else
-
-#define my_malloc   malloc
-#define my_free     free
-#define my_realloc  realloc
-
-#endif
-
 Memory::Memory()
 {
     TrHdl = _trmem_open( my_malloc, my_free, my_realloc, NULL, NULL, PrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
             _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 }
+
+#else
+
+Memory::Memory()
+{
+    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
+            _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+}
+
+#endif
 
 Memory::~Memory()
 {

@@ -99,7 +99,7 @@ HPJScanner::HPJScanner( InFile *src )
 
 HPJScanner::~HPJScanner()
 {
-    if( _curLine ) {
+    if( _curLine != NULL ) {
         delete[] _curLine;
     }
 }
@@ -187,28 +187,27 @@ int HPJScanner::getLine()
 
 char *HPJScanner::getArg( int start_pos )
 {
-    int     i;
+    char    *arg;
 
     // Eat whitespace.
-    for( i = start_pos; isspace( _curLine[i] ) ; i++ ) {
-        if( _curLine[i] == '\0' ) {
+    for( arg = _curLine + start_pos; *arg != '\0'; arg++ ) {
+        if( !isspace( *arg ) ) {
             break;
         }
     }
 
     // The next character had better be an '='.
-    if( _curLine[i] != '=' ) {
+    if( *arg++ != '=' ) {
         HCWarning( HPJ_NOARG, _lineNum, name() );
         return NULL;
     }
-    i++;
 
     // Eat whitespace again.
-    while( isspace( _curLine[i] ) && _curLine[i] != '\0' ) {
-        i++;
+    while( isspace( *arg ) && *arg != '\0' ) {
+        arg++;
     }
 
-    return _curLine+i;
+    return arg;
 }
 
 
@@ -233,7 +232,7 @@ char *HPJScanner::tokLine()
     _bufPos = j;
     _bufChar = _curLine[j];
     _curLine[j] = '\0';
-    return _curLine+i;
+    return _curLine + i;
 }
 
 
@@ -242,7 +241,7 @@ char *HPJScanner::tokLine()
 char *HPJScanner::endTok()
 {
     _curLine[_bufPos] = _bufChar;
-    return _curLine+_bufPos;
+    return _curLine + _bufPos;
 }
 
 

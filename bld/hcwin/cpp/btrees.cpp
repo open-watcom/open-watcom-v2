@@ -146,11 +146,11 @@ BtreePage::BtreePage( uint_32 max_size, BtreePage *ancestor, BtreePage *descenda
     if( descendant == NULL ) {
         // Leaf pages start with a header and indices to the previous
         // and next leaf pages.
-        _size = TREEPAGE_HEADER_SIZE+2*sizeof( uint_16 );
+        _size = TREEPAGE_HEADER_SIZE + 2 * sizeof( uint_16 );
     } else {
         // Index pages start with a header and index to the leftmost
         // child.
-        _size = TREEPAGE_HEADER_SIZE+sizeof( uint_16 );
+        _size = TREEPAGE_HEADER_SIZE + sizeof( uint_16 );
     }
 }
 
