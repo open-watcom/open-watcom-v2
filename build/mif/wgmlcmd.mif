@@ -60,12 +60,13 @@ use_dosemu = dosbox
 WGMLCMD = dosemu -dumb $(dosemu_wgml_batch)
 GENDEVCMD = dosemu -dumb $(dosemu_gendev_batch)
 use_dosemu = dosemu
-!endif
-!endif
+# only DOSEMU use lower cased file name
 wgml_tmpfile=tmp.ptf
 wgml_sysfile_01=sysusr01.gml
 wgml_sysfile_02=sysusr02.gml
 wgml_sysfile_03=sysusr03.gml
+!endif
+!endif
 
 !else ifeq bld_os bsd
 
