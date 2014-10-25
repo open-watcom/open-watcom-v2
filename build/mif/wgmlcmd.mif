@@ -20,11 +20,6 @@
 dosemu_wgml_batch=wgml.bat
 dosemu_gendev_batch=gendevb.bat
 
-wgml_tmpfile=TMP.PTF
-wgml_sysfile_01=SYSUSR01.GML
-wgml_sysfile_02=SYSUSR02.GML
-wgml_sysfile_03=SYSUSR03.GML
-
 !ifeq bld_os dos
 
 WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
@@ -48,24 +43,16 @@ GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
 
 !else ifeq bld_os linux
 
-!ifdef %WINE_CMD
-WGMLCMD = wine cmd $(docs_dir)/gml/dos/wgml "$(wgml_cmdl_params)"
-GENDEVCMD = wine cmd $(docs_dir)/gml/dos/gendev "$(gendev_cmdl_params)"
-!else
 !ifdef %OWDOSBOX
 WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_wgml_batch)" -noconsole
 GENDEVCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
+# only DOSBOX use upper cased file name
+wgml_ucase=1
 !else
 WGMLCMD = dosemu -dumb $(dosemu_wgml_batch)
 GENDEVCMD = dosemu -dumb $(dosemu_gendev_batch)
 use_dosemu = dosemu
-# only DOSEMU use lower cased file name
-wgml_tmpfile=tmp.ptf
-wgml_sysfile_01=sysusr01.gml
-wgml_sysfile_02=sysusr02.gml
-wgml_sysfile_03=sysusr03.gml
-!endif
 !endif
 
 !else ifeq bld_os bsd
@@ -73,9 +60,9 @@ wgml_sysfile_03=sysusr03.gml
 WGMLCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
 GENDEVCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
+# only DOSBOX use upper cased file name
+wgml_ucase=1
 
 !else
 !error Unsupported building platform !!!!!!
 !endif
-
-wgml_additional_files = $(wgml_tmpfile) $(wgml_sysfile_01) $(wgml_sysfile_02) $(wgml_sysfile_03)

@@ -37,9 +37,7 @@ clean : .procedure
 
  @if exist *.txt rm -f *.txt
 
-!ifeq dotarget ps
  @if exist tmp rm -rf tmp
-!endif
 
 !ifeq dotarget htmlhelp
  @for %f in ($(books)) do @if exist %f rm -rf %f

@@ -17,6 +17,20 @@ wgml_cmdl_params = $(book_src) ( file $(wgml_optfile)
 
 !include wgmlcmd.mif
 
+!ifdef wgml_ucase
+wgml_tmpfile=TMP.PTF
+wgml_sysfile_01=SYSUSR01.GML
+wgml_sysfile_02=SYSUSR02.GML
+wgml_sysfile_03=SYSUSR03.GML
+!else
+wgml_tmpfile=tmp.ptf
+wgml_sysfile_01=sysusr01.gml
+wgml_sysfile_02=sysusr02.gml
+wgml_sysfile_03=sysusr03.gml
+!endif
+
+wgml_additional_files = sysusr0?.gml SYSUSR0?.GML
+
 # If 'verbose' is set to 1, wgml displays warnings and statistics.
 # The default is a quiet build.
 doc_verbose = $(verbose)
