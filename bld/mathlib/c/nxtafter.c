@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (C) 1993 by Sun Microsystems, Inc.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,7 +27,6 @@
 *  ========================================================================
 *
 *    Based on FDLIBM
-*    Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
 *
 *    Developed at SunSoft, a Sun Microsystems, Inc. business.
 *    Permission to use, copy, modify, and distribute this
