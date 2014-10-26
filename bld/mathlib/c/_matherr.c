@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -91,14 +93,9 @@ _WMRTLINK double _matherr( struct _exception *excp )
     return( excp->retval );
 }
 
-_WMRTLINK int __reporterror( int type, char *name, double arg1, double arg2, double retval )
+_WMRTLINK void __reporterrorsimple( int type )
 {
-int ret;
-struct _exception report;
-
-    ret = 0;
-
-    if( math_errhandling & MATH_ERRNO ) {
+   if( math_errhandling & MATH_ERRNO ) {
         switch(type) {
             case DOMAIN:
                 errno = EDOM;
@@ -111,15 +108,6 @@ struct _exception report;
         }      
     }
 
-    if( math_errhandling & MATH_ERRWATCOM ) {
-        report.type = type;
-        report.name = name;
-        report.arg1 = arg1;
-        report.arg2 = arg2;
-        report.retval = retval;
-        ret = _RWD_matherr(&report);
-    }
-    
     if( math_errhandling & MATH_ERREXCEPT ) {
         switch(type) {
             case DOMAIN:
@@ -140,7 +128,25 @@ struct _exception report;
                 break;
         }      
     }
+}
 
-    
+_WMRTLINK int __reporterror( int type, char *name, double arg1, double arg2, double retval )
+{
+int ret;
+struct _exception report;
+
+    ret = 0;
+
+    __reporterrorsimple(type);
+
+    if( math_errhandling & MATH_ERRWATCOM ) {
+        report.type = type;
+        report.name = name;
+        report.arg1 = arg1;
+        report.arg2 = arg2;
+        report.retval = retval;
+        ret = _RWD_matherr(&report);
+    }
+        
     return ret;
 }
