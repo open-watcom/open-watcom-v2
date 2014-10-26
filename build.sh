@@ -39,4 +39,4 @@ if [ $RC -eq 0 ]; then
     RC=$?
 fi
 cd $OWROOT
-return $RC
+exit $RC
