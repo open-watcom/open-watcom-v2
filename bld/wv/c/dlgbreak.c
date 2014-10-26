@@ -31,6 +31,7 @@
 
 
 #include <string.h>
+#include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
