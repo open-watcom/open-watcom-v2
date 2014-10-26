@@ -36,6 +36,7 @@
 #include "variety.h"
 #include <math.h>
 #include <float.h>
+#include "_matherr.h"
 
 #define XINF    _INFINITY
 
@@ -89,8 +90,10 @@ _WMRTLINK double log1p( double x )
                       ALNRCS21, ALNRCS22, ALNRCS23};
 
     if( x == -1.0 ) {
+        __reporterror(SING, __func__, x, 0, XINF);
         return( XINF );
     } else if( x < -1.0 ) {
+        __reporterror(DOMAIN, __func__, x, 0, NAN);
         return( nan( "ignore" ) );
     }
         

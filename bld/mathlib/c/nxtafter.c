@@ -42,6 +42,7 @@
 #include "variety.h"
 #include <math.h>
 #include "xfloat.h"
+#include "_matherr.h"
 
 _WMRTLINK double nextafter(double x, double y)
 {
@@ -78,8 +79,10 @@ _WMRTLINK double nextafter(double x, double y)
         
 	    if(y==fdx.u.value) 
             return y; 
-        else 
+        else {
+            __reporterror(UNDERFLOW, __func__, x, y, fdx.u.value);
             return fdx.u.value;	/* raise underflow flag */
+        }
 	}
 	
     if(hx>=0) 				/* x > 0 */
@@ -115,8 +118,10 @@ _WMRTLINK double nextafter(double x, double y)
     
 	hy = hx & ((u4)0x7ff00000);
     
-	if(hy >= ((u4)0x7ff00000))
+	if(hy >= ((u4)0x7ff00000)) {
+        __reporterror(OVERFLOW, __func__, x, y, x+x);    
         return x+x;	/* overflow  */
+    }
 	
     if(hy<((u4)0x00100000)) 		/* underflow */
     {
@@ -125,6 +130,7 @@ _WMRTLINK double nextafter(double x, double y)
         {
 		    fdy.u.word[1] = hx; 
             fdy.u.word[0] = lx;
+            __reporterror(UNDERFLOW, __func__, x, y, fdy.u.value);
 		    return fdy.u.value;
 	    }
 	}

@@ -44,7 +44,7 @@ double __log87_err( double x, unsigned char code )
     if( code != FP_FUNC_ACOSH && x == 0.0 ) {
         err_code = code | M_SING | V_NEG_HUGEVAL;
     } else if(fabs(x) == 0.0) {
-        err_code = 
+        err_code = code | M_SING | V_NEG_HUGEVAL;
     } else {
         err_code = code | M_DOMAIN | V_NEG_HUGEVAL;
     }

@@ -25,10 +25,8 @@
 *  ========================================================================
 *
 * Description:  Rounds the argument to a nearby integer without possibility
-*               of an exception
+*               of an inexact exception
 *
-* Note: At this time, rint() doesn't throw exceptions, so this just
-*       calls directly into it.
 *
 * Author: J. Armstrong
 *
@@ -36,8 +34,13 @@
 
 #include "variety.h"
 #include <math.h>
+#include <fenv.h>
 
 _WMRTLINK double nearbyint(double x)
 {
-    return rint(x);
+double r;
+
+    r = rint(x);
+    feclearexcept(FE_INEXACT);
+    return r;
 }

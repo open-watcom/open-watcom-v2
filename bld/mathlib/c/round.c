@@ -37,12 +37,24 @@
 
 #include "variety.h"
 #include <math.h>
+#include "_matherr.h"
 
 _WMRTLINK double round(double x)
 {
 double y;
 
+    if(isnan(x) || isinf(x)) {
+        __reporterror(DOMAIN, __func__, x, 0, x);
+    }
+
     y = fabs(x);
-    y = floor(y + 0.5);
+    y = y + 0.5;
+    
+    if( isinf(y) ) {
+        __reporterror(DOMAIN, __func__, x, 0, x);
+        return x;
+    }
+    
+    y = floor(y);
     return copysign(y, x);
 }

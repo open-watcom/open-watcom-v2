@@ -37,6 +37,7 @@
 #include <math.h>
 #include <float.h>
 #include "pi.h"
+#include "_matherr.h"
 
 /* Numerator and denominator coefficients for rational minimax
  *     approximation over (0.5,1.5).
@@ -226,6 +227,7 @@ _WMRTLINK double lgamma_r( double x, int *sign )
     } else if( -XINF < y && y < 0 ) {   /* -XINF < y < 0 */
         res = log( fabs( tgamma( y ) ) );
     } else {
+        __reporterror(SING, __func__, y, 0, XINF);
         return( XINF );
     }
     /* Set the sign parameter before leaving */
