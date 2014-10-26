@@ -52,7 +52,7 @@
 
 #ifdef TINY_MEMORY
 void print_fail(int line) { printf("FAIL: line %d\n", line); }
-#define VERIFY(expr)    if(!(expr)) print_fail(__LINE__);
+#define VERIFY(expr)    if(!(expr)) print_fail(__LINE__)
 #else
 #define VERIFY(expr)    if(!(expr)) \
                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ )
@@ -468,10 +468,16 @@ void test_fp_utilities( void )
 void test_fp_remainder( void )
 {
 #if __STDC_VERSION__ >= 199901L
-    printf( "Testing C99 remainder function...\n" );
+int quo;
+
+    printf( "Testing C99 remainder functions...\n" );
 
     VERIFY( CompDbl( remainder( 2.01, 1.0 ), 0.01 ) );
     VERIFY( CompDbl( remainder( 4.99, 2.0 ), 0.99 ) );
+    
+    VERIFY( CompDbl( remquo( 88888.0, 3.0, &quo ), 1.0 ) );
+    VERIFY( (quo & 7) == 5 ); /* Last three bits are guaranteed by std */
+
 #endif
 }
 
@@ -494,6 +500,15 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
     VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
+    
+    VERIFY( lrint( 2.9 ) == (long)3 );
+    VERIFY( lrint( 3.1 ) == (long)3 );
+    VERIFY( lrint( -3.1 ) == (long)(-3) );
+    VERIFY( lrint( -2.9 ) == (long)(-3) );
+    VERIFY( llrint( 2.9 ) == (long long)3 );
+    VERIFY( llrint( 3.1 ) == (long long)3 );
+    VERIFY( llrint( -3.1 ) == (long long)(-3) );
+    VERIFY( llrint( -2.9 ) == (long long)(-3) );
 
     fesetround(FE_DOWNWARD);
     VERIFY( CompDbl( rint( 2.9), 2.0 ) );
@@ -504,6 +519,15 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
     VERIFY( CompDbl( nearbyint( -3.1), -4.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
+    
+    VERIFY( lrint( 2.9 ) == (long)2 );
+    VERIFY( lrint( 3.1 ) == (long)3 );
+    VERIFY( lrint( -3.1 ) == (long)(-4) );
+    VERIFY( lrint( -2.9 ) == (long)(-3) );
+    VERIFY( llrint( 2.9 ) == (long long)2 );
+    VERIFY( llrint( 3.1 ) == (long long)3 );
+    VERIFY( llrint( -3.1 ) == (long long)(-4) );
+    VERIFY( llrint( -2.9 ) == (long long)(-3) );
 
     fesetround(FE_UPWARD);
     VERIFY( CompDbl( rint( 2.9), 3.0 ) );
@@ -515,6 +539,15 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -2.0 ) );
 
+    VERIFY( lrint( 2.9 ) == (long)3 );
+    VERIFY( lrint( 3.1 ) == (long)4 );
+    VERIFY( lrint( -3.1 ) == (long)(-3) );
+    VERIFY( lrint( -2.9 ) == (long)(-2) );
+    VERIFY( llrint( 2.9 ) == (long long)3 );
+    VERIFY( llrint( 3.1 ) == (long long)4 );
+    VERIFY( llrint( -3.1 ) == (long long)(-3) );
+    VERIFY( llrint( -2.9 ) == (long long)(-2) );
+
     fesetround(FE_TOWARDZERO);
     VERIFY( CompDbl( rint( 2.9), 2.0 ) );
     VERIFY( CompDbl( rint( 3.1), 3.0 ) );
@@ -524,6 +557,15 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
     VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -2.0 ) );
+
+    VERIFY( lrint( 2.9 ) == (long)2 );
+    VERIFY( lrint( 3.1 ) == (long)3 );
+    VERIFY( lrint( -3.1 ) == (long)(-3) );
+    VERIFY( lrint( -2.9 ) == (long)(-2) );
+    VERIFY( llrint( 2.9 ) == (long long)2 );
+    VERIFY( llrint( 3.1 ) == (long long)3 );
+    VERIFY( llrint( -3.1 ) == (long long)(-3) );
+    VERIFY( llrint( -2.9 ) == (long long)(-2) );
 
     VERIFY( CompDbl( round( 2.9), 3.0 ) );
     VERIFY( CompDbl( round( 3.1), 3.0 ) );
@@ -537,6 +579,9 @@ void test_fp_rounding( void )
 
 int main( void )
 {
+    /* Enable Watcom-style math error handling */
+    math_errhandling = MATH_ERRWATCOM | MATH_ERREXCEPT;
+
     test_complex_math();
     test_trig();
     test_fp_classification();

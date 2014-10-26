@@ -75,6 +75,7 @@ using std::logb;
 using std::nearbyint;
 using std::nextafter;
 using std::remainder;
+using std::remquo;
 using std::rint;
 using std::round;
 using std::scalbn;
@@ -210,9 +211,12 @@ _WMRTLINK extern double lgamma_r( double __x, int *__signgamma );
 _WMRTLINK extern double log1p( double __x );
 _WMRTLINK extern double log2( double __x );
 _WMRTLINK extern double logb( double __x );
+_WMRTLINK extern long lrint( double __x );
+_WMRTLINK extern long long llrint( double __x );
 _WMRTLINK extern double nearbyint( double __x );
 _WMRTLINK extern double nextafter( double __x, double __y );
 _WMRTLINK extern double remainder( double __x, double __y );
+_WMRTLINK extern double remquo( double __x, double __y, int *__q );
 _WMRTLINK extern double rint( double __x );
 _WMRTLINK extern double round( double __x );
 _WMRTLINK extern double scalbn( double __x, int __n );
@@ -287,7 +291,7 @@ _WMRTLINK extern double yn( int __n, double __x );
 
 struct _exception {
         int     type;           /* type of error, see below */
-        char    *name;          /* name of math function */
+        const char *name;       /* name of math function */
         double  arg1;           /* value of first argument to function */
         double  arg2;           /* second argument (if indicated) */
         double  retval;         /* default return value */
@@ -296,7 +300,7 @@ struct _exception {
 
 struct  exception {
         int     type;           /* type of error, see below */
-        char    *name;          /* name of math function */
+        const char *name;       /* name of math function */
         double  arg1;           /* value of first argument to function */
         double  arg2;           /* second argument (if indicated) */
         double  retval;         /* default return value */

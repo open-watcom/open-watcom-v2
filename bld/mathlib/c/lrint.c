@@ -25,17 +25,47 @@
 *
 *  ========================================================================
 *
-* Description:  Internal math library variables
+* Description:  Rounds the argument to a nearby integer based on the 
+*               current rounding direction
 *
 * Author: J. Armstrong
 *
 ****************************************************************************/
 
-/* #include "variety.h" */
+#include "variety.h"
+#include <math.h>
+#include <fenv.h>
+#include <limits.h>
+#include "_matherr.h"
 
+double __rint_checked(double x, double limit, const char *funcname)
+{
+double fres;
 
-/* The last sign during a call to lgamma.  C99 insists this exists. */
-int signgam = 1;
+    if(__math_errhandling_flag != 0 && 
+       (isinf(x) || isnan(x)))
+    {
+        __reporterror(DOMAIN, funcname, x, 0, 0);
+        return 0;
+    } 
 
-/* Flag indicating what type of error handling should be employed */
-int __math_errhandling_flag = 4;
+    fres = rint(x);
+    
+    if(__math_errhandling_flag != 0 && 
+       (fabs(fres) > limit)) {
+        __reporterror(DOMAIN, funcname, x, 0, 0);
+        return 0;
+    } 
+    
+    return fres;
+}
+
+_WMRTLINK long lrint(double x)
+{
+    return (long)__rint_checked(x, LONG_MAX, __func__);
+}
+
+_WMRTLINK long long llrint(double x)
+{    
+    return (long long)__rint_checked(x, LONG_MAX, __func__);
+}

@@ -81,7 +81,7 @@ mathtest = ../c/mathtest.c
 comp_opts = -za99 -d2 -zq -fo=$^*.obj $(inc_path)
 link_opts = NAME $^* OPTION quiet, map DEBUG all 
 
-tiny_opts = -os -DTINY_MEMORY -s
+tiny_opts = -os -DTINY_MEMORY -s -d0 
 
 !ifdef __UNIX__
 

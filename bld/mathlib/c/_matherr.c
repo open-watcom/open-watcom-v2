@@ -130,7 +130,7 @@ _WMRTLINK void __reporterrorsimple( int type )
     }
 }
 
-_WMRTLINK int __reporterror( int type, char *name, double arg1, double arg2, double retval )
+_WMRTLINK int __reporterror( int type, const char *name, double arg1, double arg2, double retval )
 {
 int ret;
 struct _exception report;

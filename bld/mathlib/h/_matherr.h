@@ -40,7 +40,7 @@ extern  int     __math_errhandling_flag;
 
 extern  void    __reporterrorsimple( int type );
 extern  int     __reporterror( int     type,     /* type of error*/
-                               char    *name,    /* name of math function */
+                               const char    *name,    /* name of math function */
                                double  arg1,     /* value of first argument to function */
                                double  arg2,     /* second argument (if indicated) */
                                double  retval );  /* default return value */
