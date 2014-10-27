@@ -106,6 +106,10 @@ int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 static char             *_cmd_ptr;
 static wchar_t          *_wcmd_ptr;
 
+#if WINVER < 0x400
+char			_RWD_Envptr_is_fake = 0;
+#endif
+
 // called once at DLL_PROCESS_ATTACH or by __NTMainInit
 
 int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
@@ -121,6 +125,20 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     __initPOSIXHandles();
 
     _RWD_Envptr = GetEnvironmentStrings();
+#if WINVER < 0x400
+    /* Microsoft Windows 3.1 win32s does not support GetEnvironmentStringsA() and it will return NULL */
+    if (_RWD_Envptr == NULL) {
+        /* fake it with the process heap */
+	_RWD_Envptr = HeapAlloc(GetProcessHeap(),0,sizeof(uint32_t)); /* alloc 4 bytes of zero */
+	if (_RWD_Envptr == NULL) {
+		/* Really, Windows 3.1, really? */
+		MessageBoxA(NULL,"Holy crap Windows 3.1 is too cheap even to alloc 16 bytes of heap","",MB_OK);
+		ExitProcess(0);
+	}
+	*((uint32_t*)_RWD_Envptr) = 0; /* quick and dirty zero first 4 bytes */
+	_RWD_Envptr_is_fake = 1;
+    }
+#endif
 
     /*
      * Force reference to environ so that __setenvp is linked in; hence,
@@ -221,7 +239,17 @@ void __NTFini( void )
         _wcmd_ptr = NULL;
     }
     if( _RWD_Envptr != NULL ) {
-        FreeEnvironmentStrings( _RWD_Envptr );
+#if WINVER < 0x400
+	if (_RWD_Envptr_is_fake)
+		HeapFree(GetProcessHeap(),0,_RWD_Envptr);
+	else
+		FreeEnvironmentStrings( _RWD_Envptr );
+
+	_RWD_Envptr_is_fake = 0;
+#else
+	FreeEnvironmentStrings( _RWD_Envptr );
+#endif
+
         _RWD_Envptr = NULL;
     }
 }
