@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,11 +32,13 @@
 
 
 #include "variety.h"
+#include "fenv.h"
 #include <stdio.h>
 #include <unistd.h>
 #include "mathlib.h"
 #include "clibsupp.h"
 #include "_matherr.h"
+#include <errno.h>
 
 static const char * const Msgs[] = {
     0,
@@ -87,4 +91,62 @@ _WMRTLINK double _matherr( struct _exception *excp )
         excp->type == DOMAIN ? __set_EDOM() : __set_ERANGE();
     }
     return( excp->retval );
+}
+
+_WMRTLINK void __reporterrorsimple( int type )
+{
+   if( math_errhandling & MATH_ERRNO ) {
+        switch(type) {
+            case DOMAIN:
+                errno = EDOM;
+                break;
+            case OVERFLOW:
+            case UNDERFLOW:
+            case SING:
+                errno = ERANGE;
+                break;
+        }      
+    }
+
+    if( math_errhandling & MATH_ERREXCEPT ) {
+        switch(type) {
+            case DOMAIN:
+                feraiseexcept(FE_INVALID);
+                break;
+            case OVERFLOW:
+                feraiseexcept(FE_OVERFLOW);
+                break;
+            case UNDERFLOW:
+                feraiseexcept(FE_UNDERFLOW);
+                break;
+            case TLOSS:
+            case PLOSS:
+                feraiseexcept(FE_INEXACT);
+                break;
+            case SING:
+                feraiseexcept(FE_DIVBYZERO);
+                break;
+        }      
+    }
+}
+
+_WMRTLINK int __reporterror( int type, const char *name, double arg1, double arg2, double retval )
+{
+int ret;
+struct _exception report;
+
+    ret = 0;
+
+    __reporterrorsimple(type);
+
+    if( math_errhandling & MATH_ERRWATCOM ) {
+        report.type = type;
+        report.name = name;
+        report.arg1 = arg1;
+        report.arg2 = arg2;
+        report.retval = retval;
+        ret = _RWD_matherr(&report);
+    }
+        
+    return ret;
 }

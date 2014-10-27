@@ -78,10 +78,9 @@
 
 mathtest = ../c/mathtest.c
 
+tiny_opts = -za99 -d0 -os -DTINY_MEMORY -s -zq -fo=$^*.obj $(inc_path)
 comp_opts = -za99 -d2 -zq -fo=$^*.obj $(inc_path)
-link_opts = NAME $^* OPTION quiet, map DEBUG all 
-
-tiny_opts = -os -DTINY_MEMORY -s
+link_opts = NAME $^* OPTION quiet, map, eliminate DEBUG all 
 
 !ifdef __UNIX__
 
@@ -122,9 +121,11 @@ w32_lang_root  = $(%WATCOM)
 !endif
 
 exes = &
-    dos_fpis.exe dos_fpcs.exe &
-    dos_fpim.exe dos_fpcm.exe &
-    dos_fpic.exe dos_fpcc.exe &
+    do1_fpis.exe do1_fpcs.exe &
+	do2_fpis.exe do2_fpcs.exe &
+    do1_fpic.exe do1_fpcc.exe &
+	do2_fpic.exe do2_fpcc.exe &
+	dos_fpim.exe dos_fpcm.exe &
     dos_fpil.exe dos_fpcl.exe &
     dos_fpih.exe dos_fpch.exe &
     pls_fpir.exp pls_fpcr.exp &
@@ -149,28 +150,44 @@ tests : .symbolic $(exes)
 
 all : .symbolic $(exes)
 
-dos_fpis.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -ms -fpi -bt=dos
+do1_fpis.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -ms -fpi -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
-dos_fpcs.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -ms -fpc -bt=dos
+do1_fpcs.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -ms -fpc -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj 
 
+do2_fpis.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -ms -fpi -bt=dos
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
+
+do2_fpcs.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -ms -fpc -bt=dos
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj 
+	
+do1_fpic.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -mc -fpi -bt=dos
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
+
+do1_fpcc.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -mc -fpc -bt=dos
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
+	
+do2_fpic.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -mc -fpi -bt=dos
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
+
+do2_fpcc.exe : $(mathtest)
+    $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -mc -fpc -bt=dos
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
+	
 dos_fpim.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mm -fpi -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 dos_fpcm.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mm -fpc -bt=dos
-    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
-
-dos_fpic.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -mc -fpi -bt=dos
-    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
-
-dos_fpcc.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -mc -fpc -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 dos_fpil.exe : $(mathtest)

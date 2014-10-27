@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,5 +34,8 @@
 
 _WMRTLINK double fdim(double x, double y)
 {
+    if(isnan(x) || isnan(y))
+        return NAN;
+
     return fmax(x-y, 0.0);
 }

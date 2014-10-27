@@ -32,6 +32,8 @@
 #include "variety.h"
 #include "mathlib.h"
 #include "ifprag.h"
+#include <math.h>
+#include "_matherr.h"
 
 /*  The fmod function computes the floating-point remainder of x/y.
     It returns x if y is 0, otherwise it returns the value f that has
@@ -57,6 +59,13 @@ _WMRTLINK double _IF_dfmod( double x, double y )
 {
     int     quot;
     double  rem;
+    
+    if(__math_errhandling_flag != 0 && 
+       (isinf(x) || y == 0))
+    {
+        __reporterror(DOMAIN, __func__, x, y, NAN);
+        return NAN;
+    }   
 
     __fprem( x, y, &quot, &rem );
     return( rem );

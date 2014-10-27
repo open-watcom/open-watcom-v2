@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,12 +38,24 @@
 
 #include "variety.h"
 #include <math.h>
+#include "_matherr.h"
 
 _WMRTLINK double round(double x)
 {
 double y;
 
+    if(isnan(x) || isinf(x)) {
+        __reporterror(DOMAIN, __func__, x, 0, x);
+    }
+
     y = fabs(x);
-    y = floor(y + 0.5);
+    y = y + 0.5;
+    
+    if( isinf(y) ) {
+        __reporterror(DOMAIN, __func__, x, 0, x);
+        return x;
+    }
+    
+    y = floor(y);
     return copysign(y, x);
 }

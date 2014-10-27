@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,8 +26,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Error reporting convenience functions for complex arguments
 *
 ****************************************************************************/
 
@@ -48,28 +49,19 @@ _WMRTLINK dcomplex __qmath2err( unsigned int err_info, dcomplex *arg1, dcomplex 
     arg1 = arg1;
     arg2 = arg2;
     if(      err_info & M_DOMAIN   ) { why = DOMAIN;   }
-    /* above is the only possible case... stuff commented might be extensions
-    else if( err_info & M_SING     ) { why = SING;     }
-    else if( err_info & M_OVERFLOW ) { why = OVERFLOW; }
-    else if( err_info & M_UNDERFLOW) { why = UNDERFLOW;}
-    else if( err_info & M_PLOSS    ) { why = PLOSS;    }
-    else if( err_info & M_TLOSS    ) { why = TLOSS;    }*/
-    __rterrmsg( why, __rtmathfuncname( err_info & FP_FUNC_MASK ) );
-    if( err_info & V_ZERO ) {
-        res.realpart = 0.0;
-        res.imagpart = 0.0;
-    } /* Also, above is the only case...
-    else if( err_info & V_NEG_HUGEVAL ) {
-        res.realpart = - HUGE_VAL;
-        res.imagpart = - HUGE_VAL;
-    } else if( err_info & V_ONE ) {
-        res.realpart = 1.0;
-        res.imagpart = 0.0;
-    } else if( err_info & V_HUGEVAL ) {
-        res.realpart = HUGE_VAL;
-        res.imagpart = HUGE_VAL;
-    } else { // PLOSS
-        res = *arg2;
-    }*/
+    
+    __reporterrorsimple(why);
+    
+    res.realpart = 0.0;
+    res.imagpart = 0.0;
+    
+    if( math_errhandling & MATH_ERRWATCOM ) {
+        __rterrmsg( why, __rtmathfuncname( err_info & FP_FUNC_MASK ) );
+        if( err_info & V_ZERO ) {
+            res.realpart = 0.0;
+            res.imagpart = 0.0;
+        }
+    }
+    
     return( res );
 }

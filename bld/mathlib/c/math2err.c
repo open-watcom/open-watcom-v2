@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,8 +26,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Shortcut math floating point error functions.  These
+*               functions are heavily used by OpenWatcom's "older" math
+*               functions, and, therefore, now reroute to the new error
+*               reporting mechanisms supported by C99.
 *
 ****************************************************************************/
 
@@ -61,5 +65,5 @@ _WMRTLINK double __math2err( unsigned int err_info, double *arg1, double *arg2 )
     else if( err_info & V_HUGEVAL     ) { exc.retval = HUGE_VAL;   }
     else  /* PLOSS from sin,cos,tan */  { exc.retval = *arg2;      }
 
-    return( _matherr( &exc ) );
+    return __reporterror(why, exc.name, exc.arg1, exc.arg2, exc.retval);
 }

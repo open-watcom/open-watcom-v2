@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,10 +32,18 @@
 
 #include "variety.h"
 #include <math.h>
+#include "_matherr.h"
 
 _WMRTLINK double remainder(double x, double y)
 {
 double r;
+
+    if(__math_errhandling_flag != 0 && 
+       ((isinf(x) && !isnan(y)) || (y == 0 && !isnan(x))))
+    {
+        __reporterror(DOMAIN, __func__, x, y, NAN);
+        return NAN;
+    }   
 
     r = fmod(x, y);
     if(r > y/2.0)

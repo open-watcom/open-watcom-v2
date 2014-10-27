@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,6 +38,7 @@
 #include <math.h>
 #include <float.h>
 #include "pi.h"
+#include "_matherr.h"
 
 #define P1  -1.71618513886549492533811
 #define P2   2.47656508055759199108314E+1
@@ -88,10 +90,16 @@ _WMRTLINK double tgamma( double x )
     
     if( isnan( x ) || x == XINF )
         return( x );
-    if( x == -XINF )
+    
+    if( x == -XINF ) {
+        __reporterror(DOMAIN, __func__, y, 0, XNAN);
         return( XNAN );
-    if( x == 0.0 )
+    }
+    
+    if( x == 0.0 ) {
+        __reporterror(SING, __func__, y, 0, copysign( XINF, x ));
         return( copysign( XINF, x ) );
+    }
     
     /* Argument is negative */
     if( y < 0 ) {
