@@ -89,6 +89,9 @@ msg(MIN_ALLOC,          "%W allocation of %T less than minimum size" );
 #elif defined( _M_I86LM ) || defined( _M_I86HM )
     msg(PRT_LIST_1,     "   Who      Addr    Size   Call   Contents" );
     msg(PRT_LIST_2,     "========= ========= ==== ======== ===========================================" );
+#elif defined( _WIN64 )
+    msg(PRT_LIST_1,     "  Who              Addr             Size     Call     Contents" );
+    msg(PRT_LIST_2,     "================ ================ ======== ======== ===========================" );
 #else
     msg(PRT_LIST_1,     "  Who      Addr     Size     Call     Contents" );
     msg(PRT_LIST_2,     "======== ======== ======== ======== ===========================================" );
