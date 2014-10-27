@@ -39,6 +39,35 @@
  #include <signal.h>
 #endif
 
+#define ENABLE_COMPLEX          1 
+#define ENABLE_TRIG             1
+#define ENABLE_CLASSIFICATION   1
+#define ENABLE_FP               1
+#define ENABLE_GAMMA            1
+#define ENABLE_ERF              1
+#define ENABLE_EXP              1
+#define ENABLE_CBRT             1
+#define ENABLE_UTILITIES        1
+#define ENABLE_REMAINDER        1
+#define ENABLE_ROUNDING         1
+
+#ifdef FIRSTHALF
+#undef ENABLE_EXP
+#undef ENABLE_CBRT 
+#undef ENABLE_UTILITIES
+#undef ENABLE_REMAINDER
+#undef ENABLE_ROUNDING 
+#endif
+
+#ifdef SECONDHALF
+#undef ENABLE_COMPLEX
+#undef ENABLE_TRIG 
+#undef ENABLE_CLASSIFICATION
+#undef ENABLE_FP
+#undef ENABLE_GAMMA
+#undef ENABLE_ERF
+#endif
+
 #ifndef TRUE
  #define TRUE           1
  #define FALSE          0
@@ -55,8 +84,10 @@ void print_fail(int line) { printf("FAIL: line %d\n", line); }
 #define VERIFY(expr)    if(!(expr)) print_fail(__LINE__)
 #else
 #define VERIFY(expr)    if(!(expr)) \
-                            printf( "FAIL: %s, line %d\n",#expr,__LINE__ )
+                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ )
 #endif
+
+
 #define MYABS( a )      ((a) < 0 ? -(a) : (a) )
 
 #define SQRTPI  1.7724538509055160273
@@ -113,14 +144,19 @@ int CompDbl( double n1, double n2 )
 
 void test_complex_math( void )
 {
+#ifdef ENABLE_COMPLEX
     struct complex c = { 5.0, -12.0 };
 
     printf( "Testing complex functions...\n" );
     VERIFY( CompDbl( cabs( c ), 13.0 ) );
+#else
+    printf( "Skipping complex functions.\n" );
+#endif /* ENABLE_COMPLEX */
 }
 
 void test_trig( void )
 {
+#ifdef ENABLE_TRIG
     printf( "Testing trigonometric functions...\n" );
     VERIFY( CompDbl( sin( PI ), 0.0 ) );
     VERIFY( CompDbl( sin( 0.0 ), 0.0 ) );
@@ -181,10 +217,14 @@ void test_trig( void )
         tanh(1) = 0.761594155955765
         tanh(0) = 0.000000000000000
     */
+#else
+    printf( "Skipping trigonemetric functions.\n" );
+#endif /* ENABLE_TRIG */
 }
 
 void test_fp_and_80x87_math( void )
 {
+#ifdef ENABLE_FP
     double      dnum;
     int         inum;
 #ifdef __FPI__
@@ -289,10 +329,14 @@ void test_fp_and_80x87_math( void )
     VERIFY( sig_count == 0 );
     signal( SIGFPE, SIG_DFL );
 #endif
+#else
+    printf( "Skipping other floating point functions." );
+#endif /* ENABLE_FP */
 }
 
 void test_fp_classification( void )
 {
+#ifdef ENABLE_CLASSIFICATION
 #if __STDC_VERSION__ >= 199901L && !defined( __WINDOWS__ )
     printf( "Testing C99 floating-point classification functions...\n" );
 
@@ -328,10 +372,14 @@ void test_fp_classification( void )
     VERIFY( !signbit( NAN ) );
     VERIFY( signbit( -INFINITY ) );
 #endif
+#else
+    printf( "Skipping C99 floating-point classification functions.\n" );
+#endif /* ENABLE_CLASSIFICATION */
 }
 
 void test_fp_gamma( void )
 {
+#ifdef ENABLE_GAMMA
 int s;
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 Gamma functions...\n" );
@@ -365,10 +413,14 @@ int s;
     VERIFY( CompDbl( lgamma_r( -0.5, &s ), log( 2.0*SQRTPI ) ) );
     VERIFY( s < 0 );
 #endif
+#else
+    printf( "Skipping C99 Gamma functions.\n" );
+#endif /* ENABLE_GAMMA */
 }
 
 void test_fp_erf( void )
 {
+#ifdef ENABLE_ERF
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 error functions...\n" );
 
@@ -384,10 +436,14 @@ void test_fp_erf( void )
     VERIFY( CompDbl( erfc( -1.0 ), 1.8427008 ) );
     VERIFY( CompDbl( erfc( -2.0 ), 1.9953223 ) );
 #endif
+#else
+    printf( "Skipping C99 error functions.\n" );
+#endif /* ENABLE_ERF */
 }
 
 void test_fp_cbrt( void )
 {
+#ifdef ENABLE_CBRT
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 cube root function...\n" );
 
@@ -399,10 +455,14 @@ void test_fp_cbrt( void )
     VERIFY( cbrt( INFINITY ) == INFINITY );
     VERIFY( cbrt( -INFINITY ) == -INFINITY );
 #endif
+#else
+    printf( "Skipping C99 cube root function.\n" );
+#endif /* ENABLE_CBRT */
 }
 
 void test_fp_exp( void )
 {
+#ifdef ENABLE_EXP
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 exponential/logarithm functions...\n" );
 
@@ -432,10 +492,14 @@ void test_fp_exp( void )
     VERIFY( ilogb( 1.0/1024.0 ) == -10 );
     VERIFY( ilogb( -1025.0 ) == 10 );
 #endif
+#else
+    printf( "Skipping C99 exponential/logarithm functions.\n" );
+#endif /* ENABLE_EXP */
 }
 
 void test_fp_utilities( void )
 {
+#ifdef ENABLE_UTILITES
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 miscellaneous functions...\n" );
 
@@ -463,10 +527,14 @@ void test_fp_utilities( void )
     VERIFY( CompDbl( scalbn( 1.0, 3.0), 8.0 ) );
     VERIFY( CompDbl( scalbn( 4.0, 3.0), 32.0 ) );
 #endif
+#else
+    printf( "Skipping C99 miscellaneous functions.\n" );
+#endif /* ENABLE_UTILITES */
 }
 
 void test_fp_remainder( void )
 {
+#ifdef ENABLE_REMAINDER
 #if __STDC_VERSION__ >= 199901L
 int quo;
 
@@ -479,10 +547,14 @@ int quo;
     VERIFY( (quo & 7) == 5 ); /* Last three bits are guaranteed by std */
 
 #endif
+#else
+    printf( "Skipping C99 remainder functions...\n" );
+#endif /* ENABLE_REMAINDER */
 }
 
 void test_fp_rounding( void )
 {
+#ifdef ENABLE_ROUNDING
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 rounding functions...\n" );
     
@@ -575,6 +647,9 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( round( -3.5), -4.0 ) );
 
 #endif
+#else
+    printf( "Skipping C99 rounding functions.\n" );
+#endif /* ENABLE_ROUNDING */
 }
 
 int main( void )
@@ -593,7 +668,8 @@ int main( void )
     test_fp_utilities();
     test_fp_remainder();
     test_fp_rounding();
-    
+
     printf( "Tests completed.\n" );
+
     return( 0 );
 }
