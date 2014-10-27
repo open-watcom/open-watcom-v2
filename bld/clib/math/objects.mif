@@ -1,18 +1,18 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-#==========================================================================================================
-!inject abs.obj      d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+#=================================================================================================================
+!inject abs.obj      d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
 !inject div.obj      d16                    nta ntp           o16   q16     w16             lpc lmp
-!inject hvalptr.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-!inject hugeval.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-!inject imaxabs.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc     rdu rdk
-!inject imaxdiv.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc     rdu rdk
-!inject labs.obj     d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject hvalptr.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject hugeval.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject imaxabs.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc     rdu rdk win32s
+!inject imaxdiv.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc     rdu rdk win32s
+!inject labs.obj     d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
 !inject ldiv.obj                            nta ntp                                         lpc lmp
-!inject llabs.obj    d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject llabs.obj    d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
 !inject lldiv.obj    d16                    nta ntp         o16     q16     w16             lpc lmp
-!inject max.obj      d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-!inject min.obj      d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-!inject rand.obj     d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject max.obj      d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject min.obj      d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject rand.obj     d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
 
 !include ../../../../objlist.mif
 

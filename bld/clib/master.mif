@@ -21,10 +21,15 @@ clib_host_os_osi        =osi
 clib_host_os_qnx        =qnx
 clib_host_os_windows    =win
 clib_host_os_winnt      =nt
+clib_host_os_win32s     =win32s
 clib_host_os_rdos       =rdos
 clib_host_os_rdosdev    =rdosdev
 clib_host_os_linux      =linux
 host_os=$(clib_host_os_$(system))
+
+!ifeq system win32s
+win32ver_override = -DWINVER=0x310 -D_WIN32_IE=0x200
+!endif
 
 !include cproj.mif
 

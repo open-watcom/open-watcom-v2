@@ -1,45 +1,45 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-#======================================================================================================
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+#=================================================================================================================
 !inject chdir.obj    d16 d32                                                w16 w32 osi
 !inject chdiros2.obj                                        o16 o32
-!inject chdirwnt.obj                     nt nta ntp
-!inject chdrive.obj  d16 d32             nt nta ntp         o16 o32         w16 w32
+!inject chdirwnt.obj                     nt nta ntp                                                         win32s
+!inject chdrive.obj  d16 d32             nt nta ntp         o16 o32         w16 w32                         win32s
 !inject dir.obj      d16 d32                                                w16 w32
 !inject diros2.obj                                          o16 o32
 !inject dirosi.obj                                                                  osi
-!inject dirwnt.obj                       nt nta ntp
+!inject dirwnt.obj                       nt nta ntp                                                         win32s
 !inject dirrd.obj                                                                                   rdu rdk
-!inject diskfree.obj d16 d32             nt nta ntp         o16 o32         w16 w32
-!inject getdrive.obj d16 d32             nt nta ntp         o16 o32         w16 w32
+!inject diskfree.obj d16 d32             nt nta ntp         o16 o32         w16 w32                         win32s
+!inject getdrive.obj d16 d32             nt nta ntp         o16 o32         w16 w32                         win32s
 !inject gtcwd.obj    d16 d32                                                w16 w32 osi
 !inject gtcwdos2.obj                                        o16 o32
-!inject gtcwdwnt.obj                     nt nta ntp
+!inject gtcwdwnt.obj                     nt nta ntp                                                         win32s
 !inject gtcwdlnx.obj                                                                    l32 lpc lmp
 !inject _getdcwd.obj d16 d32                                                w16 w32 osi
-!inject getdcwd.obj  d16 d32             nt nta ntp         o16 o32         w16 w32 osi
+!inject getdcwd.obj  d16 d32             nt nta ntp         o16 o32         w16 w32 osi                     win32s
 !inject mkdir.obj    d16 d32                                                w16 w32 osi
 !inject mkdiros2.obj                                        o16 o32
-!inject mkdirwnt.obj                     nt nta ntp
-!inject ntdirinf.obj                     nt nta ntp
+!inject mkdirwnt.obj                     nt nta ntp                                                         win32s
+!inject ntdirinf.obj                     nt nta ntp                                                         win32s
 !inject rmdir.obj    d16 d32                                                w16 w32 osi
 !inject rmdiros2.obj                                        o16 o32
-!inject rmdirwnt.obj                     nt nta ntp
+!inject rmdirwnt.obj                     nt nta ntp                                                         win32s
 !inject tmpdir.obj                                                  q16 q32             l32 lpc lmp
-!inject uchdrwnt.obj                     nt nta ntp
+!inject uchdrwnt.obj                     nt nta ntp                                                         win32s
 !inject uchdros2.obj                                        o16 o32
 !inject uchdr.obj    d16 d32                                                w16 w32
-!inject udirwnt.obj                      nt nta ntp
+!inject udirwnt.obj                      nt nta ntp                                                         win32s
 !inject udiros2.obj                                         o16 o32
 !inject udir.obj     d16 d32                                                w16 w32
-!inject ugetdcwd.obj d16 d32             nt nta ntp         o16 o32         w16 w32
+!inject ugetdcwd.obj d16 d32             nt nta ntp         o16 o32         w16 w32                         win32s
 !inject ugtcd.obj    d16 d32                                                w16 w32 osi
 !inject ugtcdos2.obj                                        o16 o32
-!inject ugtcdwnt.obj                     nt nta ntp
-!inject umkdrwnt.obj                     nt nta ntp
+!inject ugtcdwnt.obj                     nt nta ntp                                                         win32s
+!inject umkdrwnt.obj                     nt nta ntp                                                         win32s
 !inject umkdros2.obj                                        o16 o32
 !inject umkdr.obj    d16 d32                                                w16 w32
-!inject untdrinf.obj                     nt nta ntp
-!inject urmdrwnt.obj                     nt nta ntp
+!inject untdrinf.obj                     nt nta ntp                                                         win32s
+!inject urmdrwnt.obj                     nt nta ntp                                                         win32s
 !inject urmdros2.obj                                        o16 o32
 !inject urmdr.obj    d16 d32                                                w16 w32
 
