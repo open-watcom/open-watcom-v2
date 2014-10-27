@@ -889,7 +889,7 @@ extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog
     if( curr_dialog->title != NULL ) {
         title = curr_dialog->title;
     } else {
-        ReplaceVars( buff, GetVariableStrVal( "Appname" ) );
+        ReplaceVars( buff, GetVariableStrVal( "AppName" ) );
         title = buff;
     }
     width = curr_dialog->cols;

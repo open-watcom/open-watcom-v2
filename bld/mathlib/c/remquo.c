@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+*    Portions Copyright (C) 2002 by  Red Hat, Incorporated.
 *    Portions Copyright (c) 2014 Open Watcom contributors. 
 *    All Rights Reserved.
 *
@@ -25,17 +26,35 @@
 *
 *  ========================================================================
 *
-* Description:  Internal math library variables
+*  Some portions developed by Red Hat, Incorporated.  Permission to use, 
+*  copy, modify, and distribute this software is freely granted, provided 
+*  that this notice is preserved.
 *
-* Author: J. Armstrong
+*  ========================================================================
+*
+* Description: Computes the remainder of the floating point division 
+*              operation x/y.  Value will be negative if fmod(x, y)>y/2. 
 *
 ****************************************************************************/
 
-/* #include "variety.h" */
+#include "variety.h"
+#include <math.h>
+#include "_matherr.h"
 
+_WMRTLINK double remquo(double x, double y, int *quo)
+{
+int signx, signy, signres;
+double x_over_y;
 
-/* The last sign during a call to lgamma.  C99 insists this exists. */
-int signgam = 1;
+    *quo = 0;
 
-/* Flag indicating what type of error handling should be employed */
-int __math_errhandling_flag = 4;
+    signx = _FDSign(x);
+    signy = _FDSign(y);
+
+    signres = (signx ^ signy) ? -1 : 1;
+    x_over_y = fabs(x / y);
+
+    *quo = signres * (lrint(x_over_y) & 0x7f);
+
+    return remainder(x,y);
+}

@@ -219,7 +219,7 @@ extern void SetupTitle( void )
 {
     char        buff[MAXBUF];
 
-    ReplaceVars( buff, GetVariableStrVal( "Appname" ) );
+    ReplaceVars( buff, GetVariableStrVal( "AppName" ) );
     GUISetWindowText( MainWnd, buff );
 }
 
