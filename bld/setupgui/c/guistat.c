@@ -98,13 +98,13 @@ static gui_create_info StatusInfo = {
     NULL,                               // Title
     { 1500, 2500, 6500, 6000 },         // Position
     GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE
+    GUI_VISIBLE                         // Window Styles
 //  | GUI_CLOSEABLE
     | GUI_SYSTEM_MENU
 //  | GUI_RESIZEABLE
 //  | GUI_MAXIMIZE
 //  | GUI_MINIMIZE
-    /*| GUI_DIALOG_LOOK*/,                      // Window Styles
+    /*| GUI_DIALOG_LOOK*/,
     NULL,                               // Parent
     0,                                  // Number of menus
     NULL,                               // Menu's
@@ -519,7 +519,7 @@ extern bool StatusInit( void )
 {
     char        buff[MAXBUF];
 
-    ReplaceVars( buff, GetVariableStrVal( "Appname" ) );
+    ReplaceVars( buff, GetVariableStrVal( "AppName" ) );
     if( !OpenStatusWindow( buff ) ) return( FALSE );
     return( TRUE );
 }
