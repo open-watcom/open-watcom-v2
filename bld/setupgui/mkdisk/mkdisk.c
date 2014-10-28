@@ -160,8 +160,8 @@ static char                     *BootText[ NUM_LINES ] =
 };
 
 
-static void ConcatDirSep( char *dir )
-/************************************/
+static void ConcatDirElem( char *dir, char *elem )
+/************************************************/
 {
     size_t      len;
 
@@ -170,9 +170,9 @@ static void ConcatDirSep( char *dir )
         char c = dir[len - 1];
         if( !IS_PATH_SEP( c ) ) {
             dir[len++] = DIR_SEP;
-            dir[len] = '\0';
         }
     }
+    strcpy( dir + len, elem );
 }
 
 
@@ -593,22 +593,18 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
             strcpy( src, rel_file );
         } else {
             strcpy( src, RelRoot );
-            ConcatDirSep( src );
-            strcat( src, rel_file );
+            ConcatDirElem( src, rel_file );
         }
     } else if( HAS_PATH( path ) ) {
         // path is absolute. don't use RelRoot
         strcpy( src, path );
-        ConcatDirSep( src );
-        strcat( src, file );
+        ConcatDirElem( src, file );
     } else {
         strcpy( src, RelRoot );
-        ConcatDirSep( src );
         if( !IS_EMPTY( path ) ) {
-            strcat( src, path );
-            ConcatDirSep( src );
+            ConcatDirElem( src, path );
         }
-        strcat( src, file );
+        ConcatDirElem( src, file );
     }
     if( stat( src, &stat_buf ) != 0 ) {
         printf( "\n'%s' does not exist\n", src );
@@ -618,8 +614,7 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
         time = stat_buf.st_mtime;
     }
     strcpy( dst, PackDir );
-    ConcatDirSep( dst );
-    strcat( dst, patch );
+    ConcatDirElem( dst, patch );
     if( stat( dst, &stat_buf ) != 0 ) {
         printf( "\n'%s' does not exist\n", dst );
         return( FALSE );
