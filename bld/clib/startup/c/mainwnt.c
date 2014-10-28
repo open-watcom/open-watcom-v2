@@ -124,19 +124,48 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     __FirstThreadData = tdata;
     __initPOSIXHandles();
 
-    _RWD_Envptr = GetEnvironmentStrings();
 #if WINVER < 0x400
-    /* Microsoft Windows 3.1 win32s does not support GetEnvironmentStringsA() and it will return NULL */
-    if (_RWD_Envptr == NULL) {
-        /* fake it with the process heap */
-	_RWD_Envptr = HeapAlloc(GetProcessHeap(),0,sizeof(uint32_t)); /* alloc 4 bytes of zero */
-	if (_RWD_Envptr == NULL) {
-		/* Wow, really, Windows 3.1? Really?!? */
-		ExitProcess(0xFFFFFFFF);
+	/* GetEnvironmentStrings() didn't appear in Win32s until v1.20.
+	 * v1.15a and earlier don't have it. if we compile ourself to call it
+	 * directly as a dependency the Win32s loader will abort our program and
+	 * complain about a missing "entry point".
+	 *
+	 * +-----------------------------------------------------------------------------+
+	 * |                               Win32s - Error                                |
+	 * |                                                                             |
+	 * |           The procedure entry point "GetEnvironmentStringsA" could          |
+	 * |                  not be located in the Dynamic Link Library                 |
+	 * |                               "w32scomb.dll"                                |
+	 * |                                                                             |
+	 * |                                +----------+                                 |
+	 * |                                |    OK    |                                 |
+	 * |                                +----------+                                 |
+	 * |                                                                             |
+	 * +-----------------------------------------------------------------------------+ */
+
+	{
+		LPCH (WINAPI *__GetEnvironmentStringsA)(void);
+
+		__GetEnvironmentStringsA = (void*)GetProcAddress(GetModuleHandle("KERNEL32.DLL"),"GetEnvironmentStringsA");
+		if (__GetEnvironmentStringsA)
+			_RWD_Envptr = __GetEnvironmentStringsA();
+		else
+			_RWD_Envptr = NULL;
 	}
-	*((uint32_t*)_RWD_Envptr) = 0; /* quick and dirty zero first 4 bytes */
-	_RWD_Envptr_is_fake = 1;
-    }
+
+	/* Microsoft Windows 3.1 win32s does not support GetEnvironmentStringsA() and it will return NULL */
+	if (_RWD_Envptr == NULL) {
+		/* fake it with the process heap */
+		_RWD_Envptr = HeapAlloc(GetProcessHeap(),0,sizeof(uint32_t)); /* alloc 4 bytes of zero */
+		if (_RWD_Envptr == NULL) {
+			/* Wow, really, Windows 3.1? Really?!? */
+			ExitProcess(0xFFFFFFFF);
+		}
+		*((uint32_t*)_RWD_Envptr) = 0; /* quick and dirty zero first 4 bytes */
+		_RWD_Envptr_is_fake = 1;
+	}
+#else
+    _RWD_Envptr = GetEnvironmentStrings();
 #endif
 
     /*
@@ -239,10 +268,33 @@ void __NTFini( void )
     }
     if( _RWD_Envptr != NULL ) {
 #if WINVER < 0x400
+	/* FreeEnvironmentStrings() didn't appear in Win32s until v1.20.
+	 * v1.15a and earlier don't have it. if we compile ourself to call it
+	 * directly as a dependency the Win32s loader will abort our program and
+	 * complain about a missing "entry point".
+	 *
+	 * +-----------------------------------------------------------------------------+
+	 * |                               Win32s - Error                                |
+	 * |                                                                             |
+	 * |          The procedure entry point "FreeEnvironmentStringsA" could          |
+	 * |                  not be located in the Dynamic Link Library                 |
+	 * |                               "w32scomb.dll"                                |
+	 * |                                                                             |
+	 * |                                +----------+                                 |
+	 * |                                |    OK    |                                 |
+	 * |                                +----------+                                 |
+	 * |                                                                             |
+	 * +-----------------------------------------------------------------------------+ */
+
 	if (_RWD_Envptr_is_fake)
 		HeapFree(GetProcessHeap(),0,_RWD_Envptr);
-	else
-		FreeEnvironmentStrings( _RWD_Envptr );
+	else {
+		BOOL (WINAPI *__FreeEnvironmentStringsA)(LPCH x);
+
+		__FreeEnvironmentStringsA = (void*)GetProcAddress(GetModuleHandle("KERNEL32.DLL"),"FreeEnvironmentStringsA");
+		if (__FreeEnvironmentStringsA)
+			__FreeEnvironmentStringsA( _RWD_Envptr );
+	}
 
 	_RWD_Envptr_is_fake = 0;
 #else
