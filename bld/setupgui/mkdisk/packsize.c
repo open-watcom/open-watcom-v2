@@ -51,8 +51,8 @@ char    prev_dir[_MAX_DIR];
 char    name[_MAX_PATH];
 char    new_pack[_MAX_FNAME];
 
-static void ConcatDirSep( char *dir )
-/************************************/
+static void ConcatDirElem( char *dir, char *elem )
+/************************************************/
 {
     size_t      len;
 
@@ -61,9 +61,9 @@ static void ConcatDirSep( char *dir )
         char c = dir[len - 1];
         if( !IS_PATH_SEP( c ) ) {
             dir[len++] = DIR_SEP;
-            dir[len] = '\0';
         }
     }
+    strcpy( dir + len, elem );
 }
 
 
@@ -104,13 +104,11 @@ int main( int argc, char **argv )
         cond = strtok( NULL, "\0" );
         if( cond == NULL ) cond = pack_file+strlen(pack_file);
         strcpy( name, argv[1] );
-        ConcatDirSep( name );
         if( IS_EMPTY( rel_file ) ) {
-            strcat( name, dir );
-            ConcatDirSep( name );
-            strcat( name, file );
+            ConcatDirElem( name, dir );
+            ConcatDirElem( name, file );
         } else {
-            strcat( name, rel_file );
+            ConcatDirElem( name, rel_file );
         }
         if( stat( name, &sbuf ) ) {
             printf( "\r\nFile '%s' does not exist - putting in own packfile\r\n", name );
