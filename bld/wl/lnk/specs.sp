@@ -470,9 +470,11 @@ system begin win32s
 :elsesegment Pwlsystem
     option osname='Win32s (Windows 3.x)'
     libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/win32s
     libpath %WATCOM%/lib386/nt
     library kernel32,user32,gdi32,advapi32,comdlg32,winspool,shell32,version,ole32
     library netapi32,dlcapi,mpr,rpcns4,rpcrt4,vdmdbg,winmm,winstrm,wsock32,lz32,win32spl
+    library %WATCOM%/lib386/win32s/clib3r.lib
     format windows nt ^
     runtime windows
 :endsegment

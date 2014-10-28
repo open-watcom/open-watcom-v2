@@ -1,40 +1,40 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
-#======================================================================================================
-!inject conutwnt.obj                     nt nta ntp
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu win32s
+#=============================================================================================================
+!inject conutwnt.obj                     nt nta ntp                                                     win32s
 !inject cgets.obj    d16 d32                                                w16 w32             
 !inject cgetsos2.obj                                        o16 o32
 !inject cgetsqnx.obj                                                q16 q32
-!inject cgetswnt.obj                     nt nta ntp
+!inject cgetswnt.obj                     nt nta ntp                                                     win32s
 !inject cgetslnx.obj                                                                    l32 lpc lmp
 !inject cgetsrdu.obj                                                                                rdu
-!inject cprintf.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
-!inject cputs.obj    d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
-!inject cscanf.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject cprintf.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu win32s
+!inject cputs.obj    d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu win32s
+!inject cscanf.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu win32s
 !inject getch.obj    d16 d32                                                w16 w32 osi             
 !inject getchos2.obj                                        o16 o32
 !inject getchqnx.obj                                                q16 q32
 !inject getchlnx.obj                                                                    l32 lpc lmp
-!inject getchwnt.obj                     nt nta ntp
+!inject getchwnt.obj                     nt nta ntp                                                     win32s
 !inject getchrdu.obj                                                                                rdu
 !inject gtche.obj    d16 d32                                                w16 w32 osi             
 !inject gtcheos2.obj                                        o16 o32
 !inject gtcheqnx.obj                                                q16 q32
 !inject gtchelnx.obj                                                                    l32 lpc lmp
-!inject gtchewnt.obj                     nt nta ntp
+!inject gtchewnt.obj                     nt nta ntp                                                     win32s
 !inject gtcherdu.obj                                                                                rdu
 !inject kbhit.obj    d16 d32                                                w16 w32                 
 !inject kbhitos2.obj                                        o16 o32
 !inject kbhitqnx.obj                                                q16 q32
 !inject kbhitlnx.obj                                                                    l32 lpc lmp
-!inject kbhitwnt.obj                     nt nta ntp
+!inject kbhitwnt.obj                     nt nta ntp                                                     win32s
 !inject kbhitrdu.obj                                                                                rdu
 !inject putch.obj    d16 d32                                                w16 w32 osi             
 !inject putchos2.obj                                        o16 o32
 !inject putchqnx.obj                                                q16 q32
 !inject putchlnx.obj                                                                    l32 lpc lmp
-!inject putchwnt.obj                     nt nta ntp
+!inject putchwnt.obj                     nt nta ntp                                                     win32s
 !inject putchrdu.obj                                                                                rdu
-!inject ungetch.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject ungetch.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp     win32s
 !inject ungetrdu.obj                                                                                rdu
 
 !include ../../../../objlist.mif

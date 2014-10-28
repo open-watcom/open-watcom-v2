@@ -81,6 +81,23 @@ dginfo.gh : $(rsi_root)/bin/dos4g.exe
 dpmi.exe : $(dpmi_objs)
   $(linker) name $^@ system dos option map,stack=8k file {$(dpmi_objs)}
 
+!else ifeq host_os win32s
+
+extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s
+extra_c_flags_int21nt = -s
+
+all : w32run.exe
+
+w32run.exe : $(ntldr_objs) ntstub.exe
+  %create $^&.lnk
+  @%append $^&.lnk $(lflags)
+  @%append $^&.lnk file {$(ntldr_objs)}
+  @%append $^&.lnk opt map,stack=64k,stub=ntstub.exe
+  $(linker) name $^@ @$^&.lnk
+  
+ntstub.exe : ntstub.obj
+  $(linker) name $^@ system dos option map file {ntstub.obj}
+
 !else ifeq host_os nt
 
 extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s

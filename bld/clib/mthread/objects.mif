@@ -1,16 +1,16 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-#==================================================================================================================
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+#=========================================================================================================================
 !inject declthrd.obj                        nta ntp
 !inject declwnt.obj                      nt
 !inject declrdu.obj                                                                                         rdu
 !inject maxthrds.obj                                nvc ncl nvl     o16 o32     q32             l32 lpc lmp rdu
-!inject mthread.obj                      nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk
-!inject mthrdini.obj                     nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk
-!inject regdata.obj                      nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk
-!inject register.obj                     nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk
-!inject registrx.obj                     nt nta ntp
+!inject mthread.obj                      nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk win32s
+!inject mthrdini.obj                     nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk win32s
+!inject regdata.obj                      nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk win32s
+!inject register.obj                     nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk win32s
+!inject registrx.obj                     nt nta ntp                                                                 win32s
 !inject semaqnx.obj                                                             q32
-!inject tdhdlwnt.obj                     nt nta ntp
+!inject tdhdlwnt.obj                     nt nta ntp                                                                 win32s
 !inject thrdmax.obj                                 nvc ncl nvl     o16 o32     q32             l32 lpc lmp rdu rdk
 !inject thrednov.obj                                nvc ncl
 !inject thnwlibc.obj                                        nvl nll
@@ -18,12 +18,12 @@
 !inject thredo32.obj                                                    o32
 !inject thredqnx.obj                                                            q32
 !inject thredlnx.obj                                                                            l32 lpc lmp
-!inject thredwnt.obj                     nt nta ntp
-!inject thrdxwnt.obj                     nt nta ntp
+!inject thredwnt.obj                     nt nta ntp                                                                 win32s
+!inject thrdxwnt.obj                     nt nta ntp                                                                 win32s
 !inject thredrdu.obj                                                                                        rdu
 !inject thredrdk.obj                                                                                            rdk
-!inject trdalloc.obj                     nt nta ntp nvc ncl nvl nll o16 o32                                 rdu rdk
-!inject trdlist.obj                      nt nta ntp         nvl nll     o32                                 rdu
+!inject trdalloc.obj                     nt nta ntp nvc ncl nvl nll o16 o32                                 rdu rdk win32s
+!inject trdlist.obj                      nt nta ntp         nvl nll     o32                                 rdu     win32s
 
 !include ../../../../objlist.mif
 

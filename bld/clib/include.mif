@@ -20,6 +20,7 @@ include_c_qnx      = -I"$(hdr_dir)/qnx"
 include_c_linux    = -I"$(hdr_dir)/linux"
 include_c_windows  = -I"$(hdr_dir)/dos" -I"$(w16api_dir)/wini86"
 include_c_winnt    = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
+include_c_win32s   = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
 include_c_rdos     = -I"$(hdr_dir)/dos"
 include_c_rdosdev  = -I"$(hdr_dir)/dos"
 
@@ -38,6 +39,7 @@ include_a_osi      =
 include_a_qnx      =
 include_a_windows  =
 include_a_winnt    =
+include_a_win32s   =
 include_a_linux    =
 
 include_a_path = $(include_default) $(include_a_$(system)) $(include_watcom)
