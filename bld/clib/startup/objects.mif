@@ -1,26 +1,26 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-#=========================================================================================================================
-!inject 8087cw.obj   d16 d32             nt         nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32         rdu     win32s
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==================================================================================================================
+!inject 8087cw.obj   d16 d32             nt         nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32         rdu
 !inject _8087086.obj d16                                            o16     q16     w16
-!inject _8087386.obj     d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk win32s
+!inject _8087386.obj     d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
 !inject _8087osi.obj                                                                        osi
-!inject abort.obj    d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject argcv.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk win32s
-!inject atexit.obj   d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject abort.obj    d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject argcv.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
+!inject atexit.obj   d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject chk.obj                                     nvc ncl nvl nll
 !inject stk_libc.obj                                        nvl nll
-!inject chk8087.obj  d16 d32 dpm         nt         nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32         rdu rdk win32s
-!inject cinit.obj        d32             nt nta ntp nvc     nvl         o32             w32 osi             rdu rdk win32s
+!inject chk8087.obj  d16 d32 dpm         nt         nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32         rdu rdk
+!inject cinit.obj        d32             nt nta ntp nvc     nvl         o32             w32 osi             rdu rdk
 !inject cmain086.obj d16                                            o16             w16
-!inject cmain386.obj     d32             nt nta ntp                     o32             w32 osi             rdu rdk win32s
+!inject cmain386.obj     d32             nt nta ntp                     o32             w32 osi             rdu rdk
 !inject cmainlnx.obj                                                                            l32 lpc lmp
 !inject cmainqnx.obj                                                        q16 q32
-!inject cmdname.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject cmnw386.obj                      nt nta ntp                     o32                                         win32s
-!inject cmodel.obj   d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32         rdu rdk win32s
-!inject crtinit.obj                      nt nta ntp                                                                 win32s
+!inject cmdname.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi l32 lpc lmp rdu rdk
+!inject cmnw386.obj                      nt nta ntp                     o32
+!inject cmodel.obj   d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+!inject crtinit.obj                      nt nta ntp
 !inject crwd086.obj  d16                                                    q16
-!inject crwd386.obj      d32             nt         nvc ncl nvl nll     o32     q32             l32         rdu rdk win32s
+!inject crwd386.obj      d32             nt         nvc ncl nvl nll     o32     q32             l32         rdu rdk
 !inject crwdaxp.obj                         nta ntp                                                 lpc lmp
 !inject cstrt086.obj d16
 !inject cstrt386.obj     d32
@@ -35,146 +35,146 @@
 !inject cstrtw16.obj                                                                w16
 !inject cstrtw32.obj                                                                    w32
 !inject cstrtwna.obj                        nta ntp
-!inject cstrtwnt.obj                     nt                                                                         win32s
+!inject cstrtwnt.obj                     nt
 !inject cstrwo32.obj                                                    o32
 !inject cstrwwna.obj                        nta ntp
-!inject cstrwwnt.obj                     nt                                                                         win32s
+!inject cstrwwnt.obj                     nt
 !inject cstrwaxp.obj                        nta ntp
 !inject cstrtrdk.obj                                                                                            rdk
 !inject cstrtrdu.obj                                                                                        rdu
-!inject cvtbuf.obj   d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject cvtbuf.obj   d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject d16msels.obj d16
 !inject ddgrpo32.obj                                                    o32
-!inject ddgrpwnt.obj                     nt nta ntp                                                                 win32s
+!inject ddgrpwnt.obj                     nt nta ntp
 !inject detosinf.obj                                                        q16 q32
 !inject dgroup.obj   d16                                            o16     q16 q32 w16
 !inject dllmno32.obj                                                    o32
 !inject dmaincwd.obj     d32
 !inject dmaino16.obj                                                o16
 !inject dmaino32.obj                                                    o32
-!inject dmainwnt.obj                     nt nta ntp                                                                 win32s
+!inject dmainwnt.obj                     nt nta ntp
 !inject dmainrdu.obj                                                                                        rdu
 !inject emainrdu.obj                                                                                        rdu
 !inject dpmihost.obj     d32
 !inject dllmncwd.obj     d32
-!inject dstrt386.obj                     nt                             o32                                 rdu     win32s
+!inject dstrt386.obj                     nt                             o32                                 rdu
 !inject dstrtaxp.obj                        nta
 !inject dstrtwna.obj                        nta ntp
-!inject enterdb.obj  d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject errno.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject enterdb.obj  d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject errno.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject errnovar.obj                                                            q32             l32             rdk
-!inject _exit.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32     w32 osi l32 lpc lmp rdu rdk win32s
-!inject exit.obj     d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject fltused.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu     win32s
-!inject fltuse80.obj d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32         rdu     win32s
-!inject fpexcept.obj d16 d32 dpm         nt         nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32         rdu     win32s
+!inject _exit.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32     w32 osi l32 lpc lmp rdu rdk
+!inject exit.obj     d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject fltused.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject fltuse80.obj d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32         rdu
+!inject fpexcept.obj d16 d32 dpm         nt         nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32         rdu
 !inject _getds.obj                                                  o16
 !inject getds.obj                                                           q16 q32             l32
-!inject getdsint.obj                     nt                             o32                                         win32s
-!inject histsplt.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk win32s
+!inject getdsint.obj                     nt                             o32
+!inject histsplt.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject hookfpe.obj                                                 o16
 !inject hpgrw086.obj d16
-!inject imthread.obj                     nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk win32s
+!inject imthread.obj                     nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk
 !inject inirmsel.obj     d32                                                            w32
-!inject initrtns.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject initargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk win32s
+!inject initrtns.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject initargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk
 !inject initerrn.obj                                                            q32
-!inject initwarg.obj                     nt nta ntp                     o32                                         win32s
-!inject ioexit.obj   d16 d32 dpm         nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject initwarg.obj                     nt nta ntp                     o32
+!inject ioexit.obj   d16 d32 dpm         nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject itsto32.obj                                                     o32
 !inject kererr.obj                                                              q32
 !inject lgjmpaxp.obj                        nta
 !inject lgjpxaxp.obj                        nta
 !inject lgjmpmps.obj                                                                                    lmp
-!inject liballoc.obj d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject liballoc.obj d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject libmno16.obj                                                o16
 !inject libmno32.obj                                                    o32
 !inject libterm.obj                                                     o32
 !inject libcstrt.obj                                        nvl nll
-!inject ljmphdl.obj  d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject ljmphdl.obj  d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject lmaino32.obj                                                    o32
-!inject lmainwnt.obj                     nt nta ntp                                                                 win32s
+!inject lmainwnt.obj                     nt nta ntp
 !inject lmainrdu.obj                                                                                        rdu
-!inject lmn2wnt.obj                      nt nta ntp                                                                 win32s
+!inject lmn2wnt.obj                      nt nta ntp
 !inject main2o32.obj                                                    o32
 !inject main4o32.obj                                                    o32
-!inject main2wnt.obj                     nt nta ntp                                                                 win32s
-!inject main4wnt.obj                     nt nta ntp                                                                 win32s
+!inject main2wnt.obj                     nt nta ntp
+!inject main4wnt.obj                     nt nta ntp
 !inject maino16.obj                                                 o16
 !inject mainlnx.obj                                                                             l32 lpc lmp
 !inject maino32.obj                                                     o32
 !inject mainqnx.obj                                                             q32
 !inject mainrdk.obj                                                                                             rdk
-!inject mainwnt.obj                      nt nta ntp                                                                 win32s
+!inject mainwnt.obj                      nt nta ntp
 !inject mainrdu.obj                                                                                         rdu
-!inject mtype.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32                 rdu rdk win32s
-!inject nomem.obj        d32             nt nta ntp nvc     nvl         o32         w16 w32 osi             rdu rdk win32s
-!inject nullargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk win32s
-!inject onexit.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject mtype.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32                 rdu rdk
+!inject nomem.obj        d32             nt nta ntp nvc     nvl         o32         w16 w32 osi             rdu rdk
+!inject nullargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk
+!inject onexit.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject os2fil64.obj                                                    o32
-!inject osbdptr.obj                      nt                                                                         win32s
+!inject osbdptr.obj                      nt
 !inject osinf086.obj                                                        q16
 !inject osinf386.obj                                                            q32
 !inject osmdptr.obj  d16                                            o16             w16
-!inject osmjptr.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject osmnptr.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject osvrptr.obj                      nt                                                                         win32s
-!inject pgmptr.obj   d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject pgmptr_s.obj d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-!inject pgmptra.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject osmjptr.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject osmnptr.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject osvrptr.obj                      nt
+!inject pgmptr.obj   d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject pgmptr_s.obj d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject pgmptra.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject prelude.obj                                 nvc ncl
 !inject pspptr.obj   d16 d32                                                        w16     osi
-!inject rdllmwnt.obj                     nt nta ntp                                                                 win32s
-!inject rtcntrl.obj  d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject rdllmwnt.obj                     nt nta ntp
+!inject rtcntrl.obj  d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject seg086.obj   d16                                            o16             w16
 !inject seg16.obj                                                       o32
-!inject seg386.obj       d32             nt                             o32             w32 osi l32         rdu rdk win32s
-!inject segdefns.obj                     nt                             o32                     l32         rdu     win32s
+!inject seg386.obj       d32             nt                             o32             w32 osi l32         rdu rdk
+!inject segdefns.obj                     nt                             o32                     l32         rdu
 !inject segq16.obj                                                          q16
 !inject segq32.obj                                                              q32
-!inject seh386.obj                       nt                             o32                                         win32s
-!inject seh386v2.obj                     nt                             o32                                         win32s
-!inject seterrno.obj d16 d32 dpm         nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
+!inject seh386.obj                       nt                             o32
+!inject seh386v2.obj                     nt                             o32
+!inject seterrno.obj d16 d32 dpm         nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject stack086.obj d16                                            o16     q16     w16
 !inject stack386.obj     d32                                            o32     q32     w32 osi l32         rdu rdk
 !inject stacklnx.obj                                                                                lpc lmp
-!inject stackwnt.obj                     nt nta ntp                                                                 win32s
+!inject stackwnt.obj                     nt nta ntp
 !inject stjmpaxp.obj                        nta
 !inject stjmpmps.obj                                                                                    lmp
 !inject stjmp086.obj d16                                            o16     q16     w16
-!inject stjmp386.obj     d32             nt         nvc     nvl nll     o32     q32     w32 osi l32         rdu rdk win32s
+!inject stjmp386.obj     d32             nt         nvc     nvl nll     o32     q32     w32 osi l32         rdu rdk
 !inject stjpxaxp.obj                        nta
 !inject stk086.obj   d16                                                            w16
 !inject stk386.obj       d32                                                            w32 osi
-!inject stklmwnt.obj                     nt nta ntp                                                                 win32s
+!inject stklmwnt.obj                     nt nta ntp
 !inject stko16.obj                                                  o16
 !inject stko32.obj                                                      o32
 !inject stkq16.obj                                                          q16
 !inject stkq32.obj                                                              q32
-!inject stkwnt.obj                       nt                                                                         win32s
+!inject stkwnt.obj                       nt
 !inject stkl32.obj                                                                              l32
 !inject stkrdu.obj                                                                                          rdu
 !inject stkrdk.obj                                                                                              rdk
 !inject stubwep.obj                                                                 w16
 !inject tnkcdo32.obj                                                    o32
 !inject tnksto32.obj                                                    o32
-!inject uselfn.obj   d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp         win32s
-!inject wargcv.obj                       nt nta ntp                     o32                                         win32s
+!inject uselfn.obj   d16 d32 dpm         nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject wargcv.obj                       nt nta ntp                     o32
 !inject wep.obj                                                                     w16 w32
-!inject wmainwnt.obj                     nt nta ntp                                                                 win32s
-!inject wmnwwnt.obj                      nt nta ntp                                                                 win32s
-!inject wnmjptr.obj                      nt                                                                         win32s
-!inject wnmnptr.obj                      nt                                                                         win32s
-!inject wnvrptr.obj                      nt                                                                         win32s
-!inject wpgmptr.obj                      nt nta ntp                     o32                                         win32s
-!inject wpgmptra.obj                     nt nta ntp                     o32                                         win32s
-!inject wpgmptrs.obj                     nt nta ntp                     o32                                         win32s
+!inject wmainwnt.obj                     nt nta ntp
+!inject wmnwwnt.obj                      nt nta ntp
+!inject wnmjptr.obj                      nt
+!inject wnmnptr.obj                      nt
+!inject wnvrptr.obj                      nt
+!inject wpgmptr.obj                      nt nta ntp                     o32
+!inject wpgmptra.obj                     nt nta ntp                     o32
+!inject wpgmptrs.obj                     nt nta ntp                     o32
 !inject wstrtaxp.obj                        nta
 !inject wstrtwna.obj                        nta ntp
-!inject wstrtwnt.obj                     nt                                                                         win32s
+!inject wstrtwnt.obj                     nt
 !inject wstrwaxp.obj                        nta
 !inject wstrwwna.obj                        nta ntp
-!inject wstrwwnt.obj                     nt                                                                         win32s
+!inject wstrwwnt.obj                     nt
 !inject xiyi.obj     d16 d32                        nvc ncl nvl nll o16     q16 q32 w16 w32 osi
 !inject xmsg.obj     d16 d32
 !inject xmsglnx.obj                                                                             l32 lpc lmp
@@ -184,41 +184,41 @@
 !inject xmsgosi.obj                                                                         osi
 !inject xmsgqnx.obj                                                         q16 q32
 !inject xmsgwin.obj                                                                 w16 w32
-!inject xmsgwnt.obj                      nt nta ntp                                                                 win32s
+!inject xmsgwnt.obj                      nt nta ntp
 !inject xmsgrdu.obj                                                                                         rdu
 !inject xmsgrdk.obj                                                                                             rdk
-!inject ___argc.obj  d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk win32s
-!inject ___wargc.obj                     nt nta ntp                     o32                                         win32s
+!inject ___argc.obj  d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
+!inject ___wargc.obj                     nt nta ntp                     o32
 
 !include ../../../../objlist.mif
 
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-#=========================================================================================================================
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==================================================================================================================
 !inject adiestrt.obj     d32
 !inject adifstrt.obj     d32
 !inject adsstart.obj     d32
 !inject clibdo32.obj                                                    o32
-!inject clibdwnt.obj                     nt nta ntp                                                                 win32s
-!inject commode.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk win32s
+!inject clibdwnt.obj                     nt nta ntp
+!inject commode.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
 !inject cstrtiny.obj d16
 !inject cstrtx32.obj     d32
-!inject dcinit.obj                       nt nta ntp                     o32                                         win32s
-!inject dinitarg.obj                     nt nta ntp                     o32                                         win32s
-!inject diniwarg.obj                     nt nta ntp                     o32                                         win32s
-!inject dllnmwnt.obj                     nt nta ntp                                                                 win32s
+!inject dcinit.obj                       nt nta ntp                     o32
+!inject dinitarg.obj                     nt nta ntp                     o32
+!inject diniwarg.obj                     nt nta ntp                     o32
+!inject dllnmwnt.obj                     nt nta ntp
 !inject dllstart.obj     d32
 !inject dmndo32.obj                                                     o32
-!inject dmndwnt.obj                      nt nta ntp                                                                 win32s
+!inject dmndwnt.obj                      nt nta ntp
 !inject dos16m.obj   d16
 !inject libentry.obj                                                                w16
 !inject main3o32.obj                                                    o32
 !inject main5o32.obj                                                    o32
-!inject main3wnt.obj                     nt nta ntp                                                                 win32s
-!inject main5wnt.obj                     nt nta ntp                                                                 win32s
-!inject wildargv.obj d16 d32             nt nta ntp                 o16 o32                                         win32s
-!inject wildwarg.obj                     nt nta ntp                     o32                                         win32s
-!inject wmndwnt.obj                      nt nta ntp                                                                 win32s
-!inject wmndwwnt.obj                     nt nta ntp                                                                 win32s
+!inject main3wnt.obj                     nt nta ntp
+!inject main5wnt.obj                     nt nta ntp
+!inject wildargv.obj d16 d32             nt nta ntp                 o16 o32
+!inject wildwarg.obj                     nt nta ntp                     o32
+!inject wmndwnt.obj                      nt nta ntp
+!inject wmndwwnt.obj                     nt nta ntp
 !inject resstub.obj                                                                                         rdu
 
 objsuffix=files

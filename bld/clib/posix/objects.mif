@@ -1,11 +1,11 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu win32s
-#=============================================================================================================
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+#======================================================================================================
 !inject accept.obj                                                                      l32 lpc lmp
 !inject bind.obj                                                                        l32 lpc lmp
 !inject cfgtospd.obj                                                                    l32 lpc lmp
 !inject closedir.obj                                                                    l32 lpc lmp
 !inject connect.obj                                                                     l32 lpc lmp
-!inject fnmatch.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu win32s
+!inject fnmatch.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject gthstnam.obj                                                                    l32 lpc lmp
 !inject gtpronam.obj                                                                    l32 lpc lmp
 !inject gtscknam.obj                                                                    l32 lpc lmp

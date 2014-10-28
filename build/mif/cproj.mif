@@ -26,10 +26,6 @@ win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 !endif
 
-!ifdef win32ver_override
-win32ver = $(win32ver_override)
-!endif
-
 !ifeq bootstrap 1
 objs_subdir = $(bin_subdir)
 !else
@@ -232,7 +228,6 @@ default_memory_model_386_nt      = f
 default_memory_model_386_linux   = f
 default_memory_model_386_nto     = f
 default_memory_model_386_rdos    = f
-default_memory_model_386_win32s  = f
 default_memory_model_386_        = f
 
 !ifndef memory_model_386
@@ -275,9 +270,6 @@ def_fpu_flags_qnx_386   = -fpi
   ######
   # WIN32 systems have emulator support in kernel
 def_fpu_flags_nt_386    = -fpi
-  ######
-  # WIN32 systems have emulator support in kernel
-def_fpu_flags_win32s_386= -fpi
   ######
   # LINUX has emulator support in kernel
 def_fpu_flags_linux_386 = -fpi
@@ -332,7 +324,6 @@ cflags_386      += -zc
 !endif
 
 cflags_nt       = -bt=nt $(win32ver)
-cflags_win32s   = -bt=nt $(win32ver)
 cflags_win      = -bt=windows
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
@@ -348,7 +339,6 @@ cflags_linux    = -bt=linux
 cflags_rtdll_nt   = -br
 cflags_rtdll_win  = -br
 cflags_rtdll_os2  = -br
-cflags_rtdll_win32s= -br
 !endif
 
 # generic application macros
@@ -397,7 +387,6 @@ clflags_os2_386    = -l=os2v2
 clflags_qnx_i86    = -l=qnx
 clflags_qnx_386    = -l=qnx
 clflags_osi_386    = -l=osi
-clflags_win32s_386 = -l=nt $(win32ver)
 !ifdef __UNIX__
 clflags_dos_i86    = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
 clflags_dos_386    = -l=dos4g -\"lib doslfn3r.lib\"
@@ -431,7 +420,6 @@ clflags_dll_os2_386  = -l=os2v2_dll
 clflags_dll_os2_i86  = -l=os2_dll
 clflags_dll_rdos_386 = -l=rdos_dll
 clflags_dll_win_i86  = -l=windows_dll
-clflags_dll_win32s_386 = -l=nt_dll $(win32ver)
 
 clflags_exe_osi_386 = -fe=$^&.rex
 !ifdef clflags_exe_$(host_os)_$(host_cpu)
@@ -489,7 +477,6 @@ aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(pr
 # generic application macros
 lflags_dos_386      = sys dos4g lib doslfn3r.lib
 lflags_dos_i86      = sys dos lib doslfn$(memory_model_i86).lib
-lflags_win32s_386   = sys win32s
 lflags_linux_386    = sys linux
 lflags_linux_mps    = sys linuxmips
 lflags_linux_ppc    = sys linuxppc
@@ -520,7 +507,6 @@ lflags_dll_linux_386   = $(lflags_linux_386)
 lflags_dll_linux_mps   = $(lflags_linux_mps)
 lflags_dll_linux_ppc   = $(lflags_linux_ppc)
 lflags_dll_nov_386     = $(lflags_nov_386)
-lflags_dll_win32s_386  = sys win32s_dll
 lflags_dll_nt_386      = sys nt_dll
 lflags_dll_nt_axp      = sys ntaxp_dll
 lflags_dll_os2_386     = sys os2v2_dll
@@ -602,7 +588,6 @@ rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
 rc_flags_all    = -xb -r
 
-rc_flags_win32s = -bt=nt $(win32ver)
 rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
@@ -627,7 +612,6 @@ inc_dirs_sys_linux =
 inc_dirs_sys_nto   =
 inc_dirs_sys_rdos  =
 inc_dirs_sys_rdosdev =
-inc_dirs_sys_win32s =
 inc_dirs_sys_zdos  =
 
 inc_dirs_lang_osi  =

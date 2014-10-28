@@ -26,14 +26,6 @@ set PROJNAME=w32api
     <CPCMD> nt386/ddk/*.lib               <OWRELROOT>/lib386/nt/ddk/
     <CPCMD> nt386/directx/*.lib           <OWRELROOT>/lib386/nt/directx/
 
-    mkdir <OWRELROOT>/lib386/win32s
-    mkdir <OWRELROOT>/lib386/win32s/ddk
-    mkdir <OWRELROOT>/lib386/win32s/directx
-
-    <CPCMD> win32s/*.lib                  <OWRELROOT>/lib386/win32s/
-    <CPCMD> win32s/ddk/*.lib              <OWRELROOT>/lib386/win32s/ddk/
-    <CPCMD> win32s/directx/*.lib          <OWRELROOT>/lib386/win32s/directx/
-
 #    <CPCMD> ntaxp/*.lib                   <OWRELROOT>/libaxp/nt/
 
 [ BLOCK . . ]

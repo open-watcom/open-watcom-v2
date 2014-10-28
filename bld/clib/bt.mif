@@ -12,7 +12,6 @@ bt_windows_086=
 bt_windows_386=-D__WIN386__
 bt_windows    =$(bt_windows_$(processor)) -bt=windows -DSTRICT
 bt_winnt      =-bt=nt $(win32ver)
-bt_win32s     =-bt=nt $(win32ver) -DWIN32s
 bt_linux      =-bt=linux
 bt_rdos       =-bt=rdos
 bt_rdosdev    =-bt=rdosdev

@@ -112,25 +112,6 @@ set PROJNAME=clib
     <CCCMD> rtdll/winnt.386/mf_s/clb*.dll                   <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_s/clb*.sym                   <OWRELROOT>/binnt/
 
-    <CCCMD> library/win32s.386/mf_r/clib3r.lib              <OWRELROOT>/lib386/win32s/clib3r.lib
-    <CCCMD> library/win32s.386/mf_s/clib3s.lib              <OWRELROOT>/lib386/win32s/clib3s.lib
-    <CCCMD> library/win32s.386/mf_rd/clib3r.lib             <OWRELROOT>/lib386/win32s/clib3rd.lib
-
-    <CCCMD> handleio/library/win32s.386/mf_r/binmode.obj    <OWRELROOT>/lib386/win32s/binmode.obj
-    <CCCMD> startup/library/win32s.386/mf_r/commode.obj     <OWRELROOT>/lib386/win32s/commode.obj
-
-    # run-time DLL version
-    <CCCMD> rtdll/win32s.386/mf_r/clb*.lib                  <OWRELROOT>/lib386/win32s/
-    <CCCMD> rtdll/win32s.386/mf_r/clb*.dll                  <OWRELROOT>/binw32s/
-    <CCCMD> rtdll/win32s.386/mf_r/clb*.sym                  <OWRELROOT>/binw32s/
-    <CCCMD> rtdll/win32s.386/mf_rd/clb*.lib                 <OWRELROOT>/lib386/win32s/
-    <CCCMD> rtdll/win32s.386/mf_rd/clb*.dll                 <OWRELROOT>/binw32s/
-    <CCCMD> rtdll/win32s.386/mf_rp/clb*.lib                 <OWRELROOT>/lib386/win32s/
-    <CCCMD> rtdll/win32s.386/mf_rp/clb*.dll                 <OWRELROOT>/binw32s/
-    <CCCMD> rtdll/win32s.386/mf_s/clb*.lib                  <OWRELROOT>/lib386/win32s/
-    <CCCMD> rtdll/win32s.386/mf_s/clb*.dll                  <OWRELROOT>/binw32s/
-    <CCCMD> rtdll/win32s.386/mf_s/clb*.sym                  <OWRELROOT>/binw32s/
-
     <CCCMD> library/linux.386/mf_r/clib3r.lib               <OWRELROOT>/lib386/linux/clib3r.lib
     <CCCMD> library/linux.386/mf_s/clib3s.lib               <OWRELROOT>/lib386/linux/clib3s.lib
     <CCCMD> library/linux.386/mf_rd/clib3r.lib              <OWRELROOT>/lib386/linux/clib3rd.lib

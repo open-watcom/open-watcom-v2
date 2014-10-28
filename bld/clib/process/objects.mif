@@ -1,49 +1,49 @@
 # Note: Still need to clone the Linux stuff from QNX. Only the basic stuff is here for now
 #       just top get it compiling.
 #
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk win32s
-#=================================================================================================================
-!inject cenvarg.obj  d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==========================================================================================================
+!inject cenvarg.obj  d16 d32             nt nta ntp         o16 o32                                 rdu
 !inject cwaitos2.obj                                        o16 o32
-!inject cwaitwnt.obj                     nt nta ntp                                                         win32s
+!inject cwaitwnt.obj                     nt nta ntp
 !inject delay.obj    d16 d32                                                w16
 !inject delayos2.obj                                        o16 o32
 !inject delayw32.obj                                                            w32
-!inject delaywnt.obj                     nt nta ntp                                                         win32s
+!inject delaywnt.obj                     nt nta ntp
 !inject delayrd.obj                                                                                 rdu rdk
 !inject doexec.obj   d16
 !inject doexerdu.obj                                                                                rdu
 !inject dospnos2.obj                                        o16 o32
-!inject dospnwnt.obj                     nt nta ntp                                                         win32s
+!inject dospnwnt.obj                     nt nta ntp
 !inject dospnrdu.obj                                                                                rdu
 !inject exaddos2.obj                                        o16 o32
-!inject exaddwnt.obj                     nt nta ntp                                                         win32s
+!inject exaddwnt.obj                     nt nta ntp
 !inject exaddrdu.obj                                                                                rdu
-!inject excptwnt.obj                     nt nta ntp                                                         #win32s
+!inject excptwnt.obj                     nt nta ntp
 !inject excptrdu.obj                                                                                rdu
 !inject execaddr.obj d16 d32
-!inject exl.obj      d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu     win32s
-!inject exle.obj     d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu     win32s
+!inject exl.obj      d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu
+!inject exle.obj     d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu
 !inject exleqnx.obj                                                 q16 q32
-!inject exlp.obj     d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu     win32s
-!inject exlpe.obj    d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu     win32s
+!inject exlp.obj     d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu
+!inject exlpe.obj    d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu
 !inject exlpeqnx.obj                                                q16 q32
 !inject exlpqnx.obj                                                 q16 q32
 !inject exlqnx.obj                                                  q16 q32
-!inject exv.obj      d16                 nt nta ntp         o16 o32                     l32 lpc lmp         win32s
+!inject exv.obj      d16                 nt nta ntp         o16 o32                     l32 lpc lmp
 !inject exvrdu.obj                                                                                  rdu
 !inject exve.obj     d16
 !inject exveos2.obj                                         o16 o32
 !inject exveqnx.obj                                                 q16 q32
-!inject exvewnt.obj                      nt nta ntp                                                         win32s
+!inject exvewnt.obj                      nt nta ntp
 !inject exverdu.obj                                                                                 rdu
-!inject exvp.obj     d16                 nt nta ntp         o16 o32                                 rdu     win32s
-!inject exvpe.obj    d16                 nt nta ntp         o16 o32                                 rdu     win32s
+!inject exvp.obj     d16                 nt nta ntp         o16 o32                                 rdu
+!inject exvpe.obj    d16                 nt nta ntp         o16 o32                                 rdu
 !inject exvpeqnx.obj                                                q16 q32             l32 lpc lmp
 !inject exvpqnx.obj                                                 q16 q32             l32 lpc lmp
 !inject exvqnx.obj                                                  q16 q32
 !inject exwc2mb.obj  d16 d32                                o16 o32         w16 w32
-!inject _povrlay.obj                     nt nta ntp                                                         win32s
+!inject _povrlay.obj                     nt nta ntp
 !inject raise.obj                                                   q16 q32
 !inject raisep.obj                                                                      l32 lpc lmp
 !inject sigfpe.obj   d16 d32                                                w16
@@ -52,63 +52,63 @@
 !inject signlo16.obj                                        o16
 !inject signlo32.obj                                            o32
 !inject signlq16.obj                                                q16
-!inject signlwnt.obj                     nt nta ntp                                                         win32s
+!inject signlwnt.obj                     nt nta ntp
 !inject signlrdu.obj                                                                                rdu
 !inject sigsy.obj    d16 d32                                                w16
 !inject sigtab.obj   d16 d32                                                w16 w32
 !inject sigsyo16.obj                                        o16
-!inject _slashc.obj  d16 d32             nt nta ntp         o16 o32                                         win32s
+!inject _slashc.obj  d16 d32             nt nta ntp         o16 o32
 !inject sleep.obj    d16 d32                        nvc nvl                 w16 w32
 !inject sleeplnx.obj                                                                    l32 lpc lmp
 !inject sleepos2.obj                                        o16 o32
-!inject sleepwnt.obj                     nt nta ntp                                                         win32s
+!inject sleepwnt.obj                     nt nta ntp
 !inject sleeprd.obj                                                                                 rdu rdk
 !inject spawn086.obj d16
 !inject spawn386.obj     d32
-!inject spl.obj      d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
-!inject sple.obj     d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
+!inject spl.obj      d16 d32             nt nta ntp         o16 o32                                 rdu
+!inject sple.obj     d16 d32             nt nta ntp         o16 o32                                 rdu
 !inject spleunx.obj                                                 q16 q32             l32 lpc lmp
-!inject splp.obj     d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
-!inject splpe.obj    d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
+!inject splp.obj     d16 d32             nt nta ntp         o16 o32                                 rdu
+!inject splpe.obj    d16 d32             nt nta ntp         o16 o32                                 rdu
 !inject splpeunx.obj                                                q16 q32             l32 lpc lmp
 !inject splpunx.obj                                                 q16 q32             l32 lpc lmp
 !inject splunx.obj                                                  q16 q32             l32 lpc lmp
-!inject spv.obj      d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
-!inject spve.obj     d16 d32             nt nta ntp         o16 o32                                         win32s
+!inject spv.obj      d16 d32             nt nta ntp         o16 o32                                 rdu
+!inject spve.obj     d16 d32             nt nta ntp         o16 o32
 !inject spvelnx.obj                                                                     l32 lpc lmp
 !inject spveqnx.obj                                                 q16 q32
 !inject spverdu.obj                                                                                 rdu
-!inject spvp.obj     d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
-!inject spvpe.obj    d16 d32             nt nta ntp         o16 o32                                 rdu     win32s
+!inject spvp.obj     d16 d32             nt nta ntp         o16 o32                                 rdu
+!inject spvpe.obj    d16 d32             nt nta ntp         o16 o32                                 rdu
 !inject spvpeunx.obj                                                q16 q32             l32 lpc lmp
 !inject spvpunx.obj                                                 q16 q32             l32 lpc lmp
 !inject spvunx.obj                                                  q16 q32             l32 lpc lmp
-!inject system.obj   d16 d32             nt nta ntp         o16 o32         w16 w32                         win32s
+!inject system.obj   d16 d32             nt nta ntp         o16 o32         w16 w32
 !inject systemlx.obj                                                                    l32 lpc lmp
 !inject systrdu.obj                                                                                 rdu
-!inject ucenvarg.obj                     nt nta ntp                                                         win32s
-!inject udospwnt.obj                     nt nta ntp                                                         win32s
-!inject uexl.obj     d16                 nt nta ntp         o16 o32                                         win32s
-!inject uexle.obj    d16                 nt nta ntp         o16 o32                                         win32s
-!inject uexlp.obj    d16                 nt nta ntp         o16 o32                                         win32s
-!inject uexlpe.obj   d16                 nt nta ntp         o16 o32                                         win32s
-!inject uexv.obj     d16                 nt nta ntp         o16 o32                                         win32s
-!inject uexve.obj    d16                 nt nta ntp         o16 o32                                         win32s
-!inject uexvp.obj    d16                 nt nta ntp         o16 o32                                         win32s
-!inject uexvpe.obj   d16                 nt nta ntp         o16 o32                                         win32s
-!inject _uslashc.obj d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject uspl.obj     d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject usple.obj    d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject usplp.obj    d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject usplpe.obj   d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject uspv.obj     d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject uspve.obj    d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject uspvp.obj    d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject uspvpe.obj   d16 d32             nt nta ntp         o16 o32                                         win32s
-!inject usystem.obj  d16 d32             nt nta ntp         o16 o32         w16 w32                         win32s
+!inject ucenvarg.obj                     nt nta ntp
+!inject udospwnt.obj                     nt nta ntp
+!inject uexl.obj     d16                 nt nta ntp         o16 o32
+!inject uexle.obj    d16                 nt nta ntp         o16 o32
+!inject uexlp.obj    d16                 nt nta ntp         o16 o32
+!inject uexlpe.obj   d16                 nt nta ntp         o16 o32
+!inject uexv.obj     d16                 nt nta ntp         o16 o32
+!inject uexve.obj    d16                 nt nta ntp         o16 o32
+!inject uexvp.obj    d16                 nt nta ntp         o16 o32
+!inject uexvpe.obj   d16                 nt nta ntp         o16 o32
+!inject _uslashc.obj d16 d32             nt nta ntp         o16 o32
+!inject uspl.obj     d16 d32             nt nta ntp         o16 o32
+!inject usple.obj    d16 d32             nt nta ntp         o16 o32
+!inject usplp.obj    d16 d32             nt nta ntp         o16 o32
+!inject usplpe.obj   d16 d32             nt nta ntp         o16 o32
+!inject uspv.obj     d16 d32             nt nta ntp         o16 o32
+!inject uspve.obj    d16 d32             nt nta ntp         o16 o32
+!inject uspvp.obj    d16 d32             nt nta ntp         o16 o32
+!inject uspvpe.obj   d16 d32             nt nta ntp         o16 o32
+!inject usystem.obj  d16 d32             nt nta ntp         o16 o32         w16 w32
 !inject waitos2.obj                                         o16 o32
-!inject waitwnt.obj                      nt nta ntp                                                         win32s
-!inject _raise.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu     win32s
+!inject waitwnt.obj                      nt nta ntp
+!inject _raise.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
 
 !include ../../../../objlist.mif
 

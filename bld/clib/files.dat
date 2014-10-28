@@ -93,12 +93,6 @@ type="l"    usr="clib3s.lib"    conda="3s"
 type="s"    usr="binmode.obj"
 type="s"    usr="commode.obj"
 
-[ DEFAULT dir="lib386/win32s" cond="wnttarg" where="c f77 jc jf77 ac" ]
-type="l"    usr="clib3r.lib"    conda="3r"
-type="l"    usr="clib3s.lib"    conda="3s"
-type="s"    usr="binmode.obj"
-type="s"    usr="commode.obj"
-
 [ DEFAULT dir="libaxp/nt" cond="alphatarg" where="ac" ]
 type="l"    usr="clib.lib"
 type="s"    usr="binmode.obj"
@@ -124,10 +118,6 @@ type="l"    usr="clib3r.lib"
 # 32-bit run-time DLL import libraries
 #
 [ DEFAULT dir="lib386/nt" cond="wnttarg" where="c f77 jc jf77 ac" ]
-type="l"    usr="clbrdll.lib"   conda="3r"      desc="C DLL Runtime Libraries"
-type="l"    usr="clbsdll.lib"   conda="3s"      desc="C DLL Runtime Libraries"
-
-[ DEFAULT dir="lib386/win32s" cond="wnttarg" where="c f77 jc jf77 ac" ]
 type="l"    usr="clbrdll.lib"   conda="3r"      desc="C DLL Runtime Libraries"
 type="l"    usr="clbsdll.lib"   conda="3s"      desc="C DLL Runtime Libraries"
 
