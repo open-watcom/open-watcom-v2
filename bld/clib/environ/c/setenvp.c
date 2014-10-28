@@ -99,10 +99,10 @@ void __setenvp( void )
 
     if( _RWD_environ != NULL )
         return;
-    argep = (char **)_Envptr;
+    argep = _Envptr;
     while ( *argep != NULL )
         argep++;
-    count = argep - (char **)_Envptr;
+    count = argep - _Envptr;
     argep = lib_malloc( ( count + 1 ) * sizeof( char * ) + count * sizeof( char ) );
     memcpy( argep, _Envptr, ( count + 1 ) * sizeof( char * ) );
     _RWD_env_mask = (char *)&argep[count + 1];
@@ -181,10 +181,15 @@ void __setenvp( void )
         memcpy( startp, ptr, size );
         RdosUnlockSysEnv();
     }
+  #elif defined( __NT__ )
+    startp = _RWD_Envptr;
+    if( startp == NULL ) {
+        startp = "";
+    }
   #elif defined( _M_I86 )
     startp = MK_FP( *(unsigned short _WCI86FAR *)( MK_FP( _RWD_psp, 0x2c ) ), 0 );
   #else
-    startp = _RWD_Envptr;                                   /* 13-mar-91 */
+    startp = _RWD_Envptr;
   #endif
     count = 0;
     p = startp;
