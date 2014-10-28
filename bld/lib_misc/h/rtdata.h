@@ -115,10 +115,14 @@ extern  char                *__ASTACKPTR;
  #pragma aux                __ASTACKSIZ "*"
 #endif
 #endif
-#if defined( __DOS_386__ ) || defined( __WINDOWS_386__ )
+#if !defined( _M_I86 )
+#if defined( __DOS__ )
 extern char     _WCFAR *_Envptr;
+#elif defined( __LINUX__ )
+extern char     **_Envptr;
 #else
-extern char     _WCI86FAR *_Envptr;
+extern char     *_Envptr;
+#endif
 #endif
 
 #if !defined(__QNX__) && !defined(__LINUX__) && defined(_M_IX86)
@@ -143,7 +147,7 @@ extern unsigned char        __uselfn;   /* LFN support available flag */
 #if !defined(__NETWARE__)
     #define _RWD_threadid       _threadid
 #endif
-#if !defined( _M_I86 ) && ( defined( __DOS__ ) || defined( __NT__ ) || defined( __OS2__ ) )
+#if !defined( _M_I86 )
     #define _RWD_Envptr         _Envptr
 #endif
 #define _RWD_environ            environ
