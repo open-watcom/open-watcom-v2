@@ -1856,7 +1856,18 @@ STATIC BOOLEAN hasMetas( const char *cmd )
  */
 {
 #if defined( __DOS__ ) || defined( __NT__ )
-    return( strpbrk( cmd, SHELL_METAS ) != NULL );
+    const char *p;
+    BOOLEAN quoted;
+
+    quoted = FALSE;
+    for( p = cmd; *p != NULLCHAR; ++p ) {
+        if( *p == '"' ) {
+            quoted = !quoted;
+        } else if( !quoted && strchr( SHELL_METAS, *p ) != NULL ) {
+            return( TRUE );
+        }
+    }
+    return( FALSE );
 
 #elif defined( __OS2__ ) || defined( __UNIX__ )
     const char  *p;
