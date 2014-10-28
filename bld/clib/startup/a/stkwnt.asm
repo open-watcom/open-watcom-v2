@@ -57,9 +57,13 @@ msg     db      "Stack Overflow!", 0
 
         xdefp   __CHK
         defpe   __CHK                   ; new style stack check
+ifdef WIN32s
+	; FIXME: Sorry this stack checking doesn't work in Windows 3.1
+else
         xchg    eax,4[esp]              ; get parm in eax
         call    __STK                   ; call stack checker
         mov     eax,4[esp]              ; restore eax
+endif
         ret     4
         endproc __CHK
 
