@@ -131,9 +131,8 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
         /* fake it with the process heap */
 	_RWD_Envptr = HeapAlloc(GetProcessHeap(),0,sizeof(uint32_t)); /* alloc 4 bytes of zero */
 	if (_RWD_Envptr == NULL) {
-		/* Really, Windows 3.1, really? */
-		MessageBoxA(NULL,"Holy crap Windows 3.1 is too cheap even to alloc 16 bytes of heap","",MB_OK);
-		ExitProcess(0);
+		/* Wow, really, Windows 3.1? Really?!? */
+		ExitProcess(0xFFFFFFFF);
 	}
 	*((uint32_t*)_RWD_Envptr) = 0; /* quick and dirty zero first 4 bytes */
 	_RWD_Envptr_is_fake = 1;
