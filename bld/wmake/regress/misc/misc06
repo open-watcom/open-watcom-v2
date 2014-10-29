@@ -16,4 +16,4 @@ all: .symbolic
     rm -f foo
     mkdir food
     -rm -f food
-    !rm -f -r food  # No Internal rm command -r support; force external command.
+    rm -f -r food

@@ -72,4 +72,4 @@ goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-rm -f tmp.out
+del tmp.out

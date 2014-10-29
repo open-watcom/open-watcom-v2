@@ -16,8 +16,7 @@ setup : .symbolic
     @%null
 
 clean : .symbolic
-    @rm -f upd05a upd05a1 upd05a2 upd05b upd05b1 upd05b2 > tmpfile.tmp
-    rm tmpfile.tmp
+    @rm -f upd05a upd05a1 upd05a2 upd05b upd05b1 upd05b2
 
 upd05a : upd05a1
 upd05a : upd05a2

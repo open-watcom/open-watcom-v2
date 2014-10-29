@@ -58,7 +58,7 @@ echo # ------------------------------------------------
 echo # ERROR 13: No Control Characeters valid in Option
 echo # ------------------------------------------------
 
-rm tmp.out
+del tmp.out
 %1 -h "-" 2> tmp.out
 %1 -h - 2>> tmp.out
 %1 -h "-\" 2>> tmp.out
@@ -118,7 +118,7 @@ if errorlevel 1 goto err39
     echo # !!! Test 39 unsuccessful !!! |tee -a %2
 
 :test40
-rm ditty.*
+del ditty.*
 echo # ------------------------------
 echo # ERROR 40: Could not touch target
 echo # ------------------------------
@@ -126,7 +126,7 @@ echo. >err40.tst
 chmod +r err40.tst >tmp.out
 %1 -h -a -t -f err40 >> tmp.out 2>&1
 chmod -r err40.tst
-rm err40.tst
+del err40.tst
 diff tmp.out err40.chk
 if errorlevel 1 goto err40
     echo # Test 40 successful
@@ -145,6 +145,6 @@ goto done
 echo usage: %0 prgname errorfile
 :done
 if not .%verbose% == . goto end
-rm *.out
-rm *.tmp
+del *.out
+del *.tmp
 :end
