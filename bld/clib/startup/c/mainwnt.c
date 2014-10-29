@@ -108,6 +108,8 @@ static wchar_t          *_wcmd_ptr;
 
 // called once at DLL_PROCESS_ATTACH or by __NTMainInit
 
+typedef WINBASEAPI LPCH WINAPI (*GETENVPROC)( VOID );
+
 int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
 {
     DWORD       ver;
@@ -120,14 +122,13 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     __FirstThreadData = tdata;
     __initPOSIXHandles();
 
-    _RWD_Envptr = GetEnvironmentStrings();
-
     /*
      * Force reference to environ so that __setenvp is linked in; hence,
      * __ParsePosixHandleStr will be called.
      */
     environ = NULL;
 
+    // get/init Windows version info
     ver = GetVersion();
     os_ver = LOWORD( ver );
     _RWD_osmajor = os_ver & 0xff;
@@ -137,6 +138,44 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     _RWD_winmajor = _RWD_osmajor;
     _RWD_winminor = _RWD_osminor;
     _RWD_winver = (_RWD_winmajor << 8) | _RWD_winminor;
+
+    /* WIN32 API GetEnvironmentStrings and FreeEnvironmentStrings functions have strange history.
+     * In early versions of Windows NT it was available only as GetEnvironmentStrings
+     * entry point (multi-byte version) and FreeEnvironmentStrings was missing.
+     * Later it was fixed to have both versions of GetEnvironmentStrings API entry
+     * (multi-byte and wide versions) GetEnvironmentStringsA/GetEnvironmentStringsW and
+     * FreeEnvironmentStringsA/FreeEnvironmentStringsW were added too.
+     * This problem affected only some versions of Windows NT 3.x and Win32s. 
+     * Due to this mess it is necessary check presence of appropriate entry point in WIN32
+     * DLL on run-time.
+     */
+
+    /* NOTES:
+     * Win32s V1.20 and later has GetEnvironmentStringsA available but return NULL.
+     * Win32s V1.15 and earlier does not have GetEnvironmentStringsA entry point at all.
+     * NT 3.1 and earlier has only GetEnvironmentStrings entry point.
+     * NT 3.51 and later has all GetEnvironmentStrings/GetEnvironmentStringsA/GetEnvironmentStringsW
+     * entry points.
+     * For Win32s and NT 3.x GetEnvironmentStrings should be used to get environment block.
+     * For all other versions GetEnvironmentStringsA should be used to get environment block.
+     */
+
+    {
+        GETENVPROC  _getenvs;
+        char        *name;
+
+        if( _RWD_osmajor < 4 ) {
+            /* for NT 3.x and Win32s use GetEnvironmentStrings */
+            name = "GetEnvironmentStrings";
+        } else {
+            /* for Windows 9x and NT ( 4.0 and above ) use GetEnvironmentStringsA */
+            name = "GetEnvironmentStringsA";
+        }
+        _getenvs = (GETENVPROC)GetProcAddress( GetModuleHandle( "KERNEL32.DLL" ), name );
+        if( _getenvs != NULL ) {
+            _RWD_Envptr = _getenvs();
+        }
+    }
 
     {
         static char     fn[_MAX_PATH];
@@ -209,6 +248,8 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     return( TRUE );
 }
 
+typedef WINBASEAPI BOOL WINAPI (*FREEENVPROC)( LPCH );
+
 void __NTFini( void )
 {
     // calls to free memory have to be done before semaphores closed
@@ -220,8 +261,19 @@ void __NTFini( void )
         lib_free( _wcmd_ptr );
         _wcmd_ptr = NULL;
     }
+    /* NOTES:
+     * FreeEnvironmentStringsA entry point is not available for earlier versions of Win32s and
+     * for NT 3.1 and earlier. On all other Windows versions this entry is available.
+     * (see comment above in __NTInit)
+     */
+
     if( _RWD_Envptr != NULL ) {
-        FreeEnvironmentStrings( _RWD_Envptr );
+        FREEENVPROC _freeenvs;
+
+        _freeenvs = (FREEENVPROC)GetProcAddress( GetModuleHandle( "KERNEL32.DLL" ), "FreeEnvironmentStringsA" );
+        if( _freeenvs != NULL ) {
+            _freeenvs( _RWD_Envptr );
+        }
         _RWD_Envptr = NULL;
     }
 }
