@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "exitwmsg.h"
 #include "osver.h"
 #include <stdlib.h>
 #include <windows.h>
@@ -41,7 +42,8 @@ void __init_stack_limits( unsigned *stacklow, unsigned *stacktop )
     int                         dummy;
     MEMORY_BASIC_INFORMATION    mbi;
 
-    VirtualQuery( &dummy, &mbi, sizeof( mbi ) );
+    if (VirtualQuery( &dummy, &mbi, sizeof( mbi ) ) == 0)
+        __fatal_runtime_error( "cannot determine stack information", 127 );
 
     top = ((unsigned)mbi.BaseAddress) + mbi.RegionSize;
     low = (unsigned)mbi.AllocationBase;
