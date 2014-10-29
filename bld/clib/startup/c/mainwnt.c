@@ -243,7 +243,12 @@ void __NTFini( void )
         _wcmd_ptr = NULL;
     }
     if( _RWD_Envptr != NULL ) {
-        FreeEnvironmentStrings( _RWD_Envptr );
+	BOOL (WINAPI *__fenvstr)(LPCH str);
+
+	/* Call FreeEnvironmentStringsA() if it exists.
+	 * Windows 3.1 Win32s v1.15 and earlier do not provide this function. */
+	__fenvstr = (void*)GetProcAddress(GetModuleHandle("KERNEL32.DLL"),"FreeEnvironmentStringsA");
+	if (__fenvstr) __fenvstr( _RWD_Envptr );
         _RWD_Envptr = NULL;
     }
 }
