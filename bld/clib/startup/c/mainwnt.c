@@ -120,7 +120,29 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     __FirstThreadData = tdata;
     __initPOSIXHandles();
 
-    _RWD_Envptr = GetEnvironmentStrings();
+    {
+	    HANDLE krn = GetModuleHandle("KERNEL32.DLL");
+
+	    _RWD_Envptr = NULL;
+	    if (krn != NULL) {
+		    /* use GetProcAddress to try to call GetEnvironmentStringsA() to get the environment
+		     * block in Windows 95/NT. Windows 3.1 Win32s however does not support that entry
+		     * point. v1.20 and later simply return NULL. v1.15 and earlier don't have that
+		     * entry point at all, and if it's compiled into our EXE as a dependency the Win32s
+		     * loader will display an error and exit without running our program. In those cases,
+		     * we must fallback to GetEnvironmentStrings() (without the A/W suffix) to get the
+		     * environment block. */
+		    LPCH (WINAPI *_getenvs)(void);
+
+		    _getenvs = (void*)GetProcAddress(krn,"GetEnvironmentStringsA");
+		    if (_getenvs != NULL) _RWD_Envptr = _getenvs();
+
+		    if (_RWD_Envptr == NULL) {
+			    _getenvs = (void*)GetProcAddress(krn,"GetEnvironmentStrings");
+			    if (_getenvs != NULL) _RWD_Envptr = _getenvs();
+		    }
+	    }
+    }
 
     /*
      * Force reference to environ so that __setenvp is linked in; hence,
@@ -221,7 +243,12 @@ void __NTFini( void )
         _wcmd_ptr = NULL;
     }
     if( _RWD_Envptr != NULL ) {
-        FreeEnvironmentStrings( _RWD_Envptr );
+	BOOL (WINAPI *__fenvstr)(LPCH str);
+
+	/* Call FreeEnvironmentStringsA() if it exists.
+	 * Windows 3.1 Win32s v1.15 and earlier do not provide this function. */
+	__fenvstr = (void*)GetProcAddress(GetModuleHandle("KERNEL32.DLL"),"FreeEnvironmentStringsA");
+	if (__fenvstr) __fenvstr( _RWD_Envptr );
         _RWD_Envptr = NULL;
     }
 }
