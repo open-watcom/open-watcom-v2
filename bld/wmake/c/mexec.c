@@ -106,154 +106,19 @@ static BOOLEAN RecursiveRM( const char *dir, const rm_flags *flags );
 
 #define COM_MAX_LEN 16              /* must be able to hold any OS cmdname */
 
+typedef enum {
+    #define pick(id)    COM_ ## id,
+    #include "_mexec.h"
+    #undef pick
+} commands;
+
 STATIC const char * const   dosInternals[] = {   /* COMMAND.COM commands */
-
-#if defined( __DOS__ )
-
-    "BREAK",            /* this list must be in alpha order */
-    "CALL",
-    "CD",
-    "CHDIR",
-    "CLS",
-    "COMMAND",
-    "COPY",
-    "CTTY",
-    "DATE",
-    "DEL",
-    "DIR",
-    "ECHO",
-#define COM_ECHO    11  /* index of the echo keyword */
-    "ERASE",
-    "FOR",
-#define COM_FOR     13  /* index of the for keyword */
-    "IF",
-#define COM_IF      14  /* index of the if keyword  */
-    "MD",
-    "MKDIR",
-    "PATH",
-    "PAUSE",
-    "PROMPT",
-    "RD",
-    "REM",
-    "REN",
-    "RENAME",
-    "RM",
-#define COM_RM      24
-    "RMDIR",
-    "SET",
-#define COM_SET     26  /* index of the set keyword */
-    "TIME",
-    "TYPE",
-    "VER",
-    "VERIFY",
-    "VOL"
-
-#elif defined( __OS2__ ) || defined( __NT__ )
-
-    "BREAK",
-    "CALL",
-    "CD",
-#define COM_CD      2
-    "CHCP",
-    "CHDIR",
-#define COM_CHDIR   4
-    "CLS",
-    "COPY",
-    "DATE",
-    "DEL",
-    "DETACH",
-    "DIR",
-    "DPATH",
-    "ECHO",
-#define COM_ECHO    12  /* index of the echo keyword */
-    "ENDLOCAL",
-    "ERASE",
-    "EXIT",
-    "EXTPROC",
-    "FOR",
-#define COM_FOR     17
-    "GOTO",
-    "IF",
-#define COM_IF      19
-    "MD",
-    "MKDIR",
-    "MOVE",
-    "PATH",
-    "PAUSE",
-    "PROMPT",
-    "RD",
-    "REM",
-    "REN",
-    "RENAME",
-    "RM",
-#define COM_RM      30
-    "RMDIR",
-    "SET",
-#define COM_SET     32
-    "SETLOCAL",
-    "SHIFT",
-    "START",
-    "TIME",
-    "TYPE",
-    "VER",
-    "VERIFY",
-    "VOL"
-
-#elif defined( __UNIX__ )
-
-    "BREAK",
-    "CALL",
-    "CD",
-#define COM_CD      2
-    "CHCP",
-    "CHDIR",
-#define COM_CHDIR   4
-    "CLS",
-    "COPY",
-    "DATE",
-    "DEL",
-    "DETACH",
-    "DIR",
-    "DPATH",
-    "ECHO",
-#define COM_ECHO    12  /* index of the echo keyword */
-    "ENDLOCAL",
-    "ERASE",
-    "EXIT",
-    "EXTPROC",
-    "FOR",
-#define COM_FOR     17
-    "GOTO",
-    "IF",
-#define COM_IF      19
-    "MD",
-    "MKDIR",
-    "PATH",
-    "PAUSE",
-    "PROMPT",
-    "RD",
-    "REM",
-    "REN",
-    "RENAME",
-    "RM",
-#define COM_RM      29
-    "RMDIR",
-    "SET",
-#define COM_SET     31
-    "SETLOCAL",
-    "SHIFT",
-    "START",
-    "TIME",
-    "TYPE",
-    "VER",
-    "VERIFY",
-    "VOL"
-
-#endif
+    #define pick(id)    # id,
+    #include "_mexec.h"
+    #undef pick
 };
 
 #define CNUM    (sizeof( dosInternals ) / sizeof( char * ))
-
 
 static const char * const   percentCmds[] = {
     "ABORT",
