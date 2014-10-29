@@ -29,7 +29,7 @@
 !inject cstrtlmp.obj                                                                                    lmp
 !inject cstrto16.obj                                                o16
 !inject cstrto32.obj                                                    o32
-!inject cstrtosi.obj                                                                  osi
+!inject cstrtosi.obj                                                                        osi
 !inject cstrtq16.obj                                                        q16
 !inject cstrtq32.obj                                                            q32
 !inject cstrtw16.obj                                                                w16
