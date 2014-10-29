@@ -49,7 +49,8 @@ void __init_stack_limits( unsigned *stacklow, unsigned *stacktop )
     if( WIN32_IS_NT ) {
         low += 4096 * 3;
     } else if( WIN32_IS_WIN32S ) {
-        low += 4096 * (16 + 2);
+	/* Windows 3.1 appears to only offer 64KB of stack. Assume a buffer zone of 16KB and tread carefully. */
+        low += 4096 * 4;
     } else {
         // Win 95
         low += 4096 * (16 + 3);
