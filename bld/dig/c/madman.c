@@ -1325,34 +1325,41 @@ static char *__xcvt( long_double *value,
 }
 #endif
 
-static char *DoStrReal( long_double *value, char *p, mad_type_info const *mti )
+static unsigned DoStrReal( long_double *value, mad_type_info const *mti, char *p, unsigned max )
 {
     unsigned    mant_digs;
 //    unsigned    exp_digs;
     char        *mant;
     int         sign;
     int         exp;
+    unsigned    len;
+    char        buff1[80];
 #ifdef __WATCOMC__
-    char        buff[80];
+    char        buff2[80];
 #endif
 
 //    exp_digs = LOG10B2( mti->f.exp.data.b.bits * (mti->f.exp.base / 2) );
     mant_digs = LOG10B2( mti->b.bits + mti->f.exp.hidden - ( mti->f.exp.data.b.bits + 1 ) );
 #ifdef __WATCOMC__
-    mant = __xcvt( value, mant_digs, &exp, &sign, buff );
+    mant = __xcvt( value, mant_digs, &exp, &sign, buff2 );
 #else
     mant = ecvt( value->u.value, mant_digs, &exp, &sign );
 #endif
-    if( !isdigit( *mant ) ) {
-        /* special magical thingy (nan, inf, ...) */
-        strcpy( p, mant );
-        return( p );
+    if( isdigit( *mant ) ) {
+        if( *mant != '0' )
+            --exp;
+        sprintf( buff1, "%c%c.%sE%+4.4d", ( sign ) ? '-' : '+', *mant, mant + 1, exp );
+        mant = buff1;
     }
-    if( *mant != '0' )
-        --exp;
-    sprintf( p, "%c%c.%sE%+4.4d", 
-        ( sign ) ? '-' : '+', *mant, mant + 1, exp );
-    return( p );
+    len = strlen( mant );
+    if( max > 0 ) {
+        --max;
+        if( max > len )
+            max = len;
+        memcpy( p, mant, max );
+        p[max] = '\0';
+    }
+    return( len );
 }
 
 static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti,
@@ -1380,7 +1387,7 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti,
 #if !defined( __BIG_ENDIAN__ )
             --p;
 #endif
-            if( len < max ) {
+            if( len + 1 < max ) {
                 res[len+0] = DigitTab[ *p >>   4 ];
                 res[len+1] = DigitTab[ *p &  0xf ];
             }
@@ -1388,20 +1395,20 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti,
             ++p;
 #endif
         }
+        *maxp = len;
         if( max > 0 ) {
+            --max;
             if( len < max )
                 max = len;
             res[max] = '\0';
         }
-        *maxp = len;
         return( MS_OK );
     case 10:
         MADTypeInfoForHost( MTK_FLOAT, sizeof( val ), &host );
         ms = MADTypeConvert( mti, d, &host, &val, 0 );
         if( ms != MS_OK )
             return( ms );
-        DoStrReal( (long_double *)&val, res, mti );
-        *maxp = strlen( res );
+        *maxp = DoStrReal( (long_double *)&val, mti, res, max );
         return( MS_OK );
     }
     return( MS_UNSUPPORTED );
@@ -1985,14 +1992,15 @@ static unsigned DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_p
     if( !(dp & MDP_INSTRUCTION) ) return( 0 );
     if( max > 0 ) {
         --max;
-        if( max > INSTR_LEN ) max = INSTR_LEN;
+        if( max > INSTR_LEN )
+            max = INSTR_LEN;
         memcpy( buff, ILL_INSTR, max );
         buff[max] = '\0';
     }
     return( INSTR_LEN );
 }
 
-unsigned                MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, unsigned max, char *buff )
+unsigned    MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, unsigned max, char *buff )
 {
     return( Active->rtns->MIDisasmFormat( dd, dp, radix, max, buff ) );
 }
