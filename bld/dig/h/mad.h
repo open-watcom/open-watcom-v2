@@ -83,8 +83,8 @@ mad_status      MADTypeInfoForHost( mad_type_kind, int size, mad_type_info * );
 mad_type_handle MADTypeDefault( mad_type_kind, mad_address_format, const mad_registers *, const address * );
 
 mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-mad_status      MADTypeToString( unsigned radix, const mad_type_info *, const void *data, unsigned *max, char *buff );
-mad_status      MADTypeHandleToString( unsigned radix, mad_type_handle, const void *data, unsigned *max, char *buff );
+mad_status      MADTypeToString( unsigned radix, const mad_type_info *, const void *data, char *buff, unsigned *max );
+mad_status      MADTypeHandleToString( unsigned radix, mad_type_handle, const void *data, char *buff, unsigned *max );
 
 
 /*

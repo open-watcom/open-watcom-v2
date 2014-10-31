@@ -1213,7 +1213,7 @@ unsigned FormatAddr( address a, char *buffer, unsigned max )
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, &a ), &mti );
     MADTypeConvert( &host, &a, &mti, item, 0 );
-    MADTypeToString( 16, &mti, item, &max, buffer );
+    MADTypeToString( 16, &mti, item, buffer, &max );
     return( max );
 }
 
@@ -1243,7 +1243,7 @@ void GetFullInstruct( address a, char * buffer, int max )
                 item = exeGetChar();
                 MADTypeInfoForHost( MTK_INTEGER, sizeof( item ), &host );
                 mad_max = 4;
-                MADTypeToString( 16, &host, &item, &mad_max, tail );
+                MADTypeToString( 16, &host, &item, tail, &mad_max );
                 tail += mad_max;
             } else if( i < numBytes ) {
                 *tail++ = ' ';          /* two spaces */

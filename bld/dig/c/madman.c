@@ -94,14 +94,14 @@ static mad_status DIGCLIENT MADCliTypeConvert( const mad_type_info *in_t, const 
     return( MADTypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGCLIENT MADCliTypeToString( unsigned radix, const mad_type_info *mti, const void *data, unsigned *max, char *buff )
+static mad_status DIGCLIENT MADCliTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *max )
 {
-    return( MADTypeToString( radix, mti, data, max, buff ) );
+    return( MADTypeToString( radix, mti, data, buff, max ) );
 }
 
 mad_client_routines MADClientInterface = {
     MAD_MAJOR,
-    MAD_MINOR_OLD, //NYI: change to MAD_MINOR when everybody's updated
+    MAD_MINOR,
     sizeof( mad_client_routines ),
 
     DIGCliAlloc,
@@ -1166,7 +1166,7 @@ mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, con
     return( Active->rtns->MITypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_info *mti, const void *d, unsigned *max, char *buff )
+static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_info *mti, const void *d, char *buff, unsigned *max )
 {
     base = base;
     mti = mti;
@@ -1220,8 +1220,7 @@ static char *CvtNum( unsigned long val, unsigned radix, char *p, int bit_length 
     return( U64CvtNum( tmp, radix, p, bit_length ) );
 }
 
-static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti,
-                        const void *d, unsigned *maxp, char *res )
+static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *res, unsigned *maxp )
 {
     decomposed_item     val;
     int                 neg;
@@ -1252,8 +1251,7 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti,
     return( MS_OK );
 }
 
-static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti,
-                        const void *d, unsigned *maxp, char *res )
+static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *res, unsigned *maxp )
 {
     decomposed_item     val;
     char                *p;
@@ -1362,8 +1360,7 @@ static unsigned DoStrReal( long_double *value, mad_type_info const *mti, char *p
     return( len );
 }
 
-static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti,
-                        const void *d, unsigned *maxp, char *res )
+static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *res, unsigned *maxp )
 {
     unsigned            max;
     mad_type_info       host;
@@ -1416,32 +1413,32 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti,
 
 #endif
 
-mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void *d, unsigned *max, char *buff )
+mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void *d, char *buff, unsigned *max )
 {
     if( mti->b.handler_code == MAD_DEFAULT_HANDLING ) {
         switch( mti->b.kind ) {
         case MTK_INTEGER:
-           if( IntTypeToString( radix, mti, d, max, buff ) == MS_OK ) return( MS_OK );
+           if( IntTypeToString( radix, mti, d, buff, max ) == MS_OK ) return( MS_OK );
            break;
         case MTK_ADDRESS:
-           if( AddrTypeToString( radix, mti, d, max, buff ) == MS_OK ) return( MS_OK );
+           if( AddrTypeToString( radix, mti, d, buff, max ) == MS_OK ) return( MS_OK );
            break;
 #if !defined(MAD_OMIT_FLOAT_CVT)
         case MTK_FLOAT:
-           if( FloatTypeToString( radix, mti, d, max, buff ) == MS_OK ) return( MS_OK );
+           if( FloatTypeToString( radix, mti, d, buff, max ) == MS_OK ) return( MS_OK );
            break;
         }
 #endif
     }
-    return( Active->rtns->MITypeToString( radix, mti, d, max, buff ) );
+    return( Active->rtns->MITypeToString( radix, mti, d, buff, max ) );
 }
 
-mad_status MADTypeHandleToString( unsigned radix, mad_type_handle th, const void *d, unsigned *max, char *buff )
+mad_status MADTypeHandleToString( unsigned radix, mad_type_handle th, const void *d, char *buff, unsigned *max )
 {
     mad_type_info       mti;
 
     MADTypeInfo( th, &mti );
-    return( MADTypeToString( radix, &mti, d, max, buff ) );
+    return( MADTypeToString( radix, &mti, d, buff, max ) );
 }
 
 

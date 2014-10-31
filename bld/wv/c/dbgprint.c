@@ -307,7 +307,7 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
         MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
         MADTypeConvert( &host, &ExprSP->v.addr, &mti, &item, 0 );
         mad_max = sizeof( buff );
-        MADTypeToString( radix, &mti, &item, &mad_max, ptr );
+        MADTypeToString( radix, &mti, &item, ptr, &mad_max );
         ptr += mad_max;
         break;
     case TK_REAL:

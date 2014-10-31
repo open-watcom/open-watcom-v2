@@ -712,7 +712,7 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         new = MemData.info[ mem->piece_type ].piece_radix;
         old = NewCurrRadix( new );
         max = TXT_LEN;
-        MADTypeHandleToString( new, MemData.info[ mem->piece_type ].type, &buff, &max, TxtBuff );
+        MADTypeHandleToString( new, MemData.info[ mem->piece_type ].type, &buff, TxtBuff, &max );
         NewCurrRadix( old );
     }
     return( TRUE );

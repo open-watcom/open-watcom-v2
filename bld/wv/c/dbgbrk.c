@@ -359,7 +359,7 @@ void GetBPText( brkp *bp, char *buff )
             }
         }
     } else {
-        MADTypeHandleToString( CurrRadix, bp->th, &bp->item, &max, buff );
+        MADTypeHandleToString( CurrRadix, bp->th, &bp->item, buff, &max );
     }
 }
 
@@ -408,7 +408,7 @@ static char *StrVal( char *which, brkp *wp, char *p )
     for( *p++ = ' '; *which != NULLCHAR; *p++ = *which++ ) {}
     *p++ = '=';
     max = ~0;
-    MADTypeHandleToString( CurrRadix, wp->th, &wp->item, &max, p );
+    MADTypeHandleToString( CurrRadix, wp->th, &wp->item, p, &max );
     p += max;
     return( p );
 }

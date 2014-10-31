@@ -1054,7 +1054,7 @@ void RegNewValue( const mad_reg_info *reginfo,
     p += MADRegFullName( reginfo, ".", TXT_LEN, p );
     p = StrCopy( "=", p );
     max = TXT_LEN - ( p - TxtBuff );
-    MADTypeHandleToString( CurrRadix, type, new_val, &max, p );
+    MADTypeHandleToString( CurrRadix, type, new_val, p, &max );
     p += max;
     RecordEvent( TxtBuff );
     CollapseMachState();

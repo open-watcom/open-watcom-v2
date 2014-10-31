@@ -132,7 +132,7 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
     new = MADTypePreferredRadix( th );
     old = NewCurrRadix( new );
     max = 0;
-    MADTypeToString( new, &mti, &tmp, &max, TxtBuff );
+    MADTypeToString( new, &mti, &tmp, TxtBuff, &max );
     NewCurrRadix( old );
     return( max + sign );
 }

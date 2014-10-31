@@ -109,7 +109,7 @@ unsigned FormatAddr( address *a, char *buffer, unsigned max )
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, a ), &mti );
     MADTypeConvert( &host, a, &mti, item, 0 );
-    MADTypeToString( 16, &mti, item, &max, buffer );
+    MADTypeToString( 16, &mti, item, buffer, &max );
     return( max );
 }
 

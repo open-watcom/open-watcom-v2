@@ -113,7 +113,7 @@ static char *DoMadLongConv( char *p, unsigned long value, int radix, int size )
 
     old = NewCurrRadix( radix );
     MADTypeInfoForHost( MTK_INTEGER, size, &mti );
-    MADTypeToString( radix, &mti, &value, &max, p );
+    MADTypeToString( radix, &mti, &value, p, &max );
     NewCurrRadix( old );
     return( p + max );
 }
@@ -172,7 +172,7 @@ char *AddrTypeToString( address *a, mad_type_handle th, char *p, unsigned max )
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     AddrFix( a );
     MADTypeConvert( &host, a, &mti, &item, 0 );
-    MADTypeToString( 16, &mti, &item, &mad_max, p );
+    MADTypeToString( 16, &mti, &item, p, &mad_max );
     return( p+mad_max );
 }
 

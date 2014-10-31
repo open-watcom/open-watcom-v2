@@ -286,7 +286,7 @@ static void logStack( ExceptDlgInfo *info ) {
         bytesread = MADCliReadMem( sp, word_size * 4, data );
         MADTypeConvert( &host, &sp, &mti, item, 0 );
         max = BUF_SIZE - 1;
-        MADTypeToString( 16, &mti, item, &max, buf );
+        MADTypeToString( 16, &mti, item, buf, &max );
         logStrPrintf( "%s - ", buf );
         for( i = 0; i < bytesread / MIN_SIZE; i += word_size / MIN_SIZE ) {
             for( j = word_size / MIN_SIZE - 1; j >= 0; j-- ) {
@@ -653,7 +653,7 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
     FormatException( buf, type );
     MADCliAddrToString( info->init_ip,
         MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, &( info->init_ip ) ),
-        MLK_CODE, 63, addr_buf );
+        MLK_CODE, addr_buf, 63 );
     logPrintf( STR_ERR_OCCURRED_AT_X_Y, buf, addr_buf );
     if( type == EXCEPTION_ACCESS_VIOLATION ) {
         if( info->dbinfo->u.Exception.ExceptionRecord.ExceptionInformation[0] ) {

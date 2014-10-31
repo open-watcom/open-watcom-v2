@@ -84,13 +84,13 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
     case DO_RELATIVE:
         val.mach.offset += ins->op[op].value;
         //NYI: 64 bit
-        MCAddrToString( val, MIPST_N32_PTR, MLK_CODE, 40, p );
+        MCAddrToString( val, MIPST_N32_PTR, MLK_CODE, p, 40 );
         break;
     case DO_ABSOLUTE:
         if( dd->ins.type == DI_MIPS_J || dd->ins.type == DI_MIPS_JAL ) {
             // Handle j/jal as having pointer operand to show target symbol
             val.mach.offset = ins->op[op].value;
-            MCAddrToString( val, MIPST_N32_PTR, MLK_CODE, 40, p );
+            MCAddrToString( val, MIPST_N32_PTR, MLK_CODE, p, 40 );
             break;
         }
         // Fall through
@@ -98,7 +98,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
     case DO_MEMORY_ABS:
         MCTypeInfoForHost( MTK_INTEGER, -(int)sizeof( ins->op[0].value ), &mti );
         max = 40;
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value, &max, p );
+        MCTypeToString( dd->radix, &mti, &ins->op[op].value, p, &max );
         break;
     }
     return( strlen( buff ) );

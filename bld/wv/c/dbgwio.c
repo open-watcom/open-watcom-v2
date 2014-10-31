@@ -242,7 +242,7 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece,
         line->indent = 2*MaxGadgetLength + 10 * WndMaxCharX( wnd );
         if( curr->value_known ) {
             max = TXT_LEN;
-            MADTypeHandleToString( new, IOData.info[ curr->type ].type, &curr->value, &max, TxtBuff );
+            MADTypeHandleToString( new, IOData.info[ curr->type ].type, &curr->value, TxtBuff, &max );
         } else {
             for( i = 0; i < IOData.info[ curr->type ].item_width; ++i ) {
                 TxtBuff[i] = '?';

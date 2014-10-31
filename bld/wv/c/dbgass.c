@@ -86,7 +86,7 @@ static walk_result MemRefDisp( address a, mad_type_handle th,
     ++p;
     ItemGetMAD( &a, &item, IT_NIL, th );
     max = TXT_LEN - ( p - TxtBuff );
-    MADTypeHandleToString( CurrRadix, th, &item, &max, p );
+    MADTypeHandleToString( CurrRadix, th, &item, p, &max );
     return( WR_CONTINUE );
 }
 

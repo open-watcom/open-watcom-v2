@@ -45,7 +45,7 @@ unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, unsigned max, char 
 void            DIGCLIENT MADCliNotify( mad_notify_type, const void * );
 
 
-mad_status      DIGCLIENT MADCliAddrToString( address, mad_type_handle, mad_label_kind, unsigned max, char *buff );
+mad_status      DIGCLIENT MADCliAddrToString( address, mad_type_handle, mad_label_kind, char *buff, unsigned max );
 mad_status      DIGCLIENT MADCliMemExpr( const char *start, unsigned len, unsigned radix, address * );
 
 void            DIGCLIENT MADCliAddrSection( address * );

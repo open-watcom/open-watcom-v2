@@ -82,7 +82,7 @@ mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
 }
 
 mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, unsigned max, char *buff )
+                            mad_label_kind lk, char *buff, unsigned max )
 {
     mad_type_info       mti;
     unsigned            mad_max = max;
@@ -93,7 +93,7 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     MADTypeInfo( th, &mti );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeConvert( &host, &a, &mti, &item, 0 );
-    MADTypeToString( 16, &mti, &item, &mad_max, buff );
+    MADTypeToString( 16, &mti, &item, buff, &mad_max );
     return( MS_FAIL );
 }
 

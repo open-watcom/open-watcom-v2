@@ -261,7 +261,7 @@ static char *RegValueName( void *data_handle, int item )
     if( possible->name == MAD_MSTR_NIL ) {
         max = TXT_LEN;
         MADTypeHandleToString( MADTypePreferredRadix( possible->type ),
-                possible->type, possible->data, &max, TxtBuff );
+                possible->type, possible->data, TxtBuff, &max );
     } else {
         MADCliString( possible->name, TXT_LEN, TxtBuff );
     }
@@ -388,7 +388,7 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
             old = NewCurrRadix( new );
             RegValue( &value, reg->info[i].info, DbgRegs );
             max = reg->info[i].max_value + 1;
-            MADTypeHandleToString( new, disp.disp_type, &value, &max, TxtBuff );
+            MADTypeHandleToString( new, disp.disp_type, &value, TxtBuff, &max );
             NewCurrRadix( old );
             reg->info[i].standout = FALSE;
             if( MADRegModified( reg->data, reg->info[i].info, &PrevRegs->mr, &DbgRegs->mr ) == MS_MODIFIED_SIGNIFICANTLY ) {

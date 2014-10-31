@@ -110,7 +110,7 @@ static void SetIp( HWND hwnd, address *addr ) {
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, addr ), &mti );
     item = alloca( ( mti.b.bits / BITS_PER_BYTE ) + 1);
     MADTypeConvert( &host, addr, &mti, item, 0 );
-    MADTypeToString( 16, &mti, item, &max, buf );
+    MADTypeToString( 16, &mti, item, buf, &max );
     SetDlgItemText( hwnd, INT_CS_IP, buf );
 }
 

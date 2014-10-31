@@ -221,9 +221,9 @@ unsigned        MCMachineData( address a, unsigned info_type, unsigned in_size, 
     return( MadClient->MADCliMachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, unsigned max, char *buff )
+mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, char *buff, unsigned max )
 {
-    return( MadClient->MADCliAddrToString( a, th, lk, max, buff ) );
+    return( MadClient->MADCliAddrToString( a, th, lk, buff, max ) );
 }
 
 mad_status      MCMemExpr( char *start, unsigned len, unsigned radix, address *a )
@@ -256,9 +256,9 @@ mad_status      MCTypeConvert( const mad_type_info *in_t, const void *in_d, cons
     return( MadClient->MADCliTypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-mad_status      MCTypeToString( unsigned radix, const mad_type_info *mti, const void *data, unsigned *max, char *buff )
+mad_status      MCTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *max )
 {
-    return( MadClient->MADCliTypeToString( radix, mti, data, max, buff ) );
+    return( MadClient->MADCliTypeToString( radix, mti, data, buff, max ) );
 }
 
 void            MCStatus( mad_status ms )

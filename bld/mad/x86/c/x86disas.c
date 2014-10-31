@@ -795,7 +795,7 @@ char *JmpLabel( unsigned long addr, addr_off off )
     #define PREFIX_STR "CS:"
     #define PREFIX_LEN (sizeof(PREFIX_STR)-1)
     p = &ScratchBuff[ PREFIX_LEN ];
-    if( MCAddrToString( memaddr, th, MLK_CODE, sizeof( ScratchBuff ) - 1 - PREFIX_LEN, p ) != MS_OK ) {
+    if( MCAddrToString( memaddr, th, MLK_CODE, p, sizeof( ScratchBuff ) - 1 - PREFIX_LEN ) != MS_OK ) {
         p -= PREFIX_LEN;
         memcpy( p, PREFIX_STR, PREFIX_LEN );
     }
@@ -817,7 +817,7 @@ char *ToSegStr( addr_off value, addr_seg seg, addr_off addr )
     memaddr.mach.offset  = value;
     MCAddrSection( &memaddr );
     th = BIG_SEG( memaddr ) ? X86T_F32_PTR : X86T_F16_PTR;
-    MCAddrToString( memaddr, th, MLK_MEMORY, sizeof( ScratchBuff ) - 1, ScratchBuff );
+    MCAddrToString( memaddr, th, MLK_MEMORY, ScratchBuff, sizeof( ScratchBuff ) - 1 );
     return( ScratchBuff );
 }
 
@@ -926,17 +926,17 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff )
             size = (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? 4 : 2;
         }
         MCTypeInfoForHost( MTK_INTEGER, size , &mti );
-        MCTypeToString( dd->radix, &mti, &op->value, &max, p );
+        MCTypeToString( dd->radix, &mti, &op->value, p, &max );
         break;
     case DO_RELATIVE:
         val.mach.offset += op->value;
-        MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_N32_PTR : X86T_N16_PTR , MLK_CODE, max, p );
+        MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_N32_PTR : X86T_N16_PTR , MLK_CODE, p, max );
         break;
     case DO_ABSOLUTE:
         if( op->type & DO_EXTRA ) {
             val.mach.offset = op->value;
             val.mach.segment = op->extra;
-            MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_F32_PTR : X86T_F16_PTR , MLK_CODE, max, p );
+            MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_F32_PTR : X86T_F16_PTR , MLK_CODE, p, max );
             break;
         }
         /* fall through for LEA instruction */
@@ -945,7 +945,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff )
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             // direct memory address
             MCTypeInfoForHost( MTK_INTEGER, (ins->flags.u.x86 & DIF_X86_ADDR_LONG) ? 4 : 2 , &mti );
-            MCTypeToString( dd->radix, &mti, &op->value, &max, p );
+            MCTypeToString( dd->radix, &mti, &op->value, p, &max );
         } else if( op->value == 0 ) {
             // don't output zero disp in indirect memory address
         } else {
@@ -956,7 +956,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff )
             }
             size = GetValueByteSize( op->value );
             MCTypeInfoForHost( MTK_INTEGER, size , &mti );
-            MCTypeToString( dd->radix, &mti, &op->value, &max, p );
+            MCTypeToString( dd->radix, &mti, &op->value, p, &max );
         }
         break;
     }

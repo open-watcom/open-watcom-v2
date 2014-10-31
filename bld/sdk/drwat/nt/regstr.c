@@ -230,7 +230,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         } else {
             len = data->maxv;
         }
-        MADTypeToString( new, &mti, data->curr_value, &len, s );
+        MADTypeToString( new, &mti, data->curr_value, s, &len );
         if( data->maxv == 0 ) {
             max_len = strlen( s );
         } else {
@@ -243,7 +243,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         for( i = 0; i < data->num_possible; i++ ) {
             if( data->m_list[i].name == MAD_MSTR_NIL ) {
                 len = 255;
-                MADTypeToString( new, &mti, data->m_list[i].data, &len, s );
+                MADTypeToString( new, &mti, data->m_list[i].data, s, &len );
             } else {
                 MADCliString(data->m_list[i].name,255,s);
             }

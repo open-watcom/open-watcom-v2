@@ -211,7 +211,7 @@ bool DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th )
     unsigned            max = EXPR_LEN;
 
     MADTypeInfo( th, &mti );
-    MADTypeToString( CurrRadix, &mti, value, &max, new );
+    MADTypeToString( CurrRadix, &mti, value, new, &max );
     ok = DlgAnyExpr( title, new, EXPR_LEN );
     if( !ok ) return( FALSE );
     ToItemMAD( ExprSP, value, &mti );
