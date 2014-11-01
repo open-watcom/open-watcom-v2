@@ -51,7 +51,7 @@ extern bool             DlgBreak( address );
 extern char             *StrCopy( char *, char * );
 extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup( address );
-extern void             UnAsm( address addr, unsigned, char *buff );
+extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *DupStr( char * );
 extern void             SetStackPos( location_context *lc, int pos );
 extern int              GetStackPos( void );
@@ -145,7 +145,7 @@ static  bool    CallGetLine( a_window *wnd, int row, int piece,
         line->use_prev_attr = TRUE;
         if( chain->source_line == NULL ) {
             line->text = TxtBuff;
-            UnAsm( chain->lc.execution, TXT_LEN, TxtBuff );
+            UnAsm( chain->lc.execution, TxtBuff, TXT_LEN );
         } else {
             line->text = chain->source_line;
         }

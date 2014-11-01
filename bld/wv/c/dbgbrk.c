@@ -93,7 +93,7 @@ extern char             *GetCmdEntry( char *, int, char * );
 extern char             *Format( char *buff, char *fmt, ... );
 extern void             InvokeAFile( char * );
 extern void             CreateInvokeFile( char *name, void ( *rtn ) ( void ) );
-extern void             UnAsm( address addr, unsigned, char *buff );
+extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *AddHexSpec( char * );
 extern char             *GetCmdName( int );
 extern bool             DlgAreYouNuts( unsigned long );
@@ -355,7 +355,7 @@ void GetBPText( brkp *bp, char *buff )
             if( IS_NIL_ADDR( bp->loc.addr ) ) {
                 strcpy( buff, LIT( Quest_Marks ) );
             } else {
-                UnAsm( bp->loc.addr, max, buff );
+                UnAsm( bp->loc.addr, buff, max );
             }
         }
     } else {
@@ -1735,7 +1735,7 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
         unsigned        max = TXT_LEN;
 
         ReadDbgRegs();
-        if( MADUnexpectedBreak( &DbgRegs->mr, &max, TxtBuff ) == MS_OK ) {
+        if( MADUnexpectedBreak( &DbgRegs->mr, TxtBuff, &max ) == MS_OK ) {
             WriteDbgRegs();
             if( max == 0 ) {
                 conditions &= ~COND_STOPPERS;

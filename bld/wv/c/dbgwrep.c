@@ -65,7 +65,7 @@ extern unsigned         ReqExpr();
 extern void             PushInpStack( void *handle, bool (*rtn)(), bool save_lang );
 extern char             *ScanPos();
 extern char             *DupStr( char *str );
-extern void             UnAsm( address addr, unsigned, char *buff );
+extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
@@ -101,7 +101,7 @@ static void RepInitEv( event_record *ev )
             ev->cue = CopySourceLine( ch );
         }
         if( ev->cue == NULL ) {
-            UnAsm( ev->ip, TXT_LEN, TxtBuff );
+            UnAsm( ev->ip, TxtBuff, TXT_LEN );
             ev->cue = DupStr( TxtBuff );
         }
     }

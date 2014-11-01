@@ -657,12 +657,12 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         }
         if( mem->stack ) {
             if( offset == mem->sp_offset ) {
-                MADRegSpecialName( MSR_SP, &DbgRegs->mr, MAF_OFFSET, TXT_LEN, TxtBuff );
+                MADRegSpecialName( MSR_SP, &DbgRegs->mr, MAF_OFFSET, TxtBuff, TXT_LEN );
                 line->text = TxtBuff;
                 line->attr = WND_STANDOUT;
                 return( TRUE );
             } else if( offset == mem->bp_offset ) {
-                MADRegSpecialName( MSR_FP, &DbgRegs->mr, MAF_OFFSET, TXT_LEN, TxtBuff );
+                MADRegSpecialName( MSR_FP, &DbgRegs->mr, MAF_OFFSET, TxtBuff, TXT_LEN );
                 line->text = TxtBuff;
                 line->attr = WND_STANDOUT;
                 return( TRUE );

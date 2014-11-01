@@ -117,7 +117,7 @@ void            DIGENTRY MITraceFini( mad_trace_data *td )
         to the true length of the message, even if the message did not all
         fit into the buffer provided.
 */
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, unsigned *maxp, char *buff )
+mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_lenp )
 {
     //NYI:
     return( MS_FAIL );

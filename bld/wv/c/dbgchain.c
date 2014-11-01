@@ -52,7 +52,7 @@ extern bool             DlgBreak(address);
 extern char             *StrCopy(char*,char*);
 extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup(address);
-extern void             UnAsm( address addr, unsigned, char *buff );
+extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *DupStr(char*);
 extern void             SetStackPos( location_context *lc, int pos );
 extern int              GetStackPos();
@@ -252,7 +252,7 @@ void ShowCalls()
         if( chain->source_line != NULL ) {
             source = chain->source_line;
         } else {
-            UnAsm( chain->lc.execution, TXT_LEN, buff );
+            UnAsm( chain->lc.execution, buff, TXT_LEN );
             source = buff;
         }
         Format( TxtBuff, "%s: %s", chain->symbol, source );

@@ -1255,7 +1255,7 @@ void GetFullInstruct( address a, char * buffer, int max )
         *tail++ = ' ';
         exeRewind( ins_size );
     }
-    MADDisasmFormat( MDData, MDP_ALL, 16, max - (tail-buffer), tail );
+    MADDisasmFormat( MDData, MDP_ALL, 16, tail, max - (tail-buffer) );
 }
 
 

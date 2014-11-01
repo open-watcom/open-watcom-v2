@@ -386,7 +386,7 @@ NULL };
 
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( const mad_registers *mr, unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
+    mad_status (*get_piece)( const mad_registers *mr, unsigned piece, char **descript, unsigned *buff_len_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
     const x86_reg_info          * const *reglist;
@@ -514,7 +514,7 @@ mad_string DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
     return( rsd->name );
 }
 
-unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, unsigned max, char *buff )
+unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_len )
 {
     char        str[80];
     unsigned    len;
@@ -571,12 +571,12 @@ unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, unsigned max, char
         break;
     }
     len = strlen( str );
-    if( max > 0 ) {
-        --max;
-        if( max > len )
-            max = len;
-        memcpy( buff, str, max );
-        buff[max] = '\0';
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, str, buff_len );
+        buff[buff_len] = '\0';
     }
     return( len );
 }
@@ -1802,8 +1802,8 @@ unsigned DIGENTRY MIRegSpecialName(
     mad_special_reg sr,
     const mad_registers *mr,
     mad_address_format af,
-    unsigned max,
-    char *buff )
+    char *buff,
+    unsigned buff_len )
 {
     const char  *seg;
     const char  *offset;
@@ -1829,7 +1829,7 @@ unsigned DIGENTRY MIRegSpecialName(
         offset = NULL;
     }
     len = 0;
-    left = max;
+    left = buff_len;
     if( left > 0 )
         --left;
     if( af == MAF_FULL ) {
@@ -1853,7 +1853,7 @@ unsigned DIGENTRY MIRegSpecialName(
     memcpy( buff, offset, amount );
     buff += amount;
     left -= amount;
-    if( max > 0 )
+    if( buff_len > 0 )
         *buff = '\0';
     return( len );
 }

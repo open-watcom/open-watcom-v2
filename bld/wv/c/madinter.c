@@ -259,7 +259,7 @@ void ReportMADFailure( mad_status ms )
         StartupErr( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
     }
     old = SysConfig.mad;
-    MADNameFile( old, TXT_LEN, buff );
+    MADNameFile( old, buff, TXT_LEN );
     SysConfig.mad = MAD_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
     MADRegister( old, NULL, NULL );
@@ -398,14 +398,14 @@ static walk_result FindTheMad( mad_handle mh, void *d )
     char                buff[80];
 //    char                *p;
 
-    MADNameFile( mh, sizeof( buff ), buff );
+    MADNameFile( mh, buff, sizeof( buff ) );
 //    p = SkipPathInfo( buff, 0 );
     SkipPathInfo( buff, 0 );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->mad = mh;
         return( WR_STOP );
     }
-    MADNameDescription( mh, sizeof( buff ), buff );
+    MADNameDescription( mh, buff, sizeof( buff ) );
     NormalizeString( buff );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->mad = mh;

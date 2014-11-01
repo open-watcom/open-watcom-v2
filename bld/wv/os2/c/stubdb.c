@@ -61,7 +61,7 @@ extern void             *WndAsmInspect( address addr );
 extern void             DebugMain( void );
 extern void             DebugFini( void );
 extern void             DoInput( void );
-extern void             UnAsm( address addr, unsigned max, char *buff );
+extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *DupStr( char * );
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
@@ -221,7 +221,7 @@ static void DumpSource( void )
     }
     if( DeAliasAddrCue( NO_MOD, GetCodeDot(), ch ) == SR_NONE ||
         !DUIGetSourceLine( ch, buff, sizeof( buff ) ) ) {
-        UnAsm( GetCodeDot(), sizeof( buff ), buff );
+        UnAsm( GetCodeDot(), buff, sizeof( buff ) );
     }
     printf( "%s\n", buff );
 }

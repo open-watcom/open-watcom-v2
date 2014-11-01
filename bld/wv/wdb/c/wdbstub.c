@@ -132,7 +132,7 @@ extern void             ShowCalls( void );
 extern void             ShowBPs( void );
 extern void             ShowVarDisplay( void );
 extern void             TraceKill( void );
-extern void             UnAsm( address addr, unsigned max, char *buff );
+extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern var_node         *VarExpandNode( var_node *v );
 extern var_node         *VarFirstExpandNode( var_info *i, var_node *v );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
@@ -642,7 +642,7 @@ void DumpSource( void )
     }
     if( DeAliasAddrCue( NO_MOD, GetCodeDot(), ch ) == SR_NONE ||
         !DUIGetSourceLine( ch, buff, sizeof( buff ) ) ) {
-        UnAsm( GetCodeDot(), sizeof( buff ), buff );
+        UnAsm( GetCodeDot(), buff, sizeof( buff ) );
     }
     printf( "%s\n", buff );
     fflush(stdout);

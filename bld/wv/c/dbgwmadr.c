@@ -221,7 +221,7 @@ static bool RegResize( a_window *wnd )
     p = TxtBuff + MADCliString( MADRegSetName( reg->data ), TXT_LEN, TxtBuff );
     *p++ = ' ';
     *p++ = '(';
-    len = MADRegSetLevel( reg->data, TXT_LEN - ( p - TxtBuff ), p );
+    len = MADRegSetLevel( reg->data, p, TXT_LEN - ( p - TxtBuff ) );
     if( len == 0 ) {
         p -= 2;
     } else {
@@ -289,7 +289,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     if( disp.reginfo == NULL ) return;
     if( MADRegSetDisplayModify( reg->data, disp.reginfo, &possible, &num_possible ) != MS_OK ) return;
     old = NewCurrRadix( MADTypePreferredRadix( disp.disp_type ) );
-    MADRegFullName( disp.reginfo, ".", TXT_LEN, TxtBuff );
+    MADRegFullName( disp.reginfo, ".", TxtBuff, TXT_LEN );
     RegValue( &value, disp.reginfo, DbgRegs );
     if( num_possible == 1 ) {
         ok = DlgMadTypeExpr( TxtBuff, &value, disp.disp_type );

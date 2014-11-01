@@ -168,5 +168,5 @@ void Disassemble( address *addr, char *buf,int addbytes, unsigned max )
         *tail++ = ' ';          /* two spaces */
         *tail++ = ' ';
     }
-    MADDisasmFormat( MDData, MDP_ALL, 16, max - (tail-buf), tail );
+    MADDisasmFormat( MDData, MDP_ALL, 16, tail, max - ( tail - buf ) );
 }

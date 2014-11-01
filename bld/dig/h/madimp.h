@@ -79,7 +79,7 @@ typedef struct mad_imp_routines {
     mad_status          (DIGENTRY *MIRegistersTarget)( mad_registers * );
     walk_result         (DIGENTRY *MIRegSetWalk)( mad_type_kind, MI_REG_SET_WALKER *, void * );
     mad_string          (DIGENTRY *MIRegSetName)( const mad_reg_set_data * );
-    unsigned            (DIGENTRY *MIRegSetLevel)( const mad_reg_set_data *, unsigned max, char *buff );
+    unsigned            (DIGENTRY *MIRegSetLevel)( const mad_reg_set_data *, char *buff, unsigned buff_len );
     unsigned            (DIGENTRY *MIRegSetDisplayGrouping)( const mad_reg_set_data * );
     mad_status          (DIGENTRY *MIRegSetDisplayGetPiece)( const mad_reg_set_data *, mad_registers const *, unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
     mad_status          (DIGENTRY *MIRegSetDisplayModify)( const mad_reg_set_data *, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible );
@@ -90,7 +90,7 @@ typedef struct mad_imp_routines {
     walk_result         (DIGENTRY *MIRegWalk)( const mad_reg_set_data *, const mad_reg_info *, MI_REG_WALKER *, void * );
     void                (DIGENTRY *MIRegSpecialGet)( mad_special_reg, const mad_registers *block, addr_ptr * );
     void                (DIGENTRY *MIRegSpecialSet)( mad_special_reg, mad_registers *block, addr_ptr const * );
-    unsigned            (DIGENTRY *MIRegSpecialName)( mad_special_reg, mad_registers const *block, mad_address_format, unsigned max, char *buff );
+    unsigned            (DIGENTRY *MIRegSpecialName)( mad_special_reg, mad_registers const *block, mad_address_format, char *buff, unsigned buff_len );
     const mad_reg_info *(DIGENTRY *MIRegFromContextItem)( context_item );
     void                (DIGENTRY *MIRegUpdateStart)( mad_registers *, unsigned flags, unsigned bit_start, unsigned bit_size );
     void                (DIGENTRY *MIRegUpdateEnd)( mad_registers *, unsigned flags, unsigned bit_start, unsigned bit_size );
@@ -105,7 +105,7 @@ typedef struct mad_imp_routines {
     unsigned            (DIGENTRY *MIDisasmDataSize)( void );
     unsigned            (DIGENTRY *MIDisasmNameMax)( void );
     mad_status          (DIGENTRY *MIDisasm)( mad_disasm_data *, address *, int );
-    unsigned            (DIGENTRY *MIDisasmFormat)( mad_disasm_data *, mad_disasm_piece, unsigned radix, unsigned max, char *buff );
+    unsigned            (DIGENTRY *MIDisasmFormat)( mad_disasm_data *, mad_disasm_piece, unsigned radix, char *buff, unsigned buff_len );
     unsigned            (DIGENTRY *MIDisasmInsSize)( mad_disasm_data * );
     mad_status          (DIGENTRY *MIDisasmInsUndoable)( mad_disasm_data * );
     mad_disasm_control  (DIGENTRY *MIDisasmControl)( mad_disasm_data *, mad_registers const * );
@@ -121,7 +121,7 @@ typedef struct mad_imp_routines {
     mad_status          (DIGENTRY *MITraceSimulate)( mad_trace_data *, mad_disasm_data *, mad_registers const *in, mad_registers *out );
     void                (DIGENTRY *MITraceFini)( mad_trace_data * );
 
-    mad_status          (DIGENTRY *MIUnexpectedBreak)( mad_registers *, unsigned *max, char *buff );
+    mad_status          (DIGENTRY *MIUnexpectedBreak)( mad_registers *, char *buff, unsigned *buff_lenp );
 
     mad_status          (DIGENTRY *MIDisasmInsNext)( mad_disasm_data *, const mad_registers *, address * );
 
@@ -179,7 +179,7 @@ mad_status      DIGENTRY MIRegistersTarget( mad_registers * );
 walk_result     DIGENTRY MIRegSetWalk( mad_type_kind, MI_REG_SET_WALKER *, void * );
 
 mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data * );
-unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *, unsigned max, char *buff );
+unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *, char *buff, unsigned buff_len );
 
 unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data * );
 mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *, const mad_registers *, unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
@@ -193,7 +193,7 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *, const mad_reg_info
 
 void            DIGENTRY MIRegSpecialGet( mad_special_reg, const mad_registers *block, addr_ptr * );
 void            DIGENTRY MIRegSpecialSet( mad_special_reg, mad_registers *block, const addr_ptr * );
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg, const mad_registers *block, mad_address_format, unsigned max, char *buff );
+unsigned        DIGENTRY MIRegSpecialName( mad_special_reg, const mad_registers *block, mad_address_format, char *buff, unsigned buff_len );
 
 const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item );
 
@@ -224,7 +224,7 @@ mad_status              DIGENTRY MICallUpStackLevel( mad_call_up_data *, const a
 unsigned                DIGENTRY MIDisasmDataSize( void );
 unsigned                DIGENTRY MIDisasmNameMax( void );
 mad_status              DIGENTRY MIDisasm( mad_disasm_data *, address *, int );
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *, mad_disasm_piece, unsigned radix, unsigned max, char *buff );
+unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *, mad_disasm_piece, unsigned radix, char *buff, unsigned buff_len );
 unsigned                DIGENTRY MIDisasmInsSize( mad_disasm_data * );
 mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data * );
 mad_disasm_control      DIGENTRY MIDisasmControl( mad_disasm_data *, const mad_registers * );
@@ -248,7 +248,7 @@ mad_status              DIGENTRY MITraceHaveRecursed( address, const mad_registe
 mad_status              DIGENTRY MITraceSimulate( mad_trace_data *, mad_disasm_data *, const mad_registers *in, mad_registers *out );
 void                    DIGENTRY MITraceFini( mad_trace_data * );
 
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *, unsigned *max, char *buff );
+mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *, char *buff, unsigned *buff_len );
 
 
 typedef struct mad_client_routines {

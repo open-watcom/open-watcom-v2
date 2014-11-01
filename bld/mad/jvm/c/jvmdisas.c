@@ -107,7 +107,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
 {
     mad_disasm_data     *dd = d;
     char                *p;
-    unsigned            max;
+    unsigned            buff_len;
     mad_type_info       mti;
     address             val;
 
@@ -123,8 +123,8 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
         MCTypeInfoForHost( MTK_INTEGER, -sizeof( ins->op[0].value ), &mti );
-        max = 40;
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value, p, &max );
+        buff_len = 40;
+        MCTypeToString( dd->radix, &mti, &ins->op[op].value, p, &buff_len );
         break;
     }
     return( strlen( buff ) );
@@ -189,7 +189,7 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
 /*
         Convert a disassembled instruction/operands into strings.
 */
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, unsigned max, char *buff )
+unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_len )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -215,16 +215,19 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm
     nlen = strlen( nbuff );
     if( dp == MDP_ALL ) nbuff[ nlen++ ] = ' ';
     len = nlen + olen;
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        if( nlen > max ) nlen = max;
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        if( nlen > buff_len )
+            nlen = buff_len;
         memcpy( buff, nbuff, nlen );
         buff += nlen;
-        max -= nlen;
-        if( olen > max ) olen = max;
+        buff_len -= nlen;
+        if( olen > buff_len )
+            olen = buff_len;
         memcpy( buff, obuff, olen );
-        buff[max] = '\0';
+        buff[buff_len] = '\0';
     }
     return( len );
 }

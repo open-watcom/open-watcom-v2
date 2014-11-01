@@ -620,14 +620,14 @@ void FreezeInpStack( void )
     TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
 }
 
-void UnAsm( address addr, unsigned max, char *buff )
+void UnAsm( address addr, char *buff, unsigned buff_len )
 {
     mad_disasm_data     *dd;
 
     _AllocA( dd, MADDisasmDataSize() );
 
     MADDisasm( dd, &addr, 0 );
-    MADDisasmFormat( dd, MDP_ALL, CurrRadix, max, buff );
+    MADDisasmFormat( dd, MDP_ALL, CurrRadix, buff, buff_len );
     Rtrm( buff );
 }
 

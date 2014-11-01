@@ -316,12 +316,12 @@ static walk_result logRegisterSet( const mad_reg_set_data *reg_set, void *_regs)
     len = MADCliString( MADRegSetName( reg_set ), 0, NULL );
     reg_name = alloca( len + 2 );
     MADCliString( MADRegSetName( reg_set ), len + 1, reg_name );
-    len = MADRegSetLevel( reg_set, 0, NULL );
+    len = MADRegSetLevel( reg_set, NULL, 0 );
     if( len == 0 ){
         logStrPrintf( "\n%s\n\n", reg_name );
     } else {
         set_level = alloca( len + 2 );
-        MADRegSetLevel( reg_set, len + 1, set_level );
+        MADRegSetLevel( reg_set, set_level, len + 1 );
         logStrPrintf( "\n%s (%s)\n\n", reg_name, set_level );
     }
 

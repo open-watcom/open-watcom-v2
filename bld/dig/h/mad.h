@@ -53,8 +53,8 @@ void            MADFini( void );
 typedef         walk_result (MAD_WALKER)( mad_handle, void * );
 walk_result     MADWalk( MAD_WALKER *, void * );
 
-unsigned        MADNameFile( mad_handle, unsigned max, char *name );
-unsigned        MADNameDescription( mad_handle, unsigned max, char *name );
+unsigned        MADNameFile( mad_handle, char *buff, unsigned buff_len );
+unsigned        MADNameDescription( mad_handle, char *buff, unsigned buff_len );
 
 /*
  *      Address Arithmetic
@@ -99,7 +99,7 @@ typedef         walk_result (MAD_REG_SET_WALKER)( const mad_reg_set_data *, void
 walk_result     MADRegSetWalk( mad_type_kind, MAD_REG_SET_WALKER *, void * );
 
 mad_string      MADRegSetName( const mad_reg_set_data * );
-unsigned        MADRegSetLevel( const mad_reg_set_data *, unsigned max, char *buff );
+unsigned        MADRegSetLevel( const mad_reg_set_data *, char *buff, unsigned buff_len );
 
 unsigned        MADRegSetDisplayGrouping( const mad_reg_set_data * );
 mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *, const mad_registers *mr, unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
@@ -112,11 +112,11 @@ mad_status      MADRegInspectAddr( const mad_reg_info *, const mad_registers *, 
 typedef         walk_result (MAD_REG_WALKER)( const mad_reg_info *, int has_sublist, void * );
 walk_result     MADRegWalk( const mad_reg_set_data *, const mad_reg_info *, MAD_REG_WALKER *, void * );
 
-unsigned        MADRegFullName( const mad_reg_info *ri, const char *op, unsigned max, char *buff );
+unsigned        MADRegFullName( const mad_reg_info *ri, const char *op, char *buff, unsigned buff_len );
 
 void            MADRegSpecialGet( mad_special_reg, const mad_registers *block, addr_ptr * );
 void            MADRegSpecialSet( mad_special_reg, mad_registers *block, const addr_ptr * );
-unsigned        MADRegSpecialName( mad_special_reg, const mad_registers *block, mad_address_format, unsigned max, char *buff );
+unsigned        MADRegSpecialName( mad_special_reg, const mad_registers *block, mad_address_format, char *buff, unsigned buff_len );
 
 const mad_reg_info *MADRegFromContextItem( context_item );
 
@@ -148,7 +148,7 @@ mad_status              MADCallUpStackLevel( mad_call_up_data *mcud, const addre
 unsigned                MADDisasmDataSize( void );
 unsigned                MADDisasmNameMax( void );
 mad_status              MADDisasm( mad_disasm_data *, address *, int adj );
-unsigned                MADDisasmFormat( mad_disasm_data *, mad_disasm_piece, unsigned radix, unsigned max, char *buff );
+unsigned                MADDisasmFormat( mad_disasm_data *, mad_disasm_piece, unsigned radix, char *buff, unsigned buff_len );
 unsigned                MADDisasmInsSize( mad_disasm_data * );
 mad_status              MADDisasmInsUndoable( mad_disasm_data * );
 mad_disasm_control      MADDisasmControl( mad_disasm_data *, const mad_registers * );
@@ -173,6 +173,6 @@ mad_status      MADTraceHaveRecursed( address watch, const mad_registers * );
 mad_status      MADTraceSimulate( mad_trace_data *, mad_disasm_data *, const mad_registers *in, mad_registers *out );
 void            MADTraceFini( mad_trace_data * );
 
-mad_status      MADUnexpectedBreak( mad_registers *, unsigned *max, char *buff );
+mad_status      MADUnexpectedBreak( mad_registers *, char *buff, unsigned *buff_lenp );
 
 #endif

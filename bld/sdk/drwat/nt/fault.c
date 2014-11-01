@@ -162,7 +162,7 @@ static void fillExceptionDlg( HWND hwnd, ExceptDlgInfo *info ) {
 
     if( info->threadinfo != NULL ) {
         strcpy( buf, "Fault " );
-        MADRegSpecialName( MSR_IP, info->regs, MAF_FULL, BUF_SIZE - 7, buf+6 );
+        MADRegSpecialName( MSR_IP, info->regs, MAF_FULL, buf + 6, BUF_SIZE - 7 );
         SetDlgItemText( hwnd, INT_IP_NAME, buf );
         SetIp( hwnd, &addr );
     }

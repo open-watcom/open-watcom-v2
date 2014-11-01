@@ -323,7 +323,7 @@ mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
     return( rsd->name );
 }
 
-unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, unsigned max, char *buff )
+unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_len )
 {
     char        str[80];
     unsigned    len;
@@ -350,11 +350,12 @@ unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, unsigned ma
         str[0] = '\0';
     }
     len = strlen( str );
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( buff, str, max );
-        buff[max] = '\0';
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, str, buff_len );
+        buff[buff_len] = '\0';
     }
     return( len );
 }
@@ -646,7 +647,7 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
     }
 }
 
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, unsigned max, char *buff )
+unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, char *buff, unsigned buff_len )
 {
     unsigned    idx;
     unsigned    len;
@@ -670,11 +671,12 @@ unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers con
     }
     p = RegList[idx].info.name;
     len = strlen( p );
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( buff, p, max );
-        buff[max] = '\0';
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, p, buff_len );
+        buff[buff_len] = '\0';
     }
     return( len );
 }

@@ -203,10 +203,10 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
 
     SetWindowLong( hwnd, DWL_USER, (LONG)lparam);
     data = (RegModifyData *)lparam;
-    len = MADRegFullName( data->curr_info, ".", 0, NULL );
+    len = MADRegFullName( data->curr_info, ".", NULL, 0 );
     if( len > 0 ) {
         name = alloca( ( len + 1 ) * sizeof( char ) );
-        MADRegFullName( data->curr_info, ".", len, name );
+        MADRegFullName( data->curr_info, ".", name, len );
         SetWindowText( hwnd, name );
     } else {
         SetWindowText( hwnd, "" );

@@ -789,7 +789,7 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
             break;
         }
         DoDisAsm( asw, addr );
-        MADDisasmFormat( asw->cache_dd, MDP_INSTRUCTION, CurrRadix, TXT_LEN, TxtBuff );
+        MADDisasmFormat( asw->cache_dd, MDP_INSTRUCTION, CurrRadix, TxtBuff, TXT_LEN );
         line->indent = asw->address_end + WndMaxCharX( wnd );
         break;
     case PIECE_OPERANDS:
@@ -798,7 +798,7 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
             break;
         }
         DoDisAsm( asw, addr );
-        MADDisasmFormat( asw->cache_dd, MDP_OPERANDS, CurrRadix, TXT_LEN, TxtBuff );
+        MADDisasmFormat( asw->cache_dd, MDP_OPERANDS, CurrRadix, TxtBuff, TXT_LEN );
         line->indent = asw->address_end + (MADDisasmNameMax()+1) * WndAvgCharX( wnd );
         asw->ins_end = line->indent + WndExtentX( wnd, line->text );
         break;
@@ -809,7 +809,7 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
         }
         DoDisAsm( asw, addr );
         if( asw->ins_end == 0 ) {
-            MADDisasmFormat( asw->cache_dd, MDP_ALL, CurrRadix, TXT_LEN, TxtBuff );
+            MADDisasmFormat( asw->cache_dd, MDP_ALL, CurrRadix, TxtBuff, TXT_LEN );
             asw->ins_end = asw->address_end + WndExtentX( wnd, TxtBuff );
         }
         if( InsMemRef( asw->cache_dd ) ) {
