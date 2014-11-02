@@ -53,10 +53,7 @@ test_flags = -ot-op-d1
 alt_error=00
 !endif
 
-test_flags += -I"../.." -w0
-!ifdef __UNIX__
-test_flags += -fi=../__ialias.h
-!endif
+test_flags += -I"../.." -w0 -fi=../__ialias.h
 
 test_flags_i86 = -ml -zm
 

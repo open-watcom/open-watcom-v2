@@ -11,7 +11,7 @@
 //
 
 #include <cool/N_Tree.h>
-#include <cool/stack.c>     // stack.pop template needed
+#include <cool/Stack.C>     // stack.pop template needed
 
 // CoolN_Tree -- Simple constructor that sets the root to the node provided
 // Input:    Pointer to node object or NULL.
