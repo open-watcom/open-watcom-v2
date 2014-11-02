@@ -1,4 +1,4 @@
-BASE_LIB_OBJECTS =    &
+base_lib_objs =    &
 basicops.obj &
 bitset.obj   &
 bytarray.obj &
@@ -34,7 +34,7 @@ treewalk.obj
 opt_map = -zm -oxs
 !endif
 
-base.lib : $(BASE_LIB_OBJECTS)
+base.lib : $(base_lib_objs) .EXPLICIT
     @%make set_path_wlib
-    $(librarian) $@ $(BASE_LIB_OBJECTS)
+    $(librarian) $@ $(base_lib_objs)
     @%make set_old_path

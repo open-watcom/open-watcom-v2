@@ -8,11 +8,11 @@ lib_objs = &
    random.obj rational.obj regexp.obj set.obj stack.obj string.obj &
    test.obj timer.obj timezone.obj value.obj vector.obj
 
-../cool.lib : $(lib_objs) cool.lbc
+../cool.lib : $(lib_objs) cool.lbc .EXPLICIT
     @%make set_path_wlib
     $(librarian) -p=512 $@ @cool.lbc
     @%make set_old_path
 
-cool.lbc : makefile
+cool.lbc : makefile .EXPLICIT
     %create $^@
     @for %i in ($(lib_objs)) do @%append $^@ +%i
