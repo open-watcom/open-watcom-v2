@@ -51,7 +51,7 @@ _cwMain segment para public 'Main code' use16
 Copyright       label byte
         db 'CauseWay DOS Extender v'
 VersionMajor    db '4.'
-VersionMinor    db '04'
+VersionMinor    db '05'
         db " No copyright. Public domain software.",13,10,"No rights retained. ",13,10,0
 
 ;-------------------------------------------------------------------------------

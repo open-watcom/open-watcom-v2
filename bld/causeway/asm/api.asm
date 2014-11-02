@@ -7727,6 +7727,24 @@ api94_i24Done3216:
         mov     bl,24h
         sys     SetVect
 ;
+;Patch 75h (IRQ13) vector.
+;
+        mov     bl,75h
+        sys     GetVect
+        test    BYTE PTR apiSystemFlags,1
+        jz      api94_i75Use32
+        mov     w[OldInt75],dx
+        mov     w[OldInt75+2],cx
+        jmp     api94_i75Done3216
+api94_i75Use32:
+        mov     d[OldInt75],edx
+        mov     w[OldInt75+4],cx
+api94_i75Done3216:
+        mov     edx,offset Int75Handler
+        mov     cx,cs
+        mov     bl,75h
+        sys     SetVect
+;
 ;Patch 1Bh vector.
 ;
         ;
@@ -8055,6 +8073,29 @@ CriticalPrompt  db 13,10,'Critical Error: Abort, Retry, Ignore, Fail? $'
 CriticalKeys    db 'aArRiIfF'
 CriticalCodes   db 2,2,1,1,0,0,3,3
 Int24Handler    endp
+
+;-------------------------------------------------------------------------
+;
+;IRQ13 (FPU error) in protected mode.
+;
+Int75Handler    proc    near
+        push    eax
+        xor     eax, eax
+        out     0F0h, al        ; clear FERROR#
+        mov     al, 20h
+        out     0A0h, al        ; send EOI
+        out     020h, al
+        pop     eax
+        int     02h             ; call NMI/FPU error handler
+        test    BYTE PTR cs:apiSystemFlags,1
+        jz      api100_0
+        iret
+api100_0:
+        iretd
+        iret
+OldInt75        df 0
+Int75Handler    endp
+
 
         include load3p.asm
         include loadle.asm
