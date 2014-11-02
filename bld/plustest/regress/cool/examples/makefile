@@ -54,7 +54,7 @@ stack_axp=opt stack=64k
 
 opt_link = LIBRARY ../cool.lib
 
-.c : .;..
+.cpp : .;..
 
 test : .symbolic start clean start_test ../cool.lib test.lnk $(exes)
     diff $(%ERROR_FILE) exec.chk

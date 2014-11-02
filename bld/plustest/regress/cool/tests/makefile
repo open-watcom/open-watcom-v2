@@ -66,7 +66,7 @@ stack_axp=opt stack=32k
 
 opt_link = LIBRARY ../cool.lib
 
-.c : .;..
+.cpp : .;..
 
 test : .symbolic start clean start_test ../cool.lib test.lnk $(exes)
 !ifeq arch i86
