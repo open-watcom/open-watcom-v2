@@ -238,7 +238,7 @@ extern  void    Replace( char *frum, char *to, char *into );
 extern  void    FinishName( char *fn, file_parse *parse, int loc, int addext );
 extern  int     GetFreeSpace( dir_handle *h, int loc );
 extern  void    Format( char *buff, trap_dta *dir, bool wide );
-extern  void    CopyStrMax( char *src, char *dst, unsigned int max_len );
+extern  void    CopyStrMax( char *src, char *dst, unsigned max_len );
 
 void    FreeCopySpec( COPYPTR junk );
 void    ProcCD( int argc, char **argv, int crlf );
@@ -283,8 +283,7 @@ static void Usage( void )
 
 char *StrCopy( char *src, char *dest )
 {
-    while( (*dest = *src) != 0 ) {
-        ++src;
+    while( (*dest = *src++) != 0 ) {
         ++dest;
     }
     return( dest );
@@ -399,11 +398,11 @@ char *MyStrDup( char * str ) {
     return( new );
 }
 
-extern  char    *Copy( void *s, void *d, int len ) {
+extern  char    *Copy( void *s, void *d, unsigned len ) {
 
     char *dst = d,*src = s;
 
-    while( len-- ) {
+    while( len-- > 0 ) {
         *dst++ = *src++;
     }
     return( dst );
@@ -420,11 +419,10 @@ extern  char    *Fill( void *d, int len, char filler ) {
 
 extern char *CopyStr( char *src, char *dst )
 {
-    char    c;
-
-    while( (c = *src++) != '\0' )
-        *dst++ = c;
-    *dst = '\0';
+    while( (*dst = *src) != '\0' ) {
+        ++src;
+        ++dst;
+    }
     return( dst );
 }
 
@@ -1106,11 +1104,11 @@ extern  void    RRecurse( char *f1, char *f2, int f1loc, int f2loc )
             if( Info.attr & IO_SUBDIRECTORY ) {
                 if( Info.name[ 0 ] != '.' ) {
                     CopyStr( endpath, Name3 );
-                    CopyStr(Name3,CopyStr("\\",CopyStr(Info.name,endpath)));
+                    CopyStr( Name3, CopyStr( "\\", CopyStr( Info.name,endpath ) ) );
                     endpath = Squish( &Parse2, Name2 );
                     CopyStr( endpath, Name3 );
-                    endptr = CopyStr(Info.name,endpath);
-                    CopyStr(Name3,CopyStr("\\",endptr));
+                    endptr = CopyStr( Info.name, endpath );
+                    CopyStr( Name3, CopyStr( "\\", endptr ) );
                     ch = *endptr;
                     *endptr = '\0';
                     retc = GetAttrs( Name2, f2loc );
@@ -1786,16 +1784,13 @@ int ProcDrive( int argc, char **argv )
 /* FILE NAME PARSING                                                      */
 /**************************************************************************/
 
-extern  char    *CopyMax( char *src, char *dst, unsigned int len, unsigned int max_len )
+extern  char    *CopyMax( char *src, char *buff, unsigned src_len, unsigned buff_len )
 {
-    char        *endstring;
-
-    while( len > 0 && max_len > 0 ) {
-        *dst = *src;
-        ++dst;  ++src;  --len; --max_len;
+    while( src_len > 0 && buff_len > 0 ) {
+        *buff++ = *src++;
+        --src_len; --buff_len;
     }
-    endstring = dst;
-    return( endstring );
+    return( buff );
 }
 
 extern  char    *_FileParse( char *name, file_parse *file )
@@ -1868,16 +1863,16 @@ extern  char    *_FileParse( char *name, file_parse *file )
     return( dosname );
 }
 
-extern  void    CopyStrMax( char *src, char *dst, unsigned int max_len )
+extern  void    CopyStrMax( char *src, char *dst, unsigned max_len )
 {
-    unsigned int        len;
+    unsigned    len;
 
     len = strlen( src );
     if( len > max_len ) {
         Copy( src, dst, max_len );
-        dst[ max_len ] = '\0';
+        dst[max_len] = '\0';
     } else {
-        CopyStr( src, dst );
+        StrCopy( src, dst );
     }
 }
 

@@ -2853,7 +2853,7 @@ static size_t X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 /*******************************************************************/
 {
-    size_t      len;
+    unsigned    len;
     char        *p;
     unsigned    op;
     dis_operand save;
@@ -2958,8 +2958,10 @@ char *DisAddUnixRegX64( dis_register reg, char *p, dis_format_flags flags )
 }
 
 static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p )
+                        unsigned i, char *p, unsigned buff_len )
 {
+    char    *end = p + buff_len;
+
 /*    switch( ins->type ) {
     case DI_X64_call2:
     case DI_X64_call4:
@@ -2975,7 +2977,7 @@ static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
     case DO_IMMED:
         *p++ = '$';
     }
-    p += DisCliValueString( d, ins, i, p );
+    p += DisCliValueString( d, ins, i, p, end - p );
     switch( ins->op[i].type & DO_MASK ) {
     case DO_REG:
         p = DisAddUnixRegX64( ins->op[i].base, p, flags );
@@ -3003,13 +3005,15 @@ static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
 }
 
 static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                              unsigned i, char *p )
+                              unsigned i, char *p, unsigned buff_len )
 {
     size_t      len;
+    char        *end = p + buff_len;
+
 
     if( !( flags & DFF_ALT_INDEXING ) ||
         ( ( ins->op[i].base == DR_NONE ) && ( ins->op[i].index == DR_NONE ) ) ) {
-        p += DisCliValueString( d, ins, i, p );
+        p += DisCliValueString( d, ins, i, p, end - p );
     }
     switch( ins->op[i].type & DO_MASK ) {
     case DO_REG:
@@ -3032,7 +3036,7 @@ static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
             }
             if( flags & DFF_ALT_INDEXING ) {
                 *p++ = '+';
-                len = DisCliValueString( d, ins, i, p );
+                len = DisCliValueString( d, ins, i, p, end - p );
                 switch( *p ) {
                 case '-':
                     memmove( p - 1, p, len );
@@ -3082,12 +3086,17 @@ static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num
     return( TRUE );
 }
 
+#define PTR_SUFFIX " ptr "
+#define NEAR_PTR   "near" PTR_SUFFIX
+#define FAR_PTR    "far" PTR_SUFFIX
+
 static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 /******************************************************************/
 {
     char            over;
     char            *p;
+    char            *end;
     size_t          len;
     dis_inst_flags  ins_flags;
 
@@ -3095,15 +3104,15 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
     ins_flags.u.x64 = ins->flags.u.x64;
     p = op_buff;
+    end = op_buff + buff_len;
     switch( ins->op[op_num].type & DO_MASK ) {
     case DO_MEMORY_ABS:
         if( NeedSizing( ins, flags, op_num ) ) {
             len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, FALSE );
             if( len != 0 ) {
                 p += len;
-                #define SUFFIX " ptr "
-                memcpy( p, SUFFIX, sizeof( SUFFIX ) - 1 );
-                p += sizeof( SUFFIX ) - 1;
+                memcpy( p, PTR_SUFFIX, sizeof( PTR_SUFFIX ) - 1 );
+                p += sizeof( PTR_SUFFIX ) - 1;
             }
         }
         if( ( ( ins_flags.u.x64 & SEGOVER ) != 0 )
@@ -3148,9 +3157,8 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, FALSE );
             if( len != 0 ) {
                 p += len;
-                #define SUFFIX " ptr "
-                memcpy( p, SUFFIX, sizeof( SUFFIX ) - 1 );
-                p += sizeof( SUFFIX ) - 1;
+                memcpy( p, PTR_SUFFIX, sizeof( PTR_SUFFIX ) - 1 );
+                p += sizeof( PTR_SUFFIX ) - 1;
             }
         }
         break;
@@ -3160,14 +3168,12 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             switch( ins->type ) {
             case DI_X64_call:
             case DI_X64_jmp1:
-                #define NEAR_PTR        "near ptr "
                 memcpy( p, NEAR_PTR, sizeof( NEAR_PTR ) - 1 );
                 p += sizeof( NEAR_PTR ) - 1;
                 break;
 #if 0
             case DI_X64_call3:
             case DI_X64_jmp3:
-                #define FAR_PTR "far ptr "
                 memcpy( p, FAR_PTR, sizeof( FAR_PTR ) - 1 );
                 p += sizeof( FAR_PTR ) - 1;
                 break;
@@ -3179,9 +3185,9 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         break;
     }
     if( flags & DFF_UNIX ) {
-        p = DisOpUnixFormat( d, ins, flags, op_num, p );
+        p = DisOpUnixFormat( d, ins, flags, op_num, p, end - p );
     } else {
-        p = DisOpMasmFormat( d, ins, flags, op_num, p );
+        p = DisOpMasmFormat( d, ins, flags, op_num, p, end - p );
     }
     ins->flags.u.x64 = ins_flags.u.x64;
     *p = '\0';
@@ -3240,11 +3246,11 @@ static void X64PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t X64PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 /**********************************************************************/
 {
     // No funky FPU emulation
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

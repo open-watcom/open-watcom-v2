@@ -244,7 +244,7 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
     char                buff[BUFLEN];
     char                *ptr;
     mad_type_info       mti;
-    unsigned            mad_max;
+    unsigned            buff_len;
     item_mach           item;
     mad_type_info       host;
     mad_type_handle     mth;
@@ -306,17 +306,16 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
         MADTypeInfo( mth, &mti );
         MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
         MADTypeConvert( &host, &ExprSP->v.addr, &mti, &item, 0 );
-        mad_max = sizeof( buff );
-        MADTypeToString( radix, &mti, &item, ptr, &mad_max );
-        ptr += mad_max;
+        buff_len = sizeof( buff );
+        MADTypeToString( radix, &mti, &item, ptr, &buff_len );
+        ptr += buff_len;
         break;
     case TK_REAL:
         {
             signed_64   tmp;
 
             I32ToI64( LDToD( &ExprSP->v.real ), &tmp );
-            ptr = FmtNum( tmp, radix, base_letter,
-                        NUM_SIGNED, ptr, 1, prefix, pref_len );
+            ptr = FmtNum( tmp, radix, base_letter, NUM_SIGNED, ptr, 1, prefix, pref_len );
         }
         break;
     default:

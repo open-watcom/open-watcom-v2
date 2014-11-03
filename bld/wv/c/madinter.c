@@ -61,7 +61,7 @@ extern char             *ReScan( char * );
 extern void             EvalExpr( unsigned addr_depth );
 extern void             MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
 extern unsigned         SetCurrRadix( unsigned );
-extern char             *AddrTypeToString( address *a, mad_type_handle th, char *p, unsigned max );
+extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern char             *CnvAddr( address addr, cnvaddr_option cao, bool uniq, char *p, unsigned max );
 extern void             StartupErr( char * );
 extern void             SetMADMenuItems( void );
@@ -90,21 +90,22 @@ mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
 }
 
 mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, char *buff, unsigned max )
+                            mad_label_kind lk, char *buff, unsigned buff_len )
 {
     char        *p;
 
     RemoteOvlTransAddr( &a );
     switch( lk ) {
     case MLK_CODE:
-        p = CnvAddr( a, CAO_NO_PLUS, FALSE, buff, max );
+        p = CnvAddr( a, CAO_NO_PLUS, FALSE, buff, buff_len );
         break;
     default:
-        p = CnvAddr( a, CAO_NORMAL_PLUS, FALSE, buff, max );
+        p = CnvAddr( a, CAO_NORMAL_PLUS, FALSE, buff, buff_len );
         break;
     }
-    if( p != NULL ) return( MS_OK );
-    AddrTypeToString( &a, th, buff, max );
+    if( p != NULL )
+        return( MS_OK );
+    AddrTypeToString( &a, th, buff, buff_len );
     return( MS_FAIL );
 }
 
@@ -139,7 +140,7 @@ unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *
     return( ProgPoke( a, (void *)buff, size ) );
 }
 
-unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buff )
+unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
 {
     static  char ** strings[] = {
         #define pick( e, es, js ) LITREF( e ),
@@ -150,12 +151,12 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buf
     unsigned    len;
 
     len = strlen( *strings[mstr] );
-    if( max > 0 ) {
-        --max;
-        if( max > len )
-            max = len;
-        memcpy( buff, *strings[mstr], max );
-        buff[max] = '\0';
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, *strings[mstr], buff_len );
+        buff[buff_len] = '\0';
     }
     return( len );
 }
@@ -167,18 +168,20 @@ mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
     return( MS_FAIL );
 }
 
-unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, unsigned max, char *buff )
+unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
 {
     char                *start;
     unsigned            len;
 
-    if( radix == CurrRadix ) return( 0 );
+    if( radix == CurrRadix )
+        return( 0 );
     FindRadixSpec( radix, &start, &len );
-    if( max > 0 && len > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( buff, start, max );
-        buff[max] = '\0';
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, start, buff_len );
+        buff[buff_len] = '\0';
     }
     return( len );
 }
@@ -259,7 +262,7 @@ void ReportMADFailure( mad_status ms )
         StartupErr( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
     }
     old = SysConfig.mad;
-    MADNameFile( old, buff, TXT_LEN );
+    MADNameFile( old, buff, sizeof( buff ) );
     SysConfig.mad = MAD_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
     MADRegister( old, NULL, NULL );
@@ -349,15 +352,15 @@ static unsigned NormalizeString( char *p )
     return( d - p );
 }
 
-unsigned GetMADNormalizedString( mad_string ms, unsigned max, char *p )
+unsigned GetMADNormalizedString( mad_string ms, char *buff, unsigned buff_len )
 {
-    MADCliString( ms, max, p );
-    return( NormalizeString( p ) );
+    MADCliString( ms, buff, buff_len );
+    return( NormalizeString( buff ) );
 }
 
-unsigned GetMADTypeNameForCmd( mad_type_handle th, unsigned max, char *p )
+unsigned GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len )
 {
-    return( GetMADNormalizedString( MADTypeName( th ), max, p ) );
+    return( GetMADNormalizedString( MADTypeName( th ), buff, buff_len ) );
 }
 
 struct find_handle {

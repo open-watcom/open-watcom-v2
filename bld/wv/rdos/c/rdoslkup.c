@@ -36,13 +36,13 @@
 #include "rdos.h"
 
 
-unsigned EnvLkup( char *src, char *dst, unsigned max_len )
+unsigned EnvLkup( char *name, char *buff, unsigned buff_len )
 {
     int handle;
     int size;
 
     handle = RdosOpenProcessEnv();
-    size = RdosFindEnvVar( handle, src, dst );
+    size = RdosFindEnvVar( handle, name, buff );
     RdosCloseEnv( handle );
 
     return( size );     

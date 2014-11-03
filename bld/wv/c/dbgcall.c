@@ -216,7 +216,7 @@ void CallConf( void )
         ptr = TxtBuff;
         if( DefCallType != MAD_MSTR_NIL ) {
             *ptr++ = '/';
-            ptr += MADCliString( DefCallType, ~0, ptr );
+            ptr += MADCliString( DefCallType, ptr, TXT_LEN );
         }
         *ptr++ = '(';
         first = TRUE;

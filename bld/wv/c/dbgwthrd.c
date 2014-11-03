@@ -41,7 +41,7 @@ extern bool             IsThdCurr( thread_state *thd );
 extern void             MakeThdCurr( thread_state * );
 extern void             RemoteThdName( dtid_t, char * );
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
-extern char             *CnvULongHex( unsigned long value, char *p );
+extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern void             DbgUpdate( update_list );
 
 extern thread_state     *HeadThd;
@@ -200,7 +200,7 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
             line->tabstop = TRUE;
             line->use_prev_attr = FALSE;
             line->text = TxtBuff;
-            CnvULongHex( thd->tid, TxtBuff );
+            CnvULongHex( thd->tid, TxtBuff, TXT_LEN );
             return( TRUE );
         case PIECE_STATE:
             if( IsThdCurr( thd ) ) {

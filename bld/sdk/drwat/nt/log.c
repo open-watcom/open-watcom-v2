@@ -265,8 +265,8 @@ static void logStack( ExceptDlgInfo *info ) {
     mad_type_info   host;
     mad_type_info   mti;
     void            *item;
-    char            buf[BUF_SIZE];
-    unsigned        max;
+    char            buff[BUF_SIZE];
+    unsigned        buff_len;
     unsigned        word_size;
 
 #define MIN_SIZE    sizeof( unsigned_16 )
@@ -285,9 +285,9 @@ static void logStack( ExceptDlgInfo *info ) {
     for( linecnt=0; linecnt < 20; linecnt ++ ) {
         bytesread = MADCliReadMem( sp, word_size * 4, data );
         MADTypeConvert( &host, &sp, &mti, item, 0 );
-        max = BUF_SIZE - 1;
-        MADTypeToString( 16, &mti, item, buf, &max );
-        logStrPrintf( "%s - ", buf );
+        buff_len = sizeof( buff );
+        MADTypeToString( 16, &mti, item, buff, &buff_len );
+        logStrPrintf( "%s - ", buff );
         for( i = 0; i < bytesread / MIN_SIZE; i += word_size / MIN_SIZE ) {
             for( j = word_size / MIN_SIZE - 1; j >= 0; j-- ) {
                 logStrPrintf( "%04hX", data[i+j]);
@@ -313,14 +313,14 @@ static walk_result logRegisterSet( const mad_reg_set_data *reg_set, void *_regs)
     char                    *set_level;
     unsigned                len;
 
-    len = MADCliString( MADRegSetName( reg_set ), 0, NULL );
-    reg_name = alloca( len + 2 );
-    MADCliString( MADRegSetName( reg_set ), len + 1, reg_name );
+    len = MADCliString( MADRegSetName( reg_set ), NULL, 0 );
+    reg_name = alloca( len + 1 );
+    MADCliString( MADRegSetName( reg_set ), reg_name, len + 1 );
     len = MADRegSetLevel( reg_set, NULL, 0 );
     if( len == 0 ){
         logStrPrintf( "\n%s\n\n", reg_name );
     } else {
-        set_level = alloca( len + 2 );
+        set_level = alloca( len + 1 );
         MADRegSetLevel( reg_set, set_level, len + 1 );
         logStrPrintf( "\n%s (%s)\n\n", reg_name, set_level );
     }

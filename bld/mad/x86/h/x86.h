@@ -129,7 +129,7 @@ extern void                     DecodeIns( address *a, mad_disasm_data *dd, int 
 extern void                     DoCode( mad_disasm_data *dd, int big );
 extern mad_status               GetDisasmPrev( address *a );
 extern void                     InitCache( address start, unsigned len );
-extern unsigned                 RegDispType( mad_type_handle, const void *, unsigned, char * );
+extern unsigned                 RegDispType( mad_type_handle, const void *, char *buff, unsigned buff_len );
 extern unsigned                 AddrCharacteristics( address );
 extern char                     *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, int len );
 

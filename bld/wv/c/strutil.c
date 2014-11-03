@@ -41,10 +41,10 @@
 extern char *StrAddr(address *,char *,unsigned);
 extern char *UniqStrAddr(address *,char *,unsigned);
 extern char *LineAddr(address *,char *);
-extern char *CnvULongDec( unsigned long value, char *buff );
-extern char *CnvLongDec( long value, char *buff );
+extern char *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
+extern char *CnvLongDec( long value, char *buff, unsigned buff_len );
 extern address GetRealSeg( address );
-extern char *CnvULongHex( unsigned long value, char *p );
+extern char *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern char *AddHexSpec( char *p );
 extern char *AddrToIOString( address *a, char *p, unsigned );
 
@@ -141,15 +141,15 @@ char *FmtStr( char *buff, char *fmt, va_list args )
                 buff = SysErrMsg( val, buff );
                 break;
             case 'U':
-                buff = CnvULongDec( va_arg( args, unsigned long), buff );
+                buff = CnvULongDec( va_arg( args, unsigned long), buff, TXT_LEN );
                 break;
             case 'd':
                 val = va_arg( args, int );
-                buff = CnvLongDec( val, buff );
+                buff = CnvLongDec( val, buff, TXT_LEN );
                 break;
             case 'u':
                 val = va_arg( args, unsigned );
-                buff = CnvULongDec( val, buff );
+                buff = CnvULongDec( val, buff, TXT_LEN );
                 break;
             case '%':
                 *buff++ = '%';
@@ -163,7 +163,7 @@ char *FmtStr( char *buff, char *fmt, va_list args )
                     *buff++ = '+';
                 }
                 buff = AddHexSpec( buff );
-                buff = CnvULongHex( val, buff );
+                buff = CnvULongHex( val, buff, TXT_LEN );
                 break;
             case 'S':
                 sym = va_arg( args, sym_handle * );

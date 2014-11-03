@@ -55,7 +55,7 @@ extern void             SetPointAddr( brkp *bp, address addr );
 extern void             GetBPText( brkp *bp, char *buff );
 extern void             SymComplete( gui_window *gui, int id );
 extern void             WndMsgBox( char * );
-extern char             *CnvULongDec( unsigned long value, char *buff );
+extern char             *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
 extern char             *StrCopy( char *src, char *dst ); // backwards. ugh
 extern bool             BrkCheckWatchLimit( address loc, mad_type_handle );
 extern void             RecordNewPoint( brkp *bp );
@@ -353,7 +353,7 @@ bool DlgBreak( address addr )
         dlg.cmd_error = TRUE;
     }
     dlg.tmpbp = *bp;
-    CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT( DlgBreak ), TxtBuff ) ) );
+    CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT( DlgBreak ), TxtBuff ) ), TXT_LEN );
     ResDlgOpen( &BrkEvent, &dlg, DIALOG_BREAK );
     SetRecord( TRUE );
     return( !dlg.cancel );

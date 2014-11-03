@@ -127,7 +127,7 @@ void RestoreHandlers( void )
 {
 }
 
-unsigned EnvLkup( char *name, char *buff, unsigned max_len )
+unsigned EnvLkup( char *name, char *buff, unsigned buff_len )
 {
     char        *env;
     unsigned    len;
@@ -139,13 +139,13 @@ unsigned EnvLkup( char *name, char *buff, unsigned max_len )
     env = getenv( name );
     if( env == NULL )
         return( 0 );
-    if( max_len != 0 && buff != NULL ) {
-        --max_len;
+    if( buff_len != 0 && buff != NULL ) {
+        --buff_len;
         output = 1;
     }
     for( len = 0; (c = *env++) != '\0'; ++len ) {
         if( output ) {
-            if( len >= max_len ) {
+            if( len >= buff_len ) {
                 break;
             }
             *buff++ = c;

@@ -375,7 +375,8 @@ static size_t AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     const char  *new;
 
     h = h; d = d;
-    if( !(flags & DFF_PSEUDO) ) return( 0 );
+    if( !(flags & DFF_PSEUDO) ) 
+        return( 0 );
     new = NULL;
     switch( ins->type ) {
     case DI_AXP_ADDL:
@@ -551,11 +552,11 @@ static size_t AXPFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 }
 
 static size_t AXPOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 {
     dis_operand *op;
 
-    h = h; d = d; op_buff = op_buff;
+    h = h; d = d; op_buff = op_buff; buff_len = buff_len;
     if( flags & DFF_SYMBOLIC_REG ) {
         op = &ins->op[op_num];
         if( op->base >= DR_AXP_r0 && op->base <= DR_AXP_r31 ) {
@@ -597,10 +598,10 @@ static void AXPPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t AXPPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 {
     // Nothing to do
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

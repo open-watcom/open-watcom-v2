@@ -54,7 +54,7 @@ static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
     if( data->labels != NULL ) {
         i = data->num_types;
         MADTypeInfo( th, &tinfo );
-        MADCliString( MADTypeName( th ), TXT_LEN, TxtBuff );
+        MADCliString( MADTypeName( th ), TxtBuff, TXT_LEN );
         data->labels[ i ] = DupStr( TxtBuff );
         data->info[ i ].type = th;
         data->info[ i ].item_width = GetMADMaxFormatWidth( th );

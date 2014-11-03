@@ -37,7 +37,7 @@
 
 extern char             *GetCmdName( int );
 extern char             *Format( char *buff, char *fmt, ... );
-extern char             *CnvULong( unsigned long, char * );
+extern char             *CnvULong( unsigned long, char *buff, unsigned buff_len );
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern unsigned         ChangeMem( address, void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );
@@ -93,14 +93,16 @@ void ChangeMemUndoable( address addr, void *item, int size )
 {
     char        *p;
     char        *it;
+    char        *end;
 
     if( AdvMachState( ACTION_MODIFY_MEMORY ) ) {
         ChangeMem( addr, item, size );
         it = (char*)item;
+        end = TxtBuff + TXT_LEN;
         p = Format( TxtBuff, "%s %A", GetCmdName( CMD_MODIFY ), addr );
         while( --size >= 0 ) {
             p = StrCopy( ", ", p );
-            p = CnvULong( *it++, p );
+            p = CnvULong( *it++, p, end - p );
         }
         RecordEvent( TxtBuff );
         DbgUpdate( UP_MEM_CHANGE );

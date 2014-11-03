@@ -60,12 +60,12 @@ struct dis_cpu_data {
     dis_handler_return  (*decode_check)( int, dis_dec_ins * );
     size_t              (*ins_hook)( dis_handle *, void *, dis_dec_ins *, dis_format_flags, char *ins );
     size_t              (*flag_hook)( dis_handle *, void *, dis_dec_ins *, dis_format_flags, char *ins );
-    size_t              (*op_hook)( dis_handle *, void *, dis_dec_ins *, dis_format_flags, unsigned op, char *op_buff );
-    size_t              (*post_op_hook)( dis_handle *, void *, dis_dec_ins *, dis_format_flags, unsigned op, char *op_buff );
+    size_t              (*op_hook)( dis_handle *, void *, dis_dec_ins *, dis_format_flags, unsigned op, char *op_buff, unsigned buff_len );
+    size_t              (*post_op_hook)( dis_handle *, void *, dis_dec_ins *, dis_format_flags, unsigned op, char *op_buff, unsigned buff_len );
     const unsigned char *max_insnamep;
     unsigned char       inssize_inc;
 };
 
-size_t          DisGetString( unsigned, char *, bool );
+unsigned        DisGetString( unsigned, char *, bool );
 char            *DisAddReg( dis_register, char *, dis_format_flags );
-char            *DisOpFormat( dis_handle *, void *, dis_dec_ins *, dis_format_flags, unsigned, char * );
+char            *DisOpFormat( dis_handle *, void *, dis_dec_ins *, dis_format_flags, unsigned, char *, unsigned );

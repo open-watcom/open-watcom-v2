@@ -4051,8 +4051,10 @@ char *DisAddUnixReg( dis_register reg, char *p, dis_format_flags flags )
 }
 
 static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p )
+                        unsigned i, char *p, unsigned buff_len )
 {
+    char    *end = p + buff_len;
+
     switch( ins->type ) {
     case DI_X86_call2:
     case DI_X86_call4:
@@ -4068,7 +4070,7 @@ static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
     case DO_IMMED:
         *p++ = '$';
     }
-    p += DisCliValueString( d, ins, i, p );
+    p += DisCliValueString( d, ins, i, p, end - p );
     switch( ins->op[i].type & DO_MASK ) {
     case DO_REG:
         p = DisAddUnixReg( ins->op[i].base, p, flags );
@@ -4096,13 +4098,14 @@ static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
 }
 
 static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p )
+                        unsigned i, char *p, unsigned buff_len )
 {
     size_t      len;
+    char        *end = p + buff_len;
 
     if( !( flags & DFF_ALT_INDEXING ) ||
         ( ( ins->op[i].base == DR_NONE ) && ( ins->op[i].index == DR_NONE ) ) ) {
-        p += DisCliValueString( d, ins, i, p );
+        p += DisCliValueString( d, ins, i, p, end - p );
     }
     switch( ins->op[i].type & DO_MASK ) {
     case DO_REG:
@@ -4116,7 +4119,8 @@ static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
             *p++ = '[';
             p = DisAddReg( ins->op[i].base, p, flags );
             if( ins->op[i].index != DR_NONE ) {
-                if( ins->op[i].base != DR_NONE ) *p++ = '+';
+                if( ins->op[i].base != DR_NONE )
+                    *p++ = '+';
                 p = DisAddReg( ins->op[i].index, p, flags );
                 if( ins->op[i].scale != 1 ) {
                     *p++ = '*';
@@ -4125,7 +4129,7 @@ static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
             }
             if( flags & DFF_ALT_INDEXING ) {
                 *p++ = '+';
-                len = DisCliValueString( d, ins, i, p );
+                len = DisCliValueString( d, ins, i, p, end - p );
                 switch( *p ) {
                 case '-':
                     memmove( p - 1, p, len );
@@ -4175,14 +4179,19 @@ static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num
     return( TRUE );
 }
 
+#define PTR_SUFFIX  " ptr "
+#define NEAR_PTR    "near" PTR_SUFFIX
+#define FAR_PTR     "far" PTR_SUFFIX
+
 static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 /**********************************************************************/
 {
     char            over;
     char            *p;
     size_t          len;
     dis_inst_flags  ins_flags;
+    char            *end = op_buff + buff_len;
 
     h = h;
 
@@ -4194,9 +4203,8 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, FALSE );
             if( len != 0 ) {
                 p += len;
-                #define SUFFIX " ptr "
-                memcpy( p, SUFFIX, sizeof( SUFFIX ) - 1 );
-                p += sizeof( SUFFIX ) - 1;
+                memcpy( p, PTR_SUFFIX, sizeof( PTR_SUFFIX ) - 1 );
+                p += sizeof( PTR_SUFFIX ) - 1;
             }
         }
         if( ( ( ins_flags.u.x86 & SEGOVER ) != 0 )
@@ -4242,13 +4250,11 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             switch( ins->type ) {
             case DI_X86_call:
             case DI_X86_jmp1:
-                #define NEAR_PTR        "near ptr "
                 memcpy( p, NEAR_PTR, sizeof( NEAR_PTR ) - 1 );
                 p += sizeof( NEAR_PTR ) - 1;
                 break;
             case DI_X86_call3:
             case DI_X86_jmp3:
-                #define FAR_PTR "far ptr "
                 memcpy( p, FAR_PTR, sizeof( FAR_PTR ) - 1 );
                 p += sizeof( FAR_PTR ) - 1;
                 break;
@@ -4259,9 +4265,9 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         break;
     }
     if( flags & DFF_UNIX ) {
-        p = DisOpUnixFormat( d, ins, flags, op_num, p );
+        p = DisOpUnixFormat( d, ins, flags, op_num, p, end - p );
     } else {
-        p = DisOpMasmFormat( d, ins, flags, op_num, p );
+        p = DisOpMasmFormat( d, ins, flags, op_num, p, end - p );
     }
     ins->flags.u.x86 = ins_flags.u.x86;
     *p = '\0';
@@ -4346,22 +4352,23 @@ static void X86PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
     }
 }
 
+#define EMU_INT        "; int "
+
 static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 /**********************************************************************/
 {
-    size_t len = 0;
+    size_t      len = 0;
 
     h = h; op_num = op_num;
 
     if( ins->flags.u.x86 & DIF_X86_EMU_INT ) {
-        #define EMU_INT        "; int "
-        memcpy( op_buff, EMU_INT, sizeof( EMU_INT ) - 1 );
-        len += sizeof( EMU_INT ) - 1;
-        op_buff[ len ] = 0;
+        len = sizeof( EMU_INT ) - 1;
+        memcpy( op_buff, EMU_INT, len );
+        op_buff[len] = 0;
         if( flags & DFF_INS_UP )
             strupr( op_buff );
-        len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len );
+        len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len, buff_len - len );
     }
     return( len );
 }

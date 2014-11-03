@@ -407,9 +407,9 @@ bool DUIIsDBCS( void )
     return( GUIIsDBCS() );
 }
 
-unsigned DUIEnvLkup( char *src, char *dst, unsigned max_len )
+unsigned DUIEnvLkup( char *name, char *buff, unsigned buff_len )
 {
-    return( EnvLkup( src, dst, max_len ) );
+    return( EnvLkup( name, buff, buff_len ) );
 }
 
 void DUIDirty( void )

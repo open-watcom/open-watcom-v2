@@ -48,7 +48,7 @@ extern char             *ReScan(char*);
 extern void             ChkExpr(void);
 extern void             ReqMemAddr(memory_expr , address *);
 extern void             ReqEOC();
-extern char             *CnvLong(long,char*);
+extern char             *CnvLong(long,char*,unsigned);
 extern void             NormalExpr(void);
 extern void             FreezeStack();
 extern void             UnFreezeStack( bool );
@@ -112,41 +112,41 @@ extern bool DlgGetDataAddr( gui_window *gui, unsigned id, address *value )
 
 extern void DlgSetLong( gui_window *gui, unsigned id, long value )
 {
-    CnvLong( value, TxtBuff );
+    CnvLong( value, TxtBuff, TXT_LEN );
     GUISetText( gui, id, TxtBuff );
 }
 
-static bool     DlgGetItemWithRtn( char *new, unsigned max_len, char *title,
+static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, char *title,
                                    void *value, bool (*rtn)(char*,void*),
                                    bool (*dlg)(char*,char*,int) )
 {
     bool        rc;
 
     for( ;; ) {
-        dlg( title, new, max_len );
-        if( new[0] == '\0' ) return( FALSE );
-        rc = rtn( new, value );
+        dlg( title, buff, buff_len );
+        if( buff[0] == '\0' ) return( FALSE );
+        rc = rtn( buff, value );
         if( rc ) return( TRUE );
         PrevError( TxtBuff );
     }
 }
 
-static bool     DlgGetItem( char *new, unsigned max_len, char *title, void *value, bool (*rtn)(char*,void*) )
+static bool     DlgGetItem( char *buff, unsigned buff_len, char *title, void *value, bool (*rtn)(char*,void*) )
 {
-    return( DlgGetItemWithRtn( new, max_len, title, value, rtn, DlgNewWithSym ) );
+    return( DlgGetItemWithRtn( buff, buff_len, title, value, rtn, DlgNewWithSym ) );
 }
 
 bool    DlgLongExpr( char *title, long *value )
 {
     char        new[EXPR_LEN];
 
-    CnvLong( *value, new );
+    CnvLong( *value, new, sizeof( new ) );
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanLong ) );
 }
 
-bool    DlgAnyExpr( char *title, char *value, unsigned max_len )
+bool    DlgAnyExpr( char *title, char *buff, unsigned buff_len )
 {
-    return( DlgGetItem( value, max_len, title, NULL, DlgScanAny ) );
+    return( DlgGetItem( buff, buff_len, title, NULL, DlgScanAny ) );
 }
 
 
@@ -207,12 +207,12 @@ bool DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th )
 {
     bool                ok;
     mad_type_info       mti;
-    char                new[EXPR_LEN];
-    unsigned            max = EXPR_LEN;
+    char                buff[EXPR_LEN];
+    unsigned            buff_len = sizeof( buff );
 
     MADTypeInfo( th, &mti );
-    MADTypeToString( CurrRadix, &mti, value, new, &max );
-    ok = DlgAnyExpr( title, new, EXPR_LEN );
+    MADTypeToString( CurrRadix, &mti, value, buff, &buff_len );
+    ok = DlgAnyExpr( title, buff, sizeof( buff ) );
     if( !ok ) return( FALSE );
     ToItemMAD( ExprSP, value, &mti );
     PopEntry();

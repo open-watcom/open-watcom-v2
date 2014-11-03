@@ -395,14 +395,18 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
         if( MCReadMem( a, sizeof( data.b[0] ), &data.b[0] ) == 0 )
             break;
         a.mach.offset++;
-        if( len < buff_len )
+        if( len + 1 < buff_len )
             buff[len] = data.b[0];
         if( data.b[0] == '\0' )
             break;
         ++len;
     }
-    if( buff_len > 0 )
-        buff[buff_len] = '\0';
     *buff_lenp = len;
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        buff[buff_len] = '\0';
+    }
     return( MS_OK );
 }

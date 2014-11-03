@@ -199,22 +199,31 @@ mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *
     a.mach.offset = mr->mips.pc.u._32[I64LO32];
     memset( &data, 0, sizeof( data ) );
     MCReadMem( a, sizeof( data ), &data );
-    if( data.brk != BRK_POINT ) return( MS_FAIL );
+    if( data.brk != BRK_POINT )
+        return( MS_FAIL );
     mr->mips.pc.u._32[I64LO32] += sizeof( unsigned_32 );
-    if( data.beq != JMP_SHORT ) return( MS_OK );
-    if( memcmp( data.name, "WVIDEO\0\0", 8 ) != 0 ) return( MS_OK );
+    if( data.beq != JMP_SHORT )
+        return( MS_OK );
+    if( memcmp( data.name, "WVIDEO\0\0", 8 ) != 0 )
+        return( MS_OK );
     a.mach.offset = mr->mips.u4.a0.u._32[I64LO32];
     len = 0;
     for( ;; ) {
-        if( MCReadMem( a, sizeof( ch ), &ch ) == 0 ) break;
-        if( len < buff_len )
+        if( MCReadMem( a, sizeof( ch ), &ch ) == 0 )
+            break;
+        if( len + 1 < buff_len )
             buff[len] = ch;
-        if( ch == '\0' ) break;
+        if( ch == '\0' )
+            break;
         a.mach.offset++;
         ++len;
     }
-    if( buff_len > 0 )
-        buff[buff_len] = '\0';
     *buff_lenp = len;
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        buff[buff_len] = '\0';
+    }
     return( MS_OK );
 }

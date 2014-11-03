@@ -39,7 +39,7 @@ extern unsigned         DisInsNameMax( dis_handle * );
 extern unsigned         DisInsSizeInc( dis_handle * );
 extern void             DisDecodeInit( dis_handle *, dis_dec_ins * );
 extern dis_return       DisDecode( dis_handle *, void *, dis_dec_ins * );
-extern dis_return       DisFormat( dis_handle *, void *, dis_dec_ins *, dis_format_flags, char *ins, char *opers );
+extern dis_return       DisFormat( dis_handle *, void *, dis_dec_ins *, dis_format_flags, char *ins, unsigned ins_len, char *opers, unsigned opers_len );
 extern void             DisFini( dis_handle * );
 
 /*
@@ -47,4 +47,4 @@ extern void             DisFini( dis_handle * );
 */
 extern dis_return   DisCliGetData( void *d, unsigned off, unsigned size, void *data );
 extern unsigned     DisCliGetAlign( void *d, unsigned off, unsigned align );
-extern size_t       DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff );
+extern size_t       DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff, unsigned buff_len );

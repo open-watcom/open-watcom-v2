@@ -105,42 +105,41 @@ unsigned DefaultSize( default_kind dk )
     return( info.size );
 }
 
-static char *DoMadLongConv( char *p, unsigned long value, int radix, int size )
+static char *DoMadLongConv( char *buff, unsigned buff_len, unsigned long value, int radix, int size )
 {
-    unsigned            max = 50;
     unsigned            old;
     mad_type_info       mti;
 
     old = NewCurrRadix( radix );
     MADTypeInfoForHost( MTK_INTEGER, size, &mti );
-    MADTypeToString( radix, &mti, &value, p, &max );
+    MADTypeToString( radix, &mti, &value, buff, &buff_len );
     NewCurrRadix( old );
-    return( p + max );
+    return( buff + buff_len );
 }
 
-char *CnvULongHex( unsigned long value, char *p )
+char *CnvULongHex( unsigned long value, char *buff, unsigned buff_len )
 {
-    return( DoMadLongConv( p, value, 16, sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, 16, sizeof( value ) ) );
 }
 
-char    *CnvLongDec( long value, char *p )
+char    *CnvLongDec( long value, char *buff, unsigned buff_len )
 {
-    return( DoMadLongConv( p, value, 10, -(int)sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, 10, -(int)sizeof( value ) ) );
 }
 
-char    *CnvULongDec( unsigned long value, char *p )
+char    *CnvULongDec( unsigned long value, char *buff, unsigned buff_len )
 {
-    return( DoMadLongConv( p, value, 10, sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, 10, sizeof( value ) ) );
 }
 
-char    *CnvLong( long value, char *p )
+char    *CnvLong( long value, char *buff, unsigned buff_len )
 {
-    return( DoMadLongConv( p, value, CurrRadix, -(int)sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, CurrRadix, -(int)sizeof( value ) ) );
 }
 
-char    *CnvULong( unsigned long value, char *p )
+char    *CnvULong( unsigned long value, char *buff, unsigned buff_len )
 {
-    return( DoMadLongConv( p, value, CurrRadix, sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, CurrRadix, sizeof( value ) ) );
 }
 
 #ifdef DEAD_CODE
@@ -161,10 +160,9 @@ void CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti )
 }
 #endif
 
-char *AddrTypeToString( address *a, mad_type_handle th, char *p, unsigned max )
+char *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len )
 {
     mad_type_info       mti;
-    unsigned            mad_max = max;
     item_mach           item;
     mad_type_info       host;
 
@@ -172,22 +170,18 @@ char *AddrTypeToString( address *a, mad_type_handle th, char *p, unsigned max )
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     AddrFix( a );
     MADTypeConvert( &host, a, &mti, &item, 0 );
-    MADTypeToString( 16, &mti, &item, p, &mad_max );
-    return( p+mad_max );
+    MADTypeToString( 16, &mti, &item, buff, &buff_len );
+    return( buff + buff_len );
 }
 
-char *AddrToIOString( address *a, char *p, unsigned max )
+char *AddrToIOString( address *a, char *buff, unsigned buff_len )
 {
-    return( AddrTypeToString( a,
-                              MADTypeDefault( MAS_IO | MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, a ),
-                              p, max ) );
+    return( AddrTypeToString( a, MADTypeDefault( MAS_IO | MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, a ), buff, buff_len ) );
 }
 
-char *AddrToString( address *a, mad_address_format af, char *p, unsigned max )
+char *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len )
 {
-    return( AddrTypeToString( a,
-                              MADTypeDefault( MTK_ADDRESS, af, &DbgRegs->mr, a ),
-                              p, max ) );
+    return( AddrTypeToString( a, MADTypeDefault( MTK_ADDRESS, af, &DbgRegs->mr, a ), buff, buff_len ) );
 }
 
 unsigned QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq )
@@ -262,7 +256,9 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
         SymLocation( sym, NULL, &ll );
         sym_offset = addr.mach.offset - ll.e[0].u.addr.mach.offset;
         if( cao == CAO_NORMAL_PLUS ) {
-            off_width = CnvULongHex( sym_offset, AddHexSpec( off_buff ) ) - off_buff + 1;
+            char    *prfx;
+            prfx = AddHexSpec( off_buff );
+            off_width = CnvULongHex( sym_offset, prfx, sizeof( off_buff ) - ( prfx - off_buff ) ) - off_buff + 1;
         }
         break;
     case SR_EXACT:
@@ -291,13 +287,13 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     return( p );
 }
 
-char *CnvNearestAddr( address addr, char *buff, unsigned max )
+char *CnvNearestAddr( address addr, char *buff, unsigned buff_len )
 {
     char        *p;
 
-    p = CnvAddr( addr, CAO_OMIT_PLUS, FALSE, buff, max );
+    p = CnvAddr( addr, CAO_OMIT_PLUS, FALSE, buff, buff_len );
     if( p == NULL ) {
-        p = AddrToString( &addr, MAF_FULL, buff, max );
+        p = AddrToString( &addr, MAF_FULL, buff, buff_len );
     }
     return( p );
 }
@@ -306,25 +302,25 @@ char *CnvNearestAddr( address addr, char *buff, unsigned max )
  * StrAddr --
  */
 
-char *StrAddr( address *addr, char *buff, unsigned max )
+char *StrAddr( address *addr, char *buff, unsigned buff_len )
 {
     char        *p;
 
-    p = CnvAddr( *addr, CAO_NORMAL_PLUS, FALSE, buff, max );
+    p = CnvAddr( *addr, CAO_NORMAL_PLUS, FALSE, buff, buff_len );
     if( p == NULL ) {
-        p = AddrToString( addr, MAF_FULL, buff, max );
+        p = AddrToString( addr, MAF_FULL, buff, buff_len );
     }
     return( p );
 }
 
 
-char *UniqStrAddr( address *addr, char *buff, unsigned max )
+char *UniqStrAddr( address *addr, char *buff, unsigned buff_len )
 {
     char        *p;
 
-    p = CnvAddr( *addr, CAO_NORMAL_PLUS, TRUE, buff, max );
+    p = CnvAddr( *addr, CAO_NORMAL_PLUS, TRUE, buff, buff_len );
     if( p == NULL ) {
-        p = AddrToString( addr, MAF_FULL, buff, max );
+        p = AddrToString( addr, MAF_FULL, buff, buff_len );
     }
     return( p );
 }
@@ -334,17 +330,21 @@ char *UniqStrAddr( address *addr, char *buff, unsigned max )
  * LineAddr
  */
 
-char *LineAddr( address  *addr, char *buff )
+char *LineAddr( address  *addr, char *buff, unsigned buff_len )
 {
     mod_handle          mod;
+    char                *end;
     DIPHDL( cue, line );
 
     AddrFloat( addr );
-    if( DeAliasAddrMod( *addr, &mod ) == SR_NONE ) return( NULL );
-    if( DeAliasAddrCue( mod, *addr, line ) == SR_NONE ) return( NULL );
-    buff += ModName( mod, buff, UINT_MAX );
+    if( DeAliasAddrMod( *addr, &mod ) == SR_NONE )
+        return( NULL );
+    if( DeAliasAddrCue( mod, *addr, line ) == SR_NONE )
+        return( NULL );
+    end = buff + buff_len;
+    buff += ModName( mod, buff, buff_len - 1 );
     *buff++ = '@';
-    buff = CnvULongDec( CueLine( line ), buff );
+    buff = CnvULongDec( CueLine( line ), buff, end - buff );
     *buff = NULLCHAR;
     return( buff );
 }

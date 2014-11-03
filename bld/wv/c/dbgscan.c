@@ -56,8 +56,8 @@ extern unsigned         Lookup( char *, char *, unsigned );
 extern unsigned int     ReqExpr( void );
 extern void             ConfigLine( char * );
 extern char             *Format( char *, char *, ... );
-extern char             *CnvULongDec( unsigned long, char * );
-extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, unsigned max, char *p );
+extern char             *CnvULongDec( unsigned long, char *, unsigned );
+extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len );
 extern void             DbgUpdate( update_list );
 extern char             *ReScan( char *point );
 
@@ -205,7 +205,7 @@ static walk_result      FindTypeName( mad_type_handle th, void *d )
     char                *q;
     unsigned            len;
 
-    GetMADTypeNameForCmd( th, TXT_LEN, TxtBuff );
+    GetMADTypeNameForCmd( th, TxtBuff, TXT_LEN );
     p = nd->start;
     q = TxtBuff;
     for( ;; ) {
@@ -280,7 +280,7 @@ mad_string ScanCall( void )
     type = MADCallTypeList();
     for( ;; ) {
         if( *type == MAD_MSTR_NIL ) return( MAD_MSTR_NIL );
-        MADCliString( *type, sizeof( buff ), buff );
+        MADCliString( *type, buff, sizeof( buff ) );
         q = buff;
         p = TokenStart;
         for( ;; ) {
@@ -887,7 +887,7 @@ void RadixSet( void )
 
 void RadixConf( void )
 {
-    *CnvULongDec( DefRadix, TxtBuff ) = NULLCHAR;
+    CnvULongDec( DefRadix, TxtBuff, TXT_LEN );
     ConfigLine( TxtBuff );
 }
 

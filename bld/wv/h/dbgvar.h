@@ -252,7 +252,7 @@ extern void             VarDisplaySetMembers( var_info *i, bool on );
 extern void             VarDisplayOnTop( var_node *v, bool on );
 extern bool             VarDisplayedOnTop( var_node *v );
 extern void             VarDisplayUpdate( var_info *i );
-extern char             *VarDisplayType( var_node *v, char *, int );
+extern char             *VarDisplayType( var_node *v, char *buff, unsigned buff_len );
 
 extern type_display     *VarDisplayAddStruct( char *name );
 extern type_display     *VarDisplayAddField( type_display *parent, char *name );

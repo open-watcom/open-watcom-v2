@@ -61,7 +61,7 @@ gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *
     }
     menu = popup + num_old;
     for( i = 0; i < num_toggles; ++i ) {
-        MADCliString( toggles[i].menu, TXT_LEN, TxtBuff );
+        MADCliString( toggles[i].menu, TxtBuff, TXT_LEN );
         menu->id = id++;
         menu->style = GUI_ENABLED;
         menu->hinttext = LIT( Empty );

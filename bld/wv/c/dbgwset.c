@@ -53,7 +53,7 @@ extern bool             ScanItem( bool, char **, size_t * );
 extern void             ReqEOC( void );
 extern unsigned         SetCurrRadix( unsigned int );
 extern char             *GetCmdEntry( char *, int, char * );
-extern char             *CnvULongDec( unsigned long, char * );
+extern char             *CnvULongDec( unsigned long, char *, unsigned );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
@@ -130,7 +130,7 @@ extern void DClickSet( void )
 
 extern void DClickConf( void )
 {
-    CnvULongDec( WndGetDClick(), TxtBuff );
+    CnvULongDec( WndGetDClick(), TxtBuff, TXT_LEN );
     ConfigLine( TxtBuff );
 }
 
@@ -614,7 +614,7 @@ extern void TabSet( void )
 
 extern void TabConf( void )
 {
-    CnvULongDec( TabInterval, TxtBuff );
+    CnvULongDec( TabInterval, TxtBuff, TXT_LEN );
     ConfigLine( TxtBuff );
 }
 

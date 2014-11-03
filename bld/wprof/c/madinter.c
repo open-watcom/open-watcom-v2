@@ -82,18 +82,18 @@ mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
 }
 
 mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, char *buff, unsigned max )
+                            mad_label_kind lk, char *buff, unsigned buff_len )
 {
     mad_type_info       mti;
-    unsigned            mad_max = max;
     addr_ptr            item;
     mad_type_info       host;
 
-    if( CnvAddr( a, buff, max ) ) return( MS_OK );
+    if( CnvAddr( a, buff, buff_len ) )
+        return( MS_OK );
     MADTypeInfo( th, &mti );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeConvert( &host, &a, &mti, &item, 0 );
-    MADTypeToString( 16, &mti, &item, buff, &mad_max );
+    MADTypeToString( 16, &mti, &item, buff, &buff_len );
     return( MS_FAIL );
 }
 
@@ -122,7 +122,7 @@ unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *
     return( 0 );
 }
 
-unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buff )
+unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
 {
     //MAD: need to resourcify
     static const char *strings[] = {
@@ -134,11 +134,12 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buf
     unsigned    len;
 
     len = strlen( strings[mstr] );
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( buff, strings[mstr], max );
-        buff[max] = '\0';
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, strings[mstr], buff_len );
+        buff[buff_len] = '\0';
     }
     return( len );
 }
@@ -149,7 +150,7 @@ mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
     return( MS_FAIL );
 }
 
-unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, unsigned max, char *buff )
+unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
 {
     return( 0 );
 }

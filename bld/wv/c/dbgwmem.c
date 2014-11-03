@@ -50,8 +50,8 @@
 extern char             *StrCopy(char*,char*);
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
-extern char             *CnvULongDec(unsigned long,char *);
-extern char             *CnvULong(unsigned long,char *);
+extern char             *CnvULongDec(unsigned long,char *,unsigned);
+extern char             *CnvULong(unsigned long,char *,unsigned);
 extern char             *StrAddr(address *,char * ,unsigned);
 extern void             SetDataDot( address );
 extern bool             DlgLongExpr( char *, long * );
@@ -72,7 +72,7 @@ extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern char             *Format( char *buff, char *fmt, ... );
-extern char             *AddrToString( address *a, mad_address_format af, char *p, unsigned );
+extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern unsigned         ProgPeekWrap(address addr,char * buff,unsigned length );
 
 
@@ -197,7 +197,7 @@ static gui_ord MemHeader( a_window *wnd, int piece )
     if( mem->stack && piece > 0 ) return( -1 );
     if( mem->file ) {
         if( piece > 0 ) return( -1 );
-        CnvULong( MemCurrOffset( wnd ), TxtBuff );
+        CnvULong( MemCurrOffset( wnd ), TxtBuff, TXT_LEN );
         return( 0 );
     }
     if( piece > 1 ) return( -1 );
@@ -222,7 +222,7 @@ static gui_ord BinHeader( a_window *wnd, int piece )
     mem_window  *mem = WndMem( wnd );
 
     if( piece != 0 ) return( -1 );
-    CnvULongDec( mem->u.f.offset + MemCurrOffset( wnd ), TxtBuff );
+    CnvULongDec( mem->u.f.offset + MemCurrOffset( wnd ), TxtBuff, TXT_LEN );
     return( 0 );
 }
 
@@ -282,7 +282,7 @@ static  void MemRefresh( a_window *wnd )
     if( !mem->file ) {
         MemGetContents( wnd, TRUE );
     } else {
-        CnvULong( ULONG_MAX, TxtBuff );
+        CnvULong( ULONG_MAX, TxtBuff, TXT_LEN );
         mem->address_end = ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
     }
     if( !WndHasCurrent( wnd ) ) WndFirstCurrent( wnd );
@@ -651,7 +651,7 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         line->tabstop = FALSE;
         offset *= mem->item_size;
         if( mem->file ) {
-            p = CnvULong( mem->u.f.offset + offset, TxtBuff );
+            p = CnvULong( mem->u.f.offset + offset, TxtBuff, TXT_LEN );
             StrCopy( ":", p );
             return( TRUE );
         }

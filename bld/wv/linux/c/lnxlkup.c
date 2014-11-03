@@ -63,7 +63,7 @@ char *copy_str_to_buff( char *ptr, char *str, char **end )
     return( ptr );
 }
 
-unsigned EnvLkup( char *name, char *buff, unsigned max_len )
+unsigned EnvLkup( char *name, char *buff, unsigned buff_len )
 {
     char        *env;
     char        *ptr;
@@ -74,8 +74,8 @@ unsigned EnvLkup( char *name, char *buff, unsigned max_len )
 
     if( buff == NULL ) {
         buff = cmd;
-    } else if( max_len != 0 ) {
-        end = buff + max_len - 1;
+    } else if( buff_len != 0 ) {
+        end = buff + buff_len - 1;
     }
     ptr = str = buff;
     /* if we're asking for the PATH variable, we really want to know where

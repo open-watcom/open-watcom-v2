@@ -176,11 +176,13 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
 
     buff_len = *buff_lenp;
     *buff_lenp = 0;
-    if( buff_len > 0 ) buff[0] = '\0';
+    if( buff_len > 0 )
+        buff[0] = '\0';
     a.mach.offset = mr->jvm.pc.offset;
     a.mach.segment = mr->jvm.pc.segment;
     memset( &data, 0, sizeof( data ) );
     MCReadMem( a, sizeof( data ), &data );
-    if( data != 202 ) return( MS_FAIL );
+    if( data != 202 )
+        return( MS_FAIL );
     return( MS_OK );
 }

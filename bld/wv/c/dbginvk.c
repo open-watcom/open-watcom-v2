@@ -57,7 +57,7 @@ extern void             TypeInpStack( input_type );
 extern char             *ReScan( char * );
 extern unsigned int     ScanCmd( char * );
 extern void             FreeRing( char_ring * );
-extern char             *CnvULongDec( unsigned long, char * );
+extern char             *CnvULongDec( unsigned long, char *buff, unsigned buff_len );
 extern void             LogStart( void );
 extern void             LogEnd( void );
 
@@ -147,7 +147,7 @@ static int InvGetKey( invokes *inv )
         if( ch != PARM_END ) break;
         count = parm - '0';
         if( count == 0 ) {
-            CnvULongDec( inv->number, inv_num );
+            CnvULongDec( inv->number, inv_num, sizeof( inv_num ) );
             inv->redirect = inv_num;
         } else {
             next = inv->prmlst;

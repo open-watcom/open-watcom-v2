@@ -192,7 +192,7 @@ static mad_status DoConvert( const mad_type_info *in_t, const void *in_d, const 
     return( MS_OK );
 }
 
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *max )
+mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_lenp )
 {
     mad_status          ms;
     const mad_type_info *new;
@@ -210,8 +210,9 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
         return( MS_UNSUPPORTED );
     }
     ms = DoConvert( mti, data, new, &temp );
-    if( ms != MS_OK ) return( ms );
-    return( MCTypeToString( radix, new, temp, buff, max ) );
+    if( ms != MS_OK )
+        return( ms );
+    return( MCTypeToString( radix, new, temp, buff, buff_lenp ) );
 }
 
 mad_type_handle DIGENTRY MITypeForDIPType( const dip_type_info *ti )

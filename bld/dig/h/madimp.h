@@ -72,7 +72,7 @@ typedef struct mad_imp_routines {
     void                (DIGENTRY *MITypeInfo)( mad_type_handle, mad_type_info * );
     mad_type_handle     (DIGENTRY *MITypeDefault)( mad_type_kind, mad_address_format, const mad_registers *, const address * );
     mad_status          (DIGENTRY *MITypeConvert)( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-    mad_status          (DIGENTRY *MITypeToString)( unsigned radix, const mad_type_info *, const void *, char *buff, unsigned *max );
+    mad_status          (DIGENTRY *MITypeToString)( unsigned radix, const mad_type_info *, const void *, char *buff, unsigned *buff_lenp );
 
     unsigned            (DIGENTRY *MIRegistersSize)( void );
     mad_status          (DIGENTRY *MIRegistersHost)( mad_registers * );
@@ -165,7 +165,7 @@ void            DIGENTRY MITypeInfo( mad_type_handle, mad_type_info * );
 mad_type_handle DIGENTRY MITypeDefault( mad_type_kind, mad_address_format, const mad_registers *, const address * );
 
 mad_status      DIGENTRY MITypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *, const void *, char *buff, unsigned *max );
+mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *, const void *, char *buff, unsigned *buff_lenp );
 
 
 /*
@@ -248,7 +248,7 @@ mad_status              DIGENTRY MITraceHaveRecursed( address, const mad_registe
 mad_status              DIGENTRY MITraceSimulate( mad_trace_data *, mad_disasm_data *, const mad_registers *in, mad_registers *out );
 void                    DIGENTRY MITraceFini( mad_trace_data * );
 
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *, char *buff, unsigned *buff_len );
+mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *, char *buff, unsigned *buff_lenp );
 
 
 typedef struct mad_client_routines {
@@ -268,15 +268,15 @@ typedef struct mad_client_routines {
     unsigned            (DIGCLIENT *MADCliReadMem)( address, unsigned size, void *buff );
     unsigned            (DIGCLIENT *MADCliWriteMem)( address, unsigned size, void const *buff );
 
-    unsigned            (DIGCLIENT *MADCliString)( mad_string, unsigned max, char *buff );
+    unsigned            (DIGCLIENT *MADCliString)( mad_string, char *buff, unsigned buff_len );
     mad_status          (DIGCLIENT *MADCliAddString)( mad_string, const char * );
-    unsigned            (DIGCLIENT *MADCliRadixPrefix)( unsigned radix, unsigned max, char *buff );
+    unsigned            (DIGCLIENT *MADCliRadixPrefix)( unsigned radix, char *buff, unsigned buff_len );
 
     void                (DIGCLIENT *MADCliNotify)( mad_notify_type, void const * );
 
     unsigned            (DIGCLIENT *MADCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
 
-    mad_status          (DIGCLIENT *MADCliAddrToString)( address, mad_type_handle, mad_label_kind, char *buff, unsigned max );
+    mad_status          (DIGCLIENT *MADCliAddrToString)( address, mad_type_handle, mad_label_kind, char *buff, unsigned buff_len );
     mad_status          (DIGCLIENT *MADCliMemExpr)( char const *start, unsigned len, unsigned radix, address * );
 
     void                (DIGCLIENT *MADCliAddrSection)( address * );
@@ -286,7 +286,7 @@ typedef struct mad_client_routines {
 
     mad_status          (DIGCLIENT *MADCliTypeInfoForHost)( mad_type_kind, int size, mad_type_info * );
     mad_status          (DIGCLIENT *MADCliTypeConvert)( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-    mad_status          (DIGCLIENT *MADCliTypeToString)( unsigned radix, const mad_type_info *, const void *data, char *buff, unsigned *max );
+    mad_status          (DIGCLIENT *MADCliTypeToString)( unsigned radix, const mad_type_info *, const void *data, char *buff, unsigned *buff_lenp );
 } mad_client_routines;
 
 typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
@@ -311,15 +311,15 @@ void            MCClose( dig_fhandle );
 unsigned        MCReadMem( address, unsigned size, void *buff );
 unsigned        MCWriteMem( address, unsigned size, void *buff );
 
-unsigned        MCString( mad_string, unsigned max, char *buff );
+unsigned        MCString( mad_string, char *buff, unsigned buff_len );
 mad_status      MCAddString( mad_string, const char * );
-unsigned        MCRadixPrefix( unsigned radix, unsigned max, char *buff );
+unsigned        MCRadixPrefix( unsigned radix, char *buff, unsigned buff_len );
 
 void            MCNotify( mad_notify_type, void * );
 
 unsigned        MCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
 
-mad_status      MCAddrToString( address, mad_type_handle, mad_label_kind, char *buff, unsigned max );
+mad_status      MCAddrToString( address, mad_type_handle, mad_label_kind, char *buff, unsigned buff_len );
 mad_status      MCMemExpr( char *start, unsigned len, unsigned radix, address * );
 
 void            MCAddrSection( address * );
@@ -329,7 +329,7 @@ system_config   *MCSystemConfig( void );
 
 mad_status      MCTypeInfoForHost( mad_type_kind, int size, mad_type_info * );
 mad_status      MCTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-mad_status      MCTypeToString( unsigned radix, const mad_type_info *, const void *data, char *buff, unsigned *max );
+mad_status      MCTypeToString( unsigned radix, const mad_type_info *, const void *data, char *buff, unsigned *buff_lenp );
 
 void            MCStatus( mad_status );
 

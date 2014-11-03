@@ -167,7 +167,7 @@ static walk_result CreateAllRegLists( const mad_reg_set_data *data, void *_crld 
     char        TxtBuff[TXT_LEN];
     unsigned    len;
 
-    p = TxtBuff + MADCliString( MADRegSetName( data ), TXT_LEN, TxtBuff );
+    p = TxtBuff + MADCliString( MADRegSetName( data ), TxtBuff, TXT_LEN );
     *p++ = ' ';
     *p++ = '(';
     len = MADRegSetLevel( data, p, TXT_LEN - ( p - TxtBuff ) );

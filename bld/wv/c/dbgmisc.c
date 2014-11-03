@@ -95,7 +95,7 @@ extern void             RawScanInit( void );
 extern char             RawScanChar( void );
 extern void             RawScanAdvance( void );
 extern void             RawScanFini( void );
-extern char             *CnvULongHex( unsigned long value, char *p );
+extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern int              AddrComp( address a, address b );
 
 extern char             *CmdStart;
@@ -496,22 +496,24 @@ void ProcQuit( void )
  */
 enum thread_cmds { T_BAD, T_SHOW, T_FREEZE, T_THAW, T_CHANGE };
 
-static void FormThdState( thread_state *thd, char *buff )
+static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
 {
     char *p;
+    char *p1;
 
-    buff = CnvULongHex( thd->tid, buff );
-    *buff++ = ' ';
-    *buff++ = ' ';
+    p = buff;
+    p = CnvULongHex( thd->tid, p, buff_len );
+    *p++ = ' ';
+    *p++ = ' ';
     switch( thd->state ) {
-    case THD_THAW:  p = LIT( Runnable ); break;
-    case THD_FREEZE:p = LIT( Frozen );   break;
-    case THD_DEAD:  p = LIT( Dead );     break;
-	default:        p = "";              break;
+    case THD_THAW:  p1 = LIT( Runnable ); break;
+    case THD_FREEZE:p1 = LIT( Frozen );   break;
+    case THD_DEAD:  p1 = LIT( Dead );     break;
+    default:        p1 = "";              break;
     }
-    p = StrCopy( p, buff );
-    while( (p - buff) < 10 ) *p++ = ' ';
-    StrCopy( thd->name, p );
+    p1 = StrCopy( p1, p );
+    while( (p1 - p) < 10 ) *p1++ = ' ';
+    StrCopy( thd->name, p1 );
 }
 
 
@@ -565,7 +567,7 @@ static void ThdCmd( thread_state *thd, enum thread_cmds cmd )
     up = UP_THREAD_STATE;
     switch( cmd ) {
     case T_SHOW:
-        FormThdState( thd, TxtBuff );
+        FormThdState( thd, TxtBuff, TXT_LEN );
         DUIDlgTxt( TxtBuff );
         up = UP_NO_CHANGE;
         break;

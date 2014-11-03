@@ -242,14 +242,14 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         max_len = 0;
         for( i = 0; i < data->num_possible; i++ ) {
             if( data->m_list[i].name == MAD_MSTR_NIL ) {
-                len = 255;
+                len = sizeof( s );
                 MADTypeToString( new, &mti, data->m_list[i].data, s, &len );
             } else {
-                MADCliString(data->m_list[i].name,255,s);
+                MADCliString( data->m_list[i].name, s, sizeof( s ) );
             }
             if( max_len < strlen( s ) )
                 max_len = strlen( s );
-            SendDlgItemMessage(hwnd,CH_REG_COMBO_LIST,CB_ADDSTRING,0,(LPARAM)s);
+            SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_ADDSTRING, 0, (LPARAM)s );
             if( memcmp( data->curr_value, data->m_list[i].data, cmp.b.bits / BITS_PER_BYTE ) == 0 ){
                 SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_SETCURSEL, (WPARAM)i, 0 );
             }

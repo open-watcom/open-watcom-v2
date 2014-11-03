@@ -602,7 +602,8 @@ static size_t MIPSInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
     h = h; d = d;
 
-    if( !(flags & DFF_PSEUDO) ) return( 0 );
+    if( !(flags & DFF_PSEUDO) )
+        return( 0 );
     new = NULL;
     switch( ins->type ) {
     case DI_MIPS_SLL:
@@ -680,11 +681,11 @@ static size_t MIPSFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 }
 
 static size_t MIPSOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 {
     dis_operand *op;
 
-    h = h; d = d; op_buff = op_buff;
+    h = h; d = d; op_buff = op_buff; buff_len = buff_len;
 
     if( flags & DFF_SYMBOLIC_REG ) {
         op = &ins->op[op_num];
@@ -729,10 +730,10 @@ static void MIPSPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t MIPSPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 {
     // Nothing to do
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

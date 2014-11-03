@@ -72,7 +72,7 @@ long SEX( unsigned long v, unsigned bit )
 
 #define LENGTH_BIT      0x80
 
-size_t DisGetString( unsigned index, char *buff, bool to_upper )
+unsigned DisGetString( unsigned index, char *buff, bool to_upper )
 {
     unsigned            len;
     unsigned            i;
@@ -247,10 +247,11 @@ char *DisAddReg( dis_register reg, char *dst, dis_format_flags flags )
 }
 
 char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p )
+                        unsigned i, char *p, unsigned buff_len )
 {
     const char chLbrac = ( h->cpu == DISCPU_sparc ) ? '[' : '(';
     const char chRbrac = ( h->cpu == DISCPU_sparc ) ? ']' : ')';
+    char       *end = p + buff_len;
 
 
     // BartoszP 23.10.2005
@@ -260,12 +261,12 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
     // not like x86:
     //   offset[reg]
     if( h->cpu != DISCPU_sparc ) {
-        p += DisCliValueString( d, ins, i, p );
+        p += DisCliValueString( d, ins, i, p, end - p );
     }
     switch( ins->op[i].type & DO_MASK ) {
     case DO_IMMED:
         if( h->cpu == DISCPU_sparc ) {
-            p += DisCliValueString( d, ins, i, p );
+            p += DisCliValueString( d, ins, i, p, end - p );
         }
         break;
     case DO_REG:
@@ -274,7 +275,7 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
     case DO_ABSOLUTE:
     case DO_RELATIVE:
         if( h->cpu == DISCPU_sparc ) {
-            p += DisCliValueString( d, ins, i, p );
+            p += DisCliValueString( d, ins, i, p, end - p );
             break;
         }
     case DO_MEMORY_ABS:
@@ -302,7 +303,7 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
                     // offset > 0 dissassembles like %reg + offset
                     // offset < 0 dissassembles like %reg + -offset
                     *p++ = ' '; *p++ = '+'; *p++ = ' ';
-                    p += DisCliValueString( d, ins, i, p );
+                    p += DisCliValueString( d, ins, i, p, end - p );
                 } else {
                     // who knows ??
                     *p++ = '/'; *p++ = '*';
@@ -318,13 +319,14 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
 }
 
 dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
-                dis_format_flags flags, char *name, char *opers )
+                dis_format_flags flags, char *name, unsigned name_len, char *opers, unsigned opers_len )
 // Format up an instruction name or operands or both
 {
     unsigned    i;
     dis_dec_ins ins;
     char        *p;
     size_t      len;
+    char        *end;
 
     ins = *ins_p;       /* so we can fiddle it around */
 
@@ -342,20 +344,21 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
     }
     if( opers != NULL ) {
         p = opers;
+        end = opers + opers_len;
         for( i = 0; i < ins.num_ops; ++i ) {
             if( !(ins.op[i].type & DO_HIDDEN) ) {
                 if( p != opers )
                     *p++ = ',';
-                len = h->d->op_hook( h, d, &ins, flags, i, p );
+                len = h->d->op_hook( h, d, &ins, flags, i, p, end - p );
                 p += len;
                 if( len == 0 ) {
-                    p = DisOpFormat( h, d, &ins, flags, i, p );
+                    p = DisOpFormat( h, d, &ins, flags, i, p, end - p );
                 }
             }
         }
         if( p != opers )
             *p++ = ' ';
-        len = h->d->post_op_hook( h, d, &ins, flags, i, p );
+        len = h->d->post_op_hook( h, d, &ins, flags, i, p, end - p );
         if( len ) {
             p += len;
         } else if( p != opers ) {

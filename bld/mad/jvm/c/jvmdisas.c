@@ -103,28 +103,24 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_len )
 {
     mad_disasm_data     *dd = d;
-    char                *p;
-    unsigned            buff_len;
     mad_type_info       mti;
     address             val;
 
-    p = buff;
-    p[0] = '\0';
+    buff[0] = '\0';
     val = dd->addr;
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
         val.mach.offset += ins->op[op].value;
-        MCAddrToString( val, JVMT_N32_PTR, MLK_CODE, p, 40 );
+        MCAddrToString( val, JVMT_N32_PTR, MLK_CODE, buff, buff_len );
         break;
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
         MCTypeInfoForHost( MTK_INTEGER, -sizeof( ins->op[0].value ), &mti );
-        buff_len = 40;
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value, p, &buff_len );
+        MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_len );
         break;
     }
     return( strlen( buff ) );

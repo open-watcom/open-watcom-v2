@@ -69,29 +69,25 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_len )
 {
     mad_disasm_data     *dd = d;
-    char                *p;
-    unsigned            buff_len;
     mad_type_info       mti;
     address             val;
 
-    p = buff;
-    p[0] = '\0';
+    buff[0] = '\0';
     val = dd->addr;
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
         val.mach.offset += ins->op[op].value;
         //NYI: 64 bit
-        MCAddrToString( val, PPCT_N32_PTR, MLK_CODE, p, 40 );
+        MCAddrToString( val, PPCT_N32_PTR, MLK_CODE, buff, buff_len );
         break;
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
         MCTypeInfoForHost( MTK_INTEGER, -(int)sizeof( ins->op[0].value ), &mti );
-        buff_len = 40;
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value, p, &buff_len );
+        MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_len );
         break;
     }
     return( strlen( buff ) );
@@ -144,13 +140,25 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm
 
     nbuff[0] = '\0';
     obuff[0] = '\0';
-    np = (dp & MDP_INSTRUCTION) ? nbuff : NULL;
-    op = (dp & MDP_OPERANDS)    ? obuff : NULL;
+    if( dp & MDP_INSTRUCTION ) {
+        np = nbuff;
+        nlen = sizeof( nbuff );
+    } else {
+        np = NULL;
+        nlen = 0;
+    }
+    if( dp & MDP_OPERANDS ) {
+        op = obuff;
+        olen = sizeof( obuff );
+    } else {
+        op = NULL;
+        olen = 0;
+    }
     ff = DFF_NONE;
     if( MADState->disasm_state & DT_PSUEDO_OPS ) ff |= DFF_PSEUDO;
     if( MADState->disasm_state & DT_UPPER ) ff |= DFF_INS_UP | DFF_REG_UP;
     dd->radix = radix;
-    if( DisFormat( &DH, dd, &dd->ins, ff, np, op ) != DR_OK ) {
+    if( DisFormat( &DH, dd, &dd->ins, ff, np, nlen, op, olen ) != DR_OK ) {
         return( 0 );
     }
     olen = strlen( obuff );

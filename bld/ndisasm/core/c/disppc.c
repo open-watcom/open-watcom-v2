@@ -1037,7 +1037,8 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
     h = h; d = d;
 
-    if( !(flags & DFF_PSEUDO) ) return( 0 );
+    if( !(flags & DFF_PSEUDO) )
+        return( 0 );
     new = NULL;
     more = NULL;
     switch( ins->type ) {
@@ -1403,7 +1404,7 @@ static const char ConditionField[4][3] = {
 };
 
 static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 {
     char        *p;
     char        val;
@@ -1411,7 +1412,7 @@ static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     const char  *src;
     dis_operand *op;
 
-    h = h; d = d;
+    h = h; d = d; buff_len = buff_len;
 
     p = op_buff;
     switch( ins->op[op_num].type ) {
@@ -1511,10 +1512,10 @@ static void PPCPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t PPCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff )
+        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
 {
     // Nothing to do
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

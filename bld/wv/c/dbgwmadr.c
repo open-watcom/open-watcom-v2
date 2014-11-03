@@ -218,7 +218,7 @@ static bool RegResize( a_window *wnd )
         WndNoCurrent( wnd );
     }
 
-    p = TxtBuff + MADCliString( MADRegSetName( reg->data ), TXT_LEN, TxtBuff );
+    p = TxtBuff + MADCliString( MADRegSetName( reg->data ), TxtBuff, TXT_LEN );
     *p++ = ' ';
     *p++ = '(';
     len = MADRegSetLevel( reg->data, p, TXT_LEN - ( p - TxtBuff ) );
@@ -255,15 +255,15 @@ static int GetRegIdx( reg_window *reg, int row, int piece )
 
 static char *RegValueName( void *data_handle, int item )
 {
-    mad_modify_list    *possible = &((mad_modify_list *)data_handle)[item];
-    unsigned    max;
+    mad_modify_list *possible = &((mad_modify_list *)data_handle)[item];
+    unsigned        buff_len;
 
+    buff_len = TXT_LEN;
     if( possible->name == MAD_MSTR_NIL ) {
-        max = TXT_LEN;
         MADTypeHandleToString( MADTypePreferredRadix( possible->type ),
-                possible->type, possible->data, TxtBuff, &max );
+                possible->type, possible->data, TxtBuff, &buff_len );
     } else {
-        MADCliString( possible->name, TXT_LEN, TxtBuff );
+        MADCliString( possible->name, TxtBuff, buff_len );
     }
     return( TxtBuff );
 }

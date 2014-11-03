@@ -48,7 +48,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_len )
 {
     char        *p = buff;
 
@@ -178,7 +178,7 @@ int main( void )
             DisDecodeInit( &handle, &ins );
             ins.flags = flag;
             if( DisDecode( &handle, &data, &ins ) == DR_OK ) {
-                DisFormat( &handle, NULL, &ins, format, name_buff, op_buff );
+                DisFormat( &handle, NULL, &ins, format, name_buff, sizeof( name_buff ), op_buff, sizeof( op_buff ) );
                 printf( "size:%d <%s> <%s>\n", ins.size, name_buff, op_buff );
             } else {
                 printf( "decode failed\n" );

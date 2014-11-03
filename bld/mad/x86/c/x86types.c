@@ -205,17 +205,20 @@ mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af,
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *max )
+mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_lenp )
 {
-    unsigned    i;
+    unsigned    buff_len;
 
     radix = radix;
 
     switch( mti->b.handler_code ) {
     case X86T_UNKNOWN:
     case X86T_F10EMPTY:
-       if( *max > 0 ) {
-           for( i = *max-1; i != 0; --i ) {
+       buff_len = *buff_lenp;
+       if( buff_len > 0 ) {
+           --buff_len;
+           *buff_lenp = buff_len;
+           while( buff_len-- > 0 ) {
                *buff++ = '?';
            }
            *buff = '\0';
@@ -254,7 +257,7 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
     case X86T_XMM_TITLE13:
     case X86T_XMM_TITLE14:
     case X86T_XMM_TITLE15:
-        *max = RegDispType( mti->b.handler_code, data, *max, buff );
+        *buff_lenp = RegDispType( mti->b.handler_code, data, buff, *buff_lenp );
         return( MS_OK );
     }
     return( MS_UNSUPPORTED );

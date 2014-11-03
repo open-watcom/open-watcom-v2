@@ -70,7 +70,7 @@ extern void             PushNum( long );
 extern void             DoPlus( void );
 extern void             DoPoints( type_kind );
 extern void             DoAssign( void );
-extern char             *CnvLongDec( long, char * );
+extern char             *CnvLongDec( long, char *, unsigned );
 extern void             Scan( void );
 extern bool             ScanEOC( void );
 extern int              AddrComp( address, address );
@@ -449,8 +449,8 @@ static void VarDisplayAliasNode( var_node *v, type_display *to )
     }
 }
 
-char *VarDisplayType( var_node *v, char *buff, int max_len )
-/**********************************************************/
+char *VarDisplayType( var_node *v, char *buff, unsigned buff_len )
+/****************************************************************/
 {
     int         len;
     int         tag_len;
@@ -465,14 +465,14 @@ char *VarDisplayType( var_node *v, char *buff, int max_len )
             return( NULL );
         }
     }
-    if( !v->have_type || ( len = TypeName( v->th, 0, &tag, buff, max_len ) ) == 0 ) {
+    if( !v->have_type || ( len = TypeName( v->th, 0, &tag, buff, buff_len ) ) == 0 ) {
         StrCopy( LIT( Unknown_type ), buff );
         return( NULL );
     }
     tag_name = TagName( tag );
     if( tag_name != NULL ) {
         tag_len = strlen( tag_name );
-        if( len + tag_len < max_len ) {
+        if( len + tag_len < buff_len ) {
             memmove( buff+tag_len+1, buff, len+1 );
             *StrCopy( tag_name, buff ) = ' ';
         }
@@ -1580,7 +1580,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 delay_indirect = FALSE;
             }
             ArrayParms( v, &ainfo );
-            end = CnvLongDec( v->path->element+ainfo.low_bound, buff );
+            end = CnvLongDec( v->path->element+ainfo.low_bound, buff, sizeof( buff ) );
             if( just_end_bit ) {
                 *TxtBuff = '\0';
             }
@@ -1791,15 +1791,15 @@ bool VarPrintText( var_info *i, char *buff, void (*rtn)(void), int len )
 }
 
 
-static bool PrintAString( var_info *i, char *buff, int max_len, bool force )
+static bool PrintAString( var_info *i, char *buff, unsigned buff_len, bool force )
 {
     int         len;
     bool        ok;
 
     FreezeStack();
     DupStack();
-    ok = VarPrintText( i, buff+1,
-                    force ? ForcePrintString : PrintString, max_len-2 );
+    ok = VarPrintText( i, buff + 1,
+                    force ? ForcePrintString : PrintString, buff_len - 2 );
     UnFreezeStack( TRUE );
     if( !ok ) return( FALSE );
     buff[0] = '"';

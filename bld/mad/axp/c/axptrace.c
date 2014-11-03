@@ -159,22 +159,30 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
     a.mach.offset = mr->axp.pal.nt.fir.u._32[0];
     memset( &data, 0, sizeof( data ) );
     MCReadMem( a, sizeof( data ), &data );
-    if( data.brk != BRK_POINT ) return( MS_FAIL );
+    if( data.brk != BRK_POINT )
+        return( MS_FAIL );
     mr->axp.pal.nt.fir.u._32[0] += sizeof( unsigned_32 );
-    if( data.br != JMP_SHORT ) return( MS_OK );
-    if( memcmp( data.name, "WVIDEO\0\0", 8 ) != 0 ) return( MS_OK );
+    if( data.br != JMP_SHORT )
+        return( MS_OK );
+    if( memcmp( data.name, "WVIDEO\0\0", 8 ) != 0 )
+        return( MS_OK );
     a.mach.offset = mr->axp.u16.a0.u64.u._32[0];
     len = 0;
     for( ;; ) {
         if( MCReadMem( a, sizeof( ch ), &ch ) == 0 )
             break;
-        if( len < buff_len )
+        if( len + 1 < buff_len )
             buff[len] = ch;
         if( ch == '\0' ) break;
         a.mach.offset++;
         ++len;
     }
-    if( buff_len > 0 ) buff[buff_len] = '\0';
     *buff_lenp = len;
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        buff[buff_len] = '\0';
+    }
     return( MS_OK );
 }

@@ -45,8 +45,8 @@ extern char             *ReScan( char * );
 extern void             ReqEOC( void );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             StdOutNew( void );
-extern char             *CnvULongHex( unsigned long, char * );
-extern char             *CnvULongDec( unsigned long value, char *buff );
+extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
+extern char             *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
 extern void             TypeInpStack( input_type );
 
 extern unsigned         TaskId;
@@ -93,13 +93,17 @@ extern void ProcCapture( void )
     size_t      len;
     char        *old;
     char        *p;
+    char        *end;
 
-    if( !ScanItem( FALSE, &start, &len ) ) Error( ERR_NONE, LIT( ERR_WANT_COMMAND_LIST ) );
+    if( !ScanItem( FALSE, &start, &len ) )
+        Error( ERR_NONE, LIT( ERR_WANT_COMMAND_LIST ) );
     ReqEOC();
     cmds = AllocCmdList( start, len );
-    p = CnvULongHex( TaskId, FileName+PREFIX_LEN );
+    end = FileName + sizeof( FileName );
+    p = FileName + PREFIX_LEN;
+    p = CnvULongHex( TaskId, p, end - p );
     *p++ = RemFile.ext_separator;
-    p = CnvULongDec( FileNum++, p );
+    p = CnvULongDec( FileNum++, p, end - p );
     *p = '\0';
     old = ReScan( FileName+PREFIX_LEN );
     StdOutNew();

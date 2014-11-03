@@ -1205,10 +1205,10 @@ static char *U64CvtNum( unsigned_64 val, unsigned radix, char *p, int bit_length
         *--p = DigitTab[ rem.u._32[I64LO32] ];
         --digits;
     } while( val.u._32[I64LO32] != 0 || val.u._32[I64HI32] != 0 || digits > 0 );
-    len = MADCliRadixPrefix( radix, 0, NULL );
+    len = MADCliRadixPrefix( radix, NULL, 0 );
     p -= len;
     save = p[len];
-    MADCliRadixPrefix( radix, len + 1, p );
+    MADCliRadixPrefix( radix, p, len + 1 );
     p[len] = save; /* got overwritten with a '\0' */
     return( p );
 }
@@ -1228,6 +1228,7 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, con
     char                buff1[128];
     char                *p;
     unsigned            buff_len;
+    unsigned            len;
     mad_status          ms;
 
 
@@ -1242,12 +1243,13 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, con
     p = U64CvtNum( val.i, radix, &buff1[ sizeof( buff1 ) ], mti->b.bits );
     if( neg )
         *--p = '-';
+    len = &buff1[ sizeof( buff1 ) ] - p;
     buff_len = *buff_lenp;
-    *buff_lenp = &buff1[ sizeof( buff1 ) ] - p;
+    *buff_lenp = len;
     if( buff_len > 0 ) {
         --buff_len;
-        if( buff_len > *buff_lenp )
-            buff_len = *buff_lenp;
+        if( buff_len > len )
+            buff_len = len;
         memcpy( buff, p, buff_len );
         buff[buff_len] = '\0';
     }
@@ -1259,6 +1261,7 @@ static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti, co
     decomposed_item     val;
     char                *p;
     unsigned            buff_len;
+    unsigned            len;
     char                buff1[80];
     mad_status          ms;
 
@@ -1270,12 +1273,13 @@ static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti, co
         *--p = ':';
         p = CvtNum( val.a.segment, radix, p, mti->a.seg.bits );
     }
+    len = &buff1[ sizeof( buff1 ) ] - p;
     buff_len = *buff_lenp;
-    *buff_lenp = &buff1[ sizeof( buff1 ) ] - p;
+    *buff_lenp = len;
     if( buff_len > 0 ) {
         --buff_len;
-        if( buff_len > *buff_lenp )
-            buff_len = *buff_lenp;
+        if( buff_len > len )
+            buff_len = len;
         memcpy( buff, p, buff_len );
         buff[buff_len] = '\0';
     }
@@ -1399,7 +1403,7 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, c
         *buff_lenp = len;
         if( buff_len > 0 ) {
             --buff_len;
-            if( len < buff_len )
+            if( buff_len > len )
                 buff_len = len;
             buff[buff_len] = '\0';
         }
@@ -1422,14 +1426,17 @@ mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void
     if( mti->b.handler_code == MAD_DEFAULT_HANDLING ) {
         switch( mti->b.kind ) {
         case MTK_INTEGER:
-           if( IntTypeToString( radix, mti, d, buff, buff_lenp ) == MS_OK ) return( MS_OK );
+           if( IntTypeToString( radix, mti, d, buff, buff_lenp ) == MS_OK )
+               return( MS_OK );
            break;
         case MTK_ADDRESS:
-           if( AddrTypeToString( radix, mti, d, buff, buff_lenp ) == MS_OK ) return( MS_OK );
+           if( AddrTypeToString( radix, mti, d, buff, buff_lenp ) == MS_OK )
+               return( MS_OK );
            break;
 #if !defined(MAD_OMIT_FLOAT_CVT)
         case MTK_FLOAT:
-           if( FloatTypeToString( radix, mti, d, buff, buff_lenp ) == MS_OK ) return( MS_OK );
+           if( FloatTypeToString( radix, mti, d, buff, buff_lenp ) == MS_OK )
+               return( MS_OK );
            break;
         }
 #endif
@@ -1525,9 +1532,8 @@ mad_string      MADRegSetName( const mad_reg_set_data *rsd )
 static unsigned DIGREGISTER DummyRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_len )
 {
     rsd = rsd;
-    buff_len = buff_len;
-    if( buff != NULL )
-        *buff = '\0';
+    if( buff_len > 0 )
+        buff[0] = '\0';
     return( 0 );
 }
 
@@ -1953,7 +1959,6 @@ mad_status              MADCallUpStackLevel( mad_call_up_data *cud, address cons
  */
 
 #define ILL_INSTR       "????"
-#define INSTR_LEN       (sizeof( ILL_INSTR ) - 1)
 
 static unsigned DIGREGISTER DummyDisasmDataSize( void )
 {
@@ -1967,7 +1972,7 @@ unsigned                MADDisasmDataSize( void )
 
 static unsigned DIGREGISTER DummyDisasmNameMax( void )
 {
-    return( INSTR_LEN );
+    return( sizeof( ILL_INSTR ) - 1 );
 }
 
 unsigned                MADDisasmNameMax( void )
@@ -1991,15 +1996,16 @@ static unsigned DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_p
 {
     dd = dd;
     radix = radix;
-    if( !(dp & MDP_INSTRUCTION) ) return( 0 );
+    if( !(dp & MDP_INSTRUCTION) )
+        return( 0 );
     if( buff_len > 0 ) {
         --buff_len;
-        if( buff_len > INSTR_LEN )
-            buff_len = INSTR_LEN;
+        if( buff_len > sizeof( ILL_INSTR ) - 1 )
+            buff_len = sizeof( ILL_INSTR ) - 1;
         memcpy( buff, ILL_INSTR, buff_len );
         buff[buff_len] = '\0';
     }
-    return( INSTR_LEN );
+    return( sizeof( ILL_INSTR ) - 1 );
 }
 
 unsigned    MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_len )
@@ -2013,7 +2019,7 @@ static unsigned DIGREGISTER DummyDisasmInsSize( mad_disasm_data *dd )
     return( 1 );
 }
 
-unsigned                MADDisasmInsSize( mad_disasm_data *dd )
+unsigned    MADDisasmInsSize( mad_disasm_data *dd )
 {
     return( Active->rtns->MIDisasmInsSize( dd ) );
 }
@@ -2024,7 +2030,7 @@ static mad_status DIGREGISTER DummyDisasmInsUndoable( mad_disasm_data *dd )
     return( MS_FAIL );
 }
 
-mad_status              MADDisasmInsUndoable( mad_disasm_data *dd )
+mad_status  MADDisasmInsUndoable( mad_disasm_data *dd )
 {
     return( Active->rtns->MIDisasmInsUndoable( dd ) );
 }

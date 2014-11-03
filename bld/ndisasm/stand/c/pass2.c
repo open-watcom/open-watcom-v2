@@ -506,7 +506,7 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     FmtHexNum( buff, size, mask & value, no_prefix );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, unsigned buff_len )
 {
     struct pass2        *pd = d;
     size_t              len;
@@ -531,7 +531,9 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
             len = HandleAReference( op->value, ins->size, rf,
                         pd->loop + op->op_position, pd->size, &pd->r_entry,
                         buff );
-            if( len != 0 ) return( len );
+            if( len != 0 ) {
+                return( len );
+            }
         }
         switch( op->type & DO_MASK ) {
         case DO_RELATIVE:
@@ -554,7 +556,9 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
             len = HandleAReference( op->value, ins->size, rf,
                         pd->loop + op->op_position, pd->size, &pd->r_entry,
                         buff );
-            if( len != 0 ) return( len );
+            if( len != 0 ) {
+                return( len );
+            }
         }
         FmtSizedHexNum( buff, ins, op_num );
         break;
@@ -705,7 +709,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
                 continue;
             }
         }
-        DisFormat( &DHnd, &data, &decoded, DFormat, name, ops );
+        DisFormat( &DHnd, &data, &decoded, DFormat, name, sizeof( name ), ops, sizeof( ops ) );
         if( FPU_fixup != NULL ) {
             if( !(DFormat & DFF_ASM) ) {
                 BufferAlignToTab( PREFIX_SIZE_TABS );

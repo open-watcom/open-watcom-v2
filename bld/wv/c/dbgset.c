@@ -54,7 +54,6 @@ extern bool             ScanItem( bool, char **, size_t * );
 extern void             ReqEOC( void );
 extern unsigned         SetCurrRadix( unsigned int );
 extern char             *GetCmdEntry( char *, int, char * );
-extern char             *CnvULongDec( unsigned long, char * );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
@@ -98,7 +97,7 @@ extern void             RegFindData( mad_type_kind kind, mad_reg_set_data const 
 extern mad_handle       FindMAD( char *, unsigned );
 extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq );
 extern void             AddrFloat( address * );
-unsigned                GetMADNormalizedString( mad_string, unsigned, char * );
+unsigned                GetMADNormalizedString( mad_string, char *buff, unsigned buff_len );
 
 extern bool             CapabilitiesGetExactBreakpointSupport( void );
 extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
@@ -607,12 +606,12 @@ static bool DoOneToggle( mad_window_toggles wt )
     toggles = GetMADToggleList( rsd );
     for( ;; ) {
         if( toggles->on == MAD_MSTR_NIL ) return( FALSE );
-        GetMADNormalizedString( toggles->on, TXT_LEN, TxtBuff );
+        GetMADNormalizedString( toggles->on, TxtBuff, TXT_LEN );
         if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
             DoMADToggle( rsd, bit, 0 );
             break;
         }
-        GetMADNormalizedString( toggles->off, TXT_LEN, TxtBuff );
+        GetMADNormalizedString( toggles->off, TxtBuff, TXT_LEN );
         if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
             DoMADToggle( rsd, 0, bit );
             break;
@@ -772,9 +771,9 @@ static walk_result DumpToggles( mad_handle mh, void *d )
     toggles = GetMADToggleList( rsd );
     while( toggles->menu != MAD_MSTR_NIL ) {
         if( bit & 1 ) {
-            GetMADNormalizedString( toggles->on, sizeof( buff ), buff );
+            GetMADNormalizedString( toggles->on, buff, sizeof( buff ) );
         } else {
-            GetMADNormalizedString( toggles->off, sizeof( buff ), buff );
+            GetMADNormalizedString( toggles->off, buff, sizeof( buff ) );
         }
         td->p = DumpAToggle( td->p, mh, buff );
         bit >>= 1;

@@ -66,7 +66,7 @@ extern void             SetTokens( bool );
 extern void             DoPlus( void );
 extern void             DoPoints( type_kind );
 extern void             DoAssign( void );
-extern char             *CnvLongDec( long, char * );
+extern char             *CnvLongDec( long, char *, unsigned );
 extern void             Scan( void );
 extern bool             ScanEOC( void );
 extern int              AddrComp( address, address );

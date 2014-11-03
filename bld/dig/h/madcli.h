@@ -38,9 +38,9 @@
 unsigned        DIGCLIENT MADCliReadMem( address, unsigned size, void *buff );
 unsigned        DIGCLIENT MADCliWriteMem( address, unsigned size, const void *buff );
 
-unsigned        DIGCLIENT MADCliString( mad_string, unsigned max, char *buff );
+unsigned        DIGCLIENT MADCliString( mad_string, char *buff, unsigned buff_len );
 mad_status      DIGCLIENT MADCliAddString( mad_string, const char * );
-unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, unsigned max, char *buff );
+unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len );
 
 void            DIGCLIENT MADCliNotify( mad_notify_type, const void * );
 

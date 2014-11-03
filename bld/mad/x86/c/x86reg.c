@@ -543,10 +543,10 @@ unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsign
     case FPU_REG_SET:
         switch( MCSystemConfig()->fpu ) {
         case X86_NO:
-            MCString( MAD_MSTR_NONE, sizeof( str ), str );
+            MCString( MAD_MSTR_NONE, str, sizeof( str ) );
             break;
         case X86_EMU:
-            MCString( MAD_MSTR_EMULATOR, sizeof( str ), str );
+            MCString( MAD_MSTR_EMULATOR, str, sizeof( str ) );
             break;
         case X86_87:
             strcpy( str, "8087" );
@@ -774,7 +774,7 @@ static unsigned MaxModLen( const mad_modify_list *list, unsigned num )
     max = 0;
     while( num != 0 ) {
         --num;
-        len = MCString( list[num].name, 0, NULL );
+        len = MCString( list[num].name, NULL, 0 );
         if( len > max ) {
             max = len;
         }
@@ -1356,30 +1356,29 @@ mad_status DIGENTRY MIRegSetDisplayModify(
 }
 
 
-static unsigned FmtPtr( addr_seg seg, addr_off off, unsigned off_digits,
-                        unsigned max, char *dst )
+static unsigned FmtPtr( addr_seg seg, addr_off off, unsigned off_digits, char *buff, unsigned buff_len )
 {
-    char        buff[20];
+    char        buff1[20];
     char        *p;
     unsigned    len;
 
-    p = &buff[ MCRadixPrefix( 16, sizeof( buff ), buff ) ];
+    p = &buff1[ MCRadixPrefix( 16, buff1, sizeof( buff1 ) ) ];
     p = CnvRadix( seg, 16, 'A', p, 4 );
     *p++ = ':';
-    p += MCRadixPrefix( 16, sizeof( buff ) - (p - buff), p );
+    p += MCRadixPrefix( 16, p, sizeof( buff1 ) - (p - buff1) );
     p = CnvRadix( off, 16, 'A', p, off_digits );
-    len = p - buff;
-    if( max > 0 ) {
-        --max;
-        if( len > max )
-            max = len;
-        memcpy( dst, buff, max );
-        dst[max] = '\0';
+    len = p - buff1;
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, buff1, buff_len );
+        buff[buff_len] = '\0';
     }
     return( len );
 }
 
-unsigned RegDispType( mad_type_handle th, const void *d, unsigned max, char *buff )
+unsigned RegDispType( mad_type_handle th, const void *d, char *buff, unsigned buff_len )
 {
     const mad_modify_list       *p = NULL;
     const fpu_ptr       *fp;
@@ -1391,25 +1390,25 @@ unsigned RegDispType( mad_type_handle th, const void *d, unsigned max, char *buf
     case X86T_IC:       p = ModFPUIc; break;
     case X86T_TAG:      p = ModFPUTag; break;
     case X86T_BIT:
-        if( max > 0 ) {
-            buff[0] = *(unsigned_8 *)d + '0';
-            if( max > 1 )
-                max = 1;
-            buff[max] = '\0';
+        if( buff_len > 0 ) {
+            if( buff_len > 1 ) {
+                buff_len = 1;
+                buff[0] = *(unsigned_8 *)d + '0';
+            }
+            buff[buff_len] = '\0';
         }
         return( 1 );
     case X86T_FPPTR_REAL:
         fp = d;
-        return( FmtPtr( (fp->r.low >> 4) + (fp->r.hi << 12), fp->r.low & 0xf,
-                        4, max, buff ) );
+        return( FmtPtr( (fp->r.low >> 4) + (fp->r.hi << 12), fp->r.low & 0xf, 4, buff, buff_len ) );
     case X86T_FPPTR_32:
         fp = d;
-        return( FmtPtr( fp->p.segment, fp->p.offset, 8, max, buff ) );
+        return( FmtPtr( fp->p.segment, fp->p.offset, 8, buff, buff_len ) );
     case X86T_FPPTR_16:
         fp = d;
-        return( FmtPtr( fp->p.segment, fp->p.offset & 0xffff, 4, max, buff ) );
+        return( FmtPtr( fp->p.segment, fp->p.offset & 0xffff, 4, buff, buff_len ) );
     case X86T_F10SPECIAL:
-        return( MCString( MAD_MSTR_SPECIAL, max, buff ) );
+        return( MCString( MAD_MSTR_SPECIAL, buff, buff_len ) );
     case X86T_MMX_TITLE0:
     case X86T_MMX_TITLE1:
     case X86T_MMX_TITLE2:
@@ -1429,12 +1428,12 @@ unsigned RegDispType( mad_type_handle th, const void *d, unsigned max, char *buf
         }
         title[1] = th - X86T_MMX_TITLE0 + '0';
         title[2] = '\0';
-        if( max > 0 ) {
-            --max;
-            if( max > 2 )
-                max = 2;
-            memcpy( buff, title, max );
-            buff[max] = '\0';
+        if( buff_len > 0 ) {
+            --buff_len;
+            if( buff_len > 2 )
+                buff_len = 2;
+            memcpy( buff, title, buff_len );
+            buff[buff_len] = '\0';
         }
         return( 2 );
     case X86T_XMM_TITLE0:
@@ -1473,14 +1472,16 @@ unsigned RegDispType( mad_type_handle th, const void *d, unsigned max, char *buf
             title[1] = th - X86T_XMM_TITLE0 + '0';
             title[2] = ' ';
         }
-        if( max > 0 ) {
-            max = 3;
-            memcpy( buff, title, max );
-            buff[max] = '\0';
+        if( buff_len > 0 ) {
+            --buff_len;
+            if( buff_len > 3 )
+                buff_len = 3;
+            memcpy( buff, title, buff_len );
+            buff[buff_len] = '\0';
         }
         return( 3 );
     }
-    return( MCString( p[*(unsigned_8 *)d].name, max, buff ) );
+    return( MCString( p[*(unsigned_8 *)d].name, buff, buff_len ) );
 }
 
 mad_status DIGENTRY MIRegModified(
