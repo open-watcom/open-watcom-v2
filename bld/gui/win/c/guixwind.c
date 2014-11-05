@@ -495,7 +495,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         return( false );
     }
     if( !(wnd->style & GUI_NOFRAME) ) {
-        if( dlg_info->text ) {
+        if( dlg_info->title ) {
             style |= WS_CAPTION;
             wnd->flags |= HAS_CAPTION;
         } else {
@@ -589,7 +589,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         flags |= FCF_NOMOVEWITHOWNER;
     }
     frame_hwnd = WinCreateStdWindow( parent_hwnd, frame_flags | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, &flags,
-                                     NULL, dlg_info->text,
+                                     NULL, dlg_info->title,
                                      0, (HMODULE)0, 0, NULL );
     if( frame_hwnd != NULLHANDLE ) {
         oldFrameProc = _wpi_subclasswindow( frame_hwnd, (WPI_PROC)GUIFrameProc );
@@ -625,7 +625,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         style &= ~WS_BORDER;
     }
 #endif
-    hwnd = _wpi_createwindow_ex( exstyle, class_name, dlg_info->text, style, 0, 0, pos.x,
+    hwnd = _wpi_createwindow_ex( exstyle, class_name, dlg_info->title, style, 0, 0, pos.x,
                                  pos.y, size.x, size.y, parent_hwnd, hmenu, GUIMainHInst,
                                  &wmcreateinfo, &frame_hwnd );
 #endif

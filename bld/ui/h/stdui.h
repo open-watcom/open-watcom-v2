@@ -506,7 +506,7 @@ typedef struct window {
 
 typedef struct vscreen {
         EVENT           event;          /* garbage                          */
-        char _FARD      *name;          /* title of virtual screen          */
+        char _FARD      *title;         /* title of virtual screen          */
         SAREA           area;           /* position on physical screen      */
         unsigned int    flags;          /* dialogue, unframed, movable etc. */
         ORD             row;

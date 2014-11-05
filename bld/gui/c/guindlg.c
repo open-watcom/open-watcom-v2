@@ -202,7 +202,7 @@ static void DlgOpen( gui_window *parent, char *name, int rows, int cols,
     gui_coord           charspace;
     gui_text_metrics    metrics;
 
-    DlgControl.text = name;
+    DlgControl.title = name;
     DlgControl.call_back = rtn;
     DlgControl.extra = extra;
     DlgControl.parent = parent;

@@ -186,7 +186,7 @@ extern bool SetupInit( void )
     init.rect = rect;
     init.scroll = 0;
     init.style = 0;
-    init.text = "";
+    init.title = "";
     if( Invisible ) {
         init.style |= GUI_INIT_INVISIBLE;
     } else {

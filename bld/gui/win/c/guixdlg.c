@@ -654,7 +654,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 
     data = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_pos.x, parent_pos.y, size.x, size.y,
-                           LIT( Empty ), LIT( Empty ), dlg_info->text,
+                           LIT( Empty ), LIT( Empty ), dlg_info->title,
                            PointSize, Font );
     if( data == NULL ) {
         return( false );

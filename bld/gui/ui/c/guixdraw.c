@@ -329,8 +329,8 @@ static void DrawFrame( gui_window *wnd )
     buffer = alloca( wnd->screen.area.width + 1 );
     buff = buffer;
     memset( buff, TOP( inact ), width ); /* width at least 1 */
-    if( wnd->screen.name != NULL && *wnd->screen.name != NULLCHAR ) {
-        str_length = strlen( wnd->screen.name );
+    if( wnd->screen.title != NULL && *wnd->screen.title != NULLCHAR ) {
+        str_length = strlen( wnd->screen.title );
         if( ( str_length + TITLE_EXTRA_AMOUNT ) > width ) {
             title_extra = 0;
             if( str_length > width ) {
@@ -355,7 +355,7 @@ static void DrawFrame( gui_window *wnd )
             buff[len] = TITLE_SP( inact );
             len++;
         }
-        memcpy( buff+len, wnd->screen.name, str_length );
+        memcpy( buff + len, wnd->screen.title, str_length );
         len += str_length;
         if( title_extra != 0 ) {
             buff[len] = TITLE_SP( inact );

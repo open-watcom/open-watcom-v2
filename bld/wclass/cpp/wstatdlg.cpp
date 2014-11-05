@@ -77,7 +77,7 @@ void WStatDialog::doDialog( WWindow *parent ) {
 
 
     // blank unused fields
-    create_info.text = NULL;
+    create_info.title = NULL;
     create_info.rect.x = 0;
     create_info.rect.y = 0;
     create_info.rect.width = 0;

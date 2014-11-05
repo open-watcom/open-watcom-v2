@@ -109,7 +109,7 @@ VSCREEN *uiopen( SAREA *area, char *name, unsigned flags )
         return( s );
     }
     s->area = *area;
-    s->name = name;
+    s->title = name;
     s->flags = flags;
     s->col = 0;
     s->row = 0;

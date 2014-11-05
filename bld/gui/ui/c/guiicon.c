@@ -52,8 +52,8 @@ void GUIDrawIcon( gui_window * wnd )
     if( wnd->icon_name != NULL ) {
         str = wnd->icon_name;
     } else {
-        if( wnd->screen.name != NULL ) {
-            str = wnd->screen.name;
+        if( wnd->screen.title != NULL ) {
+            str = wnd->screen.title;
         }
     }
     if( str != NULL ) {

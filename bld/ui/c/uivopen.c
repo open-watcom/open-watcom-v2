@@ -116,7 +116,7 @@ VSCREEN* global uivopen( register VSCREEN *vptr )
             area.row = 0;
             area.col = 0;
             drawbox( &(vptr->window.type.buffer), area, box, attr, FALSE );
-            if( vptr->name != NULL ) {
+            if( vptr->title != NULL ) {
 #if 0
 do not delete this stuff
                 col = 0;
@@ -130,12 +130,12 @@ do not delete this stuff
                 bstring( &(vptr->window.type.buffer), 0, col,
                          UIData->attrs[ATTR_CURR_SELECT_DIAL], vptr->name, len );
 #else
-                len = strlen( vptr->name );
+                len = strlen( vptr->title );
                 if( len > area.width )
                     len = area.width;
                 col = ( area.width - len ) / 2;
                 bstring( &(vptr->window.type.buffer), 0, col,
-                         attr, vptr->name, len );
+                         attr, vptr->title, len );
 #endif
             }
             bframe( &(vptr->window.type.buffer ) );

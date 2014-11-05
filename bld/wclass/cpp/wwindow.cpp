@@ -342,7 +342,7 @@ void WWindow::makeWindow( const char *text, WStyle style, WExStyle exstyle ) {
     if( _parent != NULL ) {
         hparent = _parent->_handle;
     }
-    create_info.text = (char *)text;
+    create_info.title = (char *)text;
     create_info.rect.x = r.x();
     create_info.rect.y = r.y();
     create_info.rect.width = r.w();

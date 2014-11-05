@@ -845,7 +845,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     CleanUpRadioGroups();
     fields[num_controls].typ = FLD_VOID; /* mark end of list */
 
-    if( !GUIStrDup( dlg_info->text, &title ) ) {
+    if( !GUIStrDup( dlg_info->title, &title ) ) {
         GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
         return( false );
     }

@@ -171,7 +171,7 @@ void WDialog::doDialog( WWindow *parent ) {
         hparent = parent->handle();
     }
     const char *ctext = _text;
-    create_info.text = (char *)ctext;
+    create_info.title = (char *)ctext;
     create_info.rect.x = r.x();
     create_info.rect.y = r.y();
     create_info.rect.width = r.w();

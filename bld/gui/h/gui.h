@@ -356,7 +356,7 @@ typedef void (PICKDLGOPEN)( char *name, int rows, int cols,
 typedef char *(PICKGETTEXT)( void *data_handle, int item );
 
 typedef struct gui_create_info {
-    char                *text;
+    char                *title;
     gui_rect            rect;
     gui_scroll_styles   scroll;
     gui_create_styles   style;

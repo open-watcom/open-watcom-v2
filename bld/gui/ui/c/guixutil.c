@@ -305,8 +305,8 @@ bool GUIJustSetWindowText( gui_window *wnd, const char *data )
     if( !GUIStrDup( data, &name ) ) {
         return( false );
     } else {
-        GUIMemFree( wnd->screen.name );
-        wnd->screen.name = name;
+        GUIMemFree( wnd->screen.title );
+        wnd->screen.title = name;
         return( true );
     }
 }

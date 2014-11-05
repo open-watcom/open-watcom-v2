@@ -120,7 +120,7 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
     init->style = info->style;
     init->style |= GUI_VSCROLL_EVENTS;
     init->style &= ~GUI_HSCROLL_EVENTS;
-    init->text = info->text == NULL ? NULL : "";
+    init->title = ( info->text == NULL ) ? NULL : "";
     if( WndMain != NULL ) {
         init->style |= GUI_VISIBLE;
         init->parent = WndMain->gui;

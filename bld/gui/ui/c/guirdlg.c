@@ -525,7 +525,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
         memset( dlg_info, 0, sizeof( gui_create_info ) );
 
         // set the initial text
-        dlg_info->text = hdr->Caption; // NULL text is ok
+        dlg_info->title = hdr->Caption; // NULL text is ok
 
         // set the dialog postion remembering to add the size of the frame
         GUIGetScreenArea( &bounding );

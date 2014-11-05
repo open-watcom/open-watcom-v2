@@ -57,10 +57,10 @@ bool GUISetWindowText( gui_window *wnd, const char *data )
 
 size_t GUIGetWindowTextLength( gui_window *wnd )
 {
-    if( wnd->screen.name == NULL ) {
+    if( wnd->screen.title == NULL ) {
         return( 0 );
     } else {
-        return( strlen( wnd->screen.name ) );
+        return( strlen( wnd->screen.title ) );
     }
 }
 
@@ -73,14 +73,14 @@ size_t GUIGetWindowText( gui_window *wnd, char *data, size_t max_length )
 {
     size_t length;
 
-    if( wnd->screen.name == NULL || max_length == 0 ) {
+    if( wnd->screen.title == NULL || max_length == 0 ) {
         length = 0;
     } else {
         max_length--;       // reserve space for null character on the end
-        length = strlen( wnd->screen.name );
+        length = strlen( wnd->screen.title );
         if( length > max_length )
             length = max_length;
-        strncpy( data, wnd->screen.name, length );
+        strncpy( data, wnd->screen.title, length );
     }
     data[length] = '\0';
     return( length );

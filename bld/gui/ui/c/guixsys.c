@@ -245,7 +245,7 @@ bool GUISetupStruct1( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 
 bool GUISetupStruct2( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 {
-    if( !GUIJustSetWindowText( wnd, dlg_info->text ) ) {
+    if( !GUIJustSetWindowText( wnd, dlg_info->title ) ) {
         return( false );
     }
     if( !GUISetArea( &wnd->screen.area, &dlg_info->rect, dlg_info->parent, true, dialog ) ) {

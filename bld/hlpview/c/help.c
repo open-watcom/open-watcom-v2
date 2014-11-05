@@ -959,7 +959,7 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
     if( strlen( helpname ) > helpScreen.area.width ) {
         helpname[helpScreen.area.width] = '\0';
     }
-    helpScreen.name = helpname;
+    helpScreen.title = helpname;
     hlp_ut_position( &helpScreen.area, helpScreen.area.height, helpScreen.area.width,
                      nums[2], nums[3], TRUE );
 }

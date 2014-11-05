@@ -182,7 +182,7 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     height += 2 * metrics.avg.y;
     GUIGetClientRect( wnd, &size );
     FloatingToolbar.parent = wnd;
-    FloatingToolbar.text = LIT( Floating_Toolbar );
+    FloatingToolbar.title = LIT( Floating_Toolbar );
     FloatingToolbar.menu->label = LIT( XFix_Toolbar );
     FloatingToolbar.menu->hinttext = LIT( Fix_Toolbar_Hint );
     FloatingToolbar.rect.height = height;
