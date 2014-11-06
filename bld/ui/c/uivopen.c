@@ -134,8 +134,7 @@ do not delete this stuff
                 if( len > area.width )
                     len = area.width;
                 col = ( area.width - len ) / 2;
-                bstring( &(vptr->window.type.buffer), 0, col,
-                         attr, vptr->title, len );
+                bstring( &(vptr->window.type.buffer), 0, col, attr, vptr->title, len );
 #endif
             }
             bframe( &(vptr->window.type.buffer ) );

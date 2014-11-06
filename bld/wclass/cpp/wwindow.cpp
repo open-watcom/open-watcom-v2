@@ -330,7 +330,7 @@ bool WWindow::mouseMove( int, int, WMouseKeyFlags ) {
 }
 
 
-void WWindow::makeWindow( const char *text, WStyle style, WExStyle exstyle ) {
+void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle ) {
 /****************************************************************************/
 
     gui_create_info     create_info;
@@ -342,7 +342,7 @@ void WWindow::makeWindow( const char *text, WStyle style, WExStyle exstyle ) {
     if( _parent != NULL ) {
         hparent = _parent->_handle;
     }
-    create_info.title = (char *)text;
+    create_info.title = (char *)title;
     create_info.rect.x = r.x();
     create_info.rect.y = r.y();
     create_info.rect.width = r.w();

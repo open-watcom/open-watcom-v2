@@ -99,7 +99,7 @@ void uiposition( SAREA *a, ORD h, ORD w, int rpos, int cpos, bool overmenus )
 }
 
 
-VSCREEN *uiopen( SAREA *area, char *name, unsigned flags )
+VSCREEN *uiopen( SAREA *area, char *title, unsigned flags )
 /********************************************************/
 {
     VSCREEN             *s;
@@ -109,7 +109,7 @@ VSCREEN *uiopen( SAREA *area, char *name, unsigned flags )
         return( s );
     }
     s->area = *area;
-    s->title = name;
+    s->title = title;
     s->flags = flags;
     s->col = 0;
     s->row = 0;

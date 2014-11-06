@@ -194,7 +194,7 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
     }
 }
 
-static void DlgOpen( gui_window *parent, char *name, int rows, int cols,
+static void DlgOpen( gui_window *parent, char *title, int rows, int cols,
                      gui_control_info *controls_info, int num_controls, GUICALLBACK *rtn,
                      void *extra, bool sys )
 {
@@ -202,7 +202,7 @@ static void DlgOpen( gui_window *parent, char *name, int rows, int cols,
     gui_coord           charspace;
     gui_text_metrics    metrics;
 
-    DlgControl.title = name;
+    DlgControl.title = title;
     DlgControl.call_back = rtn;
     DlgControl.extra = extra;
     DlgControl.parent = parent;
@@ -232,22 +232,22 @@ void GUISetModalDlgs( bool modal )
     DlgModal = modal;
 }
 
-void GUIDlgOpen( char *name, int rows, int cols, gui_control_info *controls_info,
+void GUIDlgOpen( char *title, int rows, int cols, gui_control_info *controls_info,
                  int num_controls, GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( NULL, name, rows, cols, controls_info, num_controls, rtn, extra, false );
+    DlgOpen( NULL, title, rows, cols, controls_info, num_controls, rtn, extra, false );
 }
 
-void GUIModalDlgOpen( gui_window *parent, char *name, int rows, int cols,
+void GUIModalDlgOpen( gui_window *parent, char *title, int rows, int cols,
                       gui_control_info *controls_info, int num_controls,
                       GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( parent, name, rows, cols, controls_info, num_controls, rtn, extra, false );
+    DlgOpen( parent, title, rows, cols, controls_info, num_controls, rtn, extra, false );
 }
 
-void GUISysModalDlgOpen( char *name, int rows, int cols,
+void GUISysModalDlgOpen( char *title, int rows, int cols,
                          gui_control_info *controls_info, int num_controls,
                          GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( NULL, name, rows, cols, controls_info, num_controls, rtn, extra, true );
+    DlgOpen( NULL, title, rows, cols, controls_info, num_controls, rtn, extra, true );
 }

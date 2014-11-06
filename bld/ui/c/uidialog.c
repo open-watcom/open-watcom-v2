@@ -330,12 +330,12 @@ void uiprintfield( a_dialog *ui_dlg_info, VFIELD *field )
     print_field( ui_dlg_info->vs, field, field == ui_dlg_info->curr );
 }
 
-static void *makevs( char *heading, int cols, int rows, int cpos, int rpos )
+static void *makevs( char *title, int cols, int rows, int cpos, int rpos )
 {
     SAREA               area;
 
     uiposition( &area, rows, cols, rpos, cpos, TRUE );
-    return( uiopen( &area, heading, V_DIALOGUE ) );
+    return( uiopen( &area, title, V_DIALOGUE ) );
 }
 
 unsigned ui_split_line( char **sptr, char *t, unsigned max )
@@ -383,7 +383,7 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     return( slen );
 }
 
-void *uiinitdialog( char *heading, ATTR attr, char *lines[],
+void *uiinitdialog( char *title, ATTR attr, char *lines[],
             unsigned int extra_rows, int maxlen, int rpos, int cpos )
 {
     VSCREEN             *vs;
@@ -414,7 +414,7 @@ void *uiinitdialog( char *heading, ATTR attr, char *lines[],
     }
     if( maxlen > width )
         maxlen = width;
-    vs = makevs( heading, maxlen, depth + extra_rows, cpos, rpos );
+    vs = makevs( title, maxlen, depth + extra_rows, cpos, rpos );
     uisetarea( &area, vs );
     width = area.width;
     area.row = 1;

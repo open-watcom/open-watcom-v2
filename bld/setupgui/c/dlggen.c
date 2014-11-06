@@ -897,8 +897,8 @@ extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog
 #if defined( __OS2__ ) && !defined( _UI )
     height -= 1;
 #endif
-    if( width < strlen(title) + WIDTH_BORDER + 2 ) {
-        width = strlen(title) + WIDTH_BORDER + 2;
+    if( width < strlen( title ) + WIDTH_BORDER + 2 ) {
+        width = strlen( title ) + WIDTH_BORDER + 2;
     }
 
     GUIRefresh();
