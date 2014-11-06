@@ -127,7 +127,7 @@ if errorlevel 1 goto err5
     @echo Error: MACRO #5 unsuccessful!!! | tee -a %2
 
 :test6
-rm hello.boo hello.tmp hello.c
+del hello.boo hello.tmp hello.c
 
 echo # ---------------------------
 echo #   Macro Test 6
@@ -182,9 +182,9 @@ if errorlevel 1 goto err8
 
 :test9
 
-rm -f hello.obj hello2.obj hello.boo hello.tmp hello.c hello2.c 
+del hello.obj hello2.obj hello.boo hello.tmp hello.c hello2.c 
 goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-rm tmp.out
+del tmp.out

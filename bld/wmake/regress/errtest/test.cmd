@@ -21,14 +21,14 @@ if .%2 == . goto usage
 echo # -----------------------------
 echo # ERROR 03:  Invalid Option
 echo # -----------------------------
-rm tmp.out
+del tmp.out
 %1 "-." > tmp.out 2>&1
 egrep Error tmp.out > tmpfile.out
 diff tmpfile.out err03a.chk
 if errorlevel 1 goto err03
     echo # Test 03a successful
 
-rm tmp.out
+del tmp.out
 %1 "- " > tmp.out 2>&1
 egrep Error tmp.out > tmpfile.out
 diff -b tmpfile.out err03b.chk
@@ -44,7 +44,7 @@ if errorlevel 1 goto err03
 echo # -----------------------------------------
 echo # ERROR 04: -f must be followed by a filename
 echo # -----------------------------------------
-rm tmp.out
+del tmp.out
 %1 -f > tmp.out 2>&1
 egrep Error tmp.out > tmpfile.out
 diff tmpfile.out err04.chk
@@ -61,7 +61,7 @@ echo # ------------------------------------------------
 echo # ERROR 13: No Control Characeters valid in Option
 echo # ------------------------------------------------
 
-rm tmp.out
+del tmp.out
 %1 -h "-" 2> tmp.out
 %1 -h - 2>> tmp.out
 %1 -h "-\" 2>> tmp.out
@@ -79,7 +79,7 @@ if errorlevel 1 goto err13
 echo # ------------------------------
 echo # ERROR 17: Token Too Long
 echo # ------------------------------
-rm tmp.out
+del tmp.out
 %1 -h -f err17a >  tmp.out 2>&1
 %1 -h -f err17b >> tmp.out 2>&1
 %1 -h -f err17c >> tmp.out 2>&1
@@ -98,7 +98,7 @@ if errorlevel 1 goto err17
 echo # ------------------------------
 echo # ERROR 36: Illegal attempt to update special target
 echo # ------------------------------
-rm tmp.out
+del tmp.out
 %1 -h -f err36 .c.obj > tmp.out 2>&1
 diff tmp.out err36.chk
 if errorlevel 1 goto err36
@@ -113,7 +113,7 @@ echo # ------------------------------
 echo # ERROR 39: Target not mentioned in any makefile
 echo # ------------------------------
 echo. >ditty.c
-rm tmp.out
+del tmp.out
 %1 -h -f err39 ditty.obj > tmp.out 2>&1
 diff tmp.out err39.chk
 if errorlevel 1 goto err39
@@ -124,16 +124,16 @@ if errorlevel 1 goto err39
     echo # !!! Test 39 unsuccessful !!! |tee -a %2
 
 :test40
-rm ditty.*
+del ditty.*
 echo # ------------------------------
 echo # ERROR 40: Could not touch target
 echo # ------------------------------
-rm tmp.out
+del tmp.out
 echo. >err40.tst
 chmod +r err40.tst >tmp.out
 %1 -h -a -t -f err40 >> tmp.out 2>&1
 chmod -r err40.tst
-rm err40.tst
+del err40.tst
 diff tmp.out err40.chk
 if errorlevel 1 goto err40
     echo # Test 40 successful
@@ -151,5 +151,5 @@ goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-rm *.out
-rm *.tmp
+del *.out
+del *.tmp

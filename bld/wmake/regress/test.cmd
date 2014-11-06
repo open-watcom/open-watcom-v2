@@ -4,7 +4,7 @@ SET TRMEM_CODE=1
 set from=%cd%
 cd %OWSRCDIR%\wmake\regress
 
-rm -f error.out
+del error.out
 if .%1 == . goto usage
 
 REM ===========================

@@ -9,7 +9,7 @@ if .%2 == . goto usage
 echo # ---------------------------
 echo # IMPLICIT RULES TEST 1
 echo # ---------------------------
-rm err1.out
+if exist err1.out del err1.out
 %1 -h -l err1.out > tst1.out
 if errorlevel 1 goto tst2err
     echo # Implicit Rules Test successful
@@ -71,7 +71,7 @@ if errorlevel 1 goto err2c
 echo # ---------------------------
 echo # IMPLICIT RULES TEST 2D
 echo # ---------------------------
-rm -f hello.obj
+del hello.obj
 %1 -f imp02d -h > tst1.out
 sed "s:of .*[\\/]:of :" tst1.out | diff imp02d.chk -
 if errorlevel 1 goto err2d
@@ -85,7 +85,7 @@ if errorlevel 1 goto err2d
 goto done
 :done
     :: hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go
-    rm -f *.obj err1.out tst1.out tst2.out app.lnk app.exe hello.* hello?.*
+    del *.obj err1.out tst1.out tst2.out app.lnk app.exe hello.* hello?.*
 
 goto end
 :usage

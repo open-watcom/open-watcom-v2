@@ -7,7 +7,7 @@ if .%1 == . goto usage
 echo # ---------------------------
 echo # Test A
 echo # ---------------------------
-rm -f tst2.out
+if exist tst2.out del tst2.out
 %1 -h -f for01 > tst2.out 2>&1
 diff tst2.out for01.chk
 if errorlevel 1 goto tst2aerr
@@ -22,7 +22,7 @@ if errorlevel 1 goto tst2aerr
 echo # ---------------------------
 echo # Test B
 echo # ---------------------------
-rm -f tst2.out
+del tst2.out
 %1 -h -f for02 > tst2.out 2>&1
 diff tst2.out for02.chk
 if errorlevel 1 goto tst2berr
@@ -37,7 +37,7 @@ if errorlevel 1 goto tst2berr
 echo # ---------------------------
 echo # Test C
 echo # ---------------------------
-rm -f tst2.out
+del tst2.out
 %1 -h -f for03 > tst2.out 2>&1
 diff tst2.out for03.chk
 if errorlevel 1 goto tst2cerr
@@ -57,7 +57,7 @@ dir /b >> tmpfile.tmp
 type for04b.chk >> tmpfile.tmp
 dir for?? /b >> tmpfile.tmp
 type for04c.chk >> tmpfile.tmp
-rm -f tst2.out
+del tst2.out
 %1 -h -f for04 > tst2.out 2>&1
 diff tst2.out tmpfile.tmp
 if errorlevel 1 goto tst2derr
@@ -72,7 +72,7 @@ if errorlevel 1 goto tst2derr
 echo # ---------------------------
 echo # Test E
 echo # ---------------------------
-rm -f tst2.out
+del tst2.out
 %1 -h -f for05 > tst2.out 2>&1
 diff tst2.out for05.chk
 if errorlevel 1 goto tst2eerr
@@ -87,7 +87,7 @@ if errorlevel 1 goto tst2eerr
 echo # ---------------------------
 echo # Test F
 echo # ---------------------------
-rm -f tst2.out
+del tst2.out
 %1 -h -f for06 > tst2.out 2>&1
 diff tst2.out for06.chk
 if errorlevel 1 goto tst2ferr
@@ -102,7 +102,7 @@ if errorlevel 1 goto tst2ferr
 echo # ---------------------------
 echo # Test G
 echo # ---------------------------
-rm -f tst2.out
+del tst2.out
 %1 -h -f for07 > tst2.out 2>&1
 diff tst2.out for07.chk
 if errorlevel 1 goto tst2gerr
@@ -126,7 +126,7 @@ echo a >> tmpfile.tmp
 echo b >> tmpfile.tmp
 ..\cmds\prntdir "echo c" >> tmpfile.tmp
 echo c >> tmpfile.tmp
-rm -f tst2.out
+del tst2.out
 %1 -h -f for08 > tst2.out 2>&1
 diff -b tst2.out tmpfile.tmp
 if errorlevel 1 goto tst2herr
@@ -136,9 +136,9 @@ if errorlevel 1 goto tst2herr
     echo # Error: For Loop Test H did not work
 :err
 :done
-    rm -f tmpfile.tmp
-    rm -f tst2.out
-    rm -f *.obj
+    del tmpfile.tmp
+    del tst2.out
+    if exist *.obj del *.obj
 
 goto end
 :usage
