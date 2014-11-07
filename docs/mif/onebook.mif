@@ -471,10 +471,10 @@ prepare_wgml_opts : .PROCEDURE
 # create DOSEMU batch file to run wgml utility
 #-------------------------------------------------------
     @%create $(dosemu_wgml_batch)
-    @%append $(dosemu_wgml_batch) lredir e: linux\fs$(docs_dir)
+    @%append $(dosemu_wgml_batch) lredir w: linux\fs$(docs_dir)
     @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
-    @%append $(dosemu_wgml_batch) e:\gml\dos\wgml.exe $(wgml_cmdl_params)
+    @%append $(dosemu_wgml_batch) w:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dosemu_wgml_batch) exitemu
 !else ifeq use_dosemu dosbox
 #-------------------------------------------------------
