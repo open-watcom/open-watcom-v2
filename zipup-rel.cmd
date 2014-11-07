@@ -7,7 +7,7 @@ set LABEL=open_watcom_%1
 set PREFIX=open_watcom_%1
 set P4OPT=-f
 set ARCHIVES=\archives
-cdd %ARCHIVES%
+cd %ARCHIVES%
 del /q %PREFIX%-src.zip >& NUL
 
 rem ##########################################################################
