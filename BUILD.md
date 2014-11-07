@@ -62,8 +62,9 @@ The build and clean-up processes are handled by two scripts.
     upwards of two hours even on a fairly fast machine. There is a *lot*
     to build!
 
-    You may want to run `builder cprel` after successfully building
-    everything to copy the complete system to the release (`rel`) tree.
+    You may want to run `builder cprel` from inside the `bld` directory
+    after successfully building everything to copy the complete system to
+    the release (`rel`) tree.
 
 2. `clean.bat` (DOS/Windows), `clean.cmd` (OS/2), or `clean.sh` (Linux).
     This script erases all the object files, executable files, etc.
