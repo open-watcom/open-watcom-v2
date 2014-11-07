@@ -7,18 +7,12 @@ WScript.StdOut.WriteLine "Open Watcom Build Configurator"
 
 ' Initialize boolean variables for command line switches to the default values.
 ShowUsage = False
-DebugBuild = False
-DefaultWindowing = False
 Documentation = True
 OutFileName = "myvars.cmd"
 
 ' Parse the command line.
 For i = 0 To WScript.Arguments.Count - 1
     Select Case WScript.Arguments(i)
-    Case "-d", "/d"
-        DebugBuild = True
-    Case "-w", "/w"
-        DefaultWindowing = True
     Case "-n", "/n"
         Documentation = False
     Case Else
@@ -35,9 +29,7 @@ If ShowUsage Then
     WScript.StdOut.WriteLine "Usage: owconfig [options] [filename] [options]"
     WScript.StdOut.WriteLine "Options:"
     WScript.StdOut.WriteLine "            ( /option is also accepted )"
-    WScript.StdOut.WriteLine "-d            debug build"
     WScript.StdOut.WriteLine "-n            suppress documentation build"
-    WScript.StdOut.WriteLine "-w            default windowing support in clib"
     WScript.StdOut.WriteLine
 Else
     ' Otherwise, do the work.
@@ -71,20 +63,6 @@ Else
     OutFile.WriteLine "set OWROOT=" + WshShell.CurrentDirectory
     OutFile.WriteLine "set WATCOM=" + Left(OpenWatcomPath, InStrRev(OpenWatcomPath, "\") - 1)
     OutFile.WriteLine
-    OutFile.WriteLine "REM Set this variable to 1 to get debug build"
-    If DebugBuild Then
-        OutFile.WriteLine "set DEBUG_BUILD=1"
-    Else
-        OutFile.WriteLine "set DEBUG_BUILD=0"
-    End If
-    OutFile.WriteLine
-    OutFile.WriteLine "REM Set this variable to 1 to get default windowing support in clib"
-    If DefaultWindowing Then
-        OutFile.WriteLine "set DEFAULT_WINDOWING=1"
-    Else
-        OutFile.WriteLine "set DEFAULT_WINDOWING=0"
-    End If
-    OutFile.WriteLine
     OutFile.WriteLine "REM Set this variable to 0 to suppress documentation build"
     If Documentation Then
         OutFile.WriteLine "set OWDOCBUILD=1"
@@ -94,14 +72,12 @@ Else
     OutFile.WriteLine
     OutFile.WriteLine "REM Documentation related variables"
     If Len(HcrtfPath) > 0 Then
-        OutFile.WriteLine "set OWWIN95HC=hcrtf"
-        OutFile.WriteLine "set PATH=%PATH%;" + HcrtfPath
+        OutFile.WriteLine "set OWWIN95HC=" + HcrtfPath + "\" + "hcrtf"
     Else
         OutFile.WriteLine "set OWWIN95HC="
     End If
     If Len(HhcPath) > 0 Then
-        OutFile.WriteLine "set OWHHC=hhc"
-        OutFile.WriteLine "set PATH=%PATH%;" + HhcPath
+        OutFile.WriteLine "set OWHHC=" + HhcPath + "\" + "hhc"
     Else
         OutFile.WriteLine "set OWHHC="
     End If
@@ -109,13 +85,10 @@ Else
     OutFile.WriteLine "REM Subdirectory to be used for bootstrapping"
     OutFile.WriteLine "set OWOBJDIR=bootstrp"
     OutFile.WriteLine
-    OutFile.WriteLine "REM Subdirectory to be used for building prerequisite utilities"
-    OutFile.WriteLine "set OWPREOBJDIR=prebuild"
-    OutFile.WriteLine
     OutFile.WriteLine "REM Invoke the batch file for the common environment"
     OutFile.WriteLine "call %OWROOT%\cmnvars.bat"
     OutFile.WriteLine
-    OutFile.WriteLine "cd %DEVDIR%"
+    OutFile.WriteLine "cd %OWROOT%"
     OutFile.Close
 End If
 
