@@ -149,6 +149,8 @@ SHGetFileInfoW@20
 SHGetFolderLocation@20
 SHGetFolderPathAndSubDirA@24
 SHGetFolderPathAndSubDirW@24
+SHGetFolderPathA@20
+SHGetFolderPathW@20
 SHGetIDListFromObject@8
 SHGetIconOverlayIndexA@8
 SHGetIconOVerlayIndexW@8
