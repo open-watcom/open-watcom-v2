@@ -492,11 +492,12 @@ bool DispBPMsg( bool stack_cmds )
 }
 
 
-static char *GetBPCmd( brkp *bp, char *buff, brk_event event )
+static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len )
 {
     char        *cmds;
     char        *cond;
     char        *p;
+    char        *end = buff + buff_len ;
 
     cmds = cond = LIT( Empty );
     if( bp != NULL ) {
@@ -510,7 +511,7 @@ static char *GetBPCmd( brkp *bp, char *buff, brk_event event )
         if( bp->th == MAD_NIL_TYPE_HANDLE ) {
             p = GetCmdEntry( PointNameTab, B_SET, p );
         } else {
-            p += GetMADTypeNameForCmd( bp->th, p, TXT_LEN );
+            p += GetMADTypeNameForCmd( bp->th, p, end - p );
             *p++ = ' ';
         }
         if( bp->status.b.resume ) {
@@ -535,10 +536,10 @@ static char *GetBPCmd( brkp *bp, char *buff, brk_event event )
             p = StrCopy( bp->loc.image_name, p );
             *p++ = ' ';
             p = AddHexSpec( p );
-            p = CnvULongHex( bp->loc.addr.mach.segment, p, TXT_LEN - ( p - buff ) );
+            p = CnvULongHex( bp->loc.addr.mach.segment, p, end - p );
             *p++ = ' ';
             p = AddHexSpec( p );
-            p = CnvULongHex( bp->loc.addr.mach.offset, p, TXT_LEN - ( p - buff ) );
+            p = CnvULongHex( bp->loc.addr.mach.offset, p, end - p );
             *p++ = ',';
         } else if( bp->image_name != NULL && bp->mod_name != NULL ) {
             *p++ = '/';
@@ -554,20 +555,20 @@ static char *GetBPCmd( brkp *bp, char *buff, brk_event event )
             p = StrCopy( bp->sym_name, p );
             *p++ = ' ';
             p = AddHexSpec( p );
-            p = CnvULongHex( bp->cue_diff, p, TXT_LEN - ( p - buff ) );
+            p = CnvULongHex( bp->cue_diff, p, end - p );
             *p++ = ' ';
             p = AddHexSpec( p );
-            p = CnvULongHex( bp->addr_diff, p, TXT_LEN - ( p - buff ) );
+            p = CnvULongHex( bp->addr_diff, p, end - p );
             *p++ = ',';
         } else {
-            p = AddrToString( &bp->loc.addr, MAF_FULL, p, TXT_LEN - ( p - buff ) );
+            p = AddrToString( &bp->loc.addr, MAF_FULL, p, end - p );
 //          p = Format( p, " %A", bp->loc.addr );
         }
         p = Format( p, " {%s} {%s}", cmds, cond );
         if( bp->initial_countdown != 0 ) {
             p = StrCopy( " ", p );
             p = AddHexSpec( p );
-            p = CnvULongHex( bp->initial_countdown, p, TXT_LEN - ( p - buff ) );
+            p = CnvULongHex( bp->initial_countdown, p, end - p );
         }
         return( p );
     case B_CLEAR:
@@ -580,7 +581,7 @@ static char *GetBPCmd( brkp *bp, char *buff, brk_event event )
         if( bp == NULL ) {
             p = StrCopy( "*", p );
         } else {
-            p = AddrToString( &bp->loc.addr, MAF_FULL, p, TXT_LEN - ( p - buff ) );
+            p = AddrToString( &bp->loc.addr, MAF_FULL, p, end - p );
 //          p = Format( p, " %A", bp->loc.addr );
         }
         return( p );
@@ -591,7 +592,7 @@ static char *GetBPCmd( brkp *bp, char *buff, brk_event event )
 
 static void RecordBreakEvent( brkp *bp, brk_event event )
 {
-    GetBPCmd( bp, TxtBuff, event );
+    GetBPCmd( bp, event, TxtBuff, TXT_LEN );
     RecordEvent( TxtBuff );
     if( event == B_SET && !IS_NIL_ADDR( bp->loc.addr ) ) {
         GetBPAddrText( bp, TxtBuff );
@@ -759,7 +760,7 @@ void ShowBPs( void )
     char_ring   *dll;
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        GetBPCmd( bp, TxtBuff, B_SET );
+        GetBPCmd( bp, B_SET, TxtBuff, TXT_LEN );
         DUIDlgTxt( TxtBuff );
     }
     for( dll = DLLList; dll != NULL; dll = dll->next ) {
