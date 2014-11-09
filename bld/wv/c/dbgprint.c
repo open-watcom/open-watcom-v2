@@ -186,8 +186,7 @@ static void PrtStr( char *start, unsigned len )
  * CnvRadix -- convert an unsigned number of a given radix to a string
  */
 
-static char *CnvRadix( unsigned_64 *value, unsigned radix, char base,
-                char *buff, int len )
+static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff, int len )
 {
     char        internal[ 65 ];
     char        *ptr;
@@ -211,18 +210,21 @@ static char *CnvRadix( unsigned_64 *value, unsigned radix, char base,
 }
 
 
-static char *FmtNum( unsigned_64 num, unsigned radix, char base_letter,
-                     sign_class sign_type, char *buff, unsigned len,
-                     char *prefix, unsigned pref_len )
+static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class sign_type, char *buff, unsigned len )
 {
     char        *ptr;
+    char        *prefix;
+    unsigned    pref_len;
 
     if( sign_type == NUM_SIGNED && I64Test( &num ) < 0 ) {
         *buff = '-';
         ++buff;
         U64Neg( &num, &num );
     }
-    if( radix != DefRadix && prefix == NULL ) {
+    prefix = NULL;
+    if( radix != DefRadix ) {
+        if( radix < 0 )
+            radix = -radix;
         FindRadixSpec( radix, &prefix, &pref_len );
     }
     ptr = buff;
@@ -238,8 +240,7 @@ static char *FmtNum( unsigned_64 num, unsigned radix, char base_letter,
  * PrintRadix -- print expression in given radix
  */
 
-static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
-                        char *prefix, unsigned pref_len )
+static void PrintRadix( int radix, char base_letter, sign_class sign_type )
 {
     char                buff[BUFLEN];
     char                *ptr;
@@ -250,7 +251,7 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
     mad_type_handle     mth;
 
     if( sign_type == NUM_CHECK ) {
-        if( radix != 10 ) {
+        if( radix != 10 && radix != -10 ) {
             sign_type = NUM_UNSIGNED;
         } else {
             switch( ExprSP->info.kind ) {
@@ -286,10 +287,10 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
         {
             unsigned len = 1;
             /* If we are printing hex, expand to both nibbles */            
-            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( 16 == radix ) && !_IsOn( SW_DONT_EXPAND_HEX ) )
+            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( radix == 16 || radix == -16 ) && !_IsOn( SW_DONT_EXPAND_HEX ) )
                 len = ExprSP->info.size * 2;
             ConvertTo( ExprSP, TK_INTEGER, TM_UNSIGNED, sizeof( ExprSP->v.uint ) );
-            ptr = FmtNum( ExprSP->v.uint, radix, base_letter, sign_type, ptr, len, prefix, pref_len );
+            ptr = FmtNum( ExprSP->v.uint, radix, base_letter, sign_type, ptr, len );
         }
 #endif
         break;
@@ -307,7 +308,7 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
         MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
         MADTypeConvert( &host, &ExprSP->v.addr, &mti, &item, 0 );
         buff_len = sizeof( buff );
-        MADTypeToString( radix, &mti, &item, ptr, &buff_len );
+        MADTypeToString( ( radix < 0 ) ? -radix : radix, &mti, &item, ptr, &buff_len );
         ptr += buff_len;
         break;
     case TK_REAL:
@@ -315,7 +316,7 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
             signed_64   tmp;
 
             I32ToI64( LDToD( &ExprSP->v.real ), &tmp );
-            ptr = FmtNum( tmp, radix, base_letter, NUM_SIGNED, ptr, 1, prefix, pref_len );
+            ptr = FmtNum( tmp, ( radix < 0 ) ? -radix : radix, base_letter, NUM_SIGNED, ptr, 1 );
         }
         break;
     default:
@@ -594,8 +595,6 @@ static void GetExpr( void )
 static void DoFormat( char *fmt_ptr, char *fmt_end )
 {
     char        buff[BUFLEN+1];
-    char        *pref;
-    unsigned    pref_len;
     char        z_format;
 
     StartPrintBuff( buff, BUFLEN );
@@ -633,33 +632,32 @@ static void DoFormat( char *fmt_ptr, char *fmt_end )
             case 'd' :
             case 'i' :
                 GetExpr();
-                PrintRadix( 10, NULLCHAR, NUM_SIGNED, NULL, 0 );
+                PrintRadix( 10, NULLCHAR, NUM_SIGNED );
                 PopEntry();
                 break;
             case 'u' :
                 GetExpr();
-                PrintRadix( 10, NULLCHAR, NUM_UNSIGNED, NULL, 0 );
+                PrintRadix( 10, NULLCHAR, NUM_UNSIGNED );
                 PopEntry();
                 break;
             case 'o' :
                 GetExpr();
-                PrintRadix( 8, NULLCHAR, NUM_UNSIGNED, NULL, 0 );
+                PrintRadix( 8, NULLCHAR, NUM_UNSIGNED );
                 PopEntry();
                 break;
             case 'x' :
                 GetExpr();
-                PrintRadix( 16, 'a', NUM_UNSIGNED, NULL, 0 );
+                PrintRadix( 16, 'a', NUM_UNSIGNED );
                 PopEntry();
                 break;
             case 'X' :
                 GetExpr();
-                PrintRadix( 16, 'A', NUM_UNSIGNED, NULL, 0 );
+                PrintRadix( 16, 'A', NUM_UNSIGNED );
                 PopEntry();
                 break;
             case 'p' :
                 GetExpr();
-                FindRadixSpec( 16, &pref, &pref_len );
-                PrintRadix( 16, 'A', NUM_UNSIGNED, pref, pref_len );
+                PrintRadix( -16, 'A', NUM_UNSIGNED );
                 PopEntry();
                 break;
             case 'c' :
@@ -683,7 +681,7 @@ static void DoFormat( char *fmt_ptr, char *fmt_end )
                 break;
             case 'r':
                 GetExpr();
-                PrintRadix( CurrRadix, 'A', NUM_CHECK, NULL, 0 );
+                PrintRadix( CurrRadix, 'A', NUM_CHECK );
                 PopEntry();
                 break;
             case 'a':
@@ -775,7 +773,7 @@ static void PrintArray( void )
         ExprValue( ExprSP );
         buff[0] = '[';
         I32ToI64( ai.low_bound, &tmp );
-        ptr = FmtNum( tmp, CurrRadix, 'A', NUM_SIGNED, &buff[1], 1, NULL, 0 );
+        ptr = FmtNum( tmp, CurrRadix, 'A', NUM_SIGNED, &buff[1], 1 );
         *ptr++ = ']';
         *ptr++ = '=';
         len = ptr - buff;
@@ -868,8 +866,6 @@ static unsigned ValueToName( char *buff, unsigned len )
 
 void PrintValue( void )
 {
-    char                *pref;
-    unsigned            pref_len;
     char                buff[TXT_LEN];
     char                *p;
     char                *tstr;
@@ -885,12 +881,12 @@ void PrintValue( void )
             PrtStr( buff, tlen );
             break; /* from switch */
         }
-        PrintRadix( CurrRadix, 'A', NUM_CHECK, NULL, 0 );
+        PrintRadix( CurrRadix, 'A', NUM_CHECK );
         break;
     case TK_CHAR:
     case TK_BOOL:
     case TK_INTEGER:
-        PrintRadix( CurrRadix, 'A', NUM_CHECK, NULL, 0 );
+        PrintRadix( CurrRadix, 'A', NUM_CHECK );
         break;
     case TK_ADDRESS:
         if( !IS_NIL_ADDR( ExprSP->v.addr ) ) {
@@ -909,12 +905,10 @@ void PrintValue( void )
             if( tlen != 0 ) {
                 PrtStr( tstr+1, tlen-1 );
             } else {
-                FindRadixSpec( 16, &pref, &pref_len );
-                PrintRadix( 16, 'A', NUM_UNSIGNED, pref, pref_len );
+                PrintRadix( -16, 'A', NUM_UNSIGNED );
             }
         } else {
-            FindRadixSpec( 16, &pref, &pref_len );
-            PrintRadix( 16, 'A', NUM_UNSIGNED, pref, pref_len );
+            PrintRadix( -16, 'A', NUM_UNSIGNED );
         }
         break;
     case TK_ARRAY:
