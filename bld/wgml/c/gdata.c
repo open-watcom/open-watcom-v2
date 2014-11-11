@@ -29,14 +29,25 @@
 ****************************************************************************/
 #include    "wgml.h"
 #include    "findfile.h"
+#include    "swchar.h"
 
 #define global                          // allocate storage for global vars
-#define tag_strings                     // initialize tag names as strings
 #include    "gvars.h"
 #undef  global
-#undef tag_strings
 
-#include    "swchar.h"
+
+char str_tags[t_MAX + 1][10] = {
+    { "NONE" },
+    #define pickg( name, length, routine, gmlflags, locflags )  { #name },
+    #include "gtags.h"
+    #undef pickg
+//    #define picks( name, routine, flags) { #name },
+//    #define picklab( name, routine, flags) { #name },
+//    #include "gscrcws.h" TBD
+//    #undef picklab
+//    #undef picks
+    { "MAX" }
+};
 
 /***************************************************************************/
 /*  Init some global variables                                             */

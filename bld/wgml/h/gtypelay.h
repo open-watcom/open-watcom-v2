@@ -36,14 +36,14 @@
 /*    these are used in LAYOUT tag processing to control the attributes    */
 /***************************************************************************/
  
-#define pick( name, funci, funco, result ) e_##name,
 typedef enum lay_att {
     e_dummy_zero = 0,
-#include "glayutil.h"
+    #define pick( name, funci, funco, result ) e_##name,
+    #include "glayutil.h"
+    #undef pick
     e_dummy_max
 } lay_att;
  
-#undef pick
  
 /***************************************************************************/
 /*  definitions for number style                                           */

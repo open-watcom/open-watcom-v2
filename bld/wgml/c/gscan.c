@@ -38,59 +38,48 @@
 /*    GML tags                                                             */
 /***************************************************************************/
 
-#define pickg( name, length, routine, gmlflags, locflags) { #name, length, routine, gmlflags, locflags },
-
 static  const   gmltag  gml_tags[] = {
-
-#include "gtags.h"
+    #define pickg( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags },
+    #include "gtags.h"
+    #undef pickg
     { "   ", 0, NULL, 0, 0 }            // end
 
 };
 
 #define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ) - 1)
 
-#undef pick
-
 
 /***************************************************************************/
 /*    GML layout tags                                                      */
 /***************************************************************************/
 
-#define pick( name, length, routine, flags) { #name, length, routine, flags },
-
 static  const   gmltag  lay_tags[] = {
-
-#include "gtagslay.h"
+    #define pick( name, length, routine, flags) { #name, length, routine, flags },
+    #include "gtagslay.h"
+    #undef pick
     { "   ", 0, NULL, 0, 0 }            // end
 
 };
 
 #define LAY_TAGMAX  (sizeof( lay_tags ) / sizeof( lay_tags[0] ) - 1)
 
-#undef pick
 
 
 /***************************************************************************/
 /*    SCR control words                                                    */
 /***************************************************************************/
 
-#define picks( name, routine, flags) { #name, routine, flags },
-#define picklab( name, routine, flags) { #name, routine, flags },
 
 static  const   scrtag  scr_tags[] = {
-
-#include "gscrcws.h"
-
+    #define picks( name, routine, flags) { #name, routine, flags },
+    #define picklab( name, routine, flags) { #name, routine, flags },
+    #include "gscrcws.h"
+    #undef picklab
+    #undef picks
     { "  ", NULL, 0   }                 // end
 };
 
 #define SCR_TAGMAX  (sizeof( scr_tags ) / sizeof( scr_tags[0] ) - 1)
-
-#undef pick
-#undef pickg
-#undef picklab
-#undef picks
-
 
 
 /***************************************************************************/

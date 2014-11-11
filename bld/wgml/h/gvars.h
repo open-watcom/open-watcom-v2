@@ -342,23 +342,7 @@ global  uint32_t    msg_indent;         // indent for message output (to screen,
 /*  tagnames as strings for msg display                                    */
 /***************************************************************************/
 
-#define pickg( name, length, routine, gmlflags, locflags )  { #name },
-
-global char str_tags[t_MAX + 1][10]
-#if defined(tag_strings)
-   = {
-     { "NONE" },
-#include "gtags.h"
-//  #include "gscrcws.h" TBD
-     { "MAX" }
-}
-#endif
-;
-#undef pickg
-#undef xmystr
-#undef mystr
-
-
+extern char str_tags[t_MAX + 1][10];
 
 /***************************************************************************/
 /*  :LAYOUT  data                                                          */

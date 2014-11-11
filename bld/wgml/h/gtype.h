@@ -785,19 +785,16 @@ typedef enum functs {
 /*  tags and controlwords as enums for distinction during processing       */
 /***************************************************************************/
 
-#undef pickg
-#define pickg( name, length, routine, gmlflags, locflags )  t_##name,
-
-#undef picklab
-#define picklab( name, routine, flags )  t_label,
-
-#undef picks
-#define picks( name, routine, flags )  t_##name,
-
 typedef enum e_tags {
     t_NONE,
-#include "gtags.h"
-//  #include "gscrcws.h" TBD
+    #define pickg( name, length, routine, gmlflags, locflags )  t_##name,
+    #include "gtags.h"
+    #undef pickg
+//    #define picks( name, routine, flags )  t_##name,
+//    #define picklab( name, routine, flags )  t_label,
+//    #include "gscrcws.h" TBD
+//    #undef picklab
+//    #undef picks
     t_MAX                               // the last one for range check
 } e_tags;
 

@@ -39,12 +39,12 @@
 /* Layout attributes as character strings                                                                         */
 /***************************************************************************/
 
-#define pick( name, funci, funco, result ) { #name },
-
 const   char    att_names[e_dummy_max + 1][18] = {
 //   18 is enough for longest attribute name  ( extract_threshold )
-     { "DUMMY" },                       // enum zero not used
-#include "glayutil.h"
+    { "DUMMY" },                       // enum zero not used
+    #define pick( name, funci, funco, result ) { #name },
+    #include "glayutil.h"
+    #undef pick
 };
 
 

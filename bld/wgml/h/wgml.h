@@ -455,48 +455,41 @@ extern  void    show_include_stack( void );
  * prototypes for the gml tag processing routines
  */
 
-#ifdef pickg
-    #undef pickg
-#endif
 #define pickg( name, length, routine, gmlflags, locflags )  extern void routine( const gmltag * entry );
-
 #include "gtags.h"
+#undef pickg
 
 /*
  * prototypes for the layout tag processing routines
  */
 
 #define pick( name, length, routine, flags )  extern void routine( const gmltag * entry );
-
 #include "gtagslay.h"
+#undef pick
 
 /*
  * prototypes for the layout tag attribute processing routines
  */
 
 /*          for input scanning              */
-#define pick( name, funci, funco, restype ) \
-    extern  bool    funci( char * buf, lay_att attr, restype * result );
-
+#define pick( name, funci, funco, restype ) extern  bool    funci( char * buf, lay_att attr, restype * result );
 #include "glayutil.h"
+#undef pick
 
 /*          for output via :convert tag     */
-#define pick( name, funci, funco, restype ) \
-    extern  void    funco( FILE * f, lay_att attr, restype * in );
-
+#define pick( name, funci, funco, restype ) extern  void    funco( FILE * f, lay_att attr, restype * in );
 #include "glayutil.h"
+#undef pick
 
 /*
  * prototypes for the script control word processing routines
  */
 
-#undef picklab
-#define picklab( name, routine, flags )  extern void routine( void );
-
-#undef picks
 #define picks( name, routine, flags )  extern void routine( void );
-
+#define picklab( name, routine, flags )  extern void routine( void );
 #include "gscrcws.h"
+#undef picklab
+#undef picks
 
 /*
  * prototypes for the script string function routines , ie. &'substr( ,..

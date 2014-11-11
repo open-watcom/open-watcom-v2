@@ -29,9 +29,6 @@
 *               are processed so far
 ****************************************************************************/
 
-#ifndef picks
-    #error macro picks not defined
-#endif
 //  control  routine    flags
 //     word  name
 // lower case
@@ -168,6 +165,3 @@
   picks( us, scr_us,    cw_o_t             )// underscore
   picks( wd, scr_dummy, 0                  )// widow
   picklab( .., scr_label, 0                )
-
-#undef picks
-#undef picklab
