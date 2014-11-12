@@ -47,4 +47,6 @@ wmake.exe: usageend.gh isarray.gh $(OBJS)
         $(CC) $(CFLAGS) -Fe$@ $(OBJS) $(LFLAGS)
 
 clean:
-        -erase *.obj *.gh *.exe
+        -if exist *.obj erase *.obj
+        -if exist *.gh  erase *.gh
+        -if exist *.exe erase *.exe
