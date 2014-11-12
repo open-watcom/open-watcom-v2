@@ -41,6 +41,7 @@ sub read_config
     my(@fields);
 
     $Common::config{'OWCVS'} = '';
+    $Common::config{'TOOLS'} = '';
     $Common::config{'WATCOM'} = '';
     $Common::config{'RELROOT'} = '';
     $Common::config{'WIN95HC'} = '';

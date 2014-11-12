@@ -52,6 +52,7 @@ if ($#ARGV == -1) {
 
 my $home      = $Common::config{'HOME'};
 my $OW        = $Common::config{'OW'};
+my $TOOLS     = $Common::config{'TOOLS'};
 my $WATCOM    = $Common::config{'WATCOM'};
 my $relroot   = $Common::config{'RELROOT'};
 
@@ -160,7 +161,7 @@ sub batch_output_set_test_env
 
 sub batch_output_set_boot_env
 {
-    if ($WATCOM ne '') {
+    if ($TOOLS eq 'WATCOM') {
         print BATCH "$setenv WATCOM=", $WATCOM;
         if ($^O eq 'MSWin32') {
             print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt";
@@ -195,21 +196,21 @@ sub batch_output_build_wmake_builder_rm
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
         print BATCH 'rm -f $OWBINDIR/wmake';
-        if ($WATCOM eq '') {
-            print BATCH 'make -f ../posmake clean';
-            print BATCH 'make -f ../posmake';
-        } else {
+        if ($TOOLS eq 'WATCOM') {
             print BATCH 'wmake -h -f ../wmake clean';
             print BATCH 'wmake -h -f ../wmake';
+        } else {
+            print BATCH 'make -f ../posmake clean';
+            print BATCH 'make -f ../posmake';
         }
     } else {
         print BATCH 'if exist %OWBINDIR%\wmake.exe del %OWBINDIR%\wmake.exe';
-        if ($WATCOM eq '') {
-            print BATCH 'nmake -nologo -f ..\nmake clean';
-            print BATCH 'nmake -nologo -f ..\nmake';
-        } else {
+        if ($TOOLS eq 'WATCOM') {
             print BATCH 'wmake -h -f ..\wmake clean';
             print BATCH 'wmake -h -f ..\wmake';
+        } else {
+            print BATCH 'nmake -nologo -f ..\nmake clean';
+            print BATCH 'nmake -nologo -f ..\nmake';
         }
     }
     # Create new builder tool, previous clean removed it.
@@ -233,7 +234,8 @@ sub make_boot_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
-        elsif (/$setenv WATCOM=/i)  { ; }
+        elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
+        elsif (/$setenv WATCOM=/i)  { print BATCH "echo"; }
         elsif (/$setenv INCLUDE=/i) { ; }
         elsif (/$setenv PATH=/i)    { ; }
         else                        { print BATCH; }
@@ -264,7 +266,8 @@ sub make_build_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
-        elsif (/$setenv WATCOM=/i)   { ; }
+        elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
+        elsif (/$setenv WATCOM=/i)   { print BATCH "echo"; }
         elsif (/$setenv INCLUDE=/i)  { ; }
         elsif (/$setenv PATH=/i)     { ; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
@@ -299,7 +302,8 @@ sub make_docs_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)            { print BATCH "$setenv OWROOT=", $OW; }
-        elsif (/$setenv WATCOM=/i)            { ; }
+        elsif (/$setenv OWTOOLS=/i)            { print BATCH "$setenv OWTOOLS=", $TOOLS; }
+        elsif (/$setenv WATCOM=/i)            { print BATCH "echo"; }
         elsif (/$setenv INCLUDE=/i)           { ; }
         elsif (/$setenv PATH=/i)              { ; }
         elsif (/$setenv OWDOSBOX=/i)          { ; }
@@ -340,7 +344,8 @@ sub make_test_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
-        elsif (/$setenv WATCOM=/i)   { ; }
+        elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
+        elsif (/$setenv WATCOM=/i)   { print BATCH "echo"; }
         elsif (/$setenv INCLUDE=/i)  { ; }
         elsif (/$setenv PATH=/i)     { ; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
@@ -378,7 +383,8 @@ sub make_installer_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
-        elsif (/$setenv WATCOM=/i)  { ; }
+        elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
+        elsif (/$setenv WATCOM=/i)  { print BATCH "echo"; }
         elsif (/$setenv INCLUDE=/i) { ; }
         elsif (/$setenv PATH=/i)    { ; }
         else                        { print BATCH; }

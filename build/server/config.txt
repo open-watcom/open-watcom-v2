@@ -11,6 +11,10 @@ REPORTS=c:\www\reports
 # The folder where the OW source tree is located.
 OW=c:\ow\ow
 
+# Set this entry to identify tools used by build process
+# supported values are WATCOM VISUALC GCC CLANG INTEL
+TOOLS=WATCOM
+
 # The location of your installed compiler (for doing the build).
 WATCOM=c:\ow\ow19
 
