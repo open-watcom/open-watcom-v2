@@ -8,14 +8,15 @@ REM       modify it as necessary for your own use!!
 REM Change this to point your Open Watcom source tree
 set OWROOT=c:\ow\ow
 
-REM Set this entry to use native compiler tools
-set OWUSENATIVETOOLS=0
-
 REM Subdirectory to be used for building OW build tools
 set OWOBJDIR=binbuild
 
+REM Set this entry to identify tools used by build process
+REM supported values are WATCOM VISUALC INTEL
+set OWTOOLS=WATCOM
+
 REM Change following entries to point your existing Open Watcom installation
-if '%OWUSENATIVETOOLS%' == '1' goto docs_setup
+if not '%OWTOOLS%' == 'WATCOM' goto docs_setup
 set WATCOM=c:\ow\ow19
 set INCLUDE=%WATCOM%\h
 set PATH=%WATCOM%\binw;%PATH%

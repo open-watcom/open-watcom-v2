@@ -5,12 +5,14 @@ cd %OWSRCDIR%\wmake
 if not exist %OWOBJDIR% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
 if exist %OWBINDIR%\wmake.exe del %OWBINDIR%\wmake.exe
-if '%OWUSENATIVETOOLS%' == '1' goto native_tools
+if '%OWTOOLS%' == 'VISUALC' goto visualc_tools
+if '%OWTOOLS%' == 'INTEL' goto intel_tools
 wmake -f ..\wmake clean %OWBUILDER_OUTPUT%
 wmake -f ..\wmake %OWBUILDER_OUTPUT%
 if errorlevel == 1 goto error_exit
 goto make_builder
-:native_tools
+:intel_tools
+:visualc_tools
 nmake -f ..\nmake clean %OWBUILDER_OUTPUT%
 nmake -f ..\nmake %OWBUILDER_OUTPUT%
 if errorlevel == 1 goto error_exit

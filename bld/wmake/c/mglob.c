@@ -70,13 +70,6 @@ const char FAR *BuiltIns = {
 #ifdef DLLS_IMPLEMENTED
     "__LOADDLL__=\n"
 #endif
-#if defined( BOOTSTRAP )
-#if defined( __INTEL_COMPILER )
-    "__INTEL__=\n"
-#elif defined( __WATCOMC__ )
-    "__WATCOM__=\n"
-#endif
-#endif
 
 #if defined( __DOS__ )
     "__MSDOS__=\n"

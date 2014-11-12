@@ -9,7 +9,10 @@ cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
-if [ "$OWUSENATIVETOOLS" -eq "1" ]; then
+if [ "$OWTOOLS" -eq "WATCOM" ]; then
+    wmake -f ../wmake clean
+    wmake -f ../wmake
+else
     case `uname` in
         FreeBSD)
             make -f ../posmake clean
@@ -21,9 +24,6 @@ if [ "$OWUSENATIVETOOLS" -eq "1" ]; then
             make -f ../posmake TARGETDEF=-D__LINUX__
             ;;
     esac
-else
-    wmake -f ../wmake clean
-    wmake -f ../wmake
 fi
 cd $OWSRCDIR/builder
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi

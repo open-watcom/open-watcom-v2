@@ -8,14 +8,15 @@
 # Change this to point your Open Watcom source tree
 export OWROOT=/home/ow/ow
 
-# Set this entry to use native compiler tools
-export OWUSENATIVETOOLS=0
-
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 
+# Set this entry to identify tools used by build process
+# supported values are WATCOM GCC CLANG
+export OWTOOLS=WATCOM
+
 # Change following entries to point your existing Open Watcom installation
-if [ "$OWUSENATIVETOOLS" -ne "1" ]; then
+if [ "$OWTOOLS" -eq "WATCOM" ]; then
     export WATCOM=/home/ow/ow19
     export INCLUDE=$WATCOM/lh
     export PATH=$WATCOM/binl:$PATH

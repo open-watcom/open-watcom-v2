@@ -121,9 +121,15 @@ cl_libs = $(cl_libs_gen)
 
 # bld settings
 ############################
+!ifdef __CLANG__
+bcc  = clang -pipe -c
+bcxx = clang++ -pipe -c
+bcl  = clang -pipe
+!else
 bcc  = gcc -pipe -c
 bcxx = g++ -pipe -c
 bcl  = gcc -pipe
+!endif
 
 blib      = ar
 
@@ -274,9 +280,15 @@ cl_libs = $(cl_libs_gen)
 
 # bld settings
 ############################
+!ifdef __GCC__
 bcc  = gcc47 -pipe -c
 bcxx = g++47 -pipe -c
 bcl  = gcc47 -pipe
+!else
+bcc  = clang -pipe -c
+bcxx = clang++ -pipe -c
+bcl  = clang -pipe
+!endif
 
 blib      = ar
 

@@ -22,6 +22,21 @@ mif_path     = $(build_dir)/mif
 
 .mif: $(mif_path)
 
+!ifeq %OWTOOLS WATCOM
+!define __WATCOM__
+!else ifeq %OWTOOLS VISUALC
+!define __MSVC__
+!else ifeq %OWTOOLS GCC
+!define __GCC__
+!else ifeq %OWTOOLS CLANG
+!define __CLANG__
+!else ifeq %OWTOOLS INTEL
+!define __INTEL__
+!else
+# if not defined or unknow value, default to WATCOM
+!define __WATCOM__
+!endif
+
 !ifdef %BOOTSTRAP_CPU
 bld_cpu = $(%BOOTSTRAP_CPU)
 bld_os = $(%BOOTSTRAP_OS)
