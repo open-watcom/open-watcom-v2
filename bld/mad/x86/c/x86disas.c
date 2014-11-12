@@ -770,14 +770,13 @@ mad_status DIGENTRY MIDisasmInspectAddr( char *from, unsigned len, unsigned radi
  * CnvRadix -- convert an unsigned number of a given radix to a string
  */
 
-char *CnvRadix( unsigned long value, unsigned radix, char base,
-                char *buff, int len )
+char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, unsigned len )
 {
-    char        internal[ 33 ];
+    char        internal[33];
     char        *ptr;
     unsigned    dig;
 
-    ptr = &internal[ 32 ];
+    ptr = &internal[32];
     for( ; len > 0 || value != 0; value /= radix ) {
         dig = value % radix;
         *ptr = (dig <= 9) ? dig + '0' : dig - 10 + base;
@@ -786,7 +785,7 @@ char *CnvRadix( unsigned long value, unsigned radix, char base,
     }
     len = &internal[32] - ptr;
     memcpy( buff, ptr + 1, len );
-    buff[ len ] = '\0';
+    buff[len] = '\0';
     return( buff + len );
 }
 

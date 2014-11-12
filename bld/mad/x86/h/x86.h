@@ -131,7 +131,7 @@ extern mad_status               GetDisasmPrev( address *a );
 extern void                     InitCache( address start, unsigned len );
 extern unsigned                 RegDispType( mad_type_handle, const void *, char *buff, unsigned buff_len );
 extern unsigned                 AddrCharacteristics( address );
-extern char                     *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, int len );
+extern char                     *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, unsigned len );
 
 extern mad_status               DisasmInit( void );
 extern void                     DisasmFini( void );
