@@ -281,7 +281,7 @@ int main(               // MAIN-LINE
             }
 
             i = 0;
-            while( i < len ) {
+            while( i < (int)len ) {
                 while( st[i] == ' ' )
                     i++;
                 if( st[i] == 0 )
