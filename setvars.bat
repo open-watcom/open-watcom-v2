@@ -14,9 +14,6 @@ set OWUSENATIVETOOLS=0
 REM Subdirectory to be used for building OW build tools
 set OWOBJDIR=binbuild
 
-REM Set this variable to 1 to get default windowing support in clib
-set OWDEFAULT_WINDOWING=0
-
 REM Change following entries to point your existing Open Watcom installation
 if '%OWUSENATIVETOOLS%' == '1' goto docs_setup
 set WATCOM=c:\ow\ow19

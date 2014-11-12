@@ -14,9 +14,6 @@ export OWUSENATIVETOOLS=0
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 
-# Set this variable to 1 to get default windowing support in clib
-export OWDEFAULT_WINDOWING=0
-
 # Change following entries to point your existing Open Watcom installation
 if [ "$OWUSENATIVETOOLS" -ne "1" ]; then
     export WATCOM=/home/ow/ow19
