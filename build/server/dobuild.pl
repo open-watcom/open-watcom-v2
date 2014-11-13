@@ -235,9 +235,6 @@ sub make_boot_batch
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        elsif (/$setenv WATCOM=/i)  { print BATCH "echo"; }
-        elsif (/$setenv INCLUDE=/i) { ; }
-        elsif (/$setenv PATH=/i)    { ; }
         else                        { print BATCH; }
     }
     close(INPUT);
@@ -267,9 +264,6 @@ sub make_build_batch
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        elsif (/$setenv WATCOM=/i)   { print BATCH "echo"; }
-        elsif (/$setenv INCLUDE=/i)  { ; }
-        elsif (/$setenv PATH=/i)     { ; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
     }
@@ -303,9 +297,6 @@ sub make_docs_batch
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)            { print BATCH "$setenv OWROOT=", $OW; }
         elsif (/$setenv OWTOOLS=/i)            { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        elsif (/$setenv WATCOM=/i)            { print BATCH "echo"; }
-        elsif (/$setenv INCLUDE=/i)           { ; }
-        elsif (/$setenv PATH=/i)              { ; }
         elsif (/$setenv OWDOSBOX=/i)          { ; }
         elsif (/$setenv OWGHOSTSCRIPTPATH=/i) { ; }
         elsif (/$setenv OWWIN95HC=/i)         { ; }
@@ -345,9 +336,6 @@ sub make_test_batch
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        elsif (/$setenv WATCOM=/i)   { print BATCH "echo"; }
-        elsif (/$setenv INCLUDE=/i)  { ; }
-        elsif (/$setenv PATH=/i)     { ; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
     }
@@ -384,9 +372,6 @@ sub make_installer_batch
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        elsif (/$setenv WATCOM=/i)  { print BATCH "echo"; }
-        elsif (/$setenv INCLUDE=/i) { ; }
-        elsif (/$setenv PATH=/i)    { ; }
         else                        { print BATCH; }
     }
     close(INPUT);
