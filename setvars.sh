@@ -11,16 +11,9 @@ export OWROOT=/home/ow/ow
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 
-# Set this entry to identify tools used by build process
+# Set this entry to identify your toolchain used by build process
 # supported values are WATCOM GCC CLANG
 export OWTOOLS=WATCOM
-
-# Change following entries to point your existing Open Watcom installation
-if [ "$OWTOOLS" -eq "WATCOM" ]; then
-    export WATCOM=/home/ow/ow19
-    export INCLUDE=$WATCOM/lh
-    export PATH=$WATCOM/binl:$PATH
-fi
 
 # Documentation related variables
 
@@ -52,10 +45,6 @@ export OWDOCBUILD=0
 # Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator executable
 
 # export OWDOSBOX=dosbox
-
-#if WINE cmd.exe should be used as a "windows shell" alternative to the DOS emulators
-#uncomment the line below
-# export WINE_CMD=1
 
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh

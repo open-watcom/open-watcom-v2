@@ -11,17 +11,9 @@ set OWROOT=c:\ow\ow
 REM Subdirectory to be used for building OW build tools
 set OWOBJDIR=binbuild
 
-REM Set this entry to identify tools used by build process
+REM Set this entry to identify your toolchain used by build process
 REM supported values are WATCOM
 set OWTOOLS=WATCOM
-
-REM Change following entries to point your existing Open Watcom installation
-if not '%OWTOOLS%' == 'WATCOM' goto host_setup
-set WATCOM=c:\ow\ow19
-set INCLUDE=%WATCOM%\h;%WATCOM%\h\os2
-set BEGINLIBPATH=%WATCOM%\binp\dll;%BEGINLIBPATH%
-set PATH=%WATCOM%\binp;%WATCOM%\binw;%PATH%
-:host_setup
 
 REM Documentation related variables
 

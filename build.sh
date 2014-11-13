@@ -9,7 +9,7 @@ cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
-if [ "$OWTOOLS" -eq "WATCOM" ]; then
+if [ "$OWTOOLS" = "WATCOM" ]; then
     wmake -f ../wmake clean
     wmake -f ../wmake
 else
