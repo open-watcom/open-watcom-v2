@@ -53,7 +53,6 @@ if ($#ARGV == -1) {
 my $home      = $Common::config{'HOME'};
 my $OW        = $Common::config{'OW'};
 my $TOOLS     = $Common::config{'TOOLS'};
-my $WATCOM    = $Common::config{'WATCOM'};
 my $relroot   = $Common::config{'RELROOT'};
 
 if ($^O eq 'MSWin32') {
@@ -159,24 +158,6 @@ sub batch_output_set_test_env
     }
 }
 
-sub batch_output_set_boot_env
-{
-    if ($TOOLS eq 'WATCOM') {
-        print BATCH "$setenv WATCOM=", $WATCOM;
-        if ($^O eq 'MSWin32') {
-            print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt";
-            print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binnt;%WATCOM%\\binw;%OWDEFPATH%";
-        } elsif ($^O eq 'os2') {
-            print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2";
-            print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binp;%WATCOM%\\binw;%OWDEFPATH%";
-            print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%OWDEFBEGINLIBPATH%";
-        } elsif ($^O eq 'linux') {
-            print BATCH "$setenv INCLUDE=\$WATCOM/lh";
-            print BATCH "$setenv PATH=\$OWBINDIR:\$OWROOT/build:\$WATCOM/binl:\$OWDEFPATH";
-        }
-    }
-}
-
 sub batch_output_reset_env
 {
     if ($OStype eq 'UNIX') {
@@ -238,7 +219,6 @@ sub make_boot_batch
         else                        { print BATCH; }
     }
     close(INPUT);
-    batch_output_set_boot_env();
     print BATCH "$setenv OWRELROOT=", $relroot;
     # Add additional commands to do the build.
     print BATCH "$setenv OWDOCBUILD=0";
