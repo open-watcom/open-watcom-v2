@@ -58,7 +58,7 @@ extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern a_window         *DoWndMemOpen( address, mad_type_handle );
 extern a_window         *DoWndIOOpen( address*, mad_type_handle );
-extern a_window         *DoWndFuncOpen( bool global, mod_handle mod );
+extern a_window         *DoWndFuncOpen( bool is_global, mod_handle mod );
 extern void             DupStack( void );
 extern  a_window        *DoWndFileOpen( char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,

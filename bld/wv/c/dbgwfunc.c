@@ -67,7 +67,7 @@ typedef struct {
     name_list           ___n;           // don't reference directly!
     mod_handle          mod;
     gui_ord             max_name;
-    unsigned            global : 1;
+    unsigned            is_global : 1;
     unsigned            toggled_break : 1;
     unsigned            d2_only : 1;
 } func_window;
@@ -236,14 +236,14 @@ static void FuncRefresh( a_window *wnd )
     mod_handle  mod;
 
     if( WndFlags & UP_SYM_CHANGE ) {
-        if( func->global ) {
+        if( func->is_global ) {
             FuncNewMod( wnd, func->mod );
         } else if( DeAliasAddrMod( GetCodeDot(), &mod ) == SR_NONE ) {
             FuncNoMod( wnd );
         } else {
             FuncNewMod( wnd, mod );
         }
-    } else if( ( WndFlags & UP_CODE_ADDR_CHANGE ) && !func->global ) {
+    } else if( ( WndFlags & UP_CODE_ADDR_CHANGE ) && !func->is_global ) {
         if( DeAliasAddrMod( GetCodeDot(), &mod ) == SR_NONE ) {
             FuncNoMod( wnd );
         } else {
@@ -262,7 +262,7 @@ static void FuncSetOptions( a_window *wnd )
 {
     func_window *func = WndFunc( wnd );
 
-    func->d2_only = func->global && _IsOn( SW_FUNC_D2_ONLY );
+    func->d2_only = func->is_global && _IsOn( SW_FUNC_D2_ONLY );
     FuncNewOptions( wnd );
 }
 
@@ -312,7 +312,7 @@ wnd_info FuncInfo = {
     DefPopUp( FuncMenu )
 };
 
-extern a_window *DoWndFuncOpen( bool global, mod_handle mod )
+extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
 {
     func_window *func;
     wnd_class   class;
@@ -320,14 +320,14 @@ extern a_window *DoWndFuncOpen( bool global, mod_handle mod )
 
     func = WndMustAlloc( sizeof( func_window ) );
     func->mod = mod;
-    if( global ) {
+    if( is_global ) {
         class = WND_GBLFUNCTIONS;
-        func->global = TRUE;
+        func->is_global = TRUE;
     } else {
         class = WND_FUNCTIONS;
-        func->global = FALSE;
+        func->is_global = FALSE;
     }
-    if( global ) {
+    if( is_global ) {
         name = LIT( WindowGlobal_Functions );
     } else {
         name = LIT( WindowFunctions );
