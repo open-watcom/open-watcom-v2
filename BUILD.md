@@ -69,7 +69,7 @@ The build and clean-up processes are handled by two scripts.
 
     You may want to run `builder cprel` from inside the `bld` directory
     after successfully building everything to copy the complete system to
-    the release (`rel`) tree.
+    the release tree (`rel`).
 
 2. `clean.bat` (DOS/Windows), `clean.cmd` (OS/2), or `clean.sh` (Linux).
     This script erases all the object files, executable files, etc. created
@@ -96,6 +96,14 @@ do
 
 in the `bld` directory.
 
+For testing during development it is possible to run tests without need to do
+any installation. To run test do
+
+    builder buildtest
+
+in the `bld` or individual project test directory 
+(by example `bld/ctest` for C compiler).
+
 Note that during testing you may see some error messages. That is not
 necessarily a problem since some of the tests exercise the tools' ability to
 detect errors. Failed tests are reported at the end of testing or if the
@@ -104,12 +112,12 @@ testing process aborts prematurely.
 More Details
 ------------
 
-At the top level there is a tool that oversees traversing the build tree,
-deciding which projects to build for what platforms, logging the results to
-a file, and copying the finished software into the release tree, making
-fully automated builds a possibility. This tool is called `builder`. See
-`\bld\builder\builder.doc` for detailed info on the tool and the source if
-the documentation doesn't satisfy you.
+At the top level there is a tool that oversees traversing the build tree
+(`bld`), deciding which projects to build for what platforms, logging
+the results to a file, and copying the finished software into the release
+tree (`rel`), making fully automated builds a possibility. This tool is
+called `builder`. See `\bld\builder\builder.doc` for detailed info on
+the tool and the source if the documentation doesn't satisfy you.
 
 Each project has a `builder.ctl` builder script file. If you go to a project
 directory and run `builder`, it will make only that project; if you go to
@@ -135,11 +143,11 @@ Common builder commands:
       - Second build phase. Builds the entire system.
 
     builder cprel
-      - Copies the system into the "rel" release tree.
+      - Copies the system into the release tree (`rel`).
 
     builder rel
       - Second build phase. Builds the entire system and copies it into
-        the rel release tree. This is equivalent to "builder build"
+        the release tree (`rel`). This is equivalent to "builder build"
         followed by "builder cprel."
 
     builder clean
@@ -154,7 +162,11 @@ Common builder commands:
         can start documentation build from scratch.
 
     builder test
-      - Run all automated tests.
+      - Run all automated tests on release tree (`rel`).
+
+    builder buildtest
+      - Run automated tests on build tree (`bld`). This can be used for 
+        individual project testing during development.
 
 Many of the projects use the `pmake` features of builder (see `builder.doc`)
 to determine what to build. The `pmake` source is in `bld\pmake`.
