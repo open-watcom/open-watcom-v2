@@ -68,8 +68,8 @@ int                     ForceHardMode;
 bool                    ToldWinHandle = FALSE;
 extern a_window         *WndMain;
 //TODO: see if these two event sems could be replaced by single mutex
-HEV                     PumpMessageSem = NULL;
-HEV                     PumpMessageDoneSem = NULL;
+HEV                     PumpMessageSem = NULLHANDLE;
+HEV                     PumpMessageDoneSem = NULLHANDLE;
 #define STACK_SIZE      32768
 
 
@@ -170,7 +170,7 @@ VOID PumpMessageQueue( VOID )
                 WinDispatchMsg( GUIGetHAB(), &qmsg );
             }
         }
-        WinThreadAssocQueue( GUIGetHAB(), NULL );
+        WinThreadAssocQueue( GUIGetHAB(), NULLHANDLE );
         err = WinGetLastError( GUIGetHAB() );
         DosPostEventSem( PumpMessageDoneSem );
     }
@@ -183,7 +183,7 @@ void InitScreen( void )
     RestoreMainScreen( "WDPM" );
     DosCreateEventSem( NULL, &PumpMessageDoneSem, 0, FALSE );
     DosCreateEventSem( NULL, &PumpMessageSem, 0, FALSE );
-    DosCreateThread( &tid, (PFNTHREAD)PumpMessageQueue, NULL, 0, STACK_SIZE );
+    DosCreateThread( &tid, (PFNTHREAD)PumpMessageQueue, 0, 0, STACK_SIZE );
     DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }
 
