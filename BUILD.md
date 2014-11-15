@@ -101,7 +101,7 @@ any installation. To run test do
 
     builder buildtest
 
-in the `bld` or individual project test directory 
+in the `bld` or in individual project test directory 
 (by example `bld/ctest` for C compiler).
 
 Note that during testing you may see some error messages. That is not
