@@ -129,7 +129,13 @@ static void DoCallSet( void )
     int                 parm;
     int                 i;
     char                *new, *start;
-    lookup_token        new_parms[MAX_PARMS];
+    struct {
+        union {
+            const char  *arg;
+            char        *start;
+        } u;
+        unsigned        len;
+    }                   new_parms[MAX_PARMS];
     location_list       ll;
     dip_type_info       ti;
 
@@ -147,12 +153,14 @@ static void DoCallSet( void )
         Scan();
         if( CurrToken != T_RIGHT_PAREN ) {
             for( ;; ) {
-                if( parm >= MAX_PARMS ) Error( ERR_LOC, LIT( ERR_TOO_MANY_PARMS ) );
-                new_parms[parm].start = ScanPos();
+                if( parm >= MAX_PARMS )
+                    Error( ERR_LOC, LIT( ERR_TOO_MANY_PARMS ) );
+                new_parms[parm].u.arg = ScanPos();
                 GetLocation( &ll, &ti );
-                new_parms[parm].len = ScanPos() - new_parms[parm].start;
+                new_parms[parm].len = ScanPos() - new_parms[parm].u.arg;
                 ++parm;
-                if( CurrToken != T_COMMA ) break;
+                if( CurrToken != T_COMMA )
+                    break;
                 Scan();
             }
         }
@@ -184,17 +192,17 @@ static void DoCallSet( void )
             if( new == NULL ) {
                 parm = i;
                 for( i = 0; i < parm; ++i ) {
-                    _Free( new_parms[i].start );
+                    _Free( new_parms[i].u.start );
                 }
                 Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
             }
-            memcpy( new, new_parms[i].start, new_parms[i].len );
+            memcpy( new, new_parms[i].u.arg, new_parms[i].len );
             new[new_parms[i].len] = NULLCHAR;
-            new_parms[i].start = new;
+            new_parms[i].u.start = new;
         }
         FreeParms();
         for( i = 0; i < parm; ++i ) {
-            DefParms[i] = new_parms[i].start;
+            DefParms[i] = new_parms[i].u.start;
         }
     }
     DefCallType = ctype;
