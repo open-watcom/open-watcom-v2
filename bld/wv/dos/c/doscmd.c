@@ -79,7 +79,7 @@ enum { OPT_MONO = 1, OPT_COLOR, OPT_COLOUR, OPT_EGA43, OPT_VGA50,
        OPT_SIZE
 };
 
-static  unsigned    CmdStart;
+static  unsigned    cmdStart;
 
 static void GetLines()
 {
@@ -171,18 +171,18 @@ void ProcSysOptInit()
     ptr = MK_FP( _psp, 0x80 );
     len = *ptr;
     ptr[ len + 1 ] = NULLCHAR;
-    CmdStart = 0x81;
+    cmdStart = 0x81;
 }
 
 
 char __far *GetCmdArg( int num )
 {
-    if( num != 0 || CmdStart == 0 ) return( NULL );
-    return( MK_FP( _psp, CmdStart ) );
+    if( num != 0 || cmdStart == 0 ) return( NULL );
+    return( MK_FP( _psp, cmdStart ) );
 }
 
 void SetCmdArgStart( int num, char __far *ptr )
 {
     num = num; /* must be zero */
-    CmdStart = FP_OFF( ptr );
+    cmdStart = FP_OFF( ptr );
 }

@@ -60,7 +60,7 @@ extern int      _argc;
 extern char     **environ;
 #endif
 
-static char             *CmdStart;
+static char             *cmdStart;
 static volatile bool    BrkPending;
 static unsigned         NumArgs;
 
@@ -78,7 +78,7 @@ void GUImain( void )
 {
     struct sigaction sa;
 
-    CmdStart = _argv[1];
+    cmdStart = _argv[1];
     NumArgs = _argc - 1;
 
     /*
@@ -113,8 +113,8 @@ char *GetCmdArg( int num )
 {
     char    *cmd;
 
-    if( num >= NumArgs || CmdStart == NULL ) return( NULL );
-    for( cmd = CmdStart; num != 0; --num ) {
+    if( num >= NumArgs || cmdStart == NULL ) return( NULL );
+    for( cmd = cmdStart; num != 0; --num ) {
         cmd += strlen( cmd ) + 1;
     }
     return( cmd );
@@ -124,7 +124,7 @@ void SetCmdArgStart( int num, char *ptr )
 {
     NumArgs -= num;
     if( ptr != NULL && *ptr == NULLCHAR ) ++ptr;
-    CmdStart = (char *)ptr;
+    cmdStart = (char *)ptr;
 }
 
 void KillDebugger()

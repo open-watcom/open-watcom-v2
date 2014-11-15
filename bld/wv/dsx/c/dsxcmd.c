@@ -63,7 +63,7 @@ extern addr_seg                 _psp;
 extern unsigned                 CheckSize;
 extern unsigned long            MemSize;
 
-static char                     *CmdStart;
+static char                     *cmdStart;
 
 static char SysOptNameTab[] = {
     "Monochrome\0"
@@ -212,24 +212,24 @@ void ProcSysOptInit( void )
 #ifdef __OSI__
     {
         extern char *_LpCmdLine;
-        CmdStart = _LpCmdLine;
+        cmdStart = _LpCmdLine;
         ptr = ptr;
     }
 #else
     ptr = (char *)( (unsigned_8 *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF );
     ptr[ *(unsigned_8 *)ptr + 1 ] = NULLCHAR;
-    CmdStart = (char *)( (unsigned_8 *)ptr + 1 );
+    cmdStart = (char *)( (unsigned_8 *)ptr + 1 );
 #endif
 }
 
 
 char *GetCmdArg( int num )
 {
-    return( num ? NULL : CmdStart );
+    return( num ? NULL : cmdStart );
 }
 
 void SetCmdArgStart( int num, char *ptr )
 {
     num = num; /* must be zero */
-    CmdStart = ptr;
+    cmdStart = ptr;
 }

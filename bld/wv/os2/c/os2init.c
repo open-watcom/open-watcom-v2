@@ -49,7 +49,7 @@ extern void     DebugFini( void );
 extern char     *StrCopy( char *, char * );
 extern unsigned EnvLkup( char *, char *, unsigned );
 
-static char             *CmdStart;
+static char             *cmdStart;
 static volatile bool    BrkPending;
 
 static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
@@ -70,8 +70,8 @@ void GUImain( void )
     USHORT              prev_act;
 
     DosSetMaxFH( 40 );
-    CmdStart=buff;
-    getcmd( CmdStart );
+    cmdStart = buff;
+    getcmd( cmdStart );
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
 }
@@ -94,14 +94,15 @@ void WndCleanUp()
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 || CmdStart == NULL ) return( NULL );
-    return( CmdStart );
+    if( num != 0 || cmdStart == NULL )
+        return( NULL );
+    return( cmdStart );
 }
 
 void SetCmdArgStart( int num, char *ptr )
 {
     num = num; /* must be zero */
-    CmdStart = ptr;
+    cmdStart = ptr;
 }
 
 void KillDebugger( int ret_code )
