@@ -458,10 +458,10 @@ static dip_status DIGREGISTER WVTypePtrAddrSpace( imp_image_handle *ii, imp_type
 }
 
 static dip_status DIGREGISTER WVTypeThunkAdjust( imp_image_handle *ii, imp_type_handle *obj,
-                imp_type_handle *member, location_context *lc, address *a )
+                imp_type_handle *member_ith, location_context *lc, address *a )
 {
     /* will never get called */
-    ii = ii; obj = obj; member = member; lc = lc; a = a;
+    ii = ii; obj = obj; member_ith = member_ith; lc = lc; a = a;
     return( DS_FAIL );
 }
 
@@ -565,7 +565,7 @@ static dip_status DIGREGISTER WVSymInfo( imp_image_handle *ii, imp_sym_handle *i
 {
     memset( si, 0, sizeof( *si ) );
     ii = ii; lc = lc;
-    si->global = TRUE;
+    si->is_global = TRUE;
     if( is->ri != NULL ) {
         si->kind = SK_DATA;
         return( DS_OK );

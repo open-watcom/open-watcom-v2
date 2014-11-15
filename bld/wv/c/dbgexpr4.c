@@ -710,7 +710,7 @@ void DoStringConcat( void )
  * DoGivenField - do a structure field selection, given the field pointer
  */
 
-void DoGivenField( sym_handle *member )
+void DoGivenField( sym_handle *member_hdl )
 {
     LValue( ExprSP );
     if( !(ExprSP->flags & SF_LOCATION) ) {
@@ -720,7 +720,7 @@ void DoGivenField( sym_handle *member )
     ExprSP->lc->object = ExprSP->v.loc;
     ExprSP->lc->have_object = TRUE;
     ExprSP->lc->maybe_have_object = FALSE;
-    ExprSymbol( ExprSP, member );
+    ExprSymbol( ExprSP, member_hdl );
     SymResolve( ExprSP );
 }
 

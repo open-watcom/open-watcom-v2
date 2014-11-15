@@ -86,7 +86,7 @@ extern void             PopInpStack( void );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
-extern void             DoGivenField( sym_handle *member );
+extern void             DoGivenField( sym_handle *member_hdl );
 extern void             StartSubscript( void );
 extern void             AddSubscript( void );
 extern void             EndSubscript( void );
@@ -620,7 +620,7 @@ static void VarNodeSetBits( sym_handle *sh, var_node *v )
     if( sinfo.is_private ) v->bits |= VARNODE_PRIVATE;
     if( sinfo.is_protected ) v->bits |= VARNODE_PROTECTED;
     if( sinfo.compiler ) v->bits |= VARNODE_COMPILER;
-    if( sinfo.is_static && sinfo.member ) v->bits |= VARNODE_STATIC;
+    if( sinfo.is_static && sinfo.is_member ) v->bits |= VARNODE_STATIC;
 }
 
 typedef struct {
@@ -2268,7 +2268,7 @@ static walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
     switch( swi ) {
     case SWI_SYMBOL:
         SymInfo( sym, NULL, &sinfo );
-        if( !sinfo.member && sinfo.kind != SK_TYPE ) {
+        if( !sinfo.is_member && sinfo.kind != SK_TYPE ) {
             if( d->v == NULL ) {
                 SymName( sym, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
                 // nyi - use SymInfo when Brian implements the "this" indicator

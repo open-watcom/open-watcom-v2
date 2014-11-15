@@ -539,9 +539,9 @@ dip_status SymHdl2GblInfo( imp_image_handle *ii, imp_sym_handle *is,
         si->kind = SK_NONE;
     }
     if( kind & GBL_KIND_STATIC ) {
-        si->global = 0;
+        si->is_global = 0;
     } else {
-        si->global = 1;
+        si->is_global = 1;
     }
     return( DS_OK );
 }

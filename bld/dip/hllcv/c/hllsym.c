@@ -1509,7 +1509,7 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
     } else if( is->type == HLL_SYM_TYPE_HLL_SSR ) {
         //location_list       ll;
         //dip_status          ds;
-        //imp_sym_handle      global;
+        //imp_sym_handle      global_ish;
         //addr_off            dummy_off;
         //search_result       sr;
 
@@ -1524,10 +1524,10 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
             if( ll.num != 1 ) break;
             if( ll.e[0].type != LT_ADDR ) break;
             dummy_off = 0;
-            sr = TableSearchForAddr( ii, ll.e[0].u.addr, &global,
+            sr = TableSearchForAddr( ii, ll.e[0].u.addr, &global_ish,
                                 &dummy_off, sstGlobalPub );
             if( sr != SR_EXACT ) break;
-            if( hllSymGetName( ii, &global, &name, &len, NULL ) != DS_OK ) break;
+            if( hllSymGetName( ii, &global_ish, &name, &len, NULL ) != DS_OK ) break;
             if( sn == SN_OBJECT ) {
                 return( hllNameCopy( buff, name, max, len ) );
             }
@@ -1715,7 +1715,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
             ? pub->hll.seg : pub->cv3.seg;
         si->kind = hllIsSegExecutable( ii, seg )
                  ? SK_CODE : SK_DATA;
-        si->global = 1;
+        si->is_global = 1;
     } else if( is->type == HLL_SYM_TYPE_HLL_SSR ) {
         hll_ssr_all     *ssr = p;
 
@@ -1723,7 +1723,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
         case HLL_SSR_PUBLIC: /* never seen this.. */
             si->kind = hllIsSegExecutable( ii, ssr->public_.type )
                      ? SK_CODE : SK_DATA;
-            si->global = 1;
+            si->is_global = 1;
             break;
 
         case HLL_SSR_ENTRY: //??
@@ -1761,7 +1761,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
 
         case HLL_SSR_STATIC:
         case HLL_SSR_STATIC2:
-            si->global = 1; //??
+            si->is_global = 1; //??
             /* fall thru */
         case HLL_SSR_STATIC_SCOPED:
             si->kind = SK_DATA;
@@ -1813,7 +1813,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
         } else {
             si->kind = SK_DATA;
         }
-        si->global = 1;
+        si->is_global = 1;
         break;
     case S_PUB32:
         if( hllIsSegExecutable( ii, p->pub32.f.segment ) ) {
@@ -1821,12 +1821,12 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
         } else {
             si->kind = SK_DATA;
         }
-        si->global = 1;
+        si->is_global = 1;
         break;
     case S_GDATA16:
     case S_GDATA32:
     case S_GTHREAD32:
-        si->global = 1;
+        si->is_global = 1;
         /* fall through */
     case S_REGISTER:
     case S_MANYREG:
@@ -1847,7 +1847,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
         si->kind = SK_TYPE;
         break;
     case S_GPROC16:
-        si->global = 1;
+        si->is_global = 1;
         /* fall through */
     case S_LPROC16:
         si->kind = SK_PROCEDURE;
@@ -1862,7 +1862,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
         //NYI: fill in si->num_parms
         break;
     case S_GPROC32:
-        si->global = 1;
+        si->is_global = 1;
         /* fall through */
     case S_LPROC32:
         si->kind = SK_PROCEDURE;

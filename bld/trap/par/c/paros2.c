@@ -96,12 +96,12 @@ static int CheckForPort( int i, unsigned char value )
 
 char *InitSys( void )
 {
-    SEL         global;
-    SEL         local;
+    SEL         sel_global;
+    SEL         sel_local;
     int         i;
 
-    DosGetInfoSeg( &global, &local );
-    GInfoSeg = MK_FP( global, 0 );
+    DosGetInfoSeg( &sel_global, &sel_local );
+    GInfoSeg = MK_FP( sel_global, 0 );
 
     PortsFound = 0;
     for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {

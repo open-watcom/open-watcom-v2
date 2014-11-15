@@ -1857,7 +1857,7 @@ void BreakAllModEntries( mod_handle handle )
     for( i = 0; i < NameListNumRows( &list ); ++i ) {
         addr = NameListAddr( &list, i );
         SymInfo( NameListHandle( &list, i ), NULL, &sinfo );
-        if( !sinfo.global && !sinfo.is_public ) continue;
+        if( !sinfo.is_global && !sinfo.is_public ) continue;
         if( have_mod_cue && DeAliasAddrCue( handle, addr, ch ) != SR_NONE ) {
             if( CueFileId( ch ) != CueFileId( ch_mod ) ) continue;
         }

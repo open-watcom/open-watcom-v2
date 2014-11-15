@@ -959,7 +959,7 @@ dip_status hllTypeSymGetInfo( imp_image_handle *ii, imp_sym_handle *is,
     case LF_STMEMBER:
     case LF_MEMBER:
         si->kind = SK_DATA;
-        si->member = 1;
+        si->is_member = 1;
         switch( p->member.f.attr.f.access ) {
         case CV_PRIVATE:
             si->is_private = 1;
@@ -974,7 +974,7 @@ dip_status hllTypeSymGetInfo( imp_image_handle *ii, imp_sym_handle *is,
         break;
     case LF_ONEMETHOD:
         si->kind = SK_CODE;
-        si->member = 1;
+        si->is_member = 1;
         switch( p->onemethod.f.attr.f.access ) {
         case CV_PRIVATE:
             si->is_private = 1;
@@ -989,7 +989,7 @@ dip_status hllTypeSymGetInfo( imp_image_handle *ii, imp_sym_handle *is,
         break;
     case LF_METHOD:
         si->kind = SK_CODE;
-        si->member = 1;
+        si->is_member = 1;
         minfo = GetMethodInfo( ii, p->method.f.mList, is->mfunc_idx );
         if( minfo == NULL ) return( DS_ERR | DS_FAIL );
         switch( minfo->attr.f.access ) {

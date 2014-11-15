@@ -1517,7 +1517,7 @@ dip_status SymHdl2MbrInfo( imp_image_handle *ii, imp_sym_handle *is,
         si->kind = SK_DATA;
         break;
     }
-    si->member = 1;
+    si->is_member = 1;
     if( attrib & 0x01 ) si->compiler = 1;
     if( attrib & 0x02 ) si->is_public = 1;
     if( attrib & 0x04 ) si->is_protected = 1;

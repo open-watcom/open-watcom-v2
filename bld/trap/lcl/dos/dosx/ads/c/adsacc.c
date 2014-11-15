@@ -195,7 +195,7 @@ void SetDbgTask( void )
 {
 }
 
-static  word    LookUp( word sdtseg, word seg, word global )
+static  word    LookUp( word sdtseg, word seg, word global_sel )
 {
     dword       sdtoff;
     dword       sdtlim;
@@ -206,7 +206,7 @@ static  word    LookUp( word sdtseg, word seg, word global )
     linear = GetLinear( seg, 0 );
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
         if( sdtoff == ( seg & 0xfff8 ) ) continue;
-        otherseg = sdtoff + ( global ? 0 : 4 );
+        otherseg = sdtoff + ( global_sel ? 0 : 4 );
         if( !WriteOk( otherseg ) ) continue;
         if( GetLinear( otherseg, 0 ) != linear ) continue;
                                                                           _DBG3(("lookup %4.4x", otherseg));

@@ -707,7 +707,7 @@ typedef struct {
 } print_fld;
 
 
-static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member, void *_d )
+static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, void *_d )
 {
     print_fld   *d = _d;
     char        *name;
@@ -722,12 +722,12 @@ static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member, void *_
         }
         d->first_time = FALSE;
         DupStack();
-        len = SymName( member, NULL, SN_SOURCE, NULL, 0 );
+        len = SymName( member_hdl, NULL, SN_SOURCE, NULL, 0 );
         _AllocA( name, len + 1 );
-        len = SymName( member, NULL, SN_SOURCE, name, len + 1 );
+        len = SymName( member_hdl, NULL, SN_SOURCE, name, len + 1 );
         PrtStr( name, len );
         PrtChar( '=' );
-        DoGivenField( member );
+        DoGivenField( member_hdl );
         ExprValue( ExprSP );
         PrintValue();
         PopEntry();

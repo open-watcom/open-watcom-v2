@@ -1134,7 +1134,7 @@ static unsigned ImpSymName( imp_image_handle *ii,
     unsigned            len;
     location_list       ll;
     dip_status          ds;
-    imp_sym_handle      global;
+    imp_sym_handle      global_ish;
     addr_off            dummy_off;
     search_result       sr;
 
@@ -1148,10 +1148,10 @@ static unsigned ImpSymName( imp_image_handle *ii,
         if( ll.num != 1 ) break;
         if( ll.e[0].type != LT_ADDR ) break;
         dummy_off = 0;
-        sr = TableSearchForAddr( ii, ll.e[0].u.addr, &global,
+        sr = TableSearchForAddr( ii, ll.e[0].u.addr, &global_ish,
                             &dummy_off, sstGlobalPub );
         if( sr != SR_EXACT ) break;
-        if( SymGetName( ii, &global, &name, &len, NULL ) != DS_OK ) break;
+        if( SymGetName( ii, &global_ish, &name, &len, NULL ) != DS_OK ) break;
         if( sn == SN_OBJECT ) {
             return( NameCopy( buff, name, max, len ) );
         }
@@ -1248,7 +1248,7 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
         } else {
             si->kind = SK_DATA;
         }
-        si->global = 1;
+        si->is_global = 1;
         break;
     case S_PUB32:
         if( SegIsExecutable( ii, p->pub32.f.segment ) == DS_OK ) {
@@ -1256,12 +1256,12 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
         } else {
             si->kind = SK_DATA;
         }
-        si->global = 1;
+        si->is_global = 1;
         break;
     case S_GDATA16:
     case S_GDATA32:
     case S_GTHREAD32:
-        si->global = 1;
+        si->is_global = 1;
         /* fall through */
     case S_REGISTER:
     case S_MANYREG:
@@ -1282,7 +1282,7 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
         si->kind = SK_TYPE;
         break;
     case S_GPROC16:
-        si->global = 1;
+        si->is_global = 1;
         /* fall through */
     case S_LPROC16:
         si->kind = SK_PROCEDURE;
@@ -1297,7 +1297,7 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
         //NYI: fill in si->num_parms
         break;
     case S_GPROC32:
-        si->global = 1;
+        si->is_global = 1;
         /* fall through */
     case S_LPROC32:
         si->kind = SK_PROCEDURE;

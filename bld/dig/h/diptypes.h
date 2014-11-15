@@ -158,8 +158,8 @@ typedef unsigned_8 sym_kind; enum {
 
 typedef struct {
     sym_kind            kind;
-    unsigned            global                  : 1;
-    unsigned            member                  : 1;
+    unsigned            is_global               : 1;
+    unsigned            is_member               : 1;
     unsigned            compiler                : 1;
     unsigned            is_private              : 1;
     unsigned            is_protected            : 1;

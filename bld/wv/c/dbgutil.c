@@ -192,7 +192,7 @@ unsigned QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq )
     sym_info    sinfo;
 
     SymInfo( sh, NULL, &sinfo );
-    if( sinfo.global ) {
+    if( sinfo.is_global ) {
         len = 0;
     } else {
         mod = SymMod( sh );

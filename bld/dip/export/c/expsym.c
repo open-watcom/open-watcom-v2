@@ -145,7 +145,7 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
     } else {
         si->kind = SK_DATA;
     }
-    si->global = 1;
+    si->is_global = 1;
     si->is_static = 1;
     return( DS_OK );
 }

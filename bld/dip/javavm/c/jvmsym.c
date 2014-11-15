@@ -547,7 +547,7 @@ dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
 }
 
 //NYI: sym_info fields not set
-//    unsigned          global                  : 1;
+//    unsigned          is_global               : 1;
 //    unsigned          compiler                : 1;
 //    /* only valid for SK_PROCEDURE */
 //    unsigned          rtn_calloc              : 1;
@@ -567,12 +567,12 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
     switch( is->kind ) {
     case JS_METHOD:
         si->kind = SK_PROCEDURE;
-        si->member = 1;
+        si->is_member = 1;
         si->rtn_size = GetU32( is->u.mb + offsetof( struct methodblock, code_length ) );
         break;
     case JS_FIELD:
         si->kind = SK_DATA;
-        si->member = 1;
+        si->is_member = 1;
         break;
     case JS_LOCAL:
         si->kind = SK_DATA;

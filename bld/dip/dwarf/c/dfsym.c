@@ -542,23 +542,23 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
     }
     si->compiler = is->isartificial;
     if( is->isstatic ) {
-        si->global = 0;
+        si->is_global = 0;
     } else {
-        si->global = 1;
+        si->is_global = 1;
     }
     switch( is->sclass ) {
     case SYM_MEMVAR:
-        si->member = 1;
+        si->is_member = 1;
         si->is_static = 1;
         break;
     case SYM_MEM:
     case SYM_MEMF:
     case SYM_VIRTF:
-        si->member = 1;
+        si->is_member = 1;
         si->is_static = 0;
         break;
     default:
-        si->member = 0;
+        si->is_member = 0;
         si->is_static = 0;
     }
     return( DS_OK );

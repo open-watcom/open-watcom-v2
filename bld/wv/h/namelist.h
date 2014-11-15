@@ -51,8 +51,8 @@ typedef struct {
 
 extern void             NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup_ok );
 extern int              NameListNumRows( name_list *name );
-extern unsigned         NameListName( name_list *name, int member, char *buff, symbol_name type );
+extern unsigned         NameListName( name_list *name, int member_idx, char *buff, symbol_name type );
 extern void             NameListInit( name_list *name, walk_find type );
 extern void             NameListFree( name_list *name );
-extern address          NameListAddr( name_list *name, int member );
-extern sym_handle       *NameListHandle( name_list *name, int member );
+extern address          NameListAddr( name_list *name, int member_idx );
+extern sym_handle       *NameListHandle( name_list *name, int member_idx );

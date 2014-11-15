@@ -148,8 +148,8 @@ void JoinPipeThread( void FAR * _thread )
     APIRET      rc;
     USHORT      bytes_read;
     USHORT      bytes_written;
-    SEL         global;
-    SEL         local;
+    SEL         sel_global;
+    SEL         sel_local;
     a_pipe      *me;
     a_pipe      *him;
     a_link      *link;
@@ -157,9 +157,9 @@ void JoinPipeThread( void FAR * _thread )
     me = thread->me;
     him = thread->him;
     link = thread->link;
-    rc = DosGetInfoSeg( &global, &local );
+    rc = DosGetInfoSeg( &sel_global, &sel_local );
     rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL,
-                     0, ((LINFOSEG FAR *)MK_FP( local, 0 ))->tidCurrent );
+                     0, ((LINFOSEG FAR *)MK_FP( sel_local, 0 ))->tidCurrent );
     while( me->connected && him->connected ) {
         rc = DosRead( me->write_hdl, buff, BUFF_LEN, &bytes_read );
         if( rc != 0 || bytes_read == 0 ) break;

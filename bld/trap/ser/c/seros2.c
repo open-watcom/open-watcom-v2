@@ -282,17 +282,17 @@ void Wait( unsigned timer_ticks )
 
 char *InitSys( void )
 {
-    SEL         global;
-    SEL         local;
+    SEL         sel_global;
+    SEL         sel_local;
     USHORT      rc;
 
     if( MaxBaud == 0 ) {
         MaxBaud = 3; /* 19200 -- see table */
     }
-    rc = DosGetInfoSeg( &global, &local );
+    rc = DosGetInfoSeg( &sel_global, &sel_local );
     if( rc != 0 ) return( TRP_OS2_no_info );
-    GInfoSeg = MK_FP( global, 0 );
-    LInfoSeg = MK_FP( local, 0 );
+    GInfoSeg = MK_FP( sel_global, 0 );
+    LInfoSeg = MK_FP( sel_local, 0 );
     rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL,
                      0, LInfoSeg->tidCurrent );
     if( rc != 0 ) return( TRP_OS2_cannot_set_thread_priority );
