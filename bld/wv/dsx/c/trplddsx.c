@@ -154,6 +154,8 @@ extern void DoIntSwitchToRM( void );
     "popad" \
     modify exact [];
 
+#define P1616NULL   0L
+
 typedef unsigned long P1616;
 typedef P1616 extension_routine( unsigned, void *, void * );
 
@@ -200,13 +202,13 @@ P1616 __cdecl find_entry( void )
 */
 int __cdecl D32NullPtrCheck( unsigned short on )
 {
-    static int      old_state;
+    static int  old_state;
     int         old;
     char        buff[128];
 
-    if( _D32NullPtrCheck == NULL ) {
+    if( _D32NullPtrCheck == P1616NULL ) {
         _D32NullPtrCheck = find_entry();
-        if( _D32NullPtrCheck == NULL )
+        if( _D32NullPtrCheck == P1616NULL )
             return( 0 );
         EnvLkup( "DOS4G", buff, sizeof( buff ) );
         if( strstr( strupr( buff ), "NULLP" ) ) {
@@ -396,7 +398,8 @@ static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
 
     callstruct = (void __far *)PMData->parmarea;
     callstruct->remote = trap_ver->remote;
-    if( parm == NULL ) parm = "";
+    if( parm == NULL )
+        parm = "";
     _fstrcpy( (char __far *)&callstruct[1], parm );
     callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parm ) + 1;
     GoToRealMode( RMTrapInit );

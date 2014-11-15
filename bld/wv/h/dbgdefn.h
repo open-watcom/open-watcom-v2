@@ -55,12 +55,6 @@ typedef struct machine_state    machine_state;
 #include "machtype.h"
 
 #define NULLCHAR '\0'
-#undef NULL /* rfx.c includes STDLIB.H first */
-#if defined(__LARGE__) || defined(__COMPACT__)
-#define NULL     0L
-#else
-#define NULL     0
-#endif
 #define NULL_RTN (void (*)())0
 #define ARG_TERMINATE   '\xff'
 
