@@ -35,13 +35,13 @@
 
 #if defined( __UNIX__ ) || !defined( __WATCOMC__ )
 
-int global uicharlen( int ch )
+int UIAPI uicharlen( int ch )
 /****************************/
 {
     return( 1 );
 }
 
-int global uiisdbcs( void )
+int UIAPI uiisdbcs( void )
 /*************************/
 {
     return( FALSE );
@@ -51,13 +51,13 @@ int global uiisdbcs( void )
 
 #include <mbctype.h>
 
-int global uicharlen( int ch )
+int UIAPI uicharlen( int ch )
 /****************************/
 {
     return( _mbislead( ch ) ? 2 : 1 );
 }
 
-int global uiisdbcs( void )
+int UIAPI uiisdbcs( void )
 /*************************/
 {
     return( __IsDBCS );
@@ -67,14 +67,14 @@ int global uiisdbcs( void )
 
 #else
 
-int global uicharlen( int ch )
+int UIAPI uicharlen( int ch )
 /****************************/
 {
     ch=ch;
     return( 1 ); // this is the stub version.  Real verion in system directories
 }
 
-int global uiisdbcs( void )
+int UIAPI uiisdbcs( void )
 /*************************/
 {
     return( 0 );

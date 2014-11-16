@@ -67,9 +67,8 @@ void uimousespeed( unsigned speed )
     speed = speed;
 }
 
-bool global initmouse( install )
-/******************************/
-bool                    install;
+bool UIAPI initmouse( bool install )
+/**********************************/
 {
     install = install;
     MouseInstalled = FALSE;
@@ -81,7 +80,7 @@ void extern finimouse()
 {
 }
 
-void global uisetmouseposn( ORD row, ORD col )
+void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     row = row;
     col = col;

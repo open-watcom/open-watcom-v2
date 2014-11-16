@@ -35,7 +35,7 @@
 #include "clibext.h"
 
 
-void global uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
+void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
                    ATTR attr, const char __FAR *string, int slen )
 /****************************************************************/
 {
@@ -69,7 +69,7 @@ void global uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
 }
 
 
-void global uivtextput( register VSCREEN        *vptr,
+void UIAPI uivtextput( register VSCREEN        *vptr,
                         register ORD            row,
                         register ORD            col,
                         register ATTR           attr,
@@ -84,7 +84,7 @@ void global uivtextput( register VSCREEN        *vptr,
 }
 
 
-void global uivrawput( register VSCREEN *vptr,
+void UIAPI uivrawput( register VSCREEN *vptr,
                        register ORD     row,
                        register ORD     col,
                        register PIXEL   *pixels,

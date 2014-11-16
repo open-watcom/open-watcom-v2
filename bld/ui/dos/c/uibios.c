@@ -110,7 +110,7 @@ void intern setvideomode( unsigned mode )
 }
 
 
-bool global uiset80col( void )
+bool UIAPI uiset80col( void )
 /****************************/
 
 {
@@ -142,7 +142,7 @@ extern unsigned char DOS_int( unsigned short, unsigned short, unsigned short );
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-void __far * global video_buffer( void __far *vbuff )
+void __far * UIAPI video_buffer( void __far *vbuff )
 /***********************************************/
 {
 #ifdef __386__
@@ -278,13 +278,13 @@ void intern initdbcs( void )
     Init = TRUE;
 }
 
-int global uiisdbcs( void )
+int UIAPI uiisdbcs( void )
 {
     if( !Init ) initdbcs();
     return( Pairs[0].start_range != 0 );
 }
 
-int global uicharlen( int ch )
+int UIAPI uicharlen( int ch )
 {
     dbcs_pair           *p;
 
@@ -462,7 +462,7 @@ int intern initbios( void )
     return( initialized );
 }
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     /* this routine converts milli-seconds into platform  */
     /* dependant units - used to set mouse & timer delays */

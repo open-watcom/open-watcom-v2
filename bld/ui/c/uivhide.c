@@ -32,7 +32,7 @@
 
 #include "uidef.h"
 
-unsigned global uivhide( VSCREEN *vptr )
+unsigned UIAPI uivhide( VSCREEN *vptr )
 /**************************************/
 {
     if( vptr->open && !(vptr->flags & V_HIDDEN) ) {
@@ -44,7 +44,7 @@ unsigned global uivhide( VSCREEN *vptr )
 }
 
 
-unsigned global uivshow( VSCREEN *vptr )
+unsigned UIAPI uivshow( VSCREEN *vptr )
 /**************************************/
 {
     if( vptr->flags & V_HIDDEN ) {

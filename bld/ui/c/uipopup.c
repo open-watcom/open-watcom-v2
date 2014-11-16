@@ -275,7 +275,7 @@ static bool KeyboardSelect( EVENT ev, int num, MENUITEM *menu, DESCMENU *desc )
     return( FALSE );
 }
 
-global EVENT uicreatepopupdesc( MENUITEM *menu, DESCMENU *desc, bool left,
+EVENT UIAPI uicreatepopupdesc( MENUITEM *menu, DESCMENU *desc, bool left,
                                 bool right, EVENT curr_item, bool sub )
 {
     SAREA       keep_inside;
@@ -601,7 +601,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
     return( new_ev );
 }
 
-global EVENT uicreatepopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
+EVENT UIAPI uicreatepopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
                                   bool right, EVENT curr_item,
                                   SAREA *keep_inside, bool sub )
 {
@@ -609,7 +609,7 @@ global EVENT uicreatepopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
                                keep_inside, NULL, NULL, sub ) );
 }
 
-global EVENT uicreatesubpopup( MENUITEM *menu, DESCMENU *desc, bool left,
+EVENT UIAPI uicreatesubpopup( MENUITEM *menu, DESCMENU *desc, bool left,
                                bool right, EVENT curr_item, SAREA *keep_inside,
                                DESCMENU *parent_menu, int index )
 {
@@ -625,7 +625,7 @@ global EVENT uicreatesubpopup( MENUITEM *menu, DESCMENU *desc, bool left,
                                     &return_exclude ) );
 }
 
-global EVENT uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
+EVENT UIAPI uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
                                      bool right, EVENT curr_item, SAREA *keep_inside,
                                      SAREA *return_inside, SAREA *return_exclude )
 {
@@ -633,7 +633,7 @@ global EVENT uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
                                return_inside, return_exclude, TRUE ) );
 }
 
-global EVENT uicreatepopup( ORD row, ORD col, MENUITEM *menu, bool left, bool right,
+EVENT UIAPI uicreatepopup( ORD row, ORD col, MENUITEM *menu, bool left, bool right,
                             EVENT curr_item )
 {
     DESCMENU    desc;

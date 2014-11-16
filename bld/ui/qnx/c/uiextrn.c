@@ -38,24 +38,24 @@
 #include "uivirt.h"
 
         /* console number */
-global unsigned         UIConsole = 0;
+unsigned         UIConsole = 0;
         /* filedescriptor */
-global unsigned         UIConHandle = 0;
+unsigned         UIConHandle = 0;
         /* proxy for all events */
-global pid_t            UIProxy;
+pid_t            UIProxy;
         /* remote proxy if nec.. */
-global pid_t            UIRemProxy;
+pid_t            UIRemProxy;
         /* proxy's incoming value (usually same as UIProxy */
-global pid_t            UILocalProxy;
+pid_t            UILocalProxy;
         /* Node of console mgr */
-global nid_t            UIConNid;
+nid_t            UIConNid;
         /* process group */
-global pid_t            UIPGroup;
+pid_t            UIPGroup;
         /* tell keyboard app wants to see shift, alt, ... keys... */
-global unsigned         UIWantShiftChanges = TRUE;
+unsigned         UIWantShiftChanges = TRUE;
         /* Disable checking on non console devices */
-global unsigned         UIDisableShiftChanges = FALSE;
+unsigned         UIDisableShiftChanges = FALSE;
         /* anytime is mouse time ?!? */
-global unsigned long    MouseTime = 0L;
+unsigned long    MouseTime = 0L;
         /* Active virtual console functions */
-global VirtDisplay      UIVirt;
+VirtDisplay      UIVirt;

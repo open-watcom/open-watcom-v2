@@ -35,9 +35,10 @@
 #include "biosui.h"
 #include "charmap.h"
 
-extern  void    (intern *DrawCursor)( void );
-        unsigned short  Points;                 /* Number of lines / char  */
-extern int uimousealign( void );
+extern void     (intern *DrawCursor)( void );
+extern int      uimousealign( void );
+
+unsigned short  Points;                 /* Number of lines / char  */
 
 struct mouse_data {
     unsigned short    bx,cx,dx;
@@ -98,7 +99,7 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row,
 
     *status = state.bx;
 
-    if( DrawCursor==NULL ) {
+    if( DrawCursor == NULL ) {
         *col = state.cx/MOUSE_SCALE;
         *row = state.dx/MOUSE_SCALE;
     } else {
@@ -160,14 +161,14 @@ void intern setupmouse( void )
 {
     int     dx;
 
-    if( DrawCursor==NULL ) {
+    if( DrawCursor == NULL ) {
         dx = ( UIData->width - 1 )*MOUSE_SCALE;
     } else {
         dx =   UIData->width * MOUSE_SCALE - 1;
     }
     MouseInt( 7, 0, 0, dx );
 
-    if( DrawCursor==NULL ) {
+    if( DrawCursor == NULL ) {
         dx = ( UIData->height - 1 )*MOUSE_SCALE;
     } else {
         dx = UIData->height * Points - 1;
@@ -183,7 +184,7 @@ void intern setupmouse( void )
     uimousespeed( UIData->mouse_speed );
 }
 
-bool global initmouse( int install )
+bool UIAPI initmouse( int install )
 /**********************************/
 {
     MouseInstalled = FALSE;
@@ -203,7 +204,7 @@ bool global initmouse( int install )
 }
 
 
-void global finimouse( void )
+void UIAPI finimouse( void )
 /***************************/
 {
     if( MouseInstalled ) {
@@ -211,13 +212,12 @@ void global finimouse( void )
     }
 }
 
-void global uisetmouseposn(             /* SET MOUSE POSITION */
-    ORD row,                            /* - mouse row        */
-    ORD col )                           /* - mouse column     */
+void UIAPI uisetmouseposn( ORD row, ORD col )
+/*******************************************/
 {
     MouseRow = row * UIData->mouse_yscale;
     MouseCol = col * UIData->mouse_xscale;
-    if( DrawCursor==NULL ) {
+    if( DrawCursor == NULL ) {
         MouseInt( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
     } else {
         MouseInt( 4, 0, MouseCol, MouseRow );

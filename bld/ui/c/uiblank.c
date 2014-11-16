@@ -51,21 +51,21 @@ static void blankarea( SAREA area, ATTR attr )
 }
 
 
-void global uiblankattr( ATTR attr )
+void UIAPI uiblankattr( ATTR attr )
 /**********************************/
 {
     blankarea( UIData->blank.area, attr );
 }
 
 
-void global uiblankarea( SAREA area )
+void UIAPI uiblankarea( SAREA area )
 /***********************************/
 {
     blankarea( area, UIData->attrs[ ATTR_NORMAL ] );
 }
 
 
-void global uiblankscreen( void )
+void UIAPI uiblankscreen( void )
 /*******************************/
 {
     blankarea( UIData->blank.area, 0x07 );

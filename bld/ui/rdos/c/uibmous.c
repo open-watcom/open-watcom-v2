@@ -35,14 +35,14 @@
 
 static int MouseOn = FALSE;
 
-void global uisetmouse( MOUSEORD row, MOUSEORD col )
+void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /**************************************************/
 {
     RdosSetMousePosition( col, row );
 }
 
 
-void global uimouse( int func )
+void UIAPI uimouse( int func )
 /*****************************/
 {
     if( func == MOUSE_ON ) {

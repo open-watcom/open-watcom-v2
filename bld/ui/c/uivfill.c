@@ -33,7 +33,7 @@
 #include "uidef.h"
 
 
-void global uivfill( register VSCREEN   *vptr,
+void UIAPI uivfill( register VSCREEN   *vptr,
                      register SAREA     area,
                      register ATTR      attr,
                      register char      ch )

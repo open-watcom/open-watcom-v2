@@ -94,7 +94,7 @@ static void uisetmouseon( register MOUSEORD row,
     }
 }
 
-void global uisetmouse( register MOUSEORD row,
+void UIAPI uisetmouse( register MOUSEORD row,
                         register MOUSEORD col )
 /*********************************************/
 {
@@ -104,7 +104,7 @@ void global uisetmouse( register MOUSEORD row,
 }
 
 
-void global uimouse( int func )
+void UIAPI uimouse( int func )
 /*****************************/
 {
     if( func == MOUSE_ON ) {

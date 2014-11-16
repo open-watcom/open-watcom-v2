@@ -52,7 +52,7 @@ VSCREEN* intern findvscreen( register ORD       row,
 }
 
 
-void global uivdirty( register VSCREEN  *vptr,
+void UIAPI uivdirty( register VSCREEN  *vptr,
                       register SAREA    area )
 /********************************************/
 {
@@ -62,7 +62,7 @@ void global uivdirty( register VSCREEN  *vptr,
 }
 
 
-void global uivsetactive( register VSCREEN *vptr )
+void UIAPI uivsetactive( register VSCREEN *vptr )
 /************************************************/
 {
     okopen( vptr );
@@ -72,7 +72,7 @@ void global uivsetactive( register VSCREEN *vptr )
 }
 
 
-void global uivsetcursor( register VSCREEN *vptr )
+void UIAPI uivsetcursor( register VSCREEN *vptr )
 /************************************************/
 {
     register    ORD                     row;

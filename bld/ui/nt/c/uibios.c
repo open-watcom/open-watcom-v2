@@ -67,7 +67,7 @@ static BOOL WINAPI consoleHandler( DWORD type )
 } /* consoleHandler */
 
 
-bool global uiset80col( void )
+bool UIAPI uiset80col( void )
 {
     return( TRUE );
 }
@@ -113,7 +113,7 @@ int intern initbios( void )
     return( TRUE );
 }
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     return( milli );
 }

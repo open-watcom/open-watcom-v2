@@ -33,11 +33,11 @@
 #ifndef UINLM_H_INCLUDED
 #define UINLM_H_INCLUDED
 
-extern char * global    uigetscreenname( void );
-extern void global      uiwakethread( void );
-extern void global      uiforceinfloop( void );
+extern char     * UIAPI uigetscreenname( void );
+extern void     UIAPI uiwakethread( void );
+extern void     UIAPI uiforceinfloop( void );
 
-extern bool intern      kbdisblocked( void );
-extern void intern      waitforevent( void );
+extern bool     kbdisblocked( void );
+extern void     waitforevent( void );
 
 #endif

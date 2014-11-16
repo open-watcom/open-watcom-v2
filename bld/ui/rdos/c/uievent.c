@@ -38,16 +38,16 @@
 #include "uishift.h"
 #include "uimouse.h"
 
-unsigned long global uiclock( void );
+unsigned long UIAPI uiclock( void );
 
-#define KEY_NUM_ACTIVE		0x200
-#define KEY_CAPS_ACTIVE		0x100
-#define KEY_PRINT_PRESSED	0x20
-#define KEY_SCROLL_PRESSED	0x10
-#define KEY_PAUSE_PRESSED	0x8
-#define KEY_CTRL_PRESSED	0x4
-#define KEY_ALT_PRESSED		0x2
-#define KEY_SHIFT_PRESSED	0x1
+#define KEY_NUM_ACTIVE          0x200
+#define KEY_CAPS_ACTIVE         0x100
+#define KEY_PRINT_PRESSED       0x20
+#define KEY_SCROLL_PRESSED      0x10
+#define KEY_PAUSE_PRESSED       0x8
+#define KEY_CTRL_PRESSED        0x4
+#define KEY_ALT_PRESSED         0x2
+#define KEY_SHIFT_PRESSED       0x1
 
 int                  WaitHandle;
 
@@ -239,7 +239,7 @@ void uimousespeed( unsigned speed )
     }
 }
 
-bool global initmouse( int install )
+bool UIAPI initmouse( int install )
 {
     unsigned long tmp;
 
@@ -279,7 +279,7 @@ void intern finimouse( void )
     }
 }
 
-void global uisetmouseposn( ORD row, ORD col )
+void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     uisetmouse( row, col );
 }
@@ -294,7 +294,7 @@ void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
     uisetmouse( *prow, *pcol );
 }
 
-unsigned char global uicheckshift( void )
+unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
     unsigned char kst = 0;

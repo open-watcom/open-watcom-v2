@@ -49,7 +49,7 @@ static          BYTE                OldCursorType;
 #define START_NORMAL_CURSOR 12
 #define END_NORMAL_CURSOR   14
 
-void global uioffcursor()
+void UIAPI uioffcursor()
 /***********************/
 {
     if( UIData->cursor_on ) {
@@ -59,7 +59,7 @@ void global uioffcursor()
     UIData->cursor_type = C_OFF;
 }
 
-void global uioncursor()
+void UIAPI uioncursor()
 /**********************/
 {
     BYTE startline;     /* first cursor scan line */
@@ -98,7 +98,7 @@ static void newcursor()
     }
 }
 
-void global uigetcursor( row, col, type, attr )
+void UIAPI uigetcursor( row, col, type, attr )
 /*********************************************/
     ORD*             row;
     ORD*             col;
@@ -133,7 +133,7 @@ void global uigetcursor( row, col, type, attr )
     //NYI:  Read the attribute
 }
 
-void global uisetcursor( row, col, typ, attr )
+void UIAPI uisetcursor( row, col, typ, attr )
 /********************************************/
 register        ORD               row;
 register        ORD               col;
@@ -191,14 +191,14 @@ static void swapcursor()
     UIData->cursor_on = TRUE;
 }
 
-void global uiswapcursor()
+void UIAPI uiswapcursor()
 /************************/
 {
     swapcursor();
     newcursor();
 }
 
-void global uiinitcursor()
+void UIAPI uiinitcursor()
 /************************/
 {
     savecursor();
@@ -206,7 +206,7 @@ void global uiinitcursor()
     uioffcursor();
 }
 
-void global uifinicursor()
+void UIAPI uifinicursor()
 /************************/
 {
     uioncursor();

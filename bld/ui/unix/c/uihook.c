@@ -33,7 +33,7 @@
 #include "stdui.h"
 #include "uidef.h"
 
-EVENT global uieventsourcehook( EVENT ev )
+EVENT UIAPI uieventsourcehook( EVENT ev )
 /****************************************/
 {
     return( ev );

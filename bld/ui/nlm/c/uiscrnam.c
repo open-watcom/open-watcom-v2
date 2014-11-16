@@ -33,7 +33,7 @@
 #include "uidef.h"
 #include "uinlm.h"
 
-char * global uigetscreenname( void )
+char * UIAPI uigetscreenname( void )
 /***********************************/
 {
     return( "WATCOM UI Screen" );

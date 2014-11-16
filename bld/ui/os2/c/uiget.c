@@ -41,14 +41,14 @@
 extern EVENT    Event;
 
 
-void global uiflush( void )
+void UIAPI uiflush( void )
 /*************************/
 {
     Event = EV_NO_EVENT;
     flushkey();
 }
 
-unsigned long global uiclock( void )
+unsigned long UIAPI uiclock( void )
 /**********************************/
 {
     #ifdef __386__
@@ -76,7 +76,7 @@ unsigned long global uiclock( void )
     #endif
 }
 
-EVENT global uieventsource( int update )
+EVENT UIAPI uieventsource( int update )
 /**************************************/
 {
     register    EVENT                   ev;
@@ -113,7 +113,7 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget( void )
+EVENT UIAPI uiget( void )
 /************************/
 {
     return( uieventsource( 1 ) );

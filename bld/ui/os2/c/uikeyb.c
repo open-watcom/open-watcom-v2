@@ -60,7 +60,7 @@ static          EVENT                   EventsRelease[] = {
 
 static unsigned         ShftState;
 
-unsigned char global uicheckshift( void )
+unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
     return( ShftState );

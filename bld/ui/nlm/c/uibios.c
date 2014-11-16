@@ -53,7 +53,7 @@ static MONITOR ui_data = {
 
 int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well
 
-bool global uiset80col()
+bool UIAPI uiset80col()
 /**********************/
 {
     return( TRUE );
@@ -139,7 +139,7 @@ int intern initbios( void )
 
 } /* end initbios */
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     /* NetWare uses a clock tick of .01 seconds. */
 

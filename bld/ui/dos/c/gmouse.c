@@ -95,17 +95,17 @@ static unsigned short MouScreenMask[CURSOR_HEIGHT] =  {
     0xfcff   /*1111110011111111*/
 };
 
-static void intern PlotEgaVgaCursor( unsigned );
-static char intern MouInit( void );
-static void intern MouDeinit( void );
-static char intern CheckEgaVga( void );
+static void     PlotEgaVgaCursor( unsigned );
+static char     MouInit( void );
+static void     MouDeinit( void );
+static char     CheckEgaVga( void );
 
-void intern DrawEgaVgaCursor(void);
-void intern EraseEgaVgaCursor( void );
+void intern     DrawEgaVgaCursor(void);
+void intern     EraseEgaVgaCursor( void );
 
 //  Plot the cursor on the screen, save background, draw grid, etc.
 
-static void intern PlotEgaVgaCursor( unsigned action )
+static void PlotEgaVgaCursor( unsigned action )
 {
     unsigned width, height, disp, i, j, x, y;
     static int lsavex = 0, lsavey = 0;
@@ -222,7 +222,7 @@ void intern DrawEgaVgaCursor(void)
     PlotEgaVgaCursor(DRAW);                     /* Plot the new grid        */
 }
 
-static char intern MouInit( void )
+static char MouInit( void )
 {
     char  savedmode;
     unsigned short  off, i, j, s1, s2;
@@ -270,7 +270,7 @@ static char intern MouInit( void )
 
 //  Deinitialize the mouse routines.
 
-static void intern MouDeinit( void )
+static void MouDeinit( void )
 {
     unsigned short    i, j, s1, s2, off ;
 
@@ -297,7 +297,7 @@ void intern EraseEgaVgaCursor( void )
     PlotEgaVgaCursor( ERASE );
 }
 
-void global uifinigmouse( void )
+void UIAPI uifinigmouse( void )
 {
     if( MouseInstalled && DrawCursor!=NULL ) {
         uioffmouse();
@@ -305,7 +305,7 @@ void global uifinigmouse( void )
     }
 }
 
-bool global uiinitgmouse( register int install )
+bool UIAPI uiinitgmouse( register int install )
 {
     MouseInstalled = FALSE;
     if( install > 0 && installed( BIOS_MOUSE ) ) {
@@ -328,7 +328,7 @@ bool global uiinitgmouse( register int install )
     return( MouseInstalled );
 }
 
-static char intern CheckEgaVga( void )
+static char CheckEgaVga( void )
 {
     if( ( UIData->colour == M_EGA || UIData->colour == M_VGA )
         && !UIData->desqview

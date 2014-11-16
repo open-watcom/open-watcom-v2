@@ -35,9 +35,9 @@
 
 #if defined( __GNUC__ ) && defined( __APPLE__ )
 // Workaround for buggy GCC on OS X - if initializer isn't present, variable won't be defined!
-global          EVENT                   Event = 0;
+EVENT               Event = 0;
 #else
-global          EVENT                   Event;
+EVENT               Event;
 #endif
 
 
@@ -74,7 +74,7 @@ EVENT intern getprime( VSCREEN *vptr )
 }
 
 
-EVENT global uivgetprime( VSCREEN *vptr )
+EVENT UIAPI uivgetprime( VSCREEN *vptr )
 /***************************************/
 {
     getprime( vptr );
@@ -82,7 +82,7 @@ EVENT global uivgetprime( VSCREEN *vptr )
 }
 
 
-EVENT global uivgetprimevent( VSCREEN *vptr )
+EVENT UIAPI uivgetprimevent( VSCREEN *vptr )
 /*******************************************/
 {
     register    EVENT                   ev;

@@ -33,7 +33,7 @@
 #include "uidef.h"
 
 
-void global uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
+void UIAPI uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
 /***********************************************************************/
 {
     register    BUFFER                  *bptr;

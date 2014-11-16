@@ -76,7 +76,7 @@ void intern forceevfini( void )
     // finalize critical section
 }
 
-bool global uiforceevadd( EVENT ev )
+bool UIAPI uiforceevadd( EVENT ev )
 /**********************************/
 {
     bool ret;
@@ -92,7 +92,7 @@ bool global uiforceevadd( EVENT ev )
     return( ret );
 }
 
-void global uiforceevflush( void )
+void UIAPI uiforceevflush( void )
 /********************************/
 /* The EV_KILL_UI event can't be flushed */
 {

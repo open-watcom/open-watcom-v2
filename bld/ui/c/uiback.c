@@ -89,7 +89,7 @@ void intern closebackground( void )
 }
 
 
-BUFFER * global uibackgroundbuffer( void )
+BUFFER * UIAPI uibackgroundbuffer( void )
 /****************************************/
 {
     register    bool                    ok;
@@ -108,7 +108,7 @@ BUFFER * global uibackgroundbuffer( void )
     return( NULL );
 }
 
-bool global uiremovebackground( void )
+bool UIAPI uiremovebackground( void )
 /************************************/
 {
     if( UIData->blank.type.buffer.origin != NULL ){
@@ -120,7 +120,7 @@ bool global uiremovebackground( void )
     return( TRUE );
 }
 
-bool global uikeepbackground( void )
+bool UIAPI uikeepbackground( void )
 /**********************************/
 {
     register    ORD                     row;

@@ -46,12 +46,12 @@
 extern PossibleDisplay DisplayList[];
 char    *UITermType;    /* global so that the debugger can get at it */
 
-bool global uiset80col( void )
+bool UIAPI uiset80col( void )
 {
     return( TRUE );
 }
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     /* this routine converts milli-seconds into platform  */
     /* dependant units - used to set mouse & timer delays */

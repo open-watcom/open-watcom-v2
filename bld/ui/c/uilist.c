@@ -35,21 +35,21 @@
 static          EVENTLIST               EventList       = { 0 };
 
 
-EVENTLIST* global uigetlist( void )
+EVENTLIST* UIAPI uigetlist( void )
 /*********************************/
 {
     return( UIData->events );
 }
 
 
-void global uiputlist( EVENTLIST *eventlist )
+void UIAPI uiputlist( EVENTLIST *eventlist )
 /*******************************************/
 {
     UIData->events = eventlist;
 }
 
 
-void global uipushlist( EVENT *list )
+void UIAPI uipushlist( EVENT *list )
 /***********************************/
 {
     if( UIData->events == NULL ) {
@@ -61,7 +61,7 @@ void global uipushlist( EVENT *list )
 }
 
 
-bool global uichecklist( EVENT ev, EVENT *eptr )
+bool UIAPI uichecklist( EVENT ev, EVENT *eptr )
 /**********************************************/
 {
     while( *eptr != EV_NO_EVENT ) {
@@ -81,7 +81,7 @@ bool global uichecklist( EVENT ev, EVENT *eptr )
 }
 
 
-EVENT *global uipoplist( void )
+EVENT *UIAPI uipoplist( void )
 /*****************************/
 {
     register EVENT      *list;
@@ -93,7 +93,7 @@ EVENT *global uipoplist( void )
 }
 
 
-bool global uiinlist( EVENT ev )
+bool UIAPI uiinlist( EVENT ev )
 /******************************/
 {
     register    int                     index;
@@ -115,7 +115,7 @@ bool global uiinlist( EVENT ev )
 }
 
 
-bool global uiintoplist( EVENT ev )
+bool UIAPI uiintoplist( EVENT ev )
 /*********************************/
 {
     return( uichecklist( ev, UIData->events->events[ UIData->events->num_lists - 1 ] ) );

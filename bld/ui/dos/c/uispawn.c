@@ -35,14 +35,14 @@
 #include "uidef.h"
 
 
-void global uispawnstart( void )
+void UIAPI uispawnstart( void )
 /******************************/
 {
     uiswap();
     uisetcursor( 0, 0, C_NORMAL, -1 );
 }
 
-void global uispawnend( void )
+void UIAPI uispawnend( void )
 /****************************/
 {
     uiswap();

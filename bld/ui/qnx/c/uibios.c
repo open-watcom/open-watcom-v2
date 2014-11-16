@@ -61,12 +61,12 @@ extern struct _console_ctrl *UIConCtrl;
 char    *UITermType;    /* global so that the debugger can get at it */
 
 
-bool global uiset80col()
+bool UIAPI uiset80col()
 {
     return( TRUE );
 }
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     /* this routine converts milli-seconds into platform  */
     /* dependant units - used to set mouse & timer delays */

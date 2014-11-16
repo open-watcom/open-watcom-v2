@@ -41,13 +41,13 @@
 #define row( g, i )     (g->dir == HORIZONTAL ? g->anchor : i)
 #define col( g, i )     (g->dir == HORIZONTAL ? i : g->anchor)
 
-global char VertScrollFrame[2]  = SCROLL_FRAME;
-global char HorzScrollFrame[2]  = SCROLL_FRAME;
-global char SliderChar[2]       = SLIDER_CHAR;
-global char LeftPoint[2]        = LEFT_POINT;
-global char RightPoint[2]       = RIGHT_POINT;
-global char UpPoint[2]          = UP_POINT;
-global char DownPoint[2]        = DOWN_POINT;
+char            VertScrollFrame[2]  = SCROLL_FRAME;
+char            HorzScrollFrame[2]  = SCROLL_FRAME;
+char            SliderChar[2]       = SLIDER_CHAR;
+char            LeftPoint[2]        = LEFT_POINT;
+char            RightPoint[2]       = RIGHT_POINT;
+char            UpPoint[2]          = UP_POINT;
+char            DownPoint[2]        = DOWN_POINT;
 
 static  p_gadget        Pressed         = NULL;   /* pointer to gadget where mouse pressed  */
 static  bool            Drag            = FALSE;

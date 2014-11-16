@@ -95,7 +95,7 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row,
 
 
 
-bool global initmouse( int install )
+bool UIAPI initmouse( int install )
 /**********************************/
 {
     int         cx,dx;
@@ -139,10 +139,10 @@ void extern finimouse( void )
     }
 }
 
-
-void global uisetmouseposn(             /* SET MOUSE POSITION */
-    ORD row,                            /* - mouse row        */
-    ORD col )                           /* - mouse column     */
+/*
+ * Set mouse position
+ */
+void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     MouseRow = row;
     MouseCol = col;
@@ -155,29 +155,29 @@ void global uisetmouseposn(             /* SET MOUSE POSITION */
  */
 void WindowsMouseEvent( unsigned event, unsigned info )
 {
-POINT p;
+    POINT p;
 
-        info = info;    /* shut the compiler up */
-        switch( event ) {
-        case WM_MOUSEMOVE:
-            GetCursorPos( &p );
-            MouseX = (WORD)((DWORD)p.x / (DWORD) ScreenXFudge);
-            if( MouseX > UIData->width-1 ) MouseX = UIData->width-1;
-            MouseY = (WORD)((DWORD)p.y / (DWORD) ScreenYFudge);
-            if( MouseY > UIData->height-1 ) MouseY = UIData->height-1;
-            break;
-        case WM_LBUTTONUP:
-            MouseStatusBits &= (0xFFFF) - MOUSE_PRESS;
-            break;
-        case WM_RBUTTONUP:
-            MouseStatusBits &= (0xFFFF) - MOUSE_PRESS_RIGHT;
-            break;
-        case WM_LBUTTONDOWN:
-            MouseStatusBits |= MOUSE_PRESS;
-            break;
-        case WM_RBUTTONDOWN:
-            MouseStatusBits |= MOUSE_PRESS_RIGHT;
-            break;
-        } /* switch */
+    info = info;    /* shut the compiler up */
+    switch( event ) {
+    case WM_MOUSEMOVE:
+        GetCursorPos( &p );
+        MouseX = (WORD)((DWORD)p.x / (DWORD) ScreenXFudge);
+        if( MouseX > UIData->width-1 ) MouseX = UIData->width-1;
+        MouseY = (WORD)((DWORD)p.y / (DWORD) ScreenYFudge);
+        if( MouseY > UIData->height-1 ) MouseY = UIData->height-1;
+        break;
+    case WM_LBUTTONUP:
+        MouseStatusBits &= (0xFFFF) - MOUSE_PRESS;
+        break;
+    case WM_RBUTTONUP:
+        MouseStatusBits &= (0xFFFF) - MOUSE_PRESS_RIGHT;
+        break;
+    case WM_LBUTTONDOWN:
+        MouseStatusBits |= MOUSE_PRESS;
+        break;
+    case WM_RBUTTONDOWN:
+        MouseStatusBits |= MOUSE_PRESS_RIGHT;
+        break;
+    } /* switch */
 
 } /* WindowsMouseEvent */

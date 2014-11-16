@@ -829,8 +829,8 @@ static EVENT td_sizeevent( void )
     return (EV_BACKGROUND_RESIZE);
 }
 
-static bool intern ti_initconsole( void )
-/***************************************/
+static bool ti_initconsole( void )
+/********************************/
 {
     // Initialize the term as documented in "Terminal Control Under QNX"
     TI_EXEC_PROG( init_prog );

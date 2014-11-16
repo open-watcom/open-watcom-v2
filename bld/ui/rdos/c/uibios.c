@@ -47,7 +47,7 @@ static MONITOR ui_data = {
     1
 };
 
-bool global uiset80col( void )
+bool UIAPI uiset80col( void )
 {
     return( TRUE );
 }
@@ -83,7 +83,7 @@ int intern initbios( void )
     return( TRUE );
 }
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     return( 1192 * milli);
 }
@@ -107,12 +107,12 @@ void intern physupdate( SAREA *area )
     }    
 }
 
-int global uiisdbcs( void )
+int UIAPI uiisdbcs( void )
 {
     return( FALSE );
 }
 
-int global uicharlen( int ch )
+int UIAPI uicharlen( int ch )
 {
     return( 1 );
 }

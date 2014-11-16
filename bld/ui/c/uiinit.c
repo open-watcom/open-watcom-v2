@@ -39,7 +39,7 @@
 
 void intern DBCSCharacterMap( void );
 
-bool global uistart( void )
+bool UIAPI uistart( void )
 /*************************/
 {
     UIMemOpen();
@@ -57,7 +57,7 @@ bool global uistart( void )
     return( false );
 }
 
-bool global uiinit( int mouse )
+bool UIAPI uiinit( int mouse )
 /*****************************/
 {
     bool    initialized;
@@ -74,14 +74,14 @@ bool global uiinit( int mouse )
     return( initialized );
 }
 
-void global uistop( void )
+void UIAPI uistop( void )
 {
     forceevfini();
     closebackground();
     finibios();
 }
 
-void global uifini( void )
+void UIAPI uifini( void )
 /************************/
 {
 #ifdef __UNIX__
@@ -94,7 +94,7 @@ void global uifini( void )
 }
 
 
-void global uiswap( void )
+void UIAPI uiswap( void )
 /************************/
 {
     uiswapcursor();

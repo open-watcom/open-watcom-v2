@@ -427,7 +427,7 @@ EVENT intern keyboardevent( void )
     return( ev );
 }
 
-unsigned char global uicheckshift( void )
+unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
     return( ShiftState );

@@ -35,7 +35,7 @@
 #include "uidef.h"
 
 
-void global uiunprotect( VSCREEN *vptr )
+void UIAPI uiunprotect( VSCREEN *vptr )
 /**************************************/
 {
     if( !(vptr->flags & V_UNPROTECTED) && ((vptr->flags & V_UNFRAMED) == 0 ) ){
@@ -50,7 +50,7 @@ void global uiunprotect( VSCREEN *vptr )
 }
 
 
-void global uiprotect( VSCREEN *vptr )
+void UIAPI uiprotect( VSCREEN *vptr )
 /************************************/
 {
     if( vptr->flags & V_UNPROTECTED ) {

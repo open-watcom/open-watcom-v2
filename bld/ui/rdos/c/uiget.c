@@ -42,19 +42,19 @@ extern int      WaitHandle;
 static void     ( *Callback )() = 0;
 static int      TimerPeriodMs = 0;
 
-void global uitimer( void ( *proc )(), int ms )
+void UIAPI uitimer( void ( *proc )(), int ms )
 {
     Callback = proc;
     TimerPeriodMs = ms;
 }
 
-void global uiflush( void )
+void UIAPI uiflush( void )
 {
     Event = EV_NO_EVENT;
     flushkey();
 }
 
-unsigned long global uiclock( void )
+unsigned long UIAPI uiclock( void )
 {
     unsigned long msb;
     unsigned long lsb;
@@ -63,7 +63,7 @@ unsigned long global uiclock( void )
     return( lsb );
 }
 
-EVENT global uieventsource( int update )
+EVENT UIAPI uieventsource( int update )
 {
     EVENT                   ev;
     static      int         ReturnIdle = 1;
@@ -114,7 +114,7 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget( void )
+EVENT UIAPI uiget( void )
 {
     return( uieventsource( 1 ) );
 }

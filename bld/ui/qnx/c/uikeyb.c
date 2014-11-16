@@ -64,7 +64,7 @@ unsigned char intern checkshift( void )
     return _checkshift();
 }
 
-unsigned char global uicheckshift( void )
+unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
     return _uicheckshift();

@@ -36,7 +36,7 @@
 #include "uiforce.h"
 
 
-EVENT global uieventsourcehook( EVENT ev )
+EVENT UIAPI uieventsourcehook( EVENT ev )
 /****************************************/
 {
     return( ev );

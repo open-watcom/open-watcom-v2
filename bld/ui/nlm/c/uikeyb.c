@@ -60,7 +60,7 @@ static struct {
     BYTE    scanCode;
 } SavedKey = { FALSE };
 
-unsigned char global uicheckshift()
+unsigned char UIAPI uicheckshift()
 /*******************************/
 {
     return( ShftState );
@@ -267,7 +267,7 @@ void intern waitforevent( void )
     }
 }
 
-void global uiwakethread( void )
+void UIAPI uiwakethread( void )
 /******************************/
 /* This function is called from a thread other than the UI thread to wake */
 /* the thread from the GetKey call. */

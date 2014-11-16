@@ -36,7 +36,7 @@
 #define SWITCH_THRESHOLD    10
 
 
-void global uiyield( void )
+void UIAPI uiyield( void )
 /*************************/
 {
     static int  num_yields = 0;

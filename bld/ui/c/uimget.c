@@ -35,7 +35,7 @@
 
 extern          EVENT                   Event;
 
-EVENT global uivget( VSCREEN *vptr )
+EVENT UIAPI uivget( VSCREEN *vptr )
 /**********************************/
 {
     register    EVENT                   ev;
@@ -46,7 +46,7 @@ EVENT global uivget( VSCREEN *vptr )
 }
 
 
-EVENT global uivgetevent( VSCREEN *vptr )
+EVENT UIAPI uivgetevent( VSCREEN *vptr )
 /***************************************/
 {
     register    EVENT                   ev;
@@ -61,7 +61,7 @@ EVENT global uivgetevent( VSCREEN *vptr )
 }
 
 
-void global uiungetevent( void )
+void UIAPI uiungetevent( void )
 /******************************/
 {
     if( Event < EV_NO_EVENT ) {
@@ -69,7 +69,7 @@ void global uiungetevent( void )
     }
 }
 
-void global uiflushevent( void )
+void UIAPI uiflushevent( void )
 /******************************/
 {
     Event = EV_NO_EVENT;

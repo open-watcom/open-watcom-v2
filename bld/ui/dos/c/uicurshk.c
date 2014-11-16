@@ -51,30 +51,30 @@ extern void _uigetcursor( ORD *row, ORD *col, int *typ, int *attr );
 // the original versions into _uixxx().  In a normal UI app, these stubs kick
 // in so the world is back to normal
 
-void global uioffcursor( void )
+void UIAPI uioffcursor( void )
 {
     _uioffcursor();
 }
 
-void global uioncursor( void )
+void UIAPI uioncursor( void )
 {
     _uioncursor();
 }
 
-void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 {
     _uigetcursor( row, col, type, attr );
 }
 
-void global uisetcursor( ORD row, ORD col, int typ, int attr ) {
+void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr ) {
     _uisetcursor( row, col, typ, attr );
 }
 
-void global uiswapcursor( void ) {
+void UIAPI uiswapcursor( void ) {
     _uiswapcursor();
 }
 
-void global uiinitcursor( void ) {
+void UIAPI uiinitcursor( void ) {
     _uiinitcursor();
 }
 

@@ -47,7 +47,7 @@ static          USHORT                  r;
 static          USHORT                  c;
 
 
-void global uioffcursor( void )
+void UIAPI uioffcursor( void )
 /*****************************/
 {
     VIOCURSORINFO vioCursor;
@@ -67,7 +67,7 @@ void global uioffcursor( void )
 
 
 
-void global uioncursor( void )
+void UIAPI uioncursor( void )
 /****************************/
 {
     CHAR                CharCellPair[2];
@@ -166,7 +166,7 @@ static void swapcursor( void )
 }
 
 
-void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 /*****************************************************************/
 {
 
@@ -194,7 +194,7 @@ void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 }
 
 
-void global uisetcursor( ORD row, ORD col, int typ, int attr )
+void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr )
 /************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
@@ -212,7 +212,7 @@ void global uisetcursor( ORD row, ORD col, int typ, int attr )
 }
 
 
-void global uiswapcursor( void )
+void UIAPI uiswapcursor( void )
 /******************************/
 {
     swapcursor();
@@ -220,7 +220,7 @@ void global uiswapcursor( void )
 }
 
 
-void global uiinitcursor( void )
+void UIAPI uiinitcursor( void )
 /******************************/
 {
     savecursor();
@@ -229,7 +229,7 @@ void global uiinitcursor( void )
 }
 
 
-void global uifinicursor( void )
+void UIAPI uifinicursor( void )
 /******************************/
 {
     uioncursor();

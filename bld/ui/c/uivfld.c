@@ -152,7 +152,7 @@ static VFIELD *tabfield( VSCREEN *vptr, VFIELD *fieldlist, bool forward )
 }
 
 
-EVENT global uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
+EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
 /************************************************************/
 {
     register    EVENT                   ev;

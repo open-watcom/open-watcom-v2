@@ -36,12 +36,12 @@
 
 /* We don't worry about spawning other tasks in the NetWare environment. */
 
-void global uispawnstart()
+void UIAPI uispawnstart()
 /************************/
 {
 }
 
-void global uispawnend()
+void UIAPI uispawnend()
 /**********************/
 {
 }

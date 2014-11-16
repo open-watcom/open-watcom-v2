@@ -45,7 +45,7 @@ static void drawband( SAREA area, void *dummy )
              Attr, FALSE );
 }
 
-void global uibandinit( SAREA start, ATTR attr )
+void UIAPI uibandinit( SAREA start, ATTR attr )
 {
     Attr = attr;
     start.width++;
@@ -62,7 +62,7 @@ void global uibandinit( SAREA start, ATTR attr )
 }
 
 
-void global uibandmove( SAREA new )
+void UIAPI uibandmove( SAREA new )
 {
     new.width++;
     new.height++;
@@ -73,7 +73,7 @@ void global uibandmove( SAREA new )
 }
 
 
-void global uibandfini( void )
+void UIAPI uibandfini( void )
 {
     uidirty( BandArea );
     closewindow( &BandWnd );

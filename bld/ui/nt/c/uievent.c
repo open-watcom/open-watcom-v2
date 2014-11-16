@@ -38,7 +38,7 @@
 #include "uishift.h"
 #include "uimouse.h"
 
-unsigned long global uiclock( void );
+unsigned long UIAPI uiclock( void );
 
 static unsigned char ShftState;
 
@@ -188,7 +188,7 @@ void uimousespeed( unsigned speed )
     }
 }
 
-bool global initmouse( int install )
+bool UIAPI initmouse( int install )
 {
     DWORD       tmp;
 
@@ -211,7 +211,7 @@ void intern finimouse( void )
     }
 }
 
-void global uisetmouseposn( ORD row, ORD col )
+void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     uisetmouse( row, col );
 }
@@ -339,7 +339,7 @@ void intern waitforevent( void )
 
 } /* waitforevent */
 
-unsigned char global uicheckshift( void )
+unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
     return( ShftState );

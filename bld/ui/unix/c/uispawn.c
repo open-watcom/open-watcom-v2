@@ -40,7 +40,7 @@ extern bool MouseInstalled;
 extern void intern savekeyb(void);
 extern void intern restorekeyb(void);
 
-void global uispawnstart( void )
+void UIAPI uispawnstart( void )
 /******************************/
 {
     uiswap();
@@ -49,7 +49,7 @@ void global uispawnstart( void )
     savekeyb();
 }
 
-void global uispawnend( void )
+void UIAPI uispawnend( void )
 /****************************/
 {
     restorekeyb();

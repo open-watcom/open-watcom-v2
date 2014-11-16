@@ -46,9 +46,7 @@
 
 extern ORD MouseRow, MouseCol;
 
-void global uisetmouseposn(             /* SET MOUSE POSITION */
-    ORD row,                            /* - mouse row        */
-    ORD col )                           /* - mouse column     */
+void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     MouseRow = row;
     MouseCol = col;
@@ -67,19 +65,19 @@ void intern stopmouse( void )
     _stopmouse();
 }
 
-bool global initmouse( bool install )
+bool UIAPI initmouse( bool install )
 /***********************************/
 {
     return _initmouse(install);
 }
 
-void global finimouse( void )
+void UIAPI finimouse( void )
 /***************************/
 {
     _finimouse();
 }
 
-void global uimousespeed( unsigned speed )
+void UIAPI uimousespeed( unsigned speed )
 /****************************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower

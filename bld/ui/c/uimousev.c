@@ -55,7 +55,7 @@ static          int                     MouseLast       = MOUSE_OFF;
 static          unsigned short          MouseLastButton = (unsigned short)~0;
 
 
-int global uimouseinstalled( void )
+int UIAPI uimouseinstalled( void )
 /*********************************/
 /* call this ONLY after UI has been initialized */
 
@@ -76,7 +76,7 @@ static void mouse( int func )
     }
 }
 
-void global uimouseforceoff( void )
+void UIAPI uimouseforceoff( void )
 /*********************************/
 /* this function will turn off the mouse and will prevent UI from turning
    it on until uimouseforceon is called (i.e. moving the mouse will NOT
@@ -86,7 +86,7 @@ void global uimouseforceoff( void )
     ++MouseForcedOff;
 }
 
-void global uimouseforceon( void )
+void UIAPI uimouseforceon( void )
 /********************************/
 /* call this function after sometime after uimouseforceoff, if the default
    UI mouse behaviour is desired */
@@ -94,7 +94,7 @@ void global uimouseforceon( void )
     --MouseForcedOff;
 }
 
-void global uionmouse( void )
+void UIAPI uionmouse( void )
 /***************************/
 {
     if( MouseOn ) {
@@ -105,7 +105,7 @@ void global uionmouse( void )
 }
 
 
-void global uioffmouse( void )
+void UIAPI uioffmouse( void )
 /****************************/
 // turn mouse cursor off temporarily ( until next getprimeevent )
 {
@@ -113,7 +113,7 @@ void global uioffmouse( void )
 }
 
 
-void global uihidemouse( void )
+void UIAPI uihidemouse( void )
 /*****************************/
 // turn mouse cursor off ( until user clicks or moves )
 {
@@ -212,7 +212,7 @@ EVENT intern mouseevent( void )
     return( ev );
 }
 
-VSCREEN* global uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
+VSCREEN* UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
 /*******************************************************************/
 {
     register    VSCREEN*                owner;
@@ -238,7 +238,7 @@ VSCREEN* global uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
     return( owner );
 }
 
-VSCREEN* global uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
+VSCREEN* UIAPI uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
 /********************************************************************/
 {
     VSCREEN*                            owner;
@@ -257,7 +257,7 @@ VSCREEN* global uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
     return( owner );
 }
 
-void global uiswapmouse( void )
+void UIAPI uiswapmouse( void )
 /*****************************/
 {
 
@@ -271,21 +271,21 @@ void global uiswapmouse( void )
 }
 
 
-MOUSEORD global uigetmrow( void )
+MOUSEORD UIAPI uigetmrow( void )
 /*******************************/
 {
     return( MouseRow );
 }
 
 
-MOUSEORD global uigetmcol( void )
+MOUSEORD UIAPI uigetmcol( void )
 /*******************************/
 {
     return( MouseCol );
 }
 
 
-void global uigetmouse( ORD *row, ORD *col, int *status )
+void UIAPI uigetmouse( ORD *row, ORD *col, int *status )
 /*******************************************************/
 {
     *row = MouseRow/UIData->mouse_yscale;
@@ -293,7 +293,7 @@ void global uigetmouse( ORD *row, ORD *col, int *status )
     *status = MouseOn;
 }
 
-int global uivmouseinstalled( void )
+int UIAPI uivmouseinstalled( void )
 {
     return( MouseInstalled );
 }

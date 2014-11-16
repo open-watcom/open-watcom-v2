@@ -42,20 +42,20 @@ extern EVENT    Event;
 // be very careful about setting this true
 static bool EnterForever = FALSE;
 
-void global uiflush()
+void UIAPI uiflush()
 /*******************/
 {
     Event = EV_NO_EVENT;
     flushkey();
 }
 
-unsigned long global uiclock( void )
+unsigned long UIAPI uiclock( void )
 /**********************************/
 {
     return( clock() );
 }
 
-void global uiforceinfloop( void )
+void UIAPI uiforceinfloop( void )
 /********************************/
 /* This is a dangerous function. This may be called from any thread. */
 {
@@ -77,7 +77,7 @@ static void foreverloop( void )
     }
 }
 
-EVENT global uieventsource( int update )
+EVENT UIAPI uieventsource( int update )
 /**************************************/
 {
     register    EVENT                   ev;
@@ -119,7 +119,7 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget()
+EVENT UIAPI uiget()
 /******************/
 {
     return( uieventsource( TRUE ) );

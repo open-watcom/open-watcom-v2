@@ -39,7 +39,7 @@ extern EVENT Event;
 extern EVENT uieventsourcehook( EVENT );
 extern int   kb_wait( int secs, int usecs );
 
-void global uiflush( void )
+void UIAPI uiflush( void )
 /*************************/
 {
     Event = EV_NO_EVENT;
@@ -84,7 +84,7 @@ static EVENT doget( int update )
     return( ev );
 }
 
-EVENT global uieventsource( int update )
+EVENT UIAPI uieventsource( int update )
 /**************************************/
 {
     extern void intern  stopmouse(void);
@@ -98,7 +98,7 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget( void )
+EVENT UIAPI uiget( void )
 /************************/
 {
     return( uieventsource( 1 ) );

@@ -67,7 +67,7 @@ static void dorefresh( struct update_area *total, SAREA area,
     return;
 }
 
-void global uidorefresh( void )
+void UIAPI uidorefresh( void )
 /*****************************/
 {
     register    UI_WINDOW*              wptr;

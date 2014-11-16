@@ -59,7 +59,7 @@ extern          ATTR                    CGAAttrs[];
 extern          ATTR                    EGAAttrs[];
 extern          ATTR                    MonoAttrs[];
 
-bool global uiset80col( void )
+bool UIAPI uiset80col( void )
 /****************************/
 {
     return( TRUE );
@@ -142,7 +142,7 @@ int intern initbios( void )
     return( initialized );
 }
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     /* this routine converts milli-seconds into platform  */
     /* dependant units - used to set mouse & timer delays */

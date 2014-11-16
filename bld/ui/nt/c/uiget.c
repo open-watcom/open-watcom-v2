@@ -39,20 +39,20 @@
 extern EVENT    Event;
 extern void intern waitforevent( void );
 
-void global uiflush( void )
+void UIAPI uiflush( void )
 {
     Event = EV_NO_EVENT;
     flushkey();
 }
 
-unsigned long global uiclock( void )
+unsigned long UIAPI uiclock( void )
 {
     return( GetTickCount() );
 }
 
 extern EVENT intern getanyevent( void );
 
-EVENT global uieventsource( int update )
+EVENT UIAPI uieventsource( int update )
 {
     EVENT                   ev;
     static      int                     ReturnIdle = 1;
@@ -82,7 +82,7 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget( void )
+EVENT UIAPI uiget( void )
 {
     return( uieventsource( 1 ) );
 }

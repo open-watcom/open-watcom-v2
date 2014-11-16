@@ -35,7 +35,7 @@
 
 /* NetWare does not support mice.  */
 
-void global uisetmouse( row, col )
+void UIAPI uisetmouse( row, col )
 /********************************/
     register MOUSEORD        row;
     register MOUSEORD        col;
@@ -44,7 +44,7 @@ void global uisetmouse( row, col )
     col = col;
 }
 
-void global uimouse( func )
+void UIAPI uimouse( func )
 /*************************/
 {
     func=func;

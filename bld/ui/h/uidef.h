@@ -85,7 +85,7 @@
 
 #include "stdui.h"
 
-#define         global          /* global */
+#define         UIAPI
 #define         intern          /* near */
 
 #ifdef __cplusplus
@@ -159,8 +159,8 @@ void            intern          setupmouse( void );
 void            intern          setvideomode( unsigned );
 int             intern          videopage( void );
 void            intern          vertretrace( void );
-void            global          uistartevent( void );
-void            global          uidoneevent( void );
+void            UIAPI          uistartevent( void );
+void            UIAPI          uidoneevent( void );
 
 #ifdef __cplusplus
 }

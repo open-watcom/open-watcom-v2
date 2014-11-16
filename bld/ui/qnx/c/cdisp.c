@@ -138,8 +138,8 @@ static void state_handler( int signo )
 }
 
 
-static EVENT intern cd_sizeevent( void )
-/**************************************/
+static EVENT cd_sizeevent( void )
+/*******************************/
 {
     SAREA       area;
     unsigned    state;
@@ -353,7 +353,7 @@ EVENT cd_event( void )
     return( ev );
 }
 
-global Display ConsDisplay = {
+Display ConsDisplay = {
         cd_init,
         cd_fini,
         cd_update,
@@ -365,7 +365,7 @@ global Display ConsDisplay = {
 
 extern EVENT    td_event( void );
 
-global Display QnxWDisplay = {
+Display QnxWDisplay = {
         cd_init,
         cd_fini,
         cd_update,

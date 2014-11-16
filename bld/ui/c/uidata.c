@@ -33,5 +33,5 @@
 #include "uidef.h"
 
 
-global          MONITOR*        UIData  =       NULL;
+MONITOR         *UIData = NULL;
 

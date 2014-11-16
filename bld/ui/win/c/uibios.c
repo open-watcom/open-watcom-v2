@@ -55,14 +55,14 @@ extern unsigned int  VIDPort;
 #define VIDCOLRINDXREG  0X03D4
 
 
-void global win_uisetmono( void )
+void UIAPI win_uisetmono( void )
 {
         ui_data.colour = M_MONO;
         ui_data.screen.origin = MK_FP( _B000h, 0 );
         VIDPort = VIDMONOINDXREG;
 }
 
-void global win_uisetcolor( int clr )
+void UIAPI win_uisetcolor( int clr )
 {
         ui_data.colour = clr;
         ui_data.screen.origin = MK_FP( _B800h, 0 );
@@ -110,7 +110,7 @@ int intern initbios( void )
     return( initialized );
 }
 
-unsigned global uiclockdelay( unsigned milli )
+unsigned UIAPI uiclockdelay( unsigned milli )
 {
     /* this routine converts milli-seconds into platform  */
     /* dependant units - used to set mouse & timer delays */

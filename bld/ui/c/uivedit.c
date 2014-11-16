@@ -62,7 +62,7 @@ int intern secondbyte( char *buff, char *which )
     return( buff > which );
 }
 
-EVENT global uieditevent( EVENT ev, VBUFFER *buffer )
+EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
 /***************************************************/
 {
     register    char                    *bptr;

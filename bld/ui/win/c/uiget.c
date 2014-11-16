@@ -37,7 +37,7 @@
 
 extern EVENT Event;
 
-void global uiflush( void )
+void UIAPI uiflush( void )
 /*************************/
 {
     Event = EV_NO_EVENT;
@@ -56,7 +56,7 @@ unsigned long uiclock( void )
     return( *clock );
 }
 
-EVENT global uieventsource( int update )
+EVENT UIAPI uieventsource( int update )
 /**************************************/
 {
     register    EVENT                   ev;
@@ -90,7 +90,7 @@ EVENT global uieventsource( int update )
     return( ev );
 }
 
-EVENT global uiget( void )
+EVENT UIAPI uiget( void )
 /************************/
 {
     return( uieventsource( 1 ) );

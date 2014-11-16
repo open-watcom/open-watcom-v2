@@ -33,7 +33,7 @@
 #include "uidef.h"
 
 
-void global uivattribute( register VSCREEN      *vptr,
+void UIAPI uivattribute( register VSCREEN      *vptr,
                           register SAREA        area,
                           register ATTR         attr )
 /****************************************************/
@@ -46,7 +46,7 @@ void global uivattribute( register VSCREEN      *vptr,
 }
 
 
-void global uivattrflip( register VSCREEN       *vptr,
+void UIAPI uivattrflip( register VSCREEN       *vptr,
                          register SAREA         area )
 /****************************************************/
 {

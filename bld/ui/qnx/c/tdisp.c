@@ -834,8 +834,8 @@ static EVENT td_sizeevent( void )
 
 
 #if 0
-static bool intern td_initconsole( void )
-/***************************************/
+static bool td_initconsole( void )
+/********************************/
 {
     if( !ostream_init(UIConHandle) ) return( FALSE );
     QNX_NOWRAP();
@@ -846,8 +846,8 @@ static bool intern td_initconsole( void )
 }
 #endif
 
-static bool intern td_initconsole( void )
-/***************************************/
+static bool td_initconsole( void )
+/********************************/
 {
     if( !ostream_init( UIConHandle ) ) return( FALSE );
 
@@ -878,8 +878,8 @@ static bool intern td_initconsole( void )
     return( TRUE );
 }
 
-int intern initmonitor( void )
-/****************************/
+int initmonitor( void )
+/*********************/
 {
     UIData->colour = M_VGA;
     /* notify if screen size changes */

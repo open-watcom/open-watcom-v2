@@ -33,7 +33,7 @@
 #include "uidef.h"
 
 
-void global uibarf( void )
+void UIAPI uibarf( void )
 /************************/
 {
 }

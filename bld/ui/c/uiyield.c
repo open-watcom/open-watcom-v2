@@ -32,7 +32,7 @@
 
 #include "uidef.h"
 
-void global uiyield( void )
+void UIAPI uiyield( void )
 /*************************/
 {
 }

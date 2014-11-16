@@ -102,7 +102,7 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
 }
 
 
-EVENT global uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
+EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
 /***********************************************************************/
 {
     register    int                     scroll;
@@ -173,7 +173,7 @@ EVENT global uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
 }
 
 
-EVENT global uiveditline( VSCREEN *vptr, VEDITLINE *editline )
+EVENT UIAPI uiveditline( VSCREEN *vptr, VEDITLINE *editline )
 /************************************************************/
 {
     register    EVENT                   ev;
@@ -185,7 +185,7 @@ EVENT global uiveditline( VSCREEN *vptr, VEDITLINE *editline )
     return( ev );
 }
 
-bool global uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
+bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
                                   int bufflen, ORD row, ORD col, int len )
 /************************************************************************/
 {
@@ -204,7 +204,7 @@ bool global uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
     return( TRUE );
 }
 
-bool global uiveditfini( VSCREEN *vptr, VEDITLINE *editline )
+bool UIAPI uiveditfini( VSCREEN *vptr, VEDITLINE *editline )
 /***********************************************************/
 {
     return( TRUE );

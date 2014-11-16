@@ -52,7 +52,7 @@ static void update( SAREA area, VSCREEN *vptr )
 }
 
 
-VSCREEN* global uivopen( register VSCREEN *vptr )
+VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
 /***********************************************/
 {
     register    char*                   box;
@@ -152,7 +152,7 @@ do not delete this stuff
 }
 
 
-void global uivclose( VSCREEN *vptr )
+void UIAPI uivclose( VSCREEN *vptr )
 /***********************************/
 {
     if( vptr->open ) {
@@ -172,7 +172,7 @@ void global uivclose( VSCREEN *vptr )
  *              persists instead of losing the data
  */
 
-VSCREEN * global uivresize( VSCREEN *vptr, SAREA new )
+VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
 /****************************************************/
 {
     BUFFER      old_buff;
@@ -220,7 +220,7 @@ VSCREEN * global uivresize( VSCREEN *vptr, SAREA new )
     }
 }
 
-void global uivmove( VSCREEN *vptr, ORD row, ORD col )
+void UIAPI uivmove( VSCREEN *vptr, ORD row, ORD col )
 /****************************************************/
 {
     int         rdiff;

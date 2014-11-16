@@ -34,8 +34,8 @@
 #include "uimouse.h"
 
 
-global  void (intern *DrawCursor)( void ) = NULL;
-global  void (intern *EraseCursor)(void) = NULL;
+void (intern *DrawCursor)( void ) = NULL;
+void (intern *EraseCursor)( void ) = NULL;
 
 
 #define OFF_SCREEN      200
@@ -132,13 +132,13 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
     }
 }
 
-int global uimousealign( void )
+int UIAPI uimousealign( void )
 /*****************************/
 {
     return( ColAdjust );
 }
 
-void global uisetmouse( MOUSEORD row, MOUSEORD col )
+void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /**************************************************/
 {
     if( OldMouseRow == row && OldMouseCol == col ) return;
@@ -147,7 +147,7 @@ void global uisetmouse( MOUSEORD row, MOUSEORD col )
 }
 
 
-void global uimouse( int func )
+void UIAPI uimouse( int func )
 /*****************************/
 {
     if( func == MOUSE_ON ) {

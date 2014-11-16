@@ -41,13 +41,13 @@ static ORD      OldCursorRow;
 static ORD      OldCursorCol;
 static int      OldCursorType;
 
-void global uioffcursor( void )
+void UIAPI uioffcursor( void )
 {
     UIData->cursor_on = FALSE;
     UIData->cursor_type = C_OFF;
 }
 
-void global uioncursor( void )
+void UIAPI uioncursor( void )
 {
     UIData->cursor_on = TRUE;
 }
@@ -72,7 +72,7 @@ static void swapcursor( void )
 }
 
 
-void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -81,7 +81,7 @@ void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 }
 
 
-void global uisetcursor( ORD row, ORD col, int typ, int attr )
+void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr )
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
@@ -97,14 +97,14 @@ void global uisetcursor( ORD row, ORD col, int typ, int attr )
     }
 }
 
-void global uiswapcursor( void )
+void UIAPI uiswapcursor( void )
 {
     swapcursor();
     newcursor();
 }
 
 
-void global uiinitcursor( void )
+void UIAPI uiinitcursor( void )
 {
     int tmp;
 
@@ -118,7 +118,7 @@ void global uiinitcursor( void )
 }
 
 
-void global uifinicursor( void )
+void UIAPI uifinicursor( void )
 {
     uioncursor();
 }

@@ -85,7 +85,7 @@ void intern dirtynext( SAREA area, UI_WINDOW *wptr )
 }
 
 
-void global uidirty( SAREA area )
+void UIAPI uidirty( SAREA area )
 /*******************************/
 {
     dirtynext( area, UIData->area_head );

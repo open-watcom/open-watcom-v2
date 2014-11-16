@@ -166,7 +166,7 @@ static void menutitle( int menu, bool current )
              chattr, &mptr->name[ ( mptr->flags & ITEM_CHAR_OFFSET ) ], 1 );
 }
 
-void global uidisplayitem( MENUITEM *menu, DESCMENU *desc, int item, bool curr )
+void UIAPI uidisplayitem( MENUITEM *menu, DESCMENU *desc, int item, bool curr )
 /******************************************************************************/
 {
     bool                    active;
@@ -300,13 +300,13 @@ extern void uidrawmenu( MENUITEM *menu, DESCMENU *desc, int curr )
     permit_refresh();
 }
 
-void global uiclosepopup( UI_WINDOW *window )
+void UIAPI uiclosepopup( UI_WINDOW *window )
 {
     closewindow( window );
     window->update = NULL;
 }
 
-void global uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
+void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
 {
     window->area = desc->area;
     window->priority = P_DIALOGUE;
@@ -680,7 +680,7 @@ void intern menuevent( VSCREEN *vptr )
 }
 
 
-void global uidescmenu( MENUITEM *iptr, DESCMENU *desc )
+void UIAPI uidescmenu( MENUITEM *iptr, DESCMENU *desc )
 /******************************************************/
 {
     register    int                     item;
@@ -814,7 +814,7 @@ bool uienablemenuitem( unsigned menu, unsigned item, bool enable )
 }
 
 
-void global uimenuindicators( bool status )
+void UIAPI uimenuindicators( bool status )
 /*****************************************/
 {
     Menu->indicators = status;
@@ -823,7 +823,7 @@ void global uimenuindicators( bool status )
 /* this code was split out of uimenubar to facilitate the updating of
  * menu's without constant redrawing
  */
-void global uisetmenudesc( void )
+void UIAPI uisetmenudesc( void )
 /*******************************/
 {
     register int  count;
@@ -834,7 +834,7 @@ void global uisetmenudesc( void )
     }
 }
 
-VBARMENU* global uimenubar( VBARMENU *bar )
+VBARMENU* UIAPI uimenubar( VBARMENU *bar )
 /*****************************************/
 {
     register    int                     count;
@@ -880,20 +880,20 @@ VBARMENU* global uimenubar( VBARMENU *bar )
     return( prevMenu );
 }
 
-bool global uimenuson( void )
+bool UIAPI uimenuson( void )
 /***************************/
 {
     return( Menu != NULL );
 }
 
-unsigned global uimenuheight( void )
+unsigned UIAPI uimenuheight( void )
 /**********************************/
 {
     if( Menu == NULL ) return( 0 );
     return( MENU_GET_ROW( &Describe[ NumMenus - 1 ] ) + 1 );
 }
 
-void global uimenudisable( bool disabled )
+void UIAPI uimenudisable( bool disabled )
 /****************************************/
 {
     if ( uimenuson() ) {
@@ -901,19 +901,19 @@ void global uimenudisable( bool disabled )
     }
 }
 
-bool global uimenuisdisabled( void )
+bool UIAPI uimenuisdisabled( void )
 /**********************************/
 {
     return( uimenuson() && Menu->disabled );
 }
 
-bool global uimenugetaltpressed( void )
+bool UIAPI uimenugetaltpressed( void )
 /*************************************/
 {
     return( uimenuson() && Menu->altpressed );
 }
 
-void global uimenusetaltpressed( bool altpressed )
+void UIAPI uimenusetaltpressed( bool altpressed )
 /************************************************/
 {
     if ( uimenuson() ) {
@@ -921,14 +921,14 @@ void global uimenusetaltpressed( bool altpressed )
     }
 }
 
-void global uinomenus( void )
+void UIAPI uinomenus( void )
 /***************************/
 {
     uimenubar( NULL );
 }
 
 
-void global uimenus( MENUITEM *menus, MENUITEM **items, EVENT hot )
+void UIAPI uimenus( MENUITEM *menus, MENUITEM **items, EVENT hot )
 /*****************************************************************/
 {
     register    int                     index;
@@ -942,7 +942,7 @@ void global uimenus( MENUITEM *menus, MENUITEM **items, EVENT hot )
     uimenubar( &MenuList );
 }
 
-void global uiactivatemenus( void )
+void UIAPI uiactivatemenus( void )
 /*********************************/
 {
     if( Menu != NULL ) {
@@ -953,7 +953,7 @@ void global uiactivatemenus( void )
     }
 }
 
-void global uiignorealt( void )
+void UIAPI uiignorealt( void )
 /*****************************/
 {
     if( Menu != NULL ) {
@@ -961,7 +961,7 @@ void global uiignorealt( void )
     }
 }
 
-int global uigetcurrentmenu( MENUITEM *menu )
+int UIAPI uigetcurrentmenu( MENUITEM *menu )
 {
     if( Menu->menu ) {
         *menu = Menu->titles[ Menu->menu - 1];

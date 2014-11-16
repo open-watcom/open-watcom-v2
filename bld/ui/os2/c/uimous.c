@@ -272,7 +272,7 @@ static void OS2_initmouse( int install )
 }
 
 
-bool global initmouse( int install )
+bool UIAPI initmouse( int install )
 /**********************************/
 {
     MouseInstalled = FALSE;
@@ -285,8 +285,8 @@ bool global initmouse( int install )
 }
 
 
-void extern finimouse( void )
-/***************************/
+void finimouse( void )
+/********************/
 {
     if( MouseInstalled ) {
         uioffmouse();
@@ -296,9 +296,7 @@ void extern finimouse( void )
     }
 }
 
-void global uisetmouseposn(             /* SET MOUSE POSITION */
-    ORD row,                            /* - mouse row        */
-    ORD col )                           /* - mouse column     */
+void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     if( _osmode == DOS_MODE ) {
         MouseRow = row;

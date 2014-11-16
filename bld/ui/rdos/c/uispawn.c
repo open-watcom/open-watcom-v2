@@ -35,7 +35,7 @@
 #include "uidef.h"
 
 
-void global uispawnstart( void )
+void UIAPI uispawnstart( void )
 {
     kbdspawnstart();
     mousespawnstart();
@@ -43,7 +43,7 @@ void global uispawnstart( void )
     uisetcursor( 0, 0, C_NORMAL, -1 );
 }
 
-void global uispawnend( void )
+void UIAPI uispawnend( void )
 {
     kbdspawnend();
     mousespawnend();

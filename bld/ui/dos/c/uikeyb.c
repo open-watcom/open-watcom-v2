@@ -111,7 +111,7 @@ unsigned char intern checkshift( void )
 }
 
 
-unsigned char global uicheckshift( void )
+unsigned char UIAPI uicheckshift( void )
 /***************************************/
 
 {
@@ -218,7 +218,7 @@ EVENT intern keyboardevent( void )
     return( ev );
 }
 
-EVENT global uikeyboardevent( void )
+EVENT UIAPI uikeyboardevent( void )
 /**********************************/
 {
     return( keyboardevent() );

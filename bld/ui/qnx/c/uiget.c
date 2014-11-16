@@ -46,7 +46,7 @@ extern void intern  stopmouse( void );
 extern void intern  stopkeyboard( void );
 
 
-void global uiflush( void )
+void UIAPI uiflush( void )
 /*************************/
 {
     Event = EV_NO_EVENT;
@@ -101,7 +101,7 @@ static EVENT doget( int update )
     return( ev );
 }
 
-EVENT global uieventsource( int update )
+EVENT UIAPI uieventsource( int update )
 /**************************************/
 {
     EVENT   ev;
@@ -113,7 +113,7 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget( void )
+EVENT UIAPI uiget( void )
 /************************/
 {
     return( uieventsource( 1 ) );
