@@ -57,7 +57,7 @@ bool InitRFXSupp()
 }
 
 
-unsigned RemoteRename( char * from, char *to )
+rc_erridx RemoteRename( char * from, char *to )
 {
     mx_entry            in[3];
     mx_entry            out[1];
@@ -77,7 +77,7 @@ unsigned RemoteRename( char * from, char *to )
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
-unsigned RemoteMkDir( char *name )
+rc_erridx RemoteMkDir( char *name )
 {
     mx_entry            in[2];
     mx_entry            out[1];
@@ -95,7 +95,7 @@ unsigned RemoteMkDir( char *name )
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
-unsigned RemoteRmDir( char *name )
+rc_erridx RemoteRmDir( char *name )
 {
     mx_entry            in[2];
     mx_entry            out[1];
@@ -113,7 +113,7 @@ unsigned RemoteRmDir( char *name )
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
-unsigned RemoteSetDrv( int drv )
+rc_erridx RemoteSetDrv( int drv )
 {
     mx_entry            in[1];
     mx_entry            out[1];
@@ -146,7 +146,7 @@ int RemoteGetDrv()
     return( out_mx.drive );
 }
 
-unsigned RemoteSetCWD( char *name )
+rc_erridx RemoteSetCWD( char *name )
 {
     mx_entry            in[2];
     mx_entry            out[1];
@@ -186,7 +186,7 @@ long RemoteGetFileAttr( char * name )
     return( out_mx.attribute );
 }
 
-unsigned RemoteSetFileAttr( char * name, long attrib )
+rc_erridx RemoteSetFileAttr( char * name, long attrib )
 {
     mx_entry            in[2];
     mx_entry            out[1];
@@ -333,7 +333,7 @@ unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 //NYI: Assume max cwd lenght is 80
 #define MAX_STRING_LEN  80
 
-unsigned RemoteGetCwd( int drv, char *where )
+rc_erridx RemoteGetCwd( int drv, char *where )
 {
     mx_entry            in[1];
     mx_entry            out[2];
@@ -352,8 +352,7 @@ unsigned RemoteGetCwd( int drv, char *where )
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
-unsigned RemoteFindFirst( char *pattern, void *info,
-                        unsigned info_len, int attrib )
+rc_erridx RemoteFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
 {
     mx_entry             in[2];
     mx_entry             out[2];
@@ -375,7 +374,7 @@ unsigned RemoteFindFirst( char *pattern, void *info,
 }
 
 
-unsigned RemoteFindNext( void *info, unsigned info_len )
+rc_erridx RemoteFindNext( void *info, unsigned info_len )
 {
     mx_entry             in[2];
     mx_entry             out[2];
@@ -395,7 +394,7 @@ unsigned RemoteFindNext( void *info, unsigned info_len )
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
-unsigned RemoteFindClose()
+rc_erridx RemoteFindClose()
 {
     mx_entry             in[1];
     mx_entry             out[1];

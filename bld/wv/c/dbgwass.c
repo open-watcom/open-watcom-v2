@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include "_srcmgt.h"
 #include <string.h>
-#include "dbgdefn.h"
+#include "_srcmgt.h"
 #include "dbgreg.h"
 #include "dbgwind.h"
 #include "dbgadget.h"

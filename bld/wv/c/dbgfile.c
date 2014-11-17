@@ -54,22 +54,22 @@ extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsi
 extern void             StartupErr( char * );
 extern bool             HaveRemoteFiles( void );
 
-extern unsigned         RemoteErase( char const * );
+extern rc_erridx        RemoteErase( char const * );
 extern void             RemoteErrMsg( sys_error, char * );
 extern unsigned         RemoteRead( sys_handle, void *, unsigned );
 extern unsigned         RemoteWrite( sys_handle, const void *, unsigned );
 extern unsigned long    RemoteSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       RemoteOpen( char const *, open_access );
-extern unsigned         RemoteClose( sys_handle );
+extern rc_erridx        RemoteClose( sys_handle );
 extern unsigned         RemoteWriteConsole( void *, unsigned );
 
-extern unsigned         LocalErase( char const * );
+extern rc_erridx        LocalErase( char const * );
 extern void             LocalErrMsg( sys_error, char * );
 extern unsigned         LocalRead( sys_handle, void *, unsigned );
 extern unsigned         LocalWrite( sys_handle, const void *, unsigned );
 extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       LocalOpen( char const *, open_access );
-extern unsigned         LocalClose( sys_handle );
+extern rc_erridx        LocalClose( sys_handle );
 extern sys_handle       LocalHandle( handle );
 extern void             DUIWndUser( void );
 
@@ -92,8 +92,8 @@ static char_ring *LclPath;
 
 static sys_handle       SysHandles[MAX_OPENS];
 static sys_error        SysErrors[MAX_ERRORS];
-static unsigned         ErrRover;
-static unsigned         LastErr;
+static error_idx        ErrRover;
+static error_idx        LastErr;
 
 handle PathOpen( const char *name, unsigned name_len, const char *ext );
 
@@ -170,8 +170,9 @@ static handle FindFreeHandle( void )
 
 unsigned ReadStream( handle h, void *b, unsigned l )
 {
-    sys_handle  sys     = SysHandles[ h & ~REMOTE_IND ];
+    sys_handle  sys;
 
+    sys = SysHandles[h & ~REMOTE_IND];
     if( h & REMOTE_IND ) {
         return( RemoteRead( sys, b, l ) );
     } else {
@@ -186,8 +187,9 @@ unsigned ReadText( handle h, void *b, unsigned l )
 
 unsigned WriteStream( handle h, const void *b, unsigned l)
 {
-    sys_handle  sys     = SysHandles[ h & ~REMOTE_IND ];
+    sys_handle  sys;
 
+    sys = SysHandles[h & ~REMOTE_IND];
     if( h & REMOTE_IND ) {
         return( RemoteWrite( sys, b, l ) );
     } else {
@@ -211,8 +213,9 @@ unsigned WriteText( handle h, const void *b, unsigned len )
 
 unsigned long SeekStream( handle h, long p, seek_method m )
 {
-    sys_handle  sys     = SysHandles[ h & ~REMOTE_IND ];
+    sys_handle  sys;
 
+    sys = SysHandles[h & ~REMOTE_IND];
     if( h & REMOTE_IND ) {
         return( RemoteSeek( sys, p, m ) );
     } else {
@@ -243,11 +246,12 @@ handle FileOpen( const char *name, open_access o )
     return( h );
 }
 
-unsigned FileClose( handle h )
+rc_erridx FileClose( handle h )
 {
-    sys_handle  sys     = SysHandles[ h & ~REMOTE_IND ];
+    sys_handle  sys;
 
-    SysHandles[ h & ~REMOTE_IND ] = NIL_SYS_HANDLE;
+    sys = SysHandles[h & ~REMOTE_IND];
+    SysHandles[h & ~REMOTE_IND] = NIL_SYS_HANDLE;
     if( h & REMOTE_IND ) {
         return( RemoteClose( sys ) );
     } else {
@@ -256,7 +260,7 @@ unsigned FileClose( handle h )
 }
 
 
-unsigned FileRemove( char const *name, open_access loc )
+rc_erridx FileRemove( char const *name, open_access loc )
 {
     name = FileLoc( name, &loc );
     if( loc & OP_REMOTE ) {
@@ -280,43 +284,48 @@ open_access FileHandleInfo( handle h )
     return( OP_LOCAL );
 }
 
-char *SysErrMsg( unsigned code, char *buff )
+char *SysErrMsg( error_idx code, char *buff )
 {
-    sys_error   sys = SysErrors[ (code & ~REMOTE_IND) - 1];
+    sys_error   sys;
 
+    sys = SysErrors[(code & ~REMOTE_IND) - 1];
     if( code & REMOTE_IND ) {
         RemoteErrMsg( sys, buff );
     } else {
         LocalErrMsg( sys, buff );
     }
-    return( &buff[ strlen( buff ) ] );
+    return( &buff[strlen( buff )] );
 }
 
-unsigned StashErrCode( sys_error sys, open_access loc )
+error_idx StashErrCode( sys_error sys, open_access loc )
 {
-    unsigned    code;
+    error_idx   code;
 
-    if( sys == 0 ) return( 0 );
-    if( ++ErrRover >= MAX_ERRORS ) ErrRover = 0;
+    if( sys == 0 )
+        return( 0 );
+    if( ++ErrRover >= MAX_ERRORS )
+        ErrRover = 0;
     code = ErrRover;
     SysErrors[code] = sys;
     ++code;
-    if( loc & OP_REMOTE ) code |= REMOTE_IND;
+    if( loc & OP_REMOTE )
+        code |= REMOTE_IND;
     LastErr = code;
     return( code );
 }
 
 /* for RFX */
-unsigned GetLastErr( void )
+error_idx GetLastErr( void )
 {
     return( LastErr );
 }
 
 /* for RFX */
-sys_error GetSystemErrCode( unsigned code )
+sys_error GetSystemErrCode( error_idx code )
 {
-    if( code == 0 ) return( 0 );
-    return( SysErrors[ (code & ~REMOTE_IND) - 1] );
+    if( code == 0 )
+        return( 0 );
+    return( SysErrors[(code & ~REMOTE_IND) - 1] );
 }
 
 /* for RFX */

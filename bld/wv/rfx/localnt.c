@@ -107,25 +107,25 @@ void LocalGetBuff( char *buff, unsigned size )
     }
 }
 
-unsigned LocalRename( char *from, char *to )
-/******************************************/
+rc_erridx LocalRename( char *from, char *to )
+/*******************************************/
 {
     return( StashErrCode( rename( from, to ), OP_LOCAL ) );
 }
 
-unsigned LocalMkDir( char *name )
-/*******************************/
+rc_erridx LocalMkDir( char *name )
+/********************************/
 {
     return( StashErrCode( mkdir( name ), OP_LOCAL ) );
 }
 
-unsigned LocalRmDir( char *name )
-/*******************************/
+rc_erridx LocalRmDir( char *name )
+/********************************/
 {
     return( StashErrCode( rmdir( name ), OP_LOCAL ) );
 }
 
-unsigned LocalSetDrv( int drv )
+rc_erridx LocalSetDrv( int drv )
 /*****************************/
 {
     unsigned    total;
@@ -143,14 +143,14 @@ int LocalGetDrv( void )
     return( drive - 1 );
 }
 
-unsigned LocalGetCwd( int drive, char *where )
-/********************************************/
+rc_erridx LocalGetCwd( int drive, char *where )
+/*********************************************/
 {
     return( StashErrCode( getcwd( where, 256 ) == NULL, OP_LOCAL ) );
 }
 
-unsigned LocalSetCWD( char *name )
-/********************************/
+rc_erridx LocalSetCWD( char *name )
+/*********************************/
 {
     return( StashErrCode( chdir( name ), OP_LOCAL ) );
 }
@@ -170,8 +170,8 @@ long LocalGetFileAttr( char *name )
 #endif
 }
 
-unsigned LocalSetFileAttr( char *name, long attr )
-/************************************************/
+rc_erridx LocalSetFileAttr( char *name, long attr )
+/*************************************************/
 {
 #if 0
     FILESTATUS3 fileinfo;
@@ -196,8 +196,8 @@ long LocalGetFreeSpace( int drv )
     return( dfre.avail_clusters * dfre.sectors_per_cluster * dfre.bytes_per_sector );
 }
 
-unsigned LocalDateTime( sys_handle fh, int *time, int *date, int set )
-/********************************************************************/
+rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
+/*********************************************************************/
 {
 #if 0
     struct _FILESTATUS fstatus;
@@ -237,8 +237,8 @@ static void makeDOSDTA( struct find_t *dos, trap_dta *trp )
     strcpy( trp->name, dos->name );
 }
 
-unsigned LocalFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
-/*********************************************************************************/
+rc_erridx LocalFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
+/**********************************************************************************/
 {
     unsigned        rc;
 
@@ -249,7 +249,7 @@ unsigned LocalFindFirst( char *pattern, void *info, unsigned info_len, int attri
     return( 0 );
 }
 
-unsigned LocalFindNext( void *info, unsigned info_len )
+rc_erridx LocalFindNext( void *info, unsigned info_len )
 /*****************************************************/
 {
     unsigned        rc;

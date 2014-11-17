@@ -50,7 +50,7 @@ extern char             *Format( char *buff, char *fmt, ... );
 extern char             *TxtBuff;
 
 
-static int SymPick( char *text, PICKCALLBACK *PickInit )
+static int SymPick( const char *text, PICKCALLBACK *PickInit )
 {
     dlg_pick    dlg;
 

@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#include "_srcmgt.h"
 #include <string.h>
 #include <limits.h>
-#include "dbgdefn.h"
+#include "_srcmgt.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbginfo.h"
@@ -41,7 +40,7 @@
 #include "dbgmem.h"
 #include "dbgtoggl.h"
 #include "dbgitem.h"
-#include "dbgbreak.h" //
+#include "dbgbreak.h"
 #include "dbgstk.h"
 #include "srcmgt.h"
 
@@ -809,7 +808,9 @@ static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
             FDoneSource( file->viewhndl );
         }
         if( file->erase ) {
-            if( file->name ) FileRemove( file->name, 0 );
+            if( file->name ) {
+                FileRemove( file->name, 0 );
+            }
         }
         WndFree( file->name );
         AsmFreeSrc( file->asw );

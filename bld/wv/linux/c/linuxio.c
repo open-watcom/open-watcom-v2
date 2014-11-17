@@ -148,15 +148,17 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, unsigned method )
     return( ret );
 }
 
-unsigned LocalClose( sys_handle filehndl )
+rc_erridx LocalClose( sys_handle filehndl )
 {
-    if( close( filehndl ) == 0 ) return( 0 );
+    if( close( filehndl ) == 0 )
+        return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-unsigned LocalErase( char *name )
+rc_erridx LocalErase( char *name )
 {
-    if( unlink( name ) == 0 ) return( 0 );
+    if( unlink( name ) == 0 )
+        return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 

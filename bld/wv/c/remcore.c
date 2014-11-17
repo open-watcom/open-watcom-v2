@@ -352,7 +352,7 @@ void ClearMachineDataCache( void )
  * DoLoad -- load in user program as an overlay
  */
 
-unsigned DoLoad( char *args, unsigned long *phandle )
+rc_erridx DoLoad( char *args, unsigned long *phandle )
 {
     mx_entry            in[2];
     mx_entry            out[1];

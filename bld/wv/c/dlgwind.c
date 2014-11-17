@@ -30,7 +30,6 @@
 
 
 #include "_srcmgt.h"
-#include "dbgdefn.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dbgerr.h"

@@ -110,8 +110,8 @@ void LocalGetBuff( char *buff, unsigned size )
     buff[ length.cchIn ] = '\0';
 }
 
-unsigned LocalRename( char *from, char *to )
-/**************************************/
+rc_erridx LocalRename( char *from, char *to )
+/*******************************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosMove( from, to, 0 ), OP_LOCAL ) );
@@ -120,8 +120,8 @@ unsigned LocalRename( char *from, char *to )
 #endif
 }
 
-unsigned LocalMkDir( char *name )
-/***************************/
+rc_erridx LocalMkDir( char *name )
+/********************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosMkDir( name, 0 ), OP_LOCAL ) );
@@ -130,8 +130,8 @@ unsigned LocalMkDir( char *name )
 #endif
 }
 
-unsigned LocalRmDir( char *name )
-/***************************/
+rc_erridx LocalRmDir( char *name )
+/********************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosRmDir( name, 0 ), OP_LOCAL ) );
@@ -140,8 +140,8 @@ unsigned LocalRmDir( char *name )
 #endif
 }
 
-unsigned LocalSetDrv( int drv )
-/*************************/
+rc_erridx LocalSetDrv( int drv )
+/******************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosSelectDisk( drv + 1 ), OP_LOCAL ) );
@@ -166,8 +166,8 @@ int LocalGetDrv( void )
     return( drive - 1 );
 }
 
-unsigned LocalSetCWD( char *name )
-/****************************/
+rc_erridx LocalSetCWD( char *name )
+/*********************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosChDir( name, 0 ), OP_LOCAL ) );
@@ -211,8 +211,8 @@ long LocalGetFreeSpace( int drv )
     return( usage.cbSector * usage.cSectorUnit * usage.cUnitAvail );
 }
 
-unsigned LocalDateTime( sys_handle fh, int *time, int *date, int set )
-/**************************************************************/
+rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
+/*********************************************************************/
 {
     struct _FILESTATUS fstatus;
     struct _FDATE *pdate;
@@ -227,26 +227,30 @@ unsigned LocalDateTime( sys_handle fh, int *time, int *date, int set )
 #else
         rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
 #endif
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 )
+            return( StashErrCode( rc, OP_LOCAL ) );
         fstatus.ftimeLastWrite = *ptime;
         fstatus.fdateLastWrite = *pdate;
         rc = DosSetFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 ) {
+            return( StashErrCode( rc, OP_LOCAL ) );
+        }
     } else {
 #ifdef _M_I86
         rc = DosQFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
 #else
         rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
 #endif
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 )
+            return( StashErrCode( rc, OP_LOCAL ) );
         *ptime = fstatus.ftimeLastWrite;
         *pdate = fstatus.fdateLastWrite;
     }
     return( 0 );
 }
 
-unsigned LocalGetCwd( int drive, char *where )
-/********************************************/
+rc_erridx LocalGetCwd( int drive, char *where )
+/*********************************************/
 {
     APIRET len;
 
@@ -273,8 +277,8 @@ static void makeDOSDTA( struct _FILEFINDBUF3 *os2, trap_dta *dos )
     strcpy( dos->name, os2->achName );
 }
 
-unsigned LocalFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
-/*****************************************************************************/
+rc_erridx LocalFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
+/**********************************************************************************/
 {
 #ifdef _M_I86
     FILEFINDBUF dta;
@@ -291,13 +295,14 @@ unsigned LocalFindFirst( char *pattern, void *info, unsigned info_len, int attri
 #else
     err = DosFindFirst( pattern, &handle, attrib, &dta, sizeof( dta ), &count, FIL_STANDARD );
 #endif
-    if( err != 0 ) return( StashErrCode( err, OP_LOCAL ) );
+    if( err != 0 )
+        return( StashErrCode( err, OP_LOCAL ) );
     makeDOSDTA( &dta, info );
     return( 0 );
 }
 
-unsigned LocalFindNext( void *info, unsigned info_len )
-/*************************************************/
+rc_erridx LocalFindNext( void *info, unsigned info_len )
+/******************************************************/
 {
 #ifdef _M_I86
     FILEFINDBUF   dta;
@@ -309,7 +314,8 @@ unsigned LocalFindNext( void *info, unsigned info_len )
 
     info_len = info_len;
     rc = DosFindNext( 1, &dta, sizeof( dta ), &count );
-    if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+    if( rc != 0 )
+        return( StashErrCode( rc, OP_LOCAL ) );
     if( count == 0 ) {
         DosFindClose( 1 );
         return( -1 );
@@ -380,8 +386,8 @@ int CtrlCHit( void )
 }
 
 
-unsigned LocalSetFileAttr( char *name, long attr )
-/********************************************/
+rc_erridx LocalSetFileAttr( char *name, long attr )
+/*************************************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosSetFileMode( name, attr, 0 ), OP_LOCAL ) );

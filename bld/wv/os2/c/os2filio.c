@@ -164,7 +164,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, unsigned method )
     return( new );
 }
 
-unsigned LocalClose( sys_handle filehndl )
+rc_erridx LocalClose( sys_handle filehndl )
 {
     USHORT      ret;
 
@@ -172,7 +172,7 @@ unsigned LocalClose( sys_handle filehndl )
     return( StashErrCode( ret, OP_LOCAL ) );
 }
 
-unsigned LocalErase( char *name )
+rc_erridx LocalErase( char *name )
 {
     USHORT      ret;
 

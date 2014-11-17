@@ -31,7 +31,6 @@
 
 #include <string.h>
 #include "_srcmgt.h"
-#include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbgtoken.h"
 #include "dbgerr.h"
@@ -39,6 +38,7 @@
 #include "dbginfo.h"
 #include "dui.h"
 #include "srcmgt.h"
+
 #include "clibext.h"
 
 

@@ -32,15 +32,15 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "dui.h"
+#include "dbgio.h"
 
 
 extern long         _fork( char *, size_t );
-extern long         RemoteFork(char *,size_t );
+extern rc_erridx    RemoteFork( char *,size_t );
 extern void         RemoteSuspend(void);
 extern void         RemoteResume(void);
 extern unsigned int ScanCmd(char *);
@@ -59,22 +59,28 @@ static char SystemOps[] = { "Remote\0Local\0" };
 
 void DoSystem( char *cmd, size_t len, int loc )
 {
-    long        ret;
+    long        rc;
+    rc_erridx   ret;
     bool        chk;
 
     DUISysStart();
-    if( loc == 0 && _IsOn( SW_REMOTE_FILES ) ) loc = 1;
+    if( loc == 0 && _IsOn( SW_REMOTE_FILES ) )
+        loc = 1;
     if( loc > 0 ) {
         ret = RemoteFork( cmd, len );
+        rc = 0;
     } else {
         RemoteSuspend();
         chk = CheckPointMem( CheckSize, TxtBuff );
-        ret = _fork( cmd, len );
-        if( chk ) CheckPointRestore();
+        rc = _fork( cmd, len );
+        if( chk )
+            CheckPointRestore();
         RemoteResume();
     }
-    DUISysEnd( ret >= 0 );
-    if( ret < 0 ) Error( ERR_NONE, LIT( ERR_SYS_FAIL ), (int) ret );
+    DUISysEnd( rc >= 0 );
+    if( rc < 0 ) {
+        Error( ERR_NONE, LIT( ERR_SYS_FAIL ), StashErrCode( rc & 0xFFFF, OP_REMOTE ) );
+    }
 }
 
 

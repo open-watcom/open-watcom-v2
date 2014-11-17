@@ -32,23 +32,18 @@
 #include <string.h>
 #include <stdio.h>
 #include "_srcmgt.h"
+#include "dbgdata.h"
 #include "spawn.h"
-#include "dbgdefn.h"
 #include "dbglit.h"
-#include "dbgtoggl.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
-#include "dbginfo.h"
 #include "dbgmem.h"
-#include "dbgbreak.h"
 #include "dbghook.h"
-#include "trpcore.h"
-#include "dbgreg.h"
 #include "mad.h"
 #include "dui.h"
 #include "srcmgt.h"
 #include "tistrail.h"
 #include <limits.h>
+
 #include "clibext.h"
 
 
@@ -121,7 +116,7 @@ extern void             DbgUpdate( update_list );
 extern long             RemoteGetFileDate( char *name );
 extern long             LocalGetFileDate( char *name );
 extern bool             RemoteSetFileDate( char *name, long date );
-extern unsigned         RemoteErase( char const * );
+extern rc_erridx        RemoteErase( char const * );
 extern unsigned         MaxRemoteWriteSize( void );
 
 extern void             InsertRing( char_ring **owner, char *start, unsigned len );

@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "_srcmgt.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "dbgdefn.h"
+#include "_srcmgt.h"
 #include "dbginfo.h"
 #include "dbgwind.h"
 #include "dbgadget.h"

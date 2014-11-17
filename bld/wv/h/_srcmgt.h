@@ -30,6 +30,7 @@
 
 
 #include <stdlib.h>
+#include "dbgdefn.h"
 #include "diptypes.h"
 #include "dbgio.h"
 #include "dbgmem.h"

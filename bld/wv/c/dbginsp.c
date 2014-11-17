@@ -30,10 +30,9 @@
 
 
 
-#include "_srcmgt.h"
 #include <string.h>
 #include <ctype.h>
-#include "dbgdefn.h"
+#include "_srcmgt.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"
 #include "dbgstk.h"
@@ -44,6 +43,7 @@
 #include "dbginfo.h"
 #include "mad.h"
 #include "srcmgt.h"
+
 #include "clibext.h"
 
 search_result           LineCue( mod_handle, cue_fileid,

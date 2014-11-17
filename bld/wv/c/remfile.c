@@ -48,7 +48,7 @@
 extern system_config    SysConfig;
 #endif
 
-extern trap_shandle GetSuppId( char * );
+extern trap_shandle     GetSuppId( char * );
 extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
 
 extern unsigned         MaxPacketLen;
@@ -56,7 +56,7 @@ extern unsigned         CheckSize;
 
 static trap_shandle     SuppFileId = 0;
 
-file_components     RemFile;
+file_components         RemFile;
 
 #ifdef LOGGING
 static FILE    *logf;
@@ -66,25 +66,26 @@ static FILE    *logf;
 typedef struct _fcache_t {
     int         locfile;
     sys_handle  remhandle;
-    } fcache_t;
+} fcache_t;
 
 #define CACHED_HANDLES    16
 static fcache_t    fcache[CACHED_HANDLES];
 
-#define SUPP_FILE_SERVICE( in, request )        \
-        in.supp.core_req    = REQ_PERFORM_SUPPLEMENTARY_SERVICE;        \
-        in.supp.id                  = SuppFileId;       \
-        in.req                      = request;
+#define SUPP_FILE_SERVICE( in, request )    \
+    in.supp.core_req    = REQ_PERFORM_SUPPLEMENTARY_SERVICE; \
+    in.supp.id          = SuppFileId;       \
+    in.req              = request;
 
 /* Return local handle of remote file equivalent */
 int GetCachedHandle(sys_handle remote)
 {
     int i;
 
-    for( i = 0; i < CACHED_HANDLES; i++ )
-        if( fcache[i].remhandle == remote )
+    for( i = 0; i < CACHED_HANDLES; i++ ) {
+        if( fcache[i].remhandle == remote ) {
             return( fcache[i].locfile );
-
+        }
+    }
     return( -1 );
 }
 
@@ -221,7 +222,8 @@ sys_handle RemoteOpen( char *name, open_access mode )
     file_open_ret       ret;
     int                 locfile;
 
-    if( SuppFileId == 0 ) return( NIL_SYS_HANDLE );
+    if( SuppFileId == 0 )
+        return( NIL_SYS_HANDLE );
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_OPEN );
     acc.mode = 0;
@@ -231,8 +233,9 @@ sys_handle RemoteOpen( char *name, open_access mode )
         acc.mode |= TF_WRITE;
     if( mode & OP_CREATE ) {
         acc.mode |= TF_CREATE;
-        if( mode & OP_EXEC )
+        if( mode & OP_EXEC ) {
             acc.mode |= TF_EXEC;
+        }
     }
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -245,7 +248,7 @@ sys_handle RemoteOpen( char *name, open_access mode )
     CONV_LE_32( ret.handle );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-            return( NIL_SYS_HANDLE );
+        return( NIL_SYS_HANDLE );
     } else {
         /* See if the file is available locally. If so, open it here as
          * well as on the remote machine.
@@ -283,7 +286,7 @@ static unsigned DoAWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len 
         in[0].len = sizeof( acc.con );
     } else {
         acc.file.handle = hdl;
-    CONV_LE_32( acc.file.handle );
+        CONV_LE_32( acc.file.handle );
         in[0].len = sizeof( acc.file );
     }
     in[0].ptr = &acc;
@@ -317,13 +320,17 @@ static unsigned DoWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len )
     max = MaxRemoteWriteSize();
     total = 0;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         curr = len;
-        if( curr > max ) curr = max;
+        if( curr > max )
+            curr = max;
         rc = DoAWrite( req, hdl, ptr, curr );
-        if( rc == ERR_RETURN ) return( rc );
+        if( rc == ERR_RETURN )
+            return( rc );
         total += rc;
-        if( rc != curr ) break;
+        if( rc != curr )
+            break;
         ptr = (char *)ptr + curr;
         len -= curr;
     }
@@ -332,13 +339,15 @@ static unsigned DoWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len )
 
 unsigned RemoteWrite( sys_handle hdl, const void *buff, unsigned len )
 {
-    if( SuppFileId == 0 ) return( 0 );
+    if( SuppFileId == 0 )
+        return( 0 );
     return( DoWrite( REQ_FILE_WRITE, hdl, (void *)buff, len ) );
 }
 
 unsigned RemoteWriteConsole( void *buff, unsigned len )
 {
-    if( SuppFileId == 0 ) return( 0 );
+    if( SuppFileId == 0 )
+        return( 0 );
     return( DoWrite( REQ_FILE_WRITE_CONSOLE, NIL_SYS_HANDLE, buff, len ) );
 }
 
@@ -384,7 +393,8 @@ unsigned RemoteRead( sys_handle hdl, void *ptr, unsigned len )
     unsigned    curr;
     int         locfile;
 
-    if( SuppFileId == 0 ) return( 0 );
+    if( SuppFileId == 0 )
+        return( 0 );
 
     /* Try reading from local copy first */
     locfile = GetCachedHandle( hdl );
@@ -394,13 +404,17 @@ unsigned RemoteRead( sys_handle hdl, void *ptr, unsigned len )
     max = MaxRemoteReadSize();
     total = 0;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         curr = len;
-        if( curr > max ) curr = max;
+        if( curr > max )
+            curr = max;
         rc = DoRead( hdl, ptr, curr );
-        if( rc == ERR_RETURN ) return( rc );
+        if( rc == ERR_RETURN )
+            return( rc );
         total += rc;
-        if( rc != curr ) break;
+        if( rc != curr )
+            break;
         ptr = (char *)ptr + curr;
         len -= curr;
     }
@@ -413,7 +427,8 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, unsigned method )
     file_seek_ret       ret;
     int                 locfile;
 
-    if( SuppFileId == 0 ) return( 0 );
+    if( SuppFileId == 0 )
+        return( 0 );
 
     /* Seek on local copy too (if available) */
     locfile = GetCachedHandle( hdl );
@@ -439,13 +454,14 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, unsigned method )
     }
 }
 
-unsigned RemoteClose( sys_handle hdl )
+rc_erridx RemoteClose( sys_handle hdl )
 {
     file_close_req      acc;
     file_close_ret      ret;
     int                 locfile;
 
-    if( SuppFileId == 0 ) return( 0 );
+    if( SuppFileId == 0 )
+        return( 0 );
 
     locfile = GetCachedHandle( hdl );
     if( locfile != -1 ) {
@@ -464,14 +480,15 @@ unsigned RemoteClose( sys_handle hdl )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-unsigned RemoteErase( char *name )
+rc_erridx RemoteErase( char *name )
 {
     mx_entry            in[2];
     mx_entry            out[1];
     file_erase_req      acc;
     file_erase_ret      ret;
 
-    if( SuppFileId == 0 ) return( 0 );
+    if( SuppFileId == 0 )
+        return( 0 );
     SUPP_FILE_SERVICE( acc, REQ_FILE_ERASE );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -484,14 +501,15 @@ unsigned RemoteErase( char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-long RemoteFork( char *cmd, size_t len )
+rc_erridx RemoteFork( char *cmd, size_t len )
 {
     mx_entry            in[2];
     mx_entry            out[1];
     file_run_cmd_req    acc;
     file_run_cmd_ret    ret;
 
-    if( SuppFileId == 0 ) return( 0 );
+    if( SuppFileId == 0 )
+        return( 0 );
     SUPP_FILE_SERVICE( acc, REQ_FILE_RUN_CMD );
     acc.chk_size = CheckSize;
     in[0].ptr = &acc;

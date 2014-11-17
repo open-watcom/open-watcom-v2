@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include "_srcmgt.h"
 #include <stdlib.h>
-#include "dbgdefn.h"
+#include "_srcmgt.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
 #include "dbginp.h"

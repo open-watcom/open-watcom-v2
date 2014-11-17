@@ -52,6 +52,8 @@ typedef struct machine_state    machine_state;
 
 /* Global Definitions */
 
+typedef unsigned                error_idx;
+
 #include "machtype.h"
 
 #define NULLCHAR '\0'

@@ -90,38 +90,38 @@ typedef struct copyspec {
         int             dst_loc;
 } COPYSPEC, *COPYPTR;
 
-extern  void    SysFileInit( void );
-extern  void    PathInit( void );
-extern  bool    InitTrap( char * );
-extern  bool    InitFileSupp( void );
-extern  bool    InitRFXSupp( void );
-extern  void    FiniTrap( void );
-extern  void    InitInt( void );
-extern  void    FiniInt( void );
-extern  int     CtrlCHit( void );
-extern  char    *RealFName( char *, open_access * );
-extern  sys_error       GetSystemErrCode( unsigned );
+extern  void            SysFileInit( void );
+extern  void            PathInit( void );
+extern  bool            InitTrap( char * );
+extern  bool            InitFileSupp( void );
+extern  bool            InitRFXSupp( void );
+extern  void            FiniTrap( void );
+extern  void            InitInt( void );
+extern  void            FiniInt( void );
+extern  int             CtrlCHit( void );
+extern  char            *RealFName( char *, open_access * );
+extern  sys_error       GetSystemErrCode( error_idx );
 extern  unsigned        RemoteWriteConsole( void *, unsigned );
-extern  unsigned        GetLastErr(void);
-extern  sys_handle      GetSystemHandle(handle);
+extern  error_idx       GetLastErr( void );
+extern  sys_handle      GetSystemHandle( handle );
 
-extern  char    *_FileParse( char *name, file_parse *file );
-extern  char    *Squish( file_parse *parse, char *into );
+extern  char            *_FileParse( char *name, file_parse *file );
+extern  char            *Squish( file_parse *parse, char *into );
 
-extern unsigned         RemoteRename( char *, char * );
-extern unsigned         RemoteMkDir( char *);
-extern unsigned         RemoteRmDir( char *);
-extern unsigned         RemoteSetDrv( int );
+extern rc_erridx        RemoteRename( char *, char * );
+extern rc_erridx        RemoteMkDir( char * );
+extern rc_erridx        RemoteRmDir( char * );
+extern rc_erridx        RemoteSetDrv( int );
 extern int              RemoteGetDrv(void);
-extern unsigned         RemoteSetCWD( char *);
+extern rc_erridx        RemoteSetCWD( char * );
 extern long             RemoteGetFileAttr( char * );
-extern unsigned         RemoteSetFileAttr( char * , long );
+extern rc_erridx        RemoteSetFileAttr( char * , long );
 extern long             RemoteGetFreeSpace( int );
-extern unsigned         RemoteDateTime( sys_handle , int *, int *, int);
-extern unsigned         RemoteGetCwd( int , char *);
-extern unsigned         RemoteFindFirst( char *, void *, unsigned , int );
-extern unsigned         RemoteFindNext( void *, unsigned );
-extern unsigned         RemoteFindClose(void);
+extern rc_erridx        RemoteDateTime( sys_handle , int *, int *, int );
+extern rc_erridx        RemoteGetCwd( int , char * );
+extern rc_erridx        RemoteFindFirst( char *, void *, unsigned , int );
+extern rc_erridx        RemoteFindNext( void *, unsigned );
+extern rc_erridx        RemoteFindClose( void );
 
 dbg_switches            DbgSwitches;
 char                    *TrpFile;
@@ -130,7 +130,7 @@ char                    Buff[ BUFF_LEN ];
 char                    NullStr[] = { '\0' };
 int                     MaxOnLine = { 0 };
 int                     Typing = { 0 };
-int                     ErrorStatus = { 0 };
+error_idx               ErrorStatus = { 0 };
 int                     DefaultLocation = { 0 };
 static  file_parse      Parse1;
 static  file_parse      Parse2;
@@ -306,8 +306,10 @@ static char *RealRFXName( char *name, int *loc )
 
 static open_access RFX2Acc( int loc )
 {
-    if( loc == 0 ) loc = DefaultLocation;
-    if( loc < 0 ) return( OP_LOCAL );
+    if( loc == 0 )
+        loc = DefaultLocation;
+    if( loc < 0 )
+        return( OP_LOCAL );
     return( OP_REMOTE );
 }
 
@@ -317,7 +319,8 @@ static char * RealName( char * name, int * loc )
     if( *loc == 0 ) {
         *loc = DefaultLocation;
     }
-    if( *name == '\0' ) return( "." );
+    if( *name == '\0' )
+        return( "." );
     return( name );
 }
 
@@ -373,18 +376,19 @@ int WriteBoth( char * buff, int len ) {
     int         written;
 
     written = WriteStream( STD_ERR, buff, len );
-    if( written != len ) return( written );
+    if( written != len )
+        return( written );
     written = RemoteWriteConsole( buff, len );
     return( written );
 }
 
-unsigned TransSetErr( unsigned err )
+error_idx TransSetErr( error_idx err )
 {
     ErrorStatus = err;
     return( err );
 }
 
-unsigned SysSetErr( int err )
+error_idx SysSetErr( sys_error err )
 {
     return( TransSetErr( StashErrCode( err, OP_LOCAL ) ) );
 }
@@ -474,8 +478,8 @@ void SetDrv( int drive, int loc )
     }
 }
 
-unsigned RemoveDir( char *name, int loc )
-/***********************************/
+rc_erridx RemoveDir( char *name, int loc )
+/****************************************/
 {
     if( loc == 1 ) {
         return( RemoteRmDir( name ) );
@@ -484,7 +488,7 @@ unsigned RemoveDir( char *name, int loc )
     }
 }
 
-unsigned SetDir( char *name, int loc )
+rc_erridx SetDir( char *name, int loc )
 /********************************/
 {
     if( loc == 1 ) {
@@ -494,8 +498,8 @@ unsigned SetDir( char *name, int loc )
     }
 }
 
-unsigned GetDir( int drive, char *name, int loc )
-/*******************************************/
+rc_erridx GetDir( int drive, char *name, int loc )
+/************************************************/
 {
     /* drive=0 means current drive A:=1, B:=2, etc. */
     if( loc == 1 ) {
@@ -505,14 +509,14 @@ unsigned GetDir( int drive, char *name, int loc )
     }
 }
 
-unsigned Erase( char *name, int loc )
+rc_erridx Erase( char *name, int loc )
 /*******************************/
 {
     return( FileRemove( name, RFX2Acc( loc ) ) );
 }
 
-unsigned MakeDir( char *name, int loc )
-/*********************************/
+rc_erridx MakeDir( char *name, int loc )
+/**************************************/
 {
     if( loc == 1 ) {
         return( RemoteMkDir( name ) );
@@ -537,16 +541,18 @@ int IsDevice( char *fn, int loc )
 {
     unsigned rc;
 
-    if( GetAttrs( fn, loc ) >= 0 ) return( FALSE );
+    if( GetAttrs( fn, loc ) >= 0 )
+        return( FALSE );
     rc = FileOpen( fn, OP_READ | RFX2Acc( loc ) );
-    if( rc == NIL_HANDLE ) return( FALSE );
+    if( rc == NIL_HANDLE )
+        return( FALSE );
     FileClose( rc );
     return( TRUE );
 }
 
 
-unsigned FindFirst( char *name, int loc, int attr )
-/*********************************************/
+rc_erridx FindFirst( char *name, int loc, int attr )
+/**************************************************/
 {
     if( loc == 1 ) {
         return( RemoteFindFirst( name, &Info, sizeof( Info ), attr ) );
@@ -555,8 +561,8 @@ unsigned FindFirst( char *name, int loc, int attr )
     }
 }
 
-unsigned FindNext( int loc )
-/**********************/
+rc_erridx FindNext( int loc )
+/***************************/
 {
     if( loc == 1 ) {
         return( RemoteFindNext( &Info, sizeof( Info ) ) );
@@ -565,8 +571,8 @@ unsigned FindNext( int loc )
     }
 }
 
-unsigned Rename( char *f1, char *f2, int loc )
-/********************************************/
+rc_erridx Rename( char *f1, char *f2, int loc )
+/*********************************************/
 {
     if( loc == 1 ) {
         return( RemoteRename( f1, f2 ) );
@@ -622,7 +628,8 @@ void Prompt( void )
     int         year, month, day, weekday;
 
     prompt = getenv( "PROMPT" );
-    if( !prompt ) prompt = "$n$g";
+    if( !prompt )
+        prompt = "$n$g";
     OutName();
     while( *prompt ) {
         if( *prompt == '$' ) {
@@ -717,16 +724,21 @@ static void Interactive( void )
         } else {
             p = Buff;
             for(;;) {
-                if( ReadStream( STD_IN, p, 1 ) != 1 ) return;
-                if( *p == '\n' ) break;
+                if( ReadStream( STD_IN, p, 1 ) != 1 )
+                    return;
+                if( *p == '\n' )
+                    break;
                 ++p;
             }
             p = Buff;
-            while( *p != '\r' ) ++p;
+            while( *p != '\r' )
+                ++p;
             *p = '\0';
         }
         CtrlCHit();
-        if( ProcessCmd( Buff ) != 0 ) break;
+        if( ProcessCmd( Buff ) != 0 ) {
+            break;
+        }
     }
 }
 
@@ -782,7 +794,8 @@ void CopyCmd( char * src, char * dst )
             *dst++ = ' ';
         }
         *dst = *src;
-        if( *dst == '\0' ) break;
+        if( *dst == '\0' )
+            break;
         ++src; ++dst;
     }
 }
@@ -797,7 +810,8 @@ int ProcessCmd( char * cmd ) {
 
     CopyCmd( cmd, tokens );
     WriteNL();
-    if( tokens[0] == '\0' ) return( 0 );
+    if( tokens[0] == '\0' )
+        return( 0 );
     argc = 0;
     p = strtok( tokens, " " );
     while( p != NULL ) {
@@ -805,10 +819,11 @@ int ProcessCmd( char * cmd ) {
         ++argc;
         p = strtok( NULL, " " );
     }
-    if( argc )
+    if( argc ) {
         return( ProcessArgv( argc, argv, cmd ) );
-    else
+    } else {
         return( 0 );    /* No useful input. */
+    }
 }
 
 
@@ -842,7 +857,9 @@ int ProcessArgv( int argc, char **argv, char *cmd ) {
         Help();
     } else if( strcmp( argv[ 0 ], "" ) == 0 ) {
     } else if( ProcDrive( argc, argv ) == 0 ) {
-        if( cmd != NULL ) system( cmd );
+        if( cmd != NULL ) {
+            system( cmd );
+        }
     }
     CheckError();
     return( 0 );
@@ -852,10 +869,10 @@ int ProcessArgv( int argc, char **argv, char *cmd ) {
 /* RENAME                                                                 */
 /**************************************************************************/
 
-extern  int  Renamef( char *fn1, int f1loc, char *fn2, int f2loc )
+rc_erridx   Renamef( char *fn1, int f1loc, char *fn2, int f2loc )
 {
-    long        retc;
-    int         err;
+    rc_erridx   retc;
+    rc_erridx   err;
     char        *endpath;
 
     fn1 = _FileParse( fn1, &Parse1 );
@@ -890,7 +907,8 @@ extern  int  Renamef( char *fn1, int f1loc, char *fn2, int f2loc )
         return( retc );
     }
     for(;;) {
-        if( CtrlCHit() ) return( IO_INTERRUPT );
+        if( CtrlCHit() )
+            return( IO_INTERRUPT );
         CopyStr( Info.name, endpath );
         _FileParse( Name1, &Parse3 );
         Replace( Parse1.name, Parse2.name, Parse3.name );
@@ -907,7 +925,9 @@ extern  int  Renamef( char *fn1, int f1loc, char *fn2, int f2loc )
             }
             return( retc );
         }
-        if( FindNext( f1loc ) != 0 ) break;
+        if( FindNext( f1loc ) != 0 ) {
+            break;
+        }
     }
     return( retc );
 }
@@ -936,8 +956,10 @@ void ProcRename( int argc, char **argv )
     }
     src = RealName( src, &src_loc );
     dst = RealRFXName( dst, &dst_loc );
-    if( dst_loc == 0 ) dst_loc = src_loc;
-    if( *dst == '\0' ) dst = ".";
+    if( dst_loc == 0 )
+        dst_loc = src_loc;
+    if( *dst == '\0' )
+        dst = ".";
     Renamef( src, src_loc, dst, dst_loc );
 }
 
@@ -974,8 +996,10 @@ void FreeCopySpec( COPYPTR junk )
 
 static int HasWildCards( char * src )
 {
-    if( strchr( src, '?' ) != NULL ) return( 1 );
-    if( strchr( src, '*' ) != NULL ) return( 1 );
+    if( strchr( src, '?' ) != NULL )
+        return( 1 );
+    if( strchr( src, '*' ) != NULL )
+        return( 1 );
     return( 0 );
 }
 
@@ -1039,16 +1063,17 @@ void FiniCopy( handle in, char *src_name, int src_loc,
 }
 
 
-int DoCopy( char *src, char *dst, int src_loc, int dst_loc )
+rc_erridx DoCopy( char *src, char *dst, int src_loc, int dst_loc )
 {
     handle      in, out;
     unsigned    len;
     unsigned    written;
-    unsigned    rc;
+    rc_erridx   retc;
 
     WrtCopy( src, dst, src_loc, dst_loc );
     in = FileOpen( src, OP_READ | RFX2Acc( src_loc ) );
-    if( in == NIL_HANDLE ) return( IO_FILE_NOT_FOUND );
+    if( in == NIL_HANDLE )
+        return( IO_FILE_NOT_FOUND );
     out = FileOpen( dst, OP_WRITE | OP_CREATE | RFX2Acc( dst_loc ) );
     if( out == NIL_HANDLE ) {
         FileClose( in );
@@ -1057,23 +1082,25 @@ int DoCopy( char *src, char *dst, int src_loc, int dst_loc )
     for( ;; ) {
         if( CtrlCHit() ) {
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
-            return( IO_INTERRUPT );
+            return( StashErrCode( IO_INTERRUPT, OP_LOCAL ) );
         }
         len = ReadStream( in, Buff, BUFF_LEN );
         if( len == ERR_RETURN ) {
-            rc = GetLastErr();
+            retc = GetLastErr();
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
-            return( rc );
+            return( retc );
         }
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         written = WriteStream( out, Buff, len );
         if( written == ERR_RETURN ) {
-            rc = GetLastErr();
+            retc = GetLastErr();
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
-            return( rc );
+            return( retc );
         }
         if( written != len ) {
-            if( (written == (len - 1)) && (Buff[written] == 0x1A) ) break;
+            if( (written == (len - 1)) && (Buff[written] == 0x1A) )
+                break;
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
             return( StashErrCode( IO_DISK_FULL, OP_LOCAL ) );
         }
@@ -1084,7 +1111,8 @@ int DoCopy( char *src, char *dst, int src_loc, int dst_loc )
 
 extern  void    RRecurse( char *f1, char *f2, int f1loc, int f2loc )
 {
-    long        retc;
+    rc_erridx   retc;
+    long        retl;
     char        *endptr;
     char        *endpath;
     char        ch;
@@ -1111,8 +1139,8 @@ extern  void    RRecurse( char *f1, char *f2, int f1loc, int f2loc )
                     CopyStr( Name3, CopyStr( "\\", endptr ) );
                     ch = *endptr;
                     *endptr = '\0';
-                    retc = GetAttrs( Name2, f2loc );
-                    if( retc < 0 || ( retc & IO_SUBDIRECTORY ) == 0 ) {
+                    retl = GetAttrs( Name2, f2loc );
+                    if( retl < 0 || ( retl & IO_SUBDIRECTORY ) == 0 ) {
                         retc = MakeDir( Name2, f2loc );
                         if( retc != 0 ) {
                             Error( "Unable to make directory" );
@@ -1130,20 +1158,21 @@ extern  void    RRecurse( char *f1, char *f2, int f1loc, int f2loc )
     }
 }
 
-extern  int     CopyASpec( char *f1, char *f2, int f1loc, int f2loc )
+rc_erridx   CopyASpec( char *f1, char *f2, int f1loc, int f2loc )
 {
-    long        retc;
+    rc_erridx   retc;
     char        *endptr;
     char        *endpath;
-    unsigned int        dst_cluster;
-    unsigned int        src_cluster;
+    unsigned    dst_cluster;
+    unsigned    src_cluster;
 
     f1 = _FileParse( f1, &Parse1 );
     FinishName( f1, &Parse1, f1loc, 1 );
     f2 = _FileParse( f2, &Parse2 );
     FinishName( f2, &Parse2, f2loc, 1 );
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
-    if( Parse2.name[ 0 ] == '\0' ) return( IO_FILE_NOT_FOUND );
+    if( Parse2.name[ 0 ] == '\0' )
+        return( IO_FILE_NOT_FOUND );
     dst_cluster = 0xFFFF;
     if( ( f1loc == f2loc ) && ( Parse1.drive[ 0 ] == Parse2.drive[ 0 ] ) ) {
         Squish( &Parse2, Name2 );
@@ -1177,8 +1206,11 @@ extern  int     CopyASpec( char *f1, char *f2, int f1loc, int f2loc )
                     retc = DoCopy( Name1, Name2, f1loc, f2loc );
                 }
             }
-            if( retc != 0 ) break;
-            if( FindNext( f1loc ) != 0 ) break;
+            if( retc != 0 )
+                break;
+            if( FindNext( f1loc ) != 0 ) {
+                break;
+            }
         }
     }
     return( retc );
@@ -1189,7 +1221,7 @@ static void WildCopy( int recursive )
 {
     COPYPTR     list;
     int         first;
-    int         errcod;
+    rc_erridx   errcod;
     int         none_in_root;
 
     first = 1;
@@ -1327,7 +1359,8 @@ static  void    DirClosef( dir_handle *h )
 extern  dir_handle      *DirOpenf( char *fspec, int fnloc )
 {
     dir_handle  *h;
-    long        retc;
+    rc_erridx   retc;
+    long        retl;
     char        *append;
     file_parse  parse;
 
@@ -1352,8 +1385,8 @@ extern  dir_handle      *DirOpenf( char *fspec, int fnloc )
             parse.name[ 1 ] = '\0';
         }
     } else {
-        retc = GetAttrs( fspec, fnloc );
-        if( retc >= 0 && ( retc & IO_SUBDIRECTORY ) != 0 ) {    /* 11-jun-90 */
+        retl = GetAttrs( fspec, fnloc );
+        if( retl >= 0 && ( retl & IO_SUBDIRECTORY ) != 0 ) {    /* 11-jun-90 */
             append = "\\*.*";
         } else if( parse.ext[ 0 ] == '\0' ) {
             CopyStr( ".*", parse.ext );
@@ -1621,9 +1654,9 @@ void ProcMakeDir( int argc, char **argv )
 /* ERASE/DELETE                                                           */
 /**************************************************************************/
 
-extern  long    Scratchf( char *fn, int fnloc )
+rc_erridx   Scratchf( char *fn, int fnloc )
 {
-    long        retc;
+    rc_erridx   retc;
     char        *endptr;
 
     fn = _FileParse( fn, &Parse1 );
@@ -1645,7 +1678,9 @@ extern  long    Scratchf( char *fn, int fnloc )
                 TransSetErr( retc );
                 return( retc );
             }
-            if( FindNext( fnloc ) != 0 ) break;
+            if( FindNext( fnloc ) != 0 ) {
+                break;
+            }
         }
     }
     return( retc );
@@ -1717,7 +1752,7 @@ void ProcDelDir( int argc, char **argv )
     char        *src;
     int         recursive;
     int         i;
-    long        retc;
+    rc_erridx   retc;
 
     recursive = 0;
     src = NULL;
@@ -1739,17 +1774,21 @@ void ProcDelDir( int argc, char **argv )
     CopyStr( "\\*.*", CopyStr( src, Buff ) );
     src = Buff;
     AddCopySpec( Buff, Buff, src_loc, src_loc );
-    if( recursive ) BuildDFSList();
-    if( ErrorStatus != 0 ) return;
+    if( recursive )
+        BuildDFSList();
+    if( ErrorStatus != 0 )
+        return;
     while( CopySpecs != NULL ) {
         src = strstr( CopySpecs->src, "\\*.*" );
         if( src != NULL ) {
             *src = '\0';
-
             retc = RemoveDir( CopySpecs->src, CopySpecs->src_loc );
-            if( retc != 0 ) TransSetErr( retc );
+            if( retc != 0 ) {
+                TransSetErr( retc );
+            }
         }
-        if( ErrorStatus != 0 ) break;
+        if( ErrorStatus != 0 )
+            break;
         FreeCopySpec( CopySpecs );
     }
 }

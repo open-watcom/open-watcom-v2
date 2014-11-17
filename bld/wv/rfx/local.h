@@ -29,20 +29,20 @@
 *
 ****************************************************************************/
 
-extern unsigned LocalMkDir( char * );
-extern unsigned LocalRmDir( char * );
-extern unsigned LocalGetCwd( int, char * );
-extern unsigned LocalSetCWD( char * );
+extern rc_erridx LocalMkDir( char * );
+extern rc_erridx LocalRmDir( char * );
+extern rc_erridx LocalGetCwd( int, char * );
+extern rc_erridx LocalSetCWD( char * );
 extern int      LocalGetDrv( void );
-extern unsigned LocalSetDrv( int );
-extern unsigned LocalFindFirst( char *, void *, unsigned, int );
-extern unsigned LocalFindNext( void *, unsigned );
+extern rc_erridx LocalSetDrv( int );
+extern rc_erridx LocalFindFirst( char *, void *, unsigned, int );
+extern rc_erridx LocalFindNext( void *, unsigned );
 extern long     LocalGetFileAttr( char * );
-extern unsigned LocalSetFileAttr( char *, long );
+extern rc_erridx LocalSetFileAttr( char *, long );
 extern long     LocalGetFreeSpace( int );
-extern unsigned LocalRename( char *, char * );
+extern rc_erridx LocalRename( char *, char * );
 extern void     LocalTime( int *hour, int *min, int *sec, int *hundredths );
 extern void     LocalDate( int *year, int *month, int *day, int *weekday );
-extern unsigned LocalDateTime( sys_handle, int *, int *, int );
+extern rc_erridx LocalDateTime( sys_handle, int *, int *, int );
 extern int      LocalInteractive( sys_handle );
 extern void     LocalGetBuff( char *, unsigned );

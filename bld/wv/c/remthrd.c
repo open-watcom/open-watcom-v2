@@ -67,17 +67,18 @@ dtid_t RemoteGetNextThread( dtid_t tid, unsigned *state )
     return( ret.thread );
 }
 
-dtid_t RemoteSetThreadWithErr( dtid_t tid, unsigned *err )
+dtid_t RemoteSetThreadWithErr( dtid_t tid, error_idx *erridx )
 {
     thread_set_req      acc;
     thread_set_ret      ret;
 
-    if( SuppThreadId == 0 ) return( DEFAULT_TID );
+    if( SuppThreadId == 0 )
+        return( DEFAULT_TID );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_SET );
     acc.thread = tid;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
-        *err = StashErrCode( ret.err, OP_REMOTE );
+        *erridx = StashErrCode( ret.err, OP_REMOTE );
         return( 0 );
     }
     return( ret.old_thread );

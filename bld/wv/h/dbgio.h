@@ -33,6 +33,7 @@
 #include "bool.h"
 
 typedef int             handle;
+typedef error_idx       rc_erridx;
 
 typedef unsigned_8 seek_method; enum {
     DIO_SEEK_ORG,
@@ -69,13 +70,13 @@ unsigned        WriteText( handle, const void *, unsigned );
 unsigned long   SeekStream( handle, long, seek_method );
 
 handle          FileOpen( char const *, open_access );
-unsigned        FileClose( handle );
-unsigned        FileRemove( char const *, open_access );
+rc_erridx       FileClose( handle );
+rc_erridx       FileRemove( char const *, open_access );
 open_access     FileHandleInfo( handle );
 char            *FileLoc( char const *, open_access * );
 
-char            *SysErrMsg( unsigned, char * );
-unsigned        StashErrCode( sys_error, open_access );
+char            *SysErrMsg( error_idx, char * );
+error_idx       StashErrCode( sys_error, open_access );
 
 char            *SkipPathInfo( char const *, open_access );
 char            *ExtPointer( char const *, open_access );
