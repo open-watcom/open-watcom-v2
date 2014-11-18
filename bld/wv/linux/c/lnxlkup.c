@@ -29,13 +29,14 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
+#include "dbgdefn.h"
+
 #include "clibext.h"
 
 char *copy_char_to_buff( char *ptr, char c, char **end )

@@ -37,13 +37,13 @@
 #include <malloc.h>
 #include <direct.h>
 #include <stdarg.h>
-
 #include "rdos.h"
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "autoenv.h"
+
 #include "clibint.h"
 
 extern void     DebugMain( void );

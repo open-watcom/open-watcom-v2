@@ -38,13 +38,13 @@
 #include <malloc.h>
 #include <direct.h>
 #include <stdarg.h>
-
 #include <wwindows.h>
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "autoenv.h"
+
 #ifdef __WATCOMC__
 #include "clibint.h"
 #endif

@@ -31,10 +31,10 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "farptrs.h"
 #include "dosscrn.h"
 #include "dbgio.h"
-#include "dbgreg.h"
 #include "dbgname.h"
 #include "dbgswtch.h"
 #include <string.h>

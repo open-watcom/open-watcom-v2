@@ -31,12 +31,11 @@
 
 #include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "tinyio.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
 #include "farptrs.h"
-#include "dbgreg.h"
 #include "trptypes.h"
 
 #include "doserr.h"

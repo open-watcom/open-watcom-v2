@@ -36,13 +36,11 @@
 #define INCL_BASE
 #include <os2.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
 #include "farptrs.h"
-#include "dbgreg.h"
 #include "trptypes.h"
-
 #include "doserr.h"
 
 #define READONLY    0

@@ -32,21 +32,17 @@
 #include <stddef.h>
 #include <limits.h>
 #include <string.h>
-
+#define INCL_DOS
+#define INCL_SUB
+#include "wos2.h"
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgio.h"
-
 #ifdef _M_I86
 #include "dta.h"
 #else
 #include "trprfx.h"
 #endif
-
-#define INCL_DOS
-#define INCL_SUB
-#include "wos2.h"
-
 #include "local.h"
 
 void LocalTime( int *hour, int *min, int *sec, int *hundredths )

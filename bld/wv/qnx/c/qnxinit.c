@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -43,6 +42,8 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include "dbgdefn.h"
+
 #include "clibint.h"
 
 unsigned char   _8087 = 0;

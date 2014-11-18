@@ -34,11 +34,9 @@
 #include <malloc.h>
 #include <limits.h>
 #include <dos.h>
-
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgio.h"
-
 #include "tinyio.h"
 #include "local.h"
 

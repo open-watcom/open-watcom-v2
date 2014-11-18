@@ -36,13 +36,12 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
 #include "farptrs.h"
-#include "dbgreg.h"
-#include "errno.h"
 #include "trptypes.h"
 
 

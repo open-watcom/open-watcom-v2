@@ -36,18 +36,16 @@
 #include <time.h>
 #include <direct.h>
 #include <dos.h>
+#include <windows.h>
 #include "wio.h"
-
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgio.h"
-
 #include "trprfx.h"
-
 #include "local.h"
+
 #include "clibext.h"
 
-#include <windows.h>
 
 /* Not thread safe; not expected to be an issue. */
 struct find_t   Findbuf;

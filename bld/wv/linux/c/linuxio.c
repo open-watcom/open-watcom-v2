@@ -30,18 +30,17 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgmem.h"
-#include "dbgio.h"
-#include "dbgtoggl.h"
-#include "dbgreg.h"
-#include "errno.h"
+#include <errno.h>
 #include <limits.h>
 #include <string.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgmem.h"
+#include "dbgio.h"
 #include "trptypes.h"
 
 

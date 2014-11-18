@@ -32,14 +32,12 @@
 
 #include <string.h>
 #include <ctype.h>
-#include <watcom.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "farptrs.h"
 #include "dosscrn.h"
 #include "dbgio.h"
-#include "dbgreg.h"
 #include "dbgname.h"
-#include "dbgtoggl.h"
 #include "dbgwind.h"
 #include "dpmi.h"
 

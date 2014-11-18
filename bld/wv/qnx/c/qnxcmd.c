@@ -30,15 +30,14 @@
 ****************************************************************************/
 
 
-#include "farptrs.h"
-#include "dbgdefn.h"
-#include "dbgio.h"
-#include "dbgreg.h"
-#include "dbgname.h"
-#include "dbgtoggl.h"
-#include "dbgmem.h"
 #include <string.h>
 #include <ctype.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "farptrs.h"
+#include "dbgio.h"
+#include "dbgname.h"
+#include "dbgmem.h"
 
 
 extern unsigned         GetValue( void );
