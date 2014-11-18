@@ -30,12 +30,10 @@
 
 
 #include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
-#include "dbginp.h"
 #include <string.h>
 
 

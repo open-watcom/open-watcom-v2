@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 #include "dbgtoken.h"
-#include "dbgreg.h"
+#include "dbgregd.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
 #include "dbgbreak.h"

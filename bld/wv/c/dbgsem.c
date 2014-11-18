@@ -32,17 +32,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
-#include "dbglit.h"
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
+#include "dbglit.h"
 #include "dbgstk.h"
-#include "dbgtoken.h"
-#include "dbgreg.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "dipwv.h"
 #include "dip.h"
 #include "i64.h"
+
 #include "clibext.h"
 
 

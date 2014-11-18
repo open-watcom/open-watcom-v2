@@ -31,14 +31,9 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbgbreak.h"
 #include "dbgmem.h"
-#include "dbgreg.h"
-#include "trpcore.h"
 #include "dui.h"
 #include "dbglit.h"
 #include "i64.h"

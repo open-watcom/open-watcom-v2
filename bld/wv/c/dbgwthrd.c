@@ -33,9 +33,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgreg.h"
 
 extern bool             IsThdCurr( thread_state *thd );
 extern void             MakeThdCurr( thread_state * );

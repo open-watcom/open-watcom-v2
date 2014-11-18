@@ -29,18 +29,17 @@
 ****************************************************************************/
 
 
-#define BACKWARDS
-#include "dbgdefn.h"
-#include "dbglit.h"
-#include "dbgio.h"
-#include "dbgreg.h"
-#include "dbgtoggl.h"
-#include "dbgmem.h"
-#include "dui.h"
-#include "wdmsg.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#define BACKWARDS
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbglit.h"
+#include "dbgio.h"
+#include "dbgmem.h"
+#include "dui.h"
+#include "wdmsg.h"
 #include "dbgscrn.h"
 
 extern unsigned         Lookup( char *, char *, unsigned );

@@ -32,13 +32,12 @@
 #include <ctype.h>
 #include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbgio.h"
+
 #include "clibext.h"
 
 

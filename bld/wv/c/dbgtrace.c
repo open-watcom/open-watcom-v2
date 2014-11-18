@@ -31,17 +31,11 @@
 
 #include <stdlib.h>
 #include "_srcmgt.h"
-#include "dbgtoken.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbgbreak.h"
 #include "dbglit.h"
-#include "dbginp.h"
 #include "dbgrep.h"
 #include "dbgmem.h"
-#include "trpcore.h"
 #include "mad.h"
 #include "srcmgt.h"
 

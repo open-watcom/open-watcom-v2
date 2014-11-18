@@ -31,16 +31,12 @@
 
 #include <string.h>
 #include "_srcmgt.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
-#include "dbginfo.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
-#include "dbgbreak.h"
 #include "mad.h"
 #include "srcmgt.h"
 

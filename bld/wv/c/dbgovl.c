@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgreg.h"
-#include "dbgmem.h"
-#include "dbginfo.h"
 #include <string.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgmem.h"
 
 typedef struct {
     addr_seg    first;

@@ -30,29 +30,42 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgerr.h"
-#include "dbgmem.h"
-#include "dui.h"
-#include "dbglit.h"
+#include "madregs.h"
 
+#define MAX_THD_EXTRA_SIZE      40
 
-extern void     ReqEOC( void );
-extern void     ShowReplay( void );
-extern void     ShowCalls( void );
-extern void     ShowVarDisplay( void );
+typedef unsigned long           dtid_t;
 
-void ConfigEvent( void )
-{
-    ReqEOC();
-    ShowReplay();
-}
+struct machine_state {
+    byte                *ovl;
+    dtid_t              tid;
+    mad_handle          mad;
+    unsigned            : 0;    /* for alignment */
+    mad_registers       mr;     /* variable size */
+};
 
+typedef unsigned_8 thread_state_enum; enum {
+                  /* states for clients that freeze execution */
+    THD_THAW,                  
+    THD_FREEZE,
+                  /* states for clients that only freeze debugged threads */
+    THD_WAIT,                   /* waiting for a timeout      */
+    THD_SIGNAL,                 /* waiting for a signal       */
+    THD_KEYBOARD,               /* waiting for keyboard input */
+    THD_BLOCKED,                /* blocked on a resource      */
+    THD_RUN,                    /* running or ready to run    */
+    THD_DEBUG,                  /* thread is in a debug-state */   
+                  /* special dead state */
+    THD_DEAD = 0x40
+};
 
-void ConfigCalls( void )
-{
-    ReqEOC();
-    ShowCalls();
-}
+typedef struct thread_state     thread_state;
+struct thread_state {
+    thread_state        *link;
+    dtid_t              tid;
+    thread_state_enum   state;
+    unsigned_16         cs;
+    unsigned_32         eip;
+    char                extra[MAX_THD_EXTRA_SIZE + 1];
+    char                name[1];        /* variable size */
+};

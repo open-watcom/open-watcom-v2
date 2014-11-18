@@ -30,15 +30,11 @@
 
 
 #include <string.h>
-
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "trpcore.h"
 #include "tcerr.h"
 #include "dbglit.h"
 #include "mad.h"

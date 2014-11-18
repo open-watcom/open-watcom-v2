@@ -32,14 +32,11 @@
 #include <string.h>
 #include <limits.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbgtoken.h"
-#include "dbgreg.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
 #include "ldsupp.h"
 #include "mad.h"
 #include "i64.h"

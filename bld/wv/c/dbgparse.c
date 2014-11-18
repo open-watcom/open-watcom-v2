@@ -31,15 +31,11 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
-#include "dbgtoken.h"
-#include "dbgreg.h"
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
-#include "watcom.h"
 #include "i64.h"
 
 

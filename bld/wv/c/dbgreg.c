@@ -32,12 +32,10 @@
 #include <string.h>
 #include <stddef.h>
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgmem.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
 #include "dbgtback.h"
 #include "dipwv.h"
 #include "dbgrep.h"

@@ -31,13 +31,7 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbgreg.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbgbreak.h"
-#include "dbginp.h"
-#include "trpcore.h"
+#include "dbgdata.h"
 
 char                    *InitCmdList;
 char                    *TrpFile;

@@ -33,11 +33,9 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbginfo.h"
 #include "dbglit.h"
 #include "spawn.h"
 #include "dui.h"
-#include "trpcore.h"
 #include "trpcapb.h"
 
 

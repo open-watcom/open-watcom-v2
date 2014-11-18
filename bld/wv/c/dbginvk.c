@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbgtoken.h"
@@ -38,9 +39,8 @@
 #include "dbgtoggl.h"
 #include "dbgio.h"
 #include "dbginp.h"
-#include <string.h>
-#include "clibext.h"
 
+#include "clibext.h"
 
 
 extern unsigned         InvCount;

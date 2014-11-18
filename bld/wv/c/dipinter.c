@@ -35,17 +35,17 @@
 #undef AddrSym
 #undef AddrScope
 #undef AddrCue
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "dbgio.h"
 #include "dipcli.h"
 #include "dipimp.h"
 #include "dipwv.h"
-#include "dbgreg.h"
 #include "mad.h"
 #include <string.h>
 #include <stddef.h>
+
 #include "clibext.h"
 
 

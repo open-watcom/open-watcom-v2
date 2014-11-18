@@ -34,16 +34,12 @@
 #include <float.h>
 #include <limits.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbginfo.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
-#include "dbginp.h"
-#include "dbgreg.h"
 #include "dbgitem.h"
 #include "dbgio.h"
-#include "trpcore.h"
 #include "ldsupp.h"
 #include "mad.h"
 #include "dui.h"

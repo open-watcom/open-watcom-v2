@@ -31,10 +31,8 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgreg.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
 #include "dbgitem.h"
 #include "madcli.h"
 #include <string.h>

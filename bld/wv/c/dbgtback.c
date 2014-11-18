@@ -32,14 +32,11 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dbgstk.h"
-#include "dbgtoggl.h"
 #include "dbgtback.h"
-#include "trpcore.h"
 #include "mad.h"
 
 extern bool                     TransOvlRetAddr(address *,unsigned int );

@@ -45,6 +45,7 @@
 #include "dbgmem.h"
 #include "spawn.h"
 #include "dui.h"
+
 #include "clibext.h"
 
 extern image_entry      *ImageEntry( mod_handle mh );

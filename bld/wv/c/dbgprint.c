@@ -32,14 +32,11 @@
 #include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgreg.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
 #include "ldsupp.h"
 #include "mad.h"
 #include "dui.h"

@@ -33,9 +33,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgreg.h"
 
 extern bool             RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize );
 extern void             RemoteUpdateRunThread( thread_state *thd );

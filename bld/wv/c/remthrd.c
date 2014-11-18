@@ -31,9 +31,8 @@
 
 
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgio.h"
-#include "trpcore.h"
 #include "trpthrd.h"
 
 extern trap_shandle     GetSuppId( char * );

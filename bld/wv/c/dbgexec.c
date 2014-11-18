@@ -33,16 +33,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgreg.h"
-#include "dbgtoken.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbgbreak.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbginp.h"
 #include "dbghook.h"
 #include "dbgrep.h"
-#include "trpcore.h"
 #include "mad.h"
 #include "dui.h"
 #include "enterdb.h"

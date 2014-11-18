@@ -31,11 +31,8 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbginp.h"
-#include "dbgtoken.h"
 #include "dbgmem.h"
 #include "dbglit.h"
 #include "dbgio.h"

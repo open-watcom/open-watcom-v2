@@ -31,14 +31,8 @@
 
 
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbgbreak.h"
-#include "dbginp.h"
-#include "trpcore.h"
 
 
 WNDOPEN *WndOpenTab[] =

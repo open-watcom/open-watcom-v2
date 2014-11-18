@@ -31,9 +31,7 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbgreg.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbgitem.h"
 #include "dbgstk.h"

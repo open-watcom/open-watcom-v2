@@ -33,9 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
-#include "dbgtoggl.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "mad.h"
 #include "dui.h"
 

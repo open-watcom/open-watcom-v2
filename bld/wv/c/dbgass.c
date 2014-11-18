@@ -32,16 +32,12 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgio.h"
-#include "dbginfo.h"
 #include "dbglit.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
-#include "dbgbreak.h"
 #include "mad.h"
 
 extern char             *StrAddr(address *,char *,unsigned);

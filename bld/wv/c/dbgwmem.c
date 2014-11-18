@@ -35,13 +35,11 @@
 #include <float.h>
 #include <limits.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
 #include "dbgio.h"
-#include "dbgreg.h"
 #include "dbgerr.h"
-#include "dbginfo.h"
 #include "madcli.h"
 #include "mad.h"
 #include "ldsupp.h"

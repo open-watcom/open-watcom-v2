@@ -30,9 +30,8 @@
 
 
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgio.h"
-#include "trpcore.h"
 #include "trprtrd.h"
 #include "trapaccs.h"
 

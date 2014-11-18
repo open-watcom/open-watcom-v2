@@ -34,15 +34,15 @@
 #include <stddef.h>
 #include <ctype.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
-#include "dbgreg.h"
 #include "dbgerr.h"
 #include "madcli.h"
 #include "dui.h"
 #include "mad.h"
+
 #include "clibext.h"
 
 

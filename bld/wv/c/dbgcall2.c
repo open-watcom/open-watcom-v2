@@ -31,13 +31,9 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbgreg.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
-#include "dbgbreak.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
-#include "trpcore.h"
 #include "mad.h"
 
 

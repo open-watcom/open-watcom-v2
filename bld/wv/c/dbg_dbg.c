@@ -31,14 +31,13 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dipwv.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbglit.h"
-#include "trpcore.h"
 #include "mad.h"
 #include "dui.h"
+
 #include "clibext.h"
 
 

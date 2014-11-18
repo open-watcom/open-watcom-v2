@@ -31,15 +31,12 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgreg.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
 #include "mad.h"
 #include "dui.h"
-#include "trpcore.h"
 #include "trpasync.h"
 #include "trapaccs.h"
 
