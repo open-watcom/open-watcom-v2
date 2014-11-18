@@ -389,8 +389,8 @@ common_cppflags_x64  = -D__NT_X64__
 
 # common release/debug flags
 !ifdef __INTEL__
-common_flags_rel = -Ox -Zi -Qtbb
-common_flags_dbg = -Zi -Qtbb
+common_flags_rel = -Ox -Zi -fast
+common_flags_dbg = -Zi -fast
 !else
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
