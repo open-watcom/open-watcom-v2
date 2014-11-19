@@ -155,19 +155,19 @@ void    ModListFree( module_list *list )
     list->numrows = 0;
 }
 
-int     ModListNumRows( module_list *list )
+int     ModListNumRows( const module_list *list )
 {
     if( list->sort == NULL ) return( 0 );
     return( list->numrows );
 }
 
-mod_handle ModListMod( module_list *list, int i )
+mod_handle ModListMod( const module_list *list, int i )
 {
     if( list->sort == NULL || i >= list->numrows ) return( NO_MOD );
     return( list->sort[i] );
 }
 
-void ModListName( module_list *list, int i, char *buff )
+void ModListName( const module_list *list, int i, char *buff )
 {
     buff[0] = '\0';
     if( list->sort == NULL || i >= list->numrows ) return;

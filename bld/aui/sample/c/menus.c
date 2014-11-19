@@ -120,7 +120,7 @@ char *PickList[] = { "one", "two", "three", "four" };
 
 static char             FileBrowsed[_MAX_PATH] = "e:\\f\\setup.dbg";
 
-static char *FmtNum( void *data_handle, int item )
+static char *FmtNum( const void *data_handle, int item )
 {
     static char buff[20];
 

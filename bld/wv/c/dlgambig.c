@@ -50,7 +50,7 @@ extern char             *Format( char *buff, char *fmt, ... );
 extern char             *TxtBuff;
 
 
-static int SymPick( const char *text, PICKCALLBACK *PickInit )
+static int SymPick( char *text, PICKCALLBACK *PickInit )
 {
     dlg_pick    dlg;
 
@@ -61,12 +61,12 @@ static int SymPick( const char *text, PICKCALLBACK *PickInit )
     return( dlg.chosen );
 }
 
-static char *SymPickText( void *data_handle, int item )
+static char *SymPickText( const void *data_handle, int item )
 {
-    sym_list    *sym;
-    unsigned    len;
-    char        *image;
-    ambig_info  *ambig = data_handle;
+    sym_list            *sym;
+    unsigned            len;
+    char                *image;
+    const ambig_info    *ambig = data_handle;
 
     sym = ambig->sym;
     while( --item >= 0 ) {
@@ -83,7 +83,7 @@ static char *SymPickText( void *data_handle, int item )
     return( TxtBuff );
 }
 
-int DUIDisambiguate( ambig_info *ambig, int count )
+int DUIDisambiguate( const ambig_info *ambig, int count )
 {
-    return( DlgPickWithRtn2( "", (void *)ambig, 0, SymPickText, count, SymPick ) );
+    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, count, SymPick ) );
 }

@@ -462,7 +462,7 @@ extern void DUIRingBell()
 {
     // ring ring (error)
 }
-extern int DUIDisambiguate( ambig_info *ambig, int count )
+extern int DUIDisambiguate( const ambig_info *ambig, int count )
 {
     // the expression processor detected an ambiguous symbol.  Ask user which one
     return( 0 );

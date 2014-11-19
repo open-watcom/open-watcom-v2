@@ -1031,7 +1031,7 @@ void RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mac
 }
 
 void RegNewValue( const mad_reg_info *reginfo,
-                      item_mach *new_val,
+                      const item_mach *new_val,
                       mad_type_handle type )
 {
     char                        *p;
@@ -1043,7 +1043,7 @@ void RegNewValue( const mad_reg_info *reginfo,
     RegLocation( DbgRegs, reginfo, &dst_ll );
     MadTypeToDipTypeInfo( reginfo->type, &dst_ti );
     PushLocation( &dst_ll, &dst_ti );
-    LocationCreate( &src_ll, LT_INTERNAL, new_val );
+    LocationCreate( &src_ll, LT_INTERNAL, (void *)new_val );
     MadTypeToDipTypeInfo( type, &src_ti );
     PushLocation( &src_ll, &src_ti );
     DoAssign();

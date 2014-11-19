@@ -251,9 +251,9 @@ static int GetRegIdx( reg_window *reg, int row, int piece )
 }
 
 
-static char *RegValueName( void *data_handle, int item )
+static char *RegValueName( const void *data_handle, int item )
 {
-    mad_modify_list *possible = &((mad_modify_list *)data_handle)[item];
+    mad_modify_list const *possible = (mad_modify_list const *)data_handle + item;
     unsigned        buff_len;
 
     buff_len = TXT_LEN;
@@ -306,7 +306,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
                 i = 0;
             }
         } else {  //MJC const cast
-            i = DlgPickWithRtn( TxtBuff, (void *)possible, i, RegValueName, num_possible );
+            i = DlgPickWithRtn( TxtBuff, possible, i, RegValueName, num_possible );
         }
         if( i != -1 ) {
             RegNewValue( disp.reginfo, possible[i].data, possible[i].type );

@@ -171,7 +171,7 @@ static gui_create_info DialogControl = {
     0
 };
 
-static char *ListBoxFunc( void *data_handle, int item )
+static char *ListBoxFunc( const void *data_handle, int item )
 {
     return( ((char **)data_handle)[item] );
 }

@@ -44,7 +44,7 @@ extern void             FreeSymHandle( sym_list * );
 extern int              AddrComp( address a, address b );
 extern char             *ModImageName( mod_handle handle );
 extern char             *Format( char *buff, char *fmt, ... );
-extern int              DUIDisambiguate( ambig_info *ambig, int count );
+extern int              DUIDisambiguate( const ambig_info *ambig, int count );
 
 extern char             *TxtBuff;
 

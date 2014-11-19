@@ -43,9 +43,9 @@ extern char     *DlgGetMatchString( gui_window *gui, int id, int *matchoff );
 extern void     WndMsgBox( char * );
 extern char     *DupStr(char*);
 
-static char *ModGetName( void *data_handle, int item )
+static char *ModGetName( const void *data_handle, int item )
 {
-    module_list *list = data_handle;
+    const module_list *list = data_handle;
 
     if( item >= ModListNumRows( list ) )
         return( NULL );
@@ -74,7 +74,7 @@ extern void ModComplete( gui_window *gui, int id )
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT( Modules ), (void *)&list, 0,
+        new = DlgPickWithRtn( LIT( Modules ), &list, 0,
                               ModGetName, ModListNumRows( &list ) );
         break;
     }

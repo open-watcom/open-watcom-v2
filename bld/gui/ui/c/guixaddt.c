@@ -96,7 +96,7 @@ bool GUIAddText( gui_window *wnd, unsigned id, char *text )
 }
 
 bool GUIAddTextList( gui_window *wnd, unsigned id, int items,
-                    void *data_handle, PICKGETTEXT *getstring )
+                    const void *data_handle, PICKGETTEXT *getstring )
 {
     VFIELD      *field;
     a_list      *list;

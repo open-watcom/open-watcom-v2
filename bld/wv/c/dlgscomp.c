@@ -47,9 +47,9 @@ extern void     SymCompMatches( name_list *list, char *match, unsigned *pfirst, 
 
 static name_list *SortedNames;
 
-static char *SymGetName( void *data_handle, int item )
+static char *SymGetName( const void *data_handle, int item )
 {
-    item += *(int *)data_handle;
+    item += *(const int *)data_handle;
     if( item >= NameListNumRows( SortedNames ) ) return( NULL );
     NameListName( SortedNames, item, TxtBuff, SN_QUALIFIED );
     return( TxtBuff );
@@ -102,7 +102,7 @@ extern void SymComplete( gui_window *gui, int id )
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT( Symbol_List ), (void *)&first, 0, SymGetName, num );
+        new = DlgPickWithRtn( LIT( Symbol_List ), &first, 0, SymGetName, num );
         break;
     }
     strcpy( TxtBuff, savebuff );

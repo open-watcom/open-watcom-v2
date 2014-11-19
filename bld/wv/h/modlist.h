@@ -38,8 +38,8 @@ typedef struct {
 } module_list;
 
 extern void             ModListAddModules( module_list *list, mod_handle, bool );
-extern int              ModListNumRows( module_list *list );
-extern mod_handle       ModListMod( module_list *list, int member_idx );
-extern void             ModListName( module_list *list, int member_idx, char *buff );
+extern int              ModListNumRows( const module_list *list );
+extern mod_handle       ModListMod( const module_list *list, int member_idx );
+extern void             ModListName( const module_list *list, int member_idx, char *buff );
 extern void             ModListInit( module_list *list, char *prefix );
 extern void             ModListFree( module_list *list );
