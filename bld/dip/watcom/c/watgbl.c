@@ -100,7 +100,7 @@ void GblSymFini( section_info *inf )
  * GblNamHash -- hash a symbol name
  */
 
-static int GblNameHash( char *name, size_t namlen )
+static int GblNameHash( const char *name, size_t namlen )
 {
     int     rtrn;
 
@@ -119,8 +119,8 @@ static void GblCreate( imp_sym_handle *is, gbl_info *gbl )
     is->u.gbl = gbl;
 }
 
-static int source_name( char *gstart, size_t glen,
-                        char **rstart, size_t *rlen )
+static int source_name( const char *gstart, size_t glen,
+                        const char **rstart, size_t *rlen )
 {
     int         type;
 
@@ -162,9 +162,9 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     int                 (*compare)(void const*,void const*,size_t);
     char                *gblname;
     size_t              gbllen;
-    char                *nam = NULL;
+    const char          *nam = NULL;
     size_t              namlen = 0;
-    char                *snam;
+    const char          *snam;
     size_t              snamlen;
     char                *mangled;
     size_t              mangle_len;
@@ -369,7 +369,7 @@ static void Insert( info_block *inf, gbl_link *new )
 {
     hash_link           *owner;
     gbl_info            *gbl;
-    char                *name;
+    const char          *name;
     char                *mangled_name;
     size_t              len;
 

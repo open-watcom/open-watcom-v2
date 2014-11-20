@@ -809,7 +809,7 @@ next_seg:
     }
 }
 
-static unsigned long CalcHash( char *name, unsigned len )
+static unsigned long CalcHash( const char *name, unsigned len )
 {
     unsigned_32         end;
     unsigned_32         sum;
@@ -841,7 +841,7 @@ static unsigned long CalcHash( char *name, unsigned len )
 typedef search_result   SEARCH_CREATOR( imp_image_handle *, s_all *, imp_sym_handle *, void * );
 
 static search_result TableSearchForName( imp_image_handle *ii,
-                int case_sense, char *li_name, unsigned li_len,
+                int case_sense, const char *li_name, unsigned li_len,
                 unsigned long hash, imp_sym_handle *is,
                 SEARCH_CREATOR *create, void *d, unsigned tbl_type )
 {
@@ -1654,10 +1654,12 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     data.found = 0;
     data.li = *li;
     if( ss == SS_SCOPESYM ) {
+        char    *str;
         scope_is = source;
         len = ImpSymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        data.li.scope.start = __alloca( len + 1 );
-        ImpSymName( ii, scope_is, NULL, SN_SOURCE, data.li.scope.start, len + 1 );
+        str = __alloca( len + 1 );
+        ImpSymName( ii, scope_is, NULL, SN_SOURCE, str, len + 1 );
+        data.li.scope.start = str;
         data.li.scope.len = len;
         ss = SS_MODULE;
         data.li.mod = IMH2MH( scope_is->im );

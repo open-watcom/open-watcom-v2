@@ -263,7 +263,7 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     search_result       sr;
     lookup_item         sym_li;
     char                *buff;
-    char                *src;
+    const char          *src;
     char                *dst;
     unsigned            len;
     unsigned            op_len;
@@ -277,10 +277,12 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     if( li->type == ST_NAMESPACE ) return( SR_NONE );
     sym_li = *li;
     if( ss == SS_SCOPESYM ) {
+        char    *str;
         scope_is = source;
         len = ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        sym_li.scope.start = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, sym_li.scope.start, len + 1 );
+        str = __alloca( len + 1 );
+        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, str, len + 1 );
+        sym_li.scope.start = str;
         sym_li.scope.len = len;
         ss = SS_MODULE;
         sym_li.mod = IMH2MH( scope_is->im );

@@ -2238,10 +2238,12 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     data.found = 0;
     data.li = *li;
     if( ss == SS_SCOPESYM ) {
+        char    *str;
         scope_is = source;
         len = hllSymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        data.li.scope.start = __alloca( len + 1 );
-        hllSymName( ii, scope_is, NULL, SN_SOURCE, data.li.scope.start, len + 1 );
+        str = __alloca( len + 1 );
+        hllSymName( ii, scope_is, NULL, SN_SOURCE, str, len + 1 );
+        data.li.scope.start = str;
         data.li.scope.len = len;
         ss = SS_MODULE;
         data.li.mod = IMH2MH( scope_is->im );
