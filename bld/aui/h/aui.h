@@ -52,9 +52,9 @@
 
 typedef struct {
     unsigned char       area[SAVE_SIZE];
-    unsigned            first_cmd;
-    unsigned            first_free;
-    unsigned            curr_cmd;
+    int                 first_cmd;
+    int                 first_free;
+    int                 curr_cmd;
     bool                last_was_next;
 } save_area;
 
@@ -310,7 +310,7 @@ typedef int             GUIPICKER( char *, PICKCALLBACK * );
 extern int              DlgPickWithRtn( char *text, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
 extern int              DlgPickWithRtn2( char *text, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
 extern int              DlgPick( char *text, const void *data_handle, int def, int items );
-extern bool             DlgNew( char *text, char *buff, int buff_len );
+extern bool             DlgNew( char *text, char *buff, unsigned buff_len );
 extern void             DlgOpen( char *, int, int, gui_control_info *, int, GUICALLBACK *, void * );
 extern void             ResDlgOpen( GUICALLBACK *, void *, int );
 extern int              DlgGetFileName( open_file_name *ofn );
@@ -420,7 +420,7 @@ extern bool             WndIgnoreAllEvents;
 extern bool             WndProcMacro( a_window *wnd, unsigned key );
 
 extern  void            WndSetTitle( a_window *, char * );
-extern  int             WndGetTitle( a_window *wnd, char *data, int max_length );
+extern  int             WndGetTitle( a_window *wnd, char *buff, unsigned buff_len );
 
 extern void             Ring( void );
 

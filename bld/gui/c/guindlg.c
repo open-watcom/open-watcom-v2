@@ -70,19 +70,26 @@ static gui_create_info DlgControl = {
 static bool DlgModal = false;
 
 extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
-                             char *buff, unsigned max_len )
+                             char *buff, unsigned buff_len )
 {
     char        *str;
+    unsigned    len;
 
+    if( buff_len == 0 )
+        return( 0 );
     str = GUIGetText( gui, id );
     if( str == NULL ) {
-        buff[0] = '\0';
+        buff_len = 0;
     } else {
-        strncpy( buff, str, max_len-1 );
-        buff[max_len-1] = '\0';
+        --buff_len;     // do space for terminating null char
+        len = strlen( buff );
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, str, buff_len );
         GUIMemFree( str );
     }
-    return( strlen( buff ) );
+    buff[buff_len] = '\0';
+    return( buff_len );
 }
 
 

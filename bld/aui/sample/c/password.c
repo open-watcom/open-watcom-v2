@@ -53,7 +53,7 @@ static gui_control_info Controls[] = {
     DLG_BUTTON( "Cancel", CTL_NEW_CANCEL,               B2, R1, B2+BW ),
 };
 
-extern  void    Password( char *text, char *buff, int buff_len )
+extern  void    Password( char *text, char *buff, unsigned buff_len )
 {
     DlgNewWithCtl( text, buff, buff_len,
                    Controls, ArraySize( Controls ), DlgNewEvent,

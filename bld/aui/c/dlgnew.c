@@ -61,7 +61,7 @@ static gui_control_info Controls[] = {
 
 typedef struct {
     char        *buff;
-    int         buff_len;
+    unsigned    buff_len;
     bool        cancel;
 } dlg_new;
 
@@ -99,7 +99,7 @@ extern bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
 }
 
 
-extern  bool    DlgNewWithCtl( char *text, char *buff, int buff_len,
+extern  bool    DlgNewWithCtl( char *text, char *buff, unsigned buff_len,
                                gui_control_info *controls, int num_controls,
                                GUICALLBACK *callback, int rows,
                                int cols, int max_cols )
@@ -118,7 +118,7 @@ extern  bool    DlgNewWithCtl( char *text, char *buff, int buff_len,
 }
 
 
-extern  bool    DlgNew( char *text, char *buff, int buff_len )
+extern  bool    DlgNew( char *text, char *buff, unsigned buff_len )
 {
     bool        rc;
 

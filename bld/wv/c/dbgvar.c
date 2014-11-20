@@ -79,7 +79,6 @@ extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( char *, char *, unsigned );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( char *);
-extern void             DlgNewWithSym( char * title, char * buff, int len );
 extern void             BreakOnExprSP( void * );
 extern unsigned         NewCurrRadix( unsigned int );
 extern void             FreezeInpStack( void );

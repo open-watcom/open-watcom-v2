@@ -741,7 +741,7 @@ extern bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
 
 extern bool GUISetWindowText( gui_window * wnd, const char * data );
 extern size_t GUIGetWindowTextLength( gui_window *wnd );
-extern size_t GUIGetWindowText( gui_window *wnd, char *data, size_t max_length );
+extern size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len );
 extern gui_ord GUIGetRow( gui_window * wnd, gui_point *pos );
 extern gui_ord GUIGetCol( gui_window * wnd, char *text, gui_point *pos );
 extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,

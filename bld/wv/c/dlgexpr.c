@@ -40,8 +40,8 @@
 #include "mad.h"
 
 /* to be moved to header files ! */
-extern bool             DlgNewWithMod(char*,char*,int);
-extern bool             DlgNewWithSym(char*,char*,int);
+extern bool             DlgNewWithMod(char*,char*,unsigned);
+extern bool             DlgNewWithSym(char*,char*,unsigned);
 extern char             *ReScan(char*);
 extern void             ChkExpr(void);
 extern void             ReqMemAddr(memory_expr , address *);
@@ -116,7 +116,7 @@ extern void DlgSetLong( gui_window *gui, unsigned id, long value )
 
 static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, char *title,
                                    void *value, bool (*rtn)(char*,void*),
-                                   bool (*dlg)(char*,char*,int) )
+                                   bool (*dlg)(char*,char*,unsigned) )
 {
     bool        rc;
 
@@ -190,7 +190,7 @@ bool    DlgModName( char *title, mod_handle *mod )
     } else {
         ModName( *mod, new, EXPR_LEN );
     }
-    return( DlgGetItemWithRtn( new, EXPR_LEN, title, mod, DlgScanModName, DlgNewWithMod));
+    return( DlgGetItemWithRtn( new, EXPR_LEN, title, mod, DlgScanModName, DlgNewWithMod ) );
 }
 
 bool DlgString( char *title, char *buff )
@@ -198,7 +198,7 @@ bool DlgString( char *title, char *buff )
     char        new[EXPR_LEN];
 
     new[0] = '\0';
-    return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew));
+    return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
 }
 
 bool DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th )

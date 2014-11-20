@@ -78,6 +78,6 @@ void UIAPI uiinitcursor( void ) {
     _uiinitcursor();
 }
 
-void uifinicursor( void ) {
+void UIAPI uifinicursor( void ) {
     _uifinicursor();
 }

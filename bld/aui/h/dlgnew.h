@@ -35,7 +35,7 @@
 #define CTL_NEW_EDIT    102
 #define CTL_NEW__LAST   103
 
-extern  bool    DlgNewWithCtl( char *text, char *buff, int buff_len,
+extern  bool    DlgNewWithCtl( char *text, char *buff, unsigned buff_len,
                                gui_control_info *controls, int num_controls,
                                GUICALLBACK *callback, int rows,
                                int cols, int max_cols );

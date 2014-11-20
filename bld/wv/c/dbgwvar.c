@@ -75,7 +75,7 @@ extern bool             DlgAnyExpr( char *, char *, unsigned );
 extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern void             WndVarInspect( char * );
-extern void             DlgNewWithSym( char *title, char *buff, int len );
+extern void             DlgNewWithSym( char *title, char *buff, unsigned buff_len );
 extern char             *StrCopy( char *, char * );
 extern void             BreakOnExprSP( char * );
 extern unsigned         NewCurrRadix( unsigned int );

@@ -59,9 +59,9 @@ extern  void    WndSetTitle( a_window *wnd, char *text )
     GUISetWindowText( wnd->gui, text );
 }
 
-extern  int     WndGetTitle( a_window *wnd, char *data, int max_length )
+extern  int     WndGetTitle( a_window *wnd, char *buff, unsigned buff_len )
 {
-    return( GUIGetWindowText( wnd->gui, data, max_length ) );
+    return( GUIGetWindowText( wnd->gui, buff, buff_len ) );
 }
 
 static a_window *WndCreateWithStructBody( wnd_create_struct *info,

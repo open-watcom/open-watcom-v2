@@ -82,7 +82,7 @@ extern void             AddrFix( address * );
 extern void             StartSubscript( void );
 extern void             AddSubscript( void );
 extern void             EndSubscript( void );
-extern void             DlgNewWithSym( char *, char *, int);
+extern void             DlgNewWithSym( char *, char *, unsigned);
 extern char             *ReScan( char * );
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern char             *GetCmdName( int );

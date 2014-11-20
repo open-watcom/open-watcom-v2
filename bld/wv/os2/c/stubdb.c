@@ -760,7 +760,7 @@ extern void *WndAsmInspect( address addr )
     _AllocA( dd, MADDisasmDataSize() );
     for( i = 0; i < 10; ++i ) {
         MADDisasm( dd, &addr, 0 );
-        MADDisasmFormat( dd, MDP_ALL, CurrRadix, sizeof( buff ), buff );
+        MADDisasmFormat( dd, MDP_ALL, CurrRadix, buff, sizeof( buff ) );
         InsMemRef( dd );
         printf( "%-40s%s\n", buff, TxtBuff );
     }

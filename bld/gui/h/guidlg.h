@@ -150,4 +150,4 @@ extern void GUISysModalDlgOpen( char *name, int rows, int cols,
                            GUICALLBACK *rtn, void *extra );
 
 extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
-                             char *buff, unsigned max_len );
+                             char *buff, unsigned buff_len );

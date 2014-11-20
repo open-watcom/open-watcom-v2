@@ -396,8 +396,7 @@ void    WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu )
         } else if( menu->child == NULL ) {
             WndMenuItem( wnd, menu->id, WndMenuRow, WndMenuPiece );
         } else {
-            WndCreateFloatingPopup( wnd, point, menu->num_child_menus,
-                                    menu->child, &dummy );
+            WndCreateFloatingPopup( wnd, point, menu->num_child_menus, menu->child, &dummy );
         }
     }
 }
