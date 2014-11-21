@@ -71,11 +71,11 @@ dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                            char **namep, unsigned *lenp, s_all **pp )
+                            const char **namep, unsigned *lenp, s_all **pp )
 {
     s_all               *p;
     unsigned            skip = 0;
-    char                *name;
+    const char          *name;
     numeric_leaf        val;
 
     if( is->containing_type != 0 ) {
@@ -95,7 +95,7 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
         skip = sizeof( s_register );
         break;
     case S_CONSTANT:
-        name = (char *)p + sizeof( s_constant );
+        name = (const char *)p + sizeof( s_constant );
         skip = (unsigned_8 *)GetNumLeaf( name, &val ) - (unsigned_8 *)p;
         break;
     case S_UDT:
@@ -156,7 +156,7 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
     default:
         Confused();
     }
-    name = (char *)p + skip;
+    name = (const char *)p + skip;
     *lenp = *(unsigned_8 *)name;
     *namep = &name[1];
     return( DS_OK );
@@ -854,7 +854,7 @@ static search_result TableSearchForName( imp_image_handle *ii,
     virt_mem                    base;
     virt_mem                    sym_base;
     unsigned long               count;
-    char                        *name;
+    const char                  *name;
     unsigned                    name_len;
     s_all                       *sp;
     search_result               sr;
@@ -1130,7 +1130,7 @@ static unsigned ImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
                         symbol_name sn, char *buff, unsigned max )
 {
-    char                *name;
+    const char          *name;
     unsigned            len;
     location_list       ll;
     dip_status          ds;
@@ -1488,7 +1488,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                  location_list *ll )
 {
-    char                *name;
+    const char          *name;
     unsigned            len;
     dip_status          ds;
     virt_mem            check;
@@ -1577,7 +1577,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
 {
     struct search_data  *sd = d;
     lookup_item         *li;
-    char                *name;
+    const char          *name;
     unsigned            len;
     imp_sym_handle      *new;
     s_all               *p;

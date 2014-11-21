@@ -199,7 +199,7 @@ static const struct {
     { TK_STRING,        0 },
 };
 
-void *hllGetNumLeaf( void *p, numeric_leaf *v )
+const void *hllGetNumLeaf( const void *p, numeric_leaf *v )
 {
     unsigned            key;
 
@@ -210,7 +210,7 @@ void *hllGetNumLeaf( void *p, numeric_leaf *v )
         v->valp = p;
         v->int_val = key;
     } else {
-        v->valp = (unsigned_8 *)p + sizeof( unsigned_16 );
+        v->valp = (const unsigned_8 *)p + sizeof( unsigned_16 );
         v->size = LeafInfo[ key - LF_NUMERIC ].size;
         v->k = LeafInfo[ key - LF_NUMERIC ].k;
         switch( key ) {
@@ -229,11 +229,11 @@ void *hllGetNumLeaf( void *p, numeric_leaf *v )
             break;
         case LF_VARSTRING:
             v->size = *(unsigned_16 *)v->valp;
-            v->valp = (unsigned_8 *)v->valp + sizeof( unsigned_16 );
+            v->valp = (const unsigned_8 *)v->valp + sizeof( unsigned_16 );
             break;
         }
     }
-    return( (unsigned_8 *)v->valp + v->size );
+    return( (const unsigned_8 *)v->valp + v->size );
 }
 
 

@@ -95,7 +95,7 @@ struct imp_image_handle {
 typedef struct {
     type_kind           k;
     unsigned            size;
-    void                *valp;
+    const void          *valp;
     unsigned long       int_val; /* only if k == TK_INTEGER */
 } numeric_leaf;
 
@@ -121,12 +121,12 @@ extern dip_status               LocationManyReg( imp_image_handle *, unsigned, c
 
 extern unsigned                 NameCopy( char *, const char *, unsigned, unsigned );
 extern void                     MapLogical( imp_image_handle *, address * );
-extern void *                   GetNumLeaf( void *, numeric_leaf * );
+extern const void               *GetNumLeaf( const void *, numeric_leaf * );
 extern dip_status               SegIsExecutable( imp_image_handle *, unsigned );
 
 extern search_result            ImpAddrMod( imp_image_handle *, address, imp_mod_handle * );
 
-extern dip_status               TypeSymGetName( imp_image_handle *, imp_sym_handle *, char **, unsigned * );
+extern dip_status               TypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, unsigned * );
 extern dip_status               TypeSymGetType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 extern dip_status               TypeSymGetAddr( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status               TypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );

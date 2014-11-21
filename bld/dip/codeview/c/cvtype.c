@@ -44,11 +44,11 @@ extern dip_status ImpTypeInfo( imp_image_handle *ii,
 
 
 static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
-                        char **namep, unsigned *lenp, lf_all **pp )
+                        const char **namep, unsigned *lenp, lf_all **pp )
 {
     lf_all              *p;
     unsigned            skip;
-    char                *name;
+    const char          *name;
     numeric_leaf        dummy;
 
     if( base == 0 ) {
@@ -240,7 +240,7 @@ dip_status TypeMemberFuncInfo( imp_image_handle *ii, imp_type_handle *func_it,
 }
 
 dip_status TypeSymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                        char **namep, unsigned *lenp )
+                        const char **namep, unsigned *lenp )
 {
     return( TypeVMGetName( ii, is->handle, namep, lenp, NULL ) );
 }
@@ -590,7 +590,7 @@ static dip_status GetVirtBaseDisp( imp_image_handle *ii, virt_mem adj,
                 location_context *lc, location_list ll, unsigned long *disp )
 {
     lf_all              *p;
-    void                *ptr;
+    const void          *ptr;
     numeric_leaf        val;
     unsigned            elt_type;
     unsigned            idx;
@@ -766,7 +766,7 @@ static dip_status VFuncLocation( imp_image_handle *ii, imp_sym_handle *is,
 static dip_status MatchSymLocation( imp_image_handle *ii, imp_sym_handle *is,
                     unsigned idx, location_context *lc, location_list *ll )
 {
-    char                *name;
+    const char          *name;
     unsigned            len;
     char                *buff;
     char                *start;
@@ -1121,7 +1121,7 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     virt_mem            type;
     virt_mem            array_vm;
     unsigned_32         *array_p;
-    char                *name;
+    const char          *name;
     unsigned            len;
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
@@ -1195,7 +1195,7 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
                         pending_type_list *list, lf_all *p, void *d )
 {
     struct search_data  *sd = d;
-    char                *name;
+    const char          *name;
     unsigned            name_len;
     imp_sym_handle      *is;
     search_result       sr;
@@ -2079,7 +2079,7 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, unsigned max )
 {
     lf_all              *p;
-    char                *name;
+    const char          *name;
     unsigned            len;
     imp_type_handle     real_it;
 

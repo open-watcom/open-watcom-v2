@@ -152,7 +152,7 @@ struct imp_image_handle {
 typedef struct {
     type_kind           k;
     unsigned            size;
-    void                *valp;
+    const void          *valp;
     unsigned long       int_val; /* only if k == TK_INTEGER */
 } numeric_leaf;
 
