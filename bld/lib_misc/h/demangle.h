@@ -56,8 +56,8 @@ typedef void (*outfunPtr)(void **, dm_pts, size_t, char const *);
 size_t __demangle_l(                            // DEMANGLE A C++ NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char *output,                               // - for demangled C++ name
-    size_t size )                               // - size of output buffer
+    char *buff,                                 // - output buffer for demangled C++ name
+    size_t buff_size )                          // - size of output buffer
 ;
 
 int __is_mangled(                               // IS NAME MANGLED ?
@@ -80,8 +80,8 @@ int __is_mangled_internal(                      // IS NAME MANGLED? INTERNAL?
 int __unmangled_name(                           // FIND UNMANGLED BASE NAME
     char const *name,                           // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char const **base,                          // - location of base name
-    size_t *size )                              // - size of base name
+    char const **basep,                         // - location of C++ base name
+    size_t *base_sizep )                        // - size of C++ base name
 ;                                               // return TRUE if name mangled
 
 #if !defined( __WLINK__ )
@@ -94,15 +94,15 @@ _WCRTLINK
 size_t __demangle_t(                            // DEMANGLE A C++ TYPE
     char const *input,                          // - mangled C++ type
     size_t len,                                 // - length of mangled type
-    char *output,                               // - for demangled C++ type
-    size_t size )                               // - size of output buffer
+    char *buff,                                 // - output buffer for demangled C++ type
+    size_t buff_size )                          // - size of output buffer
 ;
 
 size_t __demangle_r(                            // DEMANGLE A C++ NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char **output,                              // - for demangled C++ name
-    size_t size,                                // - size of output buffer
+    char **buffp,                               // - output buffer for demangled C++ name
+    size_t buff_size,                           // - size of output buffer
     void *(*realloc)( void *, size_t ) )        // - size adjuster for output
 ;
 
@@ -112,22 +112,22 @@ int __scope_name(                               // EXTRACT A C++ SCOPE NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
     unsigned index,                             // - scope wanted
-    char const **scope,                         // - location of name
-    size_t *size )                              // - size of output buffer
+    char const **scopep,                        // - location of C++ scope name
+    size_t *scope_sizep )                       // - size of C++ scope name
 ;                                               // returns TRUE on success
 
 size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
     char const *name,                           // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char *output,                               // - for demangled C++ name
-    size_t size )                               // - size of output buffer
-;                                               // return len of output
+    char *buff,                                 // - output buffer for demangled C++ base name
+    size_t buff_size )                          // - size of output buffer
+;                                               // return len of demangled C++ base name
 
 size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     char const *op,                             // - operator token
     size_t len,                                 // - length of operator token
-    char *result )                              // - operator name
-;                                               // return len of operator name
+    char *buff )                                // - output buffer for mangled operator name
+;                                               // return len of mangled operator name
                                                 // ZERO if not found
 
 #endif // !__WLINK__

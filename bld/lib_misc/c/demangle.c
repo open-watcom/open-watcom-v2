@@ -337,6 +337,7 @@ static void zapSpace( output_desc *data )
     if( data->output[data->index - 1] != ' ' ) {
         return;
     }
+    /* remove trailing space */
     data->count--;
     if( data->index != (data->count + 1) ) {
         size_t last = data->size;
@@ -1594,7 +1595,7 @@ static void init_globals( realloc_fn_t reallocator )
 static void init_descriptor( output_desc *data,
                              outfunPtr ofn, void *cookie,
                              char const *input, size_t len,
-                             char *output, size_t size )
+                             char *buff, size_t buff_size )
 {
     data->outfun = ofn;
     data->cookie = cookie;
@@ -1604,9 +1605,9 @@ static void init_descriptor( output_desc *data,
         data->end = input + len;
     }
     data->input = input;
-    data->output = output;
+    data->output = buff;
+    data->size = buff_size;
     data->scope_ptr = NULL;
-    data->size = size;
     data->count = 0;
     data->index = 0;
     data->pending_loc = 0;
@@ -1625,30 +1626,28 @@ static size_t terminateOutput( output_desc *data )
     size_t outlen;
 
     outlen = data->count;
-    if( data->output != NULL ) {
+    if( data->output != NULL && outlen > 0 && data->size > 0 ) {
         /* name may have been truncated */
-        if( outlen >= data->size ) {
+        if( outlen > data->size - 1  ) {
             outlen = data->size - 1;
         }
-        if( outlen > 0 ) {
-            if( data->output[outlen - 1] == ' ' ) {
-                --outlen;
-            }
-        }
+        /* remove trailing space */
+        if( outlen > 0 && data->output[outlen - 1] == ' ' )
+            --outlen;
         data->output[outlen] = '\0';
     }
     /* size does not include '\0' */
     return( outlen );
 }
 
-static size_t demangle_recursive( char const *input, char *output, size_t size )
+static size_t demangle_recursive( char const *input, char *buff, size_t buff_size )
 {
     realloc_fn_t save_reallocator;
     auto output_desc data;
 
     save_reallocator = user_realloc;
     user_realloc = NULL;
-    init_descriptor( &data, &demangleEmit, &data, input, 0, output, size );
+    init_descriptor( &data, &demangleEmit, &data, input, 0, buff, buff_size );
 #if 0 || defined( TEST )
     if( !mangled_name( &data ) ) {
         ++errors;
@@ -1678,8 +1677,8 @@ static int recursive_mangled_name( output_desc *data, state_desc *state )
 size_t __demangle_l(                            // DEMANGLE A C++ NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char *output,                               // - for demangled C++ name
-    size_t size )                               // - size of output buffer
+    char *buff,                                 // - output buffer for demangled C++ name
+    size_t buff_size )                          // - size of output buffer
 {
     int                 mangled;
     size_t              outlen;
@@ -1687,7 +1686,7 @@ size_t __demangle_l(                            // DEMANGLE A C++ NAME
 
     init_globals( NULL );
     mangled = __is_mangled( input, len );
-    init_descriptor( &data, &demangleEmit, &data, input, len, output, size );
+    init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     if( mangled ) {
         do_demangle( &data );
     } else {
@@ -1762,38 +1761,41 @@ int __is_mangled_internal( char const *name, size_t len )
 int __unmangled_name(                           // FIND UNMANGLED BASE NAME
     char const *name,                           // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char const **base,                          // - location of base name
-    size_t *size )                              // - size of base name
+    char const **basep,                         // - location of C++ base name
+    size_t *base_sizep )                        // - size of C++ base name
 {                                               // return TRUE if name mangled
     char const *end;
     int   mangled;
+    size_t base_size;
 
-    *size = 0;
-    *base = name;
     if( len == 0 ) {
         len = strlen( name );
     }
-    end = name + len;
     mangled = __is_mangled( name, len );
-    if( mangled ) {
-        name += mangled; // skip magic cookie
-        *base = name;
-        if( *name == OPNAME_PREFIX ) {
-            (*size) += 3;
-            name++;
-            if( mytoupper( *name ) == WAT_FUN_PREFIX ) {
-                (*size) += 1;
-            }
-        } else {
-            for( ; name != end ; ++name ) {
-                if( *name == SYMBOL_SUFFIX ) break;
-                (*size)++;
-            }
-        }
-        return( TRUE );
+    if( !mangled ) {
+        *basep = name;
+        *base_sizep = len;
+        return( FALSE );
     }
-    *size = len;
-    return( FALSE );
+    end = name + len;
+    name += mangled; // skip magic cookie
+    *basep = name;
+    base_size = 0;
+    if( *name == OPNAME_PREFIX ) {
+        base_size += 3;
+        name++;
+        if( mytoupper( *name ) == WAT_FUN_PREFIX ) {
+            base_size++;
+        }
+    } else {
+        for( ; name != end ; ++name ) {
+            if( *name == SYMBOL_SUFFIX )
+             	break;
+            base_size++;
+        }
+    }
+    *base_sizep = base_size;
+    return( TRUE );
 }
 
 #if !defined( __WLINK__ )
@@ -1806,15 +1808,15 @@ _WCRTLINK
 size_t __demangle_t(                            // DEMANGLE A C++ TYPE
     char const *input,                          // - mangled C++ type
     size_t len,                                 // - length of mangled type
-    char *output,                               // - for demangled C++ type
-    size_t size )                               // - size of output buffer
+    char *buff,                                 // - output buffer for demangled C++ type
+    size_t buff_size )                          // - size of output buffer
 {
     size_t outlen;
     auto output_desc data;
     auto state_desc new_state;
 
     init_globals( NULL );
-    init_descriptor( &data, &demangleEmit, &data, input, len, output, size );
+    init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     data.suppress_output = 0;
     new_state.prefix = 0;
     new_state.suffix = 0;
@@ -1828,22 +1830,22 @@ size_t __demangle_t(                            // DEMANGLE A C++ TYPE
 size_t __demangle_r(                            // DEMANGLE A C++ NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char **output,                              // - for demangled C++ name
-    size_t size,                                // - size of output buffer
+    char **buffp,                               // - output buffer for demangled C++ name
+    size_t buff_size,                           // - size of output buffer
     void * (*realloc)( void *, size_t ) )       // - size adjuster for output
 {
-    char                *output_buff;
+    char                *buff;
     int                 mangled;
     size_t              outlen;
     auto output_desc    data;
 
     init_globals( realloc );
     mangled = __is_mangled( input, len );
-    output_buff = NULL;
-    if( output != NULL ) {
-        output_buff = *output;
+    buff = NULL;
+    if( buffp != NULL ) {
+        buff = *buffp;
     }
-    init_descriptor( &data, &demangleEmit, &data, input, len, output_buff, size );
+    init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     data.suppress_output = 0;
     if( mangled ) {
         do_demangle( &data );
@@ -1851,8 +1853,8 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
         do_copy( &data );
     }
     outlen = terminateOutput( &data );
-    if( output != NULL ) {
-        *output = data.output;
+    if( buffp != NULL ) {
+        *buffp = data.output;
     }
     /* size does not include '\0' */
     return( outlen );
@@ -1864,15 +1866,15 @@ int __scope_name(                               // EXTRACT A C++ SCOPE
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
     unsigned index,                             // - scope wanted
-    char const **scope,                         // - location of name
-    size_t *size )                              // - size of output buffer
+    char const **scopep,                        // - location of C++ scope name
+    size_t *scope_sizep )                       // - size of C++ scope name
 {                                               // returns TRUE on success
     int                 mangled;
     auto output_desc    data;
 
     init_globals( NULL );
-    *scope = NULL;
-    *size = 0;
+    *scopep = NULL;
+    *scope_sizep = 0;
     mangled = __is_mangled( input, len );
     if( !mangled ) {
         return( FALSE );
@@ -1882,8 +1884,8 @@ int __scope_name(                               // EXTRACT A C++ SCOPE
     data.scope_index = index;
     do_demangle( &data );
     if( data.scope_len != 0 ) {
-        *scope = data.scope_ptr;
-        *size = data.scope_len;
+        *scopep = data.scope_ptr;
+        *scope_sizep = data.scope_len;
         return( TRUE );
     }
     return( FALSE );
@@ -1892,8 +1894,8 @@ int __scope_name(                               // EXTRACT A C++ SCOPE
 size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
-    char *output,                               // - for demangled C++ name
-    size_t size )                               // - size of output buffer
+    char *buff,                                 // - output buffer for demangled C++ base name
+    size_t buff_size )                          // - size of output buffer
 {                                               // return len of output
     int                 mangled;
     size_t              outlen;
@@ -1901,7 +1903,7 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
 
     init_globals( NULL );
     mangled = __is_mangled( input, len );
-    init_descriptor( &data, &demangleEmit, &data, input, len, output, size );
+    init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     data.suppress_output = 0;
     data.base_name = 1;
     if( mangled ) {
@@ -1917,8 +1919,8 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
 size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     char const *op,                             // - operator token
     size_t len,                                 // - length of operator token
-    char *result )                              // - operator name
-                                                // return len of operator name
+    char *buff )                                // - output buffer for mangled operator name
+                                                // return len of mangled operator name
 {
     int i;
 
@@ -1929,9 +1931,9 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     for( i = 0 ; i < num_elements( operatorFunction ) ; i++ ) {
         if( STRNCMP( op, operatorFunction[i], len ) == 0 ) {
             if( operatorFunction[i][len] == NULL_CHAR ) {
-                *result++ = OPNAME_PREFIX;
-                *result++ = OP_FUN_PREFIX;
-                *result++ = i + LOWER_TABLE_LIMIT;
+                *buff++ = OPNAME_PREFIX;
+                *buff++ = OP_FUN_PREFIX;
+                *buff++ = i + LOWER_TABLE_LIMIT;
                 return( 3 );
             }
         }
@@ -1939,9 +1941,9 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     for( i = 0 ; i < num_elements( relationalFunction ) ; i++ ) {
         if( STRNCMP( op, relationalFunction[i], len ) == 0 ) {
             if( relationalFunction[i][len] == NULL_CHAR ) {
-                *result++ = OPNAME_PREFIX;
-                *result++ = REL_FUN_PREFIX;
-                *result++ = i + LOWER_TABLE_LIMIT;
+                *buff++ = OPNAME_PREFIX;
+                *buff++ = REL_FUN_PREFIX;
+                *buff++ = i + LOWER_TABLE_LIMIT;
                 return( 3 );
             }
         }
@@ -1949,9 +1951,9 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     for( i = 0 ; i < num_elements( assignmentFunction ) ; i++ ) {
         if( STRNCMP( op, assignmentFunction[i], len ) == 0 ) {
             if( assignmentFunction[i][len] == NULL_CHAR ) {
-                *result++ = OPNAME_PREFIX;
-                *result++ = ASGN_FUN_PREFIX;
-                *result++ = i + LOWER_TABLE_LIMIT;
+                *buff++ = OPNAME_PREFIX;
+                *buff++ = ASGN_FUN_PREFIX;
+                *buff++ = i + LOWER_TABLE_LIMIT;
                 return( 3 );
             }
         }
