@@ -131,7 +131,7 @@ void WndZapped( a_window *wnd )
     WndRepaint( wnd );
 }
 
-extern gui_ord  WndExtentX( a_window *wnd, char *string )
+extern gui_ord  WndExtentX( a_window *wnd, const char *string )
 {
     return( GUIGetExtentX( wnd->gui, string, strlen( string ) ) );
 }

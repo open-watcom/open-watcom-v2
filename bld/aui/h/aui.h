@@ -320,7 +320,7 @@ extern bool             DlgFileBrowse( char *title, char *filter, char *path,
 extern a_window         **WndFindOwner( a_window * );
 extern a_window         *WndFirst( void );
 
-extern gui_ord          WndExtentX( a_window *, char * );
+extern gui_ord          WndExtentX( a_window *, const char * );
 
 extern void             WndFreshAll( void );
 extern bool             WndStopRefresh( bool );
