@@ -90,7 +90,7 @@ imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
 }
 
 unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned max )
+                        imp_cue_handle *ic, char *buff, unsigned buff_size )
 {
     void                                *p;
     unsigned_16                         name_len;
@@ -109,7 +109,7 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     name_len = *(unsigned_8 *)p;
     p = VMBlock( ii, offset + sizeof( unsigned_8 ), name_len );
     if( p == NULL ) return( 0 );
-    return( NameCopy( buff, p, max, name_len ) );
+    return( NameCopy( buff, p, buff_size, name_len ) );
 }
 
 cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,

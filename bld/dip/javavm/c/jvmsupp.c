@@ -133,31 +133,33 @@ dip_status GetData( ji_ptr off, void *p, unsigned len )
 
 #define MAX_CHUNK       32
 
-unsigned GetString( ji_ptr off, char *p, unsigned max )
+unsigned GetString( ji_ptr off, char *buff, unsigned buff_size )
 {
     unsigned    len;
     char        *end;
     unsigned    get;
 
     len = 0;
-    --max;
-    p[max] = '\0';
-    for( ;; ) {
-        if( max == 0 ) break;
-        get = max;
-        if( get > MAX_CHUNK ) get = MAX_CHUNK;
-        if( GetData( off, p, get ) != DS_OK ) {
-            *p = '\0';
-            return( 0 );
+    if( buff_size > 0 ) {
+        --buff_size;
+        buff[buff_size] = '\0';
+        for( ; buff_size > 0; ) {
+            get = buff_size;
+            if( get > MAX_CHUNK )
+                get = MAX_CHUNK;
+            if( GetData( off, buff, get ) != DS_OK ) {
+                *buff = '\0';
+                return( 0 );
+            }
+            end = memchr( buff, '\0', get );
+            if( end != NULL ) {
+                len += end - buff;
+                break;
+            }
+            len += get;
+            buff += get;
+            buff_size -= get;
         }
-        end = memchr( p, '\0', get );
-        if( end != NULL ) {
-            len += end - p;
-            break;
-        }
-        len += get;
-        p += get;
-        max -= get;
     }
     return( len );
 }
@@ -251,13 +253,14 @@ dip_status      GetAddrCue( struct mad_jvm_findaddrcue_acc *acc, struct mad_jvm_
     return( DCAssignLocation( &dst, &src, sizeof( *ret ) ) );
 }
 
-unsigned NameCopy( char *dst, const char *src, unsigned max, unsigned len )
+unsigned NameCopy( char *buff, const char *src, unsigned buff_size, unsigned len )
 {
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( dst, src, max );
-        dst[ max ] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, src, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }

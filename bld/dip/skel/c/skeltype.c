@@ -185,17 +185,17 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 }
 
 unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned max )
+                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
 {
     //TODO:
     /*
         Given the imp_type_handle, copy the name of the type into 'buff'.
-        Do not copy more than 'max' - 1 characters into the buffer and
+        Do not copy more than 'buff_size' - 1 characters into the buffer and
         append a trailing '\0' character. Return the real length
         of the type name (not including the trailing '\0' character) even
         if you had to truncate it to fit it into the buffer. If something
         went wrong and you can't get the type name, call DCStatus and
-        return zero. NOTE: the client might pass in zero for 'max'. In that
+        return zero. NOTE: the client might pass in zero for 'buff_size'. In that
         case, just return the length of the module name and do not attempt
         to put anything into the buffer.
 

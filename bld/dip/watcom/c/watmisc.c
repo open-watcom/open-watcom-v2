@@ -139,13 +139,13 @@ search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
 
 unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc,
-                                symbol_name sn, char *name, unsigned max )
+                                symbol_name sn, char *buff, unsigned buff_size )
 {
     byte                *sp;
     byte                *ep;
     byte                curr;
     unsigned            len;
-    char                *buff;
+    char                *mangled_name;
     location_list       ll;
     imp_sym_handle      gbl_is;
 
@@ -154,8 +154,8 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
         sp = (byte *)is;
         ++is;
         len = 0;
-        #define STUFF_IT( c )   if( (len+1) < max ) *ep++ = (c); ++len
-        ep = (byte *)name;
+        #define STUFF_IT( c )   if( (len+1) < buff_size ) *ep++ = (c); ++len
+        ep = (byte *)buff;
         STUFF_IT( SH_ESCAPE );
         while( sp < (byte *)is ) {
             curr = *sp++;
@@ -175,20 +175,22 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
             }
             STUFF_IT( curr );
         }
-        if( max > 0 ) *ep++ = '\0';
+        if( buff_size > 0 ) *ep++ = '\0';
         return( len );
     case SN_DEMANGLED:
         len = ImpInterface.sym_name( ii, is, lc, SN_OBJECT, NULL, 0 );
-        if( len == 0 ) return( len );
-        buff = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, is, lc, SN_OBJECT, buff, len + 1 );
-        if( !__is_mangled( buff, len ) ) return( 0 );
-        return( __demangle_l( buff, len, name, max ) );
+        if( len == 0 )
+            return( len );
+        mangled_name = __alloca( len + 1 );
+        ImpInterface.sym_name( ii, is, lc, SN_OBJECT, mangled_name, len + 1 );
+        if( !__is_mangled( mangled_name, len ) )
+            return( 0 );
+        return( __demangle_l( mangled_name, len, buff, buff_size ) );
     case SN_OBJECT:
         switch( is->type ) {
         case SH_LCL:
             if( Lcl2GblHdl( ii, is, &gbl_is ) != DS_OK ) break;
-            return( SymHdl2ObjGblName( ii, &gbl_is, name, max ) );
+            return( SymHdl2ObjGblName( ii, &gbl_is, buff, buff_size ) );
         case SH_MBR:
             if( ImpInterface.sym_location( ii, is, lc, &ll ) != DS_OK ) break;
             if( ll.num != 1 || ll.e[0].type != LT_ADDR ) break;
@@ -197,21 +199,21 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
             is = &gbl_is;
             /* fall through */
         case SH_GBL:
-            return( SymHdl2ObjGblName( ii, is, name, max ) );
+            return( SymHdl2ObjGblName( ii, is, buff, buff_size ) );
         }
         /* fall through */
     case SN_SOURCE:
         switch( is->type ) {
         case SH_GBL:
-            return( SymHdl2GblName( ii, is, name, max ) );
+            return( SymHdl2GblName( ii, is, buff, buff_size ) );
         case SH_LCL:
-            return( SymHdl2LclName( ii, is, name, max ) );
+            return( SymHdl2LclName( ii, is, buff, buff_size ) );
         case SH_MBR:
-            return( SymHdl2MbrName( ii, is, name, max ) );
+            return( SymHdl2MbrName( ii, is, buff, buff_size ) );
         case SH_TYP:
-            return( SymHdl2TypName( ii, is, name, max ) );
+            return( SymHdl2TypName( ii, is, buff, buff_size ) );
         case SH_CST:
-            return( SymHdl2CstName( ii, is, name, max ) );
+            return( SymHdl2CstName( ii, is, buff, buff_size ) );
         }
         break;
     }
@@ -277,12 +279,12 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     if( li->type == ST_NAMESPACE ) return( SR_NONE );
     sym_li = *li;
     if( ss == SS_SCOPESYM ) {
-        char    *str;
+        char    *scope_name;
         scope_is = source;
         len = ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        str = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, str, len + 1 );
-        sym_li.scope.start = str;
+        scope_name = __alloca( len + 1 );
+        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
+        sym_li.scope.start = scope_name;
         sym_li.scope.len = len;
         ss = SS_MODULE;
         sym_li.mod = IMH2MH( scope_is->im );

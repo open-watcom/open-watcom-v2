@@ -79,15 +79,16 @@ imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii,
 
 unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned max )
+                        symbol_name sn, char *buff, unsigned buff_size )
 {
     ii = ii; lc = lc;
     if( sn == SN_DEMANGLED ) return( 0 );
-    if( max > 0 ) {
-        --max;
-        if( max > is->p->len ) max = is->p->len;
-        memcpy( buff, is->p->name, max );
-        buff[ max ] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > is->p->len )
+            buff_size = is->p->len;
+        memcpy( buff, is->p->name, buff_size );
+        buff[buff_size] = '\0';
     }
     return( is->p->len );
 }

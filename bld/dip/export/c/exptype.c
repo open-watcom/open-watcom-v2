@@ -121,9 +121,9 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 }
 
 unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned max )
+                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
 {
-    ii = ii; it = it; num = num; tag = tag; buff = buff; max = max;
+    ii = ii; it = it; num = num; tag = tag; buff = buff; buff_size = buff_size;
     return( 0 );
 }
 

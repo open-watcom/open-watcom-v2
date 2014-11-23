@@ -68,38 +68,38 @@ static gui_menu_struct RegMenu[] = {
 };
 
 typedef struct {
-        char                    standout;
-        mad_reg_info  const     *info;
-        gui_ord                 max_extent;
-        gui_ord                 max_descript;
-        char                    max_value;
+    char                    standout;
+    mad_reg_info  const     *info;
+    gui_ord                 max_extent;
+    gui_ord                 max_descript;
+    char                    max_value;
 } a_reg_info;
 
 typedef struct {
-    gui_ord     descript;
-    gui_ord     value;
+    gui_ord                 descript;
+    gui_ord                 value;
 } reg_indent;
 
 typedef struct {
-        mad_reg_set_data        *data;
-        char                    up;
-        char                    rows;
-        char                    count;
-        a_reg_info              *info;
-        reg_indent              *indents;
-        gui_menu_struct         *popup;
-        unsigned                num_toggles;
-        mad_type_kind           kind;
+    mad_reg_set_data        *data;
+    char                    up;
+    char                    rows;
+    char                    count;
+    a_reg_info              *info;
+    reg_indent              *indents;
+    gui_menu_struct         *popup;
+    unsigned                num_toggles;
+    mad_type_kind           kind;
 } reg_window;
 #define WndReg( wnd ) ( (reg_window*)WndExtra( wnd ) )
 
 
 typedef struct {
-    char                *descript;
-    unsigned            max_descript;
-    const mad_reg_info  *reginfo;
-    mad_type_handle     disp_type;
-    unsigned            max_value;
+    const char              *descript;
+    unsigned                max_descript;
+    const mad_reg_info      *reginfo;
+    mad_type_handle         disp_type;
+    unsigned                max_value;
 } reg_display_piece;
 
 static bool GetDisplayPiece( reg_display_piece *disp, reg_window *reg, machine_state *mach, int i )

@@ -335,7 +335,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
 }
 
 unsigned    DIGENTRY DIPImpModName( imp_image_handle *ii,
-                        imp_mod_handle im, char *buff, unsigned max )
+                        imp_mod_handle im, char *buff, unsigned buff_size )
 {
     char        *name;
     unsigned    len;
@@ -344,7 +344,7 @@ unsigned    DIGENTRY DIPImpModName( imp_image_handle *ii,
         DCStatus( DS_FAIL );
         return( 0 );
     }
-    len = NameCopy( buff, name, max );
+    len = NameCopy( buff, name, buff_size );
     return( len );
 }
 
@@ -596,26 +596,20 @@ dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     return( DS_OK );
 }
 
-unsigned    NameCopy( char *to, const char *from, unsigned max )
-/**************************************************************/
+unsigned    NameCopy( char *buff, const char *from, unsigned buff_size )
+/**********************************************************************/
 {
     unsigned    len;
 
     len = strlen( from );
-    if( max > 0 ) {
-        if( len < max ) {
-            max = len;
-        } else {
-            max = max - 1;
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        while( buff_size-- > 0 ) {
+            *buff++ = *from++;
         }
-        if( max > 0 ) {     // Check max to prevent underflow
-            do {
-                *to = *from;
-                ++to;
-                ++from;
-            } while( --max > 0 );
-        }
-        *to = '\0';
+        *buff = '\0';
     }
     return( len );
 }

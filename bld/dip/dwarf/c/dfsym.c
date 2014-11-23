@@ -55,7 +55,7 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is 
 
 unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned max )
+                        symbol_name sn, char *buff, unsigned buff_size )
 /****************************************************************/
 {
     /*
@@ -88,25 +88,25 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
     switch( sn ) {
     case SN_SOURCE:
     case SN_OBJECT:
-        len = DRGetNameBuff( is->sym, buff, max );
+        len = DRGetNameBuff( is->sym, buff, buff_size );
         if( len == 0 ) {
             DCStatus( DS_FAIL );
             return( 0 );
         }
         --len;
-        if( max != 0 && len > max ) {
-           buff[max-1] = '\0';
+        if( buff_size != 0 && len > buff_size ) {
+           buff[buff_size - 1] = '\0';
         }
         break;
     case SN_SCOPED:
-        len =  DRGetScopedNameBuff( is->sym, buff, max );
+        len =  DRGetScopedNameBuff( is->sym, buff, buff_size );
         if( len == 0 ) {
             DCStatus( DS_FAIL );
             return( 0 );
         }
         --len;
-        if( max != 0 && len > max ) {
-           buff[max-1] = '\0';
+        if( buff_size != 0 && len > buff_size ) {
+           buff[buff_size - 1] = '\0';
         }
         break;
     case SN_DEMANGLED:
@@ -116,20 +116,20 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                 DCStatus( DS_FAIL );
                 return( 0 );
             }
-            len = NameCopy( buff, name, max );
+            len = NameCopy( buff, name, buff_size );
             DCFree( name );
         } else if( buff == NULL ) {
             return( 0 );
         } else {
-            len = DRGetNameBuff( is->sym, buff, max );
+            len = DRGetNameBuff( is->sym, buff, buff_size );
             if( __is_mangled( buff, len ) ) {
                 demangled_len = __demangle_l( buff, len, NULL, 0 );
-                if( demangled_len > max ) {
-                    demangled_len = max;
+                if( demangled_len > buff_size ) {
+                    demangled_len = buff_size;
                 }
                 name = DCAlloc( demangled_len );
                 __demangle_l( buff, len, name, demangled_len );
-                strncpy( buff, name, max );
+                strncpy( buff, name, buff_size );
                 DCFree( name );
                 return( demangled_len );
             } else {
@@ -1579,8 +1579,8 @@ static unsigned StrVCopy( strvo *dst, strvi *src )
 }
 
 
-static unsigned QualifiedName( char *buff, lookup_item  *li, unsigned max )
-/*************************************************************************/
+static unsigned QualifiedName( lookup_item  *li, char *buff, unsigned buff_size )
+/******************************************************************************/
 {
     unsigned    total;
     strvi       curr;
@@ -1590,7 +1590,7 @@ static unsigned QualifiedName( char *buff, lookup_item  *li, unsigned max )
     curr.p   = li->scope.start;
     curr.len = li->scope.len;
     dst.p   = buff;
-    dst.len = max;
+    dst.len = buff_size;
     total = 0;
     while( curr.len > 0 ) {
         total += StrVCopy( &dst, &curr );
@@ -1627,12 +1627,12 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     data.ii  = ii;
     data.compare = li->case_sensitive ? &strcmp : &stricmp;
     data.sym = 0;
-    len = QualifiedName(  buff, li, sizeof( buff ) );
+    len = QualifiedName( li, buff, sizeof( buff ) );
     if( len <= sizeof( buff ) ) {
         data.name = buff;
     } else {
         data.name = DCAlloc( len + 1 );
-        len = QualifiedName(  data.name, li, len + 1 );
+        len = QualifiedName( li, data.name, len + 1 );
     }
     data.d  = d;
     wlk.fn = AHashItem;

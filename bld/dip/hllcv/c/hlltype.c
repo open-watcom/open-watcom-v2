@@ -2074,7 +2074,7 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 }
 
 unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned max )
+                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
 {
     lf_all              *p;
     char                *name;
@@ -2106,7 +2106,7 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     if( TypeVMGetName( ii, real_it.handle, &name, &len, NULL ) != DS_OK ) {
         return( 0 );
     }
-    return( hllNameCopy( buff, name, max, len ) );
+    return( hllNameCopy( buff, name, buff_size, len ) );
 }
 
 dip_status DIGENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )

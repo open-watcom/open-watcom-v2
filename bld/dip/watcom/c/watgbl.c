@@ -119,8 +119,7 @@ static void GblCreate( imp_sym_handle *is, gbl_info *gbl )
     is->u.gbl = gbl;
 }
 
-static int source_name( const char *gstart, size_t glen,
-                        const char **rstart, size_t *rlen )
+static int source_name( const char *gstart, size_t glen, const char **rstart, size_t *rlen )
 {
     int         type;
 
@@ -138,11 +137,11 @@ static int source_name( const char *gstart, size_t glen,
         break;
     case __MANGLED:
     case __MANGLED_INTERNAL:
-        __unmangled_name( gstart, glen, (const char **)rstart, rlen );
+        __unmangled_name( gstart, glen, rstart, rlen );
         break;
     case __MANGLED_CTOR:
     case __MANGLED_DTOR:
-        __scope_name( gstart, glen, 0, (const char **)rstart, rlen );
+        __scope_name( gstart, glen, 0, rstart, rlen );
         break;
     }
     return( type );
@@ -160,14 +159,14 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     gbl_info            *gbl;
     hash_link           lnk_off;
     int                 (*compare)(void const*,void const*,size_t);
-    char                *gblname;
+    const char          *gblname;
     size_t              gbllen;
     const char          *nam = NULL;
     size_t              namlen = 0;
     const char          *snam;
     size_t              snamlen;
-    char                *mangled;
-    size_t              mangle_len;
+    const char          *mangled_name;
+    size_t              mangled_len;
     unsigned            entry;
     info_block          *blk;
     int                 lkup_dtor;
@@ -216,16 +215,17 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
             } else {
                 if( im != GBL_MOD( gbl ) ) goto next_global;
             }
-            mangled = GBL_NAME( gbl );
-            gblname = mangled;
-            if( !lkup_full ) gblname += lnk->src_off;
+            mangled_name = GBL_NAME( gbl );
+            gblname = mangled_name;
+            if( !lkup_full )
+                gblname += lnk->src_off;
             if( compare( gblname, nam, namlen ) != 0 ) goto next_global;
             if( li->scope.start != NULL ) {
-                mangle_len = GBL_NAMELEN( gbl );
+                mangled_len = GBL_NAMELEN( gbl );
                 entry = 0;
                 for( ;; ) {
-                    if( !__scope_name( mangled, mangle_len, entry,
-                             (const char **)&gblname, &gbllen ) ) goto next_global;
+                    if( !__scope_name( mangled_name, mangled_len, entry, &gblname, &gbllen ) )
+                        goto next_global;
                     if( li->scope.len == gbllen &&
                         compare( li->scope.start, gblname, gbllen ) == 0 ) {
                         break;
@@ -547,40 +547,40 @@ dip_status SymHdl2GblInfo( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 unsigned SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is,
-                        char *name, unsigned max )
+                        char *buff, unsigned buff_size )
 {
     size_t      len;
-    const byte  *gbl;
+    const char  *gbl;
 
     ii = ii;
-    gbl = is->u.gbl;
-    gbl += is->name_off;
-    len = *gbl++;
-    __unmangled_name( (const char *)gbl, len, (const char **)&gbl, &len );
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( name, gbl, max );
-        name[max] = '\0';
+    gbl = (const char *)is->u.gbl + is->name_off;
+    len = *(unsigned char *)gbl++;
+    __unmangled_name( gbl, len, &gbl, &len );
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, gbl, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }
 
 unsigned SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
-                        char *name, unsigned max )
+                        char *buff, unsigned buff_size )
 {
     unsigned    len;
-    byte        *gbl;
+    const char  *gbl;
 
     ii = ii;
-    gbl = is->u.gbl;
-    gbl += is->name_off;
-    len = *gbl++;
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( name, gbl, max );
-        name[max] = '\0';
+    gbl = (const char *)is->u.gbl + is->name_off;
+    len = *(unsigned char *)gbl++;
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, gbl, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }

@@ -79,7 +79,7 @@ walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
 }
 
 unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
-                        imp_mod_handle im, char *buff, unsigned max )
+                        imp_mod_handle im, char *buff, unsigned buff_size )
 {
     ji_ptr      name;
     unsigned    len;
@@ -87,7 +87,7 @@ unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
     name = GetPointer( ii->cc + offsetof( ClassClass, name ) );
     len = GetString( name, NameBuff, sizeof( NameBuff ) );
     NormalizeClassName( NameBuff, len );
-    return( NameCopy( buff, NameBuff, max, len ) );
+    return( NameCopy( buff, NameBuff, buff_size, len ) );
 }
 
 char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )

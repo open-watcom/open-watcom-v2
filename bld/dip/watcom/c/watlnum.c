@@ -138,7 +138,7 @@ static unsigned SpecCueFileId( imp_image_handle *ii, imp_cue_handle *ic,
 }
 
 static unsigned SpecCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                    unsigned file_id, char *buff, unsigned max )
+                    unsigned file_id, char *buff, unsigned buff_size )
 {
     unsigned_16         size;
     unsigned_16         len;
@@ -159,11 +159,12 @@ static unsigned SpecCueFile( imp_image_handle *ii, imp_cue_handle *ic,
         name = (char *)start + size * sizeof( unsigned_16 );
         name += index[file_id-2]; /* see comment in CueFind */
         len = strlen( name );
-        if( max > 0 ) {
-            --max;
-            if( max > len ) max = len;
-            memcpy( buff, name, max );
-            buff[ max ] = '\0';
+        if( buff_size > 0 ) {
+            --buff_size;
+            if( buff_size > len )
+                buff_size = len;
+            memcpy( buff, name, buff_size );
+            buff[buff_size] = '\0';
         }
         InfoSpecUnlock( base );
     }
@@ -501,7 +502,7 @@ cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
 }
 
 unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                        char *buff, unsigned max )
+                        char *buff, unsigned buff_size )
 {
     cue_fileid      id;
 
@@ -510,9 +511,9 @@ unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
     case 0:
         return( 0 );
     case 1:
-        return( PrimaryCueFile( ii, ic, buff, max ) );
+        return( PrimaryCueFile( ii, ic, buff, buff_size ) );
     default:
-        return( SpecCueFile( ii, ic, id, buff, max ) );
+        return( SpecCueFile( ii, ic, id, buff, buff_size ) );
     }
 }
 

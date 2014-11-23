@@ -38,15 +38,15 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
 }
 
 unsigned DIGENTRY DIPImpModName( imp_image_handle *ii,
-                    imp_mod_handle im, char *buff, unsigned max )
+                    imp_mod_handle im, char *buff, unsigned buff_size )
 {
     im = im;
-    if( max > 0 ) {
-        --max;
-        if( max > ii->len )
-            max = ii->len;
-        memcpy( buff, ii->name, max );
-        buff[ max ] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > ii->len )
+            buff_size = ii->len;
+        memcpy( buff, ii->name, buff_size );
+        buff[buff_size] = '\0';
     }
     return( ii->len );
 }

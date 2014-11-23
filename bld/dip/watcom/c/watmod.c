@@ -440,7 +440,7 @@ dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
  */
 
 unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
-                                char *buff, unsigned max )
+                                char *buff, unsigned buff_size )
 {
     char        *name;
     char        *start;
@@ -479,11 +479,12 @@ unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
         }
     }
     len = end - start;
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( buff, start, max );
-        buff[ max ] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, start, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }
@@ -493,19 +494,19 @@ unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
  */
 
 unsigned PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                        char *buff, unsigned max )
+                        char *buff, unsigned buff_size )
 {
     unsigned    len;
     char        *name;
 
     name = ModPointer( ii, ic->im )->name;
     len = (unsigned char)name[0];
-    if( max > 0 ) {
-        --max;
-        if( max > len )
-            max = len;
-        memcpy( buff, &name[1], max );
-        buff[ max ] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, &name[1], buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }

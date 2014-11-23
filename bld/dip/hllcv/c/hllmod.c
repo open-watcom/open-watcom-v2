@@ -78,7 +78,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
 /*
  * Strips path and extension from the name and copies into the specified buffer.
  */
-static unsigned StripAndCopyName( unsigned_8 *name, char *buf, unsigned max )
+static unsigned StripAndCopyName( unsigned_8 *name, char *buff, unsigned buff_size )
 {
     char        *start = (char *)&name[1];
     char        *end   = start + *name;
@@ -97,20 +97,20 @@ static unsigned StripAndCopyName( unsigned_8 *name, char *buf, unsigned max )
             break;
         }
     }
-    return( hllNameCopy( buf, start, max, end - start ) );
+    return( hllNameCopy( buff, start, buff_size, end - start ) );
 }
 
 /*
  * Gets the module name.
  */
 unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
-                                 char *buf, unsigned max )
+                                 char *buff, unsigned buff_size )
 {
     hll_dir_entry *hdd;
 
     /* the fictive global module. */
     if( im == IMH_GBL ) {
-        return( hllNameCopy( buf, GBL_NAME, max, sizeof( GBL_NAME ) - 1 ) );
+        return( hllNameCopy( buff, GBL_NAME, buff_size, sizeof( GBL_NAME ) - 1 ) );
     }
 
     hdd = hllFindDirEntry( ii, im, hll_sstModule );
@@ -120,11 +120,11 @@ unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
             switch ( ii->format_lvl ) {
             case HLL_LVL_NB00:
             case HLL_LVL_NB02://testme
-                return( StripAndCopyName( &((cv3_module_16 *)mp)->name_len, buf, max ) );
+                return( StripAndCopyName( &((cv3_module_16 *)mp)->name_len, buff, buff_size ) );
             case HLL_LVL_NB00_32BIT:
-                return( StripAndCopyName( &((cv3_module_32 *)mp)->name_len, buf, max ) );
+                return( StripAndCopyName( &((cv3_module_32 *)mp)->name_len, buff, buff_size ) );
             case HLL_LVL_NB04:
-                return( StripAndCopyName( &((hll_module *)mp)->name_len, buf, max ) );
+                return( StripAndCopyName( &((hll_module *)mp)->name_len, buff, buff_size ) );
             default:
                 hllConfused();
             }

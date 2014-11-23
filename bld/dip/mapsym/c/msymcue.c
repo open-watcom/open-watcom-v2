@@ -54,9 +54,9 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii,
 }
 
 unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned max )
+                        imp_cue_handle *ic, char *buff, unsigned buff_size )
 {
-    ii = ii; ic = ic; buff = buff; max = max;
+    ii = ii; ic = ic; buff = buff; buff_size = buff_size;
     return( 0 );
 }
 

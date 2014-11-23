@@ -225,7 +225,7 @@ static const char *GetTypeTag( symbol_type tag )
 static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx )
 {
     int             *idx = (int *)_idx;
-    char            buf[2048];
+    char            buff[2048];
     int             len;
     dip_status      rc;
     location_list   ll = {0};
@@ -269,8 +269,8 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
         }
     } else if( sinfo.kind == SK_CONST ) {
         ll.num = 0;
-        memset( buf, 0, sizeof( buf ) );
-        rc = SymValue( sym, NULL, &buf[0] );
+        memset( buff, 0, sizeof( buff ) );
+        rc = SymValue( sym, NULL, &buff[0] );
         if( rc == DS_OK ) {
             switch( sinfo.ret_modifier ) {
             }
@@ -305,16 +305,16 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
 
     /* finally, the name. */
     /* try get the name */
-    buf[0] = '\0';
-    len = SymName( sym, NULL, SN_DEMANGLED, buf, sizeof( buf ) );
+    buff[0] = '\0';
+    len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
     if( !len ) {
-        len = SymName( sym, NULL, SN_OBJECT, buf, sizeof( buf ) );
+        len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
     if( !len ) {
-        len = SymName( sym, NULL, SN_SOURCE, buf, sizeof( buf ) );
+        len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
-        printf( "%s\n", buf );
+        printf( "%s\n", buff );
     } else {
         printf( "(len=%d)\n", len );
     }
@@ -330,7 +330,7 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
 
 #if 0
 mod_handle      SymMod( sym_handle * );
-unsigned        SymName( sym_handle *, location_context *, symbol_name, char *name, unsigned max );
+unsigned        SymName( sym_handle *, location_context *, symbol_name, char *buff, unsigned buff_size );
 dip_status      SymType( sym_handle *, type_handle * );
 dip_status      SymValue( sym_handle *, location_context *, void * );
 dip_status      SymInfo( sym_handle *, location_context *, sym_info * );
@@ -378,7 +378,7 @@ dip_status      SymFreeAll();
 static walk_result Type2Callback( type_handle *th, void *_idx )
 {
     int             *idx = (int *)_idx;
-    char            buf[2048];
+    char            buff[2048];
     unsigned        len;
     symbol_type     tag;
     dip_type_info   tinfo;
@@ -389,11 +389,11 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
 /** @todo all this needs some serious work */
 
     /* type name. */
-    len = TypeName( th, 0, &tag, buf, sizeof( buf ) );
+    len = TypeName( th, 0, &tag, buff, sizeof( buff ) );
     if( len > 0 ) {
         printf( "tag=%d %-13s  name=%s\n"
                 "       ",
-                tag, GetTypeTag( tag ), buf );
+                tag, GetTypeTag( tag ), buff );
     }
 
     /* type info */
@@ -497,15 +497,15 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     mod_handle      mod       = CueMod( cue );
     cue_fileid      file_id   = CueFileId( cue );
     search_result   search_rc;
-    char            buf[1024];
+    char            buff[1024];
     int             len;
     dip_status      rc;
 
     /* filename */
-    buf[0] = '\0';
-    len = CueFile( cue, buf, sizeof( buf ) );
+    buff[0] = '\0';
+    len = CueFile( cue, buff, sizeof( buff ) );
     if( len > 0 ) {
-        printf( " %lx %s\n", file_id, buf );
+        printf( " %lx %s\n", file_id, buff );
     } else {
         printf( " %lx (len=%d)\n", file_id, len );
     }
@@ -658,7 +658,7 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
     return( Sym2Callback( info, sym, _idx ) );
 #else
     int             *idx = (int *)_idx;
-    char            buf[2048];
+    char            buff[2048];
     int             len;
     dip_status      rc;
     location_list   ll = {0};
@@ -703,16 +703,16 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
 
     /* finally, the name. */
     /* try get the name */
-    buf[0] = '\0';
-    len = SymName( sym, NULL, SN_DEMANGLED, buf, sizeof( buf ) );
+    buff[0] = '\0';
+    len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
     if( !len ) {
-        len = SymName( sym, NULL, SN_OBJECT, buf, sizeof( buf ) );
+        len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
     if( !len ) {
-        len = SymName( sym, NULL, SN_SOURCE, buf, sizeof( buf ) );
+        len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
-        printf( "%s\n", buf );
+        printf( "%s\n", buff );
     } else {
         printf( "(len=%d)\n", len );
     }
@@ -741,7 +741,7 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
 static walk_result ModCallback( mod_handle mh, void *_idx )
 {
     int         *idx = (int *)_idx;
-    char        buf[2048];
+    char        buff[2048];
     int         len;
     const char  *lang;
     address     addr = {0};
@@ -762,11 +762,11 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
 
     /* language and name */
     lang = ModSrcLang( mh );
-    len = ModName( mh, buf, sizeof(buf) );
+    len = ModName( mh, buff, sizeof(buff) );
     if( !len ) {
-        buf[0] = '\0';
+        buff[0] = '\0';
     }
-    printf( "%-4s  %s\n", lang, buf );
+    printf( "%-4s  %s\n", lang, buff );
 
     return( WR_CONTINUE );
 }
@@ -783,7 +783,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
 {
     walk_result     walkres;
     struct stat     s;
-    char            buf[1024];
+    char            buff[1024];
     int             len;
     int             i;
 
@@ -797,23 +797,23 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
             file);
     if( !stat( file, &s ) ) {
         struct tm   *ts;
-        char        buf[80];
+        char        buff[80];
 
         ts = gmtime( &s.st_mtime );
-        strftime( buf, sizeof( buf ), "%Y-%m-%d %H:%M:%S UCT", ts );
-        printf( "timestamp   = %s\n", buf );
+        strftime( buff, sizeof( buff ), "%Y-%m-%d %H:%M:%S UCT", ts );
+        printf( "timestamp   = %s\n", buff );
     }
     printf( "DIP         = %s\n", ImageDIP( mh ) );
 
 #if 0 /* crashes codeview, nothing on dwarf. */
-    buf[0] = '\0';
-    len = ModName( mh, buf, sizeof( buf ) );
+    buff[0] = '\0';
+    len = ModName( mh, buff, sizeof( buff ) );
     if( len ) {
-        printf( "module name = %s\n", buf );
+        printf( "module name = %s\n", buff );
     }
 #else
     len = len;
-    (void)buf;
+    (void)buff;
 #endif
     printf( "\n"
             "\n" );

@@ -52,17 +52,17 @@ walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
 }
 
 unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
-                        imp_mod_handle im, char *buff, unsigned max )
+                        imp_mod_handle im, char *buff, unsigned buff_size )
 {
     //TODO:
     /*
         Given the imp_mod_handle, copy the name of the module into 'buff'.
-        Do not copy more than 'max' - 1 characters into the buffer and
+        Do not copy more than 'buff_size' - 1 characters into the buffer and
         append a trailing '\0' character. Return the real length
         of the module name (not including the trailing '\0' character) even
         if you had to truncate it to fit it into the buffer. If something
         went wrong and you can't get the module name, call DCStatus and
-        return zero. NOTE: the client might pass in zero for 'max'. In that
+        return zero. NOTE: the client might pass in zero for 'buff_size'. In that
         case, just return the length of the module name and do not attempt
         to put anything into the buffer.
     */

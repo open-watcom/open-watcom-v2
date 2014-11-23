@@ -63,7 +63,7 @@ imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
 }
 
 unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned max )
+                        imp_cue_handle *ic, char *buff, unsigned buff_size )
 {
     ji_ptr      name;
     unsigned    len;
@@ -80,7 +80,7 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     }
     name = GetPointer( ic->cc + offsetof( ClassClass, source_name ) );
     len = GetString( name, &NameBuff[class_len], sizeof( NameBuff ) - class_len );
-    return( NameCopy( buff, NameBuff, max, len + class_len ) );
+    return( NameCopy( buff, NameBuff, buff_size, len + class_len ) );
 }
 
 cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,

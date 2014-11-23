@@ -783,14 +783,14 @@ const char *ImageDIP( mod_handle mh )
 /*
  * Module Information
  */
-unsigned ModName( mod_handle mh, char *result, unsigned max )
+unsigned ModName( mod_handle mh, char *buff, unsigned buff_size )
 {
     image_handle        *ih;
 
     ih = MH2IH( mh );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->mod_name( IMP_HDL( ih, image ), MH2IMH( mh ), result, max ) );
+    return( ih->dip->mod_name( IMP_HDL( ih, image ), MH2IMH( mh ), buff, buff_size ) );
 }
 
 char *ModSrcLang( mod_handle mh )
@@ -1051,7 +1051,7 @@ int TypeCmp( type_handle *th1, type_handle *th2 )
 }
 
 unsigned TypeName( type_handle *th, unsigned num, symbol_type *tag,
-                        char *buff, unsigned max )
+                        char *buff, unsigned buff_size )
 {
     image_handle        *ih;
 
@@ -1059,7 +1059,7 @@ unsigned TypeName( type_handle *th, unsigned num, symbol_type *tag,
     if( ih == NULL )
         return( 0 );
     return( ih->dip->type_name( IMP_HDL( ih, image ),
-                IMP_HDL( th, type ), num, tag, buff, max ) );
+                IMP_HDL( th, type ), num, tag, buff, buff_size ) );
 }
 
 /*
@@ -1235,14 +1235,14 @@ mod_handle CueMod( cue_handle *ch )
     return( MK_MH( ih->ii, ih->dip->cue_mod( IMP_HDL( ih, image ), IMP_HDL( ch, cue ) ) ) );
 }
 
-unsigned CueFile( cue_handle *ch, char *file, unsigned max )
+unsigned CueFile( cue_handle *ch, char *buff, unsigned buff_size )
 {
     image_handle        *ih;
 
     ih = II2IH( ch->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->cue_file( IMP_HDL( ih, image ), IMP_HDL( ch, cue ), file, max ) );
+    return( ih->dip->cue_file( IMP_HDL( ih, image ), IMP_HDL( ch, cue ), buff, buff_size ) );
 }
 
 cue_fileid CueFileId( cue_handle *ch )

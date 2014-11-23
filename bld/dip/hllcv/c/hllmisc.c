@@ -94,14 +94,14 @@ void DIGENTRY DIPImpCancel( void )
 /*
  * Creates a zero terminated string.
  */
-unsigned hllNameCopy( char *dst, const char *src, unsigned max, unsigned len )
+unsigned hllNameCopy( char *buff, const char *src, unsigned buff_size, unsigned len )
 {
-    if( max > 0 ) {
-        --max;
-        if( max > len )
-            max = len;
-        memcpy( dst, src, max );
-        dst[ max ] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, src, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }

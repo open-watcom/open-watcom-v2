@@ -1126,7 +1126,7 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
 
 static unsigned ImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned max )
+                        symbol_name sn, char *buff, unsigned buff_size )
 {
     const char          *name;
     unsigned            len;
@@ -1151,22 +1151,22 @@ static unsigned ImpSymName( imp_image_handle *ii,
         if( sr != SR_EXACT ) break;
         if( SymGetName( ii, &global_ish, &name, &len, NULL ) != DS_OK ) break;
         if( sn == SN_OBJECT ) {
-            return( NameCopy( buff, name, max, len ) );
+            return( NameCopy( buff, name, buff_size, len ) );
         }
         if( !__is_mangled( name, len ) ) return( 0 );
-        return( __demangle_l( name, len, buff, max ) );
+        return( __demangle_l( name, len, buff, buff_size ) );
     }
     if( sn == SN_DEMANGLED ) return( 0 );
     /* SN_SOURCE: */
     if( SymGetName( ii, is, &name, &len, NULL ) != DS_OK ) return( 0 );
-    return( NameCopy( buff, name, max, len ) );
+    return( NameCopy( buff, name, buff_size, len ) );
 }
 
 unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned max )
+                        symbol_name sn, char *buff, unsigned buff_size )
 {
-    return( ImpSymName( ii, is, lc, sn, buff, max ) );
+    return( ImpSymName( ii, is, lc, sn, buff, buff_size ) );
 }
 
 dip_status ImpSymType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *it )
@@ -1652,12 +1652,12 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     data.found = 0;
     data.li = *li;
     if( ss == SS_SCOPESYM ) {
-        char    *str;
+        char    *scope_name;
         scope_is = source;
         len = ImpSymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        str = __alloca( len + 1 );
-        ImpSymName( ii, scope_is, NULL, SN_SOURCE, str, len + 1 );
-        data.li.scope.start = str;
+        scope_name = __alloca( len + 1 );
+        ImpSymName( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
+        data.li.scope.start = scope_name;
         data.li.scope.len = len;
         ss = SS_MODULE;
         data.li.mod = IMH2MH( scope_is->im );

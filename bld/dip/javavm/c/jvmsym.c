@@ -382,7 +382,7 @@ static unsigned Demangle( char *name, unsigned len, ji_ptr sig_ptr )
 
 unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned max )
+                        symbol_name sn, char *buff, unsigned buff_size )
 {
     unsigned    len;
     ji_ptr      sig;
@@ -402,7 +402,7 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
         NormalizeClassName( NameBuff, len );
         break;
     }
-    return( NameCopy( buff, NameBuff, max, len ) );
+    return( NameCopy( buff, NameBuff, buff_size, len ) );
 }
 
 dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,

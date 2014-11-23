@@ -68,7 +68,7 @@ walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
 #define GBL_NAME "__global"
 
 unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
-                        imp_mod_handle im, char *buff, unsigned max )
+                        imp_mod_handle im, char *buff, unsigned buff_size )
 {
     cv_directory_entry  *cde;
     cv_sst_module       *mp;
@@ -78,7 +78,7 @@ unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
     unsigned            len;
 
     if( im == IMH_GBL ) {
-        return( NameCopy( buff, GBL_NAME, max, sizeof( GBL_NAME ) - 1 ) );
+        return( NameCopy( buff, GBL_NAME, buff_size, sizeof( GBL_NAME ) - 1 ) );
     }
     cde = FindDirEntry( ii, im, sstModule );
 
@@ -99,7 +99,7 @@ unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
         ++name;
         --len;
     }
-    return( NameCopy( buff, start, max, end - start ) );
+    return( NameCopy( buff, start, buff_size, end - start ) );
 }
 
 cs_compile *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )

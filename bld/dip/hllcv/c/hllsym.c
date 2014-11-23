@@ -1447,14 +1447,14 @@ imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
 }
 
 /*
- * Given the imp_sym_handle, copy the name of the symbol into 'buf'.
+ * Given the imp_sym_handle, copy the name of the symbol into 'buff'.
  *
- * Do not copy more than 'max' - 1 characters into the buffer and
+ * Do not copy more than 'buff_size' - 1 characters into the buffer and
  * append a trailing '\0' character. Return the real length
  * of the symbol name (not including the trailing '\0' character) even
  * if you had to truncate it to fit it into the buffer. If something
  * went wrong and you can't get the symbol name, call DCStatus and
- * return zero. NOTE: the client might pass in zero for 'max'. In that
+ * return zero. NOTE: the client might pass in zero for 'buff_size'. In that
  * case, just return the length of the symbol name and do not attempt
  * to put anything into the buffer.
  * The 'sn' parameter indicates what type of symbol name the client
@@ -1478,7 +1478,7 @@ imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
  */
 static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
                             location_context *lc, symbol_name sn,
-                            char *buf, unsigned max )
+                            char *buff, unsigned buff_size )
 {
     char        *name = NULL;
     unsigned    name_len;
@@ -1502,7 +1502,7 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
         /* demangle... */
         if( sn == SN_DEMANGLED && name != NULL ) {
             if( __is_mangled( name, name_len ) ) {
-                return( __demangle_l( name, name_len, buf, max ) );
+                return( __demangle_l( name, name_len, buff, buff_size ) );
             }
             return( 0 );
         }
@@ -1529,10 +1529,10 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
             if( sr != SR_EXACT ) break;
             if( hllSymGetName( ii, &global_ish, &name, &len, NULL ) != DS_OK ) break;
             if( sn == SN_OBJECT ) {
-                return( hllNameCopy( buff, name, max, len ) );
+                return( hllNameCopy( buff, name, buff_size, len ) );
             }
             if( !__is_mangled( name, len ) ) return( 0 );
-            return( __demangle_l( name, len, buf, max ) );
+            return( __demangle_l( name, len, buff, buff_size ) );
 */
         case SN_SOURCE:
             if( hllSymGetName( ii, is, &name, &name_len ) != DS_OK ) {
@@ -1551,7 +1551,7 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
     if( name == NULL ) {
         return( 0 );
     }
-    return( hllNameCopy( buf, name, max, name_len ) );
+    return( hllNameCopy( buff, name, buff_size, name_len ) );
 }
 
 /*
@@ -1559,9 +1559,9 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
  */
 unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                  location_context *lc, symbol_name sn,
-                                 char *buf, unsigned max )
+                                 char *buff, unsigned buff_size )
 {
-    return( hllSymName( ii, is, lc, sn, buf, max ) );
+    return( hllSymName( ii, is, lc, sn, buff, buff_size ) );
 }
 
 /*
@@ -1620,10 +1620,10 @@ dip_status DIGENTRY DIPImpSymLocation( imp_image_handle *ii, imp_sym_handle *is,
 
 
 /*
- * Copy the value of a constant symbol into 'buf'.
+ * Copy the value of a constant symbol into 'buff'.
  */
 dip_status hllSymValue( imp_image_handle *ii, imp_sym_handle *is,
-                        location_context *lc, void *buf )
+                        location_context *lc, void *buff )
 {
     void    *p;
 
@@ -1678,13 +1678,13 @@ dip_status hllSymValue( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 /*
- * Copy the value of a constant symbol into 'buf'. You can get the
+ * Copy the value of a constant symbol into 'buff'. You can get the
  * size required by doing a SymType followed by a TypeInfo.
  */
 dip_status DIGENTRY DIPImpSymValue( imp_image_handle *ii, imp_sym_handle *is,
-                                    location_context *lc, void *buf )
+                                    location_context *lc, void *buff )
 {
-    return( hllSymValue( ii, is, lc, buf ) );
+    return( hllSymValue( ii, is, lc, buff ) );
 }
 
 /*
@@ -2238,12 +2238,12 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     data.found = 0;
     data.li = *li;
     if( ss == SS_SCOPESYM ) {
-        char    *str;
+        char    *scope_name;
         scope_is = source;
         len = hllSymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        str = __alloca( len + 1 );
-        hllSymName( ii, scope_is, NULL, SN_SOURCE, str, len + 1 );
-        data.li.scope.start = str;
+        scope_name = __alloca( len + 1 );
+        hllSymName( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
+        data.li.scope.start = scope_name;
         data.li.scope.len = len;
         ss = SS_MODULE;
         data.li.mod = IMH2MH( scope_is->im );

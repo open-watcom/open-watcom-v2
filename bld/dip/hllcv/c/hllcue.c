@@ -647,14 +647,14 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
  * Get the filename of a cue.
  */
 unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                                 char *buf, unsigned max )
+                                 char *buff, unsigned buff_size )
 {
     unsigned_8  name_len;
     const char *file_name;
 
     if( VMGetU8( ii, ic->file, &name_len)
      && (file_name = VMBlock( ii, ic->file + 1, name_len ) ) != NULL ) {
-        return( hllNameCopy( buf, file_name, max, name_len ) );
+        return( hllNameCopy( buff, file_name, buff_size, name_len ) );
     }
 
     return( 0 );

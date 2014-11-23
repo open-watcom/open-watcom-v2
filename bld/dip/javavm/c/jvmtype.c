@@ -292,7 +292,7 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 }
 
 unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned max )
+                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
 {
     char        *p;
     unsigned    len;
@@ -303,7 +303,7 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     switch( it->kind ) {
     case JT_RAWNAME:
         NormalizeClassName( NameBuff, len );
-        return( NameCopy( buff, NameBuff, max, len ) );
+        return( NameCopy( buff, NameBuff, buff_size, len ) );
     case JT_WANTOBJECT:
     case JT_SIGNATURE:
         if( NameBuff[0] != SIGNATURE_CLASS ) return( 0 );
@@ -311,7 +311,7 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
         if( p == NULL ) p = &NameBuff[len];
         len = p - &NameBuff[1];
         NormalizeClassName( &NameBuff[1], len );
-        return( NameCopy( buff, &NameBuff[1], max, len ) );
+        return( NameCopy( buff, &NameBuff[1], buff_size, len ) );
     }
     return( 0 );
 }

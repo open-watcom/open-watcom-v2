@@ -110,7 +110,7 @@ void            LocationAdd( location_list *ll, long sbits );
 void            LocationTrunc( location_list *ll, unsigned bits );
 
 dip_status      GetData( ji_ptr off, void *p, unsigned len );
-unsigned        GetString( ji_ptr off, char *p, unsigned max );
+unsigned        GetString( ji_ptr off, char *buff, unsigned buff_size );
 ji_ptr          GetPointer( ji_ptr off );
 ji_ptr          GetClass( ji_ptr off );
 dip_status      GetLineCue( struct mad_jvm_findlinecue_acc *acc, struct mad_jvm_findline_ret *ret );
@@ -119,7 +119,7 @@ unsigned        GetU8( ji_ptr off );
 unsigned        GetU16( ji_ptr off );
 unsigned long   GetU32( ji_ptr off );
 
-unsigned        NameCopy( char *dst, const char *src, unsigned max, unsigned len );
+unsigned        NameCopy( char *buff, const char *src, unsigned buff_size, unsigned len );
 void            NormalizeClassName( char *p, unsigned len );
 
 

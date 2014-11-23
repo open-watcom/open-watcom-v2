@@ -376,8 +376,8 @@ static void GetNewRegValue( HWND hwnd )
     DLGPROC         fp;
     INT_PTR         reg_modified;
     RegModifyData   modify_data;
-    char            *discript;
-    unsigned        max_d;
+    const char      *descript;
+    unsigned        max_descript;
     mad_type_info   tinfo;
     mad_registers   *regs;
 
@@ -387,7 +387,7 @@ static void GetNewRegValue( HWND hwnd )
     owner = GetParent( owner );
 
     MADRegSetDisplayGetPiece( modify_data.reg_set, regs, GetDlgCtrlID( hwnd ),
-        &discript, &max_d, (const mad_reg_info **) (&( modify_data.curr_info )),
+        &descript, &max_descript, (const mad_reg_info **) (&( modify_data.curr_info )),
         &( modify_data.th ), &( modify_data.maxv ) );
     MADTypeInfo( modify_data.curr_info->type, &tinfo );
     modify_data.curr_value = alloca( tinfo.b.bits / BITS_PER_BYTE );

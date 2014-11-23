@@ -1171,7 +1171,7 @@ dip_status DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
 }
 
 unsigned SymHdl2CstName( imp_image_handle *ii, imp_sym_handle *is,
-                        char *name, unsigned max )
+                        char *buff, unsigned buff_size )
 {
     byte        *p;
     unsigned    len;
@@ -1184,26 +1184,27 @@ unsigned SymHdl2CstName( imp_image_handle *ii, imp_sym_handle *is,
     }
     p = Type->start + is->u.typ.t.offset;
     len = *p - is->name_off;
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( name, p + is->name_off, max );
-        name[max] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, p + is->name_off, buff_size );
+        buff[buff_size] = '\0';
     }
     PopLoad();
     return( len );
 }
 
 unsigned SymHdl2TypName( imp_image_handle *ii, imp_sym_handle *is,
-                        char *name, unsigned max )
+                        char *buff, unsigned buff_size )
 {
-    return( SymHdl2CstName( ii, is, name, max ) );
+    return( SymHdl2CstName( ii, is, buff, buff_size ) );
 }
 
 unsigned SymHdl2MbrName( imp_image_handle *ii, imp_sym_handle *is,
-                        char *name, unsigned max )
+                        char *buff, unsigned buff_size )
 {
-    return( SymHdl2CstName( ii, is, name, max ) );
+    return( SymHdl2CstName( ii, is, buff, buff_size ) );
 }
 
 dip_status SymHdl2CstValue( imp_image_handle *ii, imp_sym_handle *is, void *d )
@@ -1852,10 +1853,10 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 
 
 unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned max )
+                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
 {
     //NYI: stub implementation
-    ii = ii; it = it; num = num; tag = tag; buff = buff; max = max;
+    ii = ii; it = it; num = num; tag = tag; buff = buff; buff_size = buff_size;
     return( 0 );
 }
 

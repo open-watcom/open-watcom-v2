@@ -79,8 +79,8 @@ static void getRegSetInfo( mad_reg_set_data *data, mad_registers *regs, int *max
     unsigned        i;
     unsigned        maxd;
     unsigned        maxv;
-    char            *discript;
-    unsigned        temp_maxd;
+    const char      *descript;
+    unsigned        max_descript;
     const mad_reg_info    *rinfo;
     unsigned        temp_maxv;
     mad_type_handle mtype;
@@ -88,18 +88,18 @@ static void getRegSetInfo( mad_reg_set_data *data, mad_registers *regs, int *max
     maxd = 0;
     maxv = 0;
     for( i = 0;; i++ ) {
-        if( MADRegSetDisplayGetPiece( data, regs, i, &discript,
-            &temp_maxd, &rinfo, &mtype, &temp_maxv ) != MS_OK ) {
+        if( MADRegSetDisplayGetPiece( data, regs, i, &descript,
+            &max_descript, &rinfo, &mtype, &temp_maxv ) != MS_OK ) {
             break;
         }
         if( temp_maxv == 0 && rinfo != NULL ) {
             temp_maxv = getMADMaxFormatWidth( mtype );
         }
-        if( temp_maxd == 0 && discript != NULL ) {
-            temp_maxd = strlen( discript );
+        if( max_descript == 0 && descript != NULL ) {
+            max_descript = strlen( descript );
         }
-        if( maxd < temp_maxd )
-            maxd = temp_maxd;
+        if( maxd < max_descript )
+            maxd = max_descript;
         if( maxv < temp_maxv ) {
             maxv = temp_maxv;
         }
@@ -118,15 +118,15 @@ static void getMadString( mad_reg_set_data *data, mad_registers *regs, int i,
     const mad_reg_info    *rinfo;
     void            *value;
     unsigned        max_len;
-    char            *discript;
+    const char      *descript;
 
-    MADRegSetDisplayGetPiece( data, regs, i, &( discript ), &( create[i].maxd ), &rinfo, &mtype, &( create[i].length ) );
+    MADRegSetDisplayGetPiece( data, regs, i, &descript, &( create[i].maxd ), &rinfo, &mtype, &( create[i].length ) );
 
-    if ( create[i].maxd == 0 && discript != NULL ){
-        create[i].maxd = strlen( discript );
+    if ( create[i].maxd == 0 && descript != NULL ){
+        create[i].maxd = strlen( descript );
     }
-    if ( discript != NULL && IsEmptyString(discript) == FALSE ){
-        strcpy( create[i].buffer, discript );
+    if ( descript != NULL && IsEmptyString( descript ) == FALSE ){
+        strcpy( create[i].buffer, descript );
         create[i].maxd ++;
     } else {
         create[i].buffer[0] = '\0';
@@ -159,7 +159,7 @@ void FreeRegStringCreate( RegStringCreateData *reg_create, int num_regs )
     MemFree( reg_create );
 }
 
-BOOL IsEmptyString(char *s)
+BOOL IsEmptyString( const char *s )
 {
     while( *s ) {
         if( isalnum( *s ) ) {

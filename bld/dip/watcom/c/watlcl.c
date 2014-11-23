@@ -518,7 +518,7 @@ search_result LookupLclAddr( imp_image_handle *ii, address addr,
 
 
 unsigned SymHdl2LclName( imp_image_handle *ii, imp_sym_handle *is,
-                                char *name, unsigned max )
+                                char *buff, unsigned buff_size )
 {
     byte        *ptr;
     unsigned    len;
@@ -528,12 +528,13 @@ unsigned SymHdl2LclName( imp_image_handle *ii, imp_sym_handle *is,
     if( LoadLocalSyms( ii, is->im, &lclld ) != DS_OK ) return( 0 );
     ptr = local->start + is->u.lcl.offset;
     len = *ptr - is->name_off;
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
         ptr += is->name_off;
-        memcpy( name, ptr, max );
-        name[max] = '\0';
+        memcpy( buff, ptr, buff_size );
+        buff[buff_size] = '\0';
     }
     PopLoad( local );
     return( len );

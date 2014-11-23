@@ -175,7 +175,7 @@ static bool IsRelPathname( const char *name )
 
 
 unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned max )
+                        imp_cue_handle *ic, char *buff, unsigned buff_size )
 /********************************************************************/
 {
     char            *name;
@@ -217,8 +217,8 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     // stuff that in front of the file pathname, unless that is absolute
     dir_len = DRGetCompDirBuff( cu_handle, NULL, 0 );
     if( (dir_len > 1) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
-        if( max == 0 ) {
-            len = NameCopy( buff, name, max ) + dir_len;
+        if( buff_size == 0 ) {
+            len = NameCopy( buff, name, buff_size ) + dir_len;
         } else {
             dir_path = DCAlloc( dir_len );
             if( dir_path == NULL ) {
@@ -226,15 +226,15 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
                 return( 0 );
             }
             DRGetCompDirBuff( cu_handle, dir_path, dir_len );
-            len = NameCopy( buff, dir_path, max );
+            len = NameCopy( buff, dir_path, buff_size );
             DCFree( dir_path );
-            if( max > len + 1 ) {
+            if( buff_size > len + 1 ) {
                 len += NameCopy( buff + len, "/", 1 + 1 );
-                len += NameCopy( buff + len, name, max - len );
+                len += NameCopy( buff + len, name, buff_size - len );
             }
         }
     } else {
-        len = NameCopy( buff, name, max );
+        len = NameCopy( buff, name, buff_size );
     }
     DCFree( name );
     return( len );
