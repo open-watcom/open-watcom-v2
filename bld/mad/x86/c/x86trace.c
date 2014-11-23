@@ -358,7 +358,7 @@ void            DIGENTRY MITraceFini( mad_trace_data *td )
 #define JMP_SHORT        ((unsigned char)0XEB)
 #define BRK_POINT        ((unsigned char)0XCC)
 
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_lenp )
+mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
 {
     address     a;
     union {
@@ -366,12 +366,12 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
         addr32_ptr      a32;
         addr48_ptr      a48;
     }           data;
-    unsigned    buff_len;
+    unsigned    buff_size;
     unsigned    len;
 
-    buff_len = *buff_lenp;
-    *buff_lenp = 0;
-    if( buff_len > 0 )
+    buff_size = *buff_size_p;
+    *buff_size_p = 0;
+    if( buff_size > 0 )
         buff[0] = '\0';
     a = GetRegIP( mr );
     memset( &data, 0, sizeof( data ) );
@@ -395,18 +395,18 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
         if( MCReadMem( a, sizeof( data.b[0] ), &data.b[0] ) == 0 )
             break;
         a.mach.offset++;
-        if( len + 1 < buff_len )
+        if( len + 1 < buff_size )
             buff[len] = data.b[0];
         if( data.b[0] == '\0' )
             break;
         ++len;
     }
-    *buff_lenp = len;
-    if( buff_len > 0 ) {
-        --buff_len;
-        if( buff_len > len )
-            buff_len = len;
-        buff[buff_len] = '\0';
+    *buff_size_p = len;
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        buff[buff_size] = '\0';
     }
     return( MS_OK );
 }

@@ -168,15 +168,15 @@ void            DIGENTRY MITraceFini( mad_trace_data *td )
         to the true length of the message, even if the message did not all
         fit into the buffer provided.
 */
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_lenp )
+mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
 {
-    unsigned    buff_len;
+    unsigned    buff_size;
     char        data;
     address     a;
 
-    buff_len = *buff_lenp;
-    *buff_lenp = 0;
-    if( buff_len > 0 )
+    buff_size = *buff_size_p;
+    *buff_size_p = 0;
+    if( buff_size > 0 )
         buff[0] = '\0';
     a.mach.offset = mr->jvm.pc.offset;
     a.mach.segment = mr->jvm.pc.segment;

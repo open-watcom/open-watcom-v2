@@ -1075,7 +1075,7 @@ mod_handle SymMod( sym_handle *sh )
 
 //NYI: needs to do something for expression names
 unsigned SymName( sym_handle *sh, location_context *lc, symbol_name sn,
-                        char *name, unsigned max )
+                        char *buff, unsigned buff_size )
 {
     image_handle        *ih;
 
@@ -1083,7 +1083,7 @@ unsigned SymName( sym_handle *sh, location_context *lc, symbol_name sn,
     if( ih == NULL )
         return( 0 );
     return( ih->dip->sym_name( IMP_HDL( ih, image ),
-                IMP_HDL( sh, sym ), lc, sn, name, max ) );
+                IMP_HDL( sh, sym ), lc, sn, buff, buff_size ) );
 }
 
 dip_status SymType( sym_handle *sh, type_handle *th )

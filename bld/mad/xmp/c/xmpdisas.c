@@ -77,7 +77,7 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
 /*
         Convert a disassembled instruction/operands into strings.
 */
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_len )
+unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
 {
     //NYI:
     return( 0 );

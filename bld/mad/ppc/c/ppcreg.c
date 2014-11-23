@@ -163,21 +163,21 @@ static const mad_toggle_strings FPUToggleList[] =
 };
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
+    mad_status (*get_piece)( unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
 };
 
 static mad_status       CPUGetPiece( unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value );
 
 static mad_status       FPUGetPiece( unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value );
@@ -323,7 +323,7 @@ mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
     return( rsd->name );
 }
 
-unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_len )
+unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
 {
     char        str[80];
     unsigned    len;
@@ -350,12 +350,12 @@ unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff,
         str[0] = '\0';
     }
     len = strlen( str );
-    if( buff_len > 0 ) {
-        --buff_len;
-        if( buff_len > len )
-            buff_len = len;
-        memcpy( buff, str, buff_len );
-        buff[buff_len] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, str, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }
@@ -367,7 +367,7 @@ unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
     return( 0 );
 }
 
-static char     DescriptBuff[10];
+//static char     DescriptBuff[10];
 
 typedef struct {
     unsigned_16         first_reg_idx;
@@ -398,15 +398,16 @@ static int FindEntry( const reg_display_entry *tbl, unsigned piece,
 
 
 static mad_status       CPUGetPiece( unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
 {
     unsigned    idx;
 
-    if( !FindEntry( CPUNumeric, piece, &idx, disp_type ) ) return( MS_FAIL );
+    if( !FindEntry( CPUNumeric, piece, &idx, disp_type ) )
+        return( MS_FAIL );
     *reg = &RegList[idx].info;
     if( !(MADState->reg_state[CPU_REG_SET] & CT_EXTENDED) ) {
         if( *disp_type == PPCT_H_DWORD ) {
@@ -426,10 +427,9 @@ static mad_status       CPUGetPiece( unsigned piece,
             break;
         }
     }
-    *descript = DescriptBuff;
-    *max_descript = 0;
+    *descript_p = (*reg)->name;
+    *max_descript_p = 0;
     *max_value = 0;
-    strcpy( DescriptBuff, (*reg)->name );
     return( MS_OK );
 }
 
@@ -440,15 +440,17 @@ static const reg_display_entry FPUList[] = {
 };
 
 static mad_status       FPUGetPiece( unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
 {
     unsigned    idx;
 
-    if( !FindEntry( FPUList, piece, &idx, disp_type ) ) return( MS_FAIL );
+    if( !FindEntry( FPUList, piece, &idx, disp_type ) )
+        return( MS_FAIL );
+    *reg = &RegList[idx].info;
     if( MADState->reg_state[FPU_REG_SET] & FT_HEX ) {
         switch( *disp_type ) {
         case PPCT_H_DOUBLE:
@@ -456,26 +458,24 @@ static mad_status       FPUGetPiece( unsigned piece,
             break;
         }
     }
-    *descript = DescriptBuff;
-    *max_descript = 0;
+    *descript_p = (*reg)->name;
+    *max_descript_p = 0;
     *max_value = 0;
-    *reg = &RegList[idx].info;
-    strcpy( DescriptBuff, (*reg)->name );
     return( MS_OK );
 }
 
 mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 mad_registers const *mr,
                                 unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
 {
     mr = mr;
 
-    return( rsd->get_piece( piece, descript, max_descript, reg, disp_type, max_value ) );
+    return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
 }
 
 static const mad_modify_list    WordReg = { NULL, PPCT_H_WORD, MAD_MSTR_NIL };
@@ -647,7 +647,7 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
     }
 }
 
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, char *buff, unsigned buff_len )
+unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, char *buff, unsigned buff_size )
 {
     unsigned    idx;
     unsigned    len;
@@ -671,12 +671,12 @@ unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers con
     }
     p = RegList[idx].info.name;
     len = strlen( p );
-    if( buff_len > 0 ) {
-        --buff_len;
-        if( buff_len > len )
-            buff_len = len;
-        memcpy( buff, p, buff_len );
-        buff[buff_len] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, p, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }

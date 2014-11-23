@@ -205,25 +205,25 @@ mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af,
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_lenp )
+mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
 {
-    unsigned    buff_len;
+    unsigned    buff_size;
 
     radix = radix;
 
     switch( mti->b.handler_code ) {
     case X86T_UNKNOWN:
     case X86T_F10EMPTY:
-       buff_len = *buff_lenp;
-       if( buff_len > 0 ) {
-           --buff_len;
-           *buff_lenp = buff_len;
-           while( buff_len-- > 0 ) {
-               *buff++ = '?';
-           }
-           *buff = '\0';
-       }
-       return( MS_OK );
+        buff_size = *buff_size_p;
+        if( buff_size > 0 ) {
+            --buff_size;
+            *buff_size_p = buff_size;
+            while( buff_size-- > 0 ) {
+                *buff++ = '?';
+            }
+            *buff = '\0';
+        }
+        return( MS_OK );
     case X86T_PC:
     case X86T_RC:
     case X86T_IC:
@@ -257,7 +257,7 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
     case X86T_XMM_TITLE13:
     case X86T_XMM_TITLE14:
     case X86T_XMM_TITLE15:
-        *buff_lenp = RegDispType( mti->b.handler_code, data, buff, *buff_lenp );
+        *buff_size_p = RegDispType( mti->b.handler_code, data, buff, *buff_size_p );
         return( MS_OK );
     }
     return( MS_UNSUPPORTED );

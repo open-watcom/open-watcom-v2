@@ -929,7 +929,7 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
 }
 
 dip_status SymFindMatchingSym( imp_image_handle *ii,
-                char *name, unsigned len, unsigned idx, imp_sym_handle *is )
+                const char *name, unsigned len, unsigned idx, imp_sym_handle *is )
 {
     unsigned long       hash;
     search_result       sr;
@@ -937,14 +937,12 @@ dip_status SymFindMatchingSym( imp_image_handle *ii,
 
     data.idx = idx;
     hash = CalcHash( name, len );
-    sr = TableSearchForName( ii, 1, name, len, hash, is, MatchSym, &data,
-                sstStaticSym );
+    sr = TableSearchForName( ii, 1, name, len, hash, is, MatchSym, &data, sstStaticSym );
     switch( sr ) {
     case SR_FAIL:       return( DS_ERR|DS_FAIL );
     case SR_EXACT:      return( DS_OK );
     }
-    sr = TableSearchForName( ii, 1, name, len, hash, is, MatchSym, &data,
-                sstGlobalSym );
+    sr = TableSearchForName( ii, 1, name, len, hash, is, MatchSym, &data, sstGlobalSym );
     switch( sr ) {
     case SR_FAIL:       return( DS_ERR|DS_FAIL );
     case SR_EXACT:      return( DS_OK );

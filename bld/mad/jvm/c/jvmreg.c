@@ -69,14 +69,14 @@ static const mad_toggle_strings CPUToggleList[] =
 };
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
+    mad_status (*get_piece)( unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
 };
 
 static mad_status       CPUGetPiece( unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value );
@@ -140,9 +140,9 @@ mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
 /*
         Return the register set level string (8086, 186, 286, etc).
 */
-unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_len )
+unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
 {
-    if( buff_len > 0 )
+    if( buff_size > 0 )
         *buff = '\0';
     return( 0 );
 }
@@ -162,18 +162,19 @@ unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 
 
 static mad_status       CPUGetPiece( unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
 {
-    if( piece >= sizeof( RegList ) / sizeof( RegList[0] ) ) return( MS_FAIL );
-    *descript = (char *)RegList[piece].info.name;
-    *max_descript = strlen( *descript );
-    *disp_type = RegList[piece].info.type;
-    *max_value = 0;
+    if( piece >= sizeof( RegList ) / sizeof( RegList[0] ) )
+        return( MS_FAIL );
     *reg = &RegList[piece].info;
+    *descript_p = (*reg)->name;
+    *max_descript_p = strlen( *descript_p );
+    *disp_type = (*reg)->type;
+    *max_value = 0;
     return( MS_OK );
 }
 
@@ -183,14 +184,13 @@ static mad_status       CPUGetPiece( unsigned piece,
 mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 const mad_registers *mr,
                                 unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
 {
-    return( rsd->get_piece( piece, descript, max_descript, reg,
-                        disp_type, max_value ) );
+    return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
 }
 
 static const mad_modify_list    DWordReg = { NULL, JVMT_N32_PTR, MAD_MSTR_NIL };
@@ -374,7 +374,7 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
 /*
         Get the name of a special register.
 */
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_len )
+unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_size )
 {
     unsigned    idx;
     unsigned    len;
@@ -393,12 +393,12 @@ unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registe
     }
     p = RegList[idx].info.name;
     len = strlen( p );
-    if( buff_len > 0 ) {
-        --buff_len;
-        if( buff_len > len )
-            buff_len = len;
-        memcpy( buff, p, buff_len );
-        buff[buff_len] = '\0';
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        memcpy( buff, p, buff_size );
+        buff[buff_size] = '\0';
     }
     return( len );
 }

@@ -100,14 +100,14 @@ void GblSymFini( section_info *inf )
  * GblNamHash -- hash a symbol name
  */
 
-static int GblNameHash( const char *name, size_t namlen )
+static unsigned GblNameHash( const char *name, size_t name_len )
 {
-    int     rtrn;
+    unsigned    rtrn;
 
-    rtrn = namlen;
+    rtrn = name_len;
     rtrn += toupper( name[ 0 ] );
-    rtrn += toupper( name[ namlen / 2 ] );
-    rtrn += toupper( name[ namlen - 1 ] );
+    rtrn += toupper( name[ name_len / 2 ] );
+    rtrn += toupper( name[ name_len - 1 ] );
     return( rtrn & (SYM_TAB_SIZE-1) );
 }
 
@@ -200,7 +200,7 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     }
     for( blk = inf->gbl; blk != NULL; blk = blk->next ) {
         lnk_array = LINK( blk )->link;
-        lnk_off = LINK( blk )->hash[ GblNameHash( snam, snamlen ) ];
+        lnk_off = LINK( blk )->hash[GblNameHash( snam, snamlen )];
         while( lnk_off != HL_END ) {
             lnk = MAKE_LP( lnk_array, lnk_off );
             gbl = lnk->gbl;
@@ -370,23 +370,23 @@ static void Insert( info_block *inf, gbl_link *new )
     hash_link           *owner;
     gbl_info            *gbl;
     const char          *name;
-    char                *mangled_name;
-    size_t              len;
+    const char          *mangled_name;
+    size_t              name_len;
 
     gbl = new->gbl;
     /* only want to hash the source code portion of the name */
     mangled_name = GBL_NAME( gbl );
-    if( source_name( mangled_name, GBL_NAMELEN( gbl ), &name, &len )
+    if( source_name( mangled_name, GBL_NAMELEN( gbl ), &name, &name_len )
         == __MANGLED_DTOR ) {
         new->dtor = 1;
     } else {
         new->dtor = 0;
     }
     new->src_off = name - mangled_name;
-    new->src_len = len;
-    owner = &LINK(inf)->hash[ GblNameHash( name, len ) ];
+    new->src_len = name_len;
+    owner = &LINK( inf )->hash[GblNameHash( name, name_len )];
     new->hash_off = *owner;
-    *owner = (byte *)new - (byte *)LINK(inf)->link;
+    *owner = (byte *)new - (byte *)LINK( inf )->link;
 }
 
 
@@ -412,7 +412,7 @@ void AdjustSyms( section_info *inf )
     SET_GBLNAMEOFF( inf->ctl );
     for( ginf = inf->gbl; ginf != NULL; ginf = ginf->next ) {
         count = 0;
-        for( lnk = &LINK(ginf)->link[0]; lnk < LINK(ginf)->end; ++lnk ) {
+        for( lnk = &LINK( ginf )->link[0]; lnk < LINK( ginf )->end; ++lnk ) {
             gbl = lnk->gbl;
             if( inf->ctl->v2 ) gbl->mod = ModOff2Idx( inf, gbl->mod );
             gbl->mod += inf->mod_base_idx;

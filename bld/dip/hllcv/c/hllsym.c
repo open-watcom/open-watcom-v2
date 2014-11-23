@@ -1148,7 +1148,7 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
 
 
 dip_status hllSymFindMatchingSym( imp_image_handle *ii,
-                                  char *name, unsigned len, unsigned idx,
+                                  const char *name, unsigned len, unsigned idx,
                                   imp_sym_handle *is )
 {
 #if 0

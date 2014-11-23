@@ -162,9 +162,9 @@ mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af,
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_lenp )
+mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
 {
-    radix = radix; mti = mti; data = data; buff_lenp = buff_lenp; buff = buff;
+    radix = radix; mti = mti; data = data; buff_size_p = buff_size_p; buff = buff;
 
     return( MS_UNSUPPORTED );
 }

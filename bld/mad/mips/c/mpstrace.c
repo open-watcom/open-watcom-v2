@@ -178,7 +178,7 @@ void DIGENTRY MITraceFini( mad_trace_data *td )
 #define BRK_POINT       0x0000000D      // 'break' (with code of 0)
 
 
-mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_lenp )
+mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
 {
     address     a;
     struct {
@@ -188,12 +188,12 @@ mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *
         unsigned_8      name[8];
     }           data;
     char        ch;
-    unsigned    buff_len;
+    unsigned    buff_size;
     unsigned    len;
 
-    buff_len = *buff_lenp;
-    *buff_lenp = 0;
-    if( buff_len > 0 )
+    buff_size = *buff_size_p;
+    *buff_size_p = 0;
+    if( buff_size > 0 )
         buff[0] = '\0';
     memset( &a, 0, sizeof( a ) );
     a.mach.offset = mr->mips.pc.u._32[I64LO32];
@@ -211,19 +211,19 @@ mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *
     for( ;; ) {
         if( MCReadMem( a, sizeof( ch ), &ch ) == 0 )
             break;
-        if( len + 1 < buff_len )
+        if( len + 1 < buff_size )
             buff[len] = ch;
         if( ch == '\0' )
             break;
         a.mach.offset++;
         ++len;
     }
-    *buff_lenp = len;
-    if( buff_len > 0 ) {
-        --buff_len;
-        if( buff_len > len )
-            buff_len = len;
-        buff[buff_len] = '\0';
+    *buff_size_p = len;
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        buff[buff_size] = '\0';
     }
     return( MS_OK );
 }

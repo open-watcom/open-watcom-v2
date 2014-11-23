@@ -226,7 +226,7 @@ extern dip_status           hllTypeBase( imp_image_handle *, imp_type_handle *, 
 extern dip_status           hllTypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
 extern dip_status           hllSymFillIn( imp_image_handle *, imp_sym_handle *, unsigned_16 seg, virt_mem, unsigned len );
-extern dip_status           hllSymFindMatchingSym( imp_image_handle *, char *, unsigned, unsigned, imp_sym_handle * );
+extern dip_status           hllSymFindMatchingSym( imp_image_handle *, const char *, unsigned, unsigned, imp_sym_handle * );
 extern dip_status           hllSymLocation( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status           hllSymValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status           hllSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );

@@ -131,7 +131,7 @@ mad_status DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
     return( MS_OK );
 }
 
-unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_len )
+unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -169,19 +169,19 @@ unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsi
     nlen = strlen( nbuff );
     if( dp == MDP_ALL ) nbuff[ nlen++ ] = ' ';
     len = nlen + olen;
-    if( buff_len > 0 ) {
-        --buff_len;
-        if( buff_len > len )
-            buff_len = len;
-        if( nlen > buff_len )
-            nlen = buff_len;
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        if( nlen > buff_size )
+            nlen = buff_size;
         memcpy( buff, nbuff, nlen );
         buff += nlen;
-        buff_len -= nlen;
-        if( olen > buff_len )
-            olen = buff_len;
+        buff_size -= nlen;
+        if( olen > buff_size )
+            olen = buff_size;
         memcpy( buff, obuff, olen );
-        buff[buff_len] = '\0';
+        buff[buff_size] = '\0';
     }
     return( len );
 }
@@ -909,7 +909,7 @@ static int GetValueByteSize( unsigned long value )
     return( size );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, unsigned buff_len )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, unsigned buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;
@@ -937,17 +937,17 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             size = (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? 4 : 2;
         }
         MCTypeInfoForHost( MTK_INTEGER, size , &mti );
-        MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_len );
+        MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
         break;
     case DO_RELATIVE:
         val.mach.offset += op->value;
-        MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_N32_PTR : X86T_N16_PTR , MLK_CODE, buff, buff_len );
+        MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_N32_PTR : X86T_N16_PTR , MLK_CODE, buff, buff_size );
         break;
     case DO_ABSOLUTE:
         if( op->type & DO_EXTRA ) {
             val.mach.offset = op->value;
             val.mach.segment = op->extra;
-            MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_F32_PTR : X86T_F16_PTR , MLK_CODE, buff, buff_len );
+            MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_F32_PTR : X86T_F16_PTR , MLK_CODE, buff, buff_size );
             break;
         }
         /* fall through for LEA instruction */
@@ -956,7 +956,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             // direct memory address
             MCTypeInfoForHost( MTK_INTEGER, (ins->flags.u.x86 & DIF_X86_ADDR_LONG) ? 4 : 2 , &mti );
-            MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_len );
+            MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
         } else if( op->value == 0 ) {
             // don't output zero disp in indirect memory address
         } else {
@@ -964,12 +964,12 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             // indirect memory address with displacement
             if( op->value < 0 ) {
                 *(p++) = '-';
-                --buff_len;
+                --buff_size;
                 op->value = - op->value;
             }
             size = GetValueByteSize( op->value );
             MCTypeInfoForHost( MTK_INTEGER, size , &mti );
-            MCTypeToString( dd->radix, &mti, &op->value, p, &buff_len );
+            MCTypeToString( dd->radix, &mti, &op->value, p, &buff_size );
         }
         break;
     }

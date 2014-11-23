@@ -95,10 +95,10 @@ mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
 /*
         Return the register set level string (8086, 186, 286, etc).
 */
-unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_len )
+unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
 {
     //NYI:
-    if( buff_len > 0 )
+    if( buff_size > 0 )
         *buff = '\0';
     return( 0 );
 }
@@ -121,8 +121,8 @@ unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 const mad_registers *mr,
                                 unsigned piece,
-                                char **descript,
-                                unsigned *max_descript,
+                                const char **descript_p,
+                                unsigned *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
@@ -247,7 +247,7 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
 /*
         Get the name of a special register.
 */
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_len )
+unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_size )
 {
     //NYI:
     return( 0 );

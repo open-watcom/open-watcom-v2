@@ -103,7 +103,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_len )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;
@@ -114,13 +114,13 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, un
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
         val.mach.offset += ins->op[op].value;
-        MCAddrToString( val, JVMT_N32_PTR, MLK_CODE, buff, buff_len );
+        MCAddrToString( val, JVMT_N32_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
         MCTypeInfoForHost( MTK_INTEGER, -sizeof( ins->op[0].value ), &mti );
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_len );
+        MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_size );
         break;
     }
     return( strlen( buff ) );
@@ -185,7 +185,7 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
 /*
         Convert a disassembled instruction/operands into strings.
 */
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_len )
+unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -211,19 +211,19 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm
     nlen = strlen( nbuff );
     if( dp == MDP_ALL ) nbuff[ nlen++ ] = ' ';
     len = nlen + olen;
-    if( buff_len > 0 ) {
-        --buff_len;
-        if( buff_len > len )
-            buff_len = len;
-        if( nlen > buff_len )
-            nlen = buff_len;
+    if( buff_size > 0 ) {
+        --buff_size;
+        if( buff_size > len )
+            buff_size = len;
+        if( nlen > buff_size )
+            nlen = buff_size;
         memcpy( buff, nbuff, nlen );
         buff += nlen;
-        buff_len -= nlen;
-        if( olen > buff_len )
-            olen = buff_len;
+        buff_size -= nlen;
+        if( olen > buff_size )
+            olen = buff_size;
         memcpy( buff, obuff, olen );
-        buff[buff_len] = '\0';
+        buff[buff_size] = '\0';
     }
     return( len );
 }

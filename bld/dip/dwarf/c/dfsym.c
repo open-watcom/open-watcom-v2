@@ -1546,21 +1546,21 @@ static bool AHashItem( void *_find, dr_handle sym, char *name )
 
 typedef struct {
     const char  *p;
-    int         len;
+    unsigned    len;
 } strvi;
 
 typedef struct {
     char        *p;
-    int         len;
+    unsigned    len;
 } strvo;
 
-static int StrVCopy( strvo *dst, strvi *src )
-/*****************************************/
+static unsigned StrVCopy( strvo *dst, strvi *src )
+/************************************************/
 {
     /* Copy source until null char or source runs out
      * to dest until it runs out, return total length of source
      */
-    int     total;
+    unsigned    total;
 
     total = src->len;
     for( ;; ) {
@@ -1579,13 +1579,13 @@ static int StrVCopy( strvo *dst, strvi *src )
 }
 
 
-static int QualifiedName( char *buff, lookup_item  *li, int max )
-/***************************************************************/
+static unsigned QualifiedName( char *buff, lookup_item  *li, unsigned max )
+/*************************************************************************/
 {
-    int     total;
-    strvi   curr;
-    strvo   dst;
-    strvi   tmp;
+    unsigned    total;
+    strvi       curr;
+    strvo       dst;
+    strvi       tmp;
 
     curr.p   = li->scope.start;
     curr.len = li->scope.len;

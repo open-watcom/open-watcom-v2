@@ -38,14 +38,14 @@
 unsigned        DIGCLIENT MADCliReadMem( address, unsigned size, void *buff );
 unsigned        DIGCLIENT MADCliWriteMem( address, unsigned size, const void *buff );
 
-unsigned        DIGCLIENT MADCliString( mad_string, char *buff, unsigned buff_len );
+unsigned        DIGCLIENT MADCliString( mad_string, char *buff, unsigned buff_size );
 mad_status      DIGCLIENT MADCliAddString( mad_string, const char * );
-unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len );
+unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_size );
 
 void            DIGCLIENT MADCliNotify( mad_notify_type, const void * );
 
 
-mad_status      DIGCLIENT MADCliAddrToString( address, mad_type_handle, mad_label_kind, char *buff, unsigned max );
+mad_status      DIGCLIENT MADCliAddrToString( address, mad_type_handle, mad_label_kind, char *buff, unsigned buff_size );
 mad_status      DIGCLIENT MADCliMemExpr( const char *start, unsigned len, unsigned radix, address * );
 
 void            DIGCLIENT MADCliAddrSection( address * );
