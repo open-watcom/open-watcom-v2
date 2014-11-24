@@ -35,7 +35,6 @@
 #include "javadbg.h"
 #include <malloc.h>
 #include <string.h>
-#define MD_jvm
 #include "madregs.h"
 #include "javaname.h"
 #include "jvmerr.h"

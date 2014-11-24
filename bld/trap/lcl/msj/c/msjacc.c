@@ -34,7 +34,6 @@
 #include <malloc.h>
 #include <string.h>
 #include "trpimp.h"
-#define MD_jvm
 #include "madregs.h"
 #include "msjerr.h"
 #include "control.h"

@@ -34,8 +34,6 @@
 #include <string.h>
 #define INCL_BASE
 #include <os2.h>
-
-#define MD_x86
 #include "madregs.h"
 #include "splice.h"
 #include "cpuglob.h"

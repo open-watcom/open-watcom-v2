@@ -36,7 +36,6 @@
 #include "trperr.h"
 #include "packet.h"
 #include "jvmerr.h"
-#define MD_jvm
 #include "madregs.h"
 
 static char             LinkParm[256];

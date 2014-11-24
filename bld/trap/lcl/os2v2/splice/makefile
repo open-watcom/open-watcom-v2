@@ -20,6 +20,8 @@ sys_dll  = 1
 
 objs = splice.obj
 
+extra_cpp_flags = -DMD_x86
+
 extra_l_flags_dll = op oneautodata
 
 inc_dirs = -I"../h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
