@@ -150,6 +150,10 @@ system begin os2
     libpath %OWSRCDIR%/clib/library/os2.286/ml
     libpath %OWSRCDIR%/clib/library/os2.286/ml_mt
     libpath %OWSRCDIR%/clib/library/os2.286/ml_dll
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mm
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ml
     libpath %OWSRCDIR%/mathlib/library/msdos.287/ms
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mc
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
