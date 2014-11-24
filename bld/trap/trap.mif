@@ -115,6 +115,23 @@ sys_ppc_nt   = sys ntppc_dll initinstance &
             option description $(description) &
             op modname=$^&
 
+sys_jvm_nt   = sys nt_dll initinstance opt dosseg &
+            export TrapInit_.1 &
+            export TrapFini_.2 &
+            export TrapRequest_.3 &
+!ifneq reg_dll 1 # build regular DLL and don't try any funny stuff
+            export InfoFunction_.4 &
+            export InterruptProgram_.5 &
+            export Terminate_.6 &
+# remove reference to run-time code
+            alias __DLLstart_='_LibMain@12' &
+!endif
+            op modname=$^& &
+            option description $(description) &
+!ifneq release 0
+            $($(proj_name)_dllbase_nt_$(host_cpu)_$(name))
+!endif
+
 trap_ext_nt          = .dll
 trap_ext_os2_os2     = .dll
 trap_ext_os2_os2v2   = .d32

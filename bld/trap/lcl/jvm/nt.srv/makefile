@@ -3,8 +3,8 @@ host_cpu = 386
 host_os  = nt
 
 os = nt
+cpu = jvm
 srv = jvm
-cpu = x86
 name = jvmhelp
 which = SERVER
 
@@ -14,16 +14,16 @@ dall : .symbolic d wdebug.zip
 wall : .symbolic w wdebug.zip
     @%null
 
-wdebug.zip : JVMHelp.java
+sun/tools/debug :
+    md $@
+
+wdebug.zip : sun/tools/debug JVMHelp.java
     set classpath=.;$(javasdk)/lib/classes.zip
     $(javasdk)/bin/javac JVMHelp.java > JVMHelp.err
     type JVMHelp.err
-    !if not exist sun/nul md sun
-    !if not exist sun/tools/nul md sun/tools
-    !if not exist sun/tools/debug/nul md sun/tools/debug
     cp jvm*.class sun/tools/debug
     rm -f wdebug.zip
-    $(bld_bin)/zip -r -0 wdebug.zip sun/*.*
+    zip -r -0 wdebug.zip sun/*.*
 !ifdef lexusbld
     newer wdebug.zip $(lexlib_dir)/tools/system/wdebug.zip "^copy &f $#f > nul"
 !endif

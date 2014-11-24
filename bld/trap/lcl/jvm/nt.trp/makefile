@@ -3,7 +3,7 @@ host_cpu = 386
 host_os  = nt
 
 os = nt
-cpu = x86
+cpu = jvm
 srv = jvm
 which = TRAP
 
