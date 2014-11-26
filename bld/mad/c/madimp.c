@@ -166,7 +166,7 @@ void            MCFree( void *p )
     MadClient->MADCliFree( p );
 }
 
-dig_fhandle     MCOpen( char *name, dig_open mode )
+dig_fhandle     MCOpen( const char *name, dig_open mode )
 {
     return( MadClient->MADCliOpen( name, mode ) );
 }

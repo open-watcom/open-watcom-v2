@@ -303,7 +303,7 @@ void            *MCAlloc( size_t amount );
 void            *MCRealloc( void *p, size_t amount );
 void            MCFree( void *p );
 
-dig_fhandle     MCOpen( char *, dig_open );
+dig_fhandle     MCOpen( const char *, dig_open );
 unsigned long   MCSeek( dig_fhandle, unsigned long, dig_seek );
 unsigned        MCRead( dig_fhandle, void *, unsigned );
 void            MCClose( dig_fhandle );

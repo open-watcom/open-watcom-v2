@@ -265,13 +265,13 @@ dip_status      DCAssignLocation( location_list *, location_list *, unsigned lon
 dip_status      DCSameAddrSpace( address, address );
 void            DCAddrSection( address * );
 
-dig_fhandle     DCOpen( char *path, dig_open flags );
+dig_fhandle     DCOpen( const char *path, dig_open flags );
 unsigned long   DCSeek( dig_fhandle h, unsigned long p, dig_seek w );
 unsigned        DCRead( dig_fhandle h, void *b, unsigned s );
 dip_status      DCReadAt( dig_fhandle h, void *b, unsigned s, unsigned long p );
 unsigned        DCWrite( dig_fhandle h, void *b, unsigned s );
 void            DCClose( dig_fhandle h );
-void            DCRemove( char *path, dig_open flags );
+void            DCRemove( const char *path, dig_open flags );
 
 void            DCStatus( dip_status );
 
