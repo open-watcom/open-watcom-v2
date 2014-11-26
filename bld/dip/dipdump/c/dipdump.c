@@ -226,7 +226,7 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
 {
     int             *idx = (int *)_idx;
     char            buff[2048];
-    int             len;
+    unsigned        len;
     dip_status      rc;
     location_list   ll = {0};
     sym_info        sinfo;
@@ -498,7 +498,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     cue_fileid      file_id   = CueFileId( cue );
     search_result   search_rc;
     char            buff[1024];
-    int             len;
+    unsigned        len;
     dip_status      rc;
 
     /* filename */
@@ -659,7 +659,7 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
 #else
     int             *idx = (int *)_idx;
     char            buff[2048];
-    int             len;
+    unsigned        len;
     dip_status      rc;
     location_list   ll = {0};
     int             i;
@@ -742,7 +742,7 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
 {
     int         *idx = (int *)_idx;
     char        buff[2048];
-    int         len;
+    unsigned    len;
     const char  *lang;
     address     addr = {0};
 
@@ -784,7 +784,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
     walk_result     walkres;
     struct stat     s;
     char            buff[1024];
-    int             len;
+    unsigned        len;
     int             i;
 
     /*

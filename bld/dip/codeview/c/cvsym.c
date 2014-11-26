@@ -39,8 +39,7 @@
 #define SCOPE_CLASS_FLAG        0x80000000UL
 #define SCOPE_UNIQUE_MASK       (~SCOPE_CLASS_FLAG)
 
-dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is,
-                                virt_mem h )
+dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h )
 {
     s_all               *ref;
     cv_directory_entry  *cde;
@@ -71,7 +70,7 @@ dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                            const char **namep, unsigned *lenp, s_all **pp )
+                            const char **name_p, unsigned *name_len_p, s_all **pp )
 {
     s_all               *p;
     unsigned            skip = 0;
@@ -82,7 +81,7 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
         static const s_common dummy = { 0, S_LDATA16 };
 
         if( pp != NULL ) *pp = (s_all *)&dummy;
-        return( TypeSymGetName( ii, is, namep, lenp ) );
+        return( TypeSymGetName( ii, is, name_p, name_len_p ) );
     }
     p = VMBlock( ii, is->handle, is->len );
     if( p == NULL ) return( DS_FAIL );
@@ -157,8 +156,8 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
         Confused();
     }
     name = (const char *)p + skip;
-    *lenp = *(unsigned_8 *)name;
-    *namep = &name[1];
+    *name_len_p = *(unsigned_8 *)name;
+    *name_p = &name[1];
     return( DS_OK );
 }
 
@@ -841,7 +840,7 @@ static unsigned long CalcHash( const char *name, unsigned len )
 typedef search_result   SEARCH_CREATOR( imp_image_handle *, s_all *, imp_sym_handle *, void * );
 
 static search_result TableSearchForName( imp_image_handle *ii,
-                int case_sense, const char *li_name, unsigned li_len,
+                int case_sense, const char *name, unsigned name_len,
                 unsigned long hash, imp_sym_handle *is,
                 SEARCH_CREATOR *create, void *d, unsigned tbl_type )
 {
@@ -854,46 +853,58 @@ static search_result TableSearchForName( imp_image_handle *ii,
     virt_mem                    base;
     virt_mem                    sym_base;
     unsigned long               count;
-    const char                  *name;
-    unsigned                    name_len;
+    const char                  *curr;
+    unsigned                    curr_len;
     s_all                       *sp;
     search_result               sr;
 
     cde = FindDirEntry( ii, IMH_GBL, tbl_type );
-    if( cde == NULL ) return( SR_NONE );
+    if( cde == NULL )
+        return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
-    if( hdr == NULL ) return( SR_FAIL );
+    if( hdr == NULL )
+        return( SR_FAIL );
     switch( hdr->symhash ) {
     case 10:
         hash_base = cde->lfo + hdr->cbSymbol + sizeof( *hdr );
         p = VMBlock( ii, hash_base, sizeof( unsigned_16 ) );
-        if( p == NULL ) return( SR_FAIL );
+        if( p == NULL )
+            return( SR_FAIL );
         hash_buckets = *(unsigned_16 *)p;
         i = hash % hash_buckets;
         hash_base += 2 * sizeof( unsigned_16 );
         p = VMBlock( ii, hash_base + i * sizeof( unsigned_32 ), sizeof( unsigned_32 ) );
-        if( p == NULL ) return( SR_FAIL );
+        if( p == NULL )
+            return( SR_FAIL );
         sym_base = *(unsigned_32 *)p;
         base = hash_base + hash_buckets * sizeof( unsigned_32 );
         p = VMBlock( ii, base + i * sizeof( unsigned_32 ), sizeof( unsigned_32 ) );
-        if( p == NULL ) return( SR_FAIL );
+        if( p == NULL )
+            return( SR_FAIL );
         sym_base += base + hash_buckets * sizeof( unsigned_32 );
         sr = SR_NONE;
         for( count = *(unsigned_32 *)p; count != 0; sym_base += 2*sizeof(unsigned_32), --count ) {
             p = VMBlock( ii, sym_base, 2 * sizeof( unsigned_32 ) );
-            if( p == NULL ) return( SR_FAIL );
-            if( ((unsigned_32 *)p)[1] != hash ) continue;
+            if( p == NULL )
+                return( SR_FAIL );
+            if( ((unsigned_32 *)p)[1] != hash )
+                continue;
             if( SymFillIn( ii, is, *(unsigned_32 *)p + cde->lfo + sizeof( *hdr ) ) != DS_OK ) {
                 return( SR_FAIL );
             }
-            if( SymGetName( ii, is, &name, &name_len, &sp ) != DS_OK ) {
+            if( SymGetName( ii, is, &curr, &curr_len, &sp ) != DS_OK ) {
                 return( SR_FAIL );
             }
-            if( name_len != li_len ) continue;
+            if( curr_len != name_len )
+                continue;
             if( case_sense ) {
-                if( memcmp( li_name, name, name_len ) != 0 ) continue;
+                if( memcmp( name, curr, curr_len ) != 0 ) {
+                    continue;
+                }
             } else {
-                if( memicmp( li_name, name, name_len ) != 0 ) continue;
+                if( memicmp( name, curr, curr_len ) != 0 ) {
+                    continue;
+                }
             }
             /* Got one! */
             switch( create( ii, sp, is, d ) ) {
@@ -929,20 +940,20 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
 }
 
 dip_status SymFindMatchingSym( imp_image_handle *ii,
-                const char *name, unsigned len, unsigned idx, imp_sym_handle *is )
+                const char *name, unsigned name_len, unsigned idx, imp_sym_handle *is )
 {
     unsigned long       hash;
     search_result       sr;
     struct match_data   data;
 
     data.idx = idx;
-    hash = CalcHash( name, len );
-    sr = TableSearchForName( ii, 1, name, len, hash, is, MatchSym, &data, sstStaticSym );
+    hash = CalcHash( name, name_len );
+    sr = TableSearchForName( ii, 1, name, name_len, hash, is, MatchSym, &data, sstStaticSym );
     switch( sr ) {
     case SR_FAIL:       return( DS_ERR|DS_FAIL );
     case SR_EXACT:      return( DS_OK );
     }
-    sr = TableSearchForName( ii, 1, name, len, hash, is, MatchSym, &data, sstGlobalSym );
+    sr = TableSearchForName( ii, 1, name, name_len, hash, is, MatchSym, &data, sstGlobalSym );
     switch( sr ) {
     case SR_FAIL:       return( DS_ERR|DS_FAIL );
     case SR_EXACT:      return( DS_OK );

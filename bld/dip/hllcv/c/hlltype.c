@@ -56,7 +56,7 @@ extern dip_status hllTypeInfo( imp_image_handle *ii, imp_type_handle *it,
 
 
 static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
-                        char **namep, unsigned *lenp, lf_all **pp )
+                        const char **name_p, unsigned *name_len_p, lf_all **pp )
 {
     lf_all              *p;
     unsigned            skip;
@@ -64,8 +64,8 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
     numeric_leaf        dummy;
 
     if( base == 0 ) {
-        *namep = NULL;
-        *lenp = 0;
+        *name_p = NULL;
+        *name_len_p = 0;
         return( DS_OK );
     }
     /*
@@ -122,16 +122,16 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
         }
         break;
     default:
-        *namep = NULL;
-        *lenp = 0;
+        *name_p = NULL;
+        *name_len_p = 0;
         return( DS_OK );
     }
     /* A name can't be longer than 255 bytes */
     p = VMBlock( ii, base, 256 + skip );
     if( p == NULL ) return( DS_ERR | DS_FAIL );
     name = (char *)p + skip;
-    *lenp = *(unsigned_8 *)name;
-    *namep = &name[1];
+    *name_len_p = *(unsigned_8 *)name;
+    *name_p = &name[1];
     if( pp != NULL ) *pp = p;
     return( DS_OK );
 }
@@ -252,9 +252,9 @@ dip_status hllTypeMemberFuncInfo( imp_image_handle *ii, imp_type_handle *func_it
 }
 
 dip_status hllTypeSymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                              char **namep, unsigned *lenp )
+                              const char **name_p, unsigned *name_len_p )
 {
-    return( TypeVMGetName( ii, is->handle, namep, lenp, NULL ) );
+    return( TypeVMGetName( ii, is->handle, name_p, name_len_p, NULL ) );
 }
 
 
@@ -778,7 +778,7 @@ static dip_status VFuncLocation( imp_image_handle *ii, imp_sym_handle *is,
 static dip_status MatchSymLocation( imp_image_handle *ii, imp_sym_handle *is,
                     unsigned idx, location_context *lc, location_list *ll )
 {
-    char                *name;
+    const char          *name;
     unsigned            len;
     char                *buff;
     char                *start;
@@ -1133,7 +1133,7 @@ search_result hllTypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     virt_mem            type;
     virt_mem            array_vm;
     unsigned_32         *array_p;
-    char                *name;
+    const char          *name;
     unsigned            len;
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
@@ -1207,7 +1207,7 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
                         pending_type_list *list, lf_all *p, void *d )
 {
     struct search_data  *sd = d;
-    char                *name;
+    const char          *name;
     unsigned            name_len;
     imp_sym_handle      *is;
     search_result       sr;
@@ -2077,7 +2077,7 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
 {
     lf_all              *p;
-    char                *name;
+    const char          *name;
     unsigned            len;
     imp_type_handle     real_it;
 

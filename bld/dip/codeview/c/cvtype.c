@@ -44,7 +44,7 @@ extern dip_status ImpTypeInfo( imp_image_handle *ii,
 
 
 static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
-                        const char **namep, unsigned *lenp, lf_all **pp )
+                        const char **name_p, unsigned *name_len_p, lf_all **pp )
 {
     lf_all              *p;
     unsigned            skip;
@@ -52,8 +52,8 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
     numeric_leaf        dummy;
 
     if( base == 0 ) {
-        *namep = NULL;
-        *lenp = 0;
+        *name_p = NULL;
+        *name_len_p = 0;
         return( DS_OK );
     }
     /*
@@ -110,16 +110,16 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
         }
         break;
     default:
-        *namep = NULL;
-        *lenp = 0;
+        *name_p = NULL;
+        *name_len_p = 0;
         return( DS_OK );
     }
     /* A name can't be longer than 255 bytes */
     p = VMBlock( ii, base, 256 + skip );
     if( p == NULL ) return( DS_ERR|DS_FAIL );
     name = (char *)p + skip;
-    *lenp = *(unsigned_8 *)name;
-    *namep = &name[1];
+    *name_len_p = *(unsigned_8 *)name;
+    *name_p = &name[1];
     if( pp != NULL ) *pp = p;
     return( DS_OK );
 }
@@ -240,9 +240,9 @@ dip_status TypeMemberFuncInfo( imp_image_handle *ii, imp_type_handle *func_it,
 }
 
 dip_status TypeSymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                        const char **namep, unsigned *lenp )
+                        const char **name_p, unsigned *name_len_p )
 {
-    return( TypeVMGetName( ii, is->handle, namep, lenp, NULL ) );
+    return( TypeVMGetName( ii, is->handle, name_p, name_len_p, NULL ) );
 }
 
 

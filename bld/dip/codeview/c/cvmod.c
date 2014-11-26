@@ -72,9 +72,9 @@ unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
 {
     cv_directory_entry  *cde;
     cv_sst_module       *mp;
-    char                *name;
-    char                *start;
-    char                *end;
+    const char          *name;
+    const char          *start;
+    const char          *end;
     unsigned            len;
 
     if( im == IMH_GBL ) {
@@ -84,18 +84,18 @@ unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
 
     mp = VMBlock( ii, cde->lfo, cde->cb );
     if( mp == NULL ) return( 0 );
-    name = (char *)&mp->SegInfo[ mp->cSeg ];
+    name = (char *)&mp->SegInfo[mp->cSeg];
     len = *(unsigned_8 *)name;
     ++name;
     start = name;
     end = name + len;
-    for( ;; ) {
-        if( len == 0 ) break;
+    for( ; len != 0; ) {
         if( IS_PATH_CHAR( *name ) ) {
             start = name + 1;
             end = name + len;
         }
-        if( *name == EXT_CHAR ) end = name;
+        if( *name == EXT_CHAR )
+            end = name;
         ++name;
         --len;
     }

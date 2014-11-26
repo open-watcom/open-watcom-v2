@@ -333,7 +333,7 @@ static bool AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
 // Add any global symbol to the hash
 {
     imp_image_handle    *ii = _ii;
-//    int                 len;
+//    unsigned            len;
     char                buff[256];
 
     cont = cont;

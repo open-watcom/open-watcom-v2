@@ -74,12 +74,12 @@ dip_status cv3SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h, u
  * Get the name in a SSR record.
  */
 static dip_status hllSymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                                 char **namep, unsigned *lenp )
+                                 const char **name_p, unsigned *name_len_p )
 {
     hll_ssr_all        *ssr;
 
     if( is->containing_type != 0 ) {
-        return( hllTypeSymGetName( ii, is, namep, lenp ) );
+        return( hllTypeSymGetName( ii, is, name_p, name_len_p ) );
     }
 
     ssr = VMBlock( ii, is->handle, is->len );
@@ -88,99 +88,99 @@ static dip_status hllSymGetName( imp_image_handle *ii, imp_sym_handle *is,
     }
     switch( ssr->common.code ) {
     case HLL_SSR_BEGIN:
-        *lenp = ssr->begin.name_len;
-        *namep = ssr->begin.name;
+        *name_len_p = ssr->begin.name_len;
+        *name_p = ssr->begin.name;
         break;
     case HLL_SSR_PROC:
     case HLL_SSR_ENTRY:
-        *lenp = ssr->proc.name_len;
-        *namep = ssr->proc.name;
+        *name_len_p = ssr->proc.name_len;
+        *name_p = ssr->proc.name;
         break;
     case HLL_SSR_PROC2:
     case HLL_SSR_MEM_FUNC:
-        *lenp = ssr->proc.name_len;
-        *namep = ssr->proc.name;
-        if( *lenp & 0x80 ) {
-            *lenp = ((*lenp & 0x7f) << 8) | *(unsigned_8 *)namep++;
+        *name_len_p = ssr->proc.name_len;
+        *name_p = ssr->proc.name;
+        if( *name_len_p & 0x80 ) {
+            *name_len_p = ((*name_len_p & 0x7f) << 8) | *(unsigned_8 *)name_p++;
         }
         break;
     case HLL_SSR_CODE_LABEL:
-        *lenp = ssr->code_lable.name_len;
-        *namep = ssr->code_lable.name;
+        *name_len_p = ssr->code_lable.name_len;
+        *name_p = ssr->code_lable.name;
         break;
     case HLL_SSR_PUBLIC:
-        *lenp = ssr->public_.name_len;
-        *namep = ssr->public_.name;
+        *name_len_p = ssr->public_.name_len;
+        *name_p = ssr->public_.name;
         break;
     case HLL_SSR_STATIC:
-        *lenp = ssr->static_.name_len;
-        *namep = ssr->static_.name;
+        *name_len_p = ssr->static_.name_len;
+        *name_p = ssr->static_.name;
         break;
     case HLL_SSR_STATIC2:
-        *lenp = ssr->static2.name_len;
-        *namep = ssr->static2.name;
-        if( *lenp & 0x80 ) {
-            *lenp = ((*lenp & 0x7f) << 8) | *(unsigned_8 *)namep++;
+        *name_len_p = ssr->static2.name_len;
+        *name_p = ssr->static2.name;
+        if( *name_len_p & 0x80 ) {
+            *name_len_p = ((*name_len_p & 0x7f) << 8) | *(unsigned_8 *)name_p++;
         }
         break;
     case HLL_SSR_STATIC_SCOPED:
-        *lenp = ssr->static_scoped.name_len;
-        *namep = ssr->static_scoped.name;
+        *name_len_p = ssr->static_scoped.name_len;
+        *name_p = ssr->static_scoped.name;
         break;
     case HLL_SSR_TLS:
-        *lenp = ssr->tls.name_len;
-        *namep = ssr->tls.name;
+        *name_len_p = ssr->tls.name_len;
+        *name_p = ssr->tls.name;
         break;
     case HLL_SSR_AUTO:
-        *lenp = ssr->auto_.name_len;
-        *namep = ssr->auto_.name;
+        *name_len_p = ssr->auto_.name_len;
+        *name_p = ssr->auto_.name;
         break;
     case HLL_SSR_AUTO_SCOPED:
-        *lenp = ssr->auto_scoped.name_len;
-        *namep = ssr->auto_scoped.name;
+        *name_len_p = ssr->auto_scoped.name_len;
+        *name_p = ssr->auto_scoped.name;
         break;
     case HLL_SSR_REG:
-        *lenp = ssr->reg.name_len;
-        *namep = ssr->reg.name;
+        *name_len_p = ssr->reg.name_len;
+        *name_p = ssr->reg.name;
         break;
     case HLL_SSR_REG_RELATIVE:
-        *lenp = ssr->reg_relative.name_len;
-        *namep = ssr->reg_relative.name;
+        *name_len_p = ssr->reg_relative.name_len;
+        *name_p = ssr->reg_relative.name;
         break;
     case HLL_SSR_TAG:
-        *lenp = ssr->tag.name_len;
-        *namep = ssr->tag.name;
+        *name_len_p = ssr->tag.name_len;
+        *name_p = ssr->tag.name;
         break;
     case HLL_SSR_TAG2:
-        *lenp = ssr->tag2.name_len;
-        *namep = ssr->tag2.name;
-        if( *lenp & 0x80 ) {
-            *lenp = ((*lenp & 0x7f) << 8) | *(unsigned_8 *)namep++;
+        *name_len_p = ssr->tag2.name_len;
+        *name_p = ssr->tag2.name;
+        if( *name_len_p & 0x80 ) {
+            *name_len_p = ((*name_len_p & 0x7f) << 8) | *(unsigned_8 *)name_p++;
         }
         break;
     case HLL_SSR_TYPEDEF:
-        *lenp = ssr->typedef_.name_len;
-        *namep = ssr->typedef_.name;
+        *name_len_p = ssr->typedef_.name_len;
+        *name_p = ssr->typedef_.name;
         break;
     case HLL_SSR_MEMBER:
-        *lenp = ssr->member.name_len;
-        *namep = ssr->member.name;
+        *name_len_p = ssr->member.name_len;
+        *name_p = ssr->member.name;
         break;
     case HLL_SSR_BASED:
-        *lenp = ssr->based.name_len;
-        *namep = ssr->based.name;
+        *name_len_p = ssr->based.name_len;
+        *name_p = ssr->based.name;
         break;
     case HLL_SSR_TABLE:
-        *lenp = ssr->table.name_len;
-        *namep = ssr->table.name;
+        *name_len_p = ssr->table.name_len;
+        *name_p = ssr->table.name;
         break;
     case HLL_SSR_MAP:
-        *lenp = ssr->map.name_len;
-        *namep = ssr->map.name;
+        *name_len_p = ssr->map.name_len;
+        *name_p = ssr->map.name;
         break;
     case HLL_SSR_BASED_MEMBER:
-        *lenp = ssr->based_member.name_len;
-        *namep = ssr->based_member.name;
+        *name_len_p = ssr->based_member.name_len;
+        *name_p = ssr->based_member.name;
         break;
 
     case HLL_SSR_ARRAY_SYM:
@@ -191,8 +191,8 @@ static dip_status hllSymGetName( imp_image_handle *ii, imp_sym_handle *is,
     case HLL_SSR_CU_INFO:
     case HLL_SSR_CU_FUNC_NUM:
     case HLL_SSR_END:
-        *lenp = 0;
-        *namep = "";
+        *name_len_p = 0;
+        *name_p = "";
         break;
     default:
         hllConfused();
@@ -1029,7 +1029,7 @@ next_seg:
     }
 }
 
-static unsigned long CalcHash( char *name, unsigned len )
+static unsigned long CalcHash( const char *name, unsigned len )
 {
     unsigned_32         end;
     unsigned_32         sum;
@@ -1057,7 +1057,7 @@ static unsigned long CalcHash( char *name, unsigned len )
 typedef search_result   SEARCH_CREATOR( imp_image_handle *, s_all *, imp_sym_handle *, void * );
 
 static search_result TableSearchForName( imp_image_handle *ii,
-                int case_sense, char *li_name, unsigned li_len,
+                int case_sense, const char *name, unsigned name_len,
                 unsigned long hash, imp_sym_handle *is,
                 SEARCH_CREATOR *create, void *d, unsigned tbl_type )
 {
@@ -1070,8 +1070,8 @@ static search_result TableSearchForName( imp_image_handle *ii,
     virt_mem                    base;
     virt_mem                    sym_base;
     unsigned long               count;
-    char                        *name;
-    unsigned                    name_len;
+    const char                  *curr;
+    unsigned                    curr_len;
     s_all                       *sp;
     search_result               sr;
 
@@ -1102,14 +1102,14 @@ static search_result TableSearchForName( imp_image_handle *ii,
             if( hllSymFillIn( ii, is, *(unsigned_32 *)p + cde->lfo + sizeof( *hdr ) ) != DS_OK ) {
                 return( SR_FAIL );
             }
-            if( hllSymGetName( ii, is, &name, &name_len, &sp ) != DS_OK ) {
+            if( hllSymGetName( ii, is, &curr, &curr_len, &sp ) != DS_OK ) {
                 return( SR_FAIL );
             }
-            if( name_len != li_len ) continue;
+            if( curr_len != name_len ) continue;
             if( case_sense ) {
-                if( memcmp( li_name, name, name_len ) != 0 ) continue;
+                if( memcmp( name, curr, curr_len ) != 0 ) continue;
             } else {
-                if( memicmp( li_name, name, name_len ) != 0 ) continue;
+                if( memicmp( name, curr, curr_len ) != 0 ) continue;
             }
             /* Got one! */
             switch( create( ii, sp, is, d ) ) {
@@ -1480,7 +1480,7 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
                             location_context *lc, symbol_name sn,
                             char *buff, unsigned buff_size )
 {
-    char        *name = NULL;
+    const char  *name = NULL;
     unsigned    name_len;
 
     if( is->type == HLL_SYM_TYPE_PUB ) {
@@ -2065,7 +2065,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
                                  location_list *ll )
 {
 #if 0
-    char                *name;
+    const char          *name;
     unsigned            len;
     dip_status          ds;
     virt_mem            check;
@@ -2161,7 +2161,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
 {
     struct search_data  *sd = d;
     lookup_item         *li;
-    char                *name;
+    const char          *name;
     unsigned            len;
     imp_sym_handle      *new;
     s_all               *p;

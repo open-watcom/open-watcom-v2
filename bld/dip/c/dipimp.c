@@ -213,7 +213,7 @@ void DCAddrSection( address *a )
     Client->addr_section( a );
 }
 
-dig_fhandle DCOpen( char *path, dig_open flags )
+dig_fhandle DCOpen( const char *path, dig_open flags )
 {
     return( Client->open( path, flags ) );
 }
@@ -249,7 +249,7 @@ void DCClose( dig_fhandle h )
     Client->close( h );
 }
 
-void DCRemove( char *path, dig_open flags )
+void DCRemove( const char *path, dig_open flags )
 {
     Client->remove( path, flags );
 }
@@ -285,7 +285,7 @@ dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it,
 typedef void (DIGENTRY INTER_FUNC)();
 
 #ifdef DEBUGGING
-void Say( char *buff )
+void Say( const char *buff )
 {
     MessageBox( (HWND)NULL, buff, "IMP", MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }

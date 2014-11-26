@@ -571,7 +571,7 @@ static bool ARet( dr_handle var, int index, void *_var_ptr )
     dr_handle   *var_ptr = _var_ptr;
     char        name[sizeof( ".return" )];
     bool        cont;
-    int         len;
+    unsigned    len;
 
     index = index;
     cont = TRUE;
@@ -1409,6 +1409,7 @@ static walk_result  WalkMyLDSyms( imp_image_handle *ii, imp_mod_handle im, void 
 {
     blk_wlk     *df = _df;
 
+    ii=ii;
     df->wlk.com.im = im;
     WalkModSymList( df, &ASym, im );
     return( df->wlk.wr );
@@ -1523,12 +1524,12 @@ typedef struct {
     imp_image_handle    *ii;
     void                *d;
     int                 (*compare)(char const *, char const *);
-    char                *name;
+    const char          *name;
     dr_handle           sym;
 } hash_look_data;
 
-static bool AHashItem( void *_find, dr_handle sym, char *name )
-/*************************************************************/
+static bool AHashItem( void *_find, dr_handle sym, const char *name )
+/*******************************************************************/
 {
     hash_look_data  *find = _find;
     imp_sym_handle  *is;
@@ -1631,8 +1632,10 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     if( len <= sizeof( buff ) ) {
         data.name = buff;
     } else {
-        data.name = DCAlloc( len + 1 );
-        len = QualifiedName( li, data.name, len + 1 );
+        char    *str;
+        str = DCAlloc( len + 1 );
+        len = QualifiedName( li, str, len + 1 );
+        data.name = str;
     }
     data.d  = d;
     wlk.fn = AHashItem;
@@ -1644,7 +1647,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
         sr = SR_EXACT;
     }
     if( data.name != buff ) {
-        DCFree( data.name );
+        DCFree( (void *)data.name );
     }
     return( sr );
 }

@@ -42,26 +42,27 @@
 #define EXT_CHAR        '.'
 #define MAX_PATH        256
 
-static void GetModName( char *path, char *buff )
-/**********************************************/
+static void GetModName( const char *path, char *buff )
+/****************************************************/
 /* find the module name from the path         */
 /**********************************************/
 {
-    char    *start;
-    char    *end;
-    int     ext_found;
+    const char  *start;
+    const char  *end;
+    int         ext_found;
 
     start = end = path;
     ext_found = FALSE;
     while( *path != '\0' ) {
         if( IS_PATH_CHAR( *path ) ) {
-            start = path+1;
+            start = path + 1;
         } else if( *path == EXT_CHAR ) {
             ext_found = TRUE;
             end = path;
         } else if( *path == '(' ) {
-            start = path+1;
-            while( *path != ')' )++path;
+            start = path + 1;
+            while( *path != ')' )
+                ++path;
             end = path;
             ext_found = TRUE;
             goto do_copy;
@@ -73,9 +74,7 @@ static void GetModName( char *path, char *buff )
     }
 do_copy:
     while( start < end ) {
-        *buff = *start;
-        ++start;
-        ++buff;
+        *buff++ = *start++;
     }
     *buff = '\0';
 }

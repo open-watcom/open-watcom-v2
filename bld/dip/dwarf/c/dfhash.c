@@ -55,7 +55,7 @@ struct str_blk {
 typedef struct str_ctl  str_ctl;
 struct str_ctl {
     str_blk     *blks;          // stack of blocks
-    int         rem;            // amount left in blk
+    unsigned    rem;            // amount left in blk
     char        *strs;          // pointer in
 };
 
@@ -88,14 +88,14 @@ static void StrFini( str_ctl *ctl )
 }
 
 
-static char *StrAlloc( str_ctl *ctl, int len )
-/********************************************/
+static char *StrAlloc( str_ctl *ctl, unsigned len )
+/*************************************************/
 {
     char    *ptr;
 
     if( ctl->rem < len ) {
         str_blk     *new;
-        int         size;
+        unsigned    size;
 
         size =  NAME_STRBLK;
         if( size < len ) {
@@ -201,8 +201,8 @@ extern void FiniHashName( name_ctl *ctl )
 }
 
 
-extern void AddHashName( name_ctl *ctl, char *name, dr_handle sym )
-/*****************************************************************/
+extern void AddHashName( name_ctl *ctl, const char *name, dr_handle sym )
+/***********************************************************************/
 // Add name, sym to foray
 {
     uint_32     key;
@@ -210,7 +210,7 @@ extern void AddHashName( name_ctl *ctl, char *name, dr_handle sym )
     uint_16     rem;
     name_blk    *blk;
     name_entry  *curr;
-    int         len;
+    unsigned    len;
 
     len = strlen( name );
     key = elf_hash( name );

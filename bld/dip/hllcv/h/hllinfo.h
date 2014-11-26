@@ -209,7 +209,7 @@ extern bool                 hllIsSegExecutable( imp_image_handle *, unsigned );
 
 extern search_result        hllAddrMod( imp_image_handle *, address, imp_mod_handle * );
 
-extern dip_status           hllTypeSymGetName( imp_image_handle *, imp_sym_handle *, char **, unsigned * );
+extern dip_status           hllTypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, unsigned * );
 extern dip_status           hllTypeSymGetType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 extern dip_status           hllTypeSymGetAddr( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status           hllTypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
