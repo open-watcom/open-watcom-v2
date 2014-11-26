@@ -138,7 +138,7 @@ void FinishDebugging( void )
 /*
  * TrapInit - debugger initialization entry point
  */
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
 
@@ -150,12 +150,12 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     Out(( OUT_INIT,"TrapInit entered, debugger task=%04x", DebuggerTask ));
 
 #ifdef DEBUG
-    if( *parm == '[' ) {
+    if( *parms == '[' ) {
         unsigned                bit;
         extern unsigned DbgFlags;
-        ++parm;
-        while( *parm && *parm != ']' ) {
-            switch( *parm ) {
+        ++parms;
+        while( *parms && *parms != ']' ) {
+            switch( *parms ) {
             case 'a':
                 bit = -1;
                 break;
@@ -193,21 +193,21 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
                 bit = OUT_TEMP;
                 break;
             }
-            ++parm;
-            if( *parm == '~' ) {
+            ++parms;
+            if( *parms == '~' ) {
                 DbgFlags &= ~bit;
-                ++parm;
+                ++parms;
             } else {
                 DbgFlags |= bit;
             }
         }
-        if( *parm ) ++parm;
+        if( *parms ) ++parms;
     }
 #endif
-    if( parm[0] == 'c' && parm[1] == 'g' && parm[2] == 'e' ) {
+    if( parms[0] == 'c' && parms[1] == 'g' && parms[2] == 'e' ) {
         DebugDebugeeOnly = TRUE;
     }
-    if( parm[0] == '3' && parm[1] == '2' ) {
+    if( parms[0] == '3' && parms[1] == '2' ) {
         StopOnExtender = TRUE;
     }
 

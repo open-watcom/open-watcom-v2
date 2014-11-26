@@ -1779,14 +1779,14 @@ trap_retval ReqThread_get_extra( void )
     return( strlen( ret ) + 1 );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
-    parm=parm;
+    parms=parms;
     ForceFpu32 = 0;
-    if( parm != NULL ) {
-        switch( *parm ) {
+    if( parms != NULL ) {
+        switch( *parms ) {
         case 'f':
             ForceFpu32 = -1;
             break;

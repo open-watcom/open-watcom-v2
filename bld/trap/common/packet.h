@@ -39,7 +39,7 @@ extern void         RemovePacket( trap_elen, void * );
 extern void         *GetPacketBuffPtr(void);
 extern trap_elen    MaxPacketSize(void);
 
-extern char         *RemoteLink(char *, bool);
+extern char         *RemoteLink(const char *, bool);
 extern bool         RemoteConnect(void);
 extern void         RemoteDisco(void);
 extern void         RemoteUnLink(void);

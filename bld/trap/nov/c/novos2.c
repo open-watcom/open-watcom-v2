@@ -525,18 +525,18 @@ static bool FindPartner( void )
     return( TRUE );
 }
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
     server = server;
 putstring( "RemoteLink\r\n" );
 
-    if( name == NULL || *name == '\0' )
-        name = "NovLink";
-    for( i = 0; i < 47 && *name != '\0'; ++name ) {
-        if( strchr( "/\\:;,*?+-", *name ) == NULL ) {
-            SAPHead.name[ i++ ] = toupper( *name );
+    if( parms == NULL || *parms == '\0' )
+        parms = "NovLink";
+    for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
+        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
+            SAPHead.name[ i++ ] = toupper( *parms );
         }
     }
     SAPHead.name[ i ] = '\0';

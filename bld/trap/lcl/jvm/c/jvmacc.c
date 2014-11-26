@@ -1286,12 +1286,12 @@ trap_retval ReqFile_run_cmd( void )
     return( 0 );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 /*******************************************************************/
 {
     trap_version        ver;
 
-    remote = remote; parm = parm;
+    remote = remote; parms = parms;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

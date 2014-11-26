@@ -513,7 +513,7 @@ trap_retval ReqProg_step( void )
     return( ReqProg_go() );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
 
@@ -529,7 +529,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
     InitPSP();
     LoadError = NULL;
     error[0] = '\0';
-    strcpy( LinkParm, parm );
+    strcpy( LinkParm, parms );
     TaskLoaded = FALSE;
     _DBG_ExitFunc( "TrapInit()" );
     return( ver );

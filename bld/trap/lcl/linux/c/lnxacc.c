@@ -682,11 +682,11 @@ trap_retval ReqAddr_info( void )
     return( sizeof( *ret ) );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
-    parm = parm;
+    parms = parms;
     remote = remote;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

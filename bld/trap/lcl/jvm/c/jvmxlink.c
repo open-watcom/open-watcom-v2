@@ -110,7 +110,7 @@ void RemoteDisco( void )
 
 #define JAVA_NAME "java_g.exe"
 
-char *RemoteLink( char *parm, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
     MemHdlLink = OpenFileMapping( FILE_MAP_WRITE, FALSE, REMOTE_LINK_MEM_NAME );
@@ -163,12 +163,12 @@ char *RemoteLink( char *parm, bool server )
             strcat( command, ";" );
             strcat( command, buff );
         }
-        if( parm != NULL && parm[0] != '\0' ) {
-            p = parm + strlen( parm ) - 1;
+        if( parms != NULL && parms[0] != '\0' ) {
+            p = parms + strlen( parms ) - 1;
             if( *p == '\\' || *p == '/' )
                 *p = '\0';
             strcat( command, ";" );
-            strcat( command, parm );
+            strcat( command, parms );
         }
     }
     memset( &sinfo, 0, sizeof( sinfo ) );
@@ -200,7 +200,7 @@ char *RemoteLink( char *parm, bool server )
     ResumeThread( pinfo.hThread );
 
 #endif
-    parm = parm;
+    parms = parms;
     server = server;
     return( 0 );
 }

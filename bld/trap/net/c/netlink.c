@@ -191,13 +191,13 @@ void RemoteDisco( void )
 char            DefLinkName[] = "NetLink";
 static char     NotThere[] = TRP_ERR_NetBIOS_is_not_running ;
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
     server = server;
-    if( name == NULL || *name == '\0' )
-        name = DefLinkName;
+    if( parms == NULL || *parms == '\0' )
+        parms = DefLinkName;
 #if defined(__OS2__)
   #if defined(__386__)
     {
@@ -262,7 +262,7 @@ char *RemoteLink( char *name, bool server )
 
     memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
     for( i = 1; i < NCBNAMSZ; ++i ) {
-        NetCtlBlk.ncb_name[i] = (*name != '\0') ? *name++ : ' ';
+        NetCtlBlk.ncb_name[i] = (*parms != '\0') ? *parms++ : ' ';
     }
     NetCtlBlk.ncb_name[0] = ( server ) ? 'S' : 'C';
     NetCtlBlk.ncb_command = NCBADDNAME;

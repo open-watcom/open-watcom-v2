@@ -50,7 +50,7 @@ char    pipeName[ MACH_NAME_LEN + PREFIX_LEN + MAX_NAME ];
 
 char    DefLinkName[] = DEFAULT_NAME;
 
-char *RemoteLink( char *config, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     tiny_ret_t          rc;
     tiny_dos_version    ver;
@@ -67,10 +67,10 @@ char *RemoteLink( char *config, bool server )
     }
     strcpy( p, PREFIX );
     p += PREFIX_LEN;
-    if( *config == 0 ) {
+    if( *parms == 0 ) {
         strcpy( p, DefLinkName );
-    } else if( ValidName( config )   ) {
-        strcpy( p, config );
+    } else if( ValidName( parms ) ) {
+        strcpy( p, parms );
     } else {
         return( TRP_ERR_invalid_server_name );
     }

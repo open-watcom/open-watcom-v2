@@ -1972,7 +1972,7 @@ trap_retval ReqSplit_cmd( void )
 }
 
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
     extern              struct LoadDefinitionStructure *MyNLMHandle;
@@ -1980,7 +1980,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
 #if defined ( __NW40__ )
     ImportCLIBSymbols();
 #endif
-    remote = remote; parm = parm;
+    remote = remote; parms = parms;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

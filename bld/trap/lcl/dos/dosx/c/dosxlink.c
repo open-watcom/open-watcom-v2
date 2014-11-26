@@ -342,7 +342,7 @@ _DBG_Writeln( "found in path\r\n" );
 
 #if defined(PHARLAP)
 
-static const char *GetHelpName( char *exe_name )
+static const char *GetHelpName( const char *exe_name )
 {
     /*
       if executable is:
@@ -393,7 +393,7 @@ exp:
 #endif
 #endif
 
-char *RemoteLink( char *parm, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
     unsigned long       link;
@@ -440,7 +440,7 @@ char *RemoteLink( char *parm, bool server )
     void            __far * __far * link_ptr;
     unsigned        len;
   #if defined(PHARLAP)
-    char            *exe_name;
+    const char      *exe_name;
   #endif
 
     _DBG_EnterFunc( "RemoteLink()" );
@@ -451,27 +451,27 @@ char *RemoteLink( char *parm, bool server )
     link[ 1 ] = (void __far *)MK_LINEAR( &Buff );
     link[ 0 ] = (void __far *)LINK_SIGNATURE;
     *link_ptr = (void __far *)MK_LINEAR( &link );
-    if( parm == NULL )
-        parm = "\0\0";
-    while( *parm == ' ' )
-        ++parm;
-    if( *parm == '`' ) {
+    if( parms == NULL )
+        parms = "\0\0";
+    while( *parms == ' ' )
+        ++parms;
+    if( *parms == '`' ) {
         buffp = buff;
-        ++parm;
+        ++parms;
         for( ;; ) {
-            *buffp = *parm;
+            *buffp = *parms;
             ++buffp;
-            if( *parm == '\0' )
+            if( *parms == '\0' )
                 break;
-            ++parm;
-            if( parm[-1] == '`' ) {
+            ++parms;
+            if( parms[-1] == '`' ) {
                 break;
             }
         }
         *buffp = '\0';
     }
-    while( *parm == ' ' )
-        ++parm;
+    while( *parms == ' ' )
+        ++parms;
     if( setjmp( RealModeState ) == 0 ) {
         name = FindExtender( fullpath, &endname );
         if( name == NULL ) {
@@ -490,7 +490,7 @@ char *RemoteLink( char *parm, bool server )
             const char      *help_name;
 
     #if defined(PHARLAP)
-            exe_name = parm;
+            exe_name = parms;
             while( *exe_name++ != '\0' ) {}
             help_name = GetHelpName( exe_name );
     #else
@@ -505,7 +505,7 @@ char *RemoteLink( char *parm, bool server )
   #endif
         _DBG_Write( "Extender help name: " );
         _DBG_NoTabWriteln( buffp );
-        endparm = CopyStr( parm, endname + 1 );     // reserve length byte
+        endparm = CopyStr( parms, endname + 1 );     // reserve length byte
         endparm = CopyStr( buffp, CopyStr( " ", endparm ) );
   #if defined(PHARLAP)
         endparm = CopyStr( " ", endparm );
@@ -530,7 +530,7 @@ char *RemoteLink( char *parm, bool server )
         return( TRP_ERR_cant_start_extender );
     }
 #endif
-    parm = parm;
+    parms = parms;
     server = server;
     _DBG_ExitFunc( "RemoteLink()" );
     return( NULL );

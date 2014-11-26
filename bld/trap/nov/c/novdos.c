@@ -520,7 +520,7 @@ putstring( "got one\r\n" );
 
 char    DefLinkName[] = "NovLink";
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
     BYTE        major_ver,minor_ver;
@@ -570,10 +570,11 @@ char *RemoteLink( char *name, bool server )
     }
     #endif
     server = server;
-    if( name == NULL || *name == '\0' ) name = DefLinkName;
-    for( i = 0; i < MAX_NAME_LEN && *name != '\0'; ++name ) {
-        if( strchr( "/\\:;,*?+-", *name ) == NULL ) {
-            SAPHead.name[ i++ ] = toupper( *name );
+    if( parms == NULL || *parms == '\0' )
+        parms = DefLinkName;
+    for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
+        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
+            SAPHead.name[ i++ ] = toupper( *parms );
         }
     }
     SAPHead.name[ i ] = '\0';

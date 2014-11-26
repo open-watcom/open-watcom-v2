@@ -351,7 +351,7 @@ static char FindPartner( void )
     return( 1 );
 }
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
     WSADATA     data;
@@ -361,10 +361,11 @@ char *RemoteLink( char *name, bool server )
 
     server = server;
 
-    if( name == NULL || *name == '\0' ) name = "NovLink";
-    for( i = 0; i < 47 && *name != '\0'; ++name ) {
-        if( strchr( "/\\:;,*?+-", *name ) == NULL ) {
-            ServerName[ i++ ] = (char)toupper( *(byte *)name );
+    if( parms == NULL || *parms == '\0' )
+        parms = "NovLink";
+    for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
+        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
+            ServerName[ i++ ] = (char)toupper( *(byte *)parms );
         }
     }
     ServerName[ i ] = '\0';

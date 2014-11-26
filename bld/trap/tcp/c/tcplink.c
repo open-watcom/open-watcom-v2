@@ -351,7 +351,7 @@ void RemoteDisco( void )
 }
 
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     unsigned short      port;
 #ifndef __RDOS__    
@@ -382,9 +382,9 @@ char *RemoteLink( char *name, bool server )
  
     port = 0;
   #ifdef __RDOS__
-    while( isdigit( *name ) ) {
-        port = port * 10 + (*name - '0');
-        ++name;
+    while( isdigit( *parms ) ) {
+        port = port * 10 + (*parms - '0');
+        ++parms;
     }
     if( port == 0 )
         port = DEFAULT_PORT;
@@ -393,15 +393,15 @@ char *RemoteLink( char *name, bool server )
     listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
     RdosAddWaitForTcpListen( wait_handle, listen_handle, &listen_handle );
   #else
-    if( name == NULL || name[0] == '\0' )
-        name = "tcplink";
-    sp = getservbyname( name, "tcp" );
+    if( parms == NULL || parms[0] == '\0' )
+        parms = "tcplink";
+    sp = getservbyname( parms, "tcp" );
     if( sp != NULL ) {
         port = sp->s_port;
     } else {
-        while( isdigit( *name ) ) {
-            port = port * 10 + (*name - '0');
-            ++name;
+        while( isdigit( *parms ) ) {
+            port = port * 10 + (*parms - '0');
+            ++parms;
         }
         if( port == 0 )
             port = DEFAULT_PORT;
@@ -457,7 +457,9 @@ char *RemoteLink( char *name, bool server )
   #ifdef __RDOS__
     // Todo: handle connect
   #else
-    char        *sock;
+    const char  *sock;
+    char        buff[128];
+    char        *p;
 
     #if defined(__NT__) || defined(__WINDOWS__)
     {
@@ -470,15 +472,15 @@ char *RemoteLink( char *name, bool server )
     #endif
 
     /* get port number out of name */
-    sock = name;
-    while( *sock != '\0' ) {
+    p = buff;
+    for( sock = parms; *sock != '\0'; ++sock ) {
         if( *sock == ':' ) {
-            *sock = '\0';
             ++sock;
             break;
         }
-        ++sock;
+        *p++ = *sock;
     }
+    *p = '\0';
     if( sock[0] == '\0' ) {
         sp = getservbyname( "tcplink", "tcp" );
     } else {
@@ -498,14 +500,15 @@ char *RemoteLink( char *name, bool server )
         if( port == 0 ) port = DEFAULT_PORT;
         port = htons( port );
     }
+    parms = buff;
     /* Setup for socket connect using name specified by command line. */
     socket_address.sin_family = AF_INET;
     /* OS/2's TCP/IP gethostbyname doesn't handle numeric addresses */
-    socket_address.sin_addr.s_addr = inet_addr( name );
+    socket_address.sin_addr.s_addr = inet_addr( parms );
     if( socket_address.sin_addr.s_addr == (unsigned long)-1L ) {
         struct hostent  *hp;
 
-        hp = gethostbyname( name );
+        hp = gethostbyname( parms );
         if( hp != 0 ) {
             memcpy( &socket_address.sin_addr, hp->h_addr, hp->h_length );
         } else {

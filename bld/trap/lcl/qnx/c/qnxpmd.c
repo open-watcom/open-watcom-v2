@@ -863,7 +863,7 @@ trap_retval ReqThread_get_extra( void )
     return( strlen( ret ) + 1 );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
@@ -871,9 +871,9 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     PmdInfo.fd = NO_FILE;
     PmdInfo.enable_read_gdts = TRUE;
     PmdInfo.force_read_gdts  = FALSE;
-    if( parm != NULL ) {
-        while( *parm != '\0' ) {
-            switch( *parm ) {
+    if( parms != NULL ) {
+        while( *parms != '\0' ) {
+            switch( *parms ) {
             case 'I':
             case 'i':
                 PmdInfo.ignore_timestamp = TRUE;
@@ -887,7 +887,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
                 PmdInfo.enable_read_gdts = FALSE;
                 break;
             }
-            ++parm;
+            ++parms;
         }
     }
     err[0] = '\0'; /* all ok */

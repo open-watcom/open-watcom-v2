@@ -40,7 +40,7 @@ bool Terminate( void )
     return( FALSE );
 }
 
-int ValidName( char *name ) {
+int ValidName( const char *name ) {
 
     char *end;
     char *dot;

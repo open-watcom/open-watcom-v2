@@ -111,7 +111,7 @@ void RemoteDisco( void )
 }
 
 
-char *RemoteLink( char far *name, char server )
+char *RemoteLink( const char __far *parms, char server )
 {
     int                 version;
 
@@ -124,20 +124,20 @@ char *RemoteLink( char far *name, char server )
         return( "this program requires DESQview 2.00 or higher" );
     }
     api_level( 0x200 );
-    if( name == NULL || *name == '\0' ){
-        name = "WATCOM Server";
+    if( parms == NULL || *parms == '\0' ){
+        parms = "WATCOM Server";
     }
 
 #ifdef SERVER
-    if( mal_find( name, fstrlen( name ) ) != 0 ) {
+    if( mal_find( parms, fstrlen( parms ) ) != 0 ) {
         return( "Server name already in use" );
     }
     GetHandle = mal_new();
     mal_open( GetHandle );
-    mal_name( GetHandle, name, fstrlen( name ) );
+    mal_name( GetHandle, parms, fstrlen( parms ) );
 #else
     GetHandle = mal_me();
-    PutHandle = mal_find( name, fstrlen(name) );
+    PutHandle = mal_find( parms, fstrlen( parms ) );
     if( PutHandle == 0 ) {
         return( "Unable to find server" );
     }

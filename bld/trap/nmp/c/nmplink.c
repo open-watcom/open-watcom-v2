@@ -106,7 +106,7 @@ void DoOpen( bhandle *phdl, char *suff )
 }
 
 
-char *ValidName( char *name )
+const char *ValidName( const char *name )
 {
     int         len;
 
@@ -127,22 +127,22 @@ char *ValidName( char *name )
 
 char    DefLinkName[] = DEFAULT_NAME;
 
-char *RemoteLink( char *config, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     char        *msg;
-    char        *end;
+    const char  *end;
 
     server=server;
-    end = ValidName( config );
+    end = ValidName( parms );
     strcpy( NameBuff+1, PREFIX );
     if( end == NULL ) {
         return( TRP_ERR_invalid_server_name_format_is );
     } else {
-        if( end == config ) {
-            strcpy( NameBuff+1 + PREFIX_LEN, DefLinkName );
+        if( end == parms ) {
+            strcpy( NameBuff + 1 + PREFIX_LEN, DefLinkName );
         } else {
-            memcpy( NameBuff+1 + PREFIX_LEN, config, end-config );
-            NameBuff[ end-config+1+PREFIX_LEN ] = '\0';
+            memcpy( NameBuff + 1 + PREFIX_LEN, parms, end - parms );
+            NameBuff[end - parms + 1 + PREFIX_LEN] = '\0';
         }
     }
     msg = OpenRequest();

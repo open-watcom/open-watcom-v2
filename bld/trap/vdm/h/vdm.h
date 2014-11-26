@@ -38,5 +38,5 @@
 #define MAX_TRANS       1024
 #define DEFAULT_NAME    "VDMLink"
 
-extern  int     ValidName( char *name );
+extern  int     ValidName( const char *name );
 

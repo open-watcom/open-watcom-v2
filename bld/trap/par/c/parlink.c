@@ -855,7 +855,7 @@ void RemoteDisco( void )
 
 static char InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     unsigned    printer;
     unsigned    ch;
@@ -868,15 +868,15 @@ char *RemoteLink( char *name, bool server )
     if( err != NULL ) {
         return( err );
     }
-    if( name == NULL || name[0] == '\0' ) {
+    if( parms == NULL || parms[0] == '\0' ) {
         printer = 0;
-    } else if( name[0] >= '1' && name[0] <= '3' && name[1] == '\0' ) {
-        printer = name[0] - '1';
-    } else if( name[0] == 'p' || name[0] == 'P' ) {
+    } else if( parms[0] >= '1' && parms[0] <= '3' && parms[1] == '\0' ) {
+        printer = parms[0] - '1';
+    } else if( parms[0] == 'p' || parms[0] == 'P' ) {
         printer = 0;
         for( ;; ) {
-            ++name;
-            ch = *name;
+            ++parms;
+            ch = *parms;
             if( ch == 0 ) break;
             if( ch == ' ' ) break;
             if( ch == '\t' ) break;

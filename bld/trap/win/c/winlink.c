@@ -150,18 +150,19 @@ void RemoteDisco( void )
 char    LinkName[80];
 char    DefLinkName[] = "WinLink";
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     int     i;
     int     rc;
 
     server = server;
-    if( name == NULL || *name == '\0' ) name = DefLinkName;
+    if( parms == NULL || *parms == '\0' )
+        parms = DefLinkName;
     i = 0;
     for( ;; ) {
         if( i >= sizeof( LinkName ) ) break;
-        if( *name == '\0' ) break;
-        LinkName[i++] = *name++;
+        if( *parms == '\0' ) break;
+        LinkName[i++] = *parms++;
     }
     LinkName[i] = '\0';
 #ifdef SERVER

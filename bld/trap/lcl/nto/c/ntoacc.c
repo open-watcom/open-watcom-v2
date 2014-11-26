@@ -1320,12 +1320,12 @@ trap_retval ReqThread_get_extra( void )
 }
 
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
     sigset_t        sig_set;
 
-    parm = parm;
+    parms = parms;
     remote = remote;
 
     /* We use SIGUSR1 to gain control after blocking wait for a process. */

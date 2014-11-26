@@ -131,7 +131,7 @@ static void ReqRemoteResume( void )
     _DBG_ExitFunc( "ReqResume" );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
     char           *err;
@@ -141,11 +141,11 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
     _DBG_EnterFunc( "TrapInit" );
     ver.remote = TRUE;
     fix_minor = 0;
-    if( parm != NULL && *parm == '!' ) {
-        ++parm;
-        if( *parm != '!' ) fix_minor = 1;
+    if( parms != NULL && *parms == '!' ) {
+        ++parms;
+        if( *parms != '!' ) fix_minor = 1;
     }
-    err = RemoteLink( parm, FALSE );
+    err = RemoteLink( parms, FALSE );
     if( err != NULL ) {
         strcpy( error, err );
     } else {

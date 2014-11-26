@@ -753,21 +753,21 @@ trap_retval ReqThread_get_extra( void )
 }
 #endif
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
     remote = remote;
     core_info.fd = NO_FILE;
-    if( parm != NULL ) {
-        while( *parm != '\0' ) {
-            switch( *parm ) {
+    if( parms != NULL ) {
+        while( *parms != '\0' ) {
+            switch( *parms ) {
             case 'I':
             case 'i':
                 core_info.ignore_timestamp = TRUE;
                 break;
             }
-            ++parm;
+            ++parms;
         }
     }
     err[0] = '\0'; /* all ok */

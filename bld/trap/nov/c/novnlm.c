@@ -390,17 +390,18 @@ _DBG_IPX(( "FindPartner -- %s answered\r\n", Completed( RespECB ) ? "someone" : 
     return( FALSE );
 }
 
-char *RemoteLink( char *name, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
 
 _DBG_IPX(("RemoteLink\r\n"));
     server = server;
-    if( name == NULL || *name == '\0' ) name = "NovLink";
-    for( i = 0; i < 48 && *name != '\0'; ++name ) {
-        if( strchr( "/\\:;,*?+-", *name ) == NULL ) {
-            SAPStruct.ASServerIDpacket.serverName[ i++ ] = toupper( *name );
+    if( parms == NULL || *parms == '\0' )
+        parms = "NovLink";
+    for( i = 0; i < 48 && *parms != '\0'; ++parms ) {
+        if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
+            SAPStruct.ASServerIDpacket.serverName[ i++ ] = toupper( *parms );
         }
     }
     SAPStruct.ASServerIDpacket.serverName[ i ] = '\0';

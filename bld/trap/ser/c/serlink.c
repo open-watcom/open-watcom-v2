@@ -59,7 +59,7 @@ baud_entry BaudTable[] = {
         "0", 1, 0,
 };
 
-extern char     *ParsePortSpec( char * * );
+extern char     *ParsePortSpec( const char ** );
 extern char     *InitSys( void );
 extern void     ResetSys( void );
 extern bool     Baud( int );
@@ -665,7 +665,7 @@ char *SetMaxBaud( char *str )
 
 /* This routine is called by RemoteLink to set max baud rate */
 
-static char *CollectParm( char *parm, char *arg, int *len )
+static const char *CollectParm( const char *parm, char *arg, int *len )
 {
     int  i;
 
@@ -680,9 +680,9 @@ static char *CollectParm( char *parm, char *arg, int *len )
 }
 
 
-static char *SetLinkParms( char **pparm )
+static char *SetLinkParms( const char **pparm )
 {
-    char        *parm;
+    const char  *parm;
     char        arg1[7];
     int         arg1_len;
     char        *result;        /* result of ParsePortSpec or SetComPort */
@@ -725,9 +725,9 @@ static void SlowSend( int ch )
     }
 }
 
-static char *SetupModem( char *parm )
+static char *SetupModem( const char *parm )
 {
-    char        *start;
+    const char  *start;
     unsigned    wait;
     unsigned    ch;
     int         data;
@@ -833,14 +833,14 @@ done:
 
 /* The format for *parm is "1.9600<modem_connect_string>" */
 
-char *RemoteLink( char *parm, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     char *result;
 
     server = server;
-    if( parm == NULL )
-        parm = "";
-    result = SetLinkParms( &parm );  /* set com: port & max baud rate */
+    if( parms == NULL )
+        parms = "";
+    result = SetLinkParms( &parms );  /* set com: port & max baud rate */
     if( result != NULL ) {
         DonePort();
         return( result );
@@ -850,7 +850,7 @@ char *RemoteLink( char *parm, bool server )
         DonePort();
         return( result );
     }
-    result = SetupModem( parm );
+    result = SetupModem( parms );
     if( result != NULL )
         RemoteUnLink();
     return( result );

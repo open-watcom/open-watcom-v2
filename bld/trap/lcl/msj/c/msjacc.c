@@ -46,13 +46,13 @@ HANDLE          FakeHandle;
 
 HWND            DebuggerWindow;
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 /*******************************************************************/
 {
     trap_version        ver;
 
     MSJMemInit();
-    remote = remote; parm = parm;
+    remote = remote; parms = parms;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = FALSE;

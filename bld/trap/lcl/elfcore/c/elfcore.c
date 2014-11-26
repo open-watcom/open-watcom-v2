@@ -835,7 +835,7 @@ trap_retval ReqGet_err_text( void )
 }
 
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
 
@@ -844,15 +844,15 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     Core.x_fd = NO_FILE;
     Core.c_ehdr = malloc( sizeof( Elf32_Ehdr ) );
     Core.x_ehdr = malloc( sizeof( Elf32_Ehdr ) );
-    if( parm != NULL ) {
-        while( *parm != '\0' ) {
-            switch( *parm ) {
+    if( parms != NULL ) {
+        while( *parms != '\0' ) {
+            switch( *parms ) {
             case 'I':
             case 'i':
                 Core.ignore_timestamp = TRUE;
                 break;
             }
-            ++parm;
+            ++parms;
         }
     }
     err[0] = '\0'; /* all ok */

@@ -1335,14 +1335,14 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, unsigned_8 remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, unsigned_8 remote )
 {
     trap_version        ver;
     USHORT              os2ver;
     SEL                 li,gi;
     __LINFOSEG          __far *linfo;
 
-    parm = parm;
+    parms = parms;
     Remote = remote;
     err[0] = '\0';
     ver.major = TRAP_MAJOR_VERSION;

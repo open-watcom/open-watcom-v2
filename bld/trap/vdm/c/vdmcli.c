@@ -49,7 +49,7 @@
 
 HPIPE   pipeHdl;
 
-char *RemoteLink( char *config, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     APIRET      rc;
     char        buf[ PREFIX_LEN + MAX_NAME + 1 ];
@@ -57,10 +57,10 @@ char *RemoteLink( char *config, bool server )
     if( server )
         return( "this should never be seen" );
     strcpy( buf, PREFIX );
-    if( *config == 0 ) {
+    if( *parms == 0 ) {
         strcpy( buf + PREFIX_LEN, DEFAULT_NAME );
-    } else if( ValidName( config ) ) {
-        strcpy( buf + PREFIX_LEN, config );
+    } else if( ValidName( parms ) ) {
+        strcpy( buf + PREFIX_LEN, parms );
     } else {
         return( TRP_ERR_invalid_server_name );
     }

@@ -1766,13 +1766,13 @@ char TRAPENTRY TellHardMode( char hard )
     return( SetHardMode( hard ) );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
     PTIB                ptib;
     PPIB                ppib;
 
-    parm = parm;
+    parms = parms;
     Remote = remote;
     err[0] = '\0';
     ver.major  = TRAP_MAJOR_VERSION;
@@ -1781,7 +1781,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     SaveStdIn  = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     Screen     = DEBUG_SCREEN;
-    if( parm[0] == '2' ) {
+    if( parms[0] == '2' ) {
         stopOnSecond = TRUE;
     }
 

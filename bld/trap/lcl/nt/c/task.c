@@ -39,7 +39,7 @@
 #define VER_PLATFORM_WIN32_WINDOWS 1
 #endif
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
     OSVERSIONINFO   osver;
@@ -91,11 +91,11 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
 
     StopForDLLs = TRUE;
     BreakOnKernelMessage = FALSE;
-    if( parm[0] == 'k' ) {
+    if( parms[0] == 'k' ) {
         BreakOnKernelMessage = TRUE;
     }
     remote = remote;
-    parm = parm;
+    parms = parms;
 
     err[0] = 0;
     ver.major = TRAP_MAJOR_VERSION;

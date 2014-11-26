@@ -592,7 +592,7 @@ trap_retval ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
     extern     void InitPSP();
@@ -603,7 +603,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
     ver.minor = TRAP_MINOR_VERSION;
     FakeHandle = GetStdHandle( STD_INPUT_HANDLE );
     error[0] = '\0';
-    strcpy( LinkParm, parm );
+    strcpy( LinkParm, parms );
     TaskLoaded = FALSE;
     return( ver );
 }

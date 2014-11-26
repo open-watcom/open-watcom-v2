@@ -52,17 +52,17 @@ HANDLE  pipeHdl;
 
 #define NT_PREF_LEN     (MACH_NAME_LEN + PREFIX_LEN)
 
-char *RemoteLink( char *config, bool server )
+char *RemoteLink( const char *parms, bool server )
 {
     char        buf[ NT_PREF_LEN + MAX_NAME + 1 ];
 
     if( server )
         return( "this should never be seen" );
     strcpy( buf, NT_MACH_NAME PREFIX );
-    if( *config == 0 ) {
+    if( *parms == 0 ) {
         strcpy( buf + NT_PREF_LEN, DEFAULT_NAME );
-    } else if( ValidName( config ) ) {
-        strcpy( buf + NT_PREF_LEN, config );
+    } else if( ValidName( parms ) ) {
+        strcpy( buf + NT_PREF_LEN, parms );
     } else {
         return( TRP_ERR_invalid_server_name );
     }
