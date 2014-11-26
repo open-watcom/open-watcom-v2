@@ -143,11 +143,12 @@ extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern debug_level      DbgLevel;
 extern char             *TxtBuff;
 extern unsigned char    CurrRadix;
-static char             *CmdData;
-static bool             Done;
-extern char             *TrpFile;
+extern char             *TrapParms;
 extern address          NilAddr;
 extern char_ring        *SrcSpec;
+
+static char             *CmdData;
+static bool             Done;
 
 /* Constants Used in this File */
 

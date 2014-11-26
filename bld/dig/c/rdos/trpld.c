@@ -54,24 +54,22 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
-    char                *ptr;
-    char                *parm;
+    const char          *ptr;
+    const char          *parm;
     char                *dst;
     char                have_ext;
     char                chr;
     trap_init_func      *init_func;
 
-    if( trapbuff == NULL )
-        trapbuff = "std";
+    if( trap_parms == NULL || *trap_parms == '\0' )
+        trap_parms = "std";
     have_ext = FALSE;
-    ptr = trapbuff;
     dst = trpfile;
-    for( ;; ) {
+    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         chr = *ptr;
-        if( chr == '\0' || chr == ';' ) break;
         switch( chr ) {
         case ':':
         case '/':
@@ -83,7 +81,6 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
             break;
         }
         *dst++ = chr;
-        ++ptr;
     }
     if( !have_ext ) {
         *dst++ = '.';

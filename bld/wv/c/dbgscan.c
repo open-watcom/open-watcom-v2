@@ -33,16 +33,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbglit.h"
 #include "ldsupp.h"
 #include "mad.h"
 #include "madcli.h"
 #include "dui.h"
 #include "i64.h"
+#include "trpld.h"
 
 #include "clibext.h"
 
@@ -418,6 +418,7 @@ bool ScanItem( bool blank_delim, char **start, size_t *len )
     *start = TokenStart;
     for( ;; ) {
         if( blank_delim && isspace( *ScanPtr ) ) break;
+        if( *ScanPtr == TRAP_PARM_SEPARATOR ) break;
         if( *ScanPtr == ';' ) break;
         if( *ScanPtr == NULLCHAR ) break;
         ++ScanPtr;

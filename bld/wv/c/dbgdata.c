@@ -34,7 +34,7 @@
 #include "dbgdata.h"
 
 char                    *InitCmdList;
-char                    *TrpFile;
+char                    *TrapParms;
 #ifdef ENABLE_TRAP_LOGGING
 char                    *TrpDebugFile;
 bool                    TrpDebugFileFlush = FALSE;

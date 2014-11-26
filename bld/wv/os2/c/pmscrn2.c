@@ -30,13 +30,7 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "dbgmem.h"
-#include "trptypes.h"
-#include "trapaccs.h"
 #include <string.h>
-#include "dbgscrn.h"
 #define INCL_SUB
 #define INCL_PM
 #define INCL_BASE
@@ -44,6 +38,12 @@
 #define INCL_WINHOOKS
 #define INCL_WINMESSAGEMGR
 #include <os2.h>
+#include "dbgdefn.h"
+#include "dbgwind.h"
+#include "dbgmem.h"
+#include "trptypes.h"
+#include "trapaccs.h"
+#include "dbgscrn.h"
 
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
 

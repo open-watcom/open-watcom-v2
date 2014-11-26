@@ -53,5 +53,5 @@ typedef int         dip_sys_handle;
 typedef void        *dip_sys_handle;
 #endif
 
-extern dip_status   DIPSysLoad( char *, dip_client_routines *, dip_imp_routines **, dip_sys_handle * );
+extern dip_status   DIPSysLoad( const char *, dip_client_routines *, dip_imp_routines **, dip_sys_handle * );
 extern void         DIPSysUnload( dip_sys_handle * );

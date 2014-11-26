@@ -92,7 +92,7 @@ typedef struct copyspec {
 
 extern  void            SysFileInit( void );
 extern  void            PathInit( void );
-extern  bool            InitTrap( char * );
+extern  bool            InitTrap( const char * );
 extern  bool            InitFileSupp( void );
 extern  bool            InitRFXSupp( void );
 extern  void            FiniTrap( void );
@@ -124,7 +124,6 @@ extern rc_erridx        RemoteFindNext( void *, unsigned );
 extern rc_erridx        RemoteFindClose( void );
 
 dbg_switches            DbgSwitches;
-char                    *TrpFile;
 char                    *TxtBuff;
 char                    Buff[ BUFF_LEN ];
 char                    NullStr[] = { '\0' };

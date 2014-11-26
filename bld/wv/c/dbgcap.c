@@ -32,10 +32,9 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbginp.h"
 #include "dbgerr.h"
-#include "trptypes.h"
 
 extern bool             ScanItem( bool, char **, size_t * );
 extern cmd_list         *AllocCmdList( char *, size_t );

@@ -42,6 +42,7 @@
 #include "tinyio.h"
 #include "tcerr.h"
 #include "digio.h"
+#include "trpld.h"
 
 #ifdef __OSI__
 #include "extender.h"
@@ -58,7 +59,6 @@ extern trap_req_func    *ReqFunc;
 #define NUM_BUFF_RELOCS         16
 #define DEFAULT_TRP_NAME        "STD"
 #define DEFAULT_TRP_EXT         "TRP"
-#define PARM_SEPARATOR          ';'
 #define TRAP_VECTOR             0x1a
 #define PSP_ENVSEG_OFF          0x2c
 
@@ -387,7 +387,7 @@ static char *SetTrapHandler( void )
     return( NULL );
 }
 
-static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
+static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
 {
     _Packed struct {
         unsigned_16     remote;
@@ -398,10 +398,8 @@ static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
 
     callstruct = (void __far *)PMData->parmarea;
     callstruct->remote = trap_ver->remote;
-    if( parm == NULL )
-        parm = "";
-    _fstrcpy( (char __far *)&callstruct[1], parm );
-    callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parm ) + 1;
+    _fstrcpy( (char __far *)&callstruct[1], parms );
+    callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parms ) + 1;
     GoToRealMode( RMTrapInit );
     *trap_ver = callstruct->version;
     _fstrcpy( errmsg, (char __far *)callstruct + callstruct->errmsg_off );
@@ -532,33 +530,33 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
     return( callstruct->retlen );
 }
 
-char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
 {
     char                *err;
-    char                *parm;
-    char                *end;
+    const char          *parm;
+    const char          *end;
     dig_fhandle         dh;
     trap_file_header    __far *head;
 
 
-    if( trapbuff == NULL ) {
-        trapbuff = DEFAULT_TRP_NAME;
+    if( trap_parms == NULL || *trap_parms == '\0' ) {
+        trap_parms = DEFAULT_TRP_NAME;
     }
-    end = strchr( trapbuff, PARM_SEPARATOR );
+    end = strchr( trap_parms, TRAP_PARM_SEPARATOR );
     if( end == NULL ) {
-        end = &trapbuff[strlen( trapbuff )];
+        end = &trap_parms[strlen( trap_parms )];
         parm = end;
     } else {
         parm = end + 1;
     }
-    dh = DIGPathOpen( trapbuff, end - trapbuff, DEFAULT_TRP_EXT, NULL, 0 );
+    dh = DIGPathOpen( trap_parms, end - trap_parms, DEFAULT_TRP_EXT, NULL, 0 );
     if( dh == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
         return( buff );
     }
     err = ReadInTrap( DIGGetSystemHandle( dh ) );
     DIGPathClose( dh );
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
     if( err == NULL ) {
         if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {
             strcpy( buff, err );

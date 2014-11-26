@@ -76,27 +76,27 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle         filehndl;
-    char                *ptr;
-    char                *parm;
+    const char          *ptr;
+    const char          *parm;
     const trap_requests *(*ld_func)( const trap_callbacks * );
     const trap_requests *trap_funcs;
 
-    if( trapbuff == NULL )
-        trapbuff = "std";
-    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr )
+    if( trap_parms == NULL || *trap_parms == '\0' )
+        trap_parms = "std";
+    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    filehndl = DIGPathOpen( trapbuff, ptr - trapbuff, "trp", NULL, 0 );
+    filehndl = DIGPathOpen( trap_parms, ptr - trap_parms, "trp", NULL, 0 );
     if( filehndl == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
         return( buff );
     }
     TrapCode = ReadInImp( filehndl );
     DIGPathClose( filehndl );
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
     if( TrapCode != NULL ) {
 #ifdef __WATCOMC__
         if( TrapCode->sig == TRAPSIG ) {

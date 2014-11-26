@@ -80,25 +80,25 @@ void KillTrap( void )
 #endif
 }
 
-char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle         filehndl;
-    char                *ptr;
-    char                *parm;
+    const char          *ptr;
+    const char          *parm;
     const trap_requests *(*ld_func)( const trap_callbacks * );
     char                trap_name[_MAX_PATH];
     const trap_requests *trap_funcs;
 
-    if( trapbuff == NULL )
-        trapbuff = "std";
-    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr )
+    if( trap_parms == NULL || *trap_parms == '\0' )
+        trap_parms = "std";
+    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
 
 #if !defined( BUILTIN_TRAP_FILE )
-    filehndl = DIGPathOpen( trapbuff, ptr - trapbuff, "trp", trap_name, sizeof(trap_name) );
+    filehndl = DIGPathOpen( trap_parms, ptr - trap_parms, "trp", trap_name, sizeof(trap_name) );
     if( filehndl == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
         return( buff );
     }
     TrapFile = PE_loadLibraryHandle( DIGGetSystemHandle( filehndl ), trap_name );

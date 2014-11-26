@@ -191,7 +191,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     }
 }
 
-dip_status DIPLoad( char *path )
+dip_status DIPLoad( const char *path )
 {
     int         i;
     dip_status  status;

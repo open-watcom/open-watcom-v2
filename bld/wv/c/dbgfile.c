@@ -30,15 +30,14 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
 #include "dui.h"
 #include <string.h>
 #if !defined( BUILD_RFX )
 #include "dbglit.h"
 #endif
-#include "trptypes.h"
 #include "digio.h"
 
 #define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
@@ -693,16 +692,16 @@ void PathInit( void )
 }
 
 #if defined( __DOS__ ) || defined( __LINUX__ )
-dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *buff, unsigned buff_size )
 {
     char        dummy[TXT_LEN];
     handle      f;
 
-    if( result == NULL ) {
-        result = dummy;
-        max_result = sizeof( dummy );
+    if( buff == NULL ) {
+        buff = dummy;
+        buff_size = sizeof( dummy );
     }
-    f = FullPathOpenInternal( name, name_len, ext, result, max_result, FALSE );
+    f = FullPathOpenInternal( name, name_len, ext, buff, buff_size, FALSE );
     return( ( f == NIL_HANDLE ) ? DIG_NIL_HANDLE : f );
 }
 

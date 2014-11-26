@@ -48,7 +48,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     DIGCliFree( (void *)*sys_hdl );
 }
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     dig_fhandle         h;
     imp_header          *dip;

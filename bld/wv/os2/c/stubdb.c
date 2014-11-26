@@ -72,7 +72,7 @@ extern debug_level      DbgLevel;
 extern char             *TxtBuff;
 extern unsigned char    CurrRadix;
 static bool             Done;
-extern char             *TrpFile;
+extern char             *TrapParms;
 extern char             *CmdData;
 extern stack_entry      *ExprSP;
 
@@ -307,7 +307,7 @@ void DlgCmd( void )
                 HMODULE hmod;
                 PFN     proc = NULL;
 
-                DosQueryModuleHandle( TrpFile, &hmod );
+                DosQueryModuleHandle( TrapParms, &hmod );
                 DosQueryProcAddr( hmod, 5, 0, &proc );
 //                if( proc != NULL )
 //                    proc();

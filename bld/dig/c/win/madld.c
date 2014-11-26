@@ -44,7 +44,7 @@ HMODULE MADLastHandle;  /* for Dr. WATCOM */
 typedef void (DIGENTRY INTER_FUNC)();
 
 #ifdef DEBUGGING
-void Say( char *buff )
+void Say( const char *buff )
 {
     MessageBox( (HWND) NULL, buff, "DEBUG",
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
@@ -60,7 +60,7 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
 }
 
 
-mad_status MADSysLoad( char *path, mad_client_routines *cli,
+mad_status MADSysLoad( const char *path, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     HINSTANCE           dll;

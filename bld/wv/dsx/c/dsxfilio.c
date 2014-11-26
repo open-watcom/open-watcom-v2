@@ -37,7 +37,6 @@
 #include "tinyio.h"
 #include "dbgio.h"
 #include "farptrs.h"
-#include "trptypes.h"
 
 #include "doserr.h"
 

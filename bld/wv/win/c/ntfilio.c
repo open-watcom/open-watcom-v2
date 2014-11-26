@@ -36,11 +36,10 @@
 #include <stdio.h>
 #include "wio.h"
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
 #include "errno.h"
-#include "trptypes.h"
 
 extern char *Format(char *,char *,... );
 extern char *StrCopy(char *,char *);

@@ -29,5 +29,7 @@
 ****************************************************************************/
 
 
+#define TRAP_PARM_SEPARATOR ';'
+
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;

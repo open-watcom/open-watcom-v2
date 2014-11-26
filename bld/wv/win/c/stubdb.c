@@ -65,13 +65,13 @@ extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
 extern void             *OpenSrcFile(cue_handle *);
 
-
 extern debug_level      DbgLevel;
 extern char             *TxtBuff;
 extern unsigned char    CurrRadix;
+extern char             *TrapParms;
+
 static char             *CmdData;
 static bool             Done;
-extern char             *TrpFile;
 
 
 void WndMemInit( void )
@@ -280,7 +280,7 @@ void DlgCmd()
             } else {
                 HANDLE hmod;
                 FARPROC proc;
-                hmod = GetModuleHandle( TrpFile );
+                hmod = GetModuleHandle( TrapParms );
                 proc = GetProcAddress( hmod, (LPSTR)5 );
                 if( proc != NULL ) proc();
                 CloseHandle( hmod );

@@ -41,7 +41,6 @@
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "trptypes.h"
 
 
 #define READONLY    0

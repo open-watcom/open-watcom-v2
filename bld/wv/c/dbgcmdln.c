@@ -41,6 +41,7 @@
 #include "dui.h"
 #include "wdmsg.h"
 #include "dbgscrn.h"
+#include "trpld.h"
 
 extern unsigned         Lookup( char *, char *, unsigned );
 extern unsigned         DUIEnvLkup( char *, char *, unsigned );
@@ -60,7 +61,6 @@ void                    FindLocalDebugInfo( char *name );
 extern void             StartupErr( char *err );
 
 
-extern char             *TrpFile;
 #ifdef ENABLE_TRAP_LOGGING
 extern char             *TrpDebugFile;
 extern bool             TrpDebugFileFlush;
@@ -263,7 +263,7 @@ static void DoGetItem( char *buff, bool stop_on_first )
         if( CurrChar == ' ' ) break;
         if( CurrChar == '\t' ) break;
         if( CurrChar == ARG_TERMINATE ) break;
-        if( CurrChar == ';' ) break;
+        if( CurrChar == TRAP_PARM_SEPARATOR ) break;
         if( CurrChar == '{' ) break;
         if( OptDelim( CurrChar ) && stop_on_first ) break;
         *buff++ = CurrChar;
@@ -326,13 +326,13 @@ static void GetTrapParm( int pass )
 
     start = parm;
     SkipSpaces();
-    *start++ = ';';
+    *start++ = TRAP_PARM_SEPARATOR;
     GetRawItem( start );
     if( pass == 2 ) {
-        _Alloc( start, strlen( parm ) + strlen( TrpFile ) + 1 );
-        StrCopy( parm, StrCopy( TrpFile, start ) );
-        _Free( TrpFile );
-        TrpFile = start;
+        _Alloc( start, strlen( parm ) + strlen( TrapParms ) + 1 );
+        StrCopy( parm, StrCopy( TrapParms, start ) );
+        _Free( TrapParms );
+        TrapParms = start;
     }
 }
 
@@ -452,10 +452,11 @@ static void ProcOptList( int pass )
             }
             break;
         case OPT_TRAP:
-            if( pass == 2 ) _Free( TrpFile );
-            TrpFile = GetFileName( pass );
+            if( pass == 2 )
+                _Free( TrapParms );
+            TrapParms = GetFileName( pass );
             SkipSpaces();
-            if( CurrChar == ';' ) {
+            if( CurrChar == TRAP_PARM_SEPARATOR ) {
                 NextChar();
                 GetTrapParm( pass );
             } else if( CurrChar == '{' ) {
@@ -535,7 +536,7 @@ void ProcCmd( void )
     int         pass;
 
     MemSize = MIN_MEM_SIZE;
-    TrpFile = NULL;
+    TrapParms = NULL;
     _SwitchOn( SW_LOAD_SYMS );
     _SwitchOn( SW_USE_MOUSE );
     ProcSysOptInit();
@@ -556,7 +557,9 @@ void ProcCmd( void )
         CurrArgp = GetCmdArg( 0 );
         if( CurrArgp != NULL ) {
             ProcOptList( pass );
-            if( pass == 2 ) SetCmdArgStart( CurrArgc, CurrArgp );
+            if( pass == 2 ) {
+                SetCmdArgStart( CurrArgc, CurrArgp );
+            }
         }
         if( pass == 1 ) {
             screen_mem = ConfigScreen();
@@ -566,7 +569,7 @@ void ProcCmd( void )
                 MemSize = ~0;
             }
             SysSetMemLimit();
-            TrpFile = DupStr( "std" );
+            TrapParms = DupStr( "std" );
             InvokeFile = DupStr( "" );
         }
     }

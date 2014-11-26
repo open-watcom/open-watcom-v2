@@ -42,7 +42,6 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "farptrs.h"
-#include "trptypes.h"
 
 
 #define READONLY    0

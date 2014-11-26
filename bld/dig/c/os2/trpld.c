@@ -79,24 +79,22 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
     unsigned            len;
-    char                *ptr;
-    char                *parm;
+    const char          *ptr;
+    const char          *parm;
     unsigned            rc;
     trap_init_func      *init_func;
 
-    if( trapbuff == NULL )
-        trapbuff = "std";
-    ptr = trapbuff;
-    while( *ptr != '\0' && *ptr != ';' ) {
-        ++ptr;
-    }
+    if( trap_parms == NULL || *trap_parms == '\0' )
+        trap_parms = "std";
+    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+        ;
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    len = ptr - trapbuff;
-    memcpy( trpfile, trapbuff, len );
+    len = ptr - trap_parms;
+    memcpy( trpfile, trap_parms, len );
     trpfile[len] = '\0';
     if( !stricmp( trpfile, "std" ) ) {
         unsigned        version;

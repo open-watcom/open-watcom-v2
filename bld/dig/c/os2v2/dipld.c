@@ -45,7 +45,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     DosFreeModule( *sys_hdl );
 }
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HMODULE             dll;
     dip_init_func       *init_func;

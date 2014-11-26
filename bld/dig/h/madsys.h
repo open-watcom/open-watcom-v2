@@ -53,5 +53,5 @@ typedef int         mad_sys_handle;
 typedef void        *mad_sys_handle;
 #endif
 
-extern mad_status   MADSysLoad( char *, mad_client_routines *, mad_imp_routines **, mad_sys_handle * );
+extern mad_status   MADSysLoad( const char *, mad_client_routines *, mad_imp_routines **, mad_sys_handle * );
 extern void         MADSysUnload( mad_sys_handle * );

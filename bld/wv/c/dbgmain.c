@@ -99,7 +99,7 @@ extern void             InitScan( void );
 extern void             InitScreen( void );
 extern void             InitSource( void );
 extern void             InitToolBar( void );
-extern void             InitTrap( char * );
+extern void             InitTrap( const char * );
 extern void             LangSetFini( void );
 extern bool             LangSetInit( void );
 extern void             LoadProg( void );
@@ -168,7 +168,6 @@ extern void             WndDlgFini( void );
 extern void             WndMemInit( void );
 
 extern char             *InitCmdList;
-extern char             *TrpFile;
 extern char             *CmdStart;
 extern char             *NameBuff;
 extern char             *TxtBuff;
@@ -244,7 +243,7 @@ void DebugInit( void )
     InitMachState();
     PathInit();
     InitDbgInfo();
-    InitTrap( TrpFile );
+    InitTrap( TrapParms );
     if( !LangSetInit() ) {
         FiniTrap();
         StartupErr( LIT( STARTUP_Loading_PRS ) );
@@ -470,7 +469,7 @@ void DebugFini( void )
     FiniMADInfo();
     FiniTrace();
     RestoreHandlers();
-    _Free( TrpFile );
+    _Free( TrapParms );
     FiniLiterals();
     FiniLocalInfo();
 }

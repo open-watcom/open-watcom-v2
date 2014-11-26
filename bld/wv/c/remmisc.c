@@ -68,7 +68,6 @@ extern bool             TrpDebugFileFlush;
 
 extern system_config    SysConfig;
 extern char             *TxtBuff;
-extern char             *TrpFile;
 
 unsigned int            MaxPacketLen;
 
@@ -105,7 +104,7 @@ void FiniSuppServices( void )
 #endif
 
 static bool InitTrapError;
-void InitTrap( char *trap_file )
+void InitTrap( const char *trap_parms )
 {
     mx_entry            in[1];
     mx_entry            out[2];
@@ -128,12 +127,14 @@ void InitTrap( char *trap_file )
     InitTrapError = FALSE;
     RestoreHandlers();
     ver.remote = FALSE;
+    if( trap_parms == NULL )
+        trap_parms = "";
 #if !defined( BUILD_RFX )
-    if( stricmp( trap_file, "dumb" ) == 0 ) {
+    if( stricmp( trap_parms, "dumb" ) == 0 ) {
         error = LoadDumbTrap( &ver );
     } else {
 #endif
-        error = LoadTrap( trap_file, buff, &ver );
+        error = LoadTrap( trap_parms, buff, &ver );
 #if !defined( BUILD_RFX )
     }
 #endif
@@ -237,12 +238,12 @@ void FiniTrap( void )
 }
 
 #if 0
-bool ReInitTrap( char *trap_file )
-/********************************/
+bool ReInitTrap( const char *trap_parms )
+/***************************************/
 {
     // only tested under NT - this is here for Lexus/Fusion/What's my name?
     FiniTrap();
-    InitTrap( trap_file );
+    InitTrap( trap_parms );
     return( !InitTrapError );
 }
 #endif

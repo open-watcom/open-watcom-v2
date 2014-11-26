@@ -38,7 +38,7 @@
 #include "trpcore.h"
 
 extern char             *InitCmdList;
-extern char             *TrpFile;
+extern char             *TrapParms;
 
 /*
  *  Queried from trap file supplemental services

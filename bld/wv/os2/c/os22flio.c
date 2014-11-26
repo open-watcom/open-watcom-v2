@@ -40,7 +40,6 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "farptrs.h"
-#include "trptypes.h"
 #include "doserr.h"
 
 #define READONLY    0

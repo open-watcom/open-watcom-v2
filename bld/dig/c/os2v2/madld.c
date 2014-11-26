@@ -45,7 +45,7 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
     DosFreeModule( *sys_hdl );
 }
 
-mad_status MADSysLoad( char *path, mad_client_routines *cli,
+mad_status MADSysLoad( const char *path, mad_client_routines *cli,
                        mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     HMODULE             dll;

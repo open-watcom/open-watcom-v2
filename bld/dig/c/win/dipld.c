@@ -44,7 +44,7 @@ typedef void DIGENTRY dip_fini_func( void );
 HMODULE DIPLastHandle;  /* for Dr. WATCOM */
 
 #ifdef DEBUGGING
-void Say( char *buff )
+void Say( const char *buff )
 {
     MessageBox( (HWND) NULL, buff, "DEBUG", MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
@@ -60,7 +60,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 }
 
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HANDLE              dll;
     char                newpath[256];
