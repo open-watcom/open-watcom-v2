@@ -91,11 +91,10 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     StopForDLLs = TRUE;
     BreakOnKernelMessage = FALSE;
-    if( parms[0] == 'k' ) {
+    if( *parms == 'k' ) {
         BreakOnKernelMessage = TRUE;
     }
     remote = remote;
-    parms = parms;
 
     err[0] = 0;
     ver.major = TRAP_MAJOR_VERSION;

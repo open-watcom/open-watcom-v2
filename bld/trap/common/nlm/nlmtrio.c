@@ -38,6 +38,7 @@
 //#include <conio.h>
 #undef ConsolePrintf
 #include "nw3to4.h"
+#include "servio.h"
 
 #include <ecb.h>
 #if defined ( __NW50__ )
@@ -47,7 +48,7 @@ void  NXVmExit( int status ) ;
 extern struct ScreenStruct                     *screenID;
 extern struct LoadDefinitionStruct             *MyNLMHandle;
 
-void Output( char *str )
+void Output( const char *str )
 {
     ActivateScreen( screenID );
     OutputToScreen( screenID, "%s", str );
@@ -66,18 +67,18 @@ void SayGNiteGracey( int return_code )
 #endif
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     OutputToScreen( systemConsoleScreen, "%s\r\n", err );
     SayGNiteGracey( 1 );
 }
 
-int KeyPress()
+int KeyPress( void )
 {
    return( CheckKeyStatus( screenID ) ); /* RELINQUISH ? */
 }
 
-int KeyGet()
+int KeyGet( void )
 {
    BYTE value, scanCode, type;
 
@@ -86,8 +87,7 @@ int KeyGet()
    return( value );
 }
 
-int WantUsage( char *ptr )
+int WantUsage( const char *ptr )
 {
     return( *ptr == '?' );
 }
-

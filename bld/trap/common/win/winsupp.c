@@ -38,8 +38,6 @@
 #include "packet.h"
 #include "trperr.h"
 
-extern void StartupErr( char * );
-extern void Output( char * );
 
 extern int RemoteLinkObtained;
 
@@ -142,10 +140,10 @@ int xp,yp,xs,ys;
  */
 void ProcAppl( HWND windhandle, unsigned message, WORD worddata, LONG longdata )
 {
-    char    name[80];
-    char    *err;
-    int i;
-    char buff[80];
+    char        name[80];
+    const char  *err;
+    int         i;
+    char        buff[80];
 
     windhandle = windhandle; message = message; longdata = longdata;
     switch( worddata ) {
@@ -155,6 +153,7 @@ void ProcAppl( HWND windhandle, unsigned message, WORD worddata, LONG longdata )
             Output( TRP_ERR_null_name );
             Output( "\r\n" );
         } else {
+            *name = '\0';
             GetWindowText( EditChild, name, sizeof( name ) );
             if( RemoteLinkObtained )
                 RemoteUnLink();

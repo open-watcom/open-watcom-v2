@@ -47,29 +47,21 @@
 #include "packet.h"
 #include "servname.h"
 #include "tcerr.h"
+#include "servio.h"
+#include "nothing.h"
 
 
 extern trap_version     TrapVersion;
+
 static bool             OneShot;
 
-extern char             RWBuff[ 0x400 ];
-
-extern void             Output( char * );
-extern void             SayGNiteGracey( int );
-extern void             StartupErr(char *);
-extern int              KeyPress(void);
-extern int              KeyGet(void);
-extern void             NothingToDo(void);
-extern bool             Session( void );
-extern bool             ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot );
-
-void ServError( char *msg )
+void ServError( const char *msg )
 {
     Output( msg );
     Output( "\r\n" );
 }
 
-void ServMessage( char *msg )
+void ServMessage( const char *msg )
 {
     ServError( msg );
 }
@@ -77,7 +69,7 @@ void ServMessage( char *msg )
 void Initialize( void )
 {
 
-    char        *err;
+    const char  *err;
     char        trap[ 128 ];
     char        cmdline[ 256 ];
 
@@ -85,7 +77,7 @@ void Initialize( void )
     ParseCommandLine( cmdline, trap, RWBuff, &OneShot );
     err = RemoteLink( RWBuff, TRUE );
     if( err == NULL ) {
-        err = LoadTrap( trap[0] == '\0' ? NULL : trap, RWBuff, &TrapVersion );
+        err = LoadTrap( trap, RWBuff, &TrapVersion );
     }
     if( err != NULL ) {
         StartupErr( err );

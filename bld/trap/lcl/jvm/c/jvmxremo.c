@@ -57,7 +57,7 @@ trap_retval DoAccess( void )
         *(access_req *)In_Mx_Ptr[0].ptr |= 0x80;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
-        AddPacket( In_Mx_Ptr[i].len, In_Mx_Ptr[i].ptr );
+        AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
     *(access_req *)In_Mx_Ptr[0].ptr &= ~0x80;
     PutPacket();
@@ -72,7 +72,7 @@ trap_retval DoAccess( void )
             } else {
                 piece = left;
             }
-            RemovePacket( piece, Out_Mx_Ptr[i].ptr );
+            RemovePacket( Out_Mx_Ptr[i].ptr, piece );
             i++;
             left -= piece;
             if( left == 0 ) break;
@@ -328,41 +328,40 @@ trap_retval ReqProg_load( void )
     char                *dst;
     char                *name;
     char                *endparm;
-    char                *err;
+    const char          *err;
     prog_load_ret       *ret;
     trap_elen           len;
     char                *loaderr;
 
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    strcpy( (char *)buffer, src );
-    endparm = LinkParm + strlen( LinkParm ) + 1;
+    strcpy( buffer, src );
+    endparm = LinkParm;
+    while( *endparm++ != '\0' ) ;
     strcpy( endparm, buffer );
     if( *name == '\0' ) {
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
     }
-    err = RemoteLink( LinkParm, 0 );
+    err = RemoteLink( LinkParm, FALSE );
     if( err != NULL ) {
         loaderr = err;
         strcpy( SavedError, err );
         ret->err = ERR_JVM_SAVED_ERROR;
         return( sizeof( *ret ) );
     }
-    while( *src != '\0' ) ++src;
-    ++src;
+    while( *src++ != '\0' ) ;
     len = GetTotalSize() - (src - name) - sizeof( prog_load_req );
     dst = (char *)buffer;
-    while( *dst != '\0' ) ++dst;
-    ++dst;
+    while( *dst++ != '\0' ) ;
     memcpy( dst, src, len );
     dst += len;
     StartPacket();
-    AddPacket( sizeof( prog_load_req ), In_Mx_Ptr[0].ptr );
-    AddPacket( dst - buffer, buffer );
+    AddPacket( In_Mx_Ptr[0].ptr, sizeof( prog_load_req ) );
+    AddPacket( buffer, dst - buffer );
     PutPacket();
     len = GetPacket();
-    RemovePacket( sizeof( *ret ), ret );
+    RemovePacket( ret, sizeof( *ret ) );
     if( ret->err == 0 ) {
         TaskLoaded = TRUE;
         if( DebuggerHwnd != NULL ) SetForegroundWindow( DebuggerHwnd );
@@ -372,10 +371,10 @@ trap_retval ReqProg_load( void )
 
         killacc.req = REQ_PROG_KILL;
         StartPacket();
-        AddPacket( sizeof( killacc ), &killacc );
+        AddPacket( &killacc, sizeof( killacc ) );
         PutPacket();
         GetPacket();
-        //RemovePacket( msg_len, &erracc );
+        //RemovePacket( &erracc, msg_len );
         RemoteUnLink();
 
         TaskLoaded = FALSE;

@@ -230,7 +230,7 @@ ULONG           SendSem = 0;
 #define IPXRelinquishControl()  DosSleep( 1 )
 
 
-static trap_retval DoRemoteGet( byte *rec, trap_elen len )
+static trap_retval DoRemoteGet( void *data, trap_elen len )
 {
     int         i;
     int         p;
@@ -261,18 +261,18 @@ putconnstatus( Connection );
             --i;
         }
         got = _SWAPINT( RecHead[p].packetLen ) - sizeof( RecHead[p] );
-        _fmemcpy( rec, Buffer[p], got );
+        _fmemcpy( data, Buffer[p], got );
         recvd += got;
         PostAListen( p );
         if( got != MAX_DATA_SIZE ) break;
-        rec += got;
+        data = (char *)data + got;
     }
 
 putstring( "Done RemoteGet\r\n" );
     return( recvd );
 }
 
-static trap_retval DoRemotePut( byte *snd, trap_elen len )
+static trap_retval DoRemotePut( void *data, trap_elen len )
 {
     WORD        rc;
 
@@ -281,9 +281,9 @@ putconnstatus( Connection );
     if( len == 0 ) {
         _INITSPXECB( Send, 1, NULL, 0 );
     } else {
-        _INITSPXECB( Send, 2, (char *)snd, len );
+        _INITSPXECB( Send, 2, data, len );
     }
-    SendECB.hsem = (HSEM) &SendSem;
+    SendECB.hsem = (HSEM)&SendSem;
     SendHead.connectionCtl |= 0x10;
     SendHead.packetLen = _SWAPINT( sizeof( SendHead ) + len );
     DosSemSet( &SendSem );
@@ -308,21 +308,21 @@ putstring( "Done RemotePut\r\n" );
     return( len );
 }
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
-    return( DoRemoteGet( rec, len ) );
+    return( DoRemoteGet( data, len ) );
 }
 
-trap_retval RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
-        if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
+        if( DoRemotePut( data, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd += MAX_DATA_SIZE;
+        data = (char *)data + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
-    if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
+    if( DoRemotePut( data, len ) == REQUEST_FAILED ) {
         return( REQUEST_FAILED );
     }
     return( len );
@@ -525,14 +525,14 @@ static bool FindPartner( void )
     return( TRUE );
 }
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
     server = server;
 putstring( "RemoteLink\r\n" );
 
-    if( parms == NULL || *parms == '\0' )
+    if( *parms == '\0' )
         parms = "NovLink";
     for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {

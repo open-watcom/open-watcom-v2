@@ -43,6 +43,7 @@
 #include "madregs.h"
 #include "x86cpu.h"
 #include "miscx87.h"
+#include "cpuglob.h"
 
 typedef void (*excfn)();
 

@@ -47,7 +47,7 @@ HANDLE          FakeHandle;
 HWND            DebuggerWindow;
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
-/*******************************************************************/
+/**************************************************************************/
 {
     trap_version        ver;
 

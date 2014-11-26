@@ -36,12 +36,10 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "trpimp.h"
+#include "servio.h"
 
 
-extern char RWBuff[];
-
-
-void Output( char *str )
+void Output( const char *str )
 {
     write( 2, str, strlen( str ) );
 }
@@ -51,7 +49,7 @@ void SayGNiteGracey( int return_code )
     _exit( return_code );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Output( err );
     Output( "\n" );
@@ -101,7 +99,7 @@ int KeyGet( void )
 }
 
 
-static char *StrCopy( char *src, char *dst )
+static char *StrCopy( const char *src, char *dst )
 {
     while( (*dst = *src) ) {
         ++src;
@@ -110,20 +108,24 @@ static char *StrCopy( char *src, char *dst )
     return( dst );
 }
 
-static unsigned TryOnePath( char *path, struct stat *tmp, char *name,
+static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name,
                          char *result )
 {
     char        *end;
     char        *ptr;
 
-    if( path == NULL ) return( 0 );
+    if( path == NULL )
+        return( 0 );
     ptr = result;
     for( ;; ) {
         if( *path == '\0' || *path == ':' ) {
-            if( ptr != result ) *ptr++ = '/';
+            if( ptr != result )
+                *ptr++ = '/';
             end = StrCopy( name, ptr );
-            if( stat( result, tmp ) == 0 ) return( end - result );
-            if( *path == '\0' ) return( 0 );
+            if( stat( result, tmp ) == 0 )
+                return( end - result );
+            if( *path == '\0' )
+                return( 0 );
             ++path;
             ptr = result;
         }
@@ -134,7 +136,7 @@ static unsigned TryOnePath( char *path, struct stat *tmp, char *name,
     }
 }
 
-static unsigned FindFilePath( char *name, char *result )
+static unsigned FindFilePath( const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -146,9 +148,11 @@ static unsigned FindFilePath( char *name, char *result )
         return( end - result );
     }
     len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-    if( len != 0 ) return( len );
+    if( len != 0 )
+        return( len );
     len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-    if( len != 0 ) return( len );
+    if( len != 0 )
+        return( len );
     if( _cmdname( cmd ) != NULL ) {
         end = strrchr( cmd, '/' );
         if( end != NULL ) {
@@ -264,7 +268,7 @@ unsigned FileClose( unsigned h )
     return( 0 );
 }
 
-int WantUsage( char *ptr )
+int WantUsage( const char *ptr )
 {
     /*
         This is a really stupid place to put this, but it's the first
@@ -272,10 +276,11 @@ int WantUsage( char *ptr )
         effective GID and UID back to the real ones so that the server
         can be made set UID root without being a security hole. That allows
         use to run at ring 1 for the parallel server/trap file.
-    */
+     */
     setegid( getgid() );
     seteuid( getuid() );
-    if( *ptr == '?' ) return( TRUE );
+    if( *ptr == '?' )
+        return( TRUE );
     return( FALSE );
 }
 

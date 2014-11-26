@@ -40,8 +40,6 @@
 #include "trperr.h"
 
 extern unsigned NumPrinters( void );
-extern void ServMessage( char * );
-extern void ServError( char * );
 
 int CurrentPort = -1;    /* ports 0,1,2 */
 
@@ -109,7 +107,8 @@ BOOL CreateSelections( short x, short y, short avgx, short avgy )
 void ProcAppl( HWND windhandle, unsigned message, WORD worddata, LONG longdata )
 {
     WORD notify;
-    char buff[80], *err;
+    char buff[80];
+    const char *err;
 
     message = message;
     switch( worddata ) {

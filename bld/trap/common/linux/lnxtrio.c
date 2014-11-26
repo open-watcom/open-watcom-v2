@@ -42,10 +42,10 @@
 #endif
 #include "trpimp.h"
 #include "digio.h"
+#include "servio.h"
 
-extern char RWBuff[];
 
-void Output( char *str )
+void Output( const char *str )
 {
     write( 2, str, strlen( str ) );
 }
@@ -55,14 +55,14 @@ void SayGNiteGracey( int return_code )
     _exit( return_code );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Output( err );
     Output( "\n" );
     SayGNiteGracey( 1 );
 }
 
-int KeyPress()
+int KeyPress( void )
 {
     int             ret;
     struct termios  old;
@@ -87,7 +87,7 @@ int KeyPress()
     return( ret != 0 );
 }
 
-int KeyGet()
+int KeyGet( void )
 {
     struct termios  old;
     struct termios  new;
@@ -104,9 +104,10 @@ int KeyGet()
     return( key );
 }
 
-int WantUsage( char *ptr )
+int WantUsage( const char *ptr )
 {
-    if( *ptr == '-' ) ++ptr;
+    if( *ptr == '-' )
+        ++ptr;
     return( *ptr == '?' );
 }
 
@@ -119,8 +120,7 @@ static char *StrCopy( const char *src, char *dst )
     return( dst );
 }
 
-static unsigned TryOnePath( char *path, struct stat *tmp, const char *name,
-                         char *result )
+static unsigned TryOnePath( char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;

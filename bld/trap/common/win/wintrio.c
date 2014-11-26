@@ -36,6 +36,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <windows.h>
+#include "servio.h"
 #include "winserv.h"
 
 #define TMPSLEN 256
@@ -43,7 +44,7 @@
 static char     tmpStr[TMPSLEN];
 static short    tmpOff=0;
 
-void Output( char *str )
+void Output( const char *str )
 {
     int         i;
     int         len;
@@ -78,7 +79,7 @@ void SayGNiteGracey( int return_code )
     return_code = return_code;
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     MessageBox( NULL, err, "", MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
     if( MainWindowHandle != NULL ) {
@@ -96,7 +97,7 @@ int KeyGet( void )
     return( 0 );
 }
 
-int  WantUsage( char *foo ) {
+int  WantUsage( const char *foo ) {
     foo = foo;
     return( FALSE );
 }

@@ -167,13 +167,13 @@ bool Baud( int index )
 }
 
 
-char *ParsePortSpec( char  * *spec )
+char *ParsePortSpec( const char **spec )
 {
     int         port;
     int         nid;
     char        ch;
-    char        *parm;
-    char        *start;
+    const char  *parm;
+    const char  *start;
     static char name[] = "//___/dev/ser__";
 
     parm = (spec == NULL) ? "" : *spec;

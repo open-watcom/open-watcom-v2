@@ -42,6 +42,7 @@
 #include "trpimp.h"
 #include "packet.h"
 #include "javadbg.h"
+#include "servio.h"
 
 #ifdef DEBUG_TRAP
 #define _DBG1( x ) printf x ; fflush( stdout )
@@ -56,10 +57,6 @@ static trap_version     TrapVer;
 
 char    RWBuff[ 0x400 ];
 
-extern void         Output( char * );
-extern void         SayGNiteGracey( int );
-extern void         StartupErr(char *);
-
 static mx_entry     In[1];
 static mx_entry     Out[1];
 
@@ -67,14 +64,14 @@ static mx_entry     Out[1];
 static void AccTrap( bool want_return )
 {
     if( want_return ) {
-        PutBuffPacket( TrapRequest( 1, &In, 1, &Out ), RWBuff );
+        PutBuffPacket( RWBuff, TrapRequest( 1, &In, 1, &Out ) );
     } else {
         TrapRequest( 1, &In, 0, NULL );
     }
 }
 
 
-static bool Session()
+bool Session( void )
 {
     unsigned    req;
     bool    want_return;
@@ -108,16 +105,17 @@ static bool Session()
 
 void Initialize( void )
 {
-    char        *err;
+    const char  *err;
 
     RWBuff[0] = '\0';
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLink( (char *)RWBuff, 1 );
+    err = RemoteLink( RWBuff, 1 );
     _DBG(( "Back from PM remote link\n" ));
-    if( err ) {
+    if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));
     }
-    if( err != NULL ) StartupErr( err );
+    if( err != NULL )
+        StartupErr( err );
     _DBG(( "No Remote link error. About to TrapInit." ));
     TrapVer = TrapInit( "", RWBuff, FALSE );
     if( RWBuff[0] != '\0' ) {

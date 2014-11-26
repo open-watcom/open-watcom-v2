@@ -45,6 +45,7 @@
 #include "trperr.h"
 //#include "trptypes.h"
 #include "packet.h"
+#include "nothing.h"
 
 extern struct ResourceTagStructure              *SocketTag;
 extern struct ResourceTagStructure              *TimerTag;
@@ -55,8 +56,6 @@ extern struct ResourceTagStructure              *SemaphoreTag;
 #define Completed( x )          ( (x).status == 0 || (x).status == 0xFFFD )
 #define SPXCancelEvent( x )     if( CSPXCancelSessionListen( x ) ) \
                                     CIPXCancelECB( x );
-
-extern  void    NothingToDo( void );
 
 #define NUM_REC_BUFFS   5
 
@@ -124,7 +123,7 @@ _DBG_IPX(("Posting RecECB[%d]\r\n", i));
     CSPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static trap_retval DoRemoteGet( byte *rec, trap_elen len )
+static trap_retval DoRemoteGet( void *data, trap_elen len )
 {
     trap_elen   recvd;
     int         i;
@@ -154,20 +153,20 @@ _DBG_IPX(("RemoteGet\r\n"));
         }
         got = _SWAPINT( RecHead[p].length ) - sizeof( RecHead[p] );
 _DBG_IPX(("Got a packet - size=%d\r\n", got));
-        memcpy( rec, Buffer[p], got );
+        memcpy( data, Buffer[p], got );
         recvd += got;
         PostAListen( p );
         if( got != MAX_DATA_SIZE )
             break;
-        rec += got;
+        data = (char *)data + got;
     }
     return( recvd );
 }
 
-static trap_retval DoRemotePut( byte *snd, trap_elen len )
+static trap_retval DoRemotePut( void *data, trap_elen len )
 {
 _DBG_IPX(("RemotePut\r\n"));
-    _INITSPXECB( Send, 2, snd, len );
+    _INITSPXECB( Send, 2, data, len );
     SendHead.connectionControl |= 0x10;
     SendHead.length = _SWAPINT( sizeof( SendHead ) + len );
     CSPXSendSequencedPacket( Connection, &SendECB );
@@ -176,21 +175,21 @@ _DBG_IPX(("RemotePut\r\n"));
     return( len );
 }
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
-    return( DoRemoteGet( rec, len ) );
+    return( DoRemoteGet( data, len ) );
 }
 
-trap_retval RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
-        if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
+        if( DoRemotePut( data, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd += MAX_DATA_SIZE;
+        data = (char *)data + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
-    if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
+    if( DoRemotePut( data, len ) == REQUEST_FAILED ) {
         return( REQUEST_FAILED );
     }
     return( len );
@@ -390,14 +389,14 @@ _DBG_IPX(( "FindPartner -- %s answered\r\n", Completed( RespECB ) ? "someone" : 
     return( FALSE );
 }
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
 
 _DBG_IPX(("RemoteLink\r\n"));
     server = server;
-    if( parms == NULL || *parms == '\0' )
+    if( *parms == '\0' )
         parms = "NovLink";
     for( i = 0; i < 48 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {

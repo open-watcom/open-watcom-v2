@@ -38,14 +38,12 @@
 #include "trperr.h"
 #include "packet.h"
 #include "servname.h"
+#include "servio.h"
 #include "tcerr.h"
+#include "nothing.h"
 
 extern trap_version TrapVersion;
-extern char         RWBuff[ 0x400 ];
 
-extern void         NothingToDo( void );
-extern bool         Session( void );
-extern bool         ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot );
 #ifdef __NT__
 extern void         TellHWND( HWND );
 #endif
@@ -56,6 +54,7 @@ char  TrapFile[ 0x400 ];
 char  TrapParm[ 0x400 ];
 
 HANDLE          Instance;
+
 static char     ServerClass[32]="ServerClass";
 static HWND     hwndMain;
 static bool     SessionError;
@@ -71,10 +70,6 @@ static BOOL     AnyInstance( HINSTANCE, int, LPSTR );
 
 WINEXPORT LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
 
-/* Forward declarations */
-void StartupErr(char *err);
-void ServError( char *msg );
-void Output( char *str );
 
 /*
  * WinMain - initialization, message loop
@@ -150,12 +145,12 @@ static void EnableMenus( HWND hwnd, BOOL connected, BOOL session )
  */
 static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 {
-    char        *err;
+    const char  *err;
 
     if( !ParseCommandLine( cmdline, TrapFile, TrapParm, &OneShot ) ) {
         return( FALSE );
     }
-    err = LoadTrap( TrapFile[0] == '\0' ? NULL : TrapFile, RWBuff, &TrapVersion );
+    err = LoadTrap( TrapFile, RWBuff, &TrapVersion );
     if( err != NULL ) {
         StartupErr( err );
         return( FALSE );
@@ -224,7 +219,7 @@ static bool Exit = FALSE;
 WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     FARPROC     proc;
-    char        *err;
+    const char  *err;
     HMENU       hMenu;
 
     switch( msg ) {
@@ -333,30 +328,30 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 } /* WindowProc */
 
 
-void ServError( char *msg )
+void ServError( const char *msg )
 {
     ShowWindow( hwndMain, SW_RESTORE );
     MessageBox( NULL, msg, TRP_The_WATCOM_Debugger, MB_APPLMODAL+MB_OK );
     SessionError = TRUE;
 }
 
-void StartupErr(char *err)
+void StartupErr( const char *err )
 {
     ShowWindow( hwndMain, SW_RESTORE );
     ServError( err );
 }
 
-void ServMessage(char *msg)
+void ServMessage( const char *msg )
 {
     msg = msg;
 }
 
-int WantUsage( char *ptr )
+int WantUsage( const char *ptr )
 {
     return( *ptr == '?' );
 }
 
-void Output( char *str )
+void Output( const char *str )
 {
     MessageBox( NULL, str, TRP_The_WATCOM_Debugger, MB_APPLMODAL+MB_OK );
 }

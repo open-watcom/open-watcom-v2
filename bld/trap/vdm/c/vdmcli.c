@@ -49,7 +49,7 @@
 
 HPIPE   pipeHdl;
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     APIRET      rc;
     char        buf[ PREFIX_LEN + MAX_NAME + 1 ];
@@ -57,7 +57,7 @@ char *RemoteLink( const char *parms, bool server )
     if( server )
         return( "this should never be seen" );
     strcpy( buf, PREFIX );
-    if( *parms == 0 ) {
+    if( *parms == '\0' ) {
         strcpy( buf + PREFIX_LEN, DEFAULT_NAME );
     } else if( ValidName( parms ) ) {
         strcpy( buf + PREFIX_LEN, parms );
@@ -107,35 +107,35 @@ bool RemoteConnect( void )
 }
 
 
-trap_retval RemoteGet( byte *data, trap_elen length )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned_16 incoming;
     USHORT      bytes_read;
     unsigned    ret;
 
-    length = length;
+    len = len;
     DosRead( pipeHdl, &incoming, sizeof( incoming ), &bytes_read );
     ret = incoming;
     while( incoming != 0 ) {
         DosRead( pipeHdl, data, incoming, &bytes_read );
-        data += bytes_read;
+        data = (char *)data + bytes_read;
         incoming -= bytes_read;
     }
     return( ret );
 }
 
 
-trap_retval RemotePut( byte *data, trap_elen length )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     unsigned_16 outgoing;
     USHORT      bytes_written;
 
-    outgoing = length;
+    outgoing = len;
     DosWrite( pipeHdl, &outgoing, sizeof( outgoing ), &bytes_written );
-    if( length > 0 ) {
-        DosWrite( pipeHdl, data, length, &bytes_written );
+    if( len > 0 ) {
+        DosWrite( pipeHdl, data, len, &bytes_written );
     }
-    return( length );
+    return( len );
 }
 
 

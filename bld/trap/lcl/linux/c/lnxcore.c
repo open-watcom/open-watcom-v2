@@ -759,16 +759,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     remote = remote;
     core_info.fd = NO_FILE;
-    if( parms != NULL ) {
-        while( *parms != '\0' ) {
-            switch( *parms ) {
-            case 'I':
-            case 'i':
-                core_info.ignore_timestamp = TRUE;
-                break;
-            }
-            ++parms;
+    while( *parms != '\0' ) {
+        switch( *parms ) {
+        case 'I':
+        case 'i':
+            core_info.ignore_timestamp = TRUE;
+            break;
         }
+        ++parms;
     }
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

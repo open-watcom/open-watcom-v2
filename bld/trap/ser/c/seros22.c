@@ -251,9 +251,9 @@ bool Baud( int index )
 }
 
 
-char *ParsePortSpec( char * *spec )
+char *ParsePortSpec( const char **spec )
 {
-    char        *parm;
+    const char  *parm;
     ULONG       action;
     char        port;
     static char name[] = "com?";

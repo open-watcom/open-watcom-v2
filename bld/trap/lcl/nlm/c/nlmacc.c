@@ -168,7 +168,6 @@ byte                                    RunningPriority;
 extern struct ResourceTagStructure      *AllocTag;
 extern struct ResourceTagStructure      *SemaphoreTag;
 extern struct ResourceTagStructure      *ProcessTag;
-extern void                             ServMessage(char*);
 
 
 /* from NLMIO.C */

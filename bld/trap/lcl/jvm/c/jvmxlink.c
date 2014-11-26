@@ -72,7 +72,7 @@ char *MunchName( char *name )
     return( buff );
 }
 
-trap_retval RemoteGet( byte *buff, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned    bytes_read;
 
@@ -82,17 +82,17 @@ trap_retval RemoteGet( byte *buff, trap_elen len )
     bytes_read = *(unsigned *)SharedMem;
     if( bytes_read > len )
         bytes_read = len;
-    memcpy( buff, SharedMem + sizeof( unsigned ), bytes_read );
+    memcpy( data, SharedMem + sizeof( unsigned ), bytes_read );
     ReleaseSemaphore( SemReadDone, 1, NULL );
     return( bytes_read );
 }
 
-trap_retval RemotePut( byte *buff, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     WaitForSingleObject( SemReadUp, INFINITE );
     CHECK_DONE();
     *(unsigned *)SharedMem = len;
-    memcpy( SharedMem + sizeof( unsigned ), buff, len );
+    memcpy( SharedMem + sizeof( unsigned ), data, len );
     ReleaseSemaphore( SemWritten, 1, NULL );
     WaitForSingleObject( SemReadDone, INFINITE );
     CHECK_DONE();
@@ -110,7 +110,7 @@ void RemoteDisco( void )
 
 #define JAVA_NAME "java_g.exe"
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
     MemHdlLink = OpenFileMapping( FILE_MAP_WRITE, FALSE, REMOTE_LINK_MEM_NAME );
@@ -131,6 +131,7 @@ char *RemoteLink( const char *parms, bool server )
         SharedMem == NULL || Terminated == NULL || UniquePid == NULL ) {
         return( "can not connect to debugger" );
     }
+    parms = parms;
 #else
     STARTUPINFO             sinfo;
     PROCESS_INFORMATION     pinfo;
@@ -141,7 +142,7 @@ char *RemoteLink( const char *parms, bool server )
     strcpy( buff, JAVA_NAME );
     if( GetEnvironmentVariable( "DEBUG_THE_JAVA_DEBUGGER", command, sizeof( command ) ) != 0 ) {
         strcat( command, ".exe " );
-//          strcpy( command, "dvw.exe " );
+//        strcpy( command, "dvw.exe " );
     } else {
         command[0] = '\0';
     }
@@ -163,12 +164,13 @@ char *RemoteLink( const char *parms, bool server )
             strcat( command, ";" );
             strcat( command, buff );
         }
-        if( parms != NULL && parms[0] != '\0' ) {
-            p = parms + strlen( parms ) - 1;
-            if( *p == '\\' || *p == '/' )
-                *p = '\0';
+        if( *parms != '\0' ) {
             strcat( command, ";" );
             strcat( command, parms );
+            p = command + strlen( command ) - 1;
+            if( *p == '\\' || *p == '/' ) {
+                *p = '\0';
+            }
         }
     }
     memset( &sinfo, 0, sizeof( sinfo ) );
@@ -200,7 +202,6 @@ char *RemoteLink( const char *parms, bool server )
     ResumeThread( pinfo.hThread );
 
 #endif
-    parms = parms;
     server = server;
     return( 0 );
 }

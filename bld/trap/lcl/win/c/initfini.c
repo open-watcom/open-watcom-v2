@@ -150,12 +150,17 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     Out(( OUT_INIT,"TrapInit entered, debugger task=%04x", DebuggerTask ));
 
 #ifdef DEBUG
+    extern unsigned DbgFlags;
+
     if( *parms == '[' ) {
-        unsigned                bit;
-        extern unsigned DbgFlags;
+        unsigned    bit;
+        char        c;
         ++parms;
-        while( *parms && *parms != ']' ) {
-            switch( *parms ) {
+        while( (c = *parms != '\0' ) {
+            ++parms;
+            if( c == ']' )
+                break;
+            switch( c ) {
             case 'a':
                 bit = -1;
                 break;
@@ -193,7 +198,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
                 bit = OUT_TEMP;
                 break;
             }
-            ++parms;
             if( *parms == '~' ) {
                 DbgFlags &= ~bit;
                 ++parms;
@@ -201,7 +205,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
                 DbgFlags |= bit;
             }
         }
-        if( *parms ) ++parms;
     }
 #endif
     if( parms[0] == 'c' && parms[1] == 'g' && parms[2] == 'e' ) {

@@ -247,7 +247,7 @@ static void PostAListen( int i )
     _SPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static trap_retval DoRemoteGet( byte *rec, trap_elen len )
+static trap_retval DoRemoteGet( void *data, trap_elen len )
 {
     int         i;
     trap_elen   recvd;
@@ -274,43 +274,43 @@ static trap_retval DoRemoteGet( byte *rec, trap_elen len )
             --i;
         }
         got = _SWAPINT( RecHead[p].length ) - sizeof( RecHead[p] );
-        _fmemcpy( rec, Buffer[p], got );
+        _fmemcpy( data, Buffer[p], got );
         recvd += got;
         PostAListen( p );
         if( got != MAX_DATA_SIZE )
             break;
-        rec += got;
+        data = (char *)data + got;
     }
     return( recvd );
 }
 
-static trap_retval DoRemotePut( byte *snd, trap_elen len )
+static trap_retval DoRemotePut( void *data, trap_elen len )
 {
     _INITECB( SendECB, SendHead, 2, SPX );
     SendHead.connectControl |= 0x10;
     SendHead.length = _SWAPINT( sizeof( SendHead ) + len );
-    SendECB.fragmentDescriptor[1].address = snd;
+    SendECB.fragmentDescriptor[1].address = data;
     SendECB.fragmentDescriptor[1].size = len;
     _SPXSendSequencedPacket( Connection, &SendECB );
     WaitOn( SendECB );
     return( len );
 }
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
-    return( DoRemoteGet( rec, len ) );
+    return( DoRemoteGet( data, len ) );
 }
 
-trap_retval RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
-        if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
+        if( DoRemotePut( data, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd += MAX_DATA_SIZE;
+        data = (char *)data + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
-    if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
+    if( DoRemotePut( data, len ) == REQUEST_FAILED ) {
         return( REQUEST_FAILED );
     }
     return( len );
@@ -520,7 +520,7 @@ putstring( "got one\r\n" );
 
 char    DefLinkName[] = "NovLink";
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
     BYTE        major_ver,minor_ver;
@@ -570,7 +570,7 @@ char *RemoteLink( const char *parms, bool server )
     }
     #endif
     server = server;
-    if( parms == NULL || *parms == '\0' )
+    if( *parms == '\0' )
         parms = DefLinkName;
     for( i = 0; i < MAX_NAME_LEN && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {

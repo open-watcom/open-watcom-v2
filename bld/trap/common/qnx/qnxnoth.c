@@ -31,6 +31,7 @@
 
 
 #include <sys/kernel.h>
+#include "nothing.h"
 
 void NothingToDo()
 {

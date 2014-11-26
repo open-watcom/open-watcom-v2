@@ -1783,17 +1783,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
-    parms=parms;
     ForceFpu32 = 0;
-    if( parms != NULL ) {
-        switch( *parms ) {
-        case 'f':
-            ForceFpu32 = -1;
-            break;
-        case 'F':
-            ForceFpu32 = 1;
-            break;
-        }
+    switch( *parms ) {
+    case 'f':
+        ForceFpu32 = -1;
+        break;
+    case 'F':
+        ForceFpu32 = 1;
+        break;
     }
     remote = remote;
     ProcInfo.save_in = -1;

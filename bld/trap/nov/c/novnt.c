@@ -67,36 +67,36 @@ bool Terminate( void )
     return( FALSE );
 }
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     int         got;
     trap_elen   total;
 
     total = 0;
     for( ;; ) {
-        got = recv( ConnectionSocket, (char *)rec, len, 0 );
+        got = recv( ConnectionSocket, data, len, 0 );
         if( got == SOCKET_ERROR )
             return( REQUEST_FAILED );
         total += got;
         if( got != MAX_DATA_SIZE )
             break;
         len -= got;
-        rec += got;
+        data = (char *)data + got;
     }
     return( total );
 }
 
-trap_retval RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
 
     while( len >= MAX_DATA_SIZE ) {
-        if( send( ConnectionSocket, (char *)snd, MAX_DATA_SIZE, 0 ) == SOCKET_ERROR ) {
+        if( send( ConnectionSocket, data, MAX_DATA_SIZE, 0 ) == SOCKET_ERROR ) {
             return( REQUEST_FAILED );
         }
-        snd += MAX_DATA_SIZE;
+        data = (char *)data + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
-    if( send( ConnectionSocket, (char *)snd, len, 0 ) == SOCKET_ERROR ) {
+    if( send( ConnectionSocket, data, len, 0 ) == SOCKET_ERROR ) {
         return( REQUEST_FAILED );
     }
     return( len );
@@ -351,17 +351,17 @@ static char FindPartner( void )
     return( 1 );
 }
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
     WSADATA     data;
 #ifdef SERVER
-    char        *p;
+    const char  *p;
 #endif
 
     server = server;
 
-    if( parms == NULL || *parms == '\0' )
+    if( *parms == '\0' )
         parms = "NovLink";
     for( i = 0; i < 47 && *parms != '\0'; ++parms ) {
         if( strchr( "/\\:;,*?+-", *parms ) == NULL ) {
@@ -377,7 +377,7 @@ char *RemoteLink( const char *parms, bool server )
         RemoteUnLink();
         return( TRP_ERR_server_name_already_in_use );
     }
-    if( ( p = InitServer() ) != NULL ) {
+    if( (p = InitServer()) != NULL ) {
         RemoteUnLink();
         return( p );
     }

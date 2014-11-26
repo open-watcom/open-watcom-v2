@@ -247,10 +247,10 @@ bool Baud( int index )
     return( TRUE );
 }
 
-char *ParsePortSpec( char * *spec )
+char *ParsePortSpec( const char **spec )
 {
-    char    *parm;
-    int     port;
+    const char  *parm;
+    int         port;
 
     parm = (spec == NULL) ? "" : *spec;
 
@@ -273,9 +273,12 @@ char *ParsePortSpec( char * *spec )
     default:
         return( TRP_ERR_invalid_serial_port_number );
     }
-    if( *parm != '\0' && *parm != '.' ) return( TRP_ERR_invalid_serial_port_number );
-    if( port >= Equipment().num_rs232s ) return( TRP_ERR_serial_port_does_not_exist );
-    if( spec != NULL ) *spec = parm;
+    if( *parm != '\0' && *parm != '.' )
+        return( TRP_ERR_invalid_serial_port_number );
+    if( port >= Equipment().num_rs232s )
+        return( TRP_ERR_serial_port_does_not_exist );
+    if( spec != NULL )
+        *spec = parm;
     return( NULL );
 }
 

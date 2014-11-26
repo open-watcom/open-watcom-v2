@@ -138,18 +138,18 @@ bool Terminate( void )
 }
 #endif
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
-    NetCtlBlk.ncb_buffer = rec;
+    NetCtlBlk.ncb_buffer = data;
     NetCtlBlk.ncb_length = len;
     NetCtlBlk.ncb_command = NCBRECV;
     NetBIOS( &NetCtlBlk );
     return( NetCtlBlk.ncb_length );
 }
 
-trap_retval RemotePut( byte *rec, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
-    NetCtlBlk.ncb_buffer = rec;
+    NetCtlBlk.ncb_buffer = data;
     NetCtlBlk.ncb_length = len;
     NetCtlBlk.ncb_command = NCBSEND;
     NetBIOS( &NetCtlBlk );
@@ -191,12 +191,12 @@ void RemoteDisco( void )
 char            DefLinkName[] = "NetLink";
 static char     NotThere[] = TRP_ERR_NetBIOS_is_not_running ;
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    i;
 
     server = server;
-    if( parms == NULL || *parms == '\0' )
+    if( *parms == '\0' )
         parms = DefLinkName;
 #if defined(__OS2__)
   #if defined(__386__)
@@ -262,7 +262,7 @@ char *RemoteLink( const char *parms, bool server )
 
     memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
     for( i = 1; i < NCBNAMSZ; ++i ) {
-        NetCtlBlk.ncb_name[i] = (*parms != '\0') ? *parms++ : ' ';
+        NetCtlBlk.ncb_name[i] = ( *parms != '\0' ) ? *parms++ : ' ';
     }
     NetCtlBlk.ncb_name[0] = ( server ) ? 'S' : 'C';
     NetCtlBlk.ncb_command = NCBADDNAME;

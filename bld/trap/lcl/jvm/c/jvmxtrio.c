@@ -34,13 +34,14 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "servio.h"
 
-void Output( char *str )
+void Output( const char *str )
 {
     printf( "%s\n", str );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Output( err );
     Output( "\n" );

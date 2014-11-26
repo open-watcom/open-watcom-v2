@@ -31,11 +31,11 @@
 
 #include <conio.h>
 #include <stddef.h>
-
 #define INCL_DOSPROCESS
 #include <os2.h>
+#include "servio.h"
 
-void Output( char *str )
+void Output( const char *str )
 {
     while( *str ) {
         putch( *str );
@@ -48,25 +48,25 @@ void SayGNiteGracey( int return_code )
     DosExit( 1, return_code );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Output( err );
     Output( "\r\n" );
     SayGNiteGracey( 1 );
 }
 
-int KeyPress()
+int KeyPress( void )
 {
     return( kbhit() );
 }
 
-int KeyGet()
+int KeyGet( void )
 {
     return( getch() );
 }
 
 
-int WantUsage( char *ptr )
+int WantUsage( const char *ptr )
 {
     LONG    lReq = 20;
     ULONG   ulCurMax;
@@ -75,6 +75,7 @@ int WantUsage( char *ptr )
        specific hook that I've got. */
     DosSetRelMaxFH( &lReq, &ulCurMax );
 
-    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
+    if( (*ptr == '-') || (*ptr == '/') )
+        ++ptr;
     return( *ptr == '?' );
 }

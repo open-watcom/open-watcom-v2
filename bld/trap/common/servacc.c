@@ -37,13 +37,12 @@
 #include "trperr.h"
 #include "packet.h"
 #include "tcerr.h"
+#include "servio.h"
+#include "nothing.h"
 
 trap_version     TrapVersion;
-extern void NothingToDo( void );
 
 char    RWBuff[ 0x400 ];
-
-extern void             ServError( char * );
 
 static mx_entry     In[1];
 static mx_entry     Out[1];
@@ -51,7 +50,7 @@ static mx_entry     Out[1];
 static void AccTrap( bool want_return )
 {
     if( want_return ) {
-        PutBuffPacket( TrapAccess( 1, &In[0], 1, &Out[0] ), RWBuff );
+        PutBuffPacket( RWBuff, TrapAccess( 1, &In[0], 1, &Out[0] ) );
     } else {
         TrapAccess( 1, &In[0], 0, NULL );
     }
@@ -70,7 +69,7 @@ static bool AccConnect( void )
     data = GetOutPtr( sizeof( *ret ) );
     if( acc->ver.major != TrapVersion.major || acc->ver.minor > TrapVersion.minor ) {
         strcpy( data, TRP_ERR_WRONG_SERVER_VERSION );
-        PutBuffPacket( sizeof( *acc ) + sizeof( TRP_ERR_WRONG_SERVER_VERSION ), RWBuff );
+        PutBuffPacket( RWBuff, sizeof( *acc ) + sizeof( TRP_ERR_WRONG_SERVER_VERSION ) );
     } else {
         len = TrapAccess( 1, &In[0], 1, &Out[0] );
         max = MaxPacketSize();
@@ -79,7 +78,7 @@ static bool AccConnect( void )
         if( ret->max_msg_size > max )
             ret->max_msg_size = max;
         CONV_LE_16( ret->max_msg_size );
-        PutBuffPacket( len, RWBuff );
+        PutBuffPacket( RWBuff, len );
     }
     if( data[0] != '\0' ) {
         ServError( data );

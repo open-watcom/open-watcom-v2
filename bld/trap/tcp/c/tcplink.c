@@ -185,7 +185,7 @@
 static trp_socket           data_socket = INVALID_SOCKET;
 
 #if defined( SERVER )
-extern void     ServMessage( char * );
+extern void     ServMessage( const char * );
 #endif
 
 bool Terminate( void )
@@ -225,7 +225,7 @@ static int FullGet( void *get, int len )
     return( got );
 }
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned_16         rec_len;
 
@@ -240,7 +240,7 @@ trap_retval RemoteGet( byte *rec, trap_elen len )
 #endif
         if( FullGet( &rec_len, sizeof( rec_len ) ) == sizeof( rec_len ) ) {
             CONV_LE_16( rec_len );
-            if( rec_len == 0 || FullGet( rec, rec_len ) == rec_len ) {
+            if( rec_len == 0 || FullGet( data, rec_len ) == rec_len ) {
                 _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
                 return( rec_len );
             }
@@ -249,7 +249,7 @@ trap_retval RemoteGet( byte *rec, trap_elen len )
     return( REQUEST_FAILED );
 }
 
-trap_retval RemotePut( byte *rec, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     unsigned_16         send_len;
 
@@ -263,7 +263,7 @@ trap_retval RemotePut( byte *rec, trap_elen len )
         send_len = len;
         CONV_LE_16( send_len );
         if( !IS_SOCK_ERROR( send( data_socket, (void *)&send_len, sizeof( send_len ), 0 ) ) ) {
-            if( len == 0 || !IS_SOCK_ERROR( send( data_socket, (void *)rec, len, 0 ) ) ) {
+            if( len == 0 || !IS_SOCK_ERROR( send( data_socket, data, len, 0 ) ) ) {
 #ifdef __RDOS__
                  RdosPushTcpConnection( data_socket );
 #endif
@@ -351,7 +351,7 @@ void RemoteDisco( void )
 }
 
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     unsigned short      port;
 #ifndef __RDOS__    
@@ -365,7 +365,7 @@ char *RemoteLink( const char *parms, bool server )
     struct ifi_info     *ifi, *ifihead;
     struct sockaddr     *sa;
     #endif
-    char                buff2[128];
+    char                buff[128];
   #endif
 
     _DBG_NET(("SERVER: Calling into RemoteLink\r\n"));
@@ -393,7 +393,7 @@ char *RemoteLink( const char *parms, bool server )
     listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
     RdosAddWaitForTcpListen( wait_handle, listen_handle, &listen_handle );
   #else
-    if( parms == NULL || parms[0] == '\0' )
+    if( *parms == '\0' )
         parms = "tcplink";
     sp = getservbyname( parms, "tcp" );
     if( sp != NULL ) {
@@ -424,10 +424,10 @@ char *RemoteLink( const char *parms, bool server )
     if( getsockname( control_socket, (struct sockaddr TRAPFAR *)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
-    sprintf( buff2, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
-    ServMessage( buff2 );
+    sprintf( buff, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
+    ServMessage( buff );
     _DBG_NET(("TCP: "));
-    _DBG_NET((buff2));
+    _DBG_NET((buff));
     _DBG_NET(("\r\n"));
 
     #if !defined(__LINUX__)   /* FIXME */
@@ -439,9 +439,9 @@ char *RemoteLink( const char *parms, bool server )
             continue;
 
         if( (sa = ifi->ifi_addr) != NULL ) {
-            sprintf( buff2, "%s%s", TRP_TCP_ip_address,
+            sprintf( buff, "%s%s", TRP_TCP_ip_address,
                 inet_ntoa( ((struct sockaddr_in*)sa)->sin_addr ) );
-            ServMessage( buff2 );
+            ServMessage( buff );
         }
     }
     free_ifi_info( ifihead );
@@ -501,7 +501,7 @@ char *RemoteLink( const char *parms, bool server )
         port = htons( port );
     }
     parms = buff;
-    /* Setup for socket connect using name specified by command line. */
+    /* Setup for socket connect using parms specified by command line. */
     socket_address.sin_family = AF_INET;
     /* OS/2's TCP/IP gethostbyname doesn't handle numeric addresses */
     socket_address.sin_addr.s_addr = inet_addr( parms );

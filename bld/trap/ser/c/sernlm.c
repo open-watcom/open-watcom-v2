@@ -48,8 +48,6 @@ struct TimerDataStructure               TimerData;
 int                                     CurrentBaud;
 unsigned                                Ticks;
 
-extern void                             Output(char *);
-
 
 static void Tick( LONG dummy )
 {
@@ -166,9 +164,9 @@ bool Baud( int index )
 }
 
 
-char *ParsePortSpec( char * *spec )
+char *ParsePortSpec( const char **spec )
 {
-    char        *parm;
+    const char  *parm;
     int         port;
     int         com_num;
     int         rc;

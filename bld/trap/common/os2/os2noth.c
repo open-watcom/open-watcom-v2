@@ -31,9 +31,9 @@
 
 
 #include <stddef.h>
-
 #define INCL_DOSPROCESS
-#include "os2.h"
+#include <os2.h>
+#include "nothing.h"
 
 void NothingToDo()
 {

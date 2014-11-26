@@ -48,7 +48,7 @@ static a_handle         PutHandle;
 #define PATTERN 0xA5
 
 
-static int fstrlen( char far *str )
+static int fstrlen( char __far *str )
 {
     int         i;
 
@@ -56,31 +56,30 @@ static int fstrlen( char far *str )
     return( i );
 }
 
-#pragma off(unreferenced);
-unsigned RemoteGet( char far *rec, unsigned len )
-#pragma on(unreferenced);
+unsigned RemoteGet( void __far *data, unsigned len )
 {
-    char        far *buffer;
+    char        __far *buffer;
     int         buflen;
     int         status;
 
+    len=len;
     status = mal_read( GetHandle, &buffer, &buflen );
-    movedata( FP_SEG(buffer), FP_OFF(buffer),
-              FP_SEG(rec), FP_OFF(rec),
+    movedata( FP_SEG( buffer ), FP_OFF( buffer ),
+              FP_SEG( data ), FP_OFF( data ),
               buflen );
     return( buflen );
 }
 
-void RemotePut( char far *snd, unsigned len )
+void RemotePut( void __far *data, unsigned len )
 {
-    mal_write( PutHandle, snd, len );
+    mal_write( PutHandle, data, len );
 }
 
 
 char RemoteConnect( void )
 {
     int                 status;
-    char                far *buffer;
+    char                __far *buffer;
     int                 buflen;
     char                pattern;
 
@@ -111,7 +110,7 @@ void RemoteDisco( void )
 }
 
 
-char *RemoteLink( const char __far *parms, char server )
+const char *RemoteLink( const char __far *parms, char server )
 {
     int                 version;
 
@@ -124,7 +123,7 @@ char *RemoteLink( const char __far *parms, char server )
         return( "this program requires DESQview 2.00 or higher" );
     }
     api_level( 0x200 );
-    if( parms == NULL || *parms == '\0' ){
+    if( *parms == '\0' ){
         parms = "WATCOM Server";
     }
 

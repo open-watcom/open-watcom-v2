@@ -39,7 +39,7 @@
 extern unsigned __far output_port( unsigned, unsigned );
 extern unsigned __far input_port( unsigned );
 
-extern unsigned pascal __far DosDevConfig( char __far *, unsigned short,
+extern unsigned __pascal __far DosDevConfig( char __far *, unsigned short,
                                          unsigned short );
 
 extern unsigned short __pascal __far DosPortAccess( unsigned short reserverd,

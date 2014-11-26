@@ -1052,7 +1052,7 @@ out( "in TrapInit\r\n" );
 out( "    checking environment:\r\n" );
     CPUType = X86CPUType();
     Flags.Is386 = ( CPUType >= X86_386 );
-    if( parms[0] == 'D' || parms[0] == 'd' ) {
+    if( *parms == 'D' || *parms == 'd' ) {
         Flags.DRsOn = FALSE;
         ++parms;
     } else if( out0( "    CPU type\r\n" ) || ( Flags.Is386 == 0 ) ) {
@@ -1066,7 +1066,7 @@ out( "    checking environment:\r\n" );
     } else {
         Flags.DRsOn = TRUE;
     }
-    if( parms[0] == 'O' || parms[0] == 'o' ) {
+    if( *parms == 'O' || *parms == 'o' ) {
         Flags.NoOvlMgr = TRUE;
     }
 out( "    done checking environment\r\n" );

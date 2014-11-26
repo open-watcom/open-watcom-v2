@@ -166,7 +166,7 @@ void WndUser()
 {
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     printf( "%s\n", err );
     exit( 1 );

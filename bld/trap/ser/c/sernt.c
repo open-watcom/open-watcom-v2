@@ -276,7 +276,7 @@ bool Baud( int index )
     return( TRUE );
 }
 
-char *ParsePortSpec( char **spec )
+char *ParsePortSpec( const char **spec )
 {
     comPortNumber = 1;
     if( spec != NULL ) {

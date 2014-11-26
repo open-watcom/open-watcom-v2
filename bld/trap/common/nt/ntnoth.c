@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "nothing.h"
 
 void NothingToDo()
 {

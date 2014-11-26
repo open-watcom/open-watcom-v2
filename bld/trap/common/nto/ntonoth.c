@@ -30,6 +30,7 @@
 
 
 #include <sched.h>
+#include "nothing.h"
 
 void NothingToDo( void )
 {

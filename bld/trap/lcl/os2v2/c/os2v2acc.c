@@ -1772,7 +1772,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     PTIB                ptib;
     PPIB                ppib;
 
-    parms = parms;
     Remote = remote;
     err[0] = '\0';
     ver.major  = TRAP_MAJOR_VERSION;
@@ -1781,7 +1780,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     SaveStdIn  = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     Screen     = DEBUG_SCREEN;
-    if( parms[0] == '2' ) {
+    if( *parms == '2' ) {
         stopOnSecond = TRUE;
     }
 

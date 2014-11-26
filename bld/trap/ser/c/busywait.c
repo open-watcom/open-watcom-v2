@@ -30,10 +30,10 @@
 
 
 #include "serial.h"
+#include "nothing.h"
 
 extern  int             GetByte( void );
 extern  unsigned        WaitCount( void );
-extern  void            NothingToDo( void );
 
 int WaitByte( unsigned timer_ticks )
 {

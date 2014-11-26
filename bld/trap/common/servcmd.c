@@ -38,34 +38,33 @@
 #include "trperr.h"
 #include "packet.h"
 #include "tcerr.h"
+#include "trpld.h"
+#include "servio.h"
 
-extern int              WantUsage( char * );
-extern void             StartupErr(char *);
-extern  char ServUsage[];
-extern char  RWBuff[ 0x400 ];
 extern trap_version     TrapVersion;
 
-static char *SkipSpaces( char *ptr )
+static const char *SkipSpaces( const char *ptr )
 {
-    while( *ptr == ' ' || *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     return( ptr );
 }
 
 /*
  * GetFilename -- get filename from command line
  */
-static char *GetFilename( char *ptr, char *buff )
+static const char *GetFilename( const char *ptr, char *buff )
 {
     ptr = SkipSpaces( ptr );
     for( ;; ) {
         if( *ptr == '\0' ) break;
         if( *ptr == ' ' ) break;
         if( *ptr == '\t' ) break;
-#if !defined(__QNX__) && !defined(__LINUX__)
+#if !defined(__UNIX__)
         if( *ptr == '/' ) break;
         if( *ptr == '-' ) break;
 #endif
-        if( *ptr == ';' ) break;
+        if( *ptr == TRAP_PARM_SEPARATOR ) break;
         if( *ptr == '{' ) break;
         *buff++ = *ptr++;
     }
@@ -73,7 +72,7 @@ static char *GetFilename( char *ptr, char *buff )
     return( ptr );
 }
 
-static char *CollectTrapParm( char *ptr, char *start )
+static const char *CollectTrapParm( const char *ptr, char *buff )
 {
     unsigned    num;
 
@@ -91,43 +90,46 @@ static char *CollectTrapParm( char *ptr, char *start )
                     break;
                 }
             }
-            *start++ = *ptr++;
+            *buff++ = *ptr++;
         }
-        *start = '\0';
+        *buff = '\0';
     } else {
-        ptr = GetFilename( ptr, start );
+        ptr = GetFilename( ptr, buff );
     }
     return( ptr );
 }
 
-#if defined(__QNX__) || defined(__LINUX__)
+#if defined( __UNIX__ )
     #define IS_OPTION( c )      ((c) == '-')
 #else
     #define IS_OPTION( c )      ((c) == '-' || (c) == '/')
 #endif
 
-bool ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot )
-/***************************************************************************/
+bool ParseCommandLine( const char *cmdline, char *trap, char *parm, bool *oneshot )
+/*********************************************************************************/
 {
-    char        *start;
-    char        *ptr;
+    const char  *start;
+    const char  *ptr;
+    char        *buff;
 
     *oneshot = FALSE;
-    #if defined(__AXP__) && defined(__NT__)
-        //NYI: temp until we can get all the unaligned stuff straightened out.
-        SetErrorMode( SEM_NOALIGNMENTFAULTEXCEPT );
-    #endif
+    *trap = '\0';
+    *parm = '\0';
+#if defined(__AXP__) && defined(__NT__)
+    //NYI: temp until we can get all the unaligned stuff straightened out.
+    SetErrorMode( SEM_NOALIGNMENTFAULTEXCEPT );
+#endif
     ptr = SkipSpaces( cmdline );
     if( WantUsage( ptr ) ) {
         StartupErr( ServUsage );
         return( FALSE );
     }
-    trap[0] = '\0';
     while( IS_OPTION( *ptr ) ) {
         ptr = SkipSpaces( ptr + 1 );
         start = ptr;
         #undef isalpha
-        while( isalpha( *ptr ) ) ++ptr;
+        while( isalpha( *ptr ) )
+            ++ptr;
         if( ptr == start ) {
             StartupErr( TRP_ERR_expect_option );
             return( FALSE );
@@ -138,14 +140,14 @@ bool ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot )
                 return( FALSE );
             }
             ptr = SkipSpaces( GetFilename( ptr + 1, trap ) );
-            if( *ptr == ';' ) {
-                start = &trap[ strlen( trap ) ];
-                *start++ = ';';
-                ptr = CollectTrapParm( SkipSpaces( ptr + 1 ), start );
-                } else if( *ptr == '{'/*}*/ ) {
-                start = &trap[ strlen( trap ) ];
-                *start++ = ';';
-                ptr = CollectTrapParm( ptr, start );
+            if( *ptr == TRAP_PARM_SEPARATOR ) {
+                buff = trap + strlen( trap );
+                *buff++ = TRAP_PARM_SEPARATOR;
+                ptr = CollectTrapParm( SkipSpaces( ptr + 1 ), buff );
+            } else if( *ptr == '{'/*}*/ ) {
+                buff = trap + strlen( trap );
+                *buff++ = TRAP_PARM_SEPARATOR;
+                ptr = CollectTrapParm( ptr, buff );
             }
         } else if( strnicmp( "once", start, ptr - start ) == 0 ) {
             *oneshot = TRUE;

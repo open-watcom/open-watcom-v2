@@ -52,14 +52,14 @@ HANDLE  pipeHdl;
 
 #define NT_PREF_LEN     (MACH_NAME_LEN + PREFIX_LEN)
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     char        buf[ NT_PREF_LEN + MAX_NAME + 1 ];
 
     if( server )
         return( "this should never be seen" );
     strcpy( buf, NT_MACH_NAME PREFIX );
-    if( *parms == 0 ) {
+    if( *parms == '\0' ) {
         strcpy( buf + NT_PREF_LEN, DEFAULT_NAME );
     } else if( ValidName( parms ) ) {
         strcpy( buf + NT_PREF_LEN, parms );
@@ -109,35 +109,35 @@ bool RemoteConnect( void )
 }
 
 
-trap_retval RemoteGet( byte *data, trap_elen length )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned_16     incoming;
     ULONG           bytes_read;
     trap_elen       ret;
 
-    length = length;
+    len = len;
     ReadFile( pipeHdl, &incoming, sizeof( incoming ), &bytes_read, NULL );
     ret = incoming;
     while( incoming != 0 ) {
         ReadFile( pipeHdl, data, incoming, &bytes_read, NULL );
-        data += bytes_read;
+        data = (char *)data + bytes_read;
         incoming -= bytes_read;
     }
     return( ret );
 }
 
 
-trap_retval RemotePut( byte *data, trap_elen length )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     unsigned_16 outgoing;
     ULONG       bytes_written;
 
-    outgoing = length;
+    outgoing = len;
     WriteFile( pipeHdl, &outgoing, sizeof( outgoing ), &bytes_written, NULL );
-    if( length > 0 ) {
-        WriteFile( pipeHdl, data, length, &bytes_written, NULL );
+    if( len > 0 ) {
+        WriteFile( pipeHdl, data, len, &bytes_written, NULL );
     }
-    return( length );
+    return( len );
 }
 
 

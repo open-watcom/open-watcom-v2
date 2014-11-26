@@ -34,15 +34,16 @@
     #include <conio.h>
 #endif
 #include <stdio.h>
-#include "testlink.h"
-#include "packet.h"
 #ifdef __WINDOWS__
 #include <windows.h>
+#endif
+#include "testlink.h"
+#include "packet.h"
+#include "nothing.h"
 
+#ifdef __WINDOWS__
 extern HANDLE   *_MainWindowData; // KLUDGE!!! (who cares - it's just a test program)
 #endif
-
-extern void     NothingToDo(void);
 
 char            RWBuff[256];
 full_block      Data;
@@ -58,18 +59,18 @@ void TrapFini( void )
 #ifdef __WINDOWS__
 HANDLE  Instance;
 
-void SetLinkName( char *name )
+void SetLinkName( const char *name )
 {
     name = name;
 }
 #endif
 
-void Output( char *p )
+void Output( const char *p )
 {
     printf( "%s", p );
 }
 
-void ServMessage( char *msg )
+void ServMessage( const char *msg )
 {
     Output( msg );
     Output( "\n" );
@@ -93,16 +94,16 @@ void RunTime( void )
     test &= ~TEST_FULL;
     while( --iter_count != 0 ) {
         if( test != TEST_CLIENT_GET )
-            RemoteGet( (byte *)&Data, block_size );
+            RemoteGet( Data, block_size );
         if( test != TEST_CLIENT_PUT ) {
-            RemotePut( (byte *)&Data, block_size );
+            RemotePut( Data, block_size );
         }
     }
 }
 
 int main( int argc, char *argv[] )
 {
-    char        *err;
+    const char  *err;
     unsigned    len;
 
 #ifdef __WINDOWS__
@@ -124,7 +125,7 @@ int main( int argc, char *argv[] )
         if( RemoteConnect() ) {
             printf( "\nCONNECT\n" );
             for( ;; ) {
-                len = RemoteGet( (byte *)&Data, sizeof( Data ) );
+                len = RemoteGet( Data, sizeof( Data ) );
                 if( len == -1 ) {
                     printf( "\nlink broken\n" );
                     break;
@@ -132,8 +133,8 @@ int main( int argc, char *argv[] )
                 if( Data[0] == TEST_OVER )
                     break;
                 if( Data[0] == TEST_STRING ) {
-                    printf( "'%s' - %d bytes\n", &Data[1], len );
-                    RemotePut( (byte *)&Data, len );
+                    printf( "'%s' - %d bytes\n", Data + 1, len );
+                    RemotePut( Data, len );
                 } else {
                     RunTime();
                 }

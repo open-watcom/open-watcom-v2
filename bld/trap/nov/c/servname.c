@@ -31,4 +31,6 @@
 
 
 #include "trperr.h"
+#include "servio.h"
+
 char    ServUsage[] = { TRP_NOVSERV_Usage };

@@ -52,7 +52,7 @@ static trap_retval DoRequest( void )
         *(access_req *)In_Mx_Ptr[0].ptr |= 0x80;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
-        AddPacket( In_Mx_Ptr[i].len, In_Mx_Ptr[i].ptr );
+        AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
     *(access_req *)In_Mx_Ptr[0].ptr &= ~0x80;
     result = PutPacket();
@@ -71,7 +71,7 @@ static trap_retval DoRequest( void )
                     } else {
                         piece = left;
                     }
-                    RemovePacket( piece, Out_Mx_Ptr[i].ptr );
+                    RemovePacket( Out_Mx_Ptr[i].ptr, piece );
                     i++;
                     left -= piece;
                     if( left == 0 ) {
@@ -134,16 +134,18 @@ static void ReqRemoteResume( void )
 trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
-    char           *err;
+    const char      *err;
     int             fix_minor;
 
     remote=remote;
     _DBG_EnterFunc( "TrapInit" );
     ver.remote = TRUE;
     fix_minor = 0;
-    if( parms != NULL && *parms == '!' ) {
+    if( *parms == '!' ) {
         ++parms;
-        if( *parms != '!' ) fix_minor = 1;
+        if( *parms != '!' ) {
+            fix_minor = 1;
+        }
     }
     err = RemoteLink( parms, FALSE );
     if( err != NULL ) {

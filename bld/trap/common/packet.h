@@ -30,18 +30,18 @@
 ****************************************************************************/
 
 
-extern void         StartPacket(void);
-extern trap_retval  PutPacket(void);
-extern trap_retval  PutBuffPacket( trap_elen, void * );
-extern void         AddPacket( trap_elen, void * );
-extern trap_retval  GetPacket(void);
-extern void         RemovePacket( trap_elen, void * );
-extern void         *GetPacketBuffPtr(void);
-extern trap_elen    MaxPacketSize(void);
+extern void         StartPacket( void );
+extern trap_retval  PutPacket( void );
+extern trap_retval  PutBuffPacket( void *, trap_elen );
+extern void         AddPacket( void *, trap_elen );
+extern trap_retval  GetPacket( void );
+extern void         RemovePacket( void *, trap_elen );
+extern void         *GetPacketBuffPtr( void );
+extern trap_elen    MaxPacketSize( void );
 
-extern char         *RemoteLink(const char *, bool);
-extern bool         RemoteConnect(void);
-extern void         RemoteDisco(void);
-extern void         RemoteUnLink(void);
-extern trap_retval  RemotePut(byte *, trap_elen);
-extern trap_retval  RemoteGet(byte *, trap_elen);
+extern const char   *RemoteLink( const char *, bool );
+extern bool         RemoteConnect( void );
+extern void         RemoteDisco( void );
+extern void         RemoteUnLink( void );
+extern trap_retval  RemotePut( void *, trap_elen );
+extern trap_retval  RemoteGet( void *, trap_elen );

@@ -31,6 +31,7 @@
 
 
 #include <rdos.h>
+#include "nothing.h"
 
 void NothingToDo()
 {

@@ -871,24 +871,22 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     PmdInfo.fd = NO_FILE;
     PmdInfo.enable_read_gdts = TRUE;
     PmdInfo.force_read_gdts  = FALSE;
-    if( parms != NULL ) {
-        while( *parms != '\0' ) {
-            switch( *parms ) {
-            case 'I':
-            case 'i':
-                PmdInfo.ignore_timestamp = TRUE;
-                break;
-            case 'G':
-            case 'g':
-                PmdInfo.force_read_gdts = TRUE;
-                break;
-            case 'd':
-            case 'D':
-                PmdInfo.enable_read_gdts = FALSE;
-                break;
-            }
-            ++parms;
+    while( *parms != '\0' ) {
+        switch( *parms ) {
+        case 'I':
+        case 'i':
+            PmdInfo.ignore_timestamp = TRUE;
+            break;
+        case 'G':
+        case 'g':
+            PmdInfo.force_read_gdts = TRUE;
+            break;
+        case 'd':
+        case 'D':
+            PmdInfo.enable_read_gdts = FALSE;
+            break;
         }
+        ++parms;
     }
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

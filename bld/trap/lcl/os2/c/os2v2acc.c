@@ -55,6 +55,7 @@
 #include "exeos2.h"
 #include "exeflat.h"
 #include "x86cpu.h"
+#include "cpuglob.h"
 
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
@@ -1599,7 +1600,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     SEL                 li,gi;
     __LINFOSEG          *linfo;
 
-    parms = parms;
     Remote = remote;
     err[0] = '\0';
     ver.major = TRAP_MAJOR_VERSION;
@@ -1608,7 +1608,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     SaveStdIn = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     Screen = DEBUG_SCREEN;
-    if( parms[0] == '2' ) {
+    if( *parms == '2' ) {
         stopOnSecond = TRUE;
     }
 

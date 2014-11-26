@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <i86.h>
+#include "nothing.h"
 
 void NothingToDo( void )
 {

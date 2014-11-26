@@ -35,8 +35,8 @@
 #include "tinyio.h"
 #include "trpimp.h"
 #include "digio.h"
+#include "servio.h"
 
-extern char RWBuff[];
 
 extern int KeyPress_pragma( void );
 extern int KeyGet_pragma( void );
@@ -57,7 +57,7 @@ extern int KeyGet_pragma( void );
     modify [ax];
 
 
-void Output( char *str )
+void Output( const char *str )
 {
     TinyWrite( TINY_ERR, str, strlen( str ) );
 }
@@ -67,7 +67,7 @@ void SayGNiteGracey( int return_code )
     TinyTerminateProcess( return_code );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Output( err );
     Output( "\r\n" );
@@ -84,9 +84,10 @@ int KeyGet( void )
     return( KeyGet_pragma() );
 }
 
-int WantUsage( char *ptr )
+int WantUsage( const char *ptr )
 {
-    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
+    if( (*ptr == '-') || (*ptr == '/') )
+        ++ptr;
     return( *ptr == '?' );
 }
 

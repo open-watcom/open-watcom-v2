@@ -60,13 +60,13 @@ void Blip( int *a, int *b, char a1 )
 }
 #endif
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned long rc;
 
 #ifdef __WINDOWS__
     for( ;; ) {
-        rc = ConvGet( _id, rec, len, NO_BLOCK );
+        rc = ConvGet( _id, data, len, NO_BLOCK );
         if( (rc & 0xffff) == BLOCK ) SetExecutionFocus( _id );
         else break;
     }
@@ -74,7 +74,7 @@ trap_retval RemoteGet( byte *rec, trap_elen len )
 #ifdef DEBUG_ME
     Blip( &_a, &_b, 'G' );
 #endif
-    rc = ConvGet( _id, rec, len, BLOCK );
+    rc = ConvGet( _id, data, len, BLOCK );
 #ifdef DEBUG_ME
     Blip( &_a, &_b, 'g' );
 #endif
@@ -82,13 +82,13 @@ trap_retval RemoteGet( byte *rec, trap_elen len )
     return( rc >> 16 );
 }
 
-trap_retval RemotePut( byte *rec, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
 #ifdef __WINDOWS__
     int rc;
 
     for( ;; ) {
-        rc = ConvPut( _id, rec, len, NO_BLOCK );
+        rc = ConvPut( _id, data, len, NO_BLOCK );
         if( rc == BLOCK ) SetExecutionFocus( _id );
         else break;
     }
@@ -96,7 +96,7 @@ trap_retval RemotePut( byte *rec, trap_elen len )
 #ifdef DEBUG_ME
     Blip( &_aa, &_bb, 'T' );
 #endif
-    ConvPut( _id, rec, len, BLOCK );
+    ConvPut( _id, data, len, BLOCK );
 #ifdef DEBUG_ME
     Blip( &_aa, &_bb, 't' );
 #endif
@@ -150,13 +150,13 @@ void RemoteDisco( void )
 char    LinkName[80];
 char    DefLinkName[] = "WinLink";
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     int     i;
     int     rc;
 
     server = server;
-    if( parms == NULL || *parms == '\0' )
+    if( *parms == '\0' )
         parms = DefLinkName;
     i = 0;
     for( ;; ) {

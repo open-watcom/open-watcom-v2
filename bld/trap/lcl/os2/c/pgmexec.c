@@ -44,6 +44,7 @@
 #include "trpimp.h"
 #include "os2trap.h"
 #include "os2v2acc.h"
+#include "cpuglob.h"
 
 #define LOAD_THIS_DLL_SIZE      6
 

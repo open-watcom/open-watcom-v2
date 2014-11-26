@@ -34,6 +34,8 @@
 #include <ctype.h>
 #if defined( __OS2__ )
 #include <wos2.h>
+#elif defined( __NT__ ) || defined( __WINDOWS__ )
+#include <windows.h>
 #endif
 #include "nmp.h"
 #include "trptypes.h"
@@ -75,17 +77,20 @@ static bhandle PipeOpen( char *name )
 
 
 
-static char *OpenRequest( void )
+static const char *OpenRequest( void )
 {
     trap_elen  bytes;
 
     BindHdl = PipeOpen( BINDERY );
-    if( BindHdl == -1 ) return( TRP_ERR_NMPBIND_not_found );
+    if( BindHdl == BHANDLE_INVALID )
+        return( TRP_ERR_NMPBIND_not_found );
     NameBuff[0] = OPEN_REQUEST;
     bytes = mywrite( BindHdl, NameBuff, strlen( NameBuff ) + 1 );
-    if( bytes == 0 ) return( TRP_ERR_NMPBIND_not_found );
+    if( bytes == 0 )
+        return( TRP_ERR_NMPBIND_not_found );
     bytes = myread( BindHdl, NameBuff, 1 );
-    if( bytes == 0 ) return( TRP_ERR_NMPBIND_not_found );
+    if( bytes == 0 )
+        return( TRP_ERR_NMPBIND_not_found );
     myclose( BindHdl );
     return( NULL );
 }
@@ -99,7 +104,8 @@ void DoOpen( bhandle *phdl, char *suff )
     dbg( "\r\n" );
     for( ;; ) {
         *phdl = PipeOpen( NameBuff+1 );
-        if( *phdl != -1 ) break;
+        if( *phdl != BHANDLE_INVALID )
+            break;
         mysnooze();
     }
     *NameEnd = '\0';
@@ -118,7 +124,8 @@ const char *ValidName( const char *name )
             return( name );
             break;
         }
-        if( !isalnum( *name ) ) return( NULL );
+        if( !isalnum( *name ) )
+            return( NULL );
         ++name;
         ++len;
     }
@@ -127,14 +134,14 @@ const char *ValidName( const char *name )
 
 char    DefLinkName[] = DEFAULT_NAME;
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
-    char        *msg;
+    const char  *msg;
     const char  *end;
 
     server=server;
     end = ValidName( parms );
-    strcpy( NameBuff+1, PREFIX );
+    strcpy( NameBuff + 1, PREFIX );
     if( end == NULL ) {
         return( TRP_ERR_invalid_server_name_format_is );
     } else {
@@ -147,7 +154,8 @@ char *RemoteLink( const char *parms, bool server )
     }
     msg = OpenRequest();
     NameEnd = NameBuff + strlen( NameBuff );
-    if( msg != NULL ) return( msg );
+    if( msg != NULL )
+        return( msg );
     if( NameBuff[0] != BIND_ACK ) {
 #ifdef SERVER
         return( TRP_ERR_server_name_already_in_use );
@@ -183,12 +191,12 @@ bool RemoteConnect( void )
 }
 
 
-trap_retval RemoteGet( byte *data, trap_elen length )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     trap_elen      bytes_read;
     trap_elen      tmp;
 
-    bytes_read = myread( ReadHdl, data, length );
+    bytes_read = myread( ReadHdl, data, len );
     switch( bytes_read ) {
     case 0:
         return( REQUEST_FAILED );
@@ -202,24 +210,25 @@ trap_retval RemoteGet( byte *data, trap_elen length )
 }
 
 
-trap_retval RemotePut( byte *data, trap_elen length )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     trap_elen  bytes_written;
-    trap_elen  real_length;
+    trap_elen  real_len;
 
-    real_length = length;
-    if( length == 0 ) length = 1;       /* Can't write zero bytes */
-    bytes_written = mywrite( WriteHdl, data, length );
-    if( bytes_written != length )
+    real_len = len;
+    if( len == 0 )
+        len = 1;       /* Can't write zero bytes */
+    bytes_written = mywrite( WriteHdl, data, len );
+    if( bytes_written != len )
         return( REQUEST_FAILED );
-    if( length == 1 ) {
+    if( len == 1 ) {
         /* Send true length through */
-        bytes_written = mywrite( WriteHdl, &real_length, sizeof( trap_elen ) );
+        bytes_written = mywrite( WriteHdl, &real_len, sizeof( trap_elen ) );
         if( bytes_written != sizeof( trap_elen ) ) {
             return( REQUEST_FAILED );
         }
     }
-    return( length );
+    return( len );
 }
 
 

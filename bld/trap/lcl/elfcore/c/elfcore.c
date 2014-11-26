@@ -844,16 +844,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     Core.x_fd = NO_FILE;
     Core.c_ehdr = malloc( sizeof( Elf32_Ehdr ) );
     Core.x_ehdr = malloc( sizeof( Elf32_Ehdr ) );
-    if( parms != NULL ) {
-        while( *parms != '\0' ) {
-            switch( *parms ) {
-            case 'I':
-            case 'i':
-                Core.ignore_timestamp = TRUE;
-                break;
-            }
-            ++parms;
+    while( *parms != '\0' ) {
+        switch( *parms ) {
+        case 'I':
+        case 'i':
+            Core.ignore_timestamp = TRUE;
+            break;
         }
+        ++parms;
     }
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;

@@ -50,7 +50,7 @@ char    pipeName[ MACH_NAME_LEN + PREFIX_LEN + MAX_NAME ];
 
 char    DefLinkName[] = DEFAULT_NAME;
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     tiny_ret_t          rc;
     tiny_dos_version    ver;
@@ -67,7 +67,7 @@ char *RemoteLink( const char *parms, bool server )
     }
     strcpy( p, PREFIX );
     p += PREFIX_LEN;
-    if( *parms == 0 ) {
+    if( *parms == '\0' ) {
         strcpy( p, DefLinkName );
     } else if( ValidName( parms ) ) {
         strcpy( p, parms );
@@ -118,34 +118,34 @@ bool RemoteConnect( void )
 }
 
 
-trap_retval RemoteGet( byte *data, trap_elen length )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned_16     incoming;
     trap_elen  got;
     trap_elen  ret;
 
-    length = length;
+    len = len;
     TinyRead( pipeHdl, &incoming, sizeof( incoming ) );
     ret = incoming;
     while( incoming != 0 ) {
         got = TinyRead( pipeHdl, data, incoming );
-        data += got;
+        data = (char *)data + got;
         incoming -= got;
     }
     return( ret );
 }
 
 
-trap_retval RemotePut( byte *data, trap_elen length )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     unsigned_16 outgoing;
 
-    outgoing = length;
+    outgoing = len;
     TinyWrite( pipeHdl, &outgoing, sizeof( outgoing ) );
-    if( length > 0 ) {
-        TinyWrite( pipeHdl, data, length );
+    if( len > 0 ) {
+        TinyWrite( pipeHdl, data, len );
     }
-    return( length );
+    return( len );
 }
 
 

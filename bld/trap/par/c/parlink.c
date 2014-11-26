@@ -194,6 +194,7 @@
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
+#include "nothing.h"
 
 
 #if defined(__NT__)
@@ -288,7 +289,6 @@ extern int              NumPrinters( void );
 extern unsigned         PrnAddress( int );
 extern unsigned         AccessPorts( unsigned, unsigned );
 extern void             FreePorts( unsigned, unsigned );
-extern void             NothingToDo( void );
 extern unsigned long    Ticks( void );
 extern char             *InitSys( void );
 extern void             FiniSys( void );
@@ -596,7 +596,7 @@ static int DataPut( byte data, unsigned long wait )
     return( 0 );
 }
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     trap_elen  get_len;
     trap_elen  i;
@@ -607,12 +607,13 @@ trap_retval RemoteGet( byte *rec, trap_elen len )
         get_len = ((get_len & 0x7f) << 8) | DataGet( KEEP );
     }
     for( i = get_len; i != 0; --i ) {
-        *rec++ = DataGet( KEEP );
+        *(char *)data = DataGet( KEEP );
+        data = (char *)data + 1;
     }
     return( get_len );
 }
 
-trap_retval RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
     trap_elen  count;
 
@@ -621,7 +622,8 @@ trap_retval RemotePut( byte *snd, trap_elen len )
     }
     DataPut( len & 0xff, RELINQUISH );
     for( count = len; count != 0; --count ) {
-        DataPut( *snd++, KEEP );
+        DataPut( *(char *)data, KEEP );
+        data = (char *)data + 1;
     }
     return( len );
 }
@@ -855,11 +857,11 @@ void RemoteDisco( void )
 
 static char InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
     unsigned    printer;
     unsigned    ch;
-    char        *err;
+    const char  *err;
 
     dbgrtn( "\r\n-RemoteLink-" );
     server = server;
@@ -868,7 +870,7 @@ char *RemoteLink( const char *parms, bool server )
     if( err != NULL ) {
         return( err );
     }
-    if( parms == NULL || parms[0] == '\0' ) {
+    if( *parms == '\0' ) {
         printer = 0;
     } else if( parms[0] >= '1' && parms[0] <= '3' && parms[1] == '\0' ) {
         printer = parms[0] - '1';

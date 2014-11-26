@@ -48,7 +48,7 @@ extern void             InitPSP( void );
 
 static char             LinkParm[256];
 static char             FailMsg[128];
-static char             *LoadError;
+static const char       *LoadError;
 static bool             TaskLoaded;
 
 static unsigned long    OrigVectors[256];       /* original int vectors */
@@ -72,7 +72,7 @@ static trap_elen DoAccess( void )
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
         _DBG_Writeln( "AddPacket" );
-        AddPacket( In_Mx_Ptr[i].len, In_Mx_Ptr[i].ptr );
+        AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
     *(access_req *)In_Mx_Ptr[0].ptr &= ~0x80;
     _DBG_Writeln( "PutPacket" );
@@ -88,7 +88,7 @@ static trap_elen DoAccess( void )
                 piece = left;
             }
             _DBG_Writeln( "RemovePacket" );
-            RemovePacket( piece, Out_Mx_Ptr[i].ptr );
+            RemovePacket( Out_Mx_Ptr[i].ptr, piece );
             left -= piece;
         }
     } else {
@@ -345,7 +345,7 @@ trap_retval ReqProg_load( void )
     char                *dst;
     char                *name;
     char                *endparm;
-    char                *err;
+    const char          *err;
     tiny_ret_t          rc;
     prog_load_ret       *ret;
     trap_elen           len;
@@ -356,8 +356,10 @@ trap_retval ReqProg_load( void )
     src = name = GetInPtr( sizeof( prog_load_req ) );
     rc = FindFilePath( src, buffer, DosXExtList );
     endparm = LinkParm;
-    while( *endparm++ != '\0' ) {}      // skip program name
-    strcpy( endparm, buffer );
+    while( *endparm++ != '\0' ) {}      // skip trap parameters
+    strcpy( endparm, buffer );          // add command line
+    // result is as follow
+    // "trap parameters string"+"\0"+"command line string"+"\0"
     err = RemoteLink( LinkParm, FALSE );
     if( err != NULL ) {
         _DBG_Writeln( "Can't RemoteLink" );
@@ -376,15 +378,15 @@ trap_retval ReqProg_load( void )
             _DBG_Writeln( "StartPacket" );
             StartPacket();
             _DBG_Writeln( "AddPacket" );
-            AddPacket( sizeof( prog_load_req ), In_Mx_Ptr[0].ptr );
+            AddPacket( In_Mx_Ptr[0].ptr, sizeof( prog_load_req ) );
             _DBG_Writeln( "AddPacket" );
-            AddPacket( dst - buffer, buffer );
+            AddPacket( buffer, dst - buffer );
             _DBG_Writeln( "PutPacket" );
             PutPacket();
             _DBG_Writeln( "GetPacket" );
             len = GetPacket();
             _DBG_Writeln( "RemovePacket" );
-            RemovePacket( sizeof( *ret ), ret );
+            RemovePacket( ret, sizeof( *ret ) );
         } else {
             len = DoAccess();
         }
@@ -402,13 +404,13 @@ trap_retval ReqProg_load( void )
                 _DBG_Writeln( "StartPacket" );
                 StartPacket();
                 _DBG_Writeln( "AddPacket" );
-                AddPacket( sizeof( erracc ), &erracc );
+                AddPacket( &erracc, sizeof( erracc ) );
                 _DBG_Writeln( "PutPacket" );
                 PutPacket();
                 _DBG_Writeln( "GetPacket" );
                 msg_len = GetPacket();
                 _DBG_Writeln( "RemovePacket" );
-                RemovePacket( msg_len, FailMsg );
+                RemovePacket( FailMsg, msg_len );
                 _DBG_Write( "FailMsg :  " );
                 _DBG_NoTabWriteln( FailMsg );
                 LoadError = FailMsg;
@@ -419,12 +421,12 @@ trap_retval ReqProg_load( void )
             _DBG_Writeln( "StartPacket" );
             StartPacket();
             _DBG_Writeln( "AddPacket" );
-            AddPacket( sizeof( killacc ), &killacc );
+            AddPacket( &killacc, sizeof( killacc ) );
             _DBG_Writeln( "PutPacket" );
             PutPacket();
             _DBG_Writeln( "GetPacket" );
             GetPacket();
-            //RemovePacket( msg_len, &erracc );
+            //RemovePacket( &erracc, msg_len );
             RemoteUnLink();
 
             TaskLoaded = FALSE;
@@ -529,7 +531,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     InitPSP();
     LoadError = NULL;
     error[0] = '\0';
-    strcpy( LinkParm, parms );
+    strcpy( LinkParm, parms );      // save trap parameters
     TaskLoaded = FALSE;
     _DBG_ExitFunc( "TrapInit()" );
     return( ver );

@@ -71,8 +71,11 @@ void RunTime( test_type test, unsigned bytes, unsigned iterations )
 
     start = clock();
     while( --iter_count != 0 ) {
-        if( test != TEST_CLIENT_GET ) RemotePut( Data, block_size );
-        if( test != TEST_CLIENT_PUT ) RemoteGet( Data, block_size );
+        if( test != TEST_CLIENT_GET )
+            RemotePut( Data, block_size );
+        if( test != TEST_CLIENT_PUT ) {
+            RemoteGet( Data, block_size );
+        }
     }
 
     diff = clock() - start;
@@ -88,7 +91,7 @@ void RunTime( test_type test, unsigned bytes, unsigned iterations )
 
 int main( unsigned argc, char *argv[] )
 {
-    char            *err;
+    const char      *err;
     unsigned        iterations;
     char            *p;
     test_type       test;
@@ -111,11 +114,11 @@ int main( unsigned argc, char *argv[] )
         for( ;; ) {
             printf( "enter> " );
             fflush( stdout );
-            if( !gets( &Data[1] ) ) break;
+            if( !gets( Data + 1 ) ) break;
             if( Data[1] == 'q' ) break;
             if( Data[1] == '~' ) {
                 /* speed test */
-                p = &Data[2];
+                p = Data + 2;
                 test = TEST_PUT_GET;
                 if( *p == '>' ) {
                     test = TEST_CLIENT_PUT;
@@ -133,14 +136,14 @@ int main( unsigned argc, char *argv[] )
                 /* data transmission test */
                 Data[0] = TEST_STRING;
                 len = strlen( Data ) + 1;
-                RemotePut( &Data, len );
-                memset( &Data, 0, sizeof( Data ) );
-                len = RemoteGet( &Data, sizeof( Data ) );
-                printf( "'%s' - %d bytes\n", &Data[1], len );
+                RemotePut( Data, len );
+                memset( Data, 0, sizeof( Data ) );
+                len = RemoteGet( Data, sizeof( Data ) );
+                printf( "'%s' - %d bytes\n", Data + 1, len );
             }
         }
         Data[0] = TEST_OVER;
-        RemotePut( &Data, 1 );
+        RemotePut( Data, 1 );
         RemoteDisco();
     }
     RemoteUnLink();

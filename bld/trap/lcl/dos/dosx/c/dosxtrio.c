@@ -34,13 +34,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tinyio.h"
+#include "servio.h"
 
-void Output( char *str )
+void Output( const char *str )
 {
     TinyWrite( TINY_ERR, str, strlen( str ) );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Output( err );
     Output( "\r\n" );

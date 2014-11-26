@@ -37,7 +37,8 @@
 #include "trpimp.h"
 #include "packet.h"
 
-static byte         PackBuff[0x400];
+static char         PackBuff[0x400];
+
 static trap_elen    PackInd = 0;
 
 void StartPacket( void )
@@ -56,7 +57,7 @@ trap_retval PutPacket( void )
     return( result );
 }
 
-trap_retval PutBuffPacket( trap_elen len, void *buff )
+trap_retval PutBuffPacket( void *buff, trap_elen len )
 {
     trap_retval result;
 
@@ -66,7 +67,7 @@ trap_retval PutBuffPacket( trap_elen len, void *buff )
     return( result );
 }
 
-void AddPacket( trap_elen len, void *ptr )
+void AddPacket( void *ptr, trap_elen len )
 {
     if( ( len + PackInd ) > sizeof( PackBuff ) ) {
         len = sizeof( PackBuff ) - PackInd;
@@ -82,7 +83,7 @@ trap_retval GetPacket( void )
     return( RemoteGet( PackBuff, sizeof( PackBuff ) ) );
 }
 
-void RemovePacket( trap_elen len, void *ptr )
+void RemovePacket( void *ptr, trap_elen len )
 {
     if( ( len + PackInd ) > sizeof( PackBuff ) ) {
         len = sizeof( PackBuff ) - PackInd;

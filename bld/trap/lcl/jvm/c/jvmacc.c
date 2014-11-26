@@ -1287,7 +1287,7 @@ trap_retval ReqFile_run_cmd( void )
 }
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
-/*******************************************************************/
+/**************************************************************************/
 {
     trap_version        ver;
 

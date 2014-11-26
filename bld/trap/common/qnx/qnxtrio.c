@@ -43,10 +43,10 @@
 #include <string.h>
 #include <process.h>
 #include "trpimp.h"
+#include "servio.h"
 
-extern char RWBuff[];
 
-void Output( char *str )
+void Output( const char *str )
 {
     write( 2, str, strlen( str ) );
 }
@@ -56,7 +56,7 @@ void SayGNiteGracey( int return_code )
     _exit( return_code );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Output( err );
     Output( "\n" );
@@ -99,7 +99,7 @@ int KeyGet()
 }
 
 
-static char *StrCopy( char *src, char *dst )
+static char *StrCopy( const char *src, char *dst )
 {
     while( *dst = *src ) {
         ++src;
@@ -108,7 +108,7 @@ static char *StrCopy( char *src, char *dst )
     return( dst );
 }
 
-static unsigned TryOnePath( char *path, struct stat *tmp, char *name,
+static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name,
                          char *result )
 {
     char        *end;
@@ -132,7 +132,7 @@ static unsigned TryOnePath( char *path, struct stat *tmp, char *name,
     }
 }
 
-static unsigned FindFilePath( char *name, char *result )
+static unsigned FindFilePath( const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -164,12 +164,12 @@ static unsigned FindFilePath( char *name, char *result )
     return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
 }
 
-unsigned PathOpen( char *name, unsigned name_len, char *exts )
+unsigned PathOpen( const char *name, unsigned name_len, const char *exts )
 {
     bool                has_ext;
     bool                has_path;
     char                *ptr;
-    char                *endptr;
+    const char          *endptr;
     char                trpfile[256];
     unsigned            filehndl;
 
@@ -218,7 +218,7 @@ unsigned FileClose( unsigned h )
     return( 0 );
 }
 
-int WantUsage( char *ptr )
+int WantUsage( const char *ptr )
 {
     /*
         This is a really stupid place to put this, but it's the first
@@ -229,7 +229,8 @@ int WantUsage( char *ptr )
     */
     setegid( getgid() );
     seteuid( getuid() );
-    if( *ptr == '?' ) return( TRUE );
+    if( *ptr == '?' )
+        return( TRUE );
     return( FALSE );
 }
 

@@ -149,7 +149,7 @@ typedef struct RMBuff {
 
 #endif
 
-trap_retval RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( void *data, trap_elen len )
 {
     trap_elen       received;
 #ifdef SERVER
@@ -163,7 +163,8 @@ trap_retval RemoteGet( byte *rec, trap_elen len )
     len = received;
     _DBG(("Remote Geting %d bytes\n",len));
     while( len != 0 ) {
-        *rec++ = GetDosByte( buff );
+        *(char *)data = GetDosByte( buff );
+        data = (char *)data + 1;
         ++buff;
         --len;
     }
@@ -171,16 +172,16 @@ trap_retval RemoteGet( byte *rec, trap_elen len )
 #else
     _DBG_EnterFunc( "RemoteGet()" );
     len = len;
-    Buff.ptr = MK_LINEAR( rec );
+    Buff.ptr = MK_LINEAR( data );
     BackToProtMode();
     received = Buff.len;
-    _DBG_DumpBytes( rec, received );
+    _DBG_DumpBytes( data, received );
     _DBG_ExitFunc( "RemoteGet()" );
 #endif
     return( received );
 }
 
-trap_retval RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( void *data, trap_elen len )
 {
 #ifdef SERVER
     unsigned long   buff;
@@ -190,7 +191,8 @@ trap_retval RemotePut( byte *snd, trap_elen len )
     _DBG(("Remote Put %d bytes\n",len));
     buff = RMBuffPtr->ptr;
     while( len != 0 ) {
-        PutDosByte( buff, *snd++ );
+        PutDosByte( buff, *(char *)data );
+        data = (char *)data + 1;
         ++buff;
         --len;
     }
@@ -199,9 +201,9 @@ trap_retval RemotePut( byte *snd, trap_elen len )
     _DBG(("Remote Put Back from real mode\n"));
 #else
     _DBG_EnterFunc( "RemotePut()" );
-    _DBG_DumpBytes( snd, len );
+    _DBG_DumpBytes( data, len );
     Buff.len = len;
-    Buff.ptr = MK_LINEAR( snd );
+    Buff.ptr = MK_LINEAR( data );
     BackToProtMode();
     _DBG_ExitFunc( "RemotePut()" );
 #endif
@@ -393,7 +395,7 @@ exp:
 #endif
 #endif
 
-char *RemoteLink( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
     unsigned long       link;
@@ -422,6 +424,7 @@ char *RemoteLink( const char *parms, bool server )
   #elif defined(CAUSEWAY)
     Meg1 = GetZeroSel();
   #endif
+    parms = parms;
     link = GetDosLong( LINK_VECTOR * 4 );
     if( link >= (1024UL * 1024UL) || GetDosLong( link ) != LINK_SIGNATURE ) {
         return( TRP_ERR_not_from_command );
@@ -451,22 +454,19 @@ char *RemoteLink( const char *parms, bool server )
     link[ 1 ] = (void __far *)MK_LINEAR( &Buff );
     link[ 0 ] = (void __far *)LINK_SIGNATURE;
     *link_ptr = (void __far *)MK_LINEAR( &link );
-    if( parms == NULL )
-        parms = "\0\0";
+    // parms has following format
+    // "trap parameters string"+"\0"+"command line string"+"\0"
     while( *parms == ' ' )
         ++parms;
     if( *parms == '`' ) {
-        buffp = buff;
         ++parms;
-        for( ;; ) {
-            *buffp = *parms;
-            ++buffp;
-            if( *parms == '\0' )
-                break;
-            ++parms;
-            if( parms[-1] == '`' ) {
+        buffp = buff;
+        while( *parms != '\0' ) {
+            if( *parms == '`' ) {
+                ++parms;
                 break;
             }
+            *buffp++ = *parms++;
         }
         *buffp = '\0';
     }
@@ -483,7 +483,7 @@ char *RemoteLink( const char *parms, bool server )
         while( *endname++ != '\0' ) {}      // skip after extender name + '\0'
   #if defined(ACAD)
         buffp = buff;
-        buff[ 0 ] = '\0';
+        *buffp = '\0';
   #else
         {
             static char     *endhelp;
@@ -491,13 +491,13 @@ char *RemoteLink( const char *parms, bool server )
 
     #if defined(PHARLAP)
             exe_name = parms;
-            while( *exe_name++ != '\0' ) {}
+            while( *exe_name++ != '\0' ) {} // skip to command line
             help_name = GetHelpName( exe_name );
     #else
             help_name = HELPNAME;
     #endif
             buffp = SearchPath( DOSEnvFind( "PATH" ), help_name, buff, &endhelp );
-            if( !*buffp ) {
+            if( *buffp == '\0' ) {
                 _DBG_ExitFunc( "RemoteLink(), unable to find extender help file" );
                 return( TRP_ERR_no_extender );
             }
@@ -530,7 +530,6 @@ char *RemoteLink( const char *parms, bool server )
         return( TRP_ERR_cant_start_extender );
     }
 #endif
-    parms = parms;
     server = server;
     _DBG_ExitFunc( "RemoteLink()" );
     return( NULL );
