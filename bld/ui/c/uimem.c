@@ -32,17 +32,17 @@
 
 #include "uidef.h"
 
-LPPIXEL intern faralloc( size_t size )
+LP_PIXEL intern faralloc( size_t size )
 /************************************/
 {
-    LPPIXEL     ptr;
+    LP_PIXEL    ptr;
 
     ptr = uifaralloc( size );
     return( ptr );
 }
 
 
-void intern farfree( LPPIXEL ptr )
+void intern farfree( LP_PIXEL ptr )
 /********************************/
 {
     uifarfree( ptr );

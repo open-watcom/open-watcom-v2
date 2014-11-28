@@ -91,7 +91,7 @@ static bool setupscrnbuff( void )
 /*******************************/
 {
     int                 rows, cols;
-    PIXEL __FAR         *scrn;
+    LP_PIXEL            scrn;
     size_t              num;
     int                 i;
     static PIXEL        blank = { ' ', 7 };
@@ -291,14 +291,14 @@ static int cd_update( SAREA *area )
     }
     if( area == NULL ) {
         my_console_write( UIConCtrl, UIConsole, 0,
-                        (char __FAR *)UIData->screen.origin, 0,
+                        (LP_STRING)UIData->screen.origin, 0,
                         row, col, type );
     } else {
         count = area->width * sizeof( PIXEL );
         for( i = area->row; i < (area->row + area->height); i++ ) {
             offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
             my_console_write( UIConCtrl, UIConsole, offset,
-                            offset + (char __FAR *)UIData->screen.origin, count,
+                            offset + (LP_STRING)UIData->screen.origin, count,
                             row, col, type );
         }
     }

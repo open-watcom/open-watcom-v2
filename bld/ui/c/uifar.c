@@ -122,7 +122,7 @@ extern void _backward(void);
 
 #define ATTR_FLIP_MASK      0x77
 
-intern void cdecl farfill( LPPIXEL start, PIXEL fill, int len, int snow )
+intern void cdecl farfill( LP_PIXEL start, PIXEL fill, int len, int snow )
 {
     int         i;
 
@@ -145,7 +145,7 @@ intern void cdecl farfill( LPPIXEL start, PIXEL fill, int len, int snow )
 }
 
 
-intern void cdecl farcopy( LPPIXEL src, LPPIXEL dst, int len, int snow )
+intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, int len, int snow )
 {
 #if defined( _M_I86 )
     if( snow ) {
@@ -176,8 +176,8 @@ intern void cdecl farcopy( LPPIXEL src, LPPIXEL dst, int len, int snow )
 }
 
 
-intern void cdecl farstring( LPPIXEL start, int attr, int len,
-                                          int snow, const char __FAR *str )
+intern void cdecl farstring( LP_PIXEL start, int attr, int len,
+                                          int snow, LPC_STRING str )
 {
     int         i;
     PIXEL       p;
@@ -212,7 +212,7 @@ intern void cdecl farstring( LPPIXEL start, int attr, int len,
     farfill( start, p, len-i, snow );
 }
 
-intern void cdecl farattrib( LPPIXEL start, int attr, int len, int snow )
+intern void cdecl farattrib( LP_PIXEL start, int attr, int len, int snow )
 {
     int         i;
     PIXEL       p;
@@ -238,7 +238,7 @@ intern void cdecl farattrib( LPPIXEL start, int attr, int len, int snow )
     }
 }
 
-intern void cdecl farattrflip( LPPIXEL start, int len, int snow )
+intern void cdecl farattrflip( LP_PIXEL start, int len, int snow )
 {
     int         i;
     PIXEL       p;

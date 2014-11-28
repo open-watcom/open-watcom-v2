@@ -47,13 +47,13 @@ static bool     MouseOn = FALSE;
 static ATTR     OldAttr;
 static int      ColAdjust;
 
-static char __FAR *RegenPos( unsigned row, unsigned col )
+static LP_STRING RegenPos( unsigned row, unsigned col )
 /*******************************************************/
 {
-    char        __FAR *pos;
-    char        __FAR *col0;
+    LP_STRING   pos;
+    LP_STRING   col0;
 
-    col0 = (char __FAR *)UIData->screen.origin
+    col0 = (LP_STRING)UIData->screen.origin
           + (row*UIData->screen.increment)*sizeof(PIXEL);
     pos = col0 + col*sizeof( PIXEL );
     while( col0 < pos ) {
@@ -72,8 +72,8 @@ static char __FAR *RegenPos( unsigned row, unsigned col )
 static void uisetmouseoff( void )
 /*******************************/
 {
-    char                __FAR *old;
-    SAREA               area;
+    LP_STRING   old;
+    SAREA       area;
 
     if( MouseOn ) {
 
@@ -88,14 +88,14 @@ static void uisetmouseoff( void )
             area.height = 1;
             area.width = 1 - ColAdjust;
             physupdate( &area );
-//          physupdate( ( old - (char __FAR *)UIData->screen.origin ), 1 );
+//            physupdate( ( old - (LP_STRING)UIData->screen.origin ), 1 );
         } else{
             (*EraseCursor)();               /*  Hide text-graphics mouse    */
         }
     }
 }
 
-static void FlipAttr( char __FAR *p )
+static void FlipAttr( LP_STRING p )
 {
     OldAttr = *p;
     if( UIData->colour == M_MONO ){
@@ -108,8 +108,8 @@ static void FlipAttr( char __FAR *p )
 static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 /****************************************************/
 {
-    char                __FAR *new;
-    SAREA               area;
+    LP_STRING   new;
+    SAREA       area;
 
     if( MouseOn ){
         if( DrawCursor == NULL ) {
@@ -123,7 +123,7 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
             area.width = 1 - ColAdjust;
             area.height = 1;
             physupdate( &area );
-//          physupdate( ( new - (char __FAR *)UIData->screen.origin ), 1 );
+//            physupdate( ( new - (LP_STRING)UIData->screen.origin ), 1 );
         } else {
             (*DrawCursor)();
         }

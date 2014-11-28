@@ -33,15 +33,15 @@
 #include <stdio.h>
 #include "uidef.h"
 
-extern  void    cdecl intern    farattrib( LPPIXEL, int, int, int );
-extern  void    cdecl intern    farattrflip( LPPIXEL, int, int );
+extern  void    cdecl intern    farattrib( LP_PIXEL, int, int, int );
+extern  void    cdecl intern    farattrflip( LP_PIXEL, int, int );
 
 
 void intern battribute( BUFFER *bptr, int row, int col,
                                       int height, int width, ATTR attr )
 /**********************************************************************/
 {
-    register    LPPIXEL                 dst;
+    register    LP_PIXEL                dst;
     register    bool                    snow;
     register    int                     r;
 
@@ -57,7 +57,7 @@ void intern battrflip( BUFFER *bptr, int row, int col,
                                      int height, int width )
 /**********************************************************/
 {
-    register    LPPIXEL                 dst;
+    register    LP_PIXEL                dst;
     register    int                     r;
     register    bool                    snow;
 

@@ -36,7 +36,7 @@
 
 
 void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
-                   ATTR attr, const char __FAR *string, int slen )
+                   ATTR attr, LPC_STRING string, int slen )
 /****************************************************************/
 {
     int             count;

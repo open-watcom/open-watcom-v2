@@ -109,7 +109,7 @@ static void PlotEgaVgaCursor( unsigned action )
 {
     unsigned width, height, disp, i, j, x, y;
     static int lsavex = 0, lsavey = 0;
-    LPPIXEL screen;
+    LP_PIXEL screen;
 
     switch( action ) {
         case ERASE :                        /* Erase grid, put save info    */

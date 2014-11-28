@@ -97,7 +97,7 @@ extern char uialtchar( EVENT ev )
 
 
 static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr,
-                             const char __FAR *string, int len )
+                             LPC_STRING string, int len )
 /**************************************************************/
 {
     SAREA       area;

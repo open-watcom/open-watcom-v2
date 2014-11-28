@@ -33,19 +33,19 @@
 #include <stdio.h>
 #include "uidef.h"
 
-extern  void cdecl intern farcopy( LPPIXEL, LPPIXEL, int, int );
-extern  void cdecl intern farstring( LPPIXEL, int, int, int, const char __FAR *);
+extern  void cdecl intern farcopy( LP_PIXEL, LP_PIXEL, int, int );
+extern  void cdecl intern farstring( LP_PIXEL, int, int, int, LPC_STRING );
 
 
 void intern bstring( register BUFFER            *bptr,
                      register int               row,
                      register int               col,
                      register ATTR              attr,
-                     register const char __FAR  *string,
+                     register LPC_STRING        string,
                      register int               len )
 /******************************************************/
 {
-    LPPIXEL     dst;
+    LP_PIXEL    dst;
 
     dst = bptr->origin + row * bptr->increment + col;
     farstring( dst, attr, len, issnow( bptr ), string );
@@ -59,8 +59,8 @@ void intern braw( register BUFFER       *bptr,
                   register int          len )
 /**********************************************/
 {
-    LPPIXEL     dst;
+    LP_PIXEL    dst;
 
     dst = bptr->origin + row * bptr->increment + col;
-    farcopy( (LPPIXEL)pixels, dst, len, issnow( bptr ) );
+    farcopy( (LP_PIXEL)pixels, dst, len, issnow( bptr ) );
 }

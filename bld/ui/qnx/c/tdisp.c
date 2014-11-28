@@ -73,7 +73,7 @@ extern  unsigned    UIDisableShiftChanges;
 extern  unsigned    UIDisableShiftChanges;
 
 extern  char        *GetTermType( void );
-extern  LPPIXEL     asmNonBlankEnd( LPPIXEL, int, PIXEL );
+extern  LP_PIXEL    asmNonBlankEnd( LP_PIXEL, int, PIXEL );
 extern  void        newcursor( void );
 extern  EVENT       tk_keyboardevent( void );
 
@@ -725,14 +725,14 @@ static MONITOR  ui_data = {
 };
 
 
-static  PIXEL __FAR *shadow;
-static  int   save_cursor_type;
+static  LP_PIXEL    shadow;
+static  int         save_cursor_type;
 
 static bool setupscrnbuff( int srows, int scols )
 /***********************************************/
 {
-    static const PIXEL blank = {' ', 7};
-    PIXEL __FAR   *scrn;
+    static const PIXEL  blank = {' ', 7};
+    LP_PIXEL    scrn;
     int         num;
     int         i;
     int         rows;
@@ -1088,7 +1088,7 @@ static int td_refresh( int must )
 {
         int             i;
         int             incr;
-        LPPIXEL         bufp, sbufp;
+        LP_PIXEL        bufp, sbufp;
 
         must|= UserForcedTermRefresh;
         UserForcedTermRefresh= FALSE;
@@ -1195,7 +1195,7 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 void update_shadow( void )
 /************************/
 {
-    LPPIXEL     bufp, sbufp;    // buffer and shadow buffer
+    LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
     int         incr= UIData->screen.increment;
 
     // make sure cursor is back where it belongs
@@ -1223,13 +1223,13 @@ static int ti_refresh( int must )
 {
     int         i;
     int         incr;           // chars per line
-    LPPIXEL     bufp, sbufp;    // buffer and shadow buffer
-    LPPIXEL     pos;            // the address of the current char
-    LPPIXEL     blankStart;     // start of spaces to eos and then complete
+    LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
+    LP_PIXEL    pos;            // the address of the current char
+    LP_PIXEL    blankStart;     // start of spaces to eos and then complete
                                 // draw
     int         lastattr= -1;
     int         bufSize;
-    LPPIXEL     bufEnd;
+    LP_PIXEL    bufEnd;
     bool        cls= dirty.row1;// line on which we should clr_eos
                                 // and then continue to draw
     bool        done= FALSE;

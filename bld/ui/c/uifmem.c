@@ -34,7 +34,7 @@
   #include <i86.h>
 #endif
 
-void __FAR * UIAPI uifaralloc( size_t size )
+LP_VOID UIAPI uifaralloc( size_t size )
 /*******************************************/
 {
     void        *ptr;
@@ -49,7 +49,7 @@ void __FAR * UIAPI uifaralloc( size_t size )
 }
 
 
-void UIAPI uifarfree( void __FAR *ptr )
+void UIAPI uifarfree( LP_VOID ptr )
 /**************************************/
 {
 #if defined( HAVE_FAR ) && defined( __386__ )

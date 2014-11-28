@@ -1088,7 +1088,7 @@ static int ti_hwcursor( void )
 void update_shadow(void)
 /**********************/
 {
-    LPPIXEL     bufp, sbufp;    // buffer and shadow buffer
+    LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
     int         incr= UIData->screen.increment;
 
     // make sure cursor is back where it belongs
@@ -1116,13 +1116,13 @@ static int ti_refresh( int must )
 {
     int         i;
     int         incr;           // chars per line
-    LPPIXEL     bufp, sbufp;    // buffer and shadow buffer
-    LPPIXEL     pos;            // the address of the current char
-    LPPIXEL     blankStart;     // start of spaces to eos and then complete
+    LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
+    LP_PIXEL    pos;            // the address of the current char
+    LP_PIXEL    blankStart;     // start of spaces to eos and then complete
                                 // draw
     int         lastattr= -1;
     int         bufSize;
-    LPPIXEL     bufEnd;
+    LP_PIXEL    bufEnd;
     int         cls= dirty.row1;// line on which we should clr_eos
                                 // and then continue to draw
     bool        done= FALSE;

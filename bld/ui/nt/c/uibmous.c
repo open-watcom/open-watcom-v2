@@ -43,12 +43,12 @@ static bool     mouseOn = FALSE;
 #if 0
 static ATTR     OldAttr;
 
-static char __FAR *RegenPos( unsigned row, unsigned col )
+static LP_STRING RegenPos( unsigned row, unsigned col )
 /*****************************************************/
 {
-    char        __FAR *pos;
+    LP_STRING   pos;
 
-    pos = (char __FAR *)UIData->screen.origin
+    pos = (LP_STRING)UIData->screen.origin
           + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
     vertretrace();
     return( pos );
@@ -58,7 +58,7 @@ static char __FAR *RegenPos( unsigned row, unsigned col )
 static void uisetmouseoff( void )
 /*******************************/
 {
-//    char                __FAR *old;
+//    LP_STRING   old;
 
     if( mouseOn ) {
 #if 0
@@ -79,7 +79,7 @@ static void uisetmouseoff( void )
 static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 /****************************************************/
 {
-//    char                __FAR *new;
+//    LP_STRING   new;
 
     if( mouseOn ){
 #if 0

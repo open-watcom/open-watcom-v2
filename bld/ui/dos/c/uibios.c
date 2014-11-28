@@ -419,7 +419,7 @@ int intern initbios( void )
 {
     int                                 initialized;
     unsigned short __far                *poffset;
-    LPPIXEL                             old_origin;
+    LP_PIXEL                            old_origin;
 
     initialized = FALSE;
     if( initmonitor() ) {

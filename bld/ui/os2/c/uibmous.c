@@ -42,12 +42,12 @@ static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
 static bool     MouseOn = FALSE;
 static ATTR     OldAttr;
 
-static char __FAR *RegenPos( unsigned row, unsigned col )
+static LP_STRING RegenPos( unsigned row, unsigned col )
 /*****************************************************/
 {
-    char        __FAR *pos;
+    LP_STRING   pos;
 
-    pos = (char __FAR *)UIData->screen.origin
+    pos = (LP_STRING)UIData->screen.origin
           + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
     return( pos );
 }
@@ -55,8 +55,8 @@ static char __FAR *RegenPos( unsigned row, unsigned col )
 static void uisetmouseoff( void )
 /*******************************/
 {
-    char                __FAR *old;
-    SAREA               area;
+    LP_STRING    old;
+    SAREA       area;
 
     if( MouseOn ) {
         old = RegenPos( OldMouseRow, OldMouseCol );
@@ -72,8 +72,8 @@ static void uisetmouseoff( void )
 static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 /****************************************************/
 {
-    char                __FAR *new;
-    SAREA               area;
+    LP_STRING   new;
+    SAREA       area;
 
     if( MouseOn ){
         new = RegenPos( row, col );
