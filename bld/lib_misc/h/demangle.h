@@ -46,7 +46,7 @@ typedef void (*outfunPtr)(void **, dm_pts, size_t, char const *);
 
 /*
     extra semantics:
-        - output == NULL; proper size for a buffer will be returned
+        - buff == NULL; proper size for a buffer will be returned
         - len == 0; input string is null terminated
         - realloc == NULL; the demangled name will be truncated
         - __demangle_l(); function argument types are incomplete
