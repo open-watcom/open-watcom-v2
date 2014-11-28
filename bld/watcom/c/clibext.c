@@ -1603,7 +1603,7 @@ static const struct my_wctypes {
 
 static int my_wctype( const char *name )
 {
-    int i;
+    unsigned i;
 
     for( i = 0; i < WCTYPES_SIZE; ++i ) {
         if( strcmp( my_wctypes[i].name, name ) == 0 ) {
