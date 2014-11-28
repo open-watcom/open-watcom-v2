@@ -67,7 +67,11 @@ sub remove_OWloc
 {
     my($txt) = $_[0];
 
-    $txt =~ s/$OWloc[\/\\]//g;
+    if ($^O eq 'linux') {
+        $txt =~ s/$OWloc[\/\\]//g;
+    } else {
+        $txt =~ s/$OWloc[\/\\]//gi;
+    }
     return $txt;
 }
 
