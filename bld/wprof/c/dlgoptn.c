@@ -89,7 +89,7 @@ STATIC bint getDlgValues( gui_window * gui )
     int         sort_type;
     char        cut_buff[SMALL_CUT_WIDTH+1];
 
-    GUIDlgBuffGetText( gui, CTL_GATHER_CUT, cut_buff, SMALL_CUT_WIDTH );
+    GUIDlgBuffGetText( gui, CTL_GATHER_CUT, cut_buff, sizeof( cut_buff ) );
     fcut = strtod( cut_buff, &endptr );
     if( *endptr == NULLCHAR ) {
         if( fcut > 10.0 ) {

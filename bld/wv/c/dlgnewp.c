@@ -46,8 +46,8 @@ extern void             DoInput( void );
 extern void             LoadNewProg( char *cmd, char *parms );
 extern bool             ExeBrowse( void );
 
-static char     prog[UTIL_LEN];
-static char     args[UTIL_LEN];
+static char             prog[UTIL_LEN];
+static char             args[UTIL_LEN];
 
 
 OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
@@ -74,8 +74,8 @@ OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
             GUISetFocus( gui, CTL_NEWP_PROG );
             return( TRUE );
         case CTL_NEWP_OK:
-            GUIDlgBuffGetText( gui, CTL_NEWP_PROG, prog, UTIL_LEN );
-            GUIDlgBuffGetText( gui, CTL_NEWP_ARGS, args, UTIL_LEN );
+            GUIDlgBuffGetText( gui, CTL_NEWP_PROG, prog, sizeof( prog ) );
+            GUIDlgBuffGetText( gui, CTL_NEWP_ARGS, args, sizeof( args ) );
             dlg->cancel = FALSE;
             GUICloseDialog( gui );
             return( TRUE );

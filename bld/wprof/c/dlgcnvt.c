@@ -87,7 +87,7 @@ STATIC void getDlgValues( gui_window *gui )
 {
     OptDIFFormat = GUIIsChecked( gui, CTL_DIF_FMT );
     OptCommaFormat = GUIIsChecked( gui, CTL_COMMA_FMT );
-    GUIDlgBuffGetText( gui, CTL_NAME, convertPath, _MAX_PATH );
+    GUIDlgBuffGetText( gui, CTL_NAME, convertPath, sizeof( convertPath ) );
 }
 
 
