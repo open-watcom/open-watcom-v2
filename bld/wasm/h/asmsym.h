@@ -35,6 +35,7 @@
 #include "asminlin.h"
 
 typedef enum {
+        MT_EMPTY,
         MT_BYTE,
         MT_WORD,
         MT_DWORD,
@@ -54,8 +55,7 @@ typedef enum {
         MT_PROC,
         MT_ABS,
 #endif
-        MT_ERROR,
-        MT_EMPTY
+        MT_ERROR
 } memtype;
 
 #if defined( _STANDALONE_ )

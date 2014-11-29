@@ -1026,25 +1026,23 @@ bool get_register_argument( token_idx index, char *buffer, int *register_count, 
                     if( j > 2 ) {
                         *on_stack = true;
                         return( RC_OK );
-                    } else {
-                        sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
-                        InputQueueLine( buffer );
-                        j++;
-                        sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i].string_ptr );
-                        *register_count = j;
                     }
+                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                    InputQueueLine( buffer );
+                    j++;
+                    sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i].string_ptr );
+                    *register_count = j;
                     break;
                 case 8:
                     if( j > 2 ) {
                         *on_stack = true;
                         return( RC_OK );
-                    } else {
-                        sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
-                        InputQueueLine( buffer );
-                        j++;
-                        sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i].string_ptr );
-                        *register_count = j;
                     }
+                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                    InputQueueLine( buffer );
+                    j++;
+                    sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i].string_ptr );
+                    *register_count = j;
                     break;
                 default:
                     AsmError( SYNTAX_ERROR );
@@ -1065,13 +1063,12 @@ bool get_register_argument( token_idx index, char *buffer, int *register_count, 
                     if( j > 2 ) {
                         *on_stack = true;
                         return( RC_OK );
-                    } else {
-                        sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
-                        InputQueueLine( buffer );
-                        j++;
-                        sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i].string_ptr );
-                        *register_count = j;
                     }
+                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
+                    InputQueueLine( buffer );
+                    j++;
+                    sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i].string_ptr );
+                    *register_count = j;
                     break;
                 default:
                     AsmError( SYNTAX_ERROR );
@@ -1971,9 +1968,8 @@ static bool memory_operand( expr_list *opndx )
                     // [reg + data][reg + data] is not allowed
                     AsmError( TOO_MANY_BASE_REGISTERS );
                     return( RC_ERROR );
-                } else {
-                    index = base;
                 }
+                index = base;
             }
             if( Code->use32 ) {
                 base = T_EBP;
