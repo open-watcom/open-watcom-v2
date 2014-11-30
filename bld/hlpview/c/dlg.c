@@ -104,7 +104,7 @@ static bool GetLBItemLiteral( void *info, unsigned line, char *buf,
     return( TRUE );
 }
 
-bool GetListBoxItem( void *data_handle, unsigned item, char *buf, unsigned buflen )
+bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, unsigned buflen )
 {
     const char          *name;
     unsigned long       *itemcnt;

@@ -171,9 +171,9 @@ static gui_create_info DialogControl = {
     0
 };
 
-static char *ListBoxFunc( const void *data_handle, int item )
+static const char *ListBoxFunc( const void *data_handle, int item )
 {
-    return( ((char **)data_handle)[item] );
+    return( ((const char **)data_handle)[item] );
 }
 
 void ContrCallBack( gui_window *gui, unsigned id, void *param )
@@ -403,7 +403,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             break;
         case ADDBUTTON_CONTROL :
             GUIAddText( gui, LISTBOX_CONTROL, "lisa" );
-            GUIAddTextList( gui, LISTBOX_CONTROL, NUM_LIST_BOX_DATA, ListBoxData, &ListBoxFunc );
+            GUIAddTextList( gui, LISTBOX_CONTROL, NUM_LIST_BOX_DATA, ListBoxData, ListBoxFunc );
             GUISelectAll( gui, EDIT_CONTROL, true );
             break;
         case CLEARBUTTON_CONTROL :

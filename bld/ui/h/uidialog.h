@@ -62,7 +62,7 @@ typedef enum {
     FLD_EDIT_MLE
 } a_field_type;
 
-typedef bool (UIPICKGETTEXT)( void *data_handle, unsigned item, char *buf, unsigned buflen );
+typedef bool (UIPICKGETTEXT)( const void *data_handle, unsigned item, char *buff, unsigned buff_len );
 
 typedef struct an_edit_control {
     char            *buffer;
@@ -105,7 +105,7 @@ typedef struct a_toggle {
 
 typedef struct a_list {
     unsigned        choice;
-    void            *data;
+    const void      *data_handle;
     UIPICKGETTEXT   *get;
     a_list_info     *box;
 } a_list;

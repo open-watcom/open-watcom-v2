@@ -43,7 +43,7 @@ extern char     *DlgGetMatchString( gui_window *gui, int id, int *matchoff );
 extern void     WndMsgBox( char * );
 extern char     *DupStr(char*);
 
-static char *ModGetName( const void *data_handle, int item )
+static const char *ModGetName( const void *data_handle, int item )
 {
     const module_list *list = data_handle;
 

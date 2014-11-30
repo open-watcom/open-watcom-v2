@@ -251,7 +251,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
         if( list->get == NULL ) {
             list->get = uigetlistelement;
         }
-        (*list->get)( list->data, list->choice, ctrlbuf, area->width );
+        (*list->get)( list->data_handle, list->choice, ctrlbuf, area->width );
         length = area->width;
         break;
     case FLD_LISTBOX:
@@ -577,7 +577,7 @@ void uiupdatecombobox( a_combo_box *combo )
     list  = &combo->list;
     str = (char *)uimalloc( CTRL_BUF_LEN );
     if( str != NULL ) {
-        if( (*list->get)( list->data, list->choice, str, CTRL_BUF_LEN ) ) {
+        if( (*list->get)( list->data_handle, list->choice, str, CTRL_BUF_LEN ) ) {
             uifree( edit->buffer );
             edit->buffer = str;
             edit->length = strlen( str );

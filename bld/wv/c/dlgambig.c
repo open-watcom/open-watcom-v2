@@ -61,7 +61,7 @@ static int SymPick( char *text, PICKCALLBACK *PickInit )
     return( dlg.chosen );
 }
 
-static char *SymPickText( const void *data_handle, int item )
+static const char *SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;

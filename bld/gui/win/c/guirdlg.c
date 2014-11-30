@@ -213,7 +213,7 @@ bool GUIDoCreateResDialog( long dlg_id, HWND parent, void *data )
     if( !fp ) {
         return( false );
     }
-    if( _wpi_dialogbox( parent, (LPVOID)fp, GUIResHInst, DLG_RESOURCE(dlg_id), data ) == -1 ) {
+    if( _wpi_dialogbox( parent, (WPI_DLGPROC)fp, GUIResHInst, DLG_RESOURCE(dlg_id), data ) == -1 ) {
         _wpi_freeprocinstance( fp );
         return( false );
     }

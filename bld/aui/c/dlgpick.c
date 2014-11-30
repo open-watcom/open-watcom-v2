@@ -53,7 +53,7 @@ int DlgPickWithRtn2( char *text, const void *data_handle, int def, PICKGETTEXT *
 }
 
 
-int DoDlgPick( char *text, PICKCALLBACK *pickinit )
+static int DoDlgPick( char *text, PICKCALLBACK *pickinit )
 {
     return( GUIDlgPickWithRtn( text, pickinit, DlgOpen ) );
 }
@@ -64,9 +64,9 @@ int DlgPickWithRtn( char *text, const void *data_handle, int def, PICKGETTEXT *g
     return( DlgPickWithRtn2( text, data_handle, def, getstring, items, DoDlgPick ) );
 }
 
-char *DlgPickText( const void *data_handle, int item )
+static const char *DlgPickText( const void *data_handle, int item )
 {
-    return( ((char **)data_handle)[item] );
+    return( ((const char **)data_handle)[item] );
 }
 
 int DlgPick( char *text, const void *data_handle, int def, int items )

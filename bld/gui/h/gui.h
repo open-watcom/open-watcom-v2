@@ -353,7 +353,7 @@ typedef void (PICKCALLBACK)( gui_window *, unsigned id );
 typedef void (PICKDLGOPEN)( char *name, int rows, int cols,
                              struct gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *rtn, void *extra );
-typedef char *(PICKGETTEXT)( const void *data_handle, int item );
+typedef const char *(PICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
     char                *title;
@@ -909,12 +909,12 @@ extern bool GUIIsControlVisible( gui_window *wnd, unsigned id );
 
 /* combo/list box functions */
 extern bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw );
-extern bool GUIAddText( gui_window *wnd, unsigned id, char *text );
-extern bool GUISetListItemData( gui_window *wnd, unsigned id, unsigned choice, void *data );
-extern void *GUIGetListItemData( gui_window *wnd, unsigned id, unsigned choice );
+extern bool GUIAddText( gui_window *wnd, unsigned id, const char *text );
+extern bool GUISetListItemData( gui_window *wnd, unsigned id, int choice, void *data );
+extern void *GUIGetListItemData( gui_window *wnd, unsigned id, int choice );
 extern bool GUIAddTextList( gui_window *wnd, unsigned id, int items,
                             const void *data_handle, PICKGETTEXT *getstring );
-extern bool GUIInsertText( gui_window *wnd, unsigned id, int choice, char *text );
+extern bool GUIInsertText( gui_window *wnd, unsigned id, int choice, const char *text );
 extern bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice );
 extern int GUIGetTopIndex( gui_window *wnd, unsigned id );
 extern bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent );

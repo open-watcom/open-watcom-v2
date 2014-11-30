@@ -54,7 +54,7 @@ bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw )
  * GUIAddText -- add the text to the given list/combo box
  */
 
-bool GUIAddText( gui_window *wnd, unsigned id, char *text )
+bool GUIAddText( gui_window *wnd, unsigned id, const char *text )
 {
     int                 pos;
 #ifdef __OS2_PM__
@@ -96,7 +96,7 @@ bool GUIAddTextList( gui_window *wnd, unsigned id, int items, const void *data_h
  *                  indicated
  */
 
-bool GUIInsertText( gui_window *wnd, unsigned id, int choice, char *text )
+bool GUIInsertText( gui_window *wnd, unsigned id, int choice, const char *text )
 {
     if( text != NULL ) {
         GUIToComboList( wnd, id, LB_INSERTSTRING, CB_INSERTSTRING,
@@ -320,7 +320,7 @@ char *GUIGetListItem( gui_window *wnd, unsigned id, int choice )
     return( text );
 }
 
-bool GUISetListItemData( gui_window *wnd, unsigned id, unsigned choice, void *data )
+bool GUISetListItemData( gui_window *wnd, unsigned id, int choice, void *data )
 {
     WPI_MRESULT ret;
 
@@ -336,7 +336,7 @@ bool GUISetListItemData( gui_window *wnd, unsigned id, unsigned choice, void *da
 #endif
 }
 
-void *GUIGetListItemData( gui_window *wnd, unsigned id, unsigned choice )
+void *GUIGetListItemData( gui_window *wnd, unsigned id, int choice )
 {
     return( (void *)GUIToComboList( wnd, id, LB_GETITEMDATA, CB_GETITEMDATA,
                                     (WPI_PARAM1)choice, (WPI_PARAM2)NULL,

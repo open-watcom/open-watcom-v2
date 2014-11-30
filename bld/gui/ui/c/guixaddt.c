@@ -84,7 +84,7 @@ static bool GetList( gui_window *wnd, unsigned id, VFIELD **field, a_list **list
     return( true );
 }
 
-bool GUIAddText( gui_window *wnd, unsigned id, char *text )
+bool GUIAddText( gui_window *wnd, unsigned id, const char *text )
 {
     VFIELD      *field;
     a_list      *list;
@@ -175,7 +175,7 @@ int GUIGetListSize( gui_window *wnd, unsigned id )
     return( 0 );
 }
 
-bool GUIInsertText( gui_window *wnd, unsigned id, int choice, char *text )
+bool GUIInsertText( gui_window *wnd, unsigned id, int choice, const char *text )
 {
     VFIELD      *field;
     a_list      *list;

@@ -110,9 +110,9 @@ static gui_menu_struct MacMenu[] = {
 };
 
 
-static char *WndGetName( const void *data_handle, int item )
+static const char *WndGetName( const void *data_handle, int item )
 {
-    return( *((char ***)data_handle)[item] );
+    return( *((const char ***)data_handle)[item] );
 }
 
 #ifdef DEADCODE

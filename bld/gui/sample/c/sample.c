@@ -1619,12 +1619,6 @@ void GUImain( void )
 #ifdef HELL_FREEZES_OVER
     gui_colour_set      colour_set;
 #endif
-    int                 i;
-#if controls_on_main
-    int                 act_num;
-#endif
-
-    i=i;
 
     //GUIMemOpen();
 
@@ -1681,19 +1675,24 @@ void GUImain( void )
     HelpWindow = MainWnd;
     help_inst = GUIHelpInit( HelpWindow, help_file, "GUI Sample" );
 #if controls_on_main
-    act_num = 0;
-    for( i = 0; i < NUM_CONTROLS; i ++ ) {
-        Controls[i].parent = MainWnd;
-        if( !ControlsScaled ) {
-            SetWidthHeight( &Controls[i].rect, Controls[i].parent != NULL );
+    {
+        int     i;
+        int     act_num;
+
+        act_num = 0;
+        for( i = 0; i < NUM_CONTROLS; i++ ) {
+            Controls[i].parent = MainWnd;
+            if( !ControlsScaled ) {
+                SetWidthHeight( &Controls[i].rect, Controls[i].parent != NULL );
+            }
+            if( GUIAddControl( &Controls[i], &ToolPlain, &ToolStandout ) ) {
+                act_num++;
+            }
         }
-        if( GUIAddControl( &Controls[i], &ToolPlain, &ToolStandout ) ) {
-            act_num++;
-        }
+        ControlsScaled = true;
+        GUISetExtra( MainWnd, &act_num );
+        StaticDialogEventWnd( MainWnd, GUI_INIT_DIALOG, NULL );
     }
-    ControlsScaled = true;
-    GUISetExtra( MainWnd, &act_num );
-    StaticDialogEventWnd( MainWnd, GUI_INIT_DIALOG, NULL );
 #endif
 #if controls_on_parent
     ComboBoxControl.parent = parent_wnd;
@@ -1728,7 +1727,7 @@ void GUImain( void )
     Child4_2Wnd = GUICreateWindow( &Child4 );
 
     Child4.parent = Child4_2Wnd;
-    Child4.text = NULL;
+    Child4.title = NULL;
     SetWidthHeight( &Child4.rect, Child4.parent != NULL );
     Child4_3Wnd = GUICreateWindow( &Child4 );
 #endif
@@ -1756,6 +1755,7 @@ void GUImain( void )
 
 #if controls_on_child3
     if( Child3Wnd != NULL ) {
+        int i;
         ListBoxControl.parent = Child3Wnd;
         SetWidthHeight( &ListBoxControl.rect, ListBoxControl.parent != NULL );
         GUIAddControl( &ListBoxControl, &ToolPlain, &ToolStandout  );

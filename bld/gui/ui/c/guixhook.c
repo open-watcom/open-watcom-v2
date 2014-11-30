@@ -33,7 +33,7 @@
 #include "guiwind.h"
 #include "guixhook.h"
 
-static  bool    (*ProcessEvent)( EVENT )        = NULL;
+static  bool    (*ProcessEvent)( EVENT ) = NULL;
 
 void GUISetMDIProcessEvent( bool (*func)( EVENT ) )
 {
@@ -47,4 +47,3 @@ bool GUIMDIProcessEvent( EVENT ev )
     }
     return( false );
 }
-

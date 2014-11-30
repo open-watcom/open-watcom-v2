@@ -64,7 +64,7 @@ bool GUIMDIMaximized( gui_window *wnd )
     if( IsMaximized != NULL ) {
         return( (*IsMaximized)( wnd ) );
     }
-    return( _wpi_iszoomed( GUIGetParentFrameHWND( wnd ) ) );
+    return( _wpi_iszoomed( GUIGetParentFrameHWND( wnd ) ) != 0 );
 }
 
 void GUISetMDIMaximized( bool (*func)( gui_window * ) )

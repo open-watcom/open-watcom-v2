@@ -43,22 +43,22 @@ static bool Dclick =    FALSE;    // TRUE between DCLICK and MOUSE_RELEASE
 
 enum    { R_UP, R_DOWN, R_UNS, R_SEL };
 
-bool uigetlistelement( void *data_handle, unsigned item, char *s, unsigned l )
+bool uigetlistelement( const void *data_handle, unsigned item, char *buff, unsigned buff_len )
 {
-    char **p;
+    const char **p;
 
     if( data_handle == NULL ) {
         return( FALSE );
     }
-    p = (char **)data_handle;
+    p = (const char **)data_handle;
     if( p[item] != NULL && p[0] != NULL ) {
-        if( l > 0 ) {
-            strncpy( s, p[item], l );
+        if( buff_len > 0 ) {
+            strncpy( buff, p[item], buff_len );
         }
         return( TRUE );
     } else {
-        if( l > 0 ) {
-            *s = '\0';
+        if( buff_len > 0 ) {
+            *buff = '\0';
         }
         return( FALSE );
     }
@@ -84,7 +84,7 @@ void uipaintlistbox( a_list *list )
         if( list->box->row == i + list->box->line ) {
             attr = list->box->attr;
         }
-        ok = (*list->get)( list->data, list->box->line + i, buf, length );
+        ok = (*list->get)( list->data_handle, list->box->line + i, buf, length );
         if( ok ) {
             uitextfield( list->box->vs, list->box->area.row + i,
                          list->box->area.col, list->box->area.width,
@@ -127,7 +127,7 @@ bool checkitem( a_list *list, char typed, int index )
 {
     char        first;
 
-    if( (*list->get)( list->data, index, &first, 1 ) ) {
+    if( (*list->get)( list->data_handle, index, &first, 1 ) ) {
         if( isupper( first ) ) {
             first = tolower( first );
         }
@@ -189,21 +189,21 @@ void uiboxpoplist( void )
     uipoplist();
 }
 
-static unsigned getlistsize( void *data, UIPICKGETTEXT *get )
+static unsigned getlistsize( const void *data_handle, UIPICKGETTEXT *get )
 {
     unsigned    item;
 
-    for( item = 0; (*get)( data, item, NULL, 0 ) != FALSE; item++ );
+    for( item = 0; (*get)( data_handle, item, NULL, 0 ) != FALSE; item++ );
 
     return( item );
 }
 
 unsigned uilistsize( a_list *list )
 {
-    if( list->data == NULL ) {
+    if( list->data_handle == NULL ) {
         return( 0 );
     }
-    return( getlistsize( list->data, list->get ) );
+    return( getlistsize( list->data_handle, list->get ) );
 }
 
 void uimovelistbox( a_list *list, int row_diff, int col_diff )

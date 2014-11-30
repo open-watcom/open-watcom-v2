@@ -47,7 +47,7 @@ extern void     SymCompMatches( name_list *list, char *match, unsigned *pfirst, 
 
 static name_list *SortedNames;
 
-static char *SymGetName( const void *data_handle, int item )
+static const char *SymGetName( const void *data_handle, int item )
 {
     item += *(const int *)data_handle;
     if( item >= NameListNumRows( SortedNames ) ) return( NULL );
