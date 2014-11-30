@@ -32,8 +32,8 @@
 
 #include "uidef.h"
 
-unsigned UIAPI uivhide( VSCREEN *vptr )
-/**************************************/
+bool UIAPI uivhide( VSCREEN *vptr )
+/*********************************/
 {
     if( vptr->open && !(vptr->flags & V_HIDDEN) ) {
         closewindow( &(vptr->window) );
@@ -44,8 +44,8 @@ unsigned UIAPI uivhide( VSCREEN *vptr )
 }
 
 
-unsigned UIAPI uivshow( VSCREEN *vptr )
-/**************************************/
+bool UIAPI uivshow( VSCREEN *vptr )
+/*********************************/
 {
     if( vptr->flags & V_HIDDEN ) {
         openwindow( &(vptr->window) );
@@ -54,4 +54,3 @@ unsigned UIAPI uivshow( VSCREEN *vptr )
     }
     return( FALSE );
 }
-

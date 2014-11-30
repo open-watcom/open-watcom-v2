@@ -537,7 +537,7 @@ typedef struct monitor {
         ORD             cursor_col;     /* cursor column                    */
         int             cursor_type;    /* cursor type                      */
         unsigned char   old_shift;      /* status of shift keys             */
-        int             no_snow;        /* snow check flag                  */
+        bool            no_snow;        /* snow check flag                  */
         UI_WINDOW       blank;          /* blank window                     */
         BUFFER          screen;         /* screen                           */
         unsigned        desqview:1;     /* desqview present flag            */
@@ -683,7 +683,7 @@ extern          void            uivfill( VSCREEN _FARD*, SAREA, ATTR, char );
 extern          EVENT           uivgetevent( VSCREEN _FARD* );
 extern          EVENT           uivgetprime( VSCREEN _FARD* );
 extern          EVENT           uivgetprimevent( VSCREEN _FARD* );
-extern          unsigned        uivhide( VSCREEN _FARD * );
+extern          bool            uivhide( VSCREEN _FARD * );
 extern          int             uivmouseinstalled( void );
 extern          VSCREEN _FARD*  uivmousepos( VSCREEN _FARD*, ORD _FARD*, ORD _FARD* );
 extern          VSCREEN _FARD*  uimousepos( VSCREEN _FARD*, int _FARD*, int _FARD* );
@@ -694,7 +694,7 @@ extern          void            uivmove( VSCREEN _FARD*, ORD, ORD );
 extern          void            uivrawput( VSCREEN _FARD*, ORD, ORD, PIXEL _FARD*, int );
 extern          void            uivsetactive( VSCREEN _FARD* );
 extern          void            uivsetcursor( VSCREEN _FARD* );
-extern          unsigned        uivshow( VSCREEN _FARD * );
+extern          bool            uivshow( VSCREEN _FARD * );
 extern          void            uivtextput( VSCREEN _FARD*, ORD, ORD, ATTR, const char _FARD*, int );
 extern          void            uitextfield( VSCREEN _FARD*, ORD, ORD, ORD, ATTR, LPC_STRING, int );
 extern          void            uimousespeed( unsigned );

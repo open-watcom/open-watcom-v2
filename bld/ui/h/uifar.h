@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-extern intern  void     cdecl farfill( LP_PIXEL, PIXEL, size_t, int );
-extern intern  void     cdecl farcopy( LP_PIXEL, LP_PIXEL, size_t, int );
-extern intern  void     cdecl farstring( LP_PIXEL, int, size_t, int, LPC_STRING );
-extern intern  void     cdecl farattrib( LP_PIXEL, int, size_t, int );
-extern intern  void     cdecl farattrflip( LP_PIXEL, size_t, int );
+extern intern  void     cdecl farfill( LP_PIXEL, PIXEL, size_t, bool );
+extern intern  void     cdecl farcopy( LP_PIXEL, LP_PIXEL, size_t, bool );
+extern intern  void     cdecl farstring( LP_PIXEL, int, size_t, bool, LPC_STRING );
+extern intern  void     cdecl farattrib( LP_PIXEL, int, size_t, bool );
+extern intern  void     cdecl farattrflip( LP_PIXEL, size_t, bool );
 extern intern  LP_PIXEL faralloc( size_t size );
 extern intern  void     farfree( LP_PIXEL ptr );

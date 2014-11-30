@@ -272,7 +272,7 @@ static int cd_fini( void )
     finikeyboard();
     uifinicursor();
     console_close( UIConCtrl );
-    return 0;
+    return( FALSE );
 }
 
 static int cd_update( SAREA *area )
