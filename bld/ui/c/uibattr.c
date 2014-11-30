@@ -32,9 +32,7 @@
 
 #include <stdio.h>
 #include "uidef.h"
-
-extern  void    cdecl intern    farattrib( LP_PIXEL, int, int, int );
-extern  void    cdecl intern    farattrflip( LP_PIXEL, int, int );
+#include "uifar.h"
 
 
 void intern battribute( BUFFER *bptr, int row, int col,

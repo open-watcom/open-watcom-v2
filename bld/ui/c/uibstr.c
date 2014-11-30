@@ -32,9 +32,7 @@
 
 #include <stdio.h>
 #include "uidef.h"
-
-extern  void cdecl intern farcopy( LP_PIXEL, LP_PIXEL, int, int );
-extern  void cdecl intern farstring( LP_PIXEL, int, int, int, LPC_STRING );
+#include "uifar.h"
 
 
 void intern bstring( register BUFFER            *bptr,

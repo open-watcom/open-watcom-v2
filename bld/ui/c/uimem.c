@@ -31,6 +31,7 @@
 
 
 #include "uidef.h"
+#include "uifar.h"
 
 LP_PIXEL intern faralloc( size_t size )
 /************************************/

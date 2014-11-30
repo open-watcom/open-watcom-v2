@@ -32,8 +32,7 @@
 
 #include <stdio.h>
 #include "uidef.h"
-
-extern  void    cdecl intern     farcopy( LP_PIXEL, LP_PIXEL, int, int );
+#include "uifar.h"
 
 
 void intern uibcopy( BUFFER *sptr, int srow, int scol, BUFFER *dptr,

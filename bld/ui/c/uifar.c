@@ -38,6 +38,7 @@
     #include <conio.h>
 #endif
 #include "uidef.h"
+#include "uifar.h"
 
 #if defined( _M_I86 )
 
@@ -122,9 +123,9 @@ extern void _backward(void);
 
 #define ATTR_FLIP_MASK      0x77
 
-intern void cdecl farfill( LP_PIXEL start, PIXEL fill, int len, int snow )
+intern void cdecl farfill( LP_PIXEL start, PIXEL fill, unsigned len, int snow )
 {
-    int         i;
+    unsigned    i;
 
 #if defined( _M_I86 )
     if( snow ) {
@@ -145,7 +146,7 @@ intern void cdecl farfill( LP_PIXEL start, PIXEL fill, int len, int snow )
 }
 
 
-intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, int len, int snow )
+intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, unsigned len, int snow )
 {
 #if defined( _M_I86 )
     if( snow ) {
@@ -176,10 +177,10 @@ intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, int len, int snow )
 }
 
 
-intern void cdecl farstring( LP_PIXEL start, int attr, int len,
+intern void cdecl farstring( LP_PIXEL start, int attr, unsigned len,
                                           int snow, LPC_STRING str )
 {
-    int         i;
+    unsigned    i;
     PIXEL       p;
 
     p.attr = attr;
@@ -212,9 +213,9 @@ intern void cdecl farstring( LP_PIXEL start, int attr, int len,
     farfill( start, p, len-i, snow );
 }
 
-intern void cdecl farattrib( LP_PIXEL start, int attr, int len, int snow )
+intern void cdecl farattrib( LP_PIXEL start, int attr, unsigned len, int snow )
 {
-    int         i;
+    unsigned    i;
     PIXEL       p;
 
 #if defined( _M_I86 )
@@ -238,9 +239,9 @@ intern void cdecl farattrib( LP_PIXEL start, int attr, int len, int snow )
     }
 }
 
-intern void cdecl farattrflip( LP_PIXEL start, int len, int snow )
+intern void cdecl farattrflip( LP_PIXEL start, unsigned len, int snow )
 {
-    int         i;
+    unsigned    i;
     PIXEL       p;
 
 #if defined( _M_I86 )

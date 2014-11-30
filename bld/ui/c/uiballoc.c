@@ -32,6 +32,8 @@
 
 #include <stdio.h>
 #include "uidef.h"
+#include "uifar.h"
+
 #include "clibext.h"
 
 
