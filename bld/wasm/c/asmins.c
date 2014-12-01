@@ -1196,7 +1196,7 @@ static bool get_stack_argument( token_idx idx, char *buffer )
                     }
                     break;
                 }
-                // fall down
+                /* fall through */
             default:
                 AsmError( STRANGE_PARM_TYPE );
                 return( RC_ERROR );
@@ -1502,7 +1502,7 @@ static bool idata_nofixup( expr_list *opndx )
             }
             break;
         }
-        // fall through
+        /* fall through */
         if( ( value > SHRT_MAX ) || ( value < SHRT_MIN ) ) {
             op_type = OP_I32;
         } else if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
@@ -1532,33 +1532,31 @@ static bool idata_nofixup( expr_list *opndx )
             // expect 8-bit but got 16 bit
             AsmError( JUMP_OUT_OF_RANGE );
             return( RC_ERROR );
-        } else {
-            op_type = OP_I8;
         }
+        op_type = OP_I8;
         break;
     case MT_BYTE:
         if( !InRange( value, 1 ) ) {
             // expect 8-bit but got 16 bit
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( RC_ERROR );
-        } else {
-            op_type = OP_I8;
         }
+        op_type = OP_I8;
         break;
 #if defined( _STANDALONE_ )
     case MT_SBYTE:
         if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( RC_ERROR );
-        } else {
-            op_type = OP_I8;
         }
+        op_type = OP_I8;
         break;
     case MT_SWORD:
         if( ( value > SHRT_MAX ) || ( value < SHRT_MIN ) ) {
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( RC_ERROR );
-        } else if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
+        }
+        if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
             op_type = OP_I16;
         } else {
             op_type = OP_I8;
@@ -1573,7 +1571,8 @@ static bool idata_nofixup( expr_list *opndx )
             if( !InRange( value, 2 ) ) {
                 AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
                 return( RC_ERROR );
-            } else if( value > UCHAR_MAX ) {
+            }
+            if( value > UCHAR_MAX ) {
                 op_type = OP_I16;
             } else {
                 op_type = OP_I8;
@@ -1585,7 +1584,8 @@ static bool idata_nofixup( expr_list *opndx )
             if( !InRange( value, 2 ) ) {
                 AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
                 return( RC_ERROR );
-            } else if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
+            }
+            if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
                 op_type = OP_I16;
             } else {
                 op_type = OP_I8;
@@ -2224,6 +2224,7 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
             AsmError( CANNOT_USE_386_SEGMENT_REGISTER_WITH_CURRENT_CPU_SETTING );
             return( RC_ERROR );
         }
+        /* fall through */
     case OP_SR:                                 // any seg reg
     case OP_SR2:                                // 8086 segment register
         if( AsmBuffer[opndx->base_reg].u.token == T_CS ) {
@@ -2407,6 +2408,7 @@ bool AsmParse( const char *curline )
                     in_epilogue = true;
                     return( Ret( i, Token_Count, false ) );
                 }
+                /* fall through */
             case T_RETN:
             case T_RETF:
                 in_epilogue = false;
@@ -2418,6 +2420,7 @@ bool AsmParse( const char *curline )
                     in_epilogue = true;
                     return( Ret( i, Token_Count, true ) );
                 }
+                /* fall through */
             case T_IRETF:
             case T_IRETDF:
                 in_epilogue = false;
