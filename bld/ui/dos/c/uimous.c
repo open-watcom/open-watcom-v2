@@ -30,8 +30,8 @@
 
 
 #include <dos.h>
-#include "uidos.h"
 #include "uidef.h"
+#include "uidos.h"
 #include "biosui.h"
 #include "charmap.h"
 

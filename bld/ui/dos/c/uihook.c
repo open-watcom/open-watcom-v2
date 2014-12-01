@@ -31,8 +31,8 @@
 
 
 #include <dos.h>
-#include "biosui.h"
 #include "uidef.h"
+#include "biosui.h"
 #include "uiforce.h"
 
 

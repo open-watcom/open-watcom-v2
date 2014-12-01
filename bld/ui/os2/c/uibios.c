@@ -119,7 +119,7 @@ int intern initbios( void )
             ptr = ptrLVB;
             UIData->screen.origin = ptr;
         #else
-            UIData->screen.origin = (PIXEL __far *) ptrLVB;
+            UIData->screen.origin = (LP_PIXEL)ptrLVB;
         #endif
         UIData->screen.increment = UIData->width;
         uiinitcursor();

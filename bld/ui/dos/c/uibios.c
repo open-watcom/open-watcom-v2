@@ -34,9 +34,9 @@
 #include <conio.h>
 #include <string.h>
 #include <extender.h>
+#include "uidef.h"
 #include "uidos.h"
 #include "biosui.h"
-#include "uidef.h"
 #include "dpmi.h"
 
 typedef struct {
@@ -67,7 +67,7 @@ static          MONITOR                 ui_data         =       {
 unsigned    BIOSVidPage;
 
 #ifdef __386__
-void __far *firstmeg( unsigned segment, unsigned offset )
+LP_VOID firstmeg( unsigned segment, unsigned offset )
 {
 #if defined(__OSI__) || __WATCOMC__ >= 1000
     return( MK_FP( _ExtenderRealModeSelector, (unsigned) (segment << 4) + offset ) );
@@ -142,7 +142,7 @@ extern unsigned char DOS_int( unsigned short, unsigned short, unsigned short );
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-void __far * UIAPI video_buffer( void __far *vbuff )
+LP_VOID UIAPI video_buffer( LP_VOID vbuff )
 /***********************************************/
 {
 #ifdef __386__
@@ -169,7 +169,7 @@ void __far * UIAPI video_buffer( void __far *vbuff )
     }
     return( vbuff );
 #else
-extern void __far *get_video_buffer( void __far * );
+extern LP_VOID get_video_buffer( LP_VOID );
 #pragma aux             get_video_buffer = \
         0xb4 0xfe       /* mov ah,0xfe */ \
         0xcd 0x10       /* int 0x10 */ \
@@ -434,12 +434,12 @@ int intern initbios( void )
         }
         if( UIData->desqview ) {
             UIData->screen.origin =
-             (PIXEL __far *)video_buffer( UIData->screen.origin );
+             (LP_PIXEL)video_buffer( UIData->screen.origin );
         }
         if( uiisdbcs() ) {
             old_origin = UIData->screen.origin;
             UIData->screen.origin =
-             (PIXEL __far *)video_buffer( UIData->screen.origin );
+             (LP_PIXEL)video_buffer( UIData->screen.origin );
             if( old_origin != UIData->screen.origin ) {
                 UIData->desqview = TRUE;
             }

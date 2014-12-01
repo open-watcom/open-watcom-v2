@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include    "charmap.h"
 #include <dos.h>
+#include "uidef.h"
+#include "charmap.h"
 
 #pragma aux __SetWriteMap =           \
         "   MOV     DX, 3C4h    "   \

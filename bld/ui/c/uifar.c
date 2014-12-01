@@ -42,11 +42,11 @@
 
 #if defined( _M_I86 )
 
-extern PIXEL __far *_snowput( PIXEL __far *, PIXEL );
-extern PIXEL _snowget( PIXEL __far * );
-extern void _snowcopy( PIXEL __far *, PIXEL __far *, int );
-extern void _forward(void);
-extern void _backward(void);
+extern LP_PIXEL _snowput( LP_PIXEL, PIXEL );
+extern PIXEL _snowget( LP_PIXEL );
+extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
+extern void _forward( void );
+extern void _backward( void );
 
 #pragma aux             _forward = \
         0xfc                    /* cld */ \

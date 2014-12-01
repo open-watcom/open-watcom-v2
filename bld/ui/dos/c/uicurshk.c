@@ -32,8 +32,8 @@
 
 #include <stdlib.h>
 #include <dos.h>
-#include "uidos.h"
 #include "uidef.h"
+#include "uidos.h"
 #include "uiattrs.h"
 #include "biosui.h"
 

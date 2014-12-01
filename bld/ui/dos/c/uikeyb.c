@@ -36,8 +36,8 @@
 #ifdef __386__
 #include <conio.h>
 #endif
-#include "uidos.h"
 #include "uidef.h"
+#include "uidos.h"
 #include "uishift.h"
 #include "biosui.h"
 

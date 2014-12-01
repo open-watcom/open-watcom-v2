@@ -34,7 +34,7 @@
 #define _BIOSUI_H_
 
 #ifdef __386__
-extern void __far *firstmeg( unsigned seg, unsigned offset );
+extern LP_VOID firstmeg( unsigned seg, unsigned offset );
 #else
 #define firstmeg(a,b) MK_FP((a),(b))
 #endif
