@@ -55,7 +55,7 @@ extern bool     IsX86BigAddr( address );
 extern bool     IsX86RealAddr( address );
 extern void     SetExeOffset( address );
 extern int_16   GetDataByte( void );
-extern bool     CnvAddr( address addr, char *buff, unsigned len );
+extern bool     CnvAddr( address addr, char *buff, unsigned buff_len );
 extern void     AsmSize( void );
 extern void     AsmFini( void );
 
@@ -130,7 +130,6 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned bu
         #include "mad.str"
         #undef pick
     };
-
     unsigned    len;
 
     len = strlen( strings[mstr] );

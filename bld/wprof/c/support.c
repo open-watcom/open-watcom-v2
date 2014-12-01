@@ -1264,11 +1264,11 @@ void GetFullInstruct( address a, char * buffer, int max )
  * Convert address to a symbol string.  Return FALSE if this could not be done.
  */
 
-bool CnvAddr( address addr, char *buff, unsigned max )
+bool CnvAddr( address addr, char *buff, unsigned buff_len )
 {
     sym_handle *    sym;
     search_result   sr;
-    int             name_len;
+    unsigned        name_len;
 
     sym = alloca( DIPHandleSize( HK_SYM ) );
 //    MapAddressToActual( exeImage, &addr.mach );
@@ -1280,9 +1280,9 @@ bool CnvAddr( address addr, char *buff, unsigned max )
     default:
         return( FALSE );
     }
-    name_len = SymName( sym, NULL, SN_DEMANGLED, buff, max );
+    name_len = SymName( sym, NULL, SN_DEMANGLED, buff, buff_len );
     if( name_len == 0 ) {
-        SymName( sym, NULL, SN_SOURCE, buff, max );
+        SymName( sym, NULL, SN_SOURCE, buff, buff_len );
     }
     return( TRUE );
 }

@@ -216,15 +216,14 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym,
     } else {
         demangle_type = SN_DEMANGLED;
     }
-    new_rtn = ProfCAlloc( sizeof(rtn_info)+name_len );
-    SymName( sym, NULL, demangle_type, new_rtn->name, name_len+1 );
+    new_rtn = ProfCAlloc( sizeof( rtn_info ) + name_len );
+    SymName( sym, NULL, demangle_type, new_rtn->name, name_len + 1 );
     sym_size = DIPHandleSize( HK_SYM );
     new_rtn->sh = ProfAlloc( sym_size );
     memcpy( new_rtn->sh, sym, sym_size );
     rtn_count = sym_file->rtn_count;
     sym_file->rtn_count++;
-    sym_file->routine = ProfRealloc( sym_file->routine,
-                                     sym_file->rtn_count*sizeof(pointer));
+    sym_file->routine = ProfRealloc( sym_file->routine, sym_file->rtn_count * sizeof( pointer ) );
     sym_file->routine[rtn_count] = new_rtn;
     return( WR_CONTINUE );
 }
