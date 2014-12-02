@@ -44,33 +44,38 @@ extern void     DoHardModeCheck(void);
 
 trap_version    TrapVer;
 trap_req_func   *ReqFunc;
+#ifdef ENABLE_TRAP_LOGGING
+char            *TrapTraceFileName = NULL;
+bool            TrapTraceFileFlush = FALSE;
+#endif
 
 static void     (*pFailure)(void) = NULL;
 static void     (*pAccess)(void) = NULL;
+#ifdef ENABLE_TRAP_LOGGING
+static FILE     *TrapTraceFileHandle = NULL;
+#endif
 
 #ifdef ENABLE_TRAP_LOGGING
-
-static FILE     *TrapTraceFileHandle = NULL;
-static bool     TrapTraceFileFlush = FALSE;
-
-int OpenTrapTraceFile( const char *path, bool flush_flag )
+int OpenTrapTraceFile( void )
 {
-    if( TrapTraceFileHandle )
-        return( -1 );
-    if( NULL == ( TrapTraceFileHandle = fopen( path, "wb" ) ) )
-        return( -1 );
-
-    TrapTraceFileFlush = flush_flag;
+    if( TrapTraceFileName != NULL ) {
+        if( TrapTraceFileHandle != NULL )
+            return( -1 );
+        TrapTraceFileHandle = fopen( TrapTraceFileName, "wb" );
+        if( TrapTraceFileHandle == NULL ) {
+            return( -1 );
+        }
+    }
     return( 0 );
 }
 
 int CloseTrapTraceFile( void )
 {
-    if( TrapTraceFileHandle ){
+    if( TrapTraceFileHandle != NULL ){
         fclose( TrapTraceFileHandle );
         TrapTraceFileHandle = NULL;
     }
-    return 0;   
+    return( 0 );
 }
 #endif
 
@@ -108,7 +113,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
     trap_retval     result;
 
 #ifdef ENABLE_TRAP_LOGGING
-    if( TrapTraceFileHandle ) {
+    if( TrapTraceFileHandle != NULL ) {
         unsigned        ix;
         unsigned short  rectype = 4;   /* Request */
         unsigned short  length = 0;
@@ -138,7 +143,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
     result = ReqFunc( num_in_mx, mx_in, num_out_mx, mx_out );
 
 #ifdef ENABLE_TRAP_LOGGING
-    if( TrapTraceFileHandle ) {
+    if( TrapTraceFileHandle != NULL ) {
         /* result is the length of data returned or REQUEST_FAILED */
         /* Only worth tracing if there is data though */
         if( result > 0 ) {

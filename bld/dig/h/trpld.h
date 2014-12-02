@@ -33,3 +33,11 @@
 
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;
+
+#ifdef ENABLE_TRAP_LOGGING
+extern char             *TrapTraceFileName;
+extern bool             TrapTraceFileFlush;
+
+extern int  OpenTrapTraceFile( void );
+extern int  CloseTrapTraceFile( void );
+#endif
