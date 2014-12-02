@@ -213,6 +213,7 @@ wnd_info W4Info = {
     W4NumRows,
     NoNextRow,
     NoNotify,
+    NULL,
     0,
     DefPopUp( W4PopUp )
 };

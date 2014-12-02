@@ -225,7 +225,6 @@ bool W1EventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-
 wnd_info W1Info = {
     W1EventProc,
     W1Refresh,
@@ -238,6 +237,7 @@ wnd_info W1Info = {
     W1NumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     (wnd_update_list)EV_UPDATE_1,
     (char)DefPopUp( W1PopUp )
 };

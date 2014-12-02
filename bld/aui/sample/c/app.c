@@ -45,18 +45,9 @@ extern void WndCleanUp()
 void GUISysInit(void)
 {
 }
-
 void WndSysInit()
 {
     // initialization hook
-}
-void WndStartFreshAll()
-{
-    // hook called just before windows are all refreshed
-}
-void WndEndFreshAll()
-{
-    // hook called just after windows are all refreshed
 }
 void WndDoInput()
 {
@@ -67,6 +58,16 @@ void Ring()
     // ring the bell
 }
 #endif
+
+void WndStartFreshAll()
+{
+    // hook called just before windows are all refreshed
+}
+void WndEndFreshAll( void )
+{
+    // hook called just after windows are all refreshed
+    WndFlags = 0;
+}
 
 typedef struct {
     unsigned    key;
@@ -203,3 +204,7 @@ void GUImain( void )
     WndMainMenuProc( WndMain, MENU_OPEN1 );
 } // returning starts the events rolling
 
+bool ChkFlags( wnd_update_list flags )
+{
+    return( flags & WndFlags );
+}

@@ -252,7 +252,6 @@ bool W2EventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-
 wnd_info W2Info = {
     W2EventProc,
     W2Refresh,
@@ -265,6 +264,7 @@ wnd_info W2Info = {
     NoNumRows,
     W2NextRow,
     NoNotify,
+    ChkFlags,
     EV_UPDATE_2,
     DefPopUp( W2PopUp )
 };

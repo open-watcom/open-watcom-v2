@@ -282,16 +282,16 @@ extern  void    WndFreshAll()
 {
     a_window            *wnd;
 
-    if( WndDoingRefresh ) return;
+    if( WndDoingRefresh )
+        return;
     WndDoingRefresh = TRUE;
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( ( wnd->info->flags & WndFlags ) ) {
+        if( wnd->info->chkflags != NULL && wnd->info->chkflags( wnd->info->flags ) ) {
             WndRefresh( wnd );
         }
     }
     WndStartFreshAll();
     WndPaintDirt( NULL );
-    WndFlags = 0;
     WndEndFreshAll();
     WndDoingRefresh = FALSE;
 }

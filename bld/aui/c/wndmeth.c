@@ -45,6 +45,7 @@ wnd_info NoInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
+    NULL,
     0,
     0,
     NULL

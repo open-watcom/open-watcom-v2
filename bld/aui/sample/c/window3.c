@@ -324,6 +324,7 @@ wnd_info W3Info = {
     W3NumRows,
     NoNextRow,
     NoNotify,
+    NULL,
     0,
     DefPopUp( W3PopUp )
 };

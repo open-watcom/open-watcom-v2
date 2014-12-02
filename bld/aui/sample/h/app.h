@@ -113,9 +113,12 @@ enum {
     CLASS_W2
 };
 
+extern wnd_update_list  WndFlags;
+
 extern int RandNum( int );
 
 #define MAX_WORD 14
 #define WORD_SIZE 50
 
-extern char *Word[WORD_SIZE];
+extern char     *Word[WORD_SIZE];
+extern bool     ChkFlags( wnd_update_list flags );

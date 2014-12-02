@@ -283,6 +283,7 @@ typedef bool (WNDGETLINE)( a_window *wnd, wnd_row row, int piece, wnd_line_piece
 typedef void (WNDNOTIFY)( a_window *wnd, wnd_row row, int piece );
 typedef void (WNDBEGPAINT)( a_window *wnd, wnd_row row, int num );
 typedef void (WNDENDPAINT)( a_window *wnd, wnd_row row, int num );
+typedef bool (WNDCHKFLAGS)( wnd_update_list );
 typedef a_window * (WNDOPEN)( void );
 typedef a_window *(WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
 typedef void (WNDCLOSE)( a_window * );
@@ -300,6 +301,7 @@ typedef struct wnd_info {
         WNDNUMROWS              *numrows;
         WNDNEXTROW              *nextrow;
         WNDNOTIFY               *notify;
+        WNDCHKFLAGS             *chkflags;
         wnd_update_list         flags;
         char                    num_popups;
         gui_menu_struct         *popupmenu;
@@ -413,7 +415,6 @@ extern wnd_switches     WndSwitches;
 extern a_window         *Windows;
 extern gui_coord        WndMax;
 extern gui_coord        WndScreen;
-extern wnd_update_list  WndFlags;
 extern bool             WndOkToShow;
 extern bool             WndIgnoreAllEvents;
 
