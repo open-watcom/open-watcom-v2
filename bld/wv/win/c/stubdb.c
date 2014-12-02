@@ -35,11 +35,11 @@
 #include <process.h>
 #include <windows.h>
 #include "_srcmgt.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbginfo.h"
 #include "bool.h"
 #include "ambigsym.h"
-#include "dbgtoggl.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
@@ -395,6 +395,7 @@ void DUIInit()
 extern void DUIFreshAll()
 {
     // refresh all screens - initialization has been done
+    UpdateFlags = 0;
 }
 extern bool DUIStopRefresh( bool stop )
 {

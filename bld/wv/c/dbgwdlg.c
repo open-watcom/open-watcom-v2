@@ -232,6 +232,7 @@ wnd_info LogInfo = {
     DlgNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_DLG_WRITTEN,
     NoPopUp
 };

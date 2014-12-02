@@ -33,9 +33,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "dbglit.h"
 #include "dbgmem.h"
 #include "dbginfo.h"
@@ -104,9 +103,7 @@ extern bool             CapabilitiesGetExactBreakpointSupport( void );
 extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
 extern bool             SupportsExactBreakpoints;
 
-extern char             OnOffNameTab[];
 extern char             *TxtBuff;
-extern char             *Language;
 extern char             WndNameTab[];
 extern tokens           CurrToken;
 extern margins          SrcMar;
@@ -131,6 +128,8 @@ typedef enum {
     MWT_XMM,
     MWT_LAST
 } mad_window_toggles;
+
+char    *Language = NULL;
 
 static pending_toggle_list *PendToggleList[MWT_LAST];
 
@@ -293,7 +292,7 @@ bool SwitchOnOff( void )
 {
     unsigned which;
 
-    which = ScanCmd( OnOffNameTab );
+    which = ScanCmd( "ON\0OFf\0" );
     if( which == 0 ) Error( ERR_LOC, LIT( ERR_WANT_ON_OFF ) );
     ReqEOC();
     return( which == 1 );
@@ -302,7 +301,7 @@ bool SwitchOnOff( void )
 
 void ShowSwitch( bool on )
 {
-    GetCmdEntry( OnOffNameTab, on ? 1 : 2, TxtBuff );
+    GetCmdEntry( "ON\0OFf\0", on ? 1 : 2, TxtBuff );
     ConfigLine( TxtBuff );
 }
 

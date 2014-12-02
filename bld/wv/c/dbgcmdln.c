@@ -61,10 +61,6 @@ void                    FindLocalDebugInfo( char *name );
 extern void             StartupErr( char *err );
 
 
-#ifdef ENABLE_TRAP_LOGGING
-extern char             *TrpDebugFile;
-extern bool             TrpDebugFileFlush;
-#endif
 extern char             *InitCmdList;
 extern char             *InvokeFile;
 extern char             *DipFiles[];
@@ -466,15 +462,15 @@ static void ProcOptList( int pass )
 #ifdef ENABLE_TRAP_LOGGING
         case OPT_TRAP_DEBUG_FLUSH:
             if( pass == 2 )
-                _Free( TrpDebugFile );
-            TrpDebugFile = GetFileName( pass );
-            TrpDebugFileFlush = TRUE;
+                _Free( TrapTraceFileName );
+            TrapTraceFileName = GetFileName( pass );
+            TrapTraceFileFlush = TRUE;
             break;
         case OPT_TRAP_DEBUG:
             if( pass == 2 )
-                _Free( TrpDebugFile );
-            TrpDebugFile = GetFileName( pass );
-            TrpDebugFileFlush = FALSE;
+                _Free( TrapTraceFileName );
+            TrapTraceFileName = GetFileName( pass );
+            TrapTraceFileFlush = FALSE;
             break;
 #endif
         case OPT_REMOTE_FILES:

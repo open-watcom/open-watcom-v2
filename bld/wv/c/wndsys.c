@@ -32,12 +32,10 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbginp.h"
-#include "dbgtoken.h"
-#include "dbgerr.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbginfo.h"
+#include "dbgerr.h"
 #include "dbgadget.h"
 #include "dbghook.h"
 #include "dbgio.h"
@@ -539,6 +537,7 @@ extern void WndStartFreshAll( void )
 
 extern void WndEndFreshAll( void )
 {
+    UpdateFlags = 0;
     CheckBPErrors();
 }
 

@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "machtype.h"
+#include "bool.h"
+
 /* Functions declared as OVL_EXTERN are used only within the module
  * they are declared in however pointers to them are used.  In order
  * for the overlay manager to be able to keep track of these pointers
@@ -42,6 +45,9 @@
 #define OVL_EXTERN      static
 #endif
 
+#define NULLCHAR '\0'
+#define NULL_RTN (void (*)())0
+#define ARG_TERMINATE   '\xff'
 
 /* Handles */
 
@@ -53,14 +59,6 @@ typedef struct machine_state    machine_state;
 /* Global Definitions */
 
 typedef unsigned                error_idx;
-
-#include "machtype.h"
-
-#define NULLCHAR '\0'
-#define NULL_RTN (void (*)())0
-#define ARG_TERMINATE   '\xff'
-
-#include "bool.h"
 
 typedef unsigned_8 debug_level; enum {
     #define pick( a,b ) a,

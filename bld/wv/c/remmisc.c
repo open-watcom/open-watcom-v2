@@ -34,6 +34,7 @@
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "trpcore.h"
+#include "trpld.h"
 #include "dbgio.h"
 #if !defined( BUILD_RFX )
 #include "dbglit.h"
@@ -58,13 +59,6 @@ extern bool             InitCapabilities( void );
 extern bool             InitAsyncSupp( void );
 extern void             StartupErr( char *err );
 extern char             *DupStr( char * );
-
-#ifdef ENABLE_TRAP_LOGGING
-extern int              OpenTrapTraceFile( const char *path, bool flush_flag );
-extern int              CloseTrapTraceFile( void );
-extern char             *TrpDebugFile;
-extern bool             TrpDebugFileFlush;
-#endif
 
 extern system_config    SysConfig;
 extern char             *TxtBuff;
@@ -115,8 +109,7 @@ void InitTrap( const char *trap_parms )
     char                buff[ TXT_LEN ];
 
 #ifdef ENABLE_TRAP_LOGGING
-    if( TrpDebugFile )
-        OpenTrapTraceFile( TrpDebugFile, TrpDebugFileFlush );
+    OpenTrapTraceFile();
 #endif
 
 /* Don't use TxtBuff except for error -- it may have a Finger message in it */

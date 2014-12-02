@@ -1434,18 +1434,6 @@ bool DUIClose( void )
     return( TRUE );
 }
 
-char *GetCmdArg( int num )
-{
-    if( num != 0 ) return( NULL );
-    return( CmdData );
-}
-
-void SetCmdArgStart( int num, char *ptr )
-{
-    num = num;
-    CmdData = ptr;
-}
-
 HANDLE          Requestsem;
 HANDLE          Requestdonesem;
 
@@ -1595,6 +1583,7 @@ void DUIInit( void )
 extern void DUIFreshAll( void )
 {
     // refresh all screens - initialization has been done
+//    UpdateFlags = 0;
 }
 extern bool DUIStopRefresh( bool stop )
 {
@@ -1836,7 +1825,7 @@ extern void *WndAsmInspect( address addr )
     _AllocA( dd, MADDisasmDataSize() );
     for( i = 0; i < 10; ++i ) {
         MADDisasm( dd, &addr, 0 );
-        MADDisasmFormat( dd, MDP_ALL, CurrRadix, sizeof( buff ), buff );
+        MADDisasmFormat( dd, MDP_ALL, CurrRadix, buff, sizeof( buff ) );
         InsMemRef( dd );
         printf( "%-40s%s\n", buff, TxtBuff );
     }
@@ -1894,10 +1883,6 @@ void PopErrBox( char *buff )
 {
     MessageBox( (HWND) NULL, buff, LIT( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-}
-void KillDebugger( int ret_code )
-{
-    ExitProcess( ret_code );
 }
 
 void DUIEnterCriticalSection( void )

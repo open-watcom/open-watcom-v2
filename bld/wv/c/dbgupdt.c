@@ -49,7 +49,7 @@ extern void             SymCompFini( void );
 extern void             PopInpStack( void );
 extern address          GetCodeDot( void );
 
-extern update_list      WndFlags;
+extern update_list      UpdateFlags;
 extern mod_handle       ContextMod;
 extern mod_handle       CodeAddrMod;
 extern input_stack      *InpStack;
@@ -60,7 +60,7 @@ void DbgUpdate( update_list flags )
     mod_handle  prev_mod;
     input_stack *inp;
 
-    WndFlags |= flags;
+    UpdateFlags |= flags;
     if( flags & ( UP_SYM_CHANGE ) ) {
         BrkAddrRefresh();
     }

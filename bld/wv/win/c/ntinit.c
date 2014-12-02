@@ -40,10 +40,13 @@
 #include <stdarg.h>
 #include <wwindows.h>
 #include "dbgdefn.h"
+#ifdef __GUI__
 #include "dbgwind.h"
+#endif
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "autoenv.h"
+#include "dbglit.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
@@ -59,7 +62,9 @@ extern void     NewConsoleTitle();
 
 static char             *CmdData;
 extern volatile int     BrkPending;
+#ifdef __GUI__
 extern a_window         *WndMain;
+#endif
 
 #ifdef __AXP__
     //NYI: temp until we can get all the unaligned stuff straightened out.

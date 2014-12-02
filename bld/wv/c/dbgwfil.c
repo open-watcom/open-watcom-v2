@@ -32,15 +32,13 @@
 #include <string.h>
 #include <limits.h>
 #include "_srcmgt.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbginfo.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
-#include "dbgbreak.h"
 #include "dbgstk.h"
 #include "srcmgt.h"
 
@@ -372,7 +370,7 @@ static  void    FileModify( a_window *wnd, int row, int piece )
     if( piece == PIECE_BREAK ) {
         addr = GetRowAddr( file, row, TRUE );
         if( IS_NIL_ADDR( addr ) ) return;
-        file->toggled_break = ( ( WndFlags & UP_BREAK_CHANGE ) == 0 );
+        file->toggled_break = ( ( UpdateFlags & UP_BREAK_CHANGE ) == 0 );
         ToggleBreak( addr );
         WndRowDirty( wnd, row );
     } else {
@@ -713,7 +711,7 @@ static void     FileActive( a_window *wnd, mod_handle mod )
             WndRowDirty( wnd, file->active );
         }
     }
-    if( file->mod != NO_MOD && ( WndFlags & UP_BREAK_CHANGE ) ) {
+    if( file->mod != NO_MOD && ( UpdateFlags & UP_BREAK_CHANGE ) ) {
         WndNoSelect( wnd );
         WndRepaint( wnd );
     }
@@ -753,17 +751,17 @@ static void FileRefresh( a_window *wnd )
     address     dotaddr;
     DIPHDL( cue, ch );
 
-    if( WndFlags & UP_SYM_CHANGE ) {
+    if( UpdateFlags & UP_SYM_CHANGE ) {
         if( file->mod != NO_MOD ) ClearSrcFile( file );
         if( DeAliasAddrMod( file->dotaddr, &file->mod ) == SR_NONE ) {
             file->mod = NO_MOD;
         }
         WndZapped( wnd );
     }
-    if( WndFlags & (UP_CSIP_CHANGE+UP_STACKPOS_CHANGE) ) {
+    if( UpdateFlags & (UP_CSIP_CHANGE+UP_STACKPOS_CHANGE) ) {
         FileNewIP( wnd );
     }
-    if( (WndFlags & (UP_NEW_SRC|UP_SYM_CHANGE)) && (file->mod != NO_MOD) ) {
+    if( (UpdateFlags & (UP_NEW_SRC|UP_SYM_CHANGE)) && (file->mod != NO_MOD) ) {
         ClearSrcFile( file );
         if( LineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
             dotaddr = file->dotaddr;
@@ -771,7 +769,7 @@ static void FileRefresh( a_window *wnd )
             SrcMoveDot( wnd, dotaddr );
         }
     }
-    if( (WndFlags & UP_BREAK_CHANGE) && (file->mod != NO_MOD) ) {
+    if( (UpdateFlags & UP_BREAK_CHANGE) && (file->mod != NO_MOD) ) {
         if( file->toggled_break ) {
             file->toggled_break = FALSE;
         } else {
@@ -833,6 +831,7 @@ wnd_info FileInfo = {
     NoNumRows,
     NoNextRow,
     FileNotify,
+    ChkFlags,
     UP_NEW_SRC+UP_SYM_CHANGE+UP_CSIP_CHANGE+UP_STACKPOS_CHANGE+UP_BREAK_CHANGE,
     DefPopUp( FileMenu )
 };

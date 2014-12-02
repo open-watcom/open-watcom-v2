@@ -985,6 +985,7 @@ wnd_info BinInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_RADIX_CHANGE,
     DefPopUp( MemMenu )
 };
@@ -1001,6 +1002,7 @@ wnd_info MemInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_RADIX_CHANGE+UP_MEM_CHANGE+UP_SYM_CHANGE+UP_NEW_PROGRAM,
     DefPopUp( MemMenu )
 };
@@ -1017,6 +1019,7 @@ wnd_info StkInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_RADIX_CHANGE+UP_MEM_CHANGE+UP_STACKPOS_CHANGE+UP_REG_CHANGE+UP_SYM_CHANGE+UP_NEW_PROGRAM,
     DefPopUp( MemMenu )
 };

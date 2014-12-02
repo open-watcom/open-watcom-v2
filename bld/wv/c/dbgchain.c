@@ -43,7 +43,7 @@
 #include "mad.h"
 
 extern char             *TxtBuff;
-extern update_list      WndFlags;
+extern update_list      UpdateFlags;
 
 extern address          FindLclBlock( address addr );
 extern int              AddrComp(address ,address );
@@ -212,7 +212,7 @@ void UpdateTraceBack( cached_traceback *tb )
     tb->curr = curr;
     tb->prev = prev;
     curr->current_depth = 0;
-    if( WndFlags & UP_SYM_CHANGE ) {
+    if( UpdateFlags & UP_SYM_CHANGE ) {
         FreeChainInfo( prev, 0, prev->total_depth );
         prev->total_depth = 0;
     }

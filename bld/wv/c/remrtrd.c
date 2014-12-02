@@ -51,7 +51,8 @@ static trap_shandle     SuppRunThreadId = 0;
 bool InitRunThreadSupp( void )
 {
     SuppRunThreadId = GetSuppId( RUN_THREAD_SUPP_NAME );
-    if( SuppRunThreadId == 0 ) return( FALSE );
+    if( SuppRunThreadId == 0 )
+        return( FALSE );
     InitRunThreadWnd();
     return( TRUE );
 }

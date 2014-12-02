@@ -33,12 +33,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbginfo.h"
 #include "dbgadget.h"
 #include "modlist.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
 
 
 extern char             *TxtBuff;
@@ -272,10 +272,10 @@ static void     ModRefresh( a_window *wnd )
     mod_window  *mod = WndMod( wnd );
     modinfo     *info;
 
-    if( WndFlags & UP_SYM_CHANGE ) {
+    if( UpdateFlags & UP_SYM_CHANGE ) {
         ModInit( wnd );
     }
-    if( WndFlags & UP_OPEN_CHANGE ) {
+    if( UpdateFlags & UP_OPEN_CHANGE ) {
         for( i = 0; i < ModListNumRows( ModList( mod ) ); ++i ) {
             info = &mod->info[ i ];
             info->open = CheckOpenGadget( wnd, i, info->open,
@@ -283,7 +283,7 @@ static void     ModRefresh( a_window *wnd )
                                           info->source, PIECE_SOURCE );
         }
     }
-    if( WndFlags & (UP_CSIP_CHANGE+UP_STACKPOS_CHANGE) ) {
+    if( UpdateFlags & (UP_CSIP_CHANGE+UP_STACKPOS_CHANGE) ) {
         ModSetCurrent( wnd );
     }
 }
@@ -337,6 +337,7 @@ wnd_info ModInfo = {
     ModNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_SYM_CHANGE+UP_OPEN_CHANGE+UP_CSIP_CHANGE+UP_STACKPOS_CHANGE,
     DefPopUp( ModMenu )
 };

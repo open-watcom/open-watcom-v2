@@ -34,8 +34,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include "_srcmgt.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbginfo.h"
 #include "dbgadget.h"
 #include "wndregx.h"
 #include "sortlist.h"
@@ -303,8 +304,8 @@ static void     SrchRefresh( a_window *wnd )
     found_item  *found;
     int         i;
 
-    if( ( WndFlags & ~UP_OPEN_CHANGE ) & SrchInfo.flags ) {
-        if( WndFlags & UP_SYMBOLS_LOST ) {
+    if( ( UpdateFlags & ~UP_OPEN_CHANGE ) & SrchInfo.flags ) {
+        if( UpdateFlags & UP_SYMBOLS_LOST ) {
             srch->walk = NoModWalker;
         }
         SrchInit( wnd );
@@ -351,6 +352,7 @@ wnd_info SrchInfo = {
     SrchNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_SYMBOLS_LOST+UP_OPEN_CHANGE,
     DefPopUp( SrchMenu ),
 };

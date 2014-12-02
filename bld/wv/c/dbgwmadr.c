@@ -418,12 +418,12 @@ static void     RegRefresh( a_window *wnd )
     // if register type changes, from 16 to 32-bit,
     // this will force the mad to call back NOW, setting UP_REG_RESIZE
     GetDisplayPiece( &disp, reg, DbgRegs, 0 );
-    if( WndFlags & UP_REG_RESIZE ) {
+    if( UpdateFlags & UP_REG_RESIZE ) {
         RegResize( wnd );
         WndZapped( wnd );
         return;
     }
-    if( WndFlags & UP_MAD_CHANGE ) {
+    if( UpdateFlags & UP_MAD_CHANGE ) {
         WndZapped( wnd );
         return;
     }
@@ -481,6 +481,7 @@ wnd_info MadRegInfo = {
     RegNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_MAD_CHANGE+UP_REG_CHANGE+UP_REG_RESIZE,
     DefPopUp( RegMenu )
 };

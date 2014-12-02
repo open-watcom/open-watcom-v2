@@ -33,14 +33,13 @@
 #include <limits.h>
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
+#include "dbgwind.h"
 #include "dbginfo.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
 #include "dlgvarx.h"
 #include "dbgvar.h"
 #include "spawn.h"
@@ -802,7 +801,7 @@ static  void VarRefresh( a_window *wnd )
 
     repaint = FALSE;
     if( !var->initialized ||
-      ( WndFlags & (UP_MEM_CHANGE+UP_STACKPOS_CHANGE+UP_CSIP_CHANGE+UP_REG_CHANGE) ) ) {
+      ( UpdateFlags & (UP_MEM_CHANGE+UP_STACKPOS_CHANGE+UP_CSIP_CHANGE+UP_REG_CHANGE) ) ) {
         var->initialized = TRUE;
         repaint = VarInfoRefresh( var->vtype, &var->i, &addr, wnd );
         if( var->vtype == VAR_LOCALS ) {
@@ -816,11 +815,11 @@ static  void VarRefresh( a_window *wnd )
         }
         VarRefreshVisible( &var->i, WndTop( wnd ), WndRows( wnd ), VarDirtyRow, wnd );
     }
-    if( WndFlags & UP_VAR_DISPLAY ) {
+    if( UpdateFlags & UP_VAR_DISPLAY ) {
         VarDisplayUpdate( &var->i );
         repaint = TRUE;
     }
-    if( repaint || ( WndFlags & (UP_RADIX_CHANGE+UP_SYM_CHANGE) ) != 0 ) {
+    if( repaint || ( UpdateFlags & (UP_RADIX_CHANGE+UP_SYM_CHANGE) ) != 0 ) {
         VarRepaint( wnd );
     }
 }
@@ -948,6 +947,7 @@ wnd_info VarInfo = {
     VarNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_VAR_DISPLAY+UP_MEM_CHANGE+UP_STACKPOS_CHANGE+UP_CSIP_CHANGE+UP_REG_CHANGE+UP_RADIX_CHANGE+UP_SYM_CHANGE,
     DefPopUp( VarMenu )
 };

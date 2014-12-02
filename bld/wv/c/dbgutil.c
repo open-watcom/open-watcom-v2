@@ -45,11 +45,9 @@
 #include "dui.h"
 
 
-extern char             *NameBuff;
 extern unsigned char    CurrRadix;
 extern input_stack      *InpStack;
 extern char             *Language;
-extern char             *TxtBuff;
 extern system_config    SysConfig;
 extern unsigned char    CurrRadix;
 extern mod_handle       CodeAddrMod;

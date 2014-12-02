@@ -31,11 +31,11 @@
 
 #include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbginfo.h"
 #include "dbgtback.h"
 #include "dbgadget.h"
-#include "dbginfo.h"
 #include "dbgmem.h"
 #include "dbgchain.h"
 #include "mad.h"
@@ -202,7 +202,7 @@ static WNDREFRESH CallRefresh;
 static void     CallRefresh( a_window *wnd )
 {
 
-    if( ( WndFlags & ~UP_STACKPOS_CHANGE ) & CallInfo.flags ) {
+    if( ( UpdateFlags & ~UP_STACKPOS_CHANGE ) & CallInfo.flags ) {
         CallInit( wnd );
     }
     CallScrollPos( wnd );
@@ -252,6 +252,7 @@ wnd_info CallInfo = {
     CallNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_RADIX_CHANGE+UP_SYM_CHANGE+UP_CSIP_CHANGE+UP_STACKPOS_CHANGE,
     DefPopUp( CallMenu )
 };

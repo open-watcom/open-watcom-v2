@@ -276,6 +276,7 @@ wnd_info ImgInfo = {
     ImgNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_SYM_CHANGE,
     DefPopUp( ImgMenu )
 };

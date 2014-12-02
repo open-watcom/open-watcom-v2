@@ -397,7 +397,7 @@ static  void    AsmModify( a_window *wnd, int row, int piece )
     old = NewCurrRadix( asw->hex ? 16 : 10 );
     addr = asw->ins[ row ].addr;
     if( piece == PIECE_BREAK ) {
-        asw->toggled_break = ( ( WndFlags & UP_BREAK_CHANGE ) == 0 );
+        asw->toggled_break = ( ( UpdateFlags & UP_BREAK_CHANGE ) == 0 );
         ToggleBreak( addr );
     } else {
         WndFirstMenuItem( wnd, row, piece );
@@ -896,7 +896,7 @@ static void     AsmRefresh( a_window *wnd )
     unsigned            new_size;
     mad_disasm_data     *new;
 
-    if( WndFlags & UP_MAD_CHANGE ) {
+    if( UpdateFlags & UP_MAD_CHANGE ) {
         /* _have_ to check this one first */
         WndZapped( wnd );
         new_size = MADDisasmDataSize();
@@ -911,11 +911,11 @@ static void     AsmRefresh( a_window *wnd )
             }
         }
     }
-    if( WndFlags & UP_ASM_RESIZE ) {
+    if( UpdateFlags & UP_ASM_RESIZE ) {
         AsmResize( wnd );
         WndZapped( wnd );
     }
-    if( WndFlags & UP_NEW_PROGRAM ) {
+    if( UpdateFlags & UP_NEW_PROGRAM ) {
         AsmSetFirst( wnd, NilAddr, TRUE );
         asw->active = NilAddr;
         AsmSetDotAddr( wnd, NilAddr );
@@ -923,16 +923,16 @@ static void     AsmRefresh( a_window *wnd )
         CalcAddrLen( wnd, NilAddr );
         AsmNewSource( asw, NULL );
     }
-    if( WndFlags & (UP_SYM_CHANGE+UP_NEW_SRC) ) {
+    if( UpdateFlags & (UP_SYM_CHANGE+UP_NEW_SRC) ) {
         asw->mod = NO_MOD;
         AsmNewSource( asw, NULL );
         AsmNewIP( wnd );
         WndZapped( wnd );
-    } else if( WndFlags & (UP_STACKPOS_CHANGE+UP_CSIP_CHANGE) ) {
+    } else if( UpdateFlags & (UP_STACKPOS_CHANGE+UP_CSIP_CHANGE) ) {
         AsmNewIP( wnd );
-    } else if( WndFlags & (UP_RADIX_CHANGE) ) {
+    } else if( UpdateFlags & (UP_RADIX_CHANGE) ) {
         WndZapped( wnd );
-    } else if( WndFlags & UP_BREAK_CHANGE ) {
+    } else if( UpdateFlags & UP_BREAK_CHANGE ) {
         if( asw->toggled_break ) {
             asw->toggled_break = FALSE;
         } else {
@@ -1043,6 +1043,7 @@ wnd_info AsmInfo = {
     NoNumRows,
     NoNextRow,
     AsmNotify,
+    ChkFlags,
     UP_MAD_CHANGE+UP_SYM_CHANGE+UP_NEW_PROGRAM+UP_NEW_SRC+
     UP_STACKPOS_CHANGE+UP_CSIP_CHANGE+UP_BREAK_CHANGE+
     UP_RADIX_CHANGE+UP_ASM_RESIZE,

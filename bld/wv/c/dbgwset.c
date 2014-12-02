@@ -32,10 +32,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbgerr.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbgerr.h"
 #include "dbgmem.h"
 #include "wndregx.h"
 #include "dbgio.h"
@@ -102,9 +101,7 @@ extern void             RegFindData( mad_type_kind kind, mad_reg_set_data **pdat
 extern mad_handle       FindMAD( char *, unsigned );
 extern void             DbgUpdate( update_list );
 
-extern char             OnOffNameTab[];
 extern char             *TxtBuff;
-extern char             *Language;
 extern char             WndNameTab[];
 extern tokens           CurrToken;
 extern margins          SrcMar;

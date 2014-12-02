@@ -259,6 +259,7 @@ wnd_info TrdInfo = {
     TrdNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_THREAD_STATE,
     DefPopUp( TrdMenu ),
 };

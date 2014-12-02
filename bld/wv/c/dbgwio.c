@@ -334,6 +334,7 @@ wnd_info IOInfo = {
     IONumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_RADIX_CHANGE,
     DefPopUp( IOMenu )
 };

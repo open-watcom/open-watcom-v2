@@ -37,72 +37,68 @@
 #include "dbginp.h"
 #include "trpcore.h"
 
-extern char             *InitCmdList;
-extern char             *TrapParms;
+#if !defined( global )
+#define global  extern
+#endif
 
-/*
- *  Queried from trap file supplemental services
- */
-extern bool             Supports8ByteBreakpoints;
-extern bool             SupportsExactBreakpoints;
+global char             *InitCmdList;
+global char             *TrapParms;
 
-extern char             *InvokeFile;
-extern char             *DipFiles[10];
+global char             *InvokeFile;
+global char             *DipFiles[10];
 
-extern char_ring        *SrcSpec;
-extern debug_level      DbgLevel;
-extern debug_level      ActiveWindowLevel;
-extern char             *Language;
+global char_ring        *SrcSpec;
+global debug_level      DbgLevel;
+global debug_level      ActiveWindowLevel;
 
-extern address          NilAddr;
+global address          NilAddr;
 
-extern machine_state    *DbgRegs;
-extern machine_state    *PrevRegs;
+global machine_state    *DbgRegs;
+global machine_state    *PrevRegs;
 
-extern tokens           CurrToken;
-extern dbg_switches     DbgSwitches;
-extern screen_state     ScrnState;
+global tokens           CurrToken;
+global dbg_switches     DbgSwitches;
+global screen_state     ScrnState;
 
-extern unsigned         ExprAddrDepth;
-extern unsigned         NestedCallLevel;
-extern int              PgmStackUsage[ MAX_NESTED_CALL ];
+global unsigned         ExprAddrDepth;
+global unsigned         NestedCallLevel;
+global int              PgmStackUsage[MAX_NESTED_CALL];
 
-extern unsigned char    DefRadix;
-extern unsigned char    CurrRadix;
+global unsigned char    DefRadix;
+global unsigned char    CurrRadix;
 
-extern unsigned         InvCount;
+global unsigned         InvCount;
 
-extern update_list      WndFlags;
+global update_list      UpdateFlags;
 
-extern unsigned long    MemSize;
+global unsigned long    MemSize;
 
-extern struct location_context Context;
-extern mod_handle       ContextMod;
+global location_context Context;
+global mod_handle       ContextMod;
 
-extern mod_handle       CodeAddrMod;
-extern unsigned         TaskId;
+global mod_handle       CodeAddrMod;
+global unsigned         TaskId;
 
-extern brkp             UserTmpBrk; // brk changed
-extern brkp             DbgTmpBrk;  // brk changed
-extern brkp             *BrkList;   // brk changed
+global brkp             UserTmpBrk; // brk changed
+global brkp             DbgTmpBrk;  // brk changed
+global brkp             *BrkList;   // brk changed
 
-extern void             *CmdHistory;
-extern void             *SrchHistory;
+global void             *CmdHistory;
+global void             *SrchHistory;
 
-extern unsigned         SkipCount;
-extern input_stack      *InpStack;
-extern system_config    SysConfig;
-extern unsigned         CheckSize;
-extern unsigned         OvlSize;
+global unsigned         SkipCount;
+global input_stack      *InpStack;
+global system_config    SysConfig;
+global unsigned         CheckSize;
+global unsigned         OvlSize;
 
-extern char             *CmdStart;
-extern thread_state     *HeadThd;
-extern thread_state     *ExecThd;
-extern image_entry      *DbgImageList;
-extern dip_status       DIPStatus;
+global char             *CmdStart;
+global thread_state     *HeadThd;
+global thread_state     *ExecThd;
+global image_entry      *DbgImageList;
+global dip_status       DIPStatus;
 
-extern char             *TxtBuff;
-extern char             *NameBuff;
+global char             *TxtBuff;
+global char             *NameBuff;
 
-extern char DbgBuffers[TXT_LEN+1 + NAM_LEN+1]; // big!
-extern char             OnOffNameTab[];
+global char             DbgBuffers[(TXT_LEN + 1) + (NAM_LEN + 1)]; // big!

@@ -264,6 +264,7 @@ wnd_info RepInfo = {
     RepNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_EVENT_CHANGE,
     DefPopUp( RepMenu )
 };

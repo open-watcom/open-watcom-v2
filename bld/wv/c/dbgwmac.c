@@ -626,6 +626,7 @@ wnd_info MacInfo = {
     MacNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_MACRO_CHANGE,
     DefPopUp( MacMenu )
 };

@@ -31,9 +31,9 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbginfo.h"
-#include "dbgbreak.h" //
 #include "dbgadget.h"
 #include <string.h>
 
@@ -279,9 +279,9 @@ static void     BrkRefresh( a_window *wnd )
     brkp        *bp;
     int         row;
 
-    if( ( WndFlags & ~(UP_OPEN_CHANGE|UP_MEM_CHANGE) ) & BrkInfo.flags ) {
+    if( ( UpdateFlags & ~(UP_OPEN_CHANGE|UP_MEM_CHANGE) ) & BrkInfo.flags ) {
         BrkInit( wnd );
-    } else if( WndFlags & UP_MEM_CHANGE ) {
+    } else if( UpdateFlags & UP_MEM_CHANGE ) {
         row = 0;
         for( bp = BrkList; bp != NULL; bp = bp->next ) {
             if( bp->th != MAD_NIL_TYPE_HANDLE ) {
@@ -296,7 +296,7 @@ static void     BrkRefresh( a_window *wnd )
         brkp            *bp;
         mod_handle      mh;
 
-        if( WndFlags & UP_OPEN_CHANGE ) {
+        if( UpdateFlags & UP_OPEN_CHANGE ) {
             for( i = 0, bp = BrkList; bp != NULL; bp = bp->next, ++i ) {
                 DeAliasAddrMod( bp->loc.addr, &mh );
                 bp->status.b.source_open =
@@ -341,6 +341,7 @@ wnd_info BrkInfo = {
     BrkNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_MEM_CHANGE+UP_RADIX_CHANGE+
     UP_SYM_CHANGE+UP_BREAK_CHANGE+UP_OPEN_CHANGE,
     DefPopUp( BrkMenu )

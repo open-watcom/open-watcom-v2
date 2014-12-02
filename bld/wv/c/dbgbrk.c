@@ -179,6 +179,12 @@ typedef struct {
     memory_expr type;
 } bpjmptab_type;
 
+/*
+ *  Queried from trap file supplemental services
+ */
+bool    Supports8ByteBreakpoints = FALSE;
+bool    SupportsExactBreakpoints = FALSE;
+
 static bpjmptab_type BPJmpTab[] = {
     { &TypePoint,       EXPR_DATA },
     { &ActivatePoint,   EXPR_CODE },

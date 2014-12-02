@@ -33,11 +33,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbginfo.h"
 #include "dbgerr.h"
-#include "dbgbreak.h"
-#include "dbgtoggl.h"
 #include "namelist.h"
 
 
@@ -153,7 +152,7 @@ void GlobNewMod( a_window *wnd, mod_handle mod )
 extern WNDREFRESH GlobRefresh;
 void    GlobRefresh( a_window *wnd )
 {
-    if( WndFlags & UP_SYM_CHANGE ) {
+    if( UpdateFlags & UP_SYM_CHANGE ) {
         GlobInit( wnd );
         WndZapped( wnd );
     }
@@ -202,6 +201,7 @@ wnd_info GlobInfo = {
     GlobNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_SYM_CHANGE,
     DefPopUp( GlobMenu )
 };
@@ -219,4 +219,10 @@ extern WNDOPEN WndGlobOpen;
 extern a_window *WndGlobOpen()
 {
     return( DoWndGlobOpen( NO_MOD ) );
+}
+
+
+bool ChkFlags( wnd_update_list flags )
+{
+    return( flags & UpdateFlags );
 }

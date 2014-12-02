@@ -466,6 +466,7 @@ void DUIInit( void )
 extern void DUIFreshAll( void )
 {
     // refresh all screens - initialization has been done
+    UpdateFlags = 0;
 }
 
 extern bool DUIStopRefresh( bool stop )

@@ -98,7 +98,6 @@ extern brkp             UserTmpBrk;
 extern brkp             DbgTmpBrk;
 extern char             *TxtBuff;
 extern tokens           CurrToken;
-extern char             OnOffNameTab[];
 extern debug_level      DbgLevel;
 extern screen_state     ScrnState;
 extern thread_state     *HeadThd;
@@ -142,7 +141,7 @@ void ProcFlip( void )
     wait = 0;
     if( !ScanEOC() ) {
         old = ScanPos();
-        cmd = ScanCmd( OnOffNameTab );
+        cmd = ScanCmd( "ON\0OFf\0" );
         switch( cmd ) {
         case 1:
             ReqEOC();
@@ -170,7 +169,7 @@ void ConfigFlip( void )
     ReqEOC();
     p = StrCopy( GetCmdName( CMD_FLIP ), TxtBuff );
     *p++ = ' ';
-    GetCmdEntry( OnOffNameTab, _IsOn( SW_FLIP ) ? 1 : 2, p );
+    GetCmdEntry( "ON\0OFf\0", _IsOn( SW_FLIP ) ? 1 : 2, p );
     DUIDlgTxt( TxtBuff );
 }
 

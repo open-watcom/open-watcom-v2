@@ -300,6 +300,7 @@ wnd_info RunTrdInfo = {
     RunTrdNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_THREAD_STATE,
     DefPopUp( RunTrdMenu ),
 };

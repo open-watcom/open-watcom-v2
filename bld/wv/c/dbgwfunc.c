@@ -32,12 +32,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbginfo.h"
 #include "dbgerr.h"
 #include "dbgadget.h"
-#include "dbgbreak.h"
-#include "dbgtoggl.h"
 #include "namelist.h"
 
 
@@ -92,7 +91,7 @@ static  void    FuncModify( a_window *wnd, int row, int piece )
         if( row < 0 ) return;
         if( row >= NameListNumRows( NameList( func ) ) ) return;
         addr = NameListAddr( NameList( func ), row );
-        func->toggled_break = ( ( WndFlags & UP_BREAK_CHANGE ) == 0 );
+        func->toggled_break = ( ( UpdateFlags & UP_BREAK_CHANGE ) == 0 );
         ToggleBreak( addr );
         WndRowDirty( wnd, row );
     } else {
@@ -235,7 +234,7 @@ static void FuncRefresh( a_window *wnd )
     func_window *func = WndFunc( wnd );
     mod_handle  mod;
 
-    if( WndFlags & UP_SYM_CHANGE ) {
+    if( UpdateFlags & UP_SYM_CHANGE ) {
         if( func->is_global ) {
             FuncNewMod( wnd, func->mod );
         } else if( DeAliasAddrMod( GetCodeDot(), &mod ) == SR_NONE ) {
@@ -243,13 +242,13 @@ static void FuncRefresh( a_window *wnd )
         } else {
             FuncNewMod( wnd, mod );
         }
-    } else if( ( WndFlags & UP_CODE_ADDR_CHANGE ) && !func->is_global ) {
+    } else if( ( UpdateFlags & UP_CODE_ADDR_CHANGE ) && !func->is_global ) {
         if( DeAliasAddrMod( GetCodeDot(), &mod ) == SR_NONE ) {
             FuncNoMod( wnd );
         } else {
             FuncNewMod( wnd, mod );
         }
-    } else if( WndFlags & UP_BREAK_CHANGE ) {
+    } else if( UpdateFlags & UP_BREAK_CHANGE ) {
         if( func->toggled_break ) {
             func->toggled_break = FALSE;
         } else {
@@ -308,6 +307,7 @@ wnd_info FuncInfo = {
     FuncNumRows,
     NoNextRow,
     NoNotify,
+    ChkFlags,
     UP_SYM_CHANGE+UP_BREAK_CHANGE+UP_CODE_ADDR_CHANGE,
     DefPopUp( FuncMenu )
 };

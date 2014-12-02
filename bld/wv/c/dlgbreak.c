@@ -66,7 +66,8 @@ extern mad_type_handle  FindMADTypeHandle( mad_type_kind tk, unsigned size );
 extern char             *TxtBuff;
 extern address          NilAddr;
 
-//extern bool             Supports8ByteBreakpoints;
+extern bool             Supports8ByteBreakpoints;
+extern bool             SupportsExactBreakpoints;
 
 static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
 {

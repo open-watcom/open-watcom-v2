@@ -125,3 +125,5 @@ extern a_window *DbgTitleWndCreate( char * text, wnd_info *wndinfo,
                                     wnd_class class, void * extra,
                                     gui_resource * icon,
                                     int title_size, bool vdrag );
+
+extern bool     ChkFlags( wnd_update_list flags );

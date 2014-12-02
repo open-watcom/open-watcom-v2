@@ -169,17 +169,17 @@ extern void             WndMemInit( void );
 
 extern char             *InitCmdList;
 extern char             *CmdStart;
-extern char             *NameBuff;
-extern char             *TxtBuff;
 extern tokens           CurrToken;
 extern unsigned char    DefRadix;
 extern unsigned char    CurrRadix;
 extern debug_level      DbgLevel;
 extern debug_level      ActiveWindowLevel;
-extern char             DbgBuffers[];
 extern int              ScanSavePtr;
 extern address          NilAddr;
 extern char             *InvokeFile;
+
+extern bool             Supports8ByteBreakpoints;
+extern bool             SupportsExactBreakpoints;
 
 OVL_EXTERN void         ProcNil( void );
 
@@ -224,11 +224,15 @@ char *GetCmdName( int index )
 
 void DebugInit( void )
 {
+    NestedCallLevel = 0;
+    UpdateFlags = 0;
     _SwitchOn( SW_ERROR_STARTUP );
     _SwitchOn( SW_CHECK_SOURCE_EXISTS );
     SET_NIL_ADDR( NilAddr );
     TxtBuff  = &DbgBuffers[0];
+    *TxtBuff = '\0';
     NameBuff = &DbgBuffers[TXT_LEN+1];
+    *NameBuff = '\0';
     CurrRadix = DefRadix = 10;
     DbgLevel = MIX;
     ActiveWindowLevel = MIX;

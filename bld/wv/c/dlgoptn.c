@@ -38,6 +38,7 @@
 #include "dlgoptn.h"
 
 extern char             *TxtBuff;
+extern bool             SupportsExactBreakpoints;
 
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
