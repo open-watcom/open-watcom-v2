@@ -173,7 +173,7 @@ void FingOpen()
     }
 #endif
     WndInitCreateStruct( &info );
-    info.text = NULL;
+    info.title = NULL;
     info.info = &FingInfo;
     info.class = WND_NO_CLASS;
     info.extra = NULL;

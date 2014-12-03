@@ -172,7 +172,7 @@ extern void     W2MenuItem( a_window *wnd, unsigned id, int row, int piece )
         break;
     case MENU_W2_TITLE:
         buff[0]='\0';
-        DlgNew( "Enter New Title", buff, 80 );
+        DlgNew( "Enter New Title", buff, sizeof( buff ) );
         WndSetTitle( wnd, buff );
         break;
     }
@@ -279,7 +279,7 @@ extern a_window *W2Open()
     w2 = WndMustAlloc( WORD_SIZE*sizeof( char* )+sizeof( *w2 ) );
     WndInitCreateStruct( &info );
     info.scroll &= ~GUI_VDRAG;
-    info.text = "window with a title";
+    info.title = "window with a title";
     info.info = &W2Info;
     info.class = CLASS_W2;
     info.extra = w2;

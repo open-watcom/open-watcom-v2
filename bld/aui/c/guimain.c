@@ -77,7 +77,7 @@ static void Rescale( void )
     WndMax = scale;
 }
 
-static bool WndInitBody( char *str, int resource_menu )
+static bool WndInitBody( char *title, int resource_menu )
 {
     wnd_create_struct   info;
 
@@ -89,7 +89,7 @@ static bool WndInitBody( char *str, int resource_menu )
     Rescale();
     WndSysInit();
     WndInitWndMain( &info );
-    info.text = str;
+    info.title = title;
     info.info = &NoInfo;
     info.class = WND_NO_CLASS;
     info.extra = NULL;
@@ -104,14 +104,14 @@ static bool WndInitBody( char *str, int resource_menu )
     return( TRUE );
 }
 
-bool WndInit( char *str )
+bool WndInit( char *title )
 {
-    return( WndInitBody( str, 0 ) );
+    return( WndInitBody( title, 0 ) );
 }
 
-bool WndInitWithMenuRes( char *str, int resource_menu )
+bool WndInitWithMenuRes( char *title, int resource_menu )
 {
-    return( WndInitBody( str, resource_menu ) );
+    return( WndInitBody( title, resource_menu ) );
 }
 
 void WndShowWndMain( void )

@@ -99,32 +99,32 @@ extern bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
 }
 
 
-extern  bool    DlgNewWithCtl( char *text, char *buff, unsigned buff_len,
+extern  bool    DlgNewWithCtl( char *title, char *buff, unsigned buff_len,
                                gui_control_info *controls, int num_controls,
                                GUICALLBACK *callback, int rows,
                                int cols, int max_cols )
 {
     dlg_new     dlgnew;
 
-    int len = strlen( text );
+    int len = strlen( title );
     if( len < cols ) len = cols;
     if( len > max_cols ) len = max_cols;
     dlgnew.buff = buff;
     dlgnew.buff_len = buff_len;
     dlgnew.cancel = TRUE;
 
-    DlgOpen( text, rows, len, controls, num_controls, callback, &dlgnew );
+    DlgOpen( title, rows, len, controls, num_controls, callback, &dlgnew );
     return( !dlgnew.cancel );
 }
 
 
-extern  bool    DlgNew( char *text, char *buff, unsigned buff_len )
+extern  bool    DlgNew( char *title, char *buff, unsigned buff_len )
 {
     bool        rc;
 
     Controls[1].text = WndLoadString( LITERAL_New_OK );
     Controls[2].text = WndLoadString( LITERAL_New_Cancel );
-    rc = DlgNewWithCtl( text, buff, buff_len,
+    rc = DlgNewWithCtl( title, buff, buff_len,
                    Controls, ArraySize( Controls ), &DlgNewEvent,
                    DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS );
     WndFree( Controls[1].text );

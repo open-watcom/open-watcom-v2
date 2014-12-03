@@ -281,7 +281,7 @@ STATIC void *sampleCreateWin( void )
 
     WndInitCreateStruct( &info );
     sprintf( title, LIT( Sample_Data ), CurrSIOData->samp_file_name );
-    info.text = title;
+    info.title = title;
     info.info = &WPSampleInfo;
     info.extra = CurrSIOData;
 //    info.colour = GetWndColours( class );

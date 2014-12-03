@@ -878,8 +878,8 @@ extern gui_message_return GUIDisplayMessage( gui_window *wnd,
                                              char *message, char *caption,
                                              gui_message_type type );
 extern gui_message_return GUIGetNewVal( char *title, char *old, char **new_val );
-extern int GUIDlgPick( char *text, PICKCALLBACK *pickinit );
-extern int GUIDlgPickWithRtn( char *text, PICKCALLBACK *pickinit, PICKDLGOPEN * );
+extern int GUIDlgPick( char *title, PICKCALLBACK *pickinit );
+extern int GUIDlgPickWithRtn( char *title, PICKCALLBACK *pickinit, PICKDLGOPEN * );
 
 /* Dialog Functions */
 

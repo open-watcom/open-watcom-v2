@@ -49,7 +49,7 @@ static gui_control_info Controls[] = {
 
 #define NUM_CONTROLS ( sizeof( Controls ) / sizeof( gui_control_info ) )
 
-bool GUIPickEvent( gui_window * gui, gui_event event, void * param )
+bool GUIPickEvent( gui_window *gui, gui_event event, void *param )
 {
     unsigned            id;
     dlg_pick            *dlg;
@@ -85,7 +85,7 @@ bool GUIPickEvent( gui_window * gui, gui_event event, void * param )
 }
 
 
-int GUIDlgPickWithRtn( char *text, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
+int GUIDlgPickWithRtn( char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
 {
     dlg_pick    dlg;
 
@@ -97,12 +97,12 @@ int GUIDlgPickWithRtn( char *text, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn 
     Controls[2].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.chosen = -1;
-    OpenRtn( text, DLG_PICK_ROWS, len, Controls, NUM_CONTROLS, &GUIPickEvent, &dlg );
+    OpenRtn( title, DLG_PICK_ROWS, len, Controls, NUM_CONTROLS, &GUIPickEvent, &dlg );
     return( dlg.chosen );
 }
 
 
-int GUIDlgPick( char *text, PICKCALLBACK *pickinit )
+int GUIDlgPick( char *title, PICKCALLBACK *pickinit )
 {
-    return( GUIDlgPickWithRtn( text, pickinit, GUIDlgOpen ) );
+    return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen ) );
 }

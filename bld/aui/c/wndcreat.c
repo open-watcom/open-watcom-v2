@@ -54,9 +54,9 @@ extern  void    WndSetTitleSize( a_window *wnd, int size )
 }
 
 
-extern  void    WndSetTitle( a_window *wnd, char *text )
+extern  void    WndSetTitle( a_window *wnd, char *title )
 {
-    GUISetWindowText( wnd->gui, text );
+    GUISetWindowText( wnd->gui, title );
 }
 
 extern  int     WndGetTitle( a_window *wnd, char *buff, unsigned buff_len )
@@ -72,12 +72,13 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
     char        buff[256];
     int         size;
 
-    if( info->text == NULL ) {
+    if( info->title == NULL ) {
         buff[0] = '\0';
     } else {        // might be clobbered by create
-        strcpy( buff, info->text );
+        strcpy( buff, info->title );
     }
-    if( info->text != NULL ) strcpy( buff, info->text ); // might be clobbered by create
+    if( info->title != NULL )
+        strcpy( buff, info->title ); // might be clobbered by create
     size = sizeof( *wnd ) + ( WndMaxDirtyRects - 1 ) * sizeof( wnd->dirty ); //
     wnd = WndAlloc( size );
     if( wnd == NULL ) {
@@ -120,7 +121,7 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
     init->style = info->style;
     init->style |= GUI_VSCROLL_EVENTS;
     init->style &= ~GUI_HSCROLL_EVENTS;
-    init->title = ( info->text == NULL ) ? NULL : "";
+    init->title = ( info->title == NULL ) ? NULL : "";
     if( WndMain != NULL ) {
         init->style |= GUI_VISIBLE;
         init->parent = WndMain->gui;
@@ -175,7 +176,7 @@ extern a_window *WndCreateWithStructAndMenuRes( wnd_create_struct *info,
 extern void WndInitCreateStruct( wnd_create_struct *info )
 {
     memset( info, 0, sizeof( *info ) );
-    info->text = "";
+    info->title = "";
     info->class = WND_NO_CLASS;
     info->style = ( GUI_GADGETS & ~GUI_CURSOR ) | GUI_CHANGEABLE_FONT;
     info->scroll = GUI_HSCROLL+GUI_VSCROLL+
@@ -186,13 +187,13 @@ extern void WndInitCreateStruct( wnd_create_struct *info )
 
 
 extern WNDCREATE        WndCreate;
-extern a_window *WndCreate( char *text, wnd_info *wndinfo, wnd_class class,
+extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class class,
                               void *extra )
 {
     wnd_create_struct   info;
 
     WndInitCreateStruct( &info );
-    info.text = text;
+    info.title = title;
     info.info = wndinfo;
     info.class = class;
     info.extra = extra;

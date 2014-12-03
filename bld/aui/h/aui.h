@@ -146,7 +146,7 @@ typedef struct wnd_line_piece {
 
 typedef struct wnd_create_struct {
     struct wnd_info     *info;
-    char                *text;
+    char                *title;
     wnd_class           class;
     void                *extra;
     gui_create_styles   style;
@@ -309,11 +309,11 @@ typedef struct wnd_info {
 
 
 typedef int             GUIPICKER( char *, PICKCALLBACK * );
-extern int              DlgPickWithRtn( char *text, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
-extern int              DlgPickWithRtn2( char *text, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
-extern int              DlgPick( char *text, const void *data_handle, int def, int items );
-extern bool             DlgNew( char *text, char *buff, unsigned buff_len );
-extern void             DlgOpen( char *, int, int, gui_control_info *, int, GUICALLBACK *, void * );
+extern int              DlgPickWithRtn( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
+extern int              DlgPickWithRtn2( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
+extern int              DlgPick( char *title, const void *data_handle, int def, int items );
+extern bool             DlgNew( char *title, char *buff, unsigned buff_len );
+extern void             DlgOpen( char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
 extern void             ResDlgOpen( GUICALLBACK *, void *, int );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path,
@@ -372,8 +372,8 @@ extern void             WndInitCreateStruct( wnd_create_struct * );
 extern a_window         *WndCreateWithStruct( wnd_create_struct * );
 extern a_window         *WndCreateWithStructAndMenuRes( wnd_create_struct *, int );
 extern void             WndShrinkToMouse( a_window *wnd, wnd_metrics * );
-extern bool             WndInit( char * );
-extern bool             WndInitWithMenuRes( char *, int );
+extern bool             WndInit( char *title );
+extern bool             WndInitWithMenuRes( char *title, int );
 extern bool             WndFini( void );
 extern bool             WndMainMenuProc( a_window *, unsigned );
 extern void             WndSetSrchItem( a_window *wnd, char *expr );
@@ -420,7 +420,7 @@ extern bool             WndIgnoreAllEvents;
 
 extern bool             WndProcMacro( a_window *wnd, unsigned key );
 
-extern  void            WndSetTitle( a_window *, char * );
+extern  void            WndSetTitle( a_window *wnd, char *title );
 extern  int             WndGetTitle( a_window *wnd, char *buff, unsigned buff_len );
 
 extern void             Ring( void );
