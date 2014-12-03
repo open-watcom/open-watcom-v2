@@ -246,6 +246,7 @@ wnd_info WPSampleInfo = {
     SampleNumRows,
     NoNextRow,
     NoNotify,
+    NULL,
     0,
     DefPopUp( sampleMenu )
 };
