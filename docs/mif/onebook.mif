@@ -357,7 +357,7 @@ $(hbook).ipf $(hbook).h : $(book_objs) $(proj_objs)
 $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
     @set OWGMLINC=tmp;$(book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
-    -$(WGMLCMD)
+    -$(WGMLCMD:$(to_os_path))
     @if exist $@ @%erase $@
     @$(RENCMD) $(wgml_tmpfile) $@
 
@@ -609,13 +609,13 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.kw @%create $*.kw
     @set OWGMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
     @%make prepare_wgml_opts
-    -$(WGMLCMD)
+    -$(WGMLCMD:$(to_os_path))
     @if exist $*.ptf @%erase $*.ptf
     @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.ptf
     @%create $(wgml_sysfile_02)
-    -$(WGMLCMD)
+    -$(WGMLCMD:$(to_os_path))
     @if exist $*.ptf @%erase $*.ptf
     @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix
