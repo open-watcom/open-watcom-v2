@@ -89,7 +89,7 @@ int GUIDlgPickWithRtn( char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn
 {
     dlg_pick    dlg;
 
-    int len = strlen( text );
+    int len = strlen( title );
     if( len < DLG_PICK_COLS ) len = DLG_PICK_COLS;
     if( len > DLG_MAX_COLS ) len = DLG_MAX_COLS;
 
