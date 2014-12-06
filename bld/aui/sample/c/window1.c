@@ -254,7 +254,7 @@ extern a_window *W1Open()
     info.info = &W1Info;
     info.extra = WndMustAlloc( sizeof( w1_window ) );
     info.class = CLASS_W1;
-    info.text = "Words";
+    info.title = "Words";
     info.style |= GUI_INIT_INVISIBLE;
     wnd = WndCreateWithStruct( &info );
     WndSetIcon( wnd, &W1Icon );

@@ -84,7 +84,7 @@ extern a_window *W8Open()
     wnd_create_struct   info;
 
     WndInitCreateStruct( &info );
-    info.text = "Bar Graph";
+    info.title = "Bar Graph";
     info.info = &W8Info;
     info.class = 0;
     info.extra = NULL;

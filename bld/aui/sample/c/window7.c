@@ -85,7 +85,7 @@ extern a_window *W7Open()
 
     WndInitCreateStruct( &info );
     info.scroll |= GUI_VTRACK;
-    info.text = "Numbers";
+    info.title = "Numbers";
     info.info = &W7Info;
     info.class = 0;
     info.extra = NULL;
