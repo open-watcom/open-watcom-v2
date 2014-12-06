@@ -32,8 +32,6 @@
 
 #include "dbgdefn.h"
 #include "dbgmem.h"
-#include "machtype.h"
-#include "dbgmem.h"
 #include "dbgio.h"
 #include "digtypes.h"
 #include "digcli.h"

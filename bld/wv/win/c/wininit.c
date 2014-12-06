@@ -39,7 +39,6 @@
 #include <stdarg.h>
 #include <process.h>
 #include "wwindows.h"
-#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #ifndef __NT__

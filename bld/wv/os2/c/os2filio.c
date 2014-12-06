@@ -34,7 +34,6 @@
 #define INCL_ERRORS
 #define INCL_BASE
 #include <os2.h>
-#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"

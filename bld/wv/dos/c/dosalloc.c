@@ -37,8 +37,8 @@
 #include <dos.h>
 #include "tinyio.h"
 #include "dosheap.h"
-
 #include "dbgswtch.h"
+
 extern struct heapstart         *LastSeg;
 extern void                     *SyMemBeg;
 extern void                     *SyMemEnd;

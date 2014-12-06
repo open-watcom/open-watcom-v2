@@ -33,16 +33,15 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <process.h>
-#include "farptrs.h"
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "autoenv.h"
-
 #define INCL_DOSMISC
 #define INCL_DOSSIGNALS
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <os2.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "autoenv.h"
+
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );

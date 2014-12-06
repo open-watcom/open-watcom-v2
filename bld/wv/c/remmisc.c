@@ -32,7 +32,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
-#include "trpcore.h"
 #include "trpld.h"
 #include "dbgio.h"
 #if !defined( BUILD_RFX )

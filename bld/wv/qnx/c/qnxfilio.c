@@ -36,7 +36,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "farptrs.h"
+#include <i86.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"

@@ -31,7 +31,6 @@
 
 
 #include <ctype.h>
-#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgio.h"

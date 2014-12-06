@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-#include <i86.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <conio.h>
 #include <stdio.h>
+#include <i86.h>
 #ifdef __OSI__
 #include "extender.h"
 #endif

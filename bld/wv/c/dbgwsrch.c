@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <stddef.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"

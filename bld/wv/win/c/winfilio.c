@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"

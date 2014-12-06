@@ -31,7 +31,6 @@
 
 
 #include <string.h>
-#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgmem.h"
 

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
