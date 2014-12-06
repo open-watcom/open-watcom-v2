@@ -82,7 +82,7 @@ size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len )
         len = strlen( wnd->screen.title );
         if( buff_len > len  )
             buff_len = len;
-        strncpy( buff, wnd->screen.title, buff_len );
+        memcpy( buff, wnd->screen.title, buff_len );
     }
     buff[buff_len] = '\0';
     return( buff_len );

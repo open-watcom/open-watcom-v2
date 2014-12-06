@@ -82,7 +82,7 @@ extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
         buff_len = 0;
     } else {
         --buff_len;     // do space for terminating null char
-        len = strlen( buff );
+        len = strlen( str );
         if( buff_len > len )
             buff_len = len;
         memcpy( buff, str, buff_len );
