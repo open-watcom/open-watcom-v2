@@ -30,7 +30,7 @@
 
 
 #include <stdint.h>
-#include <watcom.h>
+#include "watcom.h"
 
 typedef int32_t     vm_prot_t;
 typedef int32_t     cpu_type_t;

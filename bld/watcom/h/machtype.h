@@ -31,7 +31,7 @@
 
 #ifndef MACH_TYPES_INCLUDED
 #define MACH_TYPES_INCLUDED
-#include <watcom.h>
+#include "watcom.h"
 
 #include "pushpck1.h"
 

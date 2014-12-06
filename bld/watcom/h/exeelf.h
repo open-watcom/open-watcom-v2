@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <watcom.h>
+#include "watcom.h"
 
 // ELF scalar data types
 
