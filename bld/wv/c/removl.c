@@ -30,7 +30,7 @@
 
 
 #include "dbgdefn.h"
-#include "trpcore.h"
+#include "dbgdata.h"
 #include "trpovl.h"
 
 extern trap_shandle     GetSuppId( char * );
@@ -39,8 +39,6 @@ extern void             InvalidateTblCache( void );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );
 
-
-extern unsigned         OvlSize;
 
 static trap_shandle     SuppOvlId = 0;
 

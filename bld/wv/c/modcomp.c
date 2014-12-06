@@ -30,14 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "modlist.h"
 
-extern char *TxtBuff;
 
 extern char     *DlgGetMatchString( gui_window *gui, int id, int *matchoff );
 extern void     WndMsgBox( char * );

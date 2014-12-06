@@ -30,7 +30,7 @@
 
 
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #include "dosscrn.h"
 
 

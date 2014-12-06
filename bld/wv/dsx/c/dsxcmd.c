@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
+#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "farptrs.h"
 #include "dosscrn.h"
 #include "dbgio.h"
 #include "dbgname.h"
@@ -58,8 +57,6 @@ extern unsigned_8               DPMICheck;
 extern flip_types               FlipMech;
 extern mode_types               ScrnMode;
 extern addr_seg                 _psp;
-extern unsigned                 CheckSize;
-extern unsigned long            MemSize;
 
 static char                     *cmdStart;
 

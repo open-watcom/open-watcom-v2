@@ -30,15 +30,14 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
+#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "farptrs.h"
 #include "dosscrn.h"
 #include "dbgio.h"
 #include "dbgname.h"
 #include "dbgswtch.h"
-#include <string.h>
-#include <ctype.h>
 
 
 extern unsigned         Lookup(char *,char *, unsigned);
@@ -52,7 +51,6 @@ extern void             StartupErr( char * );
 extern flip_types       FlipMech;
 extern mode_types       ScrnMode;
 extern addr_seg         _psp;
-extern unsigned         CheckSize;
 extern unsigned         OvlAreaSize;
 
 

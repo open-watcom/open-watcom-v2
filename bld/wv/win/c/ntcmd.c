@@ -31,7 +31,7 @@
 
 
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #ifdef __AXP__
 #include <windows.h>
 #endif

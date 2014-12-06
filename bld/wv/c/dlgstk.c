@@ -31,10 +31,9 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "guidlg.h"
 #include "dlgstk.h"
 

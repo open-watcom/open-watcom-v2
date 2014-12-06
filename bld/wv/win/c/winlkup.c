@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgmem.h"
 #include <string.h>
 #include <windows.h>
+#include "dbgdefn.h"
+#include "dbgmem.h"
 
 
 #ifndef __NT__

@@ -29,22 +29,15 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbgtoken.h"
 #include "dbginvk.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbgio.h"
-#include "dbginp.h"
 
 #include "clibext.h"
-
-
-extern unsigned         InvCount;
-extern char             *TxtBuff;
 
 
 extern bool             ScanItem( bool, char **, size_t * );

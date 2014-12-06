@@ -31,9 +31,8 @@
 
 
 #include "dbgdefn.h"
-#include <string.h>
 #include <stddef.h>
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "sortlist.h"
 
@@ -46,7 +45,6 @@ extern void             WndGblVarInspect( mod_handle mod );
 extern void             WndModListInspect( mod_handle mod );
 extern image_entry      *ImagePrimary(void);
 
-extern image_entry      *DbgImageList;
 
 char *ImgSymName( image_entry *img, bool always )
 {

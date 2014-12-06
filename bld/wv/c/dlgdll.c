@@ -34,7 +34,6 @@
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dlglist.h"
-#include <string.h>
 
 extern void         RecordSetDLLBreaks( void );
 extern void         RecordClearDLLBreaks( void );

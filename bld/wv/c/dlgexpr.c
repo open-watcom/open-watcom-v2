@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
@@ -62,8 +61,6 @@ extern void             Scan(void);
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );
 extern void             PopEntry(void);
 
-extern char             *TxtBuff;
-extern unsigned char    CurrRadix;
 extern stack_entry      *ExprSP;
 
 #define EXPR_LEN        128

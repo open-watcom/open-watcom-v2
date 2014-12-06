@@ -29,12 +29,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgerr.h"
 #include "dbgadget.h"
 #include "namelist.h"
@@ -52,9 +50,6 @@ extern void             ToggleBreak( address );
 extern char             *FileBreakGadget( a_window *, wnd_line_piece *, bool curr, brkp *bp );
 extern address          GetCodeDot( void );
 extern search_result    DeAliasAddrMod( address a, mod_handle *mh );
-
-extern char             *TxtBuff;
-extern address          NilAddr;
 
 
 #include "menudef.h"

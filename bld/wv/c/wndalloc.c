@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include <string.h>
 
 void    WndNoMemory()
 {

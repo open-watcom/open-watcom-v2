@@ -29,14 +29,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbglit.h"
-#include "dbgtoggl.h"
 #include "dbgtback.h"
 #include "dbgmem.h"
 #include "dui.h"
@@ -64,10 +61,6 @@ extern void             ConfigCalls( void );
 extern void             InvokeAFile( char * );
 extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
 extern char             *GetCmdName( int );
-
-extern tokens           CurrToken;
-extern char             *TxtBuff;
-extern char             *NameBuff;
 
 
 /*

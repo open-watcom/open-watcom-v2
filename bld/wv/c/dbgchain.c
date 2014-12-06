@@ -30,20 +30,16 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <limits.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgtback.h"
-#include "dbginfo.h"
 #include "dbgmem.h"
 #include "dbgchain.h"
 #include "dui.h"
 #include "mad.h"
 
-extern char             *TxtBuff;
-extern update_list      UpdateFlags;
 
 extern address          FindLclBlock( address addr );
 extern int              AddrComp(address ,address );

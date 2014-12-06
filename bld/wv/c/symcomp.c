@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "namelist.h"
 #include "dui.h"
@@ -50,8 +49,6 @@ typedef struct sorted_names {
 } sorted_names;
 
 sorted_names *SortedNames = NULL;
-
-extern char *TxtBuff;
 
 name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle mod )
 {

@@ -30,7 +30,6 @@
 
 
 #include <stdlib.h>
-#include <string.h>
 #include <malloc.h>
 #include <conio.h>
 #include <i86.h>

@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dlglist.h"
 
 #include "clibext.h"
@@ -44,8 +44,6 @@ extern char_ring        **RingEnd( char_ring **owner );
 extern char             *GetLastImageName( void );
 extern void             RecordEvent( char *p );
 extern void             GetBreakOnImageCmd( char *, char *, bool );
-
-extern char             *TxtBuff;
 
 
 bool DLLMatch( void )

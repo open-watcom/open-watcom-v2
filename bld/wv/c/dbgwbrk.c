@@ -33,13 +33,8 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgadget.h"
-#include <string.h>
 
-extern brkp             *BrkList;
-extern char             *TxtBuff;
-extern address          NilAddr;
 
 extern a_window         *WndAsmInspect(address);
 extern a_window         *WndSrcInspect(address);

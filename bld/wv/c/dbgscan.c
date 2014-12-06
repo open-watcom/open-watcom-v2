@@ -30,7 +30,6 @@
 
 
 #include <ctype.h>
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -62,10 +61,6 @@ extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, char *buff, un
 extern void             DbgUpdate( update_list );
 extern char             *ReScan( char *point );
 
-extern tokens           CurrToken;
-extern unsigned char    DefRadix;
-extern unsigned char    CurrRadix;
-extern char             *TxtBuff;
 
 extern void Scan( void );
 

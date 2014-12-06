@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "dbgdefn.h"
@@ -110,16 +109,7 @@ extern unsigned         MakeAsyncRun( bool single );
 extern unsigned         DlgAsyncRun( void );
 
 
-extern input_stack      *InpStack;
-extern machine_state    *DbgRegs;
-extern tokens           CurrToken;
-extern screen_state     ScrnState;
-extern brkp             DbgTmpBrk;
-extern char             *TxtBuff;
-extern thread_state     *HeadThd;
-extern thread_state     *ExecThd;
 static char             *MsgText;
-extern brkp             UserTmpBrk;
 
 static int              InCall = 0;
 

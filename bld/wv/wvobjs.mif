@@ -160,65 +160,65 @@ engine_objs_wini86 = &
     winlkup.obj
 
 ui_objs = &
-    litwd.obj &
-    dui.obj &
-    dbgwset.obj &
-    dbginsp.obj &
-    dbgicon.obj &
-    dbgdisp.obj &
-    dbgpaint.obj &
-    dbgcap.obj &
-    wndalloc.obj &
-    dlgambig.obj &
-    dlgscomp.obj &
-    modcomp.obj &
-    wndsys.obj &
-    wnddump.obj &
-    dbgintrn.obj &
-    dlgabout.obj &
-    dlgstk.obj &
-    dlgayn.obj &
-    dlgsrc.obj &
-    dlgdll.obj &
-    dlglist.obj &
-    dlgfile.obj &
-    dlgnewp.obj &
-    dlgexpr.obj &
-    dlgbreak.obj &
-    dlgvarx.obj &
-    dlgcmd.obj &
-    dlgnewws.obj &
-    dlgasync.obj &
-    wndhelp.obj &
-    wndmenu.obj &
-    dbgwfpu.obj &
-    dbgwmac.obj &
-    dbgwglob.obj &
-    dbgwfunc.obj &
+    dbgwass.obj &
+    dbgwbrk.obj &
     dbgwcall.obj &
-    dbgwmod.obj &
-    dbgwsrch.obj &
+    dbgwcap.obj &
+    dbgwdata.obj &
+    dbgwdisp.obj &
     dbgwdlg.obj &
     dbgwfil.obj &
-    dbgwass.obj &
+    dbgwfing.obj &
+    dbgwfpu.obj &
+    dbgwfunc.obj &
+    dbgwglob.obj &
+    dbgwicon.obj &
     dbgwimg.obj &
-    dbgwbrk.obj &
+    dbgwinsp.obj &
+    dbgwintr.obj &
     dbgwio.obj &
-    dbgwrep.obj &
-    dbgwmem.obj &
-    dbgwregs.obj &
-    dbgwmmx.obj &
-    dbgwxmm.obj &
+    dbgwmac.obj &
     dbgwmadr.obj &
-    dbgwtogl.obj &
-    dbgwvar.obj &
-    dbgwthrd.obj &
+    dbgwmem.obj &
+    dbgwmmx.obj &
+    dbgwmod.obj &
+    dbgwpain.obj &
+    dbgwregs.obj &
+    dbgwrep.obj &
     dbgwrtrd.obj &
-    dlgwind.obj &
-    dbgwdata.obj &
+    dbgwset.obj &
+    dbgwsrch.obj &
+    dbgwthrd.obj &
+    dbgwtogl.obj &
+    dbgwtool.obj &
+    dbgwvar.obj &
+    dbgwxmm.obj &
+    dlgabout.obj &
+    dlgambig.obj &
+    dlgasync.obj &
+    dlgayn.obj &
+    dlgbreak.obj &
+    dlgcmd.obj &
+    dlgdll.obj &
+    dlgexpr.obj &
+    dlgfile.obj &
+    dlglist.obj &
+    dlgnewp.obj &
+    dlgnewws.obj &
     dlgoptn.obj &
-    dbgtool.obj &
-    dbgfing.obj
+    dlgscomp.obj &
+    dlgsrc.obj &
+    dlgstk.obj &
+    dlgvarx.obj &
+    dlgwind.obj &
+    dui.obj &
+    litwd.obj &
+    modcomp.obj &
+    wndalloc.obj &
+    wnddump.obj &
+    wndhelp.obj &
+    wndmenu.obj &
+    wndsys.obj
 
 ui_objs_dosi86    = dosscrn.obj helpio.obj
 ui_objs_dos386    = dsxscrn.obj helpio.obj

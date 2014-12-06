@@ -31,7 +31,6 @@
 
 #include <stddef.h>
 #include <limits.h>
-#include <string.h>
 #define INCL_DOS
 #define INCL_SUB
 #include "wos2.h"

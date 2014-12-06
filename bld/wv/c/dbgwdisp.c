@@ -34,7 +34,6 @@
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include <string.h>
 
 
 extern unsigned int     OptExpr( unsigned int );
@@ -62,8 +61,6 @@ extern a_window         *WndMain;
 extern gui_coord        WndScreen;
 extern gui_coord        WndMax;
 extern gui_coord        WndScale;
-extern tokens           CurrToken;
-extern char             *TxtBuff;
 extern char             WndNameTab[];
 extern gui_colour_set   WndColours[];
 extern gui_colour_set   WndStatusColour;

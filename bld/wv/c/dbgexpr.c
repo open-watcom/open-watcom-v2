@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <limits.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -68,12 +67,8 @@ extern address          GetRegSP( void );
 extern address          GetRegBP( void );
 extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
-extern address          NilAddr;
-extern machine_state    *DbgRegs;
 extern char             *StringStart;
 extern unsigned         StringLength;
-extern unsigned         NestedCallLevel;
-extern int              PgmStackUsage[ MAX_NESTED_CALL ];
 
 static stack_entry ExprBOS = {
     NULL, NULL,

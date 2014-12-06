@@ -34,7 +34,6 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dui.h"
-#include <string.h>
 #if !defined( BUILD_RFX )
 #include "dbglit.h"
 #endif

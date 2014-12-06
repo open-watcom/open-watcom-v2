@@ -30,20 +30,14 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgadget.h"
 #include "modlist.h"
 #include "dbgio.h"
 
-
-extern char             *TxtBuff;
-extern address          NilAddr;
-extern mod_handle       ContextMod;
 
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndSrcInspect(address);

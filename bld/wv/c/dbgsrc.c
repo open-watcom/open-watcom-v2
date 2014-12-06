@@ -29,13 +29,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "_srcmgt.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "dui.h"
 #include "srcmgt.h"
 
@@ -54,10 +52,6 @@ extern char             *GetCmdName( int );
 extern void             DbgUpdate( update_list );
 extern bool             IsAbsolutePath( char *path );
 
-
-extern char_ring *SrcSpec;
-extern char      *TxtBuff;
-extern tokens     CurrToken;
 
 static char AddTab[] = { "Add\0" };
 

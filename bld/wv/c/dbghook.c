@@ -32,13 +32,11 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dip.h"
 #include "dbgerr.h"
 #include "dbglit.h"
-#include "dbginp.h"
 #include "dbghook.h"
-#include "dbgtoggl.h"
-#include "trpcore.h"
 #include "spawn.h"
 #include "dui.h"
 
@@ -58,10 +56,6 @@ extern void             ConfigCmdList( char *cmds, int indent );
 extern void             TypeInpStack( input_type set );
 extern void             DoProcPending(void);
 
-
-extern char             *TxtBuff;
-extern mod_handle       ContextMod;
-extern system_config    SysConfig;
 
 static unsigned long    HookPendingBits;
 static cmd_list         *HookCmdLists[HOOK_NUM];

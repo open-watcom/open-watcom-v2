@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -101,13 +100,10 @@ extern void             RegFindData( mad_type_kind kind, mad_reg_set_data **pdat
 extern mad_handle       FindMAD( char *, unsigned );
 extern void             DbgUpdate( update_list );
 
-extern char             *TxtBuff;
 extern char             WndNameTab[];
-extern tokens           CurrToken;
 extern margins          SrcMar;
 extern margins          AsmMar;
 extern wnd_macro        *WndMacroList;
-extern system_config    SysConfig;
 
 static unsigned         TabInterval = 8;
 

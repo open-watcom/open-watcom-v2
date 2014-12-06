@@ -29,7 +29,6 @@
 *
 ****************************************************************************/
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
@@ -37,7 +36,6 @@
 #include "dbgerr.h"
 #include "dlgoptn.h"
 
-extern char             *TxtBuff;
 extern bool             SupportsExactBreakpoints;
 
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );

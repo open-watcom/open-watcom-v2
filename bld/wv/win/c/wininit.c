@@ -30,22 +30,21 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "farptrs.h"
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <direct.h>
 #include <stdarg.h>
 #include <process.h>
+#include "wwindows.h"
+#include "farptrs.h"
+#include "dbgdefn.h"
+#include "dbgwind.h"
 #ifndef __NT__
 #include "tinyio.h"
 #endif
-
-#include <wwindows.h>
 #include "dbgmem.h"
 #include "autoenv.h"
 

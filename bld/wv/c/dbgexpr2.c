@@ -32,13 +32,12 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
-#include "dbginfo.h"
 #include "i64.h"
 
 
@@ -57,8 +56,6 @@ extern address          DefAddrSpaceForMod( mod_handle );
 extern unsigned         DefaultSize( default_kind );
 extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
-extern unsigned         ExprAddrDepth;
-extern address          NilAddr;
 
 static bool DefaultTypeInfo( dip_type_info *info )
 {

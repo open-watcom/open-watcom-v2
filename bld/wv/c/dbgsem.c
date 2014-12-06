@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdio.h>
 #include <limits.h>
 #include "dbgdefn.h"
@@ -145,16 +144,10 @@ extern mod_handle       LookupImageName( char *, unsigned );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 
 
-extern tokens           CurrToken;
 extern stack_entry      *ExprSP;
-extern unsigned         SkipCount;
-extern mod_handle       CodeAddrMod;
 extern bool             scan_string;
 extern unsigned         StringLength;
 extern unsigned         ScanCCharNum;
-extern unsigned         NestedCallLevel;
-extern int              PgmStackUsage[ MAX_NESTED_CALL ];
-extern unsigned         ExprAddrDepth;
 
 
 #define type_bitsII     int

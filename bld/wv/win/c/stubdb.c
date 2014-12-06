@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <process.h>
@@ -37,7 +36,6 @@
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "bool.h"
 #include "ambigsym.h"
 #include "dbglit.h"
@@ -65,10 +63,6 @@ extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
 extern void             *OpenSrcFile(cue_handle *);
 
-extern debug_level      DbgLevel;
-extern char             *TxtBuff;
-extern unsigned char    CurrRadix;
-extern char             *TrapParms;
 
 static char             *CmdData;
 static bool             Done;

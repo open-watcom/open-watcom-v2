@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "dbginfo.h"
-
 typedef enum {
     SF_LOCATION         = 0x0001, /* v.loc is valid */
     SF_NAME             = 0x0002, /* v.name is valid as a symbol name */

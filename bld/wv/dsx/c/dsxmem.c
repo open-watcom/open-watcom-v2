@@ -31,10 +31,9 @@
 
 
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #include <malloc.h>
 
-extern unsigned long    MemSize;
 extern void             MemExpand(void);
 
 extern int _d16ReserveExt( int );

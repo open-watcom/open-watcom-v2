@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #define INCL_SUB
 #define INCL_PM
 #define INCL_BASE
@@ -39,6 +38,7 @@
 #define INCL_WINMESSAGEMGR
 #include <os2.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
 #include "trptypes.h"

@@ -54,17 +54,17 @@ typedef unsigned_32             cue_fileid;
 typedef struct location_context location_context;
 
 
-#define NO_MOD           ((mod_handle)0)
-#define ILL_MOD          ((mod_handle)1)
+#define NO_MOD              ((mod_handle)0)
+#define ILL_MOD             ((mod_handle)1)
 
-#define DP_MIN           0
-#define DP_HIGHEST       (DP_DEFAULT-1)
-#define DP_DEFAULT       (DP_NORMAL-1)
-#define DP_NORMAL        50
-#define DP_EXPORTS       75
-#define DP_MAX           100
+#define DIP_PRIOR_MIN       0
+#define DIP_PRIOR_HIGHEST   (DIP_PRIOR_DEFAULT-1)
+#define DIP_PRIOR_DEFAULT   (DIP_PRIOR_NORMAL-1)
+#define DIP_PRIOR_NORMAL    50
+#define DIP_PRIOR_EXPORTS   75
+#define DIP_PRIOR_MAX       100
 
-#define DIP_OFFS_INVAL	 ((addr_off)-1)
+#define DIP_OFFS_INVAL	    ((addr_off)-1)
 
 typedef unsigned_8 handle_kind; enum {
                 HK_IMAGE,

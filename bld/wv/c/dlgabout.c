@@ -31,11 +31,11 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 
 extern  char    *StrCopy(char*,char*);
-extern  char    *TxtBuff;
 extern int      AboutSize;
 extern char     *AboutMessage[];
 

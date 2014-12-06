@@ -30,19 +30,17 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "farptrs.h"
-#include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <process.h>
-
 #define INCL_DOSMISC
 #define INCL_DOSSIGNALS
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
-#include "os2.h"
+#include <os2.h>
+#include "farptrs.h"
+#include "dbgdefn.h"
+#include "dbgdata.h"
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );

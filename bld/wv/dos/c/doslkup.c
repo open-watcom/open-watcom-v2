@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgmem.h"
 #include <string.h>
 #include "farptrs.h"
+#include "dbgdefn.h"
+#include "dbgmem.h"
 
 #define DOSEnv 0x002C
 

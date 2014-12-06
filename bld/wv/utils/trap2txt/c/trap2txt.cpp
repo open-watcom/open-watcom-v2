@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <trpcore.h>
-#include <madregs.h>
-#include <trpfile.h>
-
 #include <windows.h>
 #include <winbase.h>    /* For GetSystemTime */
+#include "trpcore.h"
+#include "madregs.h"
+#include "trpfile.h"
+
 
 mad_handle  read_mad_handle = MAD_NIL;
 

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
@@ -57,10 +56,6 @@ extern void             RegFindData( mad_type_kind kind, mad_reg_set_data **pdat
 extern void             RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mach );
 extern void             RegNewValue( const mad_reg_info *, item_mach const *, mad_type_handle  );
 
-extern machine_state    *DbgRegs;
-extern machine_state    *PrevRegs;
-extern char             *TxtBuff;
-extern unsigned char    CurrRadix;
 
 #include "menudef.h"
 static gui_menu_struct RegMenu[] = {

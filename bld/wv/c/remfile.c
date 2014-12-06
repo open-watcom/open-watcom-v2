@@ -31,28 +31,23 @@
 
 //#define LOGGING 1
 
-#include <string.h>
 #ifdef LOGGING
 #include <stdio.h>
 #endif
-#include "wio.h"
-#include "dbgdefn.h"
-#include "dbgio.h"
 #ifdef __NT__
 #include <windows.h>
 #endif
-#include "trpcore.h"
+#include "wio.h"
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgio.h"
 #include "trpfile.h"
 
-#ifdef __NT__
-extern system_config    SysConfig;
-#endif
 
 extern trap_shandle     GetSuppId( char * );
 extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
 
 extern unsigned         MaxPacketLen;
-extern unsigned         CheckSize;
 
 static trap_shandle     SuppFileId = 0;
 

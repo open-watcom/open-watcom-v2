@@ -29,22 +29,17 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "dbgstk.h"
-#include "dbgtoggl.h"
 #include "spawn.h"
 #include "mad.h"
 #include "madcli.h"
 
 
-extern tokens       CurrToken;
-extern char         *TxtBuff;
 extern stack_entry  *ExprSP;
 
 

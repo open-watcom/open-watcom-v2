@@ -31,10 +31,9 @@
 
 
 #include "dbgdefn.h"
-#include "dbgmem.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include <string.h>
+#include "dbgmem.h"
 
 #define MAX_DLG_LINES 30000U
 
@@ -42,8 +41,6 @@ extern void             LogLine( char * );
 extern int              PageSize( int );
 extern void             SetLogMenuItems( bool active );
 extern void             DbgUpdate( update_list );
-
-extern screen_state     ScrnState;
 
 typedef struct dlg_entry {
     struct dlg_entry        *prev;

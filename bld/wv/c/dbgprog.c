@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdio.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
@@ -130,16 +129,6 @@ char                    *RealFName( char *name, open_access *loc );
 
 extern void             DUIImageLoaded( image_entry*, bool, bool, bool* );
 
-extern tokens           CurrToken;
-extern char             *TxtBuff;
-extern system_config    SysConfig;
-extern brkp             UserTmpBrk;
-extern brkp             *BrkList;
-extern mod_handle       CodeAddrMod;
-extern mod_handle       ContextMod;
-extern image_entry      *DbgImageList;
-extern dip_status       DIPStatus;
-extern machine_state    *DbgRegs;
 extern bool             DownLoadTask;
 
 static char             *SymFileName;
@@ -593,7 +582,7 @@ static bool ProcSymInfo( image_entry *image )
     image->deferred_symbols = FALSE;
     if( _IsOff( SW_LOAD_SYMS ) ) return( NO_MOD );
     if( image->sym_name != NULL ) {
-        last = DP_MAX;
+        last = DIP_PRIOR_MAX;
         h = PathOpen( image->sym_name, strlen( image->sym_name ), "sym" );
         if( h == NIL_HANDLE ) {
             nopath = SkipPathInfo( image->sym_name, OP_REMOTE );
@@ -604,14 +593,14 @@ static bool ProcSymInfo( image_entry *image )
             }
         }
     } else {
-        last = DP_EXPORTS-1;
+        last = DIP_PRIOR_EXPORTS - 1;
         h = FileOpen( image->image_name, OP_READ );
         if( h == NIL_HANDLE ) {
             h = FileOpen( image->image_name, OP_READ | OP_REMOTE );
         }
     }
     if( h != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, h, DP_MIN, last ) ) {
+        if( CheckLoadDebugInfo( image, h, DIP_PRIOR_MIN, last ) ) {
             return( TRUE );
         }
         FileClose( h );
@@ -632,7 +621,7 @@ static bool ProcSymInfo( image_entry *image )
             h = PathOpen( image->sym_name, strlen( image->sym_name ), "" );
         }
         if( h != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, h, DP_MIN, DP_MAX ) ) {
+            if( CheckLoadDebugInfo( image, h, DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
                 return( TRUE );
             }
             FileClose( h );
@@ -646,7 +635,7 @@ static bool ProcSymInfo( image_entry *image )
         } else {
             h = FileOpen( image->image_name, OP_READ | OP_REMOTE );
             if( h != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, h, DP_EXPORTS-1, DP_MAX ) ) {
+                if( CheckLoadDebugInfo( image, h, DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
                     return( TRUE );
                 }
                 FileClose( h );

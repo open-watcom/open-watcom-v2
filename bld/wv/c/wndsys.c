@@ -34,7 +34,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgerr.h"
 #include "dbgadget.h"
 #include "dbghook.h"
@@ -45,11 +44,8 @@
     #include <windows.h>
 #endif
 
-extern screen_state     ScrnState;
-extern tokens           CurrToken;
+
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
-extern void             *SrchHistory;
-extern char             *TxtBuff;
 extern a_window         *WndMain;
 extern gui_rect         WndMainRect;
 

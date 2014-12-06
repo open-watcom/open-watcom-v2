@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stddef.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -60,16 +59,8 @@ extern void             DoAssign( void );
 extern char             *StrCopy( char *, char * );
 extern void             MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti );
 
-extern machine_state    *DbgRegs;
-extern machine_state    *PrevRegs;
-extern unsigned         OvlSize;
-extern address          NilAddr;
-extern char             *TxtBuff;
-extern unsigned char    CurrRadix;
-
 static int              StackPos;
 static bool             AlreadyWarnedUndo;
-extern system_config    SysConfig;
 
 
 #define MAX_DELTA_BITS  8

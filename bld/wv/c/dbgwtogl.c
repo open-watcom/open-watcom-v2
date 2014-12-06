@@ -31,17 +31,13 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
 #include "dbgitem.h"
 #include "mad.h"
 #include "madcli.h"
-#include <string.h>
 
 extern char             *DupStr( char *str );
-
-extern char             *TxtBuff;
 
 gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, int id )

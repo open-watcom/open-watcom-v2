@@ -51,10 +51,6 @@ extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
 extern char         *GetCmdName( int );
 
-extern tokens       CurrToken;
-extern unsigned     CheckSize;
-extern char         *TxtBuff;
-
 static char SystemOps[] = { "Remote\0Local\0" };
 
 void DoSystem( char *cmd, size_t len, int loc )

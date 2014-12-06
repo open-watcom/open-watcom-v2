@@ -30,14 +30,12 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include <string.h>
 #include <stddef.h>
-#include "dbgtoggl.h"
+#include "rdos.h"
+#include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbginfo.h"
-#include <rdos.h>
-#include <stdui.h>
+#include "stdui.h"
 #include "dbgscrn.h"
 
 extern void         *ExtraAlloc( size_t );

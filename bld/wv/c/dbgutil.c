@@ -30,7 +30,6 @@
 
 
 #include <ctype.h>
-#include <string.h>
 #include <float.h>
 #include <limits.h>
 #include "dbgdefn.h"
@@ -45,13 +44,7 @@
 #include "dui.h"
 
 
-extern unsigned char    CurrRadix;
-extern input_stack      *InpStack;
 extern char             *Language;
-extern system_config    SysConfig;
-extern unsigned char    CurrRadix;
-extern mod_handle       CodeAddrMod;
-extern machine_state    *DbgRegs;
 
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );

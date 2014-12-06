@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
@@ -46,9 +45,6 @@ extern void             RemoteSectTblWrite( void * );
 extern bool             RemoteOvlRetAddr( address *, unsigned );
 extern bool             RemoteOvlSectPos( unsigned, mem_block * );
 extern unsigned         RemoteOvlSectSize( void );
-
-extern unsigned         OvlSize;
-extern machine_state    *DbgRegs;
 
 static void             *TblCache;
 static section_info     *OvlRemap;

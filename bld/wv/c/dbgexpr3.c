@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
 #include "dbgmem.h"
 #include "dbglit.h"
@@ -48,7 +47,6 @@ extern void             LocationCreate( location_list *, location_type, void * )
 extern address          DefAddrSpaceForAddr( address );
 extern unsigned         DefaultSize( default_kind );
 
-extern address          NilAddr;
 extern stack_entry      *ExprSP;
 
 typedef enum {

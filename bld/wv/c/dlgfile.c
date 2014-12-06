@@ -30,15 +30,13 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
 #include "dbgerr.h"
-#include "dbginp.h"
 #include "dbginvk.h"
-#include "dbgtoggl.h"
 #include "dbghook.h"
 #include "dbgio.h"
-#include <string.h>
 #include <stdlib.h>
 #include "dbgscrn.h"
 
@@ -57,9 +55,6 @@ extern bool             OkToSaveReplay( void );
 extern void             FiniHelp( void );
 extern bool             KillProgOvlay( void );
 
-
-extern char             *TxtBuff;
-extern input_stack      *InpStack;
 
 #if defined(__UNIX__)
   #define ALLFILES      "All Files\0*\0"

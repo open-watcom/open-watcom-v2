@@ -30,23 +30,18 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbginfo.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "dlgamb.h"
 #include "ambigsym.h"
-#include <string.h>
 
 extern void             FreeSymHandle( sym_list * );
 extern int              AddrComp( address a, address b );
 extern char             *ModImageName( mod_handle handle );
 extern char             *Format( char *buff, char *fmt, ... );
 extern int              DUIDisambiguate( const ambig_info *ambig, int count );
-
-extern char             *TxtBuff;
 
 sym_list *Disambiguate( sym_list *sym, location_context *lc )
 {

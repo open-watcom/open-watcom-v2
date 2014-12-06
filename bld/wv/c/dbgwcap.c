@@ -48,7 +48,6 @@ extern char             *CnvULongHex( unsigned long value, char *buff, unsigned 
 extern char             *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
 extern void             TypeInpStack( input_type );
 
-extern unsigned         TaskId;
 extern file_components  RemFile;
 
 #define PREFIX_LEN      2

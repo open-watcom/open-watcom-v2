@@ -30,11 +30,11 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgio.h"
 #include "dbgerr.h"
 #include "dbgadget.h"
-#include <string.h>
 
 
 extern char             *GetDmpName( void );
@@ -44,7 +44,6 @@ extern bool             WndDlgTxt( char *buff );
 extern char             *StrCopy( char *src, char *dest );
 
 extern gui_resource     WndGadgetArray[];
-extern char             *TxtBuff;
 
 
 typedef void WRITERTN( handle, char * );

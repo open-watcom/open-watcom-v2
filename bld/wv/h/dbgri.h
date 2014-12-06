@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "dbginfo.h"
-
 typedef struct {
     location_list       ll;
     dip_type_info       ti;

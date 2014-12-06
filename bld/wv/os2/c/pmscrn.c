@@ -30,12 +30,6 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "dbgmem.h"
-#include "trapaccs.h"
-#include <string.h>
-#include "dbgscrn.h"
 #define INCL_SUB
 #define INCL_PM
 #define INCL_BASE
@@ -46,11 +40,17 @@
 #define INCL_WINSYS
 #define INCL_WINHOOKS
 #define INCL_WINMESSAGEMGR
-#include "os2.h"
+#include <os2.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgwind.h"
+#include "dbgmem.h"
+#include "trapaccs.h"
+#include "dbgscrn.h"
 
 extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 
-extern HMQ              GUIPMmq;
+extern HMQ      GUIPMmq;
 
 extern void     __far *ExtraAlloc( size_t );
 extern void     ExtraFree( void __far * );

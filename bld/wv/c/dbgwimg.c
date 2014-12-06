@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include <string.h>
 #include <stddef.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "sortlist.h"
 
 
@@ -51,8 +50,6 @@ extern char             *ImgSymName( image_entry *img, bool always );
 extern void             ImgSort(void);
 
 #define TITLE_SIZE      2
-
-extern image_entry      *DbgImageList;
 
 enum {
     PIECE_IMAGE,

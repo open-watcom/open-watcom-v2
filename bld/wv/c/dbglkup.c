@@ -30,7 +30,6 @@
 
 
 #include <ctype.h>
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbglit.h"
@@ -52,12 +51,6 @@ extern bool             IsInternalModName( char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );
 extern unsigned         ProgPoke( address, void *, unsigned );
 extern char             *GetCmdName( int );
-
-
-extern char             *TxtBuff;
-extern tokens           CurrToken;
-extern mod_handle       CodeAddrMod;
-extern dip_status       DIPStatus;
 
 
 typedef struct lookup_list {

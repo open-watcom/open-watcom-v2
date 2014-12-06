@@ -30,14 +30,10 @@
 
 
 #include <ctype.h>
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
-#include "trpcore.h"
 #include "madcli.h"
 
 extern a_window         *WndClassInspect( wnd_class class );
@@ -104,10 +100,6 @@ extern void             WndAddrInspect( address addr );
 extern void             RegFindData( mad_type_kind kind, mad_reg_set_data const **pdata );
 extern bool             HaveRemoteRunThread( void );
 
-extern address          NilAddr;
-extern debug_level      DbgLevel;
-extern void             *BrkList;
-extern system_config    SysConfig;
 
 #include "menudef.h"
 static gui_menu_struct FileMenu[] = {

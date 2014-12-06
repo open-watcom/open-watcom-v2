@@ -30,17 +30,14 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "dlgayn.h"
 
 extern char             *Format( char *buff, char *fmt, ... );
-
-extern char             *TxtBuff;
 
 OVL_EXTERN bool AynEvent( gui_window * gui, gui_event gui_ev, void *param )
 {

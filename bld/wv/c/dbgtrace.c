@@ -85,18 +85,8 @@ typedef struct {
 
 static trace_state      TraceState;
 
-extern brkp             UserTmpBrk;
-extern brkp             DbgTmpBrk;
-extern debug_level      DbgLevel;
-extern debug_level      ActiveWindowLevel;
-extern machine_state    *DbgRegs;
-extern tokens           CurrToken;
 extern char             Opcode;
 extern char             SecondByte;
-extern char             *TxtBuff;
-extern unsigned         OvlSize;
-extern system_config    SysConfig;
-extern address          NilAddr;
 
 
 extern void             *OpenSrcFile( cue_handle *ch );

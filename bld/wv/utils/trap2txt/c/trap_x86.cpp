@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <trpcore.h>
-#include <madregs.h>
-#include <trpfile.h>
+#include "trpcore.h"
+#include "madregs.h"
+#include "trpfile.h"
 
 void DumpRegistersMAD_X86( mad_registers * pregs )
 {

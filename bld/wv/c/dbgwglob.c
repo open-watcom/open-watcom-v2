@@ -30,12 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgerr.h"
 #include "namelist.h"
 
@@ -47,8 +45,6 @@ extern void             GoToAddr( address addr );
 extern int              HasLinInfo( address );
 extern void             WndVarInspect( char *);
 extern void             WndAddrInspect(address);
-
-extern  char            *TxtBuff;
 
 
 #include "menudef.h"

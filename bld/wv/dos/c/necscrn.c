@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
+#include <io.h>
+#include <dos.h>
 #include "necscrio.h"
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
-#include <io.h>
-#include <stdui.h>
-#include <dos.h>
-#include <string.h>
+#include "stdui.h"
 #include "dosscrn.h"
 #include "tinyio.h"
 #include "dbgswtch.h"
@@ -47,8 +47,6 @@ extern unsigned outp(unsigned __port, unsigned __value);
 extern void WndDirty(void);
 extern void StartupErr(char *);
 extern void uisetcurrpage(int);
-
-extern screen_state     ScrnState;
 
 flip_types              FlipMech;
 

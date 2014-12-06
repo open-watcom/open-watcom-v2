@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
+#include <dos.h>
 #include "pcscrnio.h"
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "kbio.h"
 #include "dbgmem.h"
-#include <stdui.h>
-#include <dos.h>
-#include <string.h>
+#include "stdui.h"
 #include "dosscrn.h"
 #include "tinyio.h"
 #include "dbgswtch.h"
@@ -46,8 +46,6 @@
 
 extern void WndDirty(void);
 extern void StartupErr(char *);
-
-extern screen_state     ScrnState;
 
 flip_types              FlipMech;
 mode_types              ScrnMode;

@@ -30,17 +30,13 @@
 
 
 
-#include <string.h>
 #include <ctype.h>
 #include "_srcmgt.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbgwind.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
 #include "mad.h"
 #include "srcmgt.h"
 
@@ -87,7 +83,6 @@ extern bool             FindFirstCue( mod_handle mod, cue_handle *ch );
 
 extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];
-extern address          NilAddr;
 
 
 static a_window *WndFindExisting( wnd_class class )

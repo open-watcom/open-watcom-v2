@@ -31,7 +31,7 @@
 
 
 #include <string.h>
-#include <watcom.h>
+#include "watcom.h"
 #include "dpmi.h"
 #include "dsxutil.h"
 #ifdef __OSI__

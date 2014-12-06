@@ -36,7 +36,6 @@
 #include "dbgtoggl.h"
 #include "dlgasync.h"
 #include "trapbrk.h"
-#include "string.h"
 
 static gui_window   *AsyncWnd = 0;
 static dlg_async    dlg;

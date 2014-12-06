@@ -29,14 +29,13 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "farptrs.h"
-#include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <process.h>
+#include "farptrs.h"
+#include "dbgdefn.h"
+#include "dbgdata.h"
 #include "autoenv.h"
 
 #define INCL_DOSMISC

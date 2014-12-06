@@ -31,12 +31,10 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbglit.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
 #include "ldsupp.h"
 #include "dui.h"
@@ -65,8 +63,6 @@ extern char             *ScanPos( void );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
 
-extern address          NilAddr;
-extern tokens           CurrToken;
 extern stack_entry      *ExprSP;
 
 /*

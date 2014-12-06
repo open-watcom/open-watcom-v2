@@ -31,6 +31,7 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "guidlg.h"
@@ -46,7 +47,6 @@ extern a_window *WndMain;
 #define _EXPIRY_DAY     1
 #endif
 
-extern char     *TxtBuff;
 extern int      FingMessageSize;
 extern char     *AboutMessage[];
 static gui_coord BitmapSize;

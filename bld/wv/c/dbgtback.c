@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
@@ -42,9 +41,6 @@
 extern bool                     TransOvlRetAddr(address *,unsigned int );
 extern void                     AddrFloat( address * );
 extern void                     InitLC( location_context *, bool );
-
-extern address                  NilAddr;
-extern system_config            SysConfig;
 
 static unsigned                 OvlLevel;
 

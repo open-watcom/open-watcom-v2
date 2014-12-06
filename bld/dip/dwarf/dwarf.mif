@@ -21,6 +21,6 @@ imp_objs_watcom = stub.obj
 
 extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c
-extra_cppflags = -DDIP_PRIORITY=DP_DEFAULT
+extra_cppflags = -DDIP_PRIORITY=DIP_PRIOR_DEFAULT
 
 !include ../../master.mif

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -42,9 +41,6 @@ extern void             RemoteThdName( dtid_t, char * );
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
 extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern void             DbgUpdate( update_list );
-
-extern thread_state     *HeadThd;
-extern char             *TxtBuff;
 
 #include "menudef.h"
 static gui_menu_struct TrdMenu[] = {

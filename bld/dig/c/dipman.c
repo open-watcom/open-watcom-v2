@@ -534,10 +534,10 @@ unsigned DIPImagePriority( mod_handle mh )
     image_handle        *ih;
 
     if( mh == NO_MOD )
-        return( DP_MAX+1 );
+        return( DIP_PRIOR_MAX + 1 );
     ih = MH2IH( mh );
     if( ih == NULL )
-        return( DP_MAX+1 );
+        return( DIP_PRIOR_MAX + 1 );
     return( ih->dip->dip_priority );
 }
 

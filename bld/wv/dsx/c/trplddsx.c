@@ -33,6 +33,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <conio.h>
+#include <stdio.h>
+#ifdef __OSI__
+#include "extender.h"
+#endif
 #include "dpmi.h"
 #include "exedos.h"
 #include "dbgdefn.h"
@@ -44,13 +49,6 @@
 #include "digio.h"
 #include "trpld.h"
 
-#ifdef __OSI__
-#include "extender.h"
-#endif
-
-#include <conio.h>
-
-#include <stdio.h>
 
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;

@@ -29,12 +29,6 @@
 ****************************************************************************/
 
 
-#include "curses.h"
-#define BOOL_DEFINED    // curses.h typedefs 'bool'
-#include "dbgdefn.h"
-#include "dbgio.h"
-#include "dbgmem.h"
-#include <string.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,10 +45,15 @@
 #include <signal.h>
 #include <ctype.h>
 #include <errno.h>
+#include "curses.h"
+#define BOOL_DEFINED    // curses.h typedefs 'bool'
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgio.h"
+#include "dbgmem.h"
 #include "term.h"
 #include "stdui.h"
 #include "../unix/h/ctkeyb.h"
-#include "dbgtoggl.h"
 #include "dbgscrn.h"
 
 extern void     StartupErr( char * );
@@ -66,7 +65,6 @@ extern void     KillDebugger( int );
 
 extern char     *UITermType;
 extern char     XConfig[];
-extern char     *TxtBuff;
 
 char            *DbgTerminal;
 unsigned        DbgConsole;

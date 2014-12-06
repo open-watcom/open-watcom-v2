@@ -30,20 +30,16 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgadget.h"
 #include "wndregx.h"
 #include "sortlist.h"
 #include "srcmgt.h"
 
-extern char             *TxtBuff;
-extern void             *SrchHistory;
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );

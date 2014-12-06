@@ -31,7 +31,6 @@
 
 #include <stddef.h>
 #include <limits.h>
-#include <string.h>
 #include <stdio.h>
 #include <time.h>
 #include <direct.h>

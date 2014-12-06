@@ -30,11 +30,10 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgio.h"
-#include "dbgtoken.h"
 #include "dbgerr.h"
-#include <string.h>
 
 
 extern void         ReqEOC( void );
@@ -43,11 +42,6 @@ extern unsigned int ScanCmd( char * );
 extern bool         ScanItem( bool, char **, size_t * );
 extern bool         ScanEOC( void );
 extern char         *GetCmdName( int );
-
-
-extern tokens       CurrToken;
-extern char         *TxtBuff;
-
 
 
 static handle       LogHndl;

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
@@ -92,20 +91,6 @@ extern void             RawScanAdvance( void );
 extern void             RawScanFini( void );
 extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern int              AddrComp( address a, address b );
-
-extern char             *CmdStart;
-extern brkp             UserTmpBrk;
-extern brkp             DbgTmpBrk;
-extern char             *TxtBuff;
-extern tokens           CurrToken;
-extern debug_level      DbgLevel;
-extern screen_state     ScrnState;
-extern thread_state     *HeadThd;
-extern thread_state     *ExecThd;
-extern machine_state    *DbgRegs;
-extern system_config    SysConfig;
-extern address          NilAddr;
-
 
 static char ElseifTab[]         = { "ELSEIF\0" };
 static char ElseTab[]           = { "ELSE\0" };

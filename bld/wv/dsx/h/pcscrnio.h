@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <watcom.h>
+#include "watcom.h"
 
 #if defined(__OSI__)
  extern  void   __Int10();

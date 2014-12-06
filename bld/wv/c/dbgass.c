@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgio.h"
@@ -42,9 +41,6 @@
 
 extern char             *StrAddr(address *,char *,unsigned);
 
-extern unsigned char    CurrRadix;
-extern machine_state    *DbgRegs;
-extern char             *TxtBuff;
 
 static walk_result MemRefDisp( address a, mad_type_handle th,
                         mad_memref_kind mk, void *d )

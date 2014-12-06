@@ -30,14 +30,12 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 #include "dlgnewp.h"
-#include "string.h"
 
-extern char             *TxtBuff;
 
 extern unsigned         GetProgName( char *where, unsigned len );
 extern unsigned         GetProgArgs( char *where, unsigned len );

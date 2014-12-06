@@ -31,11 +31,9 @@
 
 
 #include <limits.h>
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbgadget.h"
@@ -92,12 +90,8 @@ extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             DUIMsgBox( char *text );
 
-extern tokens           CurrToken;
-extern unsigned char    CurrRadix;
 
-extern char             *TxtBuff;
 extern stack_entry      *ExprSP;
-extern address          NilAddr;
 
 typedef struct {
     var_info            i;

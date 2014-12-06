@@ -31,21 +31,15 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbglit.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
 #include "dbgvar.h"
 #include "dui.h"
 
 extern type_display     *TypeDisplay;
-
-extern char             *TxtBuff;
-extern char             *NameBuff;
-extern tokens           CurrToken;
 
 extern char             *StrCopy( char *, char * );
 extern char             *GetCmdName( int );

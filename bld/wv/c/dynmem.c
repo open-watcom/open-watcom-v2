@@ -39,6 +39,7 @@
  #undef __fmemneed
 #endif
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #ifdef TRMEM
  #include "wio.h"
@@ -247,7 +248,7 @@ void MemFini( void )
     for( ;; ) {
         status = _heapwalk( &h_info );
         if( status != _HEAPOK ) break;
-#ifdef DBG_DBG
+#ifndef NDEBUG
         if( h_info._useflag == _USEDENTRY ) {
             end = Format( buf, "%s block",
                 h_info._useflag == _USEDENTRY ? "Used" : "Free" );
@@ -276,7 +277,6 @@ void MemFini( void )
 
 #ifndef _OVERLAYED_
 
-extern unsigned long MemSize;
 #if defined( _M_I86 )
 #define MAX_BLOCK (60U * 1024)
 #elif defined( __DOS__ )

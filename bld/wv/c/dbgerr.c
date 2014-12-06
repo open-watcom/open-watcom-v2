@@ -30,22 +30,15 @@
 
 
 #include <stdarg.h>
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbginvk.h"
-#include "dbgtoken.h"
 #include "dbglit.h"
-#include "dbginp.h"
 #include "dip.h"
-#include "dbgtoggl.h"
 #include "dbgerr.h"
 #include "dui.h"
 
 
-extern   char   *TxtBuff;
-
-extern tokens           CurrToken;
-extern input_stack      *InpStack;
 extern int              ScanSavePtr;
 
 extern char             *StrCopy( char *, char * );

@@ -30,14 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "namelist.h"
 
-extern char *TxtBuff;
 
 extern void     WndMsgBox( char * );
 extern char     *StrTrim( char *str );

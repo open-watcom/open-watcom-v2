@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include <extender.h>
-#include <machtype.h>
 #include <i86.h>
+#include "extender.h"
+#include "machtype.h"
 
 typedef union {
     struct {

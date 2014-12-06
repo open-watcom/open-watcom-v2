@@ -38,7 +38,7 @@
 #include "dipimp.h"
 
 #ifndef DIP_PRIORITY
-#define DIP_PRIORITY DP_NORMAL
+#define DIP_PRIORITY DIP_PRIOR_NORMAL
 #endif
 
 #if defined( __WATCOMC__ )

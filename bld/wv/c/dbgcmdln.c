@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 #define BACKWARDS
@@ -60,12 +59,6 @@ extern char             *StrCopy( char *src, char *dst );
 void                    FindLocalDebugInfo( char *name );
 extern void             StartupErr( char *err );
 
-
-extern char             *InitCmdList;
-extern char             *InvokeFile;
-extern char             *DipFiles[];
-
-extern unsigned long    MemSize;
 
 static char             *(*GetArg)( int );
 static int              CurrArgc;

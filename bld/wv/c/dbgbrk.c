@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
@@ -129,18 +128,7 @@ extern void             LValue( stack_entry * );
 
 
 extern char_ring        *DLLList;
-extern unsigned char    CurrRadix;
-extern brkp             UserTmpBrk;
-extern brkp             DbgTmpBrk;
-extern char             *TxtBuff;
-extern tokens           CurrToken;
-extern debug_level      DbgLevel;
-extern brkp             *BrkList;
-extern address          NilAddr;
 extern stack_entry      *ExprSP;
-extern mod_handle       CodeAddrMod;
-extern machine_state    *DbgRegs;
-extern system_config    SysConfig;
 
 static char PointNameTab[] = {
     "Activate\0"

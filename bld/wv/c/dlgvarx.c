@@ -31,14 +31,12 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dlgvarx.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
-#include "string.h"
 
-extern char             *TxtBuff;
 
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );

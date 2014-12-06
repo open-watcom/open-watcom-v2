@@ -81,7 +81,7 @@ extra_cpp_flags = -D__GUI__
 extra_cpp_flags = -D__CHAR__
 !endif
 !ifeq release 0
-extra_cpp_flags += -DAUI_DBG -DDBG_DBG
+extra_cpp_flags += -DAUI_DBG
 !endif
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 

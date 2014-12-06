@@ -29,22 +29,19 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <conio.h>
 #include <ctype.h>
 #include <process.h>
 #include <dos.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
 #include "fparse.h"
 #include "banner.h"
-
-#include "dbgdefn.h"
 #include "dbgio.h"
-#include "dbgtoggl.h"
 #include "dta.h"
 #include "tcerr.h"
-#include "trpcore.h"
 #include "trprfx.h"
 
 #include "local.h"

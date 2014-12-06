@@ -32,10 +32,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbginp.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbglit.h"
 #include "dbghook.h"
@@ -48,11 +45,6 @@ extern void             SetStackPos( location_context *lc, int pos );
 extern void             SymCompFini( void );
 extern void             PopInpStack( void );
 extern address          GetCodeDot( void );
-
-extern update_list      UpdateFlags;
-extern mod_handle       ContextMod;
-extern mod_handle       CodeAddrMod;
-extern input_stack      *InpStack;
 
 
 void DbgUpdate( update_list flags )

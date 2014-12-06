@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdui.h>
-#include <string.h>
 #include <dos.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgwind.h"
+#include "stdui.h"
 #include "dosscrn.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
-#include "dbgwind.h"
 #include "dsxutil.h"
 #include "pcscrnio.h"
 #include "dpmi.h"
@@ -145,7 +144,6 @@ extern bool                     UserScreen( void );
 
 extern void                     __far *video_buffer( void __far * );
 
-extern screen_state             ScrnState;
 extern flip_types               FlipMech = 0;
 extern mode_types               ScrnMode = 0;
 extern gui_window_styles        WndStyle;

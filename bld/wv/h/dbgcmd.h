@@ -68,6 +68,6 @@ pick(   CMD_SKIP,       ProcSkip,        "SKip\0" )
 pick(   CMD_RECORD,     ProcRecord,      "RECord\0" )
 pick(   CMD_ASSIGN,     ProcAssign,      "ASsign\0" )
 pick(   CMD_MODIFY,     ProcModify,      "MOdify\0" )
-#ifdef DBG_DBG
+#ifndef NDEBUG
 pick(   CMD_INTERNAL,   ProcInternal,    "XX\0" )
 #endif

@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
 #include "farptrs.h"
+#include "dbgdefn.h"
 #include "tinyio.h"
 
 

@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+#include <string.h>
 #include "dbgtoken.h"
 #include "dbgregd.h"
 #include "dbgtoggl.h"

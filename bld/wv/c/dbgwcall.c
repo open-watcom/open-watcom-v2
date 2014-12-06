@@ -29,18 +29,15 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgtback.h"
 #include "dbgadget.h"
 #include "dbgmem.h"
 #include "dbgchain.h"
 #include "mad.h"
 
-extern char             *TxtBuff;
 
 extern a_window         *WndSrcInspect( address );
 extern a_window         *WndAsmInspect( address );

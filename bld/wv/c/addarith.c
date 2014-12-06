@@ -31,7 +31,7 @@
 
 
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "mad.h"
 

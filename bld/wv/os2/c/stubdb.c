@@ -29,18 +29,16 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <process.h>
 #define INCL_DOS
 #include <os2.h>
 #include "_srcmgt.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "bool.h"
 #include "ambigsym.h"
-#include "dbgtoggl.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
@@ -68,11 +66,7 @@ extern unsigned         Go( bool );
 extern void             *OpenSrcFile( cue_handle * );
 extern void             ExprValue( stack_entry * );
 
-extern debug_level      DbgLevel;
-extern char             *TxtBuff;
-extern unsigned char    CurrRadix;
 static bool             Done;
-extern char             *TrapParms;
 extern char             *CmdData;
 extern stack_entry      *ExprSP;
 
@@ -591,7 +585,7 @@ void ProcHelp( void )
     FlushEOC();
 }
 
-#ifdef DBG_DBG
+#ifndef NDEBUG
 void ProcInternal( void )
 {
     // stub for old UI

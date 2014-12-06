@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 //#include "dbgwind.h"
 #include "dbglit.h"
 #include "dbgerr.h"
@@ -41,8 +40,6 @@
 
 #include "clibext.h"
 
-extern char             *TxtBuff;
-extern address          NilAddr;
 
 extern char             *DupStr(char*);
 extern bool             IsInternalMod( mod_handle mod );

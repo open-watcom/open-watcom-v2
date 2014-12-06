@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
@@ -92,12 +91,6 @@ extern char             *ModImageName( mod_handle handle );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             DbgUpdate( update_list );
-
-extern machine_state    *DbgRegs;
-extern char             *TxtBuff;
-extern address          NilAddr;
-extern debug_level      ActiveWindowLevel;
-extern unsigned char    CurrRadix;
 
 
 #include "menudef.h"

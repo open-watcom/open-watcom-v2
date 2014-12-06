@@ -31,17 +31,16 @@
 
 
 #include <limits.h>
-#include <string.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "farptrs.h"
 
 
 #define READONLY    0

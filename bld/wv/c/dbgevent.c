@@ -31,11 +31,9 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
-#include "dbginfo.h"
-#include "dbgtoggl.h"
 #include "dbgmem.h"
-#include "dbginp.h"
 #include "dbgrep.h"
 #include "dbgevent.h"
 #include "dui.h"
@@ -71,9 +69,6 @@ extern void             ReplayTo( event_record *ev );
 extern void             ProcInput( void );
 extern void             DbgUpdate( update_list );
 
-extern char             *TxtBuff;
-extern address          NilAddr;
-extern unsigned char    CurrRadix;
 
 event_record *EventList;
 static event_record **LastOwner;

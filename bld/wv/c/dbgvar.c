@@ -30,15 +30,12 @@
 
 
 #include <limits.h>
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbglit.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
 #include "dlgvarx.h"
 #define DBGVAR_C
 #include "dbgvar.h"
@@ -109,13 +106,8 @@ extern bool             AdvMachState( int );
 extern void             LValue( stack_entry * );
 extern char             *Format( char *, char *, ... );
 
-extern tokens           CurrToken;
-extern mod_handle       ContextMod;
-extern unsigned char    CurrRadix;
 
-extern char             *TxtBuff;
 extern stack_entry      *ExprSP;
-extern address          NilAddr;
 
 static int              TargRow;
 static long             ExprStackTimeStamp;

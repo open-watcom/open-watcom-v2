@@ -649,7 +649,7 @@ STATIC void loadImageInfo( image_info * curr_image )
         if( sym_file != -1 ) {
             curr_image->dip_handle = WPDipLoadInfo( sym_file,
                                        curr_image->sym_name, curr_image,
-                                       sizeof(image_info), DP_MIN, DP_MAX );
+                                       sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
     } else {
         name_len = strlen( curr_image->name ) + 1;
@@ -662,7 +662,7 @@ STATIC void loadImageInfo( image_info * curr_image )
         if( sym_file != -1 ) {
             curr_image->dip_handle = WPDipLoadInfo( sym_file,
                                       curr_image->sym_name, curr_image,
-                                      sizeof(image_info), DP_MIN, DP_MAX );
+                                      sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
         if( curr_image->dip_handle == NO_MOD ) {
             ProfFree( curr_image->sym_name );
@@ -694,7 +694,7 @@ STATIC void loadImageInfo( image_info * curr_image )
      && object_file != -1 ) {
         curr_image->dip_handle = WPDipLoadInfo( object_file,
                                    curr_image->name, curr_image,
-                                   sizeof(image_info), DP_MIN, DP_MAX );
+                                   sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
     }
     if( curr_image->dip_handle == NO_MOD ) {
         if( sym_file != -1 ) {

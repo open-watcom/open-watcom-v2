@@ -31,12 +31,11 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dlglist.h"
-#include <string.h>
 
-extern char             *TxtBuff;
 extern char             *DupStr(char*);
 extern bool             AllBrowse( char * );
 

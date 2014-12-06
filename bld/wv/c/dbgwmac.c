@@ -30,17 +30,15 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include <string.h>
 #include <stddef.h>
 #include <ctype.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
 #include "dbgadget.h"
 #include "guidlg.h"
 #include "sortlist.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
 
 extern char             *GetCmdEntry(char *,int ,char *);
 extern char             *KeyName( unsigned key );
@@ -59,7 +57,6 @@ extern void             SetUnderLine( a_window *, wnd_line_piece * );
 extern void             RingBell( void );
 
 extern char             MainTab[];
-extern char             *TxtBuff;
 extern wnd_info         *WndInfoTab[];
 extern gui_menu_struct  WndMainMenu[];
 extern int              WndNumMenus;

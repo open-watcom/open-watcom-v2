@@ -30,12 +30,6 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgio.h"
-#include "dbgmem.h"
-#include <env.h>
-#include <stdui.h>
-#include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -50,7 +44,12 @@
 #include <signal.h>
 #include <ctype.h>
 #include <errno.h>
-#include "dbgtoggl.h"
+#include <env.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgio.h"
+#include "dbgmem.h"
+#include "stdui.h"
 #include "dbgscrn.h"
 
 extern void     StartupErr( char * );
@@ -63,7 +62,6 @@ extern void             KillDebugger( int );
 extern unsigned UIConHandle;
 extern char     *UITermType;
 extern char     XConfig[];
-extern char     *TxtBuff;
 
 char                *DbgTerminal;
 unsigned            DbgConsole;

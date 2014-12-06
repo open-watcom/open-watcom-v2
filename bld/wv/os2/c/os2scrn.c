@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stddef.h>
+#define INCL_SUB
+#include <os2.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgio.h"
 #include "stdui.h"
-#include "dbgtoggl.h"
 #include "dbgscrn.h"
 
-#define INCL_SUB
-#include "os2.h"
 
 extern void     __FAR *ExtraAlloc( size_t );
 extern void     ExtraFree( void __FAR * );

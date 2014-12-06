@@ -33,18 +33,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbginp.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbghook.h"
 #include "dbgio.h"
 #include "spawn.h"
 
-extern mod_handle       CodeAddrMod;
-extern input_stack      *InpStack;
-extern tokens           CurrToken;
 
 extern void             NewLang( char *lang );
 extern void             PopInpStack( void );

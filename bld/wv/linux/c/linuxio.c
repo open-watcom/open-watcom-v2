@@ -32,7 +32,6 @@
 
 #include <errno.h>
 #include <limits.h>
-#include <string.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/stat.h>

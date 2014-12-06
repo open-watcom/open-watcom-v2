@@ -31,7 +31,6 @@
 
 #include <io.h>
 #include <limits.h>
-#include <string.h>
 #include <stddef.h>
 #include <sys/stat.h>
 #include <fcntl.h>

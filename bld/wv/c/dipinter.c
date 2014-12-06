@@ -43,7 +43,6 @@
 #include "dipimp.h"
 #include "dipwv.h"
 #include "mad.h"
-#include <string.h>
 #include <stddef.h>
 
 #include "clibext.h"
@@ -71,12 +70,6 @@ extern address          DefAddrSpaceForAddr( address );
 extern int              AddrComp( address, address );
 extern void             DeAlias( addr_ptr * );
 extern char             *StrCopy( char *, char *);
-
-extern address          NilAddr;
-extern dip_status       DIPStatus;
-extern char             *DipFiles[];
-extern char             *TxtBuff;
-extern system_config    SysConfig;
 
 /*
  * Client support routines
@@ -832,7 +825,7 @@ dip_status DIGREGISTER WVSymFreeAll( imp_image_handle *ii )
 static dip_imp_routines InternalInterface = {
     DIP_MAJOR,
     DIP_MINOR,
-    DP_EXPORTS,
+    DIP_PRIOR_EXPORTS,
     WVName,
 
     WVHandleSize,

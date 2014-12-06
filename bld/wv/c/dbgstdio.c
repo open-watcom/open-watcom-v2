@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbgerr.h"
-#include <string.h>
 
 
 extern bool ScanItem(bool ,char **,size_t *);

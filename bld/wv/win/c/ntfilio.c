@@ -31,7 +31,6 @@
 
 
 #include <limits.h>
-#include <string.h>
 #include <stddef.h>
 #include <stdio.h>
 #include "wio.h"

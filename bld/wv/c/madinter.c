@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stddef.h>
 #include <ctype.h>
 #include "dbgdefn.h"
@@ -67,13 +66,7 @@ extern void             StartupErr( char * );
 extern void             SetMADMenuItems( void );
 extern void             ClearMachineDataCache( void );
 
-extern address          NilAddr;
-extern char             *TxtBuff;
-extern system_config    SysConfig;
-extern machine_state    *DbgRegs;
-extern unsigned char    CurrRadix;
-
-static mad_status               MADStatus;
+static mad_status       MADStatus;
 
 /*
  * Client support routines

@@ -37,8 +37,6 @@
 #include "mad.h"
 
 
-extern machine_state    *DbgRegs;
-extern brkp             DbgTmpBrk;
 extern stack_entry      *ExprSP;
 
 
@@ -59,11 +57,10 @@ extern void             AddrFix( address * );
 extern void             LocationCreate( location_list *, location_type, void * );
 extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
 
-extern mod_handle       ContextMod;
 
-static machine_state            *FreezeRegSet = NULL;
-static struct location_context  FreezeContext;
-static mod_handle               FreezeContextMod;
+static machine_state    *FreezeRegSet = NULL;
+static location_context FreezeContext;
+static mod_handle       FreezeContextMod;
 
 /*
  * FreezeRegs -- freeze a copy of the register values

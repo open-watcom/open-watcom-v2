@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "dbgdefn.h"
@@ -47,9 +46,6 @@ extern void             RemotePollRunThread( void );
 extern void             MakeRunThdCurr( thread_state * );
 extern void             RemoteStopThread( thread_state *thd );
 extern void             RemoteSignalStopThread( thread_state *thd );
-
-extern thread_state     *HeadThd;
-extern char             *TxtBuff;
 
 #include "menudef.h"
 static gui_menu_struct RunTrdMenu[] = {

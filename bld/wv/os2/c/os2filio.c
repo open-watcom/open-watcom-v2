@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stddef.h>
 #define INCL_ERRORS
 #define INCL_BASE
 #include <os2.h>
+#include "farptrs.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "farptrs.h"
 #include "doserr.h"
 
 #define READONLY    0

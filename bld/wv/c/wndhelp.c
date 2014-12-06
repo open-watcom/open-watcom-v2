@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgio.h"
 #include "dbgerr.h"
@@ -40,8 +40,6 @@
 extern handle   LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern char     *StrCopy( char *src, char *dst );
 extern unsigned DUIEnvLkup( char *, char *, unsigned );
-
-extern char             *TxtBuff;
 
 static gui_help_instance Handle;
 extern a_window         *WndMain;

@@ -30,15 +30,14 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "aui.h"
-#include <stdui.h>
-#include <string.h>
 #include <dos.h>
 #include <stddef.h>
-#include "dosscrn.h"
-#include "dbgtoggl.h"
 #include <windows.h>
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "dbgwind.h"
+#include "stdui.h"
+#include "dosscrn.h"
 #include "winscrn.h"
 #include "swap.h"
 #include "dbgscrn.h"
@@ -61,8 +60,6 @@ extern unsigned char    NECBIOSGetMode(void);
 
 #define         NEC_20_LINES        0x01
 #define         NEC_31_LINES        0x10
-
-extern screen_state             ScrnState;
 
 bool            WantFast;
 flip_types      FlipMech;

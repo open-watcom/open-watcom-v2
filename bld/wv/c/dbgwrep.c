@@ -31,14 +31,11 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbginfo.h"
-#include "dbgtoggl.h"
 #include "dbgmem.h"
-#include "dbginp.h"
 #include "dbgrep.h"
 #include "dbgevent.h"
-#include <string.h>
 
 extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
@@ -70,9 +67,6 @@ extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
 
-extern char             *TxtBuff;
-extern address          NilAddr;
-extern unsigned char  CurrRadix;
 
 enum {
     PIECE_ADDRESS,

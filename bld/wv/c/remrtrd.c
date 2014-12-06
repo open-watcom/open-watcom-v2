@@ -43,9 +43,6 @@ extern void             GetSysConfig( void );
 extern void             CheckMADChange( void );
 extern void             InitRunThreadWnd( void );
 
-extern machine_state    *DbgRegs;
-extern system_config    SysConfig;
-
 static trap_shandle     SuppRunThreadId = 0;
 
 bool InitRunThreadSupp( void )

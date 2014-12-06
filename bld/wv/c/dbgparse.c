@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgstk.h"
@@ -55,11 +54,6 @@ extern bool             ScanEOC( void );
 extern handle           LocalPathOpen( const char *, unsigned, const char * );
 extern int              SSLWalk( char *, unsigned, void **, unsigned int );
 extern unsigned         SetCurrRadix( unsigned );
-
-extern tokens           CurrToken;
-
-extern unsigned         SkipCount;
-extern unsigned         ExprAddrDepth;
 
 extern stack_entry      *ExprSP;
 

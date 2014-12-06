@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <windows.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgtoggl.h"
 #include "dbgscrn.h"
 
 extern void     *ExtraAlloc( size_t );
@@ -49,8 +48,8 @@ extern void     TellHWND( HWND );
 
 volatile int    BrkPending;
 extern a_window *WndMain;
-static HWND             HwndFore = NULL;
-static HWND             FirstForeWnd = NULL;
+static HWND     HwndFore = NULL;
+static HWND     FirstForeWnd = NULL;
 
 
 void TellWinHandle()

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgmem.h"
 #include <string.h>
 #include "rdos.h"
+#include "dbgdefn.h"
+#include "dbgmem.h"
 
 
 unsigned EnvLkup( char *name, char *buff, unsigned buff_len )

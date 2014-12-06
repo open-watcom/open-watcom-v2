@@ -31,19 +31,18 @@
 
 
 #include <stdio.h>
-#include <string.h>
 #include <process.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <direct.h>
 #include <stdarg.h>
-#include <wwindows.h>
+#include "wwindows.h"
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #ifdef __GUI__
 #include "dbgwind.h"
 #endif
-#include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "dbglit.h"

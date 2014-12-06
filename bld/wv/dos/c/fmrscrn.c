@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
+#include <dos.h>
+#include <string.h>
 #include "pcscrnio.h"
 #include "dbgdefn.h"
 #include "kbio.h"
 #include "dbgmem.h"
-#include <stdui.h>
-#include <dos.h>
-#include <string.h>
+#include "stdui.h"
 #include "dosscrn.h"
 #include "tinyio.h"
 #include "dbgswtch.h"

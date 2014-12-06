@@ -30,14 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbglit.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "dbgio.h"
 #include "mad.h"
 #include "madcli.h"
@@ -103,12 +101,9 @@ extern bool             CapabilitiesGetExactBreakpointSupport( void );
 extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
 extern bool             SupportsExactBreakpoints;
 
-extern char             *TxtBuff;
 extern char             WndNameTab[];
-extern tokens           CurrToken;
 extern margins          SrcMar;
 extern margins          AsmMar;
-extern system_config    SysConfig;
 
 static char_ring        *SupportRtns;
 

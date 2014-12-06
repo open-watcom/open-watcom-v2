@@ -65,24 +65,21 @@ Done:
 */
 
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <process.h>
 #include <windows.h>
 #include "_srcmgt.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "bool.h"
 #include "ambigsym.h"
-#include "dbgtoggl.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
 #include "modlist.h"
-#include "dbgbreak.h"
 #include "srcmgt.h"
 #include "dbgscrn.h"
 
@@ -138,14 +135,6 @@ extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, in
 extern void             *WndAsmInspect( address addr );
 extern bool             WndEvalInspectExpr( char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
-
-/* External Variables Used */
-extern debug_level      DbgLevel;
-extern char             *TxtBuff;
-extern unsigned char    CurrRadix;
-extern char             *TrapParms;
-extern address          NilAddr;
-extern char_ring        *SrcSpec;
 
 static char             *CmdData;
 static bool             Done;

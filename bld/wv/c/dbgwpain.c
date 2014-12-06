@@ -30,11 +30,9 @@
 
 
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
-#include <string.h>
 
 
 
@@ -52,7 +50,6 @@ extern bool             ScanStatus( void );
 extern char             *GetCmdName( int );
 
 
-extern char             *TxtBuff;
 extern char             WndNameTab[];
 
 static gui_colour_set   *WndClassColour[ WND_NUM_CLASSES ];

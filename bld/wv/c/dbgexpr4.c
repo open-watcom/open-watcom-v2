@@ -29,14 +29,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "dbglit.h"
 #include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
+#include "dbglit.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbgtoggl.h"
 #include "dbgitem.h"
 #include "dbgtback.h"
 #include "dbgri.h"
@@ -95,9 +93,6 @@ extern unsigned         DefaultSize( default_kind );
 extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
 extern stack_entry      *ExprSP;
-extern unsigned         NestedCallLevel;
-extern int              PgmStackUsage[ MAX_NESTED_CALL ];
-extern address          NilAddr;
 
 
 /*

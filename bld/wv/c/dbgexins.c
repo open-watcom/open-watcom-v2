@@ -32,11 +32,8 @@
 
 #include <stdlib.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
-//#include "dbgwind.h"
-#include "dbgtoken.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
 
 
 

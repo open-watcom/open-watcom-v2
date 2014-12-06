@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include <float.h>
 #include <limits.h>
@@ -73,10 +72,6 @@ extern char             *Format( char *buff, char *fmt, ... );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern unsigned         ProgPeekWrap(address addr,char * buff,unsigned length );
 
-
-extern machine_state    *DbgRegs;
-extern char             *TxtBuff;
-extern address          NilAddr;
 
 typedef gui_ord (MEMHEADER)(a_window *,int);
 

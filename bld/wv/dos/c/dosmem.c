@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "farptrs.h"
-#include "tinyio.h"
 #include <malloc.h>
+#include "farptrs.h"
+#include "dbgdefn.h"
+#include "dbgdata.h"
+#include "tinyio.h"
 #include "dosheap.h"
 
 unsigned            OvlAreaSize;
@@ -47,7 +48,6 @@ extern unsigned     _STACKTOP;
 void                *SyMemBeg;
 void                *SyMemEnd;
 
-extern unsigned long MemSize;
 struct heapstart     *LastSeg;
 
 /*

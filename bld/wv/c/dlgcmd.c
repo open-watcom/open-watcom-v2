@@ -30,15 +30,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbgerr.h"
-#include "dbginp.h"
-#include "dbgtoken.h"
-#include "dbgmem.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbgerr.h"
+#include "dbgmem.h"
 #include "dbgio.h"
 #include "guidlg.h"
 #include "dlgcmd.h"
@@ -55,8 +51,6 @@ extern void             SymComplete( gui_window *gui, int id );
 extern void             DoCmd(char*);
 extern char             *DupStr(char*);
 
-extern char             *TxtBuff;
-extern void             *CmdHistory;
 
 static bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
 {

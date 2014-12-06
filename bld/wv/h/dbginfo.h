@@ -34,7 +34,6 @@
 #define __DBGINFO_INCLUDED
 #include "dip.h"
 #include "dbgmem.h"
-#include <string.h>
 
 typedef unsigned_8 inspect_type; enum {
     INSP_CODE,
@@ -47,7 +46,7 @@ enum ll_flags {
     LLF_REG_FLAGS_SHIFT = 1
 };
 
-struct location_context {
+typedef struct location_context {
     address             frame;
     address             stack;
     address             execution;
@@ -62,9 +61,7 @@ struct location_context {
     unsigned            maybe_have_object       : 1;
     unsigned            up_stack_level          : 1;
     unsigned            use;
-};
-
-extern struct location_context Context;
+} location_context;
 
 typedef struct sym_list {
     struct sym_list     *next;

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -93,10 +92,6 @@ extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_t
 
 
 extern stack_entry      *ExprSP;
-extern tokens           CurrToken;
-extern unsigned char    CurrRadix;
-extern unsigned char    DefRadix;
-extern machine_state    *DbgRegs;
 
 
 static char             *OutPtr;

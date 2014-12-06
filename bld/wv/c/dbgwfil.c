@@ -29,13 +29,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <limits.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
-#include "dbginfo.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dbgitem.h"
@@ -95,12 +93,6 @@ extern int              AddrComp( address a, address b );
 extern void             GoHome( void );
 extern void             DbgUpdate( update_list );
 
-extern char             *TxtBuff;
-extern tokens           CurrToken;
-extern debug_level      ActiveWindowLevel;
-extern address          NilAddr;
-extern mod_handle       ContextMod;
-extern void             *SrchHistory;
 extern stack_entry      *ExprSP;
 
 #define MAX_LINE_LEN    255 // must not wrap a gui_ord

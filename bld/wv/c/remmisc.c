@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "trpcore.h"
 #include "trpld.h"
@@ -59,9 +58,6 @@ extern bool             InitCapabilities( void );
 extern bool             InitAsyncSupp( void );
 extern void             StartupErr( char *err );
 extern char             *DupStr( char * );
-
-extern system_config    SysConfig;
-extern char             *TxtBuff;
 
 unsigned int            MaxPacketLen;
 

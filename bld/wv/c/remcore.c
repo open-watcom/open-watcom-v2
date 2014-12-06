@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
@@ -62,11 +61,6 @@ extern void             RemoteSectTblWrite( void * );
 extern void             CheckMADChange( void );
 
 extern unsigned         MaxPacketLen;
-extern unsigned         TaskId;
-extern machine_state    *DbgRegs;
-extern system_config    SysConfig;
-extern address          NilAddr;
-extern struct location_context Context;
 extern unsigned         CurrRegSize;
 
 //NYI: We don't know the size of the incoming err msg. Now assume max is 80.

@@ -17,6 +17,6 @@ name = export
 # have any.
 #extra_incs = $(lib_misc_dir)/h
 #extra_srcs = $(lib_misc_dir)/c
-extra_cppflags = -DDIP_PRIORITY=DP_EXPORTS
+extra_cppflags = -DDIP_PRIORITY=DIP_PRIOR_EXPORTS
 
 !include ../../master.mif

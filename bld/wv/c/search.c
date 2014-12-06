@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "dbgio.h"
 #include <string.h>
+#include "dbgio.h"
 
 static unsigned long FilePos;
 

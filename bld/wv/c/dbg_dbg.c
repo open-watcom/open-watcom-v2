@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dipwv.h"
@@ -52,15 +51,6 @@ extern void             AddrFix( address * );
 extern bool             TokenName( unsigned int, char **, unsigned int * );
 extern bool             IsInternalMod( mod_handle );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
-
-
-extern unsigned         TaskId;
-extern machine_state    *DbgRegs;
-extern unsigned char    DefRadix;
-extern system_config    SysConfig;
-extern thread_state     *ExecThd;
-extern address          NilAddr;
-extern debug_level      ActiveWindowLevel;
 
 
 typedef struct wv_sym_list      wv_sym_list;

@@ -30,16 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
 #include "dbgio.h"
-#include "dbginfo.h"
 #include "spawn.h"
 #include "mad.h"
 
@@ -56,7 +52,6 @@ extern void             NormalExpr(void);
 extern void             BreakOnExprSP(char*);
 extern void             LValue(stack_entry *);
 
-extern address          NilAddr;
 extern stack_entry      *ExprSP;
 
 extern void BreakOnSelected( char *item )

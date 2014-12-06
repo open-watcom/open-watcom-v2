@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -40,9 +39,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include "dbgdefn.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
+#endif
+
+#ifdef __WATCOMC__
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 #endif

@@ -35,7 +35,6 @@
 #include "dbgwind.h"
 #include "dbgitem.h"
 #include "madcli.h"
-#include <string.h>
 
 extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class class, gui_resource *icon );
 extern void MadRegChangeOptions( a_window *wnd );

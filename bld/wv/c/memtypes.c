@@ -30,19 +30,19 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "mad.h"
 #include "madcli.h"
 #include "memtypes.h"
 #include "dbgmem.h"
 #include "dbgitem.h"
 
+
 extern char             *DupStr( char *str );
 extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
 extern unsigned         NewCurrRadix( unsigned );
 
-extern char             *TxtBuff;
 
 static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
 {

@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
-#ifdef DBG_DBG
+#ifndef NDEBUG
 #include "dbgdefn.h"
-#include "dbgtoken.h"
-#include "dbgerr.h"
-#include "dbgtoggl.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbgerr.h"
 #include "dbgmem.h"
-#include "dbginfo.h"
 #include "wndregx.h"
-#include <string.h>
 #include <ctype.h>
 
 
@@ -59,9 +56,7 @@ extern void             SymCompInit( bool code, bool data, bool d2_only, bool du
 extern void             SymCompFini();
 extern char             *GetCmdName( int );
 
-extern char             *TxtBuff;
 extern char             WndNameTab[];
-extern tokens           CurrToken;
 
 static void BadCmd( a_window *wnd )
 {

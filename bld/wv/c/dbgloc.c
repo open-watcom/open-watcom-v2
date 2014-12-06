@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -43,7 +42,6 @@ extern unsigned         ProgPoke( address, void *, unsigned );
 extern unsigned         ChangeMem( address, void *, unsigned );
 extern void             DbgUpdate( update_list );
 
-extern machine_state    *DbgRegs;
 
 void LocationCreate( location_list *ll, location_type lt, void *d )
 {

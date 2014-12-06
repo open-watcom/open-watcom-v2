@@ -31,11 +31,10 @@
 
 
 #include <stddef.h>
-#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 //#include "dbgwind.h"
 #include "dbgerr.h"
 #include "namelist.h"
@@ -43,8 +42,6 @@
 
 #include "clibext.h"
 
-extern char             *TxtBuff;
-extern address          NilAddr;
 
 extern char             *DupStr(char*);
 extern int              AddrComp( address a, address b );

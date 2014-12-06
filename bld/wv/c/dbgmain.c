@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
@@ -167,16 +166,7 @@ extern void             VarDisplayInit( void );
 extern void             WndDlgFini( void );
 extern void             WndMemInit( void );
 
-extern char             *InitCmdList;
-extern char             *CmdStart;
-extern tokens           CurrToken;
-extern unsigned char    DefRadix;
-extern unsigned char    CurrRadix;
-extern debug_level      DbgLevel;
-extern debug_level      ActiveWindowLevel;
 extern int              ScanSavePtr;
-extern address          NilAddr;
-extern char             *InvokeFile;
 
 extern bool             Supports8ByteBreakpoints;
 extern bool             SupportsExactBreakpoints;

@@ -30,6 +30,7 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgitem.h"
 #include "dbgerr.h"
@@ -51,7 +52,6 @@ extern bool             AdvMachState( int );
 extern void             CollapseMachState( void );
 extern void             DbgUpdate( update_list );
 
-extern char             *TxtBuff;
 
 //MAD: convert this stuff to work off of mad_type_handle's ?
 

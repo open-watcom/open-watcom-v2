@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "mempiece.h"
 #include "dbgadget.h"
@@ -41,9 +40,6 @@
 #include "madcli.h"
 #include "memtypes.h"
 #include "dbgitem.h"
-
-extern char             *TxtBuff;
-extern address          NilAddr;
 
 
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );

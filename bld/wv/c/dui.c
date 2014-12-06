@@ -32,24 +32,18 @@
 
 #include <stdlib.h>
 #include "_srcmgt.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
-#include "dbginp.h"
-#include "dbgtoken.h"
-#include "dbgerr.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbgerr.h"
 #include "dbgadget.h"
 #include "dbghook.h"
-#include "dbgbreak.h"
 #include "dui.h"
 #include "srcmgt.h"
 #include "dbgscrn.h"
 
-extern void             *CmdHistory;
-extern void             *SrchHistory;
+
 extern a_window         *WndMain;
 extern char             WndNameTab[];
-extern char             *TxtBuff;
 
 extern unsigned long    CueLine( cue_handle *ch );
 extern GUICALLBACK      WndMainEventProc;

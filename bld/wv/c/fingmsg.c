@@ -30,9 +30,9 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
-#include <string.h>
 
 char *AboutMessage[] = {
     "", // constructed

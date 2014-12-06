@@ -29,13 +29,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbggptr.h"
 #include "dbgitem.h"
-#include "dbgtoggl.h"
 #include "dbglit.h"
 #include "mad.h"
 
@@ -59,9 +57,6 @@ extern char             *DupStrLen( char *, unsigned );
 extern char             *GetCmdName( int );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 
-extern char             *TxtBuff;
-extern tokens           CurrToken;
-extern address          NilAddr;
 
 /*
  * IOExam -- perform the examine port command

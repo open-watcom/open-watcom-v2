@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdarg.h>
 #include "dbgdefn.h"
-#include "dbgtoggl.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgio.h"
 
 
