@@ -50,6 +50,8 @@
 !inject nanoslp.obj                                                                             l32 lpc lmp
 !inject nice.obj                                                                                l32 lpc lmp
 !inject pause.obj                                                                               l32 lpc lmp
+!inject pclose.obj                                                                              l32 lpc lmp
+!inject popen.obj                                                                               l32 lpc lmp
 !inject pipe.obj                                                                                l32 lpc
 !inject pipemps.obj                                                                                     lmp
 !inject ptrace.obj                                                                              l32 lpc lmp
