@@ -40,6 +40,7 @@
 
 #include "bool.h"
 #include "mad.h"
+#include "madcli.h"
 #include "drwatcom.h"
 #include <windows.h>
 #include "mem.h"
@@ -51,7 +52,7 @@ unsigned DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
     return bytesread;
 }
 
-unsigned DIGCLIENT MADCliWriteMem( address a, unsigned size, void *buff )
+unsigned DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *buff )
 {
     DWORD byteswritten;
     WriteProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &byteswritten );

@@ -40,6 +40,7 @@
 #include "dip.h"
 #include <malloc.h>
 #include "madsys1.h"
+#include "madcli.h"
 #include "drwatcom.h"
 
 msglist MADMsgs[] = {
@@ -49,47 +50,49 @@ msglist MADMsgs[] = {
     0 , (char *)(pointer_int)-1
 };
 
-unsigned DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buff )
+unsigned DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
 {
     unsigned len;
     char *msg;
 
     msg = SrchMsg( mstr, MADMsgs, "String not found" );
     len = strlen( msg );
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( buff, msg, max ); //strncpy not good here since it always writes
-        buff[max]='\0';           //max char
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, msg, buff_len );
+        buff[buff_len]='\0';
     }
-    return len;
+    return( len );
 }
 
-unsigned DIGCLIENT MADCliRadixPrefix( unsigned radix, unsigned max, char *buff )
+unsigned DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
 {
     char msg[10];
     int len;
 
     switch( radix ){
-        case 16:
-            strcpy( msg, "0x" );
-            break;
-        default:
-            msg[0] = '\0';
-            break;
+    case 16:
+        strcpy( msg, "0x" );
+        break;
+    default:
+        msg[0] = '\0';
+        break;
     }
 
     len = strlen( msg );
-    if( max > 0 ) {
-        --max;
-        if( max > len ) max = len;
-        memcpy( buff, msg, max ); //strncpy not good here since it always writes
-        buff[max]='\0';
+    if( buff_len > 0 ) {
+        --buff_len;
+        if( buff_len > len )
+            buff_len = len;
+        memcpy( buff, msg, buff_len );
+        buff[buff_len]='\0';
     }
     return len;
 }
 
-void DIGCLIENT MADCliNotify( mad_notify_type nt, void *d )
+void DIGCLIENT MADCliNotify( mad_notify_type nt, const void *d )
 {
     if( StatHdl == NULL ){
         return;
@@ -113,22 +116,20 @@ unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
 }
 
 mad_status DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, char *buff, unsigned max )
+                            mad_label_kind lk, char *buff, unsigned buff_len )
 {
     mad_type_info       mti;
-    unsigned            mad_max;
     addr_ptr            item;
     mad_type_info       host;
 
-    mad_max = max;
     MADTypeInfo( th, &mti );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeConvert( &host, &a, &mti, &item, 0 );
-    MADTypeToString( 16, &mti, &item, buff, &mad_max );
+    MADTypeToString( 16, &mti, &item, buff, &buff_len );
     return( MS_OK );
 }
 
-mad_status DIGCLIENT MADCliMemExpr( char *start, unsigned len, unsigned radix, address *a )
+mad_status DIGCLIENT MADCliMemExpr( const char *start, unsigned len, unsigned radix, address *a )
 {
     //stub
     return( MS_OK );
