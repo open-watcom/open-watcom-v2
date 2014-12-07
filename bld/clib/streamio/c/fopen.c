@@ -239,7 +239,7 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
     _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
     _FP_EXTFLAGS(fp) = extflags;
 #endif
-#if defined( __NT__ ) || defined( __OS2__ )
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __UNIX__ )
     _FP_PIPEDATA(fp).isPipe = 0;        /* not a pipe */
 #endif
     _FP_BASE(fp) = NULL;

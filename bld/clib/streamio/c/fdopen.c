@@ -128,7 +128,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
         _FP_EXTFLAGS(fp) = extflags;
 #endif
-#if defined( __NT__ ) || defined( __OS2__ )
+#if defined( __NT__ ) || defined( __OS2__ ) || defined(__UNIX__)
         _FP_PIPEDATA(fp).isPipe = 0;    /* not a pipe */
 #endif
         fp->_handle = handle;               /* BJS 91-07-23 */
