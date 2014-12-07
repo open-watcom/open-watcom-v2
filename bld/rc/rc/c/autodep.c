@@ -79,7 +79,12 @@ bool AddDependency( char *fname )
         new = RCALLOC( sizeof( DepNode ) + len );
         new->next = *cur;
         new->info.len = len;
-        strcpy( new->info.name, name );
+
+        /*
+         * Avoid false buffer overflow positive with GCC
+         * and -DFORTIFY_SOURCE
+         */
+        memcpy( new->info.name, name, len + 1);
         *cur = new;
         RCFREE( name );
     }
