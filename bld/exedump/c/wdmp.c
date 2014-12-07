@@ -279,7 +279,8 @@ static int parse_options( int argc, char * const *argv )
     Hexoff = 0;
 
     for( ;; ) {
-        while( (c = getopt( argc, argv, ":aA:bB:dD:efipqrsS:x" )) != -1 ) {
+        while(optind < argc &&
+              (c = getopt( argc, argv, ":aA:bB:dD:efipqrsS:x" )) != -1 ) {
             switch( c ) {
             case 'A':
                 Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
