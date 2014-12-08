@@ -405,7 +405,7 @@ static void CentreButtons( int cols, int num_buttons, gui_control_info *controls
  */
 
 gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                      char *message, char *caption,
+                                      char *message, char *title,
                                       gui_message_type type )
 {
     int                 rows;
@@ -417,7 +417,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     int                 i;
     control_types       controls_to_use;
     int                 mess_length;
-    int                 capt_length;
+    int                 title_length;
     string_info         *strings;
     int                 num_buttons;
 
@@ -427,10 +427,10 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     } else {
         mess_length = 0;
     }
-    if( caption != NULL ) {
-        capt_length = strlen( caption );
+    if( title != NULL ) {
+        title_length = strlen( title );
     } else {
-        capt_length = 0;
+        title_length = 0;
     }
 
     /* figure out the number of icon and button controls and which ones */
@@ -455,7 +455,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
         return( GUI_RET_CANCEL );
     }
 
-    cols = capt_length + 2;
+    cols = title_length + 2;
 
     /* create GUI_STATIC controls, as many as required */
     if( num_string_controls > 0 ) {
@@ -481,7 +481,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     /* centre the buttons horizontally */
     CentreButtons( cols, num_buttons, controls_info, num_controls );
     ret = GUI_RET_CANCEL; /* default -- if escape hit */
-    GUIDlgOpen( caption, rows, cols, controls_info, num_controls, &DisplayMessage, &ret );
+    GUIDlgOpen( title, rows, cols, controls_info, num_controls, &DisplayMessage, &ret );
     for( i = 0; i < num_string_controls; i++ ) {
         GUIMemFree( strings[i].text );
     }

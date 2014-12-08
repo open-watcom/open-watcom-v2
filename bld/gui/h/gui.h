@@ -350,7 +350,7 @@ typedef bool (GUICALLBACK)( gui_window *, gui_event, void * );
 typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, unsigned id, void *param );
 typedef void (PICKCALLBACK)( gui_window *, unsigned id );
-typedef void (PICKDLGOPEN)( char *name, int rows, int cols,
+typedef void (PICKDLGOPEN)( char *title, int rows, int cols,
                              struct gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *rtn, void *extra );
 typedef const char *(PICKGETTEXT)( const void *data_handle, int item );
@@ -875,7 +875,7 @@ extern gui_ord GUIGetNumRows( gui_window *wnd );
 /* Built in user interactions */
 
 extern gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                             char *message, char *caption,
+                                             char *message, char *title,
                                              gui_message_type type );
 extern gui_message_return GUIGetNewVal( char *title, char *old, char **new_val );
 extern int GUIDlgPick( char *title, PICKCALLBACK *pickinit );

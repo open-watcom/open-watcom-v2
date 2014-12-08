@@ -59,7 +59,7 @@ static MessageTypes Types[] = {
  */
 
 gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                      char *message, char *caption,
+                                      char *message, char *title,
                                       gui_message_type type )
 {
     UINT                style;
@@ -69,7 +69,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     int                 i;
 
 
-    if( ( message == NULL ) || ( caption == NULL ) ) {
+    if( ( message == NULL ) || ( title == NULL ) ) {
         return( GUI_RET_ABORT );
     }
     style = 0;
@@ -88,7 +88,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
 
     ret_code = GUI_RET_ABORT;
 
-    ret = _wpi_messagebox( hwnd, (LPSTR) message, caption, style );
+    ret = _wpi_messagebox( hwnd, (LPSTR)message, title, style );
 
     switch( ret ) {
     case WPI_IDABORT :
