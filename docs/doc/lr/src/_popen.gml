@@ -86,7 +86,7 @@ mode.
 A stream opened by
 .id &func.
 should be closed by the
-.kw pclose
+.kw _pclose
 function.
 .desc end
 .return begin
@@ -122,7 +122,7 @@ and
 functions.
 .error end
 .see begin
-.seelist &function. _grow_handles _pclose perror _pipe _popen
+.seelist &function. _grow_handles _pclose perror _pipe
 .see end
 .exmp begin
 /*

@@ -42,7 +42,7 @@
     #define NUM_STD_STREAMS 3
 #endif
 
-#if defined(__NT__) || defined(__OS2__)
+#if defined(__NT__) || defined(__OS2__) || defined(__UNIX__)
     struct __pipe_info {
         int                 isPipe;     /* non-zero if it's a pipe */
         int                 pid;        /* PID of spawned process */
@@ -57,7 +57,7 @@ typedef struct __stream_link {
     int                     _extflags;      /* extended flags */
     unsigned char           _tmpfchar;      /* tmpfile number */
     unsigned char           _filler[sizeof(int)-1];/* explicit padding */
-#if defined(__NT__) || defined(__OS2__)
+#if defined(__NT__) || defined(__OS2__) || defined(__UNIX__)
     struct __pipe_info      pipeInfo;       /* pipe-related fields */
 #endif
 } __stream_link;
