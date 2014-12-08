@@ -66,7 +66,7 @@ extern void GUIControlDeleteAll( gui_window *wnd );
 extern void GUIChangeHWnd( HWND, HWND );
 extern gui_window *GUIGetParentWnd( HWND );
 extern bool GUIAddParent( HWND, gui_window * );
-WPI_PROC GUIDoSubClass( HWND, gui_control_class );
+extern WPI_PROC GUIDoSubClass( HWND, gui_control_class );
 extern bool GUIInsertCtrlWnd( gui_window *wnd );
 extern gui_window *GUIGetCtrlWnd( HWND hwnd );
 extern LONG GUISetControlStyle( gui_control_info *ctl_info );

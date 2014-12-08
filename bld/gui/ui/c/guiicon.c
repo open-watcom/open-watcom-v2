@@ -48,13 +48,10 @@ void GUIDrawIcon( gui_window * wnd )
     attr = wnd->colours[GUI_ICON];
     uivfill( &wnd->screen, area, attr, ' ' );
     uidrawbox( &wnd->screen, &area, attr, NULL );
-    str = NULL;
     if( wnd->icon_name != NULL ) {
         str = wnd->icon_name;
     } else {
-        if( wnd->screen.title != NULL ) {
-            str = wnd->screen.title;
-        }
+        str = wnd->screen.title;
     }
     if( str != NULL ) {
         length = strlen( str );

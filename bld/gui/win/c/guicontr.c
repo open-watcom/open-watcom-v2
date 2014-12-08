@@ -68,22 +68,22 @@ controls_struct GUIControls[GUI_NUM_CONTROL_CLASSES] = {
     { WC_MLE,           EDIT_MLE_STYLE,         GUIEditFunc      }  /* GUI_MLE            */
 };
 
-typedef struct dialog_node {
-    gui_window          *wnd;
-    struct dialog_node  *next;
-} dialog_node;
+typedef struct dialog_wnd_node {
+    gui_window              *wnd;
+    struct dialog_wnd_node  *next;
+} dialog_wnd_node;
 
-static  dialog_node     *DialogHead     = NULL;
+static dialog_wnd_node  *DialogHead = NULL;
 
 bool GUIInsertCtrlWnd( gui_window *wnd )
 {
-    dialog_node *dlg_node;
+    dialog_wnd_node     *dlg_wnd_node;
 
-    dlg_node = (dialog_node *)GUIMemAlloc( sizeof( dialog_node ) );
-    if( dlg_node != NULL ) {
-        dlg_node->wnd = wnd;
-        dlg_node->next = DialogHead;
-        DialogHead = dlg_node;
+    dlg_wnd_node = (dialog_wnd_node *)GUIMemAlloc( sizeof( dialog_wnd_node ) );
+    if( dlg_wnd_node != NULL ) {
+        dlg_wnd_node->wnd = wnd;
+        dlg_wnd_node->next = DialogHead;
+        DialogHead = dlg_wnd_node;
         return( true );
     }
     return( false );
@@ -91,29 +91,26 @@ bool GUIInsertCtrlWnd( gui_window *wnd )
 
 gui_window *GUIGetCtrlWnd( HWND hwnd )
 {
-    dialog_node **owner;
-    dialog_node *curr;
+    dialog_wnd_node    **owner;
+    dialog_wnd_node    *curr;
 
-    owner = &DialogHead;
-    while( *owner != NULL ) {
+    for( owner = &DialogHead; *owner != NULL; owner = &curr->next ) {
         curr = *owner;
         if( curr->wnd->hwnd == hwnd ) {
             return( curr->wnd );
         }
-        owner = &curr->next;
     }
     return( NULL );
 }
 
 static void GUIDeleteCtrlWnd( gui_window *wnd )
 {
-    dialog_node **owner;
-    dialog_node **prev_owner;
-    dialog_node *curr;
+    dialog_wnd_node    **owner;
+    dialog_wnd_node    **prev_owner;
+    dialog_wnd_node    *curr;
 
     prev_owner = NULL;
-    owner = &DialogHead;
-    while( *owner != NULL ) {
+    for( owner = &DialogHead; *owner != NULL; owner = &curr->next ) {
         curr = *owner;
         if( curr->wnd == wnd ) {
             if( prev_owner == NULL ) {
@@ -125,7 +122,6 @@ static void GUIDeleteCtrlWnd( gui_window *wnd )
             break;
         }
         prev_owner = owner;
-        owner = &curr->next;
     }
 }
 
@@ -777,7 +773,7 @@ bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
         if( control->control_class == GUI_EDIT ) {
             _wpi_sendmessage( hwnd, EM_LIMITTEXT, len, 0 );
 #ifdef __OS2_PM__
-        } else if( len > 0  &&  control->control_class == GUI_EDIT_MLE ) {
+        } else if( len > 0 && control->control_class == GUI_EDIT_MLE ) {
             _wpi_sendmessage( hwnd, MLM_SETTEXTLIMIT, len, 0 );
 #endif
         }
