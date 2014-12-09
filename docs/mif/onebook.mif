@@ -158,7 +158,8 @@ wgml_target=$(dotarget)
 # project configuration files
 #
 proj_objs= &
-    ../mif/depends.mif
+#    ../mif/onebook.mif
+#    ../mif/depends.mif
 #    ../mif/books.mif &
 #    ../mif/master.mif &
 #    ../builder.ctl &

@@ -1733,8 +1733,10 @@ objs_lr2 = &
 ../doc/lr/src/outp.gml &
 ../doc/lr/src/outpd.gml &
 ../doc/lr/src/outpw.gml &
+../doc/lr/src/pclose.gml &
 ../doc/lr/src/perror.gml &
 ../doc/lr/src/portdesc.gml &
+../doc/lr/src/popen.gml &
 ../doc/lr/src/pow.gml &
 ../doc/lr/src/printf.gml &
 ../doc/lr/src/printf_s.gml &
