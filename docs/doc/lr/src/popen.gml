@@ -84,7 +84,7 @@ values as described by the
 functions.
 .error end
 .see begin
-.seelist &function. pclose pipe execl
+.seelist &function. pclose pipe exec...
 .see end
 .exmp begin
 /*
