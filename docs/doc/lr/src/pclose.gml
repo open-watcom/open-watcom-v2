@@ -42,6 +42,6 @@ child process.
 .see begin
 .seelist &function. perror pipe popen
 .see end
-.seexmp _popen
+.seexmp popen
 .class POSIX 1003.1
 .system

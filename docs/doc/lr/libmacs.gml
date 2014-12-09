@@ -64,11 +64,11 @@
 .do end
 .dm fnw end
 .*
-.* DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232
-.* 1     2     4     8      16    32    64    128   256     512     1024
+.* DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32
+.* 1     2     4     8      16    32    64    128   256     512     1024  2048
 .*
 .* DOSPM NET32 MATH  MACRO
-.* 2048  4096  8192  16384
+.* 4096  8192  16384 32768
 .*
 .se __name()='DOS16'
 .se __name()='DOS32'
@@ -81,6 +81,7 @@
 .se __name()='OS216MT'
 .se __name()='OS216DL'
 .se __name()='OS232'
+.se __name()='LNX32'
 .se __name()='DOSPM'
 .se __name()='NET32'
 .se __name()='MATH'
@@ -102,6 +103,7 @@
 .se __bits()=4096
 .se __bits()=8192
 .se __bits()=16384
+.se __bits()=32768
 .*
 .dm sys begin
 .se *cnt=0
@@ -113,9 +115,9 @@
 .*  Everything except DOSPM and Netware is All
 .*  (i.e., add DOSPM to total to get new total = NET32-1)
 .*  If everything is included but not Netware and DOSPM, make it include DOSPM
-.* .if &*cnt. eq (4095-2048) .se *cnt=&*cnt.+2048
+.* .if &*cnt. eq (8191-4096) .se *cnt=&*cnt.+4096
 .*  If Netware is also included but not DOSPM, make it include DOSPM
-.* .if &*cnt. eq (4096+(4095-2048)) .se *cnt=&*cnt.+2048
+.* .if &*cnt. eq (8192+(8191-4096)) .se *cnt=&*cnt.+4096
 .  .se __sysl(&*fnd.)=&*cnt.
 .do end
 .dm sys end
@@ -124,21 +126,29 @@
 .se $$str=''
 .se *bits=&__sysl(&'vecpos(&*,fnclst))
 .if &*bits. ne 0 .do begin
-.  .if &*bits. ge 16384 .do begin
+.  .if &*bits. ge 32768 .do begin
 .  .  .se $$str=MACRO, &$$str
-.  .  .se *bits = &*bits. - 16384
+.  .  .se *bits = &*bits. - 32768
 .  .do end
 .*  Math functions are on All systems
-.  .if &*bits. ge 8192 .do begin
+.  .if &*bits. ge 16384 .do begin
 .  .  .se $$str=Math, &$$str
+.  .  .se *bits = &*bits. - 16384
+.  .do end
+.  .if &*bits. ge 8192 .do begin
+.  .  .se $$str=Netware, &$$str
 .  .  .se *bits = &*bits. - 8192
 .  .do end
 .  .if &*bits. ge 4096 .do begin
-.  .  .se $$str=Netware, &$$str
+.  .  .se $$str=DOS/PM, &$$str
 .  .  .se *bits = &*bits. - 4096
 .  .do end
+:cmt.  .if &*bits. ge 4095 .do begin
+:cmt.  .  .se $$str=All, &$$str
+:cmt.  .  .se *bits = &*bits. - 4095
+:cmt.  .do end
 .  .if &*bits. ge 2048 .do begin
-.  .  .se $$str=DOS/PM, &$$str
+.  .  .se $$str=Linux, &$$str
 .  .  .se *bits = &*bits. - 2048
 .  .do end
 .  .if &*bits. ge 2047 .do begin
@@ -166,15 +176,21 @@
 .  .  .se *bits = &*bits. - 128
 .  .do end
 .  .if &*bits. ge 64+32 .do begin
-.  .  .se $$str=QNX, &$$str
+.  .  .if '&machsys' eq 'QNX' .do begin
+.  .  .  .se $$str=QNX, &$$str
+.  .  .do end
 .  .  .se *bits = &*bits. - (64+32)
 .  .do end
 .  .if &*bits. ge 64 .do begin
-.  .  .se $$str=QNX/32, &$$str
+.  .  .if '&machsys' eq 'QNX' .do begin
+.  .  .  .se $$str=QNX/32, &$$str
+.  .  .do end
 .  .  .se *bits = &*bits. - 64
 .  .do end
 .  .if &*bits. ge 32 .do begin
-.  .  .se $$str=QNX/16, &$$str
+.  .  .if '&machsys' eq 'QNX' .do begin
+.  .  .  .se $$str=QNX/16, &$$str
+.  .  .do end
 .  .  .se *bits = &*bits. - 32
 .  .do end
 .  .if &*bits. ge 16 .do begin

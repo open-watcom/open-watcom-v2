@@ -1640,8 +1640,10 @@ The file &handle is passed to the other functions.
 .fd *fun="mount" mount a filesystem
 .fd *fun="open" open a file
 .fd *fun="_os_handle" get OS handle from POSIX handle
+.fd *fun="_pclose" close a pipe
 .fd *fun="pclose" close a pipe
 .fd *fun="pipe" create an inter-process channel
+.fd *fun="_popen" open a pipe
 .fd *fun="popen" open a pipe
 .fd *fun="read" read a record
 .fd *fun="readlink" read a symbolic link
