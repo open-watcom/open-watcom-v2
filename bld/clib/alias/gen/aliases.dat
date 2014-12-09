@@ -92,6 +92,8 @@ mbsnic          _mbsnicmp       _mbsnicoll      d16 d32 nt  nta ntp         o16 
 memicm          memicmp         _memicmp        d16 d32 nt  nta ntp         o16 o32         w16 w32     l32         rdu rdk
 mkdir_          mkdir           _mkdir          d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
 open__          open            _open           d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
+pclose          pclose          _pclose                                                                 l32 lpc lmp
+popen_          popen           _popen                                                                  l32 lpc lmp
 putenv          putenv          _putenv         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
 putws_          putws           _putws          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
 read__          read            _read           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
