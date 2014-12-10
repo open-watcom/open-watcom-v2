@@ -158,9 +158,15 @@ bld_libflags = crs $^@
 
 # standard settings
 ############################
+!ifdef __CLANG__
+cc   = clang -pipe -c
+cxx  = clang++ -pipe -c
+cl   = clang -pipe
+!else
 cc   = gcc -pipe -c
 cxx  = g++ -pipe -c
 cl   = gcc -pipe
+!endif
 
 librarian = ar
 
@@ -213,14 +219,7 @@ incl_file_opts = -include
 
 ##############################################################################
 #
-# definitions for BSD gcc native compiler
-#
-##############################################################################
-#
-# until freeBSD will be using gcc as system compiler
-# it is necessary to install uptodate gcc version and configure
-# following macros to appropriate values
-# now it is default for gcc 4.7.x
+# definitions for BSD native compiler
 #
 ##############################################################################
 
@@ -281,9 +280,9 @@ cl_libs = $(cl_libs_gen)
 # bld settings
 ############################
 !ifdef __GCC__
-bcc  = gcc47 -pipe -c
-bcxx = g++47 -pipe -c
-bcl  = gcc47 -pipe
+bcc  = gcc -pipe -c
+bcxx = g++ -pipe -c
+bcl  = gcc -pipe
 !else
 bcc  = clang -pipe -c
 bcxx = clang++ -pipe -c
@@ -317,9 +316,15 @@ bld_libflags = crs $^@
 
 # standard settings
 ############################
-cc   = gcc47 -pipe -c
-cxx  = g++47 -pipe -c
-cl   = gcc47 -pipe
+!ifdef __GCC__
+cc  = gcc -pipe -c
+cxx = g++ -pipe -c
+cl  = gcc -pipe
+!else
+cc  = clang -pipe -c
+cxx = clang++ -pipe -c
+cl  = clang -pipe
+!endif
 
 librarian = ar
 
