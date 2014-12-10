@@ -948,7 +948,7 @@
 .fnc _outtext                   gr_outtx.gml    DOS QNX W GRAPH
 .fnc pathconf                   pathconf.gml        QXO
 .fnc pause                      pause.gml           QXO
-.fnc pclose                     pclose.gml          QXO
+.fnc pclose                     pclose.gml      DOS QXO
 .fnc _pclose                    _pclose.gml     DOS       WIN32
 .fnc perror                     perror.gml      DOS QNX W WIN32
 .fnw _wperror                   perror.gml      DOS QNX W WIN32
@@ -982,7 +982,7 @@
 .fnc _polygon                   gr_polyg.gml    DOS QNX W GRAPH
 .fnc _polygon_w                 gr_polyg.gml    DOS QNX W GRAPH
 .fnc _polygon_wxy               gr_polyg.gml    DOS QNX W GRAPH
-.fnc popen                      popen.gml           QXO
+.fnc popen                      popen.gml       DOS QXO
 .fn7 _popen                     _popen.gml      DOS       WIN32
 .fnw _wpopen                    _popen.gml      DOS       WIN32
 .fnc pow                        pow.gml         DOS QNX W WIN32
