@@ -63,18 +63,11 @@ _WCRTLINK int __F_NAME(_vbprintf,_vbwprintf) ( CHAR_TYPE *s, size_t bufsize,
 {
     int                     len;
     struct buf_limit        bufinfo;
-    slib_callback_t         *tmp;
 
     bufinfo.bufptr  = s;
     bufinfo.bufsize = bufsize - 1;
     bufinfo.bufover = 0;
-#if defined( __386__ ) && defined( __QNX__ )
-    /* avoid some segment relocations for 32-bit QNX */
-    tmp = (void (*)())buf_putc;
-#else
-    tmp = buf_putc;
-#endif
-    len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, tmp );
+    len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, buf_putc );
     s[len] = '\0';
     return( len );
 }
@@ -97,18 +90,11 @@ _WCRTLINK int __F_NAME(_vsnprintf,_vsnwprintf) ( CHAR_TYPE *s, size_t bufsize,
 {
     int                     len;
     struct buf_limit        bufinfo;
-    slib_callback_t         *tmp;
 
     bufinfo.bufptr  = s;
     bufinfo.bufsize = bufsize;
     bufinfo.bufover = 0;
-#if defined( __386__ ) && defined( __QNX__ )
-    /* avoid some segment relocations for 32-bit QNX */
-    tmp = (void (*)())buf_putc;
-#else
-    tmp = buf_putc;
-#endif
-    len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, tmp );
+    len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, buf_putc );
     if( len < bufsize ) {
         s[len] = '\0';
     }

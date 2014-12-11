@@ -52,30 +52,15 @@ static void __SLIB_CALLBACK con_putc( SPECS __SLIB *specs, int op_char )
 
 _WCRTLINK int vcprintf( const char *format, va_list arg )
 {
-    slib_callback_t *tmp;
-
-#if defined( __386__ ) && defined( __QNX__ )
-    /* avoid some segment relocations for 32-bit QNX */
-    tmp = (void (*)())con_putc;
-#else
-    tmp = con_putc;
-#endif
-    return( __prtf( NULL, format, arg, tmp ) );
+    return( __prtf( NULL, format, arg, con_putc ) );
 }
 
 
 _WCRTLINK int cprintf( const char *format, ... )
 {
     auto va_list    args;
-    slib_callback_t *tmp;
 
     va_start( args, format );
-#if defined( __386__ ) && defined( __QNX__ )
-    /* avoid some segment relocations for 32-bit QNX */
-    tmp = (void (*)())con_putc;
-#else
-    tmp = con_putc;
-#endif
-    return( __prtf( NULL, format, args, tmp ) );
+    return( __prtf( NULL, format, args, con_putc ) );
 }
 

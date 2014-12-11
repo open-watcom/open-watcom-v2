@@ -76,20 +76,13 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, int op_char )
 #ifdef __WIDECHAR__
 _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list arg )
 {
-    slib_callback_t         *tmp;
     auto struct vswprtf_buf info;
 
-  #if defined( __386__ ) && defined( __QNX__ )
-    /* avoid some segment relocations for 32-bit QNX */
-    tmp = (void (*)())mem_putc;
-  #else
-    tmp = mem_putc;
-  #endif
     if( n != 0 ) {
         info.bufptr = dest;
         info.chars_output = 0;
         info.max_chars = n - 1;
-        __wprtf( &info, format, arg, tmp );
+        __wprtf( &info, format, arg, mem_putc );
         dest[info.chars_output] = NULLCHAR;
     }
     return( info.chars_output );
@@ -98,28 +91,21 @@ _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_
 
 _WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, va_list arg )
 {
-    slib_callback_t         *tmp;
 #ifndef __WIDECHAR__
     register int            len;
 #else
     auto struct vswprtf_buf info;
 #endif
 
-#if defined( __386__ ) && defined( __QNX__ )
-    /* avoid some segment relocations for 32-bit QNX */
-    tmp = (void (*)())mem_putc;
-#else
-    tmp = mem_putc;
-#endif
 #ifdef __WIDECHAR__
     info.bufptr = dest;
     info.chars_output = 0;
     info.max_chars = INT_MAX;
-    __wprtf( &info, format, arg, tmp );
+    __wprtf( &info, format, arg, mem_putc );
     dest[info.chars_output] = NULLCHAR;
     return( info.chars_output );
 #else
-    len = __prtf( dest, format, arg, tmp );
+    len = __prtf( dest, format, arg, mem_putc );
     dest[len] = NULLCHAR;
     return( len );
 #endif

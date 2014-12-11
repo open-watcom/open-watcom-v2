@@ -58,7 +58,6 @@ int __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list arg )
     int             not_buffered;
     int             amount_written;
     unsigned        oflag;
-    slib_callback_t *tmp;
 
     _ValidFile( fp, 0 );
     _AccessFile( fp );
@@ -78,13 +77,7 @@ int __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list arg )
         fp->_flag &= ~_IONBF;
         fp->_flag |= _IOFBF;
     }
-#if defined( __386__ ) && defined( __QNX__ )
-    /* avoid some segment relocations for 32-bit QNX */
-    tmp = (void (*)())file_putc;
-#else
-    tmp = file_putc;
-#endif
-    amount_written = __F_NAME(__prtf,__wprtf)( fp, format, arg, tmp );
+    amount_written = __F_NAME(__prtf,__wprtf)( fp, format, arg, file_putc );
     if( not_buffered ) {
         fp->_flag &= ~_IOFBF;
         fp->_flag |= _IONBF;
