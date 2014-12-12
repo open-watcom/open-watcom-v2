@@ -64,11 +64,11 @@
 .do end
 .dm fnw end
 .*
-.* DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32
-.* 1     2     4     8      16    32    64    128   256     512     1024  2048
+.* DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS
+.* 1     2     4     8      16    32    64    128   256     512     1024  2048  4096
 .*
 .* DOSPM NET32 MATH  MACRO
-.* 4096  8192  16384 32768
+.* 8192  16384  32768 65536
 .*
 .se __name()='DOS16'
 .se __name()='DOS32'
@@ -82,6 +82,7 @@
 .se __name()='OS216DL'
 .se __name()='OS232'
 .se __name()='LNX32'
+.se __name()='RDOS'
 .se __name()='DOSPM'
 .se __name()='NET32'
 .se __name()='MATH'
@@ -104,6 +105,7 @@
 .se __bits()=8192
 .se __bits()=16384
 .se __bits()=32768
+.se __bits()=65536
 .*
 .dm sys begin
 .se *cnt=0
@@ -126,27 +128,31 @@
 .se $$str=''
 .se *bits=&__sysl(&'vecpos(&*,fnclst))
 .if &*bits. ne 0 .do begin
-.  .if &*bits. ge 32768 .do begin
+.  .if &*bits. ge 65536 .do begin
 .  .  .se $$str=MACRO, &$$str
-.  .  .se *bits = &*bits. - 32768
+.  .  .se *bits = &*bits. - 65536
 .  .do end
 .*  Math functions are on All systems
-.  .if &*bits. ge 16384 .do begin
+.  .if &*bits. ge 32768 .do begin
 .  .  .se $$str=Math, &$$str
+.  .  .se *bits = &*bits. - 32768
+.  .do end
+.  .if &*bits. ge 16384 .do begin
+.  .  .se $$str=Netware, &$$str
 .  .  .se *bits = &*bits. - 16384
 .  .do end
 .  .if &*bits. ge 8192 .do begin
-.  .  .se $$str=Netware, &$$str
+.  .  .se $$str=DOS/PM, &$$str
 .  .  .se *bits = &*bits. - 8192
 .  .do end
+:cmt.  .if &*bits. ge 8191 .do begin
+:cmt.  .  .se $$str=All, &$$str
+:cmt.  .  .se *bits = &*bits. - 8191
+:cmt.  .do end
 .  .if &*bits. ge 4096 .do begin
-.  .  .se $$str=DOS/PM, &$$str
+.  .  .se $$str=RDOS, &$$str
 .  .  .se *bits = &*bits. - 4096
 .  .do end
-:cmt.  .if &*bits. ge 4095 .do begin
-:cmt.  .  .se $$str=All, &$$str
-:cmt.  .  .se *bits = &*bits. - 4095
-:cmt.  .do end
 .  .if &*bits. ge 2048 .do begin
 .  .  .se $$str=Linux, &$$str
 .  .  .se *bits = &*bits. - 2048

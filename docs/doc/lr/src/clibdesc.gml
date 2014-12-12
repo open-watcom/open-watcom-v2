@@ -183,7 +183,7 @@ The following notation is used:
 .begpoint $break $setptnt 12
 .point All
 This function is available on all systems
-(we do not include Netware or DOS/PM in this category).
+(we do not include RDOS, Linux, Netware or DOS/PM in this category).
 .point DOS
 This function is available on both 16-bit DOS and 32-bit extended DOS.
 .point DOS/16
@@ -195,6 +195,9 @@ This 16-bit DOS protected-mode function is supported under Phar Lap's
 286|DOS-Extender "RUN286".
 The function is found in one of &company's 16-bit protected-mode DOS
 libraries (DOSPM*.LIB under the 16-bit OS2 subdirectory).
+.point Linux
+This function is available on the Linux operating system for Intel 80386
+and upwards compatible systems.
 .point MACRO
 This function is implemented as a macro (#define) on all systems.
 .point Math
@@ -224,6 +227,8 @@ Phar Lap's 286|DOS-Extender (RUN286).
 .point OS/2-32
 This function is available on 32-bit IBM OS/2, a protected-mode
 system for Intel 80386 and upwards compatible systems.
+.point RDOS
+This function is available on RDOS operating system.
 .point QNX
 This function is available on QNX Software Systems' 16 or 32-bit
 operating systems.
