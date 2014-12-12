@@ -44,7 +44,7 @@ GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
 !else ifeq bld_os linux
 
 !ifdef %OWDOSBOX
-WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_wgml_batch)" -noconsole
+WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
 GENDEVCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
 # only DOSBOX use upper cased file name
