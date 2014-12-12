@@ -1,3 +1,4 @@
+_usnprin.obj : ../../../c/_usnprin.c ../../../c/_snprint.c
 ubprintf.obj : ../../../c/ubprintf.c ../../../c/bprintf.c
 urstrcat.obj : ../../../c/urstrcat.c ../../../c/rstrcat.c
 urstrchr.obj : ../../../c/urstrchr.c ../../../c/rstrchr.c
@@ -17,6 +18,7 @@ urstrrch.obj : ../../../c/urstrrch.c ../../../c/rstrrchr.c
 urstrset.obj : ../../../c/urstrset.c ../../../c/rstrset.c
 urstrstr.obj : ../../../c/urstrstr.c ../../../c/rstrstr.c
 urstrupr.obj : ../../../c/urstrupr.c ../../../c/rstrupr.c
+usnprint.obj : ../../../c/usnprint.c ../../../c/snprintf.c
 usprintf.obj : ../../../c/usprintf.c ../../../c/sprintf.c
 usscanf.obj  : ../../../c/usscanf.c  ../../../c/sscanf.c
 ustrcat.obj  : ../../../c/ustrcat.c  ../../../c/strcat.c

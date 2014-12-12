@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _bprintf().
+* Description:  Implementation of _snprintf().
 *
 ****************************************************************************/
 
@@ -58,25 +58,35 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, int op_char )
     }
 }
 
-_WCRTLINK int __F_NAME(_vbprintf,_vbwprintf) ( CHAR_TYPE *s, size_t bufsize,
+// Notes:
+//  _vsnprintf, _vsnwprintf must return an error (-1) when buffer too small
+//  If a NULL character can fit, append it. If not, no error.
+
+_WCRTLINK int __F_NAME(_vsnprintf,_vsnwprintf)( CHAR_TYPE *s, size_t bufsize,
         const CHAR_TYPE *format, va_list arg)
 {
     int                     len;
     struct buf_limit        bufinfo;
 
     bufinfo.bufptr  = s;
-    bufinfo.bufsize = bufsize - 1;
+    bufinfo.bufsize = bufsize;
     bufinfo.bufover = 0;
     len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, buf_putc );
-    s[len] = '\0';
-    return( len );
+    if( len < bufsize ) {
+        s[len] = '\0';
+    }
+    if( bufinfo.bufover == 0 ) {
+        return( len );
+    } else {
+        return( -1 );
+    }
 }
 
-_WCRTLINK int __F_NAME(_bprintf,_bwprintf) ( CHAR_TYPE *dest, size_t bufsize,
+_WCRTLINK int __F_NAME(_snprintf,_snwprintf) ( CHAR_TYPE *dest, size_t bufsize,
             const CHAR_TYPE *format, ... )
 {
     va_list     args;
 
     va_start( args, format );
-    return( __F_NAME(_vbprintf,_vbwprintf)( dest, bufsize, format, args ) );
+    return( __F_NAME(_vsnprintf,_vsnwprintf)( dest, bufsize, format, args ) );
 }
