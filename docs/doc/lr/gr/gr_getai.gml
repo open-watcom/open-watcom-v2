@@ -42,7 +42,7 @@ The
 If the previous arc or pie was not successfully drawn, zero is returned.
 .return end
 .see begin
-.seelist &function. _arc _pie
+.seelist _arc _pie
 .see end
 .grexam begin eg_getai.&langsuff
 .grexam output

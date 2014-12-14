@@ -63,7 +63,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist &function. jstrnset jstrset strnset strset
+.seelist jstrnset jstrset strnset strset
 .see end
 .exmp begin
 #include <stdio.h>

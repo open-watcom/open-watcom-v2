@@ -79,7 +79,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist &function. strnset strset
+.seelist strnset strset
 .see end
 .exmp begin
 #include <stdio.h>

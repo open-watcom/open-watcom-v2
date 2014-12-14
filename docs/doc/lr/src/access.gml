@@ -94,7 +94,7 @@ Path or file not found.
 .endterm
 .error end
 .see begin
-.seelist access chmod fstat open sopen stat
+.seelist chmod fstat open sopen stat
 .see end
 .exmp begin
 #include <stdio.h>

@@ -27,7 +27,7 @@ Otherwise, it returns a nonzero value.
 .return end
 .*
 .see begin
-.seelist &function. fegetenv feholdexcept feupdateenv
+.seelist fegetenv feholdexcept feupdateenv
 .see end
 .*
 .exmp begin

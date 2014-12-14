@@ -28,7 +28,7 @@ a finite value.
 .*
 .see begin
 .im seefpcls isfinite
-.seelist &function. _finite
+.seelist _finite
 .see end
 .*
 .exmp begin

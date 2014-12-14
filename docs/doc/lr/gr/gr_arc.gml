@@ -67,7 +67,7 @@ the point at the end of the arc that was drawn.
 .im gr_retdr arc
 .return end
 .see begin
-.seelist &function. _ellipse _pie _rectangle _getarcinfo _setcolor _setlinestyle _setplotaction
+.seelist _ellipse _pie _rectangle _getarcinfo _setcolor _setlinestyle _setplotaction
 .see end
 .grexam begin eg_arc.&langsuff
 .grexam output

@@ -81,7 +81,7 @@ The buffer passed was too small.
 .endterm
 .error end
 .see begin
-.seelist _fullpath _makepath _splitpath
+.seelist _makepath _splitpath
 .see end
 .exmp begin
 #include <stdio.h>

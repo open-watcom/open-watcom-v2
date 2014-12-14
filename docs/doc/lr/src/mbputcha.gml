@@ -24,7 +24,7 @@ function returns a pointer to the next location in which to
 store a character.
 .return end
 .see begin
-.seelist &function. _mbsnccnt _mbgetcode _mbputchar
+.seelist _mbsnccnt _mbgetcode _mbputchar
 .see end
 .exmp begin
 #include <stdio.h>

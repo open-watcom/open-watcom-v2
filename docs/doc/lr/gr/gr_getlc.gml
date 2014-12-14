@@ -64,7 +64,7 @@ structure,
 of the given point.
 .return end
 .see begin
-.seelist &function. _getphyscoord _setvieworg _setviewport _setwindow
+.seelist _getphyscoord _setvieworg _setviewport _setwindow
 .see end
 .grexam begin eg_getlc.&langsuff
 .grexam end

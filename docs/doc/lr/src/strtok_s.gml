@@ -133,7 +133,7 @@ pointer if there is no token or there is a runtime-constraint violation.
 .return end
 .*
 .see begin
-.seelist &function. strtok strcspn strpbrk
+.seelist strtok strcspn strpbrk
 .see end
 .*
 .exmp begin

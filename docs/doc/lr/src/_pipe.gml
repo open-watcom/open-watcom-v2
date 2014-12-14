@@ -87,7 +87,7 @@ The pipe pathname space is a read-only filesystem.
 .endterm
 .error end
 .see begin
-.seelist &function. fcntl open _pclose perror _pipe _popen read write
+.seelist fcntl open _pclose perror _pipe _popen read write
 .see end
 .exmp begin
 #include <stdio.h>

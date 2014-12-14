@@ -20,7 +20,7 @@ is returned; otherwise the address of
 is returned.
 .return end
 .see begin
-.seelist _cmdname getcmd
+.seelist getcmd
 .see end
 .exmp begin
 #include <stdio.h>

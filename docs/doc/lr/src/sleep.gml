@@ -58,7 +58,7 @@ No timer resources available to satisfy the request.
 .error end
 .do end
 .see begin
-.seelist &function. alarm delay timer_create timer_gettime timer_settime
+.seelist alarm delay timer_create timer_gettime timer_settime
 .see end
 .exmp begin
 /*

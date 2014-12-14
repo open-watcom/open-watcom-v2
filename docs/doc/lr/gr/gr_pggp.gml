@@ -38,7 +38,7 @@ The
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin
-.seelist &function. _pg_defaultchart _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter _pg_setpalette _pg_resetpalette
+.seelist _pg_defaultchart _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter _pg_setpalette _pg_resetpalette
 .see end
 .grexam begin eg_pggp.&langsuff
 .grexam end

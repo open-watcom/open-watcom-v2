@@ -181,7 +181,7 @@ and
 functions do not return to the caller.
 .return end
 .see begin
-.seelist _harderr _chain_intr _dos_getvect _dos_setvect
+.seelist _chain_intr _dos_getvect _dos_setvect
 .see end
 .exmp begin
 #include <stdio.h>

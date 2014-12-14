@@ -35,7 +35,7 @@ The
 .ct .li .
 .return end
 .see begin
-.seelist &function. _gettextcursor _settextcursor
+.seelist _gettextcursor _settextcursor
 .see end
 .grexam begin eg_disp.&langsuff
 .grexam end

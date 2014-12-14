@@ -118,8 +118,8 @@ is not a directory.
 .endterm
 .error end
 .see begin
-.seelist &function. chdir chmod _dos_setdrive getcwd mkdir
-.seelist &function. mknod rmdir stat umask
+.seelist chdir chmod _dos_setdrive getcwd mkdir
+.seelist mknod rmdir stat umask
 .see end
 .exmp begin
 #include <stdio.h>

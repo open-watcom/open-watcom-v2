@@ -21,9 +21,9 @@ successful.
 Otherwise, it returns -1.
 .return end
 .see begin
-.seelist &function. close _dos_open fdopen fopen freopen _fsopen
-.seelist &function. _grow_handles _hdopen open _open_osfhandle
-.seelist &function. _os_handle _popen sopen
+.seelist close _dos_open fdopen fopen freopen _fsopen
+.seelist _grow_handles _hdopen open _open_osfhandle
+.seelist _os_handle _popen sopen
 .see end
 .exmp begin
 #include <stdio.h>

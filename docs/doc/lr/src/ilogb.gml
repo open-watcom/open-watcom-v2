@@ -20,7 +20,7 @@ function returns FP_ILOGBNAN.  For positive or negative
 infinity, the function returns INT_MAX.
 .return end
 .see begin
-.seelist &function. logb
+.seelist logb
 .see end
 .exmp begin
 #include <stdio.h>

@@ -38,7 +38,7 @@ The
 rows is set successfully; otherwise, zero is returned.
 .return end
 .see begin
-.seelist &function. _getvideoconfig _setvideomode _setvideomoderows
+.seelist _getvideoconfig _setvideomode _setvideomoderows
 .see end
 .grexam begin eg_settr.&langsuff
 .grexam end

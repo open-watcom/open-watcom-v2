@@ -21,7 +21,7 @@ negative one respectively.  For not-a-number the function returns
 NAN.
 .return end
 .see begin
-.seelist &function. erfc
+.seelist erfc
 .see end
 .exmp begin
 #include <stdio.h>

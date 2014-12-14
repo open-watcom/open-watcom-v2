@@ -37,7 +37,7 @@ The
 and zero otherwise.
 .return end
 .see begin
-.seelist &function. _remappalette _getvideoconfig
+.seelist _remappalette _getvideoconfig
 .see end
 .grexam begin eg_mappa.&langsuff
 .grexam end

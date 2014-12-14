@@ -41,7 +41,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _setcliprgn _setvieworg _settextwindow _setwindow
+.seelist _setcliprgn _setvieworg _settextwindow _setwindow
 .see end
 .grexam begin eg_setvp.&langsuff
 .grexam end

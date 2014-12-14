@@ -26,7 +26,7 @@ function returns zero if the registration succeeds,
 non-zero if it fails.
 .return end
 .see begin
-.seelist atexit abort _exit exit
+.seelist abort _exit exit
 .see end
 .exmp begin
 #include <stdio.h>

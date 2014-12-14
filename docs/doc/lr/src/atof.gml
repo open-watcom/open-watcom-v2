@@ -42,7 +42,7 @@ function returns the converted value.
 .im errnocnv
 .return end
 .see begin
-.seelist atof sscanf strtod
+.seelist sscanf strtod
 .see end
 .exmp begin
 #include <stdlib.h>

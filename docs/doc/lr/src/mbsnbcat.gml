@@ -52,8 +52,8 @@ function returns the value of
 .ct .li .
 .return end
 .see begin
-.seelist &function. _mbsnbcat _mbsnbcmp _mbsnbcpy _mbsnbicnp _mbsnbset
-.seelist &function. _mbsnccnt strncat strcat
+.seelist _mbsnbcat _mbsnbcmp _mbsnbcpy _mbsnbicnp _mbsnbset
+.seelist _mbsnccnt strncat strcat
 .see end
 .exmp begin
 #include <stdio.h>

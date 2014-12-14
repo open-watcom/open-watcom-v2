@@ -492,10 +492,10 @@ Prototype in
 .dm see end
 .*
 .dm seelist begin
-.se *i=2
-.se *j=3
-.pe &*0.-1
-.   .seekw &*1 &*&*i. &*&*j.;.se *i=&*i.+1;.se *j=&*i.+1
+.se *i=1
+.se *j=2
+.pe &*0.
+.   .seekw '&function.' &*&*i. &*&*j.;.se *i=&*i.+1;.se *j=&*i.+1
 .dm seelist end
 .*
 .dm seekw begin

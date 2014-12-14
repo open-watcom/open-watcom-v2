@@ -60,7 +60,7 @@ occurs in
 .ct .li .
 .return end
 .see begin
-.seelist &function. strchr strpbrk strrchr strtok
+.seelist strchr strpbrk strrchr strtok
 .see end
 .exmp begin
 #include <stdio.h>

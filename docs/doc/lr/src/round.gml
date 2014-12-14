@@ -18,7 +18,7 @@ The rounded value of
 .ct .li .
 .return end
 .see begin
-.seelist &function. nearbyint rint trunc
+.seelist nearbyint rint trunc
 .see end
 .exmp begin
 #include <stdio.h>

@@ -35,7 +35,7 @@ function does not return to its caller.
 .return end
 .*
 .see begin
-.seelist abort_handler_s ignore_handler_s set_constraint_handler_s
+.seelist ignore_handler_s set_constraint_handler_s
 .see end
 .*
 .exmp begin

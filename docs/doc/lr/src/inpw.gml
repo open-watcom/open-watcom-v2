@@ -18,7 +18,7 @@ port whose number is given by
 The value returned is the word that was read.
 .return end
 .see begin
-.seelist &function. inp inpd inpw outp outpd outpw
+.seelist inp inpd inpw outp outpd outpw
 .see end
 .exmp begin
 #include <conio.h>

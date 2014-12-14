@@ -22,10 +22,10 @@ function returns 0 if successful and -1 if an error occurred.
 .return end
 .see begin
 .if &e'&dohelp eq 0 .do begin
-.seelist _bfreeseg _bcalloc _bexpand _bfree _bheapseg _bmalloc _brealloc
+.seelist _bcalloc _bexpand _bfree _bheapseg _bmalloc _brealloc
 .do end
 .el .do begin
-.seelist _bfreeseg _bheapseg calloc _expand free malloc realloc
+.seelist _bheapseg calloc _expand free malloc realloc
 .do end
 .see end
 .exmp begin

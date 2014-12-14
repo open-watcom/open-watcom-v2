@@ -44,8 +44,8 @@ is a legitimate value to read from
 to verify that an error has occurred.
 .return end
 .see begin
-.seelist &function. ferror fgetc fgetchar fgets fopen
-.seelist &function. getc getchar gets _putw ungetc
+.seelist ferror fgetc fgetchar fgets fopen
+.seelist getc getchar gets _putw ungetc
 .see end
 .exmp begin
 #include <stdio.h>

@@ -69,7 +69,7 @@ syntax; it is used only to indicate a variable number of arguments.
 The &func function returns zero if it succeeds; and non-zero if it fails.
 .return end
 .see begin
-.seelist &function. GetProc16
+.seelist GetProc16
 .see end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exmp begin

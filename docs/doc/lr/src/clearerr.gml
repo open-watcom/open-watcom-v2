@@ -25,7 +25,7 @@ The
 function returns no value.
 .return end
 .see begin
-.seelist &function. clearerr feof ferror perror strerror
+.seelist clearerr feof ferror perror strerror
 .see end
 .exmp begin
 #include <stdio.h>

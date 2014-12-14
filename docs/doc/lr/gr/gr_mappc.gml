@@ -66,7 +66,7 @@ The
 if the palette is remapped successfully; otherwise, (-1) is returned.
 .return end
 .see begin
-.seelist &function. _remapallpalette _setvideomode
+.seelist _remapallpalette _setvideomode
 .see end
 .grexam begin eg_mappc.&langsuff
 .grexam end

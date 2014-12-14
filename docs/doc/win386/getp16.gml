@@ -209,7 +209,7 @@ declared as
 .ct .li .
 .return end
 .see begin
-.seelist &function. ReleaseProc16
+.seelist ReleaseProc16
 .see end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .keep 20

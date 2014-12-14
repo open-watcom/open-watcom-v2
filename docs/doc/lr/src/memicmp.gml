@@ -51,7 +51,7 @@ is less than, equal to, or greater than the object pointed to by
 .ct .li .
 .return end
 .see begin
-.seelist &function. memchr memcmp memcpy memicmp memset
+.seelist memchr memcmp memcpy memicmp memset
 .see end
 .exmp begin
 #include <stdio.h>

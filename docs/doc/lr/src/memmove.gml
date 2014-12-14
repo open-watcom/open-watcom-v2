@@ -62,7 +62,7 @@ function returns
 .return end
 .*
 .see begin
-.seelist &function. memchr memcmp memcpy memicmp memmove memset memmove_s memcpy_s
+.seelist memchr memcmp memcpy memicmp memmove memset memmove_s memcpy_s
 .see end
 .*
 .exmp begin

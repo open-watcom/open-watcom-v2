@@ -49,7 +49,7 @@ function returns the pointer
 .ct .li .
 .return end
 .see begin
-.seelist &function. memchr memcmp memcpy memicmp memmove memset
+.seelist memchr memcmp memcpy memicmp memmove memset
 .see end
 .exmp begin
 #include <string.h>

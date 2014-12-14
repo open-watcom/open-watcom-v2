@@ -82,7 +82,7 @@ exceeds the number of characters remaining in the string, the result is
 undefined.
 .return end
 .see begin
-.seelist &function. _strdec _strinc _strninc
+.seelist _strdec _strinc _strninc
 .see end
 .exmp begin
 #ninclude <stdio.h>

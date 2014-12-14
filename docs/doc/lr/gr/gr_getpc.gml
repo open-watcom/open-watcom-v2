@@ -30,7 +30,7 @@ structure,
 of the given point.
 .return end
 .see begin
-.seelist &function. _getviewcoord _setvieworg _setviewport
+.seelist _getviewcoord _setvieworg _setviewport
 .see end
 .grexam begin eg_getpc.&langsuff
 .grexam end

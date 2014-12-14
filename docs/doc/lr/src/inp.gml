@@ -18,7 +18,7 @@ number is given by
 The value returned is the byte that was read.
 .return end
 .see begin
-.seelist &function. inp inpd inpw outp outpd outpw
+.seelist inp inpd inpw outp outpd outpw
 .see end
 .exmp begin
 #include <conio.h>

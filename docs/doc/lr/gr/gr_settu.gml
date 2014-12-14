@@ -50,7 +50,7 @@ The
 is set successfully; otherwise, (-1) is returned.
 .return end
 .see begin
-.seelist &function. _gettextcursor _displaycursor
+.seelist _gettextcursor _displaycursor
 .see end
 .grexam begin eg_gettu.&langsuff
 .grexam end

@@ -33,7 +33,7 @@ The
 current color.
 .return end
 .see begin
-.seelist &function. _getcolor _settextcolor
+.seelist _getcolor _settextcolor
 .see end
 .grexam begin eg_getc.&langsuff
 .grexam end

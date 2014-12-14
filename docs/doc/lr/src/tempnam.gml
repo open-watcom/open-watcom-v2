@@ -95,7 +95,7 @@ exists,
 returns NULL.
 .return end
 .see begin
-.seelist &function. fopen freopen mkstemp _mktemp _tempnam tmpfile tmpnam
+.seelist fopen freopen mkstemp _mktemp _tempnam tmpfile tmpnam
 .see end
 .exmp begin
 #include <stdio.h>

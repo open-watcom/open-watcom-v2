@@ -60,7 +60,7 @@ the value of
 .ct .li .
 .return end
 .see begin
-.seelist &function. jstrcat jstrncat strcat strncat
+.seelist jstrcat jstrncat strcat strncat
 .see end
 .exmp begin
 #include <stdio.h>

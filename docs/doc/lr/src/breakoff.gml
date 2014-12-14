@@ -25,7 +25,7 @@ and
 functions to not return anything.
 .return end
 .see begin
-.seelist break_off signal
+.seelist signal
 .see end
 .exmp begin
 #include <stdio.h>

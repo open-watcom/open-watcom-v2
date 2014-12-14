@@ -51,7 +51,7 @@ The
 position for graphics.
 .return end
 .see begin
-.seelist &function. _moveto _settextposition
+.seelist _moveto _settextposition
 .see end
 .grexam begin eg_getcp.&langsuff
 .grexam end

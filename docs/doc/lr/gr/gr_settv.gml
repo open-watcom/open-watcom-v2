@@ -29,7 +29,7 @@ The
 structure, the previous value of the text orientation vector.
 .return end
 .see begin
-.seelist &function. _registerfonts _unregisterfonts _setfont _getfontinfo _outgtext _getgtextextent _getgtextvector
+.seelist _registerfonts _unregisterfonts _setfont _getfontinfo _outgtext _getgtextextent _getgtextvector
 .see end
 .grexam begin eg_gettv.&langsuff
 .grexam end

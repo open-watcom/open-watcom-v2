@@ -39,7 +39,7 @@ Otherwise, it returns an OS error code and sets
 accordingly.
 .return end
 .see begin
-.seelist _dos_allocmem alloca calloc _dos_freemem _dos_setblock halloc malloc
+.seelist alloca calloc _dos_freemem _dos_setblock halloc malloc
 .see end
 .exmp begin
 #include <stdio.h>

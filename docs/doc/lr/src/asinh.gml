@@ -19,7 +19,7 @@ The
 function returns the inverse hyperbolic sine value.
 .return end
 .see begin
-.seelist asinh acosh atanh sinh matherr
+.seelist acosh atanh sinh matherr
 .see end
 .exmp begin
 #include <stdio.h>

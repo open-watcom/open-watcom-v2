@@ -36,7 +36,7 @@ structure, the physical coordinates of
 the previous origin.
 .return end
 .see begin
-.seelist &function. _getviewcoord _getphyscoord _setcliprgn _setviewport
+.seelist _getviewcoord _getphyscoord _setcliprgn _setviewport
 .see end
 .grexam begin eg_setlg.&langsuff
 .grexam end

@@ -76,7 +76,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _getimage _imagesize
+.seelist _getimage _imagesize
 .see end
 .grexam begin eg_getim.&langsuff
 .grexam end

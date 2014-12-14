@@ -26,7 +26,7 @@ The
 &routine returns the pixel value of the current text color.
 .return end
 .see begin
-.seelist &function. _settextcolor _setcolor _outtext _outmem
+.seelist _settextcolor _setcolor _outtext _outmem
 .see end
 .grexam begin eg_gettc.&langsuff
 .grexam end

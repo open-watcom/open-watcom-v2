@@ -64,7 +64,7 @@ is not an uppercase letter.
 .return end
 .see begin
 .im seeis &function.
-.seelist &function. strlwr strupr tolower toupper
+.seelist strlwr strupr tolower toupper
 .see end
 .exmp begin
 #include <stdio.h>

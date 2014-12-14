@@ -73,7 +73,7 @@ and
 .im gr_retdr figure
 .return end
 .see begin
-.seelist &function. _arc _ellipse _setcolor _setfillmask _setlinestyle _setplotaction
+.seelist _arc _ellipse _setcolor _setfillmask _setlinestyle _setplotaction
 .see end
 .grexam begin eg_pie.&langsuff
 .grexam output

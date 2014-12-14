@@ -228,7 +228,7 @@ if the argument is invalid or the stack size is incorrect, or to
 if there is not enough available memory.
 .return end
 .see begin
-.seelist &function. _beginthread _endthread
+.seelist _beginthread _endthread
 .see end
 .cp 15
 .exmp begin

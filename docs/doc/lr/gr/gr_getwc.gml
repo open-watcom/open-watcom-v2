@@ -28,7 +28,7 @@ structure,
 of the given point.
 .return end
 .see begin
-.seelist &function. _setwindow _getviewcoord
+.seelist _setwindow _getviewcoord
 .see end
 .grexam begin eg_getwc.&langsuff
 .grexam end

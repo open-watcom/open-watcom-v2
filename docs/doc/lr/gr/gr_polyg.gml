@@ -57,7 +57,7 @@ points whose coordinates are given in the array
 .im gr_retdr polygon
 .return end
 .see begin
-.seelist &function. _setcolor _setfillmask _setlinestyle _setplotaction
+.seelist _setcolor _setfillmask _setlinestyle _setplotaction
 .see end
 .grexam begin eg_polyg.&langsuff
 .grexam output

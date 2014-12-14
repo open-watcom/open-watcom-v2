@@ -65,7 +65,7 @@ returns
 .im errnoref
 .return end
 .see begin
-.seelist &function. fopen fputc fputchar fputs putc putchar puts ferror
+.seelist fopen fputc fputchar fputs putc putchar puts ferror
 .see end
 .exmp begin
 #include <stdio.h>

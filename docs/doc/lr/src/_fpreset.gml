@@ -25,7 +25,7 @@ No value is returned.
 .return end
 .*
 .see begin
-.seelist &function. _clear87 _control87 _controlfp _finite _fpreset _status87
+.seelist _clear87 _control87 _controlfp _finite _fpreset _status87
 .see end
 .*
 .exmp begin

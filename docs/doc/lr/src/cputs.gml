@@ -25,7 +25,7 @@ returns zero.
 .im errnoref
 .return end
 .see begin
-.seelist cputs fputs putch puts
+.seelist fputs putch puts
 .see end
 .exmp begin
 #include <conio.h>

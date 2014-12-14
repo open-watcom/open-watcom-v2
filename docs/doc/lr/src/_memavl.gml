@@ -34,8 +34,8 @@ function returns the number of bytes of memory available
 for dynamic memory allocation in the near heap (the default data segment).
 .return end
 .see begin
-.seelist _memavl calloc Functions _freect _memmax
-.seelist _memavl _heapgrow Functions malloc Functions realloc Functions
+.seelist calloc Functions _freect _memmax
+.seelist _heapgrow Functions malloc Functions realloc Functions
 .see end
 .exmp begin
 #include <stdio.h>

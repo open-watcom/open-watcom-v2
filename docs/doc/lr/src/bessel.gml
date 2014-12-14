@@ -67,7 +67,7 @@ These functions return the result of the desired Bessel function of
 .ct .li .
 .return end
 .see begin
-.seelist bessel matherr
+.seelist matherr
 .see end
 .exmp begin
 #include <stdio.h>

@@ -40,7 +40,7 @@ This array may be overwritten by a subsequent call to the &func
 function.
 .return end
 .see begin
-.seelist &function. clearerr feof ferror perror strerror strerror_s strerrorlen_s
+.seelist clearerr feof ferror perror strerror strerror_s strerrorlen_s
 .see end
 .exmp begin
 #include <stdio.h>

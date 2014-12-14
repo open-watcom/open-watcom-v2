@@ -33,7 +33,7 @@ points at a null character then
 is returned.
 .return end
 .see begin
-.seelist &function. _mbsnccnt _mbgetcode _mbputchar
+.seelist _mbsnccnt _mbgetcode _mbputchar
 .see end
 .exmp begin
 #include <stdio.h>

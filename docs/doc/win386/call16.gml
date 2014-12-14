@@ -86,7 +86,7 @@ which represents the return value from the 16-bit function that was
 called.
 .return end
 .see begin
-.seelist &function. GetIndirectFunctionHandle InvokeIndirectFunctionHandle FreeIndirectFunctionHandle
+.seelist GetIndirectFunctionHandle InvokeIndirectFunctionHandle FreeIndirectFunctionHandle
 .see end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exmp begin

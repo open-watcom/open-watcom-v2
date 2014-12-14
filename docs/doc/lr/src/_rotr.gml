@@ -23,7 +23,7 @@ in the size of integers.
 The rotated value is returned.
 .return end
 .see begin
-.seelist _rotr _lrotl _lrotr _rotl
+.seelist _lrotl _lrotr _rotl
 .see end
 .exmp begin
 #include <stdio.h>

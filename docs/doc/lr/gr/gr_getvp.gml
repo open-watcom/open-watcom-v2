@@ -21,7 +21,7 @@ The
 visual graphics page.
 .return end
 .see begin
-.seelist &function. _setvisualpage _setactivepage _getactivepage _getvideoconfig
+.seelist _setvisualpage _setactivepage _getactivepage _getvideoconfig
 .see end
 .grexam begin eg_setap.&langsuff
 .grexam end

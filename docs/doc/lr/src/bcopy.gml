@@ -29,7 +29,7 @@ The
 function has no return value.
 .return end
 .see begin
-.seelist &function. bcmp bcopy bzero memmove strcpy
+.seelist bcmp bcopy bzero memmove strcpy
 .see end
 .exmp begin
 #include <stdio.h>

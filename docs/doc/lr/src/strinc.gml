@@ -42,7 +42,7 @@ function returns a pointer to the next character
 (single-byte, wide, or multibyte depending on the function used).
 .return end
 .see begin
-.seelist &function. _strdec _strinc _strninc
+.seelist _strdec _strinc _strninc
 .see end
 .exmp begin
 #include <stdio.h>

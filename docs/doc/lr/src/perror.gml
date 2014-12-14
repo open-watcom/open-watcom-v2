@@ -53,7 +53,7 @@ can be set when an error is detected during the execution of
 that function.
 .return end
 .see begin
-.seelist &function. clearerr feof ferror perror strerror
+.seelist clearerr feof ferror perror strerror
 .see end
 .exmp begin
 #include <stdio.h>

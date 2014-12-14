@@ -98,7 +98,7 @@ a pointer to the first character of a token or
 if there is no token found.
 .return end
 .see begin
-.seelist &function. jstrtok jstrcspn jstrpbrk strtok strcspn strpbrk
+.seelist jstrtok jstrcspn jstrpbrk strtok strcspn strpbrk
 .see end
 .exmp begin
 #include <stdio.h>

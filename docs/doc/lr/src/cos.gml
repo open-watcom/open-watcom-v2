@@ -20,7 +20,7 @@ The
 function returns the cosine value.
 .return end
 .see begin
-.seelist cos acos sin tan
+.seelist acos sin tan
 .see end
 .exmp begin
 #include <math.h>

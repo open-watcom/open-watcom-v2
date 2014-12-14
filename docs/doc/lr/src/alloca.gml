@@ -27,7 +27,7 @@ The return value is
 if there is insufficient stack space available.
 .return end
 .see begin
-.seelist alloca calloc malloc stackavail
+.seelist calloc malloc stackavail
 .see end
 .exmp begin
 #include <stdio.h>

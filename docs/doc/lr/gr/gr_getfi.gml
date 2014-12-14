@@ -45,7 +45,7 @@ The
 returned successfully; otherwise a negative value is returned.
 .return end
 .see begin
-.seelist &function. _registerfonts _unregisterfonts _setfont _outgtext _getgtextextent _setgtextvector _getgtextvector
+.seelist _registerfonts _unregisterfonts _setfont _outgtext _getgtextextent _setgtextvector _getgtextvector
 .see end
 .grexam begin eg_getfi.&langsuff
 .grexam end

@@ -23,7 +23,7 @@ The
 &routine returns the pixel value for the current color.
 .return end
 .see begin
-.seelist &function. _setcolor
+.seelist _setcolor
 .see end
 .grexam begin eg_getc.&langsuff
 .grexam end

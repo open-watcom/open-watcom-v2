@@ -18,7 +18,7 @@ function rotates the unsigned long integer, determined by
 The rotated value is returned.
 .return end
 .see begin
-.seelist _lrotl _lrotr _rotl _rotr
+.seelist _lrotr _rotl _rotr
 .see end
 .exmp begin
 #include <stdio.h>

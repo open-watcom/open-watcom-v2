@@ -23,7 +23,7 @@ The
 &routine returns the current line-style mask.
 .return end
 .see begin
-.seelist &function. _lineto _pie _rectangle _polygon _setlinestyle
+.seelist _lineto _pie _rectangle _polygon _setlinestyle
 .see end
 .grexam begin eg_getls.&langsuff
 .grexam end

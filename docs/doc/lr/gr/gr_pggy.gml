@@ -27,7 +27,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _pg_defaultchart _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter _pg_setstyleset _pg_resetstyleset
+.seelist _pg_defaultchart _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter _pg_setstyleset _pg_resetstyleset
 .see end
 .grexam begin eg_pggy.&langsuff
 .grexam end

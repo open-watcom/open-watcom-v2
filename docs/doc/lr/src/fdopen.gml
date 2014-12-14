@@ -81,9 +81,9 @@ returns a NULL pointer.
 .im errnoref
 .return end
 .see begin
-.seelist &function. creat _dos_open dup dup2 fcntl fdopen fopen
-.seelist &function. freopen _fsopen _grow_handles _hdopen open
-.seelist &function. _open_osfhandle pipe _popen sopen
+.seelist creat _dos_open dup dup2 fcntl fdopen fopen
+.seelist freopen _fsopen _grow_handles _hdopen open
+.seelist _open_osfhandle pipe _popen sopen
 .see end
 .exmp begin
 #include <stdio.h>

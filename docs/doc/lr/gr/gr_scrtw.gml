@@ -49,7 +49,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _settextwindow _clearscreen _outtext _outmem _settextposition
+.seelist _settextwindow _clearscreen _outtext _outmem _settextposition
 .see end
 .grexam begin eg_scrtw.&langsuff
 .grexam end

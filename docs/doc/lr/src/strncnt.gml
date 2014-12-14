@@ -113,7 +113,7 @@ If
 is less than zero, these functions return 0.
 .return end
 .see begin
-.seelist &function. strcmp stricmp strncmp strnicmp
+.seelist strcmp stricmp strncmp strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

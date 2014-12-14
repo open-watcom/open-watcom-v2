@@ -76,7 +76,7 @@ when no filling takes place; a non-zero
 value is returned to indicate that filling has occurred.
 .return end
 .see begin
-.seelist &function. _setcliprgn _setcolor _setfillmask _setplotaction
+.seelist _setcliprgn _setcolor _setfillmask _setplotaction
 .see end
 .grexam begin eg_flood.&langsuff
 .grexam end

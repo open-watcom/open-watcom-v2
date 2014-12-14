@@ -58,7 +58,7 @@ The
 structure, the previous output position for text.
 .return end
 .see begin
-.seelist &function. _gettextposition _outtext _outmem _settextwindow _moveto
+.seelist _gettextposition _outtext _outmem _settextwindow _moveto
 .see end
 .grexam begin eg_gettp.&langsuff
 .grexam end

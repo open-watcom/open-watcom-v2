@@ -34,7 +34,7 @@ The
 &routine returns the previous setting for wrapping.
 .return end
 .see begin
-.seelist &function. _outtext _outmem _settextwindow
+.seelist _outtext _outmem _settextwindow
 .see end
 .grexam begin eg_wrap.&langsuff
 .grexam end

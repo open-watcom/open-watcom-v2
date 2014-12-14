@@ -69,7 +69,7 @@ and returns zero.
 .return end
 .*
 .see begin
-.seelist &function. fopen fopen_s freopen freopen_s mkstemp _mktemp _tempnam tmpfile tmpfile_s tmpnam
+.seelist fopen fopen_s freopen freopen_s mkstemp _mktemp _tempnam tmpfile tmpfile_s tmpnam
 .see end
 .*
 .exmp begin

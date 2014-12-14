@@ -43,7 +43,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _registerfonts _unregisterfonts _setfont _getfontinfo _getgtextextent _setgtextvector _getgtextvector _outtext _outmem _grtext
+.seelist _registerfonts _unregisterfonts _setfont _getfontinfo _getgtextextent _setgtextvector _getgtextvector _outtext _outmem _grtext
 .see end
 .grexam begin eg_reg.&langsuff
 .grexam end

@@ -31,7 +31,7 @@ if the end-of-file indicator is set for
 .ct .li .
 .return end
 .see begin
-.seelist &function. clearerr feof ferror fopen freopen perror read strerror
+.seelist clearerr feof ferror fopen freopen perror read strerror
 .see end
 .exmp begin
 #include <stdio.h>

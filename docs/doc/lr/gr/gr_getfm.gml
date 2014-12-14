@@ -43,7 +43,7 @@ the
 .return end
 .do end
 .see begin
-.seelist &function. _floodfill _setfillmask _setplotaction
+.seelist _floodfill _setfillmask _setplotaction
 .see end
 .grexam begin eg_getfm.&langsuff
 .grexam end

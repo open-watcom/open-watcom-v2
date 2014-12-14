@@ -28,7 +28,7 @@ You must use the
 function to check that the desired drive has been set.
 .return end
 .see begin
-.seelist &function. _dos_getdiskfree _dos_getdrive _dos_setdrive _getdiskfree _getdrive
+.seelist _dos_getdiskfree _dos_getdrive _dos_setdrive _getdiskfree _getdrive
 .see end
 .exmp begin
 #include <stdio.h>

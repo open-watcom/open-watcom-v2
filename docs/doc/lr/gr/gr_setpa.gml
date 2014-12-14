@@ -21,7 +21,7 @@ argument.
 The previous value of the plotting action is returned.
 .return end
 .see begin
-.seelist &function. _getplotaction
+.seelist _getplotaction
 .see end
 .grexam begin eg_getpa.&langsuff
 .grexam end

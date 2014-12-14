@@ -21,8 +21,8 @@ The
 function returns the first argument as a result.
 .return end
 .see begin
-.seelist &function. atoi atol itoa ltoa
-.seelist &function. strtod strtol strtoul ultoa utoa
+.seelist atoi atol itoa ltoa
+.seelist strtod strtol strtoul ultoa utoa
 .see end
 .exmp begin
 #include <stdlib.h>

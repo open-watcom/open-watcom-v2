@@ -21,7 +21,7 @@ The
 function returns the arctangent in the range (&minus.&pi./2,&pi./2).
 .return end
 .see begin
-.seelist atan acos asin atan2
+.seelist acos asin atan2
 .see end
 .exmp begin
 #include <stdio.h>

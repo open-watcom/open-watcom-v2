@@ -34,7 +34,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _setbkcolor _setviewport _setcliprgn _settextwindow
+.seelist _setbkcolor _setviewport _setcliprgn _settextwindow
 .see end
 .grexam begin eg_clear.&langsuff
 .grexam end

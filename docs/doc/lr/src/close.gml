@@ -83,10 +83,10 @@ A previous buffered write call has failed.
 .error end
 .see begin
 .if '&machsys' eq 'QNX' .do begin
-.seelist close creat dup dup2 fcntl open sopen
+.seelist creat dup dup2 fcntl open sopen
 .do end
 .el .do begin
-.seelist close creat dup dup2 open sopen
+.seelist creat dup dup2 open sopen
 .do end
 .see end
 .exmp begin

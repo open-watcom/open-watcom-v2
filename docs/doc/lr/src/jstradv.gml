@@ -46,7 +46,7 @@ is 0 then a pointer to
 is returned.
 .return end
 .see begin
-.seelist &function. btom jgetmoji jstradv mtob
+.seelist btom jgetmoji jstradv mtob
 .see end
 .exmp begin
 #include <stdio.h>

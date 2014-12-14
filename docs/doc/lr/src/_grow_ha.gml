@@ -106,9 +106,9 @@ open concurrently.
 .error begin
 .error end
 .see begin
-.seelist &function. _dos_open fdopen fileno fopen freopen _fsopen
-.seelist &function. _grow_handles _hdopen open _open_osfhandle _popen
-.seelist &function. sopen tmpfile
+.seelist _dos_open fdopen fileno fopen freopen _fsopen
+.seelist _grow_handles _hdopen open _open_osfhandle _popen
+.seelist sopen tmpfile
 .see end
 .exmp begin
 #include <stdio.h>

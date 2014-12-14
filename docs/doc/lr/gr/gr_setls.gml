@@ -28,7 +28,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _getlinestyle _lineto _rectangle _polygon _setplotaction
+.seelist _getlinestyle _lineto _rectangle _polygon _setplotaction
 .see end
 .grexam begin eg_getls.&langsuff
 .grexam output

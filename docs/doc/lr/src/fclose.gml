@@ -23,7 +23,7 @@ closed, or non-zero if any errors were detected.
 .im errnoref
 .return end
 .see begin
-.seelist &function. fclose fcloseall fdopen fopen freopen _fsopen
+.seelist fclose fcloseall fdopen fopen freopen _fsopen
 .see end
 .exmp begin
 #include <stdio.h>

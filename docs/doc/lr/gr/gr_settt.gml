@@ -41,7 +41,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _grtext _gettextsettings
+.seelist _grtext _gettextsettings
 .see end
 .grexam begin eg_settx.&langsuff
 .grexam output

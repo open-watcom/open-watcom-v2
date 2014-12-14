@@ -50,7 +50,7 @@ a pointer to the located string, or
 if the string is not found.
 .return end
 .see begin
-.seelist &function. jstrcspn jstrstr strcspn strstr
+.seelist jstrcspn jstrstr strcspn strstr
 .see end
 .exmp begin
 #include <stdio.h>

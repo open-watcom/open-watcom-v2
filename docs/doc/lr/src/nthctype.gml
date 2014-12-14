@@ -71,7 +71,7 @@ In all other cases, it returns one of
 .ct .li .
 .return end
 .see begin
-.seelist &function. chkctype iskanji iskanji2 jiszen nthctype
+.seelist chkctype iskanji iskanji2 jiszen nthctype
 .see end
 .exmp begin
 #include <stdio.h>

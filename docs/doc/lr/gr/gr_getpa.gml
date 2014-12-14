@@ -20,7 +20,7 @@ The
 &routine returns the current plotting action.
 .return end
 .see begin
-.seelist &function. _setplotaction
+.seelist _setplotaction
 .see end
 .grexam begin eg_getpa.&langsuff
 .grexam end

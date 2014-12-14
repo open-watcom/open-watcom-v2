@@ -47,7 +47,7 @@ settings.
 .im gr_retdr text
 .return end
 .see begin
-.seelist &function. _outtext _outmem _outgtext _setcharsize _settextalign _settextpath _settextorient _setcharspacing
+.seelist _outtext _outmem _outgtext _setcharsize _settextalign _settextpath _settextorient _setcharspacing
 .see end
 .grexam begin eg_grtxt.&langsuff
 .grexam output

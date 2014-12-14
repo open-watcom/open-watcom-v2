@@ -132,7 +132,7 @@ The directory entry to be removed resides on a read-only file system.
 .error end
 .*
 .see begin
-.seelist &function. chdir chmod getcwd mkdir mknod rmdir stat umask
+.seelist chdir chmod getcwd mkdir mknod rmdir stat umask
 .see end
 .*
 .exmp begin

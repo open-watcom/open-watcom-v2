@@ -21,7 +21,7 @@ function returns the arcsine in the range [&minus.&pi./2,&pi./2].
 .im errnodom
 .return end
 .see begin
-.seelist asin acos atan atan2 matherr
+.seelist acos atan atan2 matherr
 .see end
 .exmp begin
 #include <stdio.h>

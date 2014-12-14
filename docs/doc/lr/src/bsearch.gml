@@ -54,7 +54,7 @@ If there are multiple values in the array which are equal to the
 value when the array is searched linearly.
 .return end
 .see begin
-.seelist bsearch bsearch_s lfind lsearch qsort qsort_s
+.seelist bsearch_s lfind lsearch qsort qsort_s
 .see end
 .exmp begin
 #include <stdio.h>

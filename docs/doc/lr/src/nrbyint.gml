@@ -21,7 +21,7 @@ The rounded value of
 .ct .li .
 .return end
 .see begin
-.seelist &function. fegetround fesetround rint round trunc
+.seelist fegetround fesetround rint round trunc
 .see end
 .exmp begin
 #include <stdio.h>

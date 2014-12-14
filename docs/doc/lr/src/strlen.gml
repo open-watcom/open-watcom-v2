@@ -45,7 +45,7 @@ function returns the number of characters that precede the
 terminating null character.
 .return end
 .see begin
-.seelist &function. strnlen_s
+.seelist strnlen_s
 .see end
 .exmp begin
 #include <stdio.h>

@@ -45,7 +45,7 @@ The
 function returns no value.
 .return end
 .see begin
-.seelist _searchenv getenv setenv _splitpath putenv
+.seelist getenv setenv _splitpath putenv
 .see end
 .exmp begin
 #include <stdio.h>

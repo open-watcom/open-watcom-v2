@@ -19,7 +19,7 @@ function returns zero if drive is successfully changed.
 Otherwise, -1 is returned.
 .return end
 .see begin
-.seelist &function. _dos_getdrive _dos_setdrive _getdrive
+.seelist _dos_getdrive _dos_setdrive _getdrive
 .see end
 .exmp begin
 #include <stdio.h>

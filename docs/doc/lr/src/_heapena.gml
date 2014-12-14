@@ -34,7 +34,7 @@ that it has already obtained.
 The return value is the previous state of the system allocation flag.
 .return end
 .see begin
-.seelist &function. _heapchk _heapenable _heapgrow _heapmin _heapset _heapshrink _heapwalk
+.seelist _heapchk _heapenable _heapgrow _heapmin _heapset _heapshrink _heapwalk
 .see end
 .exmp begin
 #include <stdio.h>

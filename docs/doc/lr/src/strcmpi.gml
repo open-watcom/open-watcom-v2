@@ -43,7 +43,7 @@ is less than, equal to, or greater than the string pointed to by
 .ct .li .
 .return end
 .see begin
-.seelist &function. strcmp strcmpi stricmp strncmp strnicmp
+.seelist strcmp strcmpi stricmp strncmp strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

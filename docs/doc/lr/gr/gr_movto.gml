@@ -46,7 +46,7 @@ The
 output position for graphics.
 .return end
 .see begin
-.seelist &function. _getcurrentposition _lineto _settextposition
+.seelist _getcurrentposition _lineto _settextposition
 .see end
 .grexam begin eg_movto.&langsuff
 .grexam end

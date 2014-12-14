@@ -102,7 +102,7 @@ The
 if successful; otherwise, (-1) is returned.
 .return end
 .see begin
-.seelist &function. _registerfonts _unregisterfonts _getfontinfo _outgtext _getgtextextent _setgtextvector _getgtextvector
+.seelist _registerfonts _unregisterfonts _getfontinfo _outgtext _getgtextextent _setgtextvector _getgtextvector
 .see end
 .grexam begin eg_reg.&langsuff
 .grexam end

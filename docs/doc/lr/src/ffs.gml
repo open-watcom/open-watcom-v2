@@ -22,7 +22,7 @@ is 0,
 returns zero.
 .return end
 .see begin
-.seelist &function. _lrotl _lrotr _rotl _rotr
+.seelist _lrotl _lrotr _rotl _rotr
 .see end
 .exmp begin
 #include <stdio.h>

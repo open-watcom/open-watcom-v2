@@ -44,7 +44,7 @@ functions return
 a pointer to the next location in which to store a character.
 .return end
 .see begin
-.seelist &function. btom jgetmoji jputmoji
+.seelist btom jgetmoji jputmoji
 .see end
 .exmp begin
 #include <stdio.h>

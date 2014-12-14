@@ -18,7 +18,7 @@ The
 &routine returns
 .return end
 .see begin
-.seelist &function. _
+.seelist _
 .see end
 .grexam begin eg_temp.&langsuff
 .grexam output

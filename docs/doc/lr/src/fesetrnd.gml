@@ -21,7 +21,7 @@ established.
 .return end
 .*
 .see begin
-.seelist &function. fegetround
+.seelist fegetround
 .see end
 .*
 .exmp begin

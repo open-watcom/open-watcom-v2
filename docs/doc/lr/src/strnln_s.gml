@@ -53,7 +53,7 @@ be accessed by &func.
 .return end
 .*
 .see begin
-.seelist &function. strlen
+.seelist strlen
 .see end
 .*
 .exmp begin

@@ -140,7 +140,7 @@ The
 successfully selected; otherwise, zero is returned.
 .return end
 .see begin
-.seelist &function. _getvideoconfig _settextrows _setvideomoderows
+.seelist _getvideoconfig _settextrows _setvideomoderows
 .see end
 .grexam begin eg_getvc.&langsuff
 .grexam end

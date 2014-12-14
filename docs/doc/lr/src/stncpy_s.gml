@@ -94,7 +94,7 @@ returns.
 .return end
 .*
 .see begin
-.seelist &function. strncpy strlcpy strcpy strdup strcpy_s
+.seelist strncpy strlcpy strcpy strdup strcpy_s
 .see end
 .*
 .exmp begin

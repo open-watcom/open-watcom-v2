@@ -20,7 +20,7 @@ The function returns a the exponential of
 minus 1 without loss of accuracy due to subtractive cancelation.
 .return end
 .see begin
-.seelist &function. exp
+.seelist exp
 .see end
 .exmp begin
 #include <stdio.h>

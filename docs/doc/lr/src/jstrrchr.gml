@@ -49,7 +49,7 @@ a pointer to the located character,
 or a NULL pointer if the character does not occur in the Kanji string.
 .return end
 .see begin
-.seelist &function. jstrchr jstrpbrk jstrrchr strchr strpbrk strrchr
+.seelist jstrchr jstrpbrk jstrrchr strchr strpbrk strrchr
 .see end
 .exmp begin
 #include <stdio.h>

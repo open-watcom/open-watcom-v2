@@ -73,7 +73,7 @@ The
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin
-.seelist &function. _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter
+.seelist _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter
 .see end
 .grexam begin eg_pgc.&langsuff
 .grexam end

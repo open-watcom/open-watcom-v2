@@ -33,7 +33,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _getfillmask _ellipse _floodfill _rectangle _polygon _pie _setcolor _setplotaction
+.seelist _getfillmask _ellipse _floodfill _rectangle _polygon _pie _setcolor _setplotaction
 .see end
 .grexam begin eg_getfm.&langsuff
 .grexam output

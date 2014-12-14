@@ -75,7 +75,7 @@ returns.
 .return end
 .*
 .see begin
-.seelist &function. strcpy strdup strncpy strncpy_s
+.seelist strcpy strdup strncpy strncpy_s
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__  1

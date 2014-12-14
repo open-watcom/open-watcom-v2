@@ -233,7 +233,7 @@ parameter.
 .np
 .return end
 .see begin
-.im seeproc main
+.im seeproc &function
 .see end
 .exmp begin
 .blkcode begin

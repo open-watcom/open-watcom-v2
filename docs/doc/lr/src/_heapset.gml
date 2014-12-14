@@ -86,7 +86,7 @@ The heap contains a bad node, or is damaged.
 .endterm
 .return end
 .see begin
-.seelist &function. _heapchk _heapenable _heapgrow _heapmin _heapset _heapshrink _heapwalk
+.seelist _heapchk _heapenable _heapgrow _heapmin _heapset _heapshrink _heapwalk
 .see end
 .exmp begin
 #include <stdio.h>

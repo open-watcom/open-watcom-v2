@@ -23,7 +23,7 @@ The
 function has no return value.
 .return end
 .see begin
-.seelist &function. bcmp bcopy bzero memset strset
+.seelist bcmp bcopy bzero memset strset
 .see end
 .exmp begin
 #include <string.h>

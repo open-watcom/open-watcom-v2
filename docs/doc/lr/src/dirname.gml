@@ -40,7 +40,7 @@ is returned.
 .return end
 .*
 .see begin
-.seelist &function. basename
+.seelist basename
 .see end
 .*
 .exmp begin

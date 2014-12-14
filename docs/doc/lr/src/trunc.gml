@@ -21,7 +21,7 @@ The value of
 without any fractional values.
 .return end
 .see begin
-.seelist &function. nearbyint rint round floor ceil
+.seelist nearbyint rint round floor ceil
 .see end
 .exmp begin
 #include <stdio.h>

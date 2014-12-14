@@ -122,7 +122,7 @@ characters, these functions return the number of characters in the
 string.
 .return end
 .see begin
-.seelist &function. _mbsnbcat _mbsnbcnt _mbsnccnt
+.seelist _mbsnbcat _mbsnbcnt _mbsnccnt
 .see end
 .exmp begin
 #include <stdio.h>

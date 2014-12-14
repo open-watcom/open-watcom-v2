@@ -38,7 +38,7 @@ The
 function does not return any value.
 .return end
 .see begin
-.seelist &function. _beginthread _endthread
+.seelist _beginthread _endthread
 .see end
 .exmp begin
 #include <stdio.h>

@@ -55,7 +55,7 @@ When an error occurs,
 is returned.
 .return end
 .see begin
-.seelist &function. fclose fcloseall fdopen fopen freopen _fsopen
+.seelist fclose fcloseall fdopen fopen freopen _fsopen
 .see end
 .exmp begin
 #include <stdio.h>

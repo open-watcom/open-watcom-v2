@@ -108,7 +108,7 @@ and the hardware configuration.
 .return end
 .do end
 .see begin
-.seelist &function. _setvideomode _setvideomoderows
+.seelist _setvideomode _setvideomoderows
 .see end
 .grexam begin eg_getvc.&langsuff
 .grexam end

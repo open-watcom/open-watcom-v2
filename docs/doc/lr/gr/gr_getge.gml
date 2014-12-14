@@ -25,7 +25,7 @@ The
 &routine returns the length in pixels of a string.
 .return end
 .see begin
-.seelist &function. _registerfonts _unregisterfonts _setfont _getfontinfo _outgtext _setgtextvector _getgtextvector
+.seelist _registerfonts _unregisterfonts _setfont _getfontinfo _outgtext _setgtextvector _getgtextvector
 .see end
 .grexam begin eg_getfi.&langsuff
 .grexam end

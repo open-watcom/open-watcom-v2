@@ -40,7 +40,7 @@ child process.
 .endterm
 .error end
 .see begin
-.seelist &function. _pclose perror _pipe _popen
+.seelist _pclose perror _pipe _popen
 .see end
 .seexmp _popen
 .class WATCOM

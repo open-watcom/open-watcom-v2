@@ -27,7 +27,7 @@ The
 when successful; otherwise, (-1) is returned.
 .return end
 .see begin
-.seelist &function. _settextcursor _displaycursor
+.seelist _settextcursor _displaycursor
 .see end
 .grexam begin eg_gettu.&langsuff
 .grexam end

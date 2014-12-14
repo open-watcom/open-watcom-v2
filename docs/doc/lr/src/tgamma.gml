@@ -20,7 +20,7 @@ the function returns NAN.  If the argument is positive infinity,
 the function returns positive infinity.
 .return end
 .see begin
-.seelist &function. lgamma lgamma_r
+.seelist lgamma lgamma_r
 .see end
 .exmp begin
 #include <stdio.h>

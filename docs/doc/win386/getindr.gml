@@ -89,7 +89,7 @@ This handle is used in conjunction with
 to call the 16-bit procedure.
 .return end
 .see begin
-.seelist &function. _Call16 FreeIndirectFunctionHandle InvokeIndirectFunction
+.seelist _Call16 FreeIndirectFunctionHandle InvokeIndirectFunction
 .see end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .keep 13

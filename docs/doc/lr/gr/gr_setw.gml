@@ -58,7 +58,7 @@ The
 successfully; otherwise, zero is returned.
 .return end
 .see begin
-.seelist &function. _setviewport
+.seelist _setviewport
 .see end
 .grexam begin eg_setw.&langsuff
 .grexam end

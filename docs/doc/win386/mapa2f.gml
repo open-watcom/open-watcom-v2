@@ -34,7 +34,7 @@ The &func function returns a 32-bit near pointer
 usable by the 32-bit application.
 .return end
 .see begin
-.seelist &function. AllocAlias16 AllocHugeAlias16
+.seelist AllocAlias16 AllocHugeAlias16
 .see end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exmp begin

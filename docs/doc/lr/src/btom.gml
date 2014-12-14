@@ -51,7 +51,7 @@ functions return
 the number of single- and double-byte characters in the string.
 .return end
 .see begin
-.seelist btom jgetmoji mtob
+.seelist jgetmoji mtob
 .see end
 .exmp begin
 #include <stdio.h>

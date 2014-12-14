@@ -23,7 +23,7 @@ function returns the inverse hyperbolic cosine value.
 .im errnodom
 .return end
 .see begin
-.seelist acosh asinh atanh cosh matherr
+.seelist asinh atanh cosh matherr
 .see end
 .exmp begin
 #include <stdio.h>

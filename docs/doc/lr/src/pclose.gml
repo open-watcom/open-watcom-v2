@@ -40,7 +40,7 @@ child process.
 .endterm
 .error end
 .see begin
-.seelist &function. perror pipe popen
+.seelist perror pipe popen
 .see end
 .seexmp popen
 .class POSIX 1003.1

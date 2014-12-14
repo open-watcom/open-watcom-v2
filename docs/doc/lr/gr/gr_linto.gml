@@ -37,7 +37,7 @@ the current line style and the current color.
 .im gr_retdr line
 .return end
 .see begin
-.seelist &function. _moveto _setcolor _setlinestyle _setplotaction
+.seelist _moveto _setcolor _setlinestyle _setplotaction
 .see end
 .grexam begin eg_movto.&langsuff
 .grexam output

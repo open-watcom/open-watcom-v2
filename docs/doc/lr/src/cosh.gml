@@ -23,7 +23,7 @@ function returns the hyperbolic cosine value.
 .im errnorng
 .return end
 .see begin
-.seelist cosh sinh tanh matherr
+.seelist sinh tanh matherr
 .see end
 .exmp begin
 #include <stdio.h>

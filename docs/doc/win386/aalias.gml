@@ -32,7 +32,7 @@ usable by Windows,
 or returns 0 if the alias cannot be allocated.
 .return end
 .see begin
-.seelist &function. FreeAlias16
+.seelist FreeAlias16
 .see end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exmp begin

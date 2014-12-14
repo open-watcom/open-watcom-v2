@@ -51,7 +51,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _grtext _setcharsize _setcharspacing _settextalign _settextpath _settextorient
+.seelist _grtext _setcharsize _setcharspacing _settextalign _settextpath _settextorient
 .see end
 .grexam begin eg_getts.&langsuff
 .grexam end

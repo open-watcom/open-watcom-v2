@@ -44,7 +44,7 @@ The
 &routine returns the number of the previously selected palette.
 .return end
 .see begin
-.seelist &function. _setvideomode _getvideoconfig
+.seelist _setvideomode _getvideoconfig
 .see end
 .grexam begin eg_selpa.&langsuff
 .grexam end

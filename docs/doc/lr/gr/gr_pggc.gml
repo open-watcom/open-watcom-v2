@@ -29,7 +29,7 @@ The
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin
-.seelist &function. _pg_defaultchart _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter _pg_setchardef
+.seelist _pg_defaultchart _pg_initchart _pg_chart _pg_chartpie _pg_chartscatter _pg_setchardef
 .see end
 .grexam begin eg_pggc.&langsuff
 .grexam end

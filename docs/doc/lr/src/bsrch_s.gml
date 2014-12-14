@@ -73,7 +73,7 @@ pointer if no match is found or there is a runtime-constraint violation. If two 
 compare as equal, which element is matched is unspecified.
 .return end
 .see begin
-.seelist bsearch_s bsearch lfind lsearch qsort qsort_s
+.seelist bsearch lfind lsearch qsort qsort_s
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

@@ -159,7 +159,7 @@ The
 function returns no value.
 .return end
 .see begin
-.seelist _splitpath _fullpath _makepath _splitpath2
+.seelist _fullpath _makepath _splitpath2
 .see end
 .exmp begin
 #include <stdio.h>

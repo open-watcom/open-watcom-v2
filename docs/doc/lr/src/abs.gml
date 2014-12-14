@@ -19,7 +19,7 @@ function returns the absolute value of its argument.
 .return end
 .*
 .see begin
-.seelist abs labs llabs imaxabs fabs
+.seelist labs llabs imaxabs fabs
 .see end
 .*
 .exmp begin

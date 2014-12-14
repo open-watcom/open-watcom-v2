@@ -46,9 +46,9 @@ returns a POSIX-style file handle.
 Otherwise, it returns -1.
 .return end
 .see begin
-.seelist &function. close _dos_open dup2 fdopen fopen freopen _fsopen
-.seelist &function. _get_osfhandle _grow_handles _hdopen open
-.seelist &function. _open_osfhandle _os_handle _popen sopen
+.seelist close _dos_open dup2 fdopen fopen freopen _fsopen
+.seelist _get_osfhandle _grow_handles _hdopen open
+.seelist _open_osfhandle _os_handle _popen sopen
 .see end
 .exmp begin
 #include <stdio.h>

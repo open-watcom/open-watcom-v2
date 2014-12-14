@@ -20,8 +20,8 @@ function returns 0 if the number is not valid and
 non-zero otherwise.
 .return end
 .see begin
-.seelist &function. _clear87 _control87 _controlfp _finite _fpreset
-.seelist &function. printf _status87 isfinite fpclassify
+.seelist _clear87 _control87 _controlfp _finite _fpreset
+.seelist printf _status87 isfinite fpclassify
 .see end
 .exmp begin
 #include <stdio.h>

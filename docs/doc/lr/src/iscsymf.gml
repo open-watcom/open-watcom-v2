@@ -46,8 +46,8 @@ is a wide-character representation of a letter or underscore character.
 .do end
 .return end
 .see begin
-.seelist &function. isalpha isalnum iscntrl isdigit isgraph islower isprint
-.seelist &function. ispunct isspace isupper isxdigit tolower toupper
+.seelist isalpha isalnum iscntrl isdigit isgraph islower isprint
+.seelist ispunct isspace isupper isxdigit tolower toupper
 .see end
 .exmp begin
 #include <stdio.h>

@@ -36,7 +36,7 @@ The
 &routine returns the previous background color.
 .return end
 .see begin
-.seelist &function. _getbkcolor
+.seelist _getbkcolor
 .see end
 .grexam begin eg_getbc.&langsuff
 .grexam end

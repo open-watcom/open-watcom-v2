@@ -27,7 +27,7 @@ If 0 is returned, then there is no more memory available in the
 near heap.
 .return end
 .see begin
-.seelist _memmax calloc _freect _memavl _heapgrow malloc
+.seelist calloc _freect _memavl _heapgrow malloc
 .see end
 .exmp begin
 #include <stdio.h>

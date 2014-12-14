@@ -55,7 +55,7 @@ and
 .im gr_retdr rectangle
 .return end
 .see begin
-.seelist &function. _setcolor _setfillmask _setlinestyle _setplotaction
+.seelist _setcolor _setfillmask _setlinestyle _setplotaction
 .see end
 .grexam begin eg_rect.&langsuff
 .grexam output

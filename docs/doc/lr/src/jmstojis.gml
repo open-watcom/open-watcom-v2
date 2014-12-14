@@ -42,7 +42,7 @@ function returns zero if the argument is not in the range;
 otherwise, the corresponding shift-JIS code is returned.
 .return end
 .see begin
-.seelist &function. jistojms jmstojis
+.seelist jistojms jmstojis
 .see end
 .exmp begin
 #include <stdio.h>

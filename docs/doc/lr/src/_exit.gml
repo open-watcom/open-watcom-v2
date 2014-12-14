@@ -106,7 +106,7 @@ The
 function does not return to its caller.
 .return end
 .see begin
-.im seeproc _exit
+.im seeproc &function
 .see end
 .exmp begin
 #include <stdio.h>

@@ -42,7 +42,7 @@ function returns
 .im errnoref
 .return end
 .see begin
-.seelist &function. fopen fopen_s freopen freopen_s mkstemp _mktemp _tempnam tmpfile tmpfile_s tmpnam tmpnam_s
+.seelist fopen fopen_s freopen freopen_s mkstemp _mktemp _tempnam tmpfile tmpfile_s tmpnam tmpnam_s
 .see end
 .exmp begin
 #include <stdio.h>

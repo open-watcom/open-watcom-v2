@@ -122,7 +122,7 @@ and
 functions.
 .error end
 .see begin
-.seelist &function. _grow_handles _pclose perror _pipe
+.seelist _grow_handles _pclose perror _pipe
 .see end
 .exmp begin
 /*

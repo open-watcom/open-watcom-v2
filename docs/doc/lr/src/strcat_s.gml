@@ -88,7 +88,7 @@ returns.
 .return end
 .*
 .see begin
-.seelist &function. strcat strncat strncat_s
+.seelist strcat strncat strncat_s
 .see end
 .*
 .exmp begin

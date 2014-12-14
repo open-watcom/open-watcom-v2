@@ -23,7 +23,7 @@ The
 function returns no value.
 .return end
 .see begin
-.seelist _enable _disable
+.seelist _disable
 .see end
 .exmp begin
 #include <stdio.h>

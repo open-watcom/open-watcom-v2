@@ -84,7 +84,7 @@ The buffer is too small (specified by
 .endterm
 .error end
 .see begin
-.seelist &function. chdir chmod getcwd _getdcwd mkdir mknod rmdir
+.seelist chdir chmod getcwd _getdcwd mkdir mknod rmdir
 .see end
 .exmp begin
 #include <stdio.h>

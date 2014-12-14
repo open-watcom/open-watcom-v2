@@ -37,7 +37,7 @@ The
 mode and number of rows are set successfully; otherwise, zero is returned.
 .return end
 .see begin
-.seelist &function. _getvideoconfig _setvideomode _settextrows
+.seelist _getvideoconfig _setvideomode _settextrows
 .see end
 .grexam begin eg_setvr.&langsuff
 .grexam end

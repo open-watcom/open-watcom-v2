@@ -75,7 +75,7 @@ the value of
 .ct .li .
 .return end
 .see begin
-.seelist &function. jstrncpy strcpy strdup strncpy
+.seelist jstrncpy strcpy strdup strncpy
 .see end
 .exmp begin
 #include <stdio.h>

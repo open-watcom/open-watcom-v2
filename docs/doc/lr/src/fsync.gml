@@ -56,7 +56,7 @@ function is not supported.
 .endterm
 .error end
 .see begin
-.seelist &function. fdatasync fstat open stat write
+.seelist fdatasync fstat open stat write
 .see end
 .exmp begin
 /*

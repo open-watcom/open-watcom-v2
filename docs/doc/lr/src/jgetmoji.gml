@@ -53,7 +53,7 @@ points at a null character then
 is returned.
 .return end
 .see begin
-.seelist &function. btom jgetmoji jputmoji
+.seelist btom jgetmoji jputmoji
 .see end
 .exmp begin
 #include <stdio.h>

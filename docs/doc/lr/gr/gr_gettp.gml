@@ -40,7 +40,7 @@ The
 structure, the current output position for text.
 .return end
 .see begin
-.seelist &function. _outtext _outmem _settextposition _settextwindow _moveto
+.seelist _outtext _outmem _settextposition _settextwindow _moveto
 .see end
 .grexam begin eg_gettp.&langsuff
 .grexam end

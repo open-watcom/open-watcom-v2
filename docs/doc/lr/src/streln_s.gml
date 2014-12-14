@@ -35,7 +35,7 @@ null character) in the full message string.
 .return end
 .*
 .see begin
-.seelist &function. strerror strerror_s
+.seelist strerror strerror_s
 .see end
 .*
 .exmp begin

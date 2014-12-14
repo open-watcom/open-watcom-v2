@@ -60,7 +60,7 @@ is returned.
 .return end
 .*
 .see begin
-.seelist &function. memchr memcmp memcpy memicmp memmove memset memcpy_s memmove_s
+.seelist memchr memcmp memcpy memicmp memmove memset memcpy_s memmove_s
 .see end
 .*
 .exmp begin

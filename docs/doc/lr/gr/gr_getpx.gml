@@ -36,7 +36,7 @@ when the point lies within the clipping region; otherwise, (-1) is
 returned.
 .return end
 .see begin
-.seelist &function. _setpixel
+.seelist _setpixel
 .see end
 .grexam begin eg_getpx.&langsuff
 .grexam end

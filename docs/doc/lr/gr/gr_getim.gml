@@ -68,7 +68,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _imagesize _putimage
+.seelist _imagesize _putimage
 .see end
 .grexam begin eg_getim.&langsuff
 .grexam end

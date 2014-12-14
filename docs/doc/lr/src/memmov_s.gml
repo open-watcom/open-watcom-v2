@@ -103,7 +103,7 @@ are interpreted to mean the number of wide characters.
 .return end
 .*
 .see begin
-.seelist &function. memchr memcmp memcpy memicmp memmove memset memcpy_s
+.seelist memchr memcmp memcpy memicmp memmove memset memcpy_s
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__  1

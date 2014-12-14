@@ -46,8 +46,8 @@ to
 .ct , indicating an invalid file handle.
 .return end
 .see begin
-.seelist &function. close dup2 fdopen _get_osfhandle _hdopen
-.seelist &function. open _open_osfhandle _os_handle
+.seelist close dup2 fdopen _get_osfhandle _hdopen
+.seelist open _open_osfhandle _os_handle
 .see end
 .exmp begin
 #include <stdio.h>

@@ -35,7 +35,7 @@ The
 if the pixel value can be set; otherwise, (-1) is returned.
 .return end
 .see begin
-.seelist &function. _getpixel _setcolor _setplotaction
+.seelist _getpixel _setcolor _setplotaction
 .see end
 .grexam begin eg_getpx.&langsuff
 .grexam end

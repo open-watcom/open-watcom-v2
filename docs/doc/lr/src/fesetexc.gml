@@ -26,7 +26,7 @@ a nonzero value.
 .return end
 .*
 .see begin
-.seelist &function. feclearexcept fegetexceptflag feraisexcept fetestexcept
+.seelist feclearexcept fegetexceptflag feraisexcept fetestexcept
 .see end
 .*
 .exmp begin

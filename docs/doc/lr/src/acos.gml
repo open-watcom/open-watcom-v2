@@ -23,7 +23,7 @@ function returns the arccosine in the range [0,&pi.].
 .im errnodom
 .return end
 .see begin
-.seelist acos asin atan atan2 matherr
+.seelist asin atan atan2 matherr
 .see end
 .exmp begin
 #include <stdio.h>

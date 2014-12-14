@@ -20,7 +20,7 @@ The
 function returns 1 if it was successful and 0 if not.
 .return end
 .see begin
-.seelist &function. _dwDeleteOnClose _dwSetAboutDlg _dwSetAppTitle _dwSetConTitle _dwShutDown _dwYield
+.seelist _dwDeleteOnClose _dwSetAboutDlg _dwSetAppTitle _dwSetConTitle _dwShutDown _dwYield
 .see end
 .exmp begin
 #include <wdefwin.h>

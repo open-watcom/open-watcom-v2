@@ -24,7 +24,7 @@ infinity.  If the value of
 is less than -1.0, the function returns NAN.
 .return end
 .see begin
-.seelist &function. log
+.seelist log
 .see end
 .exmp begin
 #include <stdio.h>

@@ -51,7 +51,7 @@ The
 &routines return the size of a screen image.
 .return end
 .see begin
-.seelist &function. _getimage _putimage
+.seelist _getimage _putimage
 .see end
 .grexam begin eg_getim.&langsuff
 .grexam end

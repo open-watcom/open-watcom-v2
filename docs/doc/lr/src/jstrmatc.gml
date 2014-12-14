@@ -50,7 +50,7 @@ a pointer to the located character, or
 if no character is found.
 .return end
 .see begin
-.seelist &function. jstrmatch jstrskip jstrspn strspn
+.seelist jstrmatch jstrskip jstrspn strspn
 .see end
 .exmp begin
 #include <stdio.h>

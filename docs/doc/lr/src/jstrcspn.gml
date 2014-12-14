@@ -42,7 +42,7 @@ The terminating null character is not considered part of
 The length of the initial segment is returned.
 .return end
 .see begin
-.seelist &function. jstrcspn jstrspn strcspn strspn
+.seelist jstrcspn jstrspn strcspn strspn
 .see end
 .exmp begin
 #include <stdio.h>

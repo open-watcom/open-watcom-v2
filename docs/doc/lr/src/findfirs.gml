@@ -133,8 +133,8 @@ Invalid filename specification
 .endterm
 .return end
 .see begin
-.seelist &function. _dos_find...
-.seelist &function. _findclose _findfirst _findnext closedir opendir readdir
+.seelist _dos_find...
+.seelist _findclose _findfirst _findnext closedir opendir readdir
 .see end
 .exmp begin
 #include <stdio.h>

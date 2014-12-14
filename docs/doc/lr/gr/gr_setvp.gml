@@ -26,7 +26,7 @@ visual page is set successfully; otherwise, a negative number
 is returned.
 .return end
 .see begin
-.seelist &function. _getvisualpage _setactivepage _getactivepage _getvideoconfig
+.seelist _getvisualpage _setactivepage _getactivepage _getvideoconfig
 .see end
 .grexam begin eg_setap.&langsuff
 .grexam end

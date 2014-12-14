@@ -21,7 +21,7 @@ function returns non-zero if the error indicator is set for
 .ct .li .
 .return end
 .see begin
-.seelist &function. clearerr feof ferror perror strerror
+.seelist clearerr feof ferror perror strerror
 .see end
 .exmp begin
 #include <stdio.h>

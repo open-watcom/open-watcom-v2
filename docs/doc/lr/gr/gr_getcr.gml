@@ -36,7 +36,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _setcliprgn _setviewport
+.seelist _setcliprgn _setviewport
 .see end
 .grexam begin eg_setcr.&langsuff
 .grexam end

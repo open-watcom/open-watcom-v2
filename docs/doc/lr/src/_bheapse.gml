@@ -50,10 +50,10 @@ is returned if the segment could not be allocated.
 .return end
 .see begin
 .if &e'&dohelp eq 0 .do begin
-.seelist _bheapseg _bfreeseg _bcalloc _bexpand _bmalloc _brealloc
+.seelist _bfreeseg _bcalloc _bexpand _bmalloc _brealloc
 .do end
 .el .do begin
-.seelist _bheapseg _bfreeseg calloc _expand malloc realloc
+.seelist _bfreeseg calloc _expand malloc realloc
 .do end
 .see end
 .exmp begin

@@ -18,8 +18,8 @@ function returns the operating system handle that
 corresponds to the specified POSIX-style file handle.
 .return end
 .see begin
-.seelist &function. close fdopen _get_osfhandle _hdopen
-.seelist &function. open _open_osfhandle _os_handle
+.seelist close fdopen _get_osfhandle _hdopen
+.seelist open _open_osfhandle _os_handle
 .see end
 .exmp begin
 #include <stdio.h>

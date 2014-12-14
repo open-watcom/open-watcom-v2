@@ -22,7 +22,7 @@ The rounded value of
 .ct .li .
 .return end
 .see begin
-.seelist &function. fegetround fesetround nearbyint round trunc
+.seelist fegetround fesetround nearbyint round trunc
 .see end
 .exmp begin
 #include <stdio.h>

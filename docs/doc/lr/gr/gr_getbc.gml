@@ -24,7 +24,7 @@ The
 &routine returns the current background color.
 .return end
 .see begin
-.seelist &function. _setbkcolor _remappalette
+.seelist _setbkcolor _remappalette
 .see end
 .grexam begin eg_getbc.&langsuff
 .grexam end

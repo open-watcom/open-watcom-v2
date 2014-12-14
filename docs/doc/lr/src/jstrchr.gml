@@ -49,8 +49,8 @@ a pointer to the located character, or
 if the character does not occur in the Kanji string.
 .return end
 .see begin
-.seelist &function. jstrchr jstrcspn jstrrchr jstrspn jstrstr jstrtok
-.seelist &function. memchr strcspn strrchr strspn strstr strtok
+.seelist jstrchr jstrcspn jstrrchr jstrspn jstrstr jstrtok
+.seelist memchr strcspn strrchr strspn strstr strtok
 .see end
 .exmp begin
 #include <stdio.h>

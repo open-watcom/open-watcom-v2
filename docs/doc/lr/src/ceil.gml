@@ -21,7 +21,7 @@ function returns the smallest integer not less than
 .id double.
 .return end
 .see begin
-.seelist ceil floor
+.seelist floor
 .see end
 .exmp begin
 #include <stdio.h>

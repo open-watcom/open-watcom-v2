@@ -34,7 +34,7 @@ has byte orientation, or zero if the stream has no orientation.
 .return end
 .*
 .see begin
-.seelist &function. fopen freopen
+.seelist fopen freopen
 .see end
 .*
 .exmp begin

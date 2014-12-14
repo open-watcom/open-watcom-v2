@@ -39,7 +39,7 @@ stored. Otherwise, it returns a nonzero value.
 .return end
 .*
 .see begin
-.seelist &function. feclearexcept feraiseexcept fesetexceptflag fetestexcept
+.seelist feclearexcept feraiseexcept fesetexceptflag fetestexcept
 .see end
 .*
 .exmp begin

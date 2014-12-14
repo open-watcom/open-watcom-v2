@@ -45,7 +45,7 @@ function returns a pointer to the final component of
 .return end
 .*
 .see begin
-.seelist &function. dirname
+.seelist dirname
 .see end
 .*
 .exmp begin

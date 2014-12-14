@@ -28,7 +28,7 @@ The
 function returns the number of calls as an unsigned integer.
 .return end
 .see begin
-.seelist _freect calloc _heapgrow Functions malloc Functions _memavl _memmax
+.seelist calloc _heapgrow Functions malloc Functions _memavl _memmax
 .see end
 .exmp begin
 #include <stdio.h>

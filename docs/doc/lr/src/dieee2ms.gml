@@ -35,7 +35,7 @@ function returns 0 if the conversion was successful.
 Otherwise, it returns 1 if conversion would cause an overflow.
 .return end
 .see begin
-.seelist &function. _dieeetomsbin _dmsbintoieee _fieeetomsbin _fmsbintoieee
+.seelist _dieeetomsbin _dmsbintoieee _fieeetomsbin _fmsbintoieee
 .see end
 .exmp begin
 #include <stdio.h>

@@ -44,8 +44,8 @@ is a legitimate value to write to
 to verify that an error has occurred.
 .return end
 .see begin
-.seelist &function. ferror fopen fputc fputchar fputs
-.seelist &function. putc putchar puts _putw
+.seelist ferror fopen fputc fputchar fputs
+.seelist putc putchar puts _putw
 .see end
 .exmp begin
 #include <stdio.h>

@@ -20,7 +20,7 @@ the specified exceptions were successfully cleared. Otherwise, it returns a nonz
 .return end
 .*
 .see begin
-.seelist &function. fegetexceptflag feraiseexcept fesetexceptflag fetestexcept
+.seelist fegetexceptflag feraiseexcept fesetexceptflag fetestexcept
 .see end
 .*
 .exmp begin

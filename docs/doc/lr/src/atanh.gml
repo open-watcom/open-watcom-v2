@@ -23,7 +23,7 @@ function returns the inverse hyperbolic tangent value.
 .im errnodom
 .return end
 .see begin
-.seelist atanh acosh asinh matherr tanh
+.seelist acosh asinh matherr tanh
 .see end
 .exmp begin
 #include <stdio.h>

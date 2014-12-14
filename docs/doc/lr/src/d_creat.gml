@@ -31,9 +31,9 @@ Otherwise, it returns an OS error code and sets
 accordingly.
 .return end
 .see begin
-.seelist &function. creat _dos_creat _dos_creatnew _dos_open _dos_open
-.seelist &function. open fdopen fopen freopen _fsopen _grow_handles
-.seelist &function. _hdopen open _open_osfhandle _popen sopen
+.seelist creat _dos_creat _dos_creatnew _dos_open _dos_open
+.seelist open fdopen fopen freopen _fsopen _grow_handles
+.seelist _hdopen open _open_osfhandle _popen sopen
 .see end
 .exmp begin
 #include <stdio.h>

@@ -67,7 +67,7 @@ is returned if end-of-file is encountered, or if a read error occurs.
 .im errnoref
 .return end
 .see begin
-.seelist &function. fgetc fgetchar fgets fopen getc getchar gets ungetc
+.seelist fgetc fgetchar fgets fopen getc getchar gets ungetc
 .see end
 .exmp begin
 #include <stdio.h>

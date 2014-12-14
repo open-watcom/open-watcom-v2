@@ -70,7 +70,7 @@ These functions return zero if successful, and non-zero if some error
 occurred.
 .return end
 .see begin
-.seelist &function. _heapchk _heapenable _heapgrow _heapmin _heapset _heapshrink _heapwalk
+.seelist _heapchk _heapenable _heapgrow _heapmin _heapset _heapshrink _heapwalk
 .see end
 .exmp begin
 #include <stdlib.h>

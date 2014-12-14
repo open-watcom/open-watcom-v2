@@ -228,9 +228,9 @@ returns
 .im errnoref
 .return end
 .see begin
-.seelist &function. _dos_open fclose fcloseall fdopen fopen freopen
-.seelist &function. _fsopen _grow_handles _hdopen open _open_osfhandle
-.seelist &function. _popen sopen
+.seelist _dos_open fclose fcloseall fdopen fopen freopen
+.seelist _fsopen _grow_handles _hdopen open _open_osfhandle
+.seelist _popen sopen
 .see end
 .exmp begin
 #include <stdio.h>

@@ -40,7 +40,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _settextwindow _setvieworg _setviewport
+.seelist _settextwindow _setvieworg _setviewport
 .see end
 .grexam begin eg_setcr.&langsuff
 .grexam end

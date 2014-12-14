@@ -26,7 +26,7 @@ Valid rounding modes are
 .return end
 .*
 .see begin
-.seelist &function. fesetround
+.seelist fesetround
 .see end
 .*
 .exmp begin

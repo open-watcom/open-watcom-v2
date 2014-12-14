@@ -30,8 +30,8 @@ function returns a pointer to the resulting text string
 .ct .li .
 .return end
 .see begin
-.seelist &function. asctime Functions ctime Functions gmtime localtime mktime
-.seelist &function. _strdate _strtime time tzset
+.seelist asctime Functions ctime Functions gmtime localtime mktime
+.seelist _strdate _strtime time tzset
 .see end
 .exmp begin
 #include <stdio.h>

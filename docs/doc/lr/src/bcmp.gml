@@ -30,7 +30,7 @@ function returns zero if the byte strings are identical;
 otherwise it returns 1.
 .return end
 .see begin
-.seelist &function. bcmp bcopy bzero memcmp strcmp
+.seelist bcmp bcopy bzero memcmp strcmp
 .see end
 .exmp begin
 #include <stdio.h>

@@ -70,7 +70,7 @@ These functions return the integer value of the next character
 .ct .li .
 .return end
 .see begin
-.seelist &function. _mbsnextc _strdec _strinc _strninc
+.seelist _mbsnextc _strdec _strinc _strninc
 .see end
 .exmp begin
 #include <stdio.h>

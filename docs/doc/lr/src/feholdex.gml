@@ -22,7 +22,7 @@ exception handling was successfully installed.
 .return end
 .*
 .see begin
-.seelist &function. fegetenv fesetenv feupdateenv
+.seelist fegetenv fesetenv feupdateenv
 .see end
 .*
 .exmp begin

@@ -41,7 +41,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _settextcolor _settextposition _settextwindow _grtext _outtext _outgtext
+.seelist _settextcolor _settextposition _settextwindow _grtext _outtext _outgtext
 .see end
 .grexam begin eg_outm.&langsuff
 .grexam end

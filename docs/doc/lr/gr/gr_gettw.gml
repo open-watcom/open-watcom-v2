@@ -35,7 +35,7 @@ The
 .return end
 .do end
 .see begin
-.seelist &function. _settextwindow _outtext _outmem _settextposition _scrolltextwindow
+.seelist _settextwindow _outtext _outmem _settextposition _scrolltextwindow
 .see end
 .grexam begin eg_settw.&langsuff
 .grexam end

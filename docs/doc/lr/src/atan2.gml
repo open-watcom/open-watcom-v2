@@ -23,7 +23,7 @@ function returns the arctangent of
 .im errnodom
 .return end
 .see begin
-.seelist atan2 acos asin atan matherr
+.seelist acos asin atan matherr
 .see end
 .exmp begin
 #include <stdio.h>

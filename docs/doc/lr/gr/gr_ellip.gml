@@ -52,7 +52,7 @@ and
 .im gr_retdr ellipse
 .return end
 .see begin
-.seelist &function. _arc _rectangle _setcolor _setfillmask _setlinestyle _setplotaction
+.seelist _arc _rectangle _setcolor _setfillmask _setlinestyle _setplotaction
 .see end
 .grexam begin eg_ellip.&langsuff
 .grexam output

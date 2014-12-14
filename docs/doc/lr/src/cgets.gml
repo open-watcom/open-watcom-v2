@@ -50,7 +50,7 @@ which is at
 .ct .li .
 .return end
 .see begin
-.seelist cgets fgets getch getche gets
+.seelist fgets getch getche gets
 .see end
 .exmp begin
 #include <conio.h>

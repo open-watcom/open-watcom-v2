@@ -38,7 +38,7 @@ to by
 .ct .li .
 .return end
 .see begin
-.seelist &function. strcmp strcmpi stricmp strncmp strnicmp strncasecmp
+.seelist strcmp strcmpi stricmp strncmp strnicmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>

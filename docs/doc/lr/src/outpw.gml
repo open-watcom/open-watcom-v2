@@ -20,7 +20,7 @@ function writes a word (two bytes), determined by
 The value transmitted is returned.
 .return end
 .see begin
-.seelist &function. inp inpd inpw outp outpd outpw
+.seelist inp inpd inpw outp outpd outpw
 .see end
 .exmp begin
 #include <conio.h>

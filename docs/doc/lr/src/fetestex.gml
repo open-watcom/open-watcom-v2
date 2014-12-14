@@ -22,7 +22,7 @@ excepts.
 .return end
 .*
 .see begin
-.seelist &function. feclearexcept fegetexceptflag feraiseexcept fesetexceptflag
+.seelist feclearexcept fegetexceptflag feraiseexcept fesetexceptflag
 .see end
 .*
 .exmp begin

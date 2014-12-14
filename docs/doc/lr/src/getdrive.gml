@@ -13,7 +13,7 @@ function returns the current (default) drive number.
 A value of 1 is drive A, 2 is drive B, 3 is drive C, etc.
 .return end
 .see begin
-.seelist &function. _dos_getdiskfree _dos_getdrive _dos_setdrive _getdiskfree _getdrive
+.seelist _dos_getdiskfree _dos_getdrive _dos_setdrive _getdiskfree _getdrive
 .see end
 .exmp begin
 #include <stdio.h>

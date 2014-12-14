@@ -61,7 +61,7 @@ The value of
 is returned.
 .return end
 .see begin
-.seelist &function. strcat strncat strcat_s strncat_s
+.seelist strcat strncat strcat_s strncat_s
 .see end
 .exmp begin
 #include <stdio.h>

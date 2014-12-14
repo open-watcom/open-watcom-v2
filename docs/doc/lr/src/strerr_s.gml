@@ -70,7 +70,7 @@ are set to the character period (.).
 .return end
 .*
 .see begin
-.seelist &function. clearerr feof ferror perror strerror strerrorlen_s
+.seelist clearerr feof ferror perror strerror strerrorlen_s
 .see end
 .*
 .exmp begin
