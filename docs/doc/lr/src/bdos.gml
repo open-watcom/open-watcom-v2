@@ -32,7 +32,7 @@ function returns the value of the AX register after the
 interrupt has completed.
 .return end
 .see begin
-.im seeint bdos
+.im seeint
 .see end
 .exmp begin
 #include <dos.h>

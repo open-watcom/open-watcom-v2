@@ -85,7 +85,7 @@ A value of &minus.1 may be returned in the case of some output errors.
 .im errnoref
 .return end
 .see begin
-.im seeioos write
+.im seeioos
 .see end
 .exmp begin
 #include <stdio.h>

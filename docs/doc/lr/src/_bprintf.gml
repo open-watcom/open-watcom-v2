@@ -58,7 +58,7 @@ An error can occur while converting a value for output.
 .return end
 .*
 .see begin
-.im seeprtf _bprintf
+.im seeprtf
 .see end
 .*
 .exmp begin

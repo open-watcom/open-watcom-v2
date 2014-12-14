@@ -50,7 +50,7 @@ function returns the value of the CPU EAX register after the
 interrupt.
 .return end
 .see begin
-.im seeint int386x
+.im seeint
 .see end
 .exmp begin
 #include <stdio.h>

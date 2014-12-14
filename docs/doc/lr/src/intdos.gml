@@ -38,7 +38,7 @@ structure located by
 .im errnoref
 .return end
 .see begin
-.im seeint intdos
+.im seeint
 .see end
 .exmp begin
 #include <dos.h>

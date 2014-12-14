@@ -43,7 +43,7 @@ functions return a pointer to a structure containing the
 broken-down time.
 .return end
 .see begin
-.im seetime gmtime
+.im seetime
 .see end
 .cp 12
 .exmp begin

@@ -41,7 +41,7 @@ returns a value for the
 extended function.
 .return end
 .see begin
-.im seeiocon getch
+.im seeiocon
 .see end
 .exmp begin
 #include <stdio.h>

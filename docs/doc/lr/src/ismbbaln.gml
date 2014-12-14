@@ -29,7 +29,7 @@ function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end
 .see begin
-.im seeismbb &function.
+.im seeismbb
 .see end
 .exmp begin
 #include <stdio.h>

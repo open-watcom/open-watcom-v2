@@ -162,7 +162,7 @@ Otherwise,
 returns -1 when all command line options are parsed.
 .return end
 .see begin
-.im seeproc &function.
+.im seeproc
 .see end
 .exmp begin
 #include <stdio.h>

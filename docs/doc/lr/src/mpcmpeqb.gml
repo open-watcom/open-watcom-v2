@@ -17,7 +17,7 @@ values is returned as a sequence of bytes (0xff for equal, 0x00 for
 not equal).
 .return end
 .see begin
-.im seemmcmp &function.
+.im seemmcmp
 .see end
 .exmp begin
 #include <stdio.h>

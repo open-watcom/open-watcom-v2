@@ -96,7 +96,7 @@ as if printed using the fprintf format "%4d".
 .return end
 .*
 .see begin
-.im seetime asctime_s
+.im seetime
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

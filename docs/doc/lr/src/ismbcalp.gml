@@ -20,7 +20,7 @@ function returns zero if the argument is not an alphabetic
 character; otherwise, a non-zero value is returned.
 .return end
 .see begin
-.im seeismbc &function.
+.im seeismbc
 .see end
 .exmp begin
 #include <stdio.h>

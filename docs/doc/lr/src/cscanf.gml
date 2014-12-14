@@ -36,7 +36,7 @@ When a file input error occurs, the
 global variable may be set.
 .return end
 .see begin
-.im seevscnf cscanf
+.im seevscnf
 .see end
 .exmp begin
 .blktext begin

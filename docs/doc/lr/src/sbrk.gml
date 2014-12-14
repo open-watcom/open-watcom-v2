@@ -74,7 +74,7 @@ fails, &minus.1 is returned.
 .im errnoref
 .return end
 .see begin
-.im seealloc sbrk
+.im seealloc
 .see end
 .exmp begin
 #include <stdio.h>

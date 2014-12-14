@@ -145,7 +145,7 @@ is not a directory.
 .endterm
 .error end
 .see begin
-.im seeiodir opendir
+.im seeiodir
 .see end
 .exmp begin
 .blktext begin

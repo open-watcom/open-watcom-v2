@@ -33,7 +33,7 @@ function returns the value of the CPU AX register after the
 interrupt.
 .return end
 .see begin
-.im seeint int86
+.im seeint
 .see end
 .exmp begin
 /*

@@ -51,7 +51,7 @@ function returns the pointer
 to the string containing the local time.
 .return end
 .see begin
-.im seetime _ctime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

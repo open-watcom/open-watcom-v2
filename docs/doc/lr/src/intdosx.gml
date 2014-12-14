@@ -55,7 +55,7 @@ structure located by
 .im errnoref
 .return end
 .see begin
-.im seeint intdosx
+.im seeint
 .see end
 .exmp begin
 #include <stdio.h>

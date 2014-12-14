@@ -120,7 +120,7 @@ does not refer to an open directory stream.
 .endterm
 .error end
 .see begin
-.im seeiodir readdir
+.im seeiodir
 .see end
 .exmp begin
 .blktext begin

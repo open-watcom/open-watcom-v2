@@ -132,7 +132,7 @@ otherwise, zero is returned.
 .im errnoref
 .return end
 .see begin
-.im seeproc &function
+.im seeproc
 .see end
 .cp 12
 .exmp begin

@@ -25,7 +25,7 @@ does not correspond to a multibyte character with length one;
 otherwise, it returns the single byte representation.
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

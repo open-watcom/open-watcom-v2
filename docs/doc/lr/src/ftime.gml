@@ -31,7 +31,7 @@ function returns &minus.1 if not successful, and no useful
 value otherwise.
 .return end
 .see begin
-.im seetime ftime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

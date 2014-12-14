@@ -87,7 +87,7 @@ function was interrupted by a signal.
 .endterm
 .error end
 .see begin
-.im seeiodir closedir
+.im seeiodir
 .see end
 .exmp begin
 .blktext begin

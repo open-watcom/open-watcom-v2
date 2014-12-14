@@ -23,7 +23,7 @@ double-byte uppercase character;
 otherwise, the equivalent lowercase character is returned.
 .return end
 .see begin
-.im seejto &function.
+.im seejto
 .see end
 .exmp begin
 #include <stdio.h>

@@ -136,7 +136,7 @@ modify the contents of the string.
 .return end
 .*
 .see begin
-.im seeenv getenv
+.im seeenv
 .see end
 .*
 .exmp begin

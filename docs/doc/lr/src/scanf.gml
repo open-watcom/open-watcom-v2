@@ -51,7 +51,7 @@ successfully scanned and stored is returned.
 .return end
 .*
 .see begin
-.im seevscnf scanf
+.im seevscnf
 .see end
 .*
 .exmp begin

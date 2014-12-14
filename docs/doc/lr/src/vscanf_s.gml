@@ -78,7 +78,7 @@ global variable may be set.
 .return end
 .*
 .see begin
-.im seevscnf vscanf_s
+.im seevscnf
 .see end
 .*
 .exmp begin

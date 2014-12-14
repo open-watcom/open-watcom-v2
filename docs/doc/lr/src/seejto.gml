@@ -1,4 +1,4 @@
-.seelist &*1 jisalpha jisdigit jishira jiskana jiskigou
-.seelist &*1 jisl0 jisl1 jisl2
-.seelist &*1 jislower jisprint jisspace jisupper jiszen
-.seelist &*1 jtohira jtokata jtolower jtoupper
+.seelist jisalpha jisdigit jishira jiskana jiskigou
+.seelist jisl0 jisl1 jisl2
+.seelist jislower jisprint jisspace jisupper jiszen
+.seelist jtohira jtokata jtolower jtoupper

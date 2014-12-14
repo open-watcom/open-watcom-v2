@@ -39,7 +39,7 @@ The
 function does not return a value.
 .return end
 .see begin
-.im seemmfun &function.
+.im seemmfun
 .see end
 .ix 'MMX detection'
 .ix 'CPUID'

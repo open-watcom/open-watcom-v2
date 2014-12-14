@@ -35,7 +35,7 @@ function returns the value of the CPU EAX register after the
 interrupt.
 .return end
 .see begin
-.im seeint int386
+.im seeint
 .see end
 .exmp begin
 /*

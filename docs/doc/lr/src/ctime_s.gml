@@ -65,7 +65,7 @@ function instead.
 .return end
 .*
 .see begin
-.im seetime ctime_s
+.im seetime
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

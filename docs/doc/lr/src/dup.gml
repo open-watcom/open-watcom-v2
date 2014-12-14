@@ -65,7 +65,7 @@ The number of file &handle.s would exceed {OPEN_MAX}.
 .endterm
 .error end
 .see begin
-.im seeioos dup
+.im seeioos
 .see end
 .cp 8
 .exmp begin

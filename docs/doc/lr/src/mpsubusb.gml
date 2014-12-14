@@ -18,7 +18,7 @@ of one 64-bit multimedia value from a second multimedia value is
 returned.
 .return end
 .see begin
-.im seemmsub &function.
+.im seemmsub
 .see end
 .exmp begin
 #include <stdio.h>

@@ -59,7 +59,7 @@ A value of 0 indicates the start of the file.
 .return end
 .*
 .see begin
-.im seeioos tell
+.im seeioos
 .see end
 .*
 .exmp begin

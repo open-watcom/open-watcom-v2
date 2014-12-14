@@ -44,7 +44,7 @@ The result of packing, with signed saturation, 16-bit signed words
 into 8-bit signed bytes is returned.
 .return end
 .see begin
-.im seemmpck &function.
+.im seemmpck
 .see end
 .exmp begin
 #include <stdio.h>

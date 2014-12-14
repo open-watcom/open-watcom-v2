@@ -27,7 +27,7 @@ a NaN value.
 .return end
 .*
 .see begin
-.im seefpcls isnan
+.im seefpcls
 .see end
 .*
 .exmp begin

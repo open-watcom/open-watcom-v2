@@ -40,7 +40,7 @@ The result of packing, with unsigned saturation, 16-bit signed words
 into 8-bit unsigned bytes is returned.
 .return end
 .see begin
-.im seemmpck &function.
+.im seemmpck
 .see end
 .exmp begin
 #include <stdio.h>

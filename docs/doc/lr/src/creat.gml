@@ -162,7 +162,7 @@ is an empty string.
 .endterm
 .error end
 .see begin
-.im seeioos creat
+.im seeioos
 .see end
 .exmp begin
 #include <sys/types.h>

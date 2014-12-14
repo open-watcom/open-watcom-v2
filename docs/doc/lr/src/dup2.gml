@@ -86,7 +86,7 @@ are available.
 .endterm
 .error end
 .see begin
-.im seeioos dup2
+.im seeioos
 .see end
 .exmp begin
 #include <fcntl.h>

@@ -164,7 +164,7 @@ values.
 .return end
 .*
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__  1

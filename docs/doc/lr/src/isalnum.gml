@@ -51,7 +51,7 @@ is true for
 .do end
 .return end
 .see begin
-.im seeis &function.
+.im seeis
 .see end
 .exmp begin
 #include <stdio.h>

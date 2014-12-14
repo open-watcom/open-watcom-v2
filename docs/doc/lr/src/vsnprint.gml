@@ -99,7 +99,7 @@ if the returned value is nonnegative and less than
 .return end
 .*
 .see begin
-.im seevprtf vsnprintf
+.im seevprtf
 .see end
 .*
 .exmp begin

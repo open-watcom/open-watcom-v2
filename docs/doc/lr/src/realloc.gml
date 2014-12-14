@@ -92,7 +92,7 @@ if there is insufficient memory available or if the value of the
 argument is zero.
 .return end
 .see begin
-.im seealloc realloc
+.im seealloc
 .see end
 .exmp begin
 #include <stdlib.h>
@@ -257,7 +257,7 @@ if there is insufficient memory available or if the requested size is
 zero.
 .return end
 .see begin
-.im seealloc realloc
+.im seealloc
 .see end
 .exmp begin
 #include <stdlib.h>

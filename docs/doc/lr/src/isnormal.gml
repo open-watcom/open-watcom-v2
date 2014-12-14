@@ -26,7 +26,7 @@ a normal value.
 .return end
 .*
 .see begin
-.im seefpcls isnormal
+.im seefpcls
 .see end
 .*
 .exmp begin

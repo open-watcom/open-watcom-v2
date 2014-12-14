@@ -60,7 +60,7 @@ the character is an illegal character
 .endterm
 .return end
 .see begin
-.im seeismbc &function.
+.im seeismbc
 .see end
 .exmp begin
 #include <stdio.h>

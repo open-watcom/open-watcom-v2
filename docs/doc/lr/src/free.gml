@@ -32,7 +32,7 @@ The
 function returns no value.
 .return end
 .see begin
-.im seealloc free
+.im seealloc
 .see end
 .exmp begin
 #include <stdio.h>
@@ -130,7 +130,7 @@ The
 functions return no value.
 .return end
 .see begin
-.im seealloc free
+.im seealloc
 .see end
 .exmp begin
 #include <stdio.h>

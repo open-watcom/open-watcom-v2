@@ -41,7 +41,7 @@ The result of packing, with signed saturation, 32-bit signed
 double-words into 16-bit signed words is returned.
 .return end
 .see begin
-.im seemmpck &function.
+.im seemmpck
 .see end
 .exmp begin
 #include <stdio.h>

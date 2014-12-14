@@ -16,7 +16,7 @@ The bit-wise logical AND of an inverted 64-bit value and a
 non-inverted value is returned.
 .return end
 .see begin
-.im seemmbit &function.
+.im seemmbit
 .see end
 .exmp begin
 #include <stdio.h>

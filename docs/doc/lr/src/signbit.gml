@@ -22,7 +22,7 @@ argument has value is negative.
 .return end
 .*
 .see begin
-.im seefpcls signbit
+.im seefpcls
 .see end
 .*
 .exmp begin

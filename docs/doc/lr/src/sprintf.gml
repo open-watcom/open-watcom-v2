@@ -73,7 +73,7 @@ or more wide characters were requested to be generated.
 .return end
 .*
 .see begin
-.im seeprtf sprintf
+.im seeprtf
 .see end
 .*
 .exmp begin

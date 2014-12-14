@@ -46,7 +46,7 @@ using the mapping described by
 .return end
 .*
 .see begin
-.im seeis &function.
+.im seeis
 .see end
 .*
 .exmp begin

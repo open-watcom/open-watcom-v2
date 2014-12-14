@@ -200,7 +200,7 @@ argument is associated with a pipe or FIFO.
 .error end
 .*
 .see begin
-.im seeioos lseek
+.im seeioos
 .see end
 .*
 .exmp begin

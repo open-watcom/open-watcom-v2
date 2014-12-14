@@ -64,7 +64,7 @@ Otherwise, the number of input arguments for which
 values were successfully scanned and stored is returned.
 .return end
 .see begin
-.im seevscnf vsscanf
+.im seevscnf
 .see end
 .*
 .exmp begin

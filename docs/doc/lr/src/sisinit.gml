@@ -27,7 +27,7 @@ conversion state; otherwise, it returns zero.
 .return end
 .*
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .*
 .exmp begin

@@ -82,7 +82,7 @@ function returns the pointer to the string containing the
 local time.
 .return end
 .see begin
-.im seetime jctime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

@@ -14,7 +14,7 @@ The 64-bit result of loading MM0 with an unsigned 32-bit integer value
 is returned.
 .return end
 .see begin
-.im seemmfun &function.
+.im seemmfun
 .see end
 .exmp begin
 #include <stdio.h>

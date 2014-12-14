@@ -78,7 +78,7 @@ functions return the size of the memory block pointed to by
 .ct .li .
 .return end
 .see begin
-.im seealloc _msize
+.im seealloc
 .see end
 .exmp begin
 #include <stdio.h>

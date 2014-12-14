@@ -59,7 +59,7 @@ The
 function returns a pointer to the character string result.
 .return end
 .see begin
-.im seetime jasctime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

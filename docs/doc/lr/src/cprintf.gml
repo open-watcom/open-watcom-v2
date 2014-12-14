@@ -26,7 +26,7 @@ The
 function returns the number of characters written.
 .return end
 .see begin
-.im seeprtf cprintf
+.im seeprtf
 .see end
 .exmp begin
 #include <conio.h>

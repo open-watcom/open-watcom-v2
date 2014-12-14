@@ -81,7 +81,7 @@ wide characters were requested to be generated.
 .im errnoref
 .return end
 .see begin
-.im seeprtf _snprintf
+.im seeprtf
 .see end
 .exmp begin
 #include <stdio.h>

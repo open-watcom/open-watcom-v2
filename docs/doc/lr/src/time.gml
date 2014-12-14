@@ -29,7 +29,7 @@ the current calendar time is also stored in the object pointed to by
 .ct .li .
 .return end
 .see begin
-.im seetime time
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

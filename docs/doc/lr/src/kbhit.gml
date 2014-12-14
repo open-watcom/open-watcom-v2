@@ -44,7 +44,7 @@ function returns zero when no keystroke is available; otherwise, a
 non-zero value is returned.
 .return end
 .see begin
-.im seeiocon kbhit
+.im seeiocon
 .see end
 .exmp begin
 /*

@@ -33,7 +33,7 @@ The
 function returns the converted value.
 .return end
 .see begin
-.im seestoi &function.
+.im seestoi
 .see end
 .exmp begin
 #include <stdlib.h>

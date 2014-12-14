@@ -46,7 +46,7 @@ When a file input error occurs, the
 global variable may be set.
 .return end
 .see begin
-.im seevscnf vcscanf
+.im seevscnf
 .see end
 .exmp begin
 #include <conio.h>

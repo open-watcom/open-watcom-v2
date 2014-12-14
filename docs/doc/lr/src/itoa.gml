@@ -68,7 +68,7 @@ The
 function returns the pointer to the result.
 .return end
 .see begin
-.im seestoi &function.
+.im seestoi
 .see end
 .exmp begin
 #include <stdio.h>

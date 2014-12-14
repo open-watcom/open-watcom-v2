@@ -81,7 +81,7 @@ modified when
 is not a null pointer.
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

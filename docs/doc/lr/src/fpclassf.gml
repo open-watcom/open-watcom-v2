@@ -52,7 +52,7 @@ appropriate to the value of its argument
 .return end
 .*
 .see begin
-.im seefpcls fpclassify
+.im seefpcls
 .see end
 .*
 .exmp begin

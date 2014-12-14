@@ -22,7 +22,7 @@ by an amount specified in
 while shifting in zeros.
 .return end
 .see begin
-.im seemmsrl &function.
+.im seemmsrl
 .see end
 .exmp begin
 #include <stdio.h>

@@ -153,7 +153,7 @@ Otherwise, a non-zero value is returned.
 .return end
 .*
 .see begin
-.im seeenv getenv_s
+.im seeenv
 .see end
 .*
 .exmp begin

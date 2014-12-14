@@ -25,7 +25,7 @@ function returns the number of clock ticks that have
 occurred since the program started executing.
 .return end
 .see begin
-.im seetime clock
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

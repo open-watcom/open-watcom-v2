@@ -59,7 +59,7 @@ function returns the number of characters written, or a
 negative value if an output error occurred.
 .return end
 .see begin
-.im seevprtf &function.
+.im seevprtf
 .see end
 .exmp begin
 .blktext begin

@@ -17,7 +17,7 @@ If an invalid code page value is supplied for
 .ct , the function returns -1 and the code page setting is unchanged.
 .return end
 .see begin
-.im seeismbb &function.
+.im seeismbb
 .see end
 .exmp begin
 #include <stdio.h>

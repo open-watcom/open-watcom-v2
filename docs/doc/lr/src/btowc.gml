@@ -32,7 +32,7 @@ that character.
 .return end
 .*
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .*
 .exmp begin

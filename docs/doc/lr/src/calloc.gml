@@ -34,7 +34,7 @@ if there is insufficient memory available or if the value of the
 argument is zero.
 .return end
 .see begin
-.im seealloc calloc
+.im seealloc
 .see end
 .cp 10
 .exmp begin
@@ -130,7 +130,7 @@ if there is insufficient memory available or if the value of the
 argument is zero.
 .return end
 .see begin
-.im seealloc calloc
+.im seealloc
 .see end
 .cp 10
 .exmp begin

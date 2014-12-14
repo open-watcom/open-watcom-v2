@@ -62,7 +62,7 @@ set for the file; otherwise, &minus.1 is returned.
 .do end
 .return end
 .see begin
-.im seeioos setmode
+.im seeioos
 .see end
 .exmp begin
 #include <stdio.h>

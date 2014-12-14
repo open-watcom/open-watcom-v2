@@ -41,7 +41,7 @@ wide character that corresponds to a hexadecimal-digit character.
 Otherwise, zero is returned.
 .return end
 .see begin
-.im seeis &function.
+.im seeis
 .see end
 .exmp begin
 #include <stdio.h>

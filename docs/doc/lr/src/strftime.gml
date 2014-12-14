@@ -173,7 +173,7 @@ Otherwise, zero is returned.
 .return end
 .see begin
 .seelist strftime setlocale
-.im seetime strftime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

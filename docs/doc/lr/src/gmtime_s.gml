@@ -38,7 +38,7 @@ be converted to UTC or there is a runtime-constraint violation.
 .return end
 .*
 .see begin
-.im seetime gmtime_s
+.im seetime
 .see end
 .cp 12
 .exmp begin

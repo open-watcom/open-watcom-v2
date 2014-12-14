@@ -93,7 +93,7 @@ wide characters were requested to be generated.
 .im errnoref
 .return end
 .see begin
-.im seevprtf _vsnprintf
+.im seevprtf
 .see end
 .exmp begin
 .blktext begin

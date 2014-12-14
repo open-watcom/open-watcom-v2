@@ -114,7 +114,7 @@ returns zero.
 .return end
 .*
 .see begin
-.im seeprtf vsprintf_s
+.im seeprtf
 .see end
 .*
 .exmp begin

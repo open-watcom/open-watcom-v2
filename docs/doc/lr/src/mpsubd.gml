@@ -18,7 +18,7 @@ The result of subtracting one set of packed double-words from a second
 set of packed double-words is returned.
 .return end
 .see begin
-.im seemmsub &function.
+.im seemmsub
 .see end
 .exmp begin
 #include <stdio.h>

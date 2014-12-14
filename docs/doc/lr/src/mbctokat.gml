@@ -37,7 +37,7 @@ double-byte Hiragana character;
 otherwise, the equivalent Katakana character is returned.
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

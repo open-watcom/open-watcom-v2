@@ -24,7 +24,7 @@ otherwise
 returns a single-byte ASCII character.
 .return end
 .see begin
-.im seejis &function.
+.im seejis
 .see end
 .exmp begin
 #include <stdio.h>

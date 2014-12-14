@@ -63,7 +63,7 @@ is undefined if
 is not an uppercase letter.
 .return end
 .see begin
-.im seeis &function.
+.im seeis
 .seelist strlwr strupr tolower toupper
 .see end
 .exmp begin

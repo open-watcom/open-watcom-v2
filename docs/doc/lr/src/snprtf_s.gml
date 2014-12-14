@@ -111,7 +111,7 @@ returned value is nonnegative and less than
 .return end
 .*
 .see begin
-.im seeprtf snprintf_s
+.im seeprtf
 .see end
 .*
 .exmp begin

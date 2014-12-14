@@ -21,7 +21,7 @@ The
 function returns no value.
 .return end
 .see begin
-.im seealloc hfree
+.im seealloc
 .see end
 .exmp begin
 #include <stdio.h>

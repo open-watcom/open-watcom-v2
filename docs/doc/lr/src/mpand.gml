@@ -14,7 +14,7 @@ and the result is stored in memory.
 The bit-wise logical AND of two 64-bit values is returned.
 .return end
 .see begin
-.im seemmbit &function.
+.im seemmbit
 .see end
 .exmp begin
 #include <stdio.h>

@@ -82,7 +82,7 @@ or more wide characters were requested to be generated.
 .return end
 .*
 .see begin
-.im seevprtf vsprintf
+.im seevprtf
 .see end
 .*
 .exmp begin

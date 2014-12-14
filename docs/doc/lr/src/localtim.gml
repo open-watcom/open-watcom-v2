@@ -56,7 +56,7 @@ functions return a pointer to a
 structure containing the time information.
 .return end
 .see begin
-.im seetime localtime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

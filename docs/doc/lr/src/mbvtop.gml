@@ -28,7 +28,7 @@ function returns the value of the argument
 .ct .li .
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

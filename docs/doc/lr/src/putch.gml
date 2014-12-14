@@ -17,7 +17,7 @@ The
 function returns the character written.
 .return end
 .see begin
-.im seeiocon putch
+.im seeiocon
 .see end
 .exmp begin
 #include <conio.h>

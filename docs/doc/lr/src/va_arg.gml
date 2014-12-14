@@ -57,7 +57,7 @@ The macro returns the value of the next variable argument, according to
 type passed as the second parameter.
 .return end
 .see begin
-.im seevarg va_arg
+.im seevarg
 .see end
 .exmp begin
 #include <stdio.h>

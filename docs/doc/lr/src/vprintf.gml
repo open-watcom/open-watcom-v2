@@ -66,7 +66,7 @@ a negative value if an output error occurred.
 .return end
 .*
 .see begin
-.im seevprtf vprintf
+.im seevprtf
 .see end
 .*
 .exmp begin

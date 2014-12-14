@@ -18,7 +18,7 @@ The result of subtracting the packed bytes of one 64-bit multimedia
 value from another is returned.
 .return end
 .see begin
-.im seemmsub &function.
+.im seemmsub
 .see end
 .exmp begin
 #include <stdio.h>

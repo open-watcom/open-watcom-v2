@@ -38,7 +38,7 @@ negative value if an output error occurred.
 .im errnoref
 .return end
 .see begin
-.im seevprtf vcprintf
+.im seevprtf
 .see end
 .exmp begin
 #include <conio.h>

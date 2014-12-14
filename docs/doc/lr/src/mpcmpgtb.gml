@@ -17,7 +17,7 @@ multimedia values is returned as a sequence of bytes (0xff for greater
 than, 0x00 for not greater than).
 .return end
 .see begin
-.im seemmcmp &function.
+.im seemmcmp
 .see end
 .exmp begin
 #include <stdio.h>

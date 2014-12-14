@@ -54,7 +54,7 @@ bytes do not form a valid multibyte character
 .endnote
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

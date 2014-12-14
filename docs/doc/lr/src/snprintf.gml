@@ -89,7 +89,7 @@ if the returned value is nonnegative and less than
 .return end
 .*
 .see begin
-.im seeprtf snprintf
+.im seeprtf
 .see end
 .*
 .exmp begin

@@ -23,7 +23,7 @@ function returns a multibyte character or null if
 points at a null character.
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

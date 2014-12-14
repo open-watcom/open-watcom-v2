@@ -26,7 +26,7 @@ an infinite value.
 .return end
 .*
 .see begin
-.im seefpcls isinf
+.im seefpcls
 .see end
 .*
 .exmp begin

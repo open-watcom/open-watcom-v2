@@ -56,7 +56,7 @@ The
 function returns the converted calendar time.
 .return end
 .see begin
-.im seetime mktime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

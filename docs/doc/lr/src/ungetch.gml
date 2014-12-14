@@ -33,7 +33,7 @@ The
 function returns the character pushed back.
 .return end
 .see begin
-.im seeiocon ungetch
+.im seeiocon
 .see end
 .exmp begin
 #include <stdio.h>

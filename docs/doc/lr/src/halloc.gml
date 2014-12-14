@@ -31,7 +31,7 @@ value is also returned if the size of the array is greater than 64K
 bytes and the size of an array element is not a power of 2.
 .return end
 .see begin
-.im seealloc halloc
+.im seealloc
 .see end
 .exmp begin
 #include <stdio.h>

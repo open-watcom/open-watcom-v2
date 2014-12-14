@@ -29,7 +29,7 @@ otherwise
 returns a double-byte character.
 .return end
 .see begin
-.im seeismbb &function.
+.im seeismbb
 .see end
 .exmp begin
 #include <stdio.h>

@@ -79,7 +79,7 @@ The appropriate
 function can be used to determine the new size of the expanded block.
 .return end
 .see begin
-.im seealloc _expand
+.im seealloc
 .see end
 .exmp begin
 #include <stdio.h>

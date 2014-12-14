@@ -74,7 +74,7 @@ The
 functions return a pointer to the character string result.
 .return end
 .see begin
-.im seetime asctime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

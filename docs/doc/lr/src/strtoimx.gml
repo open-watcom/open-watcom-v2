@@ -84,7 +84,7 @@ is set to
 .ct .li .
 .return end
 .see begin
-.im seestoi &function.
+.im seestoi
 .see end
 .exmp begin
 #include <inttypes.h>

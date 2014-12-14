@@ -19,7 +19,7 @@ hexadecimal-digit character.
 Otherwise, zero is returned.
 .return end
 .see begin
-.im seeismbc &function.
+.im seeismbc
 .see end
 .exmp begin
 #include <stdio.h>

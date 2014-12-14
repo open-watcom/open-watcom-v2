@@ -26,7 +26,7 @@ The
 function does not return a value.
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

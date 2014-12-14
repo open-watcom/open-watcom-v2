@@ -51,7 +51,7 @@ function; otherwise, it returns zero.
 .return end
 .*
 .see begin
-.im seeis &function.
+.im seeis
 .see end
 .*
 .exmp begin

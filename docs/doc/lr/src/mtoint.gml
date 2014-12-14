@@ -13,7 +13,7 @@ The low-order 32 bits of a multimedia value are fetched and returned
 as the result.
 .return end
 .see begin
-.im seemmfun &function.
+.im seemmfun
 .see end
 .exmp begin
 #include <stdio.h>

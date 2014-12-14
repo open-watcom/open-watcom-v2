@@ -54,7 +54,7 @@ a negative value if an output error occurred.
 .return end
 .*
 .see begin
-.im seeprtf printf
+.im seeprtf
 .see end
 .*
 .exmp begin

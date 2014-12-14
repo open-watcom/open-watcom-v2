@@ -23,7 +23,7 @@ function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end
 .see begin
-.im seeismbc &function.
+.im seeismbc
 .see end
 .exmp begin
 #include <stdio.h>

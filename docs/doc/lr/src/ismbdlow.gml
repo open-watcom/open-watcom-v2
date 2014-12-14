@@ -8,7 +8,7 @@ int _ismbdlower( unsigned int ch );
 .return begin
 .return end
 .see begin
-.im seeismbd &function.
+.im seeismbd
 .see end
 .exmp begin
 .exmp end

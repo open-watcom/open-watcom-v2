@@ -40,7 +40,7 @@ excluding the terminating null character, is returned.
 .return end
 .*
 .see begin
-.im seeproc &function.
+.im seeproc
 .see end
 .*
 .exmp begin

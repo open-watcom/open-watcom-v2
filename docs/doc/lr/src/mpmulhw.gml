@@ -20,7 +20,7 @@ are multiplied with the packed 16-bit words in
 and the high-order 16-bits of the results are returned.
 .return end
 .see begin
-.im seemmmul &function.
+.im seemmmul
 .see end
 .exmp begin
 #include <stdio.h>

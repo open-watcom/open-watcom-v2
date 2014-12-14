@@ -76,7 +76,7 @@ has the property described by
 .return end
 .*
 .see begin
-.im seeis &function.
+.im seeis
 .see end
 .*
 .exmp begin

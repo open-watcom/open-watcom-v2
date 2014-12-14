@@ -65,7 +65,7 @@ The
 function does not return a value.
 .return end
 .see begin
-.im seeiodir rewinddir
+.im seeiodir
 .see end
 .exmp begin
 .blktext begin

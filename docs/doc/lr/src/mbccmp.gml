@@ -63,7 +63,7 @@ greater than multibyte character at
 :CMT. .ct ).
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

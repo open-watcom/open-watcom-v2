@@ -65,7 +65,7 @@ Not enough memory to allocate a control structure.
 .endterm
 .error end
 .see begin
-.im seeenv clearenv
+.im seeenv
 .see end
 .exmp begin
 .blktext begin

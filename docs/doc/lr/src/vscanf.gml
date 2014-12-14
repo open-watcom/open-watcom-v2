@@ -62,7 +62,7 @@ values were successfully scanned and stored is returned.
 .return end
 .*
 .see begin
-.im seevscnf vscanf
+.im seevscnf
 .see end
 .*
 .exmp begin

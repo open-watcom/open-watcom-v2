@@ -41,7 +41,7 @@ The result of the interleaved unpacking of the high-order bytes of two
 multimedia values is returned.
 .return end
 .see begin
-.im seemmupk &function.
+.im seemmupk
 .see end
 .exmp begin
 #include <stdio.h>

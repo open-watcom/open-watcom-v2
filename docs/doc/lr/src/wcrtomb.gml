@@ -74,7 +74,7 @@ and &minus.1 will be returned, but the conversion state will be
 unchanged.
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

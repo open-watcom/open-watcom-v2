@@ -40,7 +40,7 @@ The
 function does not return a value.
 .return end
 .see begin
-.im seeint intr
+.im seeint
 .see end
 .if '&machsys' ne 'QNX' .do begin
 .exmp begin

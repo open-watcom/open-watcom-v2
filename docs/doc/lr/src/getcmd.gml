@@ -33,7 +33,7 @@ The address of the target
 is returned.
 .return end
 .see begin
-.im seeproc &function.
+.im seeproc
 .see end
 .exmp begin
 .blktext begin

@@ -31,7 +31,7 @@ function returns non-zero if the argument is a single-byte
 Katakana character; otherwise, a zero value is returned.
 .return end
 .see begin
-.im seeismbb &function.
+.im seeismbb
 .see end
 .exmp begin
 #include <stdio.h>

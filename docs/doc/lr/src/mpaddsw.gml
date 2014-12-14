@@ -21,7 +21,7 @@ The result of adding the packed signed words, with saturation, of two
 64-bit multimedia values is returned.
 .return end
 .see begin
-.im seemmadd &function.
+.im seemmadd
 .see end
 .exmp begin
 #include <stdio.h>

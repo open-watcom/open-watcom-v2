@@ -112,7 +112,7 @@ returns zero.
 .return end
 .*
 .see begin
-.im seeprtf sprintf_s
+.im seeprtf
 .see end
 .*
 .exmp begin

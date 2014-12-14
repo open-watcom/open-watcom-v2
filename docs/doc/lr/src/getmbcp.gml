@@ -16,7 +16,7 @@ A return value of zero indicates that a single byte code page is in
 use.
 .return end
 .see begin
-.im seeismbb &function.
+.im seeismbb
 .see end
 .exmp begin
 #include <stdio.h>

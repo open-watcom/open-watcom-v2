@@ -29,7 +29,7 @@ double-byte uppercase character;
 otherwise, the equivalent lowercase character is returned.
 .return end
 .see begin
-.im seembc &function.
+.im seembc
 .see end
 .exmp begin
 #include <stdio.h>

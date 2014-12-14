@@ -29,7 +29,7 @@ multimedia values and adding the 32-bit results pairwise is returned
 as packed double-words.
 .return end
 .see begin
-.im seemmmul &function.
+.im seemmmul
 .see end
 .exmp begin
 #include <stdio.h>

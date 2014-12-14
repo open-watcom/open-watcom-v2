@@ -17,7 +17,7 @@ The result of comparing the 32-bit packed signed double-words of two
 (0xffffffff for greater than, 0x00000000 for not greater than).
 .return end
 .see begin
-.im seemmcmp &function.
+.im seemmcmp
 .see end
 .exmp begin
 #include <stdio.h>

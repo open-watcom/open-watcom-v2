@@ -25,7 +25,7 @@ non-punctuation character;
 otherwise, a non-zero value is returned.
 .return end
 .see begin
-.im seejis &function.
+.im seejis
 .see end
 .exmp begin
 #include <stdio.h>

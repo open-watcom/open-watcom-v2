@@ -100,7 +100,7 @@ functions return the pointer to the string containing the
 local time.
 .return end
 .see begin
-.im seetime ctime
+.im seetime
 .seelist ctime_s
 .see end
 .exmp begin

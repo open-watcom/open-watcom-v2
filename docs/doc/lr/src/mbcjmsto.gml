@@ -48,7 +48,7 @@ function returns zero if the argument is not in the range;
 otherwise, the corresponding shift-JIS code is returned.
 .return end
 .see begin
-.im seeismbb &function.
+.im seeismbb
 .see end
 .exmp begin
 #include <stdio.h>

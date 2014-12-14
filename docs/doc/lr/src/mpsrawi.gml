@@ -24,7 +24,7 @@ by an amount specified in
 while shifting in sign bits.
 .return end
 .see begin
-.im seemmsra &function.
+.im seemmsra
 .see end
 .exmp begin
 #include <stdio.h>

@@ -24,7 +24,7 @@ function returns a pointer to the structure containing the broken-down
 time.
 .return end
 .see begin
-.im seetime _gmtime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

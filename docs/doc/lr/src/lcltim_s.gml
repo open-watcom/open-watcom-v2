@@ -39,7 +39,7 @@ or there is a runtime-constraint violation.
 .return end
 .*
 .see begin
-.im seetime localtime_s
+.im seetime
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

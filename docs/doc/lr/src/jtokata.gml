@@ -32,7 +32,7 @@ double-byte Hiragana character;
 otherwise, the equivalent Katakana character is returned.
 .return end
 .see begin
-.im seejto &function.
+.im seejto
 .see end
 .exmp begin
 #include <stdio.h>

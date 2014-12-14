@@ -27,7 +27,7 @@ a finite value.
 .return end
 .*
 .see begin
-.im seefpcls isfinite
+.im seefpcls
 .seelist _finite
 .see end
 .*

@@ -21,7 +21,7 @@ between the two times in seconds as a
 .id double.
 .return end
 .see begin
-.im seetime difftime
+.im seetime
 .see end
 .exmp begin
 #include <stdio.h>

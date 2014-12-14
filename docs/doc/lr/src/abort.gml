@@ -33,7 +33,7 @@ The
 function does not return to its caller.
 .return end
 .see begin
-.im seeproc &function
+.im seeproc
 .see end
 .exmp begin
 #include <stdlib.h>

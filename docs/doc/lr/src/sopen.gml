@@ -132,7 +132,7 @@ Path or file not found
 .endterm
 .error end
 .see begin
-.im seeioos sopen
+.im seeioos
 .see end
 .exmp begin
 #include <sys/stat.h>

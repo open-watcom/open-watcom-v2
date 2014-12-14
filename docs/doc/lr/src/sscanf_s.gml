@@ -74,7 +74,7 @@ successfully assigned, which can be fewer than provided for, or even zero.
 .return end
 .*
 .see begin
-.im seevscnf sscanf_s
+.im seevscnf
 .see end
 .*
 .exmp begin

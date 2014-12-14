@@ -73,7 +73,7 @@ negative value if an output error or runtime-constraint violation occurred.
 .return end
 .*
 .see begin
-.im seeprtf vprintf_s
+.im seeprtf
 .see end
 .*
 .exmp begin

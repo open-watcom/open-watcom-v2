@@ -25,7 +25,7 @@ function returns zero if the argument is not in the set;
 otherwise, a non-zero value is returned.
 .return end
 .see begin
-.im seejto &function.
+.im seejto
 .see end
 .exmp begin
 #include <stdio.h>

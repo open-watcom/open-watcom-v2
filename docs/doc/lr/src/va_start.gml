@@ -31,7 +31,7 @@ for complete documentation on these macros.
 The macro does not return a value.
 .return end
 .see begin
-.im seevarg va_start
+.im seevarg
 .see end
 .exmp begin
 #include <stdio.h>
