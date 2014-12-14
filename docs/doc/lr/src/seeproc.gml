@@ -1,15 +1,15 @@
 .* FAMILY OF PROCESS REFERENCES
-.seelist &*1 abort atexit _bgetcmd
+.seelist abort atexit _bgetcmd
 .if '&machsys' eq 'QNX' .do begin
-.seelist &*1 close
+.seelist close
 .do end
-.seelist &*1 exec...
-.seelist &*1 exit _Exit _exit getcmd getenv main onexit putenv
+.seelist exec...
+.seelist xit _Exit _exit getcmd getenv main onexit putenv
 .if '&machsys' eq 'QNX' .do begin
-.seelist &*1 sigaction signal
+.seelist sigaction signal
 .do end
-.seelist &*1 spawn...
-.seelist &*1 system
+.seelist spawn...
+.seelist system
 .if '&machsys' eq 'QNX' .do begin
-.seelist &*1 wait waitpid
+.seelist wait waitpid
 .do end
