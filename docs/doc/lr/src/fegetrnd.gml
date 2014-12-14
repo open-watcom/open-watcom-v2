@@ -47,5 +47,5 @@ void main( void )
         printf( "Up\n" );
 }
 .exmp end
-.class C99
+.class ISO C99
 .system

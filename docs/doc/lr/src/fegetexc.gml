@@ -51,5 +51,5 @@ void main( void )
     fegetexceptflag( &flags, FE_DIVBYZERO );
 }
 .exmp end
-.class C99
+.class ISO C99
 .system

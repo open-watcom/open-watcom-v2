@@ -39,5 +39,5 @@ void main( void )
     fsetexceptflag( &flags, FE_INVALID );
 }
 .exmp end
-.class C99
+.class ISO C99
 .system

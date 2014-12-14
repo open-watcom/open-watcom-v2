@@ -31,5 +31,5 @@ void main( void )
 	feclearexcept( FE_OVERFLOW|FE_UNDERFLOW );
 }
 .exmp end
-.class C99
+.class ISO C99
 .system
