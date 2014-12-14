@@ -37,7 +37,7 @@
 #include "mad.h"
 #include "madcli.h"
 
-extern char             *DupStr( const char *str );
+extern char             *DupStr( char *str );
 
 gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, int id )

@@ -1761,87 +1761,87 @@ static bool ProcLine( char *line, pass_type pass )
     switch( State ) {
     case RS_DIALOG:
         {
-            static DIALOG_INFO  dlg;
+            static DIALOG_INFO  dialog_info;
             bool                added = FALSE;
 
             next = NextToken( line, '=' );
             if( stricmp( line, "name" ) == 0 ) {
                 // new dialog
-                memset( &dlg, 0, sizeof( DIALOG_INFO ) );
-                dlg.curr_dialog = AddNewDialog( next );
-                InitArray( (void **)&dlg.curr_dialog->controls,
-                           sizeof( gui_control_info ), &dlg.array );
-                dlg.wrap_width = MaxWidthChars;
+                memset( &dialog_info, 0, sizeof( DIALOG_INFO ) );
+                dialog_info.curr_dialog = AddNewDialog( next );
+                InitArray( (void **)&dialog_info.curr_dialog->controls,
+                           sizeof( gui_control_info ), &dialog_info.array );
+                dialog_info.wrap_width = MaxWidthChars;
             } else if( stricmp( line, "condition" ) == 0 ) {
-                CompileCondition( next, &dlg.curr_dialog->condition );
+                CompileCondition( next, &dialog_info.curr_dialog->condition );
             } else if( stricmp( line, "title" ) == 0 ) {
-                GUIStrDup( next, &dlg.curr_dialog->title );
+                GUIStrDup( next, &dialog_info.curr_dialog->title );
             } else if( stricmp( line, "any_check" ) == 0 ) {
-                dlg.curr_dialog->any_check = AddVariable( next );
+                dialog_info.curr_dialog->any_check = AddVariable( next );
             } else if( stricmp( line, "width" ) == 0 ) {
                 int         wrap_width;
                 wrap_width = atoi( next );
                 if( wrap_width > 0 && wrap_width <= MaxWidthChars ) {
-                    dlg.wrap_width = wrap_width;
+                    dialog_info.wrap_width = wrap_width;
                 }
             } else if( stricmp( line, "vis_condition" ) == 0 ) {
                 line = next; next = NextToken( line, ',' );
                 if( next == NULL || EvalCondition( next ) ) {
                     GUIStrDup( line,
-                               &dlg.curr_dialog->pVisibilityConds[dlg.curr_dialog->num_controls - 1] );
+                               &dialog_info.curr_dialog->pVisibilityConds[dialog_info.curr_dialog->num_controls - 1] );
                 }
             } else {
                 // add another control to current dialog
-                if( !BumpArray( &dlg.array ) ) {
+                if( !BumpArray( &dialog_info.array ) ) {
                     SetupError( "IDS_NOMEMORY" );
                     exit( 1 );
                 }
                 if( stricmp( line, "static_text" ) == 0 ) {
-                    dlg.col_num = C0;
-                    added = dialog_static( next, &dlg );
+                    dialog_info.col_num = C0;
+                    added = dialog_static( next, &dialog_info );
                 } else if( stricmp( line, "dynamic_text" ) == 0 ) {
-                    added = dialog_dynamic( next, &dlg );
+                    added = dialog_dynamic( next, &dialog_info );
                 } else if( stricmp( line, "other_button" ) == 0 ) {
-                    added = dialog_other_button( next, &dlg );
+                    added = dialog_other_button( next, &dialog_info );
                 } else if( stricmp( line, "edit_button" ) == 0 ) {
-                    added = dialog_edit_button( next, &dlg );
+                    added = dialog_edit_button( next, &dialog_info );
                 } else if( stricmp( line, "push_button" ) == 0 ) {
-                    added = dialog_pushbutton( next, &dlg );
+                    added = dialog_pushbutton( next, &dialog_info );
                     if( added ) {
-                        dlg.row_num -= 1;
+                        dialog_info.row_num -= 1;
                     }
                 } else if( stricmp( line, "radio_button" ) == 0 ) {
-                    added = dialog_radiobutton( next, &dlg );
+                    added = dialog_radiobutton( next, &dialog_info );
                 } else if( stricmp(line, "check_box") == 0 ) {
-                    dlg.col_num = C0;
-                    added = dialog_checkbox( next, &dlg );
+                    dialog_info.col_num = C0;
+                    added = dialog_checkbox( next, &dialog_info );
                 } else if( stricmp(line, "detail_check") == 0 ) {
-                    dlg.col_num = C0;
-                    added = dialog_detail_check( next, &dlg );
+                    dialog_info.col_num = C0;
+                    added = dialog_detail_check( next, &dialog_info );
                 } else if( stricmp(line, "check_box_continue") == 0 ) {
-                    dlg.row_num -= 1;
-                    added = dialog_checkbox( next, &dlg );
+                    dialog_info.row_num -= 1;
+                    added = dialog_checkbox( next, &dialog_info );
                 } else if( stricmp(line, "edit_control") == 0 ) {
-                    added = dialog_editcontrol( next, &dlg );
+                    added = dialog_editcontrol( next, &dialog_info );
                 } else if( stricmp(line, "text_window") == 0 ) {
-                    added = dialog_textwindow( next, &dlg, FALSE );
+                    added = dialog_textwindow( next, &dialog_info, FALSE );
                 } else if( stricmp(line, "text_window_license") == 0 ) {
-                    added = dialog_textwindow( next, &dlg, TRUE );
+                    added = dialog_textwindow( next, &dialog_info, TRUE );
                 }
                 if( added ) {
-                    dlg.row_num += 1;
+                    dialog_info.row_num += 1;
                     // in case this was the last control, set some values
-                    dlg.curr_dialog->pVariables[dlg.num_variables] = NO_VAR;
-                    dlg.curr_dialog->pConditions[dlg.num_variables] = NULL;
-                    dlg.curr_dialog->num_controls = dlg.array.num;
-                    dlg.curr_dialog->num_push_buttons = dlg.num_push_buttons;
-                    dlg.curr_dialog->rows = dlg.row_num  + HEIGHT_BORDER;
-                    if( dlg.num_push_buttons != 0 ) {
-                        dlg.curr_dialog->rows += 1;
+                    dialog_info.curr_dialog->pVariables[dialog_info.num_variables] = NO_VAR;
+                    dialog_info.curr_dialog->pConditions[dialog_info.num_variables] = NULL;
+                    dialog_info.curr_dialog->num_controls = dialog_info.array.num;
+                    dialog_info.curr_dialog->num_push_buttons = dialog_info.num_push_buttons;
+                    dialog_info.curr_dialog->rows = dialog_info.row_num  + HEIGHT_BORDER;
+                    if( dialog_info.num_push_buttons != 0 ) {
+                        dialog_info.curr_dialog->rows += 1;
                     }
-                    dlg.curr_dialog->cols = dlg.max_width + WIDTH_BORDER;
+                    dialog_info.curr_dialog->cols = dialog_info.max_width + WIDTH_BORDER;
                 } else {
-                    dlg.array.num--;
+                    dialog_info.array.num--;
                 }
             }
         }

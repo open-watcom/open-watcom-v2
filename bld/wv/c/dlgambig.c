@@ -45,7 +45,7 @@ extern char             *ModImageName( mod_handle handle );
 extern char             *Format( char *buff, char *fmt, ... );
 
 
-static int SymPick( const char *text, PICKCALLBACK *PickInit )
+static int SymPick( char *text, PICKCALLBACK *PickInit )
 {
     dlg_pick    dlg;
 

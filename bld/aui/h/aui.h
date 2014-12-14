@@ -308,12 +308,12 @@ typedef struct wnd_info {
 } wnd_info;
 
 
-typedef int             GUIPICKER( const char *title, PICKCALLBACK * );
-extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
-extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
-extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
-extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
-extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
+typedef int             GUIPICKER( char *, PICKCALLBACK * );
+extern int              DlgPickWithRtn( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
+extern int              DlgPickWithRtn2( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
+extern int              DlgPick( char *title, const void *data_handle, int def, int items );
+extern bool             DlgNew( char *title, char *buff, unsigned buff_len );
+extern void             DlgOpen( char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
 extern void             ResDlgOpen( GUICALLBACK *, void *, int );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path,

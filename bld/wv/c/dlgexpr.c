@@ -39,8 +39,8 @@
 #include "mad.h"
 
 /* to be moved to header files ! */
-extern bool             DlgNewWithMod(const char *title,char *buff,unsigned buff_len);
-extern bool             DlgNewWithSym(const char *title,char *buff,unsigned buff_len);
+extern bool             DlgNewWithMod(char*,char*,unsigned);
+extern bool             DlgNewWithSym(char*,char*,unsigned);
 extern char             *ReScan(char*);
 extern void             ChkExpr(void);
 extern void             ReqMemAddr(memory_expr , address *);
@@ -53,7 +53,7 @@ extern char             *ScanPos(void);
 extern void             PrevError(char*);
 extern char             *UniqStrAddr(address *,char * ,unsigned);
 extern char             *StrDouble(xreal*,char*);
-extern char             *DupStrLen(const char*,unsigned);
+extern char             *DupStrLen(char*,unsigned);
 extern char             *ScanPos(void);
 extern unsigned int     ScanLen(void);
 extern mod_handle       LookupModName( mod_handle, char *, unsigned );
@@ -111,9 +111,9 @@ extern void DlgSetLong( gui_window *gui, unsigned id, long value )
     GUISetText( gui, id, TxtBuff );
 }
 
-static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *title,
+static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, char *title,
                                    void *value, bool (*rtn)(char*,void*),
-                                   bool (*dlg)(const char *title,char *buff,unsigned buff_len) )
+                                   bool (*dlg)(char*,char*,unsigned) )
 {
     bool        rc;
 
@@ -126,12 +126,12 @@ static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *ti
     }
 }
 
-static bool     DlgGetItem( char *buff, unsigned buff_len, const char *title, void *value, bool (*rtn)(char*,void*) )
+static bool     DlgGetItem( char *buff, unsigned buff_len, char *title, void *value, bool (*rtn)(char*,void*) )
 {
     return( DlgGetItemWithRtn( buff, buff_len, title, value, rtn, DlgNewWithSym ) );
 }
 
-bool    DlgLongExpr( const char *title, long *value )
+bool    DlgLongExpr( char *title, long *value )
 {
     char        new[EXPR_LEN];
 
@@ -139,7 +139,7 @@ bool    DlgLongExpr( const char *title, long *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanLong ) );
 }
 
-bool    DlgAnyExpr( const char *title, char *buff, unsigned buff_len )
+bool    DlgAnyExpr( char *title, char *buff, unsigned buff_len )
 {
     return( DlgGetItem( buff, buff_len, title, NULL, DlgScanAny ) );
 }
@@ -154,7 +154,7 @@ static void InitAddr( char *new, address *value, unsigned max )
     }
 }
 
-bool    DlgCodeAddr( const char *title, address *value )
+bool    DlgCodeAddr( char *title, address *value )
 {
     char        new[EXPR_LEN];
 
@@ -162,7 +162,7 @@ bool    DlgCodeAddr( const char *title, address *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanCodeAddr ) );
 }
 
-bool    DlgDataAddr( const char *title, address *value )
+bool    DlgDataAddr( char *title, address *value )
 {
     char        new[EXPR_LEN];
 
@@ -170,7 +170,7 @@ bool    DlgDataAddr( const char *title, address *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanDataAddr ) );
 }
 
-bool    DlgGivenAddr( const char *title, address *value )
+bool    DlgGivenAddr( char *title, address *value )
 {
     char        new[EXPR_LEN];
 
@@ -178,7 +178,7 @@ bool    DlgGivenAddr( const char *title, address *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanGivenAddr ) );
 }
 
-bool    DlgModName( const char *title, mod_handle *mod )
+bool    DlgModName( char *title, mod_handle *mod )
 {
     char        new[EXPR_LEN];
 
@@ -190,7 +190,7 @@ bool    DlgModName( const char *title, mod_handle *mod )
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, mod, DlgScanModName, DlgNewWithMod ) );
 }
 
-bool DlgString( const char *title, char *buff )
+bool DlgString( char *title, char *buff )
 {
     char        new[EXPR_LEN];
 
@@ -198,7 +198,7 @@ bool DlgString( const char *title, char *buff )
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
 }
 
-bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
+bool DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th )
 {
     bool                ok;
     mad_type_info       mti;

@@ -43,7 +43,7 @@
 #include "clibext.h"
 
 
-extern char             *DupStr(const char*);
+extern char             *DupStr(char*);
 extern int              AddrComp( address a, address b );
 extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool );
 

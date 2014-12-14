@@ -330,7 +330,7 @@ void uiprintfield( a_dialog *ui_dlg_info, VFIELD *field )
     print_field( ui_dlg_info->vs, field, field == ui_dlg_info->curr );
 }
 
-static void *makevs( const char *title, int cols, int rows, int cpos, int rpos )
+static void *makevs( char *title, int cols, int rows, int cpos, int rpos )
 {
     SAREA               area;
 
@@ -383,7 +383,7 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     return( slen );
 }
 
-void *uiinitdialog( const char *title, ATTR attr, char *lines[],
+void *uiinitdialog( char *title, ATTR attr, char *lines[],
             unsigned int extra_rows, int maxlen, int rpos, int cpos )
 {
     VSCREEN             *vs;
@@ -522,7 +522,7 @@ bool uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area )
     return( FALSE );
 }
 
-a_dialog *uibegdialog( const char *title, VFIELD *fields, ORD rows, ORD cols, int rpos, int cpos )
+a_dialog *uibegdialog( char *title, VFIELD *fields, ORD rows, ORD cols, int rpos, int cpos )
 {
     char                *lines[1];
     a_dialog            *ui_dlg_info;

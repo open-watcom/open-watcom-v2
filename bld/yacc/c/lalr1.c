@@ -38,7 +38,7 @@
 #include "yacc.h"
 #include "alloc.h"
 
-#define INFINITY        ((unsigned short)-1)
+#define INFINITY        (unsigned short)-1
 
 static a_look **stk, **top;
 

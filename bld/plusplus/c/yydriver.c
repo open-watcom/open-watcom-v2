@@ -130,14 +130,12 @@ struct parse_stack {
     unsigned            look_ahead_stack : 1;
     unsigned            look_ahead_active : 1;
     unsigned            template_decl : 1;
-    unsigned            template_defn : 1;
     unsigned            template_class_inst_defer : 1;
     unsigned            special_colon_colon : 1;
     unsigned            special_gt_gt : 1;
     unsigned            special_typename : 1;
     unsigned            template_extern : 1;
     unsigned            template_instantiate : 1;
-    unsigned            template_export : 1;
 };
 
 typedef struct {
@@ -828,6 +826,7 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
                 /* template instantiation errors may have occured */
                 if( template_class_type != NULL ) {
                     scope = template_class_type->u.c.scope;
+
                     id_check = lexCategory( scope, id, LK_NULL, &yylval.tree->sym_name );
                     if( id_check == LK_TEMPLATE ) {
                         return( Y_TEMPLATE_SCOPED_TEMPLATE_NAME );
@@ -1387,20 +1386,16 @@ static void commonInit( PARSE_STACK *stack )
     stack->look_ahead_stack = FALSE;
     stack->look_ahead_active = FALSE;
     stack->template_decl = FALSE;
-    stack->template_defn = FALSE;
     stack->special_colon_colon = FALSE;
     stack->special_gt_gt = FALSE;
     stack->special_typename = FALSE;
     stack->template_extern = FALSE;
     stack->template_instantiate = FALSE;
-    stack->template_export = FALSE;
 }
 
 static void restartInit( PARSE_STACK *stack )
 {
     stack->template_decl = FALSE;
-    stack->template_defn = FALSE;
-    stack->template_export = FALSE;
     DbgAssert( stack->qualifications == NULL );
     DbgAssert( stack->look_ahead_count == 0 );
     DbgAssert( stack->look_ahead_index == 0 );
@@ -1414,13 +1409,11 @@ static void restartInit( PARSE_STACK *stack )
     DbgAssert( stack->look_ahead_stack == FALSE );
     DbgAssert( stack->look_ahead_active == FALSE );
     DbgAssert( stack->template_decl == FALSE );
-    DbgAssert( stack->template_defn == FALSE );
     DbgAssert( stack->special_colon_colon == FALSE );
     DbgAssert( stack->special_gt_gt == FALSE );
     DbgAssert( stack->special_typename == FALSE);
     DbgAssert( stack->template_extern == FALSE);
     DbgAssert( stack->template_instantiate == FALSE);
-    DbgAssert( stack->template_export == FALSE);
 }
 
 static void newLookAheadStack( PARSE_STACK *stack, PARSE_STACK *prev_stack )

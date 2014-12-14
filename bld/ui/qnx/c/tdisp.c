@@ -1208,7 +1208,7 @@ void update_shadow( void )
     for(;dirty.row0<dirty.row1;dirty.row0++){
         _fmemcpy( sbufp+incr*dirty.row0+dirty.col0,
                 bufp+incr*dirty.row0+dirty.col0,
-                ( dirty.col1 - dirty.col0 ) * sizeof( PIXEL ) );
+                (dirty.col1-dirty.col0)*sizeof(PIXEL) );
     }
 
     // set dirty rectangle to be empty

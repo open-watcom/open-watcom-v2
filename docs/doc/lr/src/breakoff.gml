@@ -10,12 +10,12 @@ void break_on( void );
 .desc begin
 The
 .kw break_off
-function can be used with DOS to restrict break checking (Ctrl+C,
-Ctrl+Break) to screen output and keyboard input.
+function can be used with DOS to restrict break checking (Ctrl/C,
+Ctrl/Break) to screen output and keyboard input.
 The
 .kw break_on
-function can be used with DOS to add break checking (Ctrl+C,
-Ctrl+Break) to other activities such as disk file input/output.
+function can be used with DOS to add break checking (Ctrl/C,
+Ctrl/Break) to other activities such as disk file input/output.
 .desc end
 .return begin
 The

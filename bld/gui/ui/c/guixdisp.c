@@ -216,7 +216,7 @@ bool GUIStrnDup( char * text, char ** new, int length )
 /*
 * TabFilter -- Expand tabs to blanks
 */
-char *TabFilter( const char *message )
+char *TabFilter( char *message )
 {
     char *new_message;
     char *start;
@@ -225,14 +225,14 @@ char *TabFilter( const char *message )
 #define TAB_SIZE 4
                                 /* allocate another chunk of memory since */
                                 /* reallocating space for string literals is a no no */
-    new_message = (char *)GUIMemAlloc( strlen( message ) + 1 );
+    new_message = ( char *)GUIMemAlloc( strlen(message)+1 );
     strcpy( new_message, message );
     for( ; ; ){
-        tab_pos = strcspn( new_message, "\t" );
-        if( tab_pos == strlen( new_message ) ) break;   /* no more tabs */
-        new_message = (char *)GUIMemRealloc( new_message, strlen( new_message ) + TAB_SIZE + 1 );
+        tab_pos = strcspn(new_message, "\t");
+        if( tab_pos == strlen(new_message) ) break;   /* no more tabs */
+        new_message = ( char *)GUIMemRealloc(new_message, strlen(new_message)+TAB_SIZE+1 );
         start = new_message + tab_pos;                /* don't forget the NULL */
-        memmove( start + TAB_SIZE, start + 1, strlen( start + 1 ) + 1 );
+        memmove(start+TAB_SIZE, start+1, strlen( start+1 )+1 );
         strnset( start, ' ', TAB_SIZE);
     }
     return( new_message );
@@ -245,7 +245,7 @@ char *TabFilter( const char *message )
  *                         lines at spaces.
  */
 
-static bool GetNumStringControls( int *num_controls, const char *old_message,
+static bool GetNumStringControls( int *num_controls, char *old_message,
                                   string_info **info )
 {
     gui_rect            scale;
@@ -268,7 +268,7 @@ static bool GetNumStringControls( int *num_controls, const char *old_message,
     GUIGetScale( &scale );
     GUIGetDlgTextMetrics( &metrics );
     if( strlen( old_message ) > 256 ) {
-        // If message is long, go to wider box
+    // If message is long, go to wider box
         max_width = ( 7 * ( scale.width / metrics.avg.x ) ) / 8;
     } else {
         max_width = ( 2 * ( scale.width / metrics.avg.x ) ) / 3;
@@ -278,7 +278,7 @@ static bool GetNumStringControls( int *num_controls, const char *old_message,
     *num_controls   = 0;
 
     for( ;message != tmp_n; ) {
-        tmp_n = message + strcspn( message, "\n\r" );
+        tmp_n = message + strcspn(message, "\n\r");
 
         if( tmp_n-message < max_width ) {
             start   = message;
@@ -289,7 +289,7 @@ static bool GetNumStringControls( int *num_controls, const char *old_message,
                 message = tmp_n+1;   /* skip over newline */
             }
         } else {                     /* search back for space */
-            for( end_char = message + max_width; ( message < end_char ) && ( *end_char != ' ' ); --end_char );
+            for(end_char = message+max_width; (message < end_char) && (*end_char != ' '); --end_char );
             if( end_char == message ) {
                 start   = message;           /* no spaces found */
                 len     = max_width;
@@ -300,10 +300,10 @@ static bool GetNumStringControls( int *num_controls, const char *old_message,
                 message = end_char+1;      /* skip over blank */
             }
         }                                  /* add new line to error box */
-        (*num_controls) += 1;
-        *info = ( string_info * )GUIMemRealloc( *info, sizeof( string_info ) * ( *num_controls ) );
-        if( *info == NULL )
-            return( false );
+        (*num_controls)+=1;
+        *info = ( string_info * )GUIMemRealloc( *info, sizeof( string_info ) *
+                                            (*num_controls) );
+        if( *info == NULL ) return( false );
         (*info)[*num_controls - 1].length = len;
         if( !GUIStrnDup( start, &((*info)[*num_controls - 1].text), len ) ) {
             return( false );
@@ -405,7 +405,7 @@ static void CentreButtons( int cols, int num_buttons, gui_control_info *controls
  */
 
 gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                      const char *message, const char *title,
+                                      char *message, char *title,
                                       gui_message_type type )
 {
     int                 rows;

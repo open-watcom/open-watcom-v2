@@ -35,7 +35,7 @@
 
 typedef struct hotspot_info {
     gui_coord   size;
-    const char  *text;
+    char        *text;
 } hotspot_info;
 
 #endif // _GUIXHOT_H_

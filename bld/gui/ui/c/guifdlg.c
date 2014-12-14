@@ -468,12 +468,12 @@ static char **buildDriveList( void )
 /*
  * buildFileTypes - get a list of all file types
  */
-static char **buildFileTypes( dlg_info *dlg, const char *data )
+static char **buildFileTypes( dlg_info *dlg, char *data )
 {
     size_t      len;
     char        **list1;
     int         num;
-    const char  *ptr;
+    char        *ptr;
 
     list1 = NULL;
     dlg->fileExtensions = NULL;

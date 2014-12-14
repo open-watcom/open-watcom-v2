@@ -115,12 +115,12 @@ typedef struct toolbarinfo {
 
 typedef struct statusinfo {
     SAREA       area;           // (relative) location of status window
-    const char  *text;          // text in status window
+    char        *text;          // text in status window
     ATTR        attr;           // colour to use to draw status text
 } statusinfo;
 
 struct gui_window {
-    VSCREEN             screen;         // virtual screen
+    VSCREEN             screen; /* must be first field - see call to uivopen */
     gui_create_styles   style;          // style window was created with
     int                 num_attrs;      // number of colours
     ATTR                *colours;       // colours for window

@@ -82,7 +82,7 @@ static void FreeDialog( a_dialog_header *tmp_dialog)
     GUIMemFree( tmp_dialog->title );
     if( !tmp_dialog->def_dlg ) {            /* free non-default controls */
         for( i = 0; i < tmp_dialog->num_controls; i++ ){
-            GUIMemFree( (void *)tmp_dialog->controls[i].text );
+            GUIMemFree( tmp_dialog->controls[i].text );
             if( tmp_dialog->pConditions[i] != NULL ) {
                 GUIMemFree( tmp_dialog->pConditions[i] );
             }

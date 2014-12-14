@@ -36,7 +36,7 @@
 #include "guidlg.h"
 #include "dlglist.h"
 
-extern char             *DupStr(const char*);
+extern char             *DupStr(char*);
 extern bool             AllBrowse( char * );
 
 static void SelectListLast( gui_window *gui )
@@ -148,7 +148,7 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
     }
 }
 
-void DlgList( const char *title, void (*clear)(void), void (*add)(const char *),
+void DlgList( char *title, void (*clear)(void), void (*add)(char*),
                            char_ring *(*next)(char_ring*), char *(*name)(char_ring*) )
 {
     dlg_list dlg;

@@ -93,8 +93,6 @@ typedef const struct idname *NAME;      // name pointer
 
 #define VAL64(x)            (x.u._64[0])
 
-#define FatalMsgExit(msg)   CFatal( msg )
-
 #ifndef NDEBUG
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
     #define DbgVerify( cond, msg ) if( !( cond ) ) CFatal( msg __location )

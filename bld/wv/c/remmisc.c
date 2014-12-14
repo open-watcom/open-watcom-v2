@@ -56,7 +56,7 @@ extern bool             InitRunThreadSupp( void );
 extern bool             InitCapabilities( void );
 extern bool             InitAsyncSupp( void );
 extern void             StartupErr( char *err );
-extern char             *DupStr( const char * );
+extern char             *DupStr( char * );
 
 unsigned int            MaxPacketLen;
 

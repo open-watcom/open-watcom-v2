@@ -41,8 +41,8 @@ _386            =       10h     ; from old clib
 
 _DS_PEGGED      =       20h     ; from old clib (used for Windows)
 _TINY           =       40h     ; from old clib (formerly 10h)
-_FLAT           =       80h
 
+_FLAT           =       ( _SMALL_CODE or _SMALL_DATA or _USE_32_SEGS )
 _SMALL          =       ( _SMALL_CODE or _SMALL_DATA )
 _COMPACT        =       ( _SMALL_CODE or _BIG_DATA )
 _MEDIUM         =       ( _BIG_CODE   or _SMALL_DATA )
@@ -54,7 +54,7 @@ _8087           =       01h
 
 ifdef __WASM__
     ifdef __FLAT__
-        _MODEL = _FLAT or _SMALL
+        _MODEL = _FLAT
     endif
     ifdef __TINY__
         _MODEL = _TINY

@@ -91,7 +91,7 @@ static  void    ChkIOErr( file_handle fp, int error ) {
     char        err_msg[ERR_BUFF_SIZE+1];
 
     if( SDError( fp, err_msg ) ) {
-        Error( error, PageFileBuff, err_msg );
+        Error( error, PageFileName, err_msg );
     }
 }
 
@@ -101,6 +101,7 @@ void    InitObj( void ) {
 // Allocate memory for object code.
 
     char        *fn;
+    char        *tmp;
     int         idx;
 
     ObjCode = NULL; // in case FMemAlloc() fails
@@ -111,6 +112,16 @@ void    InitObj( void ) {
     PageFile = NULL;
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
         fn = PageFileBuff;
+        tmp = getenv( "TMP" );
+        if( tmp != NULL && *tmp != NULLCHAR ) {
+            GetPathElement( tmp, NULL, &fn );
+            if( fn != PageFileBuff ) {
+                char c = fn[-1];
+                if( !IS_PATH_SEP( c ) ) {
+                    *fn++ = DIR_SEP;
+                }
+            }
+        }
         strcpy( fn, PageFileName );
         fn += strlen( fn );
         fn[1] = NULLCHAR;

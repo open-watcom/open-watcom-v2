@@ -33,16 +33,20 @@
 #ifndef _GUICONTR_H_
 #define _GUICONTR_H_
 
+#if defined( __GNUC__ )
+struct control_item {
+#else
 typedef struct control_item {
+#endif
     bool                checked;
     unsigned            id;
     gui_control_class   control_class;
     WPI_PROC            call_back;
     HWND                hwnd;
-    const char          *text;
+    char                *text;
     gui_control_styles  style;
     struct control_item *next;
-} control_item;
+};
 
 typedef struct {
     char                *classname;

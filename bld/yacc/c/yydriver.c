@@ -73,7 +73,7 @@ YYSTYPE *yyvp, yyval, yylval;
 #define YYACCEPT        return(0)
 #define YYERROR         goto yyerrlab
 
-int yyparse( void )
+yyparse()
 {
   short yypnum;
   short yyi, yyk, yylhs, yyaction;

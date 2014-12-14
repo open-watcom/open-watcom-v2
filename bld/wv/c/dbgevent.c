@@ -62,6 +62,7 @@ extern unsigned         NewCurrRadix( unsigned rad );
 extern unsigned         ReqExpr( void );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern char             *ScanPos( void );
+extern char             *DupStr( char *str );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );

@@ -51,15 +51,15 @@ extern char             *CnvULongDec(unsigned long,char *,unsigned);
 extern char             *CnvULong(unsigned long,char *,unsigned);
 extern char             *StrAddr(address *,char * ,unsigned);
 extern void             SetDataDot( address );
-extern bool             DlgLongExpr( const char *title, long * );
+extern bool             DlgLongExpr( char *, long * );
 extern unsigned         NewCurrRadix(unsigned int );
-extern bool             DlgDataAddr( const char *title, address *value );
+extern bool             DlgDataAddr( char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
 extern long             AddrDiff( address a, address b );
 extern unsigned         ChangeMemUndoable( address addr, void *data, unsigned len );
-extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th );
-extern bool             DlgString( const char *title, char *buff );
-extern char             *DupStr( const char *str );
+extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
+extern bool             DlgString( char *title, char *buff );
+extern char             *DupStr( char *str );
 extern int              AddrComp(address,address);
 extern void             Warn( char *p );
 extern bool             BreakWrite( address addr, mad_type_handle, char *comment );
@@ -1060,7 +1060,7 @@ extern  a_window        *WndStkOpen()
 }
 
 
-extern  a_window        *DoWndBinOpen( const char *title, handle filehndl )
+extern  a_window        *DoWndBinOpen( char *name, handle filehndl )
 {
     mem_window  *mem;
     a_window    *wnd;
@@ -1071,6 +1071,6 @@ extern  a_window        *DoWndBinOpen( const char *title, handle filehndl )
     mem->init_type = MAD_NIL_TYPE_HANDLE;
     mem->piece_type = MemByteType;
     mem->u.f.filehndl = filehndl;
-    wnd = DbgTitleWndCreate( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, FALSE );
+    wnd = DbgTitleWndCreate( name, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, FALSE );
     return( wnd );
 }

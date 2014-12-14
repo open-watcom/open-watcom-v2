@@ -37,13 +37,15 @@
 #include "alloc.h"
 
 enum {
-    ACTION_REDUCE       = 0x8000,
+    ACTION_AMBIGUOUS    = 0x8000,
     ACTION_SHIFT        = 0x4000,
+    ACTION_REDUCE       = 0x0000,
+    ACTION_STATE        = 0x3fff,
 };
 
 typedef struct {
-    token_n     token;
-    action_n    action;
+    short       token;
+    short       action;
 } a_entry;
 
 static a_entry *table;
@@ -93,7 +95,7 @@ static void end_table( void )
     fprintf( actout, "\n};\n" );
 }
 
-static void add_table( token_n token, action_n action )
+static void add_table( short token, short action )
 {
     if( used == table_size ) {
         table_size += 64;
@@ -105,14 +107,13 @@ static void add_table( token_n token, action_n action )
 }
 
 
-static void dump_reduction( a_reduce_action *rx, base_n *base )
+static void dump_reduction( a_reduce_action *rx, unsigned *base )
 {
     a_pro *pro;
     set_size *mp;
 
     pro = rx->pro;
-    for( mp = Members( rx->follow ); mp != setmembers; ) {
-        --mp;
+    for( mp = Members( rx->follow ); --mp >= setmembers; ) {
         add_table( *mp, ACTION_REDUCE | pro->pidx );
         ++(*base);
     }
@@ -120,30 +121,33 @@ static void dump_reduction( a_reduce_action *rx, base_n *base )
 
 void genobj( void )
 {
-    int         i;
-    token_n     ntoken, any_token;
-    action_n    action;
-    short       *p;
-    set_size    *mp;
-    a_pro       *pro;
-    a_state     *x;
+    int i;
+    int ntoken;
+    int this_token;
+    int any_token;
+    int action;
+    short *p;
+    set_size *mp;
+    a_pro *pro;
+    a_state *x;
     a_reduce_action *rx;
     a_reduce_action *default_reduction;
     a_shift_action *tx;
-    a_sym       *sym;
-    an_item     *item;
-    base_n      max, base;
-    base_n      *state_base;
-    unsigned    sum;
-    set_size    savings;
-    unsigned    rule_base;
+    a_sym *sym;
+    an_item *item;
+    unsigned max;
+    unsigned sum;
+    unsigned savings;
+    unsigned base;
+    unsigned rule_base;
+    short *state_base;
 
     ntoken = FirstNonTerminalTokenValue();
     for( i = nterm; i < nsym; ++i ) {
         symtab[i]->token = ntoken++;
     }
     any_token = ntoken;
-    state_base = CALLOC( nstate, base_n );
+    state_base = CALLOC( nstate, short );
     base = 0;
     max = 0;
     sum = 0;
@@ -162,8 +166,8 @@ void genobj( void )
         for( rx = x->redun; rx->pro != NULL; ++rx ) {
             mp = Members( rx->follow );
             if( mp != setmembers ) {
-                if( (set_size)( mp - setmembers ) > savings ) {
-                    savings = (set_size)( mp - setmembers );
+                if( mp - setmembers > savings ) {
+                    savings = mp - setmembers;
                     if( default_reduction != NULL ) {
                         dump_reduction( default_reduction, &base );
                     }
@@ -181,9 +185,9 @@ void genobj( void )
         }
         add_table( any_token, action );
         ++base;
-        sum += (base_n)( base - state_base[i] );
-        if( (base_n)( base - state_base[i] ) > max ) {
-            max = (base_n)( base - state_base[i] );
+        sum += base - state_base[i];
+        if( base - state_base[i] > max ) {
+            max = base - state_base[i];
         }
     }
     printf( "avg: %u max: %u\n", sum / nstate, max );
@@ -226,7 +230,7 @@ void genobj( void )
             ++item;
         }
         puttab( FITS_A_WORD, rule_base );
-        rule_base += (unsigned)( item - protab[i]->item );
+        rule_base += (int)( item - protab[i]->item );
     }
     end_table();
     begin_table( "YYCHKTYPE", "yyrhstoks" );

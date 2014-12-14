@@ -61,7 +61,7 @@ extern unsigned         NewCurrRadix( unsigned rad );
 extern unsigned         ReqExpr();
 extern void             PushInpStack( void *handle, bool (*rtn)(), bool save_lang );
 extern char             *ScanPos();
-extern char             *DupStr( const char *str );
+extern char             *DupStr( char *str );
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );

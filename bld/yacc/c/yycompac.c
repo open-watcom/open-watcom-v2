@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-extern unsigned short   yylex( void );
-extern void             yyerror( const char * );
+extern int              yylex();
+extern void             yyerror();
 
 // For now, omit error checking
 // define OMIT_ERROR_RECOVERY
@@ -150,7 +150,7 @@ static YYACTTYPE find_default( unsigned base )
     return( action );
 }
 
-int yyparse( void )
+yyparse()
 {
     unsigned short production;
     unsigned short action;

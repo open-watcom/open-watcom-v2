@@ -78,13 +78,13 @@ static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir,
             /* scrolled down */
             *min += diff;
             *max -= diff;
-            uivmoveblock( &wnd->screen, area, ydiff, xdiff );
+            uivmoveblock( (VSCREEN*)wnd, area, ydiff, xdiff );
             *min += ( *max - diff );
             *max = diff;
         } else {
             /* scrolled up */
             *max += diff;
-            uivmoveblock( &wnd->screen, area, ydiff, xdiff );
+            uivmoveblock( (VSCREEN*)wnd, area, ydiff, xdiff );
             *max = -diff;
         }
     }

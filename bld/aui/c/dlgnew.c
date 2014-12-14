@@ -99,7 +99,7 @@ extern bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
 }
 
 
-extern  bool    DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
+extern  bool    DlgNewWithCtl( char *title, char *buff, unsigned buff_len,
                                gui_control_info *controls, int num_controls,
                                GUICALLBACK *callback, int rows,
                                int cols, int max_cols )
@@ -107,10 +107,8 @@ extern  bool    DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
     dlg_new     dlgnew;
 
     int len = strlen( title );
-    if( len < cols )
-        len = cols;
-    if( len > max_cols )
-        len = max_cols;
+    if( len < cols ) len = cols;
+    if( len > max_cols ) len = max_cols;
     dlgnew.buff = buff;
     dlgnew.buff_len = buff_len;
     dlgnew.cancel = TRUE;
@@ -120,7 +118,7 @@ extern  bool    DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
 }
 
 
-extern  bool    DlgNew( const char *title, char *buff, unsigned buff_len )
+extern  bool    DlgNew( char *title, char *buff, unsigned buff_len )
 {
     bool        rc;
 
@@ -129,7 +127,7 @@ extern  bool    DlgNew( const char *title, char *buff, unsigned buff_len )
     rc = DlgNewWithCtl( title, buff, buff_len,
                    Controls, ArraySize( Controls ), &DlgNewEvent,
                    DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS );
-    WndFree( (void *)Controls[1].text );
-    WndFree( (void *)Controls[2].text );
+    WndFree( Controls[1].text );
+    WndFree( Controls[2].text );
     return( rc );
 }
