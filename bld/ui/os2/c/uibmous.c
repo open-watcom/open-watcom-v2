@@ -55,7 +55,7 @@ static LP_STRING RegenPos( unsigned row, unsigned col )
 static void uisetmouseoff( void )
 /*******************************/
 {
-    LP_STRING    old;
+    LP_STRING   old;
     SAREA       area;
 
     if( MouseOn ) {

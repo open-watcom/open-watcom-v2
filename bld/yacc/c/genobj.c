@@ -52,9 +52,9 @@ extern void writeobj( int );
 
 void genobj( void )
 {
-    short int *symbol, *target;
-    short int *p, *q, *r;
-    short int action;
+    short *symbol, *target;
+    short *p, *q, *r;
+    short action;
     set_size *mp;
     a_sym *sym;
     a_pro *pro;
@@ -71,10 +71,10 @@ void genobj( void )
 
     emitins( JMP, TOKENTRY( startstate->sidx ) );
 
-    target = CALLOC( nsym, short int );
+    target = CALLOC( nsym, short );
     for( i = 0; i < nsym; ++i )
         target[i] = DEFAULT;
-    symbol = CALLOC( nsym, short int );
+    symbol = CALLOC( nsym, short );
     for( i = 0; i < nstate; ++i ) {
         x = statetab[i];
         q = symbol;
@@ -159,11 +159,10 @@ void genobj( void )
     writeobj( label + 1 );
 }
 
-static emitt( symbol, target, n, redun )
-  short int *symbol, *target, redun;
-  unsigned n;
+static emitt( short *symbol, short *target, unsigned n, short *redun )
 {
-    unsigned i, j;
+    unsigned i;
+    set_size j;
 
     for( i = 0; i < n; ++i ) {
         j = symbol[i];
@@ -173,9 +172,7 @@ static emitt( symbol, target, n, redun )
     emitins( JMP, redun );
 }
 
-static emitv( symbol, target, n )
-  short int *symbol, *target;
-  unsigned n;
+static emitv( short *symbol, short *target, unsigned n )
 {
     unsigned m;
     int l1, l2;

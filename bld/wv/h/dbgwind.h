@@ -117,11 +117,11 @@ extern char             *WndClipItem;
 
 extern void             WndUpdate(update_list );
 
-extern a_window *DbgWndCreate( char * text, wnd_info *info,
+extern a_window *DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class class, void * extra,
                                gui_resource *icon );
 
-extern a_window *DbgTitleWndCreate( char * text, wnd_info *wndinfo,
+extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class class, void * extra,
                                     gui_resource * icon,
                                     int title_size, bool vdrag );

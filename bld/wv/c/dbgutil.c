@@ -54,7 +54,7 @@ extern char             *ReScan( char * );
 extern char             *ScanPos( void );
 extern void             NewLang( char * );
 extern char             *AddHexSpec( char * );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern address          GetCodeDot( void );
@@ -630,7 +630,7 @@ char *ModImageName( mod_handle handle )
     }
 }
 
-extern char *DupStrLen( char *str, unsigned len )
+extern char *DupStrLen( const char *str, unsigned len )
 {
     char        *dup;
 
@@ -643,7 +643,7 @@ extern char *DupStrLen( char *str, unsigned len )
 }
 
 
-extern char *DupStr( char *str )
+extern char *DupStr( const char *str )
 {
     return( DupStrLen( str, strlen( str ) ) );
 }

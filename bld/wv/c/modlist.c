@@ -41,7 +41,7 @@
 #include "clibext.h"
 
 
-extern char             *DupStr(char*);
+extern char             *DupStr(const char*);
 extern bool             IsInternalMod( mod_handle mod );
 extern image_entry      *ImagePrimary(void);
 extern image_entry      *ImageEntry( mod_handle );

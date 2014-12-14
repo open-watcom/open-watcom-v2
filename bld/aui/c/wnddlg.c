@@ -63,13 +63,13 @@ static bool DlgEventProc( gui_window * gui, gui_event event, void *parm )
 }
 
 
-extern gui_window *DlgGetParent( void )
+gui_window *DlgGetParent( void )
 {
     if( Nested >= MAX_DLG_NESTS ) return( NULL );
     return( ( Nested == -1 ) ? WndMain->gui : Parents[ Nested ] );
 }
 
-extern void DlgOpen( char *title, int rows, int cols,
+void DlgOpen( const char *title, int rows, int cols,
                      gui_control_info *ctl, int num_controls,
                      GUICALLBACK *rtn, void *extra )
 {
@@ -96,7 +96,7 @@ static gui_create_info ResDialog = {
     NULL                                // Icon
 };
 
-extern void ResDlgOpen( GUICALLBACK *rtn, void *extra, int id )
+void ResDlgOpen( GUICALLBACK *rtn, void *extra, int id )
 {
     ResDialog.parent = DlgGetParent();
     Routines[ Nested+1 ] = rtn;

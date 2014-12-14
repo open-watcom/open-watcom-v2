@@ -498,7 +498,7 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
     if( !ok ) {
         if( ctl_info != NULL ) {
             if( ctl_info->text ) {
-                GUIMemFree( ctl_info->text );
+                GUIMemFree( (void *)ctl_info->text );
             }
         }
     }
@@ -650,7 +650,7 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb, void *e
 
     if( controls_info != NULL ) {
         for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            GUIMemFree( controls_info[index].text );
+            GUIMemFree( (void *)controls_info[index].text );
         }
         GUIMemFree( controls_info );
     }

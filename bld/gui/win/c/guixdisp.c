@@ -59,7 +59,7 @@ static MessageTypes Types[] = {
  */
 
 gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                      char *message, char *title,
+                                      const char *message, const char *title,
                                       gui_message_type type )
 {
     UINT                style;

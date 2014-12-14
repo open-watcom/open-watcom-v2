@@ -495,7 +495,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         return( false );
     }
     if( !(wnd->style & GUI_NOFRAME) ) {
-        if( dlg_info->title ) {
+        if( dlg_info->title != NULL ) {
             style |= WS_CAPTION;
             wnd->flags |= HAS_CAPTION;
         } else {

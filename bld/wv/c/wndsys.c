@@ -561,7 +561,7 @@ void WndSetOpenNoShow( void )
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
 
-extern a_window *DbgTitleWndCreate( char *title, wnd_info *wndinfo,
+extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class class, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
@@ -624,7 +624,7 @@ extern a_window *DbgTitleWndCreate( char *title, wnd_info *wndinfo,
     return( wnd );
 }
 
-extern a_window *DbgWndCreate( char *title, wnd_info *info,
+extern a_window *DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class class, void *extra, gui_resource *icon )
 {
     return( DbgTitleWndCreate( title, info, class, extra, icon, 0, TRUE ) );

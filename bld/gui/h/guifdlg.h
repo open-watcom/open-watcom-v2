@@ -131,7 +131,7 @@ enum {
 
 typedef struct
 {
-    char                *filter_list;
+    const char          *filter_list;
     int                 filter_index;
     char                *file_name;
     int                 max_file_name;

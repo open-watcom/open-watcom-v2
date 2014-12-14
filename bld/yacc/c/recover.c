@@ -32,27 +32,28 @@
 
 #include "yacc.h"
 
-static AddError()
+static void AddError( void )
 {
     a_sym *xsym, *sym;
     a_pro *xpro, *pro;
     a_state *x, **s, **t, *AddErrState();
     a_shift_action *tx, *ty, *trans;
     a_reduce_action *rx, *ry, *redun;
-    int i;
+    unsigned short i;
+    index_n j;
     a_word *defined, *conflict, *rset;
-    short int *at;
+    index_n *at;
 
     trans = CALLOC( nsym, a_shift_action );
     rx = redun = CALLOC( npro + 1, a_reduce_action );
     rset = conflict = AllocSet( npro + 2 );
-    for( i = 0; i <= npro; ++i ) {
+    for( j = 0; j <= npro; ++j ) {
         (rx++)->follow = rset;
         rset += GetSetSize( 1 );
     }
     defined = rset;
     s = CALLOC( nstate, a_state * );
-    at = CALLOC( nstate, short int );
+    at = CALLOC( nstate, index_n );
     s = t = CALLOC( nstate + 1, a_state * );
     for( x = statelist; x != NULL; x = x->next ) {
          Mark( *x );
@@ -72,8 +73,8 @@ static AddError()
         }
         redun->pro = errpro;
         rx = redun + 1;
-        if( x != restart )
-            while( xpro ) {
+        if( x != restart ) {
+            while( xpro != NULL ) {
                 pro = xpro;
                 xpro = NULL;
                 Clear( rx->follow );
@@ -93,6 +94,7 @@ static AddError()
                 rx->pro = pro;
                 ++rx;
             }
+        }
         xsym = NULL;
         for( i = 0; i < x->kersize; ++i ) {
             at[i] = 0;
@@ -102,7 +104,7 @@ static AddError()
             }
         }
         tx = trans;
-        while( xsym ) {
+        while( xsym != NULL ) {
             sym = xsym;
             xsym = NULL;
             t = s;
@@ -176,8 +178,7 @@ static AddError()
     FREE( at );
 }
 
-static a_state *AddErrState( enter, s, t )
-  a_state **enter, **s, **t;
+static a_state *AddErrState( a_state **enter, a_state **s, a_state **t )
 {
     if( t == s ) {
         return( NULL );

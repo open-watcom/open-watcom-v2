@@ -110,7 +110,7 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
  * GUIGetNewVal --
  */
 
-gui_message_return GUIGetNewVal( char * title, char * old, char ** new_val )
+gui_message_return GUIGetNewVal( const char * title, const char * old, char ** new_val )
 {
     int         length;
     int         disp_length;
@@ -118,7 +118,7 @@ gui_message_return GUIGetNewVal( char * title, char * old, char ** new_val )
     ret_info    info;
 
     info.ret_val = GUI_RET_ABORT;
-    info.text = old;
+    info.text = NULL;
     length = 0;
     if( old != NULL ) {
         length = strlen( old );

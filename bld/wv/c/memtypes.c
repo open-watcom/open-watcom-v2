@@ -39,7 +39,7 @@
 #include "dbgitem.h"
 
 
-extern char             *DupStr( char *str );
+extern char             *DupStr( const char *str );
 extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
 extern unsigned         NewCurrRadix( unsigned );
 

@@ -2959,6 +2959,7 @@ template-declaration
 /* differs from standard */
 template-declaration-start
     : template-key template-declaration-init lt-special template-parameter-list-opt Y_GT_SPECIAL
+    | template-declaration-start template-key template-declaration-init lt-special template-parameter-list-opt Y_GT_SPECIAL
     ;
 
 /* differs from standard */
@@ -2972,6 +2973,7 @@ template-declaration-before-semicolon
     {
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
         state->template_decl = FALSE;
+        state->template_defn = FALSE;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -2980,6 +2982,7 @@ template-declaration-before-semicolon
         CErr1( WARN_UNSUPPORTED_TEMPLATE_EXPORT );
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
         state->template_decl = FALSE;
+        state->template_defn = FALSE;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -2990,6 +2993,7 @@ template-function-declaration
     {
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
         state->template_decl = FALSE;
+        state->template_defn = FALSE;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -2998,6 +3002,7 @@ template-function-declaration
         CErr1( WARN_UNSUPPORTED_TEMPLATE_EXPORT );
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
         state->template_decl = FALSE;
+        state->template_defn = FALSE;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -3179,12 +3184,17 @@ template-key
     : Y_TEMPLATE
     {
         if( state->template_decl ) {
-            CErr1( ERR_NO_NESTED_TEMPLATES );
+//            CErr1( ERR_NO_NESTED_TEMPLATES );
         } else if( ! ScopeType( GetCurrScope(), SCOPE_FILE )
                 && ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
             CErr1( ERR_ONLY_GLOBAL_TEMPLATES );
         }
-        state->template_decl = TRUE;
+        if( state->template_decl ) {
+            state->template_decl = FALSE;
+            state->template_defn = TRUE;
+        } else if( !state->template_defn ) {
+            state->template_decl = TRUE;
+        }
     }
     ;
 

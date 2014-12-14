@@ -68,11 +68,11 @@ extern void             Scan( void );
 extern bool             ScanEOC( void );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );
-extern bool             DlgAnyExpr( char *, char *, unsigned );
+extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern void             WndVarInspect( char * );
-extern void             DlgNewWithSym( char *title, char *buff, unsigned buff_len );
+extern void             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
 extern char             *StrCopy( char *, char * );
 extern void             BreakOnExprSP( char * );
 extern unsigned         NewCurrRadix( unsigned int );
@@ -81,7 +81,7 @@ extern void             PopInpStack( void );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             WndInspectExprSP( char *item );
 extern char             *CnvNearestAddr( address, char *, unsigned );
 extern char             *GetCmdName( int );
@@ -229,22 +229,22 @@ static  void    VarModify( a_window *wnd, int row, int piece )
     case VAR_PIECE_VALUE:
         if( !VarExpandable( class ) ) {
             char *value = DbgAlloc( TXT_LEN );
-            char *name = DbgAlloc( TXT_LEN );
+            char *title = DbgAlloc( TXT_LEN );
             old = VarNewCurrRadix( v );
             ExprValue( ExprSP );
             VarBuildName( &var->i, v, FALSE );
-            StrCopy( TxtBuff, name );
+            StrCopy( TxtBuff, title );
             VarPrintText( &var->i, value, PrintValue, TXT_LEN );
             VarKillExprSPCache( &var->i );
             v = VarFindRow( &var->i, row );
             FreezeStack();
-            ok = DlgAnyExpr( name, value, TXT_LEN );
+            ok = DlgAnyExpr( title, value, TXT_LEN );
             UnFreezeStack( FALSE );
             if( ok ) VarDoAssign( &var->i, v, value );
             NewCurrRadix( old );
             WndRowDirty( wnd, row );
             DbgFree( value );
-            DbgFree( name );
+            DbgFree( title );
         }
         break;
     }

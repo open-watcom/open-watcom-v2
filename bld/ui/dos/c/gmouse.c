@@ -136,8 +136,7 @@ static void PlotEgaVgaCursor( unsigned action )
         height = 2;
     }
 
-    screen = UIData->screen.origin;
-    screen += ( y * VidCol + x );
+    screen = UIData->screen.origin + y * VidCol + x;
     disp = ( VidCol - width );
 
     switch( action ) {

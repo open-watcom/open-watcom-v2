@@ -201,7 +201,7 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
     }
 }
 
-static void DlgOpen( gui_window *parent, char *title, int rows, int cols,
+static void DlgOpen( gui_window *parent, const char *title, int rows, int cols,
                      gui_control_info *controls_info, int num_controls, GUICALLBACK *rtn,
                      void *extra, bool sys )
 {
@@ -239,20 +239,20 @@ void GUISetModalDlgs( bool modal )
     DlgModal = modal;
 }
 
-void GUIDlgOpen( char *title, int rows, int cols, gui_control_info *controls_info,
+void GUIDlgOpen( const char *title, int rows, int cols, gui_control_info *controls_info,
                  int num_controls, GUICALLBACK *rtn, void *extra )
 {
     DlgOpen( NULL, title, rows, cols, controls_info, num_controls, rtn, extra, false );
 }
 
-void GUIModalDlgOpen( gui_window *parent, char *title, int rows, int cols,
+void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, int cols,
                       gui_control_info *controls_info, int num_controls,
                       GUICALLBACK *rtn, void *extra )
 {
     DlgOpen( parent, title, rows, cols, controls_info, num_controls, rtn, extra, false );
 }
 
-void GUISysModalDlgOpen( char *title, int rows, int cols,
+void GUISysModalDlgOpen( const char *title, int rows, int cols,
                          gui_control_info *controls_info, int num_controls,
                          GUICALLBACK *rtn, void *extra )
 {

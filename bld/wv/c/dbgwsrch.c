@@ -46,7 +46,7 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndModInspect(mod_handle);
 extern void             *OpenSrcFile(cue_handle *);
-extern char             *DupStr(char*);
+extern char             *DupStr(const char*);
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
 extern char             *StrCopy(char*,char*);
 extern int              ModCompare( mod_handle const *a, mod_handle const *b );

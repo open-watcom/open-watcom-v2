@@ -143,7 +143,7 @@ extern void StatusFini( void )
     if( StatusWnd == NULL ){
         return;
     } else {
-        GUIMemFree( StatusInfo.title );
+        GUIMemFree( (void *)StatusInfo.title );
         GUIDestroyWnd( StatusWnd );
         StatusWnd = NULL;
     }
@@ -469,7 +469,7 @@ extern bool OpenStatusWindow( char *title )
     GUITruncToPixel( &CharSize );
 
     StatusInfo.parent = MainWnd;
-    GUIStrDup( title, &StatusInfo.title );
+    GUIStrDup( title, (char **)&StatusInfo.title );
     StatusInfo.rect.width = STATUS_WIDTH * CharSize.x;
     StatusInfo.rect.height = STATUS_HEIGHT * CharSize.y;
     GUIGetClientRect( MainWnd, &rect );

@@ -609,7 +609,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     TEMPLATE_HANDLE     data;
     TEMPLATE_HANDLE     new;
     int                 i;
-    char                *text;
+    const char          *text;
     long                style;
     HWND                parent_hwnd;
     gui_control_info    *ctl_info;

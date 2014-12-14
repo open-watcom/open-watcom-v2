@@ -8,6 +8,17 @@ endif
 
         xrefp   FPInvalidOp
 
+_shift_left_8:
+        mov     AH,AL           ; shift by 8
+        mov     AL,BH           ; ...
+        mov     BH,BL           ; ...
+        mov     BL,CH           ; ...
+        mov     CH,CL           ; ...
+        mov     CL,DH           ; ...
+        mov     DH,DL           ; ...
+        xor     DL,DL           ; ...
+        ret
+
 ;
 ;       convert double to long double
 ;
@@ -37,80 +48,68 @@ else
 __EmuFDLD  proc    near
         push    DI              ; save DI
 endif
-        mov     DI,AX           ; get exponent
-        shr     DI,1            ; ...
-        shr     DI,1            ; ...
-        shr     DI,1            ; ... (still needs >> by 1 )
-        _shl    DX,1            ; shift fraction left by one
-        _rcl    CX,1            ; ...
-        _rcl    BX,1            ; ...
-        _rcl    AX,1            ; ...
-        pushf                   ; save sign (Carry flag)
-        _shl    DX,1            ; and 1 more makes 2
-        _rcl    CX,1            ; ...
-        _rcl    BX,1            ; ...
-        _rcl    AX,1            ; ...
-        _shl    DX,1            ; and 1 more makes 3
-        _rcl    CX,1            ; ...
-        _rcl    BX,1            ; ...
-        _rcl    AX,1            ; ...
-        mov     AH,AL           ; and 8 more makes 11
-        mov     AL,BH           ; ...
-        mov     BH,BL           ; ...
-        mov     BL,CH           ; ...
-        mov     CH,CL           ; ...
-        mov     CL,DH           ; ...
-        mov     DH,DL           ; ...
-        mov     DL,0            ; ...
-        _guess                  ; guess: a normal number
-          and   DI,7FFh SHL 1   ; - isolate exponent (still needs >> by 1 )
-          _quif e               ; - quit if a denormal number or zero
-          _guess xx2            ; - guess: normal number
-            cmp DI,7FFh SHL 1   ; - - quit if infinity or NaN
-            _quif e             ; - - ...
-            add DI,(3FFFh-3FFh) SHL 1; - - change bias to temp real format
-          _admit                ; - guess: NaN or infinity
-            or    DI,7FFFh SHL 1; - - set infinity or Nan for temp real
-            and   AX,7FFFh      ; - - if high word is 0
-            _if e               ; - - then
-              or    AX,BX       ; - - - check low order words
-              or    AX,CX       ; - - - ...
-              or    AX,DX       ; - - - ...
-              mov   AX,0        ; - - - set AX back to 0
-              _quif e, xx2      ; - - - quit if fraction 0, then its a infinity
-            _endif              ; - - endif
-            call  FPInvalidOp   ; - - - indicate "Invalid" exception
-            or    AH,40h        ; - - - indicate QNaN
-          _endguess             ; - endguess
-          or    AH,80h          ; - turn on implied one bit
-        _admit                  ; admit: denormal number or zero
-          push  AX              ; - determine if number is 0
-          or    AX,BX           ; - ...
-          or    AX,CX           ; - ...
-          or    AX,DX           ; - ...
-          pop   AX              ; - ...
-          _quif e               ; - quit if number is zero
-          or    DI,(3FFFh-3FFh+1) SHL 1; - set exponent
-          _loop                 ; - loop (normalize number)
-            or    AX,AX         ; - - quit if top word is not 0
-            _quif ne            ; - - ...
-            xchg  AX,DX         ; - - shift number left 16 bits
-            xchg  AX,CX         ; - - ...
-            xchg  AX,BX         ; - - ...
-            sub   DI,16 SHL 1   ; - - adjust exponent
-          _endloop              ; - endloop
-          _loop                 ; - loop (normalize number)
-            or    AX,AX         ; - - quit if top bit is on
-            _quif s             ; - - ...
-            _shl  DX,1          ; - - shift number left 1 bit
+        ; 10-byte temporary result is placed into DI:AX:BX:CX:DX
+        _guess xx1              ; guess
+          mov   DI,DX           ; - check lower words for zero
+          or    DI,CX           ; - ...
+          or    DI,BX           ; - ...
+          mov   DI,AX           ; - get entry exponent to DI
+          _quif ne              ; - quit if lower words are not zero
+          and   AX,7FFFh        ; - check for +/-0.0
+          _quif e,xx1           ; - quif if 0.0
+          cmp   AX,7FF0h        ; - check for +/-infinity
+          _quif ne              ; - quit if not infinity
+          or    DI,7FFFh        ; - set result infinity
+          mov   AX,8000h        ; - set result implied bit
+        _admit                  ; admit
+          mov     AX,DI
+          and     DI,7FF0h      ; - adjust entry exponent to result exponent position
+          shr     DI,1          ; - exponent >> 3
+          shr     DI,1          ; - ...
+          shr     DI,1          ; - ... (still needs >> 1 )
+          _rcl    AH,1          ; - get sign to carry flag
+          pushf                 ; - save sign (Carry flag)
+          mov     AH,3 shl 6    ; - set AH for shift count 3
+          _loop                 ; - loop shift fraction
+            _shl  DX,1          ; - - shift fraction << 1
             _rcl  CX,1          ; - - ...
             _rcl  BX,1          ; - - ...
             _rcl  AX,1          ; - - ...
-            sub   DI,1 SHL 1    ; - - decrement exponent
-          _endloop              ; - endloop
+          _until nc             ; - loop until count is not zero
+          call _shift_left_8    ; - and 8 more makes 11
+          cmp     DI,7FFh SHL 1 ; - check entry exponent is NaN
+          _if e                 ; - if entry exponent is NaN
+            mov   DI,7FFFh SHL 1; - - adjust result exponent to 7FFFh (NaN)
+            test  AH,40h        ; - - check SNaN
+            _if e               ; - - then
+              call  FPInvalidOp ; - - - indicate "Invalid Operand" exception
+            _endif              ; - - endif
+            or    AH,0C0h       ; - - indicate QNaN and turn on implied bit
+          _else                 ; - else it is non-zero number
+            add   DI,(3FFFh - 3FFh) SHL 1; - - adjust result exponent
+            cmp   DI,(3FFFh - 3FFh) SHL 1; - - check entry exponent is 0 (denormal number)
+            _if e               ; - - if denormal number then normalize it
+              add   DI,1 SHL 1  ; - - - adjust result exponent
+              _loop             ; - - - loop shift fraction by 8 quantities
+                or  AH,AH       ; - - - - check fraction MSB
+                _quif nz        ; - - - - quit if not zero
+                call _shift_left_8; - - - shift fraction << 8
+                sub DI,8 SHL 1  ; - - - - adjust result exponent
+              _endloop          ; - - - endloop
+              _loop             ; - - - loop shift fraction by 1
+                _quif s         ; - - - - quit if normalized (implied bit is set)
+                sub   DI,1 SHL 1; - - - - adjust result exponent
+                _shl  DX,1      ; - - - - shift fraction << 1
+                _rcl  CX,1      ; - - - - ...
+                _rcl  BX,1      ; - - - - ...
+                _rcl  AX,1      ; - - - - ...
+              _endloop          ; - - - endloop
+            _endif              ; - - endif
+            or    AH,80h        ; - - turn on implied bit
+          _endif                ; - endif
+          popf                  ; - get sign (Carry flag)
+          rcr     DI,1          ; - get sign back to DI
         _endguess               ; endguess
-        popf                    ; get sign (Carry flag)
-        rcr     DI,1            ; get sign back to DI
 ifdef _BUILDING_MATHLIB
         pop     BP              ; fetch return pointer
         mov     0[BP],DX        ; store number

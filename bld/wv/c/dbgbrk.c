@@ -83,7 +83,7 @@ extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern void             SetProgState( unsigned );
 extern void             TypeInpStack( input_type );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern char             *DupStrLen( char const *str, size_t len );
 extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( char *, int, char * );

@@ -47,6 +47,13 @@ typedef uint_16         YYACTTYPE;
 typedef uint_16         YYPLHSTYPE;
 typedef uint_8          YYPLENTYPE;
 
+#ifdef FAST_TABLES
+typedef uint_16         YYACTIONTYPE;
+typedef uint_16         YYACTIONBASETYPE;
+typedef uint_16         YYBITTYPE;
+typedef uint_16         YYBITBASETYPE;
+#endif
+
 typedef union {
     ScanInt                     intinfo;
     unsigned long               integral;
@@ -121,8 +128,8 @@ typedef enum {
 } p_action;
 
 /* definitions and tables here */
-            /*  */
-/* */
+            /* */
+           /* */
 
 #ifdef YYDEBUG
 
@@ -211,41 +218,139 @@ static YYTOKENTYPE yylexWIN( void )
     return( curtoken );
 }
 
+#ifdef FAST_TABLES
+#else
+#endif
+
+static YYACTTYPE find_action( parse_stack *state, YYCHKTYPE lookup )
+{
+#ifdef FAST_TABLES
+    YYACTTYPE yyk;
+    YYCHKTYPE lhs;
+    YYACTTYPE raw_action;
+
+    yyk = state->ssp[0];
+    bit_index = ( lookup >> 3 );
+    mask = 1 << ( lookup & 0x07 );
+    // yychktab[base] is parent + YYPARENT
+    // yyacttab[base] is default reduction
+    for(;;) {   // Chase up through parent productions
+        if( yybitcheck[bit_index + yybitbase[yyk]] & mask ) {
+            raw_action = yyaction[lookup + yyactionbase[yyk]];
+        } else {
+            raw_action = yydefaction[yyk];
+        }
+        if(( raw_action & RAW_REDUCTION ) == 0 ) {
+            /* we have a shift */
+            return( raw_action & RAW_MASK );
+        }
+        /* we have a reduction */
+        rule = raw_action & RAW_MASK;
+        if(( raw_action & RAW_UNIT_REDUCTION ) == 0 ) {
+            return( rule + YYUSED );
+        }
+        /* we have a unit reduction */
+        lhs = yyplhstab[rule];
+        yyk = yyaction[lhs + yygotobase[state->ssp[-1]]];
+#ifndef NDEBUG
+        printf("=== Unit reduction. New top state %03u Old state %03u ===\n", yyk, state->ssp[0]);
+#endif
+    }
+#else
+    YYACTTYPE yyk;
+    YYACTTYPE yyi;
+
+    yyk = *(state->ssp);
+    yyi = yyk + lookup;
+    while( yyi >= YYUSED || yychktab[yyi] != lookup ) {
+        yyi = yyk + YYPTOKEN;
+        if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
+            return( YYNOACTION );
+        }
+        yyk = yyacttab[yyi];
+        yyi = yyk + lookup;
+    }
+    return( yyacttab[yyi] );
+#endif
+}
+
+static YYACTTYPE find_default( parse_stack *state )
+{
+#ifdef FAST_TABLES
+    packed_action YYFAR *       pack;
+    YYACTTYPE                   action;
+
+    for(;;) {
+        pack = yyacttab + base;
+        action = _action( *pack );
+        if( action >= YYUSED ) break;           // Found a reduction
+        if( action == YYNOACTION ) break;       // Default is error
+        // Check parent production for default
+        base = _check( *pack ) - YYPARENT;
+        if( base == YYUSED ) {
+            // No parent
+            return( YYNOACTION );
+        }
+    }
+    return( action );
+
+    YYACTTYPE yyk;
+    YYCHKTYPE lhs;
+    YYACTTYPE raw_action;
+
+    yyk = state->ssp[0];
+    // yychktab[base] is parent + YYPARENT
+    // yyacttab[base] is default reduction
+    for(;;) {   // Chase up through parent productions
+        raw_action = yydefaction[yyk];
+        if(( raw_action & RAW_REDUCTION ) == 0 ) {
+            /* we have a shift */
+            return( raw_action & RAW_MASK );
+        }
+        /* we have a reduction */
+        rule = raw_action & RAW_MASK;
+        if(( raw_action & RAW_UNIT_REDUCTION ) == 0 ) {
+            return( rule + YYUSED );
+        }
+        /* we have a unit reduction */
+        lhs = yyplhstab[rule];
+        yyk = yyaction[lhs + yygotobase[state->ssp[-1]]];
+#ifndef NDEBUG
+        printf("=== Unit reduction. New top state %03u Old state %03u ===\n", yyk, state->ssp[0]);
+#endif
+    }
+#else
+    YYACTTYPE yyk;
+    YYACTTYPE yyi;
+
+    yyk = *(state->ssp);
+    yyi = yyk + YYDTOKEN;
+    while( yyi >= YYUSED || yychktab[yyi] != YYDTOKEN ) {
+        yyi = yyk + YYPTOKEN;
+        if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
+            return( YYNOACTION );
+        }
+        yyk = yyacttab[yyi];
+        yyi = yyk + YYDTOKEN;
+    }
+    return( yyacttab[yyi] );
+#endif
+}
+
 static p_action doAction( YYCHKTYPE t, parse_stack *state )
 {
     YYSTYPE yyval = { 0 };
     YYSTYPE *yyvp;
-    YYACTTYPE yyk;
+//    YYACTTYPE yyk;
     YYACTTYPE yyi;
     YYACTTYPE yyaction;
     YYACTTYPE rule;
     YYCHKTYPE yylhs;
 
     for(;;) {
-        yyk = *(state->ssp);
-        yyi = yyk + t;
-        while( yyi >= YYUSED || yychktab[yyi] != t ) {
-            yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
-                goto use_d_token;
-            }
-            yyk = yyacttab[yyi];
-            yyi = yyk + t;
-        }
-        yyaction = yyacttab[yyi];
+        yyaction = find_action( state, t );
         if( yyaction == YYNOACTION ) {
-    use_d_token:
-            yyk = *(state->ssp);
-            yyi = yyk + YYDTOKEN;
-            while( yyi >= YYUSED || yychktab[yyi] != YYDTOKEN ) {
-                yyi = yyk + YYPTOKEN;
-                if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
-                    return( P_SYNTAX );
-                }
-                yyk = yyacttab[yyi];
-                yyi = yyk + YYDTOKEN;
-            }
-            yyaction = yyacttab[yyi];
+            yyaction = find_default( state );
             if( yyaction == YYNOACTION ) {
                 return( P_SYNTAX );
             }
@@ -271,18 +376,12 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
             return( P_ERROR );
         }
         yylhs = yyplhstab[rule];
-        yyk = *(state->ssp);
-        yyi = yyk + yylhs;
-        while( yyi >= YYUSED || yychktab[yyi] != yylhs ) {
-            yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
-                return( P_ERROR );
-            }
-            yyk = yyacttab[yyi];
-            yyi = yyk + yylhs;
+        yyaction = find_action( state, yylhs );
+        if( yyaction == YYNOACTION ) {
+            return( P_ERROR );
         }
         state->ssp++;
-        *(state->ssp) = yyacttab[yyi];
+        *(state->ssp) = yyaction;
 #if 0                                   /*** change with new yacc */
         yyvp = state->vsp;
 #else

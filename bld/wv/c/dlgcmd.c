@@ -49,7 +49,7 @@ extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, i
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
 extern void             SymComplete( gui_window *gui, int id );
 extern void             DoCmd(char*);
-extern char             *DupStr(char*);
+extern char             *DupStr(const char*);
 
 
 static bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )

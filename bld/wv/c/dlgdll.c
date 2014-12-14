@@ -40,7 +40,7 @@ extern void         RecordClearDLLBreaks( void );
 extern void         FiniDLLList( void );
 extern char         *DLLListName( char_ring *src );
 extern char_ring    *NextDLLList( char_ring *curr );
-extern void         AddDLLList( char *name );
+extern void         AddDLLList( const char *name );
 
 
 void DlgBreakDLL( void )

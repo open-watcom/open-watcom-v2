@@ -50,7 +50,7 @@ extern bool             WndDlgTxt( char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
-extern char             *DupStrLen( char *, unsigned );
+extern char             *DupStrLen( const char *, unsigned );
 extern bool             ScanItem( bool, char **, size_t * );
 extern char             *GetCmdName( int );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
@@ -207,7 +207,7 @@ void FiniFont( void )
     }
 }
 
-static char *GUIDupStrLen( char *str, unsigned len )
+static char *GUIDupStrLen( const char *str, unsigned len )
 {
     char        *dup;
 

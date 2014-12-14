@@ -575,7 +575,6 @@ bool GUIProcessEvent( EVENT ev )
     unsigned    id;
     gui_window  *menu_window;
     bool        new_curr_wnd;
-    VSCREEN     *vscreen;
 
     // this is processed before all others and signals the end for all
     // GUI UI windows ( unconditional )
@@ -589,8 +588,7 @@ bool GUIProcessEvent( EVENT ev )
     if( uimouseinstalled() ) {
         wnd = (gui_window *)uivmousepos( NULL, &row, &col );
         if( wnd != NULL ) {
-            vscreen = (VSCREEN *)wnd;
-            if( !( vscreen->flags & GUI_WINDOW ) ) {
+            if( !( wnd->screen.flags & GUI_WINDOW ) ) {
                 wnd = NULL;
             }
         }

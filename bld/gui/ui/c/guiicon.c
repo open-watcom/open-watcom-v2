@@ -40,7 +40,7 @@ void GUIDrawIcon( gui_window * wnd )
     SAREA       area;
     int         length;
     ATTR        attr;
-    char        *str;
+    const char  *str;
 
     COPYAREA( wnd->screen.area, area );
     area.row = 0;

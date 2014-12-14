@@ -232,7 +232,7 @@ bool GUISetBackgroundChar( gui_window *wnd, char background )
  * GUISetupStruct - sets up the gui_window structure
  */
 
-bool GUISetupStruct1( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
+static bool GUISetupStruct1( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 {
     wnd->style = dlg_info->style;
     if( !dialog ) {
@@ -243,7 +243,7 @@ bool GUISetupStruct1( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
     return( true );
 }
 
-bool GUISetupStruct2( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
+static bool GUISetupStruct2( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 {
     if( !GUIJustSetWindowText( wnd, dlg_info->title ) ) {
         return( false );

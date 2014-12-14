@@ -509,7 +509,7 @@ typedef struct window {
 
 typedef struct vscreen {
         EVENT           event;          /* garbage                          */
-        char _FARD      *title;         /* title of virtual screen          */
+        const char _FARD *title;        /* title of virtual screen          */
         SAREA           area;           /* position on physical screen      */
         unsigned int    flags;          /* dialogue, unframed, movable etc. */
         ORD             row;
@@ -648,7 +648,7 @@ extern          void            uioffcursor( void );
 extern          void            uioncursor( void );
 extern          void            uioffmouse( void );
 extern          void            uionmouse( void );
-extern          VSCREEN _FARD  *uiopen( SAREA *, char *, unsigned int );
+extern          VSCREEN _FARD  *uiopen( SAREA *, const char *, unsigned int );
 extern          void            uihidemouse( void );
 extern          unsigned        uiclockdelay( unsigned milli );
 extern          EVENT   _FARD  *uipoplist( void );

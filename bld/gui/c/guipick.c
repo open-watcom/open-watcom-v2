@@ -85,13 +85,15 @@ bool GUIPickEvent( gui_window *gui, gui_event event, void *param )
 }
 
 
-int GUIDlgPickWithRtn( char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
+int GUIDlgPickWithRtn( const char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
 {
     dlg_pick    dlg;
 
     int len = strlen( title );
-    if( len < DLG_PICK_COLS ) len = DLG_PICK_COLS;
-    if( len > DLG_MAX_COLS ) len = DLG_MAX_COLS;
+    if( len < DLG_PICK_COLS )
+        len = DLG_PICK_COLS;
+    if( len > DLG_MAX_COLS )
+        len = DLG_MAX_COLS;
 
     Controls[1].text = LIT( OK );
     Controls[2].text = LIT( Cancel );
@@ -102,7 +104,7 @@ int GUIDlgPickWithRtn( char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn
 }
 
 
-int GUIDlgPick( char *title, PICKCALLBACK *pickinit )
+int GUIDlgPick( const char *title, PICKCALLBACK *pickinit )
 {
     return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen ) );
 }

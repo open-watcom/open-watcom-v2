@@ -39,7 +39,7 @@
 
 extern void     WndMsgBox( char * );
 extern char     *StrTrim( char *str );
-extern char     *DupStr( char* );
+extern char     *DupStr( const char* );
 extern name_list*SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
 extern void     SymCompMatches( name_list *list, char *match, unsigned *pfirst, unsigned *plast );
 

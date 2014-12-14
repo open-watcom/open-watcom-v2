@@ -92,6 +92,37 @@ void print_fail(int line) { printf("FAIL: line %d\n", line); }
 
 #define SQRTPI  1.7724538509055160273
 
+typedef unsigned short __based(__segname("_STACK"))     *cwp;
+
+extern  void    __fstcw( cwp cw );
+extern  void    __fstsw( cwp sw );
+
+#if defined(__386__)
+#pragma aux __fstcw =       \
+        ".387" \
+        "fstcw ss:[ecx]"    \
+        parm caller [ecx];
+#pragma aux __fstsw =       \
+        ".387" \
+        "fstsw ss:[ecx]"    \
+        parm caller [ecx];
+#else
+#pragma aux __fstcw =   \
+        ".8087" \
+        "xchg ax,bp"    \
+        "fstcw [bp]"    \
+        "fwait"         \
+        "xchg ax,bp"    \
+        parm caller [ax];
+#pragma aux __fstsw =   \
+        ".8087" \
+        "xchg ax,bp"    \
+        "fstsw [bp]"    \
+        "fwait"         \
+        "xchg ax,bp"    \
+        parm caller [ax];
+#endif
+
 #ifdef __FPI__
 volatile int    sig_count = 0;
 double          a = 1.0;
@@ -127,6 +158,15 @@ int matherr( struct _exception *err )
     return( 0 );
 }
 #endif
+
+void print_fpu_cw_sw( char *text )
+{
+    unsigned short sw, cw;
+
+    __fstcw( &cw );
+    __fstcw( &sw );
+printf("test %s FPU cw=%X sw=%X\n", text, (unsigned)cw, (unsigned)sw );
+}
 
 int CompDbl( double n1, double n2 )
 {
@@ -328,6 +368,7 @@ void test_fp_and_80x87_math( void )
     q = a / b;
     VERIFY( sig_count == 0 );
     signal( SIGFPE, SIG_DFL );
+    _fpreset();
 #endif
 #else
     printf( "Skipping other floating point functions." );

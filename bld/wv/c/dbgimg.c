@@ -39,7 +39,6 @@
 
 extern void             SetLastSym( char *to );
 extern bool             SymBrowse( char **name );
-extern char             *DupStr(char*);
 extern void             WndGblFuncInspect( mod_handle mod );
 extern void             WndGblVarInspect( mod_handle mod );
 extern void             WndModListInspect( mod_handle mod );

@@ -36,7 +36,6 @@
 #include "madcli.h"
 #include "mad.h"
 
-extern char             *DupStr( char *str );
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
 extern unsigned         NewCurrRadix( unsigned );
@@ -46,7 +45,7 @@ extern char             *Format( char *buff, char *fmt, ... );
 extern void             RecordEvent( char *p );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_handle );
 extern void             PushAddr( address val );
-extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle );
+extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, int id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );

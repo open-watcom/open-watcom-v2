@@ -103,7 +103,6 @@ extern void             DlgCmd( void );
 extern void             DoCmd(char*);
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             DoInput( void );
-extern char             *DupStr(char*);
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern void             FlushEOC(void);
 extern  void            FiniSource( void );
@@ -1511,12 +1510,12 @@ void DUIStatusText( char *text )
     printf( "STA %s\n", text );
 }
 
-bool DlgGivenAddr( char *title, address *value )
+bool DlgGivenAddr( const char *title, address *value )
 {
     // needed when segment's don't map (from new/sym command)
     return( FALSE );
 }
-void DlgNewWithSym( char *text, char *buff, int buff_len )
+void DlgNewWithSym( const char *title, char *buff, int buff_len )
 {
     // used by print command with no arguments
 }
