@@ -2,7 +2,7 @@
 :set symbol="XMPset" value="of".
 .*
 .dm funcinit begin
-.sr func=&*
+.sr func=''
 .sr funcn=''
 .sr _func=''
 .sr __func=''
@@ -25,7 +25,7 @@
 .*
 .* Define these here otherwise &_func. expands to &_func. and not ''
 .*
-.funcinit ''
+.funcinit
 .*
 .dm prelim begin
 .dm prelim end
@@ -109,18 +109,16 @@
 .if |&*1| ne |end| .do begin
 .   .sr *cnt=&*0
 .   .sr *i=1
+.   .funcinit
 .   .if |&*1| eq |begin| .do begin
-.   .   .sr *i=2
+.   .   .sr *i=&*i.+1
 .   .   .sr *cnt=&*cnt.-1
 .   .do end
-.   .if &'&*cnt eq 0 .do begin
-.   .   .funcinit ''
-.   .do end
-.   .el .do begin
+.   .if &'&*cnt ne 0 .do begin
 .   .   .sr *j=&*i.+1
 .   .   .sr *first=&*&*i.
 .   .   .sr *second=&*&*j.
-.   .   .funcinit &'strip(&*first.,'T',',')
+.   .   .sr func=&'strip(&*first.,'T',',')
 .   .   .if '&*second' eq 'Functions' .do begin
 .   .   .   .sr fncttl=&*first. &*second.
 .   .   .   .sr funcgrp=&'strip(&*first.,'T',',')

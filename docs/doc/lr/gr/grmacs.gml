@@ -22,7 +22,7 @@
 .dm picture end
 .*
 .dm gfuncinit begin
-.  .funcinit ''
+.  .funcinit
 .dm gfuncinit end
 .*
 .dm gfunc begin
