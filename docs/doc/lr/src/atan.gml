@@ -4,7 +4,6 @@
 double atan( double x );
 .ixfunc2 '&Math' &funcb
 .ixfunc2 '&Trig' &funcb
-.ixfunc2 '&Trig' &funcb
 .ixfunc2 '&Hyper' &funcb
 .synop end
 .desc begin
