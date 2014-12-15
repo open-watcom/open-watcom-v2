@@ -1,6 +1,7 @@
-.func __feenableexcept
+.func feenableexcept __feenableexcept
 .synop begin
 #include <fenv.h>
+void feenableexcept( int __excepts );
 void __feenableexcept( int __excepts );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
@@ -16,7 +17,7 @@ No value is returned.
 .return end
 .*
 .see begin
-.seelist __fedisableexcept
+.seelist fedisableexcept __fedisableexcept
 .see end
 .*
 .exmp begin
@@ -24,7 +25,7 @@ No value is returned.
 .exmp break
 void main( void )
 {
-    __feenableexcept( FE_DIVBYZERO );
+    feenableexcept( FE_DIVBYZERO );
 }
 .exmp end
 .class WATCOM
