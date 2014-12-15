@@ -45,8 +45,6 @@
 .fnc asin                       asin.gml        DOS QNX W WIN32
 .fnc asinh                      asinh.gml       DOS QNX W WIN32
 .fnc assert                     assert.gml      DOS QNX W WIN32
-.fnc _assert                    assert.gml      DOS QNX W WIN32
-.fnc _wassert                   assert.gml      DOS QNX W WIN32
 .fnc atan                       atan.gml        DOS QNX W WIN32
 .fnc atan2                      atan2.gml       DOS QNX W WIN32
 .fnc atanh                      atanh.gml       DOS QNX W WIN32

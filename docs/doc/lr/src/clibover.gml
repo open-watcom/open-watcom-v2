@@ -2278,7 +2278,6 @@ header file for examples.
 .fd *fun="siglongjmp" return and restore environment and process's signal mask saved by "sigsetjmp"
 .fd *fun="_splitpath" split a filename into its components
 .fd *fun="_splitpath2" split a filename into its components
-.fd *fun="_wassert" test an assertion and output wide character string upon failure
 .fd *fun="_wfullpath" return full path specification for file
 .fd *fun="_wmakepath" make a full filename from specified components
 .fd *fun="_wsetlocale" set locale category
