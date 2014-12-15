@@ -59,17 +59,21 @@
 .el .if '&funcgrp.' eq '' .do begin
 .   .sr fncttl=&fncttl., &*
 .do end
+.if '&funcb' eq '' .sr funcb=&*
 .if '&funcn' eq '' .sr funcn=&'strip(&*,'L','_')
 .se __fnx=&__fnx.+1
 .se $$fnc(&__fnx.)=&*
 .* try to classify type of function
-.if &'pos('_&funcn',&*) eq 1 .do begin
-.   .if "&'right(&*,3)" eq "i64" .do begin
-.   .   .sr func64=&*
+.if &'pos('i64',&*) ne 0 .do begin
+.   .if '&*(1:2).' eq '_w' .do begin
+.   .   .sr wfunc64=&*
 .   .do end
 .   .el .do begin
-.   .   .sr _func=&*
+.   .   .sr func64=&*
 .   .do end
+.do end
+.el .if '&*' eq '_&funcn' .do begin
+.   .sr _func=&*
 .do end
 .el .if '&*' eq '__&funcn' .do begin
 .   .sr __func=&*
@@ -77,14 +81,12 @@
 .el .if '&*' eq '_f&funcn' .do begin
 .   .sr ffunc=&*
 .do end
-.el .if &'pos('_w',&*) eq 1 .do begin
-.   .if &'pos('_wrapon',&*) ne 1 .do begin
-.   .   .if "&'right(&*,3)" eq "i64" .do begin
-.   .   .   .sr wfunc64=&*
-.   .   .do end
-.   .   .el .do begin
-.   .   .   .sr wfunc=&*
-.   .   .do end
+.el .if '&*(1:2).' eq '_w' .do begin
+.   .if '&*.' eq '_wrapon' or '&*.' eq '_write' .do begin
+.   .   .sr _func=&*
+.   .do end
+.   .el .do begin
+.   .   .sr wfunc=&*
 .   .do end
 .do end
 .el .if &'pos('wc',&*) eq 1 .do begin
@@ -118,8 +120,8 @@
 .   .   .sr *j=&*i.+1
 .   .   .sr *first=&*&*i.
 .   .   .sr *second=&*&*j.
-.   .   .sr funcb=&'strip(&*first.,'T',',')
 .   .   .if '&*second' eq 'Functions' .do begin
+.   .   .   .sr funcb=&'strip(&*first.,'T',',')
 .   .   .   .sr fncttl=&*first. &*second.
 .   .   .   .sr funcgrp=&'strip(&*first.,'T',',')
 .   .   .do end
