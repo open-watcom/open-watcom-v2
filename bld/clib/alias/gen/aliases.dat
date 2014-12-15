@@ -2,192 +2,195 @@
 # calling dup(), but will later want dup() to be the alias and _dup() to be
 # the "real" symbol.
 
-#file           actual name     aliased name    systems
-###########################################################################################################################
-#               #               #               DOS-16
-#               #               #               #   DOS-32
-#               #               #               #   #   NT-386
-#               #               #               #   #   #   NT-ALPHA
-#               #               #               #   #   #   #   NT-PPC
-#               #               #               #   #   #   #   #   NETWARE-CLIB
-#               #               #               #   #   #   #   #   #   NETWARE-LIBC
-#               #               #               #   #   #   #   #   #   #   OS/2-16
-#               #               #               #   #   #   #   #   #   #   #   OS2/32
-#               #               #               #   #   #   #   #   #   #   #   #   QNX-16
-#               #               #               #   #   #   #   #   #   #   #   #   #   QNX-32
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   WIN-16
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   WIN-32
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   OSI
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   #   LINUX
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   LINUX-PPC
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   LINUX-MIPS
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   RDOS USER
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   RDOS device
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
-#               #               #               #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
-###########################################################################################################################
-access          access          _access         d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
-asct_r          _asctime        asctime_r                                                               l32 lpc lmp
-atoi64          atoll           _atoi64         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-chdir_          chdir           _chdir          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-chmod_          chmod           _chmod          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-chsize          chsize          _chsize         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-close_          close           _close          d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
-creat_          creat           _creat          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-cstrdu          __clib_strdup   strdup          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-ctim_r          _ctime          ctime_r                                                                 l32 lpc lmp
-cwait_          cwait           _cwait                  nt  nta ntp         o16 o32
-cwcsdu          __clib_wcsdup   _wcsdup         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-dopen_          _hdopen         _dopen          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         rdu rdk
-dup2__          dup2            _dup2           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-dup___          dup             _dup            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-eof___          eof             _eof            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-excl__          execl           _execl          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-excle_          execle          _execle         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-exclp_          execlp          _execlp         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-exclpe          execlpe         _execlpe        d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-excv__          execv           _execv          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-excve_          execve          _execve         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-excvp_          execvp          _execvp         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-excvpe          execvpe         _execvpe        d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-fdopen          fdopen          _fdopen         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-fgetch          fgetchar        _fgetchar       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-fgetwc          fgetwchar       _fgetwchar      d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-fileno          fileno          _fileno         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-flelen          filelength      _filelength     d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-fputch          fputchar        _fputchar       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-fputwc          fputwchar       _fputwchar      d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-fseeko          fseek           fseeko                                                                  l32 lpc lmp
-fstat_          fstat           _fstat          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-ftello          ftell           ftello                                                                  l32 lpc lmp
-ftime_          ftime           _ftime          d16 d32 nt  nta ntp         o16 o32 q16 q21 w16 w32 osi l32         rdu rdk
-getche          getche          _getche         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-getch_          getch           _getch          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-getcwd          getcwd          _getcwd         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-getpid          getpid          _getpid         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-getws_          getws           _getws          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-gmtm_r          _gmtime         gmtime_r                                                                l32 lpc lmp
-i64toa          lltoa           _i64toa         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-isatty          isatty          _isatty         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-iscsyf          __iscsymf       iscsymf         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-iscsym          __iscsym        iscsym          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-islead          _ismbblead      isleadbyte      d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-ismbbk          _ismbbkalpha    _ismbbkalnum    d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-itoa__          itoa            _itoa           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-itow__          _itow           _witoa          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-kbhit_          kbhit           _kbhit          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-lctm_r          _localtime      localtime_r                                                             l32 lpc lmp
-lltoa_          lltoa           _lltoa          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-lockin          locking         _locking        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32         rdu rdk
-lseek_          lseek           _lseek          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-lstat_          stat            lstat           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-ltoa__          ltoa            _ltoa           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-ltow__          _ltow           _wltoa          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-mbscol          _mbscmp         _mbscoll        d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-mbsico          _mbsicmp        _mbsicoll       d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-mbsnbc          _mbsnbcmp       _mbsnbcoll      d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-mbsnbi          _mbsnbicmp      _mbsnbicoll     d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-mbsnco          _mbsncmp        _mbsncoll       d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-mbsnic          _mbsnicmp       _mbsnicoll      d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-memicm          memicmp         _memicmp        d16 d32 nt  nta ntp         o16 o32         w16 w32     l32         rdu rdk
-mkdir_          mkdir           _mkdir          d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
-open__          open            _open           d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
-pclose          pclose          _pclose                                                                 l32 lpc lmp
-popen_          popen           _popen                                                                  l32 lpc lmp
-putenv          putenv          _putenv         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
-putws_          putws           _putws          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-read__          read            _read           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-rmdir_          rmdir           _rmdir          d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
-setenv          setenv          _setenv         d16 d32 nt  nta ntp         o16 o32 q16     w16 w32     l32 lpc lmp rdu rdk
-setmod          setmode         _setmode        d16 d32 nt  nta ntp nvc nvl o16 o32         w16 w32                 rdu rdk
-sopen_          sopen           _sopen          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-spwl__          spawnl          _spawnl         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-spwle_          spawnle         _spawnle        d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-spwlp_          spawnlp         _spawnlp        d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-spwlpe          spawnlpe        _spawnlpe       d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-spwv__          spawnv          _spawnv         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-spwve_          spawnve         _spawnve        d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-spwvp_          spawnvp         _spawnvp        d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-spwvpe          spawnvpe        _spawnvpe       d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
-stat__          stat            _stat           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-stkavl          stackavail      _stackavail     d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-stnico          strnicmp        _strnicoll      d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strcc_          stricmp         strcasecmp      d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-strcmp          stricmp         strcmpi         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-strdup          __clib_strdup   _strdup         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-stricm          stricmp         _stricmp        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strico          stricmp         _stricoll       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strlwr          strlwr          _strlwr         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strncc          strnicmp        strncasecmp     d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-strnco          strncmp         _strncoll       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strnic          strnicmp        _strnicmp       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strnse          strnset         _strnset        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strrev          strrev          _strrev         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strset          strset          _strset         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strspn          strspnp         _strspnp        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-strupr          strupr          _strupr         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-stti64          strtoll         _strtoi64       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-sttu64          strtoull        _strtoui64      d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tccmp_          _mbccmp         _tccmp          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tccpy_          _mbccpy         _tccpy          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tclen_          _mbclen         _tclen          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcnccm          _mbsncmp        _tcsnccmp       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcnccn          _mbsnccnt       _tcsnccnt       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcncco          _mbsncmp        _tcsnccoll      d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcnccp          _mbsncpy        _tcsnccpy       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcncic          _mbsnicmp       _tcsncicoll     d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcnico          _mbsnbicmp      _tcsnicoll      d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcschr          _mbschr         _tcschr         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcscle          _mbslen         _tcsclen        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcscmp          _mbscmp         _tcscmp         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcscol          _mbscmp         _tcscoll        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcscsp          _mbscspn        _tcscspn        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsdec          _mbsdec         _tcsdec         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsicm          _mbsicmp        _tcsicmp        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsico          _mbsicmp        _tcsicoll       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsinc          _mbsinc         _tcsinc         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcslwr          _mbslwr         _tcslwr         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnbc          _mbsnbcnt       _tcsnbcnt       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnca          _mbsnbcat       _tcsncat        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsncc          _mbsncat        _tcsnccat       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnci          _mbsnicmp       _tcsncicmp      d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsncm          _mbsnbcmp       _tcsncmp        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnco          _mbsnbcmp       _tcsncoll       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsncp          _mbsnbcpy       _tcsncpy        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsncs          _mbsnset        _tcsncset       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnex          _mbsnextc       _tcsnextc       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnic          _mbsnbicmp      _tcsnicmp       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnin          _mbsninc        _tcsninc        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsnse          _mbsnbset       _tcsnset        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcspbr          _mbspbrk        _tcspbrk        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcspnp          _mbsspnp        _tcsspnp        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsrch          _mbsrchr        _tcsrchr        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsrev          _mbsrev         _tcsrev         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsset          _mbsset         _tcsset         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsspn          _mbsspn         _tcsspn         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsstr          _mbsstr         _tcsstr         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcstok          _mbstok         _tcstok         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tcsupr          _mbsupr         _tcsupr         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tell__          tell            _tell           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-tolowe          tolower         _tolower        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-touppe          toupper         _toupper        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-tzset_          tzset           _tzset          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-u64toa          ulltoa          _ui64toa        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-ufst64          _fstati64       _wfstati64      d16 d32 nt  nta ntp         o16 o32         w16 w32 osi
-ufstat          fstat           _wfstat         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi
-ulltoa          ulltoa          _ulltoa         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-ultoa_          ultoa           _ultoa          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-ultow_          _ultow          _wultoa         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32         rdu rdk
-umask_          umask           _umask          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-unlink          unlink          _unlink         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-utime_          utime           _utime          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-utoa__          utoa            _utoa           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
-utow__          _utow           _wutoa          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32         rdu rdk
-wcnico          _wcsnicmp       _wcsnicoll      d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-wcscmp          _wcsicmp        wcscmpi         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-wcsico          _wcsicmp        _wcsicoll       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-wcsnco          wcsncmp         _wcsncoll       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-write_          write           _write          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-wtoi__          _wtoi           _watoi          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-wtol__          _wtol           _watol          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-_isasc          isascii         __isascii       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+# source file     actual name    alias name
+# prefix             (clib)         (new)         systems
+#############################################################################################################################
+#             #                 #                 DOS-16
+#             #                 #                 #   DOS-32
+#             #                 #                 #   #   NT-386
+#             #                 #                 #   #   #   NT-ALPHA
+#             #                 #                 #   #   #   #   NT-PPC
+#             #                 #                 #   #   #   #   #   NETWARE-CLIB
+#             #                 #                 #   #   #   #   #   #   NETWARE-LIBC
+#             #                 #                 #   #   #   #   #   #   #   OS/2-16
+#             #                 #                 #   #   #   #   #   #   #   #   OS2/32
+#             #                 #                 #   #   #   #   #   #   #   #   #   QNX-16
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   QNX-32
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   WIN-16
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   WIN-32
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   OSI
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   #   LINUX
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   LINUX-PPC
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   LINUX-MIPS
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   RDOS USER
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   RDOS device
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
+#             #                 #                 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
+#############################################################################################################################
+access        access            _access           d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
+asct_r        _asctime          asctime_r                                                                 l32 lpc lmp
+atoi64        atoll             _atoi64           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+chdir_        chdir             _chdir            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+chmod_        chmod             _chmod            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+chsize        chsize            _chsize           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+close_        close             _close            d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
+creat_        creat             _creat            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+cstrdu        __clib_strdup     strdup            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+ctim_r        _ctime            ctime_r                                                                   l32 lpc lmp
+cwait_        cwait             _cwait                    nt  nta ntp         o16 o32
+cwcsdu        __clib_wcsdup     _wcsdup           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+dopen_        _hdopen           _dopen            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         rdu rdk
+dup2__        dup2              _dup2             d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+dup___        dup               _dup              d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+eof___        eof               _eof              d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+excl__        execl             _execl            d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+excle_        execle            _execle           d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+exclp_        execlp            _execlp           d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+exclpe        execlpe           _execlpe          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+excv__        execv             _execv            d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+excve_        execve            _execve           d16     nt  nta ntp         o16 o32 q16 q32                         rdu
+excvp_        execvp            _execvp           d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+excvpe        execvpe           _execvpe          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+fdopen        fdopen            _fdopen           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+fgetch        fgetchar          _fgetchar         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+fgetwc        fgetwchar         _fgetwchar        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+fileno        fileno            _fileno           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+flelen        filelength        _filelength       d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+fputch        fputchar          _fputchar         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+fedisa        fedisableexcept   __fedisableexcept d16 d32 nt          nvc nvl o16 o32 q16 q32 w16 w32     l32         rdu rdk
+feenab        feenableexcept    __feenableexcept  d16 d32 nt          nvc nvl o16 o32 q16 q32 w16 w32     l32         rdu rdk
+fputwc        fputwchar         _fputwchar        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+fseeko        fseek             fseeko                                                                    l32 lpc lmp
+fstat_        fstat             _fstat            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+ftello        ftell             ftello                                                                    l32 lpc lmp
+ftime_        ftime             _ftime            d16 d32 nt  nta ntp         o16 o32 q16 q21 w16 w32 osi l32         rdu rdk
+getche        getche            _getche           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+getch_        getch             _getch            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+getcwd        getcwd            _getcwd           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+getpid        getpid            _getpid           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+getws_        getws             _getws            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+gmtm_r        _gmtime           gmtime_r                                                                  l32 lpc lmp
+i64toa        lltoa             _i64toa           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+isatty        isatty            _isatty           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+iscsyf        __iscsymf         iscsymf           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+iscsym        __iscsym          iscsym            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+islead        _ismbblead        isleadbyte        d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+ismbbk        _ismbbkalpha      _ismbbkalnum      d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+itoa__        itoa              _itoa             d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+itow__        _itow             _witoa            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+kbhit_        kbhit             _kbhit            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+lctm_r        _localtime        localtime_r                                                               l32 lpc lmp
+lltoa_        lltoa             _lltoa            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+lockin        locking           _locking          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32         rdu rdk
+lseek_        lseek             _lseek            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+lstat_        stat              lstat             d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+ltoa__        ltoa              _ltoa             d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+ltow__        _ltow             _wltoa            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+mbscol        _mbscmp           _mbscoll          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+mbsico        _mbsicmp          _mbsicoll         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+mbsnbc        _mbsnbcmp         _mbsnbcoll        d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+mbsnbi        _mbsnbicmp        _mbsnbicoll       d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+mbsnco        _mbsncmp          _mbsncoll         d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+mbsnic        _mbsnicmp         _mbsnicoll        d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+memicm        memicmp           _memicmp          d16 d32 nt  nta ntp         o16 o32         w16 w32     l32         rdu rdk
+mkdir_        mkdir             _mkdir            d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
+open__        open              _open             d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
+pclose        pclose            _pclose                                                                   l32 lpc lmp
+popen_        popen             _popen                                                                    l32 lpc lmp
+putenv        putenv            _putenv           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+putws_        putws             _putws            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+read__        read              _read             d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+rmdir_        rmdir             _rmdir            d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
+setenv        setenv            _setenv           d16 d32 nt  nta ntp         o16 o32 q16     w16 w32     l32 lpc lmp rdu rdk
+setmod        setmode           _setmode          d16 d32 nt  nta ntp nvc nvl o16 o32         w16 w32                 rdu rdk
+sopen_        sopen             _sopen            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+spwl__        spawnl            _spawnl           d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+spwle_        spawnle           _spawnle          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+spwlp_        spawnlp           _spawnlp          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+spwlpe        spawnlpe          _spawnlpe         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+spwv__        spawnv            _spawnv           d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+spwve_        spawnve           _spawnve          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+spwvp_        spawnvp           _spawnvp          d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+spwvpe        spawnvpe          _spawnvpe         d16     nt  nta ntp         o16 o32 q16 q32             l32 lpc lmp rdu
+stat__        stat              _stat             d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+stkavl        stackavail        _stackavail       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+stnico        strnicmp          _strnicoll        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strcc_        stricmp           strcasecmp        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+strcmp        stricmp           strcmpi           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+strdup        __clib_strdup     _strdup           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+stricm        stricmp           _stricmp          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strico        stricmp           _stricoll         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strlwr        strlwr            _strlwr           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strncc        strnicmp          strncasecmp       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+strnco        strncmp           _strncoll         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strnic        strnicmp          _strnicmp         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strnse        strnset           _strnset          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strrev        strrev            _strrev           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strset        strset            _strset           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strspn        strspnp           _strspnp          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strupr        strupr            _strupr           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+stti64        strtoll           _strtoi64         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+sttu64        strtoull          _strtoui64        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tccmp_        _mbccmp           _tccmp            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tccpy_        _mbccpy           _tccpy            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tclen_        _mbclen           _tclen            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcnccm        _mbsncmp          _tcsnccmp         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcnccn        _mbsnccnt         _tcsnccnt         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcncco        _mbsncmp          _tcsnccoll        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcnccp        _mbsncpy          _tcsnccpy         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcncic        _mbsnicmp         _tcsncicoll       d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcnico        _mbsnbicmp        _tcsnicoll        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcschr        _mbschr           _tcschr           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcscle        _mbslen           _tcsclen          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcscmp        _mbscmp           _tcscmp           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcscol        _mbscmp           _tcscoll          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcscsp        _mbscspn          _tcscspn          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsdec        _mbsdec           _tcsdec           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsicm        _mbsicmp          _tcsicmp          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsico        _mbsicmp          _tcsicoll         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsinc        _mbsinc           _tcsinc           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcslwr        _mbslwr           _tcslwr           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnbc        _mbsnbcnt         _tcsnbcnt         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnca        _mbsnbcat         _tcsncat          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsncc        _mbsncat          _tcsnccat         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnci        _mbsnicmp         _tcsncicmp        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsncm        _mbsnbcmp         _tcsncmp          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnco        _mbsnbcmp         _tcsncoll         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsncp        _mbsnbcpy         _tcsncpy          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsncs        _mbsnset          _tcsncset         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnex        _mbsnextc         _tcsnextc         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnic        _mbsnbicmp        _tcsnicmp         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnin        _mbsninc          _tcsninc          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsnse        _mbsnbset         _tcsnset          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcspbr        _mbspbrk          _tcspbrk          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcspnp        _mbsspnp          _tcsspnp          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsrch        _mbsrchr          _tcsrchr          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsrev        _mbsrev           _tcsrev           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsset        _mbsset           _tcsset           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsspn        _mbsspn           _tcsspn           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsstr        _mbsstr           _tcsstr           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcstok        _mbstok           _tcstok           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tcsupr        _mbsupr           _tcsupr           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tell__        tell              _tell             d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+tolowe        tolower           _tolower          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+touppe        toupper           _toupper          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+tzset_        tzset             _tzset            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+u64toa        ulltoa            _ui64toa          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+ufst64        _fstati64         _wfstati64        d16 d32 nt  nta ntp         o16 o32         w16 w32 osi
+ufstat        fstat             _wfstat           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi
+ulltoa        ulltoa            _ulltoa           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+ultoa_        ultoa             _ultoa            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+ultow_        _ultow            _wultoa           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32         rdu rdk
+umask_        umask             _umask            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+unlink        unlink            _unlink           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+utime_        utime             _utime            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+utoa__        utoa              _utoa             d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+utow__        _utow             _wutoa            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32         rdu rdk
+wcnico        _wcsnicmp         _wcsnicoll        d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+wcscmp        _wcsicmp          wcscmpi           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+wcsico        _wcsicmp          _wcsicoll         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+wcsnco        wcsncmp           _wcsncoll         d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+write_        write             _write            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
+wtoi__        _wtoi             _watoi            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+wtol__        _wtol             _watol            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
+_isasc        isascii           __isascii         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk

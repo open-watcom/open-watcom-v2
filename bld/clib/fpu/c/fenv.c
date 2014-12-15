@@ -204,10 +204,10 @@ _WCRTLINK int feraiseexcept( int excepts )
 }
 
 /*
-_feenableexcept is an OW extension to unmask the given fpu exception
+feenableexcept is an OW extension to unmask the given fpu exception
 */
-_WCRTLINK void __feenableexcept( int excepts )
-/********************************************/
+_WCRTLINK void feenableexcept( int excepts )
+/******************************************/
 {
     uint16_t    status;
 
@@ -218,10 +218,10 @@ _WCRTLINK void __feenableexcept( int excepts )
 }
 
 /*
-_fedisableexcept is an OW extension to mask the given fpu exception
+fedisableexcept is an OW extension to mask the given fpu exception
 */
-_WCRTLINK void __fedisableexcept( int excepts )
-/*********************************************/
+_WCRTLINK void fedisableexcept( int excepts )
+/*******************************************/
 {
     uint16_t    status;
 

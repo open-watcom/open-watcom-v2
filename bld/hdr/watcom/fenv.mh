@@ -78,7 +78,9 @@ _WCRTLINK extern int  fesetexceptflag( const fexcept_t *__flagp, int __excepts )
 _WCRTLINK extern int  fetestexcept( int __excepts );
 
 #if !defined(NO_EXT_KEYS) /* extensions enabled */
+_WCRTLINK extern void feenableexcept( int __excepts );
 _WCRTLINK extern void __feenableexcept( int __excepts );
+_WCRTLINK extern void fedisableexcept( int __excepts );
 _WCRTLINK extern void __fedisableexcept( int __excepts );
 #endif /* extensions enabled */
 
