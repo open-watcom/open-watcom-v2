@@ -8,7 +8,7 @@ long _filelength( int &fd );
 .ixfunc2 '&OsIo' &_func
 .do end
 __int64 _filelengthi64( int &fd );
-.ixfunc2 '&OsIo' &_func64
+.ixfunc2 '&OsIo' &func64
 .synop end
 .desc begin
 The
@@ -18,7 +18,7 @@ bytes in the opened file indicated by the file &handle
 .arg &fd
 .ct .li .
 .np
-The &_func64 function returns, as a 64-bit integer, the number of
+The &func64 function returns, as a 64-bit integer, the number of
 bytes in the opened file indicated by the file &handle
 .arg &fd
 .ct .li .
@@ -37,7 +37,7 @@ If an error occurs in
 .id &funcb.
 (&minus.1L) is returned.
 .np
-If an error occurs in &_func64, (&minus.1I64) is returned.
+If an error occurs in &func64, (&minus.1I64) is returned.
 .np
 .im errnoref
 .np

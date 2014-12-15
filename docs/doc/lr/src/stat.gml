@@ -8,7 +8,7 @@ int _stat( const char *path, struct _stat *buf );
 .ixfunc2 '&FileOp' &_func
 .do end
 int _stati64( const char *path, struct _stati64 *buf );
-.ixfunc2 '&FileOp' &_func64
+.ixfunc2 '&FileOp' &func64
 .if &'length(&wfunc.) ne 0 .do begin
 int _wstat( const wchar_t *path, struct _stat *buf );
 .ixfunc2 '&FileOp' &wfunc

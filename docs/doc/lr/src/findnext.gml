@@ -6,7 +6,7 @@ int _findnext( long handle,
 .ixfunc2 '&DosFunc' &_func
 int _findnexti64( long handle,
                   struct _finddatai64_t *fileinfo );
-.ixfunc2 '&DosFunc' &_func64
+.ixfunc2 '&DosFunc' &func64
 .if &'length(&wfunc.) ne 0 .do begin
 int _wfindnext( long handle,
                 struct _wfinddata_t *fileinfo );
@@ -48,7 +48,7 @@ struct _finddata_t {
 };
 .millust end
 .np
-The &_func64 function returns information on the next file whose name
+The &func64 function returns information on the next file whose name
 matches the
 .arg filespec
 argument that was specified in a call to the
@@ -97,7 +97,7 @@ struct _wfinddata_t {
 };
 .millust end
 .np
-The wide-character &wfunc64 function is similar to the &_func64
+The wide-character &wfunc64 function is similar to the &func64
 function but operates on wide-character strings.
 It differs from the
 .id &wfunc.

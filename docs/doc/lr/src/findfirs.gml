@@ -44,7 +44,7 @@ struct _finddata_t {
 };
 .millust end
 .np
-The &_func64 function returns information on the first file whose
+The &func64 function returns information on the first file whose
 name matches the
 .arg filespec
 argument.
@@ -89,7 +89,7 @@ struct _wfinddata_t {
 };
 .millust end
 .np
-The wide-character &wfunc64 function is similar to the &_func64
+The wide-character &wfunc64 function is similar to the &func64
 function but operates on wide-character strings.
 It differs from the
 .id &wfunc.

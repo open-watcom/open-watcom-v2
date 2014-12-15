@@ -11,7 +11,7 @@
 .sr fwfunc=''
 .sr mfunc=''
 .sr fmfunc=''
-.sr _func64=''
+.sr func64=''
 .sr wfunc64=''
 .sr mathfunc=''
 .sr fmathfunc=''
@@ -65,7 +65,7 @@
 .* try to classify type of function
 .if &'pos('_&funcn',&*) eq 1 .do begin
 .   .if "&'right(&*,3)" eq "i64" .do begin
-.   .   .sr _func64=&*
+.   .   .sr func64=&*
 .   .do end
 .   .el .do begin
 .   .   .sr _func=&*
@@ -365,8 +365,8 @@ Prototype in
 .   .if &'length(&_func.) ne 0 .do begin
 .   .   .if '&_func.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
-.   .if &'length(&_func64.) ne 0 .do begin
-.   .   .if '&_func64.' ne '&funcb.' :set symbol="*extr" value=1.
+.   .if &'length(&func64.) ne 0 .do begin
+.   .   .if '&func64.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&__func.) ne 0 .do begin
 .   .   .if '&__func.' ne '&funcb.' :set symbol="*extr" value=1.
@@ -418,8 +418,8 @@ Prototype in
 .   .   .if &'length(&_func.) ne 0 .do begin
 .   .   .   .clitm &_func. is not &*cls
 .   .   .do end
-.   .   .if &'length(&_func64.) ne 0 .do begin
-.   .   .   .clitm &_func64. is not &*cls
+.   .   .if &'length(&func64.) ne 0 .do begin
+.   .   .   .clitm &func64. is not &*cls
 .   .   .do end
 .   .   .if &'length(&__func.) ne 0 .do begin
 .   .   .   .clitm &__func. is not &*cls

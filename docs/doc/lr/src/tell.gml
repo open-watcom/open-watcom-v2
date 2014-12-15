@@ -8,7 +8,7 @@ off_t _tell( int &fd );
 .ixfunc2 '&OsIo' &_func
 .do end
 __int64 _telli64( int &fd );
-.ixfunc2 '&OsIo' &_func64
+.ixfunc2 '&OsIo' &func64
 .synop end
 .*
 .desc begin
@@ -35,7 +35,7 @@ Use
 for ANSI/ISO naming conventions.
 .do end
 .np
-The &_func64 function is similar to the
+The &func64 function is similar to the
 .id &funcb.
 function but returns a
 64-bit file position.
@@ -49,7 +49,7 @@ If an error occurs in
 .id &funcb.
 (&minus.1L) is returned.
 .np
-If an error occurs in &_func64, (&minus.1I64) is returned.
+If an error occurs in &func64, (&minus.1I64) is returned.
 .np
 .im errnoref
 .np
