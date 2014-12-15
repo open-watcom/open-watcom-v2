@@ -2,11 +2,11 @@
 .synop begin
 #include <jctype.h>
 int isalkana( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a single-byte alphabetic character ("a" to "z" or "A" to "Z") or
@@ -18,7 +18,7 @@ isalpha(c) || iskmoji(c)
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not a single-byte alphabetic
 character or single-byte Katakana non-punctuation
 character;

@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 int mkdir( const char *path, mode_t mode );
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _mkdir( const char *path, mode_t mode );
 .ixfunc2 '&Direct' &_func
@@ -14,7 +14,7 @@ int _mkdir( const char *path, mode_t mode );
 #include <sys/types.h>
 #include <direct.h>
 int mkdir( const char *path );
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _mkdir( const char *path );
 .ixfunc2 '&Direct' &_func
@@ -29,7 +29,7 @@ int _wmkdir( const wchar_t *path );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates a new subdirectory with name
 .arg path
 .ct .li .
@@ -57,7 +57,7 @@ group ID.
 The newly created directory will be empty.
 .np
 Upon successful completion, the
-.id &func.
+.id &funcb.
 function will mark for update
 the
 .us st_atime, st_ctime,
@@ -75,7 +75,7 @@ update.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -85,7 +85,7 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument.
 .do end
@@ -93,7 +93,7 @@ wide-character string argument.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful, and a non-zero value
 otherwise.
 .return end

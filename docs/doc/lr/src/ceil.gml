@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double ceil( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function (ceiling function)
 computes the smallest integer not less than
 .arg x
@@ -14,7 +14,7 @@ computes the smallest integer not less than
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the smallest integer not less than
 .arg x
 .ct , expressed as a

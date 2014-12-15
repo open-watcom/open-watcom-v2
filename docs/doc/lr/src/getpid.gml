@@ -5,12 +5,12 @@ int getpid(void);
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the process id for the current process.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the process id for the current process.
 .return end
 .* .see begin

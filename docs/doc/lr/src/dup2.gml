@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int dup2( int &fd, int &fd.2 );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _dup2( int &fd, int &fd.2 );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _dup2( int &fd, int &fd.2 );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function duplicates the file &handle given by the argument
 .arg &fd
 .ct .li .
@@ -30,7 +30,7 @@ before the duplication is attempted.
 The
 .id &_func.
 function is identical to
-.id &func.
+.id &funcb.
 .
 Use
 id &_func.
@@ -53,14 +53,14 @@ is equivalent to:
 .return begin
 .if '&machsys' eq 'QNX' .do begin
 The
-.id &func.
+.id &funcb.
 function returns the value of
 .arg &fd.2
 if successful.
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 .do end
 Otherwise, &minus.1 is returned and

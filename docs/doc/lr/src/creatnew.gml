@@ -4,12 +4,12 @@
 unsigned _dos_creatnew( const char *path,
                         unsigned attribute,
                         int *&fd );
-.ixfunc2 '&DosFunc' &func
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&DosFunc' &funcb
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x5B to create a new file named
 .arg path
 .ct , with the access attributes specified by
@@ -23,7 +23,7 @@ If the file already exists, the create will fail.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

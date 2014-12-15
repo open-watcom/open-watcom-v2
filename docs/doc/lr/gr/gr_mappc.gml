@@ -11,7 +11,7 @@ integer*4 color
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets (or remaps) the palette color
 .arg pixval
 to be the color
@@ -51,7 +51,7 @@ defines constants containing the color intensities of each
 of the 16 default colors.
 .pp
 The
-.id &func.
+.id &funcb.
 &routine takes effect immediately.
 All pixels on the complete screen which have a pixel value equal to the value of
 .arg pixval
@@ -61,7 +61,7 @@ will now have the color indicated by the argument
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the previous color for the pixel value
 if the palette is remapped successfully; otherwise, (-1) is returned.
 .return end

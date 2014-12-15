@@ -2,18 +2,18 @@
 .synop begin
 #include <stdio.h>
 int fflush( FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 If the file
 .arg fp
-is open for output or update, the &func
+is open for output or update, the &funcb
 function causes any unwritten data to be written to the file.
 .ix '&StrIo' 'ungetc'
 If the file
 .arg fp
 is open for input or update, the
-.id &func.
+.id &funcb.
 function undoes the effect of
 any preceding
 .kw ungetc
@@ -26,7 +26,7 @@ then all files that are open will be flushed.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns non-zero if a write error occurs and zero
 otherwise.
 .im errnoref

@@ -3,7 +3,7 @@
 .funcw wcstod
 #include <stdlib.h>
 double strtod( const char *ptr, char **endptr );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 double wcstod( const wchar_t *ptr, wchar_t **endptr );
@@ -14,7 +14,7 @@ double wcstod( const wchar_t *ptr, wchar_t **endptr );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the string pointed to by
 .arg ptr
 to
@@ -53,7 +53,7 @@ the expected form. The subject sequence contains no characters if the input
 string is not of the expected form.
 .np
 A decimal floating-point number recognized by
-.id &func.
+.id &funcb.
 (after optional sign was
 processed) is a string containing:
 .begbull $compact
@@ -65,7 +65,7 @@ digits.
 .endbull
 .np
 A hexadecimal floating-point number recognized by
-.id &func.
+.id &funcb.
 (after optional sign
 was processed) is a string containing:
 .begbull $compact
@@ -109,14 +109,14 @@ By comparing the "end" pointer with
 .arg ptr
 .ct , it can be determined how much of the string, if any, was scanned by
 the
-.id &func.
+.id &funcb.
 function.
 .im widefunc
 .desc end
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the converted value, if any. If no conversion
 could be performed, zero is returned.
 If the correct value would cause overflow, plus or minus

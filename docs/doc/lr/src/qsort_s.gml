@@ -25,13 +25,13 @@ nor
 .arg compar
 shall be a null pointer.
 If there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function does not sort the array.
 .rtconst end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sorts an array of
 .arg nmemb
 objects, the initial element of which is
@@ -50,18 +50,18 @@ to, or greater than zero if the first argument is considered to be respectively 
 equal to, or greater than the second. The third argument to the comparison function is the
 .arg context
 argument passed to
-.id &func.
+.id &funcb.
 The sole use of
 .arg context
 by
-.id &func.
+.id &funcb.
 is to pass it to the comparison function.
 If two elements compare as equal, their relative order in the resulting sorted array is
 unspecified.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if there was no runtime-constraint violation.
 Otherwise, a non-zero value is returned.
 .return end

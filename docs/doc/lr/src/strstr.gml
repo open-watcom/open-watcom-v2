@@ -3,8 +3,8 @@
 #include <string.h>
 char *strstr( const char *str,
               const char *substr );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Search' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Search' &funcb
 .if &farfnc eq 1 .do begin
 char __far *_fstrstr( const char __far *str,
                       const char __far *substr );
@@ -38,7 +38,7 @@ unsigned char __far *_fmbsstr(
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function locates the first occurrence in the string pointed
 to by
 .arg str
@@ -52,7 +52,7 @@ character) in the string pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the located string, or
 .mono NULL
 if the string is not found.

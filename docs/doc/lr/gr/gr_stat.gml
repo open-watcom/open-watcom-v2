@@ -9,7 +9,7 @@ integer*2 function _grstatus()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the status of the most recently called
 graphics library &routine..
 The &routine can be called after any graphics &routine to determine
@@ -46,7 +46,7 @@ _GRCLIPPED              2    output clipped
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the status of the most recently called
 graphics library &routine..
 .return end

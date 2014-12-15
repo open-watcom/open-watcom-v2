@@ -2,7 +2,7 @@
 .synop begin
 #include <malloc.h>
 size_t stackavail( void );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .if &'length(&_func.) ne 0 .do begin
 size_t _stackavail( void );
 .ixfunc2 '&Memory' &_func
@@ -10,7 +10,7 @@ size_t _stackavail( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the number of bytes currently available
 in the stack.
 This value is usually used to determine an appropriate amount to
@@ -19,7 +19,7 @@ allocate using alloca.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -27,7 +27,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of bytes currently available
 in the stack.
 .return end

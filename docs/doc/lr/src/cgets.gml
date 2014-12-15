@@ -2,10 +2,10 @@
 .synop begin
 #include <conio.h>
 char *cgets( char *buf );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
-The &func
+The &funcb
 function gets a string of characters directly from the console
 and stores the string and its length in the array pointed to by
 .arg buf
@@ -17,7 +17,7 @@ The array must be big enough to hold the string, a terminating null
 character, and two additional bytes.
 .pp
 The
-.id &func.
+.id &funcb.
 function reads characters until a
 .if '&machsys' eq 'QNX' .do begin
 newline character
@@ -43,7 +43,7 @@ The actual length of the string read is placed in
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the start of the string
 which is at
 .arg buf[2]

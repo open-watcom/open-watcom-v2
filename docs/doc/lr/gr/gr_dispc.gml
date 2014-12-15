@@ -10,7 +10,7 @@ integer*2 mode
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine is used to establish whether the text cursor is to be
 displayed when graphics &routines complete.
 On entry to a graphics &routine, the text cursor is turned off.
@@ -29,7 +29,7 @@ the cursor will not be displayed
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the previous setting for
 .arg mode
 .ct .li .

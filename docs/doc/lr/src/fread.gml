@@ -5,11 +5,11 @@ size_t fread( void *buf,
               size_t elsize,
               size_t nelem,
               FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function reads
 .arg nelem
 elements of
@@ -22,7 +22,7 @@ into the buffer specified by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of complete elements
 successfully read.
 This value may be less than the requested number of elements.

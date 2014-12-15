@@ -2,7 +2,7 @@
 :set symbol="XMPset" value="of".
 .*
 .dm funcinit begin
-.sr func=''
+.sr funcb=''
 .sr funcn=''
 .sr _func=''
 .sr __func=''
@@ -118,7 +118,7 @@
 .   .   .sr *j=&*i.+1
 .   .   .sr *first=&*&*i.
 .   .   .sr *second=&*&*j.
-.   .   .sr func=&'strip(&*first.,'T',',')
+.   .   .sr funcb=&'strip(&*first.,'T',',')
 .   .   .if '&*second' eq 'Functions' .do begin
 .   .   .   .sr fncttl=&*first. &*second.
 .   .   .   .sr funcgrp=&'strip(&*first.,'T',',')
@@ -138,7 +138,7 @@
 .   .sr *i=1
 .   .pe &__fnx.
 .   .   .if '&funcgrp.' ne '&$$fnc(&*i.)' .ixm '&$$fnc(&*i.)';.sr *i=&*i.+1
-.   .sr function=&func.
+.   .sr function=&funcb.
 .do end
 .dm func end
 .*
@@ -363,28 +363,28 @@ Prototype in
 .   .el .sr __class=&*1
 .   .listnew Classification:
 .   .if &'length(&_func.) ne 0 .do begin
-.   .   .if '&_func.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&_func.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&_func64.) ne 0 .do begin
-.   .   .if '&_func64.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&_func64.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&__func.) ne 0 .do begin
-.   .   .if '&__func.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&__func.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&ffunc.) ne 0 .do begin
-.   .   .if '&ffunc.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&ffunc.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&wfunc.) ne 0 .do begin
-.   .   .if '&wfunc.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&wfunc.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&wfunc64.) ne 0 .do begin
-.   .   .if '&wfunc64.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&wfunc64.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&mfunc.) ne 0 .do begin
-.   .   .if '&mfunc.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&mfunc.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&fmfunc.) ne 0 .do begin
-.   .   .if '&fmfunc.' ne '&func.' :set symbol="*extr" value=1.
+.   .   .if '&fmfunc.' ne '&funcb.' :set symbol="*extr" value=1.
 .   .do end
 .   .if |&*1| eq |begin| .sr *all=&'strip(&'substr(&*,6),'L',' ')
 .   .el .sr *all=&*
@@ -432,7 +432,7 @@ Prototype in
 .   .   .   .   .clitm &wfunc. is not &*cls
 .   .   .   .do end
 .   .   .   .el .do begin
-.   .   .   .   .if '&wfunc.' ne '&func.' .do begin
+.   .   .   .   .if '&wfunc.' ne '&funcb.' .do begin
 .   .   .   .   .   .if '&wfunc.' ne '&function.' .do begin
 .   .   .   .   .   .   .clitm &wfunc. is &*wcls
 .   .   .   .   .   .do end
@@ -651,7 +651,7 @@ command
 .*  functii internal macro for funct_xxx
 .*
 .dm functii begin
-.if '&func' eq '' .sr func=&*1.
+.if '&funcb' eq '' .sr funcb=&*1.
 .if '&funcn' eq '' .sr funcn=&'strip(&*1,'L','_')
 .se *fnd=&'vecpos(&*1,fnclst)
 .if &*fnd. eq 0 .me
@@ -672,7 +672,7 @@ command
 .*  macros for the different function types
 .*
 .dm funct  begin
-.sr func=&*1
+.sr funcb=&*1
 .functii &*
 .dm funct  end
 .*

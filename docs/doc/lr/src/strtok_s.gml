@@ -6,8 +6,8 @@ char *strtok_s( char * restrict s1,
                 rsize_t * restrict s1max,
                 const char * restrict s2,
                 char ** restrict ptr);
-.ixfunc2 '&String' &func
-.ixfunc2 '&Search' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Search' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 wchar_t *wcstok_s( wchar_t * restrict s1,
@@ -44,7 +44,7 @@ for the first call, and shall occur within the first
 .arg *s1max
 characters of where searching resumes on subsequent calls.
 If there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function does not indirect
 through the
 .arg s1
@@ -57,7 +57,7 @@ pointers, and does not store a value in the object pointed to by
 .*
 .desc begin
 A sequence of calls to the
-.id &func.
+.id &funcb.
 function breaks the string pointed to by
 .arg s1
 into a sequence of tokens, each of which is delimited by a character
@@ -65,7 +65,7 @@ from the string pointed to by
 .arg s2
 .ct .li .
 The fourth argument points to a caller-provided char pointer into which the
-.id &func.
+.id &funcb.
 function stores information necessary for it to continue scanning the same
 string.
 The first call in a sequence has a non-null first argument and
@@ -98,10 +98,10 @@ string pointed to by
 If no such character is found, then there are no tokens in the string pointed to by
 .arg s1
 and the
-.id &func.
+.id &funcb.
 function returns a null pointer. If such a character is found,
 it is the start of the first token. The
-.id &func.
+.id &funcb.
 function then searches from there for the
 first character in
 .arg s1
@@ -112,7 +112,7 @@ current token extends to the end of the string pointed to by
 If such a character is found, it is overwritten by a null character,
 which terminates the current token.
 In all cases, the
-.id &func.
+.id &funcb.
 function stores sufficient information in the pointer pointed
 to by
 .arg ptr
@@ -127,7 +127,7 @@ value for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the first character of a token, or a null
 pointer if there is no token or there is a runtime-constraint violation.
 .return end

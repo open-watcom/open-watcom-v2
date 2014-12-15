@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double fmod( double x, double y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the floating-point remainder of
 .arg x/y
 .ct , even if the quotient
@@ -15,7 +15,7 @@ is not representable.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value
 .arg x &minus. (i * y)
 .ct , for some integer

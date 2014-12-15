@@ -4,7 +4,7 @@
 unsigned long long int strtoull( const char *ptr,
                                  char **endptr,
                                  int base );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 unsigned long long int wcstoull( const wchar_t *ptr,
@@ -16,7 +16,7 @@ unsigned long long int wcstoull( const wchar_t *ptr,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the string pointed to by
 .arg ptr
 to an
@@ -58,7 +58,7 @@ If there is a leading minus sign in the string, the value is negated.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the converted value.
 If the correct value would cause overflow,
 .kw ULLONG_MAX

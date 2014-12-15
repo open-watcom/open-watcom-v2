@@ -10,7 +10,7 @@ int _fmbsbtype( const unsigned char __far *mbstr,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the type of a byte in a multibyte
 character string.
 The function examines only the byte at offset
@@ -26,7 +26,7 @@ in earlier versions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns one of the following values:
 .begterm
 .term _MBC_SINGLE

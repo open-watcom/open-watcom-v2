@@ -3,11 +3,11 @@
 .synop begin
 #include <stdlib.h>
 void *malloc( size_t size );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function allocates space
 for an object of
 .arg size
@@ -18,11 +18,11 @@ argument has a value of zero.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the start of the allocated
 memory.
 The
-.id &func.
+.id &funcb.
 function returns
 .mono NULL
 if there is insufficient memory available or if the requested size is zero.
@@ -70,7 +70,7 @@ void __near *_nmalloc( size_t size );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions allocate space for an object of
 .arg size
 bytes.
@@ -95,11 +95,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _nmalloc
 function; in a large data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _fmalloc
@@ -107,10 +107,10 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return a pointer to the start of the allocated
 memory.
-The &func
+The &funcb
 .ct ,
 .kw _fmalloc
 and

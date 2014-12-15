@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double sqrt( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the non-negative square root of
 .arg x
 .ct .li .
@@ -14,7 +14,7 @@ A domain error occurs if the argument is negative.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of the square root.
 .im errnodom
 .return end

@@ -2,7 +2,7 @@
 .synop begin
 #include <stdio.h>
 FILE *fdopen( int &fd, const char *mode );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 FILE *_fdopen( int &fd, const char *mode );
 .ixfunc2 '&OsIo' &_func
@@ -15,7 +15,7 @@ FILE *_wfdopen( int &fd, const wchar_t *mode );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function associates a stream with the file &handle
 .arg &fd
 which represents an opened file or device.
@@ -53,7 +53,7 @@ function.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -63,20 +63,20 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide character string for the second argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the object controlling the
 stream.
 This pointer must be passed as a parameter to subsequent functions for
 performing operations on the file.
 If the open operation fails,
-.id &func.
+.id &funcb.
 returns a NULL pointer.
 .im errnoref
 .return end

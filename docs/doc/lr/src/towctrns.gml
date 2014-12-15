@@ -2,13 +2,13 @@
 .synop begin
 #include <wctype.h>
 wint_t towctrans( wint_t wc, wctrans_t desc );
-.ixfunc2 '&Conversion' &func
-.ixfunc2 '&Wide' &func
+.ixfunc2 '&Conversion' &funcb
+.ixfunc2 '&Wide' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function maps the wide character
 .arg wc
 using the mapping described by
@@ -37,7 +37,7 @@ towupper(wc)
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the mapped value of
 .arg wc
 using the mapping described by

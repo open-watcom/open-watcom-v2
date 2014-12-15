@@ -3,7 +3,7 @@
 #include <mbstring.h>
 int _mbccmp( const unsigned char *s1,
              const unsigned char *s2 );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 int _fmbccmp( const unsigned char __far *s1,
               const unsigned char __far *s2 );
@@ -12,7 +12,7 @@ int _fmbccmp( const unsigned char __far *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares one multibyte character from
 .arg s1
 to one multibyte character from
@@ -23,12 +23,12 @@ to one multibyte character from
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

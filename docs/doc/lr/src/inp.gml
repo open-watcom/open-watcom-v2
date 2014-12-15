@@ -2,11 +2,11 @@
 .synop begin
 #include <conio.h>
 unsigned int inp( int port );
-.ixfunc2 '&PortIo' &func
+.ixfunc2 '&PortIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function reads one byte from the 80x86 hardware port whose
 number is given by
 .arg port

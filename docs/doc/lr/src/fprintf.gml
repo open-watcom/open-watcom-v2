@@ -3,7 +3,7 @@
 .funcw fwprintf
 #include <stdio.h>
 int fprintf( FILE *fp, const char *format, ... );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 #include <wchar.h>
@@ -17,7 +17,7 @@ int fwprintf( FILE *fp, const wchar_t *format, ... );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes output to the file pointed to by
 .arg fp
 under control of the argument
@@ -33,7 +33,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -43,7 +43,7 @@ wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written, or a
 negative value if an output error occurred.
 .if &'length(&wfunc.) ne 0 .do begin

@@ -10,7 +10,7 @@ integer*2 wrap
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine is used to control the display of text when
 the text output reaches the right side of the text window.
 This is text displayed with the
@@ -30,7 +30,7 @@ causes lines to be truncated at the window border
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the previous setting for wrapping.
 .return end
 .see begin

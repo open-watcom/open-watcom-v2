@@ -10,7 +10,7 @@ integer*1 mask(8)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current fill mask to the value of the argument
 .arg mask
 .ct .li .
@@ -28,7 +28,7 @@ By default, no fill mask is set.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

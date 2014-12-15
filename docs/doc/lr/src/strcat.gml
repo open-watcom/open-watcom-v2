@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 char *strcat( char *dst, const char *src );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Concats' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Concats' &funcb
 .if &farfnc eq 1 .do begin
 char __far *_fstrcat( char __far *dst,
                       const char __far *src );
@@ -38,7 +38,7 @@ unsigned char __far *_fmbscat( unsigned char __far *dst,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function appends a copy of the string pointed to
 by
 .arg src

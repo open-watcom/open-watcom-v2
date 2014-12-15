@@ -3,7 +3,7 @@
 .funcw iswupper
 #include <ctype.h>
 int isupper( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wctype.h>
 int iswupper( wint_t c );
@@ -13,21 +13,21 @@ int iswupper( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for any uppercase letter 'A' through 'Z'.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is an
 uppercase letter.
 .if &'length(&wfunc.) ne 0 .do begin

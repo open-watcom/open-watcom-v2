@@ -2,7 +2,7 @@
 .synop begin
 #include <string.h>
 char *strset( char *s1, int fill );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_strset( char *s1, int fill );
 .ixfunc2 '&String' &_func
@@ -33,7 +33,7 @@ unsigned char __far *_fmbsset( unsigned char __far *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function fills the string pointed to by
 .arg s1
 with the character
@@ -45,7 +45,7 @@ unchanged.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI naming conventions.

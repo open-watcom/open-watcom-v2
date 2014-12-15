@@ -2,8 +2,8 @@
 .synop begin
 #include <stdio.h>
 void perror( const char *prefix );
-.ixfunc2 '&StrIo' &func
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&StrIo' &funcb
+.ixfunc2 '&Errs' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 void _wperror( const wchar_t *prefix );
 .ixfunc2 '&StrIo' &wfunc
@@ -13,7 +13,7 @@ void _wperror( const wchar_t *prefix );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function prints, on the file designated by
 .kw stderr
 .ct,
@@ -22,7 +22,7 @@ contained in
 .kw errno
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function writes first the string pointed to by
 .arg prefix
 to stderr.
@@ -34,17 +34,17 @@ This is followed by a colon (":"), a space, the string returned by
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument and produces wide-character output.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 Because
-.id &func.
+.id &funcb.
 uses the
 .kw fprintf
 function,

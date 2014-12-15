@@ -5,7 +5,7 @@
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro will evaluate to be the greater of two values.
 It is implemented as follows.
 .millust begin
@@ -14,7 +14,7 @@ It is implemented as follows.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 macro will evaluate to the larger of the two values passed.
 .return end
 .see begin

@@ -2,7 +2,7 @@
 .synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if '&machsys' eq 'QNX' .do begin
 #include <fcntl.h>
 int creat( const char *path, mode_t mode );
@@ -27,7 +27,7 @@ int _wcreat( const wchar_t *path, int mode );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates (and opens) a file at the operating system
 level.
 It is equivalent to:
@@ -39,7 +39,7 @@ It is equivalent to:
 The
 .id &_func.
 function is identical to
-.id &func.
+.id &funcb.
 .
 Use
 id &_func.
@@ -50,7 +50,7 @@ for ANSI naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide character string argument.
 .do end
@@ -77,7 +77,7 @@ when read permission is intended for the file.
 .desc end
 .return begin
 If successful,
-.id &func.
+.id &funcb.
 returns a &handle for the file.
 When an error occurs while opening the file, &minus.1 is returned, and
 .kw errno
@@ -111,7 +111,7 @@ names a file which is on a file system mounted on a block special
 device which is already open for writing.
 .term EINTR
 The
-.id &func.
+.id &funcb.
 operation was interrupted by a signal.
 .term EISDIR
 The named file is a directory and the file creation flags

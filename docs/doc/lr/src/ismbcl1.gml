@@ -5,7 +5,7 @@ int _ismbcl1( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 is a JIS (Japan Industrial Standard) level 1 double-byte character
@@ -17,7 +17,7 @@ expression is true:
 .millust end
 .np
 The
-.id &func.
+.id &funcb.
 function tests if the argument is a valid double-byte
 character (i.e., it checks that the lower byte is not in the ranges
 0x00 - 0x3F, 0x7F, or 0xFD - 0xFF).
@@ -35,7 +35,7 @@ the range 0x40 - 0x7E or 0x80 - 0xFC.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end

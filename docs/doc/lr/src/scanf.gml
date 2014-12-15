@@ -3,7 +3,7 @@
 .funcw wscanf
 #include <stdio.h>
 int scanf( const char *format, ... );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int wscanf( const wchar_t *format, ... );
@@ -16,7 +16,7 @@ int wscanf( const wchar_t *format, ... );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function scans input from the file designated by
 .kw stdin
 under control of the argument
@@ -32,7 +32,7 @@ receive values.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -42,7 +42,7 @@ wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 if an input failure occured before any conversion.

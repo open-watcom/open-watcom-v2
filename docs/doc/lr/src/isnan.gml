@@ -6,7 +6,7 @@ int isnan( x );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro determines whether its argument
 .arg x
 is a NaN.
@@ -21,7 +21,7 @@ must be an expression of real floating type.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 macro returns a nonzero value if and only if its argument has
 a NaN value.
 .return end

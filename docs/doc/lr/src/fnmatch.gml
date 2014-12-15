@@ -7,7 +7,7 @@ int fnmatch( const char *pattern,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function checks the string specified by the
 .arg string
 argument to see if it matches the pattern specified by the
@@ -155,13 +155,13 @@ and
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero when
 .arg string
 matches the pattern specified by 
 .arg pattern
 .ct .li .
-If there is no match, FNM_NOMATCH is returned. If an error occurs, &func
+If there is no match, FNM_NOMATCH is returned. If an error occurs, &funcb
 returns another non-zero value.
 .return end
 .*

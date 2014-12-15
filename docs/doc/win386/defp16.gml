@@ -12,7 +12,7 @@ int DefineUserProc16( int typ, PROCPTR routine, ... );
 .do end
 .synop end
 .desc begin
-The &func function defines the arguments accepted by the user defined
+The &funcb function defines the arguments accepted by the user defined
 callback procedure
 .arg routine
 .ct .li .
@@ -55,7 +55,7 @@ keyword.
 Marks the end of the variable argument list.
 .endterm
 .np
-Once the &func function has been used to declare the user callback
+Once the &funcb function has been used to declare the user callback
 routine, then
 .kw GetProc16
 may be used to get a 16-bit function pointer that may be used by Windows.
@@ -66,7 +66,7 @@ syntax; it is used only to indicate a variable number of arguments.
 .do end
 .desc end
 .return begin
-The &func function returns zero if it succeeds; and non-zero if it fails.
+The &funcb function returns zero if it succeeds; and non-zero if it fails.
 .return end
 .see begin
 .seelist GetProc16

@@ -2,12 +2,12 @@
 .synop begin
 #include <fenv.h>
 void __fedisableexcept( int __excepts );
-.ixfunc2 'Floating Point Environment' &func
+.ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function disables the specified floating point exceptions.
 .desc end
 .*

@@ -3,7 +3,7 @@
 .synop begin
 #include <stdlib.h>
 void * realloc( void *old_blk, size_t size );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 When the value of the
@@ -23,7 +23,7 @@ function is called to release the memory pointed to by
 .ct .li .
 .np
 Otherwise, the
-.id &func.
+.id &funcb.
 function re-allocates space for an object of
 .arg size
 bytes by either:
@@ -82,7 +82,7 @@ lost access to this memory.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the start of the re-allocated
 memory.
 The return value is
@@ -157,7 +157,7 @@ function is called to release the memory pointed to by
 .ct .li .
 .np
 Otherwise, the
-.id &func.
+.id &funcb.
 function re-allocates space for an object of
 .arg size
 bytes by either:
@@ -229,11 +229,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _nrealloc
 function; in a large data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _frealloc
@@ -241,7 +241,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return a pointer to the start of the re-allocated
 memory.
 The return value is

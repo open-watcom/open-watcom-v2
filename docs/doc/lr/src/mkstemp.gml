@@ -2,16 +2,16 @@
 .synop begin
 #include <stdlib.h>
 int mkstemp( char *template );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates a file with unique name by modifying the
 .arg template
 argument, and returns its file handle open for reading and writing
 in binary mode. The use of
-.id &func.
+.id &funcb.
 prevents any possible race condition between
 testing whether the file exists and opening it for use.
 .np
@@ -24,11 +24,11 @@ where
 is the fixed part of the generated filename and
 .mono XXXXXX
 is the variable part of the generated filename.
-Each of the 6 X's is a placeholder for a character supplied by &func..
+Each of the 6 X's is a placeholder for a character supplied by &funcb..
 Each placeholder character in
 .arg template
 must be an uppercase "X".
-.id &func.
+.id &funcb.
 preserves
 .mono base
 and replaces the first of the 6 trailing X's with a unique sequence
@@ -36,17 +36,17 @@ of alphanumeric characters. The string
 .arg template
 therefore must be writable.
 .np
-.id &func.
+.id &funcb.
 checks to see if a file with the generated name already exists
 and if so selects another name, until it finds a file that doesn't exist.
 If it is unsuccessful at finding a name for a file that does not
 already exist or is unable to create a file,
-.id &func.
+.id &funcb.
 returns -1.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a file handle. When an error occurs while creating
 the file, -1 is returned.
 .return end

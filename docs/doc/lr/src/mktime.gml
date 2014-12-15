@@ -3,11 +3,11 @@
 #include <time.h>
 time_t mktime( struct tm *timeptr );
 .im structtm
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the local time information in the
 structure pointed to by
 .arg timeptr
@@ -45,14 +45,14 @@ effect" and a positive value is treated as "daylight savings time is
 in effect".
 .np
 Whenever
-.id &func.
+.id &funcb.
 is called, the
 .kw tzset
 function is also called.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the converted calendar time.
 .return end
 .see begin

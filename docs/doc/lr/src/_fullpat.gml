@@ -4,7 +4,7 @@
 char *_fullpath( char *buffer,
                  const char *path,
                  size_t size );
-.ixfunc2 '&Parsing' &func
+.ixfunc2 '&Parsing' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wfullpath( wchar_t *buffer ,
                      const wchar_t *path,
@@ -15,7 +15,7 @@ wchar_t *_wfullpath( wchar_t *buffer ,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the full pathname of the file specification
 in
 .arg path
@@ -61,7 +61,7 @@ returned in
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the full path specification if
 no error occurred.
 Otherwise,

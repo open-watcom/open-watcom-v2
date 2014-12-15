@@ -6,7 +6,7 @@ intmax_t imaxabs( intmax_t j );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value
 of its maximum-size integer argument
 .arg j
@@ -14,7 +14,7 @@ of its maximum-size integer argument
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value of its argument.
 .return end
 .*

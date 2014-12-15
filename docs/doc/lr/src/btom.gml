@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 size_t btom( const unsigned char *str, size_t nb );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .if &farfnc eq 1 .do begin
 size_t far _fbtom( const unsigned char far *str, size_t nb );
 .ixfunc2 '&Jstring' &ffunc
@@ -11,12 +11,12 @@ size_t far _fbtom( const unsigned char far *str, size_t nb );
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return
@@ -38,12 +38,12 @@ bytes have been processed or a null character is encountered.
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

@@ -31,13 +31,13 @@ integer*1 image(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines store a copy of an area of the screen into the buffer
 indicated by the
 .arg image
 argument.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.
@@ -63,7 +63,7 @@ by using the
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines do not return a value.
 .return end
 .do end

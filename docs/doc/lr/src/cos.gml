@@ -2,12 +2,12 @@
 .synop begin
 #include <math.h>
 double cos( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the cosine of
 .arg x
 (measured in radians).
@@ -16,7 +16,7 @@ with little or no significance.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the cosine value.
 .return end
 .see begin

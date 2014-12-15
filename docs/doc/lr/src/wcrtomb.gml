@@ -2,8 +2,8 @@
 .synop begin
 #include <wchar.h>
 int wcrtomb( char *s, wchar_t wc, mbstate_t *ps );
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 int _fwcrtomb( char __far *s, wchar_t wc, mbstate_t __far *ps );
 .ixfunc2 '&Wide' &ffunc
@@ -17,7 +17,7 @@ int _fwcrtomb( char __far *s, wchar_t wc, mbstate_t __far *ps );
 If
 .arg s
 is a null pointer, the
-.id &func.
+.id &funcb.
 function determines the number of bytes
 necessary to enter the initial shift state (zero if encodings are not
 state-dependent or if the initial conversion state is described).
@@ -26,7 +26,7 @@ The resulting state described will be the initial conversion state.
 If
 .arg s
 is not a null pointer, the
-.id &func.
+.id &funcb.
 function determines the number of
 bytes needed to represent the multibyte character that corresponds
 to the wide character given by
@@ -49,7 +49,7 @@ initial conversion state.
 If
 .arg s
 is a null pointer, the
-.id &func.
+.id &funcb.
 function returns the number of bytes
 necessary to enter the initial shift state.
 The value returned will not be greater than that of the
@@ -59,7 +59,7 @@ macro.
 If
 .arg s
 is not a null pointer, the
-.id &func.
+.id &funcb.
 function returns the number of bytes
 stored in the array object (including any shift sequences) when
 .arg wc

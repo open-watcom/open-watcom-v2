@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 int fseek( FILE *fp, long int offset, int where );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function changes the read/write position of the file
 specified by
 .arg fp
@@ -47,7 +47,7 @@ The new file position is computed relative to the end of the file.
 .endterm
 .np
 The
-.id &func.
+.id &funcb.
 function clears the end-of-file indicator and undoes any
 effects of the
 .kw ungetc
@@ -60,7 +60,7 @@ changing it.
 The position can be restored by using the value returned by
 .kw ftell
 in a subsequent call to
-.id &func.
+.id &funcb.
 with the
 .arg where
 parameter set to
@@ -69,7 +69,7 @@ parameter set to
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful, non-zero otherwise.
 .im errnoref
 .return end

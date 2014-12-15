@@ -2,24 +2,24 @@
 .synop begin
 #include <stdio.h>
 int _getw( int binint, FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function reads a binary value of type
 .us int
 from the current position of the stream
 .arg fp
 and increments the associated file pointer to point to the next unread
 character in the input stream.
-.id &func.
+.id &funcb.
 does not assume any special alignment of items in the stream.
 .np
-.id &func.
+.id &funcb.
 is provided primarily for compatibility with previous libraries.
 Portability problems may occur with
-.id &func.
+.id &funcb.
 because the size of an
 .us int
 and the ordering of bytes within an
@@ -28,10 +28,10 @@ differ across systems.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the integer value read or, if a read error
 or end-of-file occurs, the error indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .

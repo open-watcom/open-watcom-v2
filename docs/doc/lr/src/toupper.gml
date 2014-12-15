@@ -3,8 +3,8 @@
 .funcw towupper
 #include <ctype.h>
 int toupper( int c );
-.ixfunc2 '&CharTest' &func
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&CharTest' &funcb
+.ixfunc2 '&Conversion' &funcb
 int _toupper( int c );
 .ixfunc2 '&CharTest' &_func
 .ixfunc2 '&Conversion' &_func
@@ -18,7 +18,7 @@ wint_t towupper( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts
 .arg c
 to a uppercase letter if
@@ -28,7 +28,7 @@ represents a lowercase letter.
 The
 .id &_func.
 function is a version of
-.id &func.
+.id &funcb.
 to be used only when
 .arg c
 is known to be lowercase.
@@ -37,14 +37,14 @@ is known to be lowercase.
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the corresponding uppercase letter when the
 argument is a lowercase letter; otherwise, the original character is
 returned.

@@ -6,7 +6,7 @@ int isfinite( x );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro determines whether its argument
 .arg x
 has a finite value (zero, subnormal, or normal, and not infinite or NaN).
@@ -21,7 +21,7 @@ must be an expression of real floating type.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 macro returns a nonzero value if and only if its argument has
 a finite value.
 .return end

@@ -10,7 +10,7 @@ character*(*) path
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine initializes the font graphics system.
 Fonts must be registered, and a font selected,
 before text can be displayed with the
@@ -23,7 +23,7 @@ specifies the location of the font files.
 This argument is a file specification, and can contain drive and
 directory components and may contain wildcard characters.
 The
-.id &func.
+.id &funcb.
 &routine opens each of the font files specified and
 reads the font information.
 Memory is allocated to store the characteristics of the font.
@@ -33,7 +33,7 @@ These font characteristics are used by the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of fonts that were registered if
 the &routine is successful; otherwise, a negative number is returned.
 .return end

@@ -2,10 +2,10 @@
 .synop begin
 #include <stdarg.h>
 void va_start( va_list param, previous );
-.ixfunc2 'variable arguments' &func
+.ixfunc2 'variable arguments' &funcb
 .synop end
 .desc begin
-.id &func.
+.id &funcb.
 is a macro used to start the acquisition of arguments
 from a list of variable arguments.
 The

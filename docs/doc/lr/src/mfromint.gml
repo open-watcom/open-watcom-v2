@@ -5,7 +5,7 @@ __m64 _m_from_int(int i);
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function forms a 64-bit MM value from an unsigned 32-bit
 integer value.
 .desc end

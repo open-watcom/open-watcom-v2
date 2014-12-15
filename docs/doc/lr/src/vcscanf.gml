@@ -3,17 +3,17 @@
 #include <conio.h>
 #include <stdarg.h>
 int vcscanf( const char *format, va_list args )
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function scans input from the console
 under control of the argument
 .arg format
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function uses the function
 .kw getche
 to read characters from the console.
@@ -24,7 +24,7 @@ string is described under the description of the
 function.
 .pp
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw cscanf
 function, with a variable argument list replaced with
@@ -35,7 +35,7 @@ macro.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 when the scanning is terminated by reaching the end of the input stream.

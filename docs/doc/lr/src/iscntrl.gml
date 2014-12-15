@@ -3,7 +3,7 @@
 .funcw iswcntrl
 #include <ctype.h>
 int iscntrl( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int iswcntrl( wint_t c );
@@ -13,7 +13,7 @@ int iswcntrl( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for any control character.
 A control character is any character whose value is from 0 through 31.
 .if &'length(&wfunc.) ne 0 .do begin
@@ -21,14 +21,14 @@ A control character is any character whose value is from 0 through 31.
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 control character.
 .if &'length(&wfunc.) ne 0 .do begin

@@ -10,8 +10,8 @@ errno_t wcstombs_s( size_t * restrict retval,
                     rsize_t dstmax,
                     const wchar_t * restrict src,
                     rsize_t len);
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 
 errno_t _fwcstombs_s( size_t __far * restrict retval,
@@ -57,11 +57,11 @@ shall have been stopped (see below) because a terminating null wide character wa
 reached or because an encoding error occurred.
 .np
 If there is a runtime-constraint violation, then
-.id &func.
+.id &funcb.
 does the following. If
 .arg retval
 is not a null pointer,then
-.id &func.
+.id &funcb.
 sets
 .arg *retval
 to (size_t)(-1). If
@@ -71,7 +71,7 @@ is not a null pointer and
 is greater than zero and less than
 .kw RSIZE_MAX
 .ct , then
-.id &func.
+.id &funcb.
 sets
 .arg dst[0]
 to the null character.
@@ -79,7 +79,7 @@ to the null character.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts a sequence of wide characters from the array
 pointed to by
 .arg src
@@ -137,25 +137,25 @@ is or is not a null pointer, if the input conversion encounters a
 wide character that does not correspond to a valid multibyte character,
 an encoding error
 occurs: the
-.id &func.
+.id &funcb.
 function stores the value (size_t)(-1) into
 .arg *retval
 .ct .li .
 Otherwise, the
-.id &func.
+.id &funcb.
 function stores into
 .arg *retval
 the number of bytes in the
 resulting multibyte character sequence, not including the terminating null character (if
 any).
 .np
-All elements following the terminating null character (if any) written by &func.
+All elements following the terminating null character (if any) written by &funcb.
 in the array of
 .arg dstmax
 elements pointed to by
 .arg dst
 take unspecified values when
-.id &func.
+.id &funcb.
 returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified

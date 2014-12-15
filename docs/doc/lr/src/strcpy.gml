@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 char *strcpy( char *dst, const char *src );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Copy' &funcb
 .if &farfnc eq 1 .do begin
 char __far *_fstrcpy( char __far *dst,
                       const char __far *src );
@@ -38,7 +38,7 @@ int _fmbscpy( unsigned char __far *dst,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies the string pointed to by
 .arg src
 (including the terminating null character) into the array pointed to by

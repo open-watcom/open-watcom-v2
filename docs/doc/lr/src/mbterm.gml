@@ -2,7 +2,7 @@
 .synop begin
 #include <mbstring.h>
 int _mbterm( const unsigned char *ch );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 int _fmbterm( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
@@ -10,7 +10,7 @@ int _fmbterm( const unsigned char __far *ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines if the next multibyte character in the
 string pointed to by
 .arg ch
@@ -20,17 +20,17 @@ character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 1 if the multibyte character pointed to by
 .arg ch
 is a null character.
 The
-.id &func.
+.id &funcb.
 function returns 2 if the multibyte character pointed to by
 .arg ch
 is a valid lead byte character followed by a null character.
 Otherwise, the
-.id &func.
+.id &funcb.
 function returns 0.
 .return end
 .see begin

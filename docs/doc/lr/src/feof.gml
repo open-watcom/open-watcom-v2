@@ -2,29 +2,29 @@
 .synop begin
 #include <stdio.h>
 int feof( FILE *fp );
-.ixfunc2 '&StrIo' &func
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&StrIo' &funcb
+.ixfunc2 '&Errs' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests the end-of-file indicator for the stream
 pointed to by
 .arg fp
 .ct .li .
 Because this indicator is set when an input operation attempts to read
-past the end of the file the &func
+past the end of the file the &funcb
 function will detect the end of the file only after an attempt
 is made to read beyond the end of the file.
 Thus, if a file contains 10 lines, the
-.id &func.
+.id &funcb.
 will not detect
 end of file after the tenth line is read; it will detect end of file
 once the program attempts to read more data.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns non-zero
 if the end-of-file indicator is set for
 .arg fp

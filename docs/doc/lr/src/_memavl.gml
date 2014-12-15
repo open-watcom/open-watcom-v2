@@ -2,11 +2,11 @@
 .synop begin
 #include <malloc.h>
 size_t _memavl( void );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the number of bytes of memory available for
 dynamic memory allocation in the near heap (the default data segment).
 In the tiny, small and medium memory models, the default data segment
@@ -14,12 +14,12 @@ is only extended as needed to satisfy requests for memory allocation.
 Therefore, you will need to call
 .kw _nheapgrow
 in these memory models before calling
-.id &func.
+.id &funcb.
 in order to get a
 meaningful result.
 .pp
 The number returned by
-.id &func.
+.id &funcb.
 may not represent a single contiguous
 block of memory.
 Use the
@@ -29,7 +29,7 @@ allocated.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of bytes of memory available
 for dynamic memory allocation in the near heap (the default data segment).
 .return end

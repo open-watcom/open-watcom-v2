@@ -2,11 +2,11 @@
 .synop begin
 #include <time.h>
 clock_t clock(void);
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the number of clock ticks of processor time
 used by program since the program started executing.
 This can be converted to seconds by dividing by the value of the macro
@@ -20,7 +20,7 @@ for each subsequent 24 hour interval that elapses.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of clock ticks that have
 occurred since the program started executing.
 .return end

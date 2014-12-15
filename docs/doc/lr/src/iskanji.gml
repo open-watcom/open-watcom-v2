@@ -2,11 +2,11 @@
 .synop begin
 #include <jctype.h>
 int iskanji( int fb );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg fb
 is valid as the first byte of a double-byte Kanji character.
@@ -18,7 +18,7 @@ expression is true:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not valid for the first byte
 of a double-byte Kanji character;
 otherwise, a non-zero value is returned.

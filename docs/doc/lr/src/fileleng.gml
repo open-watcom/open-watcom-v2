@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 long filelength( int &fd );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 long _filelength( int &fd );
 .ixfunc2 '&OsIo' &_func
@@ -12,7 +12,7 @@ __int64 _filelengthi64( int &fd );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns, as a 32-bit long integer, the number of
 bytes in the opened file indicated by the file &handle
 .arg &fd
@@ -26,7 +26,7 @@ bytes in the opened file indicated by the file &handle
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -34,7 +34,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 If an error occurs in
-.id &func.
+.id &funcb.
 (&minus.1L) is returned.
 .np
 If an error occurs in &_func64, (&minus.1I64) is returned.

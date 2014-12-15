@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double scalbn( double x, int y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes 
 .arg x
 *(2**

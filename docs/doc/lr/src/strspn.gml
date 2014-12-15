@@ -3,8 +3,8 @@
 #include <string.h>
 size_t strspn( const char *str,
                const char *charset );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Search' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Search' &funcb
 .if &farfnc eq 1 .do begin
 size_t _fstrspn( const char __far *str,
                  const char __far *charset );
@@ -37,7 +37,7 @@ size_t _fmbsspn( const unsigned char __far *str,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the length, in bytes, of the initial
 segment of the string pointed to by
 .arg str

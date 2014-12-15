@@ -9,11 +9,11 @@ struct timeb {
  short timezone; /* difference in minutes from UTC */
  short dstflag;  /* nonzero if in daylight savings time */
 };
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets the current time and stores it in the
 structure pointed to by
 .arg timeptr
@@ -21,12 +21,12 @@ structure pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function fills in the fields of the structure pointed to by
 .arg timeptr
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function returns &minus.1 if not successful, and no useful
 value otherwise.
 .return end

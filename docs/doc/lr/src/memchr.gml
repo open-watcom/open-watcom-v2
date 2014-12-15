@@ -2,7 +2,7 @@
 .synop begin
 #include <string.h>
 void *memchr( const void *buf, int ch, size_t length );
-.ixfunc2 '&Search' &func
+.ixfunc2 '&Search' &funcb
 .if &farfnc eq 1 .do begin
 void __far *_fmemchr( const void __far *buf,
                       int ch,
@@ -17,7 +17,7 @@ wchar_t *wmemchr( const wchar_t *buf, wchar_t ch, size_t length );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function locates the first occurrence of
 .arg ch
 (converted to an unsigned char) in the first
@@ -31,7 +31,7 @@ characters of the object pointed to by
 The
 .id &wfunc.
 wide-character function is identical to
-.id &func.
+.id &funcb.
 except that it
 operates on characters of
 .kw wchar_t
@@ -43,7 +43,7 @@ is interpreted to mean the number of wide characters.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the located character, or
 .mono NULL
 if the character does not occur in the object.

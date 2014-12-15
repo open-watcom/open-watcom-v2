@@ -19,7 +19,7 @@ void __near *_nexpand(void __near *mem_blk,size_t size);
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions change the size of the previously allocated block
 pointed to by
 .arg mem_blk
@@ -48,11 +48,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _nexpand
 function; in a large data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _fexpand
@@ -60,7 +60,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return the value
 .arg mem_blk
 if it was successful in changing the size of the block.

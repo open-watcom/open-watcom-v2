@@ -2,24 +2,24 @@
 .synop begin
 #include <malloc.h>
 void *alloca( size_t size );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function allocates space for an object of
 .arg size
 bytes from the stack.
 The allocated space is automatically discarded when the current
 function exits.
 The
-.id &func.
+.id &funcb.
 function should not be used in an expression that is an
 argument to a function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer
 to the start of the allocated memory.
 The return value is

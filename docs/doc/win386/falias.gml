@@ -11,7 +11,7 @@ void FreeAlias16( DWORD fp16 );
 .do end
 .synop end
 .desc begin
-&func frees a 16-bit far pointer alias for a 32-bit near pointer that
+&funcb frees a 16-bit far pointer alias for a 32-bit near pointer that
 was allocated with
 .kw AllocAlias16
 .ct .li .
@@ -21,10 +21,10 @@ limited space in the local descriptor table).
 .desc end
 .return begin
 .if '&lang' eq 'FORTRAN 77' .do begin
-&func is a subroutine.
+&funcb is a subroutine.
 .do end
 .el .do begin
-The &func function returns nothing.
+The &funcb function returns nothing.
 .do end
 .return end
 .see begin

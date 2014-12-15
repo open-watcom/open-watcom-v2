@@ -5,7 +5,7 @@ int _ismbbalnum( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 satisfies the condition that one of
@@ -24,7 +24,7 @@ Incorrect results occur if the argument is a double-byte character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end

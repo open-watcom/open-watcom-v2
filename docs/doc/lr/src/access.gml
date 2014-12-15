@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int access( const char *path, int mode );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _access( const char *path, int mode );
 .ixfunc2 '&FileOp' &_func
@@ -15,7 +15,7 @@ int _waccess( const wchar_t *path, int mode );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines if the file or directory specified by
 .arg path
 exists and if it can be accessed with the file permission given by
@@ -26,7 +26,7 @@ exists and if it can be accessed with the file permission given by
 The
 .id &_func.
 function is identical to
-.id &func.
+.id &funcb.
 .
 Use
 id &_func.
@@ -66,7 +66,7 @@ write-only files.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg path
@@ -75,7 +75,7 @@ wide-character string argument for
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the file or directory exists and can be
 accessed with the specified mode.
 Otherwise, &minus.1 is returned and

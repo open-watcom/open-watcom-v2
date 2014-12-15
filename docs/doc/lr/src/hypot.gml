@@ -2,12 +2,12 @@
 .synop begin
 #include <math.h>
 double hypot( double x, double y );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the length of the hypotenuse of a right
 triangle whose sides are
 .arg x

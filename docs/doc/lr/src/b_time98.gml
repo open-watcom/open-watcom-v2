@@ -3,11 +3,11 @@
 #include <bios.h>
 unsigned _bios_timeofday( unsigned service,
                           char *timeval );
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets or sets the current system clock value.
 The values for service are:
 .begterm 12

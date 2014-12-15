@@ -6,7 +6,7 @@ int abs( int j );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value of its integer argument
 .arg j
 .ct .li .
@@ -14,7 +14,7 @@ function returns the absolute value of its integer argument
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value of its argument.
 .return end
 .*

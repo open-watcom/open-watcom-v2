@@ -25,11 +25,11 @@ record /_wxycoord/ p1, p2
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines compute the number of bytes required to store
 a screen image.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.
@@ -47,7 +47,7 @@ The storage area used by the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return the size of a screen image.
 .return end
 .see begin

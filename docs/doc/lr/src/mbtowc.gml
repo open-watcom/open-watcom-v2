@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 int mbtowc( wchar_t *pwc, const char *s, size_t n );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 #include <mbstring.h>
 int _fmbtowc( wchar_t __far *pwc,
@@ -13,7 +13,7 @@ int _fmbtowc( wchar_t __far *pwc,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts a single multibyte character pointed to by
 .arg s
 into the wide character code that corresponds to that multibyte
@@ -31,7 +31,7 @@ bytes of the array pointed to by
 will be examined.
 .np
 The
-.id &func.
+.id &funcb.
 function does not examine more than
 .kw MB_CUR_MAX
 bytes.
@@ -41,13 +41,13 @@ bytes.
 If
 .arg s
 is a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns zero if multibyte
 character encodings are not state dependent, and non-zero otherwise.
 If
 .arg s
 is not a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns:
 .begnote $setptnt 6
 .termhd1 Value

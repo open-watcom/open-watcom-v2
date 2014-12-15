@@ -2,11 +2,11 @@
 .synop begin
 #include <mbstring.h>
 unsigned int _mbctolower( unsigned int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts an uppercase multibyte character to an
 equivalent lowercase multibyte character.
 .np
@@ -23,7 +23,7 @@ in earlier versions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the argument value if the argument is not a
 double-byte uppercase character;
 otherwise, the equivalent lowercase character is returned.

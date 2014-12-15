@@ -16,7 +16,7 @@ integer*2 explode(*), n
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine displays a pie chart.
 The chart is displayed using the options specified in the
 .arg env
@@ -41,7 +41,7 @@ is drawn "exploded", or slightly offset from the rest of the pie.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

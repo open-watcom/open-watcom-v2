@@ -5,7 +5,7 @@ int _dwSetAboutDlg( const char *title, const char *text );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets the "About" dialog box of the default
 windowing system.
 The argument
@@ -25,13 +25,13 @@ is NULL, then the current text in the "About" box will not be
 replaced.
 .np
 The
-.id &func.
+.id &funcb.
 function is one of the support functions that can be called
 from an application using &company's default windowing support.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 1 if it was successful and 0 if not.
 .return end
 .see begin

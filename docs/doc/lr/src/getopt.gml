@@ -9,7 +9,7 @@ int    optind, opterr, optopt;
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is a command-line parser that can be used by applications
 that follow Utility Syntax Guidelines 3, 4, 5, 6, 7, 9 and 10 in the Base
 Definitions volume of IEEE Std 1003.1-2001, Section 12.2, Utility Syntax
@@ -34,25 +34,25 @@ The global variable
 .kw optind
 is the index of the next element of the
 .arg argv[]
-vector to be processed. It is initialised to 1 by the system, and &func
+vector to be processed. It is initialised to 1 by the system, and &funcb
 updates it when it finishes with each element of
 .arg argv[]
 .ct .li .
 When an element of
 .arg argv[]
 contains multiple option characters,
-.id &func.
+.id &funcb.
 uses a static variable to determine
 which options have already been processed.
 .np
 The
-.id &func.
+.id &funcb.
 function returns the next option character (if one is found) from
 .arg argv
 that matches a character in
 .arg optstring
 .ct, if there is one that matches. If the option takes an argument,
-.id &func.
+.id &funcb.
 sets
 the variable
 .kw optarg
@@ -71,7 +71,7 @@ is incremented by 2. If the resulting value of
 is not less than
 .arg argc
 .ct, this indicates a missing option-argument, and
-.id &func.
+.id &funcb.
 returns an error
 indication.
 .np
@@ -84,7 +84,7 @@ points to the string following the option character in that element of
 is incremented by 1.
 .np
 If, when
-.id &func.
+.id &funcb.
 is called:
 .*
 .begbull
@@ -99,26 +99,26 @@ is not the character '-'
 points to the string "-"
 .endbull
 .*
-.id &func.
+.id &funcb.
 returns -1 without changing
 .kw optind
 .ct .li .
 If
 .arg argv[optind]
 points to the string "--",
-.id &func.
+.id &funcb.
 returns -1 after incrementing
 .kw optind
 .ct .li .
 .np
 If
-.id &func.
+.id &funcb.
 encounters an option character that is not contained in
 .arg optstring
 .ct, it returns the question-mark (?) character. If it detects a missing
 option-argument, it returns the colon character (:) if the first character of
 .arg optstring
-was a colon, or a question-mark character (?) otherwise. In either case, &func
+was a colon, or a question-mark character (?) otherwise. In either case, &funcb
 will set the global variable
 .kw optopt
 to the option character that caused the error. If the application has not set
@@ -127,30 +127,30 @@ the global variable
 to 0 and the first character of
 .arg optstring
 is not a colon,
-.id &func.
+.id &funcb.
 also prints a diagnostic message to
 .kw stderr
 .ct .li .
 .np
 The
-.id &func.
+.id &funcb.
 function is not re-entrant and hence not thread-safe.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the next option character specified on the command
 line.
 .np
 A colon (:) is returned if
-.id &func.
+.id &funcb.
 detects a missing argument and the
 first character of
 .arg optstring
 was a colon (:).
 .np
 A question mark (?) is returned if
-.id &func.
+.id &funcb.
 encounters an option character not in
 .arg optstring
 or detects a missing argument and the first character of
@@ -158,7 +158,7 @@ or detects a missing argument and the first character of
 was not a colon (:).
 .np
 Otherwise,
-.id &func.
+.id &funcb.
 returns -1 when all command line options are parsed.
 .return end
 .see begin

@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double exp2( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes 2.0 raised to the value 
 .arg x
 .ct .li .  The current implementation uses a simple power

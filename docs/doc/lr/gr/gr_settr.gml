@@ -10,7 +10,7 @@ integer*2 rows
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine selects the number of rows of text displayed on the screen.
 The number of rows is specified by the argument
 .arg rows
@@ -33,7 +33,7 @@ Some graphics modes will support 43 rows for EGA adapters and
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of screen rows when the number of
 rows is set successfully; otherwise, zero is returned.
 .return end

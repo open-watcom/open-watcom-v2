@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 void rewind( FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets the file position indicator for the stream
 indicated to by
 .arg fp
@@ -20,7 +20,7 @@ except that the error indicator for the stream is cleared.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

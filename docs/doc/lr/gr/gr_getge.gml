@@ -10,7 +10,7 @@ character*(*) text
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the length in pixels of the argument
 .arg text
 as it would be displayed in the current font by the &routine
@@ -21,7 +21,7 @@ is determined.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the length in pixels of a string.
 .return end
 .see begin

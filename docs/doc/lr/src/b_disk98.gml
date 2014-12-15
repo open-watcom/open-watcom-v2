@@ -15,11 +15,11 @@ struct  diskinfo_t {        /* disk parameters     */
         void _far *buffer;  /* data buffer         */
         void _far *result;  /* result buffer       */
 };
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function makes disk access operations specified by
 .arg service
 .ct .li .
@@ -123,7 +123,7 @@ stored in the area pointed to by <result>.
 .desc end
 .return begin
 If the
-.id &func.
+.id &funcb.
 function finishes normally, it returns zero in the upper
 byte and the status information in the lower byte. If an error occurs,
 the upper byte is not zero and the lower byte is the status

@@ -4,8 +4,8 @@
 int strncmp( const char *s1,
              const char *s2,
              size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &farfnc eq 1 .do begin
 int _fstrncmp( const char __far *s1,
                const char __far *s2,
@@ -42,7 +42,7 @@ int _fmbsncmp( const unsigned char __far *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 compares not more than
 .arg n
 characters from the string pointed to by
@@ -56,7 +56,7 @@ to the string pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1

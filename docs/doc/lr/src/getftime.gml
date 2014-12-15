@@ -4,11 +4,11 @@
 unsigned _dos_getftime( int &fd,
                         unsigned *date,
                         unsigned *time );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x57 to get the date and time
 that the file associated with
 .arg &fd
@@ -40,7 +40,7 @@ Hours (0-23)
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

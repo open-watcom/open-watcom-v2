@@ -5,7 +5,7 @@ int   _m_to_int(__m64 *__m);
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the low-order 32 bits of a multimedia value.
 .desc end
 .return begin

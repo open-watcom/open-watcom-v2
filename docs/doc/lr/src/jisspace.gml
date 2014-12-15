@@ -2,18 +2,18 @@
 .synop begin
 #include <jstring.h>
 int jisspace( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a double-byte space character (0x8140).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not a double-byte space
 character;
 otherwise, a non-zero value is returned.

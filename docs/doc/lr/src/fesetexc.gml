@@ -2,12 +2,12 @@
 .synop begin
 #include <fenv.h>
 int fesetexceptflag( const fexcept_t *__flagp, int __excepts );
-.ixfunc2 'Floating Point Environment' &func
+.ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function attempts to set the floating-point status flags indicated by the
 argument excepts to the states stored in the object pointed to by flagp. The value of
 *flagp shall have been set by a previous call to
@@ -19,7 +19,7 @@ of the flags.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the excepts argument is zero or if
 all the specified flags were successfully set to the appropriate state. Otherwise, it returns
 a nonzero value.

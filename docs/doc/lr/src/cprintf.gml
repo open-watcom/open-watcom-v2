@@ -2,11 +2,11 @@
 .synop begin
 #include <conio.h>
 int cprintf( const char *format, ... );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes output directly to the console under control
 of the argument
 .arg format
@@ -22,7 +22,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written.
 .return end
 .see begin

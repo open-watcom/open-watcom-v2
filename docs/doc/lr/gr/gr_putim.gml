@@ -21,12 +21,12 @@ integer*2 mode
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines display the screen image indicated by the argument
 .arg image
 .ct .li .
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.
@@ -63,7 +63,7 @@ from the screen with those from the saved image
 .uterm GXOR
 produce a new image on the screen by exclusive ORing together
 the pixel values from the screen with those from the saved image;
-the original screen is restored by two successive calls to the &func
+the original screen is restored by two successive calls to the &funcb
 &routine with this value, providing an efficient method to produce
 animated effects
 .endterm
@@ -71,7 +71,7 @@ animated effects
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines do not return a value.
 .return end
 .do end

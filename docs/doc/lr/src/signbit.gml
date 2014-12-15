@@ -6,7 +6,7 @@ int signbit( x );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro determines whether the sign of its argument value is negative.
 .np
 The argument
@@ -16,7 +16,7 @@ must be an expression of real floating type.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 macro returns a nonzero value if and only if the sign of its
 argument has value is negative.
 .return end

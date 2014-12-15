@@ -4,19 +4,19 @@
 #include <stdlib.h>
 constraint_handler_t set_constraint_handler_s(
         constraint_handler_t handler );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets the runtime-constraint handler to be
 .arg handler
 .ct .li .
 The runtime-constraint handler is the function called when a library function
 detect a runtime-constraint violation. Only the most recent handler registered
 with
-.id &func.
+.id &funcb.
 is called when a runtime-constraint violation occurs.
 .np
 When the handler is called, it is passed the following arguments:
@@ -34,21 +34,21 @@ If the function calling the handler has a return type declared as
 is passed.
 .endnote
 If no calls to the
-.id &func.
+.id &funcb.
 function have been made, a default constraint handler
 is used. This handler will display an error message and abort the program.
 .np
 If the
 .arg handler
 argument to
-.id &func.
+.id &funcb.
 is a null pointer, the default handler becomes the current
 constraint handler.
 .desc end
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the previously registered handler.
 .return end
 .*

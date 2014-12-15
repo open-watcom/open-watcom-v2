@@ -10,7 +10,7 @@ integer*2 x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the origin of the view coordinate system,
 .coord 0 0 ,
 to be located at the physical point
@@ -21,7 +21,7 @@ This causes subsequently drawn images to be translated by the amount
 .np
 .bd Note:
 In previous versions of the software, the
-.id &func.
+.id &funcb.
 &routine was called
 .mono _setlogorg.
 .uindex setlogorg
@@ -29,7 +29,7 @@ In previous versions of the software, the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns, as an
 .id xycoord
 structure, the physical coordinates of

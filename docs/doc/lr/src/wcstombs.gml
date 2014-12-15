@@ -2,8 +2,8 @@
 .synop begin
 #include <stdlib.h>
 size_t wcstombs( char *s, const wchar_t *pwcs, size_t n );
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 #include <mbstring.h>
 size_t _fwcstombs( char __far *s,
@@ -18,7 +18,7 @@ size_t _fwcstombs( char __far *s,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts a sequence of wide character codes from the
 array pointed to by
 .arg pwcs
@@ -27,7 +27,7 @@ array pointed to by
 .arg s
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function stops if a multibyte character would exceed the limit of
 .arg n
 total bytes, or if the null character is stored.
@@ -40,12 +40,12 @@ will be modified.
 .desc end
 .return begin
 If an invalid multibyte character is encountered, the
-.id &func.
+.id &funcb.
 function
 returns
 .mono (size_t)&minus.1.
 Otherwise, the
-.id &func.
+.id &funcb.
 function returns the number of array elements
 modified, not including the terminating zero code if present.
 .return end

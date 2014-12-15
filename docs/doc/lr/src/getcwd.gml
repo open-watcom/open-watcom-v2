@@ -8,7 +8,7 @@ char *getcwd( char *buffer, size_t size );
 #include <direct.h>
 char *getcwd( char *buffer, size_t size );
 .do end
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wgetcwd( wchar_t *buffer, size_t size );
 .ixfunc2 '&Direct' &wfunc
@@ -17,7 +17,7 @@ wchar_t *_wgetcwd( wchar_t *buffer, size_t size );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the name of the current working directory.
 The
 .arg buffer
@@ -52,7 +52,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it returns the
 name of the current working directory as a wide-character string
 (which is twice as long).
@@ -60,7 +60,7 @@ name of the current working directory as a wide-character string
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the address of the string containing the
 name of the current working directory, unless an error occurs, in
 which case

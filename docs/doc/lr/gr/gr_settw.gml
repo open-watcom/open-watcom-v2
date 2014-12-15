@@ -12,7 +12,7 @@ integer*2 row2, col2
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the text window to be the rectangle with a top
 left corner at
 .coord row1 col1
@@ -40,7 +40,7 @@ then text is displayed on the last line of the window.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

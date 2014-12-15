@@ -5,7 +5,7 @@ int _hdopen( int os_handle, int mode );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function takes a previously opened operating system file
 handle specified by
 .arg os_handle
@@ -15,7 +15,7 @@ and opened with access and sharing specified by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the new POSIX-style file handle if
 successful.
 Otherwise, it returns -1.

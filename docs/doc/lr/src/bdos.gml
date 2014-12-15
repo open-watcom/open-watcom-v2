@@ -2,11 +2,11 @@
 .synop begin
 #include <&doshdr>
 int bdos( int dos_func, unsigned dx, unsigned char al );
-.ixfunc2 '&OsInt' &func
+.ixfunc2 '&OsInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes the computer's central processor (CPU) to
 be interrupted with an interrupt number hexadecimal 21 (
 .ct .mono 0x21
@@ -27,7 +27,7 @@ and after the interrupt in question.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of the AX register after the
 interrupt has completed.
 .return end

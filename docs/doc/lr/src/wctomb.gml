@@ -2,8 +2,8 @@
 .synop begin
 #include <stdlib.h>
 int wctomb( char *s, wchar_t wc );
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 #include <mbstring.h>
 int _fwctomb( char __far *s, wchar_t wc );
@@ -16,7 +16,7 @@ int _fwctomb( char __far *s, wchar_t wc );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the number of bytes required to
 represent the multibyte character corresponding to the wide character
 contained in
@@ -37,13 +37,13 @@ characters will be stored.
 If
 .arg s
 is a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns zero if multibyte
 character encodings are not state dependent, and non-zero otherwise.
 If
 .arg s
 is not a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns:
 .begnote $setptnt 6
 .termhd1 Value

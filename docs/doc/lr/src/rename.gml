@@ -2,7 +2,7 @@
 .synop begin
 #include <stdio.h>
 int rename( const char *old, const char *new );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int _wrename( const wchar_t *old, const wchar_t *new );
 .ixfunc2 '&FileOp' &wfunc
@@ -11,7 +11,7 @@ int _wrename( const wchar_t *old, const wchar_t *new );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes the file whose name is indicated by the string
 .arg old
 to be renamed to the name given by the string
@@ -21,14 +21,14 @@ to be renamed to the name given by the string
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts
 wide-character string arguments.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the operation succeeds, a non-zero
 value if it fails.
 .im errnoref

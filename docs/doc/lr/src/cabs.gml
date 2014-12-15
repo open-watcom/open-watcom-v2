@@ -7,11 +7,11 @@ struct _complex {
     double  x;  /* real part */
     double  y;  /* imaginary part */
 };
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the absolute value of the complex number
 .arg value
 by a calculation which is equivalent to

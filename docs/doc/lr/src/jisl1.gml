@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jisl1( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a JIS (Japan Industrial Standard) level 1 double-byte character
@@ -30,7 +30,7 @@ the range 0x40 - 0x7E or 0x80 - 0xFC.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not in the range;
 otherwise, a non-zero value is returned.
 .return end

@@ -7,7 +7,7 @@ int closedir( DIR *dirp );
 .el .do begin
 int closedir( struct dirent *dirp );
 .do end
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int _wclosedir( struct _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
@@ -16,7 +16,7 @@ int _wclosedir( struct _wdirent *dirp );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function closes the directory specified by
 .arg dirp
 and frees the memory allocated by
@@ -40,7 +40,7 @@ or both.
 If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use the
-.id &func.
+.id &funcb.
 function.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
@@ -48,7 +48,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it closes a
 directory of wide-character filenames opened by
 .kw _wopendir
@@ -58,7 +58,7 @@ directory of wide-character filenames opened by
 .return begin
 .if '&machsys' eq 'QNX' .do begin
 If successful, the
-.id &func.
+.id &funcb.
 function returns zero.
 Otherwise &minus.1 is returned and
 .kw errno
@@ -66,7 +66,7 @@ is set to indicate the error.
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful, non-zero otherwise.
 .do end
 .return end
@@ -81,7 +81,7 @@ does not refer to an open directory stream.
 .if '&machsys' eq 'QNX' .do begin
 .term EINTR
 The
-.id &func.
+.id &funcb.
 function was interrupted by a signal.
 .do end
 .endterm

@@ -6,7 +6,7 @@ errno_t memcpy_s( void * restrict s1,
                   rsize_t s1max,
                   const void * restrict s2,
                   rsize_t n );
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&Copy' &funcb
 .if &'length(&ffunc.) ne 0 .do begin
 errno_t _fmemcpy_s( void __far * restrict s1,
                     rsize_t s1max,
@@ -44,7 +44,7 @@ shall not be greater than
 objects that overlap.
 .np
 If there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function stores zeros in the first
 .arg s1max
 characters of the object pointed to by
@@ -61,7 +61,7 @@ not greater than
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies
 .arg n
 characters from the buffer pointed to by
@@ -81,7 +81,7 @@ function if you wish to copy objects that overlap.
 The
 .id &wfunc.
 wide-character function is identical to
-.id &func.
+.id &funcb.
 except that it
 operates on characters of
 .kw wchar_t

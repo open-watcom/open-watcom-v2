@@ -5,7 +5,7 @@
 char *lltoa( long long int value,
              char *buffer,
              int radix );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_lltoa( long long int value,
               char *buffer,
@@ -22,7 +22,7 @@ wchar_t *_lltow( long long int value,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the binary integer
 .arg value
 into the equivalent string in base
@@ -49,7 +49,7 @@ is negative, then a minus sign is prepended to the result.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -59,14 +59,14 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it produces a
 wide-character string (which is twice as long).
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the result.
 .return end
 .see begin

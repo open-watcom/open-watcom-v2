@@ -10,11 +10,11 @@ unsigned _dos_allocmem( unsigned size,
 unsigned _dos_allocmem( unsigned size,
                         unsigned *segment);
 #endif
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x48 to allocate
 .arg size
 paragraphs directly from DOS.
@@ -32,7 +32,7 @@ DPMI services be used.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

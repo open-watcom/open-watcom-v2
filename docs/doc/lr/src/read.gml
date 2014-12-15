@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int read( int &fd, void *buffer, unsigned len );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _read( int &fd, void *buffer, unsigned len );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _read( int &fd, void *buffer, unsigned len );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function reads data at the operating system level.
 The number of bytes transmitted is given by
 .arg len
@@ -50,7 +50,7 @@ encountered in the original data.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -58,7 +58,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of bytes of data transmitted
 from the file to the
 buffer (this does not include any carriage-return characters that were

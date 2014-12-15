@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int unlink( const char *path );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _unlink( const char *path );
 .ixfunc2 '&FileOp' &_func
@@ -15,7 +15,7 @@ int _wunlink( const wchar_t *path );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function deletes the file whose name is the string
 pointed to by
 .arg path
@@ -27,7 +27,7 @@ function.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -37,13 +37,13 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument.
 .do end
 .desc end
 .return begin
-The &func
+The &funcb
 function returns zero if the operation succeeds, non-zero if it fails.
 .return end
 .if '&machsys' eq 'QNX' .do begin
@@ -80,7 +80,7 @@ The file named by
 .arg path
 is a directory and either the calling process does not have the
 appropriate privileges, or the implementation prohibits using
-.id &func.
+.id &funcb.
 on
 directories.
 .term EROFS

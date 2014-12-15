@@ -16,7 +16,7 @@ character*(*) label
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine displays the text string
 .arg label
 on the chart described by the
@@ -31,7 +31,7 @@ specifies the palette color used to display the string.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

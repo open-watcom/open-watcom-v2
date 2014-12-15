@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 &off_t tell( int &fd );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 off_t _tell( int &fd );
 .ixfunc2 '&OsIo' &_func
@@ -13,7 +13,7 @@ __int64 _telli64( int &fd );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function reports the current file position at the operating
 system level.
 The
@@ -29,14 +29,14 @@ function to reset the current file position.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
 .do end
 .np
 The &_func64 function is similar to the
-.id &func.
+.id &funcb.
 function but returns a
 64-bit file position.
 This value may be used in conjunction with the
@@ -46,7 +46,7 @@ function to reset the current file position.
 .*
 .return begin
 If an error occurs in
-.id &func.
+.id &funcb.
 (&minus.1L) is returned.
 .np
 If an error occurs in &_func64, (&minus.1I64) is returned.

@@ -2,15 +2,15 @@
 .synop begin
 #include <i86.h>
 void _enable( void );
-.ixfunc2 '&Interrupt' &func
+.ixfunc2 '&Interrupt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes interrupts to become enabled.
 .np
 The
-.id &func.
+.id &funcb.
 function would be used in conjunction with the
 .kw _disable
 function to make sure that a sequence of instructions are executed
@@ -19,7 +19,7 @@ without any intervening interrupts occurring.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

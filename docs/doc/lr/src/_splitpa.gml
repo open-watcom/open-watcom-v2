@@ -29,7 +29,7 @@ void _wsplitpath( const wchar_t *path,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function splits up a full pathname into four components
 consisting of a
 .if '&machsys' eq 'QNX' .do begin
@@ -89,7 +89,7 @@ The
 argument points to a buffer that will be filled in with
 the drive letter (e.g., A, B, C, etc.) followed by a colon if a drive
 is specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .np
 For Netware applications, the
@@ -97,7 +97,7 @@ For Netware applications, the
 argument points to a buffer that will be filled in with
 the volume identifier (e.g., \\NAME_SPACE) if a volume
 is specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .do end
 .note dir
@@ -114,7 +114,7 @@ The
 argument points to a buffer that will be filled in with
 the base name of the file without any extension (suffix) if a file
 name is specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .note ext
 The
@@ -122,7 +122,7 @@ The
 argument points to a buffer that will be filled in with
 the filename extension (suffix) including the leading period if an
 extension is specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .if '&machsys' eq 'QNX' .do begin
 If more than one period appears in the filename, the suffix consists
@@ -155,7 +155,7 @@ corresponding buffer will be set to an empty string.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

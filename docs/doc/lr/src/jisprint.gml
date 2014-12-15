@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jisprint( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a printable single- or double-byte character.
@@ -24,7 +24,7 @@ the range 0x40 - 0x7E or 0x80 - 0xFC.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument does not meet one of the above
 tests;
 otherwise, a non-zero value is returned.

@@ -2,18 +2,18 @@
 .synop begin
 #include <conio.h>
 int cscanf( const char *format, ... );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function scans input from the console
 under control of the argument
 .arg format
 .ct .li .
 Following the format string is a list of addresses to receive values.
 The
-.id &func.
+.id &funcb.
 function uses the function
 .kw getche
 to read characters from the console.
@@ -25,7 +25,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 when the scanning is terminated by reaching the end of the input stream.

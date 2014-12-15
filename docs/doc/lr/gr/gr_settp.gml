@@ -11,7 +11,7 @@ integer*2 row, col
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current output position for text to be
 .coord row col
 where this position is in terms of characters, not pixels.
@@ -47,12 +47,12 @@ and
 .kw printf
 may cause overlapped text since
 .kw _outtext
-uses the output position that was set by &func..
+uses the output position that was set by &funcb..
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns, as an
 .id rccoord
 structure, the previous output position for text.

@@ -2,11 +2,11 @@
 .synop begin
 #include <conio.h>
 unsigned int outp( int port, int value );
-.ixfunc2 '&PortIo' &func
+.ixfunc2 '&PortIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes one byte, determined by
 .arg value
 .ct , to the 80x86 hardware port whose number is given by

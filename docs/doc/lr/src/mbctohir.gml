@@ -2,11 +2,11 @@
 .synop begin
 #include <mbstring.h>
 unsigned int _mbctohira( unsigned int ch );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 converts a double-byte Katakana character to a Hiragana
 character.
 A double-byte Katakana character is any character for which
@@ -35,7 +35,7 @@ in earlier versions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the argument value if the argument is not a
 double-byte Katakana character;
 otherwise, the equivalent Hiragana character is returned.

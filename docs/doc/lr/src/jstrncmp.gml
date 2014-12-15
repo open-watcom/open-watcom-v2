@@ -4,8 +4,8 @@
 int jstrncmp( const JCHAR *s1,
               const JCHAR *s2,
               size_t n );
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Jcompare' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jcompare' &funcb
 .if &farfnc eq 1 .do begin
 int __far _fjstrncmp( const JCHAR __far *s1,
                       const JCHAR __far *s2,
@@ -17,12 +17,12 @@ int __far _fjstrncmp( const JCHAR __far *s1,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 compares
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions compare
@@ -43,12 +43,12 @@ ASCII and numeric characters < Katakana characters < Kanji characters
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

@@ -2,12 +2,12 @@
 .synop begin
 #include <fenv.h>
 int fegetexceptflag( fexcept_t *__flagp, int __excepts );
-.ixfunc2 'Floating Point Environment' &func
+.ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function attempts to store a representation of the states of the
 floating-point status flags indicated by the argument excepts in the
 object pointed to by the argument flagp.
@@ -33,7 +33,7 @@ is the logical OR of these values.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the representation was successfully
 stored. Otherwise, it returns a nonzero value.
 .return end

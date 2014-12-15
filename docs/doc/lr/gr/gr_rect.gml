@@ -31,10 +31,10 @@ record /_wxycoord/ p1, p2
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines draw rectangles.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.

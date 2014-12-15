@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 int system( const char *command );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int _wsystem( const wchar_t *command );
 .ixfunc2 '&Process' &wfunc
@@ -17,11 +17,11 @@ If the value of
 is
 .mono NULL,
 then the
-.id &func.
+.id &funcb.
 function determines whether or not a &shell is
 present.
 On a POSIX 1003.2 system (e.g., QNX), the shell is always assumed
-present and &func.(NULL) always returns a non-zero value.
+present and &funcb.(NULL) always returns a non-zero value.
 .do end
 .el .do begin
 .sr shell = 'command processor'
@@ -30,14 +30,14 @@ If the value of
 is
 .mono NULL,
 then the
-.id &func.
+.id &funcb.
 function determines whether or not a &shell is
 present ("COMMAND.COM" in DOS and Windows 95/98
 or "CMD.EXE" in OS/2 and Windows NT/2000).
 .do end
 .np
 Otherwise, the
-.id &func.
+.id &funcb.
 function invokes a copy of the &shell, and passes
 the string
 .arg command
@@ -83,7 +83,7 @@ functions can only cause programs to be executed.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument.
 .do end
@@ -94,7 +94,7 @@ If the value of
 is
 .mono NULL,
 then the
-.id &func.
+.id &funcb.
 function returns zero if the &shell is not present,
 a non-zero value if the &shell is present.
 .if '&machsys' eq 'QNX' .do begin
@@ -103,7 +103,7 @@ This implementation always returns a non-zero value.
 .el .do begin
 Note that Microsoft Windows 3.x does not support a command shell and
 so the
-.id &func.
+.id &funcb.
 function always returns zero when
 .arg command
 is
@@ -111,13 +111,13 @@ is
 .do end
 .np
 Otherwise, the
-.id &func.
+.id &funcb.
 function returns the result of invoking a copy of
 the &shell..
 .if '&machsys' eq 'QNX' .do begin
 A -1 is returned if the &shell could not be loaded; otherwise, the
 status of the specified command is returned.
-Assume that "status" is the value returned by &func..
+Assume that "status" is the value returned by &funcb..
 If
 .mono WEXITSTATUS( status ) == 255,
 this indicates that the specified command could not be run.

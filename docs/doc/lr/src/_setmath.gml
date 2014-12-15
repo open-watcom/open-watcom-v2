@@ -2,8 +2,8 @@
 .synop begin
 #include <math.h>
 void _set_matherr( int (*rtn)( struct _exception *err_info ) )
-.ixfunc2 '&Errs' &func
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Errs' &funcb
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The default
@@ -11,7 +11,7 @@ The default
 function supplied in the library can be replaced so that the
 application can handle mathematical errors.
 To do this, the
-.id &func.
+.id &funcb.
 function must be called with the address of the
 new mathematical error handling routine.
 .pp
@@ -90,12 +90,12 @@ and
 The field
 .id retval
 contains the value which will be returned by the function.
-This value may be changed by a user-supplied version of the &func
+This value may be changed by a user-supplied version of the &funcb
 function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .blktext end
 .return end

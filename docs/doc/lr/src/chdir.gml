@@ -8,7 +8,7 @@
 #include <direct.h>
 .do end
 int chdir( const char *path );
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _chdir( const char *path );
 .ixfunc2 '&Direct' &_func
@@ -22,7 +22,7 @@ int _wchdir( const wchar_t *path );
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The
-.id &func.
+.id &funcb.
 function changes the current working directory to the
 specified
 .arg path
@@ -35,7 +35,7 @@ an absolute path name.
 .el .do begin
 .ix 'current directory'
 The
-.id &func.
+.id &funcb.
 function changes the current directory on the specified
 drive to the specified
 .arg path
@@ -62,7 +62,7 @@ function.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -72,14 +72,14 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, &minus.1 is returned,
 .kw errno

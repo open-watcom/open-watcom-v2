@@ -9,7 +9,7 @@ integer*2 function _pg_initchart()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine initializes the presentation graphics system.
 This includes initializing the internal palette and style-set used
 when drawing charts.
@@ -21,7 +21,7 @@ a valid graphics mode has been selected.
 For this reason the
 .kw _setvideomode
 &routine must be called before
-.id &func.
+.id &funcb.
 is called.
 If a font has been selected (with the
 .kw _setfont
@@ -31,7 +31,7 @@ the presentation graphics system.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

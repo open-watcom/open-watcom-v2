@@ -3,7 +3,7 @@
 #include <mbstring.h>
 unsigned char *_mbvtop( unsigned int ch,
                         unsigned char *addr );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 unsigned char __far *_fmbvtop( unsigned int ch,
                         unsigned char __far *addr );
@@ -12,7 +12,7 @@ unsigned char __far *_fmbvtop( unsigned int ch,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function stores the multibyte character
 .arg ch
 into the string pointed to by
@@ -22,7 +22,7 @@ into the string pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of the argument
 .arg addr
 .ct .li .

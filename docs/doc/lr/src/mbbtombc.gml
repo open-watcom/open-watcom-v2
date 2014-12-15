@@ -5,7 +5,7 @@ unsigned int _mbbtombc( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the double-byte character equivalent to the
 single-byte character
 .arg ch
@@ -20,12 +20,12 @@ in earlier versions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg ch
 if there is no equivalent double-byte character;
 otherwise
-.id &func.
+.id &funcb.
 returns a double-byte character.
 .return end
 .see begin

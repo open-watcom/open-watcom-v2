@@ -3,7 +3,7 @@
 .funcw swprintf
 #include <stdio.h>
 int sprintf( char *buf, const char *format, ... );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int swprintf( wchar_t *buf,
@@ -18,7 +18,7 @@ int swprintf( wchar_t *buf,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw fprintf
 function, except that the argument
@@ -37,7 +37,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that the argument
 .arg buf
 specifies an array of wide characters into which the generated output
@@ -56,7 +56,7 @@ function accepts a wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written into the
 array, not counting the terminating null character.
 An error can occur while converting a value for output.

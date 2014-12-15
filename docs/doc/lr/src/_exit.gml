@@ -3,11 +3,11 @@
 #include <stdlib.h>
 void _exit( int status );
 void _Exit( int status );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes normal program termination to occur.
 .autonote
 .note
@@ -102,7 +102,7 @@ set to some other value to indicate an error.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return to its caller.
 .return end
 .see begin

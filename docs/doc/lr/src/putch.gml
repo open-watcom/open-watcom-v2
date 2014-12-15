@@ -2,18 +2,18 @@
 .synop begin
 #include <conio.h>
 int putch( int c );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes the character specified by the argument
 .arg c
 to the console.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the character written.
 .return end
 .see begin

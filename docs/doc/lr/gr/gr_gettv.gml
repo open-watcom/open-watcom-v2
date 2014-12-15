@@ -9,7 +9,7 @@ record /xycoord/ function _getgtextvector()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current value of the text orientation vector.
 This is the direction used when text is displayed by the
 .kw _outgtext
@@ -17,7 +17,7 @@ This is the direction used when text is displayed by the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns, as an
 .id xycoord
 structure, the current value of the text orientation vector.

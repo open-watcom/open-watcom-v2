@@ -5,7 +5,7 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 int printf_s( const char * restrict format, ... );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int wprintf_s( const wchar_t * restrict format, ... );
@@ -24,22 +24,22 @@ appear in the string pointed to by
 .arg format
 .ct .li .
 Any argument to
-.id &func.
+.id &funcb.
 corresponding to a
 .mono %s
 specifier shall not be a null pointer.
 .np
 If there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function does not
 attempt to produce further output, and it is unspecified to what extent
-.id &func.
+.id &funcb.
 produced output before discovering the runtime-constraint violation.
 .rtconst end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw printf
 function except for the explicit runtime-constraints listed above.
@@ -48,7 +48,7 @@ function except for the explicit runtime-constraints listed above.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -58,7 +58,7 @@ wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written, or a
 negative value if an output error or runtime-constraint violation occurred.
 .if &'length(&wfunc.) ne 0 .do begin

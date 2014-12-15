@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double modf( double value, double *iptr );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function breaks the argument
 .arg value
 into integral and fractional parts, each of which has the same sign as
@@ -19,7 +19,7 @@ in the object pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the signed fractional part of
 .arg value
 .ct .li .

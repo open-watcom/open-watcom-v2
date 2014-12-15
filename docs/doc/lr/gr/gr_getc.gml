@@ -9,7 +9,7 @@ integer*2 function _getcolor()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the pixel value for the current color.
 This is the color used for displaying graphics output.
 The default color value is one less than the maximum number of colors
@@ -19,7 +19,7 @@ in the current video mode.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the pixel value for the current color.
 .return end
 .see begin

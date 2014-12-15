@@ -2,18 +2,18 @@
 .synop begin
 #include <process.h>
 int wait( int *status );
-.ixfunc2 '&OS2Func' &func
-.ixfunc2 '&NTFunc' &func
+.ixfunc2 '&OS2Func' &funcb
+.ixfunc2 '&NTFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function suspends the calling process until any of the caller's
 immediate child processes terminate.
 .np
 Under Win32, there is no parent-child relationship amongst
 processes so the
-.id &func.
+.id &funcb.
 function cannot and does not wait for child
 processes to terminate.
 To wait for any process, you must specify its process id.
@@ -24,11 +24,11 @@ function should be used (one of its arguments is a process id).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the child's process id if the child process
 terminated normally.
 Otherwise,
-.id &func.
+.id &funcb.
 returns &minus.1 and sets
 .kw errno
 to one of the following values:

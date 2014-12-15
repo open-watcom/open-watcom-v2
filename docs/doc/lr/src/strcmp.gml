@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 int strcmp( const char *s1, const char *s2 );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &farfnc eq 1 .do begin
 int _fstrcmp( const char __far *s1,
               const char __far *s2 );
@@ -35,7 +35,7 @@ int _fmbscmp( const unsigned char __far *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares the string pointed to by
 .arg s1
 to the string pointed to by
@@ -47,7 +47,7 @@ to the string pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1

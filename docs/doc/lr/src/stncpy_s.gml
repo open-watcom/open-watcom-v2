@@ -6,8 +6,8 @@ errno_t strncpy_s( char * restrict s1,
                    rsize_t s1max,
                    const char * restrict s2,
                    rsize_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Copy' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t wcsncpy_s( wchar_t * restrict s1,
@@ -61,7 +61,7 @@ to the null character.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies not more than
 .arg n
 successive characters (characters that follow a null character are not

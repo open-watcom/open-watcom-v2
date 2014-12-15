@@ -16,14 +16,14 @@ struct tm *_localtime( const time_t *timer,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions convert the calendar time pointed to by
 .arg timer
 into a structure of type
 .kw tm
 .ct, of time information, expressed as local time.
 Whenever
-.id &func.
+.id &funcb.
 is called, the
 .kw tzset
 function is also called.
@@ -41,16 +41,16 @@ function places the converted time in the
 structure pointed to by
 .arg tmbuf
 .ct , and the
-.id &func.
+.id &funcb.
 function places the converted time in a static structure
 that is re-used each time
-.id &func.
+.id &funcb.
 is called.
 .im tzref
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return a pointer to a
 .kw tm
 structure containing the time information.

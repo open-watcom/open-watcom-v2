@@ -6,23 +6,23 @@ void ignore_handler_s(
         const char * restrict msg,
         void * restrict ptr, 
         errno_t error );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .synop end
 .*
 .desc begin
 A pointer to the
-.id &func.
+.id &funcb.
 function may be passed as an argument to the
 .mono set_constraint_handler_s
 function.
 The
-.id &func.
+.id &funcb.
 function simply returns to its caller.
 .desc end
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not returns no value.
 .return end
 .*

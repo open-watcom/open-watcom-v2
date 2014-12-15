@@ -12,7 +12,7 @@ integer*2 x2, y2
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the location of the current clipping region.
 A clipping region is defined with the
 .kw _setcliprgn
@@ -31,7 +31,7 @@ The bottom right corner of the clipping region is placed in
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the location of the current clipping region.
 .return end
 .do end

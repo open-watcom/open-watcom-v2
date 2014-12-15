@@ -2,11 +2,11 @@
 .synop begin
 #include <conio.h>
 int cputs( const char *buf );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes the character string pointed to by
 .arg buf
 directly to the console using the
@@ -19,7 +19,7 @@ to the string.
 The terminating null character is not written.
 .desc end
 .return begin
-The &func
+The &funcb
 function returns a non-zero value if an error occurs; otherwise, it
 returns zero.
 .im errnoref

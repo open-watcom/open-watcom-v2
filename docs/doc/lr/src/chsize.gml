@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int chsize( int &fd, long size );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _chsize( int &fd, long size );
 .ixfunc2 '&DosFunc' &_func
@@ -10,7 +10,7 @@ int _chsize( int &fd, long size );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function changes the size of the file associated with
 .arg &fd
 by extending or truncating the file to the length specified by
@@ -22,7 +22,7 @@ characters.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI naming conventions.
@@ -30,7 +30,7 @@ for ANSI naming conventions.
 .if '&machsys' eq 'QNX' .do begin
 .np
 Note that the
-.id &func.
+.id &funcb.
 function call ignores advisory locks which may
 have been set by the
 .kw fcntl
@@ -43,7 +43,7 @@ functions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 A return value of -1 indicates an error, and
 .kw errno

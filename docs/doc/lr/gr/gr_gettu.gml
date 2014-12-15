@@ -9,7 +9,7 @@ integer*2 function _gettextcursor()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current cursor attribute, or shape.
 The cursor shape is set with the
 .kw _settextcursor
@@ -17,12 +17,12 @@ The cursor shape is set with the
 See the
 .kw _settextcursor
 &routine for a description of the value returned by the
-.id &func.
+.id &funcb.
 &routine..
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current cursor shape
 when successful; otherwise, (-1) is returned.
 .return end

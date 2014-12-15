@@ -12,7 +12,7 @@ integer*2 type, style
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine initializes the chart structure
 .arg env
 to contain default values before a chart is drawn.
@@ -68,7 +68,7 @@ beside each of the pie slices.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

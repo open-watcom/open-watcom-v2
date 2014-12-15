@@ -4,22 +4,22 @@
 .synop begin
 #include <process.h>
 void _endthread(void);
-.ixfunc2 '&OS2Func' &func
-.ixfunc2 '&NTFunc' &func
+.ixfunc2 '&OS2Func' &funcb
+.ixfunc2 '&NTFunc' &funcb
 void _endthreadex( unsigned retval );
-.ixfunc2 '&NTFunc' &func.ex
+.ixfunc2 '&NTFunc' &funcb.ex
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is used to terminate a thread created by
 .kw _beginthread
 .ct .li .
 For each operating environment under which
-.id &func.
+.id &funcb.
 is supported,
 the
-.id &func.
+.id &funcb.
 function uses the appropriate system call to end the current
 thread of execution.
 .np
@@ -34,7 +34,7 @@ must be specified.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return any value.
 .return end
 .see begin

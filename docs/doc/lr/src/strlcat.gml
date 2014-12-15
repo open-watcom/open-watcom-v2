@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 size_t strlcat( char *dst, const char *src, size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Concats' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Concats' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 size_t *wcslcat( wchar_t *dst,
                  const wchar_t *src,
@@ -15,7 +15,7 @@ size_t *wcslcat( wchar_t *dst,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function appends characters of the string pointed to by
 .arg src
 to the end of the string in a buffer pointed to by
@@ -37,7 +37,7 @@ are scanned and no null character is found.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the total length of string it tried to create,
 that is the number of characters in both
 .arg src

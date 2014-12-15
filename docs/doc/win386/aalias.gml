@@ -17,14 +17,14 @@ DWORD AllocAlias16( void *ptr );
 .do end
 .synop end
 .desc begin
-The &func function obtains a 16-bit far pointer equivalent of a 32-bit
+The &funcb function obtains a 16-bit far pointer equivalent of a 32-bit
 near pointer.
 These pointers are used when passing data pointers to Windows through
 functions that have &dword arguments, and for any pointers within data
 structures passed this way.
 .desc end
 .return begin
-The &func function returns a 16-bit far pointer
+The &funcb function returns a 16-bit far pointer
 .if '&lang' eq 'FORTRAN 77' .do begin
 (as an INTEGER*4)
 .do end

@@ -2,18 +2,18 @@
 .synop begin
 #include <&doshdr>
 void (__interrupt __far *_dos_getvect(unsigned intnum))();
-.ixfunc2 '&CpuInt' &func
+.ixfunc2 '&CpuInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets the current value of interrupt vector number
 .arg intnum
 .ct .li .
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a far pointer to the current interrupt
 handler for interrupt number
 .arg intnum

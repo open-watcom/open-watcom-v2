@@ -2,17 +2,17 @@
 .synop begin
 #include <bios.h>
 unsigned short _bios_equiplist( void );
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines what hardware and peripherals are
 installed on the machine.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a set of bits indicating what is currently
 installed on the machine. Those bits are defined as follows:
 .begnote $compact

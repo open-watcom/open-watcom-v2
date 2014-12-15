@@ -10,7 +10,7 @@ character*(*) text
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine displays the character string indicated by the argument
 .arg text
 .ct .li .
@@ -42,7 +42,7 @@ The text position is updated to follow the end of the displayed text.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

@@ -2,14 +2,14 @@
 .synop begin
 #include <stdio.h>
 FILE *tmpfile( void );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .*
 .safealt
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates a temporary binary file that will
 automatically be removed when it is closed or at program termination.
 The file is opened for update.
@@ -32,11 +32,11 @@ They are listed in the order examined:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the stream of the file that it
 created.
 If the file cannot be created, the
-.id &func.
+.id &funcb.
 function returns
 .mono NULL.
 .im errnoref

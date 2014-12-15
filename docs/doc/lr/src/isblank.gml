@@ -3,7 +3,7 @@
 .funcw iswblank
 #include <ctype.h>
 int isblank( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wctype.h>
 int iswblank( wint_t c );
@@ -13,7 +13,7 @@ int iswblank( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for the following blank characters:
 .begpoint $compact $setptnt 12
 .termhd1 Constant
@@ -28,14 +28,14 @@ horizontal tab
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero character when the argument is
 one of the indicated blank characters.
 .if &'length(&wfunc.) ne 0 .do begin

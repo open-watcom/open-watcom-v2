@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 long long int atoll( const char *ptr );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 long long int _wtoll( const wchar_t *ptr );
 .ixfunc2 '&Conversion' &wfunc
@@ -11,7 +11,7 @@ long long int _wtoll( const wchar_t *ptr );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the string pointed to by
 .arg ptr
 to
@@ -22,14 +22,14 @@ representation.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it
 accepts a wide-character string argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the converted value.
 .return end
 .see begin

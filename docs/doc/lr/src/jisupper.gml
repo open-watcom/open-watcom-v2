@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jisupper( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is an uppercase double-byte character.
@@ -19,7 +19,7 @@ These are double-byte codes for the characters 'A' to 'Z'.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not an uppercase double-byte
 character;
 otherwise, a non-zero value is returned.

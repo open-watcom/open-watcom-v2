@@ -10,7 +10,7 @@ integer*2 cursor
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the attribute, or shape, of the cursor in text modes.
 :CMT.The cursor shape is set using the BIOS Set Cursor Size function.
 The argument
@@ -45,7 +45,7 @@ Cursor          Shape
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the previous cursor shape when the shape
 is set successfully; otherwise, (-1) is returned.
 .return end

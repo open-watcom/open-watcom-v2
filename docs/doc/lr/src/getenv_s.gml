@@ -30,14 +30,14 @@ is not null) is set to zero, and the environment list is not searched.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function searches the environment list for an entry matching
 the string pointed to by
 .arg name
 .ct .li .
 .np
 If that entry is found,
-.id &func.
+.id &funcb.
 performs the following actions. If
 .arg len
 is not a null pointer, the length of the string associated with the matched
@@ -51,7 +51,7 @@ If the length of the associated string is less than
 .ct .li .
 .np
 If that entry is not found,
-.id &func.
+.id &funcb.
 performs the following actions. If
 .arg len
 is not a null pointer, zero is stored in the integer pointed to by
@@ -143,7 +143,7 @@ assignments:
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the environment string specified by
 .arg name
 was found and successfully stored in the buffer pointed to by

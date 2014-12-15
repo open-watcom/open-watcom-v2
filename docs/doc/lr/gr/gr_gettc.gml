@@ -9,7 +9,7 @@ integer*2 function _gettextcolor()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the pixel value of the current text color.
 This is the color used for displaying text with the
 .kw _outtext
@@ -22,7 +22,7 @@ The default text color value is set to 7 whenever a new video mode is selected.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the pixel value of the current text color.
 .return end
 .see begin

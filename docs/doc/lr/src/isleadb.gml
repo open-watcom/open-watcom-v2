@@ -2,11 +2,11 @@
 .synop begin
 #include <ctype.h>
 int isleadbyte( int ch );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 is a valid first byte of a multibyte character in the current code
@@ -17,7 +17,7 @@ range 0x81 through 0x9F or 0xE0 through 0xFC.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 valid lead byte.
 Otherwise, zero is returned.

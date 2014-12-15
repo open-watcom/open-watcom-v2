@@ -14,11 +14,11 @@ struct com_t
   unsigned size;     /* Buffer size to receive         */
   void _far *buffer; /* Pointer to receive buffer      */
 };
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function provides serial communications services to the
 serial port specified by
 .arg port
@@ -96,7 +96,7 @@ The returned controller information is described below.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if no error occurred, non-zero if an
 error occurred.
 When the

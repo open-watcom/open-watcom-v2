@@ -10,7 +10,7 @@ integer*2 style
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current line-style mask to the value of the
 .arg style
 argument.
@@ -23,7 +23,7 @@ The default line style mask is
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

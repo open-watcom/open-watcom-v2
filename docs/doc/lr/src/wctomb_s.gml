@@ -9,8 +9,8 @@ errno_t wctomb_s( int * restrict status,
                   char * restrict s,
                   rsize_t smax,
                   wchar_t wc);
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 errno_t _fwctomb_s( int __far * restrict status,
                   char __far * restrict s,
@@ -47,7 +47,7 @@ is a null pointer, then
 shall equal zero.
 .np
 If there is a runtime-constraint violation,
-.id &func.
+.id &funcb.
 does not modify
 the int pointed to by
 .arg status
@@ -63,7 +63,7 @@ will be accessed.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines
 .arg n
 and stores the multibyte character representation
@@ -86,13 +86,13 @@ sequence needed to restore the initial shift state, and the function is
 left in the initial conversion state.
 .np
 The implementation shall behave as if no library function calls the
-.id &func.
+.id &funcb.
 function.
 .np
 If
 .arg s
 is a null pointer,the
-.id &func.
+.id &funcb.
 function stores into the int pointed to by
 .arg status
 a nonzero or zero value, if multibyte character encodings, respectively,
@@ -101,7 +101,7 @@ do or do not have state-dependent encodings.
 If
 .arg s
 is not a null pointer,the
-.id &func.
+.id &funcb.
 function stores into the int pointed to by
 .arg status
 either

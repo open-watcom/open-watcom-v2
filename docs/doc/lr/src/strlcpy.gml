@@ -4,8 +4,8 @@
 size_t strlcpy( char *dst,
                 const char *src,
                 size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Copy' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 size_t wcslcpy( wchar_t *dst,
                 const wchar_t *src,
@@ -17,7 +17,7 @@ size_t wcslcpy( wchar_t *dst,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies no more than
 .arg n
 characters from the string pointed to by
@@ -41,7 +41,7 @@ characters, then only
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters in the
 .arg src
 string, not including the terminating null character.

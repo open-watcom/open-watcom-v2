@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int write( int &fd, void *buffer, unsigned len );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _write( int &fd, void *buffer, unsigned len );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _write( int &fd, void *buffer, unsigned len );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes data at the operating system level.
 The number of bytes transmitted is given by
 .arg len
@@ -21,7 +21,7 @@ and the data to be transmitted is located at the address specified by
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -71,7 +71,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of bytes
 (does not include any extra carriage-return characters transmitted)
 of data transmitted to the file.

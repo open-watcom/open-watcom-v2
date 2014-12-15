@@ -11,7 +11,7 @@ void FreeHugeAlias16( DWORD fp16, DWORD size );
 .do end
 .synop end
 .desc begin
-&func frees a 16-bit far pointer alias that was allocated with
+&funcb frees a 16-bit far pointer alias that was allocated with
 .kw AllocHugeAlias16
 .ct .li .
 The size of the original 32-bit memory object must be specified.
@@ -23,10 +23,10 @@ limited space in the local descriptor table).
 .desc end
 .return begin
 .if '&lang' eq 'FORTRAN 77' .do begin
-&func is a subroutine.
+&funcb is a subroutine.
 .do end
 .el .do begin
-The &func function returns nothing.
+The &funcb function returns nothing.
 .do end
 .return end
 .see begin

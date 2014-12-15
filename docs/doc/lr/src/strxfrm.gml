@@ -4,8 +4,8 @@
 size_t strxfrm( char *dst,
                 const char *src,
                 size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 size_t wcsxfrm( wchar_t *dst,
@@ -18,7 +18,7 @@ size_t wcsxfrm( wchar_t *dst,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function transforms, for no more than
 .arg n
 characters, the string pointed to by
@@ -57,13 +57,13 @@ call to
 applied to the original two strings.
 .id &wfunc.
 and
-.id &func.
+.id &funcb.
 behave identically otherwise.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the length of the transformed string.
 If this length is more than
 .arg n

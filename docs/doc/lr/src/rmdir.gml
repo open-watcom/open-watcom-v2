@@ -8,7 +8,7 @@
 #include <direct.h>
 .do end
 int rmdir( const char *path );
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _rmdir( const char *path );
 .ixfunc2 '&Direct' &_func
@@ -22,7 +22,7 @@ int _wrmdir( const wchar_t *path );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function removes (deletes) the specified directory.
 The directory must not contain any files or directories.
 The
@@ -40,13 +40,13 @@ directory open, the space occupied by the directory is freed and the
 directory is no longer accessible.
 If one or more processes have the directory open when the last link
 is removed, the dot and dot-dot entries, if present, are removed before
-.id &func.
+.id &funcb.
 returns and no new entries may be created in the directory, but
 the directory is not removed until all references to the directory
 have been closed.
 .pp
 Upon successful completion, the
-.id &func.
+.id &funcb.
 function will mark for update
 the
 .us st_ctime
@@ -58,7 +58,7 @@ fields of the parent directory.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -68,7 +68,7 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument.
 .do end
@@ -76,7 +76,7 @@ wide-character string argument.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful and -1 otherwise.
 .return end
 .*

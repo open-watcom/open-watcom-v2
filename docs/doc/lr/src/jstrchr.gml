@@ -2,8 +2,8 @@
 .synop begin
 #include <jstring.h>
 JSTRING jstrchr( const JCHAR *s, JMOJI c );
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Jsearch' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jsearch' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjstrchr( const JCHAR __far *s, JMOJI c );
 .ixfunc2 '&Jstring' &ffunc
@@ -13,12 +13,12 @@ FJSTRING __far _fjstrchr( const JCHAR __far *s, JMOJI c );
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function locates
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions locate
@@ -34,12 +34,12 @@ The terminating null character is considered to be part of the string.
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

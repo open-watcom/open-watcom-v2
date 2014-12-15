@@ -2,14 +2,14 @@
 .synop begin
 #include <math.h>
 double atan( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Hyper' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
+.ixfunc2 '&Trig' &funcb
+.ixfunc2 '&Hyper' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the principal value of the
 arctangent of
 .arg x
@@ -17,7 +17,7 @@ arctangent of
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the arctangent in the range (&minus.&pi./2,&pi./2).
 .return end
 .see begin

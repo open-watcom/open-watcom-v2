@@ -9,11 +9,11 @@ struct dosdate_t {
         unsigned short year;    /* 1980-2099 */
         unsigned char dayofweek;/* 0-6 (0=Sunday) */
 };
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x2A to get the current system date.
 The date information is returned in a
 .kw dosdate_t
@@ -23,7 +23,7 @@ structure pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 .return end
 .see begin

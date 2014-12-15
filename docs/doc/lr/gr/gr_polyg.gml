@@ -29,10 +29,10 @@ record /_wxycoord/ points(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines draw polygons.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.

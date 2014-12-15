@@ -11,7 +11,7 @@ record /videoconfig/ config
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns information about the current video mode
 and the hardware configuration.
 The information is returned in the
@@ -92,17 +92,17 @@ analog color
 .keep end
 .pp
 The amount of memory reported by
-.id &func.
+.id &funcb.
 will not always
 be correct for SuperVGA adapters.
 Since it is not always possible to determine the amount of memory,
-.id &func.
+.id &funcb.
 will always report 256K, the minimum amount.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns information about the current video mode
 and the hardware configuration.
 .return end

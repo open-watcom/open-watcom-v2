@@ -3,11 +3,11 @@
 #include <conio.h>
 unsigned long outpd( int port,
                     unsigned long value );
-.ixfunc2 '&PortIo' &func
+.ixfunc2 '&PortIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes a double-word (four bytes), determined by
 .arg value
 .ct , to the 80x86 hardware port whose number is given by

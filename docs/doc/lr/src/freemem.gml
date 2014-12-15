@@ -8,11 +8,11 @@ unsigned _dos_freemem( void *   segment );
 #else
 unsigned _dos_freemem( unsigned segment );
 #endif
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x49 to release memory that was
 previously allocated by
 .kw _dos_allocmem
@@ -28,7 +28,7 @@ DPMI services be used.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

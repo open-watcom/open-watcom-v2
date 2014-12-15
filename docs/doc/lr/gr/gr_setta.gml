@@ -10,7 +10,7 @@ integer*2 horiz, vert
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current text alignment to the values
 specified by the arguments
 .arg horiz
@@ -73,7 +73,7 @@ alignment is used.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

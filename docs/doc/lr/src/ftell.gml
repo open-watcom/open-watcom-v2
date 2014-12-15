@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 long int ftell( FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the current read/write position
 of the file specified by
 .arg fp
@@ -14,14 +14,14 @@ of the file specified by
 This position defines the character that will be read or written by the
 next I/O operation on the file.
 The value returned by
-.id &func.
+.id &funcb.
 can be used in a subsequent call to
 .kw fseek
 to set the file to the same position.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the current read/write position
 of the file specified by
 .arg fp

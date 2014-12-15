@@ -13,7 +13,7 @@ integer*2 row2, col2
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the location of the current text window.
 A text window is defined with the
 .kw _settextwindow
@@ -30,7 +30,7 @@ The bottom right corner of the text window is placed in
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the location of the current text window.
 .return end
 .do end

@@ -2,7 +2,7 @@
 .synop begin
 #include <time.h>
 char *_strtime( char *timestr )
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t _wstrtime( wchar_t *timestr );
 .ixfunc2 '&Conversion' &wfunc
@@ -11,7 +11,7 @@ wchar_t _wstrtime( wchar_t *timestr );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies the current time to the buffer pointed to by
 .arg timestr
 .ct .li .
@@ -24,7 +24,7 @@ The buffer must be at least 9 bytes long.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the resulting text string
 .arg timestr
 .ct .li .

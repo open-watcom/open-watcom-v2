@@ -7,11 +7,11 @@ void *lfind( const void *key, /* object to search for  */
              unsigned width,  /* width of each element */
              int (*compare)( const void *element1,
                              const void *element2 ) );
-.ixfunc2 '&Search' &func
+.ixfunc2 '&Search' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function performs a linear search for the value
 .arg key
 in the array of
@@ -24,7 +24,7 @@ Each element of the array is
 bytes in size.
 The argument
 .arg compare
-is a pointer to a user-supplied routine that will be called by &func
+is a pointer to a user-supplied routine that will be called by &funcb
 to determine the relationship of an array element with the
 .arg key
 .ct .li .
@@ -44,7 +44,7 @@ and non-zero if the elements are not identical.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the array element in
 .arg base
 that matches

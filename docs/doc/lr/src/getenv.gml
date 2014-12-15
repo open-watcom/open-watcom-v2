@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 char *getenv( const char *name );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wgetenv( const wchar_t *name );
 .ixfunc2 '&Process' &wfunc
@@ -14,7 +14,7 @@ wchar_t *_wgetenv( const wchar_t *name );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function searches the environment list for an entry matching
 the string pointed to by
 .arg name
@@ -99,7 +99,7 @@ assignments:
 .np
 .id &wfunc.
 is a wide-character version of
-.id &func.
+.id &funcb.
 the argument and return
 value of
 .id &wfunc.
@@ -128,7 +128,7 @@ are wide-character strings.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the string assigned to the
 environment variable if found, and NULL if no match was found.
 Note: the value returned should be duplicated if you intend to

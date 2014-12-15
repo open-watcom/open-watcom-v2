@@ -2,17 +2,17 @@
 .synop begin
 #include <bios.h>
 unsigned short _bios_memsize( void );
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the total amount of real-mode memory
 available.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the total amount of 1K blocks of memory
 installed (maximum 640).
 .return end

@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 size_t mtob( const unsigned char *str, size_t nm );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .if &farfnc eq 1 .do begin
 size_t far _fmtob( const unsigned char far *str, size_t nm );
 .ixfunc2 '&Jstring' &ffunc
@@ -11,12 +11,12 @@ size_t far _fmtob( const unsigned char far *str, size_t nm );
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return
@@ -37,12 +37,12 @@ characters have been processed or a null character is encountered.
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

@@ -10,7 +10,7 @@ integer*2 pixval
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the pixel value for the
 current color to be that indicated by the
 .arg pixval
@@ -28,7 +28,7 @@ in the current video mode.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the previous value of the
 current color.
 .return end

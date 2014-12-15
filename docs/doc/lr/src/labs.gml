@@ -6,7 +6,7 @@ long int labs( long int j );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value
 of its long-integer argument
 .arg j
@@ -15,7 +15,7 @@ of its long-integer argument
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value of its argument.
 .return end
 .*

@@ -2,12 +2,12 @@
 .synop begin
 #include <wchar.h>
 int wctob( wint_t wc );
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines whether
 .arg wc
 corresponds to a member of the extended character set whose multibyte
@@ -16,7 +16,7 @@ state.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .mono EOF
 if

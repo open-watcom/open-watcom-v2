@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 int fileno( FILE *stream );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the number of the file &handle for the file
 designated by
 .arg stream
@@ -77,7 +77,7 @@ Standard printer file number,
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of the file &handle for the file
 designated by
 .arg stream

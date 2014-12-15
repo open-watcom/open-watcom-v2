@@ -15,10 +15,10 @@ double precision x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines set the current output position for graphics.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.
@@ -41,7 +41,7 @@ The output position for text output can be set by use of the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return the previous value of the
 output position for graphics.
 .return end

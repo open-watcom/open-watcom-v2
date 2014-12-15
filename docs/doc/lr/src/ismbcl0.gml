@@ -5,7 +5,7 @@ int _ismbcl0( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 is in the set of double-byte characters that include Hiragana,
@@ -18,7 +18,7 @@ These are any characters for which the following expression is true:
 .millust end
 .np
 The
-.id &func.
+.id &funcb.
 function tests if the argument is a valid double-byte
 character (i.e., it checks that the lower byte is not in the ranges
 0x00 - 0x3F, 0x7F, or 0xFD - 0xFF).
@@ -34,7 +34,7 @@ includes 86 characters.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end

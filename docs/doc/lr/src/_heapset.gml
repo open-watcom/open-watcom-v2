@@ -21,7 +21,7 @@ int _nheapset( unsigned char fill_char );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions along with
 .kw _heapchk
 and
@@ -29,7 +29,7 @@ and
 are provided for debugging heap related problems in programs.
 .np
 The
-.id &func.
+.id &funcb.
 functions perform a consistency check on the unallocated
 memory space or "heap" just as
 .kw _heapchk
@@ -56,11 +56,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _nheapset
 function; in a large data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _fheapset
@@ -68,7 +68,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return one of the following manifest constants
 which are defined in
 .mono <malloc.h>.

@@ -8,12 +8,12 @@ unsigned int sleep( unsigned int seconds );
 #include <&doshdr>
 unsigned sleep( unsigned seconds );
 .do end
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The
-.id &func.
+.id &funcb.
 function suspends the calling process until the number of
 real time seconds specified by the
 .arg seconds
@@ -24,7 +24,7 @@ the scheduling of other, higher priority activity by the system.
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 function suspends execution by the specified number of
 .arg seconds
 .ct .li .
@@ -33,7 +33,7 @@ function suspends execution by the specified number of
 .return begin
 .if '&machsys' eq 'QNX' .do begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the full time specified was
 completed; otherwise it returns the number of seconds unslept if
 interrupted by a signal.
@@ -43,7 +43,7 @@ will be set.
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 function always returns zero.
 .do end
 .return end

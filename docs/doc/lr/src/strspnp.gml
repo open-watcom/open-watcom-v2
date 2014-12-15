@@ -3,8 +3,8 @@
 #include <string.h>
 char *strspnp( const char *str,
                const char *charset );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Search' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Search' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_strspnp( const char *str,
                 const char *charset );
@@ -44,7 +44,7 @@ unsigned char __far *_fmbsspnp(
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the first character in
 .arg str
 that does not belong to the set of characters in
@@ -57,7 +57,7 @@ The terminating null character is not considered to be part of
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -68,7 +68,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .mono NULL
 if

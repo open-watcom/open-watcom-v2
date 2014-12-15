@@ -2,11 +2,11 @@
 .synop begin
 #include <stdlib.h>
 void swab( char *src, char *dest, int num );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies
 .arg num
 bytes (which should be even) from
@@ -19,7 +19,7 @@ machine that has a different byte ordering.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 .return end
 .exmp begin

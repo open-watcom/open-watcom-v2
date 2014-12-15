@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int eof( int &fd );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _eof( int &fd );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _eof( int &fd );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines, at the operating system level, if the
 end of the file has been reached for the file whose file &handle is
 given by
@@ -18,14 +18,14 @@ given by
 .ct .li .
 Because the current file position is set following an input operation,
 the
-.id &func.
+.id &funcb.
 function may be called to detect the end of the file before
 an input operation beyond the end of the file is attempted.
 .if &'length(&_func.) ne 0 .do begin
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -33,7 +33,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 1 if the current file position is at the
 end of the file, 0 if the current file position is not at the end.
 A return value of &minus.1 indicates an error, and in this case

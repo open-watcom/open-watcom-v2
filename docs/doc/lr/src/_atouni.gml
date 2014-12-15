@@ -5,7 +5,7 @@ wchar_t *_atouni( wchar_t *wcs, const char *sbcs );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the string pointed to by
 .arg sbcs
 to a wide-character string and places it in the buffer
@@ -17,7 +17,7 @@ The conversion ends at the first null character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the first argument as a result.
 .return end
 .see begin

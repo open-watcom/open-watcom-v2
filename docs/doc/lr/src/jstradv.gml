@@ -2,8 +2,8 @@
 .synop begin
 #include <jstring.h>
 JSTRING jstradv( const JCHAR *src, size_t n );
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Jconcat' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jconcat' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjstradv( const JCHAR __far *src,
                           size_t n );
@@ -14,12 +14,12 @@ FJSTRING __far _fjstradv( const JCHAR __far *src,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function skips
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions skip

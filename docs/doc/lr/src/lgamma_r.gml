@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double lgamma_r( double x, int *y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the natural logarithm of the
 absolute value of the Gamma function of 
 .arg x

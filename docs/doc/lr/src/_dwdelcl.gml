@@ -5,7 +5,7 @@ int _dwDeleteOnClose( int handle );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tells the console window that it should close
 itself when the corresponding file is closed.
 The argument
@@ -13,13 +13,13 @@ The argument
 is the handle associated with the opened console.
 .np
 The
-.id &func.
+.id &funcb.
 function is one of the support functions that can be called
 from an application using &company's default windowing support.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 1 if it was successful and 0 if not.
 .return end
 .see begin

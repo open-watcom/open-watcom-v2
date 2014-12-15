@@ -4,7 +4,7 @@
 unsigned char *_mbsnbset( unsigned char *str,
                           unsigned int fill,
                           size_t count );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &farfnc eq 1 .do begin
 unsigned char __far *_fmbsnbset( unsigned char __far *str,
                                  unsigned int fill,
@@ -14,7 +14,7 @@ unsigned char __far *_fmbsnbset( unsigned char __far *str,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function fills the string
 .arg str
 with the value of the argument
@@ -26,7 +26,7 @@ is greater than the length of the string, the entire string is filled.
 Otherwise, that number of characters at the start of the string are set
 to the fill character.
 .np
-.id &func.
+.id &funcb.
 is similar to
 .kw _mbsnset
 .ct , except that it fills in

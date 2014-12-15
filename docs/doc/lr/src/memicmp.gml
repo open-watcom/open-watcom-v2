@@ -4,7 +4,7 @@
 int memicmp( const void *s1,
              const void *s2,
              size_t length );
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&Compare' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _memicmp( const void *s1,
               const void *s2,
@@ -20,7 +20,7 @@ int _fmemicmp( const void __far *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares, with case insensitivity (upper- and
 lowercase characters are equivalent), the first
 .arg length
@@ -34,7 +34,7 @@ to the object pointed to by
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -42,7 +42,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the object pointed to by
 .arg s1

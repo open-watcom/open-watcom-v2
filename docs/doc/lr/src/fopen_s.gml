@@ -8,7 +8,7 @@
 errno_t fopen_s( FILE * restrict * restrict streamptr,
                  const char * restrict filename,
                  const char * restrict mode);
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 errno_t _wfopen_s( FILE * restrict * restrict streamptr,
                    const wchar_t * restrict filename,
@@ -27,12 +27,12 @@ None of
 .arg mode
 shall be a null pointer.
 If there is a runtime-constraint violation,
-.id &func.
+.id &funcb.
 does not attempt to open a file.
 Furthermore, if
 .arg streamptr
 is not a null pointer,
-.id &func.
+.id &funcb.
 sets
 .arg *streamptr
 to the null pointer.
@@ -40,7 +40,7 @@ to the null pointer.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function opens the file whose name is the string pointed to by
 .arg filename
 .ct , and associates a stream with it.
@@ -165,12 +165,12 @@ link your program with
 This option is not supported under Netware.
 .endnote
 .np
-The "t", "c", and "n" mode options are extensions for &func
+The "t", "c", and "n" mode options are extensions for &funcb
 and should not be used where ANSI portability is desired.
 .do end
 .el .do begin
 .np
-The "t" mode option is an extension for &func
+The "t" mode option is an extension for &funcb
 and should not be used where ANSI portability is desired.
 .do end
 .np
@@ -215,7 +215,7 @@ resulted in end-of-file.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it
 accepts wide-character string arguments for
 .arg filename
@@ -226,10 +226,10 @@ and
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if it opened the file. If it did not open the file or if
 there was a runtime-constraint violation,
-.id &func.
+.id &funcb.
 returns a non-zero value.
 .return end
 .see begin

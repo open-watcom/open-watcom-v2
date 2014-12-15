@@ -3,7 +3,7 @@
 #include <string.h>
 void *memccpy( void *dest, const void *src,
                int c, size_t cnt );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &farfnc eq 1 .do begin
 void __far *_fmemccpy( void __far *dest,
                        const void __far *src,
@@ -13,7 +13,7 @@ void __far *_fmemccpy( void __far *dest,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies bytes from
 .arg src
 to
@@ -27,7 +27,7 @@ bytes have been copied, whichever comes first.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the byte in
 .arg dest
 following the character

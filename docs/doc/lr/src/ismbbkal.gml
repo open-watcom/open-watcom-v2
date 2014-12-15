@@ -5,13 +5,13 @@ int _ismbbkalnum( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 is a non-ASCII text symbol other than punctuation.
 .np
 For example, in code page 932,
-.id &func.
+.id &funcb.
 tests for a single-byte Katakana
 character (excluding the Katakana punctuation characters).
 Note that there are no Katakana digit characters.
@@ -32,7 +32,7 @@ This is shown by the example below.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end

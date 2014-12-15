@@ -6,7 +6,7 @@ errno_t memmove_s( void * restrict s1,
                    rsize_t s1max,
                    const void * restrict s2,
                    rsize_t n );
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&Copy' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t wmemmove_s( wchar_t * restrict s1,
@@ -35,7 +35,7 @@ shall not be greater than
 .ct .li .
 .np
 If there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function stores zeros in the first
 .arg s1max
 characters of the object pointed to by
@@ -52,7 +52,7 @@ not greater than
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies
 .arg n
 characters from the buffer pointed to by
@@ -85,7 +85,7 @@ function if you wish to copy objects that do not overlap.
 The
 .id &wfunc.
 wide-character function is identical to
-.id &func.
+.id &funcb.
 except that it
 operates on characters of
 .arg wchar_t

@@ -6,11 +6,11 @@ void movedata( unsigned int src_segment,
                unsigned int tgt_segment,
                unsigned int tgt_offset,
                size_t length );
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&Copy' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies
 .arg length
 bytes from the far pointer calculated as

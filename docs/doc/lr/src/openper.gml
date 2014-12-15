@@ -12,7 +12,7 @@ when read permission is intended for the file.
 .do end
 .np
 The
-.id &func.
+.id &funcb.
 function applies the current file permission mask
 to the specified permissions (see
 .kw umask

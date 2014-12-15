@@ -13,7 +13,7 @@ void *bsearch( const void *key,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function performs a binary search of a sorted array of
 .arg num
 elements, which is pointed to by
@@ -43,7 +43,7 @@ or greater than the element in the array.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the matching member
 of the array, or
 .mono NULL

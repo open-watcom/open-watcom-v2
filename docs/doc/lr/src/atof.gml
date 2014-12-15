@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 double atof( const char *ptr );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 double _wtof( const wchar_t *ptr );
 .ixfunc2 '&Conversion' &wfunc
@@ -11,7 +11,7 @@ double _wtof( const wchar_t *ptr );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the string pointed to by
 .arg ptr
 to
@@ -26,7 +26,7 @@ strtod( ptr, (char **)NULL )
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it
 accepts a wide-character string argument.
 It is equivalent to
@@ -37,7 +37,7 @@ wcstod( ptr, (wchar_t **)NULL )
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the converted value.
 .im errnocnv
 .return end

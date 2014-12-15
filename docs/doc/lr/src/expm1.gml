@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double expm1( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the value of the exponential of
 .arg x
 minus 1.  This routine provides far better accuracy for

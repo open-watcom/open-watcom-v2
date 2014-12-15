@@ -3,7 +3,7 @@
 .funcw iswlower
 #include <ctype.h>
 int islower( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wctype.h>
 int iswlower( wint_t c );
@@ -13,21 +13,21 @@ int iswlower( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for any lowercase letter 'a' through 'z'.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when argument is a lowercase
 letter.
 .if &'length(&wfunc.) ne 0 .do begin

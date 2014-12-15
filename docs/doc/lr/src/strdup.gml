@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 char *strdup( const char *src );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Copy' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_strdup( const char *src );
 .ixfunc2 '&String' &_func
@@ -37,7 +37,7 @@ unsigned char __far *_fmbsdup( unsigned char __far *src );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates a duplicate copy of the string pointed to
 by
 .arg src
@@ -52,7 +52,7 @@ function.
 .do end
 .el .do begin
 For
-.id &func.
+.id &funcb.
 the memory for the new string is obtained by using the
 .kw malloc
 function and can be freed using the
@@ -68,7 +68,7 @@ function.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -79,7 +79,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the pointer to the new copy of the string
 if successful, otherwise it
 returns

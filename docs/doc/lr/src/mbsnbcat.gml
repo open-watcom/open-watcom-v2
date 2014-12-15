@@ -4,8 +4,8 @@
 unsigned char *_mbsnbcat( unsigned char *dst,
                     const unsigned char *src,
                                  size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Concats' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Concats' &funcb
 .if &farfnc eq 1 .do begin
 unsigned char __far *_fmbsnbcat( unsigned char __far *dst,
                            const unsigned char __far *src,
@@ -16,7 +16,7 @@ unsigned char __far *_fmbsnbcat( unsigned char __far *dst,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function appends not more than
 .arg n
 bytes of the string pointed to by
@@ -46,7 +46,7 @@ result.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of
 .arg dst
 .ct .li .

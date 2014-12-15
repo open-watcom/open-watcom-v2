@@ -10,7 +10,7 @@ integer*2 path
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current text path to have the value of the
 .arg path
 argument.
@@ -36,7 +36,7 @@ The default value of the text path is
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

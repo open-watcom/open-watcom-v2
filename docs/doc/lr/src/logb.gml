@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double logb( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the exponent portion of the argument
 .arg x
 as a double.

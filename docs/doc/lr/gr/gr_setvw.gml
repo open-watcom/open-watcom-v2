@@ -12,7 +12,7 @@ integer*2 x2, y2
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine restricts the display of graphics output to the
 clipping region and then sets the origin of the view coordinate system
 to be the top left corner of the region.
@@ -23,7 +23,7 @@ and
 .coord x2 y2 .
 .pp
 The
-.id &func.
+.id &funcb.
 &routine does not affect text output using the
 .kw _outtext
 and
@@ -36,7 +36,7 @@ To control the location of text output, see the
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

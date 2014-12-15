@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jiskigou( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a double-byte Kigou character (punctuation and other special
@@ -19,7 +19,7 @@ expression is true:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not a double-byte Kigou
 character;
 otherwise, a non-zero value is returned.

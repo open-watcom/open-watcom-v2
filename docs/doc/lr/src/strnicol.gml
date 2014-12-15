@@ -4,8 +4,8 @@
 int _strnicoll( const char *s1,
                 const char *s2,
                 size_t count );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int _wcsnicoll( const wchar_t *s1,

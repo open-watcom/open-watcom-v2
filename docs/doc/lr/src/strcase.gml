@@ -2,12 +2,12 @@
 .synop begin
 #include <strings.h>
 int strcasecmp( const char *s1, const char *s2 );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares, with case insensitivity, the string
 pointed to by
 .arg s1
@@ -21,14 +21,14 @@ and
 are mapped to lowercase for the purposes of doing the comparison.
 .np
 The
-.id &func.
+.id &funcb.
 function is identical to the
 .kw stricmp
 function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1

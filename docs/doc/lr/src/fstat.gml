@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 int fstat( int &fd, struct stat *buf );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _fstat( int &fd, struct stat *buf );
 .ixfunc2 '&OsIo' &_func
@@ -19,7 +19,7 @@ int _wfstati64( int handle, struct _stati64 *buf );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions obtain information about an open file whose file
 &handle is
 .arg &fd
@@ -33,7 +33,7 @@ indicated by
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -45,7 +45,7 @@ The
 .ct , and
 .kw _wfstati64
 functions differ from
-.id &func.
+.id &funcb.
 in the type of structure that they are
 asked to fill in.
 The

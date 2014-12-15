@@ -5,11 +5,11 @@ size_t fwrite( const void *buf,
                size_t elsize,
                size_t nelem,
                FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes
 .arg nelem
 elements of
@@ -20,7 +20,7 @@ bytes each to the file specified by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of complete elements
 successfully written.
 This value will be less than the requested number of elements only if

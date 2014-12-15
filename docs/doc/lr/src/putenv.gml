@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 int putenv( const char *env_name );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _putenv( const char *env_name );
 .ixfunc2 '&Process' &_func
@@ -25,7 +25,7 @@ Entries can be added to the environment list with the
 .doscmd set
 .do end
 or with the
-.id &func.
+.id &funcb.
 function.
 All entries in the environment list can be displayed by using the
 .if '&machsys' eq 'QNX' .do begin
@@ -69,13 +69,13 @@ as if they were in upper case.
 The space into which environment names and their values are placed
 is limited.
 Consequently, the
-.id &func.
+.id &funcb.
 function can fail when there is insufficient
 space remaining to store an additional value.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI naming conventions.
@@ -84,14 +84,14 @@ for ANSI naming conventions.
 The
 .id &wfunc.
 function is a wide-character version of
-.id &func.
+.id &funcb.
 the
 .arg env_name
 argument to
 .id &wfunc.
 is a wide-character string.
 .np
-.id &func.
+.id &funcb.
 and
 .id &wfunc.
 affect only the environment that is local to the
@@ -104,17 +104,17 @@ the calling process (in most cases, the operating-system level).
 However, the modified environment can be passed to any new processes
 created by _spawn, _exec, or system, and these new processes get any
 new items added by
-.id &func.
+.id &funcb.
 and &wfunc..
 .np
 With regard to environment entries, observe the following cautions:
 .begbull
 .bull
-Do not change an environment entry directly; instead, use &func
+Do not change an environment entry directly; instead, use &funcb
 or
 .id &wfunc.
 to change it. To modify the return value of
-.id &func.
+.id &funcb.
 or
 .id &wfunc.
 without affecting the environment table, use
@@ -125,7 +125,7 @@ to make a copy of the string.
 .bull
 If the argument
 .arg env_name
-is not a literal string, you should duplicate the string, since &func
+is not a literal string, you should duplicate the string, since &funcb
 does not copy the value; for example,
 .millust begin
     putenv( _strdup( buffer ) );
@@ -134,7 +134,7 @@ does not copy the value; for example,
 Never free a pointer to an environment entry, because the environment
 variable will then point to freed space. A similar problem
 can occur if you pass
-.id &func.
+.id &funcb.
 or
 .id &wfunc.
 a pointer to a local
@@ -142,12 +142,12 @@ variable, then exit the function in which the variable is declared.
 .endbull
 :CMT. .np
 :CMT. getenv and
-.id &func.
+.id &funcb.
 use the global variable _environ to access the
 :CMT. environment table; _wgetenv and
 .id &wfunc.
 use _wenviron.
-.id &func.
+.id &funcb.
 and
 :CMT.
 .id &wfunc.
@@ -156,7 +156,7 @@ may change the value of _environ and _wenviron, thus
 :CMT. Therefore, it is safer to use _environ or _wenviron to access the
 :CMT. environment information. For more information about the relation of
 :CMT.
-.id &func.
+.id &funcb.
 and
 .id &wfunc.
 to global variables, see _environ, _wenviron.
@@ -198,7 +198,7 @@ assignments:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero when it is successfully executed and
 returns &minus.1 when it fails.
 .return end

@@ -4,7 +4,7 @@
 size_t mbsrtowcs( wchar_t *dst,
                const char **src,
                size_t len, mbstate_t *ps );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 #include <mbstring.h>
 size_t _fmbsrtowcs( wchar_t __far *dst,
@@ -18,7 +18,7 @@ size_t _fmbsrtowcs( wchar_t __far *dst,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts a sequence of multibyte characters
 that begins in the shift state described by
 .arg ps
@@ -63,7 +63,7 @@ initial conversion state.
 .return begin
 If the input string does not begin with a valid multibyte character, an
 encoding error occurs: The
-.id &func.
+.id &funcb.
 function stores the value of the macro
 .kw EILSEQ
 in

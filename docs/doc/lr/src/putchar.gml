@@ -3,7 +3,7 @@
 .funcw putwchar
 #include <stdio.h>
 int putchar( int c );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 wint_t putwchar( wint_t c );
@@ -13,7 +13,7 @@ wint_t putwchar( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes the character specified by the argument
 .arg c
 to the output stream
@@ -29,7 +29,7 @@ fputc( c, stdout );
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it converts the
 wide character specified by
 .arg c
@@ -38,10 +38,10 @@ to a multibyte character and writes it to the output stream.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the character written or, if a write error
 occurs, the error indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .

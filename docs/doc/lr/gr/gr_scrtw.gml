@@ -10,7 +10,7 @@ integer*2 rows
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine scrolls the lines in the current text window.
 A text window is defined with the
 .kw _settextwindow
@@ -30,7 +30,7 @@ is equivalent to clearing the text window with the
 &routine..
 .np
 Two constants are defined that can be used with the
-.id &func.
+.id &funcb.
 &routine:
 .begterm 15
 .uterm GSCROLLUP
@@ -44,7 +44,7 @@ screen) by one row
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

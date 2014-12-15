@@ -8,7 +8,7 @@ unsigned char far *_fmbputchar( unsigned char far *mbstr,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function places the next single- or double-byte character
 specified by
 .arg dbch
@@ -19,7 +19,7 @@ at the start of the buffer specified by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the next location in which to
 store a character.
 .return end

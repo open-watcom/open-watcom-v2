@@ -11,7 +11,7 @@ record /textsettings/ settings
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns information about the current text settings
 used when text is displayed by the
 .kw _grtext
@@ -46,7 +46,7 @@ vertical component of the current text alignment
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns information about the current graphics text settings.
 .return end
 .do end

@@ -21,11 +21,11 @@ record /_wxycoord/ p
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines translate a point
 from one coordinate system to viewport coordinates.
 The
-.id &func.
+.id &funcb.
 &routine translates the point
 .coord x y
 from physical coordinates.
@@ -48,7 +48,7 @@ Window coordinates are defined by the
 .np
 .bd Note:
 In previous versions of the software, the
-.id &func.
+.id &funcb.
 &routine was called
 .mono _getlogcoord.
 .uindex getlogcoord
@@ -56,7 +56,7 @@ In previous versions of the software, the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return the viewport coordinates,
 as an
 .id xycoord

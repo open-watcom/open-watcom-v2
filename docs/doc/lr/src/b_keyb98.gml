@@ -3,11 +3,11 @@
 #include <bios.h>
 unsigned short _bios_keybrd( unsigned service,
                              unsigned char *keytable);
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function accesses the BIOS keyboard services.
 The possible values for
 .arg service

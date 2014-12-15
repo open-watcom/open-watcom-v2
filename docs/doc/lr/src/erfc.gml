@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double erfc( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the value of the complementary error 
 function, also known as the Gauss error function, for the argument
 .arg x

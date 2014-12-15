@@ -2,20 +2,20 @@
 .synop begin
 #include <math.h>
 double asinh( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Hyper' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
+.ixfunc2 '&Hyper' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the inverse hyperbolic sine of
 .arg x
 .ct .li .
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the inverse hyperbolic sine value.
 .return end
 .see begin

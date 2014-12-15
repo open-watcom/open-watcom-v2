@@ -2,14 +2,14 @@
 .synop begin
 #include <conio.h>
 int kbhit( void );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _kbhit( void );
 .ixfunc2 '&KbIo' &_func
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests whether or not a keystroke is currently
 available.
 When one is available, the function
@@ -19,12 +19,12 @@ or
 may be used to obtain the keystroke in question.
 .pp
 With a stand-alone program, the
-.id &func.
+.id &funcb.
 function may be called
 continuously until a keystroke is available.
 .if '&machsys' eq 'QNX' .do begin
 Note that loops involving the
-.id &func.
+.id &funcb.
 function are not recommended in
 multitasking systems.
 .do end
@@ -32,14 +32,14 @@ multitasking systems.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin
-The &func
+The &funcb
 function returns zero when no keystroke is available; otherwise, a
 non-zero value is returned.
 .return end

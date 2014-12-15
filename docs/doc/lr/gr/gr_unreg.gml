@@ -9,7 +9,7 @@ subroutine _unregisterfonts()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine frees the memory previously allocated by the
 .kw _registerfonts
 &routine..
@@ -18,13 +18,13 @@ The currently selected font is also unloaded.
 Attempting to use the
 .kw _setfont
 &routine after calling
-.id &func.
+.id &funcb.
 will result in an error.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

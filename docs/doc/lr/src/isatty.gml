@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int isatty( int &fd );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _isatty( int &fd );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _isatty( int &fd );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the opened file or device referenced by
 the file &handle
 .arg &fd
@@ -19,7 +19,7 @@ is a character device (for example, a console, printer or port).
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -27,7 +27,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the device or file is not
 a character device; otherwise, a non-zero value is returned.
 .im errnoref

@@ -3,14 +3,14 @@
 #include <wchar.h>
 int mbsinit( const mbstate_t *ps );
 int sisinit( const mbstate_t *ps );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .synop end
 .*
 .desc begin
 If
 .arg ps
 is not a null pointer, the
-.id &func.
+.id &funcb.
 function determines whether
 the pointed-to
 .kw mbstate_t
@@ -19,7 +19,7 @@ object describes an initial conversion state.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns nonzero if
 .arg ps
 is a null pointer or if the pointed-to object describes an initial

@@ -2,37 +2,37 @@
 .synop begin
 #include <stdlib.h>
 onexit_t onexit( onexit_t func );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
  function is passed the address of function
 .arg func
 to be called when the program terminates normally.
 Successive calls to
-.id &func.
+.id &funcb.
 create a list of functions that will be
 executed on a "last-in, first-out" basis.
 No more than 32 functions can be registered with the
-.id &func.
+.id &funcb.
 function.
 .pp
 The functions have no parameters and do not return values.
 .pp
 NOTE: The
-.id &func.
+.id &funcb.
 function is not an ANSI function.
 The ANSI standard function
 .kw atexit
 does the same thing that
-.id &func.
-does and should be used instead of &func
+.id &funcb.
+does and should be used instead of &funcb
 where ANSI portability is concerned.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg func
 if the registration succeeds,

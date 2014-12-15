@@ -10,7 +10,7 @@ integer*2 action
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current plotting action to the value of the
 .arg action
 argument.

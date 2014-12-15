@@ -2,11 +2,11 @@
 .synop begin
 #include <malloc.h>
 void hfree( void __huge *ptr );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function deallocates a memory block previously allocated by the
 .kw halloc
 function.
@@ -17,7 +17,7 @@ After the call, the freed block is available for allocation.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

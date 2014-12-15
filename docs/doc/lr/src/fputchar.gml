@@ -3,7 +3,7 @@
 .funcw _fputwchar
 #include <stdio.h>
 int fputchar( int c );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _fputchar( int c );
 .ixfunc2 '&StrIo' &_func
@@ -16,7 +16,7 @@ wint_t _fputwchar( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes the character specified by the argument
 .arg c
 to the output stream
@@ -34,7 +34,7 @@ The function is equivalent to:
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI naming conventions.
@@ -44,7 +44,7 @@ for ANSI naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it converts the
 wide character specified by
 .arg c
@@ -53,10 +53,10 @@ to a multibyte character and writes it to the output stream.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the character written or, if a write error
 occurs, the error indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .

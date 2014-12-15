@@ -2,21 +2,21 @@
 .synop begin
 #include <float.h>
 void _fpreset( void );
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&Errs' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function resets the floating-point unit to the default state that
 the math library requires for correct function. After a floating-point
 exception, it may be necessary to call the
-.id &func.
+.id &funcb.
 function before any further
 floating-point operations are attempted.
 .np
 In multi-threaded environments,
-.id &func.
+.id &funcb.
 only affects the current thread.
 .desc end
 .*

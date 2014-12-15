@@ -4,7 +4,7 @@
 long int strtol( const char *ptr,
                  char **endptr,
                  int base );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 long int wcstol( const wchar_t *ptr,
@@ -16,13 +16,13 @@ long int wcstol( const wchar_t *ptr,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the string pointed to by
 .arg ptr
 to an object of type
 .id long int.
 The
-.id &func.
+.id &funcb.
 function recognizes a string containing:
 .begbull $compact
 .bull
@@ -65,7 +65,7 @@ of letters and digits.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the converted value.
 If the correct value would cause overflow,
 .kw LONG_MAX

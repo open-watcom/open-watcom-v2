@@ -5,7 +5,7 @@ int _dwShutDown( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function shuts down the default windowing I/O system.
 The application will continue to execute but no windows will be
 available for output.
@@ -16,13 +16,13 @@ When the application terminates, it will not be necessary to manually
 close the main window.
 .np
 The
-.id &func.
+.id &funcb.
 function is one of the support functions that can be called
 from an application using &company's default windowing support.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 1 if it was successful and 0 if not.
 .return end
 .see begin

@@ -10,7 +10,7 @@ integer*2 pixval
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current text color to be the color
 indicated by the pixel value of the
 .arg pixval
@@ -50,7 +50,7 @@ value                   value
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the pixel value of the previous text color.
 .return end
 .see begin

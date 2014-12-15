@@ -3,7 +3,7 @@
 The
 .id &ffunc.
 function is a code and data model independent form of the
-.id &func.
+.id &funcb.
 function that accepts far pointer arguments.
 It is most useful in mixed memory model applications.
 .do end

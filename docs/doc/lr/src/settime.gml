@@ -8,11 +8,11 @@ struct dostime_t {
         unsigned char second;   /* 0-59 */
         unsigned char hsecond;  /* 1/100 second; 0-99 */
 };
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x2D to set the current system time.
 The time information is passed in a
 .kw dostime_t
@@ -22,7 +22,7 @@ structure pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns a non-zero value and sets
 .kw errno

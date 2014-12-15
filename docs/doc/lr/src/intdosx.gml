@@ -4,11 +4,11 @@
 int intdosx( const union REGS *in_regs,
              union REGS *out_regs,
              struct SREGS *seg_regs );
-.ixfunc2 '&OsInt' &func
+.ixfunc2 '&OsInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes the computer's central processor (CPU) to
 be interrupted with an interrupt number hexadecimal 21 (
 .ct .mono 0x21
@@ -45,7 +45,7 @@ and after the interrupt in question.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of the AX (EAX in 32-bit library)
 register after the interrupt has completed.
 The CARRY flag (when set, an error has occurred) is copied into the

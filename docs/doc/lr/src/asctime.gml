@@ -25,7 +25,7 @@ wchar_t *__wasctime( const struct tm *timeptr, wchar_t *buf );
 .*
 .desc begin
 The
-.idbold &func.
+.idbold &funcb.
 functions convert the time information in the structure
 pointed to by
 .arg timeptr
@@ -43,10 +43,10 @@ and the null character
 occupy the last two positions of the string.
 .np
 The ANSI function
-.idbold &func.
+.idbold &funcb.
 places the result string in a static buffer
 that is re-used each time
-.idbold &func.
+.idbold &funcb.
 or
 .kw ctime
 is called.
@@ -70,7 +70,7 @@ counterparts except that they deal with wide-character strings.
 .desc end
 .return begin
 The
-.idbold &func.
+.idbold &funcb.
 functions return a pointer to the character string result.
 .return end
 .see begin

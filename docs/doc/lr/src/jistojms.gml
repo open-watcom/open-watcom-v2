@@ -2,15 +2,15 @@
 .synop begin
 #include <jstring.h>
 unsigned short jistojms( unsigned short c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 converts a JIS character set code to a shift-JIS character
 set code.
 If the argument is out of range,
-.id &func.
+.id &funcb.
 returns 0.
 Valid JIS double-byte characters are those in which the first and
 second byte fall in the range 0x21 - 0x7E.
@@ -34,7 +34,7 @@ Thus the double-byte shift-JIS codes are greater than or equal to
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not in the range;
 otherwise, the corresponding shift-JIS code is returned.
 .return end

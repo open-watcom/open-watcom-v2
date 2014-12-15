@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double log10( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the logarithm (base 10) of
 .arg x
 .ct .li .
@@ -15,7 +15,7 @@ A range error occurs if the argument is zero.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the logarithm (base 10) of the argument.
 .im errnodom
 .return end

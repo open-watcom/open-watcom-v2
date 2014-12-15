@@ -6,29 +6,29 @@ char *dirname( char *path );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function takes a pointer to a character string that contains
 a pathname, and returns a pointer to a string that is a pathname of the
 parent directory of that file. Trailing path separators are not considered
 as part of the path.
 .np
 The
-.id &func.
+.id &funcb.
 function may modify the string pointed to by
 .arg path
 and may return a pointer to static storage that may be overwritten by
 a subsequent call to
-.id &func.
+.id &funcb.
 .
 .np
 The
-.id &func.
+.id &funcb.
 function is not re-entrant or thread-safe.
 .desc end
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to a string that is the parent
 directory of
 .arg path

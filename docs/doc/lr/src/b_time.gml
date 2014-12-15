@@ -2,11 +2,11 @@
 .synop begin
 #include <bios.h>
 int _bios_timeofday( int service, long *timeval );
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses INT 0x1A to get or set the current
 system clock value.
 The values for service are:

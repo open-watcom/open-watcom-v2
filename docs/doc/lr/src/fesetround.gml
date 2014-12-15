@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 void fesetround( int mode );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets the current rounding mode, specified by
 .arg x
 .ct .li , for the current process.  The rounding mode can be one

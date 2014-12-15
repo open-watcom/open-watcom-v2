@@ -5,8 +5,8 @@
 errno_t strerror_s( char * s,
                     rsize_t maxsize,
                     errno_t errnum );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Errs' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 errno_t wcserror_s( wchar_t * s,
                     rsize_t maxsize,
@@ -34,13 +34,13 @@ is not modified.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function maps the number in
 .arg errnum
 to a locale-specific message string. Typically,the values for
 .arg errnum
 come from errno, but
-.id &func.
+.id &funcb.
 shall map any value of type int to a message.
 If the length of the desired string is less than
 .arg maxsize

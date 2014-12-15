@@ -6,7 +6,7 @@ int _heapenable( int enabled );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is used to control attempts by the heap allocation
 manager to request more memory from the operating system's memory
 pool.
@@ -24,7 +24,7 @@ memory that is allocated by an application.
 For example, if an application wishes to allocate no more than 200K
 bytes of memory, it could allocate 200K and immediately free it.
 It can then call
-.id &func.
+.id &funcb.
 to disable any further requests from the system
 memory pool.
 After this, the application can allocate memory from the 200K pool

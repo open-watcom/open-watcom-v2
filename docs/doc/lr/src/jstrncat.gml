@@ -4,8 +4,8 @@
 JSTRING jstrncat( JCHAR *dst,
                   const JCHAR *src,
                   size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Concats' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Concats' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjstrncat( JCHAR __far *dst,
                            const JCHAR __far *src,
@@ -17,12 +17,12 @@ FJSTRING __far _fjstrncat( JCHAR __far *dst,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function appends
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions append
@@ -45,12 +45,12 @@ A terminating null character is always appended to the result.
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

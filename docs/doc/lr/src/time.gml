@@ -2,11 +2,11 @@
 .synop begin
 #include <time.h>
 time_t time( time_t *tloc );
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the current calendar time and encodes it
 into the type
 .kw time_t
@@ -18,7 +18,7 @@ Universal Time (UTC) (formerly known as Greenwich Mean Time (GMT)).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the current calendar time.
 If
 .arg tloc

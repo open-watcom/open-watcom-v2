@@ -3,7 +3,7 @@
 .funcw __iswcsym
 #include <ctype.h>
 int iscsym( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 int __iscsym( int c );
 .ixfunc2 '&CharTest' &__func
 .if &'length(&wfunc.) ne 0 .do begin
@@ -15,12 +15,12 @@ int __iswcsym( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for a letter, underscore or digit.
 .np
 The
 .id &__func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &__func.
 for ANSI/ISO naming conventions.
@@ -29,7 +29,7 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end

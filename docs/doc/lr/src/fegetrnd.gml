@@ -2,18 +2,18 @@
 .synop begin
 #include <fenv.h>
 int fegetround( void );
-.ixfunc2 'Floating Point Environment' &func
+.ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets the current rounding direction.
 .desc end
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of the rounding direction macro
 representing the current rounding direction or a negative value if there is no such
 rounding direction macro or the current rounding direction is not determinable.

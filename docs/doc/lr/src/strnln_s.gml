@@ -4,7 +4,7 @@
 #include <string.h>
 size_t strnlen_s( const char * s,
                   size_t maxsize );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 size_t wcsnlen_s( const wchar_t * s,
@@ -18,7 +18,7 @@ size_t wcsnlen_s( const wchar_t * s,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function calculates the length of the string pointed to by
 .arg s
 .ct .li .
@@ -30,17 +30,17 @@ function calculates the length of the string pointed to by
 If
 .arg s
 is a null pointer, then the
-.id &func.
+.id &funcb.
 function returns zero.
 Otherwise, the
-.id &func.
+.id &funcb.
 function returns the number of characters that precede the
 terminating null character. If there is no null character in the first
 .arg maxsize
 characters of
 .arg s
 then
-.id &func.
+.id &funcb.
 returns
 .arg maxsize
 .ct .li .
@@ -49,7 +49,7 @@ At most the first
 characters of
 .arg s
 shall
-be accessed by &func.
+be accessed by &funcb.
 .return end
 .*
 .see begin

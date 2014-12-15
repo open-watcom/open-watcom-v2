@@ -6,7 +6,7 @@
 #include <stdio.h>
 int sprintf_s( char * restrict s, rsize_t n
          const char * restrict format, ... );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int swprintf_s( char * restrict s, rsize_t n,
@@ -38,7 +38,7 @@ appear in the string pointed to by
 .arg format
 .ct .li .
 Any argument to
-.id &func.
+.id &funcb.
 corresponding to a
 .mono %s
 specifier shall not be a null pointer. No encoding error shall occur.
@@ -50,7 +50,7 @@ is not a null pointer and
 is greater than zero and less than
 .mono RSIZE_MAX,
 then the
-.id &func.
+.id &funcb.
 function sets
 .arg s[0]
 to the null character.
@@ -58,13 +58,13 @@ to the null character.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw sprintf
 function except for the explicit runtime-constraints listed above.
 .np
 The
-.id &func.
+.id &funcb.
 function, unlike
 .kw snprintf_s
 .ct , treats a result too big for the array pointed to by
@@ -75,7 +75,7 @@ as a runtime-constraint violation.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -85,14 +85,14 @@ and produces wide character output.
 .*
 .return begin
 If no runtime-constraint violation occurred, the
-.id &func.
+.id &funcb.
 function returns the
 number of characters written in the array, not counting the terminating null
 character. If an encoding error occurred,
-.id &func.
+.id &funcb.
 returns a negative value. If
 any other runtime-constraint violation occurred,
-.id &func.
+.id &funcb.
 returns zero.
 .if &'length(&wfunc.) ne 0 .do begin
 .np

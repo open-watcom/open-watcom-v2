@@ -12,7 +12,7 @@ DWORD _Call16( FARPROC lpFunc, char *fmt, ... );
 .do end
 .synop end
 .desc begin
-The &func function performs the same function as
+The &funcb function performs the same function as
 .kw GetIndirectFunctionHandle
 .ct,
 .kw InvokeIndirectFunctionHandle
@@ -78,7 +78,7 @@ after control returns to the 32-bit application, the 16-bit pointer
 created by the Supervisor is no longer valid.
 .desc end
 .return begin
-The &func function returns a 32-bit DWORD
+The &funcb function returns a 32-bit DWORD
 .if '&lang' eq 'FORTRAN 77' .do begin
 (as an INTEGER*4)
 .do end

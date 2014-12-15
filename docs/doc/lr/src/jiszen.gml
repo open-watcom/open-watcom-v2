@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jiszen( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a valid double-byte character.
@@ -23,7 +23,7 @@ This is summarized in the following diagram.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not in the range;
 otherwise, a non-zero value is returned.
 .return end

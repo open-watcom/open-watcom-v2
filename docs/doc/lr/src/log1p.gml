@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double log1p( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the natural logarithm of one plus
 .arg x
 .ct .li . For small values of

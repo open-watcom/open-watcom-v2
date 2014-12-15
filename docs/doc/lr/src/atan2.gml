@@ -2,12 +2,12 @@
 .synop begin
 #include <math.h>
 double atan2( double y, double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the principal value of the arctangent of
 .arg y/x
 .ct , using the signs of both arguments
@@ -16,7 +16,7 @@ A domain error occurs if both arguments are zero.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the arctangent of
 .arg y/x
 .ct , in the range (&minus.&pi.,&pi.).

@@ -6,7 +6,7 @@ void __far *MK_FP( unsigned int segment,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro can be used to obtain the far
 pointer value given by the
 .arg segment

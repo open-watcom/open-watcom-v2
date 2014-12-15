@@ -2,11 +2,11 @@
 .synop begin
 #include <stdlib.h>
 void srand( unsigned int seed );
-.ixfunc2 'Random Numbers' &func
+.ixfunc2 'Random Numbers' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses the argument
 .arg seed
 to start a new sequence of pseudo-random integers to be returned by
@@ -15,7 +15,7 @@ subsequent calls to
 .ct .li .
 A particular sequence of pseudo-random integers can be repeated by
 calling
-.id &func.
+.id &funcb.
 with the same
 .arg seed
 value.
@@ -25,7 +25,7 @@ value of 1.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

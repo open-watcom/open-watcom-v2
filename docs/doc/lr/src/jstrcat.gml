@@ -6,20 +6,20 @@ JSTRING jstrcat( JCHAR *dst, const JCHAR *src );
 FJSTRING __far _fjstrcat( JCHAR __far *dst,
                           const JCHAR __far *src );
 .do end
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Jconcat' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jconcat' &funcb
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jconcat' &ffunc
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function appends
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions append

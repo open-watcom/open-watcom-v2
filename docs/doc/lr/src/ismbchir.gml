@@ -5,7 +5,7 @@ int _ismbchira( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for a double-byte Hiragana character.
 A double-byte Hiragana character is any character for which the
 following expression is true:
@@ -24,7 +24,7 @@ includes 86 characters.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end

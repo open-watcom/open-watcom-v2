@@ -17,7 +17,7 @@ void *MapAliasToFlat( DWORD alias );
 .do end
 .synop end
 .desc begin
-The &func function returns a 32-bit near pointer equivalent of a pointer
+The &funcb function returns a 32-bit near pointer equivalent of a pointer
 allocated previously with
 .kw AllocAlias16
 or
@@ -27,7 +27,7 @@ This is useful if you are communicating with a 16-bit application
 that is returning pointers that you previously gave it.
 .desc end
 .return begin
-The &func function returns a 32-bit near pointer
+The &funcb function returns a 32-bit near pointer
 .if '&lang' eq 'FORTRAN 77' .do begin
 (as an INTEGER*4)
 .do end

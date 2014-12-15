@@ -2,23 +2,23 @@
 .synop begin
 #include <jstring.h>
 unsigned char *jstrerror( int errnum );
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Errs' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function maps the error number contained in
 .arg errnum
 to a Kanji error message.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the Kanji error message.
 The array containing the error string should not be modified by the
 program.
-This array may be overwritten by a subsequent call to the &func
+This array may be overwritten by a subsequent call to the &funcb
 function.
 .return end
 .see begin

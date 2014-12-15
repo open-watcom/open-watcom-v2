@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double round( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function rounds the argument
 .arg x
 to the nearest integer. Values halfway between integers

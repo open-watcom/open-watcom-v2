@@ -5,7 +5,7 @@ int _ismbbgraph( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 satisfies the condition that one of
@@ -15,7 +15,7 @@ or
 is true.
 .np
 For example, in code page 932,
-.id &func.
+.id &funcb.
 tests if the argument
 .arg ch
 is a single-byte printable character excluding space ("&sysrb.") or
@@ -32,7 +32,7 @@ This is shown by the example below.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end

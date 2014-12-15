@@ -2,18 +2,18 @@
 .synop begin
 #include <math.h>
 double fabs( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the absolute value of the argument
 .arg x
 .ct .li .
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value of
 .arg x
 .ct .li .

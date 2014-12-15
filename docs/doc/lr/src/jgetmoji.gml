@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 JSTRING jgetmoji( const JCHAR *str, JMOJI *c );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjgetmoji( const JCHAR __far *str,
                            JMOJI __far *c );
@@ -12,12 +12,12 @@ FJSTRING __far _fjgetmoji( const JCHAR __far *str,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function places
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions place
@@ -35,12 +35,12 @@ returned wide character is NULL.
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

@@ -2,11 +2,11 @@
 .synop begin
 #include <i86.h>
 void sound( unsigned frequency );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function turns on the PC's speaker at the specified
 .arg frequency
 .ct .li .
@@ -18,7 +18,7 @@ function after an appropriate amount of time.
 .if '&machsys' eq 'QNX' .do begin
 .bd WARNING:
 The
-.id &func.
+.id &funcb.
 function only works if either the program is owned by
 .id root
 and is
@@ -29,7 +29,7 @@ or if the invoking user is
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 .return end
 .see begin

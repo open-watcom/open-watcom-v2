@@ -6,7 +6,7 @@ int _bfreeseg( __segment seg );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function frees a based-heap segment.
 .pp
 The argument
@@ -17,7 +17,7 @@ indicates the segment returned by an earlier call to
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 0 if successful and -1 if an error occurred.
 .return end
 .see begin

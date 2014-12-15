@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 char *strpbrk( const char *str, const char *charset );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Search' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Search' &funcb
 .if &farfnc eq 1 .do begin
 char __far *_fstrpbrk( const char __far *str,
                        const char __far *charset );
@@ -37,7 +37,7 @@ unsigned char __far *_fmbspbrk(
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function locates the first occurrence in the string pointed
 to by
 .arg str
@@ -50,7 +50,7 @@ of any character from the string pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the located character, or
 .mono NULL
 if no character from

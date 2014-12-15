@@ -2,14 +2,14 @@
 .synop begin
 #include <math.h>
 double acos( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Hyper' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
+.ixfunc2 '&Trig' &funcb
+.ixfunc2 '&Hyper' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the principal value of the
 arccosine of
 .arg x
@@ -18,7 +18,7 @@ A domain error occurs for arguments not in the range [&minus.1,1].
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the arccosine in the range [0,&pi.].
 .im errnodom
 .return end

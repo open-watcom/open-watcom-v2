@@ -5,7 +5,7 @@ void tzset( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets the
 global
 variables
@@ -23,7 +23,7 @@ describes how to set this variable.
 .if '&machsys' ne 'QNX' .do begin
 .np
 Under Win32,
-.id &func.
+.id &funcb.
 also uses operating system supplied time zone
 information.
 The
@@ -34,7 +34,7 @@ environment variable can be used to override this information.
 The
 global
 variables have the following values after
-.id &func.
+.id &funcb.
 is executed:
 .begterm 12
 .term .mono daylight
@@ -42,7 +42,7 @@ Zero indicates that daylight saving time is not supported in the
 locale; a non-zero value indicates that daylight saving time is
 supported in the locale.
 This variable is cleared/set after a call to the
-.id &func.
+.id &funcb.
 function
 depending on whether a daylight saving time abbreviation is specified
 in the
@@ -61,7 +61,7 @@ effect.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return a value.
 .return end
 .see begin

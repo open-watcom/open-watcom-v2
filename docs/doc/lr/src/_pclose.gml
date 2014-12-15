@@ -5,7 +5,7 @@ int _pclose( FILE *fp );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function closes the pipe associated with
 .arg fp
 and waits for the subprocess created by
@@ -14,11 +14,11 @@ to terminate.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the termination status of the command
 language interpreter.
 If an error occured,
-.id &func.
+.id &funcb.
 returns (-1) with
 .kw errno
 set appropriately.
@@ -29,12 +29,12 @@ set appropriately.
 :DDHD.Meaning
 .term EINTR
 The
-.id &func.
+.id &funcb.
 function was interrupted by a signal while waiting for the
 child process to terminate.
 .term ECHILD
 The
-.id &func.
+.id &funcb.
 function was unable to obtain the termination status of the
 child process.
 .endterm

@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double pow( double x, double y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes
 .arg x
 raised to the power
@@ -25,7 +25,7 @@ A range error may occur.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of
 .arg x
 raised to the power

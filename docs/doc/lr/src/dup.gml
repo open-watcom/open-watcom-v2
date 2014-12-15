@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int dup( int &fd );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _dup( int &fd );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _dup( int &fd );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function duplicates the file &handle given by the argument
 .arg &fd
 .ct .li .
@@ -26,7 +26,7 @@ in the other.
 The
 .id &_func.
 function is identical to
-.id &func.
+.id &funcb.
 .
 Use
 id &_func.

@@ -2,11 +2,11 @@
 .synop begin
 #include <time.h>
 double difftime( time_t time1, time_t time0 );
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function calculates the difference
 between the two calendar times:
 .millust begin
@@ -15,7 +15,7 @@ between the two calendar times:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the difference
 between the two times in seconds as a
 .id double.

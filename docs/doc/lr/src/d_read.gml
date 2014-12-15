@@ -3,12 +3,12 @@
 #include <&doshdr>
 unsigned _dos_read( int &fd, void __far *buffer,
                     unsigned count, unsigned *bytes );
-.ixfunc2 '&DosFunc' &func
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&DosFunc' &funcb
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x3F to read
 .arg count
 bytes of data from the file specified by
@@ -23,7 +23,7 @@ unsigned integer pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

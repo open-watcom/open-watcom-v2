@@ -3,7 +3,7 @@
 #include <mbstring.h>
 void _mbccpy( unsigned char *dest,
               const unsigned char *ch );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 void _fmbccpy( unsigned char __far *dest,
                const unsigned char __far *ch );
@@ -12,7 +12,7 @@ void _fmbccpy( unsigned char __far *dest,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies one multibyte character from
 .arg ch
 to
@@ -22,7 +22,7 @@ to
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return a value.
 .return end
 .see begin

@@ -4,12 +4,12 @@
 int strncasecmp( const char *s1,
                  const char *s2,
                  size_t len );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares, without case sensitivity, the string
 pointed to by
 .arg s1
@@ -20,14 +20,14 @@ to the string pointed to by
 characters.
 .np
 The
-.id &func.
+.id &funcb.
 function is identical to the
 .kw strnicmp
 function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1

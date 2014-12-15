@@ -2,7 +2,7 @@
 .synop begin
 #include <direct.h>
 char *_getdcwd( int drive, char *buffer, size_t maxlen );
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wgetdcwd( int drive, wchar_t *buffer,
                     size_t maxlen );
@@ -12,7 +12,7 @@ wchar_t *_wgetdcwd( int drive, wchar_t *buffer,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets the full path of the current working directory
 on the specified drive.
 The
@@ -55,7 +55,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it returns the
 name of the current working directory as a wide-character string
 (which is twice as long).
@@ -63,7 +63,7 @@ name of the current working directory as a wide-character string
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the address of the string containing the
 name of the current working directory on the specified drive, unless
 an error occurs, in which case

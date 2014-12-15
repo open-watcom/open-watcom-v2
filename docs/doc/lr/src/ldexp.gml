@@ -2,16 +2,16 @@
 .synop begin
 #include <math.h>
 double ldexp( double x, int exp );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
-The &func
+The &funcb
 function multiplies a floating-point number by an integral power of 2.
 A range error may occur.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of
 .arg x
 times 2 raised to the power

@@ -8,8 +8,8 @@
 errno_t wcrtomb_s( size_t * restrict retval,
                    char * restrict s, rsize_t smax,
                    wchar_t wc, mbstate_t * restrict ps);
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 
 errno_t _wcrtomb_s( size_t __far * restrict retval,
@@ -48,7 +48,7 @@ is a null pointer, then
 shall equal zero.
 .np
 If there is a runtime-constraint violation, then
-.id &func.
+.id &funcb.
 does the following. If
 .arg s
 is not a null pointer and
@@ -56,7 +56,7 @@ is not a null pointer and
 is greater than zero and not greater than
 .kw RSIZE_MAX
 .ct , then
-.id &func.
+.id &funcb.
 sets
 .arg s[0]
 to the null character. If
@@ -72,7 +72,7 @@ to (size_t)(-1).
 If
 .arg s
 is a null pointer, the
-.id &func.
+.id &funcb.
 function is equivalent to the call
 .br
 wcrtomb_s(&retval, buf, sizeof buf, L'\0', ps)
@@ -88,7 +88,7 @@ is greater than MB_CUR_MAX.
 If
 .arg s
 is not a null pointer, the
-.id &func.
+.id &funcb.
 function determines the number of bytes
 needed to represent the multibyte character that corresponds to the wide character given
 by
@@ -110,12 +110,12 @@ If
 .arg wc
 does not correspond to a valid multibyte character, an encoding error
 occurs: the
-.id &func.
+.id &funcb.
 function stores the value (size_t)(-1) into
 .arg *retval
 and the
 conversion state is unspecified. Otherwise, the
-.id &func.
+.id &funcb.
 function stores into
 .arg *retval
 the number of bytes (including any shift sequences) stored in the array pointed

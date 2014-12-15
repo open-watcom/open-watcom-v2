@@ -7,7 +7,7 @@ unsigned char *jasctime( const struct tm *timeptr );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the time information in the structure
 pointed to by
 .arg timeptr
@@ -45,17 +45,17 @@ and the null character
 occupy the last two positions of the string.
 .pp
 The
-.id &func.
+.id &funcb.
 function places the result string in a static buffer that is
 re-used each time
-.id &func.
+.id &funcb.
 or
 .kw jctime
 is called.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the character string result.
 .return end
 .see begin

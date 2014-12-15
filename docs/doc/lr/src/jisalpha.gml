@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jisalpha( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a double-byte character equivalent to the single-byte
@@ -19,7 +19,7 @@ following expression is true:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not a double-byte alphabetic
 character;
 otherwise, a non-zero value is returned.

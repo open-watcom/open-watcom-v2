@@ -2,12 +2,12 @@
 .synop begin
 #include <stdio.h>
 int ferror( FILE *fp );
-.ixfunc2 '&StrIo' &func
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&StrIo' &funcb
+.ixfunc2 '&Errs' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests the error indicator for the stream
 pointed to by
 .arg fp
@@ -15,7 +15,7 @@ pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns non-zero if the error indicator is set for
 .arg fp
 .ct .li .

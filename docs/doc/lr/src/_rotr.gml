@@ -3,18 +3,18 @@
 #include <stdlib.h>
 unsigned int _rotr( unsigned int value,
                     unsigned int shift );
-.ixfunc2 '&Rotate' &func
+.ixfunc2 '&Rotate' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function rotates the unsigned integer, determined by
 .arg value
 .ct , to the right by the number of bits specified in
 .arg shift
 .ct .li .
 If you port an application using
-.id &func.
+.id &funcb.
 between a 16-bit and a 32-bit
 environment, you will get different results because of the difference
 in the size of integers.

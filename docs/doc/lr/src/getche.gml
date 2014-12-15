@@ -2,11 +2,11 @@
 .synop begin
 #include <conio.h>
 int getche( void );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function obtains the next available keystroke from the console.
 The function will wait until a keystroke is available.
 That character is echoed on the screen at the position of the cursor
@@ -23,7 +23,7 @@ A value of
 .mono EOF
 is returned when an error is detected; otherwise,
 the
-.id &func.
+.id &funcb.
 function returns the value of the keystroke (or character).
 .pp
 When the keystroke represents an extended function key (for example, a
@@ -36,7 +36,7 @@ digit),
 zero
 .do end
 is returned and the next call to
-.id &func.
+.id &funcb.
 returns a value for the
 extended function.
 .return end

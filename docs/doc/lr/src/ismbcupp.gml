@@ -5,7 +5,7 @@ int _ismbcupper( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for a valid uppercase multibyte character.
 Multibyte characters include both single-byte and double-byte
 characters.
@@ -17,7 +17,7 @@ one for which the following expression is true:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end

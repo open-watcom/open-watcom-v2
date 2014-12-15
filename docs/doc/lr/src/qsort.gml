@@ -12,7 +12,7 @@ void qsort( void *base,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sorts an array of
 .arg num
 elements, which is pointed to by
@@ -36,7 +36,7 @@ by Jon Louis Bentley and M. Douglas McIlroy in the article
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

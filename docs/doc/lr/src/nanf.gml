@@ -4,11 +4,11 @@
 float nanf( const char *str );
 double nan( const char *str );
 long double nanl( const char *str );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns not-a-number, or NAN.  The argument
 .arg str
 is ignored.

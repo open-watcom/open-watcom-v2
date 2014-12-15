@@ -5,7 +5,7 @@ long long int llabs( long long int j );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value
 of its long long integer argument
 .arg j
@@ -13,7 +13,7 @@ of its long long integer argument
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the absolute value of its argument.
 .return end
 .see begin

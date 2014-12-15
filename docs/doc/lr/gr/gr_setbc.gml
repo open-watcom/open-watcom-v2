@@ -10,7 +10,7 @@ integer*4 color
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current background color to be that of the
 .arg color
 argument.
@@ -32,7 +32,7 @@ only subsequent output is affected.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the previous background color.
 .return end
 .see begin

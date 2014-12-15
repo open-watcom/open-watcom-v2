@@ -6,19 +6,19 @@ unsigned char *jctime( const time_t *timer );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the calendar time pointed to by
 .arg timer
 to local time in the form of a string.
 The
-.id &func.
+.id &funcb.
 function is equivalent to
 .millust begin
 jasctime( localtime( timer ) )
 .millust end
 .np
 The
-.id &func.
+.id &funcb.
 functions convert the time into a string containing exactly
 37 characters.
 This string has the form shown in the following example:
@@ -54,16 +54,16 @@ and the null character
 occupy the last two positions of the string.
 .np
 The
-.id &func.
+.id &funcb.
 function places the result string in a static buffer that is
 re-used each time
-.id &func.
+.id &funcb.
 or
 .kw jasctime
 is called.
 .np
 Whenever the
-.id &func.
+.id &funcb.
 function is called, the
 .kw tzset
 function is also called.
@@ -77,7 +77,7 @@ Greenwich Mean Time (GMT)).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the pointer to the string containing the
 local time.
 .return end

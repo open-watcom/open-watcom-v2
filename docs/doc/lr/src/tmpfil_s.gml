@@ -3,20 +3,20 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 errno_t tmpfile_s( FILE * restrict * restrict streamptr);
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .*
 .rtconst begin
 .arg streamptr
 shall not be a null pointer.
 If there is a runtime-constraint violation,
-.id &func.
+.id &funcb.
 does not attempt to create a file.
 .rtconst end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates a temporary binary file that is different from any other
 existing file and that will automatically be removed when it is closed or at program
 termination. If the program terminates abnormally, whether an open temporary file is

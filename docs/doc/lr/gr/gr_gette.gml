@@ -16,7 +16,7 @@ record /xycoord/ extent(4)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine simulates the effect of using the
 .kw _grtext
 &routine to display the text string
@@ -41,7 +41,7 @@ at the upper-left corner.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

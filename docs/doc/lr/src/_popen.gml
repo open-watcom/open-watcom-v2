@@ -2,7 +2,7 @@
 .synop begin
 #include <stdio.h>
 FILE *_popen( const char *command, const char *mode );
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 FILE *_wpopen( const wchar_t *command, const wchar_t *mode );
 .ixfunc2 '&Direct' &wfunc
@@ -11,7 +11,7 @@ FILE *_wpopen( const wchar_t *command, const wchar_t *mode );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function executes the command specified by
 .arg command
 and creates a pipe between the calling process and the executed
@@ -50,7 +50,7 @@ is one of "command.com" (DOS, Windows 95) or "cmd.exe"
 The
 .arg mode
 argument to
-.id &func.
+.id &funcb.
 is a string that specifies an I/O mode for the pipe.
 .begnote
 .termhd1 Mode
@@ -58,12 +58,12 @@ is a string that specifies an I/O mode for the pipe.
 .note "r"
 The calling process will read from the standard output of the child
 process using the stream pointer returned by
-.id &func.
+.id &funcb.
 .
 .note "w"
 The calling process will write to the standard input of the child
 process using the stream pointer returned by
-.id &func.
+.id &funcb.
 .
 .endnote
 .np
@@ -84,18 +84,18 @@ Unless this value is changed by the program, the default will be text
 mode.
 .np
 A stream opened by
-.id &func.
+.id &funcb.
 should be closed by the
 .kw _pclose
 function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-NULL stream pointer upon successful
 completion.
 If
-.id &func.
+.id &funcb.
 is unable to create either the pipe or the subprocess, a
 .mono NULL
 stream pointer is returned and
@@ -112,7 +112,7 @@ The
 argument is invalid.
 .endterm
 .np
-.id &func.
+.id &funcb.
 may also set
 .kw errno
 values as described by the

@@ -9,14 +9,14 @@ integer*2 function _getplotaction()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current plotting action.
 .pp
 .im gr_plot
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current plotting action.
 .return end
 .see begin

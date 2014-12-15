@@ -2,13 +2,13 @@
 .synop begin
 #include <wctype.h>
 wctrans_t wctrans( const char *property );
-.ixfunc2 '&Conversion' &func
-.ixfunc2 '&Wide' &func
+.ixfunc2 '&Conversion' &funcb
+.ixfunc2 '&Wide' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function constructs a value with type
 .kw wctrans_t
 that describes a mapping between wide characters identified by the
@@ -23,7 +23,7 @@ indeterminate if the category's setting is changed.
 The two strings listed below are valid in all locales as
 .arg property
 arguments to the
-.id &func.
+.id &funcb.
 function.
 .begterm 10
 .termhd1 Constant
@@ -43,7 +43,7 @@ If
 identifies a valid class of wide characters according to the
 .kw LC_CTYPE
 category of the current locale, the
-.id &func.
+.id &funcb.
 function returns a non-zero
 value that is valid as the second argument to the
 .kw towctrans

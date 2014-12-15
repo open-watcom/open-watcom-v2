@@ -6,19 +6,19 @@ int _mbbtype( unsigned char ch, int type );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the type of a byte in a multibyte
 character.
 If the value of
 .arg type
 is any value except 1,
-.id &func.
+.id &funcb.
 tests for a valid single-byte or lead
 byte of a multibyte character.
 If the value of
 .arg type
 is 1,
-.id &func.
+.id &funcb.
 tests for a valid trail byte of a multibyte character.
 .np
 .us Note:
@@ -30,7 +30,7 @@ in earlier versions.
 If the value of
 .arg type
 is not 1, the
-.id &func.
+.id &funcb.
 function returns one of the following values:
 .begterm
 .term _MBC_SINGLE
@@ -48,7 +48,7 @@ the character is an illegal character
 If the value of
 .arg type
 is 1, the
-.id &func.
+.id &funcb.
 function returns one of the following values:
 .begterm
 .term _MBC_TRAIL

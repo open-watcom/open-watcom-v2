@@ -2,11 +2,11 @@
 .synop begin
 #include <setjmp.h>
 int setjmp( jmp_buf env );
-.ixfunc2 'Non-local Jumps' &func
+.ixfunc2 'Non-local Jumps' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function saves its calling environment in its
 .kw jmp_buf
 argument, for subsequent use by the
@@ -14,14 +14,14 @@ argument, for subsequent use by the
 function.
 .np
 In some cases, error handling can be implemented by using
-.id &func.
+.id &funcb.
 to record
 the point to which a return will occur following an error.
 When an error is detected in a called function, that function uses
 .kw longjmp
 to jump back to the recorded position.
 The original function which called
-.id &func.
+.id &funcb.
 must still be active (it cannot
 have returned to the function which called it).
 .np
@@ -31,7 +31,7 @@ satisfactorily handled.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero when it is initially called.
 The return value will be non-zero if the return is the result of a call
 to the
@@ -40,7 +40,7 @@ function.
 An
 .mono if
 statement is often used to handle these two returns.
-When the return value is zero, the initial call to &func
+When the return value is zero, the initial call to &funcb
 has been made; when the return value is non-zero, a return from a
 .kw longjmp
 has just occurred.

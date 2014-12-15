@@ -7,7 +7,7 @@ void _hardretn( int error );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 routine installs a critical error handler (for INT 0x24)
 to handle hardware errors.
 This critical error handler will call the user-defined function

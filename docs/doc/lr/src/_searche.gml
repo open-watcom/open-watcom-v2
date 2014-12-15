@@ -4,7 +4,7 @@
 void _searchenv( const char *name,
                  const char *env_var,
                        char *pathname );
-.ixfunc2 '&Search' &func
+.ixfunc2 '&Search' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 void _wsearchenv( const wchar_t *name,
                   const wchar_t *env_var,
@@ -15,7 +15,7 @@ void _wsearchenv( const wchar_t *name,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function searches for the file specified by
 .arg name
 in the list of directories assigned to the environment variable
@@ -41,7 +41,7 @@ will contain an empty string.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

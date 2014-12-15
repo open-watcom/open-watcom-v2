@@ -2,7 +2,7 @@
 .synop begin
 #include <mbstring.h>
 size_t _mbclen( const unsigned char *ch );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 size_t far _fmbclen( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
@@ -10,7 +10,7 @@ size_t far _fmbclen( const unsigned char __far *ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg ch
@@ -21,14 +21,14 @@ multibyte character pointed to by
 If
 .arg ch
 is a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns zero if multibyte
 character encodings do not have state-dependent encoding, and non-zero
 otherwise.
 If
 .arg ch
 is not a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns:
 .begnote $setptnt 6
 .termhd1 Value

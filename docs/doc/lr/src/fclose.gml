@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 int fclose( FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function closes the file
 .arg fp
 .ct .li .
@@ -17,7 +17,7 @@ If the associated buffer was automatically allocated, it is deallocated.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the file was successfully
 closed, or non-zero if any errors were detected.
 .im errnoref

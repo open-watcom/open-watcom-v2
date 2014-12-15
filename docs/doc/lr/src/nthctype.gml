@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 int nthctype( const char * str, size_t n );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .if &farfnc eq 1 .do begin
 int far _fnthctype( const char far * str, size_t n );
 .ixfunc2 '&Jstring' &ffunc
@@ -11,12 +11,12 @@ int far _fnthctype( const char far * str, size_t n );
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return
@@ -49,14 +49,14 @@ or it is the null character,
 .desc end
 .return begin
 If the character is a null character,
-.id &func.
+.id &funcb.
 returns
 .kw CT_ILGL
 .ct .li .
 If the offset
 .arg n
 is beyond the end of the string,
-.id &func.
+.id &funcb.
 returns
 .kw CT_ILGL
 .ct .li .

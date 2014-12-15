@@ -2,13 +2,13 @@
 .synop begin
 #include <math.h>
 double acosh( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Hyper' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
+.ixfunc2 '&Hyper' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the inverse hyperbolic cosine of
 .arg x
 .ct .li .
@@ -18,7 +18,7 @@ is less than 1.0.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the inverse hyperbolic cosine value.
 .im errnodom
 .return end

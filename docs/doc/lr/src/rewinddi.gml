@@ -8,7 +8,7 @@ void rewinddir( DIR *dirp );
 .el .do begin
 void rewinddir( struct dirent *dirp );
 .do end
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 void _wrewinddir( _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
@@ -17,7 +17,7 @@ void _wrewinddir( _wdirent *dirp );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function resets the position of the directory stream to
 which
 .arg dirp
@@ -52,7 +52,7 @@ Either or both processes may use
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it rewinds a
 directory of wide-character filenames opened by
 .kw _wopendir
@@ -61,7 +61,7 @@ directory of wide-character filenames opened by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return a value.
 .return end
 .see begin

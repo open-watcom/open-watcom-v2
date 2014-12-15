@@ -5,7 +5,7 @@ unsigned _dos_commit( int handle );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x68 to flush to disk the DOS
 buffers associated with the file indicated by
 .arg handle
@@ -15,7 +15,7 @@ file allocation table.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

@@ -2,8 +2,8 @@
 .synop begin
 #include <tchar.h>
 size_t _strncnt( const char *string, size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 size_t _wcsncnt( const wchar_t *string, size_t n );
 .ixfunc2 '&String' &wfunc
@@ -23,7 +23,7 @@ _fmbsnccnt( const unsigned char __far *string, size_t n );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function counts the number of characters in the first
 .arg n
 bytes of
@@ -51,7 +51,7 @@ in earlier versions.
 .np
 The
 .id &fmfunc.
-function is a data model independent form of the &func
+function is a data model independent form of the &funcb
 function that accepts far pointer arguments.
 It is most useful in mixed memory model applications.
 .do end
@@ -72,21 +72,21 @@ macro if
 has been defined. Otherwise
 .kw _tcsnccnt
 maps to the
-.id &func.
+.id &funcb.
 macro.
-.id &func.
+.id &funcb.
 and
 .id &wfunc.
 are single-byte-character
 string and wide-character string versions of &mfunc.. The
-.id &func.
+.id &funcb.
 and
 .id &wfunc.
 macros are provided only for this mapping and should not be
 used otherwise.
 .desc end
 .return begin
-.id &func.
+.id &funcb.
 returns the number of characters from the beginning
 of the string to byte
 .arg n

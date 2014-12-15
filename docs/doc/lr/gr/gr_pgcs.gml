@@ -28,7 +28,7 @@ integer*4 labels(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines display either a single-series or a multi-series
 scatter chart.
 The chart is displayed using the options specified in the
@@ -36,7 +36,7 @@ The chart is displayed using the options specified in the
 argument.
 .pp
 The
-.id &func.
+.id &funcb.
 &routine displays a scatter chart from the single series
 of data contained in the arrays
 .arg x
@@ -81,7 +81,7 @@ These strings describe each of the series and are used in the chart legend.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return zero
 if successful; otherwise, a non-zero value is returned.
 .return end

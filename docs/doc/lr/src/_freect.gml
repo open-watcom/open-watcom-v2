@@ -2,11 +2,11 @@
 .synop begin
 #include <malloc.h>
 unsigned int _freect( size_t size );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the number of times that
 .kw _nmalloc
 (or
@@ -19,12 +19,12 @@ In the tiny, small and medium memory models, the default data segment
 is only extended as needed to satisfy requests for memory allocation.
 Therefore, you will need to call
 .kw _nheapgrow
-in these memory models before calling &func
+in these memory models before calling &funcb
 in order to get a meaningful result.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of calls as an unsigned integer.
 .return end
 .see begin

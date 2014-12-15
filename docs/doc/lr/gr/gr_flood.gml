@@ -19,10 +19,10 @@ integer*2 stop_color
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines fill an area of the screen.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.
@@ -70,7 +70,7 @@ is the current color.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return zero
 when no filling takes place; a non-zero
 value is returned to indicate that filling has occurred.

@@ -24,19 +24,19 @@ wchar_t *__wctime( const time_t *timer, wchar_t *buf );
 .*
 .desc begin
 The
-.idbold &func.
+.idbold &funcb.
 functions convert the calendar time pointed to by
 .arg timer
 to local time in the form of a string.
 The
-.idbold &func.
+.idbold &funcb.
 function is equivalent to
 .millust begin
 asctime( localtime( timer ) )
 .millust end
 .np
 The
-.idbold &func.
+.idbold &funcb.
 functions convert the time into a string containing exactly
 26 characters.
 This string has the form shown in the following example:
@@ -52,10 +52,10 @@ and the null character
 occupy the last two positions of the string.
 .np
 The ANSI function
-.idbold &func.
+.idbold &funcb.
 places the result string in a static buffer
 that is re-used each time
-.idbold &func.
+.idbold &funcb.
 or
 .kw asctime
 is called.
@@ -69,7 +69,7 @@ places the result string in the buffer pointed to by
 The wide-character function
 .kw _wctime
 is identical to
-.idbold &func.
+.idbold &funcb.
 except that it produces a wide-character string
 (which is twice as long).
 The wide-character function
@@ -81,7 +81,7 @@ long).
 .do end
 .np
 Whenever the
-.idbold &func.
+.idbold &funcb.
 functions are called, the
 .kw tzset
 function is also called.
@@ -95,7 +95,7 @@ Greenwich Mean Time (GMT)).
 .desc end
 .return begin
 The
-.idbold &func.
+.idbold &funcb.
 functions return the pointer to the string containing the
 local time.
 .return end

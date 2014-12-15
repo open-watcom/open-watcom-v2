@@ -2,11 +2,11 @@
 .synop begin
 #include <signal.h>
 int raise( int condition );
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&Errs' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function signals the exceptional condition indicated by the
 .arg condition
 argument.
@@ -22,7 +22,7 @@ place when such a condition occurs.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero when the condition is successfully
 raised and a non-zero value otherwise.
 There may be no return of control following the function call if the

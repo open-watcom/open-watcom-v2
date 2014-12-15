@@ -13,7 +13,7 @@ int _chmod( const char *path, int permission );
 .ixfunc2 '&FileOp' &_func
 .do end
 .do end
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int _wchmod( const wchar_t *path, int permission );
 .ixfunc2 '&FileOp' &wfunc
@@ -22,7 +22,7 @@ int _wchmod( const wchar_t *path, int permission );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function changes the permissions for a file specified by
 .arg path
 to be the settings in the mode given by
@@ -50,12 +50,12 @@ is a regular file, bit
 .mono S_ISGID
 (set group ID on execution)
 in the file's mode shall be cleared upon successful return from the
-.id &func.
+.id &funcb.
 function.
 .do end
 .np
 Upon successful completion, the
-.id &func.
+.id &funcb.
 function will mark for update
 the
 .us st_ctime
@@ -64,7 +64,7 @@ field of the file.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI naming conventions.
@@ -74,13 +74,13 @@ for ANSI naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument.
 .do end
 .desc end
 .return begin
-The &func
+The &funcb
 returns zero if the new settings are successfully made; otherwise,
 &minus.1 is returned and
 .kw errno

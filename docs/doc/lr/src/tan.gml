@@ -2,12 +2,12 @@
 .synop begin
 #include <math.h>
 double tan( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the tangent of
 .arg x
 (measured in radians).
@@ -15,7 +15,7 @@ A large magnitude argument may yield a result with little or no significance.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the tangent value.
 .im errnoref
 .return end

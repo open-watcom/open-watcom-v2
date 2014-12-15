@@ -3,7 +3,7 @@
 .funcw iswalnum
 #include <ctype.h>
 int isalnum( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wctype.h>
 int iswalnum( wint_t c );
@@ -13,7 +13,7 @@ int iswalnum( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is an alphanumeric character ('a' to 'z', 'A' to 'Z', or '0' to '9').
@@ -27,14 +27,14 @@ is true.
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is neither an alphabetic
 character (A-Z or a-z) nor a digit (0-9).
 Otherwise, a non-zero value is returned.

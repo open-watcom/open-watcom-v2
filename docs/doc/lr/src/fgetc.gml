@@ -3,7 +3,7 @@
 .funcw fgetwc
 #include <stdio.h>
 int fgetc( FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 #include <wchar.h>
@@ -14,7 +14,7 @@ wint_t fgetwc( FILE *fp );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets the next character from the file designated by
 .arg fp
 .ct .li .
@@ -25,7 +25,7 @@ The character is
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it gets the next
 multibyte character (if present) from the input stream pointed to by
 .arg fp
@@ -34,18 +34,18 @@ and converts it to a wide character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the next character from the input stream
 pointed to by
 .arg fp
 .ct .li .
 If the stream is at end-of-file, the end-of-file indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .
 If a read error occurs, the error indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .

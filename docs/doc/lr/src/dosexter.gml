@@ -9,11 +9,11 @@ struct _DOSERROR {
         char action;    /* contents of BL register */
         char locus;     /* contents of CH register */
 };
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&Errs' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function extracts extended error information following
 a failed DOS function.
 This information is placed in the structure located by
@@ -26,11 +26,11 @@ your computer for an interpretation of the error information.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an unpredictable result when the preceding
 DOS call did not result in an error.
 Otherwise,
-.id &func.
+.id &funcb.
 returns the number of the extended error.
 .return end
 .see begin

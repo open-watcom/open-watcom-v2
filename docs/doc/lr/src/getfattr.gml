@@ -3,11 +3,11 @@
 #include <&doshdr>
 unsigned _dos_getfileattr( const char *path,
                            unsigned *attributes );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x43 to get the current attributes
 of the file or directory that
 .arg path
@@ -17,7 +17,7 @@ The possible attributes are:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

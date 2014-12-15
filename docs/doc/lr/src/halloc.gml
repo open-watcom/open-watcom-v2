@@ -2,11 +2,11 @@
 .synop begin
 #include <malloc.h>
 void __huge *halloc( long int numb, size_t size );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function allocates space for an array of
 .arg numb
 objects of
@@ -18,7 +18,7 @@ segment boundary.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a far pointer (of type
 .id void huge *
 .ct ) to the start of the allocated memory.

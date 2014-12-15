@@ -5,7 +5,7 @@
 #include <stdarg.h>
 int _vbprintf( char *buf, size_t bufsize,
                const char *format, va_list arg );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int _vbwprintf( wchar_t *buf, size_t bufsize,
                 const wchar_t *format, va_list arg );
@@ -15,7 +15,7 @@ int _vbwprintf( wchar_t *buf, size_t bufsize,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function formats data under control of the
 .arg format
 control string and writes the result to
@@ -32,7 +32,7 @@ string is described under the description of the
 .kw printf
 function.
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _bprintf
 function, with the variable argument list replaced with
@@ -45,7 +45,7 @@ macro.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -54,7 +54,7 @@ and produces wide-character output.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written, or a
 negative value if an output error occurred.
 .return end
@@ -64,7 +64,7 @@ negative value if an output error occurred.
 .exmp begin
 .blktext begin
 The following shows the use of
-.id &func.
+.id &funcb.
 in a general error message routine.
 .blktext end
 .blkcode begin

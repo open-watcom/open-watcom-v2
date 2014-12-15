@@ -101,7 +101,7 @@ int _wspawnvpe( mode, file, argv, envp );
 .synop end
 .desc begin
 The
-.idbold &func.
+.idbold &funcb.
 functions create and execute a new child process, named by
 .arg pgm
 .ct .li .
@@ -164,7 +164,7 @@ This option is supported under only Windows NT.
 .np
 Arguments are passed to the child process by supplying one or more
 pointers to character strings as arguments in the
-.idbold &func.
+.idbold &funcb.
 call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
@@ -346,11 +346,11 @@ is:
 .termhd2 Meaning
 .term P_WAIT
 then the return value from
-.idbold &func.
+.idbold &funcb.
 is the exit status of the child process.
 .term P_NOWAIT
 then the return value from
-.idbold &func.
+.idbold &funcb.
 is the process id (or process handle
 under Win32) of the child process.
 To obtain the exit code for a process spawned with
@@ -373,18 +373,18 @@ process passed to the
 function.
 .term P_NOWAITO
 then the return value from
-.idbold &func.
+.idbold &funcb.
 is the process id of the child process.
 The exit code cannot be obtained for a process spawned with
 .kw P_NOWAITO
 .ct .li .
 .term P_DETACH
 then the return value from
-.idbold &func.
+.idbold &funcb.
 is zero (0) if successful.
 .endterm
 .np
-When an error is detected while invoking the indicated program, &func
+When an error is detected while invoking the indicated program, &funcb
 returns &minus.1 and
 .kw errno
 is set to indicate the error.

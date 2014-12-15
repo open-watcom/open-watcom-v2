@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 char *strncat( char *dst, const char *src, size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Concats' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Concats' &funcb
 .if &farfnc eq 1 .do begin
 char __far *_fstrncat( char __far *dst,
                  const char __far *src,
@@ -43,7 +43,7 @@ unsigned char __far *_fmbsncat( unsigned char __far *dst,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function appends not more than
 .arg n
 characters of the string
@@ -64,7 +64,7 @@ A terminating null character is always appended to the result.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of
 .arg dst
 .ct .li .

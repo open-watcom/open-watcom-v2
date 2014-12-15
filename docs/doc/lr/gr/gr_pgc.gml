@@ -29,7 +29,7 @@ integer*4 labels(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines display either a single-series or a multi-series
 bar, column or line chart.
 The type of chart displayed and other chart options are contained in the
@@ -44,7 +44,7 @@ the data in the
 array is charted.
 .pp
 The
-.id &func.
+.id &funcb.
 &routine displays a bar, column or line chart from the single series
 of data contained in the
 .arg values
@@ -85,7 +85,7 @@ These strings describe each of the series and are used in the chart legend.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return zero
 if successful; otherwise, a non-zero value is returned.
 .return end

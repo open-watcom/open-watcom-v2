@@ -10,7 +10,7 @@ integer*2 style(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine retrieves the internal style-set of the
 presentation graphics system.
 The style-set is a set of line styles used for drawing
@@ -22,7 +22,7 @@ is an array that will contain the style-set.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

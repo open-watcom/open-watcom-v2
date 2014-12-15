@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 int open( const char *path, int access, ... );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _open( const char *path, int access, ... );
 .ixfunc2 '&OsIo' &_func
@@ -17,7 +17,7 @@ int _wopen( const wchar_t *path, int access, ... );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function opens a file at the operating system level.
 The name of the file to be opened is given by
 .arg path
@@ -34,7 +34,7 @@ mode.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -44,7 +44,7 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it
 accepts a wide character string argument for
 .arg path
@@ -55,7 +55,7 @@ accepts a wide character string argument for
 .desc end
 .return begin
 If successful,
-.id &func.
+.id &funcb.
 returns a &handle for the file.
 When an error occurs while opening the file, &minus.1 is returned.
 .return end

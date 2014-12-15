@@ -6,8 +6,8 @@ errno_t strncat_s( char * restrict s1,
                    rsize_t s1max,
                    const char * restrict s2,
                    rsize_t n )
-.ixfunc2 '&String' &func
-.ixfunc2 '&Concats' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Concats' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t wcsncat_s( wchar_t * restrict s1,
@@ -25,7 +25,7 @@ Let
 .arg m
 denote the value
 .arg s1max - strnlen_s(s1, s1max)
-upon entry to &func.
+upon entry to &funcb.
 .np
 Neither
 .arg s1
@@ -59,7 +59,7 @@ is
 greater than zero and not greater than
 .kw RSIZE_MAX
 .ct , then
-.id &func.
+.id &funcb.
 sets
 .arg s1[0]
 to the null character.
@@ -67,7 +67,7 @@ to the null character.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function appends not more than
 .arg n
 successive characters (characters that follow a null character are not copied)
@@ -86,14 +86,14 @@ If no null character was copied from
 .arg s1[s1max-m+n]
 is set to a null character.
 All elements following the terminating null character (if any) written by
-.id &func.
+.id &funcb.
 in
 the array of
 .arg s1max
 characters pointed to by
 .arg s1
 take unspecified values when
-.id &func.
+.id &funcb.
 returns.
 .im widefunc
 .desc end

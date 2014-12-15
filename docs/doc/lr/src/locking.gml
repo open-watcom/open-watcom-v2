@@ -2,7 +2,7 @@
 .synop begin
 #include <sys/locking.h>
 int locking( int &fd, int mode, long nbyte );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _locking( int &fd, int mode, long nbyte );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _locking( int &fd, int mode, long nbyte );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function locks or unlocks
 .arg nbyte
 bytes of the file specified by
@@ -77,7 +77,7 @@ must be installed.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -85,7 +85,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns &minus.1 and
 .kw errno

@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double frexp( double value, int *exp );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function breaks a floating-point number into a
 normalized fraction and an integral power of 2.
 It stores the integral power of 2 in the
@@ -17,7 +17,7 @@ object pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of
 .arg x
 .ct , such that

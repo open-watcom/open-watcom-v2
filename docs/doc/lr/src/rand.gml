@@ -2,11 +2,11 @@
 .synop begin
 #include <stdlib.h>
 int rand( void );
-.ixfunc2 'Random Numbers' &func
+.ixfunc2 'Random Numbers' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes a sequence of pseudo-random integers in
 the range 0 to
 .kw RAND_MAX
@@ -17,7 +17,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pseudo-random integer.
 .return end
 .see begin

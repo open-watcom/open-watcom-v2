@@ -6,7 +6,7 @@ PFU _set_new_handler( PFU pNewHandler );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions are used to transfer control to a user-defined
 error handler if the
 .kw new
@@ -45,7 +45,7 @@ handling.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return a pointer to the previous error handler so
 that the previous error handler can be reinstated at a later time.
 .np

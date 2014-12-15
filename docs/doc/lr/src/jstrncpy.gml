@@ -4,8 +4,8 @@
 JSTRING jstrncpy( JCHAR *dst,
                   const JCHAR *src,
                   size_t n );
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Jcopy' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jcopy' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjstrncpy( JCHAR __far *dst,
                            const JCHAR __far *src,
@@ -17,12 +17,12 @@ FJSTRING __far _fjstrncpy( JCHAR __far *dst,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function copies
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions copy
@@ -60,12 +60,12 @@ terminated by a null character.
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

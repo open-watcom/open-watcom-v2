@@ -6,7 +6,7 @@ char *basename( char *path );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the final component of a pathname
 pointed to by the
 .arg path
@@ -23,22 +23,22 @@ is a null pointer or points to an empty string, a pointer to the string "."
 is returned.
 .np
 The
-.id &func.
+.id &funcb.
 function may modify the string pointed to by
 .arg path
 and may return a pointer to static storage that may be overwritten by
 a subsequent call to
-.id &func.
+.id &funcb.
 .
 .np
 The
-.id &func.
+.id &funcb.
 function is not re-entrant or thread-safe.
 .desc end
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the final component of
 .arg path
 .ct .li .

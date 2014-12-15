@@ -2,7 +2,7 @@
 .synop begin
 #include <string.h>
 void *memset( void *dst, int c, size_t length );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &farfnc eq 1 .do begin
 void __far *_fmemset( void __far *dst, int c,
                       size_t length );
@@ -17,7 +17,7 @@ wchar_t *wmemset( wchar_t *dst,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function fills the first
 .arg length
 characters of the object pointed to by
@@ -31,7 +31,7 @@ with the value
 The
 .id &wfunc.
 wide-character function is identical to
-.id &func.
+.id &funcb.
 except that it
 operates on characters of
 .kw wchar_t
@@ -43,7 +43,7 @@ is interpreted to mean the number of wide characters.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the pointer
 .arg dst
 .ct .li .

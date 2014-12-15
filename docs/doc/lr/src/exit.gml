@@ -5,7 +5,7 @@ void exit( int status );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes normal program termination to occur.
 .pp
 First, all functions registered by the
@@ -29,7 +29,7 @@ set to some other value to indicate an error.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return to its caller.
 .return end
 .see begin

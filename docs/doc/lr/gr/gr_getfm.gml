@@ -11,7 +11,7 @@ integer*1 mask(8)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine copies the current fill mask into the area
 located by the argument
 .arg mask
@@ -36,7 +36,7 @@ If no fill mask has been set,
 .id NULL
 is returned; otherwise,
 the
-.id &func.
+.id &funcb.
 &routine returns
 .arg mask
 .ct .li .

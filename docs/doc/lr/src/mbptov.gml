@@ -8,7 +8,7 @@ unsigned int _fmbptov( const unsigned char __far *string );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the multibyte character at the position in
 the string pointed to by
 .arg string
@@ -17,7 +17,7 @@ the string pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a multibyte character or null if
 .arg string
 points at a null character.

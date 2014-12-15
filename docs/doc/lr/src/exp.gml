@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double exp( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the exponential function of
 .arg x
 .ct .li .
@@ -16,7 +16,7 @@ is too large.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the exponential value.
 .im errnorng
 .return end

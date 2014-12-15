@@ -26,7 +26,7 @@ is not equal to zero, then none of
 .arg compar
 shall be a null pointer.
 If there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function does not
 search the array.
 .rtconst end
@@ -34,7 +34,7 @@ search the array.
 .desc begin
 
 The
-.id &func.
+.id &funcb.
 function searches an array of
 .arg nmemb
 objects, the initial element of
@@ -57,17 +57,17 @@ equal to, and all the elements that compare greater than the key object, in that
 The third argument to the comparison function is the
 .arg context
 argument passed to
-.id &func.
+.id &funcb.
 .
 The sole use of context by
-.id &func.
+.id &funcb.
 is to pass it to the comparison function.
 
 .desc end
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to a matching element of the array,or a null
 pointer if no match is found or there is a runtime-constraint violation. If two elements
 compare as equal, which element is matched is unspecified.

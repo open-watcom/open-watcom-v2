@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 char *_mktemp( char *template );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 wchar_t *_wmktemp( wchar_t *template );
@@ -12,11 +12,11 @@ wchar_t *_wmktemp( wchar_t *template );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates a unique filename by modifying the
 .arg template
 argument.
-.id &func.
+.id &funcb.
 automatically handles multibyte-character string arguments as
 appropriate, recognizing multibyte-character sequences according to
 the multibyte code page currently in use by the run-time system.
@@ -31,39 +31,39 @@ where
 is the fixed part of the generated filename and
 .mono XXXXXX
 is the variable part of the generated filename.
-Each of the 6 X's is a placeholder for a character supplied by &func..
+Each of the 6 X's is a placeholder for a character supplied by &funcb..
 Each placeholder character in
 .arg template
 must be an uppercase "X".
-.id &func.
+.id &funcb.
 preserves
 .mono base
 and replaces the first of the 6 trailing X's with a lowercase
 alphabetic character (a-z).
-.id &func.
+.id &funcb.
 replaces the following 5 trailing X's with a five-digit value;
 this value is a unique number identifying the calling process or
 thread.
 .np
-.id &func.
+.id &funcb.
 checks to see if a file with the generated name already exists
 and if so selects another letter, in succession, from "a" to "z" until
 it finds a file that doesn't exist.
 If it is unsuccessful at finding a name for a file that does not
 already exist,
-.id &func.
+.id &funcb.
 returns NULL.
 At most, 26 unique file names can be returned to the calling process
 or thread.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the modified
 .arg template
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function returns NULL if
 .arg template
 is badly formed or no more unique names can be created from the given

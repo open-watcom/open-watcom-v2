@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 int _stricoll( const char *s1, const char *s2 );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int _wcsicoll( const wchar_t *s1, const wchar_t *s2 );
@@ -21,7 +21,7 @@ int _mbsicoll( const unsigned char *s1, const unsigned char *s2 );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function performs a case insensitive comparison of the
 string pointed to by
 .arg s1

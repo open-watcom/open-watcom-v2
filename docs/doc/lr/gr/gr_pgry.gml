@@ -9,7 +9,7 @@ subroutine _pg_resetstyleset()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine resets the internal style-set of the
 presentation graphics system to default values.
 The style-set is a set of line styles used for drawing
@@ -18,7 +18,7 @@ window borders and grid-lines.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

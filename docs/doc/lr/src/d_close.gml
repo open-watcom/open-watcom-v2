@@ -2,12 +2,12 @@
 .synop begin
 #include <&doshdr>
 unsigned _dos_close( int &fd );
-.ixfunc2 '&DosFunc' &func
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&DosFunc' &funcb
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x3E to close the file indicated by
 .arg &fd
 .ct .li .
@@ -17,7 +17,7 @@ is the one returned by a function call that created or last opened the file.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

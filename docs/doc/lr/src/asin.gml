@@ -2,12 +2,12 @@
 .synop begin
 #include <math.h>
 double asin( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the principal value of the
 arcsine of
 .arg x
@@ -16,7 +16,7 @@ A domain error occurs for arguments not in the range [&minus.1,1].
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the arcsine in the range [&minus.&pi./2,&pi./2].
 .im errnodom
 .return end

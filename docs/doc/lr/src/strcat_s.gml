@@ -5,8 +5,8 @@
 errno_t strcat_s( char * restrict s1,
                   rsize_t s1max,
                   const char * restrict s2 );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Concats' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Concats' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t wcscat_s( wchar_t * restrict s1,
@@ -60,7 +60,7 @@ to the null character.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function appends a copy of the string pointed to by
 .arg s2
 (including the terminating null character) to the end of the string pointed to by
@@ -72,13 +72,13 @@ overwrites the null character at the end of
 .arg s1
 .ct .li .
 All elements following the terminating null character (if any) written by
-.id &func.
+.id &funcb.
 in the array of
 .arg s1max
 characters pointed to by
 .arg s1
 take unspecified values when
-.id &func.
+.id &funcb.
 returns.
 .im widefunc
 .desc end

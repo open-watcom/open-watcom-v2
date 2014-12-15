@@ -5,8 +5,8 @@
 errno_t strcpy_s( char * restrict s1,
                   rsize_t s1max,
                   const char * restrict s2 );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Copy' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t wcscpy_s( wchar_t * restrict s1,
@@ -51,7 +51,7 @@ to the null character.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies the string pointed to by
 .arg s2
 (including the terminating null character) into the array pointed to by
@@ -59,14 +59,14 @@ function copies the string pointed to by
 .ct .li .
 
 All elements following the terminating null character (if any) written by
-.id &func.
+.id &funcb.
 in
 the array of
 .arg s1max
 characters pointed to by
 .arg s1
 take unspecified values when
-.id &func.
+.id &funcb.
 returns.
 .im widefunc
 .desc end

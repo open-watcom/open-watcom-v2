@@ -6,7 +6,7 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 errno_t tmpnam_s( char * s, rsize_t maxsize );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t _wtmpnam_s( wchar_t * s, rsize_t maxsize );
@@ -28,7 +28,7 @@ shall be greater than the length of the generated file name string.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function generates a string that is a valid file name and that is not the
 same as the name of an existing file. The function is potentially capable of generating
 .kw TMP_MAX_S
@@ -38,14 +38,14 @@ the value of the
 .kw L_tmpnam_s
 macro.
 The
-.id &func.
+.id &funcb.
 function generates a different string each time it is called.
 .np
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it generates a
 unique wide-character string for the file name.
 .do end
@@ -53,7 +53,7 @@ unique wide-character string for the file name.
 .*
 .return begin
 If no suitable string can be generated, or if there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function writes a null character to
 .arg s[0]
 (only if
@@ -62,7 +62,7 @@ is not null and
 .arg maxsize
 is greater than zero) and returns a non-zero value.
 Otherwise, the
-.id &func.
+.id &funcb.
 function writes the string in the array pointed to by
 .arg s
 and returns zero.

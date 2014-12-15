@@ -2,11 +2,11 @@
 .synop begin
 #include <process.h>
 char *_cmdname( char *buffer );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function obtains a copy of the executing program's pathname
 and places it in
 .arg buffer

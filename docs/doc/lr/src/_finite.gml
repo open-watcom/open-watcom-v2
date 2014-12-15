@@ -2,20 +2,20 @@
 .synop begin
 #include <float.h>
 int _finite( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 .ix 'infinity'
 .ix 'NAN'
 The
-.id &func.
+.id &funcb.
 function determines whether the double precision
 floating-point argument is a valid number (i.e., not infinite
 and not a NAN).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 0 if the number is not valid and
 non-zero otherwise.
 .return end

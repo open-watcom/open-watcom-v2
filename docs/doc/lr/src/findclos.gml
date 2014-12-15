@@ -6,7 +6,7 @@ int _findclose( long handle );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function closes the directory of filenames established by a
 call to the
 .kw _findfirst
@@ -19,9 +19,9 @@ function.
 .desc end
 .return begin
 If successful,
-.id &func.
+.id &funcb.
 returns 0; otherwise,
-.id &func.
+.id &funcb.
 and returns &minus.1
 and sets
 .kw errno

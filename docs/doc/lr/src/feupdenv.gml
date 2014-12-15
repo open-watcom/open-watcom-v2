@@ -2,12 +2,12 @@
 .synop begin
 #include <fenv.h>
 int feupdateenv( const fenv_t *__envp );
-.ixfunc2 'Floating Point Environment' &func
+.ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function attempts to save the currently raised floating-point exceptions in its
 automatic storage, installs the floating-point environment represented by the object
 pointed to by envp, and then raises the saved floating-point exceptions. The argument
@@ -17,7 +17,7 @@ floating-point environment macro.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if all the actions were successfully carried out.
 Otherwise, it returns a nonzero value.
 .return end

@@ -3,11 +3,11 @@
 #include <conio.h>
 unsigned int outpw( int port,
                     unsigned int value );
-.ixfunc2 '&PortIo' &func
+.ixfunc2 '&PortIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes a word (two bytes), determined by
 .arg value
 .ct , to the 80x86 hardware port whose number is given by

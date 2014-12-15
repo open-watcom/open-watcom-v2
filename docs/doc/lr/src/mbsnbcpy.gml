@@ -4,8 +4,8 @@
 unsigned char *_mbsnbcpy( unsigned char *dst,
                     const unsigned char *src,
                     size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Copy' &funcb
 .if &farfnc eq 1 .do begin
 unsigned char __far *_fmbsnbcpy( unsigned char __far *dst,
                            const unsigned char __far *src,
@@ -16,7 +16,7 @@ unsigned char __far *_fmbsnbcpy( unsigned char __far *dst,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies no more than
 .arg n
 bytes from the string pointed to by
@@ -45,7 +45,7 @@ characters, then the result will not be terminated by a null character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of
 .arg dst
 .ct .li .

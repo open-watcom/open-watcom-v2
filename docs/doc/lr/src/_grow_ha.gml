@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 int _grow_handles( int new_count );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function increases the number of POSIX level files that are
 allowed to be open at one time.
 The parameter
@@ -21,7 +21,7 @@ If the number returned is greater than or equal to the number
 requested, the call was successful.
 .np
 Note that even if
-.id &func.
+.id &funcb.
 returns successfully, you still might not be
 able to open the requested number of files due to some system
 limit (e.g. FILES= in the CONFIG.SYS file under DOS) or because some
@@ -83,14 +83,14 @@ In this case, you may have to increase the number specified in the
 .do end
 .note
 Add a call to
-.id &func.
+.id &funcb.
 in your application similar to that shown in the
 example below.
 .endnote
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the maximum number of file handles which
 the run-time system can accommodate.
 This number can exceed an operating system

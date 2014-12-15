@@ -7,12 +7,12 @@ unsigned int delay( unsigned int milliseconds );
 .el .do begin
 void delay( unsigned milliseconds );
 .do end
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The
-.id &func.
+.id &funcb.
 function suspends the calling process until the number
 of real time milliseconds specified by the
 .arg milliseconds
@@ -23,7 +23,7 @@ the scheduling of other, higher priority activity by the system.
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 function suspends execution by the specified number of
 .arg milliseconds
 .ct .li .
@@ -32,14 +32,14 @@ function suspends execution by the specified number of
 .return begin
 .if '&machsys' eq 'QNX' .do begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the full time specified was
 completed; otherwise it returns the number of milliseconds unslept if
 interrupted by a signal.
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 .do end
 .return end

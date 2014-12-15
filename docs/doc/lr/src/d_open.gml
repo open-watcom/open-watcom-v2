@@ -6,12 +6,12 @@
 unsigned _dos_open( const char *path,
                     unsigned mode,
                     int *&fd );
-.ixfunc2 '&DosFunc' &func
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&DosFunc' &funcb
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x3D to open the file specified by
 .arg path
 .ct , which must be an existing file.
@@ -56,7 +56,7 @@ File is not inherited by a child process
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an
 MS-DOS error code and sets

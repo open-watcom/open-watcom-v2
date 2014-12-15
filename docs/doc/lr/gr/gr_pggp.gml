@@ -10,7 +10,7 @@ record /paletteentry/ pal(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine retrieves the internal palette of the presentation
 graphics system.
 The palette controls the colors, line styles, fill patterns
@@ -33,7 +33,7 @@ character plotted on line and scatter charts
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

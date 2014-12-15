@@ -2,26 +2,26 @@
 .synop begin
 #include <stdlib.h>
 int atexit( void (*func)(void) );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
  function is passed the address of function
 .arg func
 to be called when the program terminates normally.
-Successive calls to &func
+Successive calls to &funcb
 create a list of functions that will be executed on a
 "last-in, first-out" basis.
 No more than 32 functions can be registered with the
-.id &func.
+.id &funcb.
 function.
 .pp
 The functions have no parameters and do not return values.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the registration succeeds,
 non-zero if it fails.
 .return end

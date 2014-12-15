@@ -12,7 +12,7 @@ int DefineDLLEntry( int index, void * routine, ... );
 .do end
 .synop end
 .desc begin
-The &func function defines an
+The &funcb function defines an
 .arg index
 number for the 32-bit DLL procedure
 .arg routine
@@ -66,7 +66,7 @@ The data can then be accessed with the resulting 32-bit far pointer.
 .do end
 .desc end
 .return begin
-The &func function returns zero if successful, and a non-zero value otherwise.
+The &funcb function returns zero if successful, and a non-zero value otherwise.
 .return end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exmp begin

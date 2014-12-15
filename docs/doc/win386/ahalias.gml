@@ -17,7 +17,7 @@ DWORD AllocHugeAlias16( void *ptr, DWORD size );
 .do end
 .synop end
 .desc begin
-The &func function obtains a 16-bit far pointer to a 32-bit memory object
+The &funcb function obtains a 16-bit far pointer to a 32-bit memory object
 that is
 .arg size
 bytes in size.
@@ -32,7 +32,7 @@ To get 16-bit far pointers to 32-bit memory objects larger than 64K,
 should be used.
 .desc end
 .return begin
-The &func function returns a 16-bit far pointer
+The &funcb function returns a 16-bit far pointer
 .if '&lang' eq 'FORTRAN 77' .do begin
 (as an INTEGER*4)
 .do end

@@ -2,11 +2,11 @@
 .synop begin
 #include <stdlib.h>
 void abort( void );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function raises the signal SIGABRT.
 The default action for SIGABRT is to terminate program execution,
 returning control
@@ -29,7 +29,7 @@ header file.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return to its caller.
 .return end
 .see begin

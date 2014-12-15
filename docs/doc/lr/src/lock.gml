@@ -4,11 +4,11 @@
 int lock( int &fd,
           unsigned long offset,
           unsigned long nbytes );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function locks
 .arg nbytes
 amount of data in the file designated by
@@ -54,7 +54,7 @@ must be installed.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful, and &minus.1 when an error
 occurs.
 .im errnoref

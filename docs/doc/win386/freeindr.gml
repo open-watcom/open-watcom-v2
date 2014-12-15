@@ -21,7 +21,7 @@ void FreeIndirectFunctionHandle( HINDIR handle );
 .do end
 .synop end
 .desc begin
-&func frees a handle that was obtained using
+&funcb frees a handle that was obtained using
 .kw GetIndirectFunctionHandle
 .ct .li .
 This is important to do when there is no further use for the pointer
@@ -30,10 +30,10 @@ limited space in the local descriptor table).
 .desc end
 .return begin
 .if '&lang' eq 'FORTRAN 77' .do begin
-&func is a subroutine.
+&funcb is a subroutine.
 .do end
 .el .do begin
-The &func function returns nothing.
+The &funcb function returns nothing.
 .do end
 .return end
 .see begin

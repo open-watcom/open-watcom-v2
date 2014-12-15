@@ -2,16 +2,16 @@
 .synop begin
 #include <math.h>
 int matherr( struct _exception *err_info );
-.ixfunc2 '&Errs' &func
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Errs' &funcb
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is invoked each time an error is detected by
 functions in the math library.
 The default
-.id &func.
+.id &funcb.
 function supplied in the library returns zero which
 causes an error message to be displayed upon
 .kw stderr
@@ -23,7 +23,7 @@ the library version, in order that the error handling for mathematical
 errors can be handled by an application.
 .np
 A program may contain a user-written version of
-.id &func.
+.id &funcb.
 to take any
 appropriate action when an error is detected.
 When zero is returned, an error message will be printed upon
@@ -40,7 +40,7 @@ is used as the return value for the function in which the error was
 detected.
 .np
 The
-.id &func.
+.id &funcb.
 function is passed a pointer to a structure of type
 .id struct _exception
 which contains information about the error that has been detected:
@@ -92,12 +92,12 @@ and
 The field
 .id retval
 contains the value which will be returned by the function.
-This value may be changed by a user-supplied version of the &func
+This value may be changed by a user-supplied version of the &funcb
 function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero when an error message is to be printed
 and a non-zero value otherwise.
 .return end

@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 void *sbrk( int increment );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 .if '&machsys' ne 'QNX' .do begin
@@ -16,7 +16,7 @@ the code and constant data for the program.
 As memory is allocated, this pointer will advance when there is no
 freed block large enough to satisfy an allocation request.
 The
-.id &func.
+.id &funcb.
 function can be used to set a new "break" value for the
 program by adding the value of
 .arg increment
@@ -26,7 +26,7 @@ This increment may be positive or negative.
 .np
 Under other systems, heap allocation is discontiguous.
 The
-.id &func.
+.id &funcb.
 function can only be used to allocate additional
 discontiguous blocks of memory.
 The value of
@@ -62,14 +62,14 @@ allocated by the resident program after other programs are loaded.
 .desc end
 .return begin
 If the call to
-.id &func.
+.id &funcb.
 succeeds, a pointer to the start of the new block
 of memory is returned.
 .if '&machsys' ne 'QNX' .do begin
 Under 16-bit DOS, this corresponds to the old break value.
 .do end
 If the call to
-.id &func.
+.id &funcb.
 fails, &minus.1 is returned.
 .im errnoref
 .return end

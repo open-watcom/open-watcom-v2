@@ -2,11 +2,11 @@
 .synop begin
 #include <&doshdr>
 void _dos_keep( unsigned retcode, unsigned memsize );
-.ixfunc2 '&TSR' &func
+.ixfunc2 '&TSR' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is used to install terminate-and-stay-resident
 programs ("TSR's") in memory.
 The amount of memory kept for the program is
@@ -21,7 +21,7 @@ is returned to the parent process.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return.
 .return end
 .see begin

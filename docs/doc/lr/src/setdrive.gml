@@ -2,11 +2,11 @@
 .synop begin
 #include <&doshdr>
 void _dos_setdrive( unsigned drive, unsigned *total );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x0E to set the current default
 disk drive to be the drive specified by
 .arg drive
@@ -19,7 +19,7 @@ is 5.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 If an invalid drive number is specified, the function fails with no
 error indication.

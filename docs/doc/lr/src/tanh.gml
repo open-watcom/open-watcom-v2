@@ -2,13 +2,13 @@
 .synop begin
 #include <math.h>
 double tanh( double x );
-.ixfunc2 '&Math' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Hyper' &func
+.ixfunc2 '&Math' &funcb
+.ixfunc2 '&Trig' &funcb
+.ixfunc2 '&Hyper' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the hyperbolic tangent of
 .arg x
 .ct .li .
@@ -22,7 +22,7 @@ function will be invoked in this case.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the hyperbolic tangent value.
 .im errnoref
 .return end

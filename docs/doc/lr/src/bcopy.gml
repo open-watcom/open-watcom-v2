@@ -2,12 +2,12 @@
 .synop begin
 #include <string.h>
 void bcopy( const void *src, void *dst, size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Copy' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies the byte string pointed to by
 .arg src
 (including any null characters) into the array pointed to by
@@ -25,7 +25,7 @@ function but the order of arguments is different
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 .return end
 .see begin

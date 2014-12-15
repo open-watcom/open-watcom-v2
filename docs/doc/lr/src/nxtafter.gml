@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double nextafter( double x, double y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the next machine floating point
 number of
 .arg x

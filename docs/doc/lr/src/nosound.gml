@@ -2,17 +2,17 @@
 .synop begin
 #include <i86.h>
 void nosound( void );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function turns off the PC's speaker.
 .im privity
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 .return end
 .see begin

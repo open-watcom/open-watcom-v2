@@ -3,11 +3,11 @@
 #include <conio.h>
 #include <stdarg.h>
 int vcprintf( const char *format, va_list arg );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes output directly to the console under control
 of the argument
 .arg format
@@ -21,7 +21,7 @@ string is described under the description of the
 .kw printf
 function.
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw cprintf
 function, with the variable argument list replaced with
@@ -32,7 +32,7 @@ macro.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written, or a
 negative value if an output error occurred.
 .im errnoref

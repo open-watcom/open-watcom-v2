@@ -10,7 +10,7 @@ character*(*) opt
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine selects a font from the list of registered fonts
 (see the
 .kw _registerfonts
@@ -74,7 +74,7 @@ When "nX" is specified to select a particular font, the other options
 are ignored.
 .pp
 If the best fit option ("b") is specified,
-.id &func.
+.id &funcb.
 will always be able
 to select a font.
 The font chosen will be the one that best matches the options specified.
@@ -97,7 +97,7 @@ given size.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, (-1) is returned.
 .return end

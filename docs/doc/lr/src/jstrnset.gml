@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 JSTRING jstrnset( JCHAR *s1, JMOJI fill, size_t n );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjstrnset( JCHAR __far *s1,
                            JMOJI fill,
@@ -13,12 +13,12 @@ FJSTRING __far _fjstrnset( JCHAR __far *s1,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function fills
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions fill

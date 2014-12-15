@@ -2,11 +2,11 @@
 .synop begin
 #include <jctype.h>
 int isprkana( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a single-byte printable character including space ("&sysrb.") or
@@ -18,7 +18,7 @@ isprint(c) || iskana(c)
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not a single-byte printable
 character (including space) or single-byte Katakana character;
 otherwise, a non-zero value is returned.

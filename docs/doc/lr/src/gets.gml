@@ -3,7 +3,7 @@
 .funcw _getws
 #include <stdio.h>
 char *gets( char *buf );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 wchar_t *_getws( wchar_t *buf );
@@ -13,7 +13,7 @@ wchar_t *_getws( wchar_t *buf );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets a string of characters from the file
 designated by
 .kw stdin
@@ -27,7 +27,7 @@ immediately after the last character read into the array.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it gets a string
 of multibyte characters (if present) from the input stream pointed to
 by
@@ -42,7 +42,7 @@ character is read.
 It is recommended that
 .kw fgets
 be used instead of
-.id &func.
+.id &funcb.
 because data beyond the array
 .arg buf
 will be destroyed if a new-line character is not read from the input stream
@@ -58,7 +58,7 @@ just before end-of-file.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg buf
 if successful.

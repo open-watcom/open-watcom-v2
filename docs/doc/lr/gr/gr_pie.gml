@@ -42,10 +42,10 @@ record /_wxycoord/ p3, p4
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines draw pie-shaped wedges.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.

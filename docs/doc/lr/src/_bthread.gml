@@ -15,8 +15,8 @@ unsigned long _beginthread(
         void (*start_address)(void *),
         unsigned stack_size,
         void     *arglist);
-.ixfunc2 '&NTFunc' &func
-.ixfunc2 '&TNTFunc' &func
+.ixfunc2 '&NTFunc' &funcb
+.ixfunc2 '&TNTFunc' &funcb
 unsigned long _beginthreadex(
         void *security,
         unsigned stack_size,
@@ -24,15 +24,15 @@ unsigned long _beginthreadex(
         void *arglist,
         unsigned initflag,
         unsigned *thrdid );
-.ixfunc2 '&NTFunc' &func.ex
-.ixfunc2 '&TNTFunc' &func.ex
+.ixfunc2 '&NTFunc' &funcb.ex
+.ixfunc2 '&TNTFunc' &funcb.ex
 #else
 int FAR _beginthread(
         void (FAR *start_address)(void FAR *),
         void FAR *stack_bottom,
         unsigned stack_size,
         void FAR *arglist );
-.ixfunc2 '&OS2Func' &func
+.ixfunc2 '&OS2Func' &funcb
 #endif
 .do end
 .el .do begin
@@ -41,9 +41,9 @@ int _beginthread(
         void *stack_bottom,
         unsigned stack_size,
         void *arglist );
-.ixfunc2 '&OS2Func' &func
-.ixfunc2 '&NTFunc' &func
-.ixfunc2 '&TNTFunc' &func
+.ixfunc2 '&OS2Func' &funcb
+.ixfunc2 '&NTFunc' &funcb
+.ixfunc2 '&TNTFunc' &funcb
 unsigned long _beginthreadex(
         void *security,
         unsigned stack_size,
@@ -51,13 +51,13 @@ unsigned long _beginthreadex(
         void *arglist,
         unsigned initflag,
         unsigned *thrdid );
-.ixfunc2 '&NTFunc' &func.ex
-.ixfunc2 '&TNTFunc' &func.ex
+.ixfunc2 '&NTFunc' &funcb.ex
+.ixfunc2 '&TNTFunc' &funcb.ex
 .do end
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is used to start a new thread of execution at the
 function identified by
 .arg start_address
@@ -66,10 +66,10 @@ with a single parameter identified by
 .ct .li .
 .np
 For each operating environment under which
-.id &func.
+.id &funcb.
 is supported,
 the
-.id &func.
+.id &funcb.
 function uses the appropriate system call to begin a new
 thread of execution.
 .np
@@ -199,13 +199,13 @@ unsigned __MaxThreads = { 48 };
 .desc end
 .return begin
 Under Win32, the
-.id &func.
+.id &funcb.
 function returns the thread handle for the new
 thread if successful; otherwise it returns &minus.1 to indicate that the
 thread could not be started.
 .np
 Under all other systems that support the
-.id &func.
+.id &funcb.
 function (OS/2, Netware
 and QNX), it returns the thread ID for the new thread if successful;
 otherwise it returns &minus.1 to indicate that the thread could not be

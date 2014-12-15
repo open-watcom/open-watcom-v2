@@ -10,7 +10,7 @@ unsigned char far *_fmbgetcode( unsigned char far *mbstr,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function places the next single- or double-byte character
 from the start of the Kanji string specified by
 .arg mbstr
@@ -23,7 +23,7 @@ returned wide character is NULL.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the next character to be
 obtained from the string.
 If

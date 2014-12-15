@@ -11,11 +11,11 @@ struct  diskinfo_t {        /* disk parameters   */
         unsigned nsectors;  /* number of sectors */
         void __far *buffer; /* buffer address    */
 };
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses INT 0x13 to provide access to the BIOS
 disk functions.
 Information for the desired
@@ -76,7 +76,7 @@ Real-Mode Interrupt DPMI call).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns status information in the high-order byte when
 .arg service
 is _DISK_STATUS, _DISK_READ, _DISK_WRITE, or _DISK_VERIFY.

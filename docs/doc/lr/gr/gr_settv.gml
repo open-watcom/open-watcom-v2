@@ -10,7 +10,7 @@ integer*2 x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the orientation for text output used by the
 .kw _outgtext
 &routine to the vector specified by the arguments
@@ -23,7 +23,7 @@ is the vector
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns, as an
 .id xycoord
 structure, the previous value of the text orientation vector.

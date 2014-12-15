@@ -7,7 +7,7 @@
 #include <share.h>
 int sopen( const char *filename,
            int access, int share, ... );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _sopen( const char *filename,
            int access, int share, ... );
@@ -21,7 +21,7 @@ int _wsopen( const wchar_t *filename,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function opens a file at the operating system level for
 shared access.
 The name of the file to be opened is given by
@@ -44,7 +44,7 @@ mode.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -54,7 +54,7 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide character string argument.
 .do end
@@ -93,7 +93,7 @@ sopen( path, oflag, SH_COMPAT, ... );
 .millust end
 .np
 Note that the
-.id &func.
+.id &funcb.
 function call ignores advisory locks which may
 have been set by the
 .kw fcntl
@@ -111,7 +111,7 @@ you are using for more detailed information about these sharing modes.
 .desc end
 .return begin
 If successful,
-.id &func.
+.id &funcb.
 returns a &handle for the file.
 When an error occurs while opening the file, &minus.1 is returned.
 .im errnoref

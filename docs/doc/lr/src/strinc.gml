@@ -2,7 +2,7 @@
 .synop begin
 #include <tchar.h>
 char *_strinc( const char *current );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wcsinc( const wchar_t *current );
 .ixfunc2 '&String' &wfunc
@@ -23,7 +23,7 @@ unsigned char *_fmbsinc(
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the next character
 (single-byte, wide, or multibyte) in the string pointed to by
 .arg current
@@ -37,7 +37,7 @@ does not point into the middle of a multibyte or wide character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the next character
 (single-byte, wide, or multibyte depending on the function used).
 .return end

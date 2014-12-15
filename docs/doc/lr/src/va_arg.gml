@@ -2,10 +2,10 @@
 .synop begin
 #include <stdarg.h>
 type va_arg( va_list param, type );
-.ixfunc2 'variable arguments'  &func
+.ixfunc2 'variable arguments'  &funcb
 .synop end
 .desc begin
-.id &func.
+.id &funcb.
 is a macro that can be used to obtain the next argument in a
 list of variable arguments.
 It must be used with the associated macros

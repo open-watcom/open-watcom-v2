@@ -6,7 +6,7 @@ int isnormal( x );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro determines whether its argument value is normal (neither
 zero, subnormal, infinite, nor NaN).
 First, an argument represented in a format wider than its semantic type is
@@ -20,7 +20,7 @@ must be an expression of real floating type.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 macro returns a nonzero value if and only if its argument has
 a normal value.
 .return end

@@ -11,9 +11,9 @@ When the value of the argument
 is
 .mono NULL,
 the
-.id &func.
+.id &funcb.
 function does nothing; otherwise, the
-.id &func.
+.id &funcb.
 function
 deallocates the memory block located by the argument
 .arg ptr
@@ -28,7 +28,7 @@ After the call, the freed block is available for allocation.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin
@@ -81,9 +81,9 @@ When the value of the argument
 is
 .mono NULL,
 the
-.id &func.
+.id &funcb.
 function does nothing; otherwise, the
-.id &func.
+.id &funcb.
 function
 deallocates the memory block located by the argument
 .arg ptr
@@ -114,11 +114,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a large data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _ffree
 function; in a small data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _nfree
@@ -126,7 +126,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return no value.
 .return end
 .see begin

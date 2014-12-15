@@ -5,7 +5,7 @@ int _ismbcprint( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for any printable multibyte character
 including space ('&sysrb').
 The
@@ -15,7 +15,7 @@ in the character set being tested.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end

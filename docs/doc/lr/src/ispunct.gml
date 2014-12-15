@@ -3,7 +3,7 @@
 .funcw iswpunct
 #include <ctype.h>
 int ispunct( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wctype.h>
 int iswpunct( wint_t c );
@@ -13,7 +13,7 @@ int iswpunct( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for any punctuation character such as a comma
 (,) or a period (.).
 .if &'length(&wfunc.) ne 0 .do begin
@@ -21,14 +21,14 @@ function tests for any punctuation character such as a comma
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 punctuation character.
 .if &'length(&wfunc.) ne 0 .do begin

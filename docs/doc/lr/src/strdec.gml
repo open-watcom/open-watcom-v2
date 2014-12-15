@@ -2,7 +2,7 @@
 .synop begin
 #include <tchar.h>
 char *_strdec( const char *start, const char *current );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wcsdec( const wchar_t *start,
                   const wchar_t *current );
@@ -25,7 +25,7 @@ unsigned char *_fmbsdec( const unsigned char __far *start,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the previous character
 (single-byte, wide, or multibyte) in the string pointed to by
 .arg start
@@ -44,7 +44,7 @@ does not point into the middle of a multibyte or wide character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the previous character
 (single-byte, wide, or multibyte depending on the function used).
 .return end

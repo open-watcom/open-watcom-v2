@@ -4,7 +4,7 @@
 intmax_t strtoimax( const char *ptr,
                     char **endptr,
                     int base );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 intmax_t wcstoimax( const wchar_t *ptr,
                     wchar_t **endptr,
@@ -15,13 +15,13 @@ intmax_t wcstoimax( const wchar_t *ptr,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the string pointed to by
 .arg ptr
 to an object of type
 .id intmax_t.
 The
-.id &func.
+.id &funcb.
 function recognizes a string containing:
 .begbull $compact
 .bull
@@ -64,7 +64,7 @@ of letters and digits.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the converted value.
 If the correct value would cause overflow,
 .kw INTMAX_MAX

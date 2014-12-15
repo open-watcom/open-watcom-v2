@@ -9,12 +9,12 @@ integer*4 function _xxxx
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns
 .return end
 .see begin

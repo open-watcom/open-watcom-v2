@@ -2,11 +2,11 @@
 .synop begin
 #include <malloc.h>
 size_t _memmax( void );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the size of the largest contiguous block
 of memory available for dynamic memory allocation in the near heap
 (the default data segment).
@@ -14,13 +14,13 @@ In the tiny, small and medium memory models, the default data segment
 is only extended as needed to satisfy requests for memory allocation.
 Therefore, you will need to call
 .kw _nheapgrow
-in these memory models before calling &func
+in these memory models before calling &funcb
 in order to get a meaningful result.
 .pp
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the size of the largest contiguous block
 of memory available for dynamic memory allocation in the near heap.
 If 0 is returned, then there is no more memory available in the

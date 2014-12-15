@@ -9,7 +9,7 @@ integer*4 function _getbkcolor()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current background color.
 In text modes, the background color controls the area behind each
 individual character.
@@ -20,7 +20,7 @@ The default background color is 0.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current background color.
 .return end
 .see begin

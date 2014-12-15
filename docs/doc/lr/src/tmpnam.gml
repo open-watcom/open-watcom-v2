@@ -2,7 +2,7 @@
 .synop begin
 #include <stdio.h>
 char *tmpnam( char *buffer );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wtmpnam( wchar_t *buffer );
 .ixfunc2 '&FileOp' &wfunc
@@ -14,14 +14,14 @@ wchar_t *_wtmpnam( wchar_t *buffer );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function generates a unique string for use as a valid file
 name.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it generates a
 unique wide-character string for the file name.
 .do end
@@ -69,7 +69,7 @@ following:
 An internal static buffer is used to construct the filename.
 .do end
 Subsequent calls to
-.id &func.
+.id &funcb.
 reuse the internal buffer.
 .np
 The function generates unique filenames for up to
@@ -80,13 +80,13 @@ calls.
 If the argument
 .arg buffer
 is a NULL pointer,
-.id &func.
+.id &funcb.
 returns a pointer to an internal buffer
 containing the temporary file name.
 If the argument
 .arg buffer
 is not a NULL pointer,
-.id &func.
+.id &funcb.
 copies the temporary file name from the
 internal buffer to the specified buffer and returns a pointer to the
 specified buffer.
@@ -98,7 +98,7 @@ If the argument
 .arg buffer
 is a NULL pointer, you may wish to duplicate the resulting string
 since subsequent calls to
-.id &func.
+.id &funcb.
 reuse the internal buffer.
 .ixfunc strdup
 .millust begin

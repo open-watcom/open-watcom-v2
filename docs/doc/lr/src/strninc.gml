@@ -2,7 +2,7 @@
 .synop begin
 #ninclude <tchar.h>
 char *_strninc( const char *str, size_t count );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wcsninc( const wchar_t *str, size_t count );
 .ixfunc2 '&String' &wfunc
@@ -50,21 +50,21 @@ if
 has been defined.
 Otherwise
 .kw _tcsninc
-maps to &func..
-.id &func.
+maps to &funcb..
+.id &funcb.
 and
 .id &wfunc.
 are single-byte-character string and wide-character
 string versions of &mfunc..
 .id &wfunc.
 and
-.id &func.
+.id &funcb.
 are provided only for this mapping and should not be
 used otherwise.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to
 .arg str
 after it has been incremented by

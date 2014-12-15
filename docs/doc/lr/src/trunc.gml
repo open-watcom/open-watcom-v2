@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double trunc( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function truncates the argument
 .arg x
 to the appropriate integer.  The function is equivalent to

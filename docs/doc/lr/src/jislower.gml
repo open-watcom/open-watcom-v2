@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jislower( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is a lowercase double-byte character.
@@ -19,7 +19,7 @@ These are double-byte codes for the characters 'a' to 'z'.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not a lowercase double-byte
 character;
 otherwise, a non-zero value is returned.

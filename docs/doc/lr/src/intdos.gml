@@ -3,11 +3,11 @@
 #include <&doshdr>
 int intdos( const union REGS *in_regs,
             union REGS *out_regs );
-.ixfunc2 '&OsInt' &func
+.ixfunc2 '&OsInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes the computer's central processor (CPU) to
 be interrupted with an interrupt number hexadecimal 21 (
 .ct .mono 0x21

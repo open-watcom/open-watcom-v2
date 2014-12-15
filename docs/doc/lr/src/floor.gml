@@ -2,18 +2,18 @@
 .synop begin
 #include <math.h>
 double floor( double x );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the largest integer not greater than
 .arg x
 .ct .li .
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function computes the largest integer not greater than
 .arg x
 .ct , expressed as a

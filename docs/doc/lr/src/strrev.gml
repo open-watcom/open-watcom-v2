@@ -2,7 +2,7 @@
 .synop begin
 #include <string.h>
 char *strrev( char *s1 );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_strrev( char *s1 );
 .ixfunc2 '&String' &_func
@@ -31,7 +31,7 @@ unsigned char __far *_fmbsrev( unsigned char __far *s1 );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function replaces the string
 .arg s1
 with a string whose characters are in the reverse order.
@@ -39,7 +39,7 @@ with a string whose characters are in the reverse order.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.

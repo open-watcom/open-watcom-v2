@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int chkctype( JCHAR c, int mode );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function identifies the type of an 8-bit character.
 .np
 If
@@ -14,7 +14,7 @@ If
 is not
 .kw CT_KJ1
 then
-.id &func.
+.id &funcb.
 identifies whether
 .arg c
 is the first byte of a double-byte Kanji character.
@@ -36,7 +36,7 @@ If
 is
 .kw CT_KJ1
 then
-.id &func.
+.id &funcb.
 identifies whether
 .arg c
 is the second byte of a double-byte Kanji character.
@@ -58,7 +58,7 @@ function identifies the type of the n'th byte of a Kanji string.
 If
 .arg c
 is a null character,
-.id &func.
+.id &funcb.
 returns
 .kw CT_ILGL
 .ct .li .

@@ -8,7 +8,7 @@ char *gets_s( char *s, rsize_t n );
 .rtconst freetext
 If any of the following runtime-constraints is violated, the currently
 active runtime-constraint handler will be invoked and
-.id &func.
+.id &funcb.
 will set
 .arg s[0]
 to be the null character, and characters are read and discarded from
@@ -30,7 +30,7 @@ characters from
 
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets a string of characters from the file
 designated by
 .kw stdin
@@ -50,7 +50,7 @@ read into the array.
 
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg s
 if successful.

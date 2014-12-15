@@ -2,12 +2,12 @@
 .synop begin
 #include <fenv.h>
 int feholdexcept( fenv_t *__envp );
-.ixfunc2 'Floating Point Environment' &func
+.ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function saves the current floating-point environment in the object
 pointed to by envp, clears the floating-point status flags, and then installs a non-stop
 (continue on floating-point exceptions) mode, if available, for all floating-point
@@ -16,7 +16,7 @@ exceptions.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if and only if non-stop floating-point
 exception handling was successfully installed.
 .return end

@@ -10,7 +10,7 @@ integer*2 area
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine clears the indicated
 .arg area
 and fills it with the background color.
@@ -29,7 +29,7 @@ area is current text window
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

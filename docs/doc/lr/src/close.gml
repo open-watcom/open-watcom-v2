@@ -2,7 +2,7 @@
 .synop begin
 #include <&iohdr>
 int close( int &fd );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _close( int &fd );
 .ixfunc2 '&OsIo' &_func
@@ -10,7 +10,7 @@ int _close( int &fd );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function closes a file at the operating system level.
 The
 .arg &fd
@@ -46,7 +46,7 @@ functions.
 The
 .id &_func.
 function is identical to
-.id &func.
+.id &funcb.
 .
 Use
 id &_func.
@@ -55,7 +55,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns &minus.1 and
 .kw errno
@@ -72,7 +72,7 @@ argument is not a valid file &handle..
 .if '&machsys' eq 'QNX' .do begin
 .term EINTR
 The
-.id &func.
+.id &funcb.
 function was interrupted by a signal.
 .term EIO
 An i/o error occurred while updating the directory information.

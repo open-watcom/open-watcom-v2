@@ -3,7 +3,7 @@
 The
 .id &mfunc.
 function is a multibyte character version of
-.id &func.
+.id &funcb.
 that
 operates with multibyte character strings.
 .if &farfnc eq 1 .do begin

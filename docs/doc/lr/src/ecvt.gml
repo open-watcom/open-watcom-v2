@@ -5,7 +5,7 @@ char *ecvt( double value,
             int ndigits,
             int *dec,
             int *sign );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_ecvt( double value,
              int ndigits,
@@ -23,7 +23,7 @@ wchar_t *_wecvt( double value,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the floating-point number
 .arg value
 into a character string.
@@ -51,7 +51,7 @@ is negative.
 The
 .id &_func.
 function is identical to
-.id &func.
+.id &funcb.
 .
 Use
 id &_func.
@@ -62,18 +62,18 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it produces a
 wide-character string.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to a static buffer containing the
 converted string of digits.
 Note:
-.id &func.
+.id &funcb.
 and
 .kw fcvt
 both use the same static buffer.

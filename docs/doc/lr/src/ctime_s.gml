@@ -5,7 +5,7 @@
 errno_t ctime_s( char * s,
                  rsize_t maxsize,
                  const time_t * timer);
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t _wctime_s( wchar_t * s,
@@ -39,7 +39,7 @@ is not equal zero and is not greater than
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the calendar time pointed to by
 .arg timer
 to local time in the form of a string. It is equivalent to
@@ -54,7 +54,7 @@ The
 .arg strftime
 function allows more flexible formatting and supports locale-specific
 behavior. If you do not require the exact form of the result string produced by the
-.id &func.
+.id &funcb.
 function, consider using the
 .arg strftime
 function instead.

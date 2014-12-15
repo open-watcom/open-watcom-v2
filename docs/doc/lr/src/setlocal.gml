@@ -2,7 +2,7 @@
 .synop begin
 #include <locale.h>
 char *setlocale( int category, const char *locale );
-.ixfunc2 '&Locale' &func
+.ixfunc2 '&Locale' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wsetlocale( int category, const wchar_t *locale);
 .ixfunc2 '&Locale' &wfunc
@@ -11,7 +11,7 @@ wchar_t *_wsetlocale( int category, const wchar_t *locale);
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function selects a portion of a program's
 .us locale
 according to the category given by

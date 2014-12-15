@@ -17,7 +17,7 @@ size_t _nmsize( void __near *buffer );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions return the size of the memory block pointed to by
 .arg buffer
 that was allocated by a call to the appropriate version of the
@@ -30,7 +30,7 @@ or
 functions.
 .np
 You must use the correct
-.id &func.
+.id &funcb.
 function as listed below depending on
 which heap the memory block belongs to.
 .begterm 8
@@ -49,11 +49,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In small data models (small and medium memory models),
-.id &func.
+.id &funcb.
 maps to
 .kw _nmsize
 .ct .li .
-In large data models (compact, large and huge memory models), &func
+In large data models (compact, large and huge memory models), &funcb
 maps to
 .kw _fmsize
 .ct .li .
@@ -72,7 +72,7 @@ maps to
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return the size of the memory block pointed to by
 .arg buffer
 .ct .li .

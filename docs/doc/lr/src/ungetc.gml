@@ -3,7 +3,7 @@
 .funcw ungetwc
 #include <stdio.h>
 int ungetc( int c, FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 #include <wchar.h>
@@ -14,7 +14,7 @@ wint_t ungetwc( wint_t c, FILE *fp );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function pushes the character specified by
 .arg c
 back onto the input stream pointed to by
@@ -34,7 +34,7 @@ or
 Only one character (the most recent one) of pushback is remembered.
 .np
 The
-.id &func.
+.id &funcb.
 function clears the end-of-file indicator, unless the value
 of
 .arg c
@@ -46,7 +46,7 @@ is
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it pushes the
 wide character specified by
 .arg c
@@ -66,7 +66,7 @@ is
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the character pushed back.
 .return end
 .see begin

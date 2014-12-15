@@ -3,7 +3,7 @@
 .funcw fgetws
 #include <stdio.h>
 char *fgets( char *buf, int n, FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 #include <wchar.h>
@@ -14,7 +14,7 @@ wchar_t *fgetws( wchar_t *buf, int n, FILE *fp );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function gets a string of characters from the file
 designated by
 .arg fp
@@ -22,7 +22,7 @@ and stores them in the array pointed to by
 .arg buf
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function stops reading characters when end-of-file is
 reached, or when a newline character is read, or when
 .arg n-1
@@ -35,7 +35,7 @@ read into the array.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it gets a string
 of multibyte characters (if present) from the input stream pointed to
 by
@@ -60,7 +60,7 @@ file, just before end-of-file.
 The
 .kw gets
 function is similar to
-.id &func.
+.id &funcb.
 except that it operates with
 .filename stdin
 .ct , it has no size argument, and it replaces a newline character
@@ -68,7 +68,7 @@ with the null character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg buf
 if successful.

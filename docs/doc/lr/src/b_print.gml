@@ -4,11 +4,11 @@
 unsigned short _bios_printer( unsigned service,
                               unsigned port,
                               unsigned data );
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses INT 0x17 to perform printer output
 services to the printer specified by
 .arg port
@@ -35,7 +35,7 @@ Get the status of the printer specified by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a printer status byte defined as follows:
 .begnote $compact
 .termhd1 Bit

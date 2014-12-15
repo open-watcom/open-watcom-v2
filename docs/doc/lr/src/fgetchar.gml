@@ -3,7 +3,7 @@
 .funcw _fgetwchar
 #include <stdio.h>
 int fgetchar( void );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _fgetchar( void );
 .ixfunc2 '&StrIo' &_func
@@ -16,7 +16,7 @@ wint_t _fgetwchar( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is equivalent to
 .kw fgetc
 with the argument
@@ -27,7 +27,7 @@ with the argument
 The
 .id &_func.
 function is identical to
-.id &func.
+.id &funcb.
 .
 Use
 .id &_func.
@@ -38,7 +38,7 @@ for ANSI naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it gets the next
 multibyte character (if present) from the input stream pointed to by
 .kw stdin
@@ -47,18 +47,18 @@ and converts it to a wide character.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the next character from the input stream
 pointed to by
 .kw stdin
 .ct .li .
 If the stream is at end-of-file, the end-of-file indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .
 If a read error occurs, the error indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .

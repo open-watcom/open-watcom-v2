@@ -3,7 +3,7 @@
 #include <&iohdr>
 #include <fcntl.h>
 int setmode( int &fd, int mode );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _setmode( int &fd, int mode );
 .ixfunc2 '&OsIo' &_func
@@ -12,14 +12,14 @@ int _setmode( int &fd, int mode );
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The
-.id &func.
+.id &funcb.
 is provided for compatibility with other systems.
-.id &func.
+.id &funcb.
 performs no useful action under &machsys..
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 function sets, at the operating system level, the
 translation mode to be the value of
 .arg mode
@@ -45,7 +45,7 @@ Data is read or written unchanged.
 .desc end
 .return begin
 .if '&machsys' eq 'QNX' .do begin
-.id &func.
+.id &funcb.
 always returns
 .kw O_BINARY
 under &machsys..
@@ -55,7 +55,7 @@ header file.
 .do end
 .el .do begin
 If successful, the
-.id &func.
+.id &funcb.
 function returns the previous mode that was
 set for the file; otherwise, &minus.1 is returned.
 .im errnoref

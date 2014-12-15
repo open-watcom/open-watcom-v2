@@ -13,7 +13,7 @@ unsigned int _fmbsnextc(
 .do end
 #include <tchar.h>
 unsigned int _strnextc( const char *string );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 unsigned int _wcsnextc( const wchar_t *string ) {
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
@@ -45,18 +45,18 @@ if
 has been defined.
 Otherwise
 .kw _tcsnextc
-maps to &func..
-.id &func.
+maps to &funcb..
+.id &funcb.
 and
 .id &wfunc.
 are single-byte character string and wide-character
 string versions of &mfunc..
-.id &func.
+.id &funcb.
 and
 .id &wfunc.
 are provided only for this mapping and should not be
 used otherwise.
-.id &func.
+.id &funcb.
 returns the integer value of the next single-byte character in
 the string.
 .id &wfunc.

@@ -3,8 +3,8 @@
 #include <jstring.h>
 JSTRING jstrskip( const JCHAR *str,
                   const JCHAR *charset );
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Jsearch' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jsearch' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjstrskip( const JCHAR __far *str,
                            const JCHAR __far *charset );
@@ -15,12 +15,12 @@ FJSTRING __far _fjstrskip( const JCHAR __far *str,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function locates
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions locate
@@ -36,12 +36,12 @@ in the Kanji string pointed to by
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

@@ -11,7 +11,7 @@ void ReleaseProc16( CALLBACKPTR cbp );
 .do end
 .synop end
 .desc begin
-&func releases the callback function allocated by
+&funcb releases the callback function allocated by
 .kw GetProc16
 .ct .li .
 Since the callback routines are a limited resource, it is important to
@@ -19,10 +19,10 @@ release the routines when they are no longer required.
 .desc end
 .return begin
 .if '&lang' eq 'FORTRAN 77' .do begin
-&func is a subroutine.
+&funcb is a subroutine.
 .do end
 .el .do begin
-The &func function returns nothing.
+The &funcb function returns nothing.
 .do end
 .return end
 .see begin

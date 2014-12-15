@@ -15,10 +15,10 @@ double precision x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines draw straight lines.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.

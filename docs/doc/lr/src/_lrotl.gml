@@ -3,11 +3,11 @@
 #include <stdlib.h>
 unsigned long _lrotl( unsigned long value,
                       unsigned int shift );
-.ixfunc2 '&Rotate' &func
+.ixfunc2 '&Rotate' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function rotates the unsigned long integer, determined by
 .arg value
 .ct , to the left by the number of bits specified in

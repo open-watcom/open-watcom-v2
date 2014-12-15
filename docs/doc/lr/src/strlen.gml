@@ -2,7 +2,7 @@
 .synop begin
 #include <string.h>
 size_t strlen( const char *s );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &farfnc eq 1 .do begin
 size_t _fstrlen( const char __far *s );
 .ixfunc2 '&String' &ffunc
@@ -30,7 +30,7 @@ size_t _fmbslen( const unsigned char __far *s );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the length of the string pointed to by
 .arg s
 .ct .li .
@@ -40,7 +40,7 @@ function computes the length of the string pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters that precede the
 terminating null character.
 .return end

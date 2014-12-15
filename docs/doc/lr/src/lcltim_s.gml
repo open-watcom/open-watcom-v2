@@ -20,7 +20,7 @@ there is no attempt to convert the time.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the calendar time pointed to by
 .arg timer
 into a broken-down time, expressed as local time.
@@ -31,7 +31,7 @@ The broken-down time is stored in the structure pointed to by
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg result
 .ct , or a null pointer if the specified time cannot be converted to local time

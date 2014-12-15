@@ -11,7 +11,7 @@ CALLBACKPTR GetProc16( PROCPTR fcn, long type );
 .do end
 .synop end
 .desc begin
-The &func function returns a 16-bit far function pointer suitable for
+The &funcb function returns a 16-bit far function pointer suitable for
 use as a Windows callback function.
 This callback function will invoke the 32-bit far procedure specified
 by
@@ -200,7 +200,7 @@ or as a FAR cdecl function.
 .endterm
 .desc end
 .return begin
-The &func function returns a 16-bit far pointer to a callback procedure.
+The &funcb function returns a 16-bit far pointer to a callback procedure.
 This pointer may then be fed to any Windows function that requires a
 pointer to a function within the 32-bit program.
 Note that the callback function within the 32-bit program must be

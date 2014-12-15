@@ -8,13 +8,13 @@ int _fmbrlen( const char far *s, size_t n, mbstate_t far *ps );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg s
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function is equivalent to the following call:
 .millust begin
 mbrtowc((wchar_t *)0, s, n, ps != 0 ? ps : &internal)
@@ -24,19 +24,19 @@ where
 is the address of the internal
 .kw mbstate_t
 object for the
-.id &func.
+.id &funcb.
 function.
 .im farparm
 .im mbcrstrt
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a value between -2 and
 .arg n
 .ct , inclusive.
 The
-.id &func.
+.id &funcb.
 function returns the first of the following that applies:
 .begnote
 .termhd1 Value

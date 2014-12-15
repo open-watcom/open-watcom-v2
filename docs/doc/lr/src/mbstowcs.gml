@@ -2,7 +2,7 @@
 .synop begin
 #include <stdlib.h>
 size_t mbstowcs( wchar_t *pwcs, const char *s, size_t n );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 #include <mbstring.h>
 size_t _fmbstowcs( const wchar_t __far *pwcs,
@@ -16,7 +16,7 @@ size_t _fmbstowcs( const wchar_t __far *pwcs,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts a sequence of multibyte characters pointed
 to by
 .arg s
@@ -26,7 +26,7 @@ codes into the array pointed to by
 .arg pwcs
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function does not convert any multibyte characters beyond
 the null character.
 At most
@@ -38,12 +38,12 @@ will be modified.
 .desc end
 .return begin
 If an invalid multibyte character is encountered, the
-.id &func.
+.id &funcb.
 function
 returns
 .mono (size_t)&minus.1.
 Otherwise, the
-.id &func.
+.id &funcb.
 function returns the number of array elements
 modified, not including the terminating zero code if present.
 .return end

@@ -5,7 +5,7 @@ int _pipe( int *phandles, unsigned psize, int textmode );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function creates a pipe (an unnamed FIFO) and places a file
 descriptor for the read end of the pipe in
 .arg phandles[0]
@@ -13,7 +13,7 @@ and a file descriptor for the write end of the pipe in
 .arg phandles[1]
 .ct .li .
 Their integer values are the two lowest available at the time of the
-.id &func.
+.id &funcb.
 function call.
 The
 .kw O_NONBLOCK
@@ -46,7 +46,7 @@ and the read end of the pipe to the data consuming process as its
 calls).
 .np
 If successful,
-.id &func.
+.id &funcb.
 marks for update the
 .us st_ftime,
 .us st_ctime,
@@ -57,7 +57,7 @@ fields of the pipe for updating.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero on success.
 Otherwise, (-1) is
 returned and
@@ -66,7 +66,7 @@ is set to indicate the error.
 .return end
 .error begin
 If any of the following conditions occur, the
-.id &func.
+.id &funcb.
 function shall
 return (-1) and set
 .kw errno

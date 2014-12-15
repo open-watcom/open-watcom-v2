@@ -2,11 +2,11 @@
 .synop begin
 #include <locale.h>
 struct lconv *localeconv( void );
-.ixfunc2 '&Locale' &func
+.ixfunc2 '&Locale' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets the components of an object of type
 .kw struct lconv
 with values appropriate for the formatting of numeric quantities
@@ -144,7 +144,7 @@ The sign string immediately follows the quantity and
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the filled-in object.
 .return end
 .see begin

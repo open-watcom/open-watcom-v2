@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 char *strchr( const char *s, int c );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Search' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Search' &funcb
 .if &farfnc eq 1 .do begin
 char __far *_fstrchr( const char __far *s, int c );
 .ixfunc2 '&String' &ffunc
@@ -35,7 +35,7 @@ unsigned char __far *_fmbschr(
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function locates the first occurrence of
 .arg c
 (converted to a char) in the string pointed to by
@@ -48,7 +48,7 @@ The terminating null character is considered to be part of the string.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the located character, or
 .mono NULL
 if the character does not occur in the string.

@@ -6,7 +6,7 @@
 int vfscanf( FILE *fp,
              const char *format,
              va_list arg );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int vfwscanf( FILE *fp,
               const wchar_t *format,
@@ -20,7 +20,7 @@ int vfwscanf( FILE *fp,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function scans input from the file designated by
 .arg fp
 under control of the argument
@@ -33,7 +33,7 @@ string is described under the description of the
 function.
 .np
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw fscanf
 function, with a variable argument list replaced with
@@ -46,7 +46,7 @@ macro.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -56,7 +56,7 @@ wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 if an input failure occurred before any conversion.

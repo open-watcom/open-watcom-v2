@@ -2,17 +2,17 @@
 .synop begin
 #include <time.h>
 char *_ctime( const time_t *timer, char *buf );
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the calendar time pointed to by
 .arg timer
 to local time in the form of a string.
 .pp
 The
-.id &func.
+.id &funcb.
 function converts the time into a string containing exactly
 26 characters.
 This string has the form shown in the following example:
@@ -32,7 +32,7 @@ The string is placed in the buffer pointed to by
 .ct .li .
 .pp
 Whenever
-.id &func.
+.id &funcb.
 is called, the
 .kw tzset
 function is also called.
@@ -46,7 +46,7 @@ Greenwich Mean Time (GMT)).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the pointer
 to the string containing the local time.
 .return end

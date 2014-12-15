@@ -4,7 +4,7 @@
     or
 #include <mbstring.h>
 int mblen( const char *s, size_t n );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 int _fmblen( const char __far *s, size_t n );
 .ixfunc2 '&Multibyte' &ffunc
@@ -12,7 +12,7 @@ int _fmblen( const char __far *s, size_t n );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg s
@@ -28,13 +28,13 @@ will be examined.
 If
 .arg s
 is a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns zero if multibyte
 character encodings are not state dependent, and non-zero otherwise.
 If
 .arg s
 is not a NULL pointer, the
-.id &func.
+.id &funcb.
 function returns:
 .begnote $setptnt 6
 .termhd1 Value

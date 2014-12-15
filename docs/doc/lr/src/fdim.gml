@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double fdim( double x, double y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function computes the positive difference of 
 .arg x
 and

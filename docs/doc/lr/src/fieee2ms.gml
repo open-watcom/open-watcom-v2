@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 extern int _fieeetomsbin( float *src, float *dest );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function loads the float pointed to by
 .arg src
 in IEEE format and converts it to Microsoft binary format, storing the
@@ -15,7 +15,7 @@ result into the float pointed to by
 .ct .li .
 .np
 For
-.id &func.
+.id &funcb.
 IEEE Nan's and Infinities will cause overflow.
 IEEE denormals will be converted if within range.
 Otherwise, they will be converted to 0 in the Microsoft binary format.
@@ -30,7 +30,7 @@ QuickBASIC before coprocessors became standard.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 0 if the conversion was successful.
 Otherwise, it returns 1 if conversion would cause an overflow.
 .return end

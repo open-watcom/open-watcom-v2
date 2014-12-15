@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 int jisl0( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg c
 is in the set of double-byte characters that include Hiragana,
@@ -20,7 +20,7 @@ These are any characters for which the following expression is true:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the argument is not in the set;
 otherwise, a non-zero value is returned.
 .return end

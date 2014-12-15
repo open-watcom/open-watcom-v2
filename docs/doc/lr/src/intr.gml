@@ -2,11 +2,11 @@
 .synop begin
 #include <i86.h>
 void intr( int inter_no, union REGPACK *regs );
-.ixfunc2 '&CpuInt' &func
+.ixfunc2 '&CpuInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by
 .arg inter_no
@@ -36,7 +36,7 @@ after the interrupt in question.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return a value.
 .return end
 .see begin

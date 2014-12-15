@@ -4,7 +4,7 @@
 int memcmp( const void *s1,
             const void *s2,
             size_t length );
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&Compare' &funcb
 .if &farfnc eq 1 .do begin
 int _fmemcmp( const void __far *s1,
               const void __far *s2,
@@ -21,7 +21,7 @@ int wmemcmp( const wchar_t *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares the first
 .arg length
 characters of the object pointed to by
@@ -35,7 +35,7 @@ to the object pointed to by
 The
 .id &wfunc.
 wide-character function is identical to
-.id &func.
+.id &funcb.
 except that it
 operates on characters of
 .kw wchar_t
@@ -47,7 +47,7 @@ is interpreted to mean the number of wide characters.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the object pointed to by
 .arg s1

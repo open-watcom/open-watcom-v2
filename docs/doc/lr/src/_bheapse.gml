@@ -6,7 +6,7 @@ __segment _bheapseg( size_t size );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function allocates a based-heap segment of at least
 .arg size
 bytes.
@@ -27,19 +27,19 @@ or
 .ct .li .
 .np
 The value returned by
-.id &func.
+.id &funcb.
 is the segment value or selector for the
 based heap.
 This value must be saved and used as an argument to other based heap
 functions to indicate which based heap to operate upon.
 .np
 Each call to
-.id &func.
+.id &funcb.
 allocates a new based heap.
 .desc end
 .return begin
 The value returned by
-.id &func.
+.id &funcb.
 is the segment value or selector for the
 based heap.
 This value must be saved and used as an argument to other based heap

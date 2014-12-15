@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 size_t jstrlen( const JCHAR *s );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .if &farfnc eq 1 .do begin
 size_t __far _fjstrlen( const JCHAR __far *s );
 .ixfunc2 '&Jstring' &ffunc
@@ -11,12 +11,12 @@ size_t __far _fjstrlen( const JCHAR __far *s );
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function computes
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions compute
@@ -30,12 +30,12 @@ A double-byte character is treated as one character.
 .return begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions return

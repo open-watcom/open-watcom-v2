@@ -2,12 +2,12 @@
 .synop begin
 #include <string.h>
 int bcmp(const void *s1, const void *s2, size_t n);
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares the byte string pointed to by
 .arg s1
 to the string pointed to by
@@ -25,7 +25,7 @@ function but just tests for equality
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the byte strings are identical;
 otherwise it returns 1.
 .return end

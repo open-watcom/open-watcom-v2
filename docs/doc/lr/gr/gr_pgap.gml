@@ -17,7 +17,7 @@ integer*2 explode(*), n
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine analyzes a pie chart.
 This &routine calculates default values for chart elements without
 actually displaying the chart.
@@ -37,7 +37,7 @@ The arguments are the same as for the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

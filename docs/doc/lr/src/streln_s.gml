@@ -3,7 +3,7 @@
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
 size_t strerrorlen_s( errno_t errnum );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 size_t wcserrorlen_s( errno errnum );
@@ -16,7 +16,7 @@ size_t wcserrorlen_s( errno errnum );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function calculates the length of the (untruncated) locale-specific
 message string that the
 .kw strerror_s
@@ -29,7 +29,7 @@ function maps to
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters (not including the
 null character) in the full message string.
 .return end

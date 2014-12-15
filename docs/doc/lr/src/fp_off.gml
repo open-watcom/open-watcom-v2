@@ -5,7 +5,7 @@ unsigned FP_OFF( void __far *far_ptr );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro can be used to obtain the offset portion of the far
 pointer value given in
 .arg far_ptr

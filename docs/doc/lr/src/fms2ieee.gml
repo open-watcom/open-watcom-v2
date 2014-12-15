@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 extern int _fmsbintoieee( float *src, float *dest );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function loads the float pointed to by
 .arg src
 in Microsoft binary format and converts it to IEEE format, storing the
@@ -24,7 +24,7 @@ QuickBASIC before coprocessors became standard.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 0 if the conversion was successful.
 Otherwise, it returns 1 if conversion would cause an overflow.
 .return end

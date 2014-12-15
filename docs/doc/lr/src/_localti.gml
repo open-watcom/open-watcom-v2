@@ -3,12 +3,12 @@
 #include <time.h>
 struct tm *_localtime( const time_t *timer,
                        struct tm *tmbuf );
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .im structtm
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the calendar time pointed to by
 .arg timer
 into a structure of type
@@ -18,7 +18,7 @@ The information is stored in the structure pointed to by
 .arg tmbuf
 .ct .li .
 Whenever
-.id &func.
+.id &funcb.
 is called, the
 .kw tzset
 function is also called.
@@ -32,7 +32,7 @@ Greenwich Mean Time (GMT)).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to a
 .kw tm
 structure containing the time information.

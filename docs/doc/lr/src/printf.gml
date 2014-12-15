@@ -3,7 +3,7 @@
 .funcw wprintf
 #include <stdio.h>
 int printf( const char *format, ... );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int wprintf( const wchar_t *format, ... );
@@ -16,7 +16,7 @@ int wprintf( const wchar_t *format, ... );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes output to the file designated by
 .kw stdout
 under control of the argument
@@ -30,7 +30,7 @@ string is described below.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -40,7 +40,7 @@ wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written, or a
 negative value if an output error occurred.
 .if &'length(&wfunc.) ne 0 .do begin

@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 int fcloseall( void );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function closes all open stream files, except
 .if '&machsys' eq 'QNX' .do begin
 .kw stdin
@@ -47,7 +47,7 @@ files are not available for some Windows platforms.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of streams that were closed if
 no errors were encountered.
 When an error occurs,

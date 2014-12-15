@@ -29,7 +29,7 @@ struct _heapinfo {
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions along with
 .kw _heapchk
 and
@@ -37,7 +37,7 @@ and
 are provided for debugging heap related problems in programs.
 .np
 The
-.id &func.
+.id &funcb.
 functions walk through the heap, one entry per call,
 updating the
 .kw _heapinfo
@@ -69,11 +69,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _nheapwalk
 function; in a large data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _fheapwalk

@@ -10,7 +10,7 @@ record /_fontinfo/ info
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns information about the currently selected font.
 Fonts are selected with the
 .kw _setfont
@@ -40,7 +40,7 @@ name of the current font
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero if the font information is
 returned successfully; otherwise a negative value is returned.
 .return end

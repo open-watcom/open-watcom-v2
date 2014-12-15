@@ -2,24 +2,24 @@
 .synop begin
 #include <stdio.h>
 int _putw( int binint, FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes a binary value of type
 .us int
 to the current position of the stream
 .arg fp
 .ct .li .
-.id &func.
+.id &funcb.
 does not affect the alignment of items in the stream, nor does
 it assume any special alignment.
 .np
-.id &func.
+.id &funcb.
 is provided primarily for compatibility with previous libraries.
 Portability problems may occur with
-.id &func.
+.id &funcb.
 because the size of an
 .us int
 and the ordering of bytes within an
@@ -28,10 +28,10 @@ differ across systems.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value written or, if a write error
 occurs, the error indicator is set and
-.id &func.
+.id &funcb.
 returns
 .kw EOF
 .ct .li .

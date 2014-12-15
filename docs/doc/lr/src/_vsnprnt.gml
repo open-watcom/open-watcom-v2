@@ -7,7 +7,7 @@ int _vsnprintf( char *buf,
 		size_t count,
 		const char *format,
 		va_list arg );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
@@ -21,7 +21,7 @@ int _vsnwprintf( wchar_t *buf,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function formats data under control of the
 .arg format
 control string and stores the result in
@@ -40,7 +40,7 @@ string is described under the description of the
 .kw printf
 function.
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _snprintf
 function, with the variable argument list replaced with
@@ -53,7 +53,7 @@ macro.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that the argument
 .arg buf
 specifies an array of wide characters into which the generated output
@@ -74,7 +74,7 @@ function accepts a wide-character string argument for
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters written into the
 array, not counting the terminating null character, or a negative
 value if more than
@@ -98,7 +98,7 @@ wide characters were requested to be generated.
 .exmp begin
 .blktext begin
 The following shows the use of
-.id &func.
+.id &funcb.
 in a general error message routine.
 .blktext end
 .blkcode begin

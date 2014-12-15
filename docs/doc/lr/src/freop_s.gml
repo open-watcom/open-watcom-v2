@@ -9,7 +9,7 @@ errno_t  freopen_s( FILE * restrict * restrict newstreamptr,
                     const char * filename,
                     const char * restrict mode,
                     FILE * restrict stream );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 errno_t _wfreopen_s( FILE * restrict * restrict newstreamptr,
                      const wchar_t * restrict filename,
@@ -29,14 +29,14 @@ None of
 .arg stream
 shall be a null pointer.
 If there is a runtime-constraint violation,
-.id &func.
+.id &funcb.
 neither attempts to close any file
 associated with
 .arg stream
 nor attempts to open a file. Furthermore, if
 .arg newstreamptr
 is not a null pointer,
-.id &func.
+.id &funcb.
 sets
 .arg *newstreamptr
 to the null pointer.
@@ -44,7 +44,7 @@ to the null pointer.
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function opens the file whose name is the string pointed to by
 .arg filename
 and associates the stream pointed to by
@@ -56,7 +56,7 @@ on exclusive access and file permissions).
 If
 .arg filename
 is a null pointer,the
-.id &func.
+.id &funcb.
 function attempts to change the mode of
 the
 .arg stream
@@ -66,7 +66,7 @@ to that specified by
 the stream had been used. It is implementation-defined which changes of mode are
 permitted (if any), and under what circumstances.
 The
-.id &func.
+.id &funcb.
 function first attempts to close any file that is associated with
 .arg stream
 .ct .li .
@@ -83,7 +83,7 @@ will be set to a null pointer.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts
 wide-character string arguments for
 .arg filename
@@ -95,10 +95,10 @@ and
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if it opened the file. If it did not open the file or
 there was a runtime-constraint violation,
-.id &func.
+.id &funcb.
 returns a non-zero value.
 .return end
 .see begin

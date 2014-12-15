@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double fmin( double x, double y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the smaller of
 .arg x
 and

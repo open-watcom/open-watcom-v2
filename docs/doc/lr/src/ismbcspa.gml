@@ -5,7 +5,7 @@ int _ismbcspace( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for any multibyte space character.
 Multibyte characters include both single-byte and double-byte
 characters.
@@ -14,7 +14,7 @@ For example, in code page 932, the double-byte space character is
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end

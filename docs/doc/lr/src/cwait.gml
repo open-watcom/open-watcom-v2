@@ -2,8 +2,8 @@
 .synop begin
 #include <process.h>
 int cwait( int *status, int process_id, int action );
-.ixfunc2 '&OS2Func' &func
-.ixfunc2 '&NTFunc' &func
+.ixfunc2 '&OS2Func' &funcb
+.ixfunc2 '&NTFunc' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _cwait( int *status, int process_id, int action );
 .ixfunc2 '&OS2Func' &_func
@@ -12,7 +12,7 @@ int _cwait( int *status, int process_id, int action );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function suspends the calling process until the specified
 process terminates.
 .im waitstat
@@ -49,11 +49,11 @@ Under Win32, there is no parent-child relationship.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the (child's) process id if the (child)
 process terminated normally.
 Otherwise,
-.id &func.
+.id &funcb.
 returns &minus.1 and sets
 .kw errno
 to one of the following values:

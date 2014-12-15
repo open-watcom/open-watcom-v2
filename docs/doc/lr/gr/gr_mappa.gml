@@ -10,7 +10,7 @@ integer*4 colors(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets (or remaps) all of the colors in the palette.
 The color values in the palette are replaced by the array of
 color values given by the argument
@@ -32,7 +32,7 @@ The number of colors in the palette can be determined by using the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns (-1) if the palette is remapped successfully
 and zero otherwise.
 .return end

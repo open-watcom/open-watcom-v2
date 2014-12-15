@@ -3,11 +3,11 @@
 .synop begin
 #include <stdlib.h>
 void *calloc( size_t n, size_t size );
-.ixfunc2 '&Memory' &func
+.ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function allocates space for an array of
 .arg n
 objects, each of length
@@ -16,7 +16,7 @@ bytes.
 Each element is initialized to 0.
 .np
 A block of memory allocated using the
-.id &func.
+.id &funcb.
 function should be freed
 using the
 .kw free
@@ -24,7 +24,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the start of the allocated
 memory.
 The return value is
@@ -73,7 +73,7 @@ void __near *_ncalloc( size_t n, size_t size );
 .synop end
 .desc begin
 The
-.idbold &func.
+.idbold &funcb.
 functions allocate space for an array of
 .arg n
 objects, each of length
@@ -98,11 +98,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.idbold &func.
+.idbold &funcb.
 function is equivalent to the
 .kw _ncalloc
 function; in a large data memory model, the
-.idbold &func.
+.idbold &funcb.
 function is
 equivalent to the
 .kw _fcalloc
@@ -115,7 +115,7 @@ function.
 .desc end
 .return begin
 The
-.idbold &func.
+.idbold &funcb.
 functions return a pointer to the start of the allocated
 memory.
 The return value is

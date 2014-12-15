@@ -21,7 +21,7 @@ int _nheapchk( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions along with
 .kw _heapset
 and
@@ -29,7 +29,7 @@ and
 are provided for debugging heap related problems in programs.
 .np
 The
-.id &func.
+.id &funcb.
 functions perform a consistency check on the unallocated
 memory space or "heap".
 The consistency check determines whether all the heap entries are valid.
@@ -52,11 +52,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _nheapchk
 function; in a large data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _fheapchk

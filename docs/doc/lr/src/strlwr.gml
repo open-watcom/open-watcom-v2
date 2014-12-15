@@ -2,7 +2,7 @@
 .synop begin
 #include <string.h>
 char *strlwr( char *s1 );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_strlwr( char *s1 );
 .ixfunc2 '&String' &_func
@@ -31,7 +31,7 @@ unsigned char __far *_fmbslwr( unsigned char __far *s1 );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function replaces the string
 .arg s1
 with lowercase characters by invoking the
@@ -41,7 +41,7 @@ function for each character in the string.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.

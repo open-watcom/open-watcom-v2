@@ -19,10 +19,10 @@ character*(*) text
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines display a character string.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.

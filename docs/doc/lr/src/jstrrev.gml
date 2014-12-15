@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 JSTRING jstrrev( JCHAR *s1 );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .if &farfnc eq 1 .do begin
 FJSTRING __far _fjstrrev( JCHAR __far *s1 );
 .ixfunc2 '&Jstring' &ffunc
@@ -11,12 +11,12 @@ FJSTRING __far _fjstrrev( JCHAR __far *s1 );
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function replaces
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions replace

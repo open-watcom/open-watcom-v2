@@ -10,7 +10,7 @@ integer*2 x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the window coordinates
 of the position with view coordinates
 .coord x y .
@@ -20,7 +20,7 @@ Window coordinates are defined by the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the window coordinates,
 as a
 .id _wxycoord

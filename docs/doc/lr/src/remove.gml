@@ -2,7 +2,7 @@
 .synop begin
 #include <stdio.h>
 int remove( const char *filename );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int _wremove( const wchar_t *filename );
 .ixfunc2 '&FileOp' &wfunc
@@ -11,7 +11,7 @@ int _wremove( const wchar_t *filename );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function deletes the file whose name is the string pointed
 to by
 .arg filename
@@ -21,14 +21,14 @@ to by
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if the operation succeeds, non-zero if
 it fails.
 .im errnoref

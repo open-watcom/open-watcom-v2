@@ -5,11 +5,11 @@ int setvbuf( FILE *fp,
              char *buf,
              int mode,
              size_t size );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function can be used to associate a buffer with the file
 designated by
 .arg fp
@@ -46,7 +46,7 @@ specifies the size of the array.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero on success, or a non-zero value if an
 invalid value is given for
 .arg mode

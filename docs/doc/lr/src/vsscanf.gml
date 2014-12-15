@@ -6,7 +6,7 @@
 int vsscanf( const char *in_string,
              const char *format,
              va_list arg );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int vswscanf( const wchar_t *in_string,
               const wchar_t *format,
@@ -20,7 +20,7 @@ int vswscanf( const wchar_t *in_string,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function scans input from the string designated by
 .arg in_string
 under control of the argument
@@ -33,7 +33,7 @@ string is described under the description of the
 function.
 .pp
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw sscanf
 function, with a variable argument list replaced with
@@ -46,7 +46,7 @@ macro.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -56,7 +56,7 @@ wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 if the end of the input string was reached before any conversion.

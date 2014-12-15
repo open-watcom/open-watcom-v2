@@ -2,11 +2,11 @@
 .synop begin
 #include <string.h>
 void bzero( void *dst, size_t n );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function fills the first
 .arg n
 bytes of the object pointed to by
@@ -19,7 +19,7 @@ function (new code should use the ANSI function).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function has no return value.
 .return end
 .see begin

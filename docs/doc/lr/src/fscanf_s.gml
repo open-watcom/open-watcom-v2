@@ -6,7 +6,7 @@
 #include <stdio.h>
 int fscanf_s( FILE * restrict stream,
         const char * restrict format, ... );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 #include <wchar.h>
@@ -27,16 +27,16 @@ Any argument indirected through in order to store converted input shall
 not be a null pointer.
 .np
 If there is a runtime-constraint violation, the
-.id &func.
+.id &funcb.
 function does not
 attempt to perform further input, and it is unspecified to what extent
-.id &func.
+.id &funcb.
 performed input before discovering the runtime-constraint violation.
 .rtconst end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is equivalent to
 .kw fscanf
 except that the
@@ -66,7 +66,7 @@ character).
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -76,13 +76,13 @@ wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 if an input failure occurred before any conversion or if there was
 a runtime-constraint violation.
 Otherwise, the
-.id &func.
+.id &funcb.
 function returns the number of input items
 successfully assigned, which can be fewer than provided for, or even zero.
 .np

@@ -4,7 +4,7 @@
 FILE *freopen( const char *filename,
                const char *mode,
                FILE *fp );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 FILE *_wfreopen( const wchar_t *filename,
                  const wchar_t *mode,
@@ -21,7 +21,7 @@ The stream located by the
 .kw fp
 pointer is closed.
 The
-.id &func.
+.id &funcb.
 function opens the file whose name is the string pointed to
 by
 .arg filename
@@ -40,7 +40,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts
 wide-character string arguments for
 .arg filename
@@ -51,13 +51,13 @@ and
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the object controlling the
 stream.
 This pointer must be passed as a parameter to subsequent functions for
 performing operations on the file.
 If the open operation fails,
-.id &func.
+.id &funcb.
 returns
 .mono NULL.
 .im errnoref

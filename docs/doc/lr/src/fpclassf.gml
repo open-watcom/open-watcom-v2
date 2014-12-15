@@ -6,7 +6,7 @@ int fpclassify( x );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro classifies its argument
 .arg x
 as NaN, infinite, normal, subnormal, or zero.
@@ -19,7 +19,7 @@ The argument
 must be an expression of real floating type.
 .np
 The possible return values of
-.id &func.
+.id &funcb.
 and their meanings are listed below.
 .begterm 20
 .termhd1 Constant
@@ -44,7 +44,7 @@ positive or negative zero
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 macro returns the value of the number classification macro
 appropriate to the value of its argument
 .arg x

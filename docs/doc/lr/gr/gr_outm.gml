@@ -11,7 +11,7 @@ integer*2 length
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine displays the character string indicated by the argument
 .arg text
 .ct .li .
@@ -21,7 +21,7 @@ specifies the number of characters to be displayed.
 Unlike the
 .kw _outtext
 &routine,
-.id &func.
+.id &funcb.
 will display the graphical representation of characters
 such as ASCII 10 and 0, instead of interpreting them as control characters.
 .np
@@ -36,7 +36,7 @@ The text position is updated to follow the end of the displayed text.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

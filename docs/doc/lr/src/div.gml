@@ -11,7 +11,7 @@ typedef struct {
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function calculates the quotient
 and remainder of the division of the numerator
 .arg numer
@@ -22,7 +22,7 @@ by the denominator
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a structure of type
 .kw div_t
 which contains the fields

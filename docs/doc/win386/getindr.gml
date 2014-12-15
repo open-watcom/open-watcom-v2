@@ -21,7 +21,7 @@ HINDIR GetIndirectFunctionHandle( FARPROC prc, ... );
 .do end
 .synop end
 .desc begin
-The &func function gets a handle for a 16-bit procedure that is to be
+The &funcb function gets a handle for a 16-bit procedure that is to be
 invoked indirectly.
 The procedure is assumed to have PASCAL calling convention, unless
 the
@@ -30,7 +30,7 @@ parameter is used, to indicate that Microsoft C calling convention
 is to be used.
 The 16-bit far pointer
 .arg prc
-is supplied to &func,
+is supplied to &funcb,
 and a list of the type of each parameter (in the order that they will
 be passed to the 16-bit function).
 The parameter types are:
@@ -59,7 +59,7 @@ Marks the end of the parameter list.
 There is no substitute for this function when compiling for 16-bit Windows.
 In order to make the code 16-bit Windows compatible, conditional code
 (based on the __WINDOWS_386__ macro)
-should be placed around the &func usage (see the example).
+should be placed around the &funcb usage (see the example).
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .np
@@ -77,12 +77,12 @@ functions.
 .np
 You may find it easier to use
 .kw _Call16
-rather than &func followed by a call to
+rather than &funcb followed by a call to
 .kw InvokeIndirectFunction
 .ct .li .
 .desc end
 .return begin
-The &func function returns a handle to the indirect function, or NULL
+The &funcb function returns a handle to the indirect function, or NULL
 if a handle could not be allocated.
 This handle is used in conjunction with
 .kw InvokeIndirectFunction

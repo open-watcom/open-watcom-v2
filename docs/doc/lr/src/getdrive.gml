@@ -2,11 +2,11 @@
 .synop begin
 #include <direct.h>
 int _getdrive( void );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the current (default) drive number.
 .desc end
 .return begin

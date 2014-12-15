@@ -10,7 +10,7 @@ integer*2 palnum
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine selects the palette indicated by the argument
 .arg palnum
 from the color palettes available.
@@ -40,7 +40,7 @@ Number    1               2               3
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of the previously selected palette.
 .return end
 .see begin

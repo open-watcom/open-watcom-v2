@@ -15,13 +15,13 @@ double precision space
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines set the current character spacing to have the value
 of the argument
 .arg space
 .ct .li .
 For the
-.id &func.
+.id &funcb.
 &routine,
 .arg space
 represents a number of pixels.
@@ -42,7 +42,7 @@ The default value of the character spacing is 0.
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines do not return a value.
 .return end
 .do end

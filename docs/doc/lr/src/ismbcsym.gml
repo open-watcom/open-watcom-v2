@@ -5,11 +5,11 @@ int _ismbcsymbol( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for a valid multibyte symbol character
 (punctuation and other special graphical symbols).
 For example, in code page 932,
-.id &func.
+.id &funcb.
 tests for a double-byte Kigou
 character and returns true if and only if
 .millust begin
@@ -18,7 +18,7 @@ character and returns true if and only if
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end

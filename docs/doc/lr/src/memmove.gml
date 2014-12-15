@@ -4,7 +4,7 @@
 void *memmove( void *dst,
                const void *src,
                size_t length );
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&Copy' &funcb
 .if &farfnc eq 1 .do begin
 void __far *_fmemmove( void __far *dst,
                        const void __far *src,
@@ -24,7 +24,7 @@ wchar_t *wmemmove( wchar_t *dst,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies
 .arg length
 characters from the buffer pointed to by
@@ -42,7 +42,7 @@ function to copy objects that do not overlap.
 The
 .id &wfunc.
 wide-character function is identical to
-.id &func.
+.id &funcb.
 except that it
 operates on characters of
 .kw wchar_t
@@ -55,7 +55,7 @@ is interpreted to mean the number of wide characters.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg dst
 .ct .li .

@@ -4,8 +4,8 @@
 size_t wcsrtombs( char *dst,
          const wchar_t **src,
          size_t n, mbstate_t *ps );
-.ixfunc2 '&Wide' &func
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Wide' &funcb
+.ixfunc2 '&Multibyte' &funcb
 .if &farfnc eq 1 .do begin
 #include <wchar.h>
 size_t _fwcsrtombs( char __far *dst,
@@ -20,7 +20,7 @@ size_t _fwcsrtombs( char __far *dst,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts a sequence of wide characters from the
 array indirectly pointed to by
 .arg src
@@ -66,7 +66,7 @@ initial conversion state.
 .return begin
 If the first code is not a valid wide character, an encoding error
 occurs: The
-.id &func.
+.id &funcb.
 function stores the value of the macro
 .kw EILSEQ
 in

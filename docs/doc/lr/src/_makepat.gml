@@ -11,7 +11,7 @@ void _makepath( char *path,
                 const char *dir,
                 const char *fname,
                 const char *ext );
-.ixfunc2 '&Parsing' &func
+.ixfunc2 '&Parsing' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 void _wmakepath( wchar_t *path,
 .if '&machsys' eq 'QNX' .do begin
@@ -29,7 +29,7 @@ void _wmakepath( wchar_t *path,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function constructs a full pathname from the components
 consisting of a
 .if '&machsys' eq 'QNX' .do begin
@@ -83,7 +83,7 @@ The
 argument points to a buffer containing the node specification
 (e.g., //0, //1, etc.) followed by an optional "/".
 The
-.id &func.
+.id &funcb.
 function will automatically insert a "/" following the node
 number in the full pathname if it is missing.
 If
@@ -98,7 +98,7 @@ The
 argument points to a buffer containing the drive letter (A, B, C,
 etc.) followed by an optional colon.
 The
-.id &func.
+.id &funcb.
 function will automatically insert a colon in the full
 pathname if it is missing.
 If
@@ -115,7 +115,7 @@ Either forward slashes (/) or backslashes (\) may be used.
 .do end
 The trailing slash is optional.
 The
-.id &func.
+.id &funcb.
 function will automatically insert a trailing slash in the
 full pathname if it is missing.
 If
@@ -134,7 +134,7 @@ argument points to a buffer containing the filename extension or
 suffix.
 A leading period (.) is optional.
 The
-.id &func.
+.id &funcb.
 routine will automatically insert a period in the full
 pathname if it is missing.
 If
@@ -145,7 +145,7 @@ placed in the full pathname.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

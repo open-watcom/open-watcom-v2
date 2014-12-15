@@ -2,12 +2,12 @@
 .synop begin
 #include <process.h>
 char *getcmd( char *cmd_line );
-.ixfunc2 '&Process' &func
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Process' &funcb
+.ixfunc2 '&Direct' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes the command line information, with the program
 name removed, to be copied to
 .arg cmd_line

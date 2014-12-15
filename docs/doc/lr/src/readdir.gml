@@ -7,7 +7,7 @@ struct dirent *readdir( DIR *dirp );
 .el .do begin
 struct dirent *readdir( struct dirent *dirp );
 .do end
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 struct _wdirent *_wreaddir( _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
@@ -16,7 +16,7 @@ struct _wdirent *_wreaddir( _wdirent *dirp );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function obtains information about the next matching file
 name from the argument
 .arg dirp
@@ -27,7 +27,7 @@ is the value returned from the
 .kw opendir
 function.
 The
-.id &func.
+.id &funcb.
 function can be called repeatedly to obtain the list of file
 names contained in the directory specified by the pathname given to
 .kw opendir
@@ -64,7 +64,7 @@ Either or both processes may use
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it reads a
 directory of wide-character filenames.
 .im _wdirent
@@ -72,18 +72,18 @@ directory of wide-character filenames.
 .desc end
 .return begin
 When successful,
-.id &func.
+.id &funcb.
 returns a pointer to an object of type
 .us struct dirent.
 When an error occurs,
-.id &func.
+.id &funcb.
 returns the value
 .mono NULL
 and
 .kw errno
 is set to indicate the error.
 When the end of the directory is encountered,
-.id &func.
+.id &funcb.
 returns the value
 .mono NULL
 and

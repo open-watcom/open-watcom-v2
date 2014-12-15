@@ -3,11 +3,11 @@
 #include <float.h>
 unsigned int _controlfp( unsigned int newcw,
                          unsigned int mask );
-.ixfunc2 '&Errs' &func
+.ixfunc2 '&Errs' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function updates the control word of the
 8087/80287/80387/80486.
 If
@@ -23,7 +23,7 @@ corresponding to every bit that is on in
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the new control word.
 The description of bits defined for the control word is found in the
 .hdrfile float.h

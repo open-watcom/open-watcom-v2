@@ -5,14 +5,14 @@ long _get_osfhandle( int posixhandle );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the operating system's internal file handle
 that corresponds to the POSIX-level file handle specified by
 .arg posixhandle
 .ct .li .
 .np
 The value returned by
-.id &func.
+.id &funcb.
 can be used as an argument to the
 .kw _open_osfhandle
 function which can be used to connect a second POSIX-level handle to
@@ -34,7 +34,7 @@ file.
 .desc end
 .return begin
 If successful,
-.id &func.
+.id &funcb.
 returns an operating system file handle
 corresponding to
 .arg posixhandle

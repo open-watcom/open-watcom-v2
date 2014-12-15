@@ -16,7 +16,7 @@ struct tm *_gmtime( const time_t *timer,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions convert the calendar time pointed to by
 .arg timer
 into a broken-down time, expressed as Coordinated Universal Time (UTC)
@@ -29,16 +29,16 @@ places the converted time in the
 structure pointed to by
 .arg tmbuf
 .ct , and the
-.id &func.
+.id &funcb.
 function places the converted time in a static
 structure that is re-used each time
-.id &func.
+.id &funcb.
 is called.
 .im tzref
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 functions return a pointer to a structure containing the
 broken-down time.
 .return end

@@ -9,11 +9,11 @@ struct diskfree_t {
         unsigned short sectors_per_cluster;
         unsigned short bytes_per_sector;
 };
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x36 to obtain useful information
 on the disk drive specified by
 .arg drive
@@ -27,7 +27,7 @@ pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns a non-zero value and sets
 .kw errno

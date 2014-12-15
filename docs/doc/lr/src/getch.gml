@@ -6,7 +6,7 @@ int getch( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function obtains the next available keystroke from the console.
 Nothing is echoed on the screen (the function
 .kw getche
@@ -23,7 +23,7 @@ A value of
 .mono EOF
 is returned when an error is detected; otherwise
 the
-.id &func.
+.id &funcb.
 function returns the value of the keystroke (or character).
 .pp
 When the keystroke represents an extended function key (for example,
@@ -36,7 +36,7 @@ a digit),
 zero
 .do end
 is returned and the next call to
-.id &func.
+.id &funcb.
 returns a value for the
 extended function.
 .return end

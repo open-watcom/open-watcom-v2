@@ -29,60 +29,60 @@
 .gfuncinit
 .topsect _&*
 :set symbol="function" value="_&*".
-:set symbol="func" value="_&*".
+:set symbol="funcb" value="_&*".
 :set symbol="headtxt0$" value="_&*".
 :set symbol="headtxt1$" value="_&*".
-.ixm '&func.'
+.ixm '&funcb.'
 .se __fnx=1
-.se $$fnc(1)=&func.
+.se $$fnc(1)=&funcb.
 .dm gfunc end
 .*
 .dm gfuncw begin
 .gfuncinit
 .topsect _&*, _&*._w
 :set symbol="function" value="_&*".
-:set symbol="func" value="_&*".
+:set symbol="funcb" value="_&*".
 :set symbol="func2" value="_&*._w".
 :set symbol="headtxt0$" value="_&* &rroutines".
 :set symbol="headtxt1$" value="_&* &rroutines".
-.ixm '&func.'
-.ixm '&func._w'
+.ixm '&funcb.'
+.ixm '&funcb._w'
 .se __fnx=2
-.se $$fnc(1)=&func.
-.se $$fnc(2)=&func._w
+.se $$fnc(1)=&funcb.
+.se $$fnc(2)=&funcb._w
 .dm gfuncw end
 .*
 .dm gfuncwxy begin
 .gfuncinit
 .topsect _&*, _&*._w, _&*._wxy
 :set symbol="function" value="_&*".
-:set symbol="func" value="_&*".
+:set symbol="funcb" value="_&*".
 :set symbol="func2" value="_&*._w".
 :set symbol="func3" value="_&*._wxy".
 :set symbol="headtxt0$" value="_&* &rroutines".
 :set symbol="headtxt1$" value="_&* &rroutines".
-.ixm '&func.'
-.ixm '&func._w'
-.ixm '&func._wxy'
+.ixm '&funcb.'
+.ixm '&funcb._w'
+.ixm '&funcb._wxy'
 .se __fnx=3
-.se $$fnc(1)=&func.
-.se $$fnc(2)=&func._w
-.se $$fnc(3)=&func._wxy
+.se $$fnc(1)=&funcb.
+.se $$fnc(2)=&funcb._w
+.se $$fnc(3)=&funcb._wxy
 .dm gfuncwxy end
 .*
 .dm gfuncms begin
 .gfuncinit
 .topsect _&*, _&*.ms
 :set symbol="function" value="_&*".
-:set symbol="func" value="_&*".
+:set symbol="funcb" value="_&*".
 :set symbol="func1" value="_&*.ms".
 :set symbol="headtxt0$" value="_&* &rroutines".
 :set symbol="headtxt1$" value="_&* &rroutines".
-.ixm '&func.'
-.ixm '&func.ms'
+.ixm '&funcb.'
+.ixm '&funcb.ms'
 .se __fnx=2
-.se $$fnc(1)=&func.
-.se $$fnc(2)=&func.ms
+.se $$fnc(1)=&funcb.
+.se $$fnc(2)=&funcb.ms
 .dm gfuncms end
 .*
 .dm gsynop begin

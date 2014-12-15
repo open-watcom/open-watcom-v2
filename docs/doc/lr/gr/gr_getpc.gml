@@ -10,7 +10,7 @@ integer*2 x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the physical coordinates
 of the position with view coordinates
 .coord x y .
@@ -22,7 +22,7 @@ and
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the physical coordinates,
 as an
 .id xycoord

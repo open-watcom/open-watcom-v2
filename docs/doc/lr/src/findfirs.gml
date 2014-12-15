@@ -20,7 +20,7 @@ long _wfindfirsti64( const wchar_t *filespec,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns information on the first file whose name
 matches the
 .arg filespec

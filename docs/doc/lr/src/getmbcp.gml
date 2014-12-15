@@ -5,12 +5,12 @@ int _getmbcp( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the current multibyte code page number.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the current multibyte code page.
 A return value of zero indicates that a single byte code page is in
 use.

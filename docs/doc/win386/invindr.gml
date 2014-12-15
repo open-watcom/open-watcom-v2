@@ -11,7 +11,7 @@ long InvokeIndirectFunction( HINDIR handle, ... );
 .do end
 .synop end
 .desc begin
-The &func function invokes the 16-bit function pointed to by the
+The &funcb function invokes the 16-bit function pointed to by the
 specified handle.
 The handle must have been previously allocated using the
 .kw GetIndirectFunctionHandle
@@ -29,7 +29,7 @@ is freed when the 16-bit function being invoked returns.
 There is no substitute for this function when compiling for 16-bit Windows.
 In order to make the code 16-bit Windows compatible, conditional code
 (based on the __WINDOWS_386__ macro)
-should be placed around the &func usage (see the example).
+should be placed around the &funcb usage (see the example).
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .np
@@ -38,7 +38,7 @@ syntax; it is used only to indicate a variable number of arguments.
 .do end
 .desc end
 .return begin
-The &func function returns the value which the 16-bit function
+The &funcb function returns the value which the 16-bit function
 returned.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 If the 16-bit function returns a short rather than a long, the result

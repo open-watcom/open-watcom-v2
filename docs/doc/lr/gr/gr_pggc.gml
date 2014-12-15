@@ -12,7 +12,7 @@ integer*1 def(8)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine retrieves the current bit-map definition
 for the character
 .arg ch
@@ -24,7 +24,7 @@ The current font must be an 8-by-8 bit-mapped font.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

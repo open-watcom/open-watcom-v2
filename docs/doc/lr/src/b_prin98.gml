@@ -3,11 +3,11 @@
 #include <bios.h>
 unsigned short _bios_printer( unsigned service,
                               unsigned char *databyte );
-.ixfunc2 '&BiosFunc' &func
+.ixfunc2 '&BiosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function performs printer output services to the printer.
 The values for service are:
 .begterm 12
@@ -67,7 +67,7 @@ Disabled from data output
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a printer status byte described above.
 .return end
 .exmp begin

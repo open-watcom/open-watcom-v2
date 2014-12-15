@@ -3,11 +3,11 @@
 #include <&doshdr>
 void _dos_setvect( unsigned intnum,
                    void (__interrupt __far *handler)() );
-.ixfunc2 '&CpuInt' &func
+.ixfunc2 '&CpuInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets interrupt vector number
 .arg intnum
 to point to the interrupt handling function pointed to by
@@ -16,7 +16,7 @@ to point to the interrupt handling function pointed to by
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return a value.
 .return end
 .see begin

@@ -2,11 +2,11 @@
 .synop begin
 #include <mbctype.h>
 int _mbislead( unsigned int ch );
-.ixfunc2 '&Multibyte' &func
+.ixfunc2 '&Multibyte' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 is a valid first byte of a multibyte character.
@@ -23,7 +23,7 @@ must represent a single-byte value (i.e., 0 <=
 Incorrect results occur if the argument is a double-byte character.
 .desc end
 .return begin
-.id &func.
+.id &funcb.
 returns a non-zero value if the argument is valid as the first
 byte of a multibyte character; otherwise zero is returned.
 .return end

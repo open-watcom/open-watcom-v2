@@ -3,7 +3,7 @@
 The
 .id &wfunc.
 function is a wide-character version of
-.id &func.
+.id &funcb.
 that
 operates with wide-character strings.
 .do end

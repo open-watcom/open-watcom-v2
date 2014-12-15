@@ -13,11 +13,11 @@ record /_wxycoord/ function _getcurrentposition_w()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines return the current
 output position for graphics.
 The
-.id &func.
+.id &funcb.
 &routine returns the point in view coordinates.
 The
 .id &func2.
@@ -46,7 +46,7 @@ The output position for text output can be set by use of the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return the current output
 position for graphics.
 .return end

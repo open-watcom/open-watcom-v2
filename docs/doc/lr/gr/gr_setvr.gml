@@ -11,7 +11,7 @@ integer*2 rows
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine selects a video mode and the number of rows
 of text displayed on the screen.
 The video mode is specified by the argument
@@ -32,7 +32,7 @@ video mode and the type of monitor attached.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of screen rows when the
 mode and number of rows are set successfully; otherwise, zero is returned.
 .return end

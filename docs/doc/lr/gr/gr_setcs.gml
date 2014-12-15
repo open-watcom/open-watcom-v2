@@ -15,7 +15,7 @@ double precision height, width
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines set the character height and width to the values
 specified by the arguments
 .arg height
@@ -23,7 +23,7 @@ and
 .arg width
 .ct .li .
 For the
-.id &func.
+.id &funcb.
 &routine, the arguments
 .arg height
 and
@@ -48,7 +48,7 @@ and can be determined by the
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines do not return a value.
 .return end
 .do end

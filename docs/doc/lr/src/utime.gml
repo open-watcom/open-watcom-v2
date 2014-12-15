@@ -9,7 +9,7 @@
 .do end
 int utime( const char *path,
            const struct utimbuf *times );
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _utime( const char *path,
            const struct utimbuf *times );
@@ -19,7 +19,7 @@ int _utime( const char *path,
 int _wutime( const wchar_t *path,
              const struct utimbuf *times );
 .ixfunc2 '&OsIo' &wfunc
-.ixfunc2 '&Wide' &func
+.ixfunc2 '&Wide' &funcb
 .do end
 
 struct utimbuf {
@@ -29,7 +29,7 @@ struct utimbuf {
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function records the access and modification times
 for the file
 .if '&machsys' eq 'QNX' .do begin
@@ -42,7 +42,7 @@ identified by
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI naming conventions.
@@ -57,7 +57,7 @@ the current time.
 .if '&machsys' eq 'QNX' .do begin
 The effective user ID of the process must match the owner of the file
 or directory, or the process must have write permission to the file or
-directory, or appropriate privileges in order to use the &func
+directory, or appropriate privileges in order to use the &funcb
 function in this way.
 .do end
 .el .do begin
@@ -76,7 +76,7 @@ directory are set to the values contained in the designated structure.
 .if '&machsys' eq 'QNX' .do begin
 Only the owner of the file or directory and processes with appropriate
 privileges are permitted to use the
-.id &func.
+.id &funcb.
 function in this way.
 .do end
 .*
@@ -91,7 +91,7 @@ fields in this structure.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that
 .arg path
 points to a wide-character string.
@@ -99,7 +99,7 @@ points to a wide-character string.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero when the time was successfully recorded.
 A value of &minus.1 indicates an error occurred.
 .return end

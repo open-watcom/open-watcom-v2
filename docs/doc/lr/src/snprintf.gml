@@ -5,7 +5,7 @@
 int snprintf( char *buf,
               size_t count,
               const char *format, ... );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int snwprintf( wchar_t *buf,
@@ -20,7 +20,7 @@ int snwprintf( wchar_t *buf,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw fprintf
 function, except that the argument
@@ -43,7 +43,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that the argument
 .arg buf
 specifies an array of wide characters into which the generated output
@@ -62,7 +62,7 @@ function accepts a wide-character string argument for
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the number of characters that would have been
 written had
 .arg count

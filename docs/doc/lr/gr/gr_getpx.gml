@@ -15,12 +15,12 @@ double precision x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines return the pixel value for the point
 with coordinates
 .coord x y .
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.
@@ -30,7 +30,7 @@ The
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return the pixel value for the given point
 when the point lies within the clipping region; otherwise, (-1) is
 returned.

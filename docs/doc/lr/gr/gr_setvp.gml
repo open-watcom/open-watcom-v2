@@ -10,7 +10,7 @@ integer*2 pagenum
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine selects the page (in memory)
 from which graphics output is displayed.
 The page to be selected is given by the
@@ -20,7 +20,7 @@ argument.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of the previous page when the
 visual page is set successfully; otherwise, a negative number
 is returned.

@@ -2,12 +2,12 @@
 .synop begin
 #include <wchar.h>
 wint_t btowc( int c );
-.ixfunc2 '&Wide' &func
+.ixfunc2 '&Wide' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines whether
 .arg c
 is a valid single-byte character in the initial shift state.
@@ -15,7 +15,7 @@ is a valid single-byte character in the initial shift state.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .mono WEOF
 if
@@ -26,7 +26,7 @@ or if
 .arg (unsigned char)c
 does not constitute a valid single-byte character in the initial
 shift state. Otherwise,
-.id &func.
+.id &funcb.
 returns the wide character representation of
 that character. 
 .return end

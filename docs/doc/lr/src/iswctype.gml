@@ -8,7 +8,7 @@ int iswctype( wint_t wc, wctype_t desc );
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function determines whether the wide character
 .arg wc
 has the property described by
@@ -66,7 +66,7 @@ iswxdigit(wc)
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns non-zero (true) if and only if the value of
 the wide character
 .arg wc

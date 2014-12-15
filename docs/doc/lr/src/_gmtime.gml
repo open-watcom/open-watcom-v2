@@ -3,12 +3,12 @@
 #include <time.h>
 struct tm *_gmtime( const time_t *timer,
                     struct tm *tmbuf );
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .im structtm
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the calendar time pointed to by
 .arg timer
 into a broken-down time, expressed as Coordinated Universal Time (UTC)
@@ -19,7 +19,7 @@ The time information is stored in the structure pointed to by
 .im tzref
 .desc end
 .return begin
-The &func
+The &funcb
 function returns a pointer to the structure containing the broken-down
 time.
 .return end

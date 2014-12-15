@@ -4,8 +4,8 @@
 int _mbsnbicmp( const unsigned char *s1,
                const unsigned char *s2,
                size_t n );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &farfnc eq 1 .do begin
 int _fmbsnbicmp( const unsigned char __far *s1,
                 const unsigned char __far *s2,
@@ -16,7 +16,7 @@ int _fmbsnbicmp( const unsigned char __far *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 lexicographically compares not more than
 .arg n
 bytes from the string pointed to by
@@ -29,18 +29,18 @@ The comparison is insensitive to case.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
 .ct .li .
-.id &func.
+.id &funcb.
 is similar to
 .kw _mbsncmp
 .ct , except that
-.id &func.
+.id &funcb.
 compares strings by bytes rather than by characters.
 .return end
 .see begin

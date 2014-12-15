@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 JMOJI jtokata( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 converts a double-byte Hiragana character to a Katakana
 character.
 A double-byte Hiragana character is any character for which
@@ -26,7 +26,7 @@ includes 86 characters.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the argument value if the argument is not a
 double-byte Hiragana character;
 otherwise, the equivalent Katakana character is returned.

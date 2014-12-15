@@ -2,14 +2,14 @@
 .synop begin
 #include <env.h>
 int clearenv( void );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function clears the process environment area.
 No environment variables are defined immediately after a call to the
-.id &func.
+.id &funcb.
 function.
 .if '&machsys' eq 'QNX' .do begin
 Note that this clears the
@@ -43,14 +43,14 @@ library functions.
 .do end
 .pp
 The
-.id &func.
+.id &funcb.
 function may manipulate the value of the pointer
 .kw environ
 .ct .li .
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero upon successful completion.
 Otherwise, it will return a non-zero value and set
 .kw errno

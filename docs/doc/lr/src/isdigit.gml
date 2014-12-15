@@ -3,7 +3,7 @@
 .funcw iswdigit
 #include <ctype.h>
 int isdigit( int c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wctype.h>
 int iswdigit( wint_t c );
@@ -13,7 +13,7 @@ int iswdigit( wint_t c );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests for any decimal-digit character '0' through
 '9'.
 .if &'length(&wfunc.) ne 0 .do begin
@@ -21,14 +21,14 @@ function tests for any decimal-digit character '0' through
 The
 .id &wfunc.
 function is similar to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a non-zero value when the argument is a
 decimal-digit character.
 .if &'length(&wfunc.) ne 0 .do begin

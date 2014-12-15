@@ -10,7 +10,7 @@ integer*2 vecx, vecy
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the current text orientation to the
 vector specified by the arguments
 .coord vecx vecy .
@@ -26,7 +26,7 @@ is the vector
 .if '&lang' eq 'C' .do begin
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine does not return a value.
 .return end
 .do end

@@ -2,11 +2,11 @@
 .synop begin
 #include <&doshdr>
 void _chain_intr( void (__interrupt __far *func)() );
-.ixfunc2 '&CpuInt' &func
+.ixfunc2 '&CpuInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is used at the end of an interrupt routine to
 start executing another interrupt handler (usually the previous
 handler for that interrupt).
@@ -17,7 +17,7 @@ interrupt just occurred.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function does not return.
 .return end
 .see begin

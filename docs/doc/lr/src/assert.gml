@@ -5,7 +5,7 @@ void assert( int expression );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro prints a diagnostic message upon the
 .kw stderr
 stream and terminates the program if
@@ -41,7 +41,7 @@ No action is taken if
 is true (non-zero).
 .np
 The
-.id &func.
+.id &funcb.
 macro is typically used during program development to
 identify program logic errors.
 The given
@@ -51,7 +51,7 @@ as intended.
 After the program has been debugged, the special "no debug" identifier
 .kw NDEBUG
 can be used to remove
-.id &func.
+.id &funcb.
 calls from the program when it is
 re-compiled.
 If
@@ -61,13 +61,13 @@ is defined (with any value) with a
 command line option or with a
 .id #define
 directive, the C preprocessor ignores all
-.id &func.
+.id &funcb.
 calls in the program
 source.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 macro does not return a value.
 :cmt. Because the function uses the
 :cmt. .kw fprintf

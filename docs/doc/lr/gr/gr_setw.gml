@@ -14,7 +14,7 @@ double precision x2, y2
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine defines a window for the window coordinate system.
 Window coordinates are specified as a user-defined range of values.
 This allows for consistent pictures regardless of the video mode.
@@ -38,7 +38,7 @@ the y values increase from the bottom of the screen to the top,
 otherwise, the y values increase as you move down the screen.
 .np
 The window defined by the
-.id &func.
+.id &funcb.
 &routine is displayed in
 the current viewport.
 A viewport is defined by the
@@ -53,7 +53,7 @@ at the upper right corner.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns a non-zero value when the window is set
 successfully; otherwise, zero is returned.
 .return end

@@ -21,7 +21,7 @@ int _nheapshrink( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions attempt to shrink the heap to its smallest
 possible size by returning all free entries at the end of the heap
 back to the system.
@@ -32,7 +32,7 @@ function or one of the
 functions.
 .np
 The various
-.id &func.
+.id &funcb.
 functions shrink the following heaps:
 .begterm 12
 .termhd1 Function
@@ -52,11 +52,11 @@ Near heap (inside the default data segment)
 .endterm
 .np
 In a small data memory model, the
-.id &func.
+.id &funcb.
 function is equivalent to the
 .kw _nheapshrink
 function; in a large data memory model, the
-.id &func.
+.id &funcb.
 function is
 equivalent to the
 .kw _fheapshrink

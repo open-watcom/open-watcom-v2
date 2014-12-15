@@ -2,11 +2,11 @@
 .synop begin
 #include <conio.h>
 int ungetch( int c );
-.ixfunc2 '&KbIo' &func
+.ixfunc2 '&KbIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function pushes the character specified by
 .arg c
 back onto the input stream for the console.
@@ -20,7 +20,7 @@ functions) and will be detected by the function
 Only the last character returned in this way is remembered.
 .pp
 The
-.id &func.
+.id &funcb.
 function clears the end-of-file indicator, unless the value of
 .arg c
 is
@@ -29,7 +29,7 @@ is
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the character pushed back.
 .return end
 .see begin

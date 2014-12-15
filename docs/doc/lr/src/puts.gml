@@ -3,7 +3,7 @@
 .funcw _putws
 #include <stdio.h>
 int puts( const char *buf );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 int _putws( const wchar_t *bufs );
@@ -13,7 +13,7 @@ int _putws( const wchar_t *bufs );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function writes the character string pointed to by
 .arg buf
 to the output stream designated by
@@ -26,7 +26,7 @@ The terminating null character is not written.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it converts the
 wide character string specified by
 .arg buf
@@ -35,7 +35,7 @@ to a multibyte character string and writes it to the output stream.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 if an error occurs; otherwise, it returns a non-negative value

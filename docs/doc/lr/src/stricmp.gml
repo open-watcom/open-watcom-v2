@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 int stricmp( const char *s1, const char *s2 );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _stricmp( const char *s1, const char *s2 );
 .ixfunc2 '&String' &_func
@@ -40,7 +40,7 @@ int _fmbsicmp( const unsigned char __far *s1,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares, with case insensitivity, the string
 pointed to by
 .arg s1
@@ -56,7 +56,7 @@ are mapped to lowercase for the purposes of doing the comparison.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -67,7 +67,7 @@ for ANSI/ISO naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1

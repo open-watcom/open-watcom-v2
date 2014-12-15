@@ -19,7 +19,7 @@ If there is a runtime-constraint violation, there is no attempt to convert the t
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the calendar time pointed to by
 .arg timer
 into a broken-down time, expressed as UTC. The broken-down time is stored in
@@ -30,7 +30,7 @@ the structure pointed to by
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg result
 .ct , or a null pointer if the specified time cannot

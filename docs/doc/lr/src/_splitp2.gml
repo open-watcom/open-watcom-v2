@@ -13,7 +13,7 @@ void _splitpath2( const char *inp,
                         char **dir,
                         char **fname,
                         char **ext );
-.ixfunc2 '&Parsing' &func
+.ixfunc2 '&Parsing' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 void _wsplitpath2( const wchar_t *inp,
                          wchar_t *outp,
@@ -27,7 +27,7 @@ void _wsplitpath2( const wchar_t *inp,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function splits up a full pathname into four components
 consisting of a
 .if '&machsys' eq 'QNX' .do begin
@@ -60,7 +60,7 @@ The
 argument is the location that is to contain the pointer to the node
 specification (e.g., //0, //1, etc.) if a node is specified in the
 full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .do end
 .el .do begin
@@ -70,7 +70,7 @@ The
 argument is the location that is to contain the pointer to
 the drive letter (e.g., A, B, C, etc.) followed by a colon if a drive
 is specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .do end
 .note dir
@@ -79,7 +79,7 @@ The
 argument is the location that is to contain the pointer to the
 directory path including the trailing slash if a directory path is
 specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .if '&machsys' ne 'QNX' .do begin
 Either forward slashes (/) or backslashes (\) may be used.
@@ -90,7 +90,7 @@ The
 argument is the location that is to contain the pointer to
 the base name of the file without any extension (suffix) if a file
 name is specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .note ext
 The
@@ -98,7 +98,7 @@ The
 argument is the location that is to contain the pointer to
 the filename extension (suffix) including the leading period if an
 extension is specified in the full pathname (filled in by
-.id &func.
+.id &funcb.
 ).
 .if '&machsys' eq 'QNX' .do begin
 If more than one period appears in the filename, the suffix consists
@@ -131,7 +131,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

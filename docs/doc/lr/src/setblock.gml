@@ -4,11 +4,11 @@
 unsigned _dos_setblock( unsigned size,
                         unsigned segment,
                         unsigned *maxsize );
-.ixfunc2 '&DosFunc' &func
+.ixfunc2 '&DosFunc' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function uses system call 0x4A to change the size of
 .arg segment
 .ct , which was previously allocated by
@@ -26,7 +26,7 @@ DPMI services be used.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno

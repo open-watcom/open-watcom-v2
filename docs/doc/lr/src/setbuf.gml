@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 void setbuf( FILE *fp, char *buffer );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function can be used to associate a buffer with the file
 designated by
 .arg fp
@@ -30,7 +30,7 @@ characters in length, and all input/output will be fully buffered.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns no value.
 .return end
 .see begin

@@ -2,7 +2,7 @@
 .synop begin
 #include <sys/stat.h>
 int stat( const char *path, struct stat *buf );
-.ixfunc2 '&FileOp' &func
+.ixfunc2 '&FileOp' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _stat( const char *path, struct _stat *buf );
 .ixfunc2 '&FileOp' &_func
@@ -18,11 +18,11 @@ int _wstati64( const wchar_t *path, struct _stati64 *buf );
 .ixfunc2 '&FileOp' &wfunc64
 .ixfunc2 '&Wide' &wfunc64
 int lstat( const char *path, struct stat *buf );
-.ixfunc2 '&FileOp' l&func
+.ixfunc2 '&FileOp' l&funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 functions obtain information about the file or directory
 referenced in
 .arg path
@@ -36,7 +36,7 @@ indicated by
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -48,7 +48,7 @@ The
 .ct , and
 .kw _wstati64
 functions differ from
-.id &func.
+.id &funcb.
 in the type of structure that they are
 asked to fill in.
 The
@@ -60,7 +60,7 @@ The differences in the structures are described above.
 The
 .kw lstat
 function is identical to
-.id &func.
+.id &funcb.
 on non-UNIX platforms.
 .desc end
 .im statrtn

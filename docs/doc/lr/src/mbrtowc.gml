@@ -12,7 +12,7 @@ int _fmbrtowc( wchar_t __far *pwc, const char __far *s,
 If
 .arg s
 is a null pointer, the
-.id &func.
+.id &funcb.
 function determines the number of bytes
 necessary to enter the initial shift state (zero if encodings are not
 state-dependent or if the initial conversion state is described).
@@ -24,7 +24,7 @@ the initial conversion state.
 If
 .arg s
 is not a null pointer, the
-.id &func.
+.id &funcb.
 function determines the number of
 bytes that are contained in the multibyte character (plus any leading
 shift sequences) pointed to by
@@ -43,7 +43,7 @@ resulting state described will be the initial conversion state.
 If
 .arg s
 is a null pointer, the
-.id &func.
+.id &funcb.
 function returns the number of bytes
 necessary to enter the initial shift state.
 The value returned will not be greater than that of the
@@ -53,7 +53,7 @@ macro.
 If
 .arg s
 is not a null pointer, the
-.id &func.
+.id &funcb.
 function returns the first of the
 following that applies:
 .begnote

@@ -9,7 +9,7 @@ integer*2 function _pg_resetpalette()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine resets the internal palette of the presentation
 graphics system to default values.
 The palette controls the colors, line styles, fill patterns
@@ -18,7 +18,7 @@ The default palette chosen is dependent on the current video mode.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end

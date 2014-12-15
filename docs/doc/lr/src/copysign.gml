@@ -2,11 +2,11 @@
 .synop begin
 #include <math.h>
 double copysign( double x, double y );
-.ixfunc2 '&Math' &func
+.ixfunc2 '&Math' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns a value whose absolute value is equal
 to the absolute value of the argument 
 .arg x

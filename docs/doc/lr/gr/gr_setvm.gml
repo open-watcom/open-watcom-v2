@@ -10,7 +10,7 @@ integer*2 mode
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the video mode according to the value of the
 .arg mode
 argument.
@@ -135,7 +135,7 @@ is set to be one less than the number of colors in the selected mode.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of text rows when the new mode is
 successfully selected; otherwise, zero is returned.
 .return end

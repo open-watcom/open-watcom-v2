@@ -5,18 +5,18 @@ int _dwYield( void );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function yields control back to the operating system,
 thereby giving other processes a chance to run.
 .np
 The
-.id &func.
+.id &funcb.
 function is one of the support functions that can be called
 from an application using &company's default windowing support.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns 1 if it was successful and 0 if not.
 .return end
 .see begin

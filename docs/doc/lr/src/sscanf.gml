@@ -4,7 +4,7 @@
 #include <stdio.h>
 int sscanf( const char *in_string,
             const char *format, ... );
-.ixfunc2 '&String' &func
+.ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int swscanf( const wchar_t *in_string,
@@ -18,7 +18,7 @@ int swscanf( const wchar_t *in_string,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function scans input from the character string
 .arg in_string
 under control of the argument
@@ -37,7 +37,7 @@ function.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument for
 .arg format
@@ -49,7 +49,7 @@ consists of wide characters.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .kw EOF
 if the end of the input string was reached before any input conversion.

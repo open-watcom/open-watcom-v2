@@ -4,7 +4,7 @@
 char *ultoa( unsigned long int value,
              char *buffer,
              int radix );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_ultoa( unsigned long int value,
               char *buffer,
@@ -21,7 +21,7 @@ wchar_t *_ultow( unsigned long int value,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the unsigned binary integer
 .arg value
 into the equivalent string in base
@@ -43,7 +43,7 @@ must satisfy the condition:
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -53,14 +53,14 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it produces a
 wide-character string (which is twice as long).
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the pointer to the result.
 .return end
 .see begin

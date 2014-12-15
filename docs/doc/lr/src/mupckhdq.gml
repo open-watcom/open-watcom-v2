@@ -5,7 +5,7 @@ __m64 _m_punpckhdq(__m64 *m1, __m64 *m2);
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function performs an interleaved unpack of the
 high-order data elements of
 .arg m1

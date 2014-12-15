@@ -31,14 +31,14 @@ integer*4 labels(*)
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routines analyze either a single-series or a multi-series
 bar, column or line chart.
 These &routines calculate default values for chart elements without
 actually displaying the chart.
 .pp
 The
-.id &func.
+.id &funcb.
 &routine analyzes a single-series bar, column or line chart.
 The chart environment structure
 .arg env
@@ -71,7 +71,7 @@ The arguments are the same as for the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return zero
 if successful; otherwise, a non-zero value is returned.
 .return end

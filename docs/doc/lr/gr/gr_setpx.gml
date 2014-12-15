@@ -15,12 +15,12 @@ double precision x, y
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine sets the pixel value of the point
 .coord x y
 using the current plotting action with the current color.
 The
-.id &func.
+.id &funcb.
 &routine uses the view coordinate system.
 The
 .id &func2.
@@ -30,7 +30,7 @@ The
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routines return the previous value of the indicated pixel
 if the pixel value can be set; otherwise, (-1) is returned.
 .return end

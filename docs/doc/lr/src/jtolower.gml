@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 JMOJI jtolower( JMOJI c );
-.ixfunc2 '&CharTest' &func
+.ixfunc2 '&CharTest' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts a double-byte uppercase character to an
 equivalent double-byte lowercase character.
 A double-byte uppercase character is any character for which the
@@ -17,7 +17,7 @@ following expression is true:
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the argument value if the argument is not a
 double-byte uppercase character;
 otherwise, the equivalent lowercase character is returned.

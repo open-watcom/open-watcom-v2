@@ -6,7 +6,7 @@ size_t strftime( char *s,
                  size_t maxsize,
                  const char *format,
                  const struct tm *timeptr );
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 size_t wcsftime( wchar_t *s,
@@ -27,7 +27,7 @@ size_t _wstrftime_ms( wchar_t *s,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function formats the time in the argument
 .arg timeptr
 into the array pointed to by the argument
@@ -163,7 +163,7 @@ The format modifiers E and O are ignored. (eg. %EY is the same as %Y)
 If the number of characters to be placed into the array is less than
 .arg maxsize
 .ct , the
-.id &func.
+.id &funcb.
 function returns the number of characters placed into the
 array pointed to by
 .arg s

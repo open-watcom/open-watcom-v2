@@ -4,7 +4,7 @@
 DWORD MK_FP16( void far * fp32 );
 .synop end
 .desc begin
-The &func function converts a 32-bit far pointer to a 16-bit far
+The &funcb function converts a 32-bit far pointer to a 16-bit far
 pointer.
 The 16-bit pointer is created by simply removing the high word of the
 offset of the 32-bit pointer.
@@ -17,7 +17,7 @@ This is useful whenever it is necessary to pass a 16-bit far pointer a
 parameter to a Windows function though an _16 function.
 .desc end
 .return begin
-The &func returns a 16-bit far pointer.
+The &funcb returns a 16-bit far pointer.
 .return end
 .see begin
 .seelist MK_LOCAL32 MK_FP32

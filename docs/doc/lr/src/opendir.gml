@@ -7,7 +7,7 @@ DIR *opendir( const char *dirname );
 .el .do begin
 struct dirent *opendir( const char *dirname );
 .do end
-.ixfunc2 '&Direct' &func
+.ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 struct _wdirent *_wopendir( const wchar_t *dirname );
 .ixfunc2 '&Direct' &wfunc
@@ -16,7 +16,7 @@ struct _wdirent *_wopendir( const wchar_t *dirname );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function is used in conjunction with the functions
 .kw readdir
 and
@@ -73,7 +73,7 @@ Either or both processes may use
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it accepts a
 wide-character string argument and returns a pointer to a
 .kw _wdirent
@@ -91,7 +91,7 @@ functions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function, if successful, returns a pointer to a structure
 required for subsequent calls to
 .kw readdir
@@ -103,7 +103,7 @@ specified by
 .arg dirname
 .ct .li .
 The
-.id &func.
+.id &funcb.
 function returns
 .mono NULL
 if

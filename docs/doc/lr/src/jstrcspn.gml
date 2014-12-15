@@ -3,8 +3,8 @@
 #include <string.h>
 size_t jstrcspn( const JCHAR *str,
                  const JCHAR *charset );
-.ixfunc2 '&Jstring' &func
-.ixfunc2 '&Jsearch' &func
+.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jsearch' &funcb
 .if &farfnc eq 1 .do begin
 size_t __far _fjstrcspn( const JCHAR __far *str,
                          const JCHAR __far *charset );
@@ -15,12 +15,12 @@ size_t __far _fjstrcspn( const JCHAR __far *str,
 .desc begin
 .if &farfnc eq 0 .do begin
 The
-.id &func.
+.id &funcb.
 function computes
 .do end
 .el .do begin
 The
-.id &func.
+.id &funcb.
 and
 .id &ffunc.
 functions compute

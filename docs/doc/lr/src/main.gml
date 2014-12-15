@@ -6,7 +6,7 @@ int main( int argc, char *argv[] );
 .if '&machsys' eq 'QNX' .do begin
 int main( int argc, char *argv[], char *envp[] );
 .do end
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int wmain( void );
 int wmain( int argc, wchar_t *argv[] );
@@ -23,12 +23,12 @@ int PASCAL wWinMain( HINSTANCE hInstance,
 .do end
 .synop end
 .desc begin
-.id &func.
+.id &funcb.
 is a user-supplied function where program execution begins.
 .ix 'main program'
 The command line to the program is broken into a sequence of tokens
 separated by blanks and are passed to
-.id &func.
+.id &funcb.
 as an array of pointers
 to character strings in the parameter
 .arg argv
@@ -47,7 +47,7 @@ will be
 .mono NULL
 .ct ).
 Arguments that contain blanks can be passed to
-.id &func.
+.id &funcb.
 by enclosing them
 within double quote characters (which are removed from that element in
 the
@@ -81,11 +81,11 @@ header file.
 .do end
 .np
 Alternatively, the
-.id &func.
+.id &funcb.
 function can be declared to return
 .kw void
 (i.e., no return value).
-In this case, you will not be able to return an exit code from &func
+In this case, you will not be able to return an exit code from &funcb
 using a
 .kw return
 statement but must use the
@@ -95,16 +95,16 @@ function to do so.
 .np
 The
 .id &wfunc.
-function is a user-defined wide-character version of &func
+function is a user-defined wide-character version of &funcb
 that operates with wide-character strings.
 If this function is present in the application, then it will be called
 by the run-time system startup code (and the
-.id &func.
+.id &funcb.
 function, if
 present, will not be called).
 .np
 As with
-.id &func.
+.id &funcb.
 the
 .id &wfunc.
 function can be declared to return
@@ -207,11 +207,11 @@ parameter.
 .return begin
 The
 .if &'length(&wfunc.) eq 0 .do begin
-.id &func.
+.id &funcb.
 function returns
 .do end
 .el .do begin
-.id &func.
+.id &funcb.
 and
 .id &wfunc.
 functions return

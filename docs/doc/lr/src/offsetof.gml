@@ -5,7 +5,7 @@ size_t offsetof( composite, name );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 macro returns the offset of the element
 .arg name
 within the
@@ -18,7 +18,7 @@ This provides a portable method to determine the offset.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the offset of
 .arg name
 .ct .li .

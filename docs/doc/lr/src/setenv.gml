@@ -4,7 +4,7 @@
 int setenv( const char *name,
             const char *newvalue,
             int overwrite );
-.ixfunc2 '&Process' &func
+.ixfunc2 '&Process' &funcb
 .if &'length(&_func.) ne 0 .do begin
 int _setenv( const char *name,
              const char *newvalue,
@@ -28,14 +28,14 @@ Entries can be added to the environment list
 with the
 .qnxcmd export
 or with the
-.id &func.
+.id &funcb.
 function.
 .do end
 .el .do begin
 with the
 .doscmd set
 or with the
-.id &func.
+.id &funcb.
 function.
 .do end
 .if '&machsys' eq 'QNX' .do begin
@@ -56,20 +56,20 @@ the
 function.
 .np
 The
-.id &func.
+.id &funcb.
 function searches the environment list for an entry of the
 form
 .arg name=value
 .ct .li .
 If no such string is present,
-.id &func.
+.id &funcb.
 adds an entry of the form
 .arg name=newvalue
 to the environment list.
 Otherwise, if the
 .arg overwrite
 argument is non-zero,
-.id &func.
+.id &funcb.
 either will change the existing value to
 .arg newvalue
 or will delete the string
@@ -87,11 +87,11 @@ in the environment list will be deleted.
 The value of the pointer
 .kw environ
 may change across a call to the
-.id &func.
+.id &funcb.
 function.
 .np
 The
-.id &func.
+.id &funcb.
 function will make copies of the strings associated with
 .arg name
 and
@@ -114,7 +114,7 @@ with the
 or with the
 .kw putenv
 or
-.id &func.
+.id &funcb.
 functions.
 .do end
 .el .do begin
@@ -123,7 +123,7 @@ with the
 or with the
 .kw putenv
 or
-.id &func.
+.id &funcb.
 functions.
 .do end
 .ix 'environment'
@@ -172,7 +172,7 @@ assignments:
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI naming conventions.
@@ -181,7 +181,7 @@ for ANSI naming conventions.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero upon successful completion.
 Otherwise, it will return a non-zero value and set
 .kw errno

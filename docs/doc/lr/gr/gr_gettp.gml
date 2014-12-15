@@ -9,7 +9,7 @@ record /rccoord/ function _gettextposition()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current output position for text.
 This position is in terms of characters, not pixels.
 .pp
@@ -34,7 +34,7 @@ The output position for graphics output can be set by use of the
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns, as an
 .id rccoord
 structure, the current output position for text.

@@ -14,11 +14,11 @@ int _umask( int cmask );
 .ixfunc2 '&OsIo' &_func
 .do end
 .do end
-.ixfunc2 '&OsIo' &func
+.ixfunc2 '&OsIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function sets the process's file mode creation mask to
 .arg cmask
 .ct .li .
@@ -50,7 +50,7 @@ in the file's requested permission value is disallowed.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -70,7 +70,7 @@ is specified, then writing is not allowed (i.e., the file is read only).
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the previous value of
 .arg cmask
 .ct .li .

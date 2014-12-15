@@ -9,14 +9,14 @@ integer*2 function _getactivepage()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of the currently selected
 active graphics page.
 .im gr_pages
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the number of the currently selected
 active graphics page.
 .return end

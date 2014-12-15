@@ -5,11 +5,11 @@ int int386x( int inter_no,
              const union REGS *in_regs,
              union REGS *out_regs,
              struct SREGS *seg_regs );
-.ixfunc2 '&CpuInt' &func
+.ixfunc2 '&CpuInt' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function causes the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by
 .arg inter_no
@@ -45,7 +45,7 @@ after the interrupt in question.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns the value of the CPU EAX register after the
 interrupt.
 .return end

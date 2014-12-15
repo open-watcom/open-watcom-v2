@@ -4,7 +4,7 @@
 void *memcpy( void *dst,
               const void *src,
               size_t length );
-.ixfunc2 '&Copy' &func
+.ixfunc2 '&Copy' &funcb
 .if &farfnc eq 1 .do begin
 void __far *_fmemcpy( void __far *dst,
                       const void __far *src,
@@ -24,7 +24,7 @@ wchar_t *wmemcpy( wchar_t *dst,
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function copies
 .arg length
 characters from the buffer pointed to by
@@ -42,7 +42,7 @@ function if you wish to copy objects that overlap.
 The
 .id &wfunc.
 wide-character function is identical to
-.id &func.
+.id &funcb.
 except that it
 operates on characters of
 .kw wchar_t

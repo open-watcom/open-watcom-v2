@@ -2,8 +2,8 @@
 .synop begin
 #include <string.h>
 int strcmpi( const char *s1, const char *s2 );
-.ixfunc2 '&String' &func
-.ixfunc2 '&Compare' &func
+.ixfunc2 '&String' &funcb
+.ixfunc2 '&Compare' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 int wcscmpi( const wchar_t *s1, const wchar_t *s2 );
 .ixfunc2 '&String' &wfunc
@@ -13,7 +13,7 @@ int wcscmpi( const wchar_t *s1, const wchar_t *s2 );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function compares, with case insensitivity, the string
 pointed to by
 .arg s1
@@ -26,7 +26,7 @@ and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
 The
-.id &func.
+.id &funcb.
 function is identical to the
 .kw stricmp
 function.
@@ -34,7 +34,7 @@ function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1

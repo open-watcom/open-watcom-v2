@@ -5,7 +5,7 @@
 errno_t asctime_s( char * s,
                    rsize_t maxsize,
                    const struct tm * timeptr);
-.ixfunc2 '&TimeFunc' &func
+.ixfunc2 '&TimeFunc' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 errno_t _wasctime_s( wchar_t * s,
                      rsize_t maxsize,
@@ -46,7 +46,7 @@ is not zero and is not greater than
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the normalized broken-down time in the structure
 pointed to by
 .arg timeptr

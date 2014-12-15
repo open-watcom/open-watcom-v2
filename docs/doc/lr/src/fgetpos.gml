@@ -2,11 +2,11 @@
 .synop begin
 #include <stdio.h>
 int fgetpos( FILE *fp, fpos_t *pos );
-.ixfunc2 '&StrIo' &func
+.ixfunc2 '&StrIo' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function stores the current position of the file
 .arg fp
 in the object pointed to by
@@ -16,14 +16,14 @@ The value stored is usable by the
 .kw fsetpos
 function for repositioning the file to its position at the time of the
 call to the
-.id &func.
+.id &funcb.
 function.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns zero if successful, otherwise, the
-.id &func.
+.id &funcb.
 function returns a non-zero value.
 .im errnoref
 .return end

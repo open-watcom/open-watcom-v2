@@ -5,7 +5,7 @@ int _ismbbkana( unsigned int ch );
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function tests if the argument
 .arg ch
 is a single-byte Katakana character.
@@ -26,7 +26,7 @@ This is shown by the example below.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns non-zero if the argument is a single-byte
 Katakana character; otherwise, a zero value is returned.
 .return end

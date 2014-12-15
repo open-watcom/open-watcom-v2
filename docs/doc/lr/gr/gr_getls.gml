@@ -9,7 +9,7 @@ integer*2 function _getlinestyle()
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current line-style mask.
 .pp
 .im gr_lines
@@ -19,7 +19,7 @@ The default line style mask is
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns the current line-style mask.
 .return end
 .see begin

@@ -4,7 +4,7 @@
 char *gcvt( double value,
             int ndigits,
             char *buffer );
-.ixfunc2 '&Conversion' &func
+.ixfunc2 '&Conversion' &funcb
 .if &'length(&_func.) ne 0 .do begin
 char *_gcvt( double value,
             int ndigits,
@@ -20,7 +20,7 @@ wchar_t *_wgcvt( double value,
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function converts the floating-point number
 .arg value
 into a character string and stores the result in
@@ -39,7 +39,7 @@ F-format.
 .np
 The
 .id &_func.
-function is identical to &func..
+function is identical to &funcb..
 Use
 .id &_func.
 for ANSI/ISO naming conventions.
@@ -49,14 +49,14 @@ for ANSI/ISO naming conventions.
 The
 .id &wfunc.
 function is identical to
-.id &func.
+.id &funcb.
 except that it produces a
 wide-character string (which is twice as long).
 .do end
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a pointer to the string of digits.
 .return end
 .see begin

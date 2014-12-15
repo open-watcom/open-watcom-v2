@@ -2,11 +2,11 @@
 .synop begin
 #include <jstring.h>
 JMOJI zentohan( JMOJI c );
-.ixfunc2 '&Jstring' &func
+.ixfunc2 '&Jstring' &funcb
 .synop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 function returns the single-byte ASCII character equivalent
 to the double-byte character
 .arg c
@@ -15,12 +15,12 @@ The ASCII character will be in the range 0x20 to 0x7E.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns
 .arg c
 if there is no equivalent single-byte ASCII character;
 otherwise
-.id &func.
+.id &funcb.
 returns a single-byte ASCII character.
 .return end
 .see begin

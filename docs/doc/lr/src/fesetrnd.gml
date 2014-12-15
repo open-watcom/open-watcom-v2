@@ -2,12 +2,12 @@
 .synop begin
 #include <fenv.h>
 int fesetround( int __round );
-.ixfunc2 'Floating Point Environment' &func
+.ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
-.id &func.
+.id &funcb.
 function establishes the rounding direction represented by its
 argument round. If the argument is not equal to the value of a rounding direction macro,
 the rounding direction is not changed.
@@ -15,7 +15,7 @@ the rounding direction is not changed.
 .*
 .return begin
 The
-.id &func.
+.id &funcb.
 function returns a zero value if and only if the requested rounding direction was
 established.
 .return end

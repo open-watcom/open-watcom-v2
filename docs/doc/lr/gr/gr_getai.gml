@@ -15,7 +15,7 @@ record /xycoord/ inside_pt
 .gsynop end
 .desc begin
 The
-.id &func.
+.id &funcb.
 &routine returns information about the arc most recently
 drawn by the
 .kw _arc
@@ -37,7 +37,7 @@ The interior point can be used to fill the pie.
 .desc end
 .return begin
 The
-.id &func.
+.id &funcb.
 &routine returns a non-zero value when successful.
 If the previous arc or pie was not successfully drawn, zero is returned.
 .return end
