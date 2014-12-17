@@ -70,7 +70,9 @@ bool GUIXCloseToolBar( gui_window *wnd )
         }
         GUIMemFree( toolbar->bitmaps );
         GUIMemFree( toolbar );
-        GUIResizeBackground( wnd, true );
+        if(!(wnd->flags & DOING_DESTROY)) {
+            GUIResizeBackground( wnd, true );
+        }
         GUIEVENTWND( wnd, GUI_TOOLBAR_DESTROYED, NULL );
     }
     return( true );

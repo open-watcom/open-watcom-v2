@@ -352,7 +352,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIFreeColours( wnd );
     GUIFreeBKBrush( wnd );
     GUIControlDeleteAll( wnd );
-    //GUICloseToolBar( wnd );
+    GUICloseToolBar( wnd );
     GUIFreeHint( wnd );
     _wpi_setwindowlongptr( wnd->hwnd, GUI_EXTRA_WORD * EXTRA_SIZE, 0 );
     if( wnd->root != NULLHANDLE ) {
