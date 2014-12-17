@@ -923,13 +923,6 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             }
             return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             break;
-        case WM_DESTROY :
-            wnd->flags |= DOING_DESTROY;
-            GUICloseToolBar( wnd );
-            //ret =  _wpi_defwindowproc( hwnd, msg, wparam, lparam );
-            //wnd->root       = NULL;
-            //wnd->root_frame = NULL;
-            return( 0L );
         }
     } else if( ( wnd->root != NULLHANDLE ) && ( hwnd == wnd->hwnd ) ) {
         /* message for container window */
@@ -1348,6 +1341,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         if( wnd->flags & DOING_CLOSE ) {
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
         } else if( wnd->style & GUI_CLOSEABLE ) {
+            
             if( GUIEVENTWND( wnd, GUI_CLOSE, NULL ) ) {
                 wnd->flags |= DOING_CLOSE;
                 if( wnd->flags & IS_ROOT ) {
@@ -1368,12 +1362,12 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         wnd->flags |= DOING_DESTROY;
         NumWindows--;
         GUIEVENTWND( wnd, GUI_DESTROY, NULL );
-        //ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
         GUIDestroyAllChildren( wnd );
         if( wnd->flags & IS_ROOT ) {
             GUIDestroyAllPopupsWithNoParent();
         }
         GUIFreeWindowMemory( wnd, false, false );
+        
         if( NumWindows == 0 ) {
             _wpi_postquitmessage( 0 );
             Posted = true;
