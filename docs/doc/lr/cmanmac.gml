@@ -60,7 +60,7 @@
 .   .ty ***WARNING*** &* not defined in libfuns.gml
 .   .me
 .do end
-.if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &* not in library
+.if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &* not defined in liblist7.gml
 .if |&fncttl.| eq || .do begin
 .   .sr fncttl=&*
 .do end

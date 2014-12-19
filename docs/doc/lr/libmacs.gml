@@ -7,6 +7,7 @@
 .  .se __idx=&__idx.+1
 .  .se fnclst(&__idx.)=&*1
 .  .se imblst(&__idx.)=&*2
+.  .se __sysl(&__idx.)=0
 .do end
 .dm fnc end
 .*
