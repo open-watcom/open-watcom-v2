@@ -1,6 +1,5 @@
 .func _bprintf _bwprintf
 .synop begin
-.funcw _bwprintf
 #include <stdio.h>
 int _bprintf( char *buf, size_t bufsize,
               const char *format, ... );

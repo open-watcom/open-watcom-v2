@@ -1,6 +1,5 @@
 .func fgets fgetws
 .synop begin
-.funcw fgetws
 #include <stdio.h>
 char *fgets( char *buf, int n, FILE *fp );
 .ixfunc2 '&StrIo' &funcb

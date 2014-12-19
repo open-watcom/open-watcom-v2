@@ -1,6 +1,5 @@
 .func fgetc fgetwc
 .synop begin
-.funcw fgetwc
 #include <stdio.h>
 int fgetc( FILE *fp );
 .ixfunc2 '&StrIo' &funcb

@@ -1,6 +1,4 @@
-.func begin vsprintf_s vswprintf_s
-.funcw vswprintf_s
-.func end
+.func vsprintf_s vswprintf_s
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdarg.h>

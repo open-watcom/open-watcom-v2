@@ -1,6 +1,4 @@
-.func begin sscanf_s swscanf_s
-.funcw swscanf_s
-.func end
+.func sscanf_s swscanf_s
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>

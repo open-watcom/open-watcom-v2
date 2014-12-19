@@ -1,6 +1,5 @@
 .func vsscanf vswscanf
 .synop begin
-.funcw vswscanf
 #include <stdio.h>
 #include <stdarg.h>
 int vsscanf( const char *in_string,

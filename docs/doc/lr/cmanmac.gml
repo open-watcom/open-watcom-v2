@@ -21,6 +21,7 @@
 .sr __fnx=0
 .sr __cltxt=''
 .sr funcgrp=''
+.sr iswidefn=0
 .dm funcinit end
 .*
 .* Define these here otherwise &_func. expands to &_func. and not ''
@@ -45,6 +46,13 @@
 .dm debug begin
 .* .ty &*
 .dm debug end
+.*
+.dm widefunc begin
+.sr iswidefn=0
+.if '&*1(1:2)' eq '_w' and '&*1(1:7)' ne '_wrapon' and '&*1(1:6)' ne '_write' or &'pos('wprintf',&*1) ne 0 or &'pos('wscanf',&*1) ne 0 or '&*1(1:2)' eq 'wc' or '&*1(1:4)' eq 'wmem' or '&*1(1:4)' eq 'wasc' or '&'right(&*1,2)' eq 'wc' or '&'right(&*1,2)' eq 'ws' or '&'right(&*1,5)' eq 'wchar' .do begin
+.   .sr iswidefn=1
+.do end
+.dm widefunc end
 .*
 .dm funkw begin
 .se *fnd=&'vecpos(&*,fnclst)
@@ -72,6 +80,10 @@
 .   .   .sr func64=&*
 .   .do end
 .do end
+.widefunc &*
+.if &iswidefn ne 0 .do begin
+.   .sr wfunc=&*
+.do end
 .el .if '&*' eq '_&funcn' .do begin
 .   .sr _func=&*
 .do end
@@ -80,23 +92,6 @@
 .do end
 .el .if '&*' eq '_f&funcn' .do begin
 .   .sr ffunc=&*
-.do end
-.el .if '&*(1:2).' eq '_w' .do begin
-.   .if '&*.' eq '_wrapon' or '&*.' eq '_write' .do begin
-.   .   .sr _func=&*
-.   .do end
-.   .el .do begin
-.   .   .sr wfunc=&*
-.   .do end
-.do end
-.el .if &'pos('wc',&*) eq 1 .do begin
-.   .sr wfunc=&*
-.do end
-.el .if &'pos('wmem',&*) eq 1 .do begin
-.   .sr wfunc=&*
-.do end
-.el .if &'pos('wasc',&*) eq 1 .do begin
-.   .sr wfunc=&*
 .do end
 .el .if &'pos('_mb',&*) eq 1 .do begin
 .   .sr mfunc=&*

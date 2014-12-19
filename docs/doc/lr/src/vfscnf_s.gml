@@ -1,6 +1,4 @@
-.func begin vfscanf_s vfwscanf_s
-.funcw vfwscanf_s
-.func end
+.func vfscanf_s vfwscanf_s
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdarg.h>

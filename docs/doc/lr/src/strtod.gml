@@ -1,6 +1,5 @@
 .func strtod wcstod
 .synop begin
-.funcw wcstod
 #include <stdlib.h>
 double strtod( const char *ptr, char **endptr );
 .ixfunc2 '&Conversion' &funcb

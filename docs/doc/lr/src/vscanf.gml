@@ -1,6 +1,5 @@
 .func vscanf vwscanf
 .synop begin
-.funcw vwscanf
 #include <stdarg.h>
 #include <stdio.h>
 int vscanf( const char *format, va_list arg );

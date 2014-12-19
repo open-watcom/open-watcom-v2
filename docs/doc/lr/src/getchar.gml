@@ -1,6 +1,5 @@
 .func getchar getwchar
 .synop begin
-.funcw getwchar
 #include <stdio.h>
 int getchar( void );
 .ixfunc2 '&StrIo' &funcb

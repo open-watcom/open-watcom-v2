@@ -1,6 +1,5 @@
 .func fputchar _fputchar _fputwchar
 .synop begin
-.funcw _fputwchar
 #include <stdio.h>
 int fputchar( int c );
 .ixfunc2 '&StrIo' &funcb

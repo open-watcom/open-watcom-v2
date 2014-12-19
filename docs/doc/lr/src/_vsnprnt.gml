@@ -1,6 +1,5 @@
 .func _vsnprintf _vsnwprintf
 .synop begin
-.funcw _vsnwprintf
 #include <stdarg.h>
 #include <stdio.h>
 int _vsnprintf( char *buf,

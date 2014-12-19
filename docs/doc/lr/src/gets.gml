@@ -1,6 +1,5 @@
 .func gets _getws
 .synop begin
-.funcw _getws
 #include <stdio.h>
 char *gets( char *buf );
 .ixfunc2 '&StrIo' &funcb

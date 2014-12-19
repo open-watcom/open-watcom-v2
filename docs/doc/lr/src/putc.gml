@@ -1,6 +1,5 @@
 .func putc putwc
 .synop begin
-.funcw putwc
 #include <stdio.h>
 int putc( int c, FILE *fp );
 .ixfunc2 '&StrIo' &funcb

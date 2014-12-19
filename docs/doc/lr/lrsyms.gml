@@ -27,14 +27,16 @@
 :set symbol='mn'        value=';.sf4 '.
 :set symbol='emn'       value=';.esf '.
 .*
+:set symbol="cpyyear"   value="2014".
+.*
 :set symbol="lang"      value="C".
 .*
 .* O/S specific definitions (DOS, OS/2, QNX, etc.)
 .*
 .* define default values
 .*
-:set symbol="version"   value="110".
-:set symbol="company"   value="Watcom".
+:set symbol="version"   value="130".
+:set symbol="company"   value="Open Watcom".
 :set symbol="farfnc"    value="1".
 :set symbol="sw"        value="-".
 :set symbol="pc"        value="\".

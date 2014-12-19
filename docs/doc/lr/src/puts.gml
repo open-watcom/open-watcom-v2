@@ -1,6 +1,5 @@
 .func puts _putws
 .synop begin
-.funcw _putws
 #include <stdio.h>
 int puts( const char *buf );
 .ixfunc2 '&StrIo' &funcb

@@ -1,6 +1,5 @@
 .func _vbprintf _vbwprintf
 .synop begin
-.funcw _vbwprintf
 #include <stdio.h>
 #include <stdarg.h>
 int _vbprintf( char *buf, size_t bufsize,
