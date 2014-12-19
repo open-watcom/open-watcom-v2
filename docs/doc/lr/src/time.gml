@@ -45,5 +45,5 @@ void main()
 .exmp output
 It is now: Fri Dec 25 15:58:42 1987
 .exmp end
-.class ANSI, POSIX 1003.1
+.class ISO C, POSIX 1003.1
 .system

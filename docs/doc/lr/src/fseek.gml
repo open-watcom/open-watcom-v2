@@ -107,5 +107,5 @@ void main()
   }
 .blkcode end
 .exmp end
-.class ANSI
+.class ISO C
 .system

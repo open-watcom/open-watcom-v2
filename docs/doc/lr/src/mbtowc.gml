@@ -97,5 +97,5 @@ Character encodings are not state dependent
 string(1)
 /0073
 .exmp end
-.class ANSI
+.class ISO C
 .system

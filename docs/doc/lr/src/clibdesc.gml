@@ -78,43 +78,55 @@ This subsection provides an indication of where the function or macro
 is commonly found.
 The following notation is used:
 .begpoint $break $setptnt 12
-.point ANSI
-.ix 'ANSI classification'
-.ix 'ISO classification'
-These functions or macros are defined by the ANSI/ISO C standard.
-.if '&machsys' eq 'QNX' .do begin
-.point Intel
-.ix 'Intel classification'
-These functions or macros are neither ANSI/ISO nor POSIX.
-It performs a function related to the Intel x86 architecture.
-It may be found in other implementations of C for personal computers
-using Intel chips.
-Use these functions with caution, if portability is a consideration.
+.point ISO C
+.ix 'ISO C classification'
+These functions or macros are defined by the ISO/ANSI C standard
+ISO/IEC 9899:1989.
+.point ISO C90
+.ix 'ISO C90 classification'
+These functions or macros are defined by the ISO/ANSI C standard
+ISO/IEC 9899:1990.
+.point ISO C95
+.ix 'ISO C95 classification'
+These functions or macros are defined by the ISO/ANSI C standard
+ISO/IEC 9899:1990/AMD 1:1995.
+.point ISO C99
+.ix 'ISO C99 classification'
+These functions or macros are defined by the ISO/ANSI C standard
+ISO/IEC 9899:1999.
 .point POSIX 1003.1
 .ix 'POSIX classification'
 .ix 'POSIX 1003.1 classification'
-The functions or macros are not defined by the ANSI/ISO C standard.
+The functions or macros are not defined by the ISO C standard.
 These functions are specified in the document
 .us IEEE Standard Portable Operating System Interface
 .us for Computer Environments
 (IEEE Draft Standard 1003.1-1990).
 .point POSIX 1003.2
 .ix 'POSIX 1003.2 classification'
-These functions or macros are not defined by the ANSI/ISO C standard.
+These functions or macros are not defined by the ISO C standard.
 These functions are specified in the document
 .us Shell and Utility Application Interface
 .us for Computer Operating System Environments
 (IEEE Computer Society Working Group 1003.2).
 .point POSIX 1003.4
 .ix 'POSIX 1003.4 classification'
-These functions or macros are not defined by the ANSI/ISO C standard.
+These functions or macros are not defined by the ISO C standard.
 These functions are specified in the document
 .us Realtime Extensions
 .us for Computer Operating System Environments
 (IEEE Computer Society Working Group 1003.4).
+.point Intel
+.ix 'Intel classification'
+These functions or macros are neither ISO C nor POSIX.
+It performs a function related to the Intel x86 architecture.
+It may be found in other implementations of C for personal computers
+using Intel chips.
+Use these functions with caution, if portability is a consideration.
+.if '&machsys' eq 'QNX' .do begin
 .point QNX
 .ix 'QNX classification'
-These functions or macros are neither ANSI/ISO nor POSIX.
+These functions or macros are neither ISO C nor POSIX.
 They perform a function related to QNX.
 They may be found in other implementations of C for personal computers
 with QNX.
@@ -122,17 +134,9 @@ Use these functions with caution, if portability is a consideration.
 .point UNIX
 .ix 'UNIX classification'
 These functions exist on some UNIX systems but are outside of the
-POSIX or ANSI/ISO standards.
+POSIX or ISO C standards.
 .do end
 .el .do begin
-.point POSIX 1003.1
-.ix 'POSIX classification'
-.ix 'POSIX 1003.1 classification'
-These functions or macros are not defined by the ANSI/ISO C standard.
-These function are specified in the document
-.us IEEE Standard Portable Operating System Interface
-.us for Computer Environments
-(IEEE Draft Standard 1003.1-1990).
 .point BIOS
 .ix 'BIOS classification'
 These functions access a service of the BIOS found in IBM Personal
@@ -140,17 +144,10 @@ Computers and compatibles.
 These functions should not be used if portability is a consideration.
 .point DOS
 .ix 'DOS classification'
-These functions or macros are neither ANSI/ISO nor POSIX.
+These functions or macros are neither ISO C nor POSIX.
 They perform a function related to DOS.
 They may be found in other implementations of C for personal computers
 with DOS.
-Use these functions with caution, if portability is a consideration.
-.point Intel
-.ix 'Intel classification'
-These functions or macros are neither ANSI/ISO nor POSIX.
-They performs a function related to the Intel x86 architecture.
-They may be found in other implementations of C for personal computers
-using Intel chips.
 Use these functions with caution, if portability is a consideration.
 .point OS/2
 .ix 'OS/2 classification'
@@ -164,7 +161,7 @@ These functions are specific to Microsoft Windows.
 .do end
 .point WATCOM
 .ix 'WATCOM classification'
-These functions or macros are neither ANSI/ISO nor POSIX.
+These functions or macros are neither ISO C nor POSIX.
 They may be found in other implementations of the C language, but
 caution should be used if portability is a consideration.
 .*

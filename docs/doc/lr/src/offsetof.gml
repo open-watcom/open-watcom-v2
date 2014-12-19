@@ -54,5 +54,5 @@ In a large data model, the following would result:
 first:0 second:4 third:14
 .blkcode end
 .exmp end
-.class ANSI
+.class ISO C
 .system

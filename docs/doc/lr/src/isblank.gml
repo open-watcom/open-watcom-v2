@@ -1,6 +1,7 @@
-.func isblank iswblank
+.func begin isblank
+.func2 iswblank
+.func end
 .synop begin
-.funcw iswblank
 #include <ctype.h>
 int isblank( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -81,5 +82,5 @@ Char     is a blank character
 Char   is a blank character
 Char } is not a blank character
 .exmp end
-.class ANSI
+.class ISO C99
 .system

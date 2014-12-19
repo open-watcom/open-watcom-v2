@@ -143,5 +143,5 @@ void main()
 0xe0
 0xa1
 .exmp end
-.class ANSI
+.class ISO C
 .system

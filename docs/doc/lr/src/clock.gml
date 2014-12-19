@@ -55,5 +55,5 @@ void main()
           (end_time - start_time) / CLOCKS_PER_SEC );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

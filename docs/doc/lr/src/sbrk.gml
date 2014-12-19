@@ -48,9 +48,9 @@ This value may be changed by a program at any time.
 .if '&machsys' ne 'QNX' .do begin
 .np
 Under 16-bit DOS, a new process started with one of the
-.kw spawn...
+.kw spawn&grpsfx
 or
-.kw exec...
+.kw exec&grpsfx
 functions is loaded following the break value.
 Consequently, decreasing the break value leaves more space available to
 the new process.

@@ -88,5 +88,5 @@ void main()
     v = strtoul( "12345678", NULL, 10 );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

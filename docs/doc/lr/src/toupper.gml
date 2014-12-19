@@ -1,6 +1,7 @@
-.func toupper _toupper towupper
+.func begin toupper _toupper
+.func2 towupper ISO C95
+.func end
 .synop begin
-.funcw towupper
 #include <ctype.h>
 int toupper( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -91,5 +92,5 @@ void main()
 .exmp output
 A 5 $ Z
 .exmp end
-.class ANSI
+.class ISO C
 .system

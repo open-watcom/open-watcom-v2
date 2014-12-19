@@ -34,7 +34,7 @@ function is identical to
 .
 Use
 id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 .pp

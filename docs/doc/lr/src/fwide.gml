@@ -57,5 +57,5 @@ void main( void )
 .exmp output
 orientation: byte
 .exmp end
-.class ANSI
+.class ISO C95
 .system

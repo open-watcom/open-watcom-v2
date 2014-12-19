@@ -1,4 +1,6 @@
-.func memcmp _fmemcmp wmemcmp
+.func begin memcmp _fmemcmp
+.func2 wmemcmp ISO C95
+.func end
 .synop begin
 #include <string.h>
 int memcmp( const void *s1,
@@ -72,5 +74,5 @@ void main( void )
     }
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

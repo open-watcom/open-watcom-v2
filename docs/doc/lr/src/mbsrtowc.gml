@@ -135,5 +135,5 @@ void main()
 0xff9f
 0x720d
 .exmp end
-.class ANSI
+.class ISO C95
 .system

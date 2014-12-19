@@ -85,5 +85,5 @@ void main()
 Character encodings are not state dependent
 s(1)
 .exmp end
-.class ANSI
+.class ISO C
 .system

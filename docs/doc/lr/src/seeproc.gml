@@ -3,12 +3,12 @@
 .if '&machsys' eq 'QNX' .do begin
 .seelist close
 .do end
-.seelist exec...
+.seelist exec&grpsfx
 .seelist exit _Exit _exit getcmd getenv main onexit putenv
 .if '&machsys' eq 'QNX' .do begin
 .seelist sigaction signal
 .do end
-.seelist spawn...
+.seelist spawn&grpsfx
 .seelist system
 .if '&machsys' eq 'QNX' .do begin
 .seelist wait waitpid

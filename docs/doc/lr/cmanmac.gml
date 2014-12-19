@@ -1,5 +1,6 @@
 :set symbol="sysrb" value="~b".
 :set symbol="XMPset" value="of".
+:set symbol="grpsfx" value="...".
 .*
 .dm funcinit begin
 .sr funcb=''
@@ -20,7 +21,11 @@
 .sr fncttl=''
 .sr __fnx=0
 .sr __cltxt=''
+.sr __clnam=''
+.sr __clatr=0
+.sr __clx=0
 .sr funcgrp=''
+.sr groupfun=0
 .sr iswidefn=0
 .dm funcinit end
 .*
@@ -54,53 +59,90 @@
 .do end
 .dm widefunc end
 .*
+.dm addclinf begin
+.sr *cltxt=''
+.sr *clatr=0
+.sr *cls=''
+.if '&*2' ne '' .se *cls=&'substr(&*.,&'length(&*1)+1)
+.if '&*cls' ne '' .se *cltxt=is &*cls
+.if '&*cltxt.' ne '' .sr *clatr=&*clatr.+2
+.widefunc &*1
+.if &iswidefn. ne 0 .do begin
+.   .if '&*1(1:1).' ne '_' .sr *clatr=&*clatr.+1
+.do end
+.se __clx=&__clx.+1
+.se __clnam(&__clx.)=&*1
+.se __clatr(&__clx.)=&*clatr
+.se __cltxt(&__clx.)=&*cltxt
+.dm addclinf end
+.*
+.dm addsyinf begin
+.se __fnx=&__fnx.+1
+.se $$fnc(&__fnx.)=&*1
+.dm addsyinf end
+.*
 .dm funkw begin
-.se *fnd=&'vecpos(&*,fnclst)
+.se *fnd=&'vecpos(&*1,fnclst)
 .if &*fnd. eq 0 .do begin
-.   .ty ***WARNING*** &* not defined in libfuns.gml
+.   .ty ***WARNING*** &*1 not defined in libfuns.gml
 .   .me
 .do end
-.if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &* not defined in liblist7.gml
+.if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &*1 not defined in liblist7.gml
 .if |&fncttl.| eq || .do begin
-.   .sr fncttl=&*
+.   .sr fncttl=&*1
 .do end
 .el .if '&funcgrp.' eq '' .do begin
-.   .sr fncttl=&fncttl., &*
+.   .sr fncttl=&fncttl., &*1
 .do end
-.if '&funcb' eq '' .sr funcb=&*
-.if '&funcn' eq '' .sr funcn=&'strip(&*,'L','_')
-.se __fnx=&__fnx.+1
-.se $$fnc(&__fnx.)=&*
+.if '&funcb' eq '' .sr funcb=&*1
+.if '&funcn' eq '' .sr funcn=&'strip(&*1,'L','_')
+.addsyinfo &*1
 .* try to classify type of function
-.if &'pos('i64',&*) ne 0 .do begin
-.   .if '&*(1:2).' eq '_w' .do begin
-.   .   .sr wfunc64=&*
+.if &'pos('i64',&*1) ne 0 .do begin
+.   .if '&*1(1:2).' eq '_w' .do begin
+.   .   .sr wfunc64=&*1
 .   .do end
 .   .el .do begin
-.   .   .sr func64=&*
+.   .   .sr func64=&*1
 .   .do end
 .do end
-.widefunc &*
+.widefunc &*1
 .if &iswidefn ne 0 .do begin
-.   .sr wfunc=&*
+.   .sr wfunc=&*1
 .do end
-.el .if '&*' eq '_&funcn' .do begin
-.   .sr _func=&*
+.el .if '&*1' eq '_&funcn' .do begin
+.   .sr _func=&*1
 .do end
-.el .if '&*' eq '__&funcn' .do begin
-.   .sr __func=&*
+.el .if '&*1' eq '__&funcn' .do begin
+.   .sr __func=&*1
 .do end
-.el .if '&*' eq '_f&funcn' .do begin
-.   .sr ffunc=&*
+.el .if '&*1' eq '_f&funcn' .do begin
+.   .sr ffunc=&*1
 .do end
-.el .if &'pos('_mb',&*) eq 1 .do begin
-.   .sr mfunc=&*
+.el .if '&*1(1:3).' eq '_mb' .do begin
+.   .sr mfunc=&*1
 .do end
-.el .if &'pos('_fmb',&*) eq 1 .do begin
-.   .sr fmfunc=&*
+.el .if '&*1(1:4).' eq '_fmb' .do begin
+.   .sr fmfunc=&*1
+.do end
+.if &groupfun. eq 0 .do begin
+.   .addclinf &*
 .do end
 .dm funkw end
 .*
+.*
+.*  describe functions for c library
+.*  type is derived from function name
+.*  classification is supported by .func2 macro
+.*  if omitted, default classification is WATCOM
+.*
+.*  .func begin
+.*  .func2     norm  classification
+.*  .func end
+.*
+.*  .func norm Functions
+.*  .func norm
+.*  .func norm _norm __norm _wnorm _fnorm _mbsnorm
 .*
 .dm func begin
 .if |&*1| ne |end| .do begin
@@ -116,13 +158,15 @@
 .   .   .sr *first=&*&*i.
 .   .   .sr *second=&*&*j.
 .   .   .if '&*second' eq 'Functions' .do begin
-.   .   .   .sr funcb=&'strip(&*first.,'T',',')
 .   .   .   .sr fncttl=&*first. &*second.
 .   .   .   .sr funcgrp=&'strip(&*first.,'T',',')
+.   .   .   .if |&'right(&funcgrp,&'length(&grpsfx.))| eq |&grpsfx.| .do begin
+.   .   .   .   .sr groupfun=1
+.   .   .   .   .addclinf &funcgrp
+.   .   .   .do end
 .   .   .do end
 .   .   .el .do begin
-.   .   .   .pe &*cnt
-.   .   .   .   .funkw &*&*i.;.sr *i=&*i.+1
+.   .   .   .pe &*cnt;.funkw &*&*i.;.sr *i=&*i.+1
 .   .   .do end
 .   .do end
 .do end
@@ -130,12 +174,12 @@
 .*  generate title and start of code (declaration)
 .   .topsect &fncttl.
 .   .if '&funcgrp.' ne '' .do begin
-.   .   .ixm '&funcgrp.'
+.   .   .sr function=&funcgrp.
+.   .   .ixm '&funcgrp. Functions'
 .   .do end
-.   .sr *i=1
-.   .pe &__fnx.
-.   .   .if '&funcgrp.' ne '&$$fnc(&*i.)' .ixm '&$$fnc(&*i.)';.sr *i=&*i.+1
-.   .sr function=&funcb.
+.   .el .sr function=&funcb.
+.   .sr *i=0
+.   .pe &__fnx.;.sr *i=&*i.+1;.ixm '&$$fnc(&*i.)'
 .do end
 .dm func end
 .*
@@ -144,9 +188,15 @@
 .*
 .dm func2 begin
 :cmt .if &e'&dohelp eq 1 .xmpoff
-.funkw &*1
+.funkw &*
 :cmt. .if &e'&dohelp eq 1 .xmpon
 .dm func2 end
+.*
+.dm fungroup begin
+.if &groupfun. ne 0 .do begin
+.   .addclinf &*
+.do end
+.dm fungroup end
 .*
 .* The funcw macro explicitly declares the "wide" name of a function
 .*
@@ -336,120 +386,95 @@ Prototype in
 .*
 .dm clitm begin
 .if |&*| ne || .do begin
-.   .if &clitmc eq 0 .do begin
-.   .   .ct &*
-.   .   .sr clitmc=1
-.   .do end
-.   .el .do begin
-.   .   .br .ct &*
-:cmt. .   .   .ct , &*
-.   .do end
+.   .ct &*
+.   .br
 .do end
 .dm clitm end
 .*
 .dm ansiname begin
-.if '&*' ne '' .do begin
-.br &*. conforms to ANSI/ISO naming conventions
-.do end
+.if '&*' eq '' .me
+.sr *i=0
+...loopa .sr *i=&*i.+1
+.   .if '&*' eq '&__clnam(&*i.)' .do begin
+.   .   .if '&__cltxt(&*i.)' eq '' .sr __cltxt(&*i.)=conforms to ISO C naming conventions
+.   .   .el .sr __cltxt(&*i.)=&__cltxt(&*i.)., conforms to ISO C naming conventions
+.   .   .me
+.   .do end
+.if &*i. lt &__clx. .go loopa
 .dm ansiname end
+.*
+.dm listclas begin
+.sr *i=0
+.if '&*1' eq '' .do begin
+.   .se *i=&*i.+1
+.   .pe &__clx.-1;.se *i=&*i.+1;.clitm &__clnam(&*i.) &__cltxt(&*i.)
+.   .me
+.do end
+...loopb .se *i=&*i.+1
+.   .if &__clatr(&*i.) ge 2 .do begin
+.   .   .if '&__cltxt(&*i.)' ne '' .sr *sttxt=&__cltxt(&*i)
+.   .   .el .sr *sttxt=''
+.   .do end
+.   .el .do begin
+.   .   .if '&__clnam(&*i)' eq '&function.' .sr *sttxt=is &*1
+.   .   .el .if &__clatr(&*i.) ne 0 .sr *sttxt=is &*3
+.*   .   .el .sr *sttxt=is not &*2
+.   .   .el .sr *sttxt=is WATCOM
+.   .   .if '&__cltxt(&*i.)' ne '' .sr *sttxt=&*sttxt., &__cltxt(&*i)
+.   .do end
+.   .clitm &__clnam(&*i) &*sttxt.
+.if &*i. lt &__clx. .go loopb
+.dm listclas end
 .*
 .dm class begin
 .sr *extr=0
 .if |&*1| ne |end| .do begin
-.   .if |&*1| eq |begin| .sr __class=&*2
-.   .el .sr __class=&*1
-.   .listnew Classification:
-.   .if &'length(&_func.) ne 0 .do begin
-.   .   .if '&_func.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if &'length(&func64.) ne 0 .do begin
-.   .   .if '&func64.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if &'length(&__func.) ne 0 .do begin
-.   .   .if '&__func.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if &'length(&ffunc.) ne 0 .do begin
-.   .   .if '&ffunc.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if &'length(&wfunc.) ne 0 .do begin
-.   .   .if '&wfunc.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if &'length(&wfunc64.) ne 0 .do begin
-.   .   .if '&wfunc64.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if &'length(&mfunc.) ne 0 .do begin
-.   .   .if '&mfunc.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if &'length(&fmfunc.) ne 0 .do begin
-.   .   .if '&fmfunc.' ne '&funcb.' :set symbol="*extr" value=1.
-.   .do end
-.   .if |&*1| eq |begin| .sr *all=&'strip(&'substr(&*,6),'L',' ')
-.   .el .sr *all=&*
-.   .if &*extr eq 0 .do begin
-&*all
-.   .do end
-.   .el .if |&*all| eq |WATCOM| .do begin
-&*all
-.   .do end
-.   .el .if &'words(|&*all|) gt 6 .do begin
-&*all
+.   .if |&*1| eq |begin| .do begin
+.   .   .sr __class=&*2
+.   .   .sr *all=&'strip(&'substr(&*,6),'L',' ')
 .   .do end
 .   .el .do begin
-.   .   .sr clitmc=0
-.   .   .clitm &function. is &*all
-.   .   .if |&*1| eq |begin| .sr *first=&*2
-.   .   .el .sr *first=&*1
-.   .   .if |&*first| eq |ISO| OR |&*first| eq |TR| .do begin
+.   .   .sr __class=&*1
+.   .   .sr *all=&*
+.   .do end
+.   .listnew Classification:
+.   .if &__clx. gt 1 and '&all' ne '&grfun' .do begin
+.   .   .sr *i=1
+.   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__cltxt(&*i.).' ne '' .sr *extr=1
+.   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'POSIX' .do begin
+.   .   .   .sr *i=1
+.   .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__clnam(&*i.,1:1).' eq '_' .sr *extr=1
+.   .   .do end
+.   .do end
+.   .if &*extr eq 0 .do begin
+.   .   .clitm &*all
+.   .do end
+.   .el .if |&*all| eq |WATCOM| .do begin
+.   .   .clitm &*all
+.   .do end
+.   .el .if &'words(|&*all|) gt 6 .do begin
+.   .   .clitm &*all
+.   .do end
+.   .el .do begin
+.   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'TR' .do begin
 .   .   .   .sr *cls=&'strip(&*all,'T',',')
-.   .   .   .if |&*all| eq |ISO C90| .do begin
-.   .   .   .   .sr *wcls='ISO C95'
-.   .   .   .do end
-.   .   .   .el .do begin
-.   .   .   .   .sr *wcls=&'strip(&*all,'T',',')
-.   .   .   .do end
+.   .   .   .sr *wcls=&'strip(&*all,'T',',')
 .   .   .do end
 .   .   .el .do begin
-.   .   .   .sr *cls=&'strip(&*first,'T',',')
-.   .   .   .sr *wcls=&'strip(&*first,'T',',')
+.   .   .   .sr *cls=&'strip(&__class,'T',',')
+.   .   .   .sr *wcls=&'strip(&__class,'T',',')
 .   .   .do end
-.   .   .if &'length(&_func.) ne 0 .do begin
-.   .   .   .clitm &_func. is not &*cls
+.   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'POSIX' .do begin
+.   .   .   .listclas '&*all' '&*cls' '&*wcls'
 .   .   .do end
-.   .   .if &'length(&func64.) ne 0 .do begin
-.   .   .   .clitm &func64. is not &*cls
-.   .   .do end
-.   .   .if &'length(&__func.) ne 0 .do begin
-.   .   .   .clitm &__func. is not &*cls
-.   .   .do end
-.   .   .if &'length(&ffunc.) ne 0 .do begin
-.   .   .   .clitm &ffunc. is not &*cls
-.   .   .do end
-.   .   .if &'length(&wfunc.) ne 0 .do begin
-.   .   .   .if "&'substr(&wfunc.,1,1)" eq "_" .do begin
-.   .   .   .   .clitm &wfunc. is not &*cls
-.   .   .   .do end
-.   .   .   .el .do begin
-.   .   .   .   .if '&wfunc.' ne '&funcb.' .do begin
-.   .   .   .   .   .if '&wfunc.' ne '&function.' .do begin
-.   .   .   .   .   .   .clitm &wfunc. is &*wcls
-.   .   .   .   .   .do end
-.   .   .   .   .do end
-.   .   .   .do end
-.   .   .do end
-.   .   .if &'length(&wfunc64.) ne 0 .do begin
-.   .   .   .clitm &wfunc64. is not &*cls
-.   .   .do end
-.   .   .if &'length(&mfunc.) ne 0 .do begin
-.   .   .   .clitm &mfunc. is not &*cls
-.   .   .do end
-.   .   .if &'length(&fmfunc.) ne 0 .do begin
-.   .   .   .clitm &fmfunc. is not &*cls
+.   .   .el .do begin
+.   .   .   .clitm &*all
+.   .   .   .listclas
 .   .   .do end
 .   .do end
 .do end
 .if |&*1| ne |begin| .do begin
 .   .listend
-.   .sr clitmc=0
 .do end
 .dm class end
 .*
@@ -618,129 +643,6 @@ QNX
 command
 .ix 'QNX command' '&*'
 .dm qnxcmd end
-.*
-.*       describe functions for c library  2006-03-16
-.*  new version with explicit type and classification
-.*  if omitted, default classification is WATCOM
-.*   .func begin
-.*   .funct     norm              classification
-.*   .funct_    _norm                  "
-.*   .funct_f   farnorm                "
-.*   .funct_m   multibytenorm          "
-.*   .funct_fm  farmultibytenorm       "
-.*   .funct_w   widenorm               "
-.*   .funct_fw  farwidewnorm           "
-.*
-.*   .functm    doublemathfunc         "
-.*   .functm_f  floatmathfunc          "
-.*   .functm_l  longdoublemathfunc     "
-.*   .func end
-.*
-.*    description
-.*
-.*   .classt
-.*
-.*
-.*  .func norm Functions
-.*  .func norm
-.*  .func norm _norm __norm _wnorm _fnorm _mbsnorm
-.*
-.*  functii internal macro for funct_xxx
-.*
-.dm functii begin
-.if '&funcb' eq '' .sr funcb=&*1.
-.if '&funcn' eq '' .sr funcn=&'strip(&*1,'L','_')
-.se *fnd=&'vecpos(&*1,fnclst)
-.if &*fnd. eq 0 .me
-.if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &* not in library
-.if |&fncttl.| eq || .do begin
-.   .sr fncttl=&*1
-.do end
-.el .do begin
-.   .sr fncttl=&fncttl., &*1
-.do end
-.se __fnx=&__fnx.+1
-.se $$fnc(&__fnx.)=&*1
-.if |&*2| eq || .se __cl=WATCOM
-.el .se __cl=&*2. &*3.
-.se __cltxt(&__fnx.)=&*1 is &__cl.
-.dm functii end
-.*
-.*  macros for the different function types
-.*
-.dm funct  begin
-.sr funcb=&*1
-.functii &*
-.dm funct  end
-.*
-.dm funct_  begin
-.sr _func=&*1
-.functii &*
-.dm funct_  end
-.*
-.dm funct__  begin
-.sr __func=&*1
-.functii &*
-.dm funct__  end
-.*
-.dm funct_f begin
-.sr ffunc=&*1
-.functii &*
-.dm funct_f end
-.*
-.dm funct_m begin
-.sr mfunc=&*1
-.functii &*
-.dm funct_m end
-.*
-.dm funct_w begin
-.sr wfunc=&*1
-.functii &*
-.dm funct_w end
-.*
-.dm funct_fm begin
-.sr fmfunc=&*1
-.functii &*
-.dm funct_fm end
-.*
-.dm funct_fw begin
-.sr fwfunc=&*1
-.functii &*
-.dm funct_fw end
-.*
-.dm functm begin
-.sr mathfunc=&*1
-.functii &*
-.dm functm end
-.*
-.dm functm_f begin
-.sr fmathfunc=&*1
-.functii &*
-.dm functm_f end
-.*
-.dm functm_l begin
-.sr lmathfunc=&*1
-.functii &*
-.dm functm_l end
-.*
-.*  classt
-.*    output classifications for the defined functions
-.*
-.dm classt begin
-.if |&*1| ne |end| .do begin
-.   .if |&*1| eq |begin| .sr __class=&*2
-.   .el .sr __class=&*1
-.   .listnew Classification:
-.   .sr clitmc=0
-.   .sr *i=1
-.   .pe &__fnx.
-.   .   .clitm &__cltxt(&*i).;.sr *i=&*i+1;
-.do end
-.if |&*1| ne |begin| .do begin
-.   .listend
-.   .sr clitmc=0
-.do end
-.dm classt end
 .*
 :cmt. include 'Safer C Library' related macros
 :INCLUDE file='safecmac'.

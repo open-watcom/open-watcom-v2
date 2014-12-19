@@ -45,5 +45,5 @@ void main()
     x = atoi( "-289" );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

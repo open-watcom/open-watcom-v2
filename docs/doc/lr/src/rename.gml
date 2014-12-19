@@ -41,5 +41,5 @@ void main()
     rename( "old.dat", "new.dat" );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

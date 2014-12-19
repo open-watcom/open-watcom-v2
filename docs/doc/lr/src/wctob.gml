@@ -79,5 +79,5 @@ void main()
 0x720d EOF
   0000->0x0000
 .exmp end
-.class ANSI
+.class ISO C
 .system

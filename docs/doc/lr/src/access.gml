@@ -30,7 +30,7 @@ function is identical to
 .
 Use
 id &_func.
-for ANSI naming conventions.
+for ISO C naming conventions.
 .do end
 .np
 When the value of

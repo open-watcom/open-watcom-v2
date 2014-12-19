@@ -78,5 +78,5 @@ void main()
 .exmp output
 Hello world
 .exmp end
-.class ANSI
+.class ISO C
 .system

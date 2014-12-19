@@ -1,11 +1,11 @@
-.func begin _dos_find... Functions
+.func begin _dos_find&grpsfx Functions
+.fungroup _wdos_find&grpsfx
 .func2 _dos_findclose
 .func2 _dos_findfirst
 .func2 _dos_findnext
 .func2 _wdos_findclose
 .func2 _wdos_findfirst
 .func2 _wdos_findnext
-.funcw _wdos_find...
 .func end
 .synop begin
 #include <&doshdr>
@@ -161,7 +161,7 @@ wide-character strings.
 .desc end
 .return begin
 The
-.kw _dos_find...
+.kw _dos_find&grpsfx
 functions return zero if successful.
 Otherwise, the
 .kw _dos_findfirst
@@ -172,7 +172,7 @@ functions return an OS error code and set
 accordingly.
 .return end
 .see begin
-.seelist _dos_findfirst opendir readdir closedir
+.seelist opendir readdir closedir
 .see end
 .exmp begin
 #include <stdio.h>
@@ -195,8 +195,5 @@ void main()
     #endif
 }
 .exmp end
-.* next two lines remove function group names from classification
-.funcw
-.func_
 .class DOS
 .system

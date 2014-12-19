@@ -54,5 +54,5 @@ void main()
     x = atof( "3.1415926" );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

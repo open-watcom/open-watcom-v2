@@ -1,6 +1,5 @@
-.func begin
-.funct   fopen_s TR 24731
-.funct_w _wfopen_s
+.func begin fopen_s
+.func2 _wfopen_s WATCOM
 .func end
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -127,7 +126,7 @@ the default will be text mode.
 .note b
 The letter "b" may be added to any of the above sequences in the
 second or later position to indicate that the file is (or must be) a
-binary file (an ANSI requirement for portability to systems that make
+binary file (an ISO C requirement for portability to systems that make
 a distinction between text and binary files).
 .endnote
 .if '&machsys' eq 'QNX' .do begin
@@ -166,12 +165,12 @@ This option is not supported under Netware.
 .endnote
 .np
 The "t", "c", and "n" mode options are extensions for &funcb
-and should not be used where ANSI portability is desired.
+and should not be used where ISO C portability is desired.
 .do end
 .el .do begin
 .np
 The "t" mode option is an extension for &funcb
-and should not be used where ANSI portability is desired.
+and should not be used where ISO C portability is desired.
 .do end
 .np
 Opening a file with read mode (
@@ -253,5 +252,5 @@ void main()
     }
 }
 .exmp end
-.classt
+.class TR 24731
 .system

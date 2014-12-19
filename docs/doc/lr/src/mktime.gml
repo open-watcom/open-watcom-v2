@@ -1,4 +1,4 @@
-.func mktime
+ISO C.func mktime
 .synop begin
 #include <time.h>
 time_t mktime( struct tm *timeptr );
@@ -85,5 +85,5 @@ void main()
 .exmp output
 The 21st century began on a Monday
 .exmp end
-.class ANSI
+.class ISO C
 .system

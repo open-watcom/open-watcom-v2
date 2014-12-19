@@ -1,4 +1,6 @@
-.func asctime_s _wasctime_s
+.func begin asctime_s
+.func2 _wasctime_s WATCOM
+.func end
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <time.h>

@@ -1,6 +1,7 @@
-.func tolower _tolower towlower
+.func tolower _tolower
+.func2 towlower ISO C95
+.func end
 .synop begin
-.funcw towlower
 #include <ctype.h>
 int tolower( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -91,5 +92,5 @@ void main()
 .exmp output
 a 5 $ z
 .exmp end
-.class ANSI
+.class ISO C
 .system

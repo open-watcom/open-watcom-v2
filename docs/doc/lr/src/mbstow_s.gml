@@ -1,6 +1,5 @@
-.func begin
-.funct_m  mbstowcs_s TR 24731
-.funct_fm _fmbstowcs_s
+.func begin mbstowcs_s
+.func2 _fmbstowcs_s WATCOM
 .func end
 .synop begin
 #define __STDC_WANT_LIB_EXT1__  1
@@ -175,5 +174,5 @@ int  main()
 string(6)
 /0073/0074/0072/0069/006e/0067
 .exmp end
-.classt
+.class TR 24731
 .system

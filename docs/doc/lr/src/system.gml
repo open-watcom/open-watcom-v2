@@ -74,9 +74,9 @@ shell scripts.
 batch files.
 .do end
 The
-.kw exec...
+.kw exec&grpsfx
 and
-.kw spawn...
+.kw spawn&grpsfx
 functions can only cause programs to be executed.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -169,5 +169,5 @@ void main()
   }
 .do end
 .exmp end
-.class ANSI, POSIX 1003.2
+.class ISO C, POSIX 1003.2
 .system

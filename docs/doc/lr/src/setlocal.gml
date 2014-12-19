@@ -98,5 +98,5 @@ void main()
 C
 A sample STRING (15)
 .exmp end
-.class ANSI, POSIX 1003.1
+.class ISO C
 .system

@@ -1,4 +1,6 @@
-.func scanf wscanf
+.func begin scanf
+.func2 wscanf ISO C95
+.func end
 .synop begin
 #include <stdio.h>
 int scanf( const char *format, ... );

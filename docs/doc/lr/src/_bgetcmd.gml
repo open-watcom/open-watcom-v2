@@ -77,7 +77,5 @@ arg-1 ( my stuff ) here
   arg-1 ( my   stuff ) here
 .do end
 .exmp end
-.*
 .class WATCOM
-.*
 .system

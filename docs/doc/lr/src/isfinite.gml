@@ -44,5 +44,5 @@ void main( void )
 zero is a finite number
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

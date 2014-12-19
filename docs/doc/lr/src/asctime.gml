@@ -42,7 +42,7 @@ and the null character
 .id '\0'
 occupy the last two positions of the string.
 .np
-The ANSI function
+The ISO C function
 .idbold &funcb.
 places the result string in a static buffer
 that is re-used each time
@@ -50,7 +50,7 @@ that is re-used each time
 or
 .kw ctime
 is called.
-The non-ANSI function
+The non-ISO C function
 .kw _asctime
 places the result string in the buffer pointed to by
 .arg buf
@@ -94,7 +94,5 @@ void main()
 .exmp output
 Date and time is: Sat Mar 21 15:58:27 1987
 .exmp end
-.* The following line forces an entry out for the function
-.sr mfunc='x __wasctime'
-.class ANSI
+.class ISO C
 .system

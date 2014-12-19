@@ -73,5 +73,5 @@ void main()
 string(6)
 /0073/0074/0072/0069/006e/0067
 .exmp end
-.class ANSI
+.class ISO C95
 .system

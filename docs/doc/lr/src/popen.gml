@@ -84,7 +84,7 @@ values as described by the
 functions.
 .error end
 .see begin
-.seelist pclose pipe exec...
+.seelist pclose pipe exec&grpsfx
 .see end
 .exmp begin
 /*

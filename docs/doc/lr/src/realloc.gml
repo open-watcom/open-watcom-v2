@@ -113,7 +113,7 @@ void main()
     }
   }
 .exmp end
-.class ANSI
+.class ISO C
 .do end
 .************************
 .el .do begin
@@ -124,7 +124,7 @@ void main()
 .func2 _nrealloc
 .func end
 .synop begin
-#include <stdlib.h>  For ANSI compatibility (realloc only)
+#include <stdlib.h>  For ISO C compatibility (realloc only)
 #include <malloc.h>  Required for other function prototypes
 void * realloc( void *old_blk, size_t size );
 void __based(void) *_brealloc( __segment seg,
@@ -279,9 +279,6 @@ void main()
     }
   }
 .exmp end
-.* The following two lines force entries out for these functions
-.sr wfunc='x _brealloc'
-.sr mfunc='x _nrealloc'
-.class ANSI
+.class ISO C
 .do end
 .system

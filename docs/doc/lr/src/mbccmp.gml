@@ -95,5 +95,5 @@ void main()
 .exmp output
 Greater than
 .exmp end
-.class ANSI
+.class ISO C
 .system

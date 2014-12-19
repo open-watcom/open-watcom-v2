@@ -1,6 +1,7 @@
-.func isupper iswupper
+.func begin isupper
+.func2 iswupper ISO C95
+.func end
 .synop begin
-.funcw iswupper
 #include <ctype.h>
 int isupper( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -79,5 +80,5 @@ Char a is not an uppercase character
 Char z is not an uppercase character
 Char Z is an uppercase character
 .exmp end
-.class ANSI
+.class ISO C
 .system

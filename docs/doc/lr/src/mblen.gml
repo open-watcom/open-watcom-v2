@@ -114,5 +114,5 @@ Character encodings are not state dependent
 2 bytes in character (0xe0a1)
 0 bytes in character (  0000)
 .exmp end
-.class ANSI
+.class ISO C
 .system

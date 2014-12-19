@@ -58,5 +58,5 @@ void main()
     fclose( TempFile );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

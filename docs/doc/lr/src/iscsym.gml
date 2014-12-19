@@ -1,6 +1,7 @@
-.func iscsym __iscsym __iswcsym
+.func begin iscsym __iscsym
+.func2 __iswcsym
+.func end
 .synop begin
-.funcw __iswcsym
 #include <ctype.h>
 int iscsym( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -23,7 +24,7 @@ The
 function is identical to &funcb..
 Use
 .id &__func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -80,7 +81,6 @@ Char _ is a C symbol character
 Char 9 is a C symbol character
 Char + is not a C symbol character
 .exmp end
-.class begin WATCOM
 .ansiname &__func
-.class end
+.class WATCOM
 .system

@@ -53,7 +53,7 @@ void main()
     }
   }
 .exmp end
-.class ANSI
+.class ISO C
 .do end
 .************************
 .el .do begin
@@ -64,7 +64,7 @@ void main()
 .func2 _nfree
 .func end
 .synop begin
-#include <stdlib.h>  For ANSI compatibility (free only)
+#include <stdlib.h>  For ISO C compatibility (free only)
 #include <malloc.h>  Required for other function prototypes
 void free( void *ptr );
 void _bfree( __segment seg, void __based(void) *ptr );
@@ -151,9 +151,6 @@ void main()
     }
   }
 .exmp end
-.* The following two lines force entries out for these functions
-.sr wfunc='x _bfree'
-.sr mfunc='x _nfree'
-.class ANSI
+.class ISO C
 .do end
 .system

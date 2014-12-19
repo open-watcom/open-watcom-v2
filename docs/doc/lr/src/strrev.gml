@@ -42,7 +42,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .im farfunc
 .im widefunc
@@ -70,7 +70,6 @@ A sample STRING
 GNIRTS elpmas A
 A sample STRING
 .exmp end
-.class begin WATCOM
 .ansiname &_func
-.class end
+.class WATCOM
 .system

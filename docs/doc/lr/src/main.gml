@@ -1,4 +1,8 @@
-.func main wmain WinMain wWinMain
+.func begin main
+.func2 wmain WATCOM
+.func2 WinMain WATCOM
+.func2 wWinMain WATCOM
+.func end
 .synop begin
 .funcw wmain
 int main( void );
@@ -303,9 +307,5 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
 .blkcode end
 .do end
 .exmp end
-.sr wfunc=
-.sr _func=x wmain
-.sr __func=x WinMain
-.sr ffunc=x wWinMain
-.class ANSI
+.class ISO C
 .system

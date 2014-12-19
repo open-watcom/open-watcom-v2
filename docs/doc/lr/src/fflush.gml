@@ -45,5 +45,5 @@ void main()
     getch();
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

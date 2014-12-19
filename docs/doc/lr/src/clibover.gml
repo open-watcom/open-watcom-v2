@@ -1393,11 +1393,11 @@ When a new process is started, it may replace the existing process
 .bull
 .kw P_OVERLAY
 is specified with the
-.kw spawn...
+.kw spawn&grpsfx
 functions
 .bull
 the
-.kw exec...
+.kw exec&grpsfx
 routines are invoked
 .endbull
 .pc
@@ -1408,7 +1408,7 @@ new process was started)
 .bull
 .kw P_WAIT
 is specified with the
-.kw spawn...
+.kw spawn&grpsfx
 functions
 .bull
 .kw system
@@ -1498,12 +1498,12 @@ is used
 .fdend
 .np
 There are eight
-.kw spawn...
+.kw spawn&grpsfx
 and
-.kw exec...
+.kw exec&grpsfx
 functions each.
 The
-.mono "..."
+.mono "&grpsfx"
 is one to three letters:
 .begbull
 .bull
@@ -1608,7 +1608,7 @@ included for compatibility with other C implementations.
 It is recommended that the functions used in the section
 .us File Manipulation Functions
 be used for new programs, as these functions are defined portably
-and are part of the ANSI standard for the C language.
+and are part of the ISO/ANSI standard for the C language.
 .np
 The functions in this section reference opened files and devices using a
 .us file &handle

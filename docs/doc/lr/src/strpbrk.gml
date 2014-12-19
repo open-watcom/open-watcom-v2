@@ -82,5 +82,5 @@ all vowels
 owels
 els
 .exmp end
-.class ANSI
+.class ISO C
 .system

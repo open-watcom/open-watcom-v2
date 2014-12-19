@@ -31,5 +31,5 @@ void main()
     value = cos( 3.1415278 );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

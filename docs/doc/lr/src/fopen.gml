@@ -76,7 +76,7 @@ the default will be text mode.
 .note b
 The letter "b" may be added to any of the above sequences in the
 second or later position to indicate that the file is (or must be) a
-binary file (an ANSI requirement for portability to systems that make
+binary file (an ISO C requirement for portability to systems that make
 a distinction between text and binary files).
 .endnote
 .if '&machsys' eq 'QNX' .do begin
@@ -118,7 +118,7 @@ The "t", "c", and "n" mode options are extensions for
 .id &funcb.
 and
 .kw _fdopen
-and should not be used where ANSI portability is desired.
+and should not be used where ISO C portability is desired.
 .do end
 .el .do begin
 .np
@@ -126,7 +126,7 @@ The "t" mode option is an extension for
 .id &funcb.
 and
 .kw _fdopen
-and should not be used where ANSI portability is desired.
+and should not be used where ISO C portability is desired.
 .do end
 .np
 Opening a file with read mode (
@@ -212,9 +212,9 @@ void main()
 }
 .exmp end
 .if '&machsys' eq 'QNX' .do begin
-.class ANSI
+.class ISO C
 .do end
 .el .do begin
-.class ANSI, ('t', 'c', 'n' are &company extensions)
+.class ISO C ('t', 'c', 'n' are &company extensions)
 .do end
 .system

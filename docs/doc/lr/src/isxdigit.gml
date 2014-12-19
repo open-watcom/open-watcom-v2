@@ -1,6 +1,7 @@
-.func isxdigit iswxdigit
+.func begin isxdigit
+.func2 iswxdigit ISO C95
+.func end
 .synop begin
-.funcw iswxdigit
 #include <ctype.h>
 int isxdigit( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -70,5 +71,5 @@ Char A is a hexadecimal digit character
 Char 5 is a hexadecimal digit character
 Char $ is not a hexadecimal digit character
 .exmp end
-.class ANSI
+.class ISO C
 .system

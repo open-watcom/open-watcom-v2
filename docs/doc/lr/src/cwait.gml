@@ -24,8 +24,8 @@ Under Win32, any process can wait for any other process for which the
 process id is known.
 Under OS/2, a process can wait for any of its child processes.
 For example, a process id is returned by certain forms of the
-.kw spawn
-function that is used to start a child process.
+.kw spawn&grpsfx
+functions that is used to start a child process.
 .np
 The
 .arg action
@@ -69,7 +69,7 @@ The child process terminated abnormally.
 .endterm
 .return end
 .see begin
-.seelist cwait exit _exit spawn... wait
+.seelist cwait exit _exit spawn&grpsfx wait
 .see end
 .exmp begin
 #include <stdio.h>

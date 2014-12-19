@@ -161,5 +161,5 @@ Number of bytes to enter initial shift state = 0
 2 bytes in character (0xe0a1->0x720d)
 0 bytes in character (  0000->  0000)
 .exmp end
-.class ANSI
+.class ISO C95
 .system

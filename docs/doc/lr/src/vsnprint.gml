@@ -142,5 +142,5 @@ void main( void )
 .blkcode end
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

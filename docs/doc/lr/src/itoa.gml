@@ -50,7 +50,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -93,7 +93,6 @@ void main()
 14 491b
 16 31dd
 .exmp end
-.class begin WATCOM
 .ansiname &_func
-.class end
+.class WATCOM
 .system

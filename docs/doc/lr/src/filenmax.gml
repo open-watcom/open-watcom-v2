@@ -40,5 +40,5 @@ int main( int argc, char *argv[] )
     return( 0 );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

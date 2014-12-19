@@ -69,5 +69,5 @@ void main( void )
 infinity is not a normal number
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

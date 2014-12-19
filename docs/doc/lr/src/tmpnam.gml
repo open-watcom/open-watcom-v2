@@ -128,5 +128,5 @@ void main()
     remove( filename );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

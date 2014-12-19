@@ -268,7 +268,7 @@ Otherwise, the previous value of
 for the indicated condition is returned.
 .return end
 .see begin
-.seelist signal break... raise sigprocmask
+.seelist signal break&grpsfx raise sigprocmask
 .see end
 .exmp begin
 #include <stdio.h>
@@ -322,5 +322,5 @@ int main( void )
     return( signal_count );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

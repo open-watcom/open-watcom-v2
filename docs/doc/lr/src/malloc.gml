@@ -46,7 +46,7 @@ void main()
     }
   }
 .exmp end
-.class ANSI
+.class ISO C
 .do end
 .************************
 .el .do begin
@@ -57,7 +57,7 @@ void main()
 .func2 _nmalloc
 .func end
 .synop begin
-#include <stdlib.h>  For ANSI compatibility (malloc only)
+#include <stdlib.h>  For ISO C compatibility (malloc only)
 #include <malloc.h>  Required for other function prototypes
 void *malloc( size_t size );
 void __based(void) *_bmalloc( __segment seg, size_t size );
@@ -145,9 +145,6 @@ void main()
     }
   }
 .exmp end
-.* The following two lines force entries out for these functions
-.sr wfunc='x _bmalloc'
-.sr mfunc='x _nmalloc'
-.class ANSI
+.class ISO C
 .do end
 .system

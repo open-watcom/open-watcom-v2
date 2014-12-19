@@ -72,7 +72,7 @@ the file is (or must be) a text file (i.e., CR/LF pairs are converted
 to newline characters).
 .np
 The letter "b" may be added to any of the above modes to indicate
-that the file is (or must be) a binary file (an ANSI requirement for
+that the file is (or must be) a binary file (an ISO C requirement for
 portability to systems that make a distinction between text and binary
 files).
 .np

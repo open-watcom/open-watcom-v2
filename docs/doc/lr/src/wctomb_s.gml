@@ -1,6 +1,5 @@
-.func begin
-.funct_w  wctomb_s   TR 24731
-.funct_fw _fwctomb_s
+.func begin wctomb_s
+.func2 _fwctomb_s WATCOM
 .func end
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -159,5 +158,5 @@ int main()
 Character encodings are not state dependent
 s(1)
 .exmp end
-.classt
+.class TR 24731
 .system

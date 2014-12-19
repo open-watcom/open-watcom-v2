@@ -55,7 +55,7 @@ function is identical to
 .
 Use
 id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -96,7 +96,6 @@ void main()
 .exmp output
 str=123457, dec=3, sign=0
 .exmp end
-.class begin WATCOM
 .ansiname &_func
-.class end
+.class WATCOM
 .system

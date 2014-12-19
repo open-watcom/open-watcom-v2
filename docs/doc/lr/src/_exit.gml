@@ -1,4 +1,6 @@
-.func _exit _Exit
+.func begin _exit
+.func2 _Exit ISO C99
+.func end
 .synop begin
 #include <stdlib.h>
 void _exit( int status );
@@ -130,7 +132,5 @@ void main( int argc, char *argv[] )
     _exit( EXIT_SUCCESS );
 }
 .exmp end
-.class begin POSIX 1003.1
-.br _Exit is ISO C99
-.class end
+.class POSIX 1003.1
 .system

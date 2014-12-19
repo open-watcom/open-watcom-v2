@@ -57,5 +57,5 @@ void main( int argc, char *argv[] )
     exit( EXIT_SUCCESS );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

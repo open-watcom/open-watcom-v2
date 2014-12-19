@@ -1,6 +1,7 @@
-.func isalpha iswalpha
+.func begin isalpha
+.func2 iswalpha ISO C95
+.func end
 .synop begin
-.funcw iswalpha
 #include <ctype.h>
 int isalpha( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -71,5 +72,5 @@ void main()
     }
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

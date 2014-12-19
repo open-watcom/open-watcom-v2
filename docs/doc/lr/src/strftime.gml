@@ -1,6 +1,8 @@
-.func strftime wcsftime _wstrftime_ms
+.func begin strftime
+.func2 wcsftime ISO C95
+.func2 _wstrftime_ms
+.func end
 .synop begin
-.funcw wcsftime
 #include <time.h>
 size_t strftime( char *s,
                  size_t maxsize,
@@ -192,7 +194,5 @@ void main()
 .exmp output
 Today is Friday December 25, 1987
 .exmp end
-.* The following line forces an entry out for the function
-.sr mfunc='x _wstrftime_ms'
-.class ANSI, POSIX
+.class ISO C, POSIX
 .system

@@ -106,5 +106,5 @@ abcdefg
 abc456g
 abc456g
 .exmp end
-.class ANSI
+.class ISO C
 .system

@@ -1,6 +1,7 @@
-.func isprint iswprint
+.func begin isprint
+.func2 iswprint ISO C95
+.func end
 .synop begin
-.funcw iswprint
 #include <ctype.h>
 int isprint( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -75,5 +76,5 @@ Char     is not a printable character
 Char   is a printable character
 Char } is a printable character
 .exmp end
-.class ANSI
+.class ISO C
 .system

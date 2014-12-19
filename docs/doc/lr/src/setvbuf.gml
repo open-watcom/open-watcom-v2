@@ -71,5 +71,5 @@ void main()
   setvbuf( fp, buf, _IOFBF, 1024 );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

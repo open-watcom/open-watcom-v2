@@ -51,5 +51,5 @@ void func3(void) { printf( "Do " ); }
 Do this first.
 Do this last.
 .exmp end
-.class ANSI
+.class ISO C
 .system

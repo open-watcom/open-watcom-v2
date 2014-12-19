@@ -1,6 +1,5 @@
-.func begin
-.funct_w   wcrtomb_s TR24731
-.funct_fw  _fwcrtomb_s
+.func begin wcrtomb_s
+.func2  _fwcrtomb_s WATCOM
 .func end
 .synop begin
 #define __STDC_WANT_LIB_EXT1__  1
@@ -201,5 +200,5 @@ int main()
 2 bytes in character (0x720d->0xe0a1)
 1 bytes in character (  0000->0x0069)
 .exmp end
-.classt
+.class TR 24731
 .system

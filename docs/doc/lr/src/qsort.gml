@@ -66,5 +66,5 @@ void main()
 .exmp output
 first last middle
 .exmp end
-.class ANSI
+.class ISO C
 .system

@@ -1,6 +1,7 @@
-.func isascii __isascii iswascii
+.func begin isascii __isascii
+.func2 iswascii
+.func end
 .synop begin
-.funcw iswascii
 #include <ctype.h>
 int isascii( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -23,7 +24,7 @@ The
 function is identical to &funcb..
 Use
 .id &__func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -77,7 +78,6 @@ Char A is an ASCII character
 Char   is not an ASCII character
 Char Z is an ASCII character
 .exmp end
-.class begin WATCOM
 .ansiname &__func
-.class end
+.class WATCOM
 .system

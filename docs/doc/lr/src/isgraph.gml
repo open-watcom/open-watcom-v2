@@ -1,6 +1,7 @@
-.func isgraph iswgraph
+.func begin isgraph
+.func2 iswgraph ISO C95
+.func end
 .synop begin
-.funcw iswgraph
 #include <ctype.h>
 int isgraph( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -75,5 +76,5 @@ Char     is not a printable character
 Char   is not a printable character
 Char } is a printable character
 .exmp end
-.class ANSI
+.class ISO C
 .system

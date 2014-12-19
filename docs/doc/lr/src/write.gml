@@ -24,7 +24,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .np
 The
@@ -126,7 +126,6 @@ void main( void )
     }
 }
 .exmp end
-.class begin POSIX 1003.1
 .ansiname &_func
-.class end
+.class POSIX 1003.1
 .system

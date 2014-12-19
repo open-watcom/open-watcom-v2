@@ -1,4 +1,6 @@
-.func mbsinit sisinit
+.func begin mbsinit
+.func2 sisinit WATCOM
+.func end
 .synop begin
 #include <wchar.h>
 int mbsinit( const mbstate_t *ps );
@@ -108,5 +110,5 @@ We are in an initial conversion state
 We are in an initial conversion state
 0 bytes in character (  0000->  0000)
 .exmp end
-.class ANSI
+.class ISO C95
 .system

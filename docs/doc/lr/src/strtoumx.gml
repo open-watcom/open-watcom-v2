@@ -89,5 +89,5 @@ void main()
     v = strtoumax( "12345678909876", NULL, 10 );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

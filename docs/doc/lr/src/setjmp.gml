@@ -77,5 +77,5 @@ after setjmp 0
 about to longjmp
 back from longjmp 14
 .exmp end
-.class ANSI
+.class ISO C
 .system

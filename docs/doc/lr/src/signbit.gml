@@ -38,5 +38,5 @@ void main( void )
 -4.5 is negative
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

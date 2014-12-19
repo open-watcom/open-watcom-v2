@@ -1,4 +1,4 @@
-.func begin break... Functions
+.func begin break&grpsfx Functions
 .func2 break_off
 .func2 break_on
 .func end

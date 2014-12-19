@@ -1,6 +1,5 @@
-.func begin
-.funct   freopen_s   TR 24731
-.funct_w _wfreopen_s
+.func begin freopen_s
+.func2 _wfreopen_s WATCOM
 .func end
 .synop begin
 #include <stdio.h>
@@ -124,5 +123,5 @@ void main()
     }
 }
 .exmp end
-.classt
+.class TR 24731
 .system

@@ -41,5 +41,5 @@ void main()
     remove( "vm.tmp" );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

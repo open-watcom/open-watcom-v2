@@ -44,7 +44,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .im farfunc
 .im widefunc
@@ -75,7 +75,6 @@ A mixed-case STRING
 a mixed-case string
 a mixed-case string
 .exmp end
-.class begin WATCOM
 .ansiname &_func
-.class end
+.class WATCOM
 .system

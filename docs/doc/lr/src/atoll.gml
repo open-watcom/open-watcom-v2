@@ -45,5 +45,5 @@ void main()
     x = atoll( "-289356768201" );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

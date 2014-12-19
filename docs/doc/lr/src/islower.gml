@@ -1,6 +1,7 @@
-.func islower iswlower
+.func begin islower
+.func2 iswlower ISO C95
+.func end
 .synop begin
-.funcw iswlower
 #include <ctype.h>
 int islower( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -79,5 +80,5 @@ Char a is a lowercase character
 Char z is a lowercase character
 Char Z is not a lowercase character
 .exmp end
-.class ANSI
+.class ISO C
 .system

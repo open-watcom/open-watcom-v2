@@ -18,10 +18,10 @@ The number of bytes to compare is specified by
 .ct .li .
 Null characters may be included in the comparision.
 .np
-Note that this function is similar to the ANSI
+Note that this function is similar to the ISO C
 .kw memcmp
 function but just tests for equality
-(new code should use the ANSI function).
+(new code should use the ISO C function).
 .desc end
 .return begin
 The

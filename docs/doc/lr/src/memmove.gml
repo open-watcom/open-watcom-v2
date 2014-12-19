@@ -1,4 +1,6 @@
-.func memmove _fmemmove wmemmove
+.func begin memmove _fmemmove
+.func2 wmemmove ISO C95
+.func end
 .synop begin
 #include <string.h>
 void *memmove( void *dst,
@@ -76,5 +78,5 @@ void main( void )
     buffer[0] = '*';
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

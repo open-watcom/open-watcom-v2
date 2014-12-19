@@ -113,7 +113,7 @@ append; open text file or create for update, writing at end-of-file
 .if '&machsys' eq 'QNX' .do begin
 The letter "b" may be added to any of the above sequences in the
 second or third position to indicate that the file is (or must be) a
-binary file (an ANSI requirement for portability to systems that make
+binary file (an ISO C requirement for portability to systems that make
 a distinction between text and binary files).
 Under QNX, there is no difference between text files and binary files.
 .do end

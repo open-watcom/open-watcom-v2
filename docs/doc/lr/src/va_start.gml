@@ -65,5 +65,5 @@ void main()
             _asctime( &time_of_day, buf ) );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

@@ -47,7 +47,7 @@ void main()
     buffer = (char *)calloc( 80, sizeof(char) );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .do end
 .************************
 .el .do begin
@@ -58,7 +58,7 @@ void main()
 .func2 _ncalloc
 .func end
 .synop begin
-#include <stdlib.h>  For ANSI compatibility (calloc only)
+#include <stdlib.h>  For ISO C compatibility (calloc only)
 #include <malloc.h>  Required for other function prototypes
 void *calloc( size_t n, size_t size );
 void __based(void) *_bcalloc( __segment seg,
@@ -143,9 +143,6 @@ void main()
     buffer = (char *)calloc( 80, sizeof(char) );
   }
 .exmp end
-.* The following two lines force entries out for these functions
-.sr wfunc='x _bcalloc'
-.sr mfunc='x _ncalloc'
-.class ANSI
+.class ISO C
 .do end
 .system

@@ -78,7 +78,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI naming conventions.
+for ISO C naming conventions.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

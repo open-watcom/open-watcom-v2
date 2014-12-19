@@ -1,6 +1,5 @@
-.func begin
-.funct   tmpnam_s   TR 24731
-.funct_w _wtmpnam_s
+.func begin tmpnam_s
+.func2 _wtmpnam_s WATCOM
 .func end
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -93,5 +92,5 @@ void main()
     }
 }
 .exmp end
-.classt
+.class TR 24731
 .system

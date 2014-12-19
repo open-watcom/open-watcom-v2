@@ -42,5 +42,5 @@ void main( void )
 zero is not a normal number
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

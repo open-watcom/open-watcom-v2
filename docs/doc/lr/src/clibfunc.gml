@@ -32,9 +32,9 @@
 .np
 This appendix describes the behavior of
 the 16-bit and 32-bit &company C libraries
-when the ANSI/ISO C Language standard describes the behavior as
+when the ISO/ANSI C Language standard describes the behavior as
 .us implementation-defined.
-The term describing each behavior is taken directly from the ANSI/ISO
+The term describing each behavior is taken directly from the ISO/ANSI
 C Language standard.
 The numbers in parentheses at the end of each term refers to the
 section of the standard that discusses the behavior.

@@ -25,7 +25,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI naming conventions.
+for ISO C naming conventions.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 .np

@@ -1,4 +1,8 @@
-.func strstr _fstrstr wcsstr _mbsstr _fmbsstr
+.func begin strstr _fstrstr
+.func2 wcsstr ISO C95
+.func2 _mbsstr
+.func2 _fmbsstr
+.func end
 .synop begin
 #include <string.h>
 char *strstr( const char *str,
@@ -71,5 +75,5 @@ void main()
 .exmp output
 is is an example
 .exmp end
-.class ANSI
+.class ISO C
 .system

@@ -1,4 +1,6 @@
-.func begin exec... Functions
+.func begin exec&grpsfx Functions
+.fungroup _exec&grpsfx
+.fungroup _wexec&grpsfx
 .func2 execl
 .func2 execle
 .func2 execlp
@@ -23,8 +25,6 @@
 .func2 _wexecve
 .func2 _wexecvp
 .func2 _wexecvpe
-.func_ _exec...
-.funcw _wexec...
 .func end
 .synop begin
 .* .synop begin
@@ -100,7 +100,7 @@ int _wexecvpe( file, argv, envp );
 .synop end
 .desc begin
 The
-.idbold &funcb.
+.idbold &function.
 functions load and execute a new child process, named by
 .arg path
 or
@@ -115,7 +115,7 @@ No return is made to the original program.
 .np
 Arguments are passed to the child process by supplying one or more
 pointers to character strings as arguments in the
-.idbold &funcb.
+.idbold &function.
 call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
@@ -251,7 +251,7 @@ wide-character strings.
 .desc end
 .return begin
 When the invoked program is successfully initiated, no return occurs.
-When an error is detected while invoking the indicated program, &funcb
+When an error is detected while invoking the indicated program, &function
 returns &minus.1 and
 .kw errno
 is set to indicate the error.
@@ -284,10 +284,10 @@ Not enough memory is available to execute the child process.
 .error end
 .*==========================================
 .see begin
-.seelist exec... abort atexit exit _exit
-.seelist exec... getcmd getenv main putenv qnx_spawn qnx_spawn_options
-.seelist exec... spawn...
-.seelist exec... system
+.seelist abort atexit exit _exit
+.seelist getcmd getenv main putenv qnx_spawn qnx_spawn_options
+.seelist spawn&grpsfx
+.seelist system
 .see end
 .exmp begin
 #include <stddef.h>
@@ -392,7 +392,6 @@ The program will be found if one of
 is found in the current working directory.
 .blktext end
 .exmp end
-.class begin POSIX 1003.1 with extensions
-.ansiname &_func
-.class end
+.ansiname _exec&grpsfx
+.class POSIX 1003.1 with extensions
 .system

@@ -1,4 +1,8 @@
-.func strtok _fstrtok wcstok _mbstok _fmbstok
+.func begin strtok _fstrtok
+.func2 wcstok ISO C95
+.func2 _mbstok
+.func2 _fmbstok
+.func end
 .synop begin
 #include <string.h>
 char *strtok( char *s1, const char *s2 );
@@ -173,5 +177,5 @@ word: of
 word: them
 Find
 .exmp end
-.class ANSI
+.class ISO C
 .system

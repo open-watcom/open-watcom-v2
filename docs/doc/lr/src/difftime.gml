@@ -51,5 +51,5 @@ void compute( void )
     }
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

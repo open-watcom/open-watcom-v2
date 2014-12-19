@@ -43,5 +43,5 @@ void main( void )
 NAN is a NaN
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

@@ -41,5 +41,5 @@ void main()
 3.000000
 3.000000
 .exmp end
-.class ANSI
+.class ISO C
 .system

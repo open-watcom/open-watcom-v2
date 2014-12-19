@@ -1,4 +1,6 @@
-.func memcpy _fmemcpy wmemcpy
+.func begin memcpy _fmemcpy
+.func2 wmemcpy ISO C95
+.func end
 .synop begin
 #include <string.h>
 void *memcpy( void *dst,
@@ -77,5 +79,5 @@ void main( void )
 }
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

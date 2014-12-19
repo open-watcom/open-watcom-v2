@@ -167,5 +167,5 @@ upper
 xdigit
 .exmp end
 .*
-.class ANSI
+.class ISO C95
 .system

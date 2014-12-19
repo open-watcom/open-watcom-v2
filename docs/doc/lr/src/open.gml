@@ -37,7 +37,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -105,7 +105,6 @@ void main()
                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
   }
 .exmp end
-.class begin POSIX 1003.1
 .ansiname &_func
-.class end
+.class POSIX 1003.1
 .system

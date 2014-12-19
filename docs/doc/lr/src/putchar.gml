@@ -1,4 +1,6 @@
-.func putchar putwchar
+.func begin putchar
+.func2 putwchar ISO C95
+.func end
 .synop begin
 #include <stdio.h>
 int putchar( int c );
@@ -78,5 +80,5 @@ void main()
     fclose( fp );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

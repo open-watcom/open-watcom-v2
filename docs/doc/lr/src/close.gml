@@ -50,7 +50,7 @@ function is identical to
 .
 Use
 id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .desc end
 .return begin
@@ -104,7 +104,6 @@ void main()
     }
   }
 .exmp end
-.class begin POSIX 1003.1
 .ansiname &_func
-.class end
+.class POSIX 1003.1
 .system

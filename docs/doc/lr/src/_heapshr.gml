@@ -28,7 +28,7 @@ back to the system.
 This can be used to free up as much memory as possible before using the
 .kw system
 function or one of the
-.kw spawn
+.kw spawn&grpsfx
 functions.
 .np
 The various

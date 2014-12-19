@@ -1,4 +1,6 @@
-.func fprintf fwprintf
+.func begin fprintf
+.func2 fwprintf ISO C95
+.func end
 .synop begin
 #include <stdio.h>
 int fprintf( FILE *fp, const char *format, ... );
@@ -72,5 +74,5 @@ void main( void )
 .exmp output
 Saturday, April 18, 1987
 .exmp end
-.class ANSI
+.class ISO C
 .system

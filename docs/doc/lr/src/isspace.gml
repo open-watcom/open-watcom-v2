@@ -1,6 +1,7 @@
-.func isspace iswspace
+.func begin isspace
+.func2 iswspace ISO C95
+.func end
 .synop begin
-.funcw iswspace
 #include <ctype.h>
 int isspace( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -89,5 +90,5 @@ Char     is a space character
 Char   is a space character
 Char } is not a space character
 .exmp end
-.class ANSI
+.class ISO C
 .system

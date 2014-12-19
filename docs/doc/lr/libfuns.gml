@@ -193,7 +193,7 @@
 .fnc _dos_creat                 d_creat.gml     DOS       WIN32
 .fnc _dos_creatnew              creatnew.gml    DOS       WIN32
 .fnc dosexterr                  dosexter.gml    DOS
-.fnc _dos_find...               dosfind.gml     DOS       WIN32
+.fnc _dos_find&grpsfx           dosfind.gml     DOS       WIN32
 .fnc _dos_findclose             dosfind.gml     DOS       WIN32
 .fnc _dos_findfirst             dosfind.gml     DOS       WIN32
 .fnc _dos_findnext              dosfind.gml     DOS       WIN32
@@ -243,7 +243,7 @@
 .fnc erf                        erf.gml         DOS QNX W WIN32
 .fnc erfc                       erfc.gml        DOS QNX W WIN32
 .fnc errno                      errno.gml           QXO
-.fnc exec...                    exec.gml        DOS QNX W WIN32
+.fnc exec&grpsfx                exec.gml        DOS QNX W WIN32
 .fnc execl                      exec.gml        DOS QNX W WIN32
 .fnc _execl                     exec.gml        DOS QNX W WIN32
 .fnw _wexecl                    exec.gml        DOS       WIN32
@@ -1225,7 +1225,7 @@
 .fnc _sopen                     sopen.gml       DOS       WIN32
 .fnw _wsopen                    sopen.gml       DOS       WIN32
 .fnc sound                      sound.gml       DOS QNX W
-.fnc spawn...                   spawn.gml       DOS QNX W WIN32
+.fnc spawn&grpsfx               spawn.gml       DOS QNX W WIN32
 .fnc spawnl                     spawn.gml       DOS QNX W WIN32
 .fnc _spawnl                    spawn.gml       DOS QNX W WIN32
 .fnw _wspawnl                   spawn.gml       DOS       WIN32

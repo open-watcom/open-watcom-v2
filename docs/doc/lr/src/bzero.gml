@@ -13,9 +13,9 @@ bytes of the object pointed to by
 .arg dst
 with zero (null) bytes.
 .np
-Note that this function is similar to the ANSI
+Note that this function is similar to the ISO C
 .kw memset
-function (new code should use the ANSI function).
+function (new code should use the ISO C function).
 .desc end
 .return begin
 The

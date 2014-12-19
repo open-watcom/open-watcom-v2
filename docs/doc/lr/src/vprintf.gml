@@ -1,4 +1,6 @@
-.func vprintf vwprintf
+.func begin vprintf
+.func2 vwprintf ISO C95
+.func end
 .synop begin
 #include <stdarg.h>
 #include <stdio.h>
@@ -98,5 +100,5 @@ void main( void )
 Error: Failed 100 times
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

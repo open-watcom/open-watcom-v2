@@ -79,5 +79,5 @@ void main()
       puts( buffer );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

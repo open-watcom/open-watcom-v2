@@ -48,5 +48,5 @@ void main( void )
 EOF is not a valid single-byte character
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

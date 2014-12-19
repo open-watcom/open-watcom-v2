@@ -1,4 +1,6 @@
-.func vfprintf vfwprintf
+.func begin vfprintf
+.func2 vfwprintf ISO C95
+.func end
 .synop begin
 #include <stdarg.h>
 #include <stdio.h>
@@ -104,5 +106,5 @@ void main( void )
 }
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

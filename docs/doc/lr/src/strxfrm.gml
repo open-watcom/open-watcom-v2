@@ -95,5 +95,5 @@ void main()
 A sample STRING
 A sample STRING (15)
 .exmp end
-.class ANSI
+.class ISO C
 .system

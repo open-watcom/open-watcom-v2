@@ -54,5 +54,5 @@ void main()
     fclose( fp );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

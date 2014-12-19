@@ -1,4 +1,6 @@
-.func memchr _fmemchr wmemchr
+.func begin memchr _fmemchr
+.func2 wmemchr ISO C95
+.func end
 .synop begin
 #include <string.h>
 void *memchr( const void *buf, int ch, size_t length );
@@ -73,5 +75,5 @@ void main( void )
         printf( "%s\n", where );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

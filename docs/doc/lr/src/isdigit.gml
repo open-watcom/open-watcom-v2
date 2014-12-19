@@ -1,6 +1,7 @@
-.func isdigit iswdigit
+.func isdigit
+.func2 iswdigit ISO C95
+.func end
 .synop begin
-.funcw iswdigit
 #include <ctype.h>
 int isdigit( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -69,5 +70,5 @@ Char A is not a digit character
 Char 5 is a digit character
 Char $ is not a digit character
 .exmp end
-.class ANSI
+.class ISO C
 .system

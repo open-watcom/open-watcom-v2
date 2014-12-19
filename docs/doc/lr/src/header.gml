@@ -11,25 +11,25 @@ functions are also declared. The files can be included multiple times
 and in any order.
 .if '&machsys' eq 'QNX' .do begin
 .np
-When the &company C compiler option "za" is used ("ANSI conformance"),
+When the &company C compiler option "za" is used ("ISO/ANSI C conformance"),
 the macro
 .kw NO_EXT_KEYS
 is predefined. The "za" option is used when you are creating an
-application that must conform to a certain standard, whether it be ANSI
-or POSIX. The effect on the inclusion of ANSI- and POSIX-defined header
-files is that certain portions of the header files are omitted. For ANSI
-header files, these are the portions that go beyond the ANSI standard.
+application that must conform to a certain standard, whether it be ISO/ANSI
+or POSIX. The effect on the inclusion of ISO/ANSI- and POSIX-defined header
+files is that certain portions of the header files are omitted. For ISO/ANSI
+header files, these are the portions that go beyond the ISO/ANSI standard.
 For POSIX header files, these are the portions that go beyond the POSIX
 standard. Feature test macros may then be defined to select those
 portions which are omitted. Two feature test macros may be defined.
 .begterm 17
 .term _POSIX_SOURCE
-Include those portions of the ANSI header files which relate to the
+Include those portions of the ISO/ANSI header files which relate to the
 POSIX standard
 .us (IEEE Standard Portable Operating System Interface for Computer
 .us Environments - POSIX 1003.1)
 .term _QNX_SOURCE
-Include those portions of the ANSI and POSIX header files which relate
+Include those portions of the ISO/ANSI and POSIX header files which relate
 to the POSIX standard and all extensions provided by the QNX system.
 In essence, the definition of
 .kw _QNX_SOURCE
@@ -46,7 +46,7 @@ also.
 .np
 Feature test macros may be defined on the command line or in the source
 file before any header files are included. The latter is illustrated in
-the following example in which an ANSI and POSIX conforming application
+the following example in which an ISO/ANSI and POSIX conforming application
 is being developed.
 .millust begin
     #define _POSIX_SOURCE
@@ -64,7 +64,7 @@ is being developed.
 .pc
 The source code is then compiled using the "za" option.
 .np
-The following ANSI header files are affected by the
+The following ISO/ANSI header files are affected by the
 .kw _POSIX_SOURCE
 feature test macro.
 .millust begin
@@ -76,25 +76,25 @@ feature test macro.
     time.h
 .millust end
 .np
-The following ANSI and POSIX header files are affected by the
+The following ISO/ANSI and POSIX header files are affected by the
 .kw _QNX_SOURCE
 feature test macro.
 .millust begin
-    ctype.h              (ANSI)
+    ctype.h              (ISO/ANSI)
     env.h                (POSIX)
     fcntl.h              (POSIX)
-    float.h              (ANSI)
-    limits.h             (ANSI)
-    math.h               (ANSI)
+    float.h              (ISO/ANSI)
+    limits.h             (ISO/ANSI)
+    math.h               (ISO/ANSI)
     process.h            (extension to POSIX)
-    setjmp.h             (ANSI)
-    signal.h             (ANSI)
+    setjmp.h             (ISO/ANSI)
+    signal.h             (ISO/ANSI)
     sys/stat.h           (POSIX)
-    stdio.h              (ANSI)
-    stdlib.h             (ANSI)
-    string.h             (ANSI)
+    stdio.h              (ISO/ANSI)
+    stdlib.h             (ISO/ANSI)
+    string.h             (ISO/ANSI)
     termios.h            (POSIX)
-    time.h               (ANSI)
+    time.h               (ISO/ANSI)
     sys/types.h          (POSIX)
     unistd.h             (POSIX)
 .millust end
@@ -296,7 +296,7 @@ functions.
 .*------------------------------
 .df math.h
 .ix '&Math'
-This ANSI header file declares the mathematical functions (which operate
+This ISO/ANSI header file declares the mathematical functions (which operate
 with floating-point numbers) and the structures:
 .sfbeg
 .sf exception
@@ -329,9 +329,9 @@ in-line generation of code that operates on multimedia registers.
 .df process.h
 .ix '&Process'
 This header file declares the
-.kw spawn...
+.kw spawn&grpsfx
 functions, the
-.kw exec...
+.kw exec&grpsfx
 functions, and the
 .kw system
 function. The file also contains declarations for the constants
@@ -473,7 +473,7 @@ This POSIX header file contains terminal I/O system types.
 .df time.h
 .ix '&TimeFunc'
 .ix 'tm'
-This ANSI header file declares functions related to times and dates and
+This ISO/ANSI header file declares functions related to times and dates and
 defines the structure
 .kw struct tm
 .ct .li .
@@ -506,7 +506,7 @@ that is used by it.
 .*------------------------------
 .df varargs.h
 This UNIX System V header file provides an alternate way of handling
-variable argument lists. The equivalent ANSI header file is <stdarg.h>.
+variable argument lists. The equivalent ISO/ANSI header file is <stdarg.h>.
 .*------------------------------
 .df wchar.h
 This ISO C99 header file defines several data types including

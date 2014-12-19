@@ -84,5 +84,5 @@ void main()
 0
 0
 .exmp end
-.class ANSI
+.class ISO C
 .system

@@ -447,9 +447,9 @@ will define a field to be at least 8 characters wide, and will get the
 next argument for the precision to be used in the conversion.
 .oldtext end
 .if &farfnc eq 0 .do begin
-.class ANSI (except for b and I64 specifiers)
+.class ISO C (except for b and I64 specifiers)
 .do end
 .el .do begin
-.class ANSI (except for N, W pointer size modifiers and b, I64 specifiers)
+.class ISO C (except for N, W pointer size modifiers and b, I64 specifiers)
 .do end
 .system

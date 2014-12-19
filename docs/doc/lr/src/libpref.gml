@@ -7,7 +7,7 @@ double-byte character set (DBCS).
 .do end
 .el .do begin
 This manual describes the &company C Library.
-It includes the Standard C Library (as defined in the ANSI C Standard)
+It includes the Standard C Library (as defined in the ISO/ANSI C Standard)
 plus many additional library routines which make application
 development for personal computers much easier.
 .do end

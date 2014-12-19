@@ -1,6 +1,7 @@
-.func isalnum iswalnum
+.func begin isalnum
+.func2 iswalnum ISO C95
+.func end
 .synop begin
-.funcw iswalnum
 #include <ctype.h>
 int isalnum( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -64,5 +65,5 @@ void main()
     }
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

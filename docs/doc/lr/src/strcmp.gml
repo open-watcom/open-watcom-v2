@@ -77,5 +77,5 @@ void main()
 -1
 1
 .exmp end
-.class ANSI
+.class ISO C
 .system

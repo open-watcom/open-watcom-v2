@@ -214,5 +214,5 @@ void main()
         lc->n_sign_posn );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

@@ -132,7 +132,7 @@ No matching files
 .endterm
 .return end
 .see begin
-.seelist _dos_find...
+.seelist _dos_find&grpsfx
 .seelist _findclose _findfirst _findnext closedir opendir readdir
 .see end
 .exmp begin

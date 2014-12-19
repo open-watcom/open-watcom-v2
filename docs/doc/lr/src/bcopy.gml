@@ -18,10 +18,10 @@ The number of bytes to copy is specified by
 .ct .li .
 Copying of overlapping objects is guaranteed to work properly.
 .np
-Note that this function is similar to the ANSI
+Note that this function is similar to the ISO C
 .kw memmove
 function but the order of arguments is different
-(new code should use the ANSI function).
+(new code should use the ISO C function).
 .desc end
 .return begin
 The

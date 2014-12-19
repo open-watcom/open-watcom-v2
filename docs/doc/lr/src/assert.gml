@@ -93,5 +93,5 @@ void main()
     process_string( "" );
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

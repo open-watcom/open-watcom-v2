@@ -295,7 +295,7 @@ functions.
 Currently, DOS has the capability to execute only one process at a
 time.
 Thus, when a process is initiated with the
-.kw spawn...
+.kw spawn&grpsfx
 parameter
 .kw P_WAIT
 .ct,
@@ -305,7 +305,7 @@ Otherwise, the new task replaces the initial task.
 Tasks can be started by using the
 .kw system
 .ct,
-.kw exec...
+.kw exec&grpsfx
 and
-.kw spawn...
+.kw spawn&grpsfx
 functions.

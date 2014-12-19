@@ -1,6 +1,7 @@
-.func iscntrl iswcntrl
+.func begin iscntrl
+.func2 iswcntrl ISO C95
+.func end
 .synop begin
-.funcw iswcntrl
 #include <ctype.h>
 int iscntrl( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -69,5 +70,5 @@ Char A is not a Control character
 Char     is a Control character
 Char Z is not a Control character
 .exmp end
-.class ANSI
+.class ISO C
 .system

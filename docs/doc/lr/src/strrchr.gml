@@ -69,5 +69,5 @@ void main()
 aklmn
 NULL
 .exmp end
-.class ANSI
+.class ISO C
 .system

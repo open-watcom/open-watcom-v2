@@ -79,5 +79,5 @@ tolower(A): a
 toupper(A): A
 .exmp end
 .*
-.class ANSI
+.class ISO C95
 .system

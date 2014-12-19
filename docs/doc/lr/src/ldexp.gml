@@ -35,5 +35,5 @@ void main()
 .exmp output
 150.631504
 .exmp end
-.class ANSI
+.class ISO C
 .system

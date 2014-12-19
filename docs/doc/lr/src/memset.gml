@@ -1,4 +1,6 @@
-.func memset _fmemset wmemset
+.func begin memset _fmemset
+.func2 wmemset ISO C95
+.func end
 .synop begin
 #include <string.h>
 void *memset( void *dst, int c, size_t length );
@@ -61,5 +63,5 @@ void main( void )
     memset( buffer, '=', 80 );
 }
 .exmp end
-.class ANSI
+.class ISO C
 .system

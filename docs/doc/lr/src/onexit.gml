@@ -22,13 +22,13 @@ The functions have no parameters and do not return values.
 .pp
 NOTE: The
 .id &funcb.
-function is not an ANSI function.
-The ANSI standard function
+function is not an ISO C function.
+The ISO C standard function
 .kw atexit
 does the same thing that
 .id &funcb.
 does and should be used instead of &funcb
-where ANSI portability is concerned.
+where ISO C portability is concerned.
 .desc end
 .return begin
 The

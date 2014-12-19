@@ -1,6 +1,5 @@
-.func begin
-.funct_w  wcstombs_s    TR 24731
-.funct_fw _fwcstombs_s
+.func begin wcstombs_s
+.func2 _fwcstombs_s WATCOM
 .func end
 .synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -212,5 +211,5 @@ int main()
 /0073/0074/0072/0069/006e/0067
 string(6)
 .exmp end
-.classt
+.class TR 24731
 .system

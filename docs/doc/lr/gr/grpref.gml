@@ -2,7 +2,7 @@
 .np
 .if '&lang' eq 'C' .do begin
 &company C is an implementation of
-ANSI/ISO 9899:1990 Programming Language C.
+ISO 9899:1990 Programming Language C.
 The standard was developed by the ANSI X3J11 Technical Committee
 on the C Programming Language.
 In addition to the full C language standard, the compiler supports

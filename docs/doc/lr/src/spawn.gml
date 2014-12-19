@@ -1,4 +1,6 @@
-.func begin spawn... Functions
+.func begin spawn&grpsfx Functions
+.fungroup _spawn&grpsfx
+.fungroup _wspawn&grpsfx
 .func2 spawnl
 .func2 spawnle
 .func2 spawnlp
@@ -23,8 +25,6 @@
 .func2 _wspawnve
 .func2 _wspawnvp
 .func2 _wspawnvpe
-.func_ _spawn...
-.funcw _wspawn...
 .func end
 .synop begin
 #include <process.h>
@@ -101,7 +101,7 @@ int _wspawnvpe( mode, file, argv, envp );
 .synop end
 .desc begin
 The
-.idbold &funcb.
+.idbold &function.
 functions create and execute a new child process, named by
 .arg pgm
 .ct .li .
@@ -149,7 +149,7 @@ This option is supported under DOS (16-bit only), OS/2, Win32, and
 QNX.
 .do end
 This is equivalent to calling the appropriate
-.kw exec...
+.kw exec&grpsfx
 function.
 .term P_DETACH
 Launches the child process in the background without access to the keyboard or
@@ -164,7 +164,7 @@ This option is supported under only Windows NT.
 .np
 Arguments are passed to the child process by supplying one or more
 pointers to character strings as arguments in the
-.idbold &funcb.
+.idbold &function.
 call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
@@ -346,11 +346,11 @@ is:
 .termhd2 Meaning
 .term P_WAIT
 then the return value from
-.idbold &funcb.
+.idbold &function.
 is the exit status of the child process.
 .term P_NOWAIT
 then the return value from
-.idbold &funcb.
+.idbold &function.
 is the process id (or process handle
 under Win32) of the child process.
 To obtain the exit code for a process spawned with
@@ -373,18 +373,18 @@ process passed to the
 function.
 .term P_NOWAITO
 then the return value from
-.idbold &funcb.
+.idbold &function.
 is the process id of the child process.
 The exit code cannot be obtained for a process spawned with
 .kw P_NOWAITO
 .ct .li .
 .term P_DETACH
 then the return value from
-.idbold &funcb.
+.idbold &function.
 is zero (0) if successful.
 .endterm
 .np
-When an error is detected while invoking the indicated program, &funcb
+When an error is detected while invoking the indicated program, &function
 returns &minus.1 and
 .kw errno
 is set to indicate the error.
@@ -417,9 +417,9 @@ Not enough memory is available to execute the child process.
 .error end
 .*==========================================
 .see begin
-.seelist spawn... abort atexit cwait exec... exit _exit
-.seelist spawn... getcmd getenv main putenv qnx_spawn qnx_spawn_options
-.seelist spawn... system wait
+.seelist abort atexit cwait exec&grpsfx exit _exit
+.seelist getcmd getenv main putenv qnx_spawn qnx_spawn_options
+.seelist system wait
 .see end
 .cp 8
 .exmp begin
@@ -494,7 +494,6 @@ void main( int argc, char *argv[] )
 }
 */
 .exmp end
-.class begin WATCOM
-.ansiname &_func
-.class end
+.ansiname _spawn&grpsfx
+.class WATCOM
 .system

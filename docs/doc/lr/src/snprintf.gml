@@ -109,5 +109,5 @@ void main( void )
 }
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system

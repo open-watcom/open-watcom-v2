@@ -56,5 +56,5 @@ void main()
 0.531250 3
 -0.531250 3
 .exmp end
-.class ANSI
+.class ISO C
 .system

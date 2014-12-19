@@ -45,7 +45,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI naming conventions.
+for ISO C naming conventions.
 .do end
 .np
 If the

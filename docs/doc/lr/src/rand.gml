@@ -36,5 +36,5 @@ void main()
     }
   }
 .exmp end
-.class ANSI
+.class ISO C
 .system

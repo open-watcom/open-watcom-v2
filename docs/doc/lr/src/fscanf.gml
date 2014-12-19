@@ -1,4 +1,6 @@
-.func fscanf fwscanf
+.func begin fscanf
+.func2 fwscanf ISO C95
+.func end
 .synop begin
 #include <stdio.h>
 int fscanf( FILE *fp, const char *format, ... );

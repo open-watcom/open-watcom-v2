@@ -84,5 +84,5 @@ void main()
 /0073/0074/0072/0069/006e/0067
 string(6)
 .exmp end
-.class ANSI
+.class ISO C
 .system

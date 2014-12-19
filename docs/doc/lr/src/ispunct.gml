@@ -1,6 +1,7 @@
-.func ispunct iswpunct
+.func begin ispunct
+.func2 iswpunct ISO C95
+.func end
 .synop begin
-.funcw iswpunct
 #include <ctype.h>
 int ispunct( int c );
 .ixfunc2 '&CharTest' &funcb
@@ -78,5 +79,5 @@ Char , is a punctuation character
 Char : is a punctuation character
 Char ; is a punctuation character
 .exmp end
-.class ANSI
+.class ISO C
 .system

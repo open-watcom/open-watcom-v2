@@ -71,7 +71,7 @@ The
 function is identical to &funcb..
 Use
 .id &_func.
-for ANSI/ISO naming conventions.
+for ISO C naming conventions.
 .do end
 .im farparm
 .im widefunc
@@ -100,7 +100,6 @@ void main()
     printf( "%s\n", dup );
   }
 .exmp end
-.class begin WATCOM
 .ansiname &_func
-.class end
+.class WATCOM
 .system

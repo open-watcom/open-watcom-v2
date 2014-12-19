@@ -1,4 +1,6 @@
-.func sprintf swprintf
+.func begin sprintf
+.func2 swprintf ISO C95
+.func end
 .synop begin
 #include <stdio.h>
 int sprintf( char *buf, const char *format, ... );
@@ -102,5 +104,5 @@ void main( void )
 }
 .exmp end
 .*
-.class ANSI
+.class ISO C
 .system
