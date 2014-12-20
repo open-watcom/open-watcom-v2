@@ -21,17 +21,7 @@ function determines if the file or directory specified by
 exists and if it can be accessed with the file permission given by
 .arg mode
 .ct .li .
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to
-.id &funcb.
-.
-Use
-id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .np
 When the value of
 .arg mode

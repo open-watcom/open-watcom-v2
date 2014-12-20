@@ -60,24 +60,8 @@ function will mark for update
 the
 .us st_ctime
 field of the file.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument.
-.do end
+.im ansiconf
+.im widefunc
 .desc end
 .return begin
 The &funcb

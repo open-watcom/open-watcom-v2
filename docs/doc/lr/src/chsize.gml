@@ -18,15 +18,7 @@ by extending or truncating the file to the length specified by
 .ct .li .
 If the file needs to be extended, the file is padded with NULL ('\0')
 characters.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if '&machsys' eq 'QNX' .do begin
 .np
 Note that the

@@ -15,15 +15,7 @@ function tests if the opened file or device referenced by
 the file &handle
 .arg &fd
 is a character device (for example, a console, printer or port).
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .desc end
 .return begin
 The
@@ -46,6 +38,5 @@ void main( void )
             ? "" : "not " );
 }
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

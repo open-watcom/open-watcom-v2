@@ -25,15 +25,7 @@ function.
 The returned value may be used in conjunction with the
 .kw lseek
 function to reset the current file position.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .np
 The &func64 function is similar to the
 .id &funcb.

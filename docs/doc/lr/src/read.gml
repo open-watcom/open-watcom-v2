@@ -46,15 +46,7 @@ When
 is included in the access mode, the data is transmitted with the extra
 carriage return character removed before each linefeed character
 encountered in the original data.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .desc end
 .return begin
 The
@@ -110,6 +102,5 @@ void main( void )
     }
 }
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

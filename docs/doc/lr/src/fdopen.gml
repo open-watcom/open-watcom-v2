@@ -49,15 +49,7 @@ The argument
 is described in the description of the
 .kw fopen
 function.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

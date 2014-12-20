@@ -29,15 +29,7 @@ to stderr.
 This is followed by a colon (":"), a space, the string returned by
 .mono strerror(errno)
 .ct , and a newline character.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument and produces wide-character output.
-.do end
+.im widefunc
 .desc end
 .return begin
 The

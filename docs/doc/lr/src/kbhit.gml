@@ -28,15 +28,7 @@ Note that loops involving the
 function are not recommended in
 multitasking systems.
 .do end
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .desc end
 .return begin
 The &funcb
@@ -67,6 +59,5 @@ void main( void )
     }
 }
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

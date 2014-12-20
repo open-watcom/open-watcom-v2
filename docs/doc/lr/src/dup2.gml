@@ -25,17 +25,7 @@ The number of the new &handle is
 .ct .li .
 If a file already is opened with this &handle, the file is closed
 before the duplication is attempted.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to
-.id &funcb.
-.
-Use
-id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if '&machsys' eq 'QNX' .do begin
 .pp
 The call

@@ -35,15 +35,7 @@ The
 function replaces the string
 .arg s1
 with a string whose characters are in the reverse order.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farfunc
 .im widefunc
 .im mbsffunc
@@ -70,6 +62,5 @@ A sample STRING
 GNIRTS elpmas A
 A sample STRING
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

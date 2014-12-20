@@ -33,15 +33,7 @@ function is a version of
 to be used only when
 .arg c
 is known to be lowercase.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is similar to
-.id &funcb.
-except that it accepts a
-wide-character argument.
-.do end
+.im widefunc
 .desc end
 .return begin
 The

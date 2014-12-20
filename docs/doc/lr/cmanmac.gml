@@ -63,12 +63,12 @@
 .sr *cltxt=''
 .sr *clatr=0
 .sr *cls=''
-.if '&*2' ne '' .se *cls=&'substr(&*.,&'length(&*1)+1)
-.if '&*cls' ne '' .se *cltxt=is &*cls
-.if '&*cltxt.' ne '' .sr *clatr=&*clatr.+2
+.if &*0 gt 1 .do begin
+.   .se *cltxt=is &'substr(&*.,&'length(&*1)+1)
+.do end
 .widefunc &*1
 .if &iswidefn. ne 0 .do begin
-.   .if '&*1(1:1).' ne '_' .sr *clatr=&*clatr.+1
+.   .if '&*1(1:1).' ne '_' .sr *clatr=1
 .do end
 .se __clx=&__clx.+1
 .se __clnam(&__clx.)=&*1
@@ -396,34 +396,33 @@ Prototype in
 .sr *i=0
 ...loopa .sr *i=&*i.+1
 .   .if '&*' eq '&__clnam(&*i.)' .do begin
-.   .   .if '&__cltxt(&*i.)' eq '' .sr __cltxt(&*i.)=conforms to ISO C naming conventions
-.   .   .el .sr __cltxt(&*i.)=&__cltxt(&*i.)., conforms to ISO C naming conventions
+.   .   .if &__clatr(&*i.) lt 2 .sr __clatr(&*i.)=&__clatr(&*i.).+2
 .   .   .me
 .   .do end
 .if &*i. lt &__clx. .go loopa
 .dm ansiname end
 .*
 .dm listclas begin
-.sr *i=0
-.if '&*1' eq '' .do begin
-.   .se *i=&*i.+1
-.   .pe &__clx.-1;.se *i=&*i.+1;.clitm &__clnam(&*i.) &__cltxt(&*i.)
-.   .me
-.do end
-...loopb .se *i=&*i.+1
-.   .if &__clatr(&*i.) ge 2 .do begin
-.   .   .if '&__cltxt(&*i.)' ne '' .sr *sttxt=&__cltxt(&*i)
-.   .   .el .sr *sttxt=''
+.sr *i=1
+...loopc .se *i=&*i.+1
+.   .sr *clatr=&__clatr(&*i.).
+.   .if '&__cltxt(&*i.)' ne '' .do begin
+.   .   .if &clatr ge 2 .do begin
+.   .   .   .clitm &__clnam(&*i) &__cltxt(&*i.), conforms to ANSI naming conventions
+.   .   .do end
+.   .   .el .do begin
+.   .   .   .clitm &__clnam(&*i) &__cltxt(&*i.)
+.   .   .do end
 .   .do end
-.   .el .do begin
-.   .   .if '&__clnam(&*i)' eq '&function.' .sr *sttxt=is &*1
-.   .   .el .if &__clatr(&*i.) ne 0 .sr *sttxt=is &*3
-.*   .   .el .sr *sttxt=is not &*2
-.   .   .el .sr *sttxt=is WATCOM
-.   .   .if '&__cltxt(&*i.)' ne '' .sr *sttxt=&*sttxt., &__cltxt(&*i)
+.   .el .if &*clatr ge 2 .do begin
+.   .   .clitm &__clnam(&*i) conforms to ANSI naming conventions
 .   .do end
-.   .clitm &__clnam(&*i) &*sttxt.
-.if &*i. lt &__clx. .go loopb
+.   .el .if &*1 ne 0 .do begin
+.   .   .if &*clatr eq 0 .do begin
+.   .   .   .clitm &__clnam(&*i) is WATCOM
+.   .   .do end
+.   .do end
+.if &*i. lt &__clx. .go loopc
 .dm listclas end
 .*
 .dm class begin
@@ -440,7 +439,7 @@ Prototype in
 .   .listnew Classification:
 .   .if &__clx. gt 1 and '&all' ne '&grfun' .do begin
 .   .   .sr *i=1
-.   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__cltxt(&*i.).' ne '' .sr *extr=1
+.   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__cltxt(&*i.).' ne '' or &__clatr(&*i.). ge 2 .sr *extr=1
 .   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'POSIX' .do begin
 .   .   .   .sr *i=1
 .   .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__clnam(&*i.,1:1).' eq '_' .sr *extr=1
@@ -449,27 +448,13 @@ Prototype in
 .   .if &*extr eq 0 .do begin
 .   .   .clitm &*all
 .   .do end
-.   .el .if |&*all| eq |WATCOM| .do begin
-.   .   .clitm &*all
-.   .do end
-.   .el .if &'words(|&*all|) gt 6 .do begin
-.   .   .clitm &*all
-.   .do end
 .   .el .do begin
-.   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'TR' .do begin
-.   .   .   .sr *cls=&'strip(&*all,'T',',')
-.   .   .   .sr *wcls=&'strip(&*all,'T',',')
-.   .   .do end
-.   .   .el .do begin
-.   .   .   .sr *cls=&'strip(&__class,'T',',')
-.   .   .   .sr *wcls=&'strip(&__class,'T',',')
-.   .   .do end
+.   .   .clitm &*all
 .   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'POSIX' .do begin
-.   .   .   .listclas '&*all' '&*cls' '&*wcls'
+.   .   .   .listclas 1
 .   .   .do end
 .   .   .el .do begin
-.   .   .   .clitm &*all
-.   .   .   .listclas
+.   .   .   .listclas 0
 .   .   .do end
 .   .do end
 .do end

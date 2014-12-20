@@ -22,15 +22,7 @@ The &func64 function returns, as a 64-bit integer, the number of
 bytes in the opened file indicated by the file &handle
 .arg &fd
 .ct .li .
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .desc end
 .return begin
 If an error occurs in

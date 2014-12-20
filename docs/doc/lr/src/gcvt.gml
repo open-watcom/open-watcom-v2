@@ -35,15 +35,7 @@ If the exponent of the number is less than &minus.4 or is greater than
 or equal to the number of significant digits wanted, then the number
 is converted into E-format, otherwise the number is formatted using
 F-format.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -77,6 +69,5 @@ void main()
 -123.46
 1.2346E+014
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

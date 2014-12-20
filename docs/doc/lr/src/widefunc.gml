@@ -4,6 +4,5 @@ The
 .id &wfunc.
 function is a wide-character version of
 .id &funcb.
-that
-operates with wide-character strings.
+that operates with wide-character strings.
 .do end

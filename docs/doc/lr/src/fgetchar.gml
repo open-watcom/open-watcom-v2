@@ -21,17 +21,7 @@ function is equivalent to
 with the argument
 .kw stdin
 .ct .li .
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to
-.id &funcb.
-.
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

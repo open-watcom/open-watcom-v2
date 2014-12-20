@@ -48,15 +48,7 @@ When the value of
 is greater than the length of the string, the entire string is filled.
 Otherwise, that number of characters at the start of the string are set
 to the fill character.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farfunc
 .im widefunc
 For &wfunc, the value of

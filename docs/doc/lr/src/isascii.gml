@@ -18,13 +18,8 @@ int iswascii( wint_t c );
 The
 .id &funcb.
 function tests for a character in the range from 0 to 127.
-.np
-The
-.id &__func.
-function is identical to &funcb..
-Use
-.id &__func.
-for ISO C naming conventions.
+.sr _func=&__func.
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -78,6 +73,5 @@ Char A is an ASCII character
 Char   is not an ASCII character
 Char Z is an ASCII character
 .exmp end
-.ansiname &__func
 .class WATCOM
 .system

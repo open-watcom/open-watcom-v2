@@ -30,15 +30,7 @@ The optional argument is the file permissions to be used when the
 flag is on in the
 .arg access
 mode.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -105,6 +97,5 @@ void main()
                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
   }
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

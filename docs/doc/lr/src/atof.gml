@@ -21,14 +21,8 @@ It is equivalent to
 .millust begin
 strtod( ptr, (char **)NULL )
 .millust end
+.im widefunc
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it
-accepts a wide-character string argument.
 It is equivalent to
 .millust begin
 wcstod( ptr, (wchar_t **)NULL )

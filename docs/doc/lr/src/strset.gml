@@ -41,15 +41,7 @@ with the character
 .ct .li .
 The terminating null character in the original string remains
 unchanged.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farfunc
 .im widefunc
 .im mbsffunc

@@ -32,15 +32,7 @@ indicated by
 .arg buf
 .ct .li .
 .im statdesc
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 The
 .kw _stati64
 .ct ,
@@ -105,6 +97,5 @@ void main()
     }
 }
 .exmp end
-.ansiname &_func
 .class POSIX
 .system

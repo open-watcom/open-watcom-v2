@@ -17,15 +17,7 @@ The number of bytes transmitted is given by
 and the data to be transmitted is located at the address specified by
 .arg buffer
 .ct .li .
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .np
 The
 .arg &fd
@@ -126,6 +118,5 @@ void main( void )
     }
 }
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

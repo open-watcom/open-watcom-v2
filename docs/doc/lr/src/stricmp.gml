@@ -52,15 +52,7 @@ All uppercase characters from
 and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farparm
 .im widefunc
 .im mbsffunc
@@ -97,6 +89,5 @@ void main()
 -12
 12
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

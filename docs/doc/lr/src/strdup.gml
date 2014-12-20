@@ -64,15 +64,7 @@ function and can be freed using the
 .kw _ffree
 function.
 .do end
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farparm
 .im widefunc
 .im mbsffunc
@@ -100,6 +92,5 @@ void main()
     printf( "%s\n", dup );
   }
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

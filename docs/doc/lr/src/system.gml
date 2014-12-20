@@ -78,15 +78,7 @@ The
 and
 .kw spawn&grpsfx
 functions can only cause programs to be executed.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument.
-.do end
+.im widefunc
 .desc end
 .return begin
 If the value of

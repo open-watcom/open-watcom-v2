@@ -70,14 +70,8 @@ struct _finddatai64_t {
   char      name[_MAX_PATH];
 };
 .millust end
+.im widefunc
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The wide-character
-.id &wfunc.
-function is similar to the
-.id &_func.
-function
-but operates on wide-character strings.
 .millust begin
 struct _wfinddata_t {
   unsigned  attrib;

@@ -30,15 +30,7 @@ to the object pointed to by
 .arg s2
 .ct .li .
 .im farparm
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .desc end
 .return begin
 The
@@ -66,6 +58,5 @@ void main()
     }
   }
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

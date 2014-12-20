@@ -16,15 +16,7 @@ function deletes the file whose name is the string pointed
 to by
 .arg filename
 .ct .li .
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument.
-.do end
+.im widefunc
 .desc end
 .return begin
 The

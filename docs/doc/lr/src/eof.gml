@@ -21,15 +21,7 @@ the
 .id &funcb.
 function may be called to detect the end of the file before
 an input operation beyond the end of the file is attempted.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .desc end
 .return begin
 The

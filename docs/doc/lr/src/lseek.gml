@@ -107,15 +107,7 @@ function does not, in itself, extend the size of a file (see
 the description of the
 .kw chsize
 function).
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .np
 The &func64 function is identical to
 .id &funcb.
@@ -251,7 +243,5 @@ void main( void )
     }
 }
 .exmp end
-.*
-.ansiname &_func
 .class POSIX 1003.1
 .system

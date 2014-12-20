@@ -17,14 +17,7 @@ function causes the file whose name is indicated by the string
 to be renamed to the name given by the string
 .arg new
 .ct .li .
-.if &'length(&wfunc.) ne 0 .do begin
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts
-wide-character string arguments.
-.do end
+.im widefunc
 .desc end
 .return begin
 The

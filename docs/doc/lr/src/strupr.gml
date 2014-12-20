@@ -37,15 +37,7 @@ function replaces the string
 with uppercase characters by invoking the
 .kw toupper
 function for each character in the string.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farfunc
 .im widefunc
 .im mbsfunc
@@ -75,6 +67,5 @@ A mixed-case STRING
 A MIXED-CASE STRING
 A MIXED-CASE STRING
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

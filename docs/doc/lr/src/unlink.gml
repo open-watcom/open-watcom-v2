@@ -23,24 +23,8 @@ pointed to by
 This function is equivalent to the
 .kw remove
 function.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument.
-.do end
+.im ansiconf
+.im widefunc
 .desc end
 .return begin
 The &funcb
@@ -105,6 +89,5 @@ void main( void )
     unlink( "vm.tmp" );
 }
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

@@ -42,15 +42,7 @@ must satisfy the condition:
 .millust begin
 2 <= radix <= 36
 .millust end
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -92,6 +84,5 @@ void main()
 14 491b
 16 31dd
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

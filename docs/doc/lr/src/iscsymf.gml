@@ -18,13 +18,8 @@ int __iswcsymf( wint_t c );
 The
 .id &funcb.
 function tests for a letter or underscore.
-.np
-The
-.id &__func.
-function is identical to &funcb..
-Use
-.id &__func.
-for ISO C naming conventions.
+.sr _func=&__func.
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -81,6 +76,5 @@ Char _ is a csymf character
 Char 9 is not a csymf character
 Char + is not a csymf character
 .exmp end
-.ansiname &__func
 .class WATCOM
 .system

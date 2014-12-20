@@ -72,13 +72,7 @@ Consequently, the
 .id &funcb.
 function can fail when there is insufficient
 space remaining to store an additional value.
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

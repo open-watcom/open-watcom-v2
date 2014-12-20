@@ -58,15 +58,7 @@ to the string pointed to by
 .ct , for at most
 .arg len
 characters.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farparm
 .im widefunc
 .im mbsffunc
@@ -101,6 +93,5 @@ void main()
 0
 0
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

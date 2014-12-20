@@ -34,17 +34,7 @@ It is equivalent to:
 .millust begin
   open( path, O_WRONLY | O_CREAT | O_TRUNC, mode );
 .millust end
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to
-.id &funcb.
-.
-Use
-id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

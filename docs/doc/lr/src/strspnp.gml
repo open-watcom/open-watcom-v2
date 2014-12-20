@@ -53,15 +53,7 @@ that does not belong to the set of characters in
 The terminating null character is not considered to be part of
 .arg charset
 .ct .li .
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .im farparm
 .im widefunc
 .im mbsffunc
@@ -93,6 +85,5 @@ void main()
 t to lunch
 out to lunch
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

@@ -21,17 +21,7 @@ the same file or device, it has the same open mode (read and/or write)
 and it will have file position identical to the original.
 Changing the position with one &handle will result in a changed position
 in the other.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to
-.id &funcb.
-.
-Use
-id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if '&machsys' eq 'QNX' .do begin
 .np
 The call
@@ -96,6 +86,5 @@ void main( void )
     }
 }
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

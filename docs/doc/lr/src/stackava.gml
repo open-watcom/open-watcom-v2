@@ -15,15 +15,7 @@ function returns the number of bytes currently available
 in the stack.
 This value is usually used to determine an appropriate amount to
 allocate using alloca.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .desc end
 .return begin
 The
@@ -70,6 +62,5 @@ void main( void )
     }
 }
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system

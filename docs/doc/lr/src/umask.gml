@@ -46,15 +46,7 @@ to turn off permission bits in the
 argument supplied.
 In other words, if a bit in the mask is on, then the corresponding bit
 in the file's requested permission value is disallowed.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .pp
 The argument
 .arg cmask
@@ -100,6 +92,5 @@ void main( void )
                       S_IXUSR | S_IXGRP | S_IXOTH );
 }
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

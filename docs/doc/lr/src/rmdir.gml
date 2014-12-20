@@ -54,24 +54,8 @@ and
 .us st_mtime
 fields of the parent directory.
 .do end
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument.
-.do end
+.im ansiconf
+.im widefunc
 .desc end
 .*
 .return begin
@@ -169,6 +153,5 @@ void main( void )
 .blkcode end
 .im dblslash
 .exmp end
-.ansiname &_func
 .class POSIX 1003.1
 .system

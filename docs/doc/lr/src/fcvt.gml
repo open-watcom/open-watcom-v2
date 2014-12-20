@@ -44,15 +44,7 @@ The integer pointed to by
 .arg sign
 will contain 0 if the number is positive, and non-zero if the number
 is negative.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The
-.id &_func.
-function is identical to &funcb..
-Use
-.id &_func.
-for ISO C naming conventions.
-.do end
+.im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -92,6 +84,5 @@ void main()
 .exmp output
 str=12345679, dec=3, sign=-1
 .exmp end
-.ansiname &_func
 .class WATCOM
 .system
