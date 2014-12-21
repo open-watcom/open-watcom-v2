@@ -1144,6 +1144,7 @@ static void output_section_ib( section_def *section )
             // output the topic name that belongs to the context
             if( ctx == NULL && ch != CHR_HLINK_BREAK ) {
                 warning( "Link to nonexistent context", line );
+                printf( "For topic=%s\n", topic );
                 whp_fwrite( label, 1, label_len - 1, Out_file );
             } else {
                 // now we start writing the hyper-link
