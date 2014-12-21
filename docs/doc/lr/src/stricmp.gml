@@ -54,7 +54,7 @@ and
 are mapped to lowercase for the purposes of doing the comparison.
 .im ansiconf
 .im farparm
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

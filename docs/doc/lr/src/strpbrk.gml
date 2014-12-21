@@ -45,7 +45,7 @@ of any character from the string pointed to by
 .arg charset
 .ct .li .
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

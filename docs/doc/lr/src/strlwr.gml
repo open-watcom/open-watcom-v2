@@ -39,7 +39,7 @@ with lowercase characters by invoking the
 function for each character in the string.
 .im ansiconf
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

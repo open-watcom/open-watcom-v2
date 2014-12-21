@@ -20,7 +20,7 @@ where "HH" is two digits representing the hour in 24-hour notation,
 where "MM" is two digits representing the minutes past the hour, and
 where "SS" is two digits representing seconds.
 The buffer must be at least 9 bytes long.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

@@ -37,7 +37,7 @@ into the array pointed to by the argument
 according to the
 .arg format
 argument.
-.im widefunc
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

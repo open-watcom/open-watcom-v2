@@ -1,4 +1,6 @@
-.func stat _stat _stati64 _wstat _wstati64 lstat
+.func begin stat _stat _stati64 _wstat _wstati64
+.func2 lstat POSIX
+.func end
 .synop begin
 #include <sys/stat.h>
 int stat( const char *path, struct stat *buf );
@@ -33,6 +35,7 @@ indicated by
 .ct .li .
 .im statdesc
 .im ansiconf
+.np
 The
 .kw _stati64
 .ct ,

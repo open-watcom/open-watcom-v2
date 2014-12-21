@@ -37,7 +37,7 @@ function replaces the string
 with a string whose characters are in the reverse order.
 .im ansiconf
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

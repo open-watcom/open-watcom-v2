@@ -6,7 +6,7 @@
 int iscsymf( int c );
 .ixfunc2 '&CharTest' &funcb
 int __iscsymf( int c );
-.ixfunc2 '&CharTest' &funcb
+.ixfunc2 '&CharTest' &__func
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wctype.h>
 int __iswcsymf( wint_t c );
@@ -20,15 +20,7 @@ The
 function tests for a letter or underscore.
 .sr _func=&__func.
 .im ansiconf
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is similar to
-.id &funcb.
-except that it accepts a
-wide-character argument.
-.do end
+.im widefun2
 .desc end
 .return begin
 A non-zero value is returned when the character is a letter or

@@ -74,7 +74,7 @@ is longer than
 .arg n
 characters, then the result will not be terminated by a null character.
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

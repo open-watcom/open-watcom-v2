@@ -35,7 +35,7 @@ The function will be equivalent to the
 function when the collating sequence is selected from the
 .mono "C"
 locale.
-.im widefunc
+.im widefun1
 .im mbsfunc
 .desc end
 .return begin

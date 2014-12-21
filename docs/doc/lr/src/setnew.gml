@@ -57,8 +57,8 @@ or non-zero to indicate that an allocation request should be
 re-attempted.
 .return end
 .see begin
-.seelist _set_new_handler _bfreeseg _bheapseg calloc delete free
-.seelist _set_new_handler malloc new realloc
+.seelist _bfreeseg _bheapseg calloc delete free
+.seelist malloc new realloc
 .see end
 .exmp begin
 #include <stdio.h>

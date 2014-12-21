@@ -33,7 +33,7 @@ A terminating null character is always appended to the result, unless
 characters of
 .arg dst
 are scanned and no null character is found.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

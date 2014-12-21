@@ -55,7 +55,7 @@ The terminating null character is not considered to be part of
 .ct .li .
 .im ansiconf
 .im farparm
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

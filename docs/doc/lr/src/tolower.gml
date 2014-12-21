@@ -33,7 +33,7 @@ function is a version of
 to be used only when
 .arg c
 is known to be uppercase.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

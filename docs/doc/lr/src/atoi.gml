@@ -17,7 +17,7 @@ function converts the string pointed to by
 to
 .id int
 representation.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

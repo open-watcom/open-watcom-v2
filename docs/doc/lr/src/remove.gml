@@ -16,7 +16,7 @@ function deletes the file whose name is the string pointed
 to by
 .arg filename
 .ct .li .
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

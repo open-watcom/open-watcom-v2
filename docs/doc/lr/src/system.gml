@@ -78,7 +78,7 @@ The
 and
 .kw spawn&grpsfx
 functions can only cause programs to be executed.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 If the value of

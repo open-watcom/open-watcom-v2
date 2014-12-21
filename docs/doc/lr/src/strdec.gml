@@ -39,7 +39,7 @@ You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.
 .im farparm
-.im widefunc
+.im widefun1
 .im mbsfunc
 .desc end
 .return begin

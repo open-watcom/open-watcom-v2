@@ -69,7 +69,7 @@
 .* 1     2     4     8      16    32    64    128   256     512     1024  2048  4096
 .*
 .* DOSPM NET32 MATH  MACRO
-.* 8192  16384  32768 65536
+.* 8192  16384 32768 65536
 .*
 .se __name()='DOS16'
 .se __name()='DOS32'
@@ -115,7 +115,7 @@
 .  .se *i=2
 .  .pe &*0.-1
 .  .  .se *cnt=&*cnt+&__bits(&'vecpos(&*&*i.,__name)+1);.se *i=&*i.+1
-.*  Everything except DOSPM and Netware is All
+.*  Everything except Linux, RDOS, DOSPM and Netware is All
 .*  (i.e., add DOSPM to total to get new total = NET32-1)
 .*  If everything is included but not Netware and DOSPM, make it include DOSPM
 .* .if &*cnt. eq (8191-4096) .se *cnt=&*cnt.+4096

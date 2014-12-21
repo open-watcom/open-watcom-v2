@@ -20,7 +20,7 @@ where "MM" is two digits representing the month,
 where "DD" is two digits representing the day, and
 where "YY" is two digits representing the year.
 The buffer must be at least 9 bytes long.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

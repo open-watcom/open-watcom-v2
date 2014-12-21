@@ -122,7 +122,7 @@ and the unmodified pointer
 value for
 .arg ptr
 .ct , shall start searching just past the element overwritten by a null character (if any).
-.im widefunc
+.im widefun1
 .desc end
 .*
 .return begin

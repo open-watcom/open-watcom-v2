@@ -54,7 +54,7 @@ is 16, the characters "0x" or "0X" may optionally precede the sequence
 of letters and digits.
 .np
 If there is a leading minus sign in the string, the value is negated.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

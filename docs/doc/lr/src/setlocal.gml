@@ -63,7 +63,7 @@ is executed.
 .blkcode begin
     setlocale( LC_ALL, "C" );
 .blkcode end
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 If the selection is successful, a string is returned to indicate

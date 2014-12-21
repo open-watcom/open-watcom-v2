@@ -59,7 +59,7 @@ overwrites the null character at the end of
 .ct .li .
 A terminating null character is always appended to the result.
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

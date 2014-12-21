@@ -52,7 +52,7 @@ overwrites the null character at the end of
 .arg dst
 .ct .li .
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsfunc
 .desc end
 .return begin

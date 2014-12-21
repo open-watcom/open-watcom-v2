@@ -20,7 +20,7 @@ argument.
 automatically handles multibyte-character string arguments as
 appropriate, recognizing multibyte-character sequences according to
 the multibyte code page currently in use by the run-time system.
-.im widefunc
+.im widefun1
 .np
 The string
 .arg template

@@ -49,7 +49,7 @@ file name extension.
 The argument
 .arg path
 points to a buffer containing the full pathname to be split up.
-.im widefunc
+.im widefun1
 .np
 The maximum size required for each buffer is specified by the manifest
 constants

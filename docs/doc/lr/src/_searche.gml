@@ -37,7 +37,7 @@ The full pathname is placed in the buffer pointed to by the argument
 If the specified file cannot be found, then
 .arg pathname
 will contain an empty string.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

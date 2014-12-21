@@ -50,7 +50,7 @@ The terminating null character is not considered part of
 .arg str
 .ct .li .
 .im farparm
-.im widefunc
+.im widefun1
 .im mbsfunc
 .desc end
 .return begin

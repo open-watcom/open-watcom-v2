@@ -30,7 +30,7 @@ The
 function is identical to the
 .kw stricmp
 function.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

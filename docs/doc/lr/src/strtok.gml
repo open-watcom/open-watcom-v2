@@ -99,7 +99,7 @@ Because
 may modify the original string, that string should be
 duplicated if the string is to be re-used.
 .im farfunc
-.im widefunc
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 The third argument
 .arg ptr

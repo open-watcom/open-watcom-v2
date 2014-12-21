@@ -51,7 +51,7 @@ character) in the string pointed to by
 .arg substr
 .ct .li .
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

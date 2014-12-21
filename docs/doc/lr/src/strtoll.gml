@@ -61,7 +61,7 @@ If the value of
 .arg base
 is 16, the characters "0x" or "0X" may optionally precede the sequence
 of letters and digits.
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

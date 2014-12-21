@@ -62,7 +62,7 @@ is greater than 3, then
 .ct , and
 .arg s[maxsize-4]
 are set to the character period (.).
-.im widefunc
+.im widefun1
 .desc end
 .*
 .return begin

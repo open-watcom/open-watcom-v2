@@ -43,7 +43,7 @@ function locates the last occurrence of
 .ct .li .
 The terminating null character is considered to be part of the string.
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

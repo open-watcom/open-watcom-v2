@@ -17,15 +17,7 @@ The
 .id &funcb.
 function tests for any punctuation character such as a comma
 (,) or a period (.).
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is similar to
-.id &funcb.
-except that it accepts a
-wide-character argument.
-.do end
+.im widefun2
 .desc end
 .return begin
 The

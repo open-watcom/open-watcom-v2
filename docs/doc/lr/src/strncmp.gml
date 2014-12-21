@@ -51,7 +51,7 @@ to the string pointed to by
 .arg s2
 .ct .li .
 .im farparm
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

@@ -1,6 +1,5 @@
 .func lltoa _lltoa _lltow
 .synop begin
-.funcw _lltow
 #include <stdlib.h>
 char *lltoa( long long int value,
              char *buffer,

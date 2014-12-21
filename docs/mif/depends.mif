@@ -1948,7 +1948,8 @@ objs_lr2 = &
 ../doc/lr/src/wctomb_s.gml &
 ../doc/lr/src/wctrans.gml &
 ../doc/lr/src/wctype.gml &
-../doc/lr/src/widefunc.gml &
+../doc/lr/src/widefun1.gml &
+../doc/lr/src/widefun2.gml &
 ../doc/lr/src/write.gml &
 ../doc/lr/src/zentohan.gml
 

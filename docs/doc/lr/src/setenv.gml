@@ -169,7 +169,7 @@ assignments:
 .millust end
 .do end
 .im ansiconf
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

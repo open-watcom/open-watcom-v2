@@ -39,16 +39,8 @@ See the
 .kw memcpy
 function to copy objects that do not overlap.
 .im farfunc
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-wide-character function is identical to
-.id &funcb.
-except that it
-operates on characters of
-.kw wchar_t
-type.
 The argument
 .arg length
 is interpreted to mean the number of wide characters.

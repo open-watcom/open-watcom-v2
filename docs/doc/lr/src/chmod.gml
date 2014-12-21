@@ -61,7 +61,7 @@ the
 .us st_ctime
 field of the file.
 .im ansiconf
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The &funcb

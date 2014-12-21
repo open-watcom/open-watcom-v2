@@ -16,15 +16,7 @@ int iswlower( wint_t c );
 The
 .id &funcb.
 function tests for any lowercase letter 'a' through 'z'.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is similar to
-.id &funcb.
-except that it accepts a
-wide-character argument.
-.do end
+.im widefun2
 .desc end
 .return begin
 The

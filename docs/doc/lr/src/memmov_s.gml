@@ -80,16 +80,8 @@ characters from the temporary array are copied into the object pointed to by
 See the
 .arg memcpy_s
 function if you wish to copy objects that do not overlap.
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-wide-character function is identical to
-.id &funcb.
-except that it
-operates on characters of
-.arg wchar_t
-type.
 The arguments
 .arg s1max
 and

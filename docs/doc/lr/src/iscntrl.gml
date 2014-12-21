@@ -17,15 +17,7 @@ The
 .id &funcb.
 function tests for any control character.
 A control character is any character whose value is from 0 through 31.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is similar to
-.id &funcb.
-except that it accepts a
-wide-character argument.
-.do end
+.im widefun2
 .desc end
 .return begin
 The

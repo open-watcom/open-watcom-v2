@@ -24,7 +24,7 @@ function maps to
 .arg errnum
 .ct .li .
 
-.im widefunc
+.im widefun1
 .desc end
 .*
 .return begin

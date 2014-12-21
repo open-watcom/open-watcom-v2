@@ -18,15 +18,7 @@ The
 function tests for any hexadecimal-digit character.
 These characters are the digits ('0' through '9') and the letters ('a'
 through 'f') and ('A' through 'F').
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is similar to
-.id &funcb.
-except that it accepts a
-wide-character argument.
-.do end
+.im widefun2
 .desc end
 .return begin
 The

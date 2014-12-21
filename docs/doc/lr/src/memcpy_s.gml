@@ -76,16 +76,8 @@ function if you wish to copy objects that overlap.
 .if &'length(&_func.) ne 0 .do begin
 .im farfunc
 .do end
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-wide-character function is identical to
-.id &funcb.
-except that it
-operates on characters of
-.kw wchar_t
-type.
 The arguments
 .arg s1max
 and

@@ -50,7 +50,7 @@ Otherwise, that number of characters at the start of the string are set
 to the fill character.
 .im ansiconf
 .im farfunc
-.im widefunc
+.im widefun1
 For &wfunc, the value of
 .arg count
 is the number of wide characters to fill.

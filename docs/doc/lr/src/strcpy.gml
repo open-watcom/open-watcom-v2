@@ -49,7 +49,7 @@ See the description for the
 .kw memmove
 function to copy objects that overlap.
 .im farfunc
-.im widefunc
+.im widefun1
 .im mbsfunc
 .desc end
 .return begin

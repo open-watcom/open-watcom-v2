@@ -23,7 +23,7 @@ function calculates the length of the string pointed to by
 .arg s
 .ct .li .
 
-.im widefunc
+.im widefun1
 .desc end
 .*
 .return begin

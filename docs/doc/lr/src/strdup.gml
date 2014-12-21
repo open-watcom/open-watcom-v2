@@ -66,7 +66,7 @@ function.
 .do end
 .im ansiconf
 .im farparm
-.im widefunc
+.im widefun1
 .im mbsffunc
 .desc end
 .return begin

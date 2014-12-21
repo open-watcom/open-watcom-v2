@@ -59,7 +59,7 @@ If you wish to change the current drive, you must use the
 function.
 .do end
 .im ansiconf
-.im widefunc
+.im widefun1
 .desc end
 .return begin
 The

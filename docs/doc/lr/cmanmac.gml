@@ -53,10 +53,19 @@
 .dm debug end
 .*
 .dm widefunc begin
+.sr iswidefn=1
+.if '&*1(1:2)' eq '_w' and '&*1(1:7)' ne '_wrapon' and '&*1(1:6)' ne '_write' .me
+.if '&*1(1:2)' eq 'wc' or '&*1(1:4)' eq 'wmem' .me
+.if '&*1(1:3)' eq 'tow' .me
+.if '&*1(1:3)' eq 'isw' .me
+.if '&*1(1:4)' eq 'wasc' .me
+.if '&*1(1:5)' eq '__isw' .me
+.if &'pos('wprintf',&*1) ne 0 .me
+.if &'pos('wscanf',&*1) ne 0 .me
+.if '&'right(&*1,2)' eq 'wc' or '&'right(&*1,2)' eq 'ws' .me
+.if '&'right(&*1,3)' eq 'tow' .me
+.if '&'right(&*1,5)' eq 'wchar' .me
 .sr iswidefn=0
-.if '&*1(1:2)' eq '_w' and '&*1(1:7)' ne '_wrapon' and '&*1(1:6)' ne '_write' or &'pos('wprintf',&*1) ne 0 or &'pos('wscanf',&*1) ne 0 or '&*1(1:2)' eq 'wc' or '&*1(1:4)' eq 'wmem' or '&*1(1:4)' eq 'wasc' or '&'right(&*1,2)' eq 'wc' or '&'right(&*1,2)' eq 'ws' or '&'right(&*1,5)' eq 'wchar' .do begin
-.   .sr iswidefn=1
-.do end
 .dm widefunc end
 .*
 .dm addclinf begin

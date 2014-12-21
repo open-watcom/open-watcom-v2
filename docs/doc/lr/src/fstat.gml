@@ -30,6 +30,7 @@ indicated by
 .ct .li .
 .im statdesc
 .im ansiconf
+.np
 The
 .kw _fstati64
 .ct ,

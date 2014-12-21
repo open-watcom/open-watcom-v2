@@ -17,7 +17,7 @@ No value is returned.
 .return end
 .*
 .see begin
-.seelist feenableexcept __feenableexcept
+.seelist feenableexcept
 .see end
 .*
 .exmp begin

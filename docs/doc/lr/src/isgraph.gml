@@ -21,15 +21,7 @@ The
 .kw isprint
 function is similar, except that the space character is also included
 in the character set being tested.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is similar to
-.id &funcb.
-except that it accepts a
-wide-character argument.
-.do end
+.im widefun2
 .desc end
 .return begin
 The

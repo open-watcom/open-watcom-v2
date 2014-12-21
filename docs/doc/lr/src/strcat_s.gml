@@ -80,7 +80,7 @@ characters pointed to by
 take unspecified values when
 .id &funcb.
 returns.
-.im widefunc
+.im widefun1
 .desc end
 .*
 .return begin
