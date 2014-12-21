@@ -1,4 +1,4 @@
-ISO C.func mktime
+.func mktime
 .synop begin
 #include <time.h>
 time_t mktime( struct tm *timeptr );
