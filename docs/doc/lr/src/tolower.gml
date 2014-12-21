@@ -1,4 +1,4 @@
-.func tolower _tolower
+.func begin tolower _tolower
 .func2 towlower ISO C95
 .func end
 .synop begin

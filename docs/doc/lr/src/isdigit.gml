@@ -1,4 +1,4 @@
-.func isdigit
+.func begin isdigit
 .func2 iswdigit ISO C95
 .func end
 .synop begin
