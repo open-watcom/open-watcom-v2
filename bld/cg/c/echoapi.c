@@ -511,7 +511,7 @@ static char *callBackName       // MAKE CALL-BACK NAME FOR PRINTING
     ( cg_callback rtn           // - rtn address
     , char *buffer )            // - buffer
 {
-    char *name;                 // - name to be used
+    const char  *name;          // - name to be used
 
     name = FEExtName( (cg_sym_handle)rtn, EXTN_CALLBACKNAME );
     if( name == NULL ) {

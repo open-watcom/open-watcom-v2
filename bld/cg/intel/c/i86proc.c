@@ -454,7 +454,7 @@ static  void    EmitNameInCode( void )
 /************************************/
 {
     cg_sym_handle   sym;
-    char            *name;
+    const char      *name;
     label_handle    lbl;
     uint            len;
 
@@ -467,7 +467,7 @@ static  void    EmitNameInCode( void )
     TellKeepLabel( lbl );
     CodeLabel( lbl, 0 );
     GenKillLabel( lbl );
-    EyeCatchBytes( (byte *)name, len );
+    EyeCatchBytes( (const byte *)name, len );
 }
 
 
