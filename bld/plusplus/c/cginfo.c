@@ -98,10 +98,10 @@ static void init(               // MODULE INITIALIZATION
 
 INITDEFN( cg_info, init, InitFiniStub )
 
-char *FEName(                   // RETURN THE SYMBOL'S NAME
+const char *FEName(             // RETURN THE SYMBOL'S NAME
     cg_sym_handle _sym )
 {
-    char *sym_name;             // - symbol's name
+    const char  *sym_name;      // - symbol's name
     SYMBOL sym = _sym;
 
     if( sym == NULL || sym->name == NULL ) {
@@ -193,7 +193,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
 }
 
 
-char *FEModuleName(             // RETURN MODULE NAME
+const char *FEModuleName(       // RETURN MODULE NAME
     void )
 {
     return( ModuleName );
@@ -640,10 +640,10 @@ static unsigned GetParmsSize( SYMBOL sym )
     return( size );
 }
 
-static char *allowStrictReplacement( char *patbuff )
+static const char *allowStrictReplacement( const char *patbuff )
 {
-    char *p;
-    char prev;
+    const char *p;
+    char       prev;
 
     // mangled C++ name will be injected as the name so
     // we only allow 'patbuff' to be a pure replacement
@@ -668,12 +668,12 @@ static char *allowStrictReplacement( char *patbuff )
 }
 
 
-static char *GetNamePattern(           // MANGLE SYMBOL NAME
+static const char *GetNamePattern( // MANGLE SYMBOL NAME
     SYMBOL sym )                // - symbol to mangle
 {
     SCOPE       scope;          // - scope for function
     TYPE        fn_type;        // - symbol's function type
-    char        *patbuff;       // - control of result
+    const char  *patbuff;       // - control of result
     AUX_INFO    *inf;           // - auxilary info
 
     if( sym == NULL || sym->name == NULL ) {
@@ -709,20 +709,20 @@ static char *GetNamePattern(           // MANGLE SYMBOL NAME
     return( patbuff );
 }
 
-char *FEExtName( cg_sym_handle sym, int request ) {
-//**************************************************
+const char *FEExtName( cg_sym_handle sym, int request ) {
+//*******************************************************
 
 // Return symbol name related info for object file.
 
     switch( request ) {
     case EXTN_BASENAME:
-        return( (char *)GetMangledName( sym ) );
+        return( GetMangledName( sym ) );
     case EXTN_PATTERN:
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
-        return( (char *)(pointer_int)GetParmsSize( sym ) );
+        return( (const char *)(pointer_int)GetParmsSize( sym ) );
     case EXTN_CALLBACKNAME:
-        return( (char *)CallbackName( sym ) );
+        return( CallbackName( sym ) );
     default:
         return( NULL );
     }
@@ -1577,7 +1577,7 @@ dbg_type FEDbgRetType(           // GET DEBUG RETURN TYPE FOR SYMBOL
 }
 
 
-char *FEGetEnv(                 // GET VALUE FOR ENV-VAR
+const char *FEGetEnv(           // GET VALUE FOR ENV-VAR
     char const *name )          // - name of environment var
 {
     return CppGetEnv( name );

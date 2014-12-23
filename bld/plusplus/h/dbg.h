@@ -161,7 +161,7 @@ char *DbgSymNameFull(           // GET FULL SYMBOL NAME
     SYMBOL sym,                 // - symbol
     VBUF *vbuf )                // - variable length buffer
 ;
-char *DbgSymNameShort(          // GET Short SYMBOL NAME
+const char *DbgSymNameShort(    // GET Short SYMBOL NAME
     SYMBOL sym )                // - symbol
 ;
 void DumpToken(                 // DUMP TOKEN

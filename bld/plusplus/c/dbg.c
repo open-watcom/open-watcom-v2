@@ -87,7 +87,7 @@ char *DbgSymNameFull(           // GET FULL SYMBOL NAME
 }
 
 
-char *DbgSymNameShort(          // GET Short SYMBOL NAME
+const char *DbgSymNameShort(    // GET Short SYMBOL NAME
     SYMBOL sym )                // - symbol
 {
     return FEName( sym );
