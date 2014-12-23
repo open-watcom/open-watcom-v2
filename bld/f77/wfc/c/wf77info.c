@@ -980,8 +980,8 @@ void    DefStructs( void ) {
 }
 
 
-char    *FEModuleName( void ) {
-//=======================
+const char  *FEModuleName( void ) {
+//=================================
 
 // Return pointer to module name (no file extension).
 
@@ -1162,7 +1162,7 @@ static char *GetName( sym_id sym ) {
     return( SymBuff );
 }
 
-static char *GetBaseName( sym_id sym )
+static const char *GetBaseName( sym_id sym )
 {
     int         len;
     char        *buff;
@@ -1181,7 +1181,7 @@ static char *GetBaseName( sym_id sym )
     return( buff );
 }
 
-static char *GetNamePattern( sym_id sym )
+static const char *GetNamePattern( sym_id sym )
 {
     aux_info    *aux;
 
@@ -1217,8 +1217,8 @@ static unsigned GetParmsSize( sym_id sym )
     return( args_size );
 }
 
-extern char *FEExtName( cg_sym_handle sym, int request ) {
-//=========================================================
+const char *FEExtName( cg_sym_handle sym, int request ) {
+//=======================================================
 
 // Return symbol name related info for object file.
 
@@ -1228,13 +1228,13 @@ extern char *FEExtName( cg_sym_handle sym, int request ) {
     case EXTN_PATTERN:
         return( GetNamePattern( (sym_id)sym ) );
     case EXTN_PRMSIZE:
-        return( (char *)(pointer_int)GetParmsSize( (sym_id)sym ) );
+        return( (const char *)(pointer_int)GetParmsSize( (sym_id)sym ) );
     default:
         return( NULL );
     }
 }
 
-char    *FEName( cg_sym_handle _sym ) {
+const char  *FEName( cg_sym_handle _sym ) {
 //====================================
 
 // Return pointer to the name of the given symbol.
@@ -1242,7 +1242,8 @@ char    *FEName( cg_sym_handle _sym ) {
     sym_id      sym = _sym;
 
     _UnShadow( sym );
-    if( sym == NULL ) return( "*NULL*" );
+    if( sym == NULL )
+        return( "*NULL*" );
     return( GetName( sym ) );
 }
 
@@ -2161,8 +2162,8 @@ int     FECodeBytes( const char *buffer, int len )
     return( 0 );
 }
 
-char    *FEGetEnv( char const *name )
-//===================================
+const char  *FEGetEnv( char const *name )
+//=======================================
 // do a getenv
 {
     return( getenv( name ) );

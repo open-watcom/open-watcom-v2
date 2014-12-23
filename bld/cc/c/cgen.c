@@ -1526,7 +1526,7 @@ local bool DoFuncDefn( SYM_HANDLE funcsym_handle )
     CGProcDecl( (CGSYM_HANDLE)funcsym_handle, ret_type );
 #if _CPU == 386
     if( TargetSwitches & P5_PROFILING ) {
-        char       *fn_name;
+        const char *fn_name;
         size_t     len;
         segment_id old_segid;
 

@@ -341,7 +341,7 @@ static void DoCCompile( char **cmdline )
         MyExit( 1 );
     }
     ParseInit();
-    ForceInclude = FEGetEnv( "FORCE" );
+    ForceInclude = CStrSave( FEGetEnv( "FORCE" ) );
     if( ParseCmdLine( cmdline ) ) {
         if( WholeFName == NULL ) {
             CErr1( ERR_FILENAME_REQUIRED );
@@ -1292,7 +1292,7 @@ local void Parse( void )
     // get the very first token of the file will load the pre-compiled
     // header if the user requested such and it is a #include directive.
     CompFlags.ok_to_use_precompiled_hdr = 1;
-    if( ForceInclude ) {
+    if( ForceInclude != NULL ) {
         if( PCH_FileName != NULL ) {
             CompFlags.use_precompiled_header = 1;
         }
@@ -1308,7 +1308,7 @@ local void Parse( void )
         OpenSrcFile( "_ialias.h", TRUE );
         CompFlags.ignore_fnf = FALSE;
     }
-    if( !ForceInclude ) {
+    if( ForceInclude == NULL ) {
         CompFlags.ok_to_use_precompiled_hdr = 1;
     }
     NextToken();
@@ -1327,7 +1327,7 @@ local void Parse( void )
 
 static void CPP_Parse( void )
 {
-    if( ForceInclude ) {
+    if( ForceInclude != NULL ) {
         CppPrtChar( '\n' );
         OpenSrcFile( ForceInclude, FALSE );
     }

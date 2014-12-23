@@ -840,7 +840,7 @@ static void AddIncList( const char *path_list )
 void MergeInclude( void )
 {
     /* must be called after GenCOptions to get req'd IncPathList */
-    char        *env_var;
+    const char  *env_var;
     char        buff[128];
     size_t      len;
 
@@ -1121,6 +1121,7 @@ static void Set_FHQ( void )
 
 static void Set_FI( void )
 {
+    CMemFree( ForceInclude );
     ForceInclude = GetAFileName();
 }
 
@@ -1993,6 +1994,7 @@ local void ProcOptions( const char *str )
     unsigned    level;
     const char  *save[MAX_NESTING];
     char        *buffers[MAX_NESTING];
+    const char  *penv;
     char        *ptr;
 
     if( str != NULL ) {
@@ -2005,13 +2007,14 @@ local void ProcOptions( const char *str )
                 save[level] = CollectEnvOrFileName( str + 1 );
                 ++level;
                 buffers[level] = NULL;
-                ptr = FEGetEnv( TokenBuf );
-                if( ptr == NULL ) {
+                penv = FEGetEnv( TokenBuf );
+                if( penv == NULL ) {
                     ptr = ReadIndirectFile();
                     buffers[level] = ptr;
+                    penv = ptr;
                 }
-                if( ptr != NULL ) {
-                    str = ptr;
+                if( penv != NULL ) {
+                    str = penv;
                     continue;
                 }
                 str = save[--level];

@@ -438,8 +438,8 @@ static void finiInterrupt( void )
 
 #ifndef NDEBUG
 #define _SET_PROGRESS \
-    if( getenv( "__idedrv_progress_messages" ) ) { info.progress_messages = 1; } \
-    if( getenv( "__idedrv_progress_index" ) ) { info.progress_index = 1; }
+    if( getenv( "__idedrv_progress_messages" ) != NULL ) { info.progress_messages = 1; } \
+    if( getenv( "__idedrv_progress_index" ) != NULL ) { info.progress_index = 1; }
 #else
 #define _SET_PROGRESS
 #endif

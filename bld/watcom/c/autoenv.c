@@ -73,10 +73,10 @@
  */
 static int add_path( const char *var_name, const char *new_dirs )
 {
-    char    *path;
-    char    *new_path;
-    char    *p;
-    size_t  len;
+    const char  *path;
+    char        *new_path;
+    char        *p;
+    size_t      len;
 
     /* Get env var contents */
     path = getenv( var_name );
@@ -270,7 +270,7 @@ static int setup_os_env( const char *watcom )
  */
 int watcom_setup_env( void )
 {
-    char        *watcom;
+    const char  *watcom;
     char        buf[FILENAME_MAX * 2];
     int         rc;
     size_t      len;
@@ -346,8 +346,8 @@ int watcom_setup_env( void )
 
 void main( void )
 {
-    char        *watcom;
-    char        *path;
+    const char  *watcom;
+    const char  *path;
 
     if( watcom_setup_env() != 0 ) {
         printf( "watcom_setup_env() failed!\n" );

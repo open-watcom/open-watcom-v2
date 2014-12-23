@@ -679,8 +679,8 @@ void FiniSegBacks( void )
 }
 
 
-char *FEName( CGSYM_HANDLE cgsym_handle )
-/**** return unmangled names ***********/
+const char *FEName( CGSYM_HANDLE cgsym_handle )
+/********** return unmangled names ***********/
 {
     SYM_HANDLE  sym_handle;
     SYMPTR      sym;
@@ -785,10 +785,10 @@ void FEMessage( int class, CGPOINTER parm )
 }
 
 
-char *FEModuleName( void )
-/************************/
+const char *FEModuleName( void )
+/******************************/
 {
-    return( ModuleName );
+    return( (const char *)ModuleName );
 }
 
 

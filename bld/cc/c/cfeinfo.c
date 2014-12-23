@@ -727,7 +727,7 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
 /*
 //    Return name pattern manipulator string
 */
-static char *GetNamePattern( SYM_HANDLE sym_handle )
+static const char *GetNamePattern( SYM_HANDLE sym_handle )
 {
     char                 *pattern;
     SYM_ENTRY            sym;
@@ -771,7 +771,7 @@ static char *GetNamePattern( SYM_HANDLE sym_handle )
     return( pattern );
 }
 
-static char *GetBaseName( SYM_HANDLE sym_handle )
+static const char *GetBaseName( SYM_HANDLE sym_handle )
 {
     SYM_ENTRY            sym;
 
@@ -779,8 +779,8 @@ static char *GetBaseName( SYM_HANDLE sym_handle )
     return( sym.name );
 }
 
-char *FEExtName( CGSYM_HANDLE sym_handle, int request )
-/*****************************************************/
+const char *FEExtName( CGSYM_HANDLE sym_handle, int request )
+/***********************************************************/
 {
     switch( request ) {
     case EXTN_BASENAME:
@@ -788,7 +788,7 @@ char *FEExtName( CGSYM_HANDLE sym_handle, int request )
     case EXTN_PATTERN:
         return( GetNamePattern( (SYM_HANDLE)sym_handle ) );
     case EXTN_PRMSIZE:
-        return( (char *)(pointer_int)GetParmsSize( (SYM_HANDLE)sym_handle ) );
+        return( (const char *)(pointer_int)GetParmsSize( (SYM_HANDLE)sym_handle ) );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );

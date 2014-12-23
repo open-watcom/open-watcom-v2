@@ -130,9 +130,9 @@ extern void NoteMsg( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern char *FEGetEnv( char const *name ) {
+extern const char *FEGetEnv( char const *name ) {
 // get enviorment variable
-    char *ret;
+    const char *ret;
     ret = NULL;
     if( !GlobalCompFlags.ignore_environment ) {
         if((*Cbs->GetInfo)( Hdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&ret ) ) {

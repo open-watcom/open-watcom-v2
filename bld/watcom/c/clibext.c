@@ -1484,7 +1484,8 @@ int spawnlp( int mode, const char *path, const char *cmd, ... )
 
 void _searchenv( const char *name, const char *env_var, char *buffer )
 {
-    char        *p, *p2;
+    char        *p;
+    const char  *penv;
     int         prev_errno;
     size_t      len;
 
@@ -1514,39 +1515,39 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
         strncat( p, name, (_MAX_PATH - 1) - len );
         return;
     }
-    p = getenv( env_var );
-    if( p != NULL ) {
+    penv = getenv( env_var );
+    if( penv != NULL ) {
         for( ;; ) {
-            if( *p == '\0' ) break;
-            p2 = buffer;
+            if( *penv == '\0' ) break;
+            p = buffer;
             len = 0;                                /* JBS 04/1/06 */
-            while( *p ) {
-                if( *p == LIST_SEPARATOR ) break;
-                if( *p != '"' ) {
+            while( *penv ) {
+                if( *penv == LIST_SEPARATOR ) break;
+                if( *penv != '"' ) {
                     if( len < (_MAX_PATH-1) ) {
-                        *p2++ = *p; /* JBS 00/9/29 */
+                        *p++ = *penv; /* JBS 00/9/29 */
                         len++;
                     }
                 }
-                p++;
+                penv++;
             }
             /* check for zero-length prefix which represents CWD */
-            if( p2 != buffer ) {                    /* JBS 90/3/30 */
-                if( p2[-1] != PATH_SEPARATOR
+            if( p != buffer ) {                    /* JBS 90/3/30 */
+                if( p[-1] != PATH_SEPARATOR
 #ifndef __UNIX__
-                    &&  p2[-1] != '/'
-                    &&  p2[-1] != ':'
+                    && p[-1] != '/'
+                    && p[-1] != ':'
 #endif
                     ) {
                     if( len < (_MAX_PATH - 1) ) {
-                        *p2++ = PATH_SEPARATOR;
+                        *p++ = PATH_SEPARATOR;
                         len++;
                     }
                 }
-                *p2 = '\0';
+                *p = '\0';
                 len += strlen( name );/* JBS 04/12/23 */
                 if( len < _MAX_PATH ) {
-                    strcat( p2, name );
+                    strcat( p, name );
                     /* check to see if file exists */
                     if( access( buffer, 0 ) == 0 ) {
                         __set_errno( prev_errno );
@@ -1554,8 +1555,8 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
                     }
                 }
             }
-            if( *p == '\0' ) break;
-            ++p;
+            if( *penv == '\0' ) break;
+            ++penv;
         }
     }
     buffer[0] = '\0';
