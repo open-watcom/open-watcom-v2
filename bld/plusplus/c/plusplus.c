@@ -238,13 +238,14 @@ static void openForceIncludeFile( void )
 
 static void setForceIncludeFromEnv( void )
 {
-    char *force;
+    const char  *force;
 
     force = CppGetEnv( "FORCE" );
     if( force != NULL ) {
-        force = strsave( force );
+        ForceInclude = strsave( force );
+    } else {
+        ForceInclude = NULL;
     }
-    ForceInclude = force;
 }
 
 static int doCCompile(          // COMPILE C++ PROGRAM

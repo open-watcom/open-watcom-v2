@@ -338,7 +338,7 @@ char *SetStringOption( char **o, OPT_STRING **h )
 bool MergeIncludeFromEnv( char *env )
 /***********************************/
 {
-    char *env_value;
+    const char  *env_value;
 
     if( CompFlags.cpp_ignore_env )
         return( FALSE );
@@ -449,12 +449,12 @@ static bool openCmdFile(        // OPEN A COMMAND FILE
     return IoSuppOpenSrc( fnm, FT_CMD );
 }
 
-static char *get_env(           // GET ENVIRONMENT VAR
+static const char *get_env(     // GET ENVIRONMENT VAR
     const char *var,            // - variable name
     size_t len )                // - length of name
 {
-    char buf[128];              // - used to make a string
-    char *env;                  // - environment name
+    char        buf[128];       // - used to make a string
+    const char  *env;           // - environment name
 
     if( len >= sizeof( buf ) ) {
         env = NULL;
@@ -462,7 +462,7 @@ static char *get_env(           // GET ENVIRONMENT VAR
         stvcpy( buf, var, len );
         env = CppGetEnv( buf );
     }
-    return env;
+    return( env );
 }
 
 static void scanInputFile(       // PROCESS NAME OF INPUT FILE
@@ -516,7 +516,7 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
 {
     int c;                      // - next character
     char const *fnm;            // - scanned @ name
-    char *env;                  // - environment name
+    const char *env;            // - environment name
     size_t len;                 // - length of file name
 
     if( indirectionLevel >= MAX_INDIRECTION ) {

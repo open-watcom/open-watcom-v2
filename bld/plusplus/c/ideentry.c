@@ -586,22 +586,22 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 }
 
 
-char* CppGetEnv                 // COVER FOR getenv
+const char *CppGetEnv           // COVER FOR getenv
     ( char const * name )       // - environment variable
 {
 #if defined(wpp_dll)
     IDECallBacks* cbs;          // - pointer to call backs
-    char* env_val = NULL;       // - NULL or value of environment variable
+    const char *env_val = NULL; // - NULL or value of environment variable
 
-    if( ! CompFlags.ignore_environment ) {
+    if( !CompFlags.ignore_environment ) {
         cbs = CompInfo.dll_callbacks;
         if( (*cbs->GetInfo)( CompInfo.dll_handle, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
             env_val = NULL;
         }
     }
-    return env_val;
+    return( env_val );
 #else
-    return getenv( name );
+    return( getenv( name ) );
 #endif
 }
 

@@ -52,7 +52,7 @@ NAME CppConversionName(         // GET C++ USER-DEFINED CONVERSION NAME
 NAME CppDestructorName(         // GET C++ DESTRUCTOR NAME
     void )
 ;
-char* CppGetEnv                 // COVER FOR getenv
+const char *CppGetEnv           // COVER FOR getenv
     ( char const * name )       // - environment variable
 ;
 NAME CppIndexMappingName(       // CREATE NAME OF VIRTUAL BASE INDEX MAPPING

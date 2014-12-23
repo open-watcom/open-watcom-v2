@@ -689,8 +689,8 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
 
 static void tempFname( char *fname )
 {
-    char    *env;
-    size_t  len;
+    const char  *env;
+    size_t      len;
 
 #if defined(__UNIX__)
     env = CppGetEnv( "TMPDIR" );
