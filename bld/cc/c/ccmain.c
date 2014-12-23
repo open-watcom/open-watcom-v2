@@ -341,7 +341,6 @@ static void DoCCompile( char **cmdline )
         MyExit( 1 );
     }
     ParseInit();
-    ForceInclude = CStrSave( FEGetEnv( "FORCE" ) );
     if( ParseCmdLine( cmdline ) ) {
         if( WholeFName == NULL ) {
             CErr1( ERR_FILENAME_REQUIRED );
@@ -1271,6 +1270,8 @@ void SetSrcFNameOnce( void )
 
 static void ParseInit( void )
 {
+    const char  *force;
+
     ScanInit();
     CTypeInit();
     MacroInit();
@@ -1281,6 +1282,10 @@ static void ParseInit( void )
     ExprInit();
     StmtInit();
     SegInit();
+    force = FEGetEnv( "FORCE" );
+    if( force != NULL ) {
+        ForceInclude = CStrSave( force );
+    }
 }
 
 
