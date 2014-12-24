@@ -40,6 +40,7 @@
 #include "madcli.h"
 #include "memtypes.h"
 #include "dbgitem.h"
+#include "strutil.h"
 
 
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
@@ -48,9 +49,8 @@ extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_
 
 extern bool             DlgGivenAddr( char *title, address *value );
 extern unsigned         NewCurrRadix(unsigned int );
-extern char             *StrCopy(char*,char*);
 extern char             *AddrToIOString( address *a, char *p, unsigned max );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 
 #define PIECE_TYPE( x ) ( (x)-MENU_IO_FIRST_TYPE )
 

@@ -41,10 +41,10 @@
 #include "wdmsg.h"
 #include "dbgscrn.h"
 #include "trpld.h"
+#include "strutil.h"
 
-extern unsigned         Lookup( char *, char *, unsigned );
+extern unsigned         Lookup( const char *, const char *, unsigned );
 extern unsigned         DUIEnvLkup( char *, char *, unsigned );
-extern char             *Format( char *, char *, ... );
 extern bool             OptDelim( char );
 extern void             ProcSysOptInit( void );
 extern bool             ProcSysOption( char *, unsigned, int );
@@ -54,8 +54,7 @@ extern void             PopErrBox( char * );
 extern void             SysSetMemLimit( void );
 extern void             SetNumColumns( int cols );
 extern void             SetNumLines( int lines );
-extern char             *DupStr( char * );
-extern char             *StrCopy( char *src, char *dst );
+extern char             *DupStr( const char * );
 void                    FindLocalDebugInfo( char *name );
 extern void             StartupErr( char *err );
 
@@ -70,7 +69,7 @@ bool                    DownLoadTask;
 #define MIN_MEM_SIZE    (500UL*1024)
 
 
-static char OptNameTab[] = {
+static const char OptNameTab[] = {
     "Invoke\0"
     "NOInvoke\0"
     "NOSYmbols\0"

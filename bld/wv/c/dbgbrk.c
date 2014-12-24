@@ -43,6 +43,7 @@
 #include "dui.h"
 #include "spawn.h"
 #include "enterdb.h"
+#include "strutil.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -50,15 +51,15 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern unsigned long    ReqLongExpr( void );
 extern unsigned int     ReqExpr( void );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             ReqMemAddr( memory_expr, address * );
-extern bool             ScanQuote( char **, size_t * );
+extern bool             ScanQuote( const char **, size_t * );
 extern bool             ScanEOC( void );
 extern int              AddrComp( address, address );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             ReqEOC( void );
 extern void             Scan( void );
-extern cmd_list         *AllocCmdList( char *, size_t );
+extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             PushCmdList( cmd_list * );
 extern address          GetRegIP( void );
@@ -83,11 +84,10 @@ extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern void             SetProgState( unsigned );
 extern void             TypeInpStack( input_type );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern char             *DupStrLen( char const *str, size_t len );
 extern bool             CheckBPIns( void );
-extern char             *GetCmdEntry( char *, int, char * );
-extern char             *Format( char *buff, char *fmt, ... );
+extern char             *GetCmdEntry( const char *, int, char * );
 extern void             InvokeAFile( char * );
 extern void             CreateInvokeFile( char *name, void ( *rtn ) ( void ) );
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
@@ -95,7 +95,6 @@ extern char             *AddHexSpec( char * );
 extern char             *GetCmdName( int );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
-extern char             *StrCopy( char *, char * );
 extern void             RecordEvent( char *p );
 extern void             SetRecord( bool on );
 extern unsigned         DefaultSize( default_kind );
@@ -108,8 +107,8 @@ extern mad_type_handle  FindMADTypeHandle( mad_type_kind tk, unsigned size );
 extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern unsigned         NewCurrRadix( unsigned );
 extern void             WriteDbgRegs( void );
-extern void             BreakOnImageLoad( char *name, unsigned len, bool clear );
-extern bool             ScanItem( bool blank_delim, char **start, size_t *len );
+extern void             BreakOnImageLoad( const char *name, unsigned len, bool clear );
+extern bool             ScanItem( bool blank_delim, const char **start, size_t *len );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             UnMapPoints( image_entry * );
@@ -130,7 +129,7 @@ extern void             LValue( stack_entry * );
 extern char_ring        *DLLList;
 extern stack_entry      *ExprSP;
 
-static char PointNameTab[] = {
+static const char PointNameTab[] = {
     "Activate\0"
     "Clear\0"
     "Deactivate\0"
@@ -730,7 +729,7 @@ void RecordClearPoint( brkp *bp )
 }
 
 
-void GetBreakOnImageCmd( char *name, char *buff, bool clear )
+void GetBreakOnImageCmd( const char *name, char *buff, bool clear )
 {
     char        *p;
 
@@ -831,7 +830,7 @@ OVL_EXTERN brkp *BadPoint( memory_expr def_seg )
 
 OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
 {
-    char        *start;
+    const char  *start;
     size_t      len;
     bool        clear = FALSE;
 
@@ -1322,7 +1321,7 @@ int GetBPResume( brkp *bp )
 static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
 {
     brkp            *bp;
-    char            *start;
+    const char      *start;
     size_t          len;
     address         loc;
     cmd_list        *cmds;
@@ -1572,7 +1571,7 @@ static  bool    HaveHitBP( brkp *bp )
 OVL_EXTERN      void    TestExpression( void *_bp )
 {
     brkp        *bp = _bp;
-    char        *old;
+    const char  *old;
     int         val;
 
     old = ReScan( bp->condition );

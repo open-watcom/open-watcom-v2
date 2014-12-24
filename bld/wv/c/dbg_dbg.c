@@ -206,7 +206,7 @@ static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item
 }
 
 struct lookup_reg {
-    char                *name;
+    const char          *name;
     unsigned            len;
     int                 (*cmp)();
     mad_reg_info const  *ri;

@@ -115,9 +115,12 @@ void LDToS( char *buff, xreal *v, unsigned a, unsigned b, unsigned c,
 //  _FtoS( buff, &value, a, b, c, d, e, format, exp_char );
 }
 
-void SToLD( const char *ptr, char **end, xreal *v )
+void SToLD( const char *ptr, const char **end, xreal *v )
 {
-    DToLD( strtod( ptr, end ), v );
+    char *endx;
+
+    DToLD( strtod( ptr, &endx ), v );
+    *end = endx;
 }
 
 int LDCmp( xreal *left, xreal *rite )

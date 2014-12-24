@@ -52,7 +52,7 @@ typedef unsigned_16 input_type; enum {
 
 typedef struct input_stack {
         struct  input_stack     *link;
-        char                    *scan;
+        const char              *scan;
         void                    *handle;
         bool                    (*rtn)( void *, inp_rtn_action );
         input_type              type;

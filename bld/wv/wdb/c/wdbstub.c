@@ -103,7 +103,7 @@ extern void             DlgCmd( void );
 extern void             DoCmd(char*);
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             DoInput( void );
-extern char             *DupStr(char*);
+extern char             *DupStr(const char*);
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern void             FlushEOC(void);
 extern  void            FiniSource( void );
@@ -527,7 +527,7 @@ void DisplayDebuggerVarValue( var_info *pVarInfoList )
 }
 
 /*Display a variable's value we are interested in*/
-bool InspectDebuggerVar( char *item )
+bool InspectDebuggerVar( const char *item )
 {
     var_info        InspectVars;
     address         addr;

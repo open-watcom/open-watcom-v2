@@ -311,7 +311,7 @@ extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
 {
     func_window *func;
     wnd_class   class;
-    char        *name;
+    const char  *name;
 
     func = WndMustAlloc( sizeof( func_window ) );
     func->mod = mod;

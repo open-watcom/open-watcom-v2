@@ -38,8 +38,8 @@
 
 extern void         ReqEOC( void );
 extern void         Scan( void );
-extern unsigned int ScanCmd( char * );
-extern bool         ScanItem( bool, char **, size_t * );
+extern unsigned int ScanCmd( const char * );
+extern bool         ScanItem( bool, const char **, size_t * );
 extern bool         ScanEOC( void );
 extern char         *GetCmdName( int );
 
@@ -118,8 +118,8 @@ void LogPut( char *str )
 
 static void OpenLog( open_access mode )
 {
-    char   *start;
-    size_t len;
+    const char  *start;
+    size_t      len;
 
     if( LogHndl != NIL_HANDLE ) {
         Error( ERR_NONE, LIT( ERR_LOG_STARTED ) );
@@ -182,7 +182,7 @@ OVL_EXTERN void BadLog( void )
 }
 
 
-static char LogNameTab[] = {
+static const char LogNameTab[] = {
     "Append\0"
     "Start\0"
 };

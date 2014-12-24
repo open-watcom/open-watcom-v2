@@ -34,7 +34,7 @@
 extern  double  LDToD( xreal * );
 extern  void    DToLD( double, xreal * );
 extern  void    LDToS( char *, xreal *, unsigned, unsigned, unsigned, unsigned, unsigned, char, char );
-extern  void    SToLD( const char *, char **, xreal * );
+extern  void    SToLD( const char *, const char **, xreal * );
 extern  void    LDAdd( xreal *, xreal *, xreal * );
 extern  void    LDSub( xreal *, xreal *, xreal * );
 extern  void    LDMul( xreal *, xreal *, xreal * );

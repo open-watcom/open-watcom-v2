@@ -38,11 +38,11 @@
 #include "guipick.h"
 #include "dlgamb.h"
 #include "ambigsym.h"
+#include "strutil.h"
 
 extern void             FreeSymHandle( sym_list * );
 extern int              AddrComp( address a, address b );
 extern char             *ModImageName( mod_handle handle );
-extern char             *Format( char *buff, char *fmt, ... );
 
 
 static int SymPick( char *text, PICKCALLBACK *PickInit )

@@ -33,6 +33,7 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
+#include "strutil.h"
 
 char *AboutMessage[] = {
     "", // constructed
@@ -80,8 +81,6 @@ char DOS4GOPTIONS[] =
         "StartupBanner=FALSE\n"
 ;
 #endif
-
-extern char *StrCopy( char *src, char *dst );
 
 void InitAboutMessage()
 {

@@ -50,7 +50,7 @@
 
 
 extern void             FlushEOC( void );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             DoCmd( char * );
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern address          GetCodeDot( void );

@@ -39,19 +39,19 @@
 #include "dbgitem.h"
 #include "dbgstk.h"
 #include "srcmgt.h"
+#include "strutil.h"
 
-extern bool             ScanItem( bool, char **, size_t * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern void             ReqEOC( void );
 extern bool             ScanSelectedExpr( char * );
 extern void             BreakOnSelected( char *item );
 
-extern char             *StrCopy( char *, char * );
 extern a_window         *WndFileInspect( char *file, bool binary );
 extern void             *OpenSrcFile( cue_handle * );
-extern char             *ScanPos( void );
-extern unsigned int     ScanCmd( char * );
+extern const char       *ScanPos( void );
+extern unsigned int     ScanCmd( const char * );
 extern void             Scan( void );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern brkp             *FindBreakByLine( mod_handle, cue_fileid, unsigned );
 extern void             WndFuncInspect( mod_handle mod );
 extern void             *AddBreak( address );
@@ -75,8 +75,7 @@ extern void             StepIntoFunction( char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern unsigned         NewCurrRadix( unsigned int );
 extern bool             DbgWndSearch( a_window *, bool, int );
-extern char             *DupStr( char * );
-extern char             *Format( char *, char *, ... );
+extern char             *DupStr( const char * );
 extern bool             DlgCodeAddr( char *title, address *value );
 extern void             WndSrcInspect( address addr );
 extern bool             DlgModName( char *title, mod_handle *mod );
@@ -828,7 +827,7 @@ wnd_info FileInfo = {
     DefPopUp( FileMenu )
 };
 
-a_window        *DoWndFileOpen( char *name, void *viewhndl,
+a_window        *DoWndFileOpen( const char *name, void *viewhndl,
                                         cue_handle *ch, bool track,
                                         bool erase, int class )
 {
@@ -930,7 +929,7 @@ extern a_window *WndSrcOpen( void )
 
 void ProcView( void )
 {
-    char                *start;
+    const char          *start;
     size_t              len;
     bool                binary;
 

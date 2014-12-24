@@ -40,6 +40,7 @@
 #include "mad.h"
 #include "dui.h"
 #include "i64.h"
+#include "strutil.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -57,8 +58,8 @@ extern void             DupStack( void );
 extern void             DoGivenField( sym_handle * );
 extern void             ReqEOC( void );
 extern void             Scan( void );
-extern unsigned int     ScanCmd( char * );
-extern bool             ScanQuote( char **, size_t * );
+extern unsigned int     ScanCmd( const char * );
+extern bool             ScanQuote( const char **, size_t * );
 extern bool             ScanEOC( void );
 extern char             *LineAddr( address *, char * );
 extern char             *StrAddr( address *, char *, unsigned );
@@ -73,7 +74,6 @@ extern void             DefAddr( memory_expr, address * );
 extern void             ChkBreak( void );
 extern void             PushType( type_handle * );
 extern void             MoveSP( int );
-extern char             *StrCopy( char *src, char *dst );
 extern bool             TokenName( unsigned, char **, unsigned * );
 extern void             SetTokens( bool );
 extern void             MakeMemoryAddr( bool, memory_expr, address * );
@@ -82,7 +82,7 @@ extern void             StartSubscript( void );
 extern void             AddSubscript( void );
 extern void             EndSubscript( void );
 extern void             DlgNewWithSym( char *, char *, unsigned);
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern char             *GetCmdName( int );
 extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
@@ -100,7 +100,7 @@ static unsigned         OutLen;
 static bool             OutPgm;
 static bool             First;
 
-static char PrintOps[] = { "Program\0Window\0" };
+static const char PrintOps[] = { "Program\0Window\0" };
 
 extern void PrintValue( void );
 
@@ -584,7 +584,7 @@ static void GetExpr( void )
 /*
  * DoFormat -- process a format string
  */
-static void DoFormat( char *fmt_ptr, char *fmt_end )
+static void DoFormat( const char *fmt_ptr, const char *fmt_end )
 {
     char        buff[BUFLEN+1];
     char        z_format;
@@ -937,7 +937,7 @@ static void DoDefault( void )
 
 void DoPrintList( bool output )
 {
-    char        *fmt_start;
+    const char  *fmt_start;
     size_t      fmt_len;
 
     OutPgm = output;
@@ -962,7 +962,7 @@ static void LogPrintList( void )
 void ChkPrintList( void )
 {
     bool        first;
-    char        *start;
+    const char  *start;
     size_t      len;
 
     first = TRUE;
@@ -984,7 +984,7 @@ void ChkPrintList( void )
 static char     PrintBuff[TXT_LEN];
 void ProcPrint( void )
 {
-    char        *old;
+    const char      *old;
 
     if( CurrToken == T_DIV ) {
         Scan();

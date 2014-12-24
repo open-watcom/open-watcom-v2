@@ -42,11 +42,12 @@
 #include "dbgmem.h"
 #include "spawn.h"
 #include "dui.h"
+#include "strutil.h"
 
 #include "clibext.h"
 
 extern image_entry      *ImageEntry( mod_handle mh );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern void             ReqEOC( void );
 extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
@@ -54,7 +55,7 @@ extern void             EndPrintBuff( void );
 extern void             PrintChar( void );
 extern void             PrintString( void );
 extern void             ForcePrintString( void );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
 extern void             ExprValue( stack_entry * );
@@ -91,7 +92,7 @@ extern void             PushSymHandle( sym_handle * );
 extern void             SetUpExpr( unsigned addr_depth );
 extern bool             UnMapAddress( mappable_addr *loc, image_entry *image );
 extern remap_return     ReMapImageAddress( mappable_addr *loc, image_entry *image );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             WndInspectExprSP( char *item );
 extern void             CollapseMachState( void );
 extern char             *CnvNearestAddr( address, char *, unsigned );
@@ -101,10 +102,8 @@ extern void             Warn( char * );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             DbgUpdate( update_list );
-extern char             *StrCopy( char*, char* );
 extern bool             AdvMachState( int );
 extern void             LValue( stack_entry * );
-extern char             *Format( char *, char *, ... );
 
 
 extern stack_entry      *ExprSP;
@@ -545,7 +544,7 @@ static void     CheckRValue( void )
 
 static void     PushExpr( var_node *v )
 {
-    char        *old;
+    const char      *old;
 
     if( v->is_sym_handle ) {
         SetUpExpr( 1 );
@@ -1625,7 +1624,7 @@ void  VarDeExpand( var_node *v )
     v->fake_array = FALSE;
 }
 
-static var_node *MakeNewNode( var_info *i, void *name, unsigned len )
+static var_node *MakeNewNode( var_info *i, const void *name, unsigned len )
 {
     var_node    *v;
 
@@ -1647,7 +1646,7 @@ void VarAllNodesInvalid( var_info *i )
     }
 }
 
-var_node *VarAdd1( var_info *i, void *name,
+var_node *VarAdd1( var_info *i, const void *name,
                              unsigned len, bool expand,
                              bool is_sym_handle )
 {
@@ -1954,7 +1953,7 @@ void VarAddWatch( var_info *i, var_node *v )
     DbgFree( name );
 }
 
-void VarAddNodeToScope( var_info *i, var_node *v, char *buff )
+void VarAddNodeToScope( var_info *i, var_node *v, const char *buff )
 {
     var_node    **owner;
     var_node    *new;
@@ -1963,7 +1962,7 @@ void VarAddNodeToScope( var_info *i, var_node *v, char *buff )
     while( *owner != v ) {
         owner = &(*owner)->next;
     }
-    new = MakeNewNode( i, buff, strlen( buff )+1 );
+    new = MakeNewNode( i, buff, strlen( buff ) + 1 );
     new->next = *owner;
     *owner = new;
     if( v != NULL ) {

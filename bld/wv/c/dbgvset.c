@@ -38,18 +38,18 @@
 #include "dbgitem.h"
 #include "dbgvar.h"
 #include "dui.h"
+#include "strutil.h"
 
 extern type_display     *TypeDisplay;
 
-extern char             *StrCopy( char *, char * );
 extern char             *GetCmdName( int );
-extern char             *GetCmdEntry( char *, int, char * );
+extern char             *GetCmdEntry( const char *, int, char * );
 extern void             Scan( void );
-extern bool             ScanItem( bool blank_delim, char **start, size_t *len );
-extern unsigned int     ScanCmd( char * );
+extern bool             ScanItem( bool blank_delim, const char **start, size_t *len );
+extern unsigned int     ScanCmd( const char * );
 extern void             ReqEOC( void );
 
-static char TypeSettings[] = {
+static const char TypeSettings[] = {
     "Ontop\0"
     "Hastop\0"
     "Autoexpand\0"
@@ -238,7 +238,7 @@ static bool ScanRightBrace( void )
 static char *ScanName( void )
 /***************************/
 {
-    char        *start;
+    const char  *start;
     size_t      len;
 
     ScanItem( TRUE, &start, &len );

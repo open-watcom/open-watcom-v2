@@ -37,6 +37,7 @@
 #include "dbgmem.h"
 #include "dbgchain.h"
 #include "mad.h"
+#include "strutil.h"
 
 
 extern a_window         *WndSrcInspect( address );
@@ -45,11 +46,10 @@ extern address          FindLclBlock( address addr );
 extern int              AddrComp( address, address );
 extern void             GoToAddr( address addr );
 extern bool             DlgBreak( address );
-extern char             *StrCopy( char *, char * );
 extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup( address );
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             SetStackPos( location_context *lc, int pos );
 extern int              GetStackPos( void );
 extern char             *CnvNearestAddr( address, char *, unsigned );

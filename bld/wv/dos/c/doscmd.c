@@ -39,7 +39,7 @@
 #include "dbgswtch.h"
 
 
-extern unsigned         Lookup(char *,char *, unsigned);
+extern unsigned         Lookup(const char *,const char *, unsigned);
 extern void             ForceLines( unsigned );
 extern bool             HasEquals( void );
 extern unsigned         GetValue( void );
@@ -53,7 +53,7 @@ extern addr_seg         _psp;
 extern unsigned         OvlAreaSize;
 
 
-static char SysOptNameTab[] = {
+static const char SysOptNameTab[] = {
     'M','o','n','o','c','h','r','o','m','e',NULLCHAR,
     'C','o','l','o','r',NULLCHAR,
     'C','o','l','o','u','r',NULLCHAR,

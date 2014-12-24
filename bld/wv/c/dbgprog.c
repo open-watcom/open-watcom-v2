@@ -41,6 +41,7 @@
 #include "dui.h"
 #include "srcmgt.h"
 #include "tistrail.h"
+#include "strutil.h"
 #include <limits.h>
 
 #include "clibext.h"
@@ -54,9 +55,9 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
 extern void             Warn( char * );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             Scan( void );
-extern bool             ScanItem( bool, char **, size_t * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern void             ReqEOC( void );
 extern bool             KillProgOvlay( void );
 extern void             ReportTask( task_status, unsigned );
@@ -75,18 +76,16 @@ extern handle           PathOpen( const char *, unsigned, const char * );
 extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             ChkExpr( void );
 extern bool             ScanEOC( void );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern unsigned         ReqExpr( void );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern void             ReqMemAddr( memory_expr, address * );
 extern void             SetNoSectSeg( void );
-extern char             *Format( char *buff, char *fmt, ... );
 extern void             TraceKill( void );
 extern void             ActPoint( brkp *, bool );
 extern void             AddAliasInfo( unsigned, unsigned );
 extern void             FreeAliasInfo( void );
 extern void             CheckSegAlias( void );
-extern char             *StrCopy( char *, char * );
 extern void             SetCodeDot( address );
 extern address          GetRegIP( void );
 extern bool             DlgGivenAddr( char *title, address *value );
@@ -103,13 +102,13 @@ extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );
 extern char             *GetCmdName( int index );
-extern char             *GetCmdEntry( char *tab, int index, char *buff );
+extern char             *GetCmdEntry( const char *tab, int index, char *buff );
 extern void             RecordEvent( char * );
 extern bool             HookPendingPush( void );
 extern const char       *CheckForPowerBuilder( const char * );
-extern char             *DupStr( char * );
-extern mod_handle       LookupImageName( char *start, unsigned len );
-extern mod_handle       LookupModName( mod_handle search, char *start, unsigned len );
+extern char             *DupStr( const char * );
+extern mod_handle       LookupImageName( const char *start, unsigned len );
+extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
 extern bool             GetBPSymAddr( brkp *bp, address *addr );
 extern void             DbgUpdate( update_list );
 extern long             RemoteGetFileDate( char *name );
@@ -118,8 +117,8 @@ extern bool             RemoteSetFileDate( char *name, long date );
 extern rc_erridx        RemoteErase( char const * );
 extern unsigned         MaxRemoteWriteSize( void );
 
-extern void             InsertRing( char_ring **owner, char *start, unsigned len );
-extern void             DeleteRing( char_ring **owner, char *start, unsigned len );
+extern void             InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase );
+extern void             DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase );
 extern void             FreeRing( char_ring *p );
 extern char_ring        **RingEnd( char_ring **owner );
 
@@ -238,7 +237,7 @@ void FindLocalDebugInfo( const char *name )
     } else {
         strcat( buff, name );
     }
-    InsertRing( RingEnd( &LocalDebugInfo ), buff, len + 4 + 2 );
+    InsertRing( RingEnd( &LocalDebugInfo ), buff, len + 4 + 2, FALSE );
 }
 
 static void DoDownLoadCode( void )
@@ -1092,8 +1091,8 @@ void SetSymName( char *file )
 }
 
 
-static void DoResNew( bool have_parms, char *cmd,
-                     unsigned clen, char *parms, unsigned plen )
+static void DoResNew( bool have_parms, const char *cmd,
+                     unsigned clen, const char *parms, unsigned plen )
 {
     char                *new;
 
@@ -1112,7 +1111,7 @@ static void DoResNew( bool have_parms, char *cmd,
 }
 
 
-extern void LoadNewProg( char *cmd, char *parms )
+extern void LoadNewProg( const char *cmd, const char *parms )
 {
     unsigned clen,plen;
     char        prog[FILENAME_MAX];
@@ -1206,9 +1205,9 @@ static bool CopyToRemote( char *local, char *remote, bool strip, void *cookie )
 }
 
 
-static unsigned ArgLen( char *p )
+static unsigned ArgLen( const char *p )
 {
-    char    *start;
+    const char  *start;
 
     start = p;
     while( *p != ARG_TERMINATE ) ++p;
@@ -1216,7 +1215,7 @@ static unsigned ArgLen( char *p )
 }
 
 
-static void DoReStart( bool have_parms, unsigned clen, char *start, unsigned len )
+static void DoReStart( bool have_parms, unsigned clen, const char *start, unsigned len )
 {
     DoResNew( have_parms, TaskCmd, clen, start, len );
 }
@@ -1224,7 +1223,7 @@ static void DoReStart( bool have_parms, unsigned clen, char *start, unsigned len
 
 static void ResNew( void )
 {
-    char                *start;
+    const char          *start;
     size_t              len;
     size_t              clen;
     bool                have_parms;
@@ -1267,7 +1266,7 @@ void ReStart( void )
 
 #define SKIP_SPACES     while( *start == ' ' && len != 0 ) { ++start; --len; }
 
-static char NogoTab[] = {
+static const char NogoTab[] = {
     "NOgo\0"
 };
 
@@ -1275,12 +1274,12 @@ static char NogoTab[] = {
 
 static void ProgNew( void )
 {
-    char        *start;
+    const char  *start;
     char        *cmd;
     char        *parm;
     char        *end;
     char        *new;
-    char        *sym;
+    const char  *sym;
     size_t      len;
     unsigned    clen;
     unsigned    plen;
@@ -1410,13 +1409,13 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
 
 OVL_EXTERN void SymFileNew( void )
 {
-    char        *fname;
+    const char  *fname;
     size_t      fname_len;
     image_entry *image;
     address     addr;
     map_entry   **owner;
     map_entry   *curr;
-    char        *temp;
+    const char  *temp;
     addr_off    dummy;
 
     if( ! ScanItem( TRUE, &fname, &fname_len ) ) {
@@ -1578,7 +1577,7 @@ bool SymUserModUnload( char *fname )
     return( TRUE );
 }
 
-static char NewNameTab[] = {
+static const char NewNameTab[] = {
     "Program\0"
     "Restart\0"
     "STDIn\0"

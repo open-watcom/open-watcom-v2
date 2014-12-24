@@ -93,7 +93,7 @@ global system_config    SysConfig;
 global unsigned         CheckSize;
 global unsigned         OvlSize;
 
-global char             *CmdStart;
+global const char       *CmdStart;
 global thread_state     *HeadThd;
 global thread_state     *ExecThd;
 global image_entry      *DbgImageList;

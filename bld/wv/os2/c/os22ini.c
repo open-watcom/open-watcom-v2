@@ -41,11 +41,11 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "autoenv.h"
+#include "strutil.h"
 
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern char     *StrCopy( char *, char * );
 
 char            *CmdData;
 

@@ -40,7 +40,7 @@
 #include "spawn.h"
 
 
-extern void             NewLang( char *lang );
+extern void             NewLang( const char *lang );
 extern void             PopInpStack( void );
 extern void             ProcACmd( void );
 extern bool             IsInternalMod( mod_handle );

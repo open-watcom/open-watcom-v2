@@ -36,11 +36,11 @@
 #include "dbglit.h"
 #include "dbgerr.h"
 
-extern bool             ScanItem( bool, char **, size_t * );
-extern cmd_list         *AllocCmdList( char *, size_t );
+extern bool             ScanItem( bool, const char **, size_t * );
+extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             WndTmpFileInspect( char *file, bool binary );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             ReqEOC( void );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             StdOutNew( void );
@@ -63,7 +63,8 @@ extern void CaptureError( void )
 
 OVL_EXTERN bool DoneCapture( void *cmds, inp_rtn_action action )
 {
-    char        *old;
+    const char      *old;
+
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( ((cmd_list *)cmds)->buff );
@@ -87,9 +88,9 @@ OVL_EXTERN bool DoneCapture( void *cmds, inp_rtn_action action )
 extern void ProcCapture( void )
 {
     cmd_list    *cmds;
-    char        *start;
+    const char  *start;
     size_t      len;
-    char        *old;
+    const char  *old;
     char        *p;
     char        *end;
 

@@ -32,11 +32,9 @@
 
 #include "dbgdefn.h"
 #include "dbglit.h"
-
 #include "doserr.h"
+#include "strutil.h"
 
-extern char *Format(char *,char *,... );
-extern char *StrCopy(char *,char *);
 
 char **DosErrMsgs[] = {
     LITREF( Empty ),

@@ -35,15 +35,14 @@
 #include "dbgitem.h"
 #include "dbgerr.h"
 #include "mad.h"
+#include "strutil.h"
 
 extern char             *GetCmdName( int );
-extern char             *Format( char *buff, char *fmt, ... );
 extern char             *CnvULong( unsigned long, char *buff, unsigned buff_len );
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern unsigned         ChangeMem( address, void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );
 extern unsigned         PortPoke( unsigned, void *, unsigned );
-extern char             *StrCopy( char *, char * );
 extern char             *AddHexSpec( char * );
 extern void             AddrFix( address * );
 extern address          AddrAddWrap( address, long );

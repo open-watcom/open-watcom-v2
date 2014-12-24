@@ -39,6 +39,7 @@
 #include "mad.h"
 #include "dui.h"
 #include "enterdb.h"
+#include "strutil.h"
 
 
 extern bool             AdvMachState( int );
@@ -59,8 +60,6 @@ extern void             WriteDbgRegs( void );
 extern void             SectTblRead( machine_state * );
 extern address          GetRegIP( void );
 extern bool             AddLibInfo( bool, bool * );
-extern char             *StrCopy( char *, char * );
-extern char             *Format( char *buff, char *fmt, ... );
 extern unsigned         RemoteGetMsgText( char *, unsigned );
 extern long             RemoteThawThread( dtid_t );
 extern long             RemoteFreezeThread( dtid_t );
@@ -95,7 +94,7 @@ extern unsigned         ProgPoke( address, void *, unsigned );
 extern bool             DlgScanDataAddr( char *str, address *value );
 extern bool             DlgScanLong( char *str, long *value );
 extern unsigned         NewCurrRadix( unsigned rad );
-extern cmd_list         *AllocCmdList(char *,size_t );
+extern cmd_list         *AllocCmdList(const char *,size_t );
 extern void             FreeCmdList(cmd_list *);
 extern void             PushCmdList(cmd_list *);
 extern void             TypeInpStack(input_type);

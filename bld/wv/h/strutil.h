@@ -30,52 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "dbgdefn.h"
-#include "dbglit.h"
-#include "dbgerr.h"
+#include <stdarg.h>
 
 
-extern bool ScanItem(bool ,const char **,size_t *);
-extern void ReqEOC(void);
-extern bool Redirect(bool ,char *);
-
-
-static void StdioRedirect( bool input )
-{
-    const char  *start;
-    size_t      len;
-    char        buff[160];
-
-    ScanItem( TRUE, &start, &len );
-    memcpy( buff, start, len );
-    buff[ len ] = NULLCHAR;
-    ReqEOC();
-    if( !Redirect( input, buff ) ) {
-        if( len == 0 ) {
-            Error( ERR_NONE, input ? LIT( ERR_CANNOT_RESTORE_STDIN ) :
-                                     LIT( ERR_CANNOT_RESTORE_STDOUT ) );
-        } else {
-            Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), buff );
-        }
-    }
-}
-
-/*
- * StdInNew -- redirect the STDIN file
- */
-
-extern void StdInNew()
-{
-    StdioRedirect( TRUE );
-}
-
-
-/*
- * StdOutNew -- redirect the STDOUT file
- */
-
-extern void StdOutNew()
-{
-    StdioRedirect( FALSE );
-}
+extern char *StrCopy( char const *src, char *dest );
+extern char *StrTrim( char *str );
+extern char *FmtStr( char *buff, const char *fmt, va_list args );
+extern char *Format( char *buff, const char *fmt, ... );

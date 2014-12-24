@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdarg.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgio.h"
+#include "strutil.h"
 
 
 extern char *StrAddr(address *,char *,unsigned);
@@ -81,7 +81,7 @@ char *StrTrim( char *str )
  * FmtStr -- gut level formatter
  */
 
-char *FmtStr( char *buff, char *fmt, va_list args )
+char *FmtStr( char *buff, const char *fmt, va_list args )
 {
     char                *ptr;
     unsigned            len;
@@ -180,7 +180,7 @@ char *FmtStr( char *buff, char *fmt, va_list args )
  * Format -- format up a string
  */
 
-char *Format( char *buff, char *fmt, ... )
+char *Format( char *buff, const char *fmt, ... )
 {
     va_list args;
 

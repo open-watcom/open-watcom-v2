@@ -110,9 +110,9 @@ extern void             RValue( stack_entry * );
 extern void             LRValue( stack_entry * );
 extern void             ParseRegSet( bool, location_list *, dip_type_info * );
 extern void             Recog( unsigned int );
-extern bool             ScanQuote( char **, size_t * );
+extern bool             ScanQuote( const char **, size_t * );
 extern void             Scan( void );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern unsigned         ScanLen( void );
 extern char             *NamePos( void );
 extern unsigned         NameLen( void );
@@ -120,8 +120,8 @@ extern unsigned_64      IntNumVal( void );
 extern xreal            RealNumVal( void );
 extern void             MoveSP( int );
 extern stack_entry      *StkEntry( int );
-extern char             *ReScan( char * );
-extern mod_handle       LookupModName( mod_handle, char *, int );
+extern const char       *ReScan( const char * );
+extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern unsigned         SetCurrRadix( unsigned int );
 extern void             AddChar( void );
 extern void             AddCEscapeChar( void );
@@ -140,7 +140,7 @@ extern bool             IsInternalMod( mod_handle );
 extern sym_list         *Disambiguate( sym_list * );
 extern void             FreeSymHandle( sym_list * );
 extern image_entry      *ImagePrimary( void );
-extern mod_handle       LookupImageName( char *, unsigned );
+extern mod_handle       LookupImageName( const char *, unsigned );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 
 
@@ -164,7 +164,7 @@ static struct {
 }                       CurrGet;
 
 #define MAX_SCANSAVE_PTRS 20
-static  char           *CurrScan[MAX_SCANSAVE_PTRS];
+static  const char      *CurrScan[MAX_SCANSAVE_PTRS];
         int             ScanSavePtr;
 
 
@@ -980,7 +980,7 @@ typedef struct cue_find {
     cue_handle          *best_ch;
     unsigned long       best_line;
     cue_fileid          id;
-    char                *name;
+    const char          *name;
     unsigned            len;
     unsigned            ambig           : 1;
     unsigned            found_a_file    : 1;
@@ -1100,7 +1100,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
     sym_list    *sym;
     address     addr;
     unsigned    old;
-    char        *save_scan;
+    const char  *save_scan;
     char        *mod_name;
     unsigned    mod_len;
     unsigned    mod_spec_token;

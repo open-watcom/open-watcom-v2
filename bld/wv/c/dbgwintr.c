@@ -38,25 +38,25 @@
 #include "dbgmem.h"
 #include "wndregx.h"
 #include <ctype.h>
+#include "strutil.h"
 
 
-extern unsigned int     ScanCmd(char *);
+extern unsigned int     ScanCmd(const char *);
 extern void             Scan( void );
 extern bool             ScanEOC(void);
 extern void             ReqEOC(void);
 extern unsigned         SetCurrRadix(unsigned int );
-extern char             *GetCmdEntry(char *,int ,char *);
+extern char             *GetCmdEntry(const char *,int ,char *);
 extern unsigned         ReqExpr();
 extern unsigned         OptExpr();
 extern void             WndUserAdd(char *,unsigned int );
-extern char             *StrCopy(char *,char *);
 extern void             WndDlgTxt(char*);
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, char *);
 extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
 extern void             SymCompFini();
 extern char             *GetCmdName( int );
 
-extern char             WndNameTab[];
+extern const char       WndNameTab[];
 
 static void BadCmd( a_window *wnd )
 {
@@ -164,7 +164,7 @@ static void XTimeSymComp()
     }
 }
 
-static char InternalNameTab[] =
+static const char InternalNameTab[] =
 {
     "Dumpmenu\0"
     "Symcomp\0"

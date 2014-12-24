@@ -46,12 +46,12 @@
 #endif
 #include "dbgmem.h"
 #include "autoenv.h"
+#include "strutil.h"
 
 #include "clibint.h"
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern char     *StrCopy( char *, char * );
 extern void     HookInQueue();
 extern void     HookOutQueue();
 static BOOL     PASCAL GetCommandData( HWND );

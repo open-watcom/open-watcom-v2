@@ -37,11 +37,12 @@
 #include "guidlg.h"
 #include "dlgbrk.h"
 #include "mad.h"
+#include "strutil.h"
 
 extern bool             RemovePoint( brkp * );
 extern brkp             *FindBreak( address );
 extern brkp             *AddBreak( address );
-extern cmd_list         *AllocCmdList( char *, size_t );
+extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
@@ -55,7 +56,6 @@ extern void             GetBPText( brkp *bp, char *buff );
 extern void             SymComplete( gui_window *gui, int id );
 extern void             WndMsgBox( char * );
 extern char             *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
-extern char             *StrCopy( char *src, char *dst ); // backwards. ugh
 extern bool             BrkCheckWatchLimit( address loc, mad_type_handle );
 extern void             RecordNewPoint( brkp *bp );
 extern void             RecordClearPoint( brkp *bp );

@@ -36,10 +36,11 @@
 #include "spawn.h"
 #include "dui.h"
 #include "trpcapb.h"
+#include "strutil.h"
 
 
 // This list of extern functions is in alphabetic order.:
-extern cmd_list         *AllocCmdList( char *,size_t );
+extern cmd_list         *AllocCmdList( const char *,size_t );
 extern void             ClearInpStack( input_type  );
 extern void             FingClose( void );
 extern void             FingFront( void );
@@ -69,10 +70,9 @@ extern void             FiniSource( void );
 extern void             FiniToolBar( void );
 extern void             FiniTrace( void );
 extern void             FiniTrap( void );
-extern char             *Format( char *,char *,... );
 extern void             FreeCmdList( cmd_list * );
 extern void             FreezeInpStack( void );
-extern char             *GetCmdEntry( char *tab, int index, char *buff );
+extern char             *GetCmdEntry( const char *tab, int index, char *buff );
 extern trap_shandle     GetSuppId( char * );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
@@ -148,13 +148,12 @@ extern void             PushCmdList( cmd_list *cmds );
 extern void             RecordFini( void );
 extern void             RecordInit( void );
 extern void             ReleaseProgOvlay( bool );
-extern char             *ReScan( char * );
 extern void             RestoreHandlers( void );
 extern void             RingBell( void );
 extern void             Scan( void );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern unsigned int     ScanLen( void );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern void             StartupErr( char * );
 extern void             Suicide( void );
 extern void             SupportFini( void );
@@ -184,7 +183,7 @@ bool CapabilitiesSetExactBreakpointSupport( bool status );
 #include "dbgcmd.h"
 #undef pick
 
-static char CmdNameTab[] = {
+static const char CmdNameTab[] = {
     #define pick( a, b, c ) c
     #include "dbgcmd.h"
     #undef pick

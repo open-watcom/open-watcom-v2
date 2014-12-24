@@ -46,7 +46,7 @@ search_result           LineCue( mod_handle, cue_fileid,
                           unsigned long line, unsigned column, cue_handle *ch );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern mod_handle       LookupModName( mod_handle, char *, unsigned );
+extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
 extern void             NormalExpr( void );
 extern bool             WndVarAdd( a_window *, char *, unsigned, bool );
 extern WNDOPEN          WndVarOpen;
@@ -56,11 +56,11 @@ extern a_window         *DoWndMemOpen( address, mad_type_handle );
 extern a_window         *DoWndIOOpen( address*, mad_type_handle );
 extern a_window         *DoWndFuncOpen( bool is_global, mod_handle mod );
 extern void             DupStack( void );
-extern  a_window        *DoWndFileOpen( char *name, void *viewhndl,
+extern a_window         *DoWndFileOpen( const char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,
                                     wnd_class class );
 extern void             *OpenSrcFile( cue_handle * );
-extern void             DoWndBinOpen( char *, handle );
+extern void             DoWndBinOpen( const char *, handle );
 extern a_window         *DoWndModOpen( mod_handle handle );
 extern a_window         *DoWndGlobOpen( mod_handle handle );
 extern void             MemSetLength( a_window *wnd, unsigned size );
@@ -97,7 +97,7 @@ static a_window *WndFindExisting( wnd_class class )
 }
 
 
-extern void WndTmpFileInspect( char *file )
+extern void WndTmpFileInspect( const char *file )
 {
     void                *viewhndl;
 
@@ -106,7 +106,7 @@ extern void WndTmpFileInspect( char *file )
 }
 
 typedef struct cue_mod {
-    char        *file;
+    const char  *file;
     mod_handle  mod;
     bool        found;
 } cue_mod;
@@ -137,7 +137,7 @@ static walk_result CheckOneMod( mod_handle mh, void *_d )
 }
 
 
-static mod_handle       FindFileMod( char *file )
+static mod_handle       FindFileMod( const char *file )
 {
     cue_mod     d;
 
@@ -147,7 +147,7 @@ static mod_handle       FindFileMod( char *file )
     return( d.found ? d.mod : NO_MOD );
 }
 
-extern void WndFileInspect( char *file, bool binary )
+extern void WndFileInspect( const char *file, bool binary )
 {
     handle              filehndl;
     void                *viewhndl;

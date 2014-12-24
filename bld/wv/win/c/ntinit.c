@@ -46,6 +46,7 @@
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "dbglit.h"
+#include "strutil.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
@@ -53,7 +54,6 @@
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern char     *StrCopy( char *, char * );
 extern void     DebugExit(void);
 extern void     StartupErr( char *err );
 extern void     NewConsoleTitle();

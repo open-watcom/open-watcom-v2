@@ -1,3 +1,4 @@
+
 /****************************************************************************
 *
 *                            Open Watcom Project
@@ -42,6 +43,7 @@
 #include "dui.h"
 #include "i64.h"
 #include "trpld.h"
+#include "strutil.h"
 
 #include "clibext.h"
 
@@ -52,19 +54,18 @@ typedef struct rad_str {
     char             radstr[1];         /* first byte is length */
 } rad_str;
 
-extern unsigned         Lookup( char *, char *, unsigned );
+extern unsigned         Lookup( const char *, const char *, unsigned );
 extern unsigned int     ReqExpr( void );
 extern void             ConfigLine( char * );
-extern char             *Format( char *, char *, ... );
 extern char             *CnvULongDec( unsigned long, char *, unsigned );
 extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len );
 extern void             DbgUpdate( update_list );
-extern char             *ReScan( char *point );
+extern const char       *ReScan( const char *point );
 
 
 extern void Scan( void );
 
-static char CmdLnDelimTab[] = { "<>*/(),{}!?;[]~#\0" };
+static const char CmdLnDelimTab[] = { "<>*/(),{}!?;[]~#\0" };
 
 typedef union {
         unsigned_64     int_val;
@@ -73,9 +74,9 @@ typedef union {
 
 
 static  rad_str         *RadStrs;
-static  char            *ScanPtr;
+static  const char      *ScanPtr;
 static  token_value     TokenVal;
-static  char            *TokenStart;
+static  const char      *TokenStart;
 static  token_table     *ExprTokens;
         bool            scan_string = FALSE;
         char            *StringStart = NULL;
@@ -147,7 +148,7 @@ void FiniScan( void )
  * ScanPos -- return the current scan position
  */
 
-char *ScanPos( void )
+const char *ScanPos( void )
 {
     return( TokenStart );
 }
@@ -169,10 +170,10 @@ unsigned ScanLen( void )
  * ScanCmd -- scan a command start of current token, looking up in given table
  */
 
-unsigned ScanCmd( char *cmd_table )
+unsigned ScanCmd( const char *cmd_table )
 {
     unsigned    ind;
-    char        *saveptr;
+    const char  *saveptr;
 
     saveptr = ScanPtr;
     ScanPtr = TokenStart;
@@ -189,7 +190,7 @@ unsigned ScanCmd( char *cmd_table )
 }
 
 struct type_name {
-    char                *start;
+    const char          *start;
     unsigned            len;
     mad_type_handle     th;
 };
@@ -197,7 +198,7 @@ struct type_name {
 static walk_result      FindTypeName( mad_type_handle th, void *d )
 {
     struct type_name    *nd = d;
-    char                *p;
+    const char          *p;
     char                *q;
     unsigned            len;
 
@@ -268,7 +269,7 @@ mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
 
 mad_string ScanCall( void )
 {
-    char                *p;
+    const char          *p;
     char                *q;
     const mad_string    *type;
     char                buff[NAM_LEN];
@@ -303,8 +304,8 @@ bool ScanEOC( void )
 }
 
 
-static bool FindToken( char *table, unsigned token,
-                       char **start, unsigned *len )
+static bool FindToken( const char *table, unsigned token,
+                       const char **start, unsigned *len )
 {
     unsigned chk;
 
@@ -324,7 +325,7 @@ static bool FindToken( char *table, unsigned token,
 }
 
 
-bool TokenName( unsigned token, char **start, unsigned *len )
+bool TokenName( unsigned token, const char **start, unsigned *len )
 {
     switch( token ) {
     case T_LINE_SEPARATOR:
@@ -356,7 +357,7 @@ bool TokenName( unsigned token, char **start, unsigned *len )
 
 void Recog( unsigned token )
 {
-    char        *start;
+    const char  *start;
     unsigned    len;
 
     if( token != CurrToken ) {
@@ -371,7 +372,7 @@ void Recog( unsigned token )
  * ScanQuote -- scan a debugger quoted string
  */
 
-bool ScanQuote( char **start, size_t *len )
+bool ScanQuote( const char **start, size_t *len )
 {
     int   cnt;
 
@@ -402,7 +403,7 @@ bool ScanQuote( char **start, size_t *len )
  * ScanItem - scan to a blank or EOC
  */
 
-bool ScanItem( bool blank_delim, char **start, size_t *len )
+bool ScanItem( bool blank_delim, const char **start, size_t *len )
 {
     if( ScanEOC() ) {
         *start = NULL;
@@ -446,7 +447,7 @@ void FlushEOC( void )
 
 static bool ScanExprDelim( char *table )
 {
-    char   *ptr;
+    const char  *ptr;
 
     for( ; *table != NULLCHAR ; table += 3 ) {
         for( ptr = ScanPtr ;  ( _IsOn( SW_CASE_SENSITIVE ) ?
@@ -466,7 +467,7 @@ static bool ScanExprDelim( char *table )
 
 static bool ScanCmdLnDelim( void )
 {
-    char    *ptr;
+    const char  *ptr;
 
     for( ptr = CmdLnDelimTab; ; ptr++ ) {
         if( *ScanPtr == *ptr ) break;
@@ -486,7 +487,7 @@ static bool ScanCmdLnDelim( void )
 
 static bool ScanRealNum( void )
 {
-    char    *curr;
+    const char  *curr;
 
     curr = ScanPtr;
     while( isdigit( *curr ) ) ++curr;
@@ -556,9 +557,9 @@ static bool GetNum( unsigned base )
 
 static char ScanNumber( void )
 {
-    rad_str *pref;
-    bool    ret;
-    char    *hold_scan;
+    rad_str     *pref;
+    bool        ret;
+    const char  *hold_scan;
 
     ret = FALSE;
     hold_scan = ScanPtr;
@@ -596,7 +597,7 @@ static char ScanNumber( void )
 
 #define NAME_ESC        '`'
 
-char *NamePos( void )
+const char *NamePos( void )
 {
     if( *TokenStart == NAME_ESC ) return( TokenStart + 1 );
     return( TokenStart );
@@ -604,8 +605,8 @@ char *NamePos( void )
 
 unsigned NameLen( void )
 {
-    char        *end;
-    char        *start;
+    const char  *end;
+    const char  *start;
 
     end = ScanPtr;
     start = TokenStart;
@@ -670,9 +671,9 @@ static bool ScanKeyword( char *table )
 }
 
 
-char *ReScan( char *point )
+const char *ReScan( const char *point )
 {
-    char        *old;
+    const char  *old;
 
     old = TokenStart;
     ScanPtr = point;
@@ -923,10 +924,10 @@ char *AddHexSpec( char *p )
  * ForceSym2Num -- try to force an unknown symbol into a number
  */
 
-bool ForceSym2Num( char *start, unsigned len, unsigned_64 *val_ptr )
+bool ForceSym2Num( const char *start, unsigned len, unsigned_64 *val_ptr )
 {
-    char        *old_scanptr;
-    char        *old_tokenstart;
+    const char  *old_scanptr;
+    const char  *old_tokenstart;
     token_value old_token_val;
     bool        rtn;
 

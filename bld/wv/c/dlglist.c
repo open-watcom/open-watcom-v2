@@ -36,7 +36,7 @@
 #include "guidlg.h"
 #include "dlglist.h"
 
-extern char             *DupStr(char*);
+extern char             *DupStr(const char*);
 extern bool             AllBrowse( char * );
 
 static void SelectListLast( gui_window *gui )

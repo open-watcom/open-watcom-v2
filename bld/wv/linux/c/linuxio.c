@@ -40,6 +40,7 @@
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgio.h"
+#include "strutil.h"
 
 
 #define READONLY    0
@@ -49,8 +50,6 @@
 
 typedef long   dosret;
 
-extern char *Format(char *,char *,... );
-extern char *StrCopy(char *,char *);
 extern void FreeRing(char_ring *);
 
 extern int              DbgConHandle; /* Debugger's console file handle */

@@ -34,8 +34,8 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
+#include "strutil.h"
 
-extern  char    *StrCopy(char*,char*);
 extern int      AboutSize;
 extern char     *AboutMessage[];
 

@@ -36,9 +36,9 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dui.h"
+#include "strutil.h"
 
 extern handle   LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern char     *StrCopy( char *src, char *dst );
 extern unsigned DUIEnvLkup( char *, char *, unsigned );
 
 static gui_help_instance Handle;

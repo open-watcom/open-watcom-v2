@@ -56,7 +56,7 @@ extern void             ResizeTraceData(void);
 extern void             PendingToggles( void );
 extern bool             FixOvlRetAddr( address * );
 extern void             FindRadixSpec( unsigned char value, char **start, unsigned *len );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             EvalExpr( unsigned addr_depth );
 extern void             MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
 extern unsigned         SetCurrRadix( unsigned );
@@ -105,8 +105,8 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
 mad_status      DIGCLIENT MADCliMemExpr( char const *start, unsigned len, unsigned radix, address *a )
 {
     char        save;
-    char       *startrw;
-    char        *old_scan;
+    char        *startrw;
+    const char  *old_scan;
     unsigned    old_radix;
 
     startrw = (char *)start; //MJC const defeat type checking
@@ -383,7 +383,7 @@ mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size )
 }
 
 struct find_mad {
-    char        *name;
+    const char  *name;
     unsigned    len;
     mad_handle  mad;
 };
@@ -410,7 +410,7 @@ static walk_result FindTheMad( mad_handle mh, void *d )
     return( WR_CONTINUE );
 }
 
-mad_handle FindMAD( char *name, unsigned len )
+mad_handle FindMAD( const char *name, unsigned len )
 {
     struct find_mad     data;
 

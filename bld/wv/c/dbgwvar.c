@@ -41,8 +41,9 @@
 #include "dlgvarx.h"
 #include "dbgvar.h"
 #include "spawn.h"
+#include "strutil.h"
 
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern void             ReqEOC( void );
 extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
@@ -50,7 +51,7 @@ extern void             EndPrintBuff( void );
 extern void             PrintChar( void );
 extern void             PrintString( void );
 extern void             ForcePrintString( void );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
 extern void             ExprValue( stack_entry * );
@@ -73,7 +74,6 @@ extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern void             WndVarInspect( char * );
 extern void             DlgNewWithSym( char *title, char *buff, unsigned buff_len );
-extern char             *StrCopy( char *, char * );
 extern void             BreakOnExprSP( char * );
 extern unsigned         NewCurrRadix( unsigned int );
 extern void             FreezeInpStack( void );
@@ -81,7 +81,7 @@ extern void             PopInpStack( void );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             WndInspectExprSP( char *item );
 extern char             *CnvNearestAddr( address, char *, unsigned );
 extern char             *GetCmdName( int );
@@ -167,7 +167,7 @@ static  void    VarRepaint( a_window *wnd )
 }
 
 
-extern  bool    WndVarAdd( a_window *wnd, char *name,
+extern  bool    WndVarAdd( a_window *wnd, const char *name,
                              unsigned len, bool expand )
 {
     var_node    *v;
@@ -984,7 +984,7 @@ extern a_window *WndFSVOpen( void )
 
 OVL_EXTERN  void    DoGraphicDisplay( void )
 {
-    char        *name;
+    const char  *name;
     unsigned    len;
     a_window    *wnd;
 

@@ -43,10 +43,8 @@
 
 extern void             OptMemAddr( memory_expr, address *);
 extern bool             ScanEOC( void );
-extern char             *ReScan( char * );
 extern void             ReqEOC( void );
 extern void             Scan( void );
-extern unsigned int     ScanCmd( char * );
 extern mad_type_handle  ScanType( mad_type_kind, mad_type_kind * );
 extern void             PopEntry( void );
 extern void             DbgUpdate( update_list );
@@ -57,9 +55,9 @@ extern void             SetDataDot( address addr );
 extern address          GetDataDot( void );
 extern char             *GetCmdName( int );
 extern void             FlushEOC( void );
-extern void             RecordCommand( char *startpos, int cmd );
+extern void             RecordCommand( const char *startpos, int cmd );
 extern bool             AdvMachState( int );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
 
@@ -112,7 +110,7 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
 
 void ProcModify( void )
 {
-    char                *startpos;
+    const char          *startpos;
     mad_type_handle     th;
     mad_type_kind       tk;
 

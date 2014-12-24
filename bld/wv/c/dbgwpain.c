@@ -33,24 +33,23 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
+#include "strutil.h"
 
 
 
 extern void             ReqEOC( void );
 extern wnd_class        ReqWndName( void );
 extern void             Scan( void );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             ConfigLine( char * );
-extern char             *GetCmdEntry( char *, int, char * );
-extern char             *Format( char *, char *, ... );
+extern char             *GetCmdEntry( const char *, int, char * );
 extern bool             WndDlgTxt( char *buff );
-extern char             *StrCopy( char *, char * );
 extern char             *GetWndFont( a_window * );
 extern bool             ScanStatus( void );
 extern char             *GetCmdName( int );
 
 
-extern char             WndNameTab[];
+extern const char       WndNameTab[];
 
 static gui_colour_set   *WndClassColour[ WND_NUM_CLASSES ];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
@@ -112,7 +111,7 @@ typedef enum {
     ATTR_SHADOW         = 0x0400,
 } attr_bits;
 
-static char AttrNameTab[] = {
+static const char AttrNameTab[] = {
     "Active\0"
     "SElected\0"
     "STandout\0"
@@ -195,7 +194,7 @@ typedef enum {
     CLR_YELLOW          = 0x0800,
 } colour_bits;
 
-static char ColourNameTab[] = {
+static const char ColourNameTab[] = {
     "BLAck\0"
     "BLUe\0"
     "BRIght\0"

@@ -42,6 +42,7 @@
 #include "ldsupp.h"
 #include "mad.h"
 #include "dui.h"
+#include "strutil.h"
 
 
 extern char             *Language;
@@ -49,12 +50,11 @@ extern char             *Language;
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern char             *StrCopy( char *, char * );
-extern char             *ReScan( char * );
-extern char             *ScanPos( void );
-extern void             NewLang( char * );
+extern const char       *ReScan( const char * );
+extern const char       *ScanPos( void );
+extern void             NewLang( const char * );
 extern char             *AddHexSpec( char * );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern address          GetCodeDot( void );
@@ -384,7 +384,7 @@ static char *Rtrm( char *p )
  * AllocCmdList -- allocate a command list
  */
 
-cmd_list *AllocCmdList( char *start, size_t len )
+cmd_list *AllocCmdList( const char *start, size_t len )
 {
     cmd_list *cmds;
 
@@ -630,7 +630,7 @@ char *ModImageName( mod_handle handle )
     }
 }
 
-extern char *DupStrLen( char *str, unsigned len )
+extern char *DupStrLen( const char *str, unsigned len )
 {
     char        *dup;
 
@@ -643,7 +643,7 @@ extern char *DupStrLen( char *str, unsigned len )
 }
 
 
-extern char *DupStr( char *str )
+extern char *DupStr( const char *str )
 {
     return( DupStrLen( str, strlen( str ) ) );
 }

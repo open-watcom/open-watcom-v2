@@ -38,24 +38,22 @@
 #include "spawn.h"
 #include "mad.h"
 #include "madcli.h"
+#include "strutil.h"
 
 
 extern stack_entry  *ExprSP;
 
 
 extern void         Scan( void );
-extern char         *ScanPos( void );
-extern unsigned int ScanCmd( char * );
-extern char         *ReScan( char * );
+extern const char   *ScanPos( void );
+extern const char   *ReScan( const char * );
 extern bool         ScanEOC( void );
 extern void         Recog( unsigned int );
 extern void         ReqEOC( void );
 extern void         CallExpr( address *);
 extern void         ChkPrintList( void );
 extern void         DoPrintList( bool );
-extern char         *GetCmdEntry( char *, int, char * );
 extern void         ConfigLine( char * );
-extern char         *StrCopy( char const *, char * );
 extern void         PushSym( void * );
 extern void         FreezeRegs( void );
 extern void         SwapStack( int );
@@ -123,7 +121,8 @@ static void DoCallSet( void )
     mad_string          ctype;
     int                 parm;
     int                 i;
-    char                *new, *start;
+    char                *new;
+    const char          *start;
     struct {
         union {
             const char  *arg;
@@ -264,9 +263,9 @@ void ProcCall( void )
 {
     mad_string          ctype;
     int                 parm;
-    char                *results;
+    const char          *results;
     address             start;
-    char                *old;
+    const char          *old;
     location_list       ll;
     dip_type_info       ti;
     char                *p;

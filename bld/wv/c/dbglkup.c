@@ -36,18 +36,18 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dbgio.h"
+#include "strutil.h"
 
 #include "clibext.h"
 
 
 extern void             Scan( void );
-extern unsigned         ScanCmd( char * );
-extern bool             ScanItem( bool, char **, size_t * );
+extern unsigned         ScanCmd( const char * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern void             ReqEOC( void );
 extern void             ConfigLine( char * );
-extern char             *StrCopy( char *, char * );
 extern bool             IsInternalMod( mod_handle );
-extern bool             IsInternalModName( char *, unsigned );
+extern bool             IsInternalModName( const char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );
 extern unsigned         ProgPoke( address, void *, unsigned );
 extern char             *GetCmdName( int );
@@ -59,12 +59,12 @@ typedef struct lookup_list {
     char                data[1];
 } lookup;
 
-static char CaseTab[] = { "Ignore\0Respect\0" };
+static const char CaseTab[] = { "Ignore\0Respect\0" };
 
 
 static  lookup      *DefLookup;
 
-static char AddTab[] = { "Add\0" };
+static const char AddTab[] = { "Add\0" };
 
 static void FreeList( lookup *curr )
 {
@@ -82,7 +82,7 @@ static void FreeList( lookup *curr )
  * LookInit - initialize lookup
  */
 
-static void AddLookSpec( char *start, unsigned len, bool respect, lookup *old )
+static void AddLookSpec( const char *start, unsigned len, bool respect, lookup *old )
 {
     lookup  *next;
 
@@ -131,9 +131,9 @@ void LookCaseSet( bool respect )
 void LookSet( void )
 {
     struct {
-        char     *start;
-        size_t   len;
-        bool     respect;
+        const char  *start;
+        size_t      len;
+        bool        respect;
     }       *curr, new[20];
     lookup  *old, *next;
     bool    respect;
@@ -252,12 +252,13 @@ void LookConf( void )
 /*
  * LookUp - find a token in a list
  */
-int Lookup( char *tokenlist,  char *what, int tokenlen )
+int Lookup( const char *tokenlist,  const char *what, int tokenlen )
 {
     int         tokennum = 1;
     int         k,isuppertc;
-    char        *t,*w,*ucwhat;
+    char        *w,*ucwhat;
     char        tc,wc;
+    const char  *t;
 
     _AllocA( ucwhat, tokenlen );
     for( k=0;k<tokenlen;k++) ucwhat[k] = toupper( what[k] );
@@ -291,7 +292,7 @@ int Lookup( char *tokenlist,  char *what, int tokenlen )
 }
 
 struct mod_lkup {
-    char        *start;
+    const char  *start;
     unsigned    len;
     mod_handle  mh;
 };
@@ -309,7 +310,7 @@ OVL_EXTERN walk_result CheckModName( mod_handle mh, void *d )
     return( WR_STOP );
 }
 
-mod_handle LookupModName( mod_handle search, char *start, unsigned len )
+mod_handle LookupModName( mod_handle search, const char *start, unsigned len )
 {
     struct mod_lkup     d;
     static mod_handle   CacheIntMod = NO_MOD;
@@ -350,7 +351,7 @@ OVL_EXTERN walk_result CheckImageName( mod_handle mh, void *d )
     return( WR_STOP );
 }
 
-mod_handle LookupImageName( char *start, unsigned len )
+mod_handle LookupImageName( const char *start, unsigned len )
 {
     struct mod_lkup     d;
 
@@ -392,7 +393,7 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
 {
     lookup      *curr;
     bool        save_case;
-    char        *start;
+    const char  *start;
     unsigned    len;
     bool        check_codeaddr_mod;
     mod_handle  search_mod;

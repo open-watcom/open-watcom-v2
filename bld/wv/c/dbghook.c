@@ -39,18 +39,17 @@
 #include "dbghook.h"
 #include "spawn.h"
 #include "dui.h"
+#include "strutil.h"
 
 extern void             FreeCmdList(cmd_list *);
 extern void             PushCmdList(cmd_list *);
-extern cmd_list         *AllocCmdList(char *,size_t );
-extern unsigned         ScanCmd( char * );
+extern cmd_list         *AllocCmdList(const char *,size_t );
+extern unsigned         ScanCmd( const char * );
 extern bool             ScanEOC(void);
 extern void             ReqEOC(void);
-extern bool             ScanItem( bool, char **, size_t *);
-extern char             *GetCmdEntry(char *,int ,char *);
+extern bool             ScanItem( bool, const char **, size_t *);
+extern char             *GetCmdEntry(const char *,int ,char *);
 extern input_type       SetInpStack( input_type );
-extern char             *Format(char *,char *,... );
-extern char             *StrCopy( char *, char * );
 extern char             *GetCmdName( int );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             TypeInpStack( input_type set );
@@ -79,7 +78,7 @@ void FiniHook()
     }
 }
 
-static char HookNames[] = {
+static const char HookNames[] = {
     "PROGStart\0"
     "PROGEnd\0"
     "DLLStart\0"
@@ -94,7 +93,7 @@ static char HookNames[] = {
 
 void ProcHook()
 {
-    char        *start;
+    const char  *start;
     size_t      len;
     unsigned    idx;
     cmd_list    *list;

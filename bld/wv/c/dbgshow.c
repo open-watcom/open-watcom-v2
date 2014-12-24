@@ -37,19 +37,18 @@
 #include "dbgtback.h"
 #include "dbgmem.h"
 #include "dui.h"
+#include "strutil.h"
 
 
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             Scan( void );
 extern unsigned int     OptExpr( unsigned int );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern unsigned int     ScanLen( void );
 extern bool             ScanEOC( void );
 extern void             ReqEOC( void );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern int              AddrComp( address , address );
-extern char             *Format( char *, char *, ... );
-extern char             *StrCopy( char *, char * );
 extern void             ConfigSet( void );
 extern void             ConfigDisp( void );
 extern void             ConfigFont( void );
@@ -67,7 +66,7 @@ extern char             *GetCmdName( int );
  * GetCmdEntry -- get an entry from a command table
  */
 
-char *GetCmdEntry( char *tab, int index, char *buff )
+char *GetCmdEntry( const char *tab, int index, char *buff )
 {
     for( --index; index != 0; --index ) {
         for( ; *tab != NULLCHAR; ++tab )
@@ -148,10 +147,10 @@ void ConfigLine( char *conf )
 }
 
 
-void DoConfig( char *cmd, char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
+void DoConfig( char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
 {
     int num;
-    char *start;
+    const char *start;
     char *ptr;
     unsigned i;
 
@@ -193,7 +192,7 @@ OVL_EXTERN void BadShow( void )
 }
 
 
-static char ShowNameTab[] = {
+static const char ShowNameTab[] = {
     "Paint\0"
     "Display\0"
     "Font\0"

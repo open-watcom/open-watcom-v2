@@ -42,12 +42,12 @@
 #include "dbgwind.h"
 #include "dbgmem.h"
 #include "autoenv.h"
+#include "strutil.h"
 
 #include "clibint.h"
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern char     *StrCopy( char *, char * );
 extern void     DebugExit(void);
 
 static char       CmdData[256];

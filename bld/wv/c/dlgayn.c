@@ -36,8 +36,8 @@
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "dlgayn.h"
+#include "strutil.h"
 
-extern char             *Format( char *buff, char *fmt, ... );
 
 OVL_EXTERN bool AynEvent( gui_window * gui, gui_event gui_ev, void *param )
 {

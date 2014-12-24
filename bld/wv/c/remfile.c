@@ -496,7 +496,7 @@ rc_erridx RemoteErase( char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteFork( char *cmd, size_t len )
+rc_erridx RemoteFork( const char *cmd, size_t len )
 {
     mx_entry            in[2];
     mx_entry            out[1];
@@ -509,7 +509,7 @@ rc_erridx RemoteFork( char *cmd, size_t len )
     acc.chk_size = CheckSize;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
-    in[1].ptr = cmd;
+    in[1].ptr = (char *)cmd;
     in[1].len = len;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );

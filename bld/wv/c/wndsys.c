@@ -39,6 +39,7 @@
 #include "dbghook.h"
 #include "dbgio.h"
 #include "dbgscrn.h"
+#include "strutil.h"
 #if defined( __NT__ ) && defined( __GUI__ )
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
@@ -56,12 +57,11 @@ extern bool             DebugScreenRecover( void );
 extern void             RemoteSetUserScreen( void );
 extern void             RemoteSetDebugScreen( void );
 extern void             PushCmdList( cmd_list * );
-extern void             NewLang( char *lang );
 extern void             ProcACmd( void );
 extern void             CheckBPErrors( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             ReqEOC( void );
 extern gui_colour_set   *GetWndColours( wnd_class class );
 extern bool             WndDlgTxt( char * );
@@ -76,7 +76,6 @@ extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );
 extern char             LookUpCtrlKey( unsigned key );
 extern bool             MacKeyHit( a_window *wnd, unsigned key );
 extern gui_coord        *WndMainClientSize( void );
-extern char             *StrCopy( char *src, char *dest );
 extern void             FingClose( void );
 extern char             *GetCmdName( int );
 extern void             SetUpdateFlags( update_list );
@@ -119,7 +118,7 @@ int WndGadgetSecondary = GADGET_FIRST_SECONDARY;
 wnd_attr WndGadgetAttr = WND_HOTSPOT;
 int             MaxGadgetLength;
 
-static char WindowNameTab[] =
+static const char WindowNameTab[] =
 {
     "CLose\0"
     "CURSORStart\0"
@@ -561,7 +560,7 @@ void WndSetOpenNoShow( void )
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
 
-extern a_window *DbgTitleWndCreate( char *title, wnd_info *wndinfo,
+extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class class, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
@@ -624,7 +623,7 @@ extern a_window *DbgTitleWndCreate( char *title, wnd_info *wndinfo,
     return( wnd );
 }
 
-extern a_window *DbgWndCreate( char *title, wnd_info *info,
+extern a_window *DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class class, void *extra, gui_resource *icon )
 {
     return( DbgTitleWndCreate( title, info, class, extra, icon, 0, TRUE ) );

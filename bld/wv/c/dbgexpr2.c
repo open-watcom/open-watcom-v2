@@ -41,7 +41,7 @@
 #include "i64.h"
 
 
-extern bool             ForceSym2Num(char *,unsigned int , unsigned_64 *);
+extern bool             ForceSym2Num(const char *,unsigned int , unsigned_64 *);
 extern sym_list         *Disambiguate( sym_list *, location_context * );
 extern void             DoAPoints( stack_entry *, type_kind );
 extern void             ExprSetAddrInfo( stack_entry *, bool );

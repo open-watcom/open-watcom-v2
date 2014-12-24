@@ -54,13 +54,13 @@
 #endif
 #include <stdlib.h>
 #include <stdio.h>
-#include <dip.h>
+#include "dip.h"
+#include "strutil.h"
 
 
 
 extern bool     VarInfoRelease( void );
 extern bool     DlgInfoRelease( void );
-extern char     *Format( char *, char *, ... );
 extern unsigned DUIEnvLkup( char *, char *, unsigned );
 extern void     PopErrBox( char * );
 

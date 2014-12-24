@@ -44,6 +44,7 @@
 #include "dipwv.h"
 #include "mad.h"
 #include <stddef.h>
+#include "strutil.h"
 
 #include "clibext.h"
 
@@ -65,11 +66,9 @@ extern void             StartupErr( char * );
 extern void             FreeImage( image_entry * );
 extern void             MapAddrForImage( image_entry *, addr_ptr * );
 extern image_entry      *ImageEntry( mod_handle );
-extern char             *Format( char *buff, char *fmt, ... );
 extern address          DefAddrSpaceForAddr( address );
 extern int              AddrComp( address, address );
 extern void             DeAlias( addr_ptr * );
-extern char             *StrCopy( char *, char *);
 
 /*
  * Client support routines
@@ -1007,7 +1006,7 @@ bool IsInternalMod( mod_handle mod )
     return( ImageDIP( mod ) == WVName );
 }
 
-bool IsInternalModName( char *start, unsigned len )
+bool IsInternalModName( const char *start, unsigned len )
 {
     if( len != sizeof( InternalName ) - 1 ) return( FALSE );
     if( memicmp( start, InternalName, len ) != 0 ) return( FALSE );

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdarg.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbginvk.h"
@@ -37,14 +36,12 @@
 #include "dip.h"
 #include "dbgerr.h"
 #include "dui.h"
+#include "strutil.h"
 
 
 extern int              ScanSavePtr;
 
-extern char             *StrCopy( char *, char * );
-extern char             *FmtStr( char *, char *, va_list );
-extern char             *Format( char *, char *, ... );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern void             Scan( void );
 extern unsigned int     ScanLen( void );
 extern void             ScanExpr( void * );

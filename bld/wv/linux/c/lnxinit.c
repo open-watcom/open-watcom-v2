@@ -40,6 +40,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include "dbgdefn.h"
+#include "strutil.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
@@ -53,7 +54,6 @@ unsigned char   _real87 = 0;
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern char     *StrCopy( char *, char * );
 
 extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
@@ -127,7 +127,7 @@ void SetCmdArgStart( int num, char *ptr )
 {
     NumArgs -= num;
     if( ptr != NULL && *ptr == NULLCHAR ) ++ptr;
-    cmdStart = (char *)ptr;
+    cmdStart = ptr;
 }
 
 void KillDebugger()

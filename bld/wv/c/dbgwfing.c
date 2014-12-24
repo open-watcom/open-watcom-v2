@@ -35,8 +35,8 @@
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "guidlg.h"
+#include "strutil.h"
 
-extern char *StrCopy( char *src, char *dst );
 extern void StartupErr(char *);
 extern int WndNumColours;
 extern a_window *WndMain;

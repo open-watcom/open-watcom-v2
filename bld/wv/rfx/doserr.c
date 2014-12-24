@@ -28,10 +28,9 @@
 *
 ****************************************************************************/
 
+#include <stdio.h>
 #include "doserr.h"
 
-extern char *Format(char *,char *,... );
-extern char *StrCopy(char *,char *);
 
 char *DosErrMsgs[] = {
     "",
@@ -45,8 +44,8 @@ char *DosErrMsgs[] = {
 void GetDOSErrMsg( sys_error code, char *buff )
 {
     if( code > MAX_CODE ) {
-        Format( buff, "error #%u", code );
+        sprintf( buff, "error #%u", code );
     } else {
-        StrCopy( DosErrMsgs[code], buff );
+        sprintf( buff, "%s", DosErrMsgs[code] );
     }
 }

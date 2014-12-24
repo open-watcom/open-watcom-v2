@@ -36,6 +36,7 @@
 #include "dbgmem.h"
 #include "dui.h"
 #include "srcmgt.h"
+#include "strutil.h"
 
 #include "clibext.h"
 
@@ -43,17 +44,16 @@
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             ScanItem( bool ,char **,size_t *);
-extern unsigned int     ScanCmd( char * );
+extern bool             ScanItem( bool, const char **, size_t * );
+extern unsigned int     ScanCmd( const char * );
 extern void             Scan( void );
 extern void             ConfigLine( char * );
-extern char             *StrCopy(char *, char *);
 extern char             *GetCmdName( int );
 extern void             DbgUpdate( update_list );
 extern bool             IsAbsolutePath( char *path );
 
 
-static char AddTab[] = { "Add\0" };
+static const char AddTab[] = { "Add\0" };
 
 
 void FreeRing( char_ring *p )
@@ -84,7 +84,7 @@ void FiniSource( void )
 }
 
 
-void DeleteRing( char_ring **owner, char *start, unsigned len )
+void DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase )
 {
     char_ring *p;
 
@@ -92,7 +92,8 @@ void DeleteRing( char_ring **owner, char *start, unsigned len )
         for( ;; ) {
             p = *owner;
             if( p == NULL ) break;
-            if( strnicmp( p->name, start, len ) == 0 ) {
+            if( ucase && strnicmp( p->name, start, len ) == 0
+              || !ucase && strncmp( p->name, start, len ) == 0 ) {
                 *owner = p->next;
                 _Free( p );
                 break;
@@ -103,7 +104,7 @@ void DeleteRing( char_ring **owner, char *start, unsigned len )
 }
 
 
-void InsertRing( char_ring **owner, char *start, unsigned len )
+void InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase )
 {
     char_ring *path;
 
@@ -111,6 +112,9 @@ void InsertRing( char_ring **owner, char *start, unsigned len )
         path = DbgMustAlloc( sizeof( char_ring ) + len );
         memcpy( path->name, start, len );
         path->name[ len ] = NULLCHAR;
+        if( ucase ) {
+            strupr( path->name );
+        }
         path->next = NULL;
         *owner = path;
         owner = &path->next;
@@ -127,9 +131,9 @@ char_ring **RingEnd( char_ring **owner )
 }
 
 
-void AddSourceSpec( char *str )
+void AddSourceSpec( const char *str )
 {
-    InsertRing( RingEnd( &SrcSpec ), str, strlen( str ) );
+    InsertRing( RingEnd( &SrcSpec ), str, strlen( str ), FALSE );
 }
 
 char *SourceName( char_ring *src )
@@ -150,9 +154,9 @@ char_ring *NextSourceSpec( char_ring *curr )
 
 void SourceSet( void )
 {
-    char_ring **owner;
-    char      *start;
-    size_t    len;
+    char_ring   **owner;
+    const char  *start;
+    size_t      len;
 
     if( CurrToken == T_DIV ) {
         Scan();
@@ -169,7 +173,7 @@ void SourceSet( void )
             ++start;
             --len;
         }
-        InsertRing( owner, start, len );
+        InsertRing( owner, start, len, FALSE );
     }
     DbgUpdate( UP_NEW_SRC );
 }

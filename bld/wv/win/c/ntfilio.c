@@ -39,9 +39,8 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "errno.h"
+#include "strutil.h"
 
-extern char *Format(char *,char *,... );
-extern char *StrCopy(char *,char *);
 extern void FreeRing(char_ring *);
 
 file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };

@@ -41,9 +41,9 @@
 #include "dbgitem.h"
 #include "mad.h"
 #include "dui.h"
+#include "strutil.h"
 
 extern int              AddrComp( address a, address b );
-extern char             *Format( char * buff, char * fmt, ... );
 extern void             RecordEvent( char *p );
 extern char             *GetCmdName( int index );
 extern bool             DlgUpTheStack( void );
@@ -56,7 +56,6 @@ extern void             LocationCreate( location_list *ll, location_type lt, voi
 extern dip_status       LocationAssign( location_list *dst, location_list *src, unsigned long len, bool sign_extend );
 extern void             PushLocation( location_list *ll, dip_type_info *ti );
 extern void             DoAssign( void );
-extern char             *StrCopy( char *, char * );
 extern void             MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti );
 
 static int              StackPos;

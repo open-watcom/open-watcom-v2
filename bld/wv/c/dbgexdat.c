@@ -44,16 +44,16 @@ extern void             ReqEOC( void );
 extern unsigned int     OptExpr( unsigned int );
 extern void             ChkExpr( void );
 extern void             Scan( void );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern mad_type_handle  ScanType( mad_type_kind, mad_type_kind * );
-extern char             *ScanPos( void );
+extern const char       *ScanPos( void );
 extern void             SrcExam( void );
 extern void             WndMemInspect( address, char *, unsigned, mad_type_handle );
 extern void             WndIOInspect( address *, mad_type_handle );
 extern void             WndAddrInspect( address );
 extern void             SetDataDot( address );
 extern address          GetDataDot( void );
-extern char             *DupStrLen( char *, unsigned );
+extern char             *DupStrLen( const char *, unsigned );
 extern char             *GetCmdName( int );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 
@@ -78,7 +78,7 @@ static void IOExam( mad_type_handle type )
 static void MemExam( mad_type_handle type )
 {
     address     addr;
-    char        *start;
+    const char  *start;
     char        *expr;
     unsigned    len;
 
@@ -120,7 +120,7 @@ OVL_EXTERN void TypeExam( void )
     }
 }
 
-static char FmtNameTab[] = {
+static const char FmtNameTab[] = {
     "Assembly\0"
     "Source\0"
 };

@@ -35,14 +35,14 @@
 #include "dbgitem.h"
 #include "madcli.h"
 #include "mad.h"
+#include "strutil.h"
 
-extern char             *DupStr( char *str );
+extern char             *DupStr( const char *str );
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
 extern unsigned         NewCurrRadix( unsigned );
 extern void             WndInspect( char *item );
 extern char             *GetCmdName( int index );
-extern char             *Format( char *buff, char *fmt, ... );
 extern void             RecordEvent( char *p );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_handle );
 extern void             PushAddr( address val );

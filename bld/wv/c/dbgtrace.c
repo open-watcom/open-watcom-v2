@@ -37,6 +37,7 @@
 #include "dbgmem.h"
 #include "mad.h"
 #include "srcmgt.h"
+#include "strutil.h"
 
 
 enum {
@@ -96,13 +97,13 @@ extern void             OptMemAddr( memory_expr, address * );
 extern int_16           GetDataWord( void );
 extern long             GetDataLong( void );
 extern void             Scan( void );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             ReqEOC( void );
 extern int              AddrComp( address, address );
 extern unsigned         Execute( bool, bool );
 extern void             GetCurrOpcode( void );
 extern void             Warn( char * );
-extern char             *GetCmdEntry( char *, int, char * );
+extern char             *GetCmdEntry( const char *, int, char * );
 extern char             *GetCmdName( int );
 extern void             ConfigLine( char * );
 extern bool             SimIntr( char, unsigned int );
@@ -113,7 +114,7 @@ extern address          GetRegSP( void );
 extern bool             RemoteOvlTransAddr( address * );
 extern bool             TransOvlRetAddr( address *, unsigned int );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             TypeInpStack( input_type );
 extern void             SetCodeLoc( address );
 extern void             SetCodeDot( address );
@@ -122,7 +123,6 @@ extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern void             AddrSection( address *, unsigned );
 extern bool             IsSupportRoutine( sym_handle * );
-extern char             *Format( char *buff, char *fmt, ... );
 extern void             RecordEvent( char *p );
 extern void             CheckEventRecorded( void );
 extern dtid_t           RemoteSetThread( dtid_t );
@@ -130,13 +130,13 @@ extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern void             ReportMADFailure( mad_status );
 
-static char LevelTab[] = {
+static const char LevelTab[] = {
     #define pick( a,b ) b
     #include "dbglevel.h"
     #undef pick
 };
 
-static char TraceTab2[] = {
+static const char TraceTab2[] = {
     #define pick( a,b ) b
     #include "dbgtrace.h"
     #undef pick

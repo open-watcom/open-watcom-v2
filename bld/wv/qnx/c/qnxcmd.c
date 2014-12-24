@@ -40,7 +40,7 @@
 
 
 extern unsigned         GetValue( void );
-extern unsigned         Lookup( char *, char *, unsigned );
+extern unsigned         Lookup( const char *, const char *, unsigned );
 extern void             WantEquals(void);
 extern void             GetRawItem( char * );
 extern char             *GetFileName( int pass );
@@ -52,7 +52,7 @@ extern int          DbgColumns;
 
 char                    XConfig[2048];
 
-static char SysOptNameTab[] = {
+static const char SysOptNameTab[] = {
     "Console\0"
     "XConfig\0"
     ""

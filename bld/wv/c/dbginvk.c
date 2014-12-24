@@ -40,15 +40,14 @@
 #include "clibext.h"
 
 
-extern bool             ScanItem( bool, char **, size_t * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern bool             ScanEOC( void );
 extern bool             SwitchOnOff( void );
 extern void             ShowSwitch( bool );
 extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
-extern char             *ReScan( char * );
-extern unsigned int     ScanCmd( char * );
+extern const char       *ReScan( const char * );
 extern void             FreeRing( char_ring * );
 extern char             *CnvULongDec( unsigned long, char *buff, unsigned buff_len );
 extern void             LogStart( void );
@@ -318,13 +317,13 @@ void ProfileInvoke( char *name )
 
 void ProcInvoke( void )
 {
-    char      *fstart;
-    size_t    flen;
-    char      *start;
-    char_ring *parmlist;
-    char_ring **owner;
-    char_ring *path;
-    size_t    len;
+    const char  *fstart;
+    size_t      flen;
+    const char  *start;
+    char_ring   *parmlist;
+    char_ring   **owner;
+    char_ring   *path;
+    size_t      len;
 
     if( !ScanItem( TRUE, &fstart, &flen ) ) Error( ERR_LOC, LIT( ERR_WANT_FILENAME ) );
     parmlist = NULL;
@@ -348,7 +347,7 @@ void ProcInvoke( void )
 
 void CreateInvokeFile( char *name, void (*rtn)(void) )
 {
-    char        *p;
+    const char  *p;
 
     p = ReScan( name );
     LogStart();

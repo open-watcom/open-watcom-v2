@@ -39,7 +39,7 @@
 #include "guidlg.h"
 #include "dlgcmd.h"
 
-extern char             *ReScan(char *);
+extern const char       *ReScan( const char * );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack(input_type);
 extern void             WndDlgTxt(char*);
@@ -49,7 +49,7 @@ extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, i
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
 extern void             SymComplete( gui_window *gui, int id );
 extern void             DoCmd(char*);
-extern char             *DupStr(char*);
+extern char             *DupStr(const char*);
 
 
 static bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )

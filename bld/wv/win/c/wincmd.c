@@ -34,7 +34,7 @@
 #include "dosscrn.h"
 
 
-extern unsigned         Lookup(char *,char *, unsigned);
+extern unsigned         Lookup(const char *,const char *, unsigned);
 extern void             ForceLines( unsigned );
 extern bool             HasEquals( void );
 extern unsigned         GetValue( void );
@@ -46,7 +46,7 @@ extern flip_types       FlipMech;
 extern mode_types       ScrnMode;
 extern int              ScrnLines;
 
-static char SysOptNameTab[] = {
+static const char SysOptNameTab[] = {
     "Monochrome\0"
     "Color\0"
     "Colour\0"

@@ -35,13 +35,13 @@
 #include "dbgio.h"
 #include "dbgerr.h"
 #include "dbgadget.h"
+#include "strutil.h"
 
 
 extern char             *GetDmpName( void );
 extern void             ReqEOC( void );
-extern bool             ScanItem( bool, char **, size_t * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern bool             WndDlgTxt( char *buff );
-extern char             *StrCopy( char *src, char *dest );
 
 extern gui_resource     WndGadgetArray[];
 
@@ -145,7 +145,7 @@ void WndDumpPrompt( a_window *wnd )
 
 void WndDumpFile( a_window *wnd )
 {
-    char                *start;
+    const char          *start;
     size_t              len;
     bool                got;
 

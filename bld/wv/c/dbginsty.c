@@ -38,14 +38,14 @@
 #include "dbgio.h"
 #include "spawn.h"
 #include "mad.h"
+#include "strutil.h"
 
 extern void             PopEntry(void);
 extern void             ExprValue(stack_entry *);
 extern bool             IsInternalMod( mod_handle mod );
 extern void             AddrFloat( address * );
 extern void             MakeMemoryAddr( bool, memory_expr def_seg, address *out_val );
-extern char             *StrCopy( char *src, char*dest );
-extern char             *ReScan(char *);
+extern const char       *ReScan( const char * );
 extern void             EvalLValExpr( int );
 extern void             ReqEOC(void);
 extern void             NormalExpr(void);
@@ -56,7 +56,7 @@ extern stack_entry      *ExprSP;
 
 extern void BreakOnSelected( char *item )
 {
-    char        *old;
+    const char      *old;
 
     old = ReScan( item );
     EvalLValExpr( 1 );
@@ -67,7 +67,7 @@ extern void BreakOnSelected( char *item )
 
 bool ScanSelectedExpr( char *expr )
 {
-    char        *old;
+    const char  *old;
     bool        rc;
 
     old = ReScan( expr );
@@ -134,10 +134,10 @@ static void DoLValExpr( void )
     ReqEOC();
 }
 
-extern  bool    WndEvalInspectExpr( char *item, bool pop )
-/********************************************************/
+extern  bool    WndEvalInspectExpr( const char *item, bool pop )
+/**************************************************************/
 {
-    char        *old;
+    const char  *old;
     char        buff[12],*p;
     bool        rc;
 

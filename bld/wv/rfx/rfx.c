@@ -43,6 +43,7 @@
 #include "dta.h"
 #include "tcerr.h"
 #include "trprfx.h"
+//#include "strutil.h"
 
 #include "local.h"
 
@@ -233,7 +234,6 @@ static char * Day[] = {
 extern  void    Replace( char *frum, char *to, char *into );
 extern  void    FinishName( char *fn, file_parse *parse, int loc, int addext );
 extern  int     GetFreeSpace( dir_handle *h, int loc );
-extern  void    Format( char *buff, trap_dta *dir, bool wide );
 extern  void    CopyStrMax( char *src, char *dst, unsigned max_len );
 
 void    FreeCopySpec( COPYPTR junk );
@@ -248,6 +248,8 @@ void    ProcDelDir( int argc, char **argv );
 void    ProcRename( int argc, char **argv );
 void    ProcType( int argc, char **argv );
 int     ProcDrive( int argc, char **argv );
+
+static void    FormatDTA( char *buff, trap_dta *dir, bool wide );
 
 /**************************************************************************/
 /* UTILITIES                                                              */
@@ -277,7 +279,7 @@ static void Usage( void )
     Error( "Usage: rfx trap_file[;trap_parm] [rfx_command]" );
 }
 
-char *StrCopy( char *src, char *dest )
+char *StrCopy( const char *src, char *dest )
 {
     while( (*dest = *src++) != 0 ) {
         ++dest;
@@ -1418,14 +1420,14 @@ extern  void    DirReadf( dir_handle *h, char *buff, bool wide )
     if( h->status == RFX_EOF ) {
         *buff = '\0';
     } else {
-        Format( buff, &Info, wide );
+        FormatDTA( buff, &Info, wide );
         if( FindNext( h->location ) != 0 ) {
             h->status = RFX_EOF;
         }
     }
 }
 
-extern  void    Format( char *buff, trap_dta *dir, bool wide )
+void    FormatDTA( char *buff, trap_dta *dir, bool wide )
 {
     char                *b;
     char                *d;

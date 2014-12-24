@@ -51,13 +51,13 @@
 #include "dbgmem.h"
 #include "stdui.h"
 #include "dbgscrn.h"
+#include "strutil.h"
 
 extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
-extern char     *Format(char *,char *,... );
-extern void             ReleaseProgOvlay( bool );
-extern void             KillDebugger( int );
+extern void     ReleaseProgOvlay( bool );
+extern void     KillDebugger( int );
 
 extern unsigned UIConHandle;
 extern char     *UITermType;

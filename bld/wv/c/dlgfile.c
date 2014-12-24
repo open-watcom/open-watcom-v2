@@ -39,17 +39,17 @@
 #include "dbgio.h"
 #include <stdlib.h>
 #include "dbgscrn.h"
+#include "strutil.h"
 
 
 extern a_window         *WndFileInspect( char *name, bool binary );
-extern char             *StrCopy( char *, char * );
 extern void             SaveConfigToFile( char* );
 extern void             RestoreConfigFromFile( char* );
 extern void             SaveBreaksToFile( char * );
 extern void             RestoreBreaksFromFile( char * );
 extern void             SaveReplayToFile( char * );
 extern void             RestoreReplayFromFile( char * );
-extern char             *DupStr( char * );
+extern char             *DupStr( const char * );
 extern void             ReqEOC( void );
 extern bool             OkToSaveReplay( void );
 extern void             FiniHelp( void );

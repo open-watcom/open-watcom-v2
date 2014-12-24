@@ -41,7 +41,7 @@
 /* to be moved to header files ! */
 extern bool             DlgNewWithMod(char*,char*,unsigned);
 extern bool             DlgNewWithSym(char*,char*,unsigned);
-extern char             *ReScan(char*);
+extern const char       *ReScan( const char * );
 extern void             ChkExpr(void);
 extern void             ReqMemAddr(memory_expr , address *);
 extern void             ReqEOC();
@@ -49,14 +49,12 @@ extern char             *CnvLong(long,char*,unsigned);
 extern void             NormalExpr(void);
 extern void             FreezeStack();
 extern void             UnFreezeStack( bool );
-extern char             *ScanPos(void);
+extern const char       *ScanPos( void );
 extern void             PrevError(char*);
 extern char             *UniqStrAddr(address *,char * ,unsigned);
 extern char             *StrDouble(xreal*,char*);
-extern char             *DupStrLen(char*,unsigned);
-extern char             *ScanPos(void);
+extern char             *DupStrLen(const char*,unsigned);
 extern unsigned int     ScanLen(void);
-extern mod_handle       LookupModName( mod_handle, char *, unsigned );
 extern void             Scan(void);
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );
 extern void             PopEntry(void);

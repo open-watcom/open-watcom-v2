@@ -38,6 +38,7 @@
 #include "dbgitem.h"
 #include "mad.h"
 #include "srcmgt.h"
+#include "strutil.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -70,7 +71,6 @@ extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern bool             DlgModName( char *title, mod_handle *mod );
 extern void             WndVarInspect( char * );
-extern char             *StrCopy(char*src,char*dst);
 extern void             SetUnderLine( a_window*, wnd_line_piece *);
 extern void             PushAddr( address );
 extern void             BreakOnExprSP( char *comment );
@@ -78,7 +78,6 @@ extern char             *AddrToString( address *, mad_address_format, char *, un
 extern void             ReportMADFailure( mad_status );
 
 extern void             *OpenSrcFile(cue_handle * );
-extern char             *Format(char *,char *,... );
 extern void             StepIntoFunction( char * );
 extern void             BreakOnSelected( char *item );
 extern void             GoHome(void);

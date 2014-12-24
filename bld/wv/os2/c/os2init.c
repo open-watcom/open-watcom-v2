@@ -40,10 +40,10 @@
 #include <os2.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
+#include "strutil.h"
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern char     *StrCopy( char *, char * );
 extern unsigned EnvLkup( char *, char *, unsigned );
 
 static char             *cmdStart;

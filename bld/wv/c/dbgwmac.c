@@ -39,24 +39,23 @@
 #include "guidlg.h"
 #include "sortlist.h"
 #include "dbgerr.h"
+#include "strutil.h"
 
-extern char             *GetCmdEntry(char *,int ,char *);
+extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
 extern wnd_macro        *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds );
-extern char             *StrCopy( char *src, char *dest );
 extern void             LockCmdList( cmd_list *cmds );
-extern char             *Format( char *buff, char *fmt, ... );
 extern char             *GetCmdName( int index );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, unsigned id, char *buff, bool strip_amp );
-extern cmd_list         *AllocCmdList( char *start, size_t );
+extern cmd_list         *AllocCmdList( const char *start, size_t );
 extern void             FreeCmdList(cmd_list *);
 extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
 extern void             RingBell( void );
 
-extern char             MainTab[];
+extern const char       MainTab[];
 extern wnd_info         *WndInfoTab[];
 extern gui_menu_struct  WndMainMenu[];
 extern int              WndNumMenus;
@@ -382,7 +381,7 @@ static void     MacMenuItem( a_window *wnd, unsigned id, int row, int piece )
 {
     wnd_macro           *mac;
     mac_window          *wndmac = WndMac( wnd );
-    char                *old;
+    const char          *old;
 
     wnd=wnd;
     wndmac->last_id = id;

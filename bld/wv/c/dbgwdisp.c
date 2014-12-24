@@ -34,24 +34,23 @@
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
+#include "strutil.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
 extern void             ReqEOC( void );
 extern void             Scan( void );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern bool             ScanEOC( void );
 extern unsigned         NewCurrRadix( unsigned );
-extern char             *Format( char *, char *, ... );
 extern void             ConfigLine( char * );
-extern char             *StrCopy( char *, char * );
-extern char             *GetCmdEntry( char *, int, char * );
+extern char             *GetCmdEntry( const char *, int, char * );
 extern bool             WndDlgTxt( char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
-extern char             *DupStrLen( char *, unsigned );
-extern bool             ScanItem( bool, char **, size_t * );
+extern char             *DupStrLen( const char *, unsigned );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern char             *GetCmdName( int );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
@@ -61,7 +60,7 @@ extern a_window         *WndMain;
 extern gui_coord        WndScreen;
 extern gui_coord        WndMax;
 extern gui_coord        WndScale;
-extern char             WndNameTab[];
+extern const char       WndNameTab[];
 extern gui_colour_set   WndColours[];
 extern gui_colour_set   WndStatusColour;
 
@@ -71,7 +70,7 @@ wnd_posn        WndPosition[ WND_NUM_CLASSES ];
 static char     *WndFontInfo[ WND_NUM_CLASSES ];
 gui_rect        WndMainRect;
 
-static char     DispOptions[] =
+static const char   DispOptions[] =
 {
     "Open\0"
     "Close\0"
@@ -94,7 +93,7 @@ enum {
     FIXED
 };
 
-static char     MiscTab[] = { "TOolbar\0Status\0" };
+static const char   MiscTab[] = { "TOolbar\0Status\0" };
 
 enum {
     MISC_TOOL = 1,
@@ -207,7 +206,7 @@ void FiniFont( void )
     }
 }
 
-static char *GUIDupStrLen( char *str, unsigned len )
+static char *GUIDupStrLen( const char *str, unsigned len )
 {
     char        *dup;
 
@@ -222,8 +221,8 @@ static char *GUIDupStrLen( char *str, unsigned len )
 
 void ProcFont( void )
 {
-    wnd_class class;
-    char        *start;
+    wnd_class   class;
+    const char  *start;
     size_t      len;
     int         i;
 

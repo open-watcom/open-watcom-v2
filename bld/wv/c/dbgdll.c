@@ -37,13 +37,13 @@
 
 char_ring               *DLLList;
 
-extern void             InsertRing( char_ring **owner, char *start, unsigned len );
-extern void             DeleteRing( char_ring **owner, char *start, unsigned len );
+extern void             InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase );
+extern void             DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase );
 extern void             FreeRing( char_ring *p );
 extern char_ring        **RingEnd( char_ring **owner );
 extern char             *GetLastImageName( void );
 extern void             RecordEvent( char *p );
-extern void             GetBreakOnImageCmd( char *, char *, bool );
+extern void             GetBreakOnImageCmd( const char *, char *, bool );
 
 
 bool DLLMatch( void )
@@ -70,19 +70,17 @@ char_ring *NextDLLList( char_ring *curr )
     return( curr->next );
 }
 
-void AddDLLList( char *name )
+void AddDLLList( const char *name )
 {
-    strupr( name );
-    InsertRing( RingEnd( &DLLList ), name, strlen( name ) );
+    InsertRing( RingEnd( &DLLList ), name, strlen( name ), TRUE );
 }
 
-void BreakOnImageLoad( char *name, unsigned len, bool clear )
+void BreakOnImageLoad( const char *name, unsigned len, bool clear )
 {
-    strupr( name );
     if( clear ) {
-        DeleteRing( &DLLList, name, len );
+        DeleteRing( &DLLList, name, len, TRUE );
     } else {
-        InsertRing( RingEnd( &DLLList ), name, len );
+        InsertRing( RingEnd( &DLLList ), name, len, TRUE );
     }
     GetBreakOnImageCmd( name, TxtBuff, clear );
     RecordEvent( TxtBuff );

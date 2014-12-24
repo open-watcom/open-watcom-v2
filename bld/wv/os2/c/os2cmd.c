@@ -38,14 +38,14 @@
 
 
 extern unsigned     GetValue( void );
-extern unsigned     Lookup( char *, char *, unsigned );
+extern unsigned     Lookup( const char *, const char *, unsigned );
 
 
 extern unsigned     NumLines;
 extern unsigned     NumColumns;
 
 #if 0
-static char SysOptNameTab[] = {
+static const char SysOptNameTab[] = {
     "\0"
     ""
 };

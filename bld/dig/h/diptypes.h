@@ -199,7 +199,7 @@ typedef struct {
 } location_list;
 
 typedef struct {
-    char        *start;
+    const char  *start;
     unsigned    len;
 } lookup_token;
 

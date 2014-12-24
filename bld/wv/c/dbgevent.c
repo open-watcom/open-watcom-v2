@@ -37,32 +37,31 @@
 #include "dbgrep.h"
 #include "dbgevent.h"
 #include "dui.h"
+#include "strutil.h"
 
 
 extern void             RecordPointStart( void );
 extern void             RecordNewProg( void );
-extern cmd_list         *AllocCmdList( char *start, size_t );
+extern cmd_list         *AllocCmdList( const char *start, size_t );
 extern void             FreeCmdList( cmd_list *cmds );
 extern void             PointFini( void );
 extern void             PushCmdList( cmd_list *cmds );
 extern void             TypeInpStack( input_type set );
 extern int              GetStackPos( void );
-extern char             *Format( char *buff, char *fmt, ... );
 extern char             *GetCmdName( int index );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
 extern void             InvokeAFile( char * );
 extern bool             ScanEOC( void );
-extern bool             ScanItem( bool blank_delim, char **start, size_t *len );
+extern bool             ScanItem( bool blank_delim, const char **start, size_t *len );
 extern void             ReqEOC( void );
-extern char             *StrCopy( char *src, char *dest );
 extern char             *StrAddr( address *addr, char *p, unsigned);
 extern unsigned         NewCurrRadix( unsigned rad );
 extern unsigned         ReqExpr( void );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern char             *ScanPos( void );
-extern char             *DupStr( char *str );
+extern const char       *ScanPos( void );
+extern char             *DupStr( const char *str );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
@@ -137,7 +136,7 @@ void RestoreReplayFromFile( char *name )
     ReplayTo( NULL );
 }
 
-static void AddEvent( char *start, size_t len, address ip )
+static void AddEvent( const char *start, size_t len, address ip )
 {
     event_record        **owner;
     event_record        *new;
@@ -161,7 +160,7 @@ static void AddEvent( char *start, size_t len, address ip )
 
 void ProcRecord( void )
 {
-    char        *start;
+    const char  *start;
     size_t      len;
     unsigned    rad;
     unsigned    old;
@@ -242,7 +241,7 @@ void CheckEventRecorded( void )
     }
 }
 
-void RecordEvent( char *p )
+void RecordEvent( const char *p )
 {
     int                 stackpos;
     unsigned            undo;
@@ -276,7 +275,7 @@ void RecordAsynchEvent( void )
     _SwitchOff( SW_EVENT_RECORDED_SINCE_ASYNCH );
 }
 
-void RecordGo( char *p )
+void RecordGo( const char *p )
 {
     if( _IsOn( SW_HAD_ASYNCH_EVENT ) && _IsOff( SW_EVENT_RECORDED_SINCE_ASYNCH ) ) {
         _SwitchOff( SW_HAD_ASYNCH_EVENT );
@@ -284,16 +283,16 @@ void RecordGo( char *p )
     RecordEvent( p );
 }
 
-void RecordCommand( char *startpos, int cmd )
+void RecordCommand( const char *startpos, int cmd )
 {
-    char        *endpos;
+    const char  *endpos;
     char        *p;
 
     endpos = ScanPos();
     p = StrCopy( GetCmdName( cmd ), TxtBuff );
     *p++ = ' ';
-    memcpy( p, startpos, endpos-startpos );
-    p += endpos-startpos;
+    memcpy( p, startpos, endpos - startpos );
+    p += endpos - startpos;
     *p = '\0';
     RecordEvent( TxtBuff );
 }

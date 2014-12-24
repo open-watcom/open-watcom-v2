@@ -13,7 +13,7 @@
 *    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
 *    provided with the Original Code and Modifications, and is also
 *    available at www.sybase.com/developer/opensource.
-*
+*g
 *    The Original Code and all software distributed under the License are
 *    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
 *    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
@@ -36,34 +36,34 @@
 #include "dui.h"
 #include "dbglit.h"
 #include "i64.h"
+#include "strutil.h"
 
 
-extern char             *StrCopy( char *, char * );
 extern unsigned int     ReqExpr( void );
 extern unsigned_64      ReqU64Expr( void );
 extern void             ReqMemAddr( memory_expr ,address *);
 extern unsigned         OptExpr( unsigned );
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             DebugExit( void );
 extern void             ReqEOC( void );
-extern bool             ScanQuote( char **, size_t * );
-extern bool             ScanItem( bool, char **, size_t * );
+extern bool             ScanQuote( const char **, size_t * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern void             Scan( void );
 extern bool             ScanEOC( void );
 extern unsigned         Go( bool );
 extern void             PopEntry( void );
 extern void             NormalExpr( void );
-extern cmd_list         *AllocCmdList( char *, size_t );
+extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
-extern char             *GetCmdEntry( char *, int , char * );
+extern char             *GetCmdEntry( const char *, int , char * );
 extern char             *GetCmdName( int );
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern void             PushCmdList( cmd_list * );
 extern address          GetRegIP( void );
 extern void             RecordSetRegIP( address );
-extern char             *ScanPos( void );
-extern char             *ReScan( char * );
+extern const char       *ScanPos( void );
+extern const char       *ReScan( const char * );
 extern void             DUIWndUser( void );
 extern unsigned         RemoteReadUserKey( unsigned );
 extern void             ReadDbgRegs( void );
@@ -84,7 +84,7 @@ extern void             ChkExpr( void );
 extern bool             AdvMachState( int );
 extern void             CopyInpFlags( void );
 extern void             FlushEOC( void );
-extern void             RecordCommand( char *startpos, int cmd );
+extern void             RecordCommand( const char *startpos, int cmd );
 extern void             RawScanInit( void );
 extern char             RawScanChar( void );
 extern void             RawScanAdvance( void );
@@ -92,10 +92,10 @@ extern void             RawScanFini( void );
 extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern int              AddrComp( address a, address b );
 
-static char ElseifTab[]         = { "ELSEIF\0" };
-static char ElseTab[]           = { "ELSE\0" };
-static char GoOptionTab[]       = { "Keep\0Noflip\0Until\0" };
-static char ThreadOps[]         = { "Show\0Freeze\0Thaw\0Change\0" };
+static const char ElseifTab[]         = { "ELSEIF\0" };
+static const char ElseTab[]           = { "ELSE\0" };
+static const char GoOptionTab[]       = { "Keep\0Noflip\0Until\0" };
+static const char ThreadOps[]         = { "Show\0Freeze\0Thaw\0Change\0" };
 
 enum {
     KEEP = 1,
@@ -119,7 +119,7 @@ void Flip( unsigned wait )
 
 void ProcFlip( void )
 {
-    char        *old;
+    const char  *old;
     unsigned    wait;
     unsigned    cmd;
 
@@ -194,7 +194,7 @@ void ProcDo( void )
 
 void ProcAssign( void )
 {
-    char        *startpos;
+    const char      *startpos;
 
     if( !AdvMachState( ACTION_ASSIGNMENT ) ) {
         FlushEOC();
@@ -228,7 +228,7 @@ void GoToAddr( address addr )
 
 void StepIntoFunction( char *func )
 {
-    char        *old;
+    const char  *old;
     address     stop;
 
     old = ReScan( func );
@@ -374,9 +374,9 @@ void ProcSkip( void )
 
 void ProcIf( void )
 {
-    char                *start;
+    const char          *start;
     size_t              len;
-    char                *true_start;
+    const char          *true_start;
     size_t              true_len;
     unsigned_64         res;
     cmd_list            *cmd;
@@ -423,7 +423,7 @@ void ProcIf( void )
 
 void ProcWhile( void )
 {
-    char                *start;
+    const char          *start;
     size_t              len;
     unsigned_64         res;
     cmd_list            *cmd;
@@ -449,7 +449,7 @@ void ProcWhile( void )
 
 void ProcError( void )
 {
-    char        *start;
+    const char  *start;
     size_t      len;
 
     ScanItem( FALSE, &start, &len );

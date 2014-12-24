@@ -35,18 +35,19 @@
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "madcli.h"
+#include "strutil.h"
 
 extern a_window         *WndClassInspect( wnd_class class );
 extern void             DebugExit( void );
 extern void             DlgSource( void );
-extern char             *ReScan( char * );
+extern const char       *ReScan( const char * );
 extern void             ProcSearchAll( void );
 extern void             ProcWndSearch( a_window * );
 extern void             ProcWndFindNext( a_window * );
 extern void             ProcWndFindPrev( a_window * );
 extern void             DlgOptSet( void );
 extern void             DlgCmd( void );
-extern void             DoSystem( char *, size_t, int );
+extern void             DoSystem( const char *, size_t, int );
 extern void             ExecTrace( trace_cmd_type, debug_level );
 extern unsigned         Go( bool );
 extern void             ReStart( void );
@@ -62,10 +63,9 @@ extern void             BrkClearAll( void );
 extern void             ConfigSave( bool );
 extern void             ReqEOC( void );
 extern bool             ScanEOC( void );
-extern unsigned         ScanCmd( char *cmd_table );
-extern bool             ScanItem( bool, char **, size_t * );
+extern unsigned         ScanCmd( const char *cmd_table );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern wnd_class        ReqWndName( void );
-extern char             *StrCopy( char *, char * );
 extern void             FileBrowse( void );
 extern void             LastMachState( void );
 extern void             LastStackPos( void );
@@ -162,7 +162,7 @@ wnd_info *WndInfoTab[] = {
     #undef pick
 };
 
-char MainTab[] = { "MAin\0" };
+const char MainTab[] = { "MAin\0" };
 
 extern void PlayDead( bool dead )
 {
@@ -177,9 +177,9 @@ extern void PlayDead( bool dead )
 }
 
 
-static bool StrAmpEqual( char *str, char *menu, int len )
+static bool StrAmpEqual( const char *str, const char *menu, int len )
 {
-    char        *p;
+    const char  *p;
     char        menu_accel;
 
     while( *str == ' ' ) {
@@ -217,7 +217,7 @@ static bool StrAmpEqual( char *str, char *menu, int len )
 
 static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
 {
-    char                *start;
+    const char          *start;
     size_t              len;
 
     if( !ScanItem( TRUE, &start, &len ) ) return( NULL );
@@ -255,7 +255,7 @@ char *GetMenuLabel( unsigned size,
     return( NULL );
 }
 
-static gui_menu_struct *FindSubMenu( char *start, unsigned len, gui_menu_struct *child, int size )
+static gui_menu_struct *FindSubMenu( const char *start, unsigned len, gui_menu_struct *child, int size )
 {
     gui_menu_struct     *sub;
 
@@ -308,7 +308,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     gui_menu_struct     *child;
     wnd_info            *info;
     a_window            *wnd;
-    char                *start;
+    const char          *start;
     size_t              len;
 
     *menu = *parent = NULL;
@@ -488,7 +488,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, char *key )
 extern gui_menu_struct *AddMenuAccel( char *key, char *cmd,
                                       wnd_class class, bool *is_main )
 {
-    char                *old;
+    const char          *old;
     gui_menu_struct     *menu,*parent;
     int                 num_sibs;
 

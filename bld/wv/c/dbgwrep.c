@@ -36,6 +36,7 @@
 #include "dbgmem.h"
 #include "dbgrep.h"
 #include "dbgevent.h"
+#include "strutil.h"
 
 extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
@@ -44,7 +45,6 @@ extern void             PointFini();
 extern void             PushCmdList( cmd_list *cmds );
 extern void             TypeInpStack( input_type set );
 extern int              GetStackPos();
-extern char             *Format( char *buff, char *fmt, ... );
 extern char             *GetCmdName( int index );
 extern unsigned         UndoLevel();
 extern address          GetRegIP();
@@ -55,13 +55,12 @@ extern void             InvokeAFile(char*);
 extern bool             ScanEOC();
 extern void             ReqEOC();
 extern bool             WndDlgTxt( char *buff );
-extern char             *StrCopy( char *src, char *dest );
 extern char             *StrAddr( address *addr, char *p ,unsigned);
 extern unsigned         NewCurrRadix( unsigned rad );
 extern unsigned         ReqExpr();
 extern void             PushInpStack( void *handle, bool (*rtn)(), bool save_lang );
-extern char             *ScanPos();
-extern char             *DupStr( char *str );
+extern const char       *ScanPos( void );
+extern char             *DupStr( const char *str );
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );

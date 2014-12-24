@@ -39,21 +39,21 @@
 #include "dbgio.h"
 
 
-extern long         _fork( char *, size_t );
-extern rc_erridx    RemoteFork( char *,size_t );
+extern long         _fork( const char *, size_t );
+extern rc_erridx    RemoteFork( const char *,size_t );
 extern void         RemoteSuspend(void);
 extern void         RemoteResume(void);
-extern unsigned int ScanCmd(char *);
+extern unsigned int ScanCmd(const char *);
 extern void         ReqEOC(void);
 extern void         Scan(void);
-extern bool         ScanItem(bool ,char **,size_t *);
+extern bool         ScanItem(bool ,const char **,size_t *);
 extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
 extern char         *GetCmdName( int );
 
-static char SystemOps[] = { "Remote\0Local\0" };
+static const char SystemOps[] = { "Remote\0Local\0" };
 
-void DoSystem( char *cmd, size_t len, int loc )
+void DoSystem( const char *cmd, size_t len, int loc )
 {
     long        rc;
     rc_erridx   ret;
@@ -82,7 +82,7 @@ void DoSystem( char *cmd, size_t len, int loc )
 
 void ProcSystem()
 {
-    char        *start;
+    const char  *start;
     size_t      len;
     int         loc;
 

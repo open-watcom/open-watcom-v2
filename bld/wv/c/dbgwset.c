@@ -39,19 +39,19 @@
 #include "dbgio.h"
 #include "mad.h"
 #include "madcli.h"
+#include "strutil.h"
 
 #include "clibext.h"
 
 
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             Scan( void );
-extern char             *ScanPos( void );
-extern char             *ReScan( char * );
+extern const char       *ScanPos( void );
 extern bool             ScanEOC( void );
-extern bool             ScanItem( bool, char **, size_t * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern void             ReqEOC( void );
 extern unsigned         SetCurrRadix( unsigned int );
-extern char             *GetCmdEntry( char *, int, char * );
+extern char             *GetCmdEntry( const char *, int, char * );
 extern char             *CnvULongDec( unsigned long, char *, unsigned );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
@@ -68,19 +68,16 @@ extern void             LookConf( void );
 extern void             RadixConf( void );
 extern void             SourceConf( void );
 extern void             LevelConf( void );
-extern void             DoConfig( char *, char *, void (**)(), void (**)() );
 extern void             ConfigLine( char * );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             LangInit( void );
 extern void             LangFini( void );
 extern bool             LangLoad( const char *, unsigned );
-extern char             *StrCopy( char *, char * );
 extern void             WndRedraw( wnd_class );
 extern a_window         *WndFindActive( void );
-extern cmd_list         *AllocCmdList( char *, size_t );
+extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
-extern char             *Format( char *, char *, ... );
 extern void             Recog( unsigned int );
 extern void             WndRestoreToFront( a_window* );
 extern a_window         *WndFindClass( a_window*, wnd_class );
@@ -97,10 +94,9 @@ extern void             WndMenuSetHotKey( gui_menu_struct *, bool, char *);
 extern char             *UniqStrAddr( address *addr, char *p ,unsigned );
 extern char             *GetCmdName( int );
 extern void             RegFindData( mad_type_kind kind, mad_reg_set_data **pdata );
-extern mad_handle       FindMAD( char *, unsigned );
 extern void             DbgUpdate( update_list );
 
-extern char             WndNameTab[];
+extern const char       WndNameTab[];
 extern margins          SrcMar;
 extern margins          AsmMar;
 extern wnd_macro        *WndMacroList;
@@ -394,7 +390,7 @@ char *KeyName( unsigned key )
     return( NULL );
 }
 
-static key_desc StripOff( char **start, unsigned *len,
+static key_desc StripOff( const char **start, unsigned *len,
                           char *test, key_desc desc )
 {
     int         tlen;
@@ -409,7 +405,7 @@ static key_desc StripOff( char **start, unsigned *len,
 }
 
 
-static unsigned MapKey( char *start, unsigned len )
+static unsigned MapKey( const char *start, unsigned len )
 {
     key_name            *k;
     key_desc            desc;
@@ -511,10 +507,11 @@ extern void MacroSet( void )
     wnd_class   class;
     cmd_list    *cmds;
     unsigned    key;
-    char        *start;
+    const char  *start;
     size_t      len;
     bool        scanned;
-    char        *p,*q;
+    char        *p;
+    const char  *q;
     int         i;
 
 
@@ -612,12 +609,13 @@ extern void TabConf( void )
     ConfigLine( TxtBuff );
 }
 
-static char SearchSettings[] = {
+static const char SearchSettings[] = {
     "CASEIgnore\0"
     "CASEREspect\0"
     "Rx\0"
     "NORx\0"
 };
+
 enum {
     SEARCH_IGNORE = 1,
     SEARCH_RESPECT,
@@ -628,7 +626,7 @@ enum {
 
 extern void SearchSet( void )
 {
-    char        *start;
+    const char  *start;
     size_t      len;
 
     while( CurrToken == T_DIV ) {

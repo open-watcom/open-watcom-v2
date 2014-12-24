@@ -39,10 +39,11 @@
 #include "dui.h"
 #include "srcmgt.h"
 #include "dbgscrn.h"
+#include "strutil.h"
 
 
 extern a_window         *WndMain;
-extern char             WndNameTab[];
+extern const char       WndNameTab[];
 
 extern unsigned long    CueLine( cue_handle *ch );
 extern GUICALLBACK      WndMainEventProc;
@@ -81,14 +82,13 @@ extern bool             GUIIsDBCS( void );
 extern unsigned         EnvLkup( char *src, char *dst, unsigned );
 extern void             PopErrBox( char *buff );
 extern void             KillDebugger( int ret_code );
-extern char             *Format( char *, char *, ... );
 
 extern void             InitSuppServices( void );
 
 extern void             AsyncNotify( void );
 extern void             RunThreadNotify( void );
 
-extern unsigned         ScanCmd( char *cmd_table );
+extern unsigned         ScanCmd( const char *cmd_table );
 extern void             WndMsgBox( char *text );
 extern bool             WndDlgTxt( char *text );
 extern void             WndInfoBox( char *text );

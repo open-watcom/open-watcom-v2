@@ -39,19 +39,20 @@
 #include "dbgio.h"
 #include "mad.h"
 #include "madcli.h"
+#include "strutil.h"
 
 #include "clibext.h"
 
 
-extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanCmd( const char * );
 extern void             Scan( void );
-extern char             *ScanPos( void );
-extern char             *ReScan( char * );
+extern const char       *ScanPos( void );
+extern const char       *ReScan( const char * );
 extern bool             ScanEOC( void );
-extern bool             ScanItem( bool, char **, size_t * );
+extern bool             ScanItem( bool, const char **, size_t * );
 extern void             ReqEOC( void );
 extern unsigned         SetCurrRadix( unsigned int );
-extern char             *GetCmdEntry( char *, int, char * );
+extern char             *GetCmdEntry( const char *, int, char * );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
@@ -67,16 +68,14 @@ extern void             LookConf( void );
 extern void             RadixConf( void );
 extern void             SourceConf( void );
 extern void             LevelConf( void );
-extern void             DoConfig( char *,char *,void (**)(), void (**)() );
+extern void             DoConfig( char *,const char *,void (**)(), void (**)() );
 extern void             ConfigLine( char * );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             LangInit( void );
 extern void             LangFini( void );
 extern bool             LangLoad( const char *, unsigned );
-extern char             *StrCopy( char *, char * );
 extern void             FreeCmdList( cmd_list * );
-extern char             *Format( char *, char *, ... );
 extern void             Recog( unsigned int );
 extern void             VarChangeOptions( void );
 extern void             RegChangeOptions( void );
@@ -92,7 +91,7 @@ extern void             WndDlgTxt( char * );
 extern char             *UniqStrAddr( address *addr, char *p ,unsigned);
 extern char             *GetCmdName( int );
 extern void             RegFindData( mad_type_kind kind, mad_reg_set_data const **pdata );
-extern mad_handle       FindMAD( char *, unsigned );
+extern mad_handle       FindMAD( const char *, unsigned );
 extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq );
 extern void             AddrFloat( address * );
 unsigned                GetMADNormalizedString( mad_string, char *buff, unsigned buff_len );
@@ -101,7 +100,7 @@ extern bool             CapabilitiesGetExactBreakpointSupport( void );
 extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
 extern bool             SupportsExactBreakpoints;
 
-extern char             WndNameTab[];
+extern const char       WndNameTab[];
 extern margins          SrcMar;
 extern margins          AsmMar;
 
@@ -128,7 +127,7 @@ char    *Language = NULL;
 
 static pending_toggle_list *PendToggleList[MWT_LAST];
 
-static char SetNameTab[] = {
+static const char SetNameTab[] = {
     "AUtosave\0"
     "ASsembly\0"
     "Variable\0"
@@ -144,6 +143,7 @@ static char SetNameTab[] = {
     "Dclick\0"
     "Implicit\0"
     "INput\0"
+
     "Radix\0"
     "RECursion\0"
     "SEarch\0"
@@ -404,7 +404,8 @@ bool LangSetInit( void )
 
     LangInit();
     _Alloc( Language, sizeof( InitialLang ) + 1 );
-    if( Language == NULL ) return( FALSE );
+    if( Language == NULL )
+        return( FALSE );
     StrCopy( InitialLang, Language );
     return( LangLoad( Language, strlen( Language ) ) );
 }
@@ -422,32 +423,33 @@ void LangSetFini( void )
  * NewLang -- load a new expression language, if different from current one
  */
 
-void NewLang( char *lang )
+void NewLang( const char *lang )
 {
-    char       *new;
+    char       *new_lang;
     unsigned    len;
 
     if( lang == NULL ) return;
-    strlwr( lang );
     len = strlen( lang );
-    if( ( len != strlen( Language ) ) || memcmp( lang, Language, len ) != 0 ) {
-        new = DbgMustAlloc( len + 1 );
-        memcpy( new, lang, len );
-        new[ len ] = NULLCHAR;
-        if( !LangLoad( new, len ) ) {
+    new_lang = DbgMustAlloc( len + 1 );
+    memcpy( new_lang, lang, len );
+    new_lang[len] = NULLCHAR;
+    strlwr( new_lang );
+    if( ( len != strlen( Language ) ) || memcmp( new_lang, Language, len ) != 0 ) {
+        if( !LangLoad( new_lang, len ) ) {
             LangLoad( Language, strlen( Language ) );
-            _Free( new );
             Error( ERR_NONE, LIT( ERR_NO_LANG ) );
         }
         _Free( Language );
-        Language = new;
+        Language = new_lang;
+        return;
     }
+    _Free( new_lang );
 }
 
 
 static void LangSet( void )
 {
-    char        *start;
+    const char  *start;
     size_t      len;
 
     ScanItem( TRUE, &start, &len );
@@ -535,7 +537,7 @@ static unsigned DoMADToggle( const mad_reg_set_data *rsd, unsigned on, unsigned 
 }
 
 static void PendingAdd( mad_window_toggles wt, mad_handle mh,
-                        char *name, unsigned len )
+                        const char *name, unsigned len )
 {
     pending_toggle_list **owner;
     pending_toggle_list *new;
@@ -558,7 +560,7 @@ static void PendingAdd( mad_window_toggles wt, mad_handle mh,
 static bool DoOneToggle( mad_window_toggles wt )
 {
     unsigned                    bit;
-    char                        *start;
+    const char                  *start;
     size_t                      len;
     const mad_toggle_strings    *toggles;
     const mad_reg_set_data      *rsd;
@@ -622,7 +624,7 @@ void PendingToggles( void )
     mad_window_toggles          wt;
     pending_toggle_list         **owner;
     pending_toggle_list         *curr;
-    char                        *scan;
+    const char                  *scan;
 
     scan = ScanPos();
     for( wt = 0; wt < MWT_LAST; ++wt ) {
@@ -645,11 +647,11 @@ void PendingToggles( void )
 
 static bool OneToggle( mad_window_toggles wt )
 {
-    char                *name;
+    const char          *name;
     size_t              len;
     mad_handle          old_mad;
     mad_handle          new_mad;
-    char                *scan;
+    const char          *scan;
     bool                res;
 
 
@@ -684,7 +686,7 @@ static bool OneToggle( mad_window_toggles wt )
 }
 
 static void ToggleWindowSwitches( window_toggle *toggle, int len,
-                                char *settings, mad_window_toggles wt )
+                                const char *settings, mad_window_toggles wt )
 {
     int idx;
     int i;
@@ -777,7 +779,7 @@ static walk_result DumpToggles( mad_handle mh, void *d )
     return( WR_CONTINUE );
 }
 
-static void ConfWindowSwitches( window_toggle *toggle, int len, char *settings,
+static void ConfWindowSwitches( window_toggle *toggle, int len, const char *settings,
                         mad_window_toggles wt )
 {
     struct dump_toggles data;
@@ -1034,7 +1036,7 @@ void SupportFini( void )
 static void SupportSet( void )
 {
     char_ring   *new;
-    char        *start;
+    const char  *start;
     size_t      len;
     unsigned    count;
 

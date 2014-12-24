@@ -43,8 +43,8 @@
 #include "mad.h"
 #include "ldsupp.h"
 #include "memtypes.h"
+#include "strutil.h"
 
-extern char             *StrCopy(char*,char*);
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern char             *CnvULongDec(unsigned long,char *,unsigned);
@@ -59,7 +59,7 @@ extern long             AddrDiff( address a, address b );
 extern unsigned         ChangeMemUndoable( address addr, void *data, unsigned len );
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( char *title, char *buff );
-extern char             *DupStr( char *str );
+extern char             *DupStr( const char *str );
 extern int              AddrComp(address,address);
 extern void             Warn( char *p );
 extern bool             BreakWrite( address addr, mad_type_handle, char *comment );
@@ -68,7 +68,6 @@ extern bool             DlgScanGivenAddr( char *str, address *value );
 extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
-extern char             *Format( char *buff, char *fmt, ... );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern unsigned         ProgPeekWrap(address addr,char * buff,unsigned length );
 
@@ -1060,7 +1059,7 @@ extern  a_window        *WndStkOpen()
 }
 
 
-extern  a_window        *DoWndBinOpen( char *name, handle filehndl )
+extern  a_window        *DoWndBinOpen( const char *name, handle filehndl )
 {
     mem_window  *mem;
     a_window    *wnd;
