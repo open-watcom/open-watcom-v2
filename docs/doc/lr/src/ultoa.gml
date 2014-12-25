@@ -40,15 +40,7 @@ must satisfy the condition:
 2 <= radix <= 36
 .millust end
 .im ansiconf
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it produces a
-wide-character string (which is twice as long).
-.do end
+.im widefun3
 .desc end
 .return begin
 The

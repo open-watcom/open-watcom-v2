@@ -1,7 +1,7 @@
 .func feholdexcept
 .synop begin
 #include <fenv.h>
-int feholdexcept( fenv_t *__envp );
+int feholdexcept( fenv_t *envp );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
@@ -9,7 +9,9 @@ int feholdexcept( fenv_t *__envp );
 The
 .id &funcb.
 function saves the current floating-point environment in the object
-pointed to by envp, clears the floating-point status flags, and then installs a non-stop
+pointed to by
+.arg envp
+argument, clears the floating-point status flags, and then installs a non-stop
 (continue on floating-point exceptions) mode, if available, for all floating-point
 exceptions.
 .desc end

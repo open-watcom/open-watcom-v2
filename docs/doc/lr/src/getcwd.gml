@@ -2,15 +2,15 @@
 .synop begin
 .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
-char *getcwd( char *buffer, size_t size );
+char *getcwd( char *buffer, size_t maxlen );
 .do end
 .el .do begin
 #include <direct.h>
-char *getcwd( char *buffer, size_t size );
+char *getcwd( char *buffer, size_t maxlen );
 .do end
 .ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t *_wgetcwd( wchar_t *buffer, size_t size );
+wchar_t *_wgetcwd( wchar_t *buffer, size_t maxlen );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
@@ -26,10 +26,13 @@ address is either
 or is the location at which a string containing the name of the
 current working directory is placed.
 In the latter case, the value of
-.arg size
-is the length (including the delimiting
-.mono '\0'
+.arg maxlen
+is the length in characters (including the terminating null
 character) which can be be used to store this name.
+An error occurs if the length of the path (including the terminating
+null character) exceeds
+.arg maxlen
+.ct .li .
 .np
 The maximum size that might be required for
 .arg buffer
@@ -48,14 +51,11 @@ to contain the name of the current working directory.
 This string may be freed using the
 .kw free
 function.
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it returns the
-name of the current working directory as a wide-character string
-(which is twice as long).
+.arg maxlen
+is the length in wide-characters (wchar_t).
 .do end
 .desc end
 .return begin
@@ -73,13 +73,13 @@ is returned.
 .termhd2 Meaning
 .term EINVAL
 The argument
-.arg size
+.arg maxlen
 is negative.
 .term ENOMEM
 Not enough memory to allocate a buffer.
 .term ERANGE
 The buffer is too small (specified by
-.arg size
+.arg maxlen
 .ct ) to contain the name of the current working directory.
 .endterm
 .error end

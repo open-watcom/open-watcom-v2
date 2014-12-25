@@ -95,15 +95,8 @@ assignments:
     INCLUDE=C:\WATCOM\H
 .millust end
 .do end
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-.id &wfunc.
-is a wide-character version of
-.id &funcb.
-the argument and return
-value of
-.id &wfunc.
-are wide-character strings.
+.im widefun1
+:CMT. .if &'length(&wfunc.) ne 0 .do begin
 :CMT. The
 :CMT. .kw _wenviron
 :CMT. global variable is a wide-character version of
@@ -123,7 +116,7 @@ are wide-character strings.
 :CMT. pointed to by
 :CMT. .kw _wenviron
 :CMT. .ct .li .
-.do end
+:CMT. .do end
 .desc end
 .*
 .return begin

@@ -29,21 +29,13 @@ The
 string is described under the description of the
 .kw printf
 function.
+.im widefun4
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that the argument
+The argument
 .arg buf
 specifies an array of wide characters into which the generated output
 is to be written, rather than converted to multibyte characters and
 written to a stream.
-The
-.id &wfunc.
-function accepts a wide-character string argument for
-.arg format
 .do end
 .desc end
 .*
@@ -52,6 +44,12 @@ The
 .id &funcb.
 function returns the number of characters written into the
 array, not counting the terminating null character.
+.if &'length(&wfunc.) ne 0 .do begin
+The
+.id &wfunc.
+function returns the number of wide characters written into the
+array, not counting the terminating null character.
+.do end
 An error can occur while converting a value for output.
 .im errnoref
 .return end

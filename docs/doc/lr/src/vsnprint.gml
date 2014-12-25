@@ -47,13 +47,9 @@ function, with the variable argument list replaced with
 .ct , which has been initialized by the
 .kw va_start
 macro.
+.im widefun4
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that the argument
+The argument
 .arg buf
 specifies an array of wide characters into which the generated output
 is to be written, rather than converted to multibyte characters and
@@ -62,10 +58,6 @@ The maximum number of wide characters to write, including a
 terminating null wide character, is specified by
 .arg count
 .ct .li .
-The
-.id &wfunc.
-function accepts a wide-character string argument for
-.arg format
 .do end
 .desc end
 .*

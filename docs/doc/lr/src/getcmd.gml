@@ -12,9 +12,7 @@ function causes the command line information, with the program
 name removed, to be copied to
 .arg cmd_line
 .ct .li .
-The information is terminated with a
-.mono '\0'
-character.
+The information is terminated with a null character.
 .if '&machsys' eq 'QNX' .do begin
 This provides a method of obtaining the original parameters to a program
 as a single string of text.

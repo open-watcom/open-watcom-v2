@@ -35,19 +35,7 @@ The argument
 is described in the description of the
 .kw fopen
 function.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts
-wide-character string arguments for
-.arg filename
-and
-.arg mode
-.ct .li .
-.do end
+.im widefun1
 .desc end
 .return begin
 The

@@ -1,16 +1,29 @@
 .func fesetround
 .synop begin
 #include <fenv.h>
-int fesetround( int __round );
+void fesetround( int mode );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
-.*
 .desc begin
 The
 .id &funcb.
-function establishes the rounding direction represented by its
-argument round. If the argument is not equal to the value of a rounding direction macro,
-the rounding direction is not changed.
+function sets the current rounding mode, specified by
+.arg mode
+.ct .li , for the current process. The
+.arg mode
+argument can be one of the following constants:
+.begnote $setptnt 15
+.termhd1 Argument
+.termhd2 Meaning
+.note FE_TONEAREST
+Round to nearest integer, halfway rounding away from zero
+.note FE_DOWNWARD
+Round downward to the next lowest integer
+.note FE_TOWARDZERO
+Round to the nearest integer in the direction of zero
+.note FE_UPWARD
+Round upward to the next highest integer
+.endnote
 .desc end
 .*
 .return begin
@@ -19,18 +32,23 @@ The
 function returns a zero value if and only if the requested rounding direction was
 established.
 .return end
-.*
 .see begin
-.seelist fegetround
+.seelist fegetround nearbyint rint
 .see end
-.*
 .exmp begin
-#include <fenv.h>
-.exmp break
-void main( void )
-{
-    fesetround( FE_UPWARD );
-}
+#include <stdio.h>
+#include <math.h>
+
+void main()
+  {
+    fesetround(FE_DOWNWARD)
+    printf( "%f\n", rint( 1.5 ) );
+    fesetround(FE_UPWARD)
+    printf( "%f\n", rint( 1.5 ) );
+  }
+.exmp output
+1.00000
+2.00000
 .exmp end
 .class ISO C99
 .system

@@ -150,11 +150,7 @@ This function deallocates any resources that were allocated by the
 function.
 .if &'length(&wfunc.) ne 0 .do begin
 The wide-character
-.kw _wdos_findclose
-.ct ,
-.kw _wdos_findfirst
-and
-.kw _wdos_findnext
+.kw _wdos_find&grpsfx
 functions are similar to their counterparts but operate on
 wide-character strings.
 .do end

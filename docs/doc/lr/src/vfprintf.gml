@@ -44,17 +44,7 @@ function, with the variable argument list replaced with
 .ct , which has been initialized by the
 .kw va_start
 macro.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument for
-.arg format
-.ct .li .
-.do end
+.im widefun4
 .desc end
 .*
 .return begin

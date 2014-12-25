@@ -506,7 +506,7 @@ is an array of characters (with type
 .ct ) that is terminated with an extra null character
 .mono ('\0').
 Functions are passed only the address of the string since the size
-can be determined by searching for the terminating character.
+can be determined by searching for the terminating null character.
 The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location
@@ -597,7 +597,7 @@ is an array of wide characters (with type
 .ct ) that is terminated with an extra null wide character
 .mono (L'\0').
 Functions are passed only the address of the string since the size
-can be determined by searching for the terminating character.
+can be determined by searching for the terminating null character.
 The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location
@@ -685,7 +685,7 @@ is an array of wide characters (with type
 .ct ) that is terminated with an extra null wide character
 .mono (L'\0').
 Functions are passed only the address of the wide string since the
-size can be determined by searching for the terminating character.
+size can be determined by searching for the terminating null character.
 The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location

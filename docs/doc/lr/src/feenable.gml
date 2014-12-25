@@ -1,15 +1,17 @@
 .func feenableexcept __feenableexcept
 .synop begin
 #include <fenv.h>
-void feenableexcept( int __excepts );
-void __feenableexcept( int __excepts );
+void feenableexcept( int excepts );
+void __feenableexcept( int excepts );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
 .id &funcb.
-function enables the specified floating point exceptions.
+function enables the floating point exceptions specified
+.arg excepts
+argument.
 .desc end
 .*
 .return begin

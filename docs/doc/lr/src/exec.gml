@@ -230,21 +230,7 @@ functions are extensions to POSIX 1003.1.
 .*==========================================
 .if &'length(&wfunc.) ne 0 .do begin
 The wide-character
-.kw _wexecl
-.ct ,
-.kw _wexecle
-.ct ,
-.kw _wexeclp
-.ct ,
-.kw _wexeclpe
-.ct ,
-.kw _wexecv
-.ct ,
-.kw _wexecve
-.ct ,
-.kw _wexecvp
-and
-.kw _wexecvpe
+.kw _wexec&grpsfx
 functions are similar to their counterparts but operate on
 wide-character strings.
 .do end

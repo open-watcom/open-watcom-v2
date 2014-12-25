@@ -1,7 +1,7 @@
 .func feclearexcept
 .synop begin
 #include <fenv.h>
-int feclearexcept( int __excepts );
+int feclearexcept( int excepts );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
@@ -9,13 +9,17 @@ int feclearexcept( int __excepts );
 The
 .id &funcb.
 function attempts to clear the supported floating-point exceptions
-represented by its argument.
+represented by
+.arg excepts
+argument.
 .desc end
 .*
 .return begin
 The
 .id &funcb.
-function returns zero if the excepts argument is zero or if all
+function returns zero if the
+.arg excepts
+argument is zero or if all
 the specified exceptions were successfully cleared. Otherwise, it returns a nonzero value.
 .return end
 .*

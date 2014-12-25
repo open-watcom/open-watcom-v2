@@ -1,7 +1,7 @@
 .func fegetexceptflag
 .synop begin
 #include <fenv.h>
-int fegetexceptflag( fexcept_t *__flagp, int __excepts );
+int fegetexceptflag( fexcept_t *flagp, int excepts );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
@@ -9,8 +9,12 @@ int fegetexceptflag( fexcept_t *__flagp, int __excepts );
 The
 .id &funcb.
 function attempts to store a representation of the states of the
-floating-point status flags indicated by the argument excepts in the
-object pointed to by the argument flagp.
+floating-point status flags indicated by the
+.arg excepts
+argument in the
+object pointed to by the
+.arg flagp
+argument.
 .np
 Valid exceptions are
 .kw FE_INVALID

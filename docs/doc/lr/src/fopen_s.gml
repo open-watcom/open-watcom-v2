@@ -209,19 +209,7 @@ function or to a file positioning function (
 Similarly, reading may not be followed by writing without an
 intervening call to a file positioning function, unless the read
 resulted in end-of-file.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it
-accepts wide-character string arguments for
-.arg filename
-and
-.arg mode
-.ct .li .
-.do end
+.im widefun1
 .desc end
 .return begin
 The

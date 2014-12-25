@@ -21,13 +21,11 @@ and stores them in the array pointed to by
 until end-of-file is encountered or a new-line character is read.
 Any new-line character is discarded, and a null character is placed
 immediately after the last character read into the array.
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
-.np
 The
 .id &wfunc.
-function is identical to
-.id &funcb.
-except that it gets a string
+function gets a string
 of multibyte characters (if present) from the input stream pointed to
 by
 .kw stdin

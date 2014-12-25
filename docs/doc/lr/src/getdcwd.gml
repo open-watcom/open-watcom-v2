@@ -4,8 +4,7 @@
 char *_getdcwd( int drive, char *buffer, size_t maxlen );
 .ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t *_wgetdcwd( int drive, wchar_t *buffer,
-                    size_t maxlen );
+wchar_t *_wgetdcwd( int drive, wchar_t *buffer, size_t maxlen );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
@@ -26,12 +25,10 @@ or is the location at which a string containing the name of the
 current working directory is placed.
 In the latter case, the value of
 .arg maxlen
-is the length (including the terminating
-.mono '\0'
-character) which can be be used to store this name.
+is the length in characters (including the terminating null character)
+which can be be used to store this name.
 An error occurs if the length of the path (including the terminating
-.mono '\0'
-character) exceeds
+null character) exceeds
 .arg maxlen
 .ct .li .
 .np
@@ -51,14 +48,11 @@ to contain the name of the current working directory.
 This string may be freed using the
 .kw free
 function.
+.im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it returns the
-name of the current working directory as a wide-character string
-(which is twice as long).
+.arg maxlen
+is the length in wide-characters (wchar_t).
 .do end
 .desc end
 .return begin

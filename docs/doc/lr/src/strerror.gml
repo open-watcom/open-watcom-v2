@@ -20,15 +20,7 @@ The
 function maps the error number contained in
 .arg errnum
 to an error message.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that the message it
-points to is a wide-character string.
-.do end
+.im widefun3
 .desc end
 .return begin
 The

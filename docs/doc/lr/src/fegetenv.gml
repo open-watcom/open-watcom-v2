@@ -1,7 +1,7 @@
 .func fegetenv
 .synop begin
 #include <fenv.h>
-int fegetenv( fenv_t *__envp );
+int fegetenv( fenv_t *envp );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
@@ -9,7 +9,9 @@ int fegetenv( fenv_t *__envp );
 The
 .id &funcb.
 function attempts to store the current floating-point environment in the object
-pointed to by envp.
+pointed to by
+.arg envp
+argument.
 .desc end
 .*
 .return begin

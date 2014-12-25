@@ -17,14 +17,7 @@ The
 .id &funcb.
 function generates a unique string for use as a valid file
 name.
-.if &'length(&wfunc.) ne 0 .do begin
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it generates a
-unique wide-character string for the file name.
-.do end
+.im widefun4
 .if '&machsys' eq 'QNX' .do begin
 .np
 If the

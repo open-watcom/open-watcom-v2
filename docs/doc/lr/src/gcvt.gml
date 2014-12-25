@@ -36,15 +36,7 @@ or equal to the number of significant digits wanted, then the number
 is converted into E-format, otherwise the number is formatted using
 F-format.
 .im ansiconf
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it produces a
-wide-character string (which is twice as long).
-.do end
+.im widefun3
 .desc end
 .return begin
 The

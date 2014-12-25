@@ -47,17 +47,7 @@ The
 function is equivalent to the
 .kw vprintf
 function except for the explicit runtime-constraints listed above.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument for
-.arg format
-.ct .li .
-.do end
+.im widefun4
 .desc end
 .*
 .return begin

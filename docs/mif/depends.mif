@@ -1183,6 +1183,7 @@ objs_lr2 = &
 ../doc/lr/src/_bthread.gml &
 ../doc/lr/src/_clear87.gml &
 ../doc/lr/src/_cmdname.gml &
+../doc/lr/src/_commit.gml &
 ../doc/lr/src/_ctime.gml &
 ../doc/lr/src/_disable.gml &
 ../doc/lr/src/_dwdelcl.gml &
@@ -1240,8 +1241,8 @@ objs_lr2 = &
 ../doc/lr/src/acosh.gml &
 ../doc/lr/src/alloca.gml &
 ../doc/lr/src/allocmem.gml &
-../doc/lr/src/asctime.gml &
 ../doc/lr/src/asctim_s.gml &
+../doc/lr/src/asctime.gml &
 ../doc/lr/src/asin.gml &
 ../doc/lr/src/asinh.gml &
 ../doc/lr/src/assert.gml &
@@ -1252,6 +1253,7 @@ objs_lr2 = &
 ../doc/lr/src/atof.gml &
 ../doc/lr/src/atoi.gml &
 ../doc/lr/src/atol.gml &
+../doc/lr/src/atoll.gml &
 ../doc/lr/src/b_disk.gml &
 ../doc/lr/src/b_disk98.gml &
 ../doc/lr/src/b_equi98.gml &
@@ -1285,6 +1287,7 @@ objs_lr2 = &
 ../doc/lr/src/cgets.gml &
 ../doc/lr/src/chainint.gml &
 ../doc/lr/src/chdir.gml &
+../doc/lr/src/chdrive.gml &
 ../doc/lr/src/chkctype.gml &
 ../doc/lr/src/chmod.gml &
 ../doc/lr/src/chsize.gml &
@@ -1359,8 +1362,21 @@ objs_lr2 = &
 ../doc/lr/src/fcvt.gml &
 ../doc/lr/src/fdim.gml &
 ../doc/lr/src/fdopen.gml &
+../doc/lr/src/fecleare.gml &
+../doc/lr/src/fedisabl.gml &
+../doc/lr/src/feenable.gml &
+../doc/lr/src/fegetenv.gml &
+../doc/lr/src/fegetexc.gml &
+../doc/lr/src/fegetrnd.gml &
+../doc/lr/src/feholdex.gml &
 ../doc/lr/src/feof.gml &
+../doc/lr/src/feraise.gml &
 ../doc/lr/src/ferror.gml &
+../doc/lr/src/fesetenv.gml &
+../doc/lr/src/fesetexc.gml &
+../doc/lr/src/fesetrnd.gml &
+../doc/lr/src/fetestex.gml &
+../doc/lr/src/feupdenv.gml &
 ../doc/lr/src/ffarfunc.gml &
 ../doc/lr/src/ffarparm.gml &
 ../doc/lr/src/fflush.gml &
@@ -1383,11 +1399,12 @@ objs_lr2 = &
 ../doc/lr/src/fmin.gml &
 ../doc/lr/src/fmod.gml &
 ../doc/lr/src/fms2ieee.gml &
+../doc/lr/src/fnmatch.gml &
 ../doc/lr/src/fopen.gml &
 ../doc/lr/src/fopen_s.gml &
-../doc/lr/src/freop_s.gml &
 ../doc/lr/src/fp_off.gml &
 ../doc/lr/src/fp_seg.gml &
+../doc/lr/src/fpclassf.gml &
 ../doc/lr/src/fprintf.gml &
 ../doc/lr/src/fprntf_s.gml &
 ../doc/lr/src/fputc.gml &
@@ -1396,10 +1413,11 @@ objs_lr2 = &
 ../doc/lr/src/fread.gml &
 ../doc/lr/src/free.gml &
 ../doc/lr/src/freemem.gml &
-../doc/lr/src/freopen.gml &
 ../doc/lr/src/freop_s.gml &
+../doc/lr/src/freopen.gml &
 ../doc/lr/src/frexp.gml &
 ../doc/lr/src/fscanf.gml &
+../doc/lr/src/fscanf_s.gml &
 ../doc/lr/src/fseek.gml &
 ../doc/lr/src/fsetpos.gml &
 ../doc/lr/src/fstat.gml &
@@ -1428,6 +1446,7 @@ objs_lr2 = &
 ../doc/lr/src/getosfha.gml &
 ../doc/lr/src/getpid.gml &
 ../doc/lr/src/gets.gml &
+../doc/lr/src/gets_s.gml &
 ../doc/lr/src/gettime.gml &
 ../doc/lr/src/getvect.gml &
 ../doc/lr/src/getw.gml &
@@ -1465,8 +1484,10 @@ objs_lr2 = &
 ../doc/lr/src/iscsym.gml &
 ../doc/lr/src/iscsymf.gml &
 ../doc/lr/src/isdigit.gml &
+../doc/lr/src/isfinite.gml &
 ../doc/lr/src/isgraph.gml &
 ../doc/lr/src/isgrkana.gml &
+../doc/lr/src/isinf.gml &
 ../doc/lr/src/iskana.gml &
 ../doc/lr/src/iskanji.gml &
 ../doc/lr/src/iskanji2.gml &
@@ -1515,6 +1536,8 @@ objs_lr2 = &
 ../doc/lr/src/ismbdspa.gml &
 ../doc/lr/src/ismbdupp.gml &
 ../doc/lr/src/ismbdxdi.gml &
+../doc/lr/src/isnan.gml &
+../doc/lr/src/isnormal.gml &
 ../doc/lr/src/ispnkana.gml &
 ../doc/lr/src/isprint.gml &
 ../doc/lr/src/isprkana.gml &
@@ -1574,6 +1597,7 @@ objs_lr2 = &
 ../doc/lr/src/kbhit.gml &
 ../doc/lr/src/keep.gml &
 ../doc/lr/src/labs.gml &
+../doc/lr/src/lcltim_s.gml &
 ../doc/lr/src/ldexp.gml &
 ../doc/lr/src/ldiv.gml &
 ../doc/lr/src/lfind.gml &
@@ -1585,7 +1609,6 @@ objs_lr2 = &
 ../doc/lr/src/lltoa.gml &
 ../doc/lr/src/localeco.gml &
 ../doc/lr/src/localtim.gml &
-../doc/lr/src/lcltim_s.gml &
 ../doc/lr/src/lock.gml &
 ../doc/lr/src/locking.gml &
 ../doc/lr/src/log.gml &
@@ -1647,8 +1670,8 @@ objs_lr2 = &
 ../doc/lr/src/memcpy.gml &
 ../doc/lr/src/memcpy_s.gml &
 ../doc/lr/src/memicmp.gml &
-../doc/lr/src/memmove.gml &
 ../doc/lr/src/memmov_s.gml &
+../doc/lr/src/memmove.gml &
 ../doc/lr/src/mempty.gml &
 ../doc/lr/src/memset.gml &
 ../doc/lr/src/mfromint.gml &
@@ -1716,9 +1739,9 @@ objs_lr2 = &
 ../doc/lr/src/mupckldq.gml &
 ../doc/lr/src/mupcklwd.gml &
 ../doc/lr/src/nanf.gml &
-../doc/lr/src/nrbyint.gml &
 ../doc/lr/src/necbios.doc &
 ../doc/lr/src/nosound.gml &
+../doc/lr/src/nrbyint.gml &
 ../doc/lr/src/nthctype.gml &
 ../doc/lr/src/nxtafter.gml &
 ../doc/lr/src/offsetof.gml &
@@ -1735,8 +1758,8 @@ objs_lr2 = &
 ../doc/lr/src/outpw.gml &
 ../doc/lr/src/pclose.gml &
 ../doc/lr/src/perror.gml &
-../doc/lr/src/portdesc.gml &
 ../doc/lr/src/popen.gml &
+../doc/lr/src/portdesc.gml &
 ../doc/lr/src/pow.gml &
 ../doc/lr/src/printf.gml &
 ../doc/lr/src/printf_s.gml &
@@ -1763,9 +1786,13 @@ objs_lr2 = &
 ../doc/lr/src/rmdir.gml &
 ../doc/lr/src/rmnder.gml &
 ../doc/lr/src/round.gml &
+../doc/lr/src/safefar.gml &
+../doc/lr/src/safefarm.gml &
+../doc/lr/src/safefarw.gml &
 ../doc/lr/src/sbrk.gml &
 ../doc/lr/src/scalbn.gml &
 ../doc/lr/src/scanf.gml &
+../doc/lr/src/scanf_s.gml &
 ../doc/lr/src/scanfs.gml &
 ../doc/lr/src/seealloc.gml &
 ../doc/lr/src/seeenv.gml &
@@ -1794,6 +1821,7 @@ objs_lr2 = &
 ../doc/lr/src/seeproc.gml &
 ../doc/lr/src/seeprtf.gml &
 ../doc/lr/src/seeqnxsg.gml &
+../doc/lr/src/seestoi.gml &
 ../doc/lr/src/seetime.gml &
 ../doc/lr/src/seevarg.gml &
 ../doc/lr/src/seevprtf.gml &
@@ -1832,6 +1860,7 @@ objs_lr2 = &
 ../doc/lr/src/sqrt.gml &
 ../doc/lr/src/srand.gml &
 ../doc/lr/src/sscanf.gml &
+../doc/lr/src/sscanf_s.gml &
 ../doc/lr/src/stackava.gml &
 ../doc/lr/src/stat.gml &
 ../doc/lr/src/statdesc.gml &
@@ -1850,10 +1879,10 @@ objs_lr2 = &
 ../doc/lr/src/strdec.gml &
 ../doc/lr/src/strdup.gml &
 ../doc/lr/src/streln_s.gml &
+../doc/lr/src/strerr_s.gml &
 ../doc/lr/src/strerror.gml &
 ../doc/lr/src/strerror.msg &
 ../doc/lr/src/strerror.qnx &
-../doc/lr/src/strerr_s.gml &
 ../doc/lr/src/strftime.gml &
 ../doc/lr/src/stricmp.gml &
 ../doc/lr/src/stricoll.gml &
@@ -1861,7 +1890,6 @@ objs_lr2 = &
 ../doc/lr/src/strlcat.gml &
 ../doc/lr/src/strlcpy.gml &
 ../doc/lr/src/strlen.gml &
-../doc/lr/src/strnln_s.gml &
 ../doc/lr/src/strlwr.gml &
 ../doc/lr/src/strncase.gml &
 ../doc/lr/src/strncat.gml &
@@ -1872,6 +1900,7 @@ objs_lr2 = &
 ../doc/lr/src/strnicmp.gml &
 ../doc/lr/src/strnicol.gml &
 ../doc/lr/src/strninc.gml &
+../doc/lr/src/strnln_s.gml &
 ../doc/lr/src/strnset.gml &
 ../doc/lr/src/strpbrk.gml &
 ../doc/lr/src/strrchr.gml &
@@ -1886,7 +1915,9 @@ objs_lr2 = &
 ../doc/lr/src/strtok.gml &
 ../doc/lr/src/strtok_s.gml &
 ../doc/lr/src/strtol.gml &
+../doc/lr/src/strtoll.gml &
 ../doc/lr/src/strtoul.gml &
+../doc/lr/src/strtoull.gml &
 ../doc/lr/src/strtoumx.gml &
 ../doc/lr/src/structtm.gml &
 ../doc/lr/src/strupr.gml &
@@ -1899,14 +1930,15 @@ objs_lr2 = &
 ../doc/lr/src/tempnam.gml &
 ../doc/lr/src/tgamma.gml &
 ../doc/lr/src/time.gml &
-../doc/lr/src/tmpfile.gml &
 ../doc/lr/src/tmpfil_s.gml &
+../doc/lr/src/tmpfile.gml &
 ../doc/lr/src/tmpnam.gml &
 ../doc/lr/src/tmpnam_s.gml &
 ../doc/lr/src/tolower.gml &
 ../doc/lr/src/toupper.gml &
 ../doc/lr/src/towctrns.gml &
 ../doc/lr/src/trunc.gml &
+../doc/lr/src/tzos2.gml &
 ../doc/lr/src/tzref.gml &
 ../doc/lr/src/tzset.gml &
 ../doc/lr/src/udirent.gml &
@@ -1927,14 +1959,17 @@ objs_lr2 = &
 ../doc/lr/src/vfprintf.gml &
 ../doc/lr/src/vfprtf_s.gml &
 ../doc/lr/src/vfscanf.gml &
+../doc/lr/src/vfscnf_s.gml &
 ../doc/lr/src/vprintf.gml &
 ../doc/lr/src/vprntf_s.gml &
 ../doc/lr/src/vscanf.gml &
+../doc/lr/src/vscanf_s.gml &
 ../doc/lr/src/vsnprint.gml &
 ../doc/lr/src/vsnprt_s.gml &
 ../doc/lr/src/vsprintf.gml &
 ../doc/lr/src/vsprtf_s.gml &
 ../doc/lr/src/vsscanf.gml &
+../doc/lr/src/vsscnf_s.gml &
 ../doc/lr/src/wait.gml &
 ../doc/lr/src/waitstat.gml &
 ../doc/lr/src/wcrtom_s.gml &
@@ -1950,6 +1985,8 @@ objs_lr2 = &
 ../doc/lr/src/wctype.gml &
 ../doc/lr/src/widefun1.gml &
 ../doc/lr/src/widefun2.gml &
+../doc/lr/src/widefun3.gml &
+../doc/lr/src/widefun4.gml &
 ../doc/lr/src/write.gml &
 ../doc/lr/src/zentohan.gml
 

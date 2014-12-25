@@ -70,17 +70,7 @@ function, unlike
 .ct , treats a result too big for the array pointed to by
 .arg s
 as a runtime-constraint violation.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument for
-.arg format
-and produces wide character output.
-.do end
+.im widefun4
 .desc end
 .*
 .return begin

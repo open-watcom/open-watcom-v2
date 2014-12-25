@@ -1,7 +1,7 @@
 .func fetestexcept
 .synop begin
 #include <fenv.h>
-int fetestexcept( int __excepts );
+int fetestexcept( int excepts );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
@@ -9,8 +9,9 @@ int fetestexcept( int __excepts );
 The
 .id &funcb.
 function determines which of a specified subset of the floatingpoint
-exception flags are currently set. The excepts argument specifies the floating point
-status flags to be queried.
+exception flags are currently set. The
+.arg excepts
+argument specifies the floating point status flags to be queried.
 .desc end
 .*
 .return begin
@@ -18,7 +19,8 @@ The
 .id &funcb.
 function returns the value of the bitwise OR of the floating-point exception macros
 corresponding to the currently set floating-point exceptions included in
-excepts.
+.arg excepts
+argument.
 .return end
 .*
 .see begin

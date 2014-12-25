@@ -200,19 +200,7 @@ _fsopen( filename, mode, SH_COMPAT );
 You should consult the technical documentation for the DOS system that
 you are using for more detailed information about these sharing modes.
 .do end
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts
-wide-character string arguments for
-.arg filename
-and
-.arg mode
-.ct .li .
-.do end
+.im widefun1
 .desc end
 .return begin
 The

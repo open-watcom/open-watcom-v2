@@ -1,15 +1,18 @@
 .func fedisableexcept __fedisableexcept
 .synop begin
 #include <fenv.h>
-void fedisableexcept( int __excepts );
-void __fedisableexcept( int __excepts );
+void fedisableexcept( int excepts );
+void __fedisableexcept( int excepts );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .*
 .desc begin
 The
 .id &funcb.
-function disables the specified floating point exceptions.
+function disables the floating point exceptions specified by
+.arg excepts
+argument.
+.
 .desc end
 .*
 .return begin

@@ -29,17 +29,7 @@ The
 string is described under the description of the
 .kw printf
 function.
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument for
-.arg format
-.ct .li .
-.do end
+.im widefun4
 .desc end
 .*
 .return begin

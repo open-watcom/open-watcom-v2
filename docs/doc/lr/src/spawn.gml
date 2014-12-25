@@ -271,21 +271,7 @@ function.
 .*==========================================
 .if &'length(&wfunc.) ne 0 .do begin
 The wide-character
-.kw _wspawnl
-.ct,
-.kw _wspawnle
-.ct,
-.kw _wspawnlp
-.ct,
-.kw _wspawnlpe
-.ct,
-.kw _wspawnv
-.ct,
-.kw _wspawnve
-.ct,
-.kw _wspawnvp
-and
-.kw _wspawnvpe
+.kw _wspawn&grpsfx
 functions are similar to their counterparts but operate on
 wide-character strings.
 .do end

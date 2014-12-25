@@ -21,7 +21,6 @@ function determines if the file or directory specified by
 exists and if it can be accessed with the file permission given by
 .arg mode
 .ct .li .
-.im ansiconf
 .np
 When the value of
 .arg mode
@@ -51,17 +50,8 @@ With DOS, all files have read permission; it is a good idea to test
 for read permission anyway, since a later version of DOS may support
 write-only files.
 .do end
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it accepts a
-wide-character string argument for
-.arg path
-.ct .li .
-.do end
+.im ansiconf
+.im widefun1
 .desc end
 .return begin
 The

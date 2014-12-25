@@ -30,7 +30,7 @@ unsigned char *_mbsnset( unsigned char *str,
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbsnset( unsigned char __far *str,
                                 unsigned int fill,
-                                size_t __n );
+                                size_t count );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end

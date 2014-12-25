@@ -63,20 +63,11 @@ does not exist.
 automatically handles multibyte-character string arguments as
 appropriate, recognizing multibyte-character sequences according to
 the OEM code page obtained from the operating system.
+.im widefun4
 .if &'length(&wfunc.) ne 0 .do begin
+The
 .id &wfunc.
-is a wide-character version of
-.id &funcb.
-the arguments and return
-value of
-.id &wfunc.
-are wide-character strings.
-.id &wfunc.
-and
-.id &funcb.
-behave identically except that
-.id &wfunc.
-does not handle
+function does not handle
 multibyte-character strings.
 .do end
 .np

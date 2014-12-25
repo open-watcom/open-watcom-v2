@@ -45,15 +45,7 @@ is 10 and
 .arg value
 is negative, then a minus sign is prepended to the result.
 .im ansiconf
-.if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it produces a
-wide-character string (which is twice as long).
-.do end
+.im widefun3
 .desc end
 .return begin
 The

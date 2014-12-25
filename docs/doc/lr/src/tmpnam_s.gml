@@ -40,14 +40,7 @@ The
 .id &funcb.
 function generates a different string each time it is called.
 .np
-.if &'length(&wfunc.) ne 0 .do begin
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that it generates a
-unique wide-character string for the file name.
-.do end
+.im widefun4
 .desc end
 .*
 .return begin

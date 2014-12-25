@@ -35,13 +35,9 @@ The
 string is described under the description of the
 .kw printf
 function.
+.im widefun4
 .if &'length(&wfunc.) ne 0 .do begin
-.np
-The
-.id &wfunc.
-function is identical to
-.id &funcb.
-except that the argument
+The argument
 .arg buf
 specifies an array of wide characters into which the generated output
 is to be written, rather than converted to multibyte characters and
@@ -53,10 +49,6 @@ A null wide character is placed at the end of the generated wide
 character string if fewer than
 .arg count
 wide characters were stored.
-The
-.id &wfunc.
-function accepts a wide-character string argument for
-.arg format
 .do end
 .desc end
 .return begin
