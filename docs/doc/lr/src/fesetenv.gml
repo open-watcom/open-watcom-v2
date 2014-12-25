@@ -8,8 +8,8 @@ int fesetenv( const fenv_t *envp );
 .desc begin
 The
 .id &funcb.
-function attempts to establishe the floating-point environment represented
-by the object pointed to by
+function attempts to establish the floating-point environment to environment
+represented by the object pointed by
 .arg envp
 argument. The
 .arg envp

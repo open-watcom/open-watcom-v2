@@ -12,13 +12,17 @@ function determines which of a specified subset of the floatingpoint
 exception flags are currently set. The
 .arg excepts
 argument specifies the floating point status flags to be queried.
+.np
+For valid exception values see
+.seekw &function. fegetexceptflag
+.ct .li .
 .desc end
 .*
 .return begin
 The
 .id &funcb.
 function returns the value of the bitwise OR of the floating-point exception macros
-corresponding to the currently set floating-point exceptions included in
+corresponding to the currently set floating-point exceptions included in the
 .arg excepts
 argument.
 .return end

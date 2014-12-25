@@ -9,9 +9,13 @@ void __feenableexcept( int excepts );
 .desc begin
 The
 .id &funcb.
-function enables the floating point exceptions specified
+function enables the floating point exceptions specified by the
 .arg excepts
 argument.
+.np
+For valid exception values see
+.seekw &function. fegetexceptflag
+.ct .li .
 .desc end
 .*
 .return begin

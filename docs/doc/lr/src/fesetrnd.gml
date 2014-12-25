@@ -1,7 +1,7 @@
 .func fesetround
 .synop begin
 #include <fenv.h>
-void fesetround( int mode );
+int fesetround( int mode );
 .ixfunc2 'Floating Point Environment' &funcb
 .synop end
 .desc begin
@@ -16,12 +16,16 @@ argument can be one of the following constants:
 .termhd1 Argument
 .termhd2 Meaning
 .note FE_TONEAREST
+.ix FE_TONEAREST
 Round to nearest integer, halfway rounding away from zero
 .note FE_DOWNWARD
+.ix FE_DOWNWARD
 Round downward to the next lowest integer
 .note FE_TOWARDZERO
+.ix FE_TOWARDZERO
 Round to the nearest integer in the direction of zero
 .note FE_UPWARD
+.ix FE_UPWARD
 Round upward to the next highest integer
 .endnote
 .desc end

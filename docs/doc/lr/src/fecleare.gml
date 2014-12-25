@@ -9,9 +9,13 @@ int feclearexcept( int excepts );
 The
 .id &funcb.
 function attempts to clear the supported floating-point exceptions
-represented by
+represented by the
 .arg excepts
 argument.
+.np
+For valid exception values see
+.seekw &function. fegetexceptflag
+.ct .li .
 .desc end
 .*
 .return begin

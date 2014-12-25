@@ -10,23 +10,30 @@ The
 .id &funcb.
 function attempts to set the floating-point status flags indicated by the
 .arg excepts
-argument to the states stored in the object pointed to by
+argument to the states stored in the object pointed by the
 .arg flagp
-argument. The value of *
+argument. The value pointed by the
 .arg flagp
-shall have been set by a previous call to
+argument shall have been set by a previous call to
 .kw fegetexceptflag
 whose second argument represented at least those floating-point exceptions
-represented by the argument excepts. This function does not raise
+represented by the
+.arg excepts
+argument. This function does not raise
 floating-point exceptions, but only sets the state of the flags.
+.np
+For valid exception values see
+.seekw &function. fegetexceptflag
+.ct .li .
 .desc end
 .*
 .return begin
 The
 .id &funcb.
-function returns zero if the excepts argument is zero or if
-all the specified flags were successfully set to the appropriate state.
-Otherwise, it returns a nonzero value.
+function returns zero if the
+.arg excepts
+argument is zero or if all the specified flags were successfully set to
+the appropriate state. Otherwise, it returns a nonzero value.
 .return end
 .*
 .see begin

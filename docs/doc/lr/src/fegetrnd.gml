@@ -18,11 +18,9 @@ function returns the value of the rounding direction macro
 representing the current rounding direction or a negative value if there is no such
 rounding direction macro or the current rounding direction is not determinable.
 .np
-Valid rounding modes are
-.kw FE_TONEAREST
-.kw FE_DOWNWARD
-.kw FE_TOWARDZERO
-.kw FE_UPWARD
+For valid rounding modes see
+.seekw &function. fesetround
+.ct .li .
 .return end
 .*
 .see begin
