@@ -38,6 +38,7 @@
 #include "wndregx.h"
 #include "sortlist.h"
 #include "srcmgt.h"
+#include "strutil.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -46,7 +47,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndModInspect(mod_handle);
 extern void             *OpenSrcFile(cue_handle *);
-extern char             *DupStr(const char*);
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
 extern int              ModCompare( mod_handle const *a, mod_handle const *b );
 extern bool             DlgSearchAll(char**,void*);

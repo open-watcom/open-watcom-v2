@@ -35,13 +35,13 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "sortlist.h"
+#include "strutil.h"
 
 
 extern bool             ReLoadSymInfo( image_entry *image );
 extern void             UnLoadSymInfo( image_entry *image, bool nofree );
 extern void             SetLastSym( char *to );
 extern bool             SymBrowse( char **name );
-extern char             *DupStr(const char*);
 extern void             WndGblFuncInspect( mod_handle mod );
 extern void             WndGblVarInspect( mod_handle mod );
 extern void             WndModListInspect( mod_handle mod );

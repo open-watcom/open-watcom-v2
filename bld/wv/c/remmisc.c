@@ -34,6 +34,7 @@
 #include "dbgmem.h"
 #include "trpld.h"
 #include "dbgio.h"
+#include "strutil.h"
 #if !defined( BUILD_RFX )
 #include "dbglit.h"
 #endif
@@ -56,7 +57,6 @@ extern bool             InitRunThreadSupp( void );
 extern bool             InitCapabilities( void );
 extern bool             InitAsyncSupp( void );
 extern void             StartupErr( char *err );
-extern char             *DupStr( const char * );
 
 unsigned int            MaxPacketLen;
 

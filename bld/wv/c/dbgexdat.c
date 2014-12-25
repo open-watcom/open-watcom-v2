@@ -36,6 +36,7 @@
 #include "dbgitem.h"
 #include "dbglit.h"
 #include "mad.h"
+#include "strutil.h"
 
 
 extern void             AsmExam( void );
@@ -53,7 +54,6 @@ extern void             WndIOInspect( address *, mad_type_handle );
 extern void             WndAddrInspect( address );
 extern void             SetDataDot( address );
 extern address          GetDataDot( void );
-extern char             *DupStrLen( const char *, unsigned );
 extern char             *GetCmdName( int );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 

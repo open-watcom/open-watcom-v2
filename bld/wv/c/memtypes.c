@@ -37,9 +37,9 @@
 #include "memtypes.h"
 #include "dbgmem.h"
 #include "dbgitem.h"
+#include "strutil.h"
 
 
-extern char             *DupStr( const char *str );
 extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
 extern unsigned         NewCurrRadix( unsigned );
 

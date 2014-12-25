@@ -54,7 +54,6 @@ extern void             PopErrBox( char * );
 extern void             SysSetMemLimit( void );
 extern void             SetNumColumns( int cols );
 extern void             SetNumLines( int lines );
-extern char             *DupStr( const char * );
 void                    FindLocalDebugInfo( char *name );
 extern void             StartupErr( char *err );
 

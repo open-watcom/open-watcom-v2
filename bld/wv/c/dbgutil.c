@@ -54,7 +54,6 @@ extern const char       *ReScan( const char * );
 extern const char       *ScanPos( void );
 extern void             NewLang( const char * );
 extern char             *AddHexSpec( char * );
-extern char             *DupStr( const char * );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern address          GetCodeDot( void );
@@ -628,24 +627,6 @@ char *ModImageName( mod_handle handle )
     } else {
         return( SkipPathInfo( image->image_name, OP_REMOTE ) );
     }
-}
-
-extern char *DupStrLen( const char *str, unsigned len )
-{
-    char        *dup;
-
-    dup = DbgAlloc( len + 1 );
-    if( dup != NULL ) {
-        memcpy( dup, str, len );
-        dup[len] = '\0';
-    }
-    return( dup );
-}
-
-
-extern char *DupStr( const char *str )
-{
-    return( DupStrLen( str, strlen( str ) ) );
 }
 
 static walk_result RegWalkList( mad_reg_set_data const *data, void *pdata )

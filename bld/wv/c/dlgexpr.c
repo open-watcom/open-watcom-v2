@@ -53,7 +53,6 @@ extern const char       *ScanPos( void );
 extern void             PrevError(char*);
 extern char             *UniqStrAddr(address *,char * ,unsigned);
 extern char             *StrDouble(xreal*,char*);
-extern char             *DupStrLen(const char*,unsigned);
 extern unsigned int     ScanLen(void);
 extern void             Scan(void);
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );

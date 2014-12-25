@@ -49,7 +49,6 @@ extern bool             DlgBreak(address);
 extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup(address);
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
-extern char             *DupStr(const char*);
 extern void             SetStackPos( location_context *lc, int pos );
 extern int              GetStackPos();
 extern char             *CnvNearestAddr( address, char *, unsigned );

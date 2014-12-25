@@ -37,7 +37,6 @@
 #include "mad.h"
 #include "strutil.h"
 
-extern char             *DupStr( const char *str );
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
 extern unsigned         NewCurrRadix( unsigned );

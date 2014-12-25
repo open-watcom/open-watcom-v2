@@ -44,9 +44,9 @@
 #include "dbgvar.h"
 #include "srcmgt.h"
 #include "dbgscrn.h"
+#include "strutil.h"
 
 extern void             FlushEOC(void);
-extern char             *DupStr(const char*);
 extern void             DoCmd(char*);
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern address          GetCodeDot();
@@ -57,7 +57,6 @@ extern void             DoInput(void);
 extern void             DlgCmd( void );
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern address          GetCodeDot();
-extern char             *DupStr(char*);
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );

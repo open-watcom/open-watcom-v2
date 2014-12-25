@@ -106,7 +106,6 @@ extern char             *GetCmdEntry( const char *tab, int index, char *buff );
 extern void             RecordEvent( char * );
 extern bool             HookPendingPush( void );
 extern const char       *CheckForPowerBuilder( const char * );
-extern char             *DupStr( const char * );
 extern mod_handle       LookupImageName( const char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
 extern bool             GetBPSymAddr( brkp *bp, address *addr );

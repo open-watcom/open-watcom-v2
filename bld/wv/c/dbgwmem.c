@@ -59,7 +59,6 @@ extern long             AddrDiff( address a, address b );
 extern unsigned         ChangeMemUndoable( address addr, void *data, unsigned len );
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( char *title, char *buff );
-extern char             *DupStr( const char *str );
 extern int              AddrComp(address,address);
 extern void             Warn( char *p );
 extern bool             BreakWrite( address addr, mad_type_handle, char *comment );

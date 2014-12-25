@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "doserr.h"

@@ -92,7 +92,6 @@ extern void             PushSymHandle( sym_handle * );
 extern void             SetUpExpr( unsigned addr_depth );
 extern bool             UnMapAddress( mappable_addr *loc, image_entry *image );
 extern remap_return     ReMapImageAddress( mappable_addr *loc, image_entry *image );
-extern char             *DupStr( const char * );
 extern void             WndInspectExprSP( char *item );
 extern void             CollapseMachState( void );
 extern char             *CnvNearestAddr( address, char *, unsigned );

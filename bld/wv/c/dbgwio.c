@@ -50,7 +50,6 @@ extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_
 extern bool             DlgGivenAddr( char *title, address *value );
 extern unsigned         NewCurrRadix(unsigned int );
 extern char             *AddrToIOString( address *a, char *p, unsigned max );
-extern char             *DupStr( const char * );
 
 #define PIECE_TYPE( x ) ( (x)-MENU_IO_FIRST_TYPE )
 

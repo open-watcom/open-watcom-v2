@@ -49,7 +49,6 @@ extern void             SaveBreaksToFile( char * );
 extern void             RestoreBreaksFromFile( char * );
 extern void             SaveReplayToFile( char * );
 extern void             RestoreReplayFromFile( char * );
-extern char             *DupStr( const char * );
 extern void             ReqEOC( void );
 extern bool             OkToSaveReplay( void );
 extern void             FiniHelp( void );

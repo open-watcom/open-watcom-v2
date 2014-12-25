@@ -187,3 +187,21 @@ char *Format( char *buff, const char *fmt, ... )
     va_start( args, fmt );
     return( FmtStr( buff, fmt, args ) );
 }
+
+char *DupStrLen( const char *str, unsigned len )
+{
+    char        *dup;
+
+    dup = DbgAlloc( len + 1 );
+    if( dup != NULL ) {
+        memcpy( dup, str, len );
+        dup[len] = '\0';
+    }
+    return( dup );
+}
+
+
+char *DupStr( const char *str )
+{
+    return( DupStrLen( str, strlen( str ) ) );
+}

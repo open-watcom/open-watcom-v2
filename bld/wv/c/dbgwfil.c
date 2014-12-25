@@ -75,7 +75,6 @@ extern void             StepIntoFunction( char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern unsigned         NewCurrRadix( unsigned int );
 extern bool             DbgWndSearch( a_window *, bool, int );
-extern char             *DupStr( const char * );
 extern bool             DlgCodeAddr( char *title, address *value );
 extern void             WndSrcInspect( address addr );
 extern bool             DlgModName( char *title, mod_handle *mod );

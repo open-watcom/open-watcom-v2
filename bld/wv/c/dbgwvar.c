@@ -81,7 +81,6 @@ extern void             PopInpStack( void );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
-extern char             *DupStr( const char * );
 extern void             WndInspectExprSP( char *item );
 extern char             *CnvNearestAddr( address, char *, unsigned );
 extern char             *GetCmdName( int );
