@@ -335,7 +335,7 @@ unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
 /*
         Given a string, convert that to an address to be examined.
 */
-mad_status              DIGENTRY MIDisasmInspectAddr( char *from, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a)
 {
     //NYI:
     return( MS_FAIL );

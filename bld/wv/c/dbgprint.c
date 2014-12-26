@@ -74,7 +74,7 @@ extern void             DefAddr( memory_expr, address * );
 extern void             ChkBreak( void );
 extern void             PushType( type_handle * );
 extern void             MoveSP( int );
-extern bool             TokenName( unsigned, char **, unsigned * );
+extern bool             TokenName( unsigned, const char **, unsigned * );
 extern void             SetTokens( bool );
 extern void             MakeMemoryAddr( bool, memory_expr, address * );
 extern void             AddrFix( address * );
@@ -167,7 +167,7 @@ static void EndBuff( void )
 }
 
 
-static void PrtStr( char *start, unsigned len )
+static void PrtStr( const char *start, unsigned len )
 {
     PrtNeed( len );
     for( ; len > 0; --len ) PrtChar( *start++ );
@@ -860,7 +860,7 @@ void PrintValue( void )
 {
     char                buff[TXT_LEN];
     char                *p;
-    char                *tstr;
+    const char          *tstr;
     unsigned            tlen;
 
     switch( ExprSP->info.kind ) {
@@ -895,7 +895,7 @@ void PrintValue( void )
             }
             SetTokens( FALSE );
             if( tlen != 0 ) {
-                PrtStr( tstr+1, tlen-1 );
+                PrtStr( tstr + 1, tlen - 1 );
             } else {
                 PrintRadix( -16, 'A', NUM_UNSIGNED );
             }

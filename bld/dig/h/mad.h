@@ -152,7 +152,7 @@ unsigned                MADDisasmFormat( mad_disasm_data *, mad_disasm_piece, un
 unsigned                MADDisasmInsSize( mad_disasm_data * );
 mad_status              MADDisasmInsUndoable( mad_disasm_data * );
 mad_disasm_control      MADDisasmControl( mad_disasm_data *, const mad_registers * );
-mad_status              MADDisasmInspectAddr( char *start, unsigned len, unsigned radix, const mad_registers *, address * );
+mad_status              MADDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *, address * );
 mad_status              MADDisasmInsNext( mad_disasm_data *, const mad_registers *, address * );
 
 typedef                 walk_result (MAD_MEMREF_WALKER)( address, mad_type_handle, mad_memref_kind, void * );

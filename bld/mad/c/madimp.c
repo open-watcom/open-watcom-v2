@@ -226,9 +226,9 @@ mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk
     return( MadClient->MADCliAddrToString( a, th, lk, buff, buff_size ) );
 }
 
-mad_status      MCMemExpr( char *start, unsigned len, unsigned radix, address *a )
+mad_status      MCMemExpr( const char *expr, unsigned radix, address *a )
 {
-    return( MadClient->MADCliMemExpr( start, len, radix, a ) );
+    return( MadClient->MADCliMemExpr( expr, radix, a ) );
 }
 
 void            MCAddrSection( address *a )

@@ -102,21 +102,15 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_FAIL );
 }
 
-mad_status      DIGCLIENT MADCliMemExpr( char const *start, unsigned len, unsigned radix, address *a )
+mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address *a )
 {
-    char        save;
-    char        *startrw;
     const char  *old_scan;
     unsigned    old_radix;
 
-    startrw = (char *)start; //MJC const defeat type checking
-    save = startrw[len];
-    startrw[len] = '\0';
     old_radix = SetCurrRadix( radix );
-    old_scan = ReScan( startrw );
+    old_scan = ReScan( expr );
     EvalExpr( 0 );   /* memory expression */
     MakeMemoryAddr( TRUE, EXPR_DATA, a );
-    startrw[len] = save;
     SetCurrRadix( old_radix );
     ReScan( old_scan );
     return( MS_OK );

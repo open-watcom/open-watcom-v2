@@ -2060,7 +2060,7 @@ mad_status              MADDisasmInsNext( mad_disasm_data *dd, const mad_registe
     return( Active->rtns->MIDisasmInsNext( dd, mr, a ) );
 }
 
-static mad_status DIGREGISTER DummyDisasmInspectAddr( char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+static mad_status DIGREGISTER DummyDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
 {
     start = start;
     len = len;
@@ -2070,7 +2070,7 @@ static mad_status DIGREGISTER DummyDisasmInspectAddr( char *start, unsigned len,
     return( MS_FAIL );
 }
 
-mad_status              MADDisasmInspectAddr( char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status              MADDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
 {
     return( Active->rtns->MIDisasmInspectAddr( start, len, radix, mr, a ) );
 }

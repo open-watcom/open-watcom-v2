@@ -39,6 +39,8 @@
 
 #include "clibext.h"
 
+typedef int     cmp_func( const void *, const void *, size_t );
+
 
 extern void             GetSysConfig( void );
 extern address          GetRegIP( void );
@@ -48,7 +50,7 @@ extern address          GetDataDot( void );
 extern address          GetCodeDot( void );
 extern dtid_t           GetNextTID( void );
 extern void             AddrFix( address * );
-extern bool             TokenName( unsigned int, char **, unsigned int * );
+extern bool             TokenName( unsigned int, const char **, unsigned * );
 extern bool             IsInternalMod( mod_handle );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 
@@ -184,7 +186,7 @@ CONST wv_sym_entry *const ListInternal[] = {
 
 static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item *li )
 {
-    int                 (*cmp)( const void *, const void *, size_t );
+    cmp_func            *cmp;
     wv_sym_entry        *curr;
 
     if( li->scope.start != NULL ) return( FALSE );
@@ -208,7 +210,7 @@ static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item
 struct lookup_reg {
     const char          *name;
     unsigned            len;
-    int                 (*cmp)();
+    cmp_func            *cmp;
     mad_reg_info const  *ri;
 };
 
@@ -241,10 +243,10 @@ mad_reg_info const *LookupRegName( mad_reg_info *parent, lookup_item *li )
 
 wv_sym_entry *LookupInternalName( lookup_item *li )
 {
-    wv_sym_entry        *se;
-    char        *null_start;
-    unsigned    null_len;
-    int         (*cmp)( const void *, const void *, size_t );
+    wv_sym_entry    *se;
+    const char      *null_start;
+    unsigned        null_len;
+    cmp_func        *cmp;
 
     se = StaticLookup( ListInternal, li );
     if( se != NULL ) return( se );
@@ -266,7 +268,7 @@ wv_sym_entry *LookupInternalName( lookup_item *li )
 wv_sym_entry *LookupUserName( lookup_item *li )
 {
     wv_sym_list         *sl;
-    int                 (*cmp)( const void *, const void *, size_t );
+    cmp_func            *cmp;
 
     if( li->case_sensitive ) {
         cmp = memcmp;

@@ -78,6 +78,7 @@ void DIGCLIENT MADCliAddrSection( address *addr )
 mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
 {
     /* never called */
+	addr = addr;
     return( MS_FAIL );
 }
 
@@ -88,6 +89,7 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     addr_ptr            item;
     mad_type_info       host;
 
+	lk = lk;
     if( CnvAddr( a, buff, buff_len ) )
         return( MS_OK );
     MADTypeInfo( th, &mti );
@@ -97,9 +99,10 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_FAIL );
 }
 
-mad_status      DIGCLIENT MADCliMemExpr( const char *start, unsigned len, unsigned radix, address *a )
+mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address *a )
 {
     /* never called */
+	expr = expr; radix = radix; a = a;
     return( MS_FAIL );
 }
 
@@ -119,6 +122,7 @@ unsigned        DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
 
 unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *buff )
 {
+	a = a; size = size; buff = buff;
     return( 0 );
 }
 
@@ -146,11 +150,13 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned bu
 mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
 {
     //MAD: NYI
+	mstr = mstr; str = str;
     return( MS_FAIL );
 }
 
 unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
 {
+	radix=radix; buff = buff; buff_len = buff_len;
     return( 0 );
 }
 

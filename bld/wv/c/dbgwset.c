@@ -391,9 +391,9 @@ char *KeyName( unsigned key )
 }
 
 static key_desc StripOff( const char **start, unsigned *len,
-                          char *test, key_desc desc )
+                          const char *test, key_desc desc )
 {
-    int         tlen;
+    unsigned    tlen;
 
     tlen = strlen( test );
     if( strnicmp( *start, test, tlen ) == 0 ) {

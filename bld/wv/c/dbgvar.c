@@ -63,7 +63,7 @@ extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             SwapStack( int entry );
 extern void             ExprPurge( void );
-extern bool             TokenName( unsigned int ,char **, unsigned int * );
+extern bool             TokenName( unsigned, const char **, unsigned * );
 extern void             SetTokens( bool );
 extern void             PushNum( long );
 extern void             DoPlus( void );
@@ -1434,7 +1434,7 @@ static void ChkTxtBuffOverflow( char *newbuff )
 }
 
 
-static void InsertTxt( char *buff, char *txt, int len )
+static void InsertTxt( char *buff, const char *txt, unsigned len )
 /*
     See VarBuildName
 */
@@ -1454,12 +1454,12 @@ static void InsertTxt( char *buff, char *txt, int len )
 }
 
 
-static char AddToName( unsigned token, char *fldname, int namelen, char pprio )
+static char AddToName( unsigned token, const char *fldname, int namelen, char pprio )
 /*
     See VarBuildName
 */
 {
-    char        *tstr;
+    const char  *tstr;
     unsigned    tlen;
     char        *buff, *end;
     char        prio;

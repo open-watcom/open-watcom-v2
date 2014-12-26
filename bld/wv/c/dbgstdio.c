@@ -36,7 +36,7 @@
 #include "dbgerr.h"
 
 
-extern bool ScanItem(bool ,const char **,size_t *);
+extern bool ScanItem(bool, const char **, size_t *);
 extern void ReqEOC(void);
 extern bool Redirect(bool ,char *);
 

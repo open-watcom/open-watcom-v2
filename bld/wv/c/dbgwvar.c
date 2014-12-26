@@ -59,7 +59,6 @@ extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             SwapStack( int entry );
 extern void             ExprPurge( void );
-extern bool             TokenName( unsigned int, char **, unsigned int * );
 extern void             SetTokens( bool );
 extern void             DoPlus( void );
 extern void             DoPoints( type_kind );

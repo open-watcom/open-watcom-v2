@@ -467,17 +467,18 @@ unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
     return( MADState->disasm_state );
 }
 
-mad_status              DIGENTRY MIDisasmInspectAddr( char *from, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status              DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
 {
-    char        *buff = __alloca( len * 2 );
+    char        *buff = __alloca( len * 2 + 1 );
     char        *to;
 
     mr = mr;
     to = buff;
-    while( len != 0 ) {
-        if( *from == '(' ) *to++ = '+';
-        *to++ = *from++;
-        --len;
+    for( ; len != 0; --len ) {
+        if( *start == '(' )
+            *to++ = '+';
+        *to++ = *start++;
     }
-    return( MCMemExpr( buff, to - buff, radix, a ) );
+    *to = '\0';
+    return( MCMemExpr( buff, radix, a ) );
 }

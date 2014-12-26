@@ -35,6 +35,7 @@
 #include "x86.h"
 #include "x86types.h"
 #include "madregs.h"
+
 #include "clibext.h"
 
 #define OP_1 0
@@ -92,7 +93,7 @@ mad_status GetDisasmPrev( address *a )
     big = BIG_SEG( DbgAddr );
     backup = ( big ) ? 0x40 : 0x20;
     curr_off = DbgAddr.mach.offset;
-    DbgAddr.mach.offset = (curr_off <= backup) ? 0 : (curr_off - backup);
+    DbgAddr.mach.offset = ( curr_off <= backup ) ? 0 : ( curr_off - backup );
     InitCache( DbgAddr, curr_off - DbgAddr.mach.offset );
     for( start = DbgAddr.mach.offset; start < curr_off; ++start ) {
         DbgAddr.mach.offset = start;
@@ -106,8 +107,11 @@ mad_status GetDisasmPrev( address *a )
                 a->mach.offset = prev;
                 return( MS_OK );
             }
-            if( DbgAddr.mach.offset > curr_off ) break;
-            if( DbgAddr.mach.offset < start ) break; /* wrapped around segment */
+            if( DbgAddr.mach.offset > curr_off )
+                break;
+            if( DbgAddr.mach.offset < start ) {
+                break; /* wrapped around segment */
+            }
         }
     }
     /* Couldn't sync instruction stream */
@@ -121,7 +125,8 @@ mad_status DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
     dd->characteristics = AddrCharacteristics( *a );
     while( adj < 0 ) {
         ms = GetDisasmPrev( a );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         ++adj;
     }
     while( adj >= 0 ) {
@@ -159,15 +164,18 @@ unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsi
         olen = 0;
     }
     ff = DFF_ASM;
-    if( MADState->disasm_state & DT_UPPER ) ff |= DFF_INS_UP | DFF_REG_UP;
-    if( MADState->disasm_state & DT_INSIDE ) ff |= DFF_ALT_INDEXING;
+    if( MADState->disasm_state & DT_UPPER )
+        ff |= DFF_INS_UP | DFF_REG_UP;
+    if( MADState->disasm_state & DT_INSIDE )
+        ff |= DFF_ALT_INDEXING;
     dd->radix = radix;
     if( DisFormat( &DH, dd, &dd->ins, ff, np, nlen, op, olen ) != DR_OK ) {
         return( 0 );
     }
     olen = strlen( obuff );
     nlen = strlen( nbuff );
-    if( dp == MDP_ALL ) nbuff[ nlen++ ] = ' ';
+    if( dp == MDP_ALL )
+        nbuff[nlen++] = ' ';
     len = nlen + olen;
     if( buff_size > 0 ) {
         --buff_size;
@@ -214,12 +222,13 @@ mad_status DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
     return( MS_OK );
 }
 
-static unsigned Adjustment( mad_disasm_data *dd )
+static mad_disasm_control Adjustment( mad_disasm_data *dd )
 {
-    switch( dd->ins.op[ OP_1 ].type & DO_MASK ) {
+    switch( dd->ins.op[OP_1].type & DO_MASK ) {
     case DO_IMMED:
     case DO_RELATIVE:
-        if( dd->ins.op[ OP_1 ].value < dd->addr.mach.offset ) return( MDC_TAKEN_BACK );
+        if( dd->ins.op[OP_1].value < dd->addr.mach.offset )
+            return( MDC_TAKEN_BACK );
         return( MDC_TAKEN_FORWARD );
     }
     return( MDC_TAKEN );
@@ -229,7 +238,7 @@ static mad_disasm_control Cond( mad_disasm_data *dd, int taken )
 {
     if( !taken )
         return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-    return( (MDC_JUMP | MDC_CONDITIONAL) + Adjustment( dd ) );
+    return( ( MDC_JUMP | MDC_CONDITIONAL ) + Adjustment( dd ) );
 }
 
 mad_disasm_control DisasmControl( mad_disasm_data *dd, const mad_registers *mr )
@@ -268,79 +277,73 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, const mad_registers *mr )
         xor = 1;
     case DI_X86_jo:
     case DI_X86_jo2:
-        return Cond( dd, ( ( mr->x86.cpu.efl & FLG_O ) != 0 ) ^ xor );
+        return( Cond( dd, ( ( mr->x86.cpu.efl & FLG_O ) != 0 ) ^ xor ) );
     case DI_X86_jae:
     case DI_X86_jae2:
         xor = 1;
     case DI_X86_jb:
     case DI_X86_jb2:
-        return Cond( dd, ( ( mr->x86.cpu.efl & FLG_C ) != 0 ) ^ xor );
+        return( Cond( dd, ( ( mr->x86.cpu.efl & FLG_C ) != 0 ) ^ xor ) );
     case DI_X86_jne:
     case DI_X86_jne2:
         xor = 1;
     case DI_X86_je:
     case DI_X86_je2:
-        return Cond( dd, ( ( mr->x86.cpu.efl & FLG_Z ) != 0 ) ^ xor );
+        return( Cond( dd, ( ( mr->x86.cpu.efl & FLG_Z ) != 0 ) ^ xor ) );
     case DI_X86_ja:
     case DI_X86_ja2:
         xor = 1;
     case DI_X86_jbe:
     case DI_X86_jbe2:
-        return Cond( dd, ( ( mr->x86.cpu.efl & ( FLG_C | FLG_Z ) ) != 0 ) ^ xor );
+        return( Cond( dd, ( ( mr->x86.cpu.efl & ( FLG_C | FLG_Z ) ) != 0 ) ^ xor ) );
     case DI_X86_jns:
     case DI_X86_jns2:
         xor = 1;
     case DI_X86_js:
     case DI_X86_js2:
-        return Cond( dd, ( ( mr->x86.cpu.efl & FLG_S ) != 0 ) ^ xor );
+        return( Cond( dd, ( ( mr->x86.cpu.efl & FLG_S ) != 0 ) ^ xor ) );
     case DI_X86_jpo:
     case DI_X86_jpo2:
         xor = 1;
     case DI_X86_jp:
     case DI_X86_jp2:
-        return Cond( dd, ( ( mr->x86.cpu.efl & FLG_P ) != 0 ) ^ xor );
+        return( Cond( dd, ( ( mr->x86.cpu.efl & FLG_P ) != 0 ) ^ xor ) );
     case DI_X86_jge:
     case DI_X86_jge2:
         xor = 1;
     case DI_X86_jl:
     case DI_X86_jl2:
-        return Cond( dd, ( ( mr->x86.cpu.efl & FLG_S ) != 0 )
-                ^ ( ( mr->x86.cpu.efl & FLG_O ) !=0 )
-                ^ xor );
+        return( Cond( dd, ( ( mr->x86.cpu.efl & FLG_S ) != 0 ) ^ ( ( mr->x86.cpu.efl & FLG_O ) != 0 ) ^ xor ) );
     case DI_X86_jg:
     case DI_X86_jg2:
         xor = 1;
     case DI_X86_jle:
     case DI_X86_jle2:
-        return Cond( dd, ( ( ( ( mr->x86.cpu.efl & FLG_S ) != 0 )
-                ^ ( ( mr->x86.cpu.efl & FLG_O ) != 0 ) )
-                | ( ( mr->x86.cpu.efl & FLG_Z ) != 0 ) )
-                ^ xor );
+        return( Cond( dd, ( ( ( ( mr->x86.cpu.efl & FLG_S ) != 0 ) ^ ( ( mr->x86.cpu.efl & FLG_O ) != 0 ) )
+            | ( ( mr->x86.cpu.efl & FLG_Z ) != 0 ) ) ^ xor ) );
     case DI_X86_into:
-        return( ( mr->x86.cpu.efl & FLG_O ) != 0
-                ? ( MDC_SYSCALL|MDC_CONDITIONAL|MDC_TAKEN )
-                : ( MDC_SYSCALL|MDC_CONDITIONAL|MDC_TAKEN_NOT ) );
+        return( MDC_SYSCALL | MDC_CONDITIONAL | ( (mr->x86.cpu.efl & FLG_O) != 0 ? MDC_TAKEN : MDC_TAKEN_NOT ) );
     case DI_X86_loopnz:
-        val= mr->x86.cpu.ecx;
-        if( !( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) )
+        val = mr->x86.cpu.ecx;
+        if( ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) == 0 )
             val &= 0xffff;
-        return Cond( dd, ( mr->x86.cpu.efl & FLG_Z ) == 0 && val != 1 );
+        return( Cond( dd, ( mr->x86.cpu.efl & FLG_Z ) == 0 && val != 1 ) );
     case DI_X86_loopz:
-        val= mr->x86.cpu.ecx;
-        if( !( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) )
+        val = mr->x86.cpu.ecx;
+        if( ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) == 0 )
             val &= 0xffff;
-        return Cond( dd, ( mr->x86.cpu.efl & FLG_Z ) != 0 && val != 1 );
+        return( Cond( dd, ( mr->x86.cpu.efl & FLG_Z ) != 0 && val != 1 ) );
     case DI_X86_loop:
-        val= mr->x86.cpu.ecx;
-        if( !( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) )
+        val = mr->x86.cpu.ecx;
+        if( ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) == 0 )
             val &= 0xffff;
-        return Cond( dd, val != 1 );
+        return( Cond( dd, val != 1 ) );
     case DI_X86_jcxz:
     case DI_X86_jecxz:
-        val= mr->x86.cpu.ecx;
-        if( !( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) )
+        val = mr->x86.cpu.ecx;
+        if( ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) == 0 )
             val &= 0xffff;
-        return Cond( dd, val == 0 );
+        return( Cond( dd, val == 0 ) );
     default:
         break;
     }
@@ -367,7 +370,7 @@ mad_status DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registers *m
     *next = GetRegIP( mr );
     next->mach.offset += dd->ins.size;
     dc = DisasmControl( dd, mr );
-    if( (dc & MDC_TAKEN_MASK) == MDC_TAKEN_NOT ) {
+    if( ( dc & MDC_TAKEN_MASK ) == MDC_TAKEN_NOT ) {
         return( MS_OK );
     }
     switch( dc & MDC_TYPE_MASK ) {
@@ -375,15 +378,15 @@ mad_status DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registers *m
         return( MS_FAIL );
     case MDC_JUMP:
     case MDC_CALL:
-        switch( dd->ins.op[ OP_1 ].type & DO_MASK ) {
+        switch( dd->ins.op[OP_1].type & DO_MASK ) {
         case DO_ABSOLUTE:
-            next->mach.segment = dd->ins.op[ OP_1 ].extra;
+            next->mach.segment = dd->ins.op[OP_1].extra;
             /* fall through */
         case DO_RELATIVE:
-            next->mach.offset = dd->ins.op[ OP_1 ].value;
+            next->mach.offset = dd->ins.op[OP_1].value;
             break;
         case DO_REG:
-            next->mach.offset = RegValue( mr, dd->ins.op[ OP_1 ].base );
+            next->mach.offset = RegValue( mr, dd->ins.op[OP_1].base );
             break;
         default:
             /* memory indirect jump/call */
@@ -391,12 +394,12 @@ mad_status DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registers *m
 
             if( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) {
                 next->mach.offset = GetDataLong();
-                if( dd->ins.op[ OP_1 ].ref_type == DRT_X86_FARPTR48 ) {
+                if( dd->ins.op[OP_1].ref_type == DRT_X86_FARPTR48 ) {
                     next->mach.segment = (unsigned_16)GetDataWord();
                 }
             } else {
                 next->mach.offset = (unsigned_16)GetDataWord();
-                if( dd->ins.op[ OP_1 ].ref_type == DRT_X86_FARPTR32 ) {
+                if( dd->ins.op[OP_1].ref_type == DRT_X86_FARPTR32 ) {
                     next->mach.segment = (unsigned_16)GetDataWord();
                 }
             }
@@ -425,20 +428,20 @@ mad_status DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registers *m
 }
 
 static const unsigned_8 RegIndex[] = {
-        offsetof( mad_registers, x86.cpu.eax ),
-        offsetof( mad_registers, x86.cpu.ecx ),
-        offsetof( mad_registers, x86.cpu.edx ),
-        offsetof( mad_registers, x86.cpu.ebx ),
-        offsetof( mad_registers, x86.cpu.esp ),
-        offsetof( mad_registers, x86.cpu.ebp ),
-        offsetof( mad_registers, x86.cpu.esi ),
-        offsetof( mad_registers, x86.cpu.edi ),
-        offsetof( mad_registers, x86.cpu.es ),
-        offsetof( mad_registers, x86.cpu.cs ),
-        offsetof( mad_registers, x86.cpu.ss ),
-        offsetof( mad_registers, x86.cpu.ds ),
-        offsetof( mad_registers, x86.cpu.fs ),
-        offsetof( mad_registers, x86.cpu.gs ),
+    offsetof( mad_registers, x86.cpu.eax ),
+    offsetof( mad_registers, x86.cpu.ecx ),
+    offsetof( mad_registers, x86.cpu.edx ),
+    offsetof( mad_registers, x86.cpu.ebx ),
+    offsetof( mad_registers, x86.cpu.esp ),
+    offsetof( mad_registers, x86.cpu.ebp ),
+    offsetof( mad_registers, x86.cpu.esi ),
+    offsetof( mad_registers, x86.cpu.edi ),
+    offsetof( mad_registers, x86.cpu.es ),
+    offsetof( mad_registers, x86.cpu.cs ),
+    offsetof( mad_registers, x86.cpu.ss ),
+    offsetof( mad_registers, x86.cpu.ds ),
+    offsetof( mad_registers, x86.cpu.fs ),
+    offsetof( mad_registers, x86.cpu.gs ),
 };
 
 static dword RegValue( const mad_registers *mr, int idx )
@@ -456,7 +459,7 @@ static dword RegValue( const mad_registers *mr, int idx )
         idx -= DR_X86_eax;
         mask = 0xffffffff;
     }
-    reg = (dword *)( (unsigned_8 *)mr + RegIndex[ idx ] );
+    reg = (dword *)( (unsigned_8 *)mr + RegIndex[idx] );
     return( *reg & mask );
 }
 
@@ -537,9 +540,9 @@ walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *wk, cons
         addr.mach.offset += RegValue( mr, op->index ) * op->scale;
     }
     if( op->type & DO_NO_SEG_OVR ) {
-        addr.mach.segment = RegValue( mr, DR_X86_es );
+        addr.mach.segment = (addr_seg)RegValue( mr, DR_X86_es );
     } else {
-        addr.mach.segment = RegValue( mr, GetSegRegOverride( dd, op ) );
+        addr.mach.segment = (addr_seg)RegValue( mr, GetSegRegOverride( dd, op ) );
     }
     if( dd->ins.flags.u.x86 & DIF_X86_ADDR_LONG ) {
         addr.mach.offset &= ~(dword)0;
@@ -605,15 +608,15 @@ walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const ma
     switch( dd->ins.type ) {
     case DI_X86_ret:
     case DI_X86_ret2:
-        th = (dd->ins.flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_N32_PTR : X86T_N16_PTR;
+        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_N32_PTR : X86T_N16_PTR;
         break;
     case DI_X86_retf:
     case DI_X86_retf2:
-        th = (dd->ins.flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_F32_PTR : X86T_F16_PTR;
+        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_F32_PTR : X86T_F16_PTR;
         break;
     case DI_X86_iret:
     case DI_X86_iretd:
-        th = (dd->ins.flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_IRET32 : X86T_IRET16;
+        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_IRET32 : X86T_IRET16;
         break;
     case DI_X86_pop:
     case DI_X86_pop2:
@@ -625,17 +628,17 @@ walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const ma
     case DI_X86_popf:
     case DI_X86_popfd:
     case DI_X86_leave:
-        th = (dd->ins.flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_DWORD : X86T_WORD;
+        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_DWORD : X86T_WORD;
         break;
     case DI_X86_popa:
     case DI_X86_popad:
-        th = (dd->ins.flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_POPAD : X86T_POPA;
+        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_POPAD : X86T_POPA;
         break;
     default:
         break;
     }
     if( th != (mad_type_handle)-1 ) {
-        wr = wk( GetRegSP( mr ), th, MMK_VOLATILE|MMK_IMPLICIT|MMK_READ, d );
+        wr = wk( GetRegSP( mr ), th, MMK_VOLATILE | MMK_IMPLICIT | MMK_READ, d );
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
@@ -668,7 +671,7 @@ walk_result DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *
     struct memref_glue  glue;
 
     glue.wk = wk;
-    glue.d  = d;
+    glue.d = d;
     return( DoDisasmMemRefWalk( dd, MemRefGlue, mr, &glue ) );
 }
 
@@ -686,7 +689,7 @@ unsigned DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
 {
     unsigned    toggle;
 
-    toggle = (on & off);
+    toggle = ( on & off );
     MADState->disasm_state ^= toggle;
     MADState->disasm_state |= on & ~toggle;
     MADState->disasm_state &= ~off | toggle;
@@ -694,17 +697,14 @@ unsigned DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
 }
 
 
-static int RegAt( char *from, char *reg )
+static int RegAt( const char *from, const char *reg, unsigned len )
 {
-    unsigned    len;
-
-    ++from;
     switch( *from ) {
     case 'e':
     case 'E':
         ++from;
+        break;
     }
-    len = strlen( reg );
     if( strnicmp( from, reg, len ) != 0 )
         return( 0 );
     if( isalnum( from[len] ) || from[len] == '_' )
@@ -714,30 +714,29 @@ static int RegAt( char *from, char *reg )
 
 static char *StrCopy( const char *s, char *d )
 {
-    for( ;; ) {
-        *d = *s;
-        if( *d == '\0' ) break;
+    while( ( *d = *s ) != '\0' ) {
         ++s;
         ++d;
     }
     return( d );
 }
 
-mad_status DIGENTRY MIDisasmInspectAddr( char *from, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
 {
-    char        *buff = __alloca( len * 2 );
+    char        *buff = __alloca( len * 2 + 1 );
     char        *to;
-    int         parens;
+    unsigned    parens;
+    char        c;
 
     mr = mr;
     to = buff;
     parens = 0;
-    while( len != 0 ) {
-        switch( *from ) {
+    for( ; len > 0; --len ) {
+        switch( c = *start++ ) {
         case '[':
             *to++ = '+';
             *to++ = '(';
-            if( RegAt( from, "bp" ) || RegAt( from, "sp" ) ) {
+            if( RegAt( start, "bp", 2 ) || RegAt( start, "sp", 2 ) ) {
                 to = StrCopy( "ss", to );
             } else {
                 to = StrCopy( "ds", to );
@@ -752,18 +751,17 @@ mad_status DIGENTRY MIDisasmInspectAddr( char *from, unsigned len, unsigned radi
             ++parens;
             break;
         default:
-            *to++ = *from;
+            *to++ = c;
         }
-        ++from;
-        --len;
     }
-    while( --parens >= 0 ) {
-        memmove( buff+1, buff, to - buff + 1 );
+    for( ; parens > 0; --parens ) {
+        memmove( buff + 1, buff, to - buff + 1 );
         buff[0] = '(';
         ++to;
         *to++ = ')';
     }
-    return( MCMemExpr( buff, to - buff, radix, a ) );
+    *to = '\0';
+    return( MCMemExpr( buff, radix, a ) );
 }
 
 /*
@@ -779,7 +777,7 @@ char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, unsi
     ptr = &internal[32];
     for( ; len > 0 || value != 0; value /= radix ) {
         dig = value % radix;
-        *ptr = (dig <= 9) ? dig + '0' : dig - 10 + base;
+        *ptr = ( dig <= 9 ) ? dig + '0' : dig - 10 + base;
         --ptr;
         --len;
     }
@@ -806,9 +804,9 @@ char *JmpLabel( unsigned long addr, addr_off off )
     memaddr = DbgAddr;
     memaddr.mach.offset = addr;
     th = ( BIG_SEG( memaddr ) ) ? X86T_N32_PTR : X86T_N16_PTR;
-    #define PREFIX_STR "CS:"
-    #define PREFIX_LEN (sizeof(PREFIX_STR)-1)
-    p = &ScratchBuff[ PREFIX_LEN ];
+#define PREFIX_STR "CS:"
+#define PREFIX_LEN (sizeof( PREFIX_STR ) - 1)
+    p = &ScratchBuff[PREFIX_LEN];
     if( MCAddrToString( memaddr, th, MLK_CODE, p, sizeof( ScratchBuff ) - 1 - PREFIX_LEN ) != MS_OK ) {
         p -= PREFIX_LEN;
         memcpy( p, PREFIX_STR, PREFIX_LEN );
@@ -828,7 +826,7 @@ char *ToSegStr( addr_off value, addr_seg seg, addr_off addr )
     addr = addr;
 
     memaddr.mach.segment = seg;
-    memaddr.mach.offset  = value;
+    memaddr.mach.offset = value;
     MCAddrSection( &memaddr );
     th = BIG_SEG( memaddr ) ? X86T_F32_PTR : X86T_F16_PTR;
     MCAddrToString( memaddr, th, MLK_MEMORY, ScratchBuff, sizeof( ScratchBuff ) - 1 );
@@ -840,19 +838,19 @@ static void ReadMem( address a, unsigned s, void *d )
 {
 
     if( a.sect_id == Cache.start.sect_id
-     && a.mach.segment == Cache.start.mach.segment
-     && a.mach.offset >= Cache.start.mach.offset
-     && ( a.mach.offset + s ) < ( Cache.start.mach.offset + Cache.len ) ) {
-        memcpy( d, &Cache.data[a.mach.offset-Cache.start.mach.offset], s );
+      && a.mach.segment == Cache.start.mach.segment
+      && a.mach.offset >= Cache.start.mach.offset
+      && ( a.mach.offset + s ) < ( Cache.start.mach.offset + Cache.len ) ) {
+        memcpy( d, &Cache.data[a.mach.offset - Cache.start.mach.offset], s );
         return;
     }
 #if 0
     InitCache( a, Cache.want );
     if( a.sect_id == Cache.start.sect_id
-     && a.mach.segment == Cache.start.mach.segment
-     && a.mach.offset >= Cache.start.mach.offset
-     && (a.mach.offset+s) < (Cache.start.mach.offset+Cache.len) ) {
-        memcpy( d, &Cache.data[a.mach.offset-Cache.start.mach.offset], s );
+      && a.mach.segment == Cache.start.mach.segment
+      && a.mach.offset >= Cache.start.mach.offset
+      && ( a.mach.offset + s ) < ( Cache.start.mach.offset + Cache.len ) ) {
+        memcpy( d, &Cache.data[a.mach.offset - Cache.start.mach.offset], s );
         return;
     }
 #endif
@@ -881,7 +879,8 @@ signed_32 GetDataLong( void )
 void InitCache( address start, unsigned len )
 {
     Cache.start = start;
-    if( len > sizeof( Cache.data ) ) len = sizeof( Cache.data );
+    if( len > sizeof( Cache.data ) )
+        len = sizeof( Cache.data );
     Cache.want = len;
     Cache.len = MCReadMem( start, len, Cache.data );
 }
@@ -893,7 +892,8 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
 
     addr = dd->addr;
     addr.mach.offset += off;
-    if( MCReadMem( addr, size, data ) == 0 ) return( DR_FAIL );
+    if( MCReadMem( addr, size, data ) == 0 )
+        return( DR_FAIL );
     return( DR_OK );
 }
 
@@ -934,20 +934,20 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             size = 4;
             break;
         default:
-            size = (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? 4 : 2;
+            size = ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? 4 : 2;
         }
-        MCTypeInfoForHost( MTK_INTEGER, size , &mti );
+        MCTypeInfoForHost( MTK_INTEGER, size, &mti );
         MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
         break;
     case DO_RELATIVE:
         val.mach.offset += op->value;
-        MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_N32_PTR : X86T_N16_PTR , MLK_CODE, buff, buff_size );
+        MCAddrToString( val, ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_N32_PTR : X86T_N16_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_ABSOLUTE:
         if( op->type & DO_EXTRA ) {
             val.mach.offset = op->value;
             val.mach.segment = op->extra;
-            MCAddrToString( val, (ins->flags.u.x86 & DIF_X86_OPND_LONG) ? X86T_F32_PTR : X86T_F16_PTR , MLK_CODE, buff, buff_size );
+            MCAddrToString( val, ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_F32_PTR : X86T_F16_PTR, MLK_CODE, buff, buff_size );
             break;
         }
         /* fall through for LEA instruction */
@@ -955,7 +955,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
     case DO_MEMORY_REL:
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             // direct memory address
-            MCTypeInfoForHost( MTK_INTEGER, (ins->flags.u.x86 & DIF_X86_ADDR_LONG) ? 4 : 2 , &mti );
+            MCTypeInfoForHost( MTK_INTEGER, ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2, &mti );
             MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
         } else if( op->value == 0 ) {
             // don't output zero disp in indirect memory address
@@ -963,12 +963,12 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             char *p = buff;
             // indirect memory address with displacement
             if( op->value < 0 ) {
-                *(p++) = '-';
+                *( p++ ) = '-';
                 --buff_size;
-                op->value = - op->value;
+                op->value = -op->value;
             }
             size = GetValueByteSize( op->value );
-            MCTypeInfoForHost( MTK_INTEGER, size , &mti );
+            MCTypeInfoForHost( MTK_INTEGER, size, &mti );
             MCTypeToString( dd->radix, &mti, &op->value, p, &buff_size );
         }
         break;
@@ -976,7 +976,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
     return( strlen( buff ) );
 }
 
-mad_status DisasmInit()
+mad_status DisasmInit( void )
 {
     if( DisInit( DISCPU_x86, &DH, FALSE ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );
@@ -984,7 +984,7 @@ mad_status DisasmInit()
     return( MS_OK );
 }
 
-void DisasmFini()
+void DisasmFini( void )
 {
     DisFini( &DH );
 }

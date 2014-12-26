@@ -109,7 +109,7 @@ typedef struct mad_imp_routines {
     unsigned            (DIGENTRY *MIDisasmInsSize)( mad_disasm_data * );
     mad_status          (DIGENTRY *MIDisasmInsUndoable)( mad_disasm_data * );
     mad_disasm_control  (DIGENTRY *MIDisasmControl)( mad_disasm_data *, mad_registers const * );
-    mad_status          (DIGENTRY *MIDisasmInspectAddr)( char *start, unsigned len, unsigned radix, mad_registers const *, address * );
+    mad_status          (DIGENTRY *MIDisasmInspectAddr)( const char *start, unsigned len, unsigned radix, mad_registers const *, address * );
     walk_result         (DIGENTRY *MIDisasmMemRefWalk)( mad_disasm_data *, MI_MEMREF_WALKER *, mad_registers const *, void * );
     const mad_toggle_strings    *(DIGENTRY *MIDisasmToggleList)( void );
     unsigned            (DIGENTRY *MIDisasmToggle)( unsigned on, unsigned off );
@@ -228,7 +228,7 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *, mad_disasm_p
 unsigned                DIGENTRY MIDisasmInsSize( mad_disasm_data * );
 mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data * );
 mad_disasm_control      DIGENTRY MIDisasmControl( mad_disasm_data *, const mad_registers * );
-mad_status              DIGENTRY MIDisasmInspectAddr( char *start, unsigned len, unsigned radix, const mad_registers *, address * );
+mad_status              DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *, address * );
 mad_status              DIGENTRY MIDisasmInsNext( mad_disasm_data *, const mad_registers *, address * );
 
 walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *, MI_MEMREF_WALKER *, const mad_registers *, void * );
@@ -277,7 +277,7 @@ typedef struct mad_client_routines {
     unsigned            (DIGCLIENT *MADCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
 
     mad_status          (DIGCLIENT *MADCliAddrToString)( address, mad_type_handle, mad_label_kind, char *buff, unsigned buff_size );
-    mad_status          (DIGCLIENT *MADCliMemExpr)( char const *start, unsigned len, unsigned radix, address * );
+    mad_status          (DIGCLIENT *MADCliMemExpr)( char const *expr, unsigned radix, address * );
 
     void                (DIGCLIENT *MADCliAddrSection)( address * );
     mad_status          (DIGCLIENT *MADCliAddrOvlReturn)( address * );
@@ -320,7 +320,7 @@ void            MCNotify( mad_notify_type, void * );
 unsigned        MCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
 
 mad_status      MCAddrToString( address, mad_type_handle, mad_label_kind, char *buff, unsigned buff_size );
-mad_status      MCMemExpr( char *start, unsigned len, unsigned radix, address * );
+mad_status      MCMemExpr( const char *expr, unsigned radix, address * );
 
 void            MCAddrSection( address * );
 mad_status      MCAddrOvlReturn( address * );

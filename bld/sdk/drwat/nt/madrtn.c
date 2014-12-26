@@ -129,7 +129,7 @@ mad_status DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_OK );
 }
 
-mad_status DIGCLIENT MADCliMemExpr( const char *start, unsigned len, unsigned radix, address *a )
+mad_status DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address *a )
 {
     //stub
     return( MS_OK );
