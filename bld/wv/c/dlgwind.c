@@ -35,6 +35,7 @@
 #include "guidlg.h"
 #include "dbgerr.h"
 #include "dlgwind.h"
+#include "dbgscan.h"
 
 
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
@@ -45,7 +46,6 @@ extern void             VarChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             FuncChangeOptions( void );
-extern unsigned         NewCurrRadix( unsigned rad );
 
 
 static void GetDlgStatus( gui_window *gui )

@@ -36,18 +36,16 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dbgio.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
 
-extern bool             ScanItem( bool, const char **, size_t * );
-extern bool             ScanEOC( void );
 extern bool             SwitchOnOff( void );
 extern void             ShowSwitch( bool );
 extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
-extern const char       *ReScan( const char * );
 extern void             FreeRing( char_ring * );
 extern char             *CnvULongDec( unsigned long, char *buff, unsigned buff_len );
 extern void             LogStart( void );

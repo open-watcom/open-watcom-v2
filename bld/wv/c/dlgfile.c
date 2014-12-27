@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include "dbgscrn.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern a_window         *WndFileInspect( char *name, bool binary );
@@ -49,7 +50,6 @@ extern void             SaveBreaksToFile( char * );
 extern void             RestoreBreaksFromFile( char * );
 extern void             SaveReplayToFile( char * );
 extern void             RestoreReplayFromFile( char * );
-extern void             ReqEOC( void );
 extern bool             OkToSaveReplay( void );
 extern void             FiniHelp( void );
 extern bool             KillProgOvlay( void );

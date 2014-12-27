@@ -40,18 +40,13 @@
 #include "dbgstk.h"
 #include "srcmgt.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
-extern bool             ScanItem( bool, const char **, size_t * );
-extern void             ReqEOC( void );
 extern bool             ScanSelectedExpr( char * );
 extern void             BreakOnSelected( char *item );
 
 extern a_window         *WndFileInspect( char *file, bool binary );
 extern void             *OpenSrcFile( cue_handle * );
-extern const char       *ScanPos( void );
-extern unsigned int     ScanCmd( const char * );
-extern void             Scan( void );
-extern const char       *ReScan( const char * );
 extern brkp             *FindBreakByLine( mod_handle, cue_fileid, unsigned );
 extern void             WndFuncInspect( mod_handle mod );
 extern void             *AddBreak( address );
@@ -73,7 +68,6 @@ extern void             AsmNewSrcNotify( a_window *, mod_handle, bool track );
 extern void             SkipToAddr( address );
 extern void             StepIntoFunction( char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
-extern unsigned         NewCurrRadix( unsigned int );
 extern bool             DbgWndSearch( a_window *, bool, int );
 extern bool             DlgCodeAddr( char *title, address *value );
 extern void             WndSrcInspect( address addr );

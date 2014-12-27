@@ -34,13 +34,10 @@
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
-
-extern void             ReqEOC( void );
 extern wnd_class        ReqWndName( void );
-extern void             Scan( void );
-extern unsigned int     ScanCmd( const char * );
 extern void             ConfigLine( char * );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern bool             WndDlgTxt( char *buff );

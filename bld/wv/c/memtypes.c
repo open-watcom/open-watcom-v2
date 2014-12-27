@@ -38,10 +38,10 @@
 #include "dbgmem.h"
 #include "dbgitem.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
-extern unsigned         NewCurrRadix( unsigned );
 
 
 static walk_result MadMemTypeWalk( mad_type_handle th, void *d )

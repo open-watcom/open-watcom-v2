@@ -39,15 +39,12 @@
 #include "dbgvar.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern type_display     *TypeDisplay;
 
 extern char             *GetCmdName( int );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern void             Scan( void );
-extern bool             ScanItem( bool blank_delim, const char **start, size_t *len );
-extern unsigned int     ScanCmd( const char * );
-extern void             ReqEOC( void );
 
 static const char TypeSettings[] = {
     "Ontop\0"

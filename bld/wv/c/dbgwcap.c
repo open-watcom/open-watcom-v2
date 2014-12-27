@@ -35,13 +35,11 @@
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgerr.h"
+#include "dbgscan.h"
 
-extern bool             ScanItem( bool, const char **, size_t * );
 extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             WndTmpFileInspect( char *file, bool binary );
-extern const char       *ReScan( const char * );
-extern void             ReqEOC( void );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             StdOutNew( void );
 extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );

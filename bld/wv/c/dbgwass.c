@@ -39,6 +39,7 @@
 #include "mad.h"
 #include "srcmgt.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -58,7 +59,6 @@ extern void             SetCodeDot(address);
 extern address          GetCodeDot(void);
 extern bool             HasLineInfo(address);
 extern brkp             *FindBreak(address);
-extern unsigned         NewCurrRadix(unsigned int );
 extern bool             SrcMoveDot( a_window *, address );
 extern void             SrcJoinAsm( a_window *, a_window * );
 extern void             SrcFreeAsm( a_window * );

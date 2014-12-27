@@ -38,6 +38,7 @@
 #include "mad.h"
 #include "srcmgt.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 enum {
@@ -96,9 +97,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             OptMemAddr( memory_expr, address * );
 extern int_16           GetDataWord( void );
 extern long             GetDataLong( void );
-extern void             Scan( void );
-extern unsigned int     ScanCmd( const char * );
-extern void             ReqEOC( void );
 extern int              AddrComp( address, address );
 extern unsigned         Execute( bool, bool );
 extern void             GetCurrOpcode( void );
@@ -114,7 +112,6 @@ extern address          GetRegSP( void );
 extern bool             RemoteOvlTransAddr( address * );
 extern bool             TransOvlRetAddr( address *, unsigned int );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern const char       *ReScan( const char * );
 extern void             TypeInpStack( input_type );
 extern void             SetCodeLoc( address );
 extern void             SetCodeDot( address );

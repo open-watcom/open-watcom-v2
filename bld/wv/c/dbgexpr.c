@@ -39,7 +39,7 @@
 #include "ldsupp.h"
 #include "mad.h"
 #include "i64.h"
-
+#include "dbgscan.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
@@ -67,8 +67,6 @@ extern address          GetRegSP( void );
 extern address          GetRegBP( void );
 extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
-extern char             *StringStart;
-extern unsigned         StringLength;
 
 static stack_entry ExprBOS = {
     NULL, NULL,

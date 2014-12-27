@@ -31,21 +31,17 @@
 
 
 #ifndef NDEBUG
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "wndregx.h"
-#include <ctype.h>
 #include "strutil.h"
+#include "dbgscan.h"
 
 
-extern unsigned int     ScanCmd(const char *);
-extern void             Scan( void );
-extern bool             ScanEOC(void);
-extern void             ReqEOC(void);
-extern unsigned         SetCurrRadix(unsigned int );
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern unsigned         ReqExpr();
 extern unsigned         OptExpr();

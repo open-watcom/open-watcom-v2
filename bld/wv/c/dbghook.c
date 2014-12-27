@@ -40,14 +40,11 @@
 #include "spawn.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern void             FreeCmdList(cmd_list *);
 extern void             PushCmdList(cmd_list *);
 extern cmd_list         *AllocCmdList(const char *,size_t );
-extern unsigned         ScanCmd( const char * );
-extern bool             ScanEOC(void);
-extern void             ReqEOC(void);
-extern bool             ScanItem( bool, const char **, size_t *);
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern input_type       SetInpStack( input_type );
 extern char             *GetCmdName( int );

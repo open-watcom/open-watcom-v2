@@ -24,15 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger lexical scanner.
 *
 ****************************************************************************/
 
 
-typedef struct rad_str {
-    struct   rad_str *next;
-             char    *radstr;
-    unsigned char     radstrlen;
-    unsigned char     radval;
-} rad_str;
+#include "mad.h"
+
+extern mad_type_handle  ScanType( mad_type_kind tk, mad_type_kind *tkr );
+extern mad_string       ScanCall( void );

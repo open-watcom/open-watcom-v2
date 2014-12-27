@@ -43,6 +43,7 @@
 #include "mad.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern char             *Language;
@@ -50,15 +51,11 @@ extern char             *Language;
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern const char       *ReScan( const char * );
-extern const char       *ScanPos( void );
 extern void             NewLang( const char * );
-extern char             *AddHexSpec( char * );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern address          GetCodeDot( void );
 extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
-extern unsigned         NewCurrRadix( unsigned );
 extern image_entry      *ImageEntry( mod_handle mh );
 extern image_entry      *ImagePrimary( void );
 

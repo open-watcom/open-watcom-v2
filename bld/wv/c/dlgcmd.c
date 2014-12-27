@@ -39,8 +39,8 @@
 #include "guidlg.h"
 #include "dlgcmd.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
-extern const char       *ReScan( const char * );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack(input_type);
 extern void             WndDlgTxt(char*);

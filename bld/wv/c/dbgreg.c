@@ -42,6 +42,7 @@
 #include "mad.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( char *p );
@@ -91,9 +92,7 @@ static  int             NumStateEntries = 0;
 extern long             GetDataLong( void );
 extern void             StartupErr( char * );
 extern unsigned         ReqExpr( void );
-extern void             ReqEOC( void );
 extern void             DbgUpdate( update_list );
-extern unsigned         SetCurrRadix( unsigned int );
 extern void             Warn( char * );
 extern void             LogLine( char * );
 extern void             FindAddrSectId( address *, int );
@@ -109,9 +108,6 @@ extern void             FiniOvlState( void );
 extern unsigned         ProgPoke( address addr, void *data, unsigned len );
 extern unsigned         ProgPeek( address addr, void *data, unsigned len );
 extern void             SetCodeLoc( address );
-extern char             *NamePos( void );
-extern unsigned int     NameLen( void );
-extern void             Scan( void );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );
 extern void             AddrSection( address *, unsigned );

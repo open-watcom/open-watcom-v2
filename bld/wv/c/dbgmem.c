@@ -36,6 +36,7 @@
 #include "dbgerr.h"
 #include "mad.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern char             *GetCmdName( int );
 extern char             *CnvULong( unsigned long, char *buff, unsigned buff_len );
@@ -43,7 +44,6 @@ extern unsigned         ProgPeek( address, void *, unsigned int );
 extern unsigned         ChangeMem( address, void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );
 extern unsigned         PortPoke( unsigned, void *, unsigned );
-extern char             *AddHexSpec( char * );
 extern void             AddrFix( address * );
 extern address          AddrAddWrap( address, long );
 extern void             RecordEvent( char * );

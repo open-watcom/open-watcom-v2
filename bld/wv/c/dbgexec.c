@@ -40,6 +40,7 @@
 #include "dui.h"
 #include "enterdb.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern bool             AdvMachState( int );
@@ -93,7 +94,6 @@ extern void             NameThread( dtid_t tid, char *name );
 extern unsigned         ProgPoke( address, void *, unsigned );
 extern bool             DlgScanDataAddr( char *str, address *value );
 extern bool             DlgScanLong( char *str, long *value );
-extern unsigned         NewCurrRadix( unsigned rad );
 extern cmd_list         *AllocCmdList(const char *,size_t );
 extern void             FreeCmdList(cmd_list *);
 extern void             PushCmdList(cmd_list *);

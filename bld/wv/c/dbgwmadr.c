@@ -36,10 +36,10 @@
 #include "madcli.h"
 #include "mad.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
-extern unsigned         NewCurrRadix( unsigned );
 extern void             WndInspect( char *item );
 extern char             *GetCmdName( int index );
 extern void             RecordEvent( char *p );

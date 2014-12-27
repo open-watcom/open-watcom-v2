@@ -41,6 +41,7 @@
 #include "dui.h"
 #include "i64.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -56,14 +57,8 @@ extern void             ExprValue( stack_entry * );
 extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             DoGivenField( sym_handle * );
-extern void             ReqEOC( void );
-extern void             Scan( void );
-extern unsigned int     ScanCmd( const char * );
-extern bool             ScanQuote( const char **, size_t * );
-extern bool             ScanEOC( void );
 extern char             *LineAddr( address *, char * );
 extern char             *StrAddr( address *, char *, unsigned );
-extern void             FindRadixSpec( unsigned char, char **, unsigned int * );
 extern void             WriteToPgmScreen( void *, unsigned int );
 extern void             GraphicDisplay( void );
 extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
@@ -74,7 +69,6 @@ extern void             DefAddr( memory_expr, address * );
 extern void             ChkBreak( void );
 extern void             PushType( type_handle * );
 extern void             MoveSP( int );
-extern bool             TokenName( unsigned, const char **, unsigned * );
 extern void             SetTokens( bool );
 extern void             MakeMemoryAddr( bool, memory_expr, address * );
 extern void             AddrFix( address * );
@@ -82,7 +76,6 @@ extern void             StartSubscript( void );
 extern void             AddSubscript( void );
 extern void             EndSubscript( void );
 extern void             DlgNewWithSym( char *, char *, unsigned);
-extern const char       *ReScan( const char * );
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern char             *GetCmdName( int );
 extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
@@ -205,7 +198,7 @@ static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff
 static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class sign_type, char *buff, unsigned len )
 {
     char        *ptr;
-    char        *prefix;
+    const char  *prefix;
     unsigned    pref_len;
 
     if( sign_type == NUM_SIGNED && I64Test( &num ) < 0 ) {

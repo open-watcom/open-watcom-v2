@@ -43,19 +43,17 @@
 #include "spawn.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
 extern image_entry      *ImageEntry( mod_handle mh );
-extern const char       *ScanPos( void );
-extern void             ReqEOC( void );
 extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
 extern void             EndPrintBuff( void );
 extern void             PrintChar( void );
 extern void             PrintString( void );
 extern void             ForcePrintString( void );
-extern const char       *ReScan( const char * );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
 extern void             ExprValue( stack_entry * );
@@ -63,22 +61,18 @@ extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             SwapStack( int entry );
 extern void             ExprPurge( void );
-extern bool             TokenName( unsigned, const char **, unsigned * );
 extern void             SetTokens( bool );
 extern void             PushNum( long );
 extern void             DoPlus( void );
 extern void             DoPoints( type_kind );
 extern void             DoAssign( void );
 extern char             *CnvLongDec( long, char *, unsigned );
-extern void             Scan( void );
-extern bool             ScanEOC( void );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( char *, char *, unsigned );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( char *);
 extern void             BreakOnExprSP( void * );
-extern unsigned         NewCurrRadix( unsigned int );
 extern void             FreezeInpStack( void );
 extern void             PopInpStack( void );
 extern void             FreezeStack( void );

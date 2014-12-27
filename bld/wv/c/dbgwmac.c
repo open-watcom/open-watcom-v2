@@ -40,6 +40,7 @@
 #include "sortlist.h"
 #include "dbgerr.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
@@ -51,7 +52,6 @@ extern cmd_list         *AllocCmdList( const char *start, size_t );
 extern void             FreeCmdList(cmd_list *);
 extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);
-extern const char       *ReScan( const char * );
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
 extern void             RingBell( void );
 

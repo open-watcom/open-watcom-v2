@@ -31,6 +31,10 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#if defined( __NT__ ) && defined( __GUI__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+#endif
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
@@ -40,10 +44,7 @@
 #include "dbgio.h"
 #include "dbgscrn.h"
 #include "strutil.h"
-#if defined( __NT__ ) && defined( __GUI__ )
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-#endif
+#include "dbgscan.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -61,8 +62,6 @@ extern void             ProcACmd( void );
 extern void             CheckBPErrors( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
-extern unsigned int     ScanCmd( const char * );
-extern void             ReqEOC( void );
 extern gui_colour_set   *GetWndColours( wnd_class class );
 extern bool             WndDlgTxt( char * );
 extern a_window         *WndSrchOpen( char * );

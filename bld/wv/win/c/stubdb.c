@@ -45,8 +45,8 @@
 #include "srcmgt.h"
 #include "dbgscrn.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
-extern void             FlushEOC(void);
 extern void             DoCmd(char*);
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern address          GetCodeDot();

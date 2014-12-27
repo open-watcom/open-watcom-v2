@@ -44,6 +44,9 @@
 #include "i64.h"
 #include "trpld.h"
 #include "strutil.h"
+#include "dbgscan.h"
+#include "madscan.h"
+#include "numscan.h"
 
 #include "clibext.h"
 
@@ -60,10 +63,7 @@ extern void             ConfigLine( char * );
 extern char             *CnvULongDec( unsigned long, char *, unsigned );
 extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len );
 extern void             DbgUpdate( update_list );
-extern const char       *ReScan( const char *point );
 
-
-extern void Scan( void );
 
 static const char CmdLnDelimTab[] = { "<>*/(),{}!?;[]~#\0" };
 
@@ -84,7 +84,7 @@ static  token_table     *ExprTokens;
         unsigned        ScanCCharNum = TRUE;
 
 
-static void SetRadixSpec( char *str, unsigned len, unsigned radix, bool clear )
+static void SetRadixSpec( const char *str, unsigned len, unsigned radix, bool clear )
 {
 
     rad_str   *pref;
@@ -555,7 +555,7 @@ static bool GetNum( unsigned base )
  * ScanNumber -- scan for a number
  */
 
-static char ScanNumber( void )
+static bool ScanNumber( void )
 {
     rad_str     *pref;
     bool        ret;
@@ -572,8 +572,7 @@ static char ScanNumber( void )
         }
     } else {
         CurrToken = T_BAD_NUM; /* assume we'll find a bad number */
-        pref = RadStrs;
-        while( pref != NULL ) {
+        for( pref = RadStrs; pref != NULL; pref = pref->next ) {
             if( memicmp( ScanPtr, &pref->radstr[1], pref->radstr[0] ) == 0 ) {
                 ret = TRUE;
                 ScanPtr += pref->radstr[0];
@@ -584,7 +583,6 @@ static char ScanNumber( void )
                 }
                 ScanPtr -= pref->radstr[0];
             }
-            pref = pref->next;
         }
         if( isdigit( *ScanPtr ) && GetNum( CurrRadix ) ) {
             CurrToken = T_INT_NUM;
@@ -890,7 +888,7 @@ void RadixConf( void )
 }
 
 
-void FindRadixSpec( unsigned char value, char **start, unsigned *len )
+void FindRadixSpec( unsigned char value, const char **start, unsigned *len )
 {
     rad_str     *rad;
 
@@ -908,7 +906,7 @@ void FindRadixSpec( unsigned char value, char **start, unsigned *len )
 
 char *AddHexSpec( char *p )
 {
-    char        *pref;
+    const char  *pref;
     unsigned    len;
 
     if( CurrRadix == 16 ) return( p );

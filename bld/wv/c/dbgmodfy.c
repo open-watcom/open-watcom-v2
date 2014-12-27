@@ -38,14 +38,11 @@
 #include "dbgitem.h"
 #include "ldsupp.h"
 #include "dui.h"
-#include "mad.h"
+#include "madscan.h"
+#include "dbgscan.h"
 
 
 extern void             OptMemAddr( memory_expr, address *);
-extern bool             ScanEOC( void );
-extern void             ReqEOC( void );
-extern void             Scan( void );
-extern mad_type_handle  ScanType( mad_type_kind, mad_type_kind * );
 extern void             PopEntry( void );
 extern void             DbgUpdate( update_list );
 extern void             NormalExpr( void );
@@ -54,10 +51,8 @@ extern unsigned         ReqExpr( void );
 extern void             SetDataDot( address addr );
 extern address          GetDataDot( void );
 extern char             *GetCmdName( int );
-extern void             FlushEOC( void );
 extern void             RecordCommand( const char *startpos, int cmd );
 extern bool             AdvMachState( int );
-extern const char       *ScanPos( void );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
 

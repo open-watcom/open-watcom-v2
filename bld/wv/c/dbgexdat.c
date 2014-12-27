@@ -35,19 +35,15 @@
 #include "dbggptr.h"
 #include "dbgitem.h"
 #include "dbglit.h"
-#include "mad.h"
 #include "strutil.h"
+#include "madscan.h"
+#include "dbgscan.h"
 
 
 extern void             AsmExam( void );
 extern void             OptMemAddr( memory_expr, address * );
-extern void             ReqEOC( void );
 extern unsigned int     OptExpr( unsigned int );
 extern void             ChkExpr( void );
-extern void             Scan( void );
-extern unsigned int     ScanCmd( const char * );
-extern mad_type_handle  ScanType( mad_type_kind, mad_type_kind * );
-extern const char       *ScanPos( void );
 extern void             SrcExam( void );
 extern void             WndMemInspect( address, char *, unsigned, mad_type_handle );
 extern void             WndIOInspect( address *, mad_type_handle );

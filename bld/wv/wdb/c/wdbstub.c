@@ -81,6 +81,7 @@ Done:
 #include "modlist.h"
 #include "srcmgt.h"
 #include "dbgscrn.h"
+#include "dbgscan.h"
 
 enum {
     REQ_NONE,
@@ -104,7 +105,6 @@ extern void             DoCmd(char*);
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern void             FlushEOC(void);
 extern  void            FiniSource( void );
 extern brkp             *GetBPAt(int row);
 extern int              GetBPsCount( void );

@@ -36,11 +36,10 @@
 #include "dbgerr.h"
 #include "dbgadget.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern char             *GetDmpName( void );
-extern void             ReqEOC( void );
-extern bool             ScanItem( bool, const char **, size_t * );
 extern bool             WndDlgTxt( char *buff );
 
 extern gui_resource     WndGadgetArray[];

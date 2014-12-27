@@ -37,6 +37,7 @@
 #include "dui.h"
 #include "trpcapb.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -64,7 +65,6 @@ extern void             FiniMacros( void );
 extern void             FiniMemWindow( void );
 extern void             FiniMenus( void );
 extern void             FiniPaint( void );
-extern void             FiniScan( void );
 extern void             FiniScreen( void );
 extern void             FiniSource( void );
 extern void             FiniToolBar( void );
@@ -94,7 +94,6 @@ extern void             InitMachState( void );
 extern void             InitMemWindow( void );
 extern void             InitMenus( void );
 extern void             InitPaint( void );
-extern void             InitScan( void );
 extern void             InitScreen( void );
 extern void             InitSource( void );
 extern void             InitToolBar( void );
@@ -150,10 +149,6 @@ extern void             RecordInit( void );
 extern void             ReleaseProgOvlay( bool );
 extern void             RestoreHandlers( void );
 extern void             RingBell( void );
-extern void             Scan( void );
-extern unsigned int     ScanCmd( const char * );
-extern unsigned int     ScanLen( void );
-extern const char       *ScanPos( void );
 extern void             StartupErr( char * );
 extern void             Suicide( void );
 extern void             SupportFini( void );

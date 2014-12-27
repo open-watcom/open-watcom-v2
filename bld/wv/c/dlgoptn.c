@@ -35,14 +35,13 @@
 #include "guidlg.h"
 #include "dbgerr.h"
 #include "dlgoptn.h"
+#include "dbgscan.h"
 
 extern bool             SupportsExactBreakpoints;
 
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
-extern void             DefaultRadixSet( unsigned radix );
 extern void             LookCaseSet( bool respect );
-extern unsigned         NewCurrRadix( unsigned rad );
 extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
 
 static void GetDlgStatus( gui_window *gui )

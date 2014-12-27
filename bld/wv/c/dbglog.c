@@ -34,13 +34,9 @@
 #include "dbglit.h"
 #include "dbgio.h"
 #include "dbgerr.h"
+#include "dbgscan.h"
 
 
-extern void         ReqEOC( void );
-extern void         Scan( void );
-extern unsigned int ScanCmd( const char * );
-extern bool         ScanItem( bool, const char **, size_t * );
-extern bool         ScanEOC( void );
 extern char         *GetCmdName( int );
 
 

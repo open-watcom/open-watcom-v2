@@ -37,9 +37,9 @@
 #include "dbgio.h"
 #include "spawn.h"
 #include "dui.h"
+#include "dbgscan.h"
 
 
-extern const char       *ReScan( const char * );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
 extern bool             TBreak( void );

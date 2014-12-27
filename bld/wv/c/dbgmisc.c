@@ -13,7 +13,7 @@
 *    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
 *    provided with the Original Code and Modifications, and is also
 *    available at www.sybase.com/developer/opensource.
-*g
+*
 *    The Original Code and all software distributed under the License are
 *    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
 *    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
@@ -37,19 +37,14 @@
 #include "dbglit.h"
 #include "i64.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern unsigned int     ReqExpr( void );
 extern unsigned_64      ReqU64Expr( void );
 extern void             ReqMemAddr( memory_expr ,address *);
 extern unsigned         OptExpr( unsigned );
-extern unsigned int     ScanCmd( const char * );
 extern void             DebugExit( void );
-extern void             ReqEOC( void );
-extern bool             ScanQuote( const char **, size_t * );
-extern bool             ScanItem( bool, const char **, size_t * );
-extern void             Scan( void );
-extern bool             ScanEOC( void );
 extern unsigned         Go( bool );
 extern void             PopEntry( void );
 extern void             NormalExpr( void );
@@ -62,8 +57,6 @@ extern void             DbgUpdate( update_list );
 extern void             PushCmdList( cmd_list * );
 extern address          GetRegIP( void );
 extern void             RecordSetRegIP( address );
-extern const char       *ScanPos( void );
-extern const char       *ReScan( const char * );
 extern void             DUIWndUser( void );
 extern unsigned         RemoteReadUserKey( unsigned );
 extern void             ReadDbgRegs( void );
@@ -77,18 +70,12 @@ extern dtid_t           RemoteSetRunThreadWithErr( dtid_t, unsigned * );
 extern void             RemoteThdName( dtid_t, char * );
 extern void             RemoteRunThdName( dtid_t, char * );
 extern void             TraceKill( void );
-extern unsigned         SetCurrRadix( unsigned );
 extern address          ReturnAddress( void );
 extern void             SetCodeDot( address );
 extern void             ChkExpr( void );
 extern bool             AdvMachState( int );
 extern void             CopyInpFlags( void );
-extern void             FlushEOC( void );
 extern void             RecordCommand( const char *startpos, int cmd );
-extern void             RawScanInit( void );
-extern char             RawScanChar( void );
-extern void             RawScanAdvance( void );
-extern void             RawScanFini( void );
 extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern int              AddrComp( address a, address b );
 

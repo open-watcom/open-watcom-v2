@@ -37,6 +37,7 @@
 #include "dbgrep.h"
 #include "dbgevent.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
@@ -52,14 +53,10 @@ extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
 extern void             CreateInvokeFile( char *name, void (*rtn)(void) );
 extern void             InvokeAFile(char*);
-extern bool             ScanEOC();
-extern void             ReqEOC();
 extern bool             WndDlgTxt( char *buff );
 extern char             *StrAddr( address *addr, char *p ,unsigned);
-extern unsigned         NewCurrRadix( unsigned rad );
 extern unsigned         ReqExpr();
 extern void             PushInpStack( void *handle, bool (*rtn)(), bool save_lang );
-extern const char       *ScanPos( void );
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );

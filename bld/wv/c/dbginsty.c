@@ -39,15 +39,14 @@
 #include "spawn.h"
 #include "mad.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern void             PopEntry(void);
 extern void             ExprValue(stack_entry *);
 extern bool             IsInternalMod( mod_handle mod );
 extern void             AddrFloat( address * );
 extern void             MakeMemoryAddr( bool, memory_expr def_seg, address *out_val );
-extern const char       *ReScan( const char * );
 extern void             EvalLValExpr( int );
-extern void             ReqEOC(void);
 extern void             NormalExpr(void);
 extern void             BreakOnExprSP(char*);
 extern void             LValue(stack_entry *);

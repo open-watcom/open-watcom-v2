@@ -39,9 +39,9 @@
 #include "dbgmem.h"
 #include "dbgitem.h"
 #include "i64.h"
+#include "numscan.h"
 
 
-extern bool             ForceSym2Num(const char *,unsigned int , unsigned_64 *);
 extern sym_list         *Disambiguate( sym_list *, location_context * );
 extern void             DoAPoints( stack_entry *, type_kind );
 extern void             ExprSetAddrInfo( stack_entry *, bool );
@@ -328,8 +328,8 @@ static bool DoNameResolve( stack_entry *entry )
     if( entry->v.li.type != ST_NONE ) return( FALSE );
     if( entry->v.li.scope.start != NULL ) return( FALSE );
 
-    if( !ForceSym2Num( entry->v.li.name.start,
-                    entry->v.li.name.len, &val ) ) return( FALSE );
+    if( !ForceSym2Num( entry->v.li.name.start, entry->v.li.name.len, &val ) )
+        return( FALSE );
     entry->v.uint = val;
     ClassNum( entry );
     return( TRUE );

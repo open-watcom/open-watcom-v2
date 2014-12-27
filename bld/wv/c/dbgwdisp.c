@@ -35,21 +35,16 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
-extern void             ReqEOC( void );
-extern void             Scan( void );
-extern unsigned int     ScanCmd( const char * );
-extern bool             ScanEOC( void );
-extern unsigned         NewCurrRadix( unsigned );
 extern void             ConfigLine( char * );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern bool             WndDlgTxt( char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
-extern bool             ScanItem( bool, const char **, size_t * );
 extern char             *GetCmdName( int );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );

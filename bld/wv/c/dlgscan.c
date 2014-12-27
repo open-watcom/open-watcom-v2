@@ -37,22 +37,17 @@
 #include "dbglit.h"
 #include "spawn.h"
 #include "mad.h"
+#include "dbgscan.h"
 
 
-extern const char       *ReScan( const char * );
 extern unsigned long    ReqLongExpr( void );
 extern void             ReqMemAddr( memory_expr, address * );
-extern void             ReqEOC( void );
 extern void             NormalExpr( void );
 extern void             ChkExpr( void );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
-extern const char       *ScanPos( void );
-extern unsigned int     ScanLen( void );
 extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
-extern void             Scan( void );
 extern void             RawScanInit( void );
-extern bool             ScanItem( bool, const char **, size_t * );
 
 
 OVL_EXTERN void GetExprAny( void *value )

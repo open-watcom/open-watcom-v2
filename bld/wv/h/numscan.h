@@ -24,57 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger lexical scanner.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include "dbgdefn.h"
-#include "dbglit.h"
-#include "dbgerr.h"
-#include "dbgscan.h"
-
-
-extern bool Redirect(bool ,char *);
-
-
-static void StdioRedirect( bool input )
-{
-    const char  *start;
-    size_t      len;
-    char        buff[160];
-
-    ScanItem( TRUE, &start, &len );
-    memcpy( buff, start, len );
-    buff[ len ] = NULLCHAR;
-    ReqEOC();
-    if( !Redirect( input, buff ) ) {
-        if( len == 0 ) {
-            Error( ERR_NONE, input ? LIT( ERR_CANNOT_RESTORE_STDIN ) :
-                                     LIT( ERR_CANNOT_RESTORE_STDOUT ) );
-        } else {
-            Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), buff );
-        }
-    }
-}
-
-/*
- * StdInNew -- redirect the STDIN file
- */
-
-extern void StdInNew()
-{
-    StdioRedirect( TRUE );
-}
-
-
-/*
- * StdOutNew -- redirect the STDOUT file
- */
-
-extern void StdOutNew()
-{
-    StdioRedirect( FALSE );
-}
+extern unsigned_64  IntNumVal( void );
+extern bool         ForceSym2Num( const char *start, unsigned len, unsigned_64 *val_ptr );
+extern xreal        RealNumVal( void );

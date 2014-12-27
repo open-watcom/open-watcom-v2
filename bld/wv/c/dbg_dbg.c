@@ -36,6 +36,7 @@
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
@@ -50,7 +51,6 @@ extern address          GetDataDot( void );
 extern address          GetCodeDot( void );
 extern dtid_t           GetNextTID( void );
 extern void             AddrFix( address * );
-extern bool             TokenName( unsigned int, const char **, unsigned * );
 extern bool             IsInternalMod( mod_handle );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 

@@ -34,6 +34,7 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern char *StrAddr(address *,char *,unsigned);
@@ -43,7 +44,6 @@ extern char *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
 extern char *CnvLongDec( long value, char *buff, unsigned buff_len );
 extern address GetRealSeg( address );
 extern char *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
-extern char *AddHexSpec( char *p );
 extern char *AddrToIOString( address *a, char *p, unsigned );
 
 /*

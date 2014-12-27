@@ -37,24 +37,20 @@
 #include "dbgitem.h"
 #include "dbgstk.h"
 #include "mad.h"
+#include "dbgscan.h"
 
 /* to be moved to header files ! */
 extern bool             DlgNewWithMod(char*,char*,unsigned);
 extern bool             DlgNewWithSym(char*,char*,unsigned);
-extern const char       *ReScan( const char * );
 extern void             ChkExpr(void);
 extern void             ReqMemAddr(memory_expr , address *);
-extern void             ReqEOC();
 extern char             *CnvLong(long,char*,unsigned);
 extern void             NormalExpr(void);
 extern void             FreezeStack();
 extern void             UnFreezeStack( bool );
-extern const char       *ScanPos( void );
 extern void             PrevError(char*);
 extern char             *UniqStrAddr(address *,char * ,unsigned);
 extern char             *StrDouble(xreal*,char*);
-extern unsigned int     ScanLen(void);
-extern void             Scan(void);
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );
 extern void             PopEntry(void);
 

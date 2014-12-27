@@ -34,13 +34,11 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
-
+#include "dbgscan.h"
 
 
 extern bool             HasLinInfo(address );
 extern void             OptMemAddr(memory_expr ,address *);
-extern void             ReqEOC(void);
-extern void             Scan(void);
 extern void             *WndAsmInspect(address);
 extern void             *WndSrcInspect(address);
 extern address          GetCodeDot( void );

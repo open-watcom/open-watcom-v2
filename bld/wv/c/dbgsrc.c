@@ -37,6 +37,7 @@
 #include "dui.h"
 #include "srcmgt.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
@@ -44,9 +45,6 @@
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             ScanItem( bool, const char **, size_t * );
-extern unsigned int     ScanCmd( const char * );
-extern void             Scan( void );
 extern void             ConfigLine( char * );
 extern char             *GetCmdName( int );
 extern void             DbgUpdate( update_list );

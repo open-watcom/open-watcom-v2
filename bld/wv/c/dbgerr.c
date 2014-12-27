@@ -37,14 +37,11 @@
 #include "dbgerr.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern int              ScanSavePtr;
 
-extern const char       *ScanPos( void );
-extern void             Scan( void );
-extern unsigned int     ScanLen( void );
-extern void             ScanExpr( void * );
 extern void             ExprPurge( void );
 extern void             RingBell( void );
 extern void             DUIFlushKeys( void );
@@ -54,7 +51,6 @@ extern void             DUIWndDebug( void );
 extern void             CmdError( void );
 extern void             CaptureError( void );
 extern void             BrkCmdError( void );
-extern void             RestoreRadix( void );
 extern void             PurgeSymHandles( void );
 extern void             DlgCmd( void );
 extern bool             SetProgStartHook( bool );

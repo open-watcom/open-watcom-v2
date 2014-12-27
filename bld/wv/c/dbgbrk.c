@@ -39,11 +39,12 @@
 #include "dbgstk.h"
 #include "dbgrep.h"
 #include "dbgio.h"
-#include "mad.h"
 #include "dui.h"
 #include "spawn.h"
 #include "enterdb.h"
 #include "strutil.h"
+#include "madscan.h"
+#include "dbgscan.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -51,14 +52,8 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern unsigned long    ReqLongExpr( void );
 extern unsigned int     ReqExpr( void );
-extern const char       *ReScan( const char * );
 extern void             ReqMemAddr( memory_expr, address * );
-extern bool             ScanQuote( const char **, size_t * );
-extern bool             ScanEOC( void );
 extern int              AddrComp( address, address );
-extern unsigned int     ScanCmd( const char * );
-extern void             ReqEOC( void );
-extern void             Scan( void );
 extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             PushCmdList( cmd_list * );
@@ -89,7 +84,6 @@ extern char             *GetCmdEntry( const char *, int, char * );
 extern void             InvokeAFile( char * );
 extern void             CreateInvokeFile( char *name, void ( *rtn ) ( void ) );
 extern void             UnAsm( address addr, char *buff, unsigned buff_len );
-extern char             *AddHexSpec( char * );
 extern char             *GetCmdName( int );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
@@ -100,13 +94,10 @@ extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern bool             SetMsgText( char *, unsigned * );
 extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len );
-extern mad_type_handle  ScanType( mad_type_kind, mad_type_kind * );
 extern mad_type_handle  FindMADTypeHandle( mad_type_kind tk, unsigned size );
 extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
-extern unsigned         NewCurrRadix( unsigned );
 extern void             WriteDbgRegs( void );
 extern void             BreakOnImageLoad( const char *name, unsigned len, bool clear );
-extern bool             ScanItem( bool blank_delim, const char **start, size_t *len );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             UnMapPoints( image_entry * );
@@ -185,7 +176,7 @@ static bpjmptab_type BPJmpTab[] = {
 };
 
 
-static char *BrkFmt( void )
+static const char *BrkFmt( void )
 {
     return( ( DbgLevel != ASM ) ? "%l" : "%a" );
 }
@@ -431,14 +422,16 @@ static void GetWPVal( brkp *wp )
 
 bool DispBPMsg( bool stack_cmds )
 {
-    brkp    *bp, *next;
-    char    *p;
-    bool    ret;
+    brkp        *bp;
+    brkp        *next;
+    char        *p;
+    bool        ret;
     cmd_list    *cmds;
 
     ret = FALSE;
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        if( !bp->status.b.hit ) continue;
+        if( !bp->status.b.hit )
+            continue;
         if( !bp->status.b.silent ) {
             if( bp->th != MAD_NIL_TYPE_HANDLE ) {
                 p = GetBPAddrText( bp, TxtBuff );
@@ -601,7 +594,8 @@ static void DoActPoint( brkp *bp, bool act )
 
 void ActPoint( brkp *bp, bool act )
 {
-    if( act && bp->status.b.unmapped ) return;
+    if( act && bp->status.b.unmapped )
+        return;
     DoActPoint( bp, act );
     DbgUpdate( UP_BREAK_CHANGE );
 }
@@ -656,7 +650,8 @@ bool RemoveBreak( address addr )
     brkp        *bp;
 
     bp = FindBreak( addr );
-    if( bp == NULL ) return( FALSE );
+    if( bp == NULL )
+        return( FALSE );
     RemovePoint( bp );
     return( TRUE );
 }
@@ -876,12 +871,16 @@ static brkp *PointBreak( memory_expr def_seg, address *addr )
         index = ReqExpr(); // always decimal
         NewCurrRadix( old );
         for( bp = BrkList; bp != NULL; bp = bp->next ) {
-            if( bp->index == index ) break;
+            if( bp->index == index ) {
+                break;
+            }
         }
     } else {
         ReqMemAddr( def_seg, addr );
         for( bp = BrkList; bp != NULL; bp = bp->next ) {
-            if( AddrComp( bp->loc.addr, *addr ) == 0 ) break;
+            if( AddrComp( bp->loc.addr, *addr ) == 0 ) {
+                break;
+            }
         }
     }
     ReqEOC();
@@ -986,7 +985,8 @@ char *CopySourceLine( cue_handle *ch )
     char        *p;
     char        *source_line;
 
-    if( !DUIGetSourceLine( ch, TxtBuff, TXT_LEN ) ) return( NULL );
+    if( !DUIGetSourceLine( ch, TxtBuff, TXT_LEN ) )
+        return( NULL );
     for( p = TxtBuff; *p == ' '; ++p ) ;
     source_line = DupStr( p );
     return( source_line );
@@ -1022,7 +1022,8 @@ void SetPointAddr( brkp *bp, address addr )
     size_t      len;
     bool        ok;
 
-    if( bp->status.b.unmapped ) return;
+    if( bp->status.b.unmapped )
+        return;
     _Free( bp->source_line );
     bp->source_line = NULL;
     bp->loc.addr = addr;
@@ -1038,7 +1039,8 @@ void SetPointAddr( brkp *bp, address addr )
         GetWPVal( bp );
     } else if( DeAliasAddrMod( addr, &mod ) != SR_NONE ) {
         image = ImageEntry( mod );
-        if( image == NULL ) return;
+        if( image == NULL )
+            return;
         ModName( mod, TxtBuff, TXT_LEN );
         bp->mod_name = DupStr( TxtBuff );
         if( image->image_name != NULL ) {
@@ -1092,7 +1094,8 @@ bool BrkCheckWatchLimit( address loc, mad_type_handle th )
         enough_iron = TRUE;
     }
     for( wp = BrkList; wp != NULL; wp = wp->next ) {
-        if( wp->th == MAD_NIL_TYPE_HANDLE ) continue;
+        if( wp->th == MAD_NIL_TYPE_HANDLE )
+            continue;
         MADTypeInfo( wp->th, &mti );
         if( !RemoteSetWatch( wp->loc.addr, mti.b.bits / BITS_PER_BYTE, &mult ) ) {
             enough_iron = FALSE;
@@ -1102,7 +1105,8 @@ bool BrkCheckWatchLimit( address loc, mad_type_handle th )
         RemoteRestoreWatch( loc, size );
     }
     for( wp = BrkList; wp != NULL; wp = wp->next ) {
-        if( wp->th == MAD_NIL_TYPE_HANDLE ) continue;
+        if( wp->th == MAD_NIL_TYPE_HANDLE )
+            continue;
         MADTypeInfo( wp->th, &mti );
         RemoteRestoreWatch( wp->loc.addr, mti.b.bits / BITS_PER_BYTE );
     }
@@ -1131,7 +1135,8 @@ static brkp *AddPoint( address loc, mad_type_handle th, bool unmapped )
     brkp                *bp;
     brkp                **owner;
 
-    if( th != MAD_NIL_TYPE_HANDLE && !BrkCheckWatchLimit( loc, th ) ) return( NULL );
+    if( th != MAD_NIL_TYPE_HANDLE && !BrkCheckWatchLimit( loc, th ) )
+        return( NULL );
     _Alloc( bp, sizeof( brkp ) );
     InitMappableAddr( &bp->loc );
     bp->th = th;
@@ -1179,8 +1184,8 @@ extern brkp *AddBreak( address addr )
         }
     }
     bp = AddPoint( addr, MAD_NIL_TYPE_HANDLE, FALSE );
-    if( bp == NULL ) return( NULL );
-    RecordBreakEvent( bp, B_SET );
+    if( bp != NULL )
+        RecordBreakEvent( bp, B_SET );
     return( bp );
 }
 
@@ -1189,7 +1194,8 @@ extern void ToggleBreak( address addr )
 {
     brkp        *bp;
 
-    if( IS_NIL_ADDR( addr ) ) return;
+    if( IS_NIL_ADDR( addr ) )
+        return;
     bp = FindBreak( addr );
     if( bp == NULL ) {
         AddBreak( addr );
@@ -1301,13 +1307,15 @@ long GetBPCountDown( brkp *bp )
 
 char *GetBPCondition( brkp *bp )
 {
-    if( bp->condition == NULL ) return( "" );
+    if( bp->condition == NULL )
+        return( "" );
     return( bp->condition );
 }
 
 char *GetBPPatch( brkp *bp )
 {
-    if( bp->cmds == NULL ) return( "" );
+    if( bp->cmds == NULL )
+        return( "" );
     return( bp->cmds->buff + strlen( GetCmdName( CMD_DO ) ) + 1 );
 }
 
@@ -1411,9 +1419,11 @@ done:;
     condition = NULL;
     countdown = 0;
     if( ScanQuote( &start, &len ) ) {
-        if( len != 0 ) cmds = AllocCmdList( start, len );
+        if( len != 0 )
+            cmds = AllocCmdList( start, len );
         if( ScanQuote( &start, &len ) ) {
-            if( len != 0 ) condition = DupStrLen( start, len );
+            if( len != 0 )
+                condition = DupStrLen( start, len );
             if( !ScanEOC() ) {
                 countdown = ReqExpr();
             }
@@ -1436,7 +1446,8 @@ done:;
         }
     }
     bp = AddPoint( loc, th, unmapped );
-    if( bp == NULL ) return( NULL );
+    if( bp == NULL )
+        return( NULL );
     bp->status.b.unmapped = unmapped;
     if( mapaddress ) {
         bp->loc.image_name = image_name;
@@ -1449,13 +1460,16 @@ done:;
         bp->addr_diff = addr_diff;
     }
     bp->cmds = cmds;
-    if( cmds != NULL ) bp->status.b.use_cmds = TRUE;
+    if( cmds != NULL )
+        bp->status.b.use_cmds = TRUE;
     bp->condition = condition;
-    if( condition != NULL ) bp->status.b.use_condition = TRUE;
+    if( condition != NULL )
+        bp->status.b.use_condition = TRUE;
     SetBPCountDown( bp, countdown );
     bp->status.b.resume = resume;
     bp->status.b.active = active;
-    if( index != 0 ) bp->index = index;
+    if( index != 0 )
+        bp->index = index;
     RecordBreakEvent( bp, B_SET );
     return( bp );
 }
@@ -1466,12 +1480,16 @@ bool BreakWrite( address addr, mad_type_handle th, char *comment )
     brkp                *bp;
     mad_type_info       mti;
     bool                ok_to_try = TRUE;
-    if( th == MAD_NIL_TYPE_HANDLE ) return( FALSE );
+
+    if( th == MAD_NIL_TYPE_HANDLE )
+        return( FALSE );
     MADTypeInfo( th, &mti );
     switch( mti.b.bits / BITS_PER_BYTE ) {
     case 8:
-        if( !Supports8ByteBreakpoints )
+        if( !Supports8ByteBreakpoints ) {
             ok_to_try = FALSE;
+        }
+        // fall down
     case 1:
     case 2:
     case 4:
@@ -1480,11 +1498,13 @@ bool BreakWrite( address addr, mad_type_handle th, char *comment )
                 Error( ERR_NONE, LIT( ERR_POINT_EXISTS ) );
             }
             bp = AddPoint( addr, th, FALSE );
-            if( bp == NULL ) return( TRUE );
+            if( bp == NULL )
+                return( TRUE );
             bp->source_line = DupStr( comment );
             RecordBreakEvent( bp, B_SET );
             return( TRUE );
         }
+        // fall down
     default:
         return( FALSE );
     }
@@ -1558,10 +1578,14 @@ void PointFini( void )
 
 static  bool    HaveHitBP( brkp *bp )
 {
-    if( !bp->status.b.active ) return( FALSE );
-    if( !bp->status.b.in_place ) return( FALSE );
-    if( !SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) return( FALSE );
-    if( AddrComp( bp->loc.addr, GetRegIP() ) != 0 ) return( FALSE );
+    if( !bp->status.b.active )
+        return( FALSE );
+    if( !bp->status.b.in_place )
+        return( FALSE );
+    if( !SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) )
+        return( FALSE );
+    if( AddrComp( bp->loc.addr, GetRegIP() ) != 0 )
+        return( FALSE );
     return( TRUE );
 }
 
@@ -1622,7 +1646,8 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
     state_set = FALSE;
     bphit = FALSE;
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        if( !bp->status.b.active ) continue;
+        if( !bp->status.b.active )
+            continue;
         hit = FALSE;
         if( bp->th != MAD_NIL_TYPE_HANDLE ) {
             if( SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
@@ -1720,8 +1745,10 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
         bphit = TRUE;
         DbgTmpBrk.status.b.hit = TRUE;
     }
-    if( bphit ) return( COND_BREAK | ( conditions & ~COND_STOPPERS ) );
-    if( wphit ) return( COND_WATCH | ( conditions & ~COND_STOPPERS ) );
+    if( bphit )
+        return( COND_BREAK | ( conditions & ~COND_STOPPERS ) );
+    if( wphit )
+        return( COND_WATCH | ( conditions & ~COND_STOPPERS ) );
     if( conditions & COND_BREAK ) {
         unsigned        max = TXT_LEN;
 
@@ -1757,7 +1784,8 @@ bool UpdateWPs( void )
 
     have_active = FALSE;
     for( wp = BrkList; wp != NULL; wp = wp->next ) {
-        if( wp->th == MAD_NIL_TYPE_HANDLE ) continue;
+        if( wp->th == MAD_NIL_TYPE_HANDLE )
+            continue;
         wp->status.b.hit = FALSE;
         wp->status.b.has_value = FALSE;
         if( wp->status.b.active && SectIsLoaded( wp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
@@ -1776,7 +1804,8 @@ void InsertWPs( void )
     mad_type_info       mti;
 
     for( wp = BrkList; wp != NULL; wp = wp->next ) {
-        if( wp->th == MAD_NIL_TYPE_HANDLE ) continue;
+        if( wp->th == MAD_NIL_TYPE_HANDLE )
+            continue;
         if( wp->status.b.active && SectIsLoaded( wp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
             wp->status.b.in_place = TRUE;
             MADTypeInfo( wp->th, &mti );
@@ -1846,11 +1875,16 @@ void BreakAllModEntries( mod_handle handle )
     for( i = 0; i < NameListNumRows( &list ); ++i ) {
         addr = NameListAddr( &list, i );
         SymInfo( NameListHandle( &list, i ), NULL, &sinfo );
-        if( !sinfo.is_global && !sinfo.is_public ) continue;
+        if( !sinfo.is_global && !sinfo.is_public )
+            continue;
         if( have_mod_cue && DeAliasAddrCue( handle, addr, ch ) != SR_NONE ) {
-            if( CueFileId( ch ) != CueFileId( ch_mod ) ) continue;
+            if( CueFileId( ch ) != CueFileId( ch_mod ) ) {
+                continue;
+            }
         }
-        if( FindBreak( addr ) != NULL ) continue;
+        if( FindBreak( addr ) != NULL ) {
+            continue;
+        }
         AddBreak( addr );
     }
     NameListFree( &list );
@@ -1874,12 +1908,14 @@ address GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool ex
 {
     DIPHDL( cue, ch );
 
-    if( mod == NO_MOD || row < 0 ) return( NilAddr );
+    if( mod == NO_MOD || row < 0 )
+        return( NilAddr );
     switch( LineCue( mod, file_id, row+1, 0, ch ) ) {
     case SR_NONE:
         return( NilAddr );
     case SR_CLOSEST:
-        if( exact ) return( NilAddr );
+        if( exact )
+            return( NilAddr );
         break;
     }
     return( CueAddr( ch ) );

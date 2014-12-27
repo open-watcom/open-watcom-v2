@@ -40,6 +40,7 @@
 #include "srcmgt.h"
 #include "dbgscrn.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern a_window         *WndMain;
@@ -88,7 +89,6 @@ extern void             InitSuppServices( void );
 extern void             AsyncNotify( void );
 extern void             RunThreadNotify( void );
 
-extern unsigned         ScanCmd( const char *cmd_table );
 extern void             WndMsgBox( char *text );
 extern bool             WndDlgTxt( char *text );
 extern void             WndInfoBox( char *text );

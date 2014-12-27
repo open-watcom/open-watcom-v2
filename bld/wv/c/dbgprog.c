@@ -30,6 +30,7 @@
 
 
 #include <stdio.h>
+#include <limits.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "spawn.h"
@@ -42,7 +43,7 @@
 #include "srcmgt.h"
 #include "tistrail.h"
 #include "strutil.h"
-#include <limits.h>
+#include "dbgscan.h"
 
 #include "clibext.h"
 
@@ -55,10 +56,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
 extern void             Warn( char * );
-extern unsigned int     ScanCmd( const char * );
-extern void             Scan( void );
-extern bool             ScanItem( bool, const char **, size_t * );
-extern void             ReqEOC( void );
 extern bool             KillProgOvlay( void );
 extern void             ReportTask( task_status, unsigned );
 extern void             BPsDeac( void );
@@ -75,10 +72,7 @@ extern void             SymInfoMvHdl( handle, handle );
 extern handle           PathOpen( const char *, unsigned, const char * );
 extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             ChkExpr( void );
-extern bool             ScanEOC( void );
-extern const char       *ReScan( const char * );
 extern unsigned         ReqExpr( void );
-extern const char       *ScanPos( void );
 extern void             ReqMemAddr( memory_expr, address * );
 extern void             SetNoSectSeg( void );
 extern void             TraceKill( void );

@@ -40,18 +40,11 @@
 #include "mad.h"
 #include "madcli.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
 
-extern unsigned int     ScanCmd( const char * );
-extern void             Scan( void );
-extern const char       *ScanPos( void );
-extern const char       *ReScan( const char * );
-extern bool             ScanEOC( void );
-extern bool             ScanItem( bool, const char **, size_t * );
-extern void             ReqEOC( void );
-extern unsigned         SetCurrRadix( unsigned int );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
@@ -59,13 +52,11 @@ extern void             WndUserAdd( char *, unsigned int );
 extern void             CallSet( void );
 extern void             ImplicitSet( void );
 extern void             LookSet( void );
-extern void             RadixSet( void );
 extern void             SourceSet( void );
 extern void             LevelSet( void );
 extern void             CallConf( void );
 extern void             ImplicitConf( void );
 extern void             LookConf( void );
-extern void             RadixConf( void );
 extern void             SourceConf( void );
 extern void             LevelConf( void );
 extern void             DoConfig( char *,const char *,void (**)(), void (**)() );
@@ -76,7 +67,6 @@ extern void             LangInit( void );
 extern void             LangFini( void );
 extern bool             LangLoad( const char *, unsigned );
 extern void             FreeCmdList( cmd_list * );
-extern void             Recog( unsigned int );
 extern void             VarChangeOptions( void );
 extern void             RegChangeOptions( void );
 extern void             FPUChangeOptions( void );

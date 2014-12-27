@@ -38,6 +38,7 @@
 #include "dbgevent.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
 extern void             RecordPointStart( void );
@@ -53,14 +54,9 @@ extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
 extern void             InvokeAFile( char * );
-extern bool             ScanEOC( void );
-extern bool             ScanItem( bool blank_delim, const char **start, size_t *len );
-extern void             ReqEOC( void );
 extern char             *StrAddr( address *addr, char *p, unsigned);
-extern unsigned         NewCurrRadix( unsigned rad );
 extern unsigned         ReqExpr( void );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern const char       *ScanPos( void );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );

@@ -40,17 +40,11 @@
 #include "mad.h"
 #include "madcli.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
 
-extern unsigned int     ScanCmd( const char * );
-extern void             Scan( void );
-extern const char       *ScanPos( void );
-extern bool             ScanEOC( void );
-extern bool             ScanItem( bool, const char **, size_t * );
-extern void             ReqEOC( void );
-extern unsigned         SetCurrRadix( unsigned int );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern char             *CnvULongDec( unsigned long, char *, unsigned );
 extern unsigned         ReqExpr( void );
@@ -59,13 +53,11 @@ extern void             WndUserAdd( char *, unsigned int );
 extern void             CallSet( void );
 extern void             ImplicitSet( void );
 extern void             LookSet( void );
-extern void             RadixSet( void );
 extern void             SourceSet( void );
 extern void             LevelSet( void );
 extern void             CallConf( void );
 extern void             ImplicitConf( void );
 extern void             LookConf( void );
-extern void             RadixConf( void );
 extern void             SourceConf( void );
 extern void             LevelConf( void );
 extern void             ConfigLine( char * );
@@ -78,7 +70,6 @@ extern void             WndRedraw( wnd_class );
 extern a_window         *WndFindActive( void );
 extern cmd_list         *AllocCmdList( const char *, size_t );
 extern void             FreeCmdList( cmd_list * );
-extern void             Recog( unsigned int );
 extern void             WndRestoreToFront( a_window* );
 extern a_window         *WndFindClass( a_window*, wnd_class );
 extern wnd_class        ReqWndName( void );

@@ -37,14 +37,11 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
 
-extern void             Scan( void );
-extern unsigned         ScanCmd( const char * );
-extern bool             ScanItem( bool, const char **, size_t * );
-extern void             ReqEOC( void );
 extern void             ConfigLine( char * );
 extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( const char *, unsigned );

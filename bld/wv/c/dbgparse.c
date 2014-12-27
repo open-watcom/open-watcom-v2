@@ -36,6 +36,7 @@
 #include "dbgio.h"
 #include "dbgmem.h"
 #include "i64.h"
+#include "dbgscan.h"
 
 
 extern void             PushInt( int );
@@ -49,11 +50,8 @@ extern void             ExprResolve( stack_entry * );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );
 
-extern void             ScanExpr( void * );
-extern bool             ScanEOC( void );
 extern handle           LocalPathOpen( const char *, unsigned, const char * );
 extern int              SSLWalk( char *, unsigned, void **, unsigned int );
-extern unsigned         SetCurrRadix( unsigned );
 
 extern stack_entry      *ExprSP;
 

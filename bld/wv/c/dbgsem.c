@@ -39,6 +39,8 @@
 #include "dipwv.h"
 #include "dip.h"
 #include "i64.h"
+#include "dbgscan.h"
+#include "numscan.h"
 
 #include "clibext.h"
 
@@ -109,23 +111,10 @@ extern void             LValue( stack_entry * );
 extern void             RValue( stack_entry * );
 extern void             LRValue( stack_entry * );
 extern void             ParseRegSet( bool, location_list *, dip_type_info * );
-extern void             Recog( unsigned int );
-extern bool             ScanQuote( const char **, size_t * );
-extern void             Scan( void );
-extern const char       *ScanPos( void );
-extern unsigned         ScanLen( void );
-extern char             *NamePos( void );
-extern unsigned         NameLen( void );
-extern unsigned_64      IntNumVal( void );
-extern xreal            RealNumVal( void );
 extern void             MoveSP( int );
 extern stack_entry      *StkEntry( int );
-extern const char       *ReScan( const char * );
 extern mod_handle       LookupModName( mod_handle, const char *, int );
-extern unsigned         SetCurrRadix( unsigned int );
 extern void             AddChar( void );
-extern void             AddCEscapeChar( void );
-extern void             AddActualChar( char );
 extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern void             FreePgmStack( bool );
 extern void             MarkArrayOrder( bool );
@@ -145,9 +134,6 @@ extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 
 
 extern stack_entry      *ExprSP;
-extern bool             scan_string;
-extern unsigned         StringLength;
-extern unsigned         ScanCCharNum;
 
 
 #define type_bitsII     int
@@ -1101,7 +1087,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
     address     addr;
     unsigned    old;
     const char  *save_scan;
-    char        *mod_name;
+    const char  *mod_name;
     unsigned    mod_len;
     unsigned    mod_spec_token;
 

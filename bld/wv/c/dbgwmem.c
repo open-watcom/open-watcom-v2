@@ -44,6 +44,7 @@
 #include "ldsupp.h"
 #include "memtypes.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
@@ -52,7 +53,6 @@ extern char             *CnvULong(unsigned long,char *,unsigned);
 extern char             *StrAddr(address *,char * ,unsigned);
 extern void             SetDataDot( address );
 extern bool             DlgLongExpr( char *, long * );
-extern unsigned         NewCurrRadix(unsigned int );
 extern bool             DlgDataAddr( char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
 extern long             AddrDiff( address a, address b );

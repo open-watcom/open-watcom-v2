@@ -36,11 +36,11 @@
 #include "dbgerr.h"
 #include "madcli.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 extern a_window         *WndClassInspect( wnd_class class );
 extern void             DebugExit( void );
 extern void             DlgSource( void );
-extern const char       *ReScan( const char * );
 extern void             ProcSearchAll( void );
 extern void             ProcWndSearch( a_window * );
 extern void             ProcWndFindNext( a_window * );
@@ -61,10 +61,6 @@ extern void             BrkEnableAll( void );
 extern void             BrkDisableAll( void );
 extern void             BrkClearAll( void );
 extern void             ConfigSave( bool );
-extern void             ReqEOC( void );
-extern bool             ScanEOC( void );
-extern unsigned         ScanCmd( const char *cmd_table );
-extern bool             ScanItem( bool, const char **, size_t * );
 extern wnd_class        ReqWndName( void );
 extern void             FileBrowse( void );
 extern void             LastMachState( void );

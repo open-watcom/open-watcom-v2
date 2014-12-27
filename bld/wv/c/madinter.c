@@ -41,6 +41,7 @@
 #include "madcli.h"
 #include "dui.h"
 #include "mad.h"
+#include "dbgscan.h"
 
 #include "clibext.h"
 
@@ -55,11 +56,8 @@ extern void             ResizeRegData(void);
 extern void             ResizeTraceData(void);
 extern void             PendingToggles( void );
 extern bool             FixOvlRetAddr( address * );
-extern void             FindRadixSpec( unsigned char value, char **start, unsigned *len );
-extern const char       *ReScan( const char * );
 extern void             EvalExpr( unsigned addr_depth );
 extern void             MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
-extern unsigned         SetCurrRadix( unsigned );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern char             *CnvAddr( address addr, cnvaddr_option cao, bool uniq, char *p, unsigned max );
 extern void             StartupErr( char * );
@@ -157,7 +155,7 @@ mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
 
 unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
 {
-    char                *start;
+    const char          *start;
     unsigned            len;
 
     if( radix == CurrRadix )

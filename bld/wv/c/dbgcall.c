@@ -36,20 +36,15 @@
 #include "dbgmem.h"
 #include "dbgstk.h"
 #include "spawn.h"
-#include "mad.h"
 #include "madcli.h"
 #include "strutil.h"
+#include "madscan.h"
+#include "dbgscan.h"
 
 
 extern stack_entry  *ExprSP;
 
 
-extern void         Scan( void );
-extern const char   *ScanPos( void );
-extern const char   *ReScan( const char * );
-extern bool         ScanEOC( void );
-extern void         Recog( unsigned int );
-extern void         ReqEOC( void );
 extern void         CallExpr( address *);
 extern void         ChkPrintList( void );
 extern void         DoPrintList( bool );
@@ -65,7 +60,6 @@ extern void         FreePgmStack( bool );
 extern void         PushLocation( location_list *, dip_type_info * );
 extern void         ParseRegSet( bool, location_list *, dip_type_info * );
 extern void         LocationCreate( location_list *, location_type, void * );
-extern mad_string   ScanCall( void );
 
 
 #define MAX_PARMS       10

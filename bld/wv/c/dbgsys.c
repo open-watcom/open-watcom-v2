@@ -37,16 +37,13 @@
 #include "dbgerr.h"
 #include "dui.h"
 #include "dbgio.h"
+#include "dbgscan.h"
 
 
 extern long         _fork( const char *, size_t );
 extern rc_erridx    RemoteFork( const char *,size_t );
 extern void         RemoteSuspend(void);
 extern void         RemoteResume(void);
-extern unsigned int ScanCmd(const char *);
-extern void         ReqEOC(void);
-extern void         Scan(void);
-extern bool         ScanItem(bool ,const char **,size_t *);
 extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
 extern char         *GetCmdName( int );

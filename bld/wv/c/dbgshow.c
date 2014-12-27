@@ -38,16 +38,10 @@
 #include "dbgmem.h"
 #include "dui.h"
 #include "strutil.h"
+#include "dbgscan.h"
 
 
-extern unsigned int     ScanCmd( const char * );
-extern void             Scan( void );
 extern unsigned int     OptExpr( unsigned int );
-extern const char       *ScanPos( void );
-extern unsigned int     ScanLen( void );
-extern bool             ScanEOC( void );
-extern void             ReqEOC( void );
-extern const char       *ReScan( const char * );
 extern int              AddrComp( address , address );
 extern void             ConfigSet( void );
 extern void             ConfigDisp( void );
