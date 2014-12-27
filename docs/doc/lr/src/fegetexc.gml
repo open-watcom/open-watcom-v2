@@ -8,15 +8,14 @@ int fegetexceptflag( fexcept_t *flagp, int excepts );
 .desc begin
 The
 .id &funcb.
-function attempts to store a representation of the states of the
-floating-point status flags indicated by the
+function attempts to store a representation of the floating-point exceptions
+specified by the
 .arg excepts
-argument in the
-object pointed to by the
+argument into the fexcept_t object pointed by the
 .arg flagp
 argument.
 .np
-Valid exception values are
+Valid exception bit values are
 .begnote $setptnt 13
 .note FE_INVALID
 .ix FE_INVALID

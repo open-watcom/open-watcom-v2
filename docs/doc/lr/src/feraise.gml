@@ -8,8 +8,7 @@ int feraiseexcept( int excepts );
 .desc begin
 The
 .id &funcb.
-function attempts to raise the supported floating-point exceptions
-represented by the
+function attempts to raise the floating-point exceptions specified by the
 .arg excepts
 argument.
 .np

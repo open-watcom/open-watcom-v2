@@ -8,9 +8,9 @@ int fesetexceptflag( const fexcept_t *flagp, int excepts );
 .desc begin
 The
 .id &funcb.
-function attempts to set the floating-point status flags indicated by the
+function attempts to set the exceptions indicated by
 .arg excepts
-argument to the states stored in the object pointed by the
+argument with the states stored in the object pointed by
 .arg flagp
 argument. The value pointed by the
 .arg flagp

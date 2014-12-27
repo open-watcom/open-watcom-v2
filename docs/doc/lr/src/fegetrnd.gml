@@ -8,7 +8,8 @@ int fegetround( void );
 .desc begin
 The
 .id &funcb.
-function gets the current rounding direction.
+function returns a value that indicates the rounding direction mode, as
+specified in the current floating point environment.
 .desc end
 .*
 .return begin

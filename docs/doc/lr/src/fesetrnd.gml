@@ -7,14 +7,12 @@ int fesetround( int mode );
 .desc begin
 The
 .id &funcb.
-function sets the current rounding mode, specified by
+function sets the rounding direction mode, specified by
 .arg mode
-.ct .li , for the current process. The
-.arg mode
-argument can be one of the following constants:
+.ct .li , for the current floating point environment.
+.np
+The rounding direction mode can be one of the following values:
 .begnote $setptnt 15
-.termhd1 Argument
-.termhd2 Meaning
 .note FE_TONEAREST
 .ix FE_TONEAREST
 Round to nearest integer, halfway rounding away from zero

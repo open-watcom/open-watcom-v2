@@ -8,10 +8,10 @@ int fetestexcept( int excepts );
 .desc begin
 The
 .id &funcb.
-function determines which of a specified subset of the floatingpoint
-exception flags are currently set. The
+function tests which of the specified floating-point
+exceptions flags are currently set. The
 .arg excepts
-argument specifies the floating point status flags to be queried.
+argument specifies the floating-point exceptions to be queried.
 .np
 For valid exception values see
 .seekw &function. fegetexceptflag

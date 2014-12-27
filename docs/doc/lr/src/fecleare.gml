@@ -8,8 +8,8 @@ int feclearexcept( int excepts );
 .desc begin
 The
 .id &funcb.
-function attempts to clear the supported floating-point exceptions
-represented by the
+function attempts to clear the floating-point exceptions
+specified by the
 .arg excepts
 argument.
 .np
@@ -24,7 +24,8 @@ The
 function returns zero if the
 .arg excepts
 argument is zero or if all
-the specified exceptions were successfully cleared. Otherwise, it returns a nonzero value.
+the specified exceptions were successfully cleared. Otherwise, it returns
+a nonzero value.
 .return end
 .*
 .see begin
