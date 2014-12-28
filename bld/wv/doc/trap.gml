@@ -78,10 +78,10 @@ always acts as if the debuggee were in a 32-bit large model environment since
 the 32-bit flat model and all 16-bit memory models are subsets.
 The structure is defined as follows:
 :XMP.
-    typedef struct {
-        unsigned_32    offset;
-        unsigned_16    segment;
-    } addr48_ptr;
+typedef struct {
+    unsigned_32    offset;
+    unsigned_16    segment;
+} addr48_ptr;
 :eXMP.
 The :F.segment:eF. field contains the segment of the address and the :F.offset:eF.
 field stores the offset of the address.
@@ -133,10 +133,10 @@ one request at a time.
 :P.
 The message entry structure is as follows (defined in :F.trptypes.h:eF.):
 :XMP.
-    typedef struct {
-        void            *ptr;
-        unsigned        len;
-    } mx_entry;
+typedef struct {
+    void            *ptr;
+    unsigned        len;
+} mx_entry;
 :eXMP.
 :PC.
 The :F.ptr:eF. is pointing to a block of data for that message entry.
@@ -160,10 +160,10 @@ prototyped in :F.trpimp.h:eF..
 This function initializes the environment for proper operation of
 :F.TrapRequest:eF..
 :XMP.
-    trap_version TRAPENTRY TrapInit( char       *parm,
-                                     char       *error,
-                                     unsigned_8 remote
-    );
+trap_version TRAPENTRY TrapInit( char       *parm,
+                                 char       *error,
+                                 unsigned_8 remote
+);
 :eXMP.
 :PC.
 The :F.parm:eF. is a string that the user passes to the trap file. Its
@@ -172,7 +172,7 @@ interpretation is completely up to the trap file. In the case of the
 all the characters following the semicolon in the :F./TRAP:eF. option are
 passed as the :F.parm:eF.. For example:
 :XMP.
-    wd /trap=nov;testing program
+wd /trap=nov;testing program
 :eXMP.
 :P.
 The :F.parm:eF. would be "testing".
@@ -183,11 +183,11 @@ remote server is loading it.
 This function returns a structure :F.trap_version:eF. of the following form
 (defined in :F.trptypes.h:eF.):
 :XMP.
-    typedef struct {
-        unsigned_8  major;
-        unsigned_8  minor;
-        unsigned_8  remote;
-    } trap_version;
+typedef struct {
+    unsigned_8  major;
+    unsigned_8  minor;
+    unsigned_8  remote;
+} trap_version;
 :eXMP.
 :PC.
 The :F.major:eF. field contains the major version number of the trap file while
@@ -207,11 +207,11 @@ Failure to do so may result in unpredictable operation of :F.TrapRequest:eF..
 All requests between the server and the remote trap file are handled by
 TrapRequest.
 :XMP.
-    unsigned TRAPENTRY TrapRequest( unsigned num_in_mx,
-                                    mx_entry *mx_in,
-                                    unsigned num_out_mx,
-                                    mx_entry *mx_out
-    );
+unsigned TRAPENTRY TrapRequest( unsigned num_in_mx,
+                                mx_entry *mx_in,
+                                unsigned num_out_mx,
+                                mx_entry *mx_out
+);
 :eXMP.
 :PC.
 The :F.mx_in:eF. points to an array of request mx_entry's.
@@ -238,29 +238,29 @@ of memory to read as input and will return the memory block in the
 output message. To read 30 bytes of memory from address 0x0010:0x8000 into
 a buffer, we can write:
 :XMP.
-    mx_entry        in[1];
-    mx_entry        out[1];
-    unsigned char   buffer[30];
-    struct in_msg_def {
-        access_req          req;
-        addr48_ptr          addr;
-        unsigned_16         len;
-    } in_msg = { REQ_READ_MEM, { 0x8000, 0x0010 }, sizeof( buffer ) };
+mx_entry        in[1];
+mx_entry        out[1];
+unsigned char   buffer[30];
+struct in_msg_def {
+    access_req          req;
+    addr48_ptr          addr;
+    unsigned_16         len;
+} in_msg = { REQ_READ_MEM, { 0x8000, 0x0010 }, sizeof( buffer ) };
 
-    unsigned_16 mem_blk_len;
+unsigned_16 mem_blk_len;
 
-    in[0].ptr = &in_msg;
-    in[0].len = sizeof( in_msg );
-    out[0].ptr = &buffer;
-    out[0].len = sizeof( buffer );
+in[0].ptr = &in_msg;
+in[0].len = sizeof( in_msg );
+out[0].ptr = &buffer;
+out[0].len = sizeof( buffer );
 
-    mem_blk_len = TrapRequest( 1, in, 1, out );
+mem_blk_len = TrapRequest( 1, in, 1, out );
 
-    if( mem_blk_length != sizeof( buffer ) ) {
-        printf( "Error in reading memory\n" );
-    } else {
-        printf( "OK\n" );
-    }
+if( mem_blk_length != sizeof( buffer ) ) {
+    printf( "Error in reading memory\n" );
+} else {
+    printf( "OK\n" );
+}
 :eXMP.
 :PC.
 The program will print "OK" if it has transferred 30 bytes of data from the
@@ -273,7 +273,7 @@ The function terminates the link between the debugger and the trap file.
 It should be called
 after finishing all access requests.
 :XMP.
-    void TRAPENTRY TrapFini( void );
+void TRAPENTRY TrapFini( void );
 :eXMP.
 :PC.
 After calling :F.TrapFini:eF., it is illegal to call :F.TrapRequest:eF.
@@ -302,10 +302,10 @@ Request to connect to the remote machine. This must be the first request made.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_8      major;   <-+- struct trap_version
-    unsigned_8      minor;     |
-    unsigned_8      remote;  <-+
+access_req      req
+unsigned_8      major;   <-+- struct trap_version
+unsigned_8      minor;     |
+unsigned_8      remote;  <-+
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
@@ -323,9 +323,9 @@ remote server is between the &company debugger and the trap file.
 :P.
 Return message:
 :XMP.
-    unsigned_16 max_msg_size
-    ----------------------------
-    string      err_msg
+unsigned_16 max_msg_size
+----------------------------
+string      err_msg
 :eXMP.
 :PC.
 If error has occurred, the :F.err_msg:eF. field will returns the error
@@ -345,14 +345,14 @@ After this request, a REQ_CONNECT must be the next one made.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_SUSPEND (2)
 .np
@@ -367,14 +367,14 @@ continuing the debugging process.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_RESUME (3)
 .np
@@ -383,14 +383,14 @@ The debugger issues this request when the spawned sub-shell exits.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_GET_SUPPLEMENTARY_SERVICE (4)
 .np
@@ -398,9 +398,9 @@ Request to obtain a supplementary service id.
 :P.
 Request message:
 :XMP.
-    access_req  req
-    ------------------------
-    string      service_name
+access_req  req
+------------------------
+string      service_name
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.service_name:eF field
@@ -409,8 +409,8 @@ case insensitive.
 :P.
 Return message:
 :XMP.
-    trap_error      err;
-    trap_shandle    id;
+trap_error      err;
+trap_shandle    id;
 :eXMP.
 :PC.
 The :F.err:eF. field is non-zero if something went wrong in obtaining
@@ -430,10 +430,10 @@ Request to perform a supplementary service.
 :P.
 Request message:
 :XMP.
-    access_req  req
-    unsigned_32 service_id
-    ------------------------
-    unspecified
+access_req  req
+unsigned_32 service_id
+------------------------
+unspecified
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.service_id:eF field
@@ -442,7 +442,7 @@ is specified by the individual supplementary service provider.
 :P.
 Return message:
 :XMP.
-    unspecified
+unspecified
 :eXMP.
 :PC.
 The return message is specified by the individual supplementary service
@@ -453,62 +453,64 @@ Request to get system information from the remote machine.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
 :P.
 Return message:
 :XMP.
-    unsigned_8  cpu;
-    unsigned_8  fpu;
-    unsigned_8  osmajor;
-    unsigned_8  osminor;
-    unsigned_8  os;
-    unsigned_8  huge_shift;
-    mad_handle  mad;
+unsigned_8  cpu;
+unsigned_8  fpu;
+unsigned_8  osmajor;
+unsigned_8  osminor;
+unsigned_8  os;
+unsigned_8  huge_shift;
+mad_handle  mad;
 :eXMP.
 :PC.
 The :F.mad:eF. field specifies the MAD (Machine Architecture Description) in use
 and determines how the other fields will be interpreted. Currently the following
 MADs are used:
 :XMP.
-    MAD_X86  - Intel Architecture IA-32 compatible
-    MAD_AXP  - Alpha Architecture
-    MAD_PPC  - PowerPC Architecture
-    MAD_MIPS - MIPS Architecture
-    MAD_MSJ  - Java Virtual Machine (Microsoft)
+MAD_X86  - Intel Architecture IA-32 compatible
+MAD_X64  - Intel Architecture X64 compatible
+MAD_AXP  - Alpha Architecture
+MAD_PPC  - PowerPC Architecture
+MAD_MIPS - MIPS Architecture
+MAD_MSJ  - Java Virtual Machine (Microsoft)
+MAD_JVM  - Java Virtual Machine (Sun)
 :eXMP.
 :PC.
 The :F.cpu:eF. fields returns the type of the remote CPU. The size of that field
 is unsigned_8. Possible CPU types for MAD_X86 are:
 :XMP.
-    bits 0-3
-       X86_86  = 0   - 8086
-       X86_186 = 1   - 80186
-       X86_286 = 2   - 80286
-       X86_386 = 3   - 80386
-       X86_486 = 4   - 80486
-       X86_586 = 5   - Pentium
-       X86_686 = 6   - Pentium Pro/II/III
-       X86_P4  = 15  - Pentium 4
-    bit  4           - MM registers
-    bit  5           - XMM registers
-    bits 6,7         - unused
+bits 0-3
+   X86_86  = 0   - 8086
+   X86_186 = 1   - 80186
+   X86_286 = 2   - 80286
+   X86_386 = 3   - 80386
+   X86_486 = 4   - 80486
+   X86_586 = 5   - Pentium
+   X86_686 = 6   - Pentium Pro/II/III
+   X86_P4  = 15  - Pentium 4
+bit  4           - MMX registers
+bit  5           - XMM registers
+bits 6,7         - unused
 :eXMP.
 :PC.
 The :F.fpu:eF. fields tells the type of FPU. The size of the field is unsigned_8.
 FPU types for MAD_X86 include:
 :XMP.
-    X86_EMU = -1     - Software emulated FPU
-    X86_NO  =  0     - No FPU
-    X86_87  =  1     - 8087
-    X86_287 =  2     - 80287
-    X86_387 =  3     - 80387
-    X86_487 =  4     - 486 integrated FPU
-    X86_587 =  5     - Pentium integrated FPU
-    X86_587 =  6     - Pentium Pro/II/III integrated FPU
-    X86_P47 =  15    - Pentium 4 integrated FPU
+X86_EMU = -1     - Software emulated FPU
+X86_NO  =  0     - No FPU
+X86_87  =  1     - 8087
+X86_287 =  2     - 80287
+X86_387 =  3     - 80387
+X86_487 =  4     - 486 integrated FPU
+X86_587 =  5     - Pentium integrated FPU
+X86_587 =  6     - Pentium Pro/II/III integrated FPU
+X86_P47 =  15    - Pentium 4 integrated FPU
 :eXMP.
 :PC.
 The :F.osmajor:eF. and :F.osminor:eF. contains the major and minor version
@@ -516,21 +518,21 @@ number for the operating system of the remote machine. The type of operating
 system can be found in
 :F.os:eF. field. The size of this field is unsigned_8. The OS can be :
 :XMP.
-    OS_IDUNNO    =  0   - Unknown operating system
-    OS_DOS       =  1   - DOS
-    OS_OS2       =  2   - OS/2
-    OS_PHAR      =  3   - Phar Lap 386 DOS Extender
-    OS_ECLIPSE   =  4   - Eclipse 386 DOS Extender (obsolete)
-    OS_NW386     =  5   - NetWare 386
-    OS_QNX       =  6   - QNX 4.x
-    OS_RATIONAL  =  7   - DOS/4G or compatible
-    OS_WINDOWS   =  8   - Windows 3.x
-    OS_PENPOINT  =  9   - PenPoint (obsolete)
-    OS_NT        = 10   - Win32
-    OS_AUTOCAD   = 11   - ADS/ADI development (obsolete)
-    OS_NEUTRINO  = 12   - QNX 6.x
-    OS_LINUX     = 13   - Linux
-    OS_FREEBSD   = 14   - Free BSD
+OS_IDUNNO    =  0   - Unknown operating system
+OS_DOS       =  1   - DOS
+OS_OS2       =  2   - OS/2
+OS_PHAR      =  3   - Phar Lap 386 DOS Extender
+OS_ECLIPSE   =  4   - Eclipse 386 DOS Extender (obsolete)
+OS_NW386     =  5   - NetWare 386
+OS_QNX       =  6   - QNX 4.x
+OS_RATIONAL  =  7   - DOS/4G or compatible
+OS_WINDOWS   =  8   - Windows 3.x
+OS_PENPOINT  =  9   - PenPoint (obsolete)
+OS_NT        = 10   - Win32
+OS_AUTOCAD   = 11   - ADS/ADI development (obsolete)
+OS_NEUTRINO  = 12   - QNX 6.x
+OS_LINUX     = 13   - Linux
+OS_FREEBSD   = 14   - Free BSD
 :eXMP.
 :PC.
 The :F.huge_shift:eF. field is used to determine the shift needed for huge
@@ -548,9 +550,9 @@ its addresses.
 :P.
 Request message:
 :XMP.
-    access_req      req;
-    addr48_ptr      in_addr;
-    trap_mhandle    handle;
+access_req      req;
+addr48_ptr      in_addr;
+trap_mhandle    handle;
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.in_addr:eF. tells the address
@@ -559,8 +561,8 @@ from. The value from this field is obtained by REQ_PROG_LOAD or
 REQ_GET_LIB_NAME. There are two magical values for the :F.in_addr.segment:eF.
 field.
 :XMP.
-    MAP_FLAT_CODE_SELECTOR  = -1
-    MAP_FLAT_DATA_SELECTOR  = -2
+MAP_FLAT_CODE_SELECTOR  = -1
+MAP_FLAT_DATA_SELECTOR  = -2
 :eXMP.
 :PC.
 When the :F.in_addr.segment:eF. equals one of these values, the debugger
@@ -569,9 +571,9 @@ performs the mapping as if the given offset was in the flat address space.
 :P.
 Return message:
 :XMP.
-    addr48_ptr      out_addr
-    addr48_off      lo_bound;
-    addr48_off      hi_bound;
+addr48_ptr      out_addr
+addr48_off      lo_bound;
+addr48_off      hi_bound;
 :eXMP.
 :PC.
 The mapped address is returned in :F.out_addr:eF.. Note that in addition
@@ -596,9 +598,9 @@ is calculated.
 :P.
 Request message:
 :XMP.
-    access_req      req;
-    addr48_ptr      in_addr;
-    unsigned_16     len;
+access_req      req;
+addr48_ptr      in_addr;
+unsigned_16     len;
 :eXMP.
 :PC.
 The :F.req:eF. field stores the request. The :F.in_addr:eF. contains the
@@ -606,7 +608,7 @@ starting address and the :F.len:eF. field tells how large the block of memory is
 :P.
 Return message:
 :XMP.
-    unsigned_32     result
+unsigned_32     result
 :eXMP.
 :PC.
 The checksum will be returned in :F.result:eF..
@@ -616,9 +618,9 @@ Request to read a block of memory.
 :P.
 Request message:
 :XMP.
-    access_req      req;
-    addr48_ptr      mem_addr;
-    unsigned_16     len;
+access_req      req;
+addr48_ptr      mem_addr;
+unsigned_16     len;
 :eXMP.
 :PC.
 The :F.mem_addr:eF. contains the address of the memory block to read from the
@@ -627,7 +629,7 @@ memory data will be copied to output message.
 :P.
 Return message:
 :XMP.
-    bytes       data
+bytes       data
 :eXMP.
 :PC.
 The :F.data:eF. field stores the memory block read in. The length of this memory
@@ -640,10 +642,10 @@ Request to write a block of memory.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    addr48_ptr      mem_addr
-    ------------------------
-    bytes           data
+access_req      req
+addr48_ptr      mem_addr
+------------------------
+bytes           data
 :eXMP.
 :PC.
 The :F.data:eF. field stores the memory data to be transferred. The data will be
@@ -652,7 +654,7 @@ stored in the debuggee's address space starting at the address in the
 :P.
 Return message:
 :XMP.
-    unsigned_16 len
+unsigned_16 len
 :eXMP.
 :PC.
 The :F.len:eF. field tells the length of memory block actually written to the
@@ -664,9 +666,9 @@ Request to read data from I/O address space of the debuggee.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_32     IO_offset
-    unsigned_8      len
+access_req      req
+unsigned_32     IO_offset
+unsigned_8      len
 :eXMP.
 :PC.
 The :F.IO_offset:eF. contains the I/O address of the debuggee machine. The length
@@ -675,7 +677,7 @@ data will be copied from :F.IO_offset:eF. to the return message.
 :P.
 Return message:
 :XMP.
-    bytes       data
+bytes       data
 :eXMP.
 :PC.
 The :F.data:eF. field stores the memory block read in. The length of this memory
@@ -688,10 +690,10 @@ Request to write data to the I/O address space of the debuggee.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_32     IO_offset
-    -------------------------
-    bytes           data
+access_req      req
+unsigned_32     IO_offset
+-------------------------
+bytes           data
 :eXMP.
 :PC.
 The :F.IO_offset:eF. contains the I/O address of the debuggee machine.
@@ -700,7 +702,7 @@ the debuggee machine.
 :P.
 Return message:
 :XMP.
-    unsigned_8  len
+unsigned_8  len
 :eXMP.
 :PC.
 The :F.len:eF. field tells the number of bytes actually written out. If an error
@@ -722,16 +724,16 @@ present.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The request is in :F.req:eF. field.
 :P.
 Return message:
 :XMP.
-    addr48_ptr      stack_pointer
-    addr48_ptr      program_counter
-    unsigned_16     conditions
+addr48_ptr      stack_pointer
+addr48_ptr      program_counter
+unsigned_16     conditions
 :eXMP.
 :PC.
 The :F.stack_pointer:eF. and :F.program_counter:eF. fields store the latest
@@ -739,21 +741,22 @@ values of SS:ESP and CS:EIP (or their non-x86 equivalents) respectively.
 The :F.conditions:eF. informs the debugger what conditions have changed since
 execution began. It contains the following flags:
 :XMP.
-    Bit 0   : COND_CONFIG           - Configurations change
-    Bit 1   : COND_SECTIONS         - Program overlays change
-    Bit 2   : COND_LIBRARIES        - Libraries (DLL) change
-    Bit 3   : COND_ALIASING         - Alias change
-    Bit 4   : COND_THREAD           - Thread change
-    Bit 5   : COND_THREAD_EXTRA     - Thread extra change
-    Bit 6   : COND_TRACE            - Trace point occurred
-    Bit 7   : COND_BREAK            - Break point occurred
-    Bit 8   : COND_WATCH            - Watch point occurred
-    Bit 9   : COND_USER             - User interrupt
-    Bit 10  : COND_TERMINATE        - Program terminated
-    Bit 11  : COND_EXCEPTION        - Machine exception
-    Bit 12  : COND_MESSAGE          - Message to be displayed
-    Bit 13  : COND_STOP             - Debuggee wants to stop
-    Bit 14-15  :  not used
+Bit 0   : COND_CONFIG           - Configurations change
+Bit 1   : COND_SECTIONS         - Program overlays change
+Bit 2   : COND_LIBRARIES        - Libraries (DLL) change
+Bit 3   : COND_ALIASING         - Alias change
+Bit 4   : COND_THREAD           - Thread change
+Bit 5   : COND_THREAD_EXTRA     - Thread extra change
+Bit 6   : COND_TRACE            - Trace point occurred
+Bit 7   : COND_BREAK            - Break point occurred
+Bit 8   : COND_WATCH            - Watch point occurred
+Bit 9   : COND_USER             - User interrupt
+Bit 10  : COND_TERMINATE        - Program terminated
+Bit 11  : COND_EXCEPTION        - Machine exception
+Bit 12  : COND_MESSAGE          - Message to be displayed
+Bit 13  : COND_STOP             - Debuggee wants to stop
+Bit 14  : COND_RUNNING          - Debuggee is running
+Bit 15  :  not used
 :eXMP.
 When a bit is off, the debugger avoids having to make additional requests
 to determine the new state of the debuggee. If the trap file is not sure
@@ -765,10 +768,10 @@ Request to load a program.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_8      true_argv
-    -------------------------
-    bytes           argv
+access_req      req
+unsigned_8      true_argv
+-------------------------
+bytes           argv
 :eXMP.
 :PC.
 The :F.true_argv:eF. field indicates whether the argument consists of a
@@ -782,10 +785,10 @@ of strings.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    trap_phandle    task_id
-    trap_mhandle    mod_handle
-    unsigned_8      flags
+trap_error      err
+trap_phandle    task_id
+trap_mhandle    mod_handle
+unsigned_8      flags
 :eXMP.
 :PC.
 The :F.err:eF. field returns the error code while loading the program.
@@ -795,13 +798,13 @@ image. It is used as input to the REQ_MAP_ADDR request.
 The :F.flags:eF. field contains the following
 information:
 :XMP.
-    Bit 0      :  LD_FLAG_IS_32             - 32-bit program (obsolete)
-    Bit 1      :  LD_FLAG_IS_PROT           - Protected mode (obsolete)
-    Bit 2      :  LD_FLAG_IS_STARTED        - Program already started
-    Bit 3      :  LD_FLAG_IGNORE_SEGMENTS   - Ignore segments (flat)
-    Bit 4      :  LD_FLAG_HAVE_RUNTIME_DLLS - DLL load breaks supported
-    Bit 5      :  LD_FLAG_DISPLAY_DAMAGED   - Debugger must repaint screen
-    Bit 6 - 7  :  not used
+Bit 0   : LD_FLAG_IS_BIG            - 32-bit program (obsolete)
+Bit 1   : LD_FLAG_IS_PROT           - Protected mode (obsolete)
+Bit 2   : LD_FLAG_IS_STARTED        - Program already started
+Bit 3   : LD_FLAG_IGNORE_SEGMENTS   - Ignore segments (flat)
+Bit 4   : LD_FLAG_HAVE_RUNTIME_DLLS - DLL load breaks supported
+Bit 5   : LD_FLAG_DISPLAY_DAMAGED   - Debugger must repaint screen
+Bit 6,7 : not used
 :eXMP.
 .section REQ_PROG_KILL (16)
 .np
@@ -809,8 +812,8 @@ Request to kill the program.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_phandle    task_id
+access_req      req
+trap_phandle    task_id
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.task_id:eF. field (obtained
@@ -818,7 +821,7 @@ from REQ_PROG_LOAD) identifies the program to be killed.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 The :F.err:eF. field returns the error code of the OS kill program
@@ -829,9 +832,9 @@ Request to set a watchpoint at the address given.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    addr48_ptr      watch_addr
-    unsigned_8      size
+access_req      req
+addr48_ptr      watch_addr
+unsigned_8      size
 :eXMP.
 :PC.
 The address of the watchpoint is given by the :F.watch_addr:eF. field. The
@@ -839,8 +842,8 @@ The address of the watchpoint is given by the :F.watch_addr:eF. field. The
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    unsigned_32     multiplier
+trap_error      err
+unsigned_32     multiplier
 :eXMP.
 The :F.err:eF. field returns the error code if the setting failed.
 If the setting of the watchpoint worked, the 31 low order bits of
@@ -855,9 +858,9 @@ assume all watch points are cleared at once.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    addr48_ptr      watch_addr
-    unsigned_8      size
+access_req      req
+addr48_ptr      watch_addr
+unsigned_8      size
 :eXMP.
 :PC.
 The address of the watch point is given by the :F.watch_addr:eF. field. The
@@ -865,7 +868,7 @@ The address of the watch point is given by the :F.watch_addr:eF. field. The
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_SET_BREAK (19)
 .np
@@ -873,15 +876,15 @@ Request to set a breakpoint at the address given.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    addr48_ptr      break_addr
+access_req      req
+addr48_ptr      break_addr
 :eXMP.
 :PC.
 The address of the break point is given by the :F.break_addr:eF. field.
 :P.
 Return message:
 :XMP.
-    unsigned_32     old
+unsigned_32     old
 :eXMP.
 :PC.
 The :F.old:eF. field returns the original byte(s) at the address
@@ -893,9 +896,9 @@ assume all breakpoints are cleared at once.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    addr48_ptr      break_addr
-    unsigned_32     old
+access_req      req
+addr48_ptr      break_addr
+unsigned_32     old
 :eXMP.
 :PC.
 The address of the break point is given by the :F.break_addr:eF. field. The
@@ -904,7 +907,7 @@ request.
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_GET_NEXT_ALIAS (21)
 .np
@@ -916,8 +919,8 @@ displayed).
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_16     seg
+access_req      req
+unsigned_16     seg
 :eXMP.
 :PC.
 The :F.seg:eF. field contains the segment. To get the first alias, put zero
@@ -925,8 +928,8 @@ in this field.
 :P.
 Return message:
 :XMP.
-    unsigned_16     seg
-    unsigned_16     alias
+unsigned_16     seg
+unsigned_16     alias
 :eXMP.
 :PC.
 The :F.seg:eF. field contains the next segment where an alias appears. If this field
@@ -939,12 +942,12 @@ Request to make the debuggee's screen visible.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_SET_DEBUG_SCREEN (23)
 .np
@@ -952,12 +955,12 @@ Request to make the debugger's screen visible.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_READ_USER_KEYBOARD (24)
 .np
@@ -965,8 +968,8 @@ Request to read the remote keyboard input.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_16     wait
+access_req      req
+unsigned_16     wait
 :eXMP.
 :PC.
 The request will be time out if it waits longer than the period specifies in the
@@ -975,7 +978,7 @@ means to wait forever.
 :P.
 Return message:
 :XMP.
-    unsigned_8      key
+unsigned_8      key
 :eXMP.
 :PC.
 The :F.key:eF. field returns the input character from remote machine.
@@ -985,8 +988,8 @@ Request to get the name of a newly loaded library (DLL).
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_mhandle    handle
+access_req      req
+trap_mhandle    handle
 :eXMP.
 :PC.
 The :F.handle:eF. field contains the library handle. It should be zero
@@ -995,9 +998,9 @@ of a previous request.
 :P.
 Return message:
 :XMP.
-    trap_mhandle    handle
-    ---------------------------
-    string          name
+trap_mhandle    handle
+---------------------------
+string          name
 :eXMP.
 :PC.
 The :F.handle:eF. field contains the library handle. It contains zero if
@@ -1013,8 +1016,8 @@ Request to get the error message text for an error code.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_error      err
+access_req      req
+trap_error      err
 :eXMP.
 :PC.
 The :F.err:eF. field contains the error code number of the error text
@@ -1022,7 +1025,7 @@ requested.
 :P.
 Return message:
 :XMP.
-    string          error_msg
+string          error_msg
 :eXMP.
 :PC.
 The error message text will be returned in :F.error_msg:eF. field.
@@ -1037,25 +1040,25 @@ message text that the trap file wants to display to the user.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :P.
 Return message:
 :XMP.
-    unsigned_8      flags
-    ---------------------
-    string          msg
+unsigned_8      flags
+---------------------
+string          msg
 :eXMP.
 :PC.
 The message text will be returned in the :F.msg:eF. field.
 The :F.flags:eF. contains a number of bits which control the next action
 of the debugger. They are:
 :XMP.
-    Bit 0       : MSG_NEWLINE
-    Bit 1       : MSG_MORE
-    Bit 2       : MSG_WARNING
-    Bit 3       : MSG_ERROR
-    Bit 4 - 7   : not used
+Bit 0       : MSG_NEWLINE
+Bit 1       : MSG_MORE
+Bit 2       : MSG_WARNING
+Bit 3       : MSG_ERROR
+Bit 4 - 7   : not used
 :eXMP.
 :PC.
 The MSG_NEWLINE bit indicates that the debugger should scroll its display
@@ -1072,9 +1075,9 @@ standard output (REQ_REDIRECT_STDOUT) of the debuggee.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ------------------------
-    string          name
+access_req      req
+------------------------
+string          name
 :eXMP.
 :PC.
 The file name to be redirected
@@ -1082,7 +1085,7 @@ to/from is given by the :F.name:eF. field.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 When an error has occurred, the :F.err:eF. field contains an error code
@@ -1094,9 +1097,9 @@ parameters.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ------------------------
-    string          cmd
+access_req      req
+------------------------
+string          cmd
 :eXMP.
 :PC.
 The :F.cmd:eF.
@@ -1105,8 +1108,8 @@ of command strings.
 :P.
 Return message:
 :XMP.
-    unsigned_16     cmd_end
-    unsigned_16     parm_start
+unsigned_16     cmd_end
+unsigned_16     parm_start
 :eXMP.
 :PC.
 The :F.cmd_end:eF. field tells the position in command line where the command
@@ -1119,13 +1122,13 @@ the target architecture and is defined by the MAD file.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 :P.
 Return message:
 :XMP.
-    unspecified
+unspecified
 :eXMP.
 :PC.
 The return message content is specific to the MAD in use and will contain
@@ -1137,9 +1140,9 @@ specific.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    -------------------
-    unspecified
+access_req      req
+-------------------
+unspecified
 :eXMP.
 :PC.
 The message content is specific to the MAD in use and will contain a
@@ -1147,7 +1150,7 @@ The message content is specific to the MAD in use and will contain a
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 :PC.
 .section REQ_MACHINE_DATA (33)
@@ -1156,11 +1159,11 @@ Request to retrieve machine specific data.
 :P.
 Request message:
 :XMP.
-    access_req      req;
-    unsigned_8      info_type;
-    addr48_ptr      addr;
-    -----------------------------
-    unspecified
+access_req      req;
+unsigned_8      info_type;
+addr48_ptr      addr;
+-----------------------------
+unspecified
 :eXMP.
 :PC.
 The :F.info_type:eF. field specifies what kind of information should be
@@ -1169,10 +1172,10 @@ is requested. The remainder of the message is MAD specific.
 :P.
 Return message:
 :XMP.
-    addr48_off      cache_start;
-    addr48_off      cache_end;
-    -----------------------------
-    unspecified
+addr48_off      cache_start;
+addr48_off      cache_end;
+-----------------------------
+unspecified
 :eXMP.
 :PC.
 The return message content is specific to the MAD in use.
@@ -1207,14 +1210,14 @@ Request to retreive characteristics of the remote file system.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :P.
 Return message:
 :XMP.
-    char            ext_separator;
-    char            path_separator[3];
-    char            newline[2];
+char            ext_separator;
+char            path_separator[3];
+char            newline[2];
 :eXMP.
 :PC.
 The
@@ -1232,21 +1235,21 @@ Request to create/open a file.
 :P.
 Request message:
 :XMP.
-    access_req          req
-    unsigned_8          mode
-    ------------------------
-    string              name
+access_req          req
+unsigned_8          mode
+------------------------
+string              name
 :eXMP.
 :PC.
 The name of the file to be opened is given by :F.name:eF..
 The :F.mode:eF. field stores the access mode of the
 file. The following bits are defined:
 :XMP.
-    Bit 0      :  TF_READ
-    Bit 1      :  TF_WRITE
-    Bit 2      :  TF_CREATE
-    Bit 3      :  TF_EXEC
-    Bit 4 - 7  :  not used
+Bit 0      :  TF_READ
+Bit 1      :  TF_WRITE
+Bit 2      :  TF_CREATE
+Bit 3      :  TF_EXEC
+Bit 4 - 7  :  not used
 :eXMP.
 :PC.
 For read/write mode, turn both :F.TF_READ:eF. and :F.TF_WRITE:eF. bits on.
@@ -1256,8 +1259,8 @@ the target platform).
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    trap_fhandle    handle
+trap_error      err
+trap_fhandle    handle
 :eXMP.
 :PC.
 If successful, the :F.handle:eF. returns a handle for the file. When an error
@@ -1269,26 +1272,26 @@ Request to seek to a particular file position.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_fhandle    handle
-    unsigned_8      mode
-    unsigned_32     pos
+access_req      req
+trap_fhandle    handle
+unsigned_8      mode
+unsigned_32     pos
 :eXMP.
 :PC.
 The handle of the file is given by the :F.handle:eF. field. The :F.mode:eF.
 field stores the seek mode. There are three seek modes:
 :XMP.
-    TF_SEEK_ORG = 0  - Relative to the start of file
-    TF_SEEK_CUR = 1  - Relative to the current file position
-    TF_SEEK_END = 2  - Rrelative to the end of file
+TF_SEEK_ORG = 0  - Relative to the start of file
+TF_SEEK_CUR = 1  - Relative to the current file position
+TF_SEEK_END = 2  - Rrelative to the end of file
 :eXMP.
 :PC.
 The position to seek to is in the :F.pos:eF. field.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    unsigned_32     pos
+trap_error      err
+unsigned_32     pos
 :eXMP.
 :PC.
 If an error has occurred, the :F.err:eF. field contains a value indicating
@@ -1300,9 +1303,9 @@ Request to read a block of data from a file.
 :P.
 Request message:
 :XMP.
-    access_req          req
-    trap_fhandle        handle
-    unsigned_16         len
+access_req          req
+trap_fhandle        handle
+unsigned_16         len
 :eXMP.
 :PC.
 The handle of the file is given by the :F.handle:eF. field. The :F.len:eF.
@@ -1310,9 +1313,9 @@ field stores the number of bytes to be transmitted.
 :P.
 Return message:
 :XMP.
-    trap_error          err
-    --------------------------
-    bytes               data
+trap_error          err
+--------------------------
+bytes               data
 :eXMP.
 :PC.
 If successful, the :F.data:eF. returns the block of data.
@@ -1329,10 +1332,10 @@ Request to write a block of data to a file.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_fhandle    handle
-    ------------------------
-    bytes           data
+access_req      req
+trap_fhandle    handle
+------------------------
+bytes           data
 :eXMP.
 :PC.
 The handle of the file is given by the :F.handle:eF. field. The data is given in
@@ -1340,8 +1343,8 @@ The handle of the file is given by the :F.handle:eF. field. The data is given in
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    unsigned_16     len
+trap_error      err
+unsigned_16     len
 :eXMP.
 :PC.
 If there is no error, :F.len:eF. will equal to that in the :F.data_len:eF.
@@ -1353,17 +1356,17 @@ Request to write a block of data to the debuggee's screen.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ------------------------
-    bytes           data
+access_req      req
+------------------------
+bytes           data
 :eXMP.
 :PC.
 The data is given in :F.data:eF. field.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    unsigned_16     len
+trap_error      err
+unsigned_16     len
 :eXMP.
 :PC.
 If there is no error, :F.len:eF. will equal to the :F.data_len:eF.
@@ -1375,15 +1378,15 @@ Request to close a file.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_fhandle    handle
+access_req      req
+trap_fhandle    handle
 :eXMP.
 :PC.
 The handle of the file is given by the :F.handle:eF. field.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 When an error has occurred, the :F.err:eF. field contains a value
@@ -1394,9 +1397,9 @@ Request to erase a file.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    -------------------------
-    string          file_name
+access_req      req
+-------------------------
+string          file_name
 :eXMP.
 :PC.
 The :F.file_name:eF
@@ -1404,7 +1407,7 @@ field contains the file name to be deleted.
 :P.
 Return message:
 :XMP.
-    trap_error  err
+trap_error  err
 :eXMP.
 :PC.
 If error has occurred when erasing the file, the :F.err:eF. field will
@@ -1415,19 +1418,19 @@ Request to convert a file name to its full path name.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_8      file_type
-    -------------------------
-    string          file_name
+access_req      req
+unsigned_8      file_type
+-------------------------
+string          file_name
 :eXMP.
 :PC.
 The :F.file_type:eF. field indicates the type of the input file.
 File types can be:
 :XMP.
-    TF_FILE_EXE  =  0
-    TF_FILE_DBG  =  1
-    TF_FILE_PRS  =  2
-    TF_FILE_HLP  =  3
+TF_FILE_EXE  =  0
+TF_FILE_DBG  =  1
+TF_FILE_PRS  =  2
+TF_FILE_HLP  =  3
 :eXMP.
 :PC.
 This is
@@ -1440,9 +1443,9 @@ field contains the file name to be converted.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    --------------------------
-    string          path_name
+trap_error      err
+--------------------------
+string          path_name
 :eXMP.
 :PC.
 If no error occurs the :F.err:eF. field returns a zero and the full path name
@@ -1455,10 +1458,10 @@ Request to run a command on the target (debuggee's) system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_16     chk_size
-    ------------------------
-    string          cmd
+access_req      req
+unsigned_16     chk_size
+------------------------
+string          cmd
 :eXMP.
 :PC.
 The :F.chk_size:eF. field gives the check size in kilobytes. This field
@@ -1469,7 +1472,7 @@ field stores the command to be executed.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If error has occurred when executing the command, the :F.err:eF. field
@@ -1502,10 +1505,10 @@ only useful for 16-bit environments, using the addr48_ptr type would be
 inefficient.
 The structure is defined as follows:
 :XMP.
-    typedef struct {
-        unsigned_16    offset;
-        unsigned_16    segment;
-    } addr32_ptr;
+typedef struct {
+    unsigned_16    offset;
+    unsigned_16    segment;
+} addr32_ptr;
 :eXMP.
 The :F.segment:eF. field contains the segment of the address and the :F.offset:eF.
 field stores the offset of the address.
@@ -1514,10 +1517,10 @@ field stores the offset of the address.
 the number of entries down in the overlay stack.
 The structure is defined as follows:
 :XMP.
-    typedef struct {
-        addr32_ptr  mach;
-        unsigned_16 sect_id;
-    } ovl_address;
+typedef struct {
+    addr32_ptr  mach;
+    unsigned_16 sect_id;
+} ovl_address;
 :eXMP.
 The :F.mach:eF. field is the machine address. The :F.sect_id:eF.
 field stores the address section number.
@@ -1534,14 +1537,14 @@ message.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
 :P.
 Return message:
 :XMP.
-    unsigned_16     size
+unsigned_16     size
 :eXMP.
 :PC.
 The :F.size:eF. field returns the size in bytes. A value of zero indicates
@@ -1557,16 +1560,16 @@ message.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_16     sect_id
+access_req      req
+unsigned_16     sect_id
 :eXMP.
 The :F.sect_id:eF. field indicates the overlay section the information is
 being requested of.
 :P.
 Return message:
 :XMP.
-    unsigned_16     segment
-    unsigned_32     size
+unsigned_16     segment
+unsigned_32     size
 :eXMP.
 :PC.
 The :F.segment:eF. field contains the segment value where the overlay
@@ -1586,12 +1589,12 @@ trap file request.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :P.
 Return message:
 :XMP.
-    bytes           data
+bytes           data
 :eXMP.
 :PC.
 The :F.data:eF. field contains the overlay state information requested.
@@ -1605,16 +1608,16 @@ message.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    --------------------
-    bytes           data
+access_req      req
+--------------------
+bytes           data
 :eXMP.
 :PC.
 The :F.data:eF. field contains the overlay state information to be restored.
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_OVL_TRANS_VECT_ADDR (4)
 .np
@@ -1627,8 +1630,8 @@ messages.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ovl_address     ovl_addr
+access_req      req
+ovl_address     ovl_addr
 :eXMP.
 :PC.
 The :F.mach:eF. field is the machine address. The :F.sect_id:eF.
@@ -1636,7 +1639,7 @@ field stores the number of entries down in the overlay stack.
 :P.
 Return message:
 :XMP.
-    ovl_address     ovl_addr
+ovl_address     ovl_addr
 :eXMP.
 :PC.
 The translated address will be returned in the :F.ovl_addr:eF. field.
@@ -1653,13 +1656,13 @@ messages.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ovl_address     ovl_addr
+access_req      req
+ovl_address     ovl_addr
 :eXMP.
 :P.
 Return message:
 :XMP.
-    ovl_address     ovl_addr
+ovl_address     ovl_addr
 :eXMP.
 :PC.
 The translated address will be returned in the :F.ovl_addr:eF. field.
@@ -1676,16 +1679,16 @@ messages.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ovl_address     ovl_addr
+access_req      req
+ovl_address     ovl_addr
 :eXMP.
 :PC.
 The :F.ovl_addr:eF. field contains the overlay address.
 :P.
 Return message:
 :XMP.
-    unsigned_8      remapped
-    ovl_address     ovl_addr
+unsigned_8      remapped
+ovl_address     ovl_addr
 :eXMP.
 :PC.
 If the address gets remapped the :F.remapped:eF. field will return one.
@@ -1720,8 +1723,8 @@ Request to get next thread.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_thandle    thread
+access_req      req
+trap_thandle    thread
 :eXMP.
 :PC.
 The :F.thread:eF. contains the either a zero to get information on the
@@ -1730,16 +1733,16 @@ return message of a previous request.
 :P.
 Return message:
 :XMP.
-    trap_thandle    thread
-    unsigned_8      state
+trap_thandle    thread
+unsigned_8      state
 :eXMP.
 :PC.
 The :F.thread:eF. field returns the thread ID. There are no more threads in
 the list, it will contain zero.
 The :F.state:eF. field can have two values:
 :XMP.
-    THREAD_THAWED = 0
-    THREAD_FROZEN = 1
+THREAD_THAWED = 0
+THREAD_FROZEN = 1
 :eXMP.
 .section REQ_THREAD_SET (1)
 .np
@@ -1747,8 +1750,8 @@ Request to set a given thread ID to be the current thread.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_thandle    thread
+access_req      req
+trap_thandle    thread
 :eXMP.
 :PC.
 The :F.thread:eF. contains the thread number to set. If it's zero, do not
@@ -1756,8 +1759,8 @@ attempt to set the thread, just return the current thread ID.
 :P.
 Return message:
 :XMP.
-    trap_error      error
-    trap_thandle    old_thread
+trap_error      error
+trap_thandle    old_thread
 :eXMP.
 :PC.
 The :F.old_thread:eF. field returns the previous thread ID. If the set fails, the
@@ -1769,15 +1772,15 @@ the task program.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_thandle    thread
+access_req      req
+trap_thandle    thread
 :eXMP.
 :PC.
 The :F.thread:eF. contains the thread number to freeze.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 If the thread cannot be frozen, the :F.err:eF. field returns non-zero value.
 .section REQ_THREAD_THAW (3)
@@ -1786,15 +1789,15 @@ Request to allow a thread to run next time when executing the program.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_thandle    thread
+access_req      req
+trap_thandle    thread
 :eXMP.
 :PC.
 The :F.thread:eF. contains the thread number to thaw.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 If the thread cannot be thawed, the :F.err:eF. field returns non zero value.
 .section REQ_THREAD_GET_EXTRA (4)
@@ -1806,8 +1809,8 @@ be useful for the user to know.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_32     thread
+access_req      req
+unsigned_32     thread
 :eXMP.
 :PC.
 The :F.thread:eF. field contains the thread ID. A zero value means to get the
@@ -1816,7 +1819,7 @@ top of the thread window.
 :P.
 Return message:
 :XMP.
-    string          extra
+string          extra
 :eXMP.
 :PC.
 The extra information of the thread will be returned in :F.extra:eF. field.
@@ -1837,11 +1840,11 @@ Request to rename a file on the debuggee's system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    -------------------------
-    string          from_name
-    -------------------------
-    string          to_name
+access_req      req
+-------------------------
+string          from_name
+-------------------------
+string          to_name
 :eXMP.
 :PC.
 The file whose name is indicated by the field :F.from_name:eF. will be renamed
@@ -1849,7 +1852,7 @@ to the name given by the field :F.to_name:eF.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If error has occurred, the :F.err:eF. field will return the error code
@@ -1860,16 +1863,16 @@ Request to create a directory on the target (debuggee) system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ------------------------
-    string          dir_name
+access_req      req
+------------------------
+string          dir_name
 :eXMP.
 :PC.
 The :F.dir_name:eF field contains the name of the directory to be created.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If error has occurred when creating the directory, the :F.err:eF. field
@@ -1880,16 +1883,16 @@ Request to remove a directory on the target system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ------------------------
-    string          dir_name
+access_req      req
+------------------------
+string          dir_name
 :eXMP.
 :PC.
 The :F.dir_name:eF field contains the name of the directory to be removed.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If error has occurred, the :F.err:eF. field will return the error code
@@ -1900,15 +1903,15 @@ Request to set the current drive on the target system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_8      drive
+access_req      req
+unsigned_8      drive
 :eXMP.
 :PC.
 The :F.drive:eF field contains the drive number to be set on the target system.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If error has occurred, the :F.err:eF. field will return the error code
@@ -1919,14 +1922,14 @@ Request to get the current drive on the target system.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
 :P.
 Return message:
 :XMP.
-    unsigned_8      drive
+unsigned_8      drive
 :eXMP.
 :PC.
 The :F.drive:eF field returns the current drive number on the target system.
@@ -1936,16 +1939,16 @@ Request to set a directory on the target system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    ------------------------
-    string          dir_name
+access_req      req
+------------------------
+string          dir_name
 :eXMP.
 :PC.
 The :F.dir_name:eF field contains the name of the directory to be set.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If error has occurred, the :F.err:eF. field will return the error code
@@ -1956,17 +1959,17 @@ Request to get the current directory name on the target system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_8      drive
+access_req      req
+unsigned_8      drive
 :eXMP.
 :PC.
 The :F.drive:eF field contains the target drive number.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    --------------------------
-    string          dir_name
+trap_error      err
+--------------------------
+string          dir_name
 :eXMP.
 :PC.
 The :F.dir_name:eF field contains the name of the directory to be set. If error
@@ -1977,9 +1980,9 @@ Request to set a file's date and time information on the target system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_fhandle    handle
-    time_t          time
+access_req      req
+trap_fhandle    handle
+time_t          time
 :eXMP.
 :PC.
 The :F.handle:eF. contains the file handle. The :F.time:eF. field follows
@@ -1988,7 +1991,7 @@ the UNIX time format. The :F.time:eF. represents the time since January 1, 1970
 :P.
 Return message:
 :XMP.
-    NONE
+NONE
 :eXMP.
 .section REQ_RFX_GETDATETIME (8)
 .np
@@ -1996,15 +1999,15 @@ Request to get the date and time information for a file on the target system.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    trap_fhandle    handle
+access_req      req
+trap_fhandle    handle
 :eXMP.
 :PC.
 The :F.handle:eF. contains the file handle.
 :P.
 Return message:
 :XMP.
-    time_t          time
+time_t          time
 :eXMP.
 :PC.
 The :F.time:eF. field follows the UNIX time format. The :F.time:eF.
@@ -2015,15 +2018,15 @@ Request to get the amount of free space left on the drive.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_8      drive
+access_req      req
+unsigned_8      drive
 :eXMP.
 :PC.
 The :F.drive:eF field contains the target drive number.
 :P.
 Return message:
 :XMP.
-    unsigned_32     size
+unsigned_32     size
 :eXMP.
 :PC.
 The :F.size:eF. field returns the number of bytes left on the drive.
@@ -2033,10 +2036,10 @@ Request to set the file attribute of a file.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_32     attribute
-    -------------------------
-    string          name
+access_req      req
+unsigned_32     attribute
+-------------------------
+string          name
 :eXMP.
 :PC.
 The :F.name:eF field contains the name whose attributes are to be set.
@@ -2045,7 +2048,7 @@ new attributes of the file.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If error has occurred, the :F.err:eF. field will return the error code
@@ -2056,16 +2059,16 @@ Request to get the file attribute of a file.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    --------------------
-    string          name
+access_req      req
+--------------------
+string          name
 :eXMP.
 :PC.
 The :F.name:eF field contains the name to be checked.
 :P.
 Return message:
 :XMP.
-    unsigned_32     attribute
+unsigned_32     attribute
 :eXMP.
 :PC.
 The :F.attribute:eF. field returns the attribute of the file.
@@ -2075,9 +2078,9 @@ Request to convert a file name to its canonical form.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    -------------------------
-    string          file_name
+access_req      req
+-------------------------
+string          file_name
 :eXMP.
 :PC.
 The :F.file_name:eF
@@ -2085,9 +2088,9 @@ field contains the file name to be converted.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    --------------------------
-    string          path_name
+trap_error      err
+--------------------------
+string          path_name
 :eXMP.
 :PC.
 If there is no error, the :F.err:eF. field returns a zero and the full path name
@@ -2100,10 +2103,10 @@ Request to find the first file in a directory.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    unsigned_8      attrib
-    ----------------------
-    string          name
+access_req      req
+unsigned_8      attrib
+----------------------
+string          name
 :eXMP.
 :PC.
 The :F.name:eF. field contains the name of the directory and the :F.attrib:eF. field
@@ -2111,28 +2114,28 @@ contains the attribute of the files to list in the directory.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    -----------------------
-    dta             info
+trap_error      err
+-----------------------
+dta             info
 :eXMP.
 :PC.
 If found, the :F.err:eF. field will be zero. The location and
 information of about the first file will be in the structure :F.info.:eF. Definition
 of the structure :F.dta:eF. is as follows:
 :XMP.
-    typedef struct dta {
-        struct {
-            unsigned_8          spare1[13];
-            unsigned_16         dir_entry_num;
-            unsigned_16         cluster;
-            unsigned_8          spare2[4];
-        } dos;
-        unsigned_8          attr;
-        unsigned_16         time;
-        unsigned_16         date;
-        unsigned_32         size;
-        unsigned_8          name[14];
-    } dta;
+typedef struct dta {
+    struct {
+        unsigned_8          spare1[13];
+        unsigned_16         dir_entry_num;
+        unsigned_16         cluster;
+        unsigned_8          spare2[4];
+    } dos;
+    unsigned_8          attr;
+    unsigned_16         time;
+    unsigned_16         date;
+    unsigned_32         size;
+    unsigned_8          name[14];
+} dta;
 :eXMP.
 .section REQ_RFX_FINDNEXT (14)
 .np
@@ -2141,9 +2144,9 @@ REQ_RFX_FINDFIRST.
 :P.
 Request message:
 :XMP.
-    access_req      req
-    --------------------
-    dta             info
+access_req      req
+--------------------
+dta             info
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.info:eF. field contains
@@ -2151,9 +2154,9 @@ the dta returned from the previous REQ_FIND_NEXT or REQ_FIND_FIRST.
 :P.
 Return message:
 :XMP.
-    trap_error      err
-    -----------------------
-    dta             info
+trap_error      err
+-----------------------
+dta             info
 :eXMP.
 :PC.
 The :F.info:eF. field is the same as in REQ_FIND_FIRST.
@@ -2163,14 +2166,14 @@ Request to end the directory search operation.
 :P.
 Request message:
 :XMP.
-    access_req      req
+access_req      req
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request.
 :P.
 Return message:
 :XMP.
-    trap_error      err
+trap_error      err
 :eXMP.
 :PC.
 If successful, the :F.err:eF. field will be zero, otherwise the
@@ -2217,15 +2220,15 @@ loaded, the &company debugger uses export ordinal 1 from the DLL for TrapInit, e
 ordinal 2 for TrapFini and export ordinal 3 for TrapRequest.
 Some example code follows:
 :XMP.
-    rc = DosLoadModule( NULL, 0, trap_file_name, &dll_module );
-    if( rc != 0 ) {
+rc = DosLoadModule( NULL, 0, trap_file_name, &dll_module );
+if( rc != 0 ) {
     return( "unable to load trap file" );
-    }
-    if( DosGetProcAddr( dll_module, "#1", &TrapInit ) != 0
-     || DosGetProcAddr( dll_module, "#2", &TrapFini ) != 0
-     || DosGetProcAddr( dll_module, "#3", &TrapRequest ) != 0 ) {
+}
+if( DosGetProcAddr( dll_module, "#1", &TrapInit ) != 0
+ || DosGetProcAddr( dll_module, "#2", &TrapFini ) != 0
+ || DosGetProcAddr( dll_module, "#3", &TrapRequest ) != 0 ) {
     return( "incorrect version of trap file" );
-    }
+}
 :eXMP.
 .section Trap Files Under Windows.
 .np
@@ -2236,16 +2239,16 @@ loaded, the &company debugger uses export ordinal 2 from the DLL for TrapInit, e
 ordinal 3 for TrapFini and export ordinal 4 for TrapRequest.
 Some example code follows:
 :XMP.
-    dll = LoadLibrary( trap_file_name );
-    if( dll < 32 ) {
-        return( "unable to load trap file" );
-    }
-    TrapInit   = (LPVOID) GetProcAddress( dll, (LPSTR)2 );
-    TrapFini   = (LPVOID) GetProcAddress( dll, (LPSTR)3 );
-    TrapRequest = (LPVOID) GetProcAddress( dll, (LPSTR)4 );
-    if( TrapInit == NULL || TrapFini == NULL || TrapRequest == NULL ) {
-        return( "incorrect version of trap file" );
-    }
+dll = LoadLibrary( trap_file_name );
+if( dll < 32 ) {
+    return( "unable to load trap file" );
+}
+TrapInit   = (LPVOID) GetProcAddress( dll, (LPSTR)2 );
+TrapFini   = (LPVOID) GetProcAddress( dll, (LPSTR)3 );
+TrapRequest = (LPVOID) GetProcAddress( dll, (LPSTR)4 );
+if( TrapInit == NULL || TrapFini == NULL || TrapRequest == NULL ) {
+    return( "incorrect version of trap file" );
+}
 :eXMP.
 .section Trap Files Under Windows NT.
 .np
@@ -2256,16 +2259,16 @@ loaded, the &company debugger uses export ordinal 1 from the DLL for TrapInit, e
 ordinal 2 for TrapFini and export ordinal 3 for TrapRequest.
 Some example code follows:
 :XMP.
-    dll = LoadLibrary( trap_file_name );
-    if( dll < 32 ) {
-        return( "unable to load trap file" );
-    }
-    TrapInit   = (LPVOID) GetProcAddress( dll, (LPSTR)1 );
-    TrapFini   = (LPVOID) GetProcAddress( dll, (LPSTR)2 );
-    TrapRequest = (LPVOID) GetProcAddress( dll, (LPSTR)3 );
-    if( TrapInit == NULL || TrapFini == NULL || TrapRequest == NULL ) {
-        return( "incorrect version of trap file" );
-    }
+dll = LoadLibrary( trap_file_name );
+if( dll < 32 ) {
+    return( "unable to load trap file" );
+}
+TrapInit   = (LPVOID) GetProcAddress( dll, (LPSTR)1 );
+TrapFini   = (LPVOID) GetProcAddress( dll, (LPSTR)2 );
+TrapRequest = (LPVOID) GetProcAddress( dll, (LPSTR)3 );
+if( TrapInit == NULL || TrapFini == NULL || TrapRequest == NULL ) {
+    return( "incorrect version of trap file" );
+}
 :eXMP.
 .section Trap Files Under QNX
 .np

@@ -7,10 +7,10 @@ When &company Debugger loads a DOS program, it looks at the initial CS:IP value 
 following structure:
 :XMP.
 struct ovl_header {
-    unsigned_8	short_jmp_opcode;	/* == 0xeb */
-    signed_8	short_jmp_displacment;
-    unsigned_16 signature;		/* == 0x2112 */
-    void	(far *hook)();
+    unsigned_8  short_jmp_opcode;       /* == 0xeb */
+    signed_8    short_jmp_displacment;
+    unsigned_16 signature;              /* == 0x2112 */
+    void        (far *hook)();
     unsigned_16 handler_offset;
 };
 :eXMP.
@@ -81,18 +81,18 @@ The following requests are recognized by the debug handler routine.
 .section GET_STATE_SIZE
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (0)	    AX = size of overlay state
+Inputs:                         Outputs:
+AX = request number (0)         AX = size of overlay state
 :eXMP.
 :P
 This request returns the number of bytes required for an overlay state.
 .section GET_OVERLAY_STATE
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (1)	    AX = 1
-    CX:BX = far pointer to memory
-	    to store overlay state
+Inputs:                         Outputs:
+AX = request number (1)         AX = 1
+CX:BX = far pointer to memory
+        to store overlay state
 :eXMP.
 :P.
 This request copies the overlay state into the memory pointed at by
@@ -100,10 +100,10 @@ the CX:BX registers. A one is always returned in AX.
 .section SET_OVERLAY_STATE
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (2)	    AX = 1
-    CX:BX = far pointer to memory
-	    to load overlay state
+Inputs:                         Outputs:
+AX = request number (2)         AX = 1
+CX:BX = far pointer to memory
+        to load overlay state
 :eXMP.
 :P.
 This request takes a previously obtained overlay state and causes the overlay
@@ -120,10 +120,10 @@ but all of its ancestor sections as well.
 .section TRANSLATE_VECTOR_ADDR
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (3)	    AX = 1 if addr was translated,
-    CX:BX = far pointer to		 0 otherwise
-	    overlay address
+Inputs:                         Outputs:
+AX = request number (3)         AX = 1 if addr was translated,
+CX:BX = far pointer to               0 otherwise
+        overlay address
 :eXMP.
 :P.
 This request checks to see if the far pointer portion of the overlay address
@@ -136,10 +136,10 @@ is returned in AX.
 .section TRANSLATE_RETURN_ADDR
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (4)	    AX = 1 if addr was translated,
-    CX:BX = far pointer to		 0 otherwise
-	    overlay address
+Inputs:                         Outputs:
+AX = request number (4)         AX = 1 if addr was translated,
+CX:BX = far pointer to               0 otherwise
+        overlay address
 :eXMP.
 :P.
 In order
@@ -162,12 +162,12 @@ then the overlay address is left untouched and a zero is returned in AX.
 .section GET_OVL_TBL_ADDR
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (5)	    AX = 0
-    CX:BX = far pointer to variable
-	    of type far pointer to
-	    be filled in with
-	    overlay table address
+Inputs:                         Outputs:
+AX = request number (5)         AX = 0
+CX:BX = far pointer to variable
+        of type far pointer to
+        be filled in with
+        overlay table address
 :eXMP.
 :P.
 This request fills in the far pointer pointed at by CX:BX with the address
@@ -182,10 +182,10 @@ so this call should be avoided if at all possible.
 .section GET_MOVED_SECTION
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (6)         AX = 1 if the section exists
-    CX:BX = far pointer to               0 otherwise   
-	    overlay address
+Inputs:                         Outputs:
+AX = request number (6)         AX = 1 if the section exists
+CX:BX = far pointer to               0 otherwise   
+        overlay address
 :eXMP.
 :P.
 With the dynamic overlay manager, sections may be loaded, or moved, to
@@ -217,10 +217,10 @@ void CheckMovedSections()
 .section GET_SECTION_DATA
 .np
 :XMP.
-    Inputs:			    Outputs:
-    AX = request number (7)         AX = 1 if the section exists
-    CX:BX = far pointer to               0 otherwise   
-	    overlay address
+Inputs:                         Outputs:
+AX = request number (7)         AX = 1 if the section exists
+CX:BX = far pointer to               0 otherwise   
+        overlay address
 :eXMP.
 :P.
 This request returns information on the current location of a section
@@ -238,8 +238,8 @@ portion of the address with the size of the section in paragraphs.
 The pointer returned by the GET_OVL_TBL_ADDR request has the following format:
 :XMP
 typedef struct ovl_table {
-    unsigned_8	    major;
-    unsigned_8	    minor;
+    unsigned_8      major;
+    unsigned_8      minor;
     void            far *start;
     unsigned_16     delta;
     unsigned_16     ovl_size;
@@ -267,13 +267,13 @@ program (e.g. the tenth element in the array describes overlay section 10.)
 Each entry has the following form:
 :XMP.
 typedef struct ovltab_entry {
-    unsigned_16		flags_anc;
-    unsigned_16		relocs;
-    unsigned_16		start_para;
-    unsigned_16		code_handle;
-    unsigned_16		num_paras;
-    unsigned_16		fname;
-    unsigned_32		disk_addr;
+    unsigned_16         flags_anc;
+    unsigned_16         relocs;
+    unsigned_16         start_para;
+    unsigned_16         code_handle;
+    unsigned_16         num_paras;
+    unsigned_16         fname;
+    unsigned_32         disk_addr;
 } ovltab_entry;
 :eXMP.
 :P.

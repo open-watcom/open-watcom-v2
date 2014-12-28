@@ -41,11 +41,11 @@ Since there may be different versions of the type and local symbol
 information, and there may be multiple front-ends a special OMF COMENT record
 is placed in the object file. It has the following form:
 :XMP.
-	comment_class = 0xfe
-	'D'
-	major_version_number (char)
-	minor_version_number (char)
-	source_language (string)
+comment_class = 0xfe
+'D'
+major_version_number (char)
+minor_version_number (char)
+source_language (string)
 :eXMP.
 :PC.
 The :F.comment_class:eF. of 0xfe indicates a linker directive comment.
@@ -90,7 +90,7 @@ BP_OFFSET   (value 0x1?)
     WORD    (value 0x11) offset_word
     DWORD   (value 0x12) offset_dword
 
-CONST	    (value 0x2?)
+CONST       (value 0x2?)
     ADDR286 (value 0x20) memory_location_32_pointer
     ADDR386 (value 0x21) memory_location_48_pointer
     INT_1   (value 0x22) const_byte
@@ -101,38 +101,38 @@ MULTI_REG   (value 0x3?)
     Low nibble is number of register bytes that follow - 1.
     The registers are specified low order register first.
 
-REG	    (value 0x4?)
+REG         (value 0x4?)
     Low nibble is low nibble of the appropriate register value.
     This may only be used for the first 16 registers.
 
 IND_REG     (value 0x5?)
     CALLOC_NEAR (value 0x50) register_byte
-    CALLOC_FAR	(value 0x51) register_byte, register_byte
+    CALLOC_FAR  (value 0x51) register_byte, register_byte
     RALLOC_NEAR (value 0x52) register_byte
-    RALLOC_FAR	(value 0x53) register_byte, register_byte
+    RALLOC_FAR  (value 0x53) register_byte, register_byte
 
 OPERATOR     (value 0x6?)
-    IND_2	(value 0x60)
-    IND_4	(value 0x61)
+    IND_2       (value 0x60)
+    IND_4       (value 0x61)
     IND_ADDR286 (value 0x62)
     IND_ADDR386 (value 0x63)
     ZEB         (value 0x64)
     ZEW         (value 0x65)
-    MK_FP	(value 0x66)
+    MK_FP       (value 0x66)
     POP         (value 0x67)
-    XCHG	(value 0x68) stack_byte
+    XCHG        (value 0x68) stack_byte
     ADD         (value 0x69)
     DUP         (value 0x6a)
     NOP         (value 0x6b)
 
 
 Here is the list of register numbers:
- 0-AL,	1-AH,  2-BL,  3-BH,  4-CL,  5-CH,  6-DL,  7-DH
- 8-AX,	9-BX, 10-CX, 11-DX, 12-SI, 13-DI, 14-BP, 15-SP
-16-CS, 17-SS, 18-DS, 19-ES
+ 0-AL,  1-AH,   2-BL,   3-BH,   4-CL,   5-CH,   6-DL,   7-DH
+ 8-AX,  9-BX,   10-CX,  11-DX,  12-SI,  13-DI,  14-BP,  15-SP
+16-CS,  17-SS,  18-DS,  19-ES
 20-ST0, 21-ST1, 22-ST2, 23-ST3, 24-ST4, 25-ST5, 26-ST6, 27-ST7
 28-EAX, 29-EBX, 30-ECX, 31-EDX, 32-ESI, 33-EDI, 34-EBP, 35-ESP
-36-FS,	37-GS
+36-FS,  37-GS
 :eXMP.
 :PC.
 CONST pushes a single constant value onto the expression stack. INT_1 and
@@ -185,13 +185,13 @@ are offsets from the BP register for 286 programs and from the EBP register
 for 386 programs. A BP_OFFSET could also be expressed with the following
 series of operations:
 :XMP.
-	MULTI_REG(1) SS
-	IND_2 
-	MULTI_REG(1) EBP
-	IND_4
-	MK_FP
-	INT_1 offset_byte
-	ADD
+MULTI_REG(1) SS
+IND_2 
+MULTI_REG(1) EBP
+IND_4
+MK_FP
+INT_1 offset_byte
+ADD
 :eXMP.
 :P.
 The IND_REG location type is used for structured return values.
@@ -259,13 +259,13 @@ scalar item
 is being given a name. It has the following form:
 :XMP.
 BIT: 7 6 5 4 3 2 1 0
-     | |   | |	   |
+     | |   | |     |
      | |   | +-----+--- size in bytes - 1
      | +---+----------- class (000 - integer)
-     |			      (001 - unsigned)
-     |			      (010 - float)
-     |			      (011 - void (size=0))
-     |			      (100 - complex)
+     |                        (001 - unsigned)
+     |                        (010 - float)
+     |                        (011 - void (size=0))
+     |                        (100 - complex)
      +----------------- unused
 :eXMP.
 :PC.
@@ -309,9 +309,9 @@ WORD_INDEX     (value 0x21) high_bound_word, base_type_index
 LONG_INDEX     (value 0x22) high_bound_dword, base_type_index
 TYPE_INDEX     (value 0x23) index_type_index, base_type_index
 DESC_INDEX     (value 0x24) scalar_type_byte, scalar_type_byte,
-				bounds_32_pointer, base_type_index
+                                bounds_32_pointer, base_type_index
 DESC_INDEX_386 (value 0x25) scalar_type_byte, scalar_type_byte,
-				bounds_48_pointer, base_type_index
+                                bounds_48_pointer, base_type_index
 :eXMP.
 :P.
 BYTE_INDEX, WORD_INDEX, LONG_INDEX are all used to describe a restricted
@@ -348,16 +348,16 @@ signed numbers.
 This definition is used to define a pointer type. There are 10
 sub-classes.
 :XMP.
-NEAR		(value 0x40) base_type_index [,base_locator]
-FAR		(value 0x41) base_type_index
-HUGE		(value 0x42) base_type_index
-NEAR_DEREF	(value 0x43) base_type_index [,base_locator]
-FAR_DEREF	(value 0x44) base_type_index
-HUGE_DEREF	(value 0x45) base_type_index
-NEAR386 	(value 0x46) base_type_index [,base_locator]
-FAR386		(value 0x47) base_type_index
-NEAR386_DEFREF	(value 0x48) base_type_index [,base_locator]
-FAR386_DEREF	(value 0x49) base_type_index
+NEAR            (value 0x40) base_type_index [,base_locator]
+FAR             (value 0x41) base_type_index
+HUGE            (value 0x42) base_type_index
+NEAR_DEREF      (value 0x43) base_type_index [,base_locator]
+FAR_DEREF       (value 0x44) base_type_index
+HUGE_DEREF      (value 0x45) base_type_index
+NEAR386         (value 0x46) base_type_index [,base_locator]
+FAR386          (value 0x47) base_type_index
+NEAR386_DEFREF  (value 0x48) base_type_index [,base_locator]
+FAR386_DEREF    (value 0x49) base_type_index
 :eXMP.
 :P.
 When a symbol is one of the *_DEREF types, the &company Debugger will automatically
@@ -385,7 +385,7 @@ the default near segment and a zero offset.
 This definition is used to define an enumerated type. There are 4
 sub-classes.
 :XMP.
-LIST	   (value 0x50) #consts_word, scalar_type_byte
+LIST       (value 0x50) #consts_word, scalar_type_byte
 CONST_BYTE (value 0x51) value_byte, name
 CONST_WORD (value 0x52) value_word, name
 CONST_LONG (value 0x53) value_dword, name
@@ -410,19 +410,19 @@ in the same $$TYPES segment.
 This definition is used to define a structure type. There are 10
 sub-classes.
 :XMP.
-LIST	   (value 0x60) #fields_word [,size_dword]
+LIST       (value 0x60) #fields_word [,size_dword]
 FIELD_BYTE (value 0x61) offset_byte, type_index, name
 FIELD_WORD (value 0x62) offset_word, type_index, name
 FIELD_LONG (value 0x63) offset_dword, type_index, name
 BIT_BYTE   (value 0x64) offset_byte, start_bit_byte, bit_size_byte,
-			type_index, name
+                            type_index, name
 BIT_WORD   (value 0x65) offset_word, start_bit_byte, bit_size_byte,
-			type_index, name
+                            type_index, name
 BIT_LONG   (value 0x66) offset_dword, start_bit_byte, bit_size_byte,
-			type_index, name
+                            type_index, name
 FIELD_CLASS (v    0x67) attrib_byte, field_locator, type_index, name
 BIT_CLASS  (value 0x68) attrib_byte, field_locator, start_bit_byte,
-			bit_size_byte, type_index, name
+                            bit_size_byte, type_index, name
 INHERIT_CLASS (v  0x69) adjust_locator, ancestor_type_index
 :eXMP.
 :P.
@@ -443,9 +443,9 @@ of the field:
 BIT: 7 6 5 4 3 2 1 0
      |     | | | | |
      |     | | | | +--- internal
-     |	   | | | +----- public
-     |	   | | +------- protected
-     |	   | +--------- private
+     |     | | | +----- public
+     |     | | +------- protected
+     |     | +--------- private
      +-----+----------- unused
 :eXMP.
 :PC.
@@ -459,8 +459,8 @@ the debugger will implicitly push the base address of the class instance
 onto the stack. The following is an example of the location expression used
 to calculate an ordinary field at offset 10 from the start of the class:
 :XMP.
-	INT_1	10
-	ADD
+INT_1   10
+ADD
 :eXMP.
 :P.
 The INHERIT_CLASS record indicates that a particular class should inherit
@@ -485,10 +485,10 @@ in the same $$TYPES segment.
 This definition is used to define a procedure type. There are 4
 sub-classes.
 :XMP.
-NEAR	  (value 0x70) ret_type_index, #parms_byte {,parm_type_index}
-FAR	  (value 0x71) ret_type_index, #parms_byte {,parm_type_index}
+NEAR      (value 0x70) ret_type_index, #parms_byte {,parm_type_index}
+FAR       (value 0x71) ret_type_index, #parms_byte {,parm_type_index}
 NEAR386   (value 0x72) ret_type_index, #parms_byte {,parm_type_index}
-FAR386	  (value 0x73) ret_type_index, #parms_byte {,parm_type_index}
+FAR386    (value 0x73) ret_type_index, #parms_byte {,parm_type_index}
 EXT_PARMS (value 0x74) {,parm_type_index}
 :eXMP.
 :P.
@@ -555,10 +555,10 @@ of symbol definition, one for variables and one for code.
 This definition is used to define the location of a data symbol.
 There are 4 sub-classes.
 :XMP.
-MODULE	  (value 0x10) memory_location_32_pointer, type_index, name
-LOCAL	  (value 0x11) address_locator, type_index, name
-MODULE386 (value 0x12) memory_location_48_pointer, type_index, name
-MODULE_LOC (v    0x13) address_locator, type_index, name
+MODULE     (value 0x10) memory_location_32_pointer, type_index, name
+LOCAL      (value 0x11) address_locator, type_index, name
+MODULE386  (value 0x12) memory_location_48_pointer, type_index, name
+MODULE_LOC (value 0x13) address_locator, type_index, name
 :eXMP.
 :P.
 MODULE defines either an exported, domestic, or imported
@@ -576,28 +576,28 @@ executing in a block which defines the symbol.
 This definition is used to define an object in the code. There are 6
 sub-classes.
 :XMP.
-BLOCK	     (value 0x20) start_offset_word, size_word,
-			    parent_block_offset
+BLOCK        (value 0x20) start_offset_word, size_word,
+                            parent_block_offset
 NEAR_RTN     (value 0x21) <BLOCK>, pro_size_byte, epi_size_byte,
-			    ret_addr_offset_word, type_index,
-			    return_val_loc, #parms_byte
-			    {,parm_location}, name
+                            ret_addr_offset_word, type_index,
+                            return_val_loc, #parms_byte
+                            {,parm_location}, name
 FAR_RTN      (value 0x22) <BLOCK>, pro_size_byte, epi_size_byte,
-			    ret_addr_offset_word, type_index,
-			    return_val_loc, #parms_byte
-			    {,parm_location}, name
+                            ret_addr_offset_word, type_index,
+                            return_val_loc, #parms_byte
+                            {,parm_location}, name
 BLOCK_386    (value 0x23) start_offset_dword, size_dword,
-			    parent_block_offset
+                            parent_block_offset
 NEAR_RTN_386 (value 0x24) <BLOCK_386>, pro_size_byte, epi_size_byte,
-			    ret_addr_offset_dword, type_index,
-			    return_val_loc, #parms_byte
-			    {,parm_location}, name
+                            ret_addr_offset_dword, type_index,
+                            return_val_loc, #parms_byte
+                            {,parm_location}, name
 FAR_RTN_386  (value 0x25) <BLOCK_386>, pro_size_byte, epi_size_byte,
-			    ret_addr_offset_dword, type_index,
-			    return_val_loc, #parms_byte
-			    {,parm_location}, name
+                            ret_addr_offset_dword, type_index,
+                            return_val_loc, #parms_byte
+                            {,parm_location}, name
 MEMBER_SCOPE (value 0x26) parent_block_offset, class_type_index
-			    [obj_ptr_type_byte, object_loc]
+                            [obj_ptr_type_byte, object_loc]
 :eXMP.
 :P.
 BLOCK is used to indicate a block of code that contains local symbol
@@ -695,26 +695,26 @@ them to the executable file.
 After linking, the executable file looks like this:
 :XMP.
 +-----------------------+
-|			|
-|	EXE file	|
-|			|
+|                       |
+|        EXE file       |
+|                       |
 +=======================+
-|			|
-|	 Overlays	|
-|			|
+|                       |
+|        Overlays       |
+|                       |
 +=======================+
-|    Any Other Stuff	|
-+=======================+<---	start of debugging information
+|    Any Other Stuff    |
++=======================+<--- start of debugging information
 | source language table |
 +-----------------------+
 | segment address table |
 +-----------------------+
-|			|<-\
-|  section debug info	|   +-- repeated for each overlay & root
-|			|<-/
+|                       |<-\
+|  section debug info   |   +-- repeated for each overlay & root
+|                       |<-/
 +-----------------------+
-|  master debug header	|
-+=======================+<---	end of file
+|  master debug header  |
++=======================+<--- end of file
 :eXMP.
 :PC.
 The section marked as "EXE file" is the normal executable file.
@@ -744,14 +744,14 @@ it is capable of handling the version of debugging information.
 The master header structure is as follows:
 :XMP.
 struct master_dbg_header {
-    unsigned_16 	signature;
-    unsigned_8		exe_major_ver;
-    unsigned_8		exe_minor_ver;
-    unsigned_8		obj_major_ver;
-    unsigned_8		obj_minor_ver;
-    unsigned_16 	lang_size;
-    unsigned_16 	segment_size;
-    unsigned_32 	debug_size;
+    unsigned_16 signature;
+    unsigned_8  exe_major_ver;
+    unsigned_8  exe_minor_ver;
+    unsigned_8  obj_major_ver;
+    unsigned_8  obj_minor_ver;
+    unsigned_16 lang_size;
+    unsigned_16 segment_size;
+    unsigned_32 debug_size;
 };
 :eXMP.
 :PC.
@@ -836,19 +836,19 @@ map file will be represented in the table.
 Each :F.section debug info:eF. contains the following:
 :XMP
 +-----------------------+
-|    section header	|
+|    section header     |
 +-----------------------+
-|    local symbols	|
+|    local symbols      |
 +-----------------------+
-|	 types		|
+|        types          |
 +-----------------------+
-|    line numbers	|
+|    line numbers       |
 +-----------------------+
-|     module info	|
+|     module info       |
 +-----------------------+
-|    global symbols	|
+|    global symbols     |
 +-----------------------+
-|     address info	|
+|     address info      |
 +-----------------------+
 :eXMP.
 :PC.
@@ -868,11 +868,11 @@ information and the location of the permanently loaded classes.
 The header structure is as follows:
 :XMP.
 struct section_dbg_header {
-    unsigned_32 	mod_offset;
-    unsigned_32 	gbl_offset;
-    unsigned_32 	addr_offset;
-    unsigned_32 	section_size;
-    unsigned_16 	section_id;
+    unsigned_32 mod_offset;
+    unsigned_32 gbl_offset;
+    unsigned_32 addr_offset;
+    unsigned_32 section_size;
+    unsigned_16 section_id;
 };
 :eXMP.
 :PC.
@@ -915,7 +915,7 @@ class using an array of arrays. The top level array is the following structure:
 struct line_segment {
     unsigned_32     segment;
     unsigned_16     num;
-    line_info	    line[1];
+    line_info       line[1];
 }
 :eXMP.
 :PC.
@@ -994,7 +994,7 @@ struct {
 unsigned_16 file_count
 
 struct {
-    unsigned_16	index;
+    unsigned_16 index;
 } file_name_index_entry; /* repeated file_count times */
 
 /* file name table */
@@ -1037,7 +1037,7 @@ struct mod_info {
     demand_info locals;
     demand_info types;
     demand_info lines;
-    unsigned_8	name[1];
+    unsigned_8  name[1];
 };
 :eXMP.
 :PC.
@@ -1056,8 +1056,8 @@ loaded information
 from those classes. The structure contains these fields:
 :XMP.
 struct demand_info {
-    unsigned_32 	offset;
-    unsigned_16 	num_entries;
+    unsigned_32 offset;
+    unsigned_16 num_entries;
 };
 :eXMP.
 :PC.
@@ -1085,7 +1085,7 @@ class
 |        |          demand link
    ...              table             demand info
 |        |          +--------+        data block 
-|	 |          |        |        +------+
+|        |          |        |        +------+
 +--------+             ...       +--->|      |
 | offset | ---+     |        |   |      ...
 +--------+    |     +--------+   |    |      |
@@ -1093,12 +1093,12 @@ class
 +--------+          +--------+
 |        |          |        |
    ...                 ...
-|	 |          |        |  
+|        |          |        |  
 +--------+          +--------+        demand info 
                     | offset |---+    data block
                     +--------+   |    +------+
-		    |        |   +--->|      |
-		       ...              ...
+                    |        |   +--->|      |
+                        ...              ...
                     |        |        |      |
                     +--------+        +------+
 :eXMP.
@@ -1118,17 +1118,17 @@ All PUBDEF records processed by the linker create entries in this class.
 The fields in the structure are:
 :XMP.
 struct gbl_info {
-    addr48_ptr	    addr;
+    addr48_ptr      addr;
     unsigned_16     mod_index;
-    unsigned_8	    kind;
-    unsigned_8	    name[1];
+    unsigned_8      kind;
+    unsigned_8      name[1];
 };
 :eXMP.
 :PC.
 The :F.addr:eF. field contains the location in memory associated with
 this symbol. The value placed in this field is the same that the linker
 places in the map file (i.e. unrelocated, as if the executable loads
-at location 0:0). The field contains a	48 bit value
+at location 0:0). The field contains a 48 bit value
 (32 bit offset followed by a 16 bit segment).
 The  :F.mod_index:eF. field is an index which identifies the
 module which defines the symbol (i.e. contained the [L]PUBDEF record).
@@ -1163,9 +1163,9 @@ it processes.
 The class consists of an array of structures with the following fields:
 :XMP.
 struct seg_info {
-    addr48_ptr	    addr;
+    addr48_ptr      addr;
     unsigned_16     num;
-    addr_info	    sects[1];
+    addr_info       sects[1];
 };
 :eXMP.
 :PC.
