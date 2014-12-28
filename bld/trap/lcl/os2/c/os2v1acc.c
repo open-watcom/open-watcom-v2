@@ -407,15 +407,6 @@ trap_retval ReqMap_addr( void )
 }
 
 
-trap_retval ReqAddr_info( void )
-{
-    addr_info_ret *retblk;
-
-    retblk = GetOutPtr( 0 );
-    retblk->is_big = FALSE;
-    return( sizeof( *retblk ) );
-}
-
 trap_retval ReqMachine_data( void )
 {
     machine_data_ret    *ret;
@@ -525,70 +516,6 @@ static void WriteCPU( struct x86_cpu *r )
     Buff.u.r.CS = r->cs;
     Buff.u.r.ES = r->es;
     Buff.u.r.SS = r->ss;
-}
-
-trap_retval ReqRead_cpu( void )
-{
-    word                *clr;
-    read_cpu_ret        *ret;
-
-    ret = GetOutPtr(0);
-    for( clr = (word *)&ret->cpu;
-        (char *)clr < (char *)&ret->cpu + sizeof(trap_cpu_regs); ++clr ) {
-        *clr = 0;
-    }
-    if( Pid != 0 ) {
-        ReadRegs( &Buff );
-        ReadCPU( (struct x86_cpu *)&ret->cpu );
-    }
-    return( sizeof( read_cpu_ret ) );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    read_fpu_ret        *ret;
-    TID                 save;
-
-    ret = GetOutPtr(0);
-    Buff.cmd = PT_CMD_READ_8087;
-    Buff.segv = FP_SEG( ret );
-    Buff.offv = FP_OFF( ret );
-    save = Buff.tid;
-    Buff.tid = 1;   /*NYI: OS/2 V1.2 gets upset trying to read other tids */
-    DosPTrace( &Buff );
-    Buff.tid = save;
-    if( Buff.cmd == PT_RET_NO_NPX_YET ) return( 0 );
-    FPUExpand( ret );
-    return( sizeof( *ret ) );
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetInPtr(sizeof(write_cpu_req));
-    if( Pid != 0 ) {
-        WriteCPU( (struct x86_cpu *)regs );
-        WriteRegs( &Buff );
-    }
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    trap_fpu_regs       *regs;
-    TID                 save;
-
-    regs = GetInPtr(sizeof(write_fpu_req));
-    Buff.cmd = PT_CMD_WRITE_8087;
-    Buff.segv = FP_SEG( regs );
-    Buff.offv = FP_OFF( regs );
-    FPUContract( regs );
-    save = Buff.tid;
-    Buff.tid = 1;   /*NYI: OS/2 V1.2 gets upset trying to read other tids */
-    DosPTrace( &Buff );
-    Buff.tid = save;
-    return( 0 );
 }
 
 trap_retval ReqRead_regs( void )

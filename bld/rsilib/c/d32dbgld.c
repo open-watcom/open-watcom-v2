@@ -44,16 +44,18 @@ typedef struct {
 static char     exp_loaded;
 static SELECTOR exp_base;
 
-static int abspath( char *filename, char *fullpath )
+static int abspath( const char *filename, char *fullpath )
 {
     int i;
-    char *fn, *fp;
+    const char *fn;
+    char *fp;
     union REGS r;
 
     fn = filename;
     fp = fullpath;
-    if( fn[0] && fn[1] == ':' ) {
-        *fp = fn[0], fn += 2;
+    if( fn[0] != '\0' && fn[1] == ':' ) {
+        *fp = fn[0];
+        fn += 2;
     } else {
         r.h.ah = 0x19;  /* get current drive */
         intdos( &r, &r );
@@ -76,7 +78,7 @@ static int abspath( char *filename, char *fullpath )
         }
     }
     /* fullpath to fp is current dir for drive, fn is relative path */
-    while( *fp++ = *fn ) {
+    while( (*fp++ = *fn) != '\0' ) {
         if( *fn++ == '.' ) {
             if( *fn == '\\' ) {
                 ++fn;    /* .\ is nop */
@@ -94,7 +96,7 @@ static int abspath( char *filename, char *fullpath )
     return( 1 );
 }
 
-static void set_program_name( char *filename )
+static void set_program_name( const char *filename )
 /* change name of current program (in environment) */
 {
     union {
@@ -203,7 +205,7 @@ retry:
     */
     ep.w.off += 2;
     *ep.ip++ = 1;
-    while( (*ep.cip++ = *p++) && --maxp > 0 )
+    while( (*ep.cip++ = *p++) != '\0' && --maxp > 0 )
             ;
     *ep.ip = 0;
 
@@ -289,7 +291,7 @@ void D32SetCurrentObject( long cookie )
 
 /* Load an executable
 */
-int D32DebugLoad( char *filename, char FarPtr cmdtail, TSF32 FarPtr tspv )
+int D32DebugLoad( const char *filename, char FarPtr cmdtail, TSF32 FarPtr tspv )
 {
     int             result;
     char            cmdline[129];
@@ -350,16 +352,13 @@ int D32DebugLoad( char *filename, char FarPtr cmdtail, TSF32 FarPtr tspv )
     tspv->eflags = 0x200;       /* interrupts enabled */
     tspv->ebp = 0L;             /* for backtrace */
 
-    filename = "EXP_LOADER";
     cmdtail = lv_curr.loader_package->package_title;
-
-    while( *filename ) {
-        if( !*cmdtail )
+    for( filename = "EXP_LOADER"; *filename != '\0'; filename++ ) {
+        if( *cmdtail == '\0' )
             return( 0 );
-        filename++;
         cmdtail++;
     }
-    if( !*cmdtail ) {
+    if( *cmdtail == '\0' ) {
         exp_loaded = 1;
         exp_base = user_sel_start - user_sel_const;
     }

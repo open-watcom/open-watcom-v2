@@ -55,17 +55,6 @@ BOOL IsSegSize32( WORD seg )
     return( FALSE );
 }
 
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = IsSegSize32( acc->in_addr.segment );
-    return( sizeof( *ret ) );
-}
-
 trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;

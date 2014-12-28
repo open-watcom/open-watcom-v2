@@ -553,23 +553,6 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-//OBSOLETE - use ReqMachine_data
-trap_retval ReqAddr_info( void )
-/***************************/
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    _DBG( "AccAddrInfo\r\n" );
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = 0;
-    if( IsSel32bit( acc->in_addr.segment ) ) {
-        ret->is_big = 1;
-    }
-    return( sizeof( *ret ) );
-}
-
 static trap_elen ReadMemory( addr48_ptr *addr, void *data, trap_elen len )
 /************************************************************************/
 {
@@ -677,46 +660,6 @@ trap_retval ReqWrite_io( void )
     }
     ret->len = len;
     return( sizeof( *ret ) );
-}
-
-trap_retval ReqRead_cpu( void )
-/**************************/
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetOutPtr( 0 );
-    *regs = DebugRegs;
-    return( sizeof( *regs ) );
-}
-
-trap_retval ReqRead_fpu( void )
-/**************************/
-{
-    trap_fpu_regs       *regs;
-
-    regs = GetOutPtr( 0 );
-    Read387( regs );
-    return( sizeof( *regs ) );
-}
-
-trap_retval ReqWrite_cpu( void )
-/***************************/
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetInPtr( sizeof( write_cpu_req ) );
-    DebugRegs = *regs;
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-/***************************/
-{
-    trap_fpu_regs       *regs;
-
-    regs = GetInPtr( sizeof( write_fpu_req ) );
-    Write387( regs );
-    return( 0 );
 }
 
 static unsigned ProgRun( bool step )

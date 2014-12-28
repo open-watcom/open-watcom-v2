@@ -186,32 +186,6 @@ trap_retval ReqWrite_io( void )
     return( DoAccess() );
 }
 
-// OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_cpu( void )
-{
-    read_cpu_ret        *ret;
-
-    if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
-        memset( ret, 0, sizeof( *ret ) );
-        return( sizeof( *ret ) );
-    }
-    return( DoAccess() );
-}
-
-// OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_fpu( void )
-{
-    read_fpu_ret        *ret;
-
-    if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
-        memset( ret, 0, sizeof( *ret ) );
-        return( sizeof( *ret ) );
-    }
-    return( DoAccess() );
-}
-
 trap_retval ReqRead_regs( void )
 {
 
@@ -262,19 +236,6 @@ trap_retval ReqProg_go( void )
     }
     len = DoAccess();
     return( len );
-}
-
-//OBSOLETE - use ReqMachine_data
-trap_retval ReqAddr_info( void )
-{
-    addr_info_ret       *ret;
-
-    if( !TaskLoaded ) {
-        ret = GetOutPtr( 0 );
-        ret->is_big = TRUE;
-        return( sizeof( *ret ) );
-    }
-    return( DoAccess() );
 }
 
 trap_retval ReqMachine_data( void )
@@ -396,19 +357,6 @@ trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-// OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_cpu( void )
-{
-    if( !TaskLoaded ) return( 0 );
-    return( DoAccess() );
-}
-
-// OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_fpu( void )
-{
-    if( !TaskLoaded ) return( 0 );
-    return( DoAccess() );
-}
 trap_retval ReqWrite_regs( void )
 {
     if( !TaskLoaded ) return( 0 );

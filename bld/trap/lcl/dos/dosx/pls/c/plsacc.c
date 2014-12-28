@@ -243,19 +243,6 @@ static bool IsProtSeg( USHORT seg )
     return( FALSE );
 }
 
-//OBSOLETE - use ReqMachine_data
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    _DBG(("AccAddrInfo\r\n"));
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = IsProtSeg( acc->in_addr.segment );
-    return( sizeof( *ret ) );
-}
-
 trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
@@ -549,47 +536,6 @@ static void WriteCPU( struct x86_cpu *r )
     Mach.msb_fs = r->fs;
     Mach.msb_gs = r->gs;
     Mach.msb_eflags = r->efl;
-}
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    _DBG(("AccReadCPU\r\n"));
-    regs = GetOutPtr( 0 );
-    ReadCPU( (struct x86_cpu *)regs );
-    _DBG(("exit AccReadCPU\r\n"));
-    return( sizeof( *regs ) );
-}
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_fpu( void )
-{
-    _DBG(("AccReadFPU\r\n"));
-    TaskFPExec( (ULONG)&Read387, GetOutPtr( 0 ) );
-    _DBG(("exit AccReadFPU\r\n"));
-    return( sizeof( trap_fpu_regs ) );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    _DBG(("AccWriteCPU\r\n"));
-    regs = GetInPtr( sizeof( write_cpu_req ) );
-    WriteCPU( (struct x86_cpu *)regs );
-    return( 0 );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_fpu( void )
-{
-    _DBG(("AccWriteFPU\r\n"));
-    TaskFPExec( (ULONG)&Write387, GetInPtr(sizeof(write_fpu_req)) );
-    _DBG(("exit AccWriteFPU\r\n"));
-    return( 0 );
 }
 
 trap_retval ReqRead_regs( void )

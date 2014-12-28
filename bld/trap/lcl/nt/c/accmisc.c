@@ -61,19 +61,6 @@ BOOL IsBigSel( WORD sel )
 #endif
 }
 
-trap_retval ReqAddr_info( void )
-{
-    WORD            seg;
-    addr_info_req   *acc;
-    addr_info_ret   *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    seg = acc->in_addr.segment;
-    ret->is_big = IsBigSel( seg );
-    return( sizeof( *ret ) );
-}
-
 #if defined( MD_axp )
 typedef struct {
     unsigned_32 beg_addr;

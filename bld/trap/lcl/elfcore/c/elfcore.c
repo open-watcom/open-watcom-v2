@@ -370,18 +370,6 @@ static size_t ReadFPU( mad_registers *r )
 }
 
 
-trap_retval ReqRead_cpu( void )
-{
-    return( ReadCPU( GetOutPtr( 0 ) ) );
-}
-
-
-trap_retval ReqRead_fpu( void )
-{
-    return( ReadFPU( GetOutPtr( 0 ) ) );
-}
-
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
@@ -396,18 +384,6 @@ trap_retval ReqRead_regs( void )
 
 
 /* Functions to write machine registers don't do anything */
-
-trap_retval ReqWrite_cpu( void )
-{
-    return( 0 );
-}
-
-
-trap_retval ReqWrite_fpu( void )
-{
-    return( 0 );
-}
-
 
 trap_retval ReqWrite_regs( void )
 {
@@ -710,17 +686,6 @@ trap_retval ReqFile_string_to_fullpath( void )
         ret->err = 0;
     }
     return( sizeof( *ret ) + len + 1 );
-}
-
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = TRUE;
-    return( sizeof( *ret ) );
 }
 
 trap_retval ReqMachine_data( void )

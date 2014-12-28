@@ -407,18 +407,6 @@ static void ReadFPU( struct x86_fpu *r )
     }
 }
 
-trap_retval ReqRead_cpu( void )
-{
-    ReadCPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_cpu ) );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    ReadFPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_fpu ) );
-}
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
@@ -428,16 +416,6 @@ trap_retval ReqRead_regs( void )
     ReadCPU( &mr->x86.cpu );
     ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    return( 0 );
 }
 
 trap_retval ReqWrite_regs( void )
@@ -642,17 +620,6 @@ trap_retval ReqFile_string_to_fullpath( void )
         ret->err = 0;
     }
     return( sizeof( *ret ) + len + 1 );
-}
-
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = TRUE;
-    return( sizeof( *ret ) );
 }
 
 trap_retval ReqMachine_data( void )

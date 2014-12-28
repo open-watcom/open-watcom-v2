@@ -584,32 +584,7 @@ is the same as a previous request, and the input offset falls within the
 valid range identified by the return of that previous request, it can
 perform the mapping itself and not bother sending the request to the trap
 file.
-.section REQ_ADDR_INFO (8)
-.np
-This request is x86 specific and obsolete; REQ_MACHINE_DATA should be used
-instead. It needs to be provided only for backwards compatibility.
-:P.
-Request to check if a given address is using 32-bit addressing (the
-386 compatible CPU's current selector's B-bit is on) by
-default. The debugger requires this information to properly disassemble
-instructions.
-:P.
-Request message:
-:XMP.
-    access_req      req
-    addr48_ptr      in_addr
-:eXMP.
-:PC.
-The :F.req:eF. field contains the request and the :F.in_addr:eF. tells the input
-address.
-:P.
-Return message:
-:XMP.
-    unsigned_8      is_32
-:eXMP.
-:PC.
-The field returns one if the address is a USE32 segment, zero otherwise.
-.section REQ_CHECKSUM_MEM (9)
+.section REQ_CHECKSUM_MEM (8)
 .np
 Request to calculate the checksum for a block of memory in the debuggee's
 address space.
@@ -635,7 +610,7 @@ Return message:
 :eXMP.
 :PC.
 The checksum will be returned in :F.result:eF..
-.section REQ_READ_MEM (10)
+.section REQ_READ_MEM (9)
 .np
 Request to read a block of memory.
 :P.
@@ -659,7 +634,7 @@ The :F.data:eF. field stores the memory block read in. The length of this memory
 block is given by the return value from TrapRequest. If error has occurred in reading
 memory, the length of the data returns will not be equal to the number of bytes
 requested.
-.section REQ_WRITE_MEM (11)
+.section REQ_WRITE_MEM (10)
 .np
 Request to write a block of memory.
 :P.
@@ -683,7 +658,7 @@ Return message:
 The :F.len:eF. field tells the length of memory block actually written to the
 debuggee machine. If error has occurred in writing the memory, the length
 returned will not be equal to the number of bytes requested.
-.section REQ_READ_IO (12)
+.section REQ_READ_IO (11)
 .np
 Request to read data from I/O address space of the debuggee.
 :P.
@@ -707,7 +682,7 @@ The :F.data:eF. field stores the memory block read in. The length of this memory
 block is given by the return value from TrapRequest. If an error has occurred in
 reading, the length returned will not be equal to the number of bytes
 requested.
-.section REQ_WRITE_IO (13)
+.section REQ_WRITE_IO (12)
 .np
 Request to write data to the I/O address space of the debuggee.
 :P.
@@ -731,102 +706,7 @@ Return message:
 The :F.len:eF. field tells the number of bytes actually written out. If an error
 has occurred in writing, the length returned will not be equal
 to the number of bytes requested.
-.section REQ_READ_CPU (14)
-.np
-This request is x86 specific and obsolete; REQ_READ_REGS should be used
-instead. It needs to be provided only for backwards compatibility.
-:P.
-Request to read the CPU registers.
-:P.
-Request message:
-:XMP.
-    access_req      req
-:eXMP.
-:P.
-Return message:
-:XMP.
-    bytes           data
-:eXMP.
-:PC.
-The :F.data:eF.
-field contains the register information requested. It contains the following
-structure:
-:XMP.
-    struct cpu_regs {
-        unsigned_32 EAX;
-        unsigned_32 EBX;
-        unsigned_32 ECX;
-        unsigned_32 EDX;
-        unsigned_32 ESI;
-        unsigned_32 EDI;
-        unsigned_32 EBP;
-        unsigned_32 ESP;
-        unsigned_32 EIP;
-        unsigned_32 EFL;
-        unsigned_32 CR0;
-        unsigned_32 CR2;
-        unsigned_32 CR3;
-        unsigned_16 DS;
-        unsigned_16 ES;
-        unsigned_16 SS;
-        unsigned_16 CS;
-        unsigned_16 FS;
-        unsigned_16 GS;
-        };
-:eXMP.
-.section REQ_READ_FPU (15)
-.np
-This request is x86 specific and obsolete; REQ_READ_REGS should be used
-instead. It needs to be provided only for backwards compatibility.
-:P.
-Request to read the FPU registers.
-:P.
-Request message:
-:XMP.
-    access_req      req
-:eXMP.
-:P.
-Return message:
-:XMP.
-    bytes           data
-:eXMP.
-:PC.
-The :F.data:eF. field contains the register information requested. Its format
-is the same as the result of a "fsave" instruction in a 32-bit segment (the
-instruction pointer and operand pointer fields take up 8 bytes each).
-Implementations of trap files in 16-bit environments should expand the
-instruction pointer and operand pointer fields from 4 bytes to 8 (shuffling
-the data register fields down in memory) before returning the result to
-the debugger.
-.section REQ_WRITE_CPU (16)/REQ_WRITE_FPU (17)
-.np
-These requests are x86 specific and obsolete; REQ_WRITE_REGS should be used
-instead. They needs to be provided only for backwards compatibility.
-:P.
-Requests to write to the CPU or FPU state.
-:P.
-Request message:
-:XMP.
-    access_req          req
-    ------------------------
-    bytes               data
-:eXMP.
-:P.
-Information in :F.data:eF. field will be transfered to the debuggee's
-registers. The formats of data can be found in
-REQ_READ_CPU/REQ_READ_FPU
-:NOTE.
-For the REQ_WRITE_FPU case, the data will be in a 32-bit "fsave" instruction
-format,
-so 16-bit environments will have to squish the instruction and operand
-pointer fields back to their 4 byte forms.
-:P.
-Return message:
-:XMP.
-    NONE
-:eXMP.
-:PC.
-.section REQ_PROG_GO (18)/REQ_PROG_STEP (19)
+.section REQ_PROG_GO (13)/REQ_PROG_STEP (14)
 .np
 Requests to execute the debuggee. REQ_PROG_GO causes the debuggee to
 resume execution, while REQ_PROG_STEP requests only a single machine
@@ -879,7 +759,7 @@ When a bit is off, the debugger avoids having to make additional requests
 to determine the new state of the debuggee. If the trap file is not sure
 that a particular item has changed, or if it is expensive to find out, it
 should just turn the bit on.
-.section REQ_PROG_LOAD (20)
+.section REQ_PROG_LOAD (15)
 .np
 Request to load a program.
 :P.
@@ -923,7 +803,7 @@ information:
     Bit 5      :  LD_FLAG_DISPLAY_DAMAGED   - Debugger must repaint screen
     Bit 6 - 7  :  not used
 :eXMP.
-.section REQ_PROG_KILL (21)
+.section REQ_PROG_KILL (16)
 .np
 Request to kill the program.
 :P.
@@ -943,7 +823,7 @@ Return message:
 :PC.
 The :F.err:eF. field returns the error code of the OS kill program
 operation.
-.section REQ_SET_WATCH (22)
+.section REQ_SET_WATCH (17)
 .np
 Request to set a watchpoint at the address given.
 :P.
@@ -968,7 +848,7 @@ If the setting of the watchpoint worked, the 31 low order bits of
 placed into execution. The top bit of the field is set to one if a debug
 register is being used for the watchpoint, and zero if the watchpoint is
 being done by software.
-.section REQ_CLEAR_WATCH (23)
+.section REQ_CLEAR_WATCH (18)
 .np
 Request to clear a watchpoint at the address given. The trap file may
 assume all watch points are cleared at once.
@@ -987,7 +867,7 @@ Return message:
 :XMP.
     NONE
 :eXMP.
-.section REQ_SET_BREAK (24)
+.section REQ_SET_BREAK (19)
 .np
 Request to set a breakpoint at the address given.
 :P.
@@ -1006,7 +886,7 @@ Return message:
 :PC.
 The :F.old:eF. field returns the original byte(s) at the address
 :F.break_addr:eF..
-.section REQ_CLEAR_BREAK (25)
+.section REQ_CLEAR_BREAK (20)
 .np
 Request to clear a breakpoint at the address given. The trap file may
 assume all breakpoints are cleared at once.
@@ -1026,7 +906,7 @@ Return message:
 :XMP.
     NONE
 :eXMP.
-.section REQ_GET_NEXT_ALIAS (26)
+.section REQ_GET_NEXT_ALIAS (21)
 .np
 Request to get alias information for a segment. In some protect mode
 environments (typically 32-bit flat) two different selectors may refer
@@ -1053,7 +933,7 @@ The :F.seg:eF. field contains the next segment where an alias appears. If this f
 returns zero, it implies no more aliases can be found. The :F.alias:eF. field
 returns the alias of the input segment. Zero indicates a previously set alias
 should be deleted.
-.section REQ_SET_USER_SCREEN (27)
+.section REQ_SET_USER_SCREEN (22)
 .np
 Request to make the debuggee's screen visible.
 :P.
@@ -1066,7 +946,7 @@ Return message:
 :XMP.
     NONE
 :eXMP.
-.section REQ_SET_DEBUG_SCREEN (28)
+.section REQ_SET_DEBUG_SCREEN (23)
 .np
 Request to make the debugger's screen visible.
 :P.
@@ -1079,7 +959,7 @@ Return message:
 :XMP.
     NONE
 :eXMP.
-.section REQ_READ_USER_KEYBOARD (29)
+.section REQ_READ_USER_KEYBOARD (24)
 .np
 Request to read the remote keyboard input.
 :P.
@@ -1099,7 +979,7 @@ Return message:
 :eXMP.
 :PC.
 The :F.key:eF. field returns the input character from remote machine.
-.section REQ_GET_LIB_NAME (30)
+.section REQ_GET_LIB_NAME (25)
 .np
 Request to get the name of a newly loaded library (DLL).
 :P.
@@ -1127,7 +1007,7 @@ just of the '\0' character), then this is a indication that the DLL indicated
 by the given handle has been unloaded, and the debugger should remove
 any symbolic information for the image. It is an error to attempt to remove
 a handle that has not been loaded in a previous REQ_GET_LIB_NAME request.
-.section REQ_GET_ERR_TEXT (31)
+.section REQ_GET_ERR_TEXT (26)
 .np
 Request to get the error message text for an error code.
 :P.
@@ -1146,7 +1026,7 @@ Return message:
 :eXMP.
 :PC.
 The error message text will be returned in :F.error_msg:eF. field.
-.section REQ_GET_MESSAGE_TEXT (32)
+.section REQ_GET_MESSAGE_TEXT (27)
 .np
 Request to retrieve generic message text. After a REQ_PROG_LOAD, REQ_PROG_GO
 or REQ_PROG_STEP has returned with COND_MESSAGE or COND_EXCEPTION,
@@ -1185,7 +1065,7 @@ and the debugger should make another REQ_GET_MESSAGE_TEXT.
 MSG_WARNING indicates that the message is a warning level message while
 MSG_ERROR is an error level message. If neither of these bits are on, the
 message is merely informational.
-.section REQ_REDIRECT_STDIN (33)/REQ_REDIRECT_STDOUT (34)
+.section REQ_REDIRECT_STDIN (28)/REQ_REDIRECT_STDOUT (29)
 .np
 Request to redirect the standard input (REQ_REDIRECT_STDIN) or
 standard output (REQ_REDIRECT_STDOUT) of the debuggee.
@@ -1207,7 +1087,7 @@ Return message:
 :PC.
 When an error has occurred, the :F.err:eF. field contains an error code
 indicating the type of error that has been detected.
-.section REQ_SPLIT_CMD (35)
+.section REQ_SPLIT_CMD (30)
 .np
 Request to split the command line into the command name and
 parameters.
@@ -1232,7 +1112,7 @@ Return message:
 The :F.cmd_end:eF. field tells the position in command line where the command
 name ends. The :F.parm_start:eF. field stores the position where the
 program arguments begin.
-.section REQ_READ_REGS (36)
+.section REQ_READ_REGS (31)
 .np
 Request to read CPU register contents. The data returned depends on
 the target architecture and is defined by the MAD file.
@@ -1250,7 +1130,7 @@ Return message:
 :PC.
 The return message content is specific to the MAD in use and will contain
 a :F.mad_registers:eF. union (defined in :F.madtypes.h:eF.).
-.section REQ_WRITE_REGS (37)
+.section REQ_WRITE_REGS (32)
 .np
 Request to write CPU register contents. The data is target architecture
 specific.
@@ -1270,7 +1150,7 @@ Return message:
     NONE
 :eXMP.
 :PC.
-.section REQ_MACHINE_DATA (38)
+.section REQ_MACHINE_DATA (33)
 .np
 Request to retrieve machine specific data.
 :P.

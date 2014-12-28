@@ -72,23 +72,6 @@ static void ReadCPU( struct x86_cpu *r )
     }
 }
 
-static void ReadFPU( struct x86_fpu *r )
-{
-    user_i387_struct    regs;
-
-    memset( r, 0, sizeof( *r ) );
-    if( ptrace( PTRACE_GETFPREGS, pid, NULL, &regs ) == 0 ) {
-        r->cw = regs.cwd;
-        r->sw = regs.swd;
-        r->tag = regs.twd;
-        r->ip_err.p.offset = regs.fip;
-        r->ip_err.p.segment = regs.fcs;
-        r->op_err.p.offset = regs.foo;
-        r->op_err.p.segment = regs.fos;
-        memcpy( r->reg, regs.st_space, sizeof( r->reg ) );
-    }
-}
-
 static void ReadFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
 {
     user_fxsr_struct    regs;
@@ -109,18 +92,6 @@ static void ReadFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
         memcpy( x->xmm, regs.xmm_space, sizeof( x->xmm ) );
         x->mxcsr = regs.mxcsr;
     }
-}
-
-trap_retval ReqRead_cpu( void )
-{
-    ReadCPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_cpu ) );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    ReadFPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_fpu ) );
 }
 
 trap_retval ReqRead_regs( void )
@@ -173,21 +144,6 @@ static void WriteCPU( struct x86_cpu *r )
     ptrace( PTRACE_SETREGS, pid, NULL, &regs );
 }
 
-static void WriteFPU( struct x86_fpu *r )
-{
-    user_i387_struct    regs;
-
-    regs.cwd = r->cw;
-    regs.swd = r->sw;
-    regs.twd = r->tag;
-    regs.fip = r->ip_err.p.offset;
-    regs.fcs = r->ip_err.p.segment;
-    regs.foo = r->op_err.p.offset;
-    regs.fos = r->op_err.p.segment;
-    memcpy( regs.st_space, r->reg, sizeof( r->reg ) );
-    ptrace( PTRACE_SETFPREGS, pid, NULL, &regs );
-}
-
 static void WriteFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
 {
     user_fxsr_struct    regs;
@@ -208,18 +164,6 @@ static void WriteFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
         regs.mxcsr = x->mxcsr;
         ptrace( PTRACE_SETFPXREGS, pid, NULL, &regs );
     }
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-    WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
-    return( 0 );
 }
 
 trap_retval ReqWrite_regs( void )

@@ -683,17 +683,6 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = Is32BitSeg( acc->in_addr.segment );
-    return( sizeof( *ret ) );
-}
-
 trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
@@ -824,57 +813,6 @@ static void WriteCPU( struct x86_cpu *r )
     lastESP = Buff.ESP;
     lastCS  = Buff.CS;
     lastEIP = Buff.EIP;
-}
-
-trap_retval ReqRead_cpu( void )
-{
-    trap_cpu_regs *regs;
-
-    regs = GetOutPtr( 0 );
-    memset( regs, 0, sizeof( trap_cpu_regs ) );
-    if( Pid != 0 ) {
-        ReadRegs( &Buff );
-        ReadCPU( (struct x86_cpu *)regs );
-    }
-    return( sizeof( *regs ) );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    Buff.Cmd    = DBG_C_ReadCoRegs;
-    Buff.Buffer = (ULONG)GetOutPtr(0);
-    Buff.Value  = DBG_CO_387;       /* for 2.0: DBG_CO_387 */
-    Buff.Len    = DBG_LEN_387;      /* for 2.0: size of register state */
-    Buff.Index  = 0;                /* for 2.0: must be 0 */
-    CallDosDebug( &Buff );
-    if( Buff.Cmd == DBG_N_CoError ) {
-        return( 0 );
-    } else {
-        return( DBG_LEN_387 );
-    }
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetInPtr( sizeof( write_cpu_req ) );
-    if( Pid != 0 ) {
-        WriteCPU( (struct x86_cpu *)regs );
-        WriteRegs( &Buff );
-    }
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    Buff.Cmd    = DBG_C_WriteCoRegs;
-    Buff.Buffer = (ULONG)GetInPtr(sizeof(write_fpu_req));
-    Buff.Value  = DBG_CO_387;       /* for 2.0: DBG_CO_387 */
-    Buff.Len    = DBG_LEN_387;      /* for 2.0: buffer size */
-    Buff.Index  = 0;                /* for 2.0: must be zero */
-    CallDosDebug( &Buff );
-    return( 0 );
 }
 
 trap_retval ReqRead_regs( void )

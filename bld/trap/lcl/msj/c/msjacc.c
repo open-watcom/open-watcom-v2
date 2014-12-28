@@ -109,16 +109,6 @@ trap_retval ReqMap_addr( void )
     return sizeof( *ret );
 }
 
-trap_retval ReqAddr_info( void )
-/***************************/
-{
-    addr_info_ret *     ret;
-
-    ret = GetOutPtr( 0 );
-    ret->is_big = TRUE;
-    return sizeof( *ret );
-}
-
 trap_retval ReqChecksum_mem( void )
 /******************************/
 {
@@ -235,40 +225,6 @@ trap_retval ReqWrite_io( void )
     ret = GetOutPtr(0);
     ret->len = 0;
     return sizeof( *ret );
-}
-
-// OBSOLETE - use ReqRead_regs
-
-trap_retval ReqRead_cpu( void )
-/**************************/
-{
-    read_cpu_ret *ret;
-
-    ret = GetOutPtr(0);
-    memset( ret, 0, sizeof( *ret ) );
-    return sizeof( *ret );
-}
-
-trap_retval ReqRead_fpu( void )
-/**************************/
-{
-    read_fpu_ret * ret;
-
-    ret = GetOutPtr(0);
-    memset( ret, 0, sizeof( *ret ) );
-    return sizeof( *ret );
-}
-
-trap_retval ReqWrite_cpu( void )
-/***************************/
-{
-    return 0;
-}
-
-trap_retval ReqWrite_fpu( void )
-/***************************/
-{
-    return 0;
 }
 
 static unsigned runProg( bool single_step )

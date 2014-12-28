@@ -94,6 +94,16 @@ static char             UtilBuff[BUFF_SIZE];
 static watch            WatchPoints[ MAX_WP ];
 static int              WatchCount;
 
+static void EMURestore( _word seg, const void __far *data )
+{
+    EMUSaveRestore( seg, (void __far *)data, 0 );
+}
+
+static void EMUSave( _word seg, void __far *data )
+{
+    EMUSaveRestore( seg, data, 1 );
+}
+
 int SetUsrTask( void )
 {
     return( 1 );
@@ -103,7 +113,7 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void FarPtr,unsigned short), addr48_ptr *addr, byte FarPtr data, unsigned short req )
+static unsigned short ReadMemory( addr48_ptr *addr, void FarPtr data, unsigned short req_len )
 {
     unsigned short  len;
 
@@ -112,38 +122,61 @@ static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void FarPtr,unsi
     _DBG_Write( ":" );
     _DBG_Write32( addr->offset );
     _DBG_Write( " for 0x" );
-    _DBG_Write16( req );
+    _DBG_Write16( req_len );
     _DBG_Write( " bytes -- " );
-    if( rsi_addr32_check( addr->offset, addr->segment, req, NULL ) == MEMBLK_VALID ) {
-        if( r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
+    if( rsi_addr32_check( addr->offset, addr->segment, req_len, NULL ) == MEMBLK_VALID ) {
+        if( D32DebugRead( addr->offset, addr->segment, 0, data, req_len ) == 0 ) {
             _DBG_Writeln( "OK" );
-            addr->offset += req;
-            return( req );
+            addr->offset += req_len;
+            return( req_len );
         }
     }
     _DBG_Writeln(( "Bad" ));
     len = 0;
-    while( req > 0 ) {
+    while( req_len > 0 ) {
         if( rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) != MEMBLK_VALID )
             break;
-        if( r( addr->offset, addr->segment, 0, data, 1 ) != 0 )
+        if( D32DebugRead( addr->offset, addr->segment, 0, data, 1 ) != 0 )
             break;
         ++addr->offset;
-        ++data;
+        data = (char FarPtr)data + 1;
         ++len;
-        --req;
+        --req_len;
     }
     return( len );
 }
 
-static unsigned short ReadMemory( addr48_ptr *addr, void FarPtr data, unsigned short len )
+static unsigned short WriteMemory( addr48_ptr *addr, const void FarPtr data, unsigned short req_len )
 {
-    return( ReadWrite( D32DebugRead, addr, data, len ) );
-}
+    unsigned short  len;
 
-static unsigned short WriteMemory( addr48_ptr *addr, void FarPtr data, unsigned short len )
-{
-    return( ReadWrite( D32DebugWrite, addr, data, len ) );
+    _DBG_Write( "checking " );
+    _DBG_Write16( addr->segment );
+    _DBG_Write( ":" );
+    _DBG_Write32( addr->offset );
+    _DBG_Write( " for 0x" );
+    _DBG_Write16( req_len );
+    _DBG_Write( " bytes -- " );
+    if( rsi_addr32_check( addr->offset, addr->segment, req_len, NULL ) == MEMBLK_VALID ) {
+        if( D32DebugWrite( addr->offset, addr->segment, 0, data, req_len ) == 0 ) {
+            _DBG_Writeln( "OK" );
+            addr->offset += req_len;
+            return( req_len );
+        }
+    }
+    _DBG_Writeln(( "Bad" ));
+    len = 0;
+    while( req_len > 0 ) {
+        if( rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) != MEMBLK_VALID )
+            break;
+        if( D32DebugWrite( addr->offset, addr->segment, 0, data, 1 ) != 0 )
+            break;
+        ++addr->offset;
+        data = (char FarPtr)data + 1;
+        ++len;
+        --req_len;
+    }
+    return( len );
 }
 
 
@@ -216,24 +249,6 @@ trap_retval ReqMap_addr( void )
     parm caller [ax] value [dx ax];
 
 extern unsigned long GetLAR( unsigned );
-
-//OBSOLETE - use ReqMachine_data
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    _DBG_Writeln( "AccAddrInfo" );
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = 0;
-    if( rsi_addr32_check( 0, acc->in_addr.segment, 1, NULL ) == MEMBLK_VALID ) {
-        if( GetLAR( acc->in_addr.segment ) & 0x400000 ) {
-            ret->is_big = 1;
-        }
-    }
-    return( sizeof( *ret ) );
-}
 
 trap_retval ReqMachine_data( void )
 {
@@ -371,7 +386,7 @@ static void ReadCPU( struct x86_cpu *r )
     r->gs = Proc.gs;
 }
 
-static void WriteCPU( struct x86_cpu *r )
+static void WriteCPU( const struct x86_cpu *r )
 {
     Proc.eflags = r->efl;
     Proc.eax = r->eax;
@@ -395,7 +410,7 @@ static void ReadFPU( struct x86_fpu *r )
 {
     if( HAVE_EMU ) {
         if( CheckWin386Debug() == WGOD_VERSION ) {
-            EMUSaveRestore( Proc.cs, r, 1 );
+            EMUSave( Proc.cs, r );
         } else {
             Read387( r );
         }
@@ -408,11 +423,11 @@ static void ReadFPU( struct x86_fpu *r )
     }
 }
 
-static void WriteFPU( struct x86_fpu *r )
+static void WriteFPU( const struct x86_fpu *r )
 {
     if( HAVE_EMU ) {
         if( CheckWin386Debug() == WGOD_VERSION ) {
-            EMUSaveRestore( Proc.cs, r, 0 );
+            EMURestore( Proc.cs, r );
         } else {
             Write387( r );
         }
@@ -426,46 +441,6 @@ static void WriteFPU( struct x86_fpu *r )
 }
 
 
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetOutPtr( 0 );
-    ReadCPU( (struct x86_cpu *)regs );
-    return( sizeof( *regs ) );
-}
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_fpu( void )
-{
-    trap_fpu_regs       *regs;
-
-    regs = GetOutPtr( 0 );
-    ReadFPU( (struct x86_fpu *)regs );
-    return( sizeof( *regs ) );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetInPtr( sizeof( write_cpu_req ) );
-    WriteCPU( (struct x86_cpu *)regs );
-    return( 0 );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_fpu( void )
-{
-    trap_fpu_regs       *regs;
-
-    regs = GetInPtr( sizeof( write_fpu_req ) );
-    WriteFPU( (struct x86_fpu *)regs );
-    return( 0 );
-}
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
@@ -478,7 +453,7 @@ trap_retval ReqRead_regs( void )
 
 trap_retval ReqWrite_regs( void )
 {
-    mad_registers       *mr;
+    const mad_registers *mr;
 
     mr = GetInPtr(sizeof(write_regs_req));
     WriteCPU( &mr->x86.cpu );

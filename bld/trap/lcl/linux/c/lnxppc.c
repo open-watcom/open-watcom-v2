@@ -82,18 +82,6 @@ static void ReadCPU( struct ppc_mad_registers *r )
     last_eip = r->iar.u._32[I64LO32];
 }
 
-trap_retval ReqRead_cpu( void )
-{
-//    ReadCPU( GetOutPtr( 0 ) );
-//    return( sizeof( mr->ppc ) );
-    return( 0 );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    return( 0 );
-}
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers   *mr;
@@ -124,17 +112,6 @@ static void WriteCPU( struct ppc_mad_registers *r )
         ptrace( PTRACE_POKEUSER, pid, (PT_FPR0 + i * 2 + 1) * REGSIZE, TRANS_FPREG_LO( r, i ) );
     }
     ptrace( PTRACE_POKEUSER, pid, PT_FPSCR * REGSIZE, (void *)(r->fpscr) );
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-//    WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    return( 0 );
 }
 
 trap_retval ReqWrite_regs( void )

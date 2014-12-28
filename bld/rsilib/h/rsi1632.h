@@ -168,18 +168,18 @@ extern void         FAR16 rm1B_handler( void );
 extern void         FAR16 passup_hotkey( void );
 /* d32dbgld.c */
 extern void         D32SetCurrentObject( long cookie );
-extern int          D32DebugLoad( char *, char FarPtr, TSF32 FarPtr );
+extern int          D32DebugLoad( const char *, char FarPtr, TSF32 FarPtr );
 extern int          D32Relocate( Fptr32 FarPtr fp );
 extern int          D32Unrelocate( Fptr32 FarPtr fp );
 /* mem32.asm */
 extern void         __cdecl peek32( OFFSET32, SELECTOR, void FarPtr, unsigned short );
-extern int          __cdecl poke32( OFFSET32, SELECTOR, void FarPtr, unsigned short );
+extern int          __cdecl poke32( OFFSET32, SELECTOR, const void FarPtr, unsigned short );
 /* d32dbgrd.c */
 extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, unsigned short );
 /* d32dbgwr.c */
-extern int          D32DebugWrite( OFFSET32, SELECTOR, int, void FarPtr, unsigned short );
+extern int          D32DebugWrite( OFFSET32, SELECTOR, int, const void FarPtr, unsigned short );
 /* d32dbgsb.c */
-extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, unsigned char FarPtr, unsigned char FarPtr );
+extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, const unsigned char FarPtr, unsigned char FarPtr );
 
 // global variables
 extern int          addr_mode;

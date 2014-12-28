@@ -77,16 +77,6 @@ static void ReadCPU( struct mips_mad_registers *r )
     last_eip = r->pc.u._32[I64LO32];
 }
 
-trap_retval ReqRead_cpu( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    return( 0 );
-}
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers   *mr;
@@ -113,16 +103,6 @@ static void WriteCPU( struct mips_mad_registers *r )
         ptrace( PTRACE_POKEUSER, pid, (void *)(FPR_BASE + i * 2), (void *)TRANS_FPREG_LO( r, i ) );
         ptrace( PTRACE_POKEUSER, pid, (void *)(FPR_BASE + i * 2 + 1), (void *)TRANS_FPREG_HI( r, i ) );
     }
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    return( 0 );
 }
 
 trap_retval ReqWrite_regs( void )

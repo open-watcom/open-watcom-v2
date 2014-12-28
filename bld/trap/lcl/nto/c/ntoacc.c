@@ -260,18 +260,6 @@ static void ReadFPU( struct x86_fpu *r )
     devctl( ProcInfo.procfd, DCMD_PROC_GETFPREG, r, regsize, &regsize );
 }
 
-trap_retval ReqRead_cpu( void )
-{
-    ReadCPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_cpu ) );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    ReadFPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_fpu ) );
-}
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
@@ -313,18 +301,6 @@ static void WriteFPU( struct x86_fpu *r )
     if( ProcInfo.pid != 0 ) {
         devctl( ProcInfo.procfd, DCMD_PROC_SETFPREG, r, sizeof( X86_FSAVE_REGISTERS ), 0 );
     }
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-    WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
-    return( 0 );
 }
 
 trap_retval ReqWrite_regs( void )
@@ -1123,18 +1099,6 @@ trap_retval ReqGet_message_text( void )
         ret->flags = MSG_NEWLINE | MSG_ERROR;
     }
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
-}
-
-
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = TRUE;
-    return( sizeof( *ret ) );
 }
 
 

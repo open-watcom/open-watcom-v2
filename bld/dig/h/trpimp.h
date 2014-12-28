@@ -42,17 +42,12 @@ extern trap_retval ReqResume(void);
 extern trap_retval ReqGet_supplementary_service(void);
 extern trap_retval ReqPerform_supplementary_service(void);
 extern trap_retval ReqGet_sys_config(void);
-extern trap_retval ReqMap_addr(void);      //obsolete
-extern trap_retval ReqAddr_info(void);
+extern trap_retval ReqMap_addr(void);
 extern trap_retval ReqChecksum_mem(void);
 extern trap_retval ReqRead_mem(void);
 extern trap_retval ReqWrite_mem(void);
 extern trap_retval ReqRead_io(void);
 extern trap_retval ReqWrite_io(void);
-extern trap_retval ReqRead_cpu(void);      //obsolete
-extern trap_retval ReqRead_fpu(void);      //obsolete
-extern trap_retval ReqWrite_cpu(void);     //obsolete
-extern trap_retval ReqWrite_fpu(void);     //obsolete
 extern trap_retval ReqProg_go(void);
 extern trap_retval ReqProg_step(void);
 extern trap_retval ReqProg_load(void);

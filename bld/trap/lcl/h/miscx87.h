@@ -33,18 +33,20 @@
 
 #ifdef _M_I86
 #define VOIDPTR   void __far *
+#define CVOIDPTR  const void __far *
 #else
 #define VOIDPTR   void *
+#define CVOIDPTR  const void *
 #endif
 
 extern void FPUExpand( VOIDPTR );
 extern void FPUContract( VOIDPTR );
 
 extern void Read8087( VOIDPTR );
-extern void Write8087( VOIDPTR );
+extern void Write8087( CVOIDPTR );
 
 extern void Read387( VOIDPTR );
-extern void Write387( VOIDPTR );
+extern void Write387( CVOIDPTR );
 
 extern unsigned_8 NPXType( void );
 

@@ -910,16 +910,6 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-//obsolete
-trap_retval ReqAddr_info( void )
-{
-    addr_info_ret       *ret;
-
-    ret = GetOutPtr( 0 );
-    ret->is_big = TRUE;
-    return( sizeof( *ret ) );
-}
-
 trap_retval ReqMachine_data( void )
 {
     machine_data_ret    *ret;
@@ -1082,52 +1072,6 @@ trap_retval ReqWrite_io( void )
     }
     ret->len = len;
     return( sizeof( *ret ) );
-}
-
-//obsolete
-trap_retval ReqRead_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetOutPtr(0);
-    if( MSB == NULL ) {
-        memset( regs, 0, sizeof( *regs ) );
-    } else {
-        *regs = MSB->cpu;
-    }
-    return( sizeof( *regs ) );
-}
-
-//obsolete
-trap_retval ReqRead_fpu( void )
-{
-    trap_fpu_regs       *regs;
-
-    regs = GetOutPtr(0);
-    if( MSB == NULL ) {
-        memset( regs, 0, sizeof( *regs ) );
-    } else {
-        *regs = MSB->fpu;
-    }
-    return( sizeof( *regs ) );
-}
-
-//obsolete
-trap_retval ReqWrite_cpu( void )
-{
-    if( MSB != NULL ) {
-        MSB->cpu = *(trap_cpu_regs *)GetInPtr(sizeof(write_cpu_req));
-    }
-    return( 0 );
-}
-
-//obsolete
-trap_retval ReqWrite_fpu( void )
-{
-    if( MSB != NULL ) {
-        MSB->fpu = *(trap_fpu_regs *)GetInPtr(sizeof(write_fpu_req));
-    }
-    return( 0 );
 }
 
 trap_retval ReqRead_regs( void )

@@ -50,16 +50,11 @@ static trap_retval (* const CoreRequests[])(void) = {
     ReqPerform_supplementary_service,
     ReqGet_sys_config,
     ReqMap_addr,
-    ReqAddr_info,   //obsolete
     ReqChecksum_mem,
     ReqRead_mem,
     ReqWrite_mem,
     ReqRead_io,
     ReqWrite_io,
-    ReqRead_cpu,    //obsolete
-    ReqRead_fpu,    //obsolete
-    ReqWrite_cpu,   //obsolete
-    ReqWrite_fpu,   //obsolete
     ReqProg_go,
     ReqProg_step,
     ReqProg_load,

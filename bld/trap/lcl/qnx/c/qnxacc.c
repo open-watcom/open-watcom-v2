@@ -601,18 +601,6 @@ static void ReadFPU( struct x86_fpu *r )
     }
 }
 
-trap_retval ReqRead_cpu( void )
-{
-    ReadCPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_cpu ) );
-}
-
-trap_retval ReqRead_fpu( void )
-{
-    ReadFPU( GetOutPtr( 0 ) );
-    return( sizeof( struct x86_fpu ) );
-}
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
@@ -666,18 +654,6 @@ static void WriteFPU( struct x86_fpu *r )
         }
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_80X87_WR, r, state_size, 0, 0);
     }
-}
-
-trap_retval ReqWrite_cpu( void )
-{
-    WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
-    return( 0 );
-}
-
-trap_retval ReqWrite_fpu( void )
-{
-    WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
-    return( 0 );
 }
 
 trap_retval ReqWrite_regs( void )
@@ -1532,27 +1508,6 @@ trap_retval ReqGet_message_text( void )
         ret->flags = MSG_NEWLINE | MSG_ERROR;
     }
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
-}
-
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
-    struct _seginfo     info;
-    bool                is_32;
-
-    acc = GetInPtr( 0 );
-    is_32 = FALSE;
-    if( ProcInfo.proc32 ) {
-        qnx_segment_info( ProcInfo.proc, ProcInfo.pid, acc->in_addr.segment,
-                        &info );
-        if( info.flags & _PMF_DBBIT ) {
-            is_32 = TRUE;
-        }
-    }
-    ret = GetOutPtr( 0 );
-    ret->is_big = is_32;
-    return( sizeof( *ret ) );
 }
 
 trap_retval ReqMachine_data( void )

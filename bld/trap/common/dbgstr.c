@@ -39,39 +39,33 @@ char *DBG_ReqStrings[] = {
     "REQ_PERFORM_SUPPLEMENTARY_SERVICE",  /* 05 */
     "REQ_GET_SYS_CONFIG",                 /* 06 */
     "REQ_MAP_ADDR",                       /* 07 */
-    "REQ_ADDR_INFO",                      /* 08 obsolete - use MACHINE_DATA */
-    "REQ_CHECKSUM_MEM",                   /* 09 */
-    "REQ_READ_MEM",                       /* 10 */
-    "REQ_WRITE_MEM",                      /* 11 */
-    "REQ_READ_IO",                        /* 12 */
-    "REQ_WRITE_IO",                       /* 13 */
-    "REQ_READ_CPU",                       /* 14 obsolete - use READ_REGS */
-    "REQ_READ_FPU",                       /* 15 obsolete - use READ_REGS */
-    "REQ_WRITE_CPU",                      /* 16 obsolete - use WRITE_REGS */
-    "REQ_WRITE_FPU",                      /* 17 obsolete - use WRITE_REGS */
-    "REQ_PROG_GO",                        /* 18 */
-    "REQ_PROG_STEP",                      /* 19 */
-    "REQ_PROG_LOAD",                      /* 20 */
-    "REQ_PROG_KILL",                      /* 21 */
-    "REQ_SET_WATCH",                      /* 22 */
-    "REQ_CLEAR_WATCH",                    /* 23 */
-    "REQ_SET_BREAK",                      /* 24 */
-    "REQ_CLEAR_BREAK",                    /* 25 */
-    "REQ_GET_NEXT_ALIAS",                 /* 26 */
-    "REQ_SET_USER_SCREEN",                /* 27 */
-    "REQ_SET_DEBUG_SCREEN",               /* 28 */
-    "REQ_READ_USER_KEYBOARD",             /* 29 */
-    "REQ_GET_LIB_NAME",                   /* 30 */
-    "REQ_GET_ERR_TEXT",                   /* 31 */
-    "REQ_GET_MESSAGE_TEXT",               /* 32 */
-    "REQ_REDIRECT_STDIN",                 /* 33 */
-    "REQ_REDIRECT_STDOUT",                /* 34 */
-    "REQ_SPLIT_CMD",                      /* 35 */
-    "REQ_READ_REGS",                      /* 36 */
-    "REQ_WRITE_REGS",                     /* 37 */
-    "REQ_MACHINE_DATA"                    /* 38 */
+    "REQ_CHECKSUM_MEM",                   /* 08 */
+    "REQ_READ_MEM",                       /* 09 */
+    "REQ_WRITE_MEM",                      /* 10 */
+    "REQ_READ_IO",                        /* 11 */
+    "REQ_WRITE_IO",                       /* 12 */
+    "REQ_PROG_GO",                        /* 13 */
+    "REQ_PROG_STEP",                      /* 14 */
+    "REQ_PROG_LOAD",                      /* 15 */
+    "REQ_PROG_KILL",                      /* 16 */
+    "REQ_SET_WATCH",                      /* 17 */
+    "REQ_CLEAR_WATCH",                    /* 18 */
+    "REQ_SET_BREAK",                      /* 19 */
+    "REQ_CLEAR_BREAK",                    /* 20 */
+    "REQ_GET_NEXT_ALIAS",                 /* 21 */
+    "REQ_SET_USER_SCREEN",                /* 22 */
+    "REQ_SET_DEBUG_SCREEN",               /* 23 */
+    "REQ_READ_USER_KEYBOARD",             /* 24 */
+    "REQ_GET_LIB_NAME",                   /* 25 */
+    "REQ_GET_ERR_TEXT",                   /* 26 */
+    "REQ_GET_MESSAGE_TEXT",               /* 27 */
+    "REQ_REDIRECT_STDIN",                 /* 28 */
+    "REQ_REDIRECT_STDOUT",                /* 29 */
+    "REQ_SPLIT_CMD",                      /* 30 */
+    "REQ_READ_REGS",                      /* 31 */
+    "REQ_WRITE_REGS",                     /* 32 */
+    "REQ_MACHINE_DATA"                    /* 33 */
 };
 
 uint_8                   DBG_Indent;
 uint_8                   DBG_Lines;
-

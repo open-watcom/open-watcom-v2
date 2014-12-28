@@ -20,16 +20,11 @@ int handle_REQ_GET_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short le
 int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short len );
 int handle_REQ_GET_SYS_CONFIG( unsigned char * pkt, unsigned short len );
 int handle_REQ_MAP_ADDR( unsigned char * pkt, unsigned short len );
-int handle_REQ_ADDR_INFO( unsigned char * pkt, unsigned short len );
 int handle_REQ_CHECKSUM_MEM( unsigned char * pkt, unsigned short len );
 int handle_REQ_READ_MEM( unsigned char * pkt, unsigned short len );
 int handle_REQ_WRITE_MEM( unsigned char * pkt, unsigned short len );
 int handle_REQ_READ_IO( unsigned char * pkt, unsigned short len );
 int handle_REQ_WRITE_IO( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_CPU( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_FPU( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_CPU( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_FPU( unsigned char * pkt, unsigned short len );
 int handle_REQ_PROG_GO( unsigned char * pkt, unsigned short len );
 int handle_REQ_PROG_STEP( unsigned char * pkt, unsigned short len );
 int handle_REQ_PROG_LOAD( unsigned char * pkt, unsigned short len );
@@ -60,16 +55,11 @@ int handle_REQ_GET_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigned sh
 int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_MAP_ADDR_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_ADDR_INFO_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_CHECKSUM_MEM_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_READ_MEM_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_WRITE_MEM_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_READ_IO_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_WRITE_IO_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_CPU_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_READ_FPU_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_CPU_REPLY( unsigned char * pkt, unsigned short len );
-int handle_REQ_WRITE_FPU_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_PROG_GO_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_PROG_STEP_REPLY( unsigned char * pkt, unsigned short len );
 int handle_REQ_PROG_LOAD_REPLY( unsigned char * pkt, unsigned short len );
@@ -103,16 +93,11 @@ RQ_HANDLER MyHandlers[] = {
     handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE,
     handle_REQ_GET_SYS_CONFIG,
     handle_REQ_MAP_ADDR,
-    handle_REQ_ADDR_INFO,
     handle_REQ_CHECKSUM_MEM,
     handle_REQ_READ_MEM,
     handle_REQ_WRITE_MEM,
     handle_REQ_READ_IO,
     handle_REQ_WRITE_IO,
-    handle_REQ_READ_CPU,
-    handle_REQ_READ_FPU,
-    handle_REQ_WRITE_CPU,
-    handle_REQ_WRITE_FPU,
     handle_REQ_PROG_GO,
     handle_REQ_PROG_STEP,
     handle_REQ_PROG_LOAD,
@@ -146,16 +131,11 @@ RQ_HANDLER MyReplyHandlers[] = {
     handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY,
     handle_REQ_GET_SYS_CONFIG_REPLY,
     handle_REQ_MAP_ADDR_REPLY,
-    handle_REQ_ADDR_INFO_REPLY,
     handle_REQ_CHECKSUM_MEM_REPLY,
     handle_REQ_READ_MEM_REPLY,
     handle_REQ_WRITE_MEM_REPLY,
     handle_REQ_READ_IO_REPLY,
     handle_REQ_WRITE_IO_REPLY,
-    handle_REQ_READ_CPU_REPLY,
-    handle_REQ_READ_FPU_REPLY,
-    handle_REQ_WRITE_CPU_REPLY,
-    handle_REQ_WRITE_FPU_REPLY,
     handle_REQ_PROG_GO_REPLY,
     handle_REQ_PROG_STEP_REPLY,
     handle_REQ_PROG_LOAD_REPLY,
@@ -622,25 +602,6 @@ int handle_REQ_MAP_ADDR_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_ADDR_INFO( unsigned char * pkt, unsigned short )
-{
-    addr_info_req * prq = ( addr_info_req * ) pkt;
-    printf( "Debugger request: REQ_ADDR_INFO\n" );
-    printf( "    Address:    %.04x:%.08x\n", prq->in_addr.segment, prq->in_addr.offset );
-    
-    return 1;
-}
-
-int handle_REQ_ADDR_INFO_REPLY( unsigned char * pkt, unsigned short )
-{
-    addr_info_ret * pr = ( addr_info_ret * ) pkt;
-    
-    printf( "Trap reply: REQ_ADDR_INFO\n" );
-    printf( "    Is big:  %u\n", pr->is_big );
-    
-    return 1;
-}
-
 int handle_REQ_CHECKSUM_MEM( unsigned char * pkt, unsigned short )
 {
     checksum_mem_req * prq = ( checksum_mem_req * ) pkt;
@@ -750,50 +711,6 @@ int handle_REQ_WRITE_IO_REPLY( unsigned char * pkt, unsigned short )
     printf( "Trap reply: REQ_WRITE_IO\n" );
     printf( "    Length: %u\n", pr->len );
     
-    return 0;
-}
-
-int handle_REQ_READ_CPU( unsigned char * , unsigned short )
-{
-    printf( "Debugger request: REQ_READ_CPU\n" );
-    return 1;
-}
-
-int handle_REQ_READ_CPU_REPLY( unsigned char * , unsigned short )
-{
-    return 0;
-}
-
-int handle_REQ_READ_FPU( unsigned char * , unsigned short )
-{
-    printf( "Debugger request: REQ_READ_FPU\n" );
-    return 1;
-}
-
-int handle_REQ_READ_FPU_REPLY( unsigned char * , unsigned short )
-{
-    return 0;
-}
-
-int handle_REQ_WRITE_CPU( unsigned char * , unsigned short )
-{
-    printf( "Debugger request: REQ_WRITE_CPU\n" );
-    return 1;
-}
-
-int handle_REQ_WRITE_CPU_REPLY( unsigned char * , unsigned short )
-{
-    return 0;
-}
-
-int handle_REQ_WRITE_FPU( unsigned char * , unsigned short )
-{
-    printf( "Debugger request: REQ_WRITE_FPU\n" );
-    return 1;
-}
-
-int handle_REQ_WRITE_FPU_REPLY( unsigned char * , unsigned short )
-{
     return 0;
 }
 

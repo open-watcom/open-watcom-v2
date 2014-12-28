@@ -172,16 +172,11 @@ static trap_retval (* const DumbRequests[])(void) = {
     ReqSimpleStub, // ReqPerform_supplementary_service,
     ReqSimpleStub, // ReqGet_sys_config,
     ReqMap_addr,
-    ReqSimpleStub, // ReqAddr_info, //obsolete
     ReqChecksum_mem,
     ReqSimpleStub, // ReqRead_mem,
     ReqSimpleStub, // ReqWrite_mem,
     ReqSimpleStub, // ReqRead_io,
     ReqSimpleStub, // ReqWrite_io,
-    ReqSimpleStub, // ReqRead_cpu,  //obsolete
-    ReqSimpleStub, // ReqRead_fpu,  //obsolete
-    ReqSimpleStub, // ReqWrite_cpu, //obsolete
-    ReqSimpleStub, // ReqWrite_fpu, //obsolete
     ReqSimpleStub, // ReqProg_go,
     ReqSimpleStub, // ReqProg_step,
     ReqProg_load,

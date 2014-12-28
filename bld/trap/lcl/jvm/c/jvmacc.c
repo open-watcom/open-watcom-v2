@@ -1309,34 +1309,3 @@ void TRAPENTRY TrapFini()
     CloseHandle( EventSem );
     CloseHandle( EventDoneSem );
 }
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_cpu( void )
-{
-    return( 0 );
-}
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_fpu( void )
-{
-    return( 0 );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_cpu( void )
-{
-    return( 0 );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_fpu( void )
-{
-    return( 0 );
-}
-
-//OBSOLETE - use ReqMachine_data
-trap_retval ReqAddr_info( void )
-{
-    return( 0 );
-}
-

@@ -15,7 +15,7 @@
 
 #include "rsi1632.h"
 
-int D32DebugWrite( OFFSET32 off, SELECTOR sel, int translate, void FarPtr from, unsigned short len )
+int D32DebugWrite( OFFSET32 off, SELECTOR sel, int translate, const void FarPtr from, unsigned short len )
 {
     Fptr32      fp;
     OFFSET32    new_len;

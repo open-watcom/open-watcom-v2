@@ -671,17 +671,6 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqAddr_info( void )
-{
-    addr_info_req   *acc;
-    addr_info_ret   *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->is_big = TRUE;
-    return( sizeof( *ret ) );
-}
-
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;

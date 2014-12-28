@@ -280,16 +280,6 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-//OBSOLETE - use ReqMachine_data
-trap_retval ReqAddr_info( void )
-{
-    addr_info_ret   *ret;
-
-    ret = GetOutPtr( 0 );
-    ret->is_big = FALSE;
-    return( sizeof( *ret ) );
-}
-
 trap_retval ReqMachine_data( void )
 {
     machine_data_ret    *ret;
@@ -434,58 +424,6 @@ trap_retval ReqWrite_io( void )
         ret->len = 0;
     }
     return( sizeof( *ret ) );
-}
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_cpu( void )
-{
-    void          *regs;
-    read_cpu_ret  *ret;
-
-    ret = GetOutPtr( 0 );
-    regs = GetOutPtr( sizeof( *ret ) );
-    ret->cpu = TaskRegs;
-    return( sizeof( *ret ) );
-}
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_fpu( void )
-{
-    void    __far *regs;
-
-    regs = GetOutPtr(0);
-    if( Have87Emu() ) {
-        Read87EmuState( regs );
-    } else if( RealNPXType != X86_NO ) {
-        Read8087( regs );
-    } else {
-        return( 0 );
-    }
-    return( sizeof( trap_fpu_regs ) );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_cpu( void )
-{
-    trap_cpu_regs *regs;
-
-    regs = GetInPtr(sizeof(write_cpu_req));
-    TaskRegs = *regs;
-    return( 0 );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_fpu( void )
-{
-    void    __far *regs;
-
-    regs = GetInPtr(sizeof(write_fpu_req));
-    if( Have87Emu() ) {
-        Write87EmuState( regs );
-    } else if( RealNPXType != X86_NO ) {
-        Write8087( regs );
-    }
-    return( 0 );
 }
 
 trap_retval ReqRead_regs( void )

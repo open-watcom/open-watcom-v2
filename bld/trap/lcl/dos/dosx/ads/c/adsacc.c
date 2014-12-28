@@ -320,17 +320,6 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-//OBSOLETE - use ReqMachine_data
-trap_retval ReqAddr_info( void )
-{
-    addr_info_ret       *ret;
-
-                                                                          _DBG1(( "AccAddrInfo" ));
-    ret = GetOutPtr( 0 );
-    ret->is_big = 1;
-    return( sizeof( *ret ) );
-}
-
 trap_retval ReqMachine_data( void )
 {
     machine_data_ret    *ret;
@@ -443,23 +432,6 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_cpu( void )
-{
-    trap_cpu_regs       *regs;
-
-    regs = GetOutPtr( 0 );
-    *regs = Regs;
-    return( sizeof( *regs ) );
-}
-
-//OBSOLETE - use ReqRead_regs
-trap_retval ReqRead_fpu( void )
-{
-    Read387( (trap_fpu_regs *)GetOutPtr( 0 ) );
-    return( sizeof( trap_fpu_regs ) );
-}
-
 trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
@@ -468,20 +440,6 @@ trap_retval ReqRead_regs( void )
     mr->x86.cpu = *(struct x86_cpu *)&Regs;
     Read387( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_cpu( void )
-{
-    Regs = *( trap_cpu_regs *)GetInPtr( sizeof( write_cpu_req ) );
-    return( 0 );
-}
-
-//OBSOLETE - use ReqWrite_regs
-trap_retval ReqWrite_fpu( void )
-{
-    Write387( (trap_fpu_regs *)GetInPtr( sizeof( write_fpu_req ) ) );
-    return( 0 );
 }
 
 trap_retval ReqWrite_regs( void )

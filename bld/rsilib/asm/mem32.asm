@@ -32,7 +32,7 @@ nocopy1:
 peek32 endp
 
 ;
-; int __cdecl poke32(long offset32, int sel, char far *dest, unsigned short count)
+; int __cdecl poke32(long offset32, int sel, const char far *dest, unsigned short count)
 ;
 poke32 proc C public uses es ds bx ecx esi edi, off32:dword, sel:word, src:dword, count:word
         mov     bx,sel
