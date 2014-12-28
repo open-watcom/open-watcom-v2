@@ -37,7 +37,6 @@
 #include "dbglit.h"
 #include "dbgitem.h"
 #include "dlgvarx.h"
-#define DBGVAR_C
 #include "dbgvar.h"
 #include "dbgmem.h"
 #include "spawn.h"
