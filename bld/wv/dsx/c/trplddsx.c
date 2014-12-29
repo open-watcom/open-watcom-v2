@@ -469,7 +469,7 @@ static char *ReadInTrap( tiny_handle_t fh )
     return( NULL );
 }
 
-static trap_retval DoTrapAccess( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
     uint_8              __far *msgptr;
     unsigned_8          j;
