@@ -32,15 +32,15 @@
 
 #include "trpimp.h"
 
-trap_elen   In_Mx_Num;
-trap_elen   Out_Mx_Num;
-mx_entry_p  In_Mx_Ptr;
-mx_entry_p  Out_Mx_Ptr;
+trap_elen       In_Mx_Num;
+trap_elen       Out_Mx_Num;
+in_mx_entry_p   In_Mx_Ptr;
+mx_entry_p      Out_Mx_Ptr;
 
 void *GetInPtr( trap_elen pos )     /* Absolute position */
 {
-    trap_elen   entries_left;
-    mx_entry_p  entry;
+    trap_elen       entries_left;
+    in_mx_entry_p   entry;
 
     entries_left = In_Mx_Num - 1;
     entry = In_Mx_Ptr;

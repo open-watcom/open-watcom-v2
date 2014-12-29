@@ -108,7 +108,7 @@ typedef mx_entry        TRAPFAR *mx_entry_p;
 typedef in_mx_entry     TRAPFAR *in_mx_entry_p;
 
 typedef trap_version    TRAPENTRY trap_init_func( const char *, char *, bool );
-typedef trap_retval     TRAPENTRY trap_req_func( trap_elen, mx_entry_p, trap_elen, mx_entry_p );
+typedef trap_retval     TRAPENTRY trap_req_func( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );
 typedef void            TRAPENTRY trap_fini_func( void );
 
 /* Client interface routines */

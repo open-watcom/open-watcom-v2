@@ -44,7 +44,7 @@ trap_version     TrapVersion;
 
 char    RWBuff[ 0x400 ];
 
-static mx_entry     In[1];
+static in_mx_entry  In[1];
 static mx_entry     Out[1];
 
 static void AccTrap( bool want_return )

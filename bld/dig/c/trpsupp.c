@@ -140,7 +140,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
     }
 #endif
 
-    result = ReqFunc( num_in_mx, (mx_entry_p)mx_in, num_out_mx, mx_out );
+    result = ReqFunc( num_in_mx, mx_in, num_out_mx, mx_out );
 
 #ifdef ENABLE_TRAP_LOGGING
     if( TrapTraceFileHandle != NULL ) {

@@ -184,7 +184,7 @@ extern trap_retval ReqCapabilities_set_exact_bp(void);
 
 extern trap_elen        In_Mx_Num;
 extern trap_elen        Out_Mx_Num;
-extern mx_entry_p       In_Mx_Ptr;
+extern in_mx_entry_p    In_Mx_Ptr;
 extern mx_entry_p       Out_Mx_Ptr;
 
 extern void             *GetInPtr( trap_elen );

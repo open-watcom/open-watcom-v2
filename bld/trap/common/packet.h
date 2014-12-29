@@ -33,7 +33,7 @@
 extern void         StartPacket( void );
 extern trap_retval  PutPacket( void );
 extern trap_retval  PutBuffPacket( void *, trap_elen );
-extern void         AddPacket( void *, trap_elen );
+extern void         AddPacket( const void *, trap_elen );
 extern trap_retval  GetPacket( void );
 extern void         RemovePacket( void *, trap_elen );
 extern void         *GetPacketBuffPtr( void );

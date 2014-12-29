@@ -201,7 +201,7 @@ static trap_retval (* const DumbRequests[])(void) = {
 };
 
 
-trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
     trap_retval     result;
 

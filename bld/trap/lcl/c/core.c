@@ -120,7 +120,7 @@ trap_retval ReqResume( void )
     return( 0 );
 }
 
-trap_retval TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+trap_retval TRAPENTRY TrapRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
     trap_retval     result;
 

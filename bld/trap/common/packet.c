@@ -67,7 +67,7 @@ trap_retval PutBuffPacket( void *buff, trap_elen len )
     return( result );
 }
 
-void AddPacket( void *ptr, trap_elen len )
+void AddPacket( const void *ptr, trap_elen len )
 {
     if( ( len + PackInd ) > sizeof( PackBuff ) ) {
         len = sizeof( PackBuff ) - PackInd;
