@@ -353,7 +353,11 @@ trap_retval ReqRfx_findnext( void )
 
 trap_retval ReqRfx_findclose( void )
 {
-    return( 0 );
+    rfx_findclose_ret    *ret;
+
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    return( sizeof( *ret ) );
 }
 
 trap_retval ReqRfx_nametocannonical( void )
