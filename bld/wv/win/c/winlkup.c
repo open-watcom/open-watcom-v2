@@ -39,7 +39,7 @@
 #ifndef __NT__
 const char *DOSEnvFind( const char *name )
 {
-    const char  env;
+    const char  *env;
     const char  *p;
 
     env = GetDOSEnvironment();
