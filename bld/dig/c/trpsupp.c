@@ -108,7 +108,7 @@ void TrapFailAllRequests()
     ReqFunc = NULL;
 }
 
-static trap_retval ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+static trap_retval ReqFuncProxy( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
     trap_retval     result;
 
@@ -140,7 +140,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
     }
 #endif
 
-    result = ReqFunc( num_in_mx, mx_in, num_out_mx, mx_out );
+    result = ReqFunc( num_in_mx, (mx_entry_p)mx_in, num_out_mx, mx_out );
 
 #ifdef ENABLE_TRAP_LOGGING
     if( TrapTraceFileHandle != NULL ) {
@@ -182,7 +182,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
 }
 
 
-unsigned TrapAccess( unsigned num_in_mx, mx_entry_p mx_in, unsigned num_out_mx, mx_entry_p mx_out  )
+unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_mx, mx_entry_p mx_out  )
 {
     trap_retval     result;
 
@@ -204,9 +204,9 @@ unsigned TrapAccess( unsigned num_in_mx, mx_entry_p mx_in, unsigned num_out_mx, 
     return( result );
 }
 
-unsigned TrapSimpAccess( unsigned in_len, void *in_data, unsigned out_len, void *out_data )
+unsigned TrapSimpAccess( unsigned in_len, const void *in_data, unsigned out_len, void *out_data )
 {
-    mx_entry        in[1];
+    in_mx_entry     in[1];
     mx_entry        out[1];
     unsigned        result;
 

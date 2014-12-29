@@ -99,7 +99,13 @@ typedef struct {
     trap_elen   len;
 } mx_entry;
 
+typedef struct {
+    const void  *ptr;
+    trap_elen   len;
+} in_mx_entry;
+
 typedef mx_entry        TRAPFAR *mx_entry_p;
+typedef in_mx_entry     TRAPFAR *in_mx_entry_p;
 
 typedef trap_version    TRAPENTRY trap_init_func( const char *, char *, bool );
 typedef trap_retval     TRAPENTRY trap_req_func( trap_elen, mx_entry_p, trap_elen, mx_entry_p );
@@ -109,8 +115,8 @@ typedef void            TRAPENTRY trap_fini_func( void );
 extern char             *LoadDumbTrap( trap_version * );
 extern char             *LoadTrap( const char *, char *, trap_version * );
 extern void             TrapSetFailCallBack( void (*func)(void) );
-extern unsigned         TrapAccess( unsigned, mx_entry_p, unsigned, mx_entry_p );
-extern unsigned         TrapSimpAccess( unsigned, void *, unsigned, void * );
+extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
+extern unsigned         TrapSimpAccess( unsigned, const void *, unsigned, void * );
 extern void             KillTrap(void);
 
 #include "digunpck.h"
