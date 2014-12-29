@@ -61,56 +61,56 @@ rc_erridx RemoteRename( char * from, char *to )
 {
     in_mx_entry         in[3];
     mx_entry            out[1];
-    rfx_rename_req      in_mx;
-    rfx_rename_ret      out_mx;
+    rfx_rename_req      acc;
+    rfx_rename_ret      ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_RENAME );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_RENAME );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = from;
     in[1].len = strlen( from ) + 1;
     in[2].ptr = to;
     in[2].len = strlen( to ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     TrapAccess( 3, in, 1, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 rc_erridx RemoteMkDir( char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
-    rfx_mkdir_req       in_mx;
-    rfx_mkdir_ret       out_mx;
+    rfx_mkdir_req       acc;
+    rfx_mkdir_ret       ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_MKDIR );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_MKDIR );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = name;
     in[1].len = strlen( name ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 rc_erridx RemoteRmDir( char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
-    rfx_rmdir_req       in_mx;
-    rfx_rmdir_ret       out_mx;
+    rfx_rmdir_req       acc;
+    rfx_rmdir_ret       ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_RMDIR );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_RMDIR );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = name;
     in[1].len = strlen( name ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 rc_erridx RemoteSetDrv( int drv )
@@ -138,59 +138,59 @@ rc_erridx RemoteSetCWD( char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
-    rfx_setcwd_req      in_mx;
-    rfx_setcwd_ret      out_mx;
+    rfx_setcwd_req      acc;
+    rfx_setcwd_ret      ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_SETCWD );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_SETCWD );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = name;
     in[1].len = strlen( name ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 long RemoteGetFileAttr( char * name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
-    rfx_getfileattr_req in_mx;
-    rfx_getfileattr_ret out_mx;
+    rfx_getfileattr_req acc;
+    rfx_getfileattr_ret ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_GETFILEATTR );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_GETFILEATTR );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = name;
     in[1].len = strlen( name ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    if( (out_mx.attribute & 0xffff0000) == 0xffff0000 ) {
-        StashErrCode( out_mx.attribute, OP_REMOTE );
+    if( (ret.attribute & 0xffff0000) == 0xffff0000 ) {
+        StashErrCode( ret.attribute, OP_REMOTE );
         return( -1L );
     }
-    return( out_mx.attribute );
+    return( ret.attribute );
 }
 
 rc_erridx RemoteSetFileAttr( char * name, long attrib )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
-    rfx_setfileattr_req in_mx;
-    rfx_setfileattr_ret out_mx;
+    rfx_setfileattr_req acc;
+    rfx_setfileattr_ret ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_SETFILEATTR );
-    in_mx.attribute = attrib;
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_SETFILEATTR );
+    acc.attribute = attrib;
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = name;
     in[1].len = strlen( name ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 long RemoteGetFreeSpace( int drv )
@@ -310,40 +310,40 @@ rc_erridx RemoteGetCwd( int drv, char *where )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
-    rfx_getcwd_req      in_mx;
-    rfx_getcwd_ret      out_mx;
+    rfx_getcwd_req      acc;
+    rfx_getcwd_ret      ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_GETCWD );
-    in_mx.drive = drv;
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_GETCWD );
+    acc.drive = drv;
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     out[1].ptr = where;
     out[1].len = MAX_STRING_LEN;
     TrapAccess( 1, in, 2, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 rc_erridx RemoteFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
-    rfx_findfirst_req   in_mx;
-    rfx_findfirst_ret   out_mx;
+    rfx_findfirst_req   acc;
+    rfx_findfirst_ret   ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_FINDFIRST );
-    in_mx.attrib = attrib;
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_FINDFIRST );
+    acc.attrib = attrib;
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = pattern;
     in[1].len = strlen( pattern ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     out[1].ptr = info;
     out[1].len = info_len;
     TrapAccess( 2, in, 2, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 
@@ -351,20 +351,20 @@ rc_erridx RemoteFindNext( void *info, unsigned info_len )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
-    rfx_findnext_req    in_mx;
-    rfx_findnext_ret    out_mx;
+    rfx_findnext_req    acc;
+    rfx_findnext_ret    ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_FINDNEXT );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_FINDNEXT );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = info;
     in[1].len = info_len;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     out[1].ptr = info;
     out[1].len = info_len;
     TrapAccess( 2, in, 2, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 rc_erridx RemoteFindClose()
@@ -381,21 +381,21 @@ unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_l
 {
     in_mx_entry           in[2];
     mx_entry              out[2];
-    rfx_nametocannonical_req    in_mx;
-    rfx_nametocannonical_ret    out_mx;
+    rfx_nametocannonical_req    acc;
+    rfx_nametocannonical_ret    ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_NAMETOCANNONICAL );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_NAMETOCANNONICAL );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = name;
     in[1].len = strlen( name ) + 1;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     out[1].ptr = fullname;
     out[1].len = fullname_len;
     TrapAccess( 2, in, 2, out );
-    if( out_mx.err != 0 ) {
-        StashErrCode( out_mx.err, OP_REMOTE );
+    if( ret.err != 0 ) {
+        StashErrCode( ret.err, OP_REMOTE );
         *fullname = NULLCHAR;
     }
     return( strlen( fullname ) );

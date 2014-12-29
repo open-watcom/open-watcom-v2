@@ -97,8 +97,8 @@ void InitTrap( const char *trap_parms )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
-    connect_req         in_mx;
-    connect_ret         out_mx;
+    connect_req         acc;
+    connect_ret         ret;
     char                *error;
     trap_version        ver;
     char                buff[ TXT_LEN ];
@@ -132,19 +132,19 @@ void InitTrap( const char *trap_parms )
         InitTrapError = TRUE;
         StartupErr( buff );
     }
-    in_mx.req = REQ_CONNECT;
-    in_mx.ver.major = TRAP_MAJOR_VERSION;
-    in_mx.ver.minor = TRAP_MINOR_VERSION;
-    in_mx.ver.remote = FALSE;
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
+    acc.req = REQ_CONNECT;
+    acc.ver.major = TRAP_MAJOR_VERSION;
+    acc.ver.minor = TRAP_MINOR_VERSION;
+    acc.ver.remote = FALSE;
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
     buff[0] = '\0';
     out[1].ptr = buff;
     out[1].len = MAX_ERR_MSG_SIZE;
     TrapAccess( 1, in, 2, out );
-    MaxPacketLen = out_mx.max_msg_size;
+    MaxPacketLen = ret.max_msg_size;
     if( buff[0] != '\0' ) {
         KillTrap();
         InitTrapError = TRUE;
@@ -210,10 +210,10 @@ void RemoteErrMsg( sys_error err, char *msg )
 
 void FiniTrap( void )
 {
-    disconnect_req      in_mx;
+    disconnect_req      acc;
 
-    in_mx.req = REQ_DISCONNECT;
-    TrapSimpAccess( sizeof( in_mx ), &in_mx, 0, NULL );
+    acc.req = REQ_DISCONNECT;
+    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
     RestoreHandlers();
     KillTrap();
     GrabHandlers();
