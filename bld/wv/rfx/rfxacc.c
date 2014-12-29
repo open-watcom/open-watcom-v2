@@ -115,35 +115,23 @@ rc_erridx RemoteRmDir( char *name )
 
 rc_erridx RemoteSetDrv( int drv )
 {
-    in_mx_entry         in[1];
-    mx_entry            out[1];
-    rfx_setdrive_req    in_mx;
-    rfx_setdrive_ret    out_mx;
+    rfx_setdrive_req    acc;
+    rfx_setdrive_ret    ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_SETDRIVE );
-    in_mx.drive = drv;
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
-    TrapAccess( 1, in, 1, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_SETDRIVE );
+    acc.drive = drv;
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 int RemoteGetDrv()
 {
-    in_mx_entry         in[1];
-    mx_entry            out[1];
-    rfx_getdrive_req    in_mx;
-    rfx_getdrive_ret    out_mx;
+    rfx_getdrive_req    acc;
+    rfx_getdrive_ret    ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_GETDRIVE );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
-    TrapAccess( 1, in, 1, out );
-    return( out_mx.drive );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_GETDRIVE );
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    return( ret.drive );
 }
 
 rc_erridx RemoteSetCWD( char *name )
@@ -207,23 +195,17 @@ rc_erridx RemoteSetFileAttr( char * name, long attrib )
 
 long RemoteGetFreeSpace( int drv )
 {
-    in_mx_entry         in[1];
-    mx_entry            out[1];
-    rfx_getfreespace_req        in_mx;
-    rfx_getfreespace_ret        out_mx;
+    rfx_getfreespace_req    acc;
+    rfx_getfreespace_ret    ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_GETFREESPACE );
-    in_mx.drive = drv;
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
-    TrapAccess( 1, in, 1, out );
-    if( (out_mx.size & 0xffff0000) == 0xffff0000 ) {
-        StashErrCode( out_mx.size, OP_REMOTE );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_GETFREESPACE );
+    acc.drive = drv;
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    if( (ret.size & 0xffff0000) == 0xffff0000 ) {
+        StashErrCode( ret.size, OP_REMOTE );
         return( -1L );
     }
-    return( out_mx.size );
+    return( ret.size );
 }
 
 static void mylocaltime( unsigned long date_time, int *time, int *date )
@@ -299,33 +281,24 @@ static unsigned long mymktime( unsigned time, unsigned date )
 
 unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 {
-    in_mx_entry         in[1];
-
     if( set ) {
-        rfx_setdatetime_req     in_mx;
+        rfx_setdatetime_req     acc;
 
-        SUPP_RFX_SERVICE( in_mx, REQ_RFX_SETDATETIME );
-        in_mx.handle = hdl;
-        in_mx.time = mymktime( *time, *date );
+        SUPP_RFX_SERVICE( acc, REQ_RFX_SETDATETIME );
+        acc.handle = hdl;
+        acc.time = mymktime( *time, *date );
 
-        in[0].ptr = &in_mx;
-        in[0].len = sizeof( in_mx );
-        TrapAccess( 1, in, 0, NULL );
+        TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
     } else {
-        mx_entry                out[1];
-        rfx_getdatetime_req     in_mx;
-        rfx_getdatetime_ret     out_mx;
+        rfx_getdatetime_req     acc;
+        rfx_getdatetime_ret     ret;
 
-        SUPP_RFX_SERVICE( in_mx, REQ_RFX_GETDATETIME );
-        in_mx.handle = hdl;
+        SUPP_RFX_SERVICE( acc, REQ_RFX_GETDATETIME );
+        acc.handle = hdl;
 
-        in[0].ptr = &in_mx;
-        in[0].len = sizeof( in_mx );
-        out[0].ptr = &out_mx;
-        out[0].len = sizeof( out_mx );
-        TrapAccess( 1, in, 1, out );
+        TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
 
-        mylocaltime( out_mx.time, time, date );
+        mylocaltime( ret.time, time, date );
     }
     return( 0 );
 }
@@ -396,19 +369,12 @@ rc_erridx RemoteFindNext( void *info, unsigned info_len )
 
 rc_erridx RemoteFindClose()
 {
-    in_mx_entry          in[1];
-    mx_entry             out[1];
-    rfx_findclose_req   in_mx;
-    rfx_findclose_ret   out_mx;
+    rfx_findclose_req   acc;
+    rfx_findclose_ret   ret;
 
-    SUPP_RFX_SERVICE( in_mx, REQ_RFX_FINDCLOSE );
-    in[0].ptr = &in_mx;
-    in[0].len = sizeof( in_mx );
-    out_mx.err = 0;
-    out[0].ptr = &out_mx;
-    out[0].len = sizeof( out_mx );
-    TrapAccess( 1, in, 1, out );
-    return( StashErrCode( out_mx.err, OP_REMOTE ) );
+    SUPP_RFX_SERVICE( acc, REQ_RFX_FINDCLOSE );
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_len )

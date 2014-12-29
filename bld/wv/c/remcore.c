@@ -90,8 +90,6 @@ static bool IsInterrupt( addr_ptr *addr, unsigned size )
 
 static unsigned MemRead( address addr, void *ptr, unsigned size )
 {
-    in_mx_entry         in[1];
-    mx_entry            out[1];
     read_mem_req        acc;
     bool                int_tbl;
     unsigned            left;
@@ -103,8 +101,6 @@ static unsigned MemRead( address addr, void *ptr, unsigned size )
     acc.req = REQ_READ_MEM;
     AddrFix( &addr );
     acc.mem_addr = addr.mach;
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
     left = size;
     for( ;; ) {
         if( left > MaxPacketLen ) {
@@ -112,8 +108,6 @@ static unsigned MemRead( address addr, void *ptr, unsigned size )
         } else {
             piece = left;
         }
-        out[0].ptr = ptr;
-        out[0].len = piece;
         acc.len = piece;
 
         int_tbl = IsInterrupt( &(acc.mem_addr), size );
@@ -121,7 +115,7 @@ static unsigned MemRead( address addr, void *ptr, unsigned size )
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
-        got = TrapAccess( 1, in, 1, out );
+        got = TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
         if( int_tbl ) GrabHandlers();
 
         left -= got;
@@ -243,18 +237,12 @@ unsigned long ProgChkSum( address addr, unsigned len )
 
 unsigned PortPeek( unsigned port, void *data, unsigned size )
 {
-    in_mx_entry         in[1];
-    mx_entry            out[1];
     read_io_req         acc;
 
     acc.req = REQ_READ_IO;
     acc.IO_offset = port;
     acc.len = size;
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    out[0].ptr = data;
-    out[0].len = size;
-    return( TrapAccess( 1, in, 1, out ) );
+    return( TrapSimpAccess( sizeof( acc ), &acc, size, data ) );
 }
 
 unsigned PortPoke( unsigned port, void *data, unsigned size )
@@ -321,13 +309,12 @@ void WriteDbgRegs( void )
     WriteRegs( DbgRegs );
 }
 
-unsigned int ArgsLen( char *args )
+unsigned ArgsLen( const char *args )
 {
-    unsigned int        len = 0;
+    unsigned    len = 0;
 
-    while( *args != ARG_TERMINATE ) {
+    while( *args++ != ARG_TERMINATE ) {
         len++;
-        args++;
     }
     return( len );
 }

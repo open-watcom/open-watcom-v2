@@ -476,16 +476,16 @@ bool InitCapabilities( void )
     SuppCapabilitiesId = GetSuppId( CAPABILITIES_SUPP_NAME );
     if( SuppCapabilitiesId == 0 ) 
         return( FALSE );
-        
+
     CapabilitiesGet8ByteBreakpointSupport();
     CapabilitiesGetExactBreakpointSupport();
-    
+
     if( Supports8ByteBreakpoints )
         CapabilitiesSet8ByteBreakpointSupport( TRUE );
-        
+
     if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
         CapabilitiesSetExactBreakpointSupport( TRUE );
-        
+
     return( TRUE );
 }
 
@@ -496,21 +496,15 @@ bool InitCapabilities( void )
 
 bool CapabilitiesGet8ByteBreakpointSupport()
 {
-    in_mx_entry                 in[1];
-    mx_entry                    out[1];
     capabilities_get_8b_bp_req  acc;
     capabilities_get_8b_bp_ret  ret;
 
     if( SuppCapabilitiesId == 0 ) 
         return( FALSE );
-    
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    out[0].ptr = &ret;
-    out[0].len = sizeof( ret );
 
-    TrapAccess( 1, in, 1, out );
+    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
+
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( FALSE );
     } else {
@@ -521,23 +515,16 @@ bool CapabilitiesGet8ByteBreakpointSupport()
 
 bool CapabilitiesSet8ByteBreakpointSupport( bool status )
 {
-    in_mx_entry                 in[1];
-    mx_entry                    out[1];
     capabilities_set_8b_bp_req  acc;
     capabilities_set_8b_bp_ret  ret;
-    
+
     if( SuppCapabilitiesId == 0 ) 
         return( FALSE );
-    
+
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_8B_BP );
     acc.status = status ? TRUE : FALSE;
-    
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    out[0].ptr = &ret;
-    out[0].len = sizeof( ret );
 
-    TrapAccess( 1, in, 1, out );
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( FALSE );
     } else {
@@ -548,22 +535,16 @@ bool CapabilitiesSet8ByteBreakpointSupport( bool status )
 
 bool CapabilitiesGetExactBreakpointSupport( void )
 {
-    in_mx_entry                 in[1];
-    mx_entry                    out[1];
     capabilities_get_8b_bp_req  acc;
     capabilities_get_8b_bp_ret  ret;
 
 
     if( SuppCapabilitiesId == 0 ) 
         return( FALSE );
-    
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    out[0].ptr = &ret;
-    out[0].len = sizeof( ret );
 
-    TrapAccess( 1, in, 1, out );
+    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
+
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( FALSE );
     } else {
@@ -575,23 +556,16 @@ bool CapabilitiesGetExactBreakpointSupport( void )
 
 bool CapabilitiesSetExactBreakpointSupport( bool status )
 {
-    in_mx_entry                 in[1];
-    mx_entry                    out[1];
     capabilities_set_8b_bp_req  acc;
     capabilities_set_8b_bp_ret  ret;
-    
+
     if( SuppCapabilitiesId == 0 ) 
         return( FALSE );
-    
+
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
     acc.status = status ? TRUE : FALSE;
-    
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    out[0].ptr = &ret;
-    out[0].len = sizeof( ret );
 
-    TrapAccess( 1, in, 1, out );
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( FALSE );
     } else {
