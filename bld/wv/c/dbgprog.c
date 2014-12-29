@@ -141,6 +141,7 @@ bool InitCmd( void )
     char        *last;
     unsigned    total;
     char        *start;
+    char        c;
 
     curr = GetCmdArg( 0 );
     if( curr != NULL ) {
@@ -165,38 +166,31 @@ bool InitCmd( void )
             SetCmdArgStart( argc, curr );
         }
     }
-    argc = 0;
     total = 0;
-    for( ;; ) {
-        curr = GetCmdArg( argc );
-        if( curr == NULL ) break;
-        while( *curr != NULLCHAR ) {
+    for( argc = 0; (curr = GetCmdArg( argc )) != NULL; ++argc ) {
+        while( *curr++ != NULLCHAR ) {
             ++total;
-            ++curr;
         }
         ++total;
-        ++argc;
     }
     _Alloc( TaskCmd, total + 2 );
     if( TaskCmd == NULL ) return( FALSE );
     ptr = TaskCmd;
-    argc = 0;
-    for( ;; ) {
-        curr = GetCmdArg( argc );
-        if( curr == NULL ) break;
-        while( *curr != NULLCHAR ) {
-            *ptr = *curr++;
-            if( *ptr == ARG_TERMINATE ) *ptr = ' ';
-            ++ptr;
+    for( argc = 0; (curr = GetCmdArg( argc )) != NULL; ++argc ) {
+        while( (c = *curr++) != NULLCHAR ) {
+            if( c == ARG_TERMINATE )
+                c = ' ';
+            *ptr++ = c;
         }
         *ptr++ = NULLCHAR;
-        ++argc;
     }
     *ptr = ARG_TERMINATE;
     last = ptr;
     RemoteSplitCmd( TaskCmd, &end, &parm );
     for( ptr = TaskCmd; ptr < end; ++ptr ) {
-        if( *ptr == NULLCHAR ) *ptr = ' ';
+        if( *ptr == NULLCHAR ) {
+            *ptr = ' ';
+        }
     }
     memmove( ptr + 1, parm, last - parm + 1 );
     *ptr = NULLCHAR;
