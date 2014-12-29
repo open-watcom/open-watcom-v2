@@ -183,10 +183,13 @@ static void DoCallSet( void )
                     _Free( new_parms[i].u.start );
                 }
                 Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+                parm = 0;
+                break;
+            } else {
+                memcpy( new, new_parms[i].u.arg, new_parms[i].len );
+                new[new_parms[i].len] = NULLCHAR;
+                new_parms[i].u.start = new;
             }
-            memcpy( new, new_parms[i].u.arg, new_parms[i].len );
-            new[new_parms[i].len] = NULLCHAR;
-            new_parms[i].u.start = new;
         }
         FreeParms();
         for( i = 0; i < parm; ++i ) {
