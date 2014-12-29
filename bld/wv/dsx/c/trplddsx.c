@@ -77,7 +77,7 @@ static dos_memory               TrapMem;
 
 static void __far               *RawPMtoRMSwitchAddr;
 
-extern unsigned                 EnvLkup( char *, char *, unsigned max );
+extern unsigned                 EnvLkup( const char *name, char *buff, unsigned buff_len );
 
 
 unsigned_8      DPMICheck = 0;

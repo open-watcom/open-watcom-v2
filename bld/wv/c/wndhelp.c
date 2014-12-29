@@ -39,7 +39,7 @@
 #include "strutil.h"
 
 extern handle   LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern unsigned DUIEnvLkup( char *, char *, unsigned );
+extern unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len );
 
 static gui_help_instance Handle;
 extern a_window         *WndMain;

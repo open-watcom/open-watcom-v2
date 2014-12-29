@@ -44,7 +44,7 @@
 #include "strutil.h"
 
 extern unsigned         Lookup( const char *, const char *, unsigned );
-extern unsigned         DUIEnvLkup( char *, char *, unsigned );
+extern unsigned         DUIEnvLkup( const char *name, char *buff, unsigned buff_len );
 extern bool             OptDelim( char );
 extern void             ProcSysOptInit( void );
 extern bool             ProcSysOption( char *, unsigned, int );

@@ -860,11 +860,11 @@ bool DUIIsDBCS( void )
     return( FALSE );
 }
 
-extern unsigned EnvLkup( char *src, char *dst, unsigned );
+extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
 
-unsigned DUIEnvLkup( char *src, char *dst, unsigned max_len )
+unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
 {
-    return( EnvLkup( src, dst, max_len ) );
+    return( EnvLkup( name, buff, buff_len ) );
 }
 
 void DUIDirty( void )

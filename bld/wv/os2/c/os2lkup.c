@@ -37,9 +37,9 @@
 #include "os2.h"
 
 
-unsigned EnvLkup( char *name, char *buff, unsigned buff_len )
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
-    char    __far *env;
+    const char  __far *env;
     unsigned    len;
     int         output = 0;
     char        c;

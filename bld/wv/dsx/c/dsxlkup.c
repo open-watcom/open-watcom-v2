@@ -42,18 +42,18 @@
 
 #define PSP_ENV_VARS_OFF        0x2c
 
-char *DOSEnvFind( char *src )
+const char *DOSEnvFind( const char *name )
 {
 #ifdef __OSI__
-    return( getenv( src ) );
+    return( getenv( name ) );
 #else
-    char        *env;
-    char        *p;
+    const char  *env;
+    const char  *p;
 
     env = (char *)DPMIGetSegmentBaseAddress( *(addr_seg *)
         ((unsigned_8 *)DPMIGetSegmentBaseAddress( _psp )+PSP_ENV_VARS_OFF));
     do {
-        p = src;
+        p = name;
         do {
             if( *p == '\0' && *env == '=' ) return( env + 1 );
         } while( *env++ == *p++ );
@@ -64,14 +64,14 @@ char *DOSEnvFind( char *src )
 #endif
 }
 
-unsigned EnvLkup( char *src, char *buff, unsigned buff_len )
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
-    char        *env;
+    const char  *env;
     unsigned    len;
     int         output = 0;
     char        c;
 
-    env = DOSEnvFind( src );
+    env = DOSEnvFind( name );
     if( env == NULL )
         return( 0 );
     if( buff_len != 0 && buff != NULL ) {

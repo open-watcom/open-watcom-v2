@@ -37,14 +37,14 @@
 
 
 #ifndef __NT__
-char *DOSEnvFind( char *src )
+const char *DOSEnvFind( const char *name )
 {
-    char        *env;
-    char        *p;
+    const char  env;
+    const char  *p;
 
     env = GetDOSEnvironment();
     do {
-        p = src;
+        p = name;
         do {
             if( *p == NULLCHAR && *env == '=' ) return( env + 1 );
         } while( *env++ == *p++ );
@@ -58,23 +58,23 @@ char *DOSEnvFind( char *src )
  * EnvLkup -- lookup up string in environment area
  */
 
-unsigned EnvLkup( char *src, char *buff, unsigned max_len )
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
     unsigned    len;
-    char        *env;
+    const char  *env;
     int         output = 0;
     char        c;
 
-    env = DOSEnvFind( src );
+    env = DOSEnvFind( name );
     if( env == NULL )
         return( 0 );
-    if( max_len != 0 && buff != NULL ) {
-        --max_len;
+    if( buff_len != 0 && buff != NULL ) {
+        --buff_len;
         output = 1;
     }
     for( len = 0; (c = *env++) != '\0'; ++len ) {
         if( output ) {
-            if( len >= max_len ) {
+            if( len >= buff_len ) {
                 break;
             }
             *buff++ = c;
@@ -90,8 +90,8 @@ unsigned EnvLkup( char *src, char *buff, unsigned max_len )
  * EnvLkup -- lookup up string in environment area
  */
 
-unsigned EnvLkup( char *src, char *dst, unsigned max_len )
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
-    return( GetEnvironmentVariable( src, dst, max_len ) );
+    return( GetEnvironmentVariable( name, buff, buff_len ) );
 }
 #endif

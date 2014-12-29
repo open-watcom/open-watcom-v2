@@ -80,7 +80,7 @@ extern void             SetIOMenuItems( void );
 extern void             DoInput( void );
 extern void             *OpenSrcFile(cue_handle *);
 extern bool             GUIIsDBCS( void );
-extern unsigned         EnvLkup( char *src, char *dst, unsigned );
+extern unsigned         EnvLkup( const char *name, char *buff, unsigned buff_len );
 extern void             PopErrBox( char *buff );
 extern void             KillDebugger( int ret_code );
 
@@ -399,7 +399,7 @@ bool DUIIsDBCS( void )
     return( GUIIsDBCS() );
 }
 
-unsigned DUIEnvLkup( char *name, char *buff, unsigned buff_len )
+unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
 {
     return( EnvLkup( name, buff, buff_len ) );
 }

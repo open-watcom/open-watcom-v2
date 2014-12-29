@@ -44,7 +44,7 @@
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern unsigned EnvLkup( char *, char *, unsigned );
+extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
 
 static char             *cmdStart;
 static volatile bool    BrkPending;

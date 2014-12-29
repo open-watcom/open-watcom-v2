@@ -50,7 +50,7 @@ char *copy_char_to_buff( char *ptr, char c, char **end )
     return( ptr );
 }
 
-char *copy_str_to_buff( char *ptr, char *str, char **end )
+char *copy_str_to_buff( char *ptr, const char *str, char **end )
 {
     int len;
 
@@ -64,9 +64,9 @@ char *copy_str_to_buff( char *ptr, char *str, char **end )
     return( ptr );
 }
 
-unsigned EnvLkup( char *name, char *buff, unsigned buff_len )
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
-    char        *env;
+    const char  *env;
     char        *ptr;
     char        *p;
     char        cmd[_MAX_PATH];

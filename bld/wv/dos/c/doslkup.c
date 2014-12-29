@@ -38,14 +38,14 @@
 
 extern  addr_seg    _psp;
 
-char __far *DOSEnvFind( char __far *src )
+const char __far *DOSEnvFind( const char __far *name )
 {
-    char        __far *env;
-    char        __far *p;
+    const char  __far *env;
+    const char  __far *p;
 
     env = MK_FP( *((unsigned __far *)MK_FP( _psp, DOSEnv )), 0 );
     do {
-        p = src;
+        p = name;
         do {
             if( *p == NULLCHAR && *env == '=' ) return( env + 1 );
         } while( *env++ == *p++ );
@@ -59,14 +59,14 @@ char __far *DOSEnvFind( char __far *src )
  * EnvLkup -- lookup up string in environment area
  */
 
-unsigned EnvLkup( char *src, char *buff, unsigned buff_len )
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len 
 {
-    char        __far *env;
+    const char  __far *env;
     unsigned    len;
     int         output = 0;
     char        c;
 
-    env = DOSEnvFind( src );
+    env = DOSEnvFind( name );
     if( env == NULL )
         return( 0 );
     if( buff_len != 0 && buff != NULL ) {

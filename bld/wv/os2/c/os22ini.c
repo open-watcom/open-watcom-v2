@@ -125,9 +125,9 @@ void RestoreHandlers( void )
 {
 }
 
-unsigned EnvLkup( char *name, char *buff, unsigned buff_len )
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
-    char        *env;
+    const char  *env;
     unsigned    len;
     int         output = 0;
     char        c;
