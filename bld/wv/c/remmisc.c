@@ -95,7 +95,7 @@ void FiniSuppServices( void )
 static bool InitTrapError;
 void InitTrap( const char *trap_parms )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[2];
     connect_req         in_mx;
     connect_ret         out_mx;
@@ -164,7 +164,7 @@ void InitTrap( const char *trap_parms )
 
 trap_shandle GetSuppId( char *name )
 {
-    mx_entry                            in[2];
+    in_mx_entry                         in[2];
     mx_entry                            out[1];
     get_supplementary_service_req       acc;
     get_supplementary_service_ret       ret;

@@ -155,7 +155,7 @@ bool HaveRemoteFiles( void )
 unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
                                  unsigned res_len )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[2];
     file_string_to_fullpath_req acc;
     file_string_to_fullpath_ret ret;
@@ -211,7 +211,7 @@ unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
 
 sys_handle RemoteOpen( char *name, open_access mode )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     file_open_req       acc;
     file_open_ret       ret;
@@ -268,7 +268,7 @@ sys_handle RemoteOpen( char *name, open_access mode )
 
 static unsigned DoAWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     union {
         file_write_req              file;
@@ -348,7 +348,7 @@ unsigned RemoteWriteConsole( void *buff, unsigned len )
 
 static unsigned DoRead( sys_handle hdl, void *ptr, unsigned len )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[2];
     file_read_req       acc;
     file_read_ret       ret;
@@ -477,7 +477,7 @@ rc_erridx RemoteClose( sys_handle hdl )
 
 rc_erridx RemoteErase( char *name )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     file_erase_req      acc;
     file_erase_ret      ret;
@@ -498,7 +498,7 @@ rc_erridx RemoteErase( char *name )
 
 rc_erridx RemoteFork( const char *cmd, size_t len )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     file_run_cmd_req    acc;
     file_run_cmd_ret    ret;

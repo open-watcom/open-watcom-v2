@@ -61,7 +61,7 @@ bool HaveRemoteRunThread( void )
 
 bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[2];
     run_thread_info_req acc;
     run_thread_info_ret ret;
@@ -131,7 +131,7 @@ void RemotePollRunThread( void )
 
 void RemoteUpdateRunThread( thread_state *thd )
 {
-    mx_entry                        in[1];
+    in_mx_entry                     in[1];
     mx_entry                        out[2];
     run_thread_get_runtime_req      acc;
     run_thread_get_runtime_ret      ret;

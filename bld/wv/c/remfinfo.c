@@ -55,7 +55,7 @@ bool InitFileInfoSupp()
 
 long RemoteGetFileDate( char *name )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     file_info_get_date_req      acc;
     file_info_get_date_ret      ret;
@@ -79,7 +79,7 @@ long RemoteGetFileDate( char *name )
 
 bool RemoteSetFileDate( char *name, long date )
 {
-    mx_entry                    in[2];
+    in_mx_entry                 in[2];
     mx_entry                    out[1];
     file_info_set_date_req      acc;
     file_info_set_date_ret      ret;

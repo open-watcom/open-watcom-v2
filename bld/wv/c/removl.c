@@ -109,7 +109,7 @@ void RemoteSectTblRead( void *ovl )
 
 void RemoteSectTblWrite( void *ovl )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     ovl_write_state_req acc;
 
     SUPP_OVL_SERVICE( acc, REQ_OVL_WRITE_STATE );

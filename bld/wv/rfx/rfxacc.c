@@ -59,7 +59,7 @@ bool InitRFXSupp()
 
 rc_erridx RemoteRename( char * from, char *to )
 {
-    mx_entry            in[3];
+    in_mx_entry         in[3];
     mx_entry            out[1];
     rfx_rename_req      in_mx;
     rfx_rename_ret      out_mx;
@@ -79,7 +79,7 @@ rc_erridx RemoteRename( char * from, char *to )
 
 rc_erridx RemoteMkDir( char *name )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     rfx_mkdir_req       in_mx;
     rfx_mkdir_ret       out_mx;
@@ -97,7 +97,7 @@ rc_erridx RemoteMkDir( char *name )
 
 rc_erridx RemoteRmDir( char *name )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     rfx_rmdir_req       in_mx;
     rfx_rmdir_ret       out_mx;
@@ -115,7 +115,7 @@ rc_erridx RemoteRmDir( char *name )
 
 rc_erridx RemoteSetDrv( int drv )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[1];
     rfx_setdrive_req    in_mx;
     rfx_setdrive_ret    out_mx;
@@ -132,7 +132,7 @@ rc_erridx RemoteSetDrv( int drv )
 
 int RemoteGetDrv()
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[1];
     rfx_getdrive_req    in_mx;
     rfx_getdrive_ret    out_mx;
@@ -148,7 +148,7 @@ int RemoteGetDrv()
 
 rc_erridx RemoteSetCWD( char *name )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     rfx_setcwd_req      in_mx;
     rfx_setcwd_ret      out_mx;
@@ -166,7 +166,7 @@ rc_erridx RemoteSetCWD( char *name )
 
 long RemoteGetFileAttr( char * name )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     rfx_getfileattr_req in_mx;
     rfx_getfileattr_ret out_mx;
@@ -188,7 +188,7 @@ long RemoteGetFileAttr( char * name )
 
 rc_erridx RemoteSetFileAttr( char * name, long attrib )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     rfx_setfileattr_req in_mx;
     rfx_setfileattr_ret out_mx;
@@ -207,7 +207,7 @@ rc_erridx RemoteSetFileAttr( char * name, long attrib )
 
 long RemoteGetFreeSpace( int drv )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[1];
     rfx_getfreespace_req        in_mx;
     rfx_getfreespace_ret        out_mx;
@@ -299,7 +299,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
 
 unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
 
     if( set ) {
         rfx_setdatetime_req     in_mx;
@@ -335,7 +335,7 @@ unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 
 rc_erridx RemoteGetCwd( int drv, char *where )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[2];
     rfx_getcwd_req      in_mx;
     rfx_getcwd_ret      out_mx;
@@ -354,7 +354,7 @@ rc_erridx RemoteGetCwd( int drv, char *where )
 
 rc_erridx RemoteFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
 {
-    mx_entry             in[2];
+    in_mx_entry          in[2];
     mx_entry             out[2];
     rfx_findfirst_req   in_mx;
     rfx_findfirst_ret   out_mx;
@@ -376,7 +376,7 @@ rc_erridx RemoteFindFirst( char *pattern, void *info, unsigned info_len, int att
 
 rc_erridx RemoteFindNext( void *info, unsigned info_len )
 {
-    mx_entry             in[2];
+    in_mx_entry          in[2];
     mx_entry             out[2];
     rfx_findnext_req    in_mx;
     rfx_findnext_ret    out_mx;
@@ -396,7 +396,7 @@ rc_erridx RemoteFindNext( void *info, unsigned info_len )
 
 rc_erridx RemoteFindClose()
 {
-    mx_entry             in[1];
+    in_mx_entry          in[1];
     mx_entry             out[1];
     rfx_findclose_req   in_mx;
     rfx_findclose_ret   out_mx;
@@ -413,7 +413,7 @@ rc_erridx RemoteFindClose()
 
 unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_len )
 {
-    mx_entry              in[2];
+    in_mx_entry           in[2];
     mx_entry              out[2];
     rfx_nametocannonical_req    in_mx;
     rfx_nametocannonical_ret    out_mx;

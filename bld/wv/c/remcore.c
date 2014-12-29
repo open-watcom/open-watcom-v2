@@ -90,7 +90,7 @@ static bool IsInterrupt( addr_ptr *addr, unsigned size )
 
 static unsigned MemRead( address addr, void *ptr, unsigned size )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[1];
     read_mem_req        acc;
     bool                int_tbl;
@@ -181,7 +181,7 @@ unsigned ProgPeek( address addr, void *data, unsigned len )
 
 unsigned ProgPoke( address addr, void *data, unsigned len )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     write_mem_req       acc;
     write_mem_ret       ret;
@@ -243,7 +243,7 @@ unsigned long ProgChkSum( address addr, unsigned len )
 
 unsigned PortPeek( unsigned port, void *data, unsigned size )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[1];
     read_io_req         acc;
 
@@ -259,7 +259,7 @@ unsigned PortPeek( unsigned port, void *data, unsigned size )
 
 unsigned PortPoke( unsigned port, void *data, unsigned size )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     write_io_req        acc;
     write_io_ret        ret;
@@ -296,7 +296,7 @@ void ReadDbgRegs( void )
 
 static void WriteRegs( machine_state *state )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     write_regs_req      acc;
 //    mad_status          ms;
 
@@ -344,7 +344,7 @@ void ClearMachineDataCache( void )
 
 rc_erridx DoLoad( char *args, unsigned long *phandle )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     prog_load_req       acc;
     prog_load_ret       ret;
@@ -452,7 +452,7 @@ unsigned MakeProgRun( bool single )
 
 bool Redirect( bool input, char *hndlname )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     redirect_stdin_req  acc;
     redirect_stdin_ret  ret;
@@ -522,7 +522,7 @@ unsigned RemoteReadUserKey( unsigned wait )
 
 unsigned long RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buff_len )
 {
-    mx_entry            in[1];
+    in_mx_entry         in[1];
     mx_entry            out[2];
     get_lib_name_req    acc;
     get_lib_name_ret    ret;
@@ -544,7 +544,7 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buff_
 
 unsigned RemoteGetMsgText( char *msg, unsigned len )
 {
-    mx_entry                    in[1];
+    in_mx_entry                 in[1];
     mx_entry                    out[2];
     get_message_text_req        acc;
     get_message_text_ret        ret;
@@ -565,7 +565,7 @@ unsigned RemoteMachineData( address addr, unsigned info_type,
                         unsigned in_size,  const void *inp,
                         unsigned out_size, void *outp )
 {
-    mx_entry                    in[2];
+    in_mx_entry                 in[2];
     mx_entry                    out[2];
     machine_data_req            acc;
     machine_data_ret            ret;
@@ -662,7 +662,7 @@ void RemoteRestoreWatch( address addr, unsigned size )
 
 void RemoteSplitCmd( char *cmd, char **end, char **parm )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[1];
     split_cmd_req       acc;
     split_cmd_ret       ret;

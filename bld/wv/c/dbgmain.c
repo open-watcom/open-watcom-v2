@@ -496,7 +496,7 @@ bool InitCapabilities( void )
 
 bool CapabilitiesGet8ByteBreakpointSupport()
 {
-    mx_entry                    in[1];
+    in_mx_entry                 in[1];
     mx_entry                    out[1];
     capabilities_get_8b_bp_req  acc;
     capabilities_get_8b_bp_ret  ret;
@@ -521,7 +521,7 @@ bool CapabilitiesGet8ByteBreakpointSupport()
 
 bool CapabilitiesSet8ByteBreakpointSupport( bool status )
 {
-    mx_entry                    in[1];
+    in_mx_entry                 in[1];
     mx_entry                    out[1];
     capabilities_set_8b_bp_req  acc;
     capabilities_set_8b_bp_ret  ret;
@@ -548,7 +548,7 @@ bool CapabilitiesSet8ByteBreakpointSupport( bool status )
 
 bool CapabilitiesGetExactBreakpointSupport( void )
 {
-    mx_entry                    in[1];
+    in_mx_entry                 in[1];
     mx_entry                    out[1];
     capabilities_get_8b_bp_req  acc;
     capabilities_get_8b_bp_ret  ret;
@@ -575,7 +575,7 @@ bool CapabilitiesGetExactBreakpointSupport( void )
 
 bool CapabilitiesSetExactBreakpointSupport( bool status )
 {
-    mx_entry                    in[1];
+    in_mx_entry                 in[1];
     mx_entry                    out[1];
     capabilities_set_8b_bp_req  acc;
     capabilities_set_8b_bp_ret  ret;

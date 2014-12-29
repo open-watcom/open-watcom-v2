@@ -55,7 +55,7 @@ bool InitEnvSupp( void )
 
 bool RemoteSetEnvironmentVariable( char *name, char *value )
 {
-    mx_entry            in[3];
+    in_mx_entry         in[3];
     mx_entry            out[1];
     env_set_var_req     acc;
     env_set_var_ret     ret;
@@ -81,7 +81,7 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
 
 bool RemoteGetEnvironmentVariable( char *name, char *res, int res_len )
 {
-    mx_entry            in[2];
+    in_mx_entry         in[2];
     mx_entry            out[2];
     env_get_var_req     acc;
     env_get_var_ret     ret;
