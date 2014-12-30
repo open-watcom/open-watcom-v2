@@ -307,7 +307,7 @@ void DUIMsgBox( char *text )
     printf( "MSG %s\n", text );
 }
 
-bool DUIDlgTxt( char *text )
+bool DUIDlgTxt( const char *text )
 {
     printf( "DLG %s\n", text );
     return( TRUE );
@@ -684,7 +684,7 @@ void VarSaveWndToScope( void *wnd )
 void VarRestoreWndFromScope( void *wnd )
 {
 }
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     MessageBox( (HWND) NULL, buff, LIT( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
@@ -738,8 +738,8 @@ void DUIDirty()
 }
 
 
-void StartupErr( char *err )
-/**************************/
+void StartupErr( const char *err )
+/********************************/
 {
     printf( "Fatal error: %s", err );
     exit( 1 );

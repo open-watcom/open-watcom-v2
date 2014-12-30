@@ -42,7 +42,6 @@
 
 extern void     __FAR *ExtraAlloc( size_t );
 extern void     ExtraFree( void __FAR * );
-extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
 
@@ -158,7 +157,7 @@ bool SysGUI()
 {
     return( FALSE );
 }
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     WriteText( STD_ERR, buff, strlen( buff ) );
 }

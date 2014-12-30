@@ -77,7 +77,6 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern void             WndDlgTxt( char * );
 extern char             *UniqStrAddr( address *addr, char *p ,unsigned);
 extern char             *GetCmdName( int );
 extern void             RegFindData( mad_type_kind kind, mad_reg_set_data const **pdata );

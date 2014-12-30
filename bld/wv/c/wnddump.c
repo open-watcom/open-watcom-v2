@@ -40,19 +40,19 @@
 
 
 extern char             *GetDmpName( void );
-extern bool             WndDlgTxt( char *buff );
+extern bool             WndDlgTxt( const char *buff );
 
 extern gui_resource     WndGadgetArray[];
 
 
-typedef void WRITERTN( handle, char * );
+typedef void WRITERTN( handle, const char * );
 
-static void WriteFile( handle file, char *buff )
+static void WriteFile( handle file, const char *buff )
 {
     WriteText( file, buff, strlen( buff ) );
 }
 
-static void WriteLog( handle dummy, char *buff )
+static void WriteLog( handle dummy, const char *buff )
 {
     dummy = dummy;
     WndDlgTxt( buff );

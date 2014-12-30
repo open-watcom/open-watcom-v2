@@ -62,7 +62,7 @@
 extern bool     VarInfoRelease( void );
 extern bool     DlgInfoRelease( void );
 extern unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len );
-extern void     PopErrBox( char * );
+extern void     PopErrBox( const char * );
 
 
 #ifdef TRMEM
@@ -78,7 +78,8 @@ static void TRPrintLine( void *handle, const char *buff, size_t len )
 {
     handle = handle;
     len = len;
-    if( !Closing ) PopErrBox( (void*)buff );
+    if( !Closing )
+        PopErrBox( buff );
     write( TrackFile, buff, len );
 }
 
@@ -157,8 +158,8 @@ static void MemTrackInit( void )
     TRMemOpen();
 }
 
-static char UnFreed[] = { "Memory UnFreed" };
-static char TrackErr[] = { "Memory Tracker Errors Detected" };
+static const char UnFreed[] = { "Memory UnFreed" };
+static const char TrackErr[] = { "Memory Tracker Errors Detected" };
 
 static void MemTrackFini( void )
 {
@@ -226,7 +227,8 @@ void *ChkAlloc( size_t size, char *error )
     void *ret;
 
     ret = TRMemAlloc( size );
-    if( ret == NULL ) Error( ERR_NONE, error );
+    if( ret == NULL )
+        Error( ERR_NONE, error );
     return( ret );
 }
 
@@ -243,11 +245,13 @@ void MemFini( void )
     char                buf[50];
     char                *end;
 
-    if( getenv( "TRMEMFILE" ) == NULL ) return;
+    if( getenv( "TRMEMFILE" ) == NULL )
+        return;
     h_info._pentry = NULL;
     for( ;; ) {
         status = _heapwalk( &h_info );
-        if( status != _HEAPOK ) break;
+        if( status != _HEAPOK )
+            break;
 #ifndef NDEBUG
         if( h_info._useflag == _USEDENTRY ) {
             end = Format( buf, "%s block",
@@ -336,6 +340,8 @@ void *ExtraRealloc( void *p, size_t size )
 
 void ExtraFree( void *ptr )
 {
-    if( ptr != NULL ) TRMemFree( ptr );
+    if( ptr != NULL ) {
+        TRMemFree( ptr );
+    }
 }
 #endif

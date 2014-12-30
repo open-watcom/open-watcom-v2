@@ -55,7 +55,7 @@
 extern void     DebugMain( void );
 extern void     DebugFini( void );
 extern void     DebugExit(void);
-extern void     StartupErr( char *err );
+extern void     StartupErr( const char *err );
 extern void     NewConsoleTitle();
 
 
@@ -149,7 +149,7 @@ bool TBreak()
     return( ret );
 }
 
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     MessageBox( (HWND) NULL, buff, LIT( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );

@@ -43,7 +43,6 @@
 
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack(input_type);
-extern void             WndDlgTxt(char*);
 extern bool             TBreak();
 extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
 extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );

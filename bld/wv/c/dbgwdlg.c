@@ -37,7 +37,7 @@
 
 #define MAX_DLG_LINES 30000U
 
-extern void             LogLine( char * );
+extern void             LogLine( const char * );
 extern int              PageSize( int );
 extern void             SetLogMenuItems( bool active );
 extern void             DbgUpdate( update_list );
@@ -57,7 +57,7 @@ static unsigned         DlgListLineNum = 0;
 static unsigned         DlgLines = 0;
 
 
-static void DlgListPush( char *buff, unsigned len, unsigned attr )
+static void DlgListPush( const char *buff, unsigned len, unsigned attr )
 {
     dlg_entry   *entry;
 
@@ -100,7 +100,7 @@ bool DlgInfoRelease( void )
     return( TRUE );
 }
 
-static void WndDlgLine( char *buff, wnd_attr attr )
+static void WndDlgLine( const char *buff, wnd_attr attr )
 {
     unsigned    len;
 
@@ -112,7 +112,7 @@ static void WndDlgLine( char *buff, wnd_attr attr )
 }
 
 
-static bool WndDlgTxtAttr( char *buff, wnd_attr attr )
+static bool WndDlgTxtAttr( const char *buff, wnd_attr attr )
 {
     char        ch,*p;
     bool        multi = FALSE;
@@ -155,7 +155,7 @@ static void DlgRefresh( a_window *wnd )
 }
 
 
-bool WndDlgTxt( char *buff )
+bool WndDlgTxt( const char *buff )
 {
     return( WndDlgTxtAttr( buff, WND_PLAIN ) );
 }

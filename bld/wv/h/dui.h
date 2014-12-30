@@ -32,7 +32,7 @@
 extern void DUIUpdate( update_list flags );
 extern void DUIStatusText( char *text );
 extern void DUIMsgBox( char *text );
-extern bool DUIDlgTxt( char *text );
+extern bool DUIDlgTxt( const char *text );
 extern void DUIInfoBox( char *text );
 extern void DUIStop( void );
 extern void DUIFini( void );

@@ -143,7 +143,7 @@ int mygetlasterr()
     return( 0 );
 }
 
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     RdosWriteString( buff );
 }

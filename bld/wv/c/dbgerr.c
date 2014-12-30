@@ -54,7 +54,7 @@ extern void             BrkCmdError( void );
 extern void             PurgeSymHandles( void );
 extern void             DlgCmd( void );
 extern bool             SetProgStartHook( bool );
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 extern void             Suicide( void );
 extern void             ProcInput( void );
 

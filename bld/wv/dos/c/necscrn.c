@@ -45,7 +45,7 @@
 extern unsigned inp(unsigned __port);
 extern unsigned outp(unsigned __port, unsigned __value);
 extern void WndDirty(void);
-extern void StartupErr(char *);
+extern void StartupErr( const char * );
 extern void uisetcurrpage(int);
 
 flip_types              FlipMech;
@@ -237,7 +237,8 @@ static void AllocSwapSeg()
      * for NEC screen representation.
      */
     ret = TinyAllocBlock( PageSize >> 3 );
-    if( ret < 0 ) StartupErr( "unable to allocate swap area" );
+    if( ret < 0 )
+        StartupErr( "unable to allocate swap area" );
     SwapSeg = ret;
 }
 

@@ -50,12 +50,12 @@ extern void             ProcSysOptInit( void );
 extern bool             ProcSysOption( char *, unsigned, int );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
-extern void             PopErrBox( char * );
+extern void             PopErrBox( const char * );
 extern void             SysSetMemLimit( void );
 extern void             SetNumColumns( int cols );
 extern void             SetNumLines( int lines );
 void                    FindLocalDebugInfo( char *name );
-extern void             StartupErr( char *err );
+extern void             StartupErr( const char *err );
 
 
 static char             *(*GetArg)( int );

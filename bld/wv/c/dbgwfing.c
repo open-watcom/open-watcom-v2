@@ -37,7 +37,7 @@
 #include "guidlg.h"
 #include "strutil.h"
 
-extern void StartupErr(char *);
+extern void StartupErr( const char * );
 extern int WndNumColours;
 extern a_window *WndMain;
 

@@ -100,6 +100,7 @@ extern  int             CtrlCHit( void );
 extern  char            *RealFName( char *, open_access * );
 extern  sys_error       GetSystemErrCode( error_idx );
 extern  unsigned        RemoteWriteConsole( void *, unsigned );
+extern  unsigned        RemoteWriteConsoleNL( void );
 extern  error_idx       GetLastErr( void );
 extern  sys_handle      GetSystemHandle( handle );
 
@@ -145,35 +146,34 @@ COPYPTR CopySpecs;
 
 #define REAL_CODE( err ) (GetSystemErrCode(err)&0xffff)
 
-#define NL  "\r\n"
-
-char HelpText[] = {
-NL
-"Commands which accept special file names are:" NL
-NL
-"      copy    [/s] src_spec [dst_spec] [/s] - copy files (/s=recursive)" NL
-"      dir     [/w] dir_spec [/w]            - directory (/w=wide)" NL
-"      cd      dir_spec                      - set current directory" NL
-"      chdir   dir_spec                      - set current directory" NL
-"      md      dir_spec                      - create directory" NL
-"      mkdir   dir_spec                      - create directory" NL
-"      rd      [/s] dir_spec [/s]            - delete directory" NL
-"      rmdir   [/s] dir_spec [/s]            - delete directory" NL
-"      type    dir_spec                      - type a file" NL
-"      del     [/s] file_spec [/s]           - erase files (/s= recursive)" NL
-"      erase   [/s] file_spec [/s]           - erase files (/s= recursive)" NL
-"      ren     src_spec dst_spec             - rename files" NL
-"      drive:                                - set drive and XXLcle" NL
-"      exit                                  - leave rfx" NL
-NL
-" Special file names are the same as DOS file names except" NL
-" they may be preceded by a XXLcle specifier of the form:" NL
-"      @[XXLcle]" NL
-"      - where: XXLcle = 'l' for XXLcl machine, 'r' for XXRem machine" NL
-"      - if a file name starts with an '@', then double it e.g. '@@file'" NL
-" Note:" NL
-"      If [dst_spec] is omitted from the copy command, it defaults to the" NL
-"      current directory on the machine NOT specified by [src_spec]" NL
+const char *HelpText[] = {
+"",
+"Commands which accept special file names are:",
+"",
+"      copy    [/s] src_spec [dst_spec] [/s] - copy files (/s=recursive)",
+"      dir     [/w] dir_spec [/w]            - directory (/w=wide)",
+"      cd      dir_spec                      - set current directory",
+"      chdir   dir_spec                      - set current directory",
+"      md      dir_spec                      - create directory",
+"      mkdir   dir_spec                      - create directory",
+"      rd      [/s] dir_spec [/s]            - delete directory",
+"      rmdir   [/s] dir_spec [/s]            - delete directory",
+"      type    dir_spec                      - type a file",
+"      del     [/s] file_spec [/s]           - erase files (/s= recursive)",
+"      erase   [/s] file_spec [/s]           - erase files (/s= recursive)",
+"      ren     src_spec dst_spec             - rename files",
+"      drive:                                - set drive and XXLcle",
+"      exit                                  - leave rfx",
+"",
+" Special file names are the same as DOS file names except",
+" they may be preceded by a XXLcle specifier of the form:",
+"      @[XXLcle]",
+"      - where: XXLcle = 'l' for XXLcl machine, 'r' for XXRem machine",
+"      - if a file name starts with an '@', then double it e.g. '@@file'",
+" Note:",
+"      If [dst_spec] is omitted from the copy command, it defaults to the",
+"      current directory on the machine NOT specified by [src_spec]",
+NULL
 };
 
 char * ErrMessages[] = {
@@ -257,18 +257,23 @@ static void    FormatDTA( char *buff, trap_dta *dir, bool wide );
 
 static void Help( void )
 {
-    WriteStream( STD_ERR, HelpText, sizeof( HelpText )-1 );
+    const char  **txts;
+    const char  *txt;
+
+    for( txts = HelpText; (txt = *txts) != NULL; ++txts ) {
+        WriteText( STD_ERR, txt, strlen( txt ) );
+    }
 }
 
 
 static void WhatDidYouSay( void )
 {
 #define whadjasay "Not understood: Type '?' for help"
-    WriteText( STD_ERR, whadjasay, sizeof( whadjasay )-1 );
+    WriteText( STD_ERR, whadjasay, sizeof( whadjasay ) - 1 );
 }
 
 
-static void Error( char *err )
+static void Error( const char *err )
 {
     WriteText( STD_ERR, err, strlen( err ) );
 }
@@ -322,7 +327,7 @@ static char * RealName( char * name, int * loc )
     return( name );
 }
 
-void StartupErr( char *err )
+void StartupErr( const char *err )
 {
     Error( err );
     exit( 2 );
@@ -334,11 +339,6 @@ void RestoreHandlers( void )
 
 void GrabHandlers( void )
 {
-}
-
-void WriteNL( void )
-{
-   WriteStream( STD_ERR, NL, sizeof( NL ) - 1 );
 }
 
 void CheckError( void )
@@ -367,17 +367,6 @@ void DbgFree( void * chunk )
 
 void FreeRing( void )
 {
-}
-
-int WriteBoth( char * buff, int len ) {
-
-    int         written;
-
-    written = WriteStream( STD_ERR, buff, len );
-    if( written != len )
-        return( written );
-    written = RemoteWriteConsole( buff, len );
-    return( written );
 }
 
 error_idx TransSetErr( error_idx err )
@@ -687,7 +676,7 @@ void Prompt( void )
                 WriteStream( STD_ERR, "\x1b", 1 );
                 break;
             case '_':
-                WriteStream( STD_ERR, "\r\n", 2 );
+                WriteNL( STD_ERR );
                 OutName();
                 break;
             default:
@@ -807,7 +796,7 @@ int ProcessCmd( char * cmd ) {
     char        tokens[255];
 
     CopyCmd( cmd, tokens );
-    WriteNL();
+    WriteNL( STD_ERR );
     if( tokens[0] == '\0' )
         return( 0 );
     argc = 0;
@@ -1197,8 +1186,7 @@ rc_erridx   CopyASpec( char *f1, char *f2, int f1loc, int f2loc )
                 CopyStr( Parse2.path, Parse3.path );
                 CopyStr( Parse2.drive, Parse3.drive );
                 endptr = Squish( &Parse3, Name2 );
-                if( src_cluster == dst_cluster
-                 &&  strcmp( endptr, endpath ) == 0 ) {
+                if( src_cluster == dst_cluster && strcmp( endptr, endpath ) == 0 ) {
                     retc = StashErrCode( IO_CANT_COPY_TO_SELF, OP_LOCAL );
                 } else {
                     retc = DoCopy( Name1, Name2, f1loc, f2loc );
@@ -1224,11 +1212,10 @@ static void WildCopy( int recursive )
 
     first = 1;
     none_in_root = FALSE;
-    for( ;; ) { /* Careful. List shifts underfoot */
-        list = CopySpecs;
-        if( list == NULL ) break;
-        errcod = CopyASpec( list->src,list->dst, list->src_loc,list->dst_loc );
-        WriteBoth( "\r\n", 2 );
+    while( (list = CopySpecs) != NULL ) { /* Careful. List shifts underfoot */
+        errcod = CopyASpec( list->src, list->dst, list->src_loc, list->dst_loc );
+        WriteNL( STD_ERR );
+        RemoteWriteConsoleNL();
         if( errcod != 0 ) {
             if( REAL_CODE( errcod ) == 0x02 ||
                 REAL_CODE( errcod ) == 0x12 ) { /* File not found */
@@ -1314,11 +1301,11 @@ void ProcCopy( int argc, char **argv )
         }
         AddCopySpec( src, dst, src_loc, dst_loc );
         WildCopy( recursive );
-        #define CPYMSG "        x Files copied        x Directories created\r\n"
+        #define CPYMSG "        x Files copied        x Directories created"
         strcpy( Buff, CPYMSG );
         DItoD( FilesCopied, Buff + 8 );
         DItoD( DirectoriesMade, Buff + 30 );
-        WriteStream( STD_OUT, Buff, sizeof( CPYMSG ) - 1 );
+        WriteText( STD_OUT, Buff, sizeof( CPYMSG ) - 1 );
     } else {
         WhatDidYouSay();
     }
@@ -1546,15 +1533,14 @@ void ProcDir( int argc, char **argv )
                 Buff[ 14 ] = '\0';
             }
             if( wide == 0 ) {
-                WriteStream( STD_OUT, Buff, strlen( Buff ) );
-                WriteStream( STD_OUT, NL, sizeof( NL ) - 1 );
+                WriteText( STD_OUT, Buff, strlen( Buff ) );
                 line++;
             } else {
                 WriteStream( STD_OUT, Buff, strlen( Buff ) );
                 if ( ++count == 5 ) {
                     count = 0;
                     line++;
-                    WriteStream( STD_OUT, NL, sizeof( NL ) - 1 );
+                    WriteNL( STD_OUT );
                 } else {
                     WriteStream( STD_OUT, "\t", 1 );
                 }
@@ -1562,19 +1548,19 @@ void ProcDir( int argc, char **argv )
             if( line == 23 ) {
                 WriteStream( STD_OUT, "Press any key when ready . . . ", 31 );
                 getch();
-                WriteStream( STD_OUT, "\r\n\r\n", 4 );
+                WriteNL( STD_OUT );
                 line = 0;
             }
         }
         DirClosef( io );
         if( count != 0 ) {
-            WriteStream( STD_OUT, "\r\n", 2 );
+            WriteNL( STD_OUT );
         }
-        #define MSG "        x File(s)         x bytes free\r\n"
+        #define MSG "        x File(s)         x bytes free"
         strcpy( Buff, MSG );
         DItoD( i, Buff + 8 );
         DItoD( io->free, Buff + 26 );
-        WriteStream( STD_OUT, Buff, sizeof( MSG ) - 1 );
+        WriteText( STD_OUT, Buff, sizeof( MSG ) - 1 );
     } else {
         SysSetErr( IO_FILE_NOT_FOUND );
     }
@@ -1607,25 +1593,30 @@ void ProcCD( int argc, char **argv, int crlf )
         } else {
             WriteStream( STD_OUT, "@L", 2 );
         }
-        Buff[ 0 ] = GetDrv( src_loc );
-        Buff[ 1 ] = ':';
-        Buff[ 2 ] = '\\';
+        Buff[0] = GetDrv( src_loc );
+        Buff[1] = ':';
+        Buff[2] = '\\';
         WriteStream( STD_OUT, Buff, 3 );
         GetDir( 0, Buff, src_loc );
         WriteStream( STD_OUT, Buff, strlen( Buff ) );
-        if( crlf ) WriteStream( STD_OUT, "\r\n", 2 );
+        if( crlf ) {
+            WriteNL( STD_OUT );
+        }
     } else if ( ( src[1] == ':' ) && ( src[2] == '\0' ) ) {
         if( src_loc == 1 ) {
             WriteStream( STD_OUT, "@R", 2 );
         } else {
             WriteStream( STD_OUT, "@L", 2 );
         }
-        *src = toupper( *src );
-        WriteStream( STD_OUT, src, 2 );
-        WriteStream( STD_OUT, "\\", 1 );
-        GetDir( tolower( src[0] ) - 'a' + 1, Buff, src_loc );
+        Buff[0] = toupper( *src );
+        Buff[1] = ':';
+        Buff[2] = '\\';
+        WriteStream( STD_OUT, Buff, 3 );
+        GetDir( Buff[ 0 ] - 'A' + 1, Buff, src_loc );
         WriteStream( STD_OUT, Buff, strlen( Buff ) );
-        if( crlf ) WriteStream( STD_OUT, NL, sizeof( NL ) - 1 );
+        if( crlf ) {
+            WriteNL( STD_OUT );
+        }
     } else {
         SetDir( src, src_loc );
     }

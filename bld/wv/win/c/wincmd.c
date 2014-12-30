@@ -39,7 +39,6 @@ extern void             ForceLines( unsigned );
 extern bool             HasEquals( void );
 extern unsigned         GetValue( void );
 extern unsigned long    GetMemory( void );
-extern void             StartupErr( char * );
 
 extern bool             WantFast;
 extern flip_types       FlipMech;

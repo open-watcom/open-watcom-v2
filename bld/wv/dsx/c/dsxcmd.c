@@ -49,7 +49,6 @@ extern void                     ForceLines( unsigned );
 extern bool                     HasEquals( void );
 extern unsigned                 GetValue( void );
 extern unsigned long            GetMemory( void );
-extern void                     StartupErr( char * );
 
 
 extern unsigned_8               DPMICheck;

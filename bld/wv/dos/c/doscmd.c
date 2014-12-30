@@ -44,7 +44,7 @@ extern void             ForceLines( unsigned );
 extern bool             HasEquals( void );
 extern unsigned         GetValue( void );
 extern unsigned long    GetMemory( void );
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 
 
 extern flip_types       FlipMech;
@@ -84,7 +84,8 @@ static void GetLines()
 
     if( HasEquals() ) {
         num = GetValue();
-        if( num < 10 || num > 999 ) StartupErr( "lines out of range" );
+        if( num < 10 || num > 999 )
+            StartupErr( "lines out of range" );
         ForceLines( num );
     }
 }

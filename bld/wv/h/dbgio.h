@@ -65,6 +65,7 @@ unsigned        ReadStream( handle, void *, unsigned );
 unsigned        ReadText( handle, void *, unsigned );
 
 unsigned        WriteStream( handle, const void *, unsigned );
+unsigned        WriteNL( handle );
 unsigned        WriteText( handle, const void *, unsigned );
 
 unsigned long   SeekStream( handle, long, seek_method );

@@ -90,11 +90,10 @@ static  save_state      *StateLast;
 static  int             NumStateEntries = 0;
 
 extern long             GetDataLong( void );
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 extern unsigned         ReqExpr( void );
 extern void             DbgUpdate( update_list );
 extern void             Warn( char * );
-extern void             LogLine( char * );
 extern void             FindAddrSectId( address *, int );
 extern void             SetStateOvlSect( machine_state *, unsigned int );
 extern unsigned int     RemoteOvlSectSize( void );

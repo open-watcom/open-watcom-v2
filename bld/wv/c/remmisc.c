@@ -44,7 +44,7 @@
 
 extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 //extern void             TrapErrTranslate( char *, int );
 extern void             FiniCoreSupp( void );
 extern bool             InitCoreSupp( void );
@@ -56,7 +56,6 @@ extern bool             InitThreadSupp( void );
 extern bool             InitRunThreadSupp( void );
 extern bool             InitCapabilities( void );
 extern bool             InitAsyncSupp( void );
-extern void             StartupErr( char *err );
 
 unsigned int            MaxPacketLen;
 

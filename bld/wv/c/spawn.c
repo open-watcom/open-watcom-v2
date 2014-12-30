@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <setjmp.h>
 
-extern void PopErrBox( char *buff );
+extern void PopErrBox( const char *buff );
 
 static jmp_buf  *ExitSP;
 

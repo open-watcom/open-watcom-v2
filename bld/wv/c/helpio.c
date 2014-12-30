@@ -52,7 +52,7 @@ HELPIO int HelpRead( HelpFp fp, void *buf, int len )
     return( ReadStream( (handle)fp, buf, len ) );
 }
 
-HELPIO int HelpWrite( HelpFp fp, char *buf, int len )
+HELPIO int HelpWrite( HelpFp fp, const char *buf, int len )
 {
     return( WriteStream( (handle)fp, buf, len ) );
 }

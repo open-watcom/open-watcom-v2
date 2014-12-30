@@ -40,7 +40,6 @@ extern unsigned         Lookup(const char *,const char *, unsigned);
 extern bool             HasEquals( void );
 extern unsigned         GetValue( void );
 extern unsigned long    GetMemory( void );
-extern void             StartupErr( char * );
 
 extern int              ScrnLines;
 

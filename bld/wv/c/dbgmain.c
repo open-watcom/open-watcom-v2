@@ -149,7 +149,7 @@ extern void             RecordInit( void );
 extern void             ReleaseProgOvlay( bool );
 extern void             RestoreHandlers( void );
 extern void             RingBell( void );
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 extern void             Suicide( void );
 extern void             SupportFini( void );
 extern void             SymCompFini( void );

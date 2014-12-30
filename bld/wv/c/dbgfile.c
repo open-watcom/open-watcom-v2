@@ -49,7 +49,7 @@
 extern unsigned         DUIEnvLkup( const char *name, char *buff, unsigned buff_len );
 extern void             FreeRing( char_ring * );
 extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 extern bool             HaveRemoteFiles( void );
 
 extern rc_erridx        RemoteErase( char const * );
@@ -195,17 +195,22 @@ unsigned WriteStream( handle h, const void *b, unsigned l)
     }
 }
 
-unsigned WriteText( handle h, const void *b, unsigned len )
+unsigned WriteNL( handle h )
 {
     char    *nl;
 
-    len = WriteStream( h, b, len );
     if( h & REMOTE_IND ) {
         nl = RemFile.newline;
     } else {
         nl = LclFile.newline;
     }
-    WriteStream( h, nl, (nl[1] != NULLCHAR) ? 2 : 1 );
+    return( WriteStream( h, nl, (nl[1] != NULLCHAR) ? 2 : 1 ) );
+}
+
+unsigned WriteText( handle h, const void *b, unsigned len )
+{
+    len = WriteStream( h, b, len );
+    WriteNL( h );
     return( len );   /* not including the newline sequence */
 }
 

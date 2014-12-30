@@ -82,11 +82,12 @@ void LogFini( void )
  * LogLine -- put a string followed by a newline in the log file
  */
 
-void LogLine( char *str )
+void LogLine( const char *str )
 {
     int   len;
 
-    if( LogHndl == NIL_HANDLE ) return;
+    if( LogHndl == NIL_HANDLE )
+        return;
     len = strlen( str );
     if( WriteText( LogHndl, str, len ) != len ) {
         LogFini();
@@ -99,11 +100,12 @@ void LogLine( char *str )
  */
 
 #ifdef DEADCODE
-void LogPut( char *str )
+void LogPut( const char *str )
 {
     int   len;
 
-    if( LogHndl == NIL_HANDLE ) return;
+    if( LogHndl == NIL_HANDLE )
+        return;
     len = strlen( str );
     if( WriteStream( LogHndl, str, len ) != len ) {
         LogFini();

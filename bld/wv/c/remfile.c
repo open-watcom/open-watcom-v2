@@ -346,6 +346,13 @@ unsigned RemoteWriteConsole( void *buff, unsigned len )
     return( DoWrite( REQ_FILE_WRITE_CONSOLE, NIL_SYS_HANDLE, buff, len ) );
 }
 
+unsigned RemoteWriteConsoleNL( void )
+{
+    if( SuppFileId == 0 )
+        return( 0 );
+    return( DoWrite( REQ_FILE_WRITE_CONSOLE, NIL_SYS_HANDLE, RemFile.newline, ( RemFile.newline[1] != NULLCHAR ) ? 2 : 1 ) );
+}
+
 static unsigned DoRead( sys_handle hdl, void *ptr, unsigned len )
 {
     in_mx_entry         in[1];

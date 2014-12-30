@@ -137,7 +137,7 @@ sys_handle LocalHandle( handle h )
     return( h );
 }
 
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     WriteText( STD_ERR, buff, strlen( buff ) );
 }

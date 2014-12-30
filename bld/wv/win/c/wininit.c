@@ -173,14 +173,14 @@ void exit( int code )
     KillDebugger( code );
 }
 
-void __exit_with_msg( char *msg )
+void __exit_with_msg( const char *msg )
 {
     PopErrBox( msg );
     exit( 1 );
 }
 #endif
 
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     MessageBox( (HWND) NULL, buff, LIT( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );

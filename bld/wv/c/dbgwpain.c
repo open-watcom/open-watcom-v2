@@ -40,7 +40,7 @@
 extern wnd_class        ReqWndName( void );
 extern void             ConfigLine( char * );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern bool             WndDlgTxt( char *buff );
+extern bool             WndDlgTxt( const char *buff );
 extern char             *GetWndFont( a_window * );
 extern bool             ScanStatus( void );
 extern char             *GetCmdName( int );

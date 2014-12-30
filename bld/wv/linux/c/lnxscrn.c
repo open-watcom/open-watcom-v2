@@ -57,7 +57,7 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 
-extern void     StartupErr( char * );
+extern void     StartupErr( const char * );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
 extern void     ReleaseProgOvlay( bool );
@@ -461,7 +461,7 @@ void ScrnSpawnEnd( void )
  *                                                                           *
 \*****************************************************************************/
 
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     WriteText( STD_ERR, buff, strlen( buff ) );
 }

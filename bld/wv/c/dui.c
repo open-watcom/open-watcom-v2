@@ -81,7 +81,7 @@ extern void             DoInput( void );
 extern void             *OpenSrcFile(cue_handle *);
 extern bool             GUIIsDBCS( void );
 extern unsigned         EnvLkup( const char *name, char *buff, unsigned buff_len );
-extern void             PopErrBox( char *buff );
+extern void             PopErrBox( const char *buff );
 extern void             KillDebugger( int ret_code );
 
 extern void             InitSuppServices( void );
@@ -90,7 +90,7 @@ extern void             AsyncNotify( void );
 extern void             RunThreadNotify( void );
 
 extern void             WndMsgBox( char *text );
-extern bool             WndDlgTxt( char *text );
+extern bool             WndDlgTxt( const char *text );
 extern void             WndInfoBox( char *text );
 extern void             WndUser( void );
 extern void             WndDebug( void );
@@ -180,7 +180,7 @@ void DUIMsgBox( char *text )
     WndMsgBox( text );
 }
 
-bool DUIDlgTxt( char *text )
+bool DUIDlgTxt( const char *text )
 {
     return( WndDlgTxt( text ) );
 }
@@ -426,8 +426,8 @@ void DUIRemoveBreak( brkp *bp )
 }
 
 
-void StartupErr( char *err )
-/**************************/
+void StartupErr( const char *err )
+/********************************/
 {
     PopErrBox( err );
     KillDebugger(1);

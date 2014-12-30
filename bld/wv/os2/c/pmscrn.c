@@ -54,7 +54,6 @@ extern HMQ      GUIPMmq;
 
 extern void     __far *ExtraAlloc( size_t );
 extern void     ExtraFree( void __far * );
-extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
 extern void     TellHandles( void __far *hab, void __far *hwnd );
@@ -275,7 +274,7 @@ bool SysGUI()
 {
     return( TRUE );
 }
-void PopErrBox( char *buff )
+void PopErrBox( const char *buff )
 {
     WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, buff,
                    LIT( Debugger_Startup_Error ), 1001,

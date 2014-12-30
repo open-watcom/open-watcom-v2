@@ -41,7 +41,7 @@
 extern unsigned int     OptExpr( unsigned int );
 extern void             ConfigLine( char * );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern bool             WndDlgTxt( char * );
+extern bool             WndDlgTxt( const char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );

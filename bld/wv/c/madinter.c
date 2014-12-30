@@ -60,7 +60,7 @@ extern void             EvalExpr( unsigned addr_depth );
 extern void             MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern char             *CnvAddr( address addr, cnvaddr_option cao, bool uniq, char *p, unsigned max );
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );
 extern void             ClearMachineDataCache( void );
 

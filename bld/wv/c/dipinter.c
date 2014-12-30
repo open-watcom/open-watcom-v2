@@ -62,7 +62,7 @@ extern wv_sym_entry     *LookupInternalName( lookup_item * );
 extern wv_sym_entry     *LookupUserName( lookup_item * );
 extern void             InternalValue( unsigned, void * );
 extern void             PurgeUserNames(void);
-extern void             StartupErr( char * );
+extern void             StartupErr( const char * );
 extern void             FreeImage( image_entry * );
 extern void             MapAddrForImage( image_entry *, addr_ptr * );
 extern image_entry      *ImageEntry( mod_handle );

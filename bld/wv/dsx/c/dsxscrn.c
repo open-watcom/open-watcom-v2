@@ -136,7 +136,7 @@ typedef struct {
 } screen_info;
 
 
-extern void                     StartupErr( char * );
+extern void                     StartupErr( const char * );
 extern int                      GUIInitMouse( int );
 extern void                     GUIFiniMouse( void );
 extern void                     GUIInitGraphicsMouse( gui_window_styles );

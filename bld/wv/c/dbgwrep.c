@@ -53,7 +53,6 @@ extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
 extern void             CreateInvokeFile( char *name, void (*rtn)(void) );
 extern void             InvokeAFile(char*);
-extern bool             WndDlgTxt( char *buff );
 extern char             *StrAddr( address *addr, char *p ,unsigned);
 extern unsigned         ReqExpr();
 extern void             PushInpStack( void *handle, bool (*rtn)(), bool save_lang );

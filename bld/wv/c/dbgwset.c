@@ -80,7 +80,7 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern void             WndDlgTxt( char * );
+extern void             WndDlgTxt( const char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, char *);
 extern char             *UniqStrAddr( address *addr, char *p ,unsigned );
 extern char             *GetCmdName( int );

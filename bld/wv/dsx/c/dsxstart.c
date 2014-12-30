@@ -41,7 +41,7 @@
 extern void                     ProcCmd( void );
 extern void                     DebugMain( void );
 extern void                     DebugFini( void );
-extern void                     StartupErr( char * );
+extern void                     StartupErr( const char * );
 extern void                     SaveOrigVectors( void );
 extern void                     RestoreOrigVectors( void );
 
