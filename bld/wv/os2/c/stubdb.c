@@ -952,7 +952,12 @@ bool DUICopyCancelled( void * cookie )
     return( FALSE );
 }
 
-unsigned OnAnotherThread( unsigned(*rtn)(unsigned,void *,unsigned,void *), unsigned in_len, void *in, unsigned out_len, void *out )
+unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )
 {
-    return( rtn( in_len, in, out_len, out ) );
+    return( TrapAccess( in_num, in_mx, out_num, out_mx ) );
+}
+
+unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+{
+    return( TrapSimpAccess( in_len, in_data, out_len, out_data ) );
 }

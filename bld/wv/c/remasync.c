@@ -81,7 +81,7 @@ unsigned MakeAsyncRun( bool single )
     else
         acc.req = REQ_ASYNC_GO;
 
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_RUNNING ) {
@@ -124,7 +124,7 @@ unsigned PollAsync( )
 
     acc.req = REQ_ASYNC_POLL;
 
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_RUNNING ) {
@@ -167,7 +167,7 @@ unsigned StopAsync( )
 
     acc.req = REQ_ASYNC_STOP;
 
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_RUNNING ) {

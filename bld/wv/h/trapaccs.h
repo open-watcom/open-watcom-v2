@@ -31,7 +31,9 @@
 
 
 #if defined(__GUI__) && defined(__OS2__)
-extern unsigned OnAnotherThread( unsigned(*)(), unsigned, void *, unsigned, void * );
+extern unsigned OnAnotherThreadAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
+extern unsigned OnAnotherThreadSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
 #else
-#define     OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
+#define     OnAnotherThreadAccess( a,b,c,d ) TrapAccess( a,b,c,d )
+#define     OnAnotherThreadSimpAccess( a,b,c,d ) TrapSimpAccess( a,b,c,d )
 #endif

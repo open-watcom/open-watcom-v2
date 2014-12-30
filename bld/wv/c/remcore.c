@@ -350,7 +350,7 @@ rc_erridx DoLoad( char *args, unsigned long *phandle )
     ret.task_id = 0;
     RestoreHandlers();
     FiniSuppServices();
-    OnAnotherThread( TrapAccess, 2, in, 1, out );
+    OnAnotherThreadAccess( 2, in, 1, out );
     InitSuppServices();
     GrabHandlers();
     GetSysConfig();
@@ -392,7 +392,7 @@ bool KillProgOvlay( void )
     acc.task_id = TaskId;
     RestoreHandlers();
     FiniSuppServices();
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.err );
     InitSuppServices();
     _SwitchOff( SW_HAVE_TASK );
@@ -413,7 +413,7 @@ unsigned MakeProgRun( bool single )
     acc.req = single ? REQ_PROG_STEP : REQ_PROG_GO;
     RestoreHandlers();
     DUIExitCriticalSection();
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.stack_pointer.offset );
     CONV_LE_16( ret.stack_pointer.segment );
     CONV_LE_32( ret.program_counter.offset );

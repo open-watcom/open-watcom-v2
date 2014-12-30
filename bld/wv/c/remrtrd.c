@@ -117,7 +117,7 @@ void RemotePollRunThread( void )
     acc.supp.id = SuppRunThreadId;
     acc.req = REQ_RUN_THREAD_POLL;
 
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
     if( ret.conditions & COND_CONFIG ) {
@@ -212,7 +212,7 @@ void RemoteStopThread( thread_state *thd )
     acc.req = REQ_RUN_THREAD_STOP;
     acc.thread = thd->tid;
 
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, 0, NULL );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
 void RemoteSignalStopThread( thread_state *thd )
@@ -226,5 +226,5 @@ void RemoteSignalStopThread( thread_state *thd )
     acc.req = REQ_RUN_THREAD_SIGNAL_STOP;
     acc.thread = thd->tid;
 
-    OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, 0, NULL );
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }

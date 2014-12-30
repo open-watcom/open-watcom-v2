@@ -204,7 +204,7 @@ unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_m
     return( result );
 }
 
-unsigned TrapSimpAccess( unsigned in_len, const void *in_data, unsigned out_len, void *out_data )
+unsigned TrapSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
 {
     in_mx_entry     in[1];
     mx_entry        out[1];

@@ -282,15 +282,31 @@ void PopErrBox( char *buff )
                    MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
 
-unsigned OnAnotherThread( unsigned(*rtn)(unsigned,void *,unsigned,void *), unsigned in_len, void *in, unsigned out_len, void *out )
+unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )
 {
     unsigned    result;
 
     if( !ToldWinHandle || IsTrapFilePumpingMessageQueue() ) {
-        return( rtn( in_len, in, out_len, out ) );
+        return( TrapAccess( in_num, in_mx, out_num, out_mx ) );
     } else {
         DosSemClear( &PumpMessageSem );
-        result = rtn( in_len, in, out_len, out );
+        result = TrapAccess( in_num, in_mx, out_num, out_mx );
+        WinPostMsg( GUIGetSysHandle( WndGui( WndMain ) ), WM_QUIT, 0, 0 );
+        DosSemWait( &PumpMessageDoneSem, SEM_INDEFINITE_WAIT );
+        DosSemSet( &PumpMessageDoneSem );
+        return( result );
+    }
+}
+
+unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+{
+    unsigned    result;
+
+    if( !ToldWinHandle || IsTrapFilePumpingMessageQueue() ) {
+        return( TrapSimpAccess( in_len, in_data, out_len, out_data ) );
+    } else {
+        DosSemClear( &PumpMessageSem );
+        result = TrapSimpAccess( in_len, in_data, out_len, out_data );
         WinPostMsg( GUIGetSysHandle( WndGui( WndMain ) ), WM_QUIT, 0, 0 );
         DosSemWait( &PumpMessageDoneSem, SEM_INDEFINITE_WAIT );
         DosSemSet( &PumpMessageDoneSem );
