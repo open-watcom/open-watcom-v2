@@ -1143,20 +1143,16 @@ static bool CopyToRemote( char *local, char *remote, bool strip, void *cookie )
     unsigned long       copied;
     long                remdate;
     long                lcldate;
+    bool                delete_file;
 
-    bsize = MaxRemoteWriteSize();
-    _Alloc( buff, bsize );
-    if( buff == NULL ) {
-        bsize = 128;
-        buff = DbgMustAlloc( bsize );
-    }
 #ifdef __NT__
     lcldate = LocalGetFileDate( local );
 #else
     lcldate = -1;
 #endif
     remdate = RemoteGetFileDate( remote );
-    if( remdate != -1 && lcldate != -1 && remdate == lcldate ) return( TRUE );
+    if( remdate != -1 && lcldate != -1 && remdate == lcldate )
+        return( TRUE );
     strip = strip; // nyi - strip debug info here
     floc = FileOpen( local, OP_READ );
     if( floc == NIL_HANDLE ) {
@@ -1169,9 +1165,16 @@ static bool CopyToRemote( char *local, char *remote, bool strip, void *cookie )
         FileClose( floc );
         return( FALSE );
     }
+    bsize = 0x8000;
+    _Alloc( buff, bsize );
+    if( buff == NULL ) {
+        bsize = 128;
+        buff = DbgMustAlloc( bsize );
+    }
     copylen = SizeMinusDebugInfo( floc, strip );
     DUICopySize( cookie, copylen );
     SeekStream( floc, 0, DIO_SEEK_ORG );
+    delete_file = FALSE;
     copied = 0;
     while( ( len = ReadStream( floc, buff, bsize ) ) != 0 ) {
         WriteStream( frem, buff, len );
@@ -1179,16 +1182,20 @@ static bool CopyToRemote( char *local, char *remote, bool strip, void *cookie )
         copied += len;
         if( copied >= copylen ) break;
         if( DUICopyCancelled( cookie ) ) {
-            FileClose( floc );
-            FileClose( frem );
-            RemoteErase( remote );
-            return( FALSE );
+            delete_file = TRUE;
+            break;
         }
     }
     FileClose( floc );
     FileClose( frem );
-    RemoteSetFileDate( remote, lcldate );
-    return( TRUE );
+    _Free( buff );
+    if( delete_file ) {
+        RemoteErase( remote );
+        return( FALSE );
+    } else {
+        RemoteSetFileDate( remote, lcldate );
+        return( TRUE );
+    }
 }
 
 
