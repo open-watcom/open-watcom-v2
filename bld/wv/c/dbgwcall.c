@@ -132,8 +132,8 @@ static  bool    CallGetLine( a_window *wnd, int row, int piece,
     line->extent = WND_MAX_EXTEND;
     switch( piece ) {
     case PIECE_SYMBOL:
+        StrCopy( ":", StrCopy( chain->symbol, TxtBuff ) );
         line->text = TxtBuff;
-        StrCopy( ":", StrCopy( chain->symbol, line->text ) );
         return( TRUE );
     case PIECE_SOURCE:
         line->indent = call->max_sym_len + 3*WndAvgCharX( wnd );
