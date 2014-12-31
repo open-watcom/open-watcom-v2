@@ -266,68 +266,42 @@ sys_handle RemoteOpen( char *name, open_access mode )
     }
 }
 
-static unsigned DoAWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len )
+static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
-    union {
-        file_write_req              file;
-        file_write_console_req      con;
-    } acc;
-    file_write_ret      ret;
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    file_write_req          acc;
+    file_write_ret          ret;
+    unsigned                total;
+    unsigned                buff_len;
 
-    SUPP_FILE_SERVICE( acc.file, req );
-    if( req == REQ_FILE_WRITE_CONSOLE ) {
-        in[0].len = sizeof( acc.con );
-    } else {
-        acc.file.handle = hdl;
-        CONV_LE_32( acc.file.handle );
-        in[0].len = sizeof( acc.file );
-    }
+    SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE );
+    acc.handle = hdl;
+    CONV_LE_32( acc.handle );
     in[0].ptr = &acc;
-    in[1].ptr = ptr;
-    in[1].len = len;
+    in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, in, 1, out );
-    CONV_LE_32( ret.err );
-    CONV_LE_16( ret.len );
-    if( ret.err != 0 ) {
-        StashErrCode( ret.err, OP_REMOTE );
-        return( ERR_RETURN );
-    } else {
-        return( ret.len );
-    }
-}
 
-unsigned MaxRemoteWriteSize( void )
-{
-    return( MaxPacketLen - sizeof( file_write_req ) );
-}
-
-static unsigned DoWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len )
-{
-    unsigned    rc;
-    unsigned    total;
-    unsigned    max;
-    unsigned    curr;
-
-    max = MaxRemoteWriteSize();
+    buff_len = MaxPacketLen - sizeof( acc );
     total = 0;
-    for( ;; ) {
-        if( len == 0 )
+    while( len > 0 ) {
+        if( len < buff_len )
+            buff_len = len;
+        in[1].ptr = buff;
+        in[1].len = buff_len;
+        TrapAccess( 2, in, 1, out );
+        CONV_LE_32( ret.err );
+        CONV_LE_16( ret.len );
+        if( ret.err != 0 ) {
+            StashErrCode( ret.err, OP_REMOTE );
+            return( ERR_RETURN );
+        }
+        total += ret.len;
+        if( ret.len != buff_len )
             break;
-        curr = len;
-        if( curr > max )
-            curr = max;
-        rc = DoAWrite( req, hdl, ptr, curr );
-        if( rc == ERR_RETURN )
-            return( rc );
-        total += rc;
-        if( rc != curr )
-            break;
-        ptr = (char *)ptr + curr;
-        len -= curr;
+        buff = (char *)buff + buff_len;
+        len -= buff_len;
     }
     return( total );
 }
@@ -336,63 +310,108 @@ unsigned RemoteWrite( sys_handle hdl, const void *buff, unsigned len )
 {
     if( SuppFileId == 0 )
         return( 0 );
-    return( DoWrite( REQ_FILE_WRITE, hdl, (void *)buff, len ) );
+
+    return( doWrite( hdl, buff, len ) );
+}
+
+static unsigned doWriteConsole( const void *buff, unsigned len )
+{
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    file_write_console_req  acc;
+    file_write_console_ret  ret;
+    unsigned                total;
+    unsigned                buff_len;
+
+    SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE_CONSOLE );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
+
+    buff_len = MaxPacketLen - sizeof( acc );
+    total = 0;
+    while( len > 0 ) {
+        if( len < buff_len )
+            buff_len = len;
+        in[1].ptr = buff;
+        in[1].len = buff_len;
+        TrapAccess( 2, in, 1, out );
+        CONV_LE_32( ret.err );
+        CONV_LE_16( ret.len );
+        if( ret.err != 0 ) {
+            StashErrCode( ret.err, OP_REMOTE );
+            return( ERR_RETURN );
+        }
+        total += ret.len;
+        if( ret.len != buff_len )
+            break;
+        buff = (char *)buff + buff_len;
+        len -= buff_len;
+    }
+    return( total );
 }
 
 unsigned RemoteWriteConsole( void *buff, unsigned len )
 {
     if( SuppFileId == 0 )
         return( 0 );
-    return( DoWrite( REQ_FILE_WRITE_CONSOLE, NIL_SYS_HANDLE, buff, len ) );
+
+    return( doWriteConsole( buff, len ) );
 }
 
 unsigned RemoteWriteConsoleNL( void )
 {
     if( SuppFileId == 0 )
         return( 0 );
-    return( DoWrite( REQ_FILE_WRITE_CONSOLE, NIL_SYS_HANDLE, RemFile.newline, ( RemFile.newline[1] != NULLCHAR ) ? 2 : 1 ) );
+
+    return( doWriteConsole( RemFile.newline, ( RemFile.newline[1] != NULLCHAR ) ? 2 : 1 ) );
 }
 
-static unsigned DoRead( sys_handle hdl, void *ptr, unsigned len )
+static unsigned doRead( sys_handle hdl, void *buff, unsigned len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
     file_read_req       acc;
     file_read_ret       ret;
-    unsigned            got;
+    unsigned            total;
+    unsigned            buff_len;
+    unsigned            got_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
     acc.handle = hdl;
-    acc.len = len;
+    CONV_LE_32( acc.handle );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    out[1].ptr = ptr;
-    out[1].len = len;
-    CONV_LE_32( acc.handle );
-    CONV_LE_16( acc.len );
-    got = TrapAccess( 1, in, 2, out );
-    CONV_LE_32( ret.err );
-    if( ret.err != 0 ) {
-        StashErrCode( ret.err, OP_REMOTE );
-        return( ERR_RETURN );
-    } else {
-        return( got - sizeof( ret ) );
+
+    buff_len = MaxPacketLen - sizeof( file_read_req );
+    total = 0;
+    while( len > 0 ) {
+        if( len < buff_len )
+            buff_len = len;
+        out[1].ptr = buff;
+        out[1].len = buff_len;
+        acc.len = buff_len;
+        CONV_LE_16( acc.len );
+        got_len = TrapAccess( 1, in, 2, out ) - sizeof( ret );
+        CONV_LE_32( ret.err );
+        if( ret.err != 0 ) {
+            StashErrCode( ret.err, OP_REMOTE );
+            return( ERR_RETURN );
+        }
+        total += got_len;
+        if( got_len != buff_len )
+            break;
+        buff = (char *)buff + buff_len;
+        len -= buff_len;
     }
+    return( total );
 }
 
-unsigned MaxRemoteReadSize( void )
+unsigned RemoteRead( sys_handle hdl, void *buff, unsigned len )
 {
-    return( MaxPacketLen - sizeof( file_read_req ) );
-}
-
-unsigned RemoteRead( sys_handle hdl, void *ptr, unsigned len )
-{
-    unsigned    total;
-    unsigned    rc;
-    unsigned    max;
-    unsigned    curr;
     int         locfile;
 
     if( SuppFileId == 0 )
@@ -401,26 +420,9 @@ unsigned RemoteRead( sys_handle hdl, void *ptr, unsigned len )
     /* Try reading from local copy first */
     locfile = GetCachedHandle( hdl );
     if( locfile != -1 )
-        return( read( locfile, ptr, len ) );
+        return( read( locfile, buff, len ) );
 
-    max = MaxRemoteReadSize();
-    total = 0;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        curr = len;
-        if( curr > max )
-            curr = max;
-        rc = DoRead( hdl, ptr, curr );
-        if( rc == ERR_RETURN )
-            return( rc );
-        total += rc;
-        if( rc != curr )
-            break;
-        ptr = (char *)ptr + curr;
-        len -= curr;
-    }
-    return( total );
+    return( doRead( hdl, buff, len ) );
 }
 
 unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, unsigned method )
