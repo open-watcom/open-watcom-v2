@@ -59,7 +59,7 @@ const char __far *DOSEnvFind( const char __far *name )
  * EnvLkup -- lookup up string in environment area
  */
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len 
+unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
     const char  __far *env;
     unsigned    len;
