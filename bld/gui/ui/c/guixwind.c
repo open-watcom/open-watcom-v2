@@ -185,7 +185,7 @@ gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
  * GUIGetCol - get the column that the mouse is on
  */
 
-gui_ord GUIGetCol( gui_window * wnd, char * text, gui_point * in_pt )
+gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
 {
     gui_point pt;
 

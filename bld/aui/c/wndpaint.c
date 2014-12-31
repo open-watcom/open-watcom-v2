@@ -151,7 +151,8 @@ static void WndDrawTheLine( a_window *wnd, wnd_line_piece *line,
 static void WndDrawCursor( a_window *wnd, wnd_line_piece *line,
                            wnd_row row, int piece )
 {
-    char        *p;
+    const char  *p;
+
     if( _Is( wnd, WSW_NOT_TO_SCREEN ) ) return;
     if( _Isnt( wnd, WSW_CHAR_CURSOR ) ) return;
     if( !line->tabstop ) return;

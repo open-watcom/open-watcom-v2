@@ -31,7 +31,7 @@
 
 
 #include "auipvt.h"
-extern gui_message_return WndDisplayMessage( char *msg, char *cap,
+extern gui_message_return WndDisplayMessage( const char *msg, char *cap,
                                              gui_message_type type )
 {
     gui_window  *gui;

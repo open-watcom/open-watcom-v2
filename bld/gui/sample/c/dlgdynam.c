@@ -36,7 +36,7 @@
 
 static bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param );
 
-static  char            *LongText       = "inserted_really_long_piece_of_text";
+static  const char  *LongText = "inserted_really_long_piece_of_text";
 
 static gui_create_info DialogControl = {
     "Dynamic Dialog Box",               // Title

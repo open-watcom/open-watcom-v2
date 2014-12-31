@@ -742,10 +742,10 @@ extern bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
 extern bool GUISetWindowText( gui_window * wnd, const char * data );
 extern size_t GUIGetWindowTextLength( gui_window *wnd );
 extern size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len );
-extern gui_ord GUIGetRow( gui_window * wnd, gui_point *pos );
-extern gui_ord GUIGetCol( gui_window * wnd, char *text, gui_point *pos );
+extern gui_ord GUIGetRow( gui_window *wnd, gui_point *pos );
+extern gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *pos );
 extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,
-                                char * string, int mouse_x );
+                                const char *string, int mouse_x );
 extern gui_ord GUIGetExtentX( gui_window *wnd, const char * text, size_t length );
 extern gui_ord GUIGetExtentY( gui_window *wnd, const char * text );
 extern gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, size_t length );
@@ -875,7 +875,7 @@ extern gui_ord GUIGetNumRows( gui_window *wnd );
 /* Built in user interactions */
 
 extern gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                             char *message, char *title,
+                                             const char *message, char *title,
                                              gui_message_type type );
 extern gui_message_return GUIGetNewVal( char *title, char *old, char **new_val );
 extern int GUIDlgPick( char *title, PICKCALLBACK *pickinit );

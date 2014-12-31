@@ -41,7 +41,7 @@ char * ListBoxData[] = { "one", "two", "three" };
 int    NUM_LIST_BOX_DATA = ( sizeof( ListBoxData ) / sizeof( char * ) );
 extern out_info Child1_Out;
 
-static  char            *LongText       = "inserted_really_long_piece_of_text";
+static  const char  *LongText = "inserted_really_long_piece_of_text";
 
 static gui_resource DlgWinIcon = { WIN1, "Win1" };
 

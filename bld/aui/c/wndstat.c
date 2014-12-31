@@ -54,7 +54,7 @@ void WndCloseStatusWindow( void )
 #define STAT_LEN        80
 char WndStatusString[STAT_LEN+1];
 
-bool WndStatusText( char *text )
+bool WndStatusText( const char *text )
 {
     bool        rc;
 

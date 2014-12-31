@@ -54,7 +54,7 @@ gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pos )
     return( row );
 }
 
-gui_ord GUIGetCol( gui_window * wnd, char * text, gui_point * in_pos )
+gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
 {
     int         width;
     bool        got_new;

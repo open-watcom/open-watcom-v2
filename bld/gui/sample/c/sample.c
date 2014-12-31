@@ -48,7 +48,7 @@ int             CurrPopupItem   = MENU_CHANGE;
 static gui_window       *HelpWindow     = NULL;
 static char             *help_file;
 static gui_help_instance        help_inst;
-static  char             LongStr[] =
+static const char       LongStr[] =
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

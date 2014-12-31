@@ -50,8 +50,8 @@ static gui_ord DoReturn( gui_ord ret, gui_window * wnd, bool got_new )
  * GUIGetStringPos
  */
 
-extern gui_ord GUIGetStringPos( gui_window * wnd, gui_ord indent,
-                                char * string, int mouse_x )
+extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,
+                                const char *string, int mouse_x )
 
 {
     gui_coord diff;

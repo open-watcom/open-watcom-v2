@@ -38,8 +38,8 @@
  * GUIGetStringPos
  */
 
-extern gui_ord GUIGetStringPos( gui_window * wnd, gui_ord indent,
-                                char * string, gui_ord mouse_x )
+extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,
+                                const char *string, gui_ord mouse_x )
 
 {
     int pos;

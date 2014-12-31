@@ -120,7 +120,7 @@ typedef unsigned char   wnd_class;
 typedef unsigned long   wnd_update_list;
 
 typedef struct wnd_line_piece {
-    char        *text;                  // default ""
+    const char  *text;                  // default ""
     wnd_attr    attr;                   // default WND_PLAIN
     gui_ord     indent;                 // default 0
     gui_ord     extent;                 // default WND_NO_EXTEND
@@ -517,7 +517,7 @@ extern void             *WndHourCursor( void );
 extern void             *WndArrowCursor( void );
 
 extern void             WndCreateStatusWindow( gui_colour_set * );
-extern bool             WndStatusText( char * );
+extern bool             WndStatusText( const char * );
 extern bool             WndHaveStatusWindow( void );
 extern void             WndCloseStatusWindow( void );
 
@@ -552,7 +552,7 @@ extern char             *WndLoadString( int );
 extern void             NullPopupMenu( gui_menu_struct *menu );
 
 extern void             WndChangeMenuAll( gui_menu_struct *menu, int num_popups, bool on, int bit );
-extern gui_message_return WndDisplayMessage( char *msg, char *cap,
+extern gui_message_return WndDisplayMessage( const char *msg, char *cap,
                                              gui_message_type type );
 
 extern void     WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );

@@ -113,10 +113,10 @@ extern void             WndSetPopup( unsigned id );
 extern bool             WndMouseButtonIsDown( void );
 extern bool             WndValid(a_window*);
 extern void             WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu );
-extern char             *WndPrevChar( char *buff, char *curr );
-extern int              WndPrevCharCol( char *buff, int idx );
+extern const char       *WndPrevChar( const char *buff, const char *curr );
+extern int              WndPrevCharCol( const char *buff, int idx );
 extern int              WndLastCharCol( wnd_line_piece *line );
-extern int              WndCharCol( char *buff, int col );
+extern int              WndCharCol( const char *buff, int col );
 
 
 extern bool             WndDoingRefresh;

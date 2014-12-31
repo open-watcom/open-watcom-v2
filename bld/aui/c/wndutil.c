@@ -33,27 +33,29 @@
 #include "auipvt.h"
 #include <string.h>
 
-int WndCharCol( char *buff, int col )
+int WndCharCol( const char *buff, int col )
 {
-    char        *end,*curr;
+    const char  *end, *curr;
 
     end = buff + col;
-    for( curr = buff; curr < end; curr += GUICharLen( *curr ) ) ;
-    if( curr > end ) col--;
+    for( curr = buff; curr < end; curr += GUICharLen( *curr ) )
+        ;
+    if( curr > end )
+        col--;
     return( col );
 }
 
 int WndLastCharCol( wnd_line_piece *line )
 {
-    return( line->length == 0 ? 0 : WndCharCol( line->text, line->length-1 ) );
+    return( line->length == 0 ? 0 : WndCharCol( line->text, line->length - 1 ) );
 }
 
-int WndPrevCharCol( char *buff, int idx )
+int WndPrevCharCol( const char *buff, int idx )
 {
     return( idx == 0 ? 0 : WndCharCol( buff, idx - 1 ) );
 }
 
-char *WndPrevChar( char *buff, char *curr )
+const char *WndPrevChar( const char *buff, const char *curr )
 {
     return( buff + WndPrevCharCol( buff, curr - buff ) );
 }

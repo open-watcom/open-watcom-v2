@@ -122,7 +122,7 @@ bool WndRXFind( void * _rx, char **pos, char **endpos )
     return( TRUE );
 }
 
-static void NotFound( a_window *wnd, regexp *rx, char *msg )
+static void NotFound( a_window *wnd, regexp *rx, const char *msg )
 {
     Ring();
     WndNextRow( wnd, WND_NO_ROW, WND_RESTORE_ROW );
@@ -224,11 +224,11 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
                 }
             }
             if( line.bitmap ) continue;
-            pos = line.text;
+            pos = (char *)line.text;
             endpos = NULL;
             while( WndRXFind( rx, &pos, &endpos ) ) {
-                curr.end = endpos - line.text;
-                curr.col = pos - line.text;
+                curr.end = endpos - (char *)line.text;
+                curr.col = pos - (char *)line.text;
                 if( curr.piece < starting_pos.piece ) {
                     prev_occurence = curr;
                 } else if( curr.piece > starting_pos.piece ) {
