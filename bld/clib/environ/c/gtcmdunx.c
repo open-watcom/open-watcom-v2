@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
+*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -47,20 +49,35 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
     char    *word;
     char    *p     = NULL;
     char    **argv = &_argv[1];
+    char    *space;
 
     --len; // reserve space for NULL byte
 
-    if( buffer && (len > 0) ) {
+    if( buffer && (len >= 0) ) {
         p  = buffer;
         *p = '\0';
     }
-
+    
     /* create approximation of original command line */
     for( word = *argv++, i = 0, total = 0; word; word = *argv++ ) {
         i      = strlen( word );
         total += i;
+        
+        /* Check for spaces.  If found, this argument should
+         * be quoted.  This solution is a bit hacky and might
+         * possibly be fooled under very odd circumstances.
+         */
+        space = strchr(word, ' ');
+        if(space != NULL)
+            total +=2;
 
         if( p ) {
+        
+            if(space != NULL && len > 0) {
+                *p++ = '"';
+                --len;
+            }
+        
             if( i >= len ) {
                 strncpy( p, word, len );
                 p[len] = '\0';
@@ -71,11 +88,16 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
                 p   += i;
                 len -= i;
             }
+            
+            if(space != NULL && len > 0) {
+                *p++ = '"';
+                --len;
+            }
         }
 
         /* account for at least one space separating arguments */
         if( *argv ) {
-            if( p ) {
+            if( p != NULL && len > 0 ) {
                 *p++ = ' ';
                 --len;
             }
