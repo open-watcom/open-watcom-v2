@@ -841,7 +841,7 @@ bool ProcessCmdBreakpoint( const char *param )
         breakpoint "File Name":line_number
         breakpoint file:line_number
     */
-    if( param[0] == '\"' ) {
+    if( param[0] == '"' ) {
         file_name = GetFirstQuotedPart( param );
     } else {
         file_name = GetCmdPartByChar( param, ":" );
