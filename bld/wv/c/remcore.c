@@ -56,8 +56,8 @@ extern void             AddrFloat( address * );
 extern void             InvalidateTblCache( void );
 extern void             InitLC( location_context *new, bool use_real_regs );
 extern dtid_t           RemoteSetThread( dtid_t );
-extern void             RemoteSectTblRead( void * );
-extern void             RemoteSectTblWrite( void * );
+extern void             RemoteSectTblRead( byte * );
+extern void             RemoteSectTblWrite( const byte * );
 extern void             CheckMADChange( void );
 
 extern unsigned         MaxPacketLen;
@@ -173,7 +173,7 @@ unsigned ProgPeek( address addr, void *data, unsigned len )
     }
 }
 
-unsigned ProgPoke( address addr, void *data, unsigned len )
+unsigned ProgPoke( address addr, const void *data, unsigned len )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -245,7 +245,7 @@ unsigned PortPeek( unsigned port, void *data, unsigned size )
     return( TrapSimpAccess( sizeof( acc ), &acc, size, data ) );
 }
 
-unsigned PortPoke( unsigned port, void *data, unsigned size )
+unsigned PortPoke( unsigned port, const void *data, unsigned size )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

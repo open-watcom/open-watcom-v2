@@ -46,7 +46,7 @@ extern void             ConfigLine( char * );
 extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( const char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );
-extern unsigned         ProgPoke( address, void *, unsigned );
+extern unsigned         ProgPoke( address, const void *, unsigned );
 extern char             *GetCmdName( int );
 
 

@@ -41,9 +41,9 @@
 extern char             *GetCmdName( int );
 extern char             *CnvULong( unsigned long, char *buff, unsigned buff_len );
 extern unsigned         ProgPeek( address, void *, unsigned int );
-extern unsigned         ChangeMem( address, void *, unsigned int );
+extern unsigned         ChangeMem( address, const void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );
-extern unsigned         PortPoke( unsigned, void *, unsigned );
+extern unsigned         PortPoke( unsigned, const void *, unsigned );
 extern void             AddrFix( address * );
 extern address          AddrAddWrap( address, long );
 extern void             RecordEvent( char * );
@@ -54,52 +54,25 @@ extern void             DbgUpdate( update_list );
 
 //MAD: convert this stuff to work off of mad_type_handle's ?
 
-/* this item doesn't really exist, it's just being used for sizeof */
-extern item_mach    Mach;
-
-/***********************************************************************
-  !!!!!! must correspond with enum order (item_type) in dbgitem.h !!!!!
- ***********************************************************************/
-static unsigned Sizes[] = {
-        0,
-        sizeof( Mach.ub ),
-        sizeof( Mach.sb ),
-        sizeof( Mach.uw ),
-        sizeof( Mach.sw ),
-        sizeof( Mach.ud ),
-        sizeof( Mach.sd ),
-        sizeof( Mach.uq ),
-        sizeof( Mach.sq ),
-        sizeof( Mach.sf ),
-        sizeof( Mach.lf ),
-        sizeof( Mach.xf ),
-        sizeof( Mach.so ),
-        sizeof( Mach.lo ),
-        sizeof( Mach.qo ),
-        sizeof( Mach.sa ),
-        sizeof( Mach.la ),
-        sizeof( Mach.xa ),
-        sizeof( Mach.sc ),
-        sizeof( Mach.lc ),
-        sizeof( Mach.xc ),
-        sizeof( Mach.nwscb ),
-        sizeof( Mach.fwscb ),
-        sizeof( Mach.ndscb ),
-        sizeof( Mach.fdscb ),
+static unsigned Sizes[IT_MAX] = {
+    0,
+    #define pick(e,s,t,n) s,
+    #include "_dbgitem.h"
+    #undef pick
 };
 
-void ChangeMemUndoable( address addr, void *item, int size )
+void ChangeMemUndoable( address addr, const void *item, unsigned size )
 {
-    char        *p;
-    char        *it;
-    char        *end;
+    char                *p;
+    const unsigned char *it;
+    char                *end;
 
     if( AdvMachState( ACTION_MODIFY_MEMORY ) ) {
         ChangeMem( addr, item, size );
-        it = (char*)item;
+        it = item;
         end = TxtBuff + TXT_LEN;
         p = Format( TxtBuff, "%s %A", GetCmdName( CMD_MODIFY ), addr );
-        while( --size >= 0 ) {
+        for( ; size > 0; --size ) {
             p = StrCopy( ", ", p );
             p = CnvULong( *it++, p, end - p );
         }
@@ -114,7 +87,8 @@ unsigned        ProgPeekWrap(address addr,char * buff,unsigned length )
     unsigned    peek1,peek2;
 
     peek1 = ProgPeek( addr, buff, length );
-    if( peek1 == 0 || peek1 == length ) return( peek1 );
+    if( peek1 == 0 || peek1 == length )
+        return( peek1 );
     peek2 = ProgPeek( AddrAddWrap( addr, peek1 ), buff+peek1, length-peek1 );
     return( peek1+peek2 );
 }
@@ -123,24 +97,27 @@ static item_type ItemType( unsigned size )
 {
     item_type   i;
 
-    for( i = 0; Sizes[ i ] != size; ++i ) {
-        if( i >= sizeof( Sizes ) / sizeof( Sizes[0] ) ) return( IT_NIL );
+    for( i = IT_NIL + 1; i < IT_MAX; ++i ) {
+        if( Sizes[i] == size ) {
+            return( i );
+        }
     }
-    return( i );
+    return( IT_NIL );
 }
 
 
 unsigned ItemSize( item_type typ )
 {
-    return( Sizes[ typ & IT_TYPE_MASK ] );
+    return( Sizes[typ & IT_TYPE_MASK] );
 }
 
 
 static bool ItemGet( address *addr, item_mach *item, item_type typ )
 {
-    unsigned    size = Sizes[ typ & IT_TYPE_MASK ];
+    unsigned    size = Sizes[typ & IT_TYPE_MASK];
 
-    if( typ & IT_DEC ) addr->mach.offset -= size;
+    if( typ & IT_DEC )
+        addr->mach.offset -= size;
     if( typ & IT_IO ) {
         if( PortPeek( addr->mach.offset, item, size ) != size ) {
             if( typ & IT_ERR ) {
@@ -157,17 +134,19 @@ static bool ItemGet( address *addr, item_mach *item, item_type typ )
             return( FALSE );
         }
     }
-    if( typ & IT_INC ) addr->mach.offset += size;
+    if( typ & IT_INC )
+        addr->mach.offset += size;
     return( TRUE );
 
 }
 
 
-static bool ItemPut( address *addr, item_mach *item, item_type typ )
+static bool ItemPut( address *addr, const item_mach *item, item_type typ )
 {
-    unsigned    size = Sizes[ typ & IT_TYPE_MASK ];
+    unsigned    size = Sizes[typ & IT_TYPE_MASK];
 
-    if( typ & IT_DEC ) addr->mach.offset -= size;
+    if( typ & IT_DEC )
+        addr->mach.offset -= size;
     if( typ & IT_IO ) {
         if( PortPoke( addr->mach.offset, item, size ) != size ) {
             if( typ & IT_ERR ) {
@@ -183,7 +162,8 @@ static bool ItemPut( address *addr, item_mach *item, item_type typ )
             return( FALSE );
         }
     }
-    if( typ & IT_INC ) addr->mach.offset += size;
+    if( typ & IT_INC )
+        addr->mach.offset += size;
     return( TRUE );
 
 }
@@ -231,15 +211,17 @@ item_type ItemGetMAD( address *addr, item_mach *item, item_type ops, mad_type_ha
     item_type   it;
 
     it = ItemTypeFromMADType( th );
-    if( !ItemGet( addr, item, it | ops ) ) return( IT_NIL );
+    if( !ItemGet( addr, item, it | ops ) )
+        return( IT_NIL );
     return( it );
 }
 
-item_type ItemPutMAD( address *addr, item_mach *item, item_type ops, mad_type_handle th )
+item_type ItemPutMAD( address *addr, const item_mach *item, item_type ops, mad_type_handle th )
 {
     item_type   it;
 
     it = ItemTypeFromMADType( th );
-    if( !ItemPut( addr, item, it | ops ) ) return( IT_NIL );
+    if( !ItemPut( addr, item, it | ops ) )
+        return( IT_NIL );
     return( it );
 }

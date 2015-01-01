@@ -91,7 +91,7 @@ extern void             TraceStop( bool );
 extern void             ReMapPoints( image_entry *);
 extern void             DbgUpdate( update_list );
 extern void             NameThread( dtid_t tid, char *name );
-extern unsigned         ProgPoke( address, void *, unsigned );
+extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             DlgScanDataAddr( char *str, address *value );
 extern bool             DlgScanLong( char *str, long *value );
 extern cmd_list         *AllocCmdList(const char *,size_t );

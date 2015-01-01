@@ -56,7 +56,7 @@ extern bool             DlgLongExpr( char *, long * );
 extern bool             DlgDataAddr( char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
 extern long             AddrDiff( address a, address b );
-extern unsigned         ChangeMemUndoable( address addr, void *data, unsigned len );
+extern unsigned         ChangeMemUndoable( address addr, const void *data, unsigned len );
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( char *title, char *buff );
 extern int              AddrComp(address,address);

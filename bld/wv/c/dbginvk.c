@@ -130,21 +130,25 @@ static int InvGetKey( invokes *inv )
         }
         save = inv->in_off;
         ch = InvRead( inv, &save );
-        if( ch != PARM_START ) return( ch );
+        if( ch != PARM_START )
+            return( ch );
         parm = InvRead( inv, &save );
-        if( parm < '0' || parm > '9' ) break;
+        if( parm < '0' || parm > '9' )
+            break;
         ch = InvRead( inv, &save );
-        if( ch != PARM_END ) break;
+        if( ch != PARM_END )
+            break;
         count = parm - '0';
         if( count == 0 ) {
             CnvULongDec( inv->number, inv_num, sizeof( inv_num ) );
             inv->redirect = inv_num;
         } else {
-            next = inv->prmlst;
-            while( next != NULL && --count > 0 ) {
-                next = next->next;
+            for( next = inv->prmlst; next != NULL && count > 0 ; next = next->next ) {
+                --count;
             }
-            if( next != NULL ) inv->redirect = next->name;
+            if( next != NULL ) {
+                inv->redirect = next->name;
+            }
         }
     }
     inv->in_off = save + 1;

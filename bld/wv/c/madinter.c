@@ -49,7 +49,7 @@
 extern void             AddrSection( address *, unsigned );
 extern void             DbgUpdate( update_list );
 extern unsigned         ProgPeek( address, void *, unsigned );
-extern unsigned         ProgPoke( address, void *, unsigned );
+extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             RemoteOvlTransAddr(address *);
 extern address          GetRegIP(void);
 extern void             ResizeRegData(void);
@@ -122,7 +122,7 @@ unsigned        DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
 
 unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *buff )
 {
-    return( ProgPoke( a, (void *)buff, size ) );
+    return( ProgPoke( a, buff, size ) );
 }
 
 unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )

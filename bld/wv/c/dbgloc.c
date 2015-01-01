@@ -38,8 +38,8 @@
 
 extern address          AddrAdd( address, long );
 extern unsigned         ProgPeek( address, void *, unsigned );
-extern unsigned         ProgPoke( address, void *, unsigned );
-extern unsigned         ChangeMem( address, void *, unsigned );
+extern unsigned         ProgPoke( address, const void *, unsigned );
+extern unsigned         ChangeMem( address, const void *, unsigned );
 extern void             DbgUpdate( update_list );
 
 
@@ -166,7 +166,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     bool                padding;
     unsigned_32         pad_bytes = 0;
     bool                mem_mod;
-    unsigned            (*modify)( address, void *, unsigned );
+    unsigned            (*modify)( address, const void *, unsigned );
 
     modify = _IsOn( SW_RECORD_LOCATION_ASSIGN ) ? ChangeMem : ProgPoke;
     mem_mod = FALSE;

@@ -98,7 +98,7 @@ static void CheckRemapping( void )
     }
 }
 
-void RemoteSectTblRead( void *ovl )
+void RemoteSectTblRead( byte *ovl )
 {
     ovl_read_state_req  acc;
 
@@ -107,7 +107,7 @@ void RemoteSectTblRead( void *ovl )
     CheckRemapping();
 }
 
-void RemoteSectTblWrite( void *ovl )
+void RemoteSectTblWrite( const byte *ovl )
 {
     in_mx_entry         in[2];
     ovl_write_state_req acc;

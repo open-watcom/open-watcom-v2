@@ -975,9 +975,12 @@ static item_type DerefToSCB( type_handle *th )
 {
     dip_type_info   ti;
 
-    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK ) return( 0 );
-    if( ti.kind != TK_POINTER ) return( 0 );
-    if( !(ti.modifier & TM_FLAG_DEREF) ) return( 0 );
+    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
+        return( IT_NIL );
+    if( ti.kind != TK_POINTER )
+        return( IT_NIL );
+    if( !(ti.modifier & TM_FLAG_DEREF) )
+        return( IT_NIL );
     switch( ti.modifier & TM_MOD_MASK ) {
     case TM_NEAR:
         //MAD: ????
@@ -996,7 +999,7 @@ static item_type DerefToSCB( type_handle *th )
             return( IT_FDSCB );
         }
     }
-    return( 0 );
+    return( IT_NIL );
 }
 
 /*

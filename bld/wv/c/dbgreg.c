@@ -104,7 +104,7 @@ extern dtid_t           RemoteSetThread( dtid_t );
 extern thread_state     *FindThread( dtid_t );
 extern bool             InitOvlState( void );
 extern void             FiniOvlState( void );
-extern unsigned         ProgPoke( address addr, void *data, unsigned len );
+extern unsigned         ProgPoke( address addr, const void *data, unsigned len );
 extern unsigned         ProgPeek( address addr, void *data, unsigned len );
 extern void             SetCodeLoc( address );
 extern void             AddrFix( address * );
@@ -575,10 +575,10 @@ bool AdvMachState( int action )
 }
 
 
-unsigned ChangeMem( address addr, void * to, unsigned size )
+unsigned ChangeMem( address addr, const void * to, unsigned size )
 {
     memory_delta        *curr;
-    unsigned_8          *p;
+    const unsigned_8    *p;
     unsigned            amount;
     unsigned            left;
 

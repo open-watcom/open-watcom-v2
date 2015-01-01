@@ -40,8 +40,8 @@ typedef struct {
     unsigned_16 spacer;         /* to make a power of two */
 } section_info;
 
-extern void             RemoteSectTblRead( void * );
-extern void             RemoteSectTblWrite( void * );
+extern void             RemoteSectTblRead( byte * );
+extern void             RemoteSectTblWrite( const byte * );
 extern bool             RemoteOvlRetAddr( address *, unsigned );
 extern bool             RemoteOvlSectPos( unsigned, mem_block * );
 extern unsigned         RemoteOvlSectSize( void );
@@ -61,7 +61,8 @@ bool InitOvlState( void )
         OvlSize = RemoteOvlSectSize();
         OvlCount = ( OvlSize - 3 ) * 8;
         _Alloc( OvlRemap, OvlCount * sizeof( section_info ) );
-        if( OvlRemap == NULL ) return( FALSE );
+        if( OvlRemap == NULL )
+            return( FALSE );
         _Alloc( TblCache, OvlSize );
         for( i = 0; i < OvlCount; ++i ) {
             if( RemoteOvlSectPos( i + 1, &where ) ) {
@@ -95,9 +96,12 @@ int SectIsLoaded( unsigned sect_id, int sect_map_id )
 {
     byte    *tbl;
 
-    if( sect_id == 0 ) return( TRUE );
-    if( OvlSize == 0 ) return( FALSE );
-    if( sect_id > OvlCount ) return( TRUE );
+    if( sect_id == 0 )
+        return( TRUE );
+    if( OvlSize == 0 )
+        return( FALSE );
+    if( sect_id > OvlCount )
+        return( TRUE );
     --sect_id;
     if( sect_map_id == OVL_MAP_CURR ) {
         if( TblCacheValid ) {
@@ -113,21 +117,25 @@ int SectIsLoaded( unsigned sect_id, int sect_map_id )
     } else { /* map at time of execution */
         tbl = DbgRegs->ovl;
     }
-    return( (tbl[ sect_id / 8 ] & (1 << sect_id % 8) ) != 0 );
+    return( (tbl[sect_id / 8] & (1 << ( sect_id % 8 )) ) != 0 );
 }
 
 void SectLoad( unsigned sect_id )
 {
-    char    *tbl;
+    byte    *tbl;
 
-    if( sect_id == 0 ) return;
-    if( OvlSize == 0 ) return;
-    if( sect_id > OvlCount ) return;
-    if( TblCache != NULL && SectIsLoaded( sect_id, OVL_MAP_CURR ) ) return;
+    if( sect_id == 0 )
+        return;
+    if( OvlSize == 0 )
+        return;
+    if( sect_id > OvlCount )
+        return;
+    if( TblCache != NULL && SectIsLoaded( sect_id, OVL_MAP_CURR ) )
+        return;
     _AllocA( tbl, OvlSize );
     memset( tbl, 0, OvlSize );
     --sect_id;
-    tbl[ sect_id / 8 ] |= 1 << sect_id % 8;
+    tbl[sect_id / 8] |= 1 << ( sect_id % 8 );
     RemoteSectTblWrite( tbl );
 }
 
@@ -140,7 +148,8 @@ void SectTblRead( machine_state *state )
 
 void SetStateOvlSect( machine_state *state, unsigned sect_id )
 {
-    if( sect_id == 0 ) return;
+    if( sect_id == 0 )
+        return;
     RemoteSectTblWrite( state->ovl );
     SectLoad( sect_id );
     RemoteSectTblRead( state->ovl );
@@ -179,8 +188,10 @@ void AddrSection( address *addr, unsigned ovl_map_id )
     addr->indirect = TRUE;
     for( i = 0; i < OvlCount; ++i ) {
         seg = addr->mach.segment - OvlRemap[i].shift;
-        if( seg < OvlRemap[i].first ) continue;
-        if( seg >= OvlRemap[i].last ) continue;
+        if( seg < OvlRemap[i].first )
+            continue;
+        if( seg >= OvlRemap[i].last )
+            continue;
         if( SectIsLoaded( i + 1, ovl_map_id ) ) {
             addr->sect_id = i + 1;
             addr->mach.segment = seg;
@@ -192,21 +203,26 @@ void AddrSection( address *addr, unsigned ovl_map_id )
 
 void AddrFix( address *addr )
 {
-    if( OvlSize == 0 ) return;
-    if( !addr->indirect ) return;
-    if( addr->sect_id == 0 ) return;
-    addr->mach.segment += OvlRemap[addr->sect_id-1].shift;
+    if( OvlSize == 0 )
+        return;
+    if( !addr->indirect )
+        return;
+    if( addr->sect_id == 0 )
+        return;
+    addr->mach.segment += OvlRemap[addr->sect_id - 1].shift;
     addr->indirect = FALSE;
 }
 
 void AddrFloat( address *addr )
 {
-    if( OvlSize == 0 ) return;
-    if( addr->indirect ) return;
+    if( OvlSize == 0 )
+        return;
+    if( addr->indirect )
+        return;
     if( addr->sect_id == 0 ) {
         AddrSection( addr, OVL_MAP_CURR );
     } else {
-        addr->mach.segment -= OvlRemap[addr->sect_id-1].shift;
+        addr->mach.segment -= OvlRemap[addr->sect_id - 1].shift;
         addr->indirect = TRUE;
     }
 }
