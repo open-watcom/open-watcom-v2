@@ -133,7 +133,10 @@ typedef struct {
     /* followed by data to write to console */
 } _WCUNALIGNED file_write_console_req;
 
-typedef file_write_ret  file_write_console_ret;
+typedef struct {
+    trap_error          err;
+    unsigned_16         len;
+} file_write_console_ret;
 
 typedef struct {
     supp_prefix         supp;
