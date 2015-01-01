@@ -50,7 +50,6 @@ extern void             ProcSysOptInit( void );
 extern bool             ProcSysOption( char *, unsigned, int );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
-extern void             PopErrBox( const char * );
 extern void             SysSetMemLimit( void );
 extern void             SetNumColumns( int cols );
 extern void             SetNumLines( int lines );
@@ -169,7 +168,8 @@ void OptError( char *err )
         NextChar();
     }
     if( curr == token ) {
-        if( CurrChar == ARG_TERMINATE ) CurrChar = ' ';
+        if( CurrChar == ARG_TERMINATE )
+            CurrChar = ' ';
         *curr++ = CurrChar;
     }
     *curr = NULLCHAR;
@@ -196,7 +196,8 @@ bool HasEquals( void )
 void WantEquals( void )
 {
     SkipSpaces();
-    if( CurrChar != '=' && CurrChar != '#' ) OptError( LIT( STARTUP_Expect_Eql ) );
+    if( CurrChar != '=' && CurrChar != '#' )
+        OptError( LIT( STARTUP_Expect_Eql ) );
     NextChar();
     SkipSpaces();
 }
@@ -210,7 +211,8 @@ unsigned long GetValueLong( void )
     unsigned long val;
 
     WantEquals();
-    if( !isdigit( CurrChar ) ) OptError( LIT( STARTUP_Invalid_Num ) );
+    if( !isdigit( CurrChar ) )
+        OptError( LIT( STARTUP_Invalid_Num ) );
     val = 0;
     do {
         val = val * 10 + CurrChar - '0';
@@ -224,7 +226,8 @@ unsigned GetValue( void )
     unsigned long val;
 
     val = GetValueLong();
-    if( val > 0xffff ) OptError( LIT( STARTUP_Num_Too_Big ) );
+    if( val > 0xffff )
+        OptError( LIT( STARTUP_Num_Too_Big ) );
     return( val );
 }
 
@@ -247,12 +250,18 @@ unsigned long GetMemory( void )
 static void DoGetItem( char *buff, bool stop_on_first )
 {
     for( ;; ) {
-        if( CurrChar == ' ' ) break;
-        if( CurrChar == '\t' ) break;
-        if( CurrChar == ARG_TERMINATE ) break;
-        if( CurrChar == TRAP_PARM_SEPARATOR ) break;
-        if( CurrChar == '{' ) break;
-        if( OptDelim( CurrChar ) && stop_on_first ) break;
+        if( CurrChar == ' ' )
+            break;
+        if( CurrChar == '\t' )
+            break;
+        if( CurrChar == ARG_TERMINATE )
+            break;
+        if( CurrChar == TRAP_PARM_SEPARATOR )
+            break;
+        if( CurrChar == '{' )
+            break;
+        if( OptDelim( CurrChar ) && stop_on_first )
+            break;
         *buff++ = CurrChar;
         NextChar();
         stop_on_first = TRUE;
@@ -344,7 +353,7 @@ static void PrintUsage( int first_ln )
 
     for( ;; first_ln++ ) {
         msg_buff = DUILoadString( first_ln );
-        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
+        if( ( msg_buff[0] == '.' ) && ( msg_buff[1] == 0 ) )
             break;
         puts( msg_buff );
     }
@@ -357,15 +366,16 @@ static void PrintUsage( int first_ln )
 
 static void ProcOptList( int pass )
 {
-    char        buff[80];
-    char        err_buff[CMD_LEN];
-    char        *curr;
+    char            buff[80];
+    char            err_buff[CMD_LEN];
+    char            *curr;
     unsigned long   mem;
 
     SetupChar(); /* initialize scanner */
     for( ;; ) {
         SkipSpaces();
-        if( !OptDelim( CurrChar ) ) break;
+        if( !OptDelim( CurrChar ) )
+            break;
         NextChar();
         curr = buff;
 #ifndef __GUI__
@@ -407,11 +417,13 @@ static void ProcOptList( int pass )
             }
             break;
         case OPT_INVOKE:
-            if( pass == 2 ) _Free( InvokeFile );
+            if( pass == 2 )
+                _Free( InvokeFile );
             InvokeFile = GetFileName( pass );
             break;
         case OPT_NOINVOKE:
-            if( pass == 2 ) _Free( InvokeFile );
+            if( pass == 2 )
+                _Free( InvokeFile );
             InvokeFile = NULL;
             break;
         case OPT_NOSOURCECHECK:
@@ -426,7 +438,8 @@ static void ProcOptList( int pass )
         case OPT_DYNAMIC:
             mem = GetMemory();
             if( pass == 1 ) {
-                if( mem < MIN_MEM_SIZE ) mem = MIN_MEM_SIZE;
+                if( mem < MIN_MEM_SIZE )
+                    mem = MIN_MEM_SIZE;
                 MemSize = mem;
             }
             break;
@@ -434,8 +447,9 @@ static void ProcOptList( int pass )
             {
                 int i;
 
-                for( i = 0; DipFiles[ i ] != NULL; ++i ) ;
-                DipFiles[ i ] = GetFileName( pass );
+                for( i = 0; DipFiles[i] != NULL; ++i )
+                    ;
+                DipFiles[i] = GetFileName( pass );
             }
             break;
         case OPT_TRAP:

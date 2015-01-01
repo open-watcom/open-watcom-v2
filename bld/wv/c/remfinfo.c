@@ -53,7 +53,7 @@ bool InitFileInfoSupp()
     return( FALSE );
 }
 
-long RemoteGetFileDate( char *name )
+long RemoteGetFileDate( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -77,7 +77,7 @@ long RemoteGetFileDate( char *name )
     }
 }
 
-bool RemoteSetFileDate( char *name, long date )
+bool RemoteSetFileDate( const char *name, long date )
 {
     in_mx_entry                 in[2];
     mx_entry                    out[1];

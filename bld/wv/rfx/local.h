@@ -29,18 +29,18 @@
 *
 ****************************************************************************/
 
-extern rc_erridx LocalMkDir( char * );
-extern rc_erridx LocalRmDir( char * );
+extern rc_erridx LocalMkDir( const char * );
+extern rc_erridx LocalRmDir( const char * );
 extern rc_erridx LocalGetCwd( int, char * );
-extern rc_erridx LocalSetCWD( char * );
+extern rc_erridx LocalSetCWD( const char * );
 extern int      LocalGetDrv( void );
 extern rc_erridx LocalSetDrv( int );
-extern rc_erridx LocalFindFirst( char *, void *, unsigned, int );
+extern rc_erridx LocalFindFirst( const char *, void *, unsigned, int );
 extern rc_erridx LocalFindNext( void *, unsigned );
-extern long     LocalGetFileAttr( char * );
-extern rc_erridx LocalSetFileAttr( char *, long );
+extern long     LocalGetFileAttr( const char * );
+extern rc_erridx LocalSetFileAttr( const char *, long );
 extern long     LocalGetFreeSpace( int );
-extern rc_erridx LocalRename( char *, char * );
+extern rc_erridx LocalRename( const char *, const char * );
 extern void     LocalTime( int *hour, int *min, int *sec, int *hundredths );
 extern void     LocalDate( int *year, int *month, int *day, int *weekday );
 extern rc_erridx LocalDateTime( sys_handle, int *, int *, int );

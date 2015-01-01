@@ -103,7 +103,9 @@ static void GetLocation( location_list *ll, dip_type_info *ti )
     if( ti->size == 0 ) {
         Error( ERR_LOC, LIT( ERR_WANT_REG_NAME ) );
     }
-    if( reg_set ) Recog( T_RIGHT_BRACKET );
+    if( reg_set ) {
+        Recog( T_RIGHT_BRACKET );
+    }
 }
 
 /*
@@ -115,7 +117,6 @@ static void DoCallSet( void )
     mad_string          ctype;
     int                 parm;
     int                 i;
-    char                *new;
     const char          *start;
     struct {
         union {
@@ -167,17 +168,21 @@ static void DoCallSet( void )
     }
     ReqEOC();
     if( start != NULL ) {
+        char *new_return;
+
         i = ScanPos() - start;
-        new = DbgMustAlloc( i + 1 );
-        memcpy( new, start, i );
-        new[ i ] = NULLCHAR;
+        new_return = DbgMustAlloc( i + 1 );
+        memcpy( new_return, start, i );
+        new_return[i] = NULLCHAR;
         _Free( DefReturn );
-        DefReturn = new;
+        DefReturn = new_return;
     }
     if( parm >= 0 ) {
         for( i = 0; i < parm; ++i ) {
-            _Alloc( new, new_parms[i].len + 1 );
-            if( new == NULL ) {
+            char    *new_arg;
+
+            _Alloc( new_arg, new_parms[i].len + 1 );
+            if( new_arg == NULL ) {
                 parm = i;
                 for( i = 0; i < parm; ++i ) {
                     _Free( new_parms[i].u.start );
@@ -186,9 +191,9 @@ static void DoCallSet( void )
                 parm = 0;
                 break;
             } else {
-                memcpy( new, new_parms[i].u.arg, new_parms[i].len );
-                new[new_parms[i].len] = NULLCHAR;
-                new_parms[i].u.start = new;
+                memcpy( new_arg, new_parms[i].u.arg, new_parms[i].len );
+                new_arg[new_parms[i].len] = NULLCHAR;
+                new_parms[i].u.start = new_arg;
             }
         }
         FreeParms();
@@ -324,7 +329,8 @@ void ProcCall( void )
                 NormalExpr();
                 SwapStack( 1 );
                 ++parm;
-                if( CurrToken != T_COMMA ) break;
+                if( CurrToken != T_COMMA )
+                    break;
                 Scan();
             }
         }
@@ -343,7 +349,9 @@ void ProcCall( void )
     FreezeRegs();
     if( PerformExplicitCall( start, ctype, parm ) && results != NULL ) {
         old = ReScan( results );
-        if( Spawn( &CallResults ) == 0 ) ReScan( old );
+        if( Spawn( &CallResults ) == 0 ) {
+            ReScan( old );
+        }
     }
     UnFreezeRegs();
     FreePgmStack( FALSE );

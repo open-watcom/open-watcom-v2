@@ -41,14 +41,13 @@
 #define CTL_LIST_BROWSE 106
 
 #ifndef RC
-    extern void DlgList( char *title, void (*clear)(void), void (*add)(char*),
-                               char_ring *(*next)(char_ring*), char *(*name)(char_ring*) );
+    extern void DlgList( char *title, void (*clear)(void), void (*add)(const char *),
+                               char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
     typedef struct dlg_list {
         void (*clear)(void);
-        void (*add)(char*);
-        char_ring *(*next)(char_ring*);
-        char *(*name)(char_ring*);
+        void (*add)(const char *);
+        char_ring *(*next)(char_ring *);
+        char *(*name)(char_ring *);
         char *title;
     } dlg_list;
 #endif
-

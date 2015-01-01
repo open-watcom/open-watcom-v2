@@ -188,8 +188,10 @@ static void MemTrackFini( void )
 
 int __saveregs __fmemneed( size_t size )
 {
-    if( DIPMoreMem( size ) == DS_OK ) return( TRUE );
-    if( DUIInfoRelease() ) return( TRUE );
+    if( DIPMoreMem( size ) == DS_OK )
+        return( TRUE );
+    if( DUIInfoRelease() )
+        return( TRUE );
     return( FALSE );
 }
 #endif
@@ -219,7 +221,9 @@ void *DbgRealloc( void *chunk, size_t size )
 
 void DbgFree( void *ptr )
 {
-    if( ptr != NULL ) TRMemFree( ptr );
+    if( ptr != NULL ) {
+        TRMemFree( ptr );
+    }
 }
 
 void *ChkAlloc( size_t size, char *error )
@@ -297,11 +301,11 @@ void MemExpand( void )
     void            **p;
     size_t          alloced;
 
-    if( MemSize == ~0 ) return;
+    if( MemSize == ~0 )
+        return;
     link = NULL;
-    size = MemSize;
     alloced = MAX_BLOCK;
-    for( ; size > 0; ) {
+    for( size = MemSize; size > 0; size -= alloced ) {
         if( size < MAX_BLOCK )
             alloced = size;
         p = TRMemAlloc( alloced );
@@ -309,7 +313,6 @@ void MemExpand( void )
             *p = link;
             link = p;
         }
-        size -= alloced;
     }
     while( link != NULL ) {
         p = *link;

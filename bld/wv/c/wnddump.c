@@ -75,7 +75,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
 
     font = WndGetFontInfo( wnd );
     gadget_len = MaxGadgetLength;
-    MaxGadgetLength = ( strlen( WndGadgetArray[ 0 ].chars ) + 1 ) * WndAvgCharX( wnd );
+    MaxGadgetLength = ( strlen( WndGadgetArray[0].chars ) + 1 ) * WndAvgCharX( wnd );
     WndSetSysFont( wnd, TRUE );
     indent_per_char = WndAvgCharX( wnd );
 //    len = WndGetTitle( wnd, buff, TXT_LEN );
@@ -98,33 +98,37 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
         p = buff;
         chars_written = 0;
         for( piece = 0; ; ++piece ) {
-            if( !WndGetLineAbs( wnd, row, piece, &line ) ) break;
+            if( !WndGetLineAbs( wnd, row, piece, &line ) )
+                break;
             indent_pos = line.indent / indent_per_char;
             while( indent_pos > chars_written ) {
                 p = StrCopy( " ", p );
                 ++chars_written;
             }
             if( line.bitmap ) {
-                line.text = WndGadgetArray[ (int)line.text[0] ].chars;
+                line.text = WndGadgetArray[(int)line.text[0]].chars;
                 line.length = strlen( line.text );
             }
             p = StrCopy( line.text, p );
             chars_written += line.length;
         }
-        if( piece == 0 ) break;
+        if( piece == 0 )
+            break;
         rtn( file, buff );
     }
     MaxGadgetLength = gadget_len;
-    if( font != NULL ) WndSetFontInfo( wnd, font );
+    if( font != NULL )
+        WndSetFontInfo( wnd, font );
     GUIMemFree( font );
 }
 
 
-static void DoWndDumpFile( char *name, a_window *wnd )
+static void DoWndDumpFile( const char *name, a_window *wnd )
 {
     handle              file;
 
-    if( wnd == NULL ) return;
+    if( wnd == NULL )
+        return;
     file = FileOpen( name, OP_WRITE | OP_CREATE | OP_TRUNC );
     if( file == NIL_HANDLE ) {
         Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), name );
@@ -138,7 +142,8 @@ void WndDumpPrompt( a_window *wnd )
     char                *name;
 
     name = GetDmpName();
-    if( name == NULL ) return;
+    if( name == NULL )
+        return;
     DoWndDumpFile( name, wnd );
 }
 
@@ -154,7 +159,7 @@ void WndDumpFile( a_window *wnd )
         WndDumpPrompt( wnd );
     } else {
         memcpy( TxtBuff, start, len );
-        TxtBuff[ len ] = '\0';
+        TxtBuff[len] = '\0';
         DoWndDumpFile( TxtBuff, wnd );
     }
 }

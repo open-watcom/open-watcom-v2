@@ -107,18 +107,18 @@ extern  sys_handle      GetSystemHandle( handle );
 extern  char            *_FileParse( char *name, file_parse *file );
 extern  char            *Squish( file_parse *parse, char *into );
 
-extern rc_erridx        RemoteRename( char *, char * );
-extern rc_erridx        RemoteMkDir( char * );
-extern rc_erridx        RemoteRmDir( char * );
+extern rc_erridx        RemoteRename( const char *, const char * );
+extern rc_erridx        RemoteMkDir( const char * );
+extern rc_erridx        RemoteRmDir( const char * );
 extern rc_erridx        RemoteSetDrv( int );
-extern int              RemoteGetDrv(void);
-extern rc_erridx        RemoteSetCWD( char * );
-extern long             RemoteGetFileAttr( char * );
-extern rc_erridx        RemoteSetFileAttr( char * , long );
+extern int              RemoteGetDrv( void );
+extern rc_erridx        RemoteSetCWD( const char * );
+extern long             RemoteGetFileAttr( const char * );
+extern rc_erridx        RemoteSetFileAttr( const char * , long );
 extern long             RemoteGetFreeSpace( int );
 extern rc_erridx        RemoteDateTime( sys_handle , int *, int *, int );
-extern rc_erridx        RemoteGetCwd( int , char * );
-extern rc_erridx        RemoteFindFirst( char *, void *, unsigned , int );
+extern rc_erridx        RemoteGetCwd( int, char * );
+extern rc_erridx        RemoteFindFirst( const char *, void *, unsigned , int );
 extern rc_erridx        RemoteFindNext( void *, unsigned );
 extern rc_erridx        RemoteFindClose( void );
 
@@ -231,15 +231,15 @@ static char * Day[] = {
 
 
 /* Forward declarations */
-extern  void    Replace( char *frum, char *to, char *into );
+extern  void    Replace( const char *frum, const char *to, char *into );
 extern  void    FinishName( char *fn, file_parse *parse, int loc, int addext );
 extern  int     GetFreeSpace( dir_handle *h, int loc );
-extern  void    CopyStrMax( char *src, char *dst, unsigned max_len );
+extern  void    CopyStrMax( const char *src, char *dst, unsigned max_len );
 
 void    FreeCopySpec( COPYPTR junk );
 void    ProcCD( int argc, char **argv, int crlf );
-int     ProcessCmd( char * cmd );
-int     ProcessArgv( int argc, char **argv, char *cmd );
+int     ProcessCmd( const char * cmd );
+int     ProcessArgv( int argc, char **argv, const char *cmd );
 void    ProcCopy( int argc, char **argv );
 void    ProcDir( int argc, char **argv );
 void    ProcMakeDir( int argc, char **argv );
@@ -316,7 +316,7 @@ static open_access RFX2Acc( int loc )
     return( OP_REMOTE );
 }
 
-static char * RealName( char * name, int * loc )
+static char *RealName( char *name, int * loc )
 {
     name = RealRFXName( name, loc );
     if( *loc == 0 ) {
@@ -380,18 +380,19 @@ error_idx SysSetErr( sys_error err )
     return( TransSetErr( StashErrCode( err, OP_LOCAL ) ) );
 }
 
-char *MyStrDup( char * str ) {
+char *MyStrDup( const char *str ) {
 
-    char * new;
+    char *new;
 
     new = DbgAlloc( strlen( str ) + 1 );
     strcpy( new, str );
     return( new );
 }
 
-extern  char    *Copy( void *s, void *d, unsigned len ) {
+extern  char    *Copy( const void *s, void *d, unsigned len ) {
 
-    char *dst = d,*src = s;
+    char        *dst = d;
+    const char  *src = s;
 
     while( len-- > 0 ) {
         *dst++ = *src++;
@@ -408,7 +409,7 @@ extern  char    *Fill( void *d, int len, char filler ) {
     return( dst );
 }
 
-extern char *CopyStr( char *src, char *dst )
+extern char *CopyStr( const char *src, char *dst )
 {
     while( (*dst = *src) != '\0' ) {
         ++src;
@@ -465,8 +466,8 @@ void SetDrv( int drive, int loc )
     }
 }
 
-rc_erridx RemoveDir( char *name, int loc )
-/****************************************/
+rc_erridx RemoveDir( const char *name, int loc )
+/**********************************************/
 {
     if( loc == 1 ) {
         return( RemoteRmDir( name ) );
@@ -475,8 +476,8 @@ rc_erridx RemoveDir( char *name, int loc )
     }
 }
 
-rc_erridx SetDir( char *name, int loc )
-/********************************/
+rc_erridx SetDir( const char *name, int loc )
+/*******************************************/
 {
     if( loc == 1 ) {
         return( RemoteSetCWD( name ) );
@@ -496,14 +497,14 @@ rc_erridx GetDir( int drive, char *name, int loc )
     }
 }
 
-rc_erridx Erase( char *name, int loc )
-/*******************************/
+rc_erridx Erase( const char *name, int loc )
+/******************************************/
 {
     return( FileRemove( name, RFX2Acc( loc ) ) );
 }
 
-rc_erridx MakeDir( char *name, int loc )
-/**************************************/
+rc_erridx MakeDir( const char *name, int loc )
+/********************************************/
 {
     if( loc == 1 ) {
         return( RemoteMkDir( name ) );
@@ -513,8 +514,8 @@ rc_erridx MakeDir( char *name, int loc )
 }
 
 
-long GetAttrs( char *fn, int loc )
-/********************************/
+long GetAttrs( const char *fn, int loc )
+/**************************************/
 {
     if( loc == 1 ) {
         return( RemoteGetFileAttr( fn ) );
@@ -523,8 +524,8 @@ long GetAttrs( char *fn, int loc )
     }
 }
 
-int IsDevice( char *fn, int loc )
-/********************************/
+int IsDevice( const char *fn, int loc )
+/*************************************/
 {
     unsigned rc;
 
@@ -538,8 +539,8 @@ int IsDevice( char *fn, int loc )
 }
 
 
-rc_erridx FindFirst( char *name, int loc, int attr )
-/**************************************************/
+rc_erridx FindFirst( const char *name, int loc, int attr )
+/********************************************************/
 {
     if( loc == 1 ) {
         return( RemoteFindFirst( name, &Info, sizeof( Info ), attr ) );
@@ -558,8 +559,8 @@ rc_erridx FindNext( int loc )
     }
 }
 
-rc_erridx Rename( char *f1, char *f2, int loc )
-/*********************************************/
+rc_erridx Rename( const char *f1, const char *f2, int loc )
+/*********************************************************/
 {
     if( loc == 1 ) {
         return( RemoteRename( f1, f2 ) );
@@ -760,7 +761,7 @@ int main( int argc, char **argv )
     return( 0 );
 }
 
-int Option( char * str, char opt )
+int Option( const char * str, char opt )
 {
     if( *str == '/' || *str == '-' ) {
         if( tolower( str[1] ) == opt ) {
@@ -774,7 +775,7 @@ int Option( char * str, char opt )
 /* PROCESS COMMANDS                                                       */
 /**************************************************************************/
 
-void CopyCmd( char * src, char * dst )
+void CopyCmd( const char *src, char *dst )
 {
     for( ;; ) {
         if( *src == '/' ) {
@@ -788,7 +789,7 @@ void CopyCmd( char * src, char * dst )
 }
 
 
-int ProcessCmd( char * cmd ) {
+int ProcessCmd( const char *cmd ) {
 
     int         argc;
     char        *argv[20];
@@ -814,7 +815,7 @@ int ProcessCmd( char * cmd ) {
 }
 
 
-int ProcessArgv( int argc, char **argv, char *cmd ) {
+int ProcessArgv( int argc, char **argv, const char *cmd ) {
 
     ErrorStatus = 0;
     strlwr( argv[ 0 ] );
@@ -954,7 +955,7 @@ void ProcRename( int argc, char **argv )
 /* COPY                                                                   */
 /**************************************************************************/
 
-void AddCopySpec( char * src, char *dst, int src_loc, int dst_loc )
+void AddCopySpec( const char *src, const char *dst, int src_loc, int dst_loc )
 {
     COPYPTR     new;
 
@@ -981,7 +982,7 @@ void FreeCopySpec( COPYPTR junk )
     DbgFree( junk );
 }
 
-static int HasWildCards( char * src )
+static int HasWildCards( const char * src )
 {
     if( strchr( src, '?' ) != NULL )
         return( 1 );
@@ -991,7 +992,7 @@ static int HasWildCards( char * src )
 }
 
 
-static int IsDir( char * src, int src_loc )
+static int IsDir( const char *src, int src_loc )
 {
     long rc;
 
@@ -1003,7 +1004,7 @@ static int IsDir( char * src, int src_loc )
 }
 
 
-void WrtCopy( char *src, char *dst, int src_loc, int dst_loc )
+void WrtCopy( const char *src, const char *dst, int src_loc, int dst_loc )
 {
     int         len;
 
@@ -1037,8 +1038,8 @@ void WrtCopy( char *src, char *dst, int src_loc, int dst_loc )
     }
 }
 
-void FiniCopy( handle in, char *src_name, int src_loc,
-               handle out, char *dst_name, int dst_loc )
+void FiniCopy( handle in, const char *src_name, int src_loc,
+               handle out, const char *dst_name, int dst_loc )
 {
     SameDate( in, src_loc, out, dst_loc );
     FileClose( in );
@@ -1050,7 +1051,7 @@ void FiniCopy( handle in, char *src_name, int src_loc,
 }
 
 
-rc_erridx DoCopy( char *src, char *dst, int src_loc, int dst_loc )
+rc_erridx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
 {
     handle      in, out;
     unsigned    len;
@@ -1812,7 +1813,7 @@ int ProcDrive( int argc, char **argv )
 /* FILE NAME PARSING                                                      */
 /**************************************************************************/
 
-extern  char    *CopyMax( char *src, char *buff, unsigned src_len, unsigned buff_len )
+extern  char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigned buff_len )
 {
     while( src_len > 0 && buff_len > 0 ) {
         *buff++ = *src++;
@@ -1891,7 +1892,7 @@ extern  char    *_FileParse( char *name, file_parse *file )
     return( dosname );
 }
 
-extern  void    CopyStrMax( char *src, char *dst, unsigned max_len )
+extern  void    CopyStrMax( const char *src, char *dst, unsigned max_len )
 {
     unsigned    len;
 
@@ -1904,7 +1905,7 @@ extern  void    CopyStrMax( char *src, char *dst, unsigned max_len )
     }
 }
 
-extern  void    Replace( char *frum, char *to, char *into )
+extern  void    Replace( const char *frum, const char *to, char *into )
 {
     while( *to != '\0' ) {
         switch( *to ) {

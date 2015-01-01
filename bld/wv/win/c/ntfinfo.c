@@ -34,8 +34,8 @@
 #include "dbgdefn.h"
 #include "dbgmem.h"
 
-long LocalGetFileDate( char *name )
-/*********************************/
+long LocalGetFileDate( const char *name )
+/***************************************/
 {
     WIN32_FIND_DATA     ffb;
     HANDLE              h;
@@ -50,8 +50,8 @@ long LocalGetFileDate( char *name )
     return( ( md << 16 ) + mt );
 }
 
-bool LocalSetFileDate( char *name, long date )
-/********************************************/
+bool LocalSetFileDate( const char *name, long date )
+/**************************************************/
 {
     HANDLE              h;
     WORD                md,mt;

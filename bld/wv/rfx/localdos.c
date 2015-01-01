@@ -118,26 +118,26 @@ void LocalGetBuff( char *buff, unsigned size )
     *buff = '\0';
 }
 
-rc_erridx LocalRename( char *from, char *to )
-/*******************************************/
+rc_erridx LocalRename( const char *from, const char *to )
+/*******************************************************/
 {
     return( DOSErrCode( TinyRename( from, to )) );
 }
 
-rc_erridx LocalMkDir( char *name )
-/********************************/
+rc_erridx LocalMkDir( const char *name )
+/**************************************/
 {
     return( DOSErrCode( TinyMakeDir( name )) );
 }
 
-rc_erridx LocalRmDir( char *name )
-/********************************/
+rc_erridx LocalRmDir( const char *name )
+/**************************************/
 {
     return( DOSErrCode( TinyRemoveDir( name )) );
 }
 
 rc_erridx LocalSetDrv( int drv )
-/*************************/
+/******************************/
 {
     TinySetCurrDrive( drv );
     return( 0 );
@@ -149,14 +149,14 @@ int LocalGetDrv( void )
     return( TinyGetCurrDrive() );
 }
 
-rc_erridx LocalSetCWD( char *name )
-/*********************************/
+rc_erridx LocalSetCWD( const char *name )
+/***************************************/
 {
     return( DOSErrCode( TinyChangeDir( name )) );
 }
 
-long LocalGetFileAttr( char *name )
-/*********************************/
+long LocalGetFileAttr( const char *name )
+/***************************************/
 {
     tiny_ret_t rc;
 
@@ -200,8 +200,8 @@ rc_erridx LocalGetCwd( int drv, char *where )
     return( DOSErrCode( TinyGetCWDir( where, drv )) );
 }
 
-rc_erridx LocalFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
-/**********************************************************************************/
+rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+/****************************************************************************************/
 {
     info_len = info_len;
     TinySetDTA( info );
@@ -216,8 +216,8 @@ rc_erridx LocalFindNext( void *info, unsigned info_len )
     return( DOSErrCode( TinyFindNext()) );
 }
 
-rc_erridx LocalSetFileAttr( char *name, long attr )
-/*************************************************/
+rc_erridx LocalSetFileAttr( const char *name, long attr )
+/*******************************************************/
 {
     return( DOSErrCode( TinySetFileAttr( name, attr )) );
 }

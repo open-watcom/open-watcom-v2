@@ -55,7 +55,9 @@ const char *DOSEnvFind( const char *name )
     do {
         p = name;
         do {
-            if( *p == '\0' && *env == '=' ) return( env + 1 );
+            if( *p == '\0' && *env == '=' ) {
+                return( env + 1 );
+            }
         } while( *env++ == *p++ );
         while( *env++ != '\0' )
             ;

@@ -36,14 +36,13 @@
 #include "dlglist.h"
 
 extern void             FiniSource(void);
-extern void             AddSourceSpec(char*);
+extern void             AddSourceSpec(const char *);
 extern char             *SourceName( char_ring *src );
 extern char_ring        *NextSourceSpec( char_ring *curr );
 extern void             DbgUpdate( update_list );
 
-void DlgSource()
+void DlgSource( void )
 {
-    DlgList( LIT( New_Source ), FiniSource, AddSourceSpec,
-                                NextSourceSpec, SourceName );
+    DlgList( LIT( New_Source ), FiniSource, AddSourceSpec, NextSourceSpec, SourceName );
     DbgUpdate( UP_NEW_SRC );
 }

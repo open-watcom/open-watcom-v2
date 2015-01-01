@@ -108,14 +108,15 @@ static  char    *LastCfg;
 static  char    *LastBrk;
 static  char    *LastRep;
 
-static void SetLast( char **what, char *to )
+static void SetLast( char **what, const char *to )
 {
     _Free( *what );
-    if( to == NULL ) to = LIT( Empty );
+    if( to == NULL )
+        to = LIT( Empty );
     *what = DupStr( to );
 }
 
-void SetLastExe( char *to )
+void SetLastExe( const char *to )
 {
     SetLast( &LastExe, to );
 }
@@ -125,7 +126,7 @@ char *GetLastExe( void )
     return( LastExe );
 }
 
-void SetLastCfg( char *to )
+void SetLastCfg( const char *to )
 {
     SetLast( &LastCfg, TxtBuff );
 }
@@ -170,7 +171,7 @@ static bool DoFileBrowse( char **last, char *title, char *filter, unsigned long 
     bool        rc;
 
     if( *last == NULL ) {
-        TxtBuff[ 0 ] = '\0';
+        TxtBuff[0] = '\0';
     } else {
         strcpy( TxtBuff, *last );
     }
@@ -206,7 +207,8 @@ static bool     WndDead = FALSE;
 bool WndShutDownHook( void )
 {
 
-    if( WndDead ) return( TRUE );
+    if( WndDead )
+        return( TRUE );
     WndDead = TRUE;
     HookNotify( TRUE, HOOK_QUIT );
     if( _IsOn( SW_POWERBUILDER ) && _IsOn( SW_HAVE_TASK ) && !AskIfKillPB() ) {
@@ -264,8 +266,7 @@ bool BreakSave( bool writing )
 bool ReplaySave( bool writing )
 {
     if( OkToSaveReplay() ) {
-        if( DoFileBrowse( &LastRep, LIT( Replay_File_Name ), ConfigFilter,
-                          OFN_FLAGS( writing ) ) ) {
+        if( DoFileBrowse( &LastRep, LIT( Replay_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
             if( writing ) {
                 SaveReplayToFile( TxtBuff );
             } else {
@@ -280,8 +281,7 @@ bool ReplaySave( bool writing )
 
 extern void FileBrowse( void )
 {
-    if( DoFileBrowse( &LastFile, LIT( Enter_File_Name ),
-                      SourceFilter, OFN_FLAGS( 0 ) )){
+    if( DoFileBrowse( &LastFile, LIT( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )){
         WndFileInspect( TxtBuff, FALSE );
     }
 }
@@ -310,6 +310,7 @@ extern char *GetDmpName( void )
     bool        rc;
 
     rc = DoFileBrowse( &LastDmp, LIT( Enter_File_Name ), AllFilter, OFN_FLAGS( 1 ) );
-    if( !rc ) return( NULL );
+    if( !rc )
+        return( NULL );
     return( LastDmp );
 }

@@ -61,7 +61,7 @@ extern void             WriteDbgRegs( void );
 extern void             SectTblRead( machine_state * );
 extern address          GetRegIP( void );
 extern bool             AddLibInfo( bool, bool * );
-extern unsigned         RemoteGetMsgText( char *, unsigned );
+extern unsigned         RemoteGetMsgText( char *buff, unsigned buff_len );
 extern long             RemoteThawThread( dtid_t );
 extern long             RemoteFreezeThread( dtid_t );
 extern bool             SourceStep( void );

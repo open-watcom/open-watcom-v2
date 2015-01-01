@@ -262,8 +262,7 @@ char *StrRTrim( char *s )
         while( !done ) {
             if( 0 == len ) {
                 done = 1;
-            }
-            else if( isspace( (unsigned char)s[len - 1] ) ) {
+            } else if( isspace( (unsigned char)s[len - 1] ) ) {
                 s[len - 1] = '\0';
             } else {
                 done = 1;
@@ -281,7 +280,7 @@ char *MyStrTrim( char *s )
     return( s );
 } 
 
-char *GetCmdPartByChar( char *cmd, char* delimit )
+char *GetCmdPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
     size_t  pos_value = strcspn( cmd, delimit );
@@ -299,12 +298,12 @@ char *GetCmdPartByChar( char *cmd, char* delimit )
     return( result );
 }
 
-char *GetCmdPart( char *cmd )
+char *GetCmdPart( const char *cmd )
 {
     return( GetCmdPartByChar( cmd, " " ) );
 }
 
-char *GetParamPartByChar( char *cmd, char *delimit )
+char *GetParamPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
     size_t  pos_value = strcspn( cmd, delimit );
@@ -321,29 +320,29 @@ char *GetParamPartByChar( char *cmd, char *delimit )
     return( result );
 }
 
-char *GetParamPart( char *cmd )
+char *GetParamPart( const char *cmd )
 {
     return( GetParamPartByChar( cmd, " " ) );
 }
 
-char * GetFirstQuotedPart( char *cmd )
+char *GetFirstQuotedPart( const char *cmd )
 {
     char    *result;
 
     if( cmd[0] == '"' && strlen( cmd ) > 1 ) {
-        result = GetCmdPartByChar( &cmd[1],"\"" );
+        result = GetCmdPartByChar( cmd + 1, "\"" );
     } else {
         result = GetCmdPart( cmd );
     }
     return( result );
 }
 
-char *GetSecondQuotedPart( char *cmd )
+char *GetSecondQuotedPart( const char *cmd )
 {
     char    *result;
 
     if( cmd[0] == '"' && strlen( cmd ) > 1 ) {
-        result = GetParamPartByChar( &cmd[1], "\"" );
+        result = GetParamPartByChar( cmd + 1, "\"" );
     } else {
         result = GetParamPart( cmd );
     }
@@ -351,7 +350,7 @@ char *GetSecondQuotedPart( char *cmd )
 }
 
 
-bool IsCmdEqualCmd( char *cmd, const char *e_cmd, const char *e_short_cmd )
+bool IsCmdEqualCmd( const char *cmd, const char *e_cmd, const char *e_short_cmd )
 {
     bool comparefull  = !(strlen( cmd ) != strlen( e_cmd ));
     bool compareshort = !(strlen( cmd ) != strlen( e_short_cmd ));
@@ -361,26 +360,27 @@ bool IsCmdEqualCmd( char *cmd, const char *e_cmd, const char *e_short_cmd )
         return( FALSE );
     }
     /* otherwise we'll check if they are same */
-    if( ( comparefull == TRUE ) && ( _strnicmp( cmd, e_cmd, strlen( e_cmd ) ) == 0 ) ) {
+    if( comparefull && ( _strnicmp( cmd, e_cmd, strlen( e_cmd ) ) == 0 ) ) {
         return( TRUE );
-    } else if( ( compareshort == TRUE ) && ( _strnicmp( cmd, e_short_cmd, strlen( e_short_cmd ) ) == 0 ) ) {
+    } else if( compareshort && ( _strnicmp( cmd, e_short_cmd, strlen( e_short_cmd ) ) == 0 ) ) {
         return( TRUE );
     }
     return( FALSE );
 }
 
 
-bool IsCmdEqualCmd2( char *cmd, const char *e_cmd )
+bool IsCmdEqualCmd2( const char *cmd, const char *e_cmd )
 {
     /* if the length of the command does not match then we'll ignore the command */
     if( strlen( cmd ) != strlen( e_cmd ) ) {
         return( FALSE );
     }
     /* otherwise we'll check if they are same */
-    if( _strnicmp( cmd , e_cmd, strlen( e_cmd ) ) == 0 )
+    if( _strnicmp( cmd , e_cmd, strlen( e_cmd ) ) == 0 ) {
         return( TRUE );
-    else
+    } else {
         return( FALSE );
+    }
 }
 
 /*for setting a breakpoint in a file,
@@ -410,13 +410,13 @@ address SetBreakPointInFile( char *filename,int line_num )
     mod_nums = ModListNumRows( &list );
     for( row = 0; row < mod_nums; ++row ) {
         ModListName( &list, row, &mod_name[0] );
-        if( IsCmdEqualCmd2( mod_name, filename ) == TRUE ) {
+        if( IsCmdEqualCmd2( mod_name, filename ) ) {
             ShowDebuggerMsg( mod_name );
             mod_address = ModFirstAddr( ModListMod ( &list, row ) );
             if( DeAliasAddrCue( ModListMod ( &list, row ), mod_address, ch ) == SR_NONE ) {
             } else {
                 bp_address = GetRowAddrDirectly( CueMod( ch ), CueFileId( ch ), line_num, FALSE );
-                if( IS_NIL_ADDR( bp_address ) == FALSE ) {
+                if( !IS_NIL_ADDR( bp_address ) ) {
                     bp = AddBreak( bp_address );
                     bp_handled = TRUE;
                 }
@@ -426,7 +426,7 @@ address SetBreakPointInFile( char *filename,int line_num )
         
     }
     ModListFree( &list );
-    if( bp_handled == TRUE) {
+    if( bp_handled ) {
         ShowDebuggerMsg( "Sucessfully added the Break point." );
     } else {
         ShowDebuggerMsg( "Unable to set Break point at the requested line." );
@@ -468,12 +468,11 @@ static void DisplayDebuggerVarRecursively( var_info *pVarInfoList, var_node *v )
     /*temp code end*/
     return;
 
-    if(  v == NULL ) {
+    if( v == NULL )
         return;
-    }
     VarBuildName( pVarInfoList , v, TRUE );
     printf( "%s = {\n", TxtBuff );
-    if( (v->gadget ==  VARGADGET_CLOSED) || (v->gadget ==  VARGADGET_POINTS) || (v->gadget ==  VARDISP_INHERIT_CLOSED) ) {
+    if( (v->gadget == VARGADGET_CLOSED) || (v->gadget == VARGADGET_POINTS) || (v->gadget == VARDISP_INHERIT_CLOSED) ) {
         e = VarFirstExpandNode( pVarInfoList, v );
         DisplayDebuggerVarRecursively( pVarInfoList, e );
     } else {
@@ -492,7 +491,8 @@ void DisplayDebuggerVarValue( var_info *pVarInfoList )
 
     for( row = 0; ; ++row ) {
         v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_GADGET, &depth , &inherited );
-        if( v == NULL ) break;
+        if( v == NULL )
+            break;
         v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_NAME, &depth , &inherited );
         v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_VALUE, &depth , &inherited );
         switch( v->gadget ) {
@@ -512,7 +512,7 @@ void DisplayDebuggerVarValue( var_info *pVarInfoList )
             printf( "<-" );
             break;
         }
-        if( (v->gadget ==  VARGADGET_CLOSED) || (v->gadget ==  VARGADGET_POINTS) || (v->gadget ==  VARDISP_INHERIT_CLOSED) ) {
+        if( (v->gadget == VARGADGET_CLOSED) || (v->gadget == VARGADGET_POINTS) || (v->gadget == VARDISP_INHERIT_CLOSED) ) {
             //fixme: Print the expanded list
             //printf( "%s = { \n%s\n}\n", TxtBuff, v->value );
             DisplayDebuggerVarRecursively( pVarInfoList, v );
@@ -582,11 +582,10 @@ static void DumpLocals( void )
 and display the path one at a time*/
 void ShowSourceDirectories( void )
 {
-    char_ring *p = SrcSpec;
-    for( ;; ) {
-        if( p == NULL ) break;
+    char_ring *p;
+
+    for( p = SrcSpec; p != NULL; p = p->next ) {
         ShowDebuggerMsg( p->name );
-        p = p->next;
     }
 }
 
@@ -710,35 +709,26 @@ bool EnableBps( char *params )
 
 bool IsDbgProgramLoaded( void )
 {
-    if( _IsOn( SW_HAVE_TASK ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( _IsOn( SW_HAVE_TASK ) );
 }
 
-bool IsCmdQuit( char *cmd )
+bool IsCmdQuit( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_QUIT, WDB_SHORT_CMD_QUIT ) || IsCmdEqualCmd( cmd, WDB_CMD_EXIT, WDB_SHORT_CMD_EXIT ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_QUIT, WDB_SHORT_CMD_QUIT ) || IsCmdEqualCmd( cmd, WDB_CMD_EXIT, WDB_SHORT_CMD_EXIT ) );
 }
 
-bool IsCmdPrint( char *cmd )
+bool IsCmdPrint( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_PRINT, WDB_SHORT_CMD_PRINT ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_PRINT, WDB_SHORT_CMD_PRINT ) );
 }
 
-bool ProcessCmdPrint( char *param )
+bool ProcessCmdPrint( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_PRINT );
         return( TRUE );
     } 
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -750,21 +740,18 @@ bool ProcessCmdPrint( char *param )
     return( TRUE );
 }
 
-bool IsCmdRun( char *cmd )
+bool IsCmdRun( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_RUN, WDB_SHORT_CMD_RUN ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_RUN, WDB_SHORT_CMD_RUN ) );
 }
 
-bool ProcessCmdRun( char *param )
+bool ProcessCmdRun( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_RUN );
         return( TRUE );
     } 
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -772,21 +759,18 @@ bool ProcessCmdRun( char *param )
     return( TRUE );
 }
 
-bool IsCmdContinue( char *cmd )
+bool IsCmdContinue( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_CONTINUE, WDB_SHORT_CMD_CONTINUE ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_CONTINUE, WDB_SHORT_CMD_CONTINUE ) );
 }
 
-bool ProcessCmdContinue( char *param )
+bool ProcessCmdContinue( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_CONTINUE );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -794,12 +778,9 @@ bool ProcessCmdContinue( char *param )
     return( TRUE );
 }
 
-bool IsCmdLoad( char *cmd )
+bool IsCmdLoad( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_LOAD, WDB_SHORT_CMD_LOAD ) || IsCmdEqualCmd( cmd, WDB_CMD_FILE, WDB_SHORT_CMD_FILE ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_LOAD, WDB_SHORT_CMD_LOAD ) || IsCmdEqualCmd( cmd, WDB_CMD_FILE, WDB_SHORT_CMD_FILE ) );
 }
 
 bool ProcessCmdLoad( char *param )
@@ -824,29 +805,23 @@ bool ProcessCmdLoad( char *param )
     return( TRUE );
 }
 
-bool IsCmdRestart( char *cmd )
+bool IsCmdRestart( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_RESTART, WDB_SHORT_CMD_RESTART ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_RESTART, WDB_SHORT_CMD_RESTART ) );
 }
 
-bool ProcessCmdRestart( char *param )
+bool ProcessCmdRestart( const char *param )
 {
     ReStart();
     return( TRUE );
 }
 
-bool IsCmdBreakpoint( char *cmd )
+bool IsCmdBreakpoint( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_BREAKPOINT, WDB_SHORT_CMD_BREAKPOINT ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_BREAKPOINT, WDB_SHORT_CMD_BREAKPOINT ) );
 }
 
-bool ProcessCmdBreakpoint( char *param )
+bool ProcessCmdBreakpoint( const char *param )
 {
     char    *file_name;
     char    *line_number_str;
@@ -857,7 +832,7 @@ bool ProcessCmdBreakpoint( char *param )
         ShowDebuggerMsg(WDB_HELP_BREAKPOINT);
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -906,14 +881,11 @@ bool ProcessCmdBreakpoint( char *param )
     return( TRUE );
 }
 
-bool IsCmdDisable( char *cmd )
+bool IsCmdDisable( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_DISABLE, WDB_SHORT_CMD_DISABLE ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_DISABLE, WDB_SHORT_CMD_DISABLE ) );
 }
-bool ProcessCmdDisable( char *param )
+bool ProcessCmdDisable( const char *param )
 {
     char    *disable_cmd = NULL;
     char    *disable_param = NULL;
@@ -923,7 +895,7 @@ bool ProcessCmdDisable( char *param )
         return( TRUE );
     }
 
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -946,23 +918,21 @@ bool ProcessCmdDisable( char *param )
     return( TRUE );
 }
 
-bool IsCmdEnable( char *cmd )
+bool IsCmdEnable( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_ENABLE, WDB_SHORT_CMD_ENABLE ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_ENABLE, WDB_SHORT_CMD_ENABLE ) );
 }
 
-bool ProcessCmdEnable( char *param )
+bool ProcessCmdEnable( const char *param )
 {
     char    *enable_cmd;
     char    *enable_param;
+
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_ENABLE );
         return( TRUE );
     } 
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -985,15 +955,12 @@ bool ProcessCmdEnable( char *param )
     return( TRUE );
 }
 
-bool IsCmdDelete( char *cmd )
+bool IsCmdDelete( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_DELETE, WDB_SHORT_CMD_DELETE ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_DELETE, WDB_SHORT_CMD_DELETE ) );
 }
 
-bool ProcessCmdDelete( char *param )
+bool ProcessCmdDelete( const char *param )
 {
     char    *delete_cmd;
     char    *delete_param;
@@ -1002,7 +969,7 @@ bool ProcessCmdDelete( char *param )
         ShowDebuggerMsg( WDB_HELP_DELETE );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1025,14 +992,11 @@ bool ProcessCmdDelete( char *param )
     return( TRUE );
 }
 
-bool IsCmdInfo( char *cmd )
+bool IsCmdInfo( const char *cmd )
 {
-    if(  IsCmdEqualCmd( cmd, WDB_CMD_INFO, WDB_SHORT_CMD_INFO ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_INFO, WDB_SHORT_CMD_INFO ) );
 }
-bool ProcessCmdInfo( char *param )
+bool ProcessCmdInfo( const char *param )
 {
     char    *info_cmd;
 
@@ -1040,7 +1004,7 @@ bool ProcessCmdInfo( char *param )
         ShowDebuggerMsg( WDB_HELP_INFO );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( §IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1056,21 +1020,18 @@ bool ProcessCmdInfo( char *param )
     return( TRUE );
 }
 
-bool IsCmdNext( char *cmd )
+bool IsCmdNext( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_NEXT, WDB_SHORT_CMD_NEXT ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_NEXT, WDB_SHORT_CMD_NEXT ) );
 }
 
-bool ProcessCmdNext( char *param )
+bool ProcessCmdNext( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_NEXT );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1078,21 +1039,18 @@ bool ProcessCmdNext( char *param )
     return( TRUE );
 }
 
-bool IsCmdStep( char *cmd )
+bool IsCmdStep( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_STEP, WDB_SHORT_CMD_STEP ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_STEP, WDB_SHORT_CMD_STEP ) );
 }
 
-bool ProcessCmdStep( char *param )
+bool ProcessCmdStep( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_STEP );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1100,21 +1058,18 @@ bool ProcessCmdStep( char *param )
     return( TRUE );
 }
 
-bool IsCmdFinish( char *cmd )
+bool IsCmdFinish( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_FINISH, WDB_SHORT_CMD_FINISH ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_FINISH, WDB_SHORT_CMD_FINISH ) );
 }
 
-bool ProcessCmdFinish( char *param )
+bool ProcessCmdFinish( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_FINISH );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1122,25 +1077,22 @@ bool ProcessCmdFinish( char *param )
     return( TRUE );
 }
 
-bool IsCmdBacktrace( char *cmd )
+bool IsCmdBacktrace( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_BACKTRACE, WDB_SHORT_CMD_BACKTRACE ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_BACKTRACE, WDB_SHORT_CMD_BACKTRACE ) );
 }
 
-bool ProcessCmdBacktrace( char *param )
+bool ProcessCmdBacktrace( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_BACKTRACE );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
-    if( IsCmdEqualCmd2( "full", param ) == TRUE ) {
+    if( IsCmdEqualCmd2( "full", param ) ) {
         DumpLocals();
     } else {    
         ShowCalls();
@@ -1148,21 +1100,18 @@ bool ProcessCmdBacktrace( char *param )
     return( TRUE );
 }
 
-bool IsCmdModule( char *cmd )
+bool IsCmdModule( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_MODULE, WDB_SHORT_CMD_MODULE ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_MODULE, WDB_SHORT_CMD_MODULE ) );
 }
 
-bool ProcessCmdModule( char *param )
+bool ProcessCmdModule( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_MODULE );
         return( TRUE );
     }
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1170,15 +1119,12 @@ bool ProcessCmdModule( char *param )
     return( TRUE );
 }
 
-bool IsCmdAttach( char *cmd )
+bool IsCmdAttach( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_ATTACH, WDB_SHORT_CMD_ATTACH ))
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_ATTACH, WDB_SHORT_CMD_ATTACH ));
 }
 
-bool ProcessCmdAttach( char *param )
+bool ProcessCmdAttach( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_ATTACH );
@@ -1189,22 +1135,19 @@ bool ProcessCmdAttach( char *param )
     return( TRUE );
 }
 
-bool IsCmdKill( char *cmd )
+bool IsCmdKill( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_KILL, WDB_SHORT_CMD_KILL ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_KILL, WDB_SHORT_CMD_KILL ) );
 }
 
-bool ProcessCmdKill( char *param )
+bool ProcessCmdKill( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_KILL );
         return( TRUE );
     }
     //fixme: Not working
-    if( IsDbgProgramLoaded() == FALSE ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1212,15 +1155,12 @@ bool ProcessCmdKill( char *param )
     return( TRUE );
 }
 
-bool IsCmdDirectory( char *cmd )
+bool IsCmdDirectory( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_DIRECTORY, WDB_SHORT_CMD_DIRECTORY ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_DIRECTORY, WDB_SHORT_CMD_DIRECTORY ) );
 }
 
-bool ProcessCmdDirectory( char *param )
+bool ProcessCmdDirectory( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_DIRECTORY );
@@ -1235,15 +1175,12 @@ bool ProcessCmdDirectory( char *param )
     return( TRUE );
 }
 
-bool IsCmdShow( char *cmd )
+bool IsCmdShow( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_SHOW, WDB_SHORT_CMD_SHOW ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_SHOW, WDB_SHORT_CMD_SHOW ) );
 }
 
-bool ProcessCmdShow( char *param )
+bool ProcessCmdShow( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg(WDB_HELP_SHOW);
@@ -1255,12 +1192,9 @@ bool ProcessCmdShow( char *param )
     return( TRUE );
 }
 
-bool IsCmdHelp( char *cmd )
+bool IsCmdHelp( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_HELP, WDB_SHORT_CMD_HELP ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_HELP, WDB_SHORT_CMD_HELP ) );
 }
 
 bool ProcessCmdHelp( char *param )
@@ -1290,15 +1224,12 @@ bool ProcessCmdHelp( char *param )
     return( TRUE );
 }
 
-bool IsCmdTest( char *cmd )
+bool IsCmdTest( const char *cmd )
 {
-    if( IsCmdEqualCmd( cmd, WDB_CMD_TEST, WDB_SHORT_CMD_TEST ) )
-        return( TRUE );
-    else
-        return( FALSE );
+    return( IsCmdEqualCmd( cmd, WDB_CMD_TEST, WDB_SHORT_CMD_TEST ) );
 }
 
-bool ProcessCmdTest( char *param )
+bool ProcessCmdTest( const char *param )
 {
     WndAsmInspect( GetCodeDot() );
     return( TRUE );
@@ -1387,7 +1318,7 @@ bool ProcessDebuggerCmd( char *cmd )
         result = TRUE;
     }
 
-    if( result == FALSE ) {
+    if( !result ) {
         ShowDebuggerError( cmd );
         ShowDebuggerError( "Unknown Command." );
     }
@@ -1461,14 +1392,16 @@ void RunRequest( int req )
 void DlgCmd( void )
 {
     char        buff[512];
-    do{
+
+    do {
         ShowDebuggerPrompt();
         gets( buff );
         MyStrTrim( buff );
         buff[strlen( buff )] = '\0';
-        if( ProcessDebuggerCmd( buff ) == FALSE)
+        if( !ProcessDebuggerCmd( buff ) ) {
             break;
-    }while (1);
+        }
+    } while (1);
 }
 
 extern char *DUILoadString( int id )
@@ -1868,7 +1801,7 @@ void VarRestoreWndFromScope( void *wnd )
 }
 void PopErrBox( const char *buff )
 {
-    MessageBox( (HWND) NULL, buff, LIT( Debugger_Startup_Error ),
+    MessageBox( (HWND)NULL, buff, LIT( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
 

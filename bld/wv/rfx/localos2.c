@@ -105,8 +105,8 @@ void LocalGetBuff( char *buff, unsigned size )
     buff[ length.cchIn ] = '\0';
 }
 
-rc_erridx LocalRename( char *from, char *to )
-/*******************************************/
+rc_erridx LocalRename( const char *from, const char *to )
+/*******************************************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosMove( from, to, 0 ), OP_LOCAL ) );
@@ -115,8 +115,8 @@ rc_erridx LocalRename( char *from, char *to )
 #endif
 }
 
-rc_erridx LocalMkDir( char *name )
-/********************************/
+rc_erridx LocalMkDir( const char *name )
+/**************************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosMkDir( name, 0 ), OP_LOCAL ) );
@@ -125,8 +125,8 @@ rc_erridx LocalMkDir( char *name )
 #endif
 }
 
-rc_erridx LocalRmDir( char *name )
-/********************************/
+rc_erridx LocalRmDir( const char *name )
+/**************************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosRmDir( name, 0 ), OP_LOCAL ) );
@@ -161,8 +161,8 @@ int LocalGetDrv( void )
     return( drive - 1 );
 }
 
-rc_erridx LocalSetCWD( char *name )
-/*********************************/
+rc_erridx LocalSetCWD( const char *name )
+/***************************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosChDir( name, 0 ), OP_LOCAL ) );
@@ -171,8 +171,8 @@ rc_erridx LocalSetCWD( char *name )
 #endif
 }
 
-long LocalGetFileAttr( char *name )
-/*********************************/
+long LocalGetFileAttr( const char *name )
+/***************************************/
 {
 #ifdef _M_I86
     USHORT attr;
@@ -272,8 +272,8 @@ static void makeDOSDTA( struct _FILEFINDBUF3 *os2, trap_dta *dos )
     strcpy( dos->name, os2->achName );
 }
 
-rc_erridx LocalFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
-/**********************************************************************************/
+rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+/****************************************************************************************/
 {
 #ifdef _M_I86
     FILEFINDBUF dta;
@@ -381,8 +381,8 @@ int CtrlCHit( void )
 }
 
 
-rc_erridx LocalSetFileAttr( char *name, long attr )
-/*************************************************/
+rc_erridx LocalSetFileAttr( const char *name, long attr )
+/*******************************************************/
 {
 #ifdef _M_I86
     return( StashErrCode( DosSetFileMode( name, attr, 0 ), OP_LOCAL ) );

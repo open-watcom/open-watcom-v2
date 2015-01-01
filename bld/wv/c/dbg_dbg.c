@@ -100,7 +100,7 @@ enum {
 #define CONST static const
 #endif
 
-#define WV_SYM_DEF(size) struct { fixed_wv_sym_entry s; char len, name[ size ]; }
+#define WV_SYM_DEF(size) struct { fixed_wv_sym_entry s; char len, name[size]; }
 
 #define WV_SYM( prfx, tk, tm, ts, sc, intrnl, vn, np ) \
     CONST WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
@@ -156,53 +156,52 @@ ADDRESS_SYM( bp );
 ADDRESS_SYM( NIL );
 
 CONST wv_sym_entry *const ListInternal[] = {
-(wv_sym_entry *)    &wvINT_radix,
-(wv_sym_entry *)    &wvINT_monitor,
-(wv_sym_entry *)    &wvINT_top,
-(wv_sym_entry *)    &wvINT_bottom,
-(wv_sym_entry *)    &wvINT_psp,
-(wv_sym_entry *)    &wvINT_pid,
-(wv_sym_entry *)    &wvINT_remote,
-(wv_sym_entry *)    &wvINT_code,
-(wv_sym_entry *)    &wvINT_data,
-(wv_sym_entry *)    &wvINT_machine,
-(wv_sym_entry *)    &wvINT_cpu,
-(wv_sym_entry *)    &wvINT_fpu,
-(wv_sym_entry *)    &wvINT_os,
-(wv_sym_entry *)    &wvINT_32,
-(wv_sym_entry *)    &wvINT_left,
-(wv_sym_entry *)    &wvINT_right,
-(wv_sym_entry *)    &wvINT_etid,
-(wv_sym_entry *)    &wvINT_ctid,
-(wv_sym_entry *)    &wvINT_ntid,
-(wv_sym_entry *)    &wvINT_ip,
-(wv_sym_entry *)    &wvINT_sp,
-(wv_sym_entry *)    &wvINT_bp,
-(wv_sym_entry *)    &wvINT_loaded,
-(wv_sym_entry *)    &wvINT_WV_TNG,
-(wv_sym_entry *)    &wvINT_src,
-(wv_sym_entry *)    &wvINT_kanji,
-    NULL };
+    (wv_sym_entry *)&wvINT_radix,
+    (wv_sym_entry *)&wvINT_monitor,
+    (wv_sym_entry *)&wvINT_top,
+    (wv_sym_entry *)&wvINT_bottom,
+    (wv_sym_entry *)&wvINT_psp,
+    (wv_sym_entry *)&wvINT_pid,
+    (wv_sym_entry *)&wvINT_remote,
+    (wv_sym_entry *)&wvINT_code,
+    (wv_sym_entry *)&wvINT_data,
+    (wv_sym_entry *)&wvINT_machine,
+    (wv_sym_entry *)&wvINT_cpu,
+    (wv_sym_entry *)&wvINT_fpu,
+    (wv_sym_entry *)&wvINT_os,
+    (wv_sym_entry *)&wvINT_32,
+    (wv_sym_entry *)&wvINT_left,
+    (wv_sym_entry *)&wvINT_right,
+    (wv_sym_entry *)&wvINT_etid,
+    (wv_sym_entry *)&wvINT_ctid,
+    (wv_sym_entry *)&wvINT_ntid,
+    (wv_sym_entry *)&wvINT_ip,
+    (wv_sym_entry *)&wvINT_sp,
+    (wv_sym_entry *)&wvINT_bp,
+    (wv_sym_entry *)&wvINT_loaded,
+    (wv_sym_entry *)&wvINT_WV_TNG,
+    (wv_sym_entry *)&wvINT_src,
+    (wv_sym_entry *)&wvINT_kanji,
+    NULL
+};
 
 static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item *li )
 {
     cmp_func            *cmp;
     wv_sym_entry        *curr;
 
-    if( li->scope.start != NULL ) return( FALSE );
+    if( li->scope.start != NULL )
+        return( FALSE );
     if( li->case_sensitive ) {
         cmp = memcmp;
     } else {
         cmp = memicmp;
     }
-    for( ;; ) {
-        curr = (wv_sym_entry *) *list;
-        if( curr == NULL ) break;
+    for( ; (curr = (wv_sym_entry *)*list) != NULL; ++list ) {
         if( li->name.len == curr->name[0]
-         && cmp( li->name.start, &curr->name[1], li->name.len ) == 0 ) {
+          && cmp( li->name.start, &curr->name[1], li->name.len ) == 0 ) {
             return( curr );
         }
-        ++list;
     }
     return( NULL );
 }
@@ -218,8 +217,10 @@ static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 {
     struct lookup_reg   *ld = d;
 
-    if( memicmp( ld->name, ri->name, ld->len ) != 0 ) return( WR_CONTINUE );
-    if( ri->name[ld->len] != '\0' ) return( WR_CONTINUE );
+    if( memicmp( ld->name, ri->name, ld->len ) != 0 )
+        return( WR_CONTINUE );
+    if( ri->name[ld->len] != '\0' )
+        return( WR_CONTINUE );
     ld->ri = ri;
     return( WR_STOP );
 }
@@ -228,7 +229,8 @@ mad_reg_info const *LookupRegName( mad_reg_info *parent, lookup_item *li )
 {
     struct lookup_reg   lr;
 
-    if( li->scope.start != NULL ) return( NULL );
+    if( li->scope.start != NULL )
+        return( NULL );
     if( li->case_sensitive ) {
         lr.cmp = memcmp;
     } else {
@@ -249,17 +251,20 @@ wv_sym_entry *LookupInternalName( lookup_item *li )
     cmp_func        *cmp;
 
     se = StaticLookup( ListInternal, li );
-    if( se != NULL ) return( se );
+    if( se != NULL )
+        return( se );
     if( TokenName( TSTR_NULL, &null_start, &null_len ) ) {
         ++null_start;
         --null_len;
-        if( null_len != li->name.len ) return( NULL );
+        if( null_len != li->name.len )
+            return( NULL );
         if( li->case_sensitive ) {
             cmp = memcmp;
         } else {
             cmp = memicmp;
         }
-        if( cmp( null_start, li->name.start, null_len ) != 0 ) return( NULL );
+        if( cmp( null_start, li->name.start, null_len ) != 0 )
+            return( NULL );
         return( (wv_sym_entry *)&wvINT_NIL );
     }
     return( NULL );
@@ -276,8 +281,10 @@ wv_sym_entry *LookupUserName( lookup_item *li )
         cmp = memicmp;
     }
     for( sl = WmonSymLst; sl != NULL; sl = sl->next ) {
-        if( li->name.len != sl->s.name[0] ) continue;
-        if( cmp( li->name.start, &sl->s.name[1], li->name.len ) != 0 ) continue;
+        if( li->name.len != sl->s.name[0] )
+            continue;
+        if( cmp( li->name.start, &sl->s.name[1], li->name.len ) != 0 )
+            continue;
         return( &sl->s );
     }
     return( NULL );
@@ -286,17 +293,13 @@ wv_sym_entry *LookupUserName( lookup_item *li )
 void PurgeUserNames( void )
 {
     wv_sym_list *sl;
-    wv_sym_list *next;
 
-    sl = WmonSymLst;
-    for( ;; ) {
-        if( sl == NULL ) break;
-        next = sl->next;
-        if( sl->s.t.k == TK_STRING ) _Free( sl->s.v.string );
+    while( (sl = WmonSymLst) != NULL ) {
+        WmonSymLst = sl->next;
+        if( sl->s.t.k == TK_STRING )
+            _Free( sl->s.v.string );
         _Free( sl );
-        sl = next;
     }
-    WmonSymLst = NULL;
 }
 
 /*
@@ -307,8 +310,10 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     wv_type_entry       info;
     wv_sym_list         *new;
 
-    if( (li->mod != NO_MOD) && !IsInternalMod( li->mod ) ) return( FALSE );
-    if( li->scope.start != NULL ) return( FALSE );
+    if( (li->mod != NO_MOD) && !IsInternalMod( li->mod ) )
+        return( FALSE );
+    if( li->scope.start != NULL )
+        return( FALSE );
     info.k = ti->kind;
     info.m = ti->modifier;
     info.s = ti->size;

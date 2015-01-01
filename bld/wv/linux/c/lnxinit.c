@@ -116,7 +116,8 @@ char *GetCmdArg( int num )
 {
     char    *cmd;
 
-    if( num >= NumArgs || cmdStart == NULL ) return( NULL );
+    if( num >= NumArgs || cmdStart == NULL )
+        return( NULL );
     for( cmd = cmdStart; num != 0; --num ) {
         cmd += strlen( cmd ) + 1;
     }
@@ -126,7 +127,8 @@ char *GetCmdArg( int num )
 void SetCmdArgStart( int num, char *ptr )
 {
     NumArgs -= num;
-    if( ptr != NULL && *ptr == NULLCHAR ) ++ptr;
+    if( ptr != NULL && *ptr == NULLCHAR )
+        ++ptr;
     cmdStart = ptr;
 }
 
@@ -154,13 +156,14 @@ bool TBreak()
 
 long _fork( char *cmd, size_t len )
 {
-    char    buff[256];
-    const char    *argv[4];
-    char    *shell;
-    pid_t   pid;
+    char        buff[256];
+    const char  *argv[4];
+    const char  *shell;
+    pid_t       pid;
     
     shell = getenv( "SHELL" );
-    if( shell == NULL ) shell = "/bin/sh";
+    if( shell == NULL )
+        shell = "/bin/sh";
 
     argv[0] = shell;
     if( len != 0 ) {
@@ -188,7 +191,8 @@ long _fork( char *cmd, size_t len )
             exit( 1 );
     } else {
             fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
-            if( pid == -1 ) return( 0xffff0000 | errno );
+            if( pid == -1 )
+                return( 0xffff0000 | errno );
             do {
             } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
     }

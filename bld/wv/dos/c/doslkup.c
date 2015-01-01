@@ -47,7 +47,9 @@ const char __far *DOSEnvFind( const char __far *name )
     do {
         p = name;
         do {
-            if( *p == NULLCHAR && *env == '=' ) return( env + 1 );
+            if( *p == NULLCHAR && *env == '=' ) {
+                return( env + 1 );
+            }
         } while( *env++ == *p++ );
         while( *env++ != NULLCHAR )
             ;

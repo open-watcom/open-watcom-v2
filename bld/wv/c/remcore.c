@@ -507,7 +507,7 @@ unsigned RemoteReadUserKey( unsigned wait )
     return( ret.key );
 }
 
-unsigned long RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buff_len )
+unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, unsigned buff_len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -520,7 +520,7 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buff_
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    out[1].ptr = ptr;
+    out[1].ptr = buff;
     out[1].len = buff_len;
     ret.handle = 0;
     CONV_LE_32( acc.handle );
@@ -529,7 +529,7 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buff_
     return( ret.handle );
 }
 
-unsigned RemoteGetMsgText( char *msg, unsigned len )
+unsigned RemoteGetMsgText( char *buff, unsigned buff_len )
 {
     in_mx_entry                 in[1];
     mx_entry                    out[2];
@@ -541,8 +541,8 @@ unsigned RemoteGetMsgText( char *msg, unsigned len )
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    out[1].ptr = msg;
-    out[1].len = len;
+    out[1].ptr = buff;
+    out[1].len = buff_len;
     TrapAccess( 1, in, 2, out );
 //    TrapErrTranslate( msg, MAX_ERR_MSG_SIZE );
     return( ret.flags );

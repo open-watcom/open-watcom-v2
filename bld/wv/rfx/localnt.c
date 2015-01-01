@@ -104,20 +104,20 @@ void LocalGetBuff( char *buff, unsigned size )
     }
 }
 
-rc_erridx LocalRename( char *from, char *to )
-/*******************************************/
+rc_erridx LocalRename( const char *from, const char *to )
+/*******************************************************/
 {
     return( StashErrCode( rename( from, to ), OP_LOCAL ) );
 }
 
-rc_erridx LocalMkDir( char *name )
-/********************************/
+rc_erridx LocalMkDir( const char *name )
+/**************************************/
 {
     return( StashErrCode( mkdir( name ), OP_LOCAL ) );
 }
 
-rc_erridx LocalRmDir( char *name )
-/********************************/
+rc_erridx LocalRmDir( const char *name )
+/**************************************/
 {
     return( StashErrCode( rmdir( name ), OP_LOCAL ) );
 }
@@ -146,14 +146,14 @@ rc_erridx LocalGetCwd( int drive, char *where )
     return( StashErrCode( getcwd( where, 256 ) == NULL, OP_LOCAL ) );
 }
 
-rc_erridx LocalSetCWD( char *name )
-/*********************************/
+rc_erridx LocalSetCWD( const char *name )
+/***************************************/
 {
     return( StashErrCode( chdir( name ), OP_LOCAL ) );
 }
 
-long LocalGetFileAttr( char *name )
-/*********************************/
+long LocalGetFileAttr( const char *name )
+/***************************************/
 {
 #if 0
     FILESTATUS3 fileinfo;
@@ -167,8 +167,8 @@ long LocalGetFileAttr( char *name )
 #endif
 }
 
-rc_erridx LocalSetFileAttr( char *name, long attr )
-/*************************************************/
+rc_erridx LocalSetFileAttr( const char *name, long attr )
+/*******************************************************/
 {
 #if 0
     FILESTATUS3 fileinfo;
@@ -234,8 +234,8 @@ static void makeDOSDTA( struct find_t *dos, trap_dta *trp )
     strcpy( trp->name, dos->name );
 }
 
-rc_erridx LocalFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
-/**********************************************************************************/
+rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+/****************************************************************************************/
 {
     unsigned        rc;
 
