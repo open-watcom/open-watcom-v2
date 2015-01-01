@@ -598,19 +598,8 @@ extern  void    WndSetMainMenu( gui_menu_struct *menu, int num_menus );
 
 // debugging stuff
 
-#ifndef OLD_GUI
-#define Say( x ) \
-        WndDisplayMessage( (char*)(x), "Information", GUI_INFORMATION ); \
-
-#define Say2( y, x ) \
-        WndDisplayMessage( (char*)(x), (char*)y, GUI_INFORMATION );
-#else
-#define Say( x ) \
-        GUIDisplayMessage( (char*)(x), "Information", GUI_INFORMATION ); \
-
-#define Say2( y, x ) \
-        GUIDisplayMessage( (char*)(x), (char*)y, GUI_INFORMATION );
-#endif
+#define Say(x)      WndDisplayMessage( x, "Information", GUI_INFORMATION );
+#define Say2(y,x)   WndDisplayMessage( x, (char*)y, GUI_INFORMATION );
 
 #define GUI_IS_ASCII( x ) ( (x) < 256 )
 
