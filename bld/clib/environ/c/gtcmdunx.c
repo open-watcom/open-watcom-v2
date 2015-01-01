@@ -48,12 +48,12 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
     int     i;
     char    *word;
     char    *p     = NULL;
-    char    **argv = &_argv[0];
+    char    **argv = &_argv[1];
     char    *space;
 
     --len; // reserve space for NULL byte
 
-    if( buffer && (len > 0) ) {
+    if( buffer && (len >= 0) ) {
         p  = buffer;
         *p = '\0';
     }
