@@ -36,6 +36,7 @@
 #include "dbgmem.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
@@ -46,8 +47,6 @@ extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
 extern char             *GetCmdName( int );
-extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern void             TypeInpStack( input_type );
 extern bool             HookPendingPush( void );
 
 extern a_window         *WndMain;

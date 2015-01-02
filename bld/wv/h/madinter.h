@@ -24,19 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  Debugger lexical scanner.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "mad.h"
 
-extern mad_type_handle  ScanType( mad_type_kind tk, mad_type_kind *tkr );
-extern mad_string       ScanCall( void );
-extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
-extern void             RegFindData( mad_type_kind kind, const mad_reg_set_data **pdata );
-#ifdef DEAD_CODE
-extern void             CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti );
-#endif
-extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
-extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
+
+extern void            InitMADInfo( void );
+extern void            FiniMADInfo( void );
+extern mad_type_handle GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
+extern void            GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
+extern void            GetMADTypeDefault( mad_type_kind mtk, mad_type_info *mti );
+extern void            ReportMADFailure( mad_status ms );
+extern void            CheckMADChange( void );
+extern unsigned        GetMADNormalizedString( mad_string ms, char *buff, unsigned buff_len );
+extern unsigned        GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len );
+extern mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size );
+extern mad_handle      FindMAD( const char *name, unsigned len );

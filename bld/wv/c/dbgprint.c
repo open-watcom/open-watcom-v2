@@ -37,11 +37,12 @@
 #include "dbgerr.h"
 #include "dbgitem.h"
 #include "ldsupp.h"
-#include "mad.h"
+#include "madinter.h"
 #include "dui.h"
 #include "i64.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -57,8 +58,6 @@ extern void             ExprValue( stack_entry * );
 extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             DoGivenField( sym_handle * );
-extern char             *LineAddr( address *, char * );
-extern char             *StrAddr( address *, char *, unsigned );
 extern void             WriteToPgmScreen( void *, unsigned int );
 extern void             GraphicDisplay( void );
 extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
@@ -78,7 +77,6 @@ extern void             EndSubscript( void );
 extern void             DlgNewWithSym( char *, char *, unsigned);
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern char             *GetCmdName( int );
-extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
 
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )
@@ -322,7 +320,7 @@ static void PrintAddress( char fmt )
 
     if( fmt == 'l' ) {
         MakeMemoryAddr( TRUE, EXPR_CODE, &addr );
-        ptr = LineAddr( &addr, buff );
+        ptr = LineAddr( &addr, buff, sizeof( buff ) );
         if( ptr == NULL ) {
             ptr = StrAddr( &addr, buff, sizeof( buff ) );
         }

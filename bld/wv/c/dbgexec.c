@@ -41,6 +41,7 @@
 #include "enterdb.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern bool             AdvMachState( int );
@@ -50,12 +51,9 @@ extern void             RemoveBPs( void );
 extern bool             InsertWPs( void );
 extern bool             UpdateWPs( void );
 extern unsigned         CheckBPs( unsigned, unsigned );
-extern void             RingBell( void );
 extern unsigned         MakeProgRun( bool );
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
-extern void             PopInpStack( void );
-extern bool             PurgeInpStack( void );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern void             SectTblRead( machine_state * );
@@ -94,12 +92,7 @@ extern void             NameThread( dtid_t tid, char *name );
 extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             DlgScanDataAddr( char *str, address *value );
 extern bool             DlgScanLong( char *str, long *value );
-extern cmd_list         *AllocCmdList(const char *,size_t );
-extern void             FreeCmdList(cmd_list *);
-extern void             PushCmdList(cmd_list *);
-extern void             TypeInpStack(input_type);
-extern char             *CnvNearestAddr( address, char *, unsigned );
-extern void             PopInpStack( void );
+
 extern void             ProcACmd( void );
 extern bool             SymUserModLoad( char *fname, address *loadaddr );
 extern bool             SymUserModUnload( char *fname );

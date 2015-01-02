@@ -78,7 +78,7 @@ extern void             SetTargMenuItems( void );
 extern void             SetBrkMenuItems( void );
 extern void             SetIOMenuItems( void );
 extern void             DoInput( void );
-extern void             *OpenSrcFile(cue_handle *);
+extern void             *OpenSrcFile( cue_handle * );
 extern bool             GUIIsDBCS( void );
 extern unsigned         EnvLkup( const char *name, char *buff, unsigned buff_len );
 extern void             PopErrBox( const char *buff );
@@ -89,9 +89,9 @@ extern void             InitSuppServices( void );
 extern void             AsyncNotify( void );
 extern void             RunThreadNotify( void );
 
-extern void             WndMsgBox( char *text );
+extern void             WndMsgBox( const char *text );
 extern bool             WndDlgTxt( const char *text );
-extern void             WndInfoBox( char *text );
+extern void             WndInfoBox( const char *text );
 extern void             WndUser( void );
 extern void             WndDebug( void );
 extern a_window         *WndClassInspect( wnd_class class );
@@ -170,12 +170,12 @@ void DUIUpdate( update_list flags )
     }
 }
 
-void DUIStatusText( char *text )
+void DUIStatusText( const char *text )
 {
     WndStatusText( text );
 }
 
-void DUIMsgBox( char *text )
+void DUIMsgBox( const char *text )
 {
     WndMsgBox( text );
 }
@@ -185,7 +185,7 @@ bool DUIDlgTxt( const char *text )
     return( WndDlgTxt( text ) );
 }
 
-void DUIInfoBox( char *text )
+void DUIInfoBox( const char *text )
 {
     WndInfoBox( text );
 }
@@ -307,7 +307,7 @@ int DUIScreenSizeX( void )
     return( WndScreen.x );
 }
 
-void DUIErrorBox( char *buff )
+void DUIErrorBox( const char *buff )
 {
     WndDisplayMessage( buff, LIT( Error ), GUI_INFORMATION + GUI_SYSTEMMODAL );
 }

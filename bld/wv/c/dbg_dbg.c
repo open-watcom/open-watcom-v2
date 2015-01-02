@@ -34,7 +34,7 @@
 #include "dipwv.h"
 #include "dbgmem.h"
 #include "dbglit.h"
-#include "mad.h"
+#include "madinter.h"
 #include "dui.h"
 #include "dbgscan.h"
 
@@ -52,7 +52,6 @@ extern address          GetCodeDot( void );
 extern dtid_t           GetNextTID( void );
 extern void             AddrFix( address * );
 extern bool             IsInternalMod( mod_handle );
-extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 
 
 typedef struct wv_sym_list      wv_sym_list;

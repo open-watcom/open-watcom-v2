@@ -43,6 +43,7 @@
 #include "spawn.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
@@ -61,7 +62,6 @@ extern void             SetTokens( bool );
 extern void             DoPlus( void );
 extern void             DoPoints( type_kind );
 extern void             DoAssign( void );
-extern char             *CnvLongDec( long, char *, unsigned );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );
 extern bool             DlgAnyExpr( char *, char *, unsigned );
@@ -70,15 +70,11 @@ extern void             WndVarNewWindow( char * );
 extern void             WndVarInspect( char * );
 extern void             DlgNewWithSym( char *title, char *buff, unsigned buff_len );
 extern void             BreakOnExprSP( char * );
-extern void             FreezeInpStack( void );
-extern void             PopInpStack( void );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
 extern void             WndInspectExprSP( char *item );
-extern char             *CnvNearestAddr( address, char *, unsigned );
 extern char             *GetCmdName( int );
-extern void             Warn( char * );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             DUIMsgBox( char *text );

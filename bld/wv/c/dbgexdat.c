@@ -38,6 +38,7 @@
 #include "strutil.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
+#include "madinter.h"
 
 
 extern void             AsmExam( void );
@@ -51,7 +52,6 @@ extern void             WndAddrInspect( address );
 extern void             SetDataDot( address );
 extern address          GetDataDot( void );
 extern char             *GetCmdName( int );
-extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 
 
 /*

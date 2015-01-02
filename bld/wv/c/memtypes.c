@@ -33,15 +33,13 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "mad.h"
-#include "madcli.h"
 #include "memtypes.h"
 #include "dbgmem.h"
 #include "dbgitem.h"
 #include "strutil.h"
 #include "dbgscan.h"
-
-
-extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
+#include "dbgmad.h"
+#include "madcli.h"
 
 
 static walk_result MadMemTypeWalk( mad_type_handle th, void *d )

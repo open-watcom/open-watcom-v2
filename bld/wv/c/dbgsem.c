@@ -41,6 +41,7 @@
 #include "i64.h"
 #include "dbgscan.h"
 #include "numscan.h"
+#include "madinter.h"
 
 #include "clibext.h"
 
@@ -130,7 +131,6 @@ extern sym_list         *Disambiguate( sym_list * );
 extern void             FreeSymHandle( sym_list * );
 extern image_entry      *ImagePrimary( void );
 extern mod_handle       LookupImageName( const char *, unsigned );
-extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 
 
 extern stack_entry      *ExprSP;

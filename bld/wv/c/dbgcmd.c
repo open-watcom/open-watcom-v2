@@ -38,10 +38,9 @@
 #include "spawn.h"
 #include "dui.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
-extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern void             TypeInpStack( input_type );
 extern bool             TBreak( void );
 
 static bool DoneCmd( void *buff, inp_rtn_action action )

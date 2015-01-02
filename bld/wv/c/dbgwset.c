@@ -37,16 +37,14 @@
 #include "dbgmem.h"
 #include "wndregx.h"
 #include "dbgio.h"
-#include "mad.h"
-#include "madcli.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
 
 extern char             *GetCmdEntry( const char *, int, char * );
-extern char             *CnvULongDec( unsigned long, char *, unsigned );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
@@ -68,8 +66,6 @@ extern void             LangFini( void );
 extern bool             LangLoad( const char *, unsigned );
 extern void             WndRedraw( wnd_class );
 extern a_window         *WndFindActive( void );
-extern cmd_list         *AllocCmdList( const char *, size_t );
-extern void             FreeCmdList( cmd_list * );
 extern void             WndRestoreToFront( a_window* );
 extern a_window         *WndFindClass( a_window*, wnd_class );
 extern wnd_class        ReqWndName( void );
@@ -82,9 +78,7 @@ extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             WndDlgTxt( const char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, char *);
-extern char             *UniqStrAddr( address *addr, char *p ,unsigned );
 extern char             *GetCmdName( int );
-extern void             RegFindData( mad_type_kind kind, mad_reg_set_data **pdata );
 extern void             DbgUpdate( update_list );
 
 extern const char       WndNameTab[];

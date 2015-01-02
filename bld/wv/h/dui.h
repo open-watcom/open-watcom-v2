@@ -30,10 +30,10 @@
 
 
 extern void DUIUpdate( update_list flags );
-extern void DUIStatusText( char *text );
-extern void DUIMsgBox( char *text );
+extern void DUIStatusText( const char *text );
+extern void DUIMsgBox( const char *text );
 extern bool DUIDlgTxt( const char *text );
-extern void DUIInfoBox( char *text );
+extern void DUIInfoBox( const char *text );
 extern void DUIStop( void );
 extern void DUIFini( void );
 extern void DUIInitHistory( void );
@@ -51,7 +51,7 @@ extern int  DUIGetMonitorType( void );
 extern int  DUIScreenSizeX( void );
 extern int  DUIScreenSizeY( void );
 extern void DUIRedrawSources( void );
-extern void DUIErrorBox( char *buff );
+extern void DUIErrorBox( const char *buff );
 extern void DUIArrowCursor( void );
 extern char *DUILoadString( int i );
 extern bool DUIAskIfAsynchOk( void );

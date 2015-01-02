@@ -38,14 +38,13 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern int              ScanSavePtr;
 
 extern void             ExprPurge( void );
-extern void             RingBell( void );
 extern void             DUIFlushKeys( void );
-extern bool             PurgeInpStack( void );
 extern void             UnFreezeRegs( void );
 extern void             DUIWndDebug( void );
 extern void             CmdError( void );
@@ -152,7 +151,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
     Suicide();
 }
 
-void PrevError( char *msg )
+void PrevError( const char *msg )
 {
     DUIWndDebug();
     RingBell();

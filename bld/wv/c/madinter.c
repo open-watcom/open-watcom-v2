@@ -38,10 +38,11 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dbgerr.h"
-#include "madcli.h"
 #include "dui.h"
-#include "mad.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "madcli.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
@@ -59,7 +60,6 @@ extern bool             FixOvlRetAddr( address * );
 extern void             EvalExpr( unsigned addr_depth );
 extern void             MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
-extern char             *CnvAddr( address addr, cnvaddr_option cao, bool uniq, char *p, unsigned max );
 extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );
 extern void             ClearMachineDataCache( void );
@@ -210,14 +210,14 @@ system_config   *DIGCLIENT MADCliSystemConfig( void )
  *      Debugger routines
  */
 
-void InitMADInfo()
+void InitMADInfo( void )
 {
     if( MADInit() != MS_OK ) {
         StartupErr( LIT( STARTUP_MAD_Not_Init ) );
     }
 }
 
-void FiniMADInfo()
+void FiniMADInfo( void )
 {
     MADFini();
 }
@@ -280,7 +280,7 @@ void ReportMADFailure( mad_status ms )
     _SwitchOff( SW_ERROR_RETURNS );
 }
 
-void CheckMADChange()
+void CheckMADChange( void )
 {
     mad_status          ms;
     mad_type_info       mti;

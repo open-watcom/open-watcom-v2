@@ -33,25 +33,23 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgitem.h"
-#include "madcli.h"
-#include "mad.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmad.h"
+#include "madinter.h"
+#include "madcli.h"
 
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
 extern void             WndInspect( char *item );
 extern char             *GetCmdName( int index );
 extern void             RecordEvent( char *p );
-extern void             GetMADTypeDefault( mad_type_kind, mad_type_handle );
 extern void             PushAddr( address val );
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, int id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
-extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
 extern void             WndInspectExprSP( char *item );
-extern void             RegFindData( mad_type_kind kind, mad_reg_set_data **pdata );
 extern void             RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mach );
 extern void             RegNewValue( const mad_reg_info *, item_mach const *, mad_type_handle  );
 
@@ -75,7 +73,7 @@ typedef struct {
 } reg_indent;
 
 typedef struct {
-    mad_reg_set_data        *data;
+    const mad_reg_set_data  *data;
     char                    up;
     char                    rows;
     char                    count;

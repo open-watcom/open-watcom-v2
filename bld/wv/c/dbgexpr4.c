@@ -39,8 +39,9 @@
 #include "dbgtback.h"
 #include "dbgri.h"
 #include "ldsupp.h"
-#include "mad.h"
+#include "madinter.h"
 #include "i64.h"
+#include "dbgutil.h"
 
 
 extern void             BinOp( stack_entry *, stack_entry * );
@@ -89,8 +90,6 @@ extern void             SetRegSP( address );
 extern void             ExprSetAddrInfo( stack_entry *, bool );
 extern void             AddrFix( address * );
 extern void             PushLocation( location_list *, dip_type_info * );
-extern unsigned         DefaultSize( default_kind );
-extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
 extern stack_entry      *ExprSP;
 

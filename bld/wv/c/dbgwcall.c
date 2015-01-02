@@ -38,6 +38,7 @@
 #include "dbgchain.h"
 #include "mad.h"
 #include "strutil.h"
+#include "dbgutil.h"
 
 
 extern a_window         *WndSrcInspect( address );
@@ -48,10 +49,8 @@ extern void             GoToAddr( address addr );
 extern bool             DlgBreak( address );
 extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup( address );
-extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern void             SetStackPos( location_context *lc, int pos );
 extern int              GetStackPos( void );
-extern char             *CnvNearestAddr( address, char *, unsigned );
 
 extern address          FindNextIns( address a );
 extern void             InitTraceBack( cached_traceback * );

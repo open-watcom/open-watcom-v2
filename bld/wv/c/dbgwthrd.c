@@ -34,12 +34,12 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
+#include "dbgutil.h"
 
 extern bool             IsThdCurr( thread_state *thd );
 extern void             MakeThdCurr( thread_state * );
 extern void             RemoteThdName( dtid_t, char * );
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
-extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern void             DbgUpdate( update_list );
 
 #include "menudef.h"

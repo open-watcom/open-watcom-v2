@@ -37,10 +37,11 @@
 #include "dbglit.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "mad.h"
-#include "madcli.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "dbgmad.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
@@ -66,7 +67,6 @@ extern void             WndMenuOff( void );
 extern void             LangInit( void );
 extern void             LangFini( void );
 extern bool             LangLoad( const char *, unsigned );
-extern void             FreeCmdList( cmd_list * );
 extern void             VarChangeOptions( void );
 extern void             RegChangeOptions( void );
 extern void             FPUChangeOptions( void );
@@ -77,13 +77,8 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern char             *UniqStrAddr( address *addr, char *p ,unsigned);
 extern char             *GetCmdName( int );
-extern void             RegFindData( mad_type_kind kind, mad_reg_set_data const **pdata );
-extern mad_handle       FindMAD( const char *, unsigned );
-extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq );
 extern void             AddrFloat( address * );
-unsigned                GetMADNormalizedString( mad_string, char *buff, unsigned buff_len );
 
 extern bool             CapabilitiesGetExactBreakpointSupport( void );
 extern bool             CapabilitiesSetExactBreakpointSupport( bool status );

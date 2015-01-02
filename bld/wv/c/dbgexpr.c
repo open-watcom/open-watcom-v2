@@ -37,7 +37,7 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "ldsupp.h"
-#include "mad.h"
+#include "madinter.h"
 #include "i64.h"
 #include "dbgscan.h"
 
@@ -65,7 +65,6 @@ extern void             ExprSymbol( stack_entry *, sym_handle * );
 extern address          GetRegIP( void );
 extern address          GetRegSP( void );
 extern address          GetRegBP( void );
-extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
 
 static stack_entry ExprBOS = {

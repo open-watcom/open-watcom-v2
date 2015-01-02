@@ -37,10 +37,10 @@
 #include "dlgamb.h"
 #include "strutil.h"
 #include "ambigsym.h"
+#include "dbgutil.h"
 
 extern void             FreeSymHandle( sym_list * );
 extern int              AddrComp( address a, address b );
-extern char             *ModImageName( mod_handle handle );
 extern int              DUIDisambiguate( const ambig_info *ambig, int count );
 
 sym_list *Disambiguate( sym_list *sym, location_context *lc )

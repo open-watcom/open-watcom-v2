@@ -34,7 +34,7 @@
 #include "dbgdata.h"
 #include "dbgstk.h"
 #include "dbgitem.h"
-#include "mad.h"
+#include "madinter.h"
 
 
 extern stack_entry      *ExprSP;
@@ -55,7 +55,6 @@ extern void             CopyMachState( machine_state *, machine_state * );
 extern void             FreeMachState( machine_state *);
 extern void             AddrFix( address * );
 extern void             LocationCreate( location_list *, location_type, void * );
-extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
 
 
 static machine_state    *FreezeRegSet = NULL;

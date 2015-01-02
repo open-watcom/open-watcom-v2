@@ -40,10 +40,12 @@
 #include "dbgitem.h"
 #include "dbgio.h"
 #include "ldsupp.h"
-#include "mad.h"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "dbgmad.h"
+#include "dbgutil.h"
 
 
 extern char             *Language;
@@ -55,7 +57,6 @@ extern void             NewLang( const char * );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern address          GetCodeDot( void );
-extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 extern image_entry      *ImageEntry( mod_handle mh );
 extern image_entry      *ImagePrimary( void );
 
@@ -502,7 +503,7 @@ void PushInpStack( void *handle, bool (*rtn)( void *, inp_rtn_action ), bool sav
     if( !new->rtn( handle, INP_RTN_INIT ) ) PopInpStack();
 }
 
-void CopyInpFlags()
+void CopyInpFlags( void )
 {
     if( InpStack == NULL ) return;
     if( InpStack->link == NULL ) return;
@@ -633,7 +634,7 @@ static walk_result RegWalkList( mad_reg_set_data const *data, void *pdata )
     return( WR_STOP );
 }
 
-void RegFindData( mad_type_kind kind, mad_reg_set_data **pdata )
+void RegFindData( mad_type_kind kind, const mad_reg_set_data **pdata )
 {
     *pdata = NULL;
     MADRegSetWalk( kind, RegWalkList, pdata );

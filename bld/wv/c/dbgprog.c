@@ -44,6 +44,7 @@
 #include "tistrail.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
@@ -55,7 +56,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
-extern void             Warn( char * );
 extern bool             KillProgOvlay( void );
 extern void             ReportTask( task_status, unsigned );
 extern void             BPsDeac( void );

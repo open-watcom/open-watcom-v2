@@ -35,10 +35,11 @@
 #include "dbglit.h"
 #include "dbgrep.h"
 #include "dbgmem.h"
-#include "mad.h"
 #include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "dbgutil.h"
 
 
 enum {
@@ -100,7 +101,6 @@ extern long             GetDataLong( void );
 extern int              AddrComp( address, address );
 extern unsigned         Execute( bool, bool );
 extern void             GetCurrOpcode( void );
-extern void             Warn( char * );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern char             *GetCmdName( int );
 extern void             ConfigLine( char * );
@@ -111,8 +111,6 @@ extern void             SetRegIP( address );
 extern address          GetRegSP( void );
 extern bool             RemoteOvlTransAddr( address * );
 extern bool             TransOvlRetAddr( address *, unsigned int );
-extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern void             TypeInpStack( input_type );
 extern void             SetCodeLoc( address );
 extern void             SetCodeDot( address );
 extern address          GetCodeDot( void );
@@ -125,7 +123,6 @@ extern void             CheckEventRecorded( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
-extern void             ReportMADFailure( mad_status );
 
 static const char LevelTab[] = {
     #define pick( a,b ) b

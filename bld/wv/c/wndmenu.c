@@ -34,9 +34,9 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
-#include "madcli.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmad.h"
 
 extern a_window         *WndClassInspect( wnd_class class );
 extern void             DebugExit( void );
@@ -93,7 +93,6 @@ extern void             UnknownScreen( void );
 extern bool             DlgCodeAddr( char *title, address *value );
 extern bool             DlgDataAddr( char *title, address *value );
 extern void             WndAddrInspect( address addr );
-extern void             RegFindData( mad_type_kind kind, mad_reg_set_data const **pdata );
 extern bool             HaveRemoteRunThread( void );
 
 

@@ -45,6 +45,8 @@
 #include "strutil.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "dbgutil.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -54,9 +56,6 @@ extern unsigned long    ReqLongExpr( void );
 extern unsigned int     ReqExpr( void );
 extern void             ReqMemAddr( memory_expr, address * );
 extern int              AddrComp( address, address );
-extern cmd_list         *AllocCmdList( const char *, size_t );
-extern void             FreeCmdList( cmd_list * );
-extern void             PushCmdList( cmd_list * );
 extern address          GetRegIP( void );
 extern int              SectIsLoaded( unsigned int, int  );
 extern dword            RemoteSetBreak( address );
@@ -78,36 +77,28 @@ extern void             RemoteRestoreWatch( address, unsigned );
 extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern void             SetProgState( unsigned );
-extern void             TypeInpStack( input_type );
 extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern void             InvokeAFile( char * );
 extern void             CreateInvokeFile( char *name, void ( *rtn ) ( void ) );
-extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *GetCmdName( int );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern void             RecordEvent( char *p );
 extern void             SetRecord( bool on );
-extern unsigned         DefaultSize( default_kind );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern bool             SetMsgText( char *, unsigned * );
-extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len );
-extern mad_type_handle  FindMADTypeHandle( mad_type_kind tk, unsigned size );
-extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern void             WriteDbgRegs( void );
 extern void             BreakOnImageLoad( const char *name, unsigned len, bool clear );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             UnMapPoints( image_entry * );
 extern void             ReMapPoints( image_entry * );
-extern char             *StrAddr( address *addr, char *buff, unsigned max );
 extern image_entry      *ImageEntry( mod_handle mh );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern bool             DlgScanCodeAddr( char *str, address *value );
 extern void             DoInput( void );
-extern char             *CnvNearestAddr( address, char *, unsigned );
 extern void             DbgUpdate( update_list );
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             DUIRemoveBreak( brkp *bp );

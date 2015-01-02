@@ -39,24 +39,19 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern void             RecordPointStart( void );
 extern void             RecordNewProg( void );
-extern cmd_list         *AllocCmdList( const char *start, size_t );
-extern void             FreeCmdList( cmd_list *cmds );
 extern void             PointFini( void );
-extern void             PushCmdList( cmd_list *cmds );
-extern void             TypeInpStack( input_type set );
 extern int              GetStackPos( void );
 extern char             *GetCmdName( int index );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
 extern void             InvokeAFile( char * );
-extern char             *StrAddr( address *addr, char *p, unsigned);
 extern unsigned         ReqExpr( void );
-extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );

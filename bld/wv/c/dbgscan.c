@@ -38,8 +38,6 @@
 #include "dbgmem.h"
 #include "dbglit.h"
 #include "ldsupp.h"
-#include "mad.h"
-#include "madcli.h"
 #include "dui.h"
 #include "i64.h"
 #include "trpld.h"
@@ -47,6 +45,9 @@
 #include "dbgscan.h"
 #include "dbgmad.h"
 #include "numscan.h"
+#include "dbgutil.h"
+#include "madinter.h"
+#include "madcli.h"
 
 #include "clibext.h"
 
@@ -60,8 +61,6 @@ typedef struct rad_str {
 extern unsigned         Lookup( const char *, const char *, unsigned );
 extern unsigned int     ReqExpr( void );
 extern void             ConfigLine( char * );
-extern char             *CnvULongDec( unsigned long, char *, unsigned );
-extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len );
 extern void             DbgUpdate( update_list );
 
 

@@ -38,18 +38,17 @@
 #include "dbgstk.h"
 #include "mad.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 /* to be moved to header files ! */
 extern bool             DlgNewWithMod(char*,char*,unsigned);
 extern bool             DlgNewWithSym(char*,char*,unsigned);
 extern void             ChkExpr(void);
 extern void             ReqMemAddr(memory_expr , address *);
-extern char             *CnvLong(long,char*,unsigned);
 extern void             NormalExpr(void);
 extern void             FreezeStack();
 extern void             UnFreezeStack( bool );
-extern void             PrevError(char*);
-extern char             *UniqStrAddr(address *,char * ,unsigned);
+extern void             PrevError( const char * );
 extern char             *StrDouble(xreal*,char*);
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );
 extern void             PopEntry(void);

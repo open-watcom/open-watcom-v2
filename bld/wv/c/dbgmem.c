@@ -37,9 +37,9 @@
 #include "mad.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 extern char             *GetCmdName( int );
-extern char             *CnvULong( unsigned long, char *buff, unsigned buff_len );
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern unsigned         ChangeMem( address, const void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );

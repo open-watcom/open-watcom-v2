@@ -38,12 +38,12 @@
 #include "dbghook.h"
 #include "dbgio.h"
 #include "dui.h"
+#include "dbgutil.h"
 
 extern void             BrkAddrRefresh( void );
 extern void             InitLC( location_context *new, bool use_real_regs );
 extern void             SetStackPos( location_context *lc, int pos );
 extern void             SymCompFini( void );
-extern void             PopInpStack( void );
 extern address          GetCodeDot( void );
 
 

@@ -37,11 +37,11 @@
 #include "mempiece.h"
 #include "dbgadget.h"
 #include "mad.h"
-#include "madcli.h"
 #include "memtypes.h"
 #include "dbgitem.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
@@ -49,7 +49,6 @@ extern void             MemFiniTypes( mem_type_walk_data *data );
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
 
 extern bool             DlgGivenAddr( char *title, address *value );
-extern char             *AddrToIOString( address *a, char *p, unsigned max );
 
 #define PIECE_TYPE( x ) ( (x)-MENU_IO_FIRST_TYPE )
 

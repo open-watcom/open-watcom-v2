@@ -41,15 +41,11 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
-extern void             FreeCmdList(cmd_list *);
-extern void             PushCmdList(cmd_list *);
-extern cmd_list         *AllocCmdList(const char *,size_t );
 extern char             *GetCmdEntry(const char *,int ,char *);
-extern input_type       SetInpStack( input_type );
 extern char             *GetCmdName( int );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern void             TypeInpStack( input_type set );
 extern void             DoProcPending(void);
 
 

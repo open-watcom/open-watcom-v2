@@ -41,19 +41,16 @@
 #include "dbgerr.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
 extern wnd_macro        *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds );
-extern void             LockCmdList( cmd_list *cmds );
 extern char             *GetCmdName( int index );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, unsigned id, char *buff, bool strip_amp );
-extern cmd_list         *AllocCmdList( const char *start, size_t );
-extern void             FreeCmdList(cmd_list *);
 extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
-extern void             RingBell( void );
 
 extern const char       MainTab[];
 extern wnd_info         *WndInfoTab[];
@@ -84,7 +81,7 @@ enum {
     PIECE_LAST
 };
 
-#define MIN_KEY_SIZE( wnd ) (8*WndAvgCharX(wnd)) // something big enough to click on
+#define MIN_KEY_SIZE( wnd ) (8 * WndAvgCharX(wnd)) // something big enough to click on
 
 static gui_ord  Indents[PIECE_LAST];
 

@@ -36,15 +36,10 @@
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
-extern cmd_list         *AllocCmdList( const char *, size_t );
-extern void             FreeCmdList( cmd_list * );
 extern void             WndTmpFileInspect( char *file, bool binary );
-extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             StdOutNew( void );
-extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
-extern char             *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
-extern void             TypeInpStack( input_type );
 
 extern file_components  RemFile;
 

@@ -39,12 +39,12 @@
 #include "dbgerr.h"
 #include "namelist.h"
 #include "sortlist.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
 
 extern int              AddrComp( address a, address b );
-extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool );
 
 typedef struct a_symbol {
     struct a_symbol     *next;

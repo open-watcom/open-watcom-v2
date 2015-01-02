@@ -39,18 +39,15 @@
 #include "dbgitem.h"
 #include "dbgio.h"
 #include "dbgerr.h"
-#include "madcli.h"
-#include "mad.h"
 #include "ldsupp.h"
 #include "memtypes.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "dbgutil.h"
 
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
-extern char             *CnvULongDec(unsigned long,char *,unsigned);
-extern char             *CnvULong(unsigned long,char *,unsigned);
-extern char             *StrAddr(address *,char * ,unsigned);
 extern void             SetDataDot( address );
 extern bool             DlgLongExpr( char *, long * );
 extern bool             DlgDataAddr( char *title, address *value );
@@ -60,13 +57,11 @@ extern unsigned         ChangeMemUndoable( address addr, const void *data, unsig
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( char *title, char *buff );
 extern int              AddrComp(address,address);
-extern void             Warn( char *p );
 extern bool             BreakWrite( address addr, mad_type_handle, char *comment );
 extern a_window         *WndAsmInspect(address addr);
 extern bool             DlgScanGivenAddr( char *str, address *value );
 extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
-extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern unsigned         ProgPeekWrap(address addr,char * buff,unsigned length );
 

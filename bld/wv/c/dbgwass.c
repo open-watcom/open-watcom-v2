@@ -36,10 +36,11 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dbgitem.h"
-#include "mad.h"
 #include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "dbgutil.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -65,7 +66,6 @@ extern void             SrcFreeAsm( a_window * );
 extern void             SrcNewAsmNotify( a_window *, mod_handle, bool track );
 extern a_window         *SrcWndFind( a_window*src, address addr,bool track );
 extern void             SkipToAddr( address );
-extern char             *StrAddr(address *,char *,unsigned);
 extern void             FileBreakGadget( a_window *,wnd_line_piece *line, bool curr, brkp *bp );
 extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern unsigned         ProgPeek(address ,void *,unsigned int );
@@ -75,7 +75,6 @@ extern void             SetUnderLine( a_window*, wnd_line_piece *);
 extern void             PushAddr( address );
 extern void             BreakOnExprSP( char *comment );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
-extern void             ReportMADFailure( mad_status );
 
 extern void             *OpenSrcFile(cue_handle * );
 extern void             StepIntoFunction( char * );
@@ -85,9 +84,6 @@ extern address          ModFirstAddr( mod_handle mod );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, int id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
-extern char             *StrAddr( address *addr, char *p, unsigned max );
-extern char             *ModImageName( mod_handle handle );
-extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             DbgUpdate( update_list );
 

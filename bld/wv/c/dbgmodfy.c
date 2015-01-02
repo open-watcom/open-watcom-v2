@@ -38,6 +38,7 @@
 #include "dbgitem.h"
 #include "ldsupp.h"
 #include "dui.h"
+#include "madinter.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
 
@@ -53,7 +54,6 @@ extern address          GetDataDot( void );
 extern char             *GetCmdName( int );
 extern void             RecordCommand( const char *startpos, int cmd );
 extern bool             AdvMachState( int );
-extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
 
 extern stack_entry      *ExprSP;

@@ -36,31 +36,27 @@
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "dlgbrk.h"
-#include "mad.h"
 #include "strutil.h"
+#include "madinter.h"
+#include "dbgutil.h"
 
 extern bool             RemovePoint( brkp * );
 extern brkp             *FindBreak( address );
 extern brkp             *AddBreak( address );
-extern cmd_list         *AllocCmdList( const char *, size_t );
-extern void             FreeCmdList( cmd_list * );
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
 extern bool             DlgGetCodeAddr( gui_window *gui, unsigned id, address* );
 extern bool             DlgGetDataAddr( gui_window *gui, unsigned id, address* );
-extern void             PrevError( char * );
-extern char             *UniqStrAddr( address *,char * ,unsigned );
+extern void             PrevError( const char * );
 extern void             DbgUpdate( update_list flags );
 extern void             SetPointAddr( brkp *bp, address addr );
 extern void             GetBPText( brkp *bp, char *buff );
 extern void             SymComplete( gui_window *gui, int id );
-extern void             WndMsgBox( char * );
-extern char             *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
+extern void             WndMsgBox( const char * );
 extern bool             BrkCheckWatchLimit( address loc, mad_type_handle );
 extern void             RecordNewPoint( brkp *bp );
 extern void             RecordClearPoint( brkp *bp );
 extern void             SetRecord( bool on );
-extern mad_type_handle  FindMADTypeHandle( mad_type_kind tk, unsigned size );
 
 
 extern bool             Supports8ByteBreakpoints;
@@ -131,7 +127,8 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
         return( FALSE );
     }
     GUIDlgBuffGetText( gui, CTL_BRK_CMD_LIST, TxtBuff, TXT_LEN );
-    if( tmp_bp->cmds != NULL ) FreeCmdList( tmp_bp->cmds );
+    if( tmp_bp->cmds != NULL )
+        FreeCmdList( tmp_bp->cmds );
     if( TxtBuff[0] != '\0' ) {
         tmp_bp->cmds = AllocCmdList( TxtBuff, strlen( TxtBuff ) );
     } else {

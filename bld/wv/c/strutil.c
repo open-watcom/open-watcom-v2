@@ -35,16 +35,10 @@
 #include "dbgio.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
-extern char *StrAddr(address *,char *,unsigned);
-extern char *UniqStrAddr(address *,char *,unsigned);
-extern char *LineAddr(address *,char *);
-extern char *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
-extern char *CnvLongDec( long value, char *buff, unsigned buff_len );
 extern address GetRealSeg( address );
-extern char *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
-extern char *AddrToIOString( address *a, char *p, unsigned );
 
 /*
  * StrCopy -- copy string
@@ -89,7 +83,7 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
     address             addr;
     char                *res;
     sym_handle          *sym;
-    char                save_buff[UTIL_LEN+1];
+    char                save_buff[UTIL_LEN + 1];
 
     while( *fmt != NULLCHAR ) {
         if( *fmt != '%' ) {
@@ -115,7 +109,7 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
             case 'l':
                 addr = va_arg( args, address );
                 buff = StrAddr( &addr, buff, TXT_LEN ); // nyi - overflow?
-                res = LineAddr( &addr, save_buff );
+                res = LineAddr( &addr, save_buff, sizeof( save_buff ) );
                 if( res != NULL ) {
                     *buff++ = '(';
                     buff = StrCopy( save_buff, buff );

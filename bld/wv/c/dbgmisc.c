@@ -38,6 +38,7 @@
 #include "i64.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern unsigned int     ReqExpr( void );
@@ -48,13 +49,10 @@ extern void             DebugExit( void );
 extern unsigned         Go( bool );
 extern void             PopEntry( void );
 extern void             NormalExpr( void );
-extern cmd_list         *AllocCmdList( const char *, size_t );
-extern void             FreeCmdList( cmd_list * );
 extern char             *GetCmdEntry( const char *, int , char * );
 extern char             *GetCmdName( int );
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
-extern void             PushCmdList( cmd_list * );
 extern address          GetRegIP( void );
 extern void             RecordSetRegIP( address );
 extern void             DUIWndUser( void );
@@ -74,9 +72,7 @@ extern address          ReturnAddress( void );
 extern void             SetCodeDot( address );
 extern void             ChkExpr( void );
 extern bool             AdvMachState( int );
-extern void             CopyInpFlags( void );
 extern void             RecordCommand( const char *startpos, int cmd );
-extern char             *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
 extern int              AddrComp( address a, address b );
 
 static const char ElseifTab[]         = { "ELSEIF\0" };

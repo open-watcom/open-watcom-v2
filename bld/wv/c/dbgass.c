@@ -38,8 +38,7 @@
 #include "dbgmem.h"
 #include "dbgitem.h"
 #include "mad.h"
-
-extern char             *StrAddr(address *,char *,unsigned);
+#include "dbgutil.h"
 
 
 static walk_result MemRefDisp( address a, mad_type_handle th,

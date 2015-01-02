@@ -1,0 +1,66 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  Debugger utility routines.
+*
+****************************************************************************/
+
+
+extern unsigned     DefaultSize( default_kind dk );
+extern char         *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
+extern char         *CnvLongDec( long value, char *buff, unsigned buff_len );
+extern char         *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
+extern char         *CnvLong( long value, char *buff, unsigned buff_len );
+extern char         *CnvULong( unsigned long value, char *buff, unsigned buff_len );
+extern char         *AddrToIOString( address *a, char *buff, unsigned buff_len );
+extern unsigned     QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq );
+extern char         *CnvAddr( address addr, cnvaddr_option cao, bool uniq, char *p, unsigned max );
+extern char         *CnvNearestAddr( address addr, char *buff, unsigned buff_len );
+extern char         *StrAddr( address *addr, char *buff, unsigned buff_len );
+extern char         *UniqStrAddr( address *addr, char *buff, unsigned buff_len );
+extern char         *LineAddr( address  *addr, char *buff, unsigned buff_len );
+extern void         RingBell( void );
+extern void         Warn( char *p );
+extern cmd_list     *AllocCmdList( const char *start, size_t len );
+extern void         FreeCmdList( cmd_list *cmds );
+extern void         LockCmdList( cmd_list *cmds );
+extern void         TypeInpStack( input_type set );
+extern void         ClearInpStack( input_type clear );
+extern input_type   SetInpStack( input_type new );
+extern void         PopInpStack( void );
+extern void         PushInpStack( void *handle, bool (*rtn)( void *, inp_rtn_action ), bool save_lang );
+extern void         CopyInpFlags( void );
+OVL_EXTERN bool     DoneCmdList( void *_cmds, inp_rtn_action action );
+extern void         PushCmdList( cmd_list *cmds );
+#ifdef DEADCODE
+OVL_EXTERN bool     DoneCmdText( char *cmds, inp_rtn_action action );
+extern void         PushCmdText( char *cmds );
+#endif
+extern bool         PurgeInpStack( void );
+OVL_EXTERN bool     DoneNull( void *_buff, inp_rtn_action action );
+extern void         FreezeInpStack( void );
+extern void         UnAsm( address addr, char *buff, unsigned buff_len );
+extern char         *ModImageName( mod_handle handle );

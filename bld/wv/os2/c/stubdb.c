@@ -49,6 +49,7 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern void             DoCmd( char * );
@@ -58,7 +59,6 @@ extern void             *WndAsmInspect( address addr );
 extern void             DebugMain( void );
 extern void             DebugFini( void );
 extern void             DoInput( void );
-extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
@@ -363,7 +363,7 @@ extern char *DUILoadString( int id )
     return( ret );
 }
 
-void DUIMsgBox( char *text )
+void DUIMsgBox( const char *text )
 {
     printf( "MSG %s\n", text );
 }
@@ -374,17 +374,17 @@ bool DUIDlgTxt( const char *text )
     return( TRUE );
 }
 
-void DUIInfoBox( char *text )
+void DUIInfoBox( const char *text )
 {
     printf( "INF %s\n", text );
 }
 
-void DUIErrorBox( char *text )
+void DUIErrorBox( const char *text )
 {
     printf( "ERR %s\n", text );
 }
 
-void DUIStatusText( char *text )
+void DUIStatusText( const char *text )
 {
     printf( "STA %s\n", text );
 }

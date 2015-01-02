@@ -45,6 +45,7 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -57,7 +58,6 @@ extern bool             DebugScreen( void );
 extern bool             DebugScreenRecover( void );
 extern void             RemoteSetUserScreen( void );
 extern void             RemoteSetDebugScreen( void );
-extern void             PushCmdList( cmd_list * );
 extern void             ProcACmd( void );
 extern void             CheckBPErrors( void );
 extern int              DlgSearch( a_window *, void * );
@@ -540,14 +540,14 @@ void WndFlushKeys( void )
     GUIFlushKeys();
 }
 
-extern void WndMsgBox( char *msg )
+extern void WndMsgBox( const char *msg )
 {
     FingClose(); // close this if we have a startup error.  2x won't hurt
     WndDebug();
     WndDisplayMessage( msg, "", GUI_INFORMATION+GUI_SYSTEMMODAL);
 }
 
-extern void WndInfoBox( char *msg )
+extern void WndInfoBox( const char *msg )
 {
     if( !( WndDlgTxt( msg ) || WndStatusText( msg ) ) ) {
         WndMsgBox( msg );

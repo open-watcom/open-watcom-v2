@@ -41,6 +41,7 @@
 #include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 extern bool             ScanSelectedExpr( char * );
 extern void             BreakOnSelected( char *item );
@@ -78,7 +79,6 @@ extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
 extern unsigned         ExprSize( stack_entry * );
 extern void             EvalLValExpr( int );
 extern void             PopEntry( void );
-extern char             *ModImageName( mod_handle handle );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
 extern int              AddrComp( address a, address b );

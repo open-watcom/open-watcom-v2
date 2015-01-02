@@ -39,10 +39,11 @@
 #include "dipwv.h"
 #include "dbgrep.h"
 #include "dbgitem.h"
-#include "mad.h"
+#include "madinter.h"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( char *p );
@@ -51,7 +52,6 @@ extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );
 extern bool             DlgIncompleteUndo( void );
 extern bool             TraceModifications( MAD_MEMREF_WALKER *wk, void *d );
-extern void             ReportMADFailure( mad_status );
 
 extern void             LocationCreate( location_list *ll, location_type lt, void *d );
 extern dip_status       LocationAssign( location_list *dst, location_list *src, unsigned long len, bool sign_extend );
@@ -93,7 +93,6 @@ extern long             GetDataLong( void );
 extern void             StartupErr( const char * );
 extern unsigned         ReqExpr( void );
 extern void             DbgUpdate( update_list );
-extern void             Warn( char * );
 extern void             FindAddrSectId( address *, int );
 extern void             SetStateOvlSect( machine_state *, unsigned int );
 extern unsigned int     RemoteOvlSectSize( void );

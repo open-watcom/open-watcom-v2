@@ -39,6 +39,7 @@
 #include "dbgitem.h"
 #include "mad.h"
 #include "srcmgt.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
@@ -75,7 +76,6 @@ extern void             IONewAddr( a_window *wnd, address *addr, int type );
 extern void             WndSetOpenNoShow( void );
 extern void             ModNewHandle( a_window *wnd, mod_handle handle );
 extern bool             SrcHasFileOpen( a_window *wnd );
-extern void             Warn( char *p );
 extern address          ModFirstAddr( mod_handle mod );
 extern bool             WndEvalInspectExpr( char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
@@ -294,7 +294,8 @@ extern  a_window        *WndSrcInspect( address addr )
 {
     a_window    *wnd;
     wnd = DoWndSrcInspect( addr, TRUE );
-    if( wnd == NULL ) Warn( LIT( WARN_Source_Not_Available ) );
+    if( wnd == NULL )
+        Warn( LIT( WARN_Source_Not_Available ) );
     return( wnd );
 }
 

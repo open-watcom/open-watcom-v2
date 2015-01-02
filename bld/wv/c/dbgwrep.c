@@ -38,13 +38,11 @@
 #include "dbgevent.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
-extern void             FreeCmdList( cmd_list *cmds );
 extern void             PointFini();
-extern void             PushCmdList( cmd_list *cmds );
-extern void             TypeInpStack( input_type set );
 extern int              GetStackPos();
 extern char             *GetCmdName( int index );
 extern unsigned         UndoLevel();
@@ -53,10 +51,7 @@ extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
 extern void             CreateInvokeFile( char *name, void (*rtn)(void) );
 extern void             InvokeAFile(char*);
-extern char             *StrAddr( address *addr, char *p ,unsigned);
 extern unsigned         ReqExpr();
-extern void             PushInpStack( void *handle, bool (*rtn)(), bool save_lang );
-extern void             UnAsm( address addr, char *buff, unsigned buff_len );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );

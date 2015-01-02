@@ -37,6 +37,7 @@
 #include "dbgadget.h"
 #include "modlist.h"
 #include "dbgio.h"
+#include "dbgutil.h"
 
 
 extern void             WndFuncInspect( mod_handle mod );
@@ -50,7 +51,6 @@ extern void             BreakAllModEntries( mod_handle handle );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern  bool            ModHasSourceInfo( mod_handle handle );
 extern address          ModFirstAddr( mod_handle mod );
-extern char             *ModImageName( mod_handle handle );
 
 #include "menudef.h"
 static gui_menu_struct ModMenu[] = {

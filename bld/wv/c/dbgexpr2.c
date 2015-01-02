@@ -40,6 +40,8 @@
 #include "dbgitem.h"
 #include "i64.h"
 #include "numscan.h"
+#include "madinter.h"
+#include "dbgutil.h"
 
 
 extern sym_list         *Disambiguate( sym_list *, location_context * );
@@ -53,8 +55,6 @@ extern void             LocationCreate( location_list *, location_type, void * )
 extern void             CreateLC( stack_entry * );
 extern address          DefAddrSpaceForAddr( address );
 extern address          DefAddrSpaceForMod( mod_handle );
-extern unsigned         DefaultSize( default_kind );
-extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
 
 static bool DefaultTypeInfo( dip_type_info *info )

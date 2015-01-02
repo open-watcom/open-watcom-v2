@@ -34,13 +34,12 @@
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "mad.h"
 #include "dui.h"
 #include "trpasync.h"
 #include "trapaccs.h"
+#include "madinter.h"
 
 extern void             GetSysConfig( void );
-extern void             CheckMADChange( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 
 extern trap_shandle     GetSuppId( char * );

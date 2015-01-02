@@ -43,6 +43,7 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
@@ -65,15 +66,12 @@ extern void             PushNum( long );
 extern void             DoPlus( void );
 extern void             DoPoints( type_kind );
 extern void             DoAssign( void );
-extern char             *CnvLongDec( long, char *, unsigned );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( char *, char *, unsigned );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( char *);
 extern void             BreakOnExprSP( void * );
-extern void             FreezeInpStack( void );
-extern void             PopInpStack( void );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
@@ -87,10 +85,8 @@ extern bool             UnMapAddress( mappable_addr *loc, image_entry *image );
 extern remap_return     ReMapImageAddress( mappable_addr *loc, image_entry *image );
 extern void             WndInspectExprSP( char *item );
 extern void             CollapseMachState( void );
-extern char             *CnvNearestAddr( address, char *, unsigned );
 extern char             *GetCmdName( int );
 extern void             RecordEvent( char * );
-extern void             Warn( char * );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             DbgUpdate( update_list );

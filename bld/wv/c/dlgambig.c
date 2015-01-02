@@ -39,10 +39,10 @@
 #include "dlgamb.h"
 #include "ambigsym.h"
 #include "strutil.h"
+#include "dbgutil.h"
 
 extern void             FreeSymHandle( sym_list * );
 extern int              AddrComp( address a, address b );
-extern char             *ModImageName( mod_handle handle );
 
 
 static int SymPick( char *text, PICKCALLBACK *PickInit )

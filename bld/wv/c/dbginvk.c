@@ -37,6 +37,7 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dbgscan.h"
+#include "dbgutil.h"
 
 #include "clibext.h"
 
@@ -44,10 +45,7 @@
 extern bool             SwitchOnOff( void );
 extern void             ShowSwitch( bool );
 extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
-extern void             TypeInpStack( input_type );
 extern void             FreeRing( char_ring * );
-extern char             *CnvULongDec( unsigned long, char *buff, unsigned buff_len );
 extern void             LogStart( void );
 extern void             LogEnd( void );
 

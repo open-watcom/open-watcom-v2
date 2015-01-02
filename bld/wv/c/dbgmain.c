@@ -38,11 +38,11 @@
 #include "trpcapb.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "madinter.h"
+#include "dbgutil.h"
 
 
 // This list of extern functions is in alphabetic order.:
-extern cmd_list         *AllocCmdList( const char *,size_t );
-extern void             ClearInpStack( input_type  );
 extern void             FingClose( void );
 extern void             FingFront( void );
 extern void             FingOpen( void );
@@ -59,7 +59,6 @@ extern void             FiniIOWindow( void );
 extern void             FiniLiterals( void );
 extern void             FiniLocalInfo( void );
 extern void             FiniLook( void );
-extern void             FiniMADInfo( void );
 extern void             FiniMachState( void );
 extern void             FiniMacros( void );
 extern void             FiniMemWindow( void );
@@ -70,8 +69,6 @@ extern void             FiniSource( void );
 extern void             FiniToolBar( void );
 extern void             FiniTrace( void );
 extern void             FiniTrap( void );
-extern void             FreeCmdList( cmd_list * );
-extern void             FreezeInpStack( void );
 extern char             *GetCmdEntry( const char *tab, int index, char *buff );
 extern trap_shandle     GetSuppId( char * );
 extern void             GrabHandlers( void );
@@ -89,7 +86,6 @@ extern void             InitIOWindow( void );
 extern void             InitLiterals( void );
 extern void             InitLocalInfo( void );
 extern void             InitLook( void );
-extern void             InitMADInfo( void );
 extern void             InitMachState( void );
 extern void             InitMemWindow( void );
 extern void             InitMenus( void );
@@ -106,7 +102,6 @@ extern void             LogInit( void );
 extern void             PathFini( void );
 extern void             PathInit( void );
 extern void             PointFini( void );
-extern void             PopInpStack( void );
 extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
@@ -142,13 +137,10 @@ extern void             ProcView( void );
 extern void             ProcWhile( void );
 extern void             ProcWindow( void );
 extern void             ProfileInvoke( char * );
-extern bool             PurgeInpStack( void );
-extern void             PushCmdList( cmd_list *cmds );
 extern void             RecordFini( void );
 extern void             RecordInit( void );
 extern void             ReleaseProgOvlay( bool );
 extern void             RestoreHandlers( void );
-extern void             RingBell( void );
 extern void             StartupErr( const char * );
 extern void             Suicide( void );
 extern void             SupportFini( void );

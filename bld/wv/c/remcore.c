@@ -36,9 +36,9 @@
 #include "dbgmem.h"
 #include "tcerr.h"
 #include "dbglit.h"
-#include "mad.h"
 #include "dui.h"
 #include "trapaccs.h"
+#include "madinter.h"
 
 extern void             FiniSuppServices( void );
 extern void             InitSuppServices( void );
@@ -58,7 +58,6 @@ extern void             InitLC( location_context *new, bool use_real_regs );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern void             RemoteSectTblRead( byte * );
 extern void             RemoteSectTblWrite( const byte * );
-extern void             CheckMADChange( void );
 
 extern unsigned         MaxPacketLen;
 extern unsigned         CurrRegSize;

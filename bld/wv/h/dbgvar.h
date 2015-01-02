@@ -178,6 +178,8 @@ typedef unsigned_8 var_type; enum {
     VAR_LAST,
 };
 
+typedef void            VARDIRTRTN( void *, int );
+
 extern type_display     *TypeDisplay;
 
 extern  bool            VarDeleteAScope(var_info *i,void*);
@@ -264,7 +266,6 @@ extern void             VarDisplaySetHidden( var_node *v, var_type_bits bit, boo
 extern bool             VarDisplayIsStruct( var_node *v );
 extern void             VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit );
 extern var_node         *VarNextVisibleSibling( var_info *i, var_node *v );
-typedef void            VARDIRTRTN( void *, int );
 extern void             VarRefreshVisible( var_info *, int, int, VARDIRTRTN *, void * );
 extern void             VarBaseName( var_node *v );
 extern var_node *       VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );

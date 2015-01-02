@@ -34,13 +34,13 @@
 #include "dbgio.h"
 #include "trprtrd.h"
 #include "trapaccs.h"
+#include "madinter.h"
 
 #define DEFAULT_TID     1
 
 extern trap_shandle     GetSuppId( char * );
 extern void             CheckForNewThreads( bool set_exec );
 extern void             GetSysConfig( void );
-extern void             CheckMADChange( void );
 extern void             InitRunThreadWnd( void );
 
 static trap_shandle     SuppRunThreadId = 0;
