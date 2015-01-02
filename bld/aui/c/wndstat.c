@@ -81,7 +81,7 @@ void WndResetStatusText( void )
     WndInternalStatusText( WndStatusString );
 }
 
-bool WndInternalStatusText( char *text )
+bool WndInternalStatusText( const char *text )
 {
     if( text == NULL ) return( FALSE );
     if( !WndHaveStatusWindow() ) return( FALSE );

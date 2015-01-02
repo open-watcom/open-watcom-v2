@@ -126,7 +126,7 @@ extern gui_menu_struct  *WndPopupMenuPtr;
 extern int              WndNumMenus;
 
 extern bool             WndHaveUserStatusText;
-extern bool             WndInternalStatusText( char * );
+extern bool             WndInternalStatusText( const char * );
 extern void             WndResetStatusText( void );
 extern void             WndFiniStatusText( void );
 
