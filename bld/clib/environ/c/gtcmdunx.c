@@ -45,42 +45,54 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
     int     total;
     int     i;
     char    *word;
-    char    *p     = NULL;
+    char    *p;
     char    **argv = &_argv[1];
+    int     need_quotes;
 
-    --len; // reserve space for NULL byte
-
-    if( buffer && (len > 0) ) {
-        p  = buffer;
-        *p = '\0';
+    if( (buffer != NULL) && (len > 0) ) {
+        p = buffer;
+        --len;          // reserve space for terminating NULL byte
+    } else {
+        p = NULL;
+        len = 0;
     }
 
     /* create approximation of original command line */
-    for( word = *argv++, i = 0, total = 0; word; word = *argv++ ) {
+    total = 0;
+    while( (word = *argv++) != NULL ) {
         i      = strlen( word );
         total += i;
+        need_quotes = ( strpbrk( word, " " ) != NULL );
+        if( need_quotes )
+            total += 2;
 
-        if( p ) {
-            if( i >= len ) {
-                strncpy( p, word, len );
-                p[len] = '\0';
-                p      = NULL;
-                len    = 0;
-            } else {
-                strcpy( p, word );
-                p   += i;
-                len -= i;
-            }
+        if( need_quotes && len != 0 ) {
+            --len;
+            *p++ = '"';
+        }
+        if( len != 0 ) {
+            if( i > len )
+                i = len;
+            memcpy( p, word, i );
+            p += i;
+            len -= i;
+        }
+        if( need_quotes && len != 0 ) {
+            --len;
+            *p++ = '"';
         }
 
         /* account for at least one space separating arguments */
-        if( *argv ) {
-            if( p ) {
-                *p++ = ' ';
-                --len;
-            }
+        if( *argv != NULL ) {
             ++total;
+            if( len != 0 ) {
+                --len;
+                *p++ = ' ';
+            }
         }
+    }
+    if( p != NULL ) {
+        *p = '\0';  // terminate string
     }
 
     return( total );
