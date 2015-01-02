@@ -45,7 +45,7 @@
 #include "trpld.h"
 #include "strutil.h"
 #include "dbgscan.h"
-#include "madscan.h"
+#include "dbgmad.h"
 #include "numscan.h"
 
 #include "clibext.h"

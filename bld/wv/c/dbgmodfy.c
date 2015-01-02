@@ -38,7 +38,7 @@
 #include "dbgitem.h"
 #include "ldsupp.h"
 #include "dui.h"
-#include "madscan.h"
+#include "dbgmad.h"
 #include "dbgscan.h"
 
 

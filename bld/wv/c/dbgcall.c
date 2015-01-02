@@ -38,7 +38,7 @@
 #include "spawn.h"
 #include "madcli.h"
 #include "strutil.h"
-#include "madscan.h"
+#include "dbgmad.h"
 #include "dbgscan.h"
 
 

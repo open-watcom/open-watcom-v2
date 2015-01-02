@@ -43,7 +43,7 @@
 #include "spawn.h"
 #include "enterdb.h"
 #include "strutil.h"
-#include "madscan.h"
+#include "dbgmad.h"
 #include "dbgscan.h"
 
 
