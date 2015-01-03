@@ -35,6 +35,7 @@
 #include "uidef.h"
 #include "uidos.h"
 #include "uiattrs.h"
+#include "uidbg.h"
 #include "biosui.h"
 
 #define         _swap(a,b)              {int i; i=a; a=b; b=i;}
@@ -46,10 +47,10 @@ static          ORD                     OldCursorRow;
 static          ORD                     OldCursorCol;
 static          int                     OldCursorType;
 
-void UIAPI _uioffcursor( void )
+void UIDBG _uioffcursor( void )
 /******************************/
 {
-    union       REGS                    r;
+    union REGS      r;
 
     if( UIData->cursor_on ) {
         /* set OldCursor size */
@@ -63,10 +64,10 @@ void UIAPI _uioffcursor( void )
 }
 
 
-void UIAPI _uioncursor( void )
+void UIDBG _uioncursor( void )
 /*****************************/
 {
-    union       REGS                    r;
+    union REGS      r;
 
     /* set OldCursor type */
     r.h.ah = 1;
@@ -108,7 +109,7 @@ void UIAPI _uioncursor( void )
 static void savecursor( void )
 /****************************/
 {
-    union       REGS                    r;
+    union REGS      r;
 
     /* get current video state */
     r.h.ah = 15;
@@ -156,10 +157,10 @@ static void swapcursor( void )
 }
 
 
-void UIAPI _uigetcursor( ORD *row, ORD *col, int *type, int *attr )
-/*********************************************/
+void UIDBG _uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+/*****************************************************************/
 {
-    union       REGS                    r;
+    union REGS      r;
 
     /* get current video state */
     r.h.ah = 15;
@@ -184,8 +185,8 @@ void UIAPI _uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 }
 
 
-void UIAPI _uisetcursor( ORD row, ORD col, int typ, int attr )
-/********************************************/
+void UIDBG _uisetcursor( ORD row, ORD col, int typ, int attr )
+/************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
@@ -202,16 +203,16 @@ void UIAPI _uisetcursor( ORD row, ORD col, int typ, int attr )
 }
 
 
-void UIAPI _uiswapcursor( void )
-/*******************************/
+void UIDBG _uiswapcursor( void )
+/******************************/
 {
     swapcursor();
     newcursor();
 }
 
 
-void UIAPI _uiinitcursor( void )
-/*******************************/
+void UIDBG _uiinitcursor( void )
+/******************************/
 {
     savecursor();
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, OldCursorAttr );
@@ -219,8 +220,8 @@ void UIAPI _uiinitcursor( void )
 }
 
 
-void _uifinicursor( void )
-/************************/
+void UIDBG _uifinicursor( void )
+/******************************/
 {
     _uioncursor();
 }

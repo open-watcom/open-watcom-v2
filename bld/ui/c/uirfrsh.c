@@ -30,7 +30,13 @@
 ****************************************************************************/
 
 
+/*
+    _uidorefresh UI internal function is used by OW Debugger.
+    Don't use it directly in UI project, call uirefresh instead.
+*/
+
 #include "uidef.h"
+#include "uidbg.h"
 #include "uidebug.h"
 
 struct update_area {
@@ -39,7 +45,7 @@ struct update_area {
 };
 
 
-static void dorefresh( struct update_area *total, SAREA area,
+static void _dorefresh( struct update_area *total, SAREA area,
                            UI_WINDOW *wptr, UI_WINDOW *cover )
 /************************************************************/
 {
@@ -60,14 +66,14 @@ static void dorefresh( struct update_area *total, SAREA area,
         dividearea( area, cover->area, areas );
         for( i = 1; i < 5; ++i ) {
             if( areas[ i ].height > 0 ) {
-                dorefresh( total, areas[ i ], wptr, cover->prev );
+                _dorefresh( total, areas[ i ], wptr, cover->prev );
             }
         }
     }
     return;
 }
 
-void UIAPI uidorefresh( void )
+void UIDBG _uidorefresh( void )
 /*****************************/
 {
     register    UI_WINDOW*              wptr;
@@ -81,7 +87,7 @@ void UIAPI uidorefresh( void )
     total.end = 0;
     while( wptr != NULL ) {
         if( wptr->dirty.height > 0 ) {
-            dorefresh( &total, wptr->dirty, wptr, wptr->prev );
+            _dorefresh( &total, wptr->dirty, wptr, wptr->prev );
             wptr->dirty.height = 0;
         }
         wptr = wptr->prev;

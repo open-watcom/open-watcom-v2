@@ -35,17 +35,10 @@
 #include "uidef.h"
 #include "uidos.h"
 #include "uiattrs.h"
+#include "uidbg.h"
 #include "biosui.h"
 
-extern void _uifinicursor( void );
-extern void _uiinitcursor( void );
-extern void _uiswapcursor( void );
-extern void _uisetcursor( ORD row, ORD col, int typ, int attr );
-extern void _uioffcursor( void );
-extern void _uioncursor( void );
-extern void _uigetcursor( ORD *row, ORD *col, int *typ, int *attr );
-
-// these function get overridden by the debugger if it's doing its own
+// these functions get overridden by the OW Debugger if it's doing its own
 // hardware cursor on a monochrome screen, but the debugger needs
 // to call the original version if it's on the main screen, so I've changed
 // the original versions into _uixxx().  In a normal UI app, these stubs kick

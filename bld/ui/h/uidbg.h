@@ -24,25 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  UI internal functions overriden by OW Debugger
 *
 ****************************************************************************/
 
 
-#include "uidef.h"
-#include "uidbg.h"
-
 /*
-        This file is here so that OW Debugger can replace uirefresh with a
-        version that does nothing when the debugger screen is not active.
-
-        DO NOT call _uidorefresh() directly from anywhere else.
-        DO NOT put any other routines into this file.
-        DO NOT merge this file back into UIRFRSH.C
+    These UI internal functions are redefined or used directly by 
+    OW Debugger. It must be hold in separate object file that it
+    is properly replaced by linker in OW debugger if necessary.
 */
 
-void UIAPI uirefresh( void )
-{
-    _uidorefresh();
-}
+#define UIDBG
+
+extern void UIDBG _uifinicursor( void );
+extern void UIDBG _uiinitcursor( void );
+extern void UIDBG _uiswapcursor( void );
+extern void UIDBG _uisetcursor( ORD row, ORD col, int typ, int attr );
+extern void UIDBG _uioffcursor( void );
+extern void UIDBG _uioncursor( void );
+extern void UIDBG _uigetcursor( ORD *row, ORD *col, int *typ, int *attr );
+
+extern void UIDBG _uidorefresh( void );
