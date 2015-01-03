@@ -60,9 +60,18 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
     /* create approximation of original command line */
     total = 0;
     while( (word = *argv++) != NULL ) {
-        i      = strlen( word );
+        /* account for at least one space separating arguments */
+        if( total != 0 ) {
+            ++total;
+            if( len != 0 ) {
+                --len;
+                *p++ = ' ';
+            }
+        }
+
+        i = strlen( word );
         total += i;
-        need_quotes = ( strpbrk( word, " " ) != NULL );
+        need_quotes = ( strpbrk( word, " " ) != NULL || i == 0 );
         if( need_quotes )
             total += 2;
 
@@ -70,7 +79,7 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
             --len;
             *p++ = '"';
         }
-        if( len != 0 ) {
+        if( len != 0 && i != 0 ) {
             if( i > len )
                 i = len;
             memcpy( p, word, i );
@@ -80,15 +89,6 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
         if( need_quotes && len != 0 ) {
             --len;
             *p++ = '"';
-        }
-
-        /* account for at least one space separating arguments */
-        if( *argv != NULL ) {
-            ++total;
-            if( len != 0 ) {
-                --len;
-                *p++ = ' ';
-            }
         }
     }
     if( p != NULL ) {
