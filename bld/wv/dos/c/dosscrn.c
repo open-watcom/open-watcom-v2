@@ -41,6 +41,7 @@
 #include "tinyio.h"
 #include "dbgswtch.h"
 #include "dbginstr.h"
+#include "uidbg.h"
 
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 
@@ -1063,13 +1064,11 @@ void FiniScreen()
 
 static char OldRow, OldCol, OldTyp;
 
-void uiinitcursor()
+void uiinitcursor( void )
 {
 }
 
-#pragma off( unreferenced );
 void uisetcursor( ORD row, ORD col, int typ, int attr )
-#pragma off( unreferenced );
 {
     unsigned    bios_cur_pos;
 
@@ -1090,7 +1089,7 @@ void uisetcursor( ORD row, ORD col, int typ, int attr )
 }
 
 
-void uioffcursor()
+void uioffcursor( void )
 {
     if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != NULL ) ) {
         OldTyp = C_OFF;
@@ -1098,20 +1097,18 @@ void uioffcursor()
     }
 }
 
-void uiswapcursor()
+void uiswapcursor( void )
 {
 }
 
-void uifinicursor()
+void uifinicursor( void )
 {
 }
 
-void uirefresh()
+void uirefresh( void )
 {
-    extern void uidorefresh(void);
-
     if( ScrnState & DBG_SCRN_ACTIVE ) {
-        uidorefresh();
+        _uirefresh();
     }
 }
 

@@ -41,6 +41,7 @@
 #include "pcscrnio.h"
 #include "dpmi.h"
 #include "dbgscrn.h"
+#include "uidbg.h"
 
 
 #define _64K                    (64UL*1024)
@@ -1257,20 +1258,14 @@ extern void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-extern void _uiinitcursor( void );
-extern void _uisetcursor( ORD row, ORD col, int typ, int attr );
-extern void _uioffcursor( void );
-extern void _uiswapcursor( void );
-extern void _uifinicursor( void );
-
 extern void uiinitcursor( void )
 {
-    if( FlipMech != FLIP_TWO ) _uiinitcursor();
+    if( FlipMech != FLIP_TWO ) {
+        _uiinitcursor();
+    }
 }
 
-#pragma off( unreferenced );
 void uisetcursor( ORD row, ORD col, int typ, int attr )
-#pragma off( unreferenced );
 {
     uint_16     bios_cur_pos;
 
@@ -1321,9 +1316,7 @@ extern void uifinicursor( void )
 
 void uirefresh()
 {
-    extern void uidorefresh(void);
-
     if( ScrnState & DBG_SCRN_ACTIVE ) {
-        uidorefresh();
+        _uirefresh();
     }
 }

@@ -37,12 +37,12 @@
         This file is here so that OW Debugger can replace uirefresh with a
         version that does nothing when the debugger screen is not active.
 
-        DO NOT call _uidorefresh() directly from anywhere else.
+        DO NOT call _uirefresh() directly from anywhere else.
         DO NOT put any other routines into this file.
         DO NOT merge this file back into UIRFRSH.C
 */
 
 void UIAPI uirefresh( void )
 {
-    _uidorefresh();
+    _uirefresh();
 }

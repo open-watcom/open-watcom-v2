@@ -24,72 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Async run dialog
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "guidlg.h"
-#include "dbgerr.h"
-#include "dbgtoggl.h"
-#include "dlgasync.h"
-#include "trapbrk.h"
-#ifdef __RDOS__
-#include "stdui.h"
-#endif
-
-static gui_window   *AsyncWnd = 0;
-static dlg_async    dlg;
-
-extern unsigned PollAsync( void );
-extern unsigned StopAsync( void );
-
-void AsyncNotify( void )
-{
-   if( AsyncWnd ) {
-        dlg.cond = PollAsync();
-        if( !( dlg.cond & COND_RUNNING ) ) {
-            GUICloseDialog( AsyncWnd );
-            AsyncWnd = 0;
-#ifdef __RDOS__
-            uirefresh();
-#endif
-        }
-    }
-}
-
-OVL_EXTERN bool AsyncEvent( gui_window * gui, gui_event gui_ev, void * param )
-{
-    unsigned            id;
-
-    switch( gui_ev ) {
-    case GUI_INIT_DIALOG:
-        dlg.cond = 0;
-        GUISetFocus( gui, CTL_ASYNC_STOP );
-        AsyncWnd = gui;
-        return( TRUE );
-    case GUI_CONTROL_CLICKED :
-        GUI_GETID( param, id );
-        switch( id ) {
-        case CTL_ASYNC_STOP:
-            AsyncWnd = 0;
-            dlg.cond = StopAsync();
-            GUICloseDialog( gui );
-            return( TRUE );
-        }
-        return( FALSE );
-    case GUI_DESTROY:
-        AsyncWnd = 0;
-        return( TRUE );
-    }
-
-    return( FALSE );
-}
-
-extern unsigned DlgAsyncRun( void )
-{
-    ResDlgOpen( &AsyncEvent, 0, DIALOG_ASYNC_RUN );
-    return( dlg.cond ); 
-}
+#define OWDEBUGGER_API
+#include "uirfrsh.c"

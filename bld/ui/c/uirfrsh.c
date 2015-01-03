@@ -31,13 +31,20 @@
 
 
 /*
-    _uidorefresh UI internal function is used by OW Debugger.
+    _uirefresh UI internal function is used directly by OW Debugger.
     Don't use it directly in UI project, call uirefresh instead.
 */
 
 #include "uidef.h"
 #include "uidbg.h"
 #include "uidebug.h"
+
+
+#ifdef OWDEBUGGER_API
+#define UIREFRESH UIDBG _uirefresh
+#else
+#define UIREFRESH UIAPI uirefresh
+#endif
 
 struct update_area {
     unsigned        start;
@@ -73,8 +80,8 @@ static void _dorefresh( struct update_area *total, SAREA area,
     return;
 }
 
-void UIDBG _uidorefresh( void )
-/*****************************/
+void UIREFRESH( void )
+/********************/
 {
     register    UI_WINDOW*              wptr;
     struct update_area                  total;

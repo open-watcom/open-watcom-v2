@@ -41,6 +41,7 @@
 #include "winscrn.h"
 #include "swap.h"
 #include "dbgscrn.h"
+#include "uidbg.h"
 
 extern void __far HookRtn( unsigned event, unsigned info );
 extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
@@ -308,10 +309,8 @@ void uifarfree( void *ptr )
 
 void uirefresh( void )
 {
-    extern void uidorefresh(void);
-
     if( ScrnState & DBG_SCRN_ACTIVE ) {
-        uidorefresh();
+        _uirefresh();
     }
 }
 

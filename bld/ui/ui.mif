@@ -46,11 +46,11 @@ objs =  uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
         uiinit.obj   uiledit.obj  uilist.obj   uilstbox.obj &
         uimem.obj    uimenu.obj   uimenucr.obj uimget.obj   &
         uimisc.obj   uimousev.obj uipad.obj    uipget.obj   &
-        uipopup.obj  uiprot.obj   uirefer.obj  uirfrsh.obj  &
-        uisnow.obj   uispawn.obj  uitab.obj    uivattr.obj  &
-        uivedit.obj  uivfill.obj  uivfld.obj   uivhide.obj  &
-        uivline.obj  uivmove.obj  uivopen.obj  uivscrn.obj  &
-        uivstr.obj   uivutil.obj  uiwin.obj    uiyield.obj
+        uipopup.obj  uiprot.obj   uisnow.obj   uispawn.obj  &
+        uitab.obj    uivattr.obj  uivedit.obj  uivfill.obj  &
+        uivfld.obj   uivhide.obj  uivline.obj  uivmove.obj  &
+        uivopen.obj  uivscrn.obj  uivstr.obj   uivutil.obj  &
+        uiwin.obj    uiyield.obj
 
 # system type         dos  nlm  nt   os2  qnx  unix  win  rdos
 # builder builds      yes  no   yes  yes  no   yes   yes  yes
@@ -77,6 +77,9 @@ objs =  uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
 !inject uikeyb.obj    dos  nlm      os2   qnx  unix  win
 !inject uimapch.obj   dos
 !inject uiproxy.obj                       qnx
+!inject uirefer.obj   dos                            win
+!inject ui_rfrsh.obj  dos                            win
+!inject uirfrsh.obj        nlm  nt  os2   qnx  unix       rdos
 !inject uiscrnam.obj       nlm
 !inject uiutil.obj    dos
 !inject uivirt.obj                        qnx  unix

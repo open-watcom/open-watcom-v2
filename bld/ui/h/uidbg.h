@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  UI internal functions overriden by OW Debugger
+* Description:  UI internal functions used directly by OW Debugger
 *
 ****************************************************************************/
 
-
-/*
-    These UI internal functions are redefined or used directly by 
-    OW Debugger. It must be hold in separate object file that it
-    is properly replaced by linker in OW debugger if necessary.
-*/
 
 #define UIDBG
 
@@ -45,4 +39,4 @@ extern void UIDBG _uioffcursor( void );
 extern void UIDBG _uioncursor( void );
 extern void UIDBG _uigetcursor( ORD *row, ORD *col, int *typ, int *attr );
 
-extern void UIDBG _uidorefresh( void );
+extern void UIDBG _uirefresh( void );
