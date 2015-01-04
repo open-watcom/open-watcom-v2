@@ -150,7 +150,7 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
 /*
  * AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
+TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx, int dtily,
                              int dtilcx, int dtilcy, int id, long style,
                              const char *class, const char *text, BYTE infolen,
                              const char *infodata )

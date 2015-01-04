@@ -38,10 +38,10 @@
 
 #include "os2dlg.h"
 
-static TEMPLATE_HANDLE PMDialogTemplate    ( USHORT temptype, USHORT codepage,
+static TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage,
                                              USHORT focus );
 static TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data );
-static TEMPLATE_HANDLE PMAddControl        ( TEMPLATE_HANDLE data, long style,
+static TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style,
                                              USHORT dtx, USHORT dty,
                                              USHORT dtcx, USHORT dtcy,
                                              USHORT id, USHORT children,
@@ -49,7 +49,7 @@ static TEMPLATE_HANDLE PMAddControl        ( TEMPLATE_HANDLE data, long style,
                                              const char *text, PVOID presparms,
                                              ULONG presparmslen,
                                              const void *ctldata, ULONG ctldatlen );
-static int          PMDynamicDialogBox     ( PFNWP fn, HWND hwnd,
+static int          PMDynamicDialogBox( PFNWP fn, HWND hwnd,
                                              TEMPLATE_HANDLE data,
                                              PVOID dlgdata );
 
@@ -370,7 +370,7 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     return( new );
 }
 
-TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtx, int dty,
+TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtx, int dty,
                              int dtcx, int dtcy, int id, long style,
                              const char *class, const char *text,
                              BYTE infolen, const char *infodata )
@@ -404,4 +404,3 @@ int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, 
     inst = inst;
     return( PMDynamicDialogBox( fn, hwnd, data, (PVOID)lparam ) );
 }
-
