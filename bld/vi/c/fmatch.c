@@ -38,7 +38,7 @@ static regexp  *cRx;
 /*
  * FileMatch - check if a file matches a wild card
  */
-bool FileMatch( char *name )
+bool FileMatch( const char *name )
 {
     return( RegExec( cRx, name, true ) );
 
@@ -47,7 +47,7 @@ bool FileMatch( char *name )
 /*
  * FileMatchInit - start file matching
  */
-vi_rc FileMatchInit( char *wild )
+vi_rc FileMatchInit( const char *wild )
 {
     char        *tomatch;
     int         i, j, len;

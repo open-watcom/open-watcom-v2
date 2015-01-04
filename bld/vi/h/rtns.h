@@ -408,8 +408,8 @@ void    QuitEditor( vi_rc );
 void    Usage( char * );
 
 /* fmatch.c */
-bool    FileMatch( char *name );
-vi_rc   FileMatchInit( char *wild );
+bool    FileMatch( const char *name );
+vi_rc   FileMatchInit( const char *wild );
 void    FileMatchFini( void );
 
 /* gencfg.c */

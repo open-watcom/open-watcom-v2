@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-extern void             *WndCompileRX( char *expr );
+extern void             *WndCompileRX( const char *expr );
 extern void             WndFreeRX( void *rx );
-extern bool             WndRXFind( void *rx, char **pos, char **endpos );
-extern void             WndSetMagicStr( char *str );
+extern bool             WndRXFind( void *rx, const char **pos, const char **endpos );
+extern void             WndSetMagicStr( const char *str );
 extern bool             WndGetSrchIgnoreCase( void );
 extern void             WndSetSrchIgnoreCase( bool );
 extern bool             WndGetSrchRX( void );

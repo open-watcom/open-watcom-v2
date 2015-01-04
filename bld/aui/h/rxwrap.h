@@ -34,7 +34,7 @@
 
 #define ALLOC       WndAlloc
 #define CASEIGNORE  SrchIgnoreCase
-#define MAGICFLAG   FALSE
+#define MAGICFLAG   false
 #define MAGICSTR    SrchIgnoreMagic
 #define META        SrchMetaChars
 
@@ -48,8 +48,8 @@ extern char __near SrchMetaChars[];
 #else
 extern char SrchMetaChars[];
 #endif
-extern char SrchIgnoreCase;
+extern bool SrchIgnoreCase;
 extern char SrchMagicChars[];
-extern char SrchRX;
+extern bool SrchRX;
 
 extern void *WndAlloc( size_t );

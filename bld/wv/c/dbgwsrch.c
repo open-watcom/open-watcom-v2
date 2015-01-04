@@ -124,7 +124,7 @@ OVL_EXTERN walk_result AddSrcFile( cue_handle *ch, void *d )
 OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
 {
     void        *viewhndl;
-    char        *pos,*endpos;
+    const char  *pos,*endpos;
     found_item  *found;
     unsigned    i;
     int         len;
@@ -135,14 +135,15 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
     WndStatusText( TxtBuff );
     for( i = 1;; ++i ) {
         len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN );
-        if( len < 0 ) break;
+        if( len < 0 )
+            break;
         TxtBuff[ len ] = '\0';
         pos = TxtBuff;
         endpos = NULL;
         if( WndRXFind( srch->rx, &pos, &endpos ) ) {
-            found = WndRealloc( srch->found,
-                                (srch->num_rows+1)*sizeof( found_item ) );
-            if( found == NULL ) break;
+            found = WndRealloc( srch->found, ( srch->num_rows + 1 ) * sizeof( found_item ) );
+            if( found == NULL )
+                break;
             srch->found = found;
             found[ srch->num_rows ].mod = CueMod( ch );
             found[ srch->num_rows ].file_id = CueFileId( ch );

@@ -37,14 +37,14 @@
 
 bool    WndDoingSearch = FALSE;
 
-void WndSetSrchItem( a_window *wnd, char *expr )
+void WndSetSrchItem( a_window *wnd, const char *expr )
 {
     GUIMemFree( wnd->searchitem );
     wnd->searchitem = GUIMemAlloc( strlen( expr ) + 1 );
     strcpy( wnd->searchitem, expr );
 }
 
-void *WndCompileRX( char *expr )
+void *WndCompileRX( const char *expr )
 {
     regexp      *rx;
 
@@ -64,18 +64,18 @@ void WndFreeRX( void *rx )
 }
 
 
-void WndSetMagicStr( char *str )
+void WndSetMagicStr( const char *str )
 {
     char        *meta;
-    char        *ignore;
+    int		i;
 
-    ignore = SrchIgnoreMagic;
-    for( meta = SrchMetaChars; *meta; ++meta ) {
+    i = 0;
+    for( meta = SrchMetaChars; i < MAX_MAGIC_STR && *meta != '\0'; ++meta ) {
         if( strchr( str, *meta ) == NULL ) {
-            *ignore++ = *meta;
+            SrchIgnoreMagic[i++] = *meta;
         }
     }
-    *ignore = '\0';
+    SrchIgnoreMagic[i] = '\0';
 }
 
 char *WndGetSrchMagicChars( void )
@@ -111,7 +111,7 @@ void WndSetSrchRX( bool flag )
     SrchRX = flag;
 }
 
-bool WndRXFind( void * _rx, char **pos, char **endpos )
+bool WndRXFind( void *_rx, const char **pos, const char **endpos )
 {
     regexp * rx = (regexp *)_rx;
 
@@ -136,8 +136,8 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
 {
     wnd_line_piece      line;
     regexp              *rx;
-    char                *pos;
-    char                *endpos;
+    const char          *pos;
+    const char          *endpos;
     bool                wrap;
     int                 rows;
     bool                rc;
@@ -224,11 +224,11 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
                 }
             }
             if( line.bitmap ) continue;
-            pos = (char *)line.text;
+            pos = line.text;
             endpos = NULL;
             while( WndRXFind( rx, &pos, &endpos ) ) {
-                curr.end = endpos - (char *)line.text;
-                curr.col = pos - (char *)line.text;
+                curr.end = endpos - line.text;
+                curr.col = pos - line.text;
                 if( curr.piece < starting_pos.piece ) {
                     prev_occurence = curr;
                 } else if( curr.piece > starting_pos.piece ) {

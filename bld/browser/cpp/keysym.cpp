@@ -89,7 +89,7 @@ KeySymbol::~KeySymbol()
 }
 
 void KeySymbol::setSearchString( String & str, void ** prog,
-                                 const char * name )
+                                 const char *name )
 //------------------------------------------------------------
 {
     WBRFree( *prog );   // free existing program
@@ -152,7 +152,7 @@ bool KeySymbol::matches( Symbol * sym )
     bool   accept;
     char * container;
 
-    if( !(SymTypeConvert[ sym->symtype() ] & _searchFor) ) {
+    if( !(SymTypeConvert[sym->symtype()] & _searchFor) ) {
         return( FALSE );
     }
 
@@ -176,11 +176,11 @@ bool KeySymbol::matches( Symbol * sym )
 
     if( _nameProg ) {
         if( sym->name() ) {
-            if( !RegExec( (regexp *) _nameProg, (char *) sym->name(), TRUE ) ) {
+            if( !RegExec( (regexp *)_nameProg, sym->name(), true ) ) {
                 return( FALSE );
             }
         } else {
-            if( !RegExec( (regexp *) _nameProg, "", TRUE ) ) {
+            if( !RegExec( (regexp *)_nameProg, "", true ) ) {
                 return( FALSE );
             }
         }
@@ -190,14 +190,13 @@ bool KeySymbol::matches( Symbol * sym )
         if( sym->getParent() ) {
             container = DRGetName( sym->getParent() );
             if( container ) {
-                accept = (bool) RegExec( (regexp *) _contClassProg,
-                                         container, TRUE );
+                accept = (bool)RegExec( (regexp *)_contClassProg, container, true );
                 WBRFree( container );
                 if( !accept ) {
                     return( FALSE );
                 }
             } else {
-                if( !RegExec( (regexp *) _contClassProg, "", TRUE ) ) {
+                if( !RegExec( (regexp *)_contClassProg, "", true ) ) {
                     return( FALSE );
                 }
             }
@@ -222,7 +221,7 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
     bool   accept;
     char * container;
 
-    if( !(SymTypeConvert[ ctxt->type ] & _searchFor) ) {
+    if( !(SymTypeConvert[ctxt->type] & _searchFor) ) {
         return( FALSE );
     }
 
@@ -246,11 +245,11 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
 
     if( _nameProg && ctxt->name ) {
         if( ctxt->name ) {
-            if( !RegExec( (regexp *) _nameProg, ctxt->name, TRUE ) ) {
+            if( !RegExec( (regexp *)_nameProg, ctxt->name, true ) ) {
                 return( FALSE );
             }
         } else {
-            if( !RegExec( (regexp *) _nameProg, "", TRUE ) ) {
+            if( !RegExec( (regexp *)_nameProg, "", true ) ) {
                 return( FALSE );
             }
         }
@@ -260,14 +259,13 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
         if(  ctxt->context->classhdl ) {
             container = DRGetName( ctxt->context->classhdl );
             if( container ) {
-                accept = (bool) RegExec( (regexp *) _contClassProg,
-                                         container, TRUE );
+                accept = (bool)RegExec( (regexp *)_contClassProg, container, true );
                 WBRFree( container );
                 if( !accept ) {
                     return( FALSE );
                 }
             } else {
-                if( !RegExec( (regexp *) _contClassProg, "", TRUE ) ) {
+                if( !RegExec( (regexp *)_contClassProg, "", true ) ) {
                     return( FALSE );
                 }
             }
@@ -280,14 +278,13 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
         if( ctxt->context->functionhdl ) {
             container = DRGetName( ctxt->context->functionhdl );
             if( container ) {
-                accept = (bool) RegExec( (regexp *) _contFunctionProg,
-                                         container, TRUE );
+                accept = (bool)RegExec( (regexp *)_contFunctionProg, container, true );
                 WBRFree( container );
                 if( !accept ) {
                     return( FALSE );
                 }
             } else {
-                if( !RegExec( (regexp *) _contFunctionProg, "", TRUE ) ) {
+                if( !RegExec( (regexp *)_contFunctionProg, "", true ) ) {
                     return( FALSE );
                 }
             }
@@ -310,7 +307,7 @@ bool KeySymbol::matches( dr_handle hdl, const char * name )
     dr_sym_type type;
 
     type = DRGetSymType( hdl );
-    if( !(SymTypeConvert[ type ] & _searchFor) ) {
+    if( !(SymTypeConvert[type] & _searchFor) ) {
         return( FALSE );
     }
 
@@ -334,11 +331,11 @@ bool KeySymbol::matches( dr_handle hdl, const char * name )
 
     if( _nameProg ) {
         if( name ) {
-            if( !RegExec( (regexp *) _nameProg, (char *) name, TRUE ) ) {
+            if( !RegExec( (regexp *)_nameProg, name, true ) ) {
                 return( FALSE );
             }
         } else {
-            if( !RegExec( (regexp *) _nameProg, "", TRUE ) ) {
+            if( !RegExec( (regexp *)_nameProg, "", true ) ) {
                 return( FALSE );
             }
         }

@@ -40,12 +40,12 @@
 
 extern char NullStr[];
 
-char                    SrchIgnoreCase = TRUE;
-char                    SrchMagicChars[MAX_MAGIC_STR] = { "^$\\.[(|?+*~@" };
-char                    SrchRX = FALSE;
+bool                    SrchIgnoreCase = true;
+char                    SrchMagicChars[MAX_MAGIC_STR + 1] = { "^$\\.[(|?+*~@" };
+bool                    SrchRX = false;
 
 // This next one is just for the RX processor. It want's it backwards!
-char                    SrchIgnoreMagic[MAX_MAGIC_STR] = { "\0" };
+char                    SrchIgnoreMagic[MAX_MAGIC_STR + 1] = { "\0" };
 
 #define MetaChar( i ) ("^$\\.[(|?+*~@"[i-CTL_FIRST_RX])
 
@@ -104,8 +104,8 @@ typedef struct {
     a_window            *wnd;
     int                 direction;
     void                *history;
-    unsigned            case_ignore : 1;
-    unsigned            use_rx : 1;
+    bool                case_ignore;
+    bool                use_rx;
 } dlg_search;
 
 extern void DlgClickHistory( gui_window *gui, int edit, int list )
@@ -182,7 +182,8 @@ static void     GetDlgStatus( gui_window *gui, dlg_search *dlg )
 {
     GUIMemFree( dlg->wnd->searchitem );
     dlg->wnd->searchitem = GUIGetText( gui, CTL_SRCH_EDIT );
-    if( dlg->wnd->searchitem == NULL ) dlg->direction = 0;
+    if( dlg->wnd->searchitem == NULL )
+        dlg->direction = 0;
     dlg->case_ignore = GUIIsChecked( gui, CTL_SRCH_CASE );
     dlg->use_rx = GUIIsChecked( gui, CTL_SRCH_RX );
     if( dlg->history != NULL ) {

@@ -183,7 +183,7 @@ void * WBRRegComp( const char * cname )
         if( !optMgr->getUseRX() && optMgr->getWholeWord() ) {
             name.concat( "\\$" );
         }
-        result = RegComp( (char *) name.gets() );
+        result = RegComp( name.gets() );
         if( result == NULL ) {
             throw (CauseOfDeath) (DEATH_BY_BAD_REGEXP + RegExpError);
         }
@@ -204,16 +204,16 @@ void * WBRRegComp( const char * )
 
 #endif
 
-char * WBRStrDup( const char * src )
-//----------------------------------
+char * WBRStrDup( const char *src )
+//---------------------------------
 // this is a strdup which goes through our memory allocator.
 {
     unsigned    len;
-    char *      dest;
+    char        *dest;
 
     if( src == NULL ) return NULL;
     len = strlen( src ) + 1;
-    dest = (char *) WBRAlloc( len );
+    dest = (char *)WBRAlloc( len );
     memcpy( dest, src, len );
     return( dest );
 }
