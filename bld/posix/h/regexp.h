@@ -60,15 +60,15 @@ enum {
 extern int      RegExpError;
 
 #ifndef REALTABS
-extern char     RealTabs;
+extern bool     RealTabs;
 #endif
 
 #ifndef CASEIGNORE
-extern char     CaseIgnore;
+extern bool     CaseIgnore;
 #endif
 
 #ifndef MAGICFLAG
-extern char     MagicFlag;
+extern bool     MagicFlag;
 #endif
 
 #ifndef MAGICSTR
@@ -79,8 +79,8 @@ extern char     *MagicString;
 
 #define NSUBEXP  21
 typedef struct {
-    char        *startp[NSUBEXP];
-    char        *endp[NSUBEXP];
+    const char  *startp[NSUBEXP];
+    const char  *endp[NSUBEXP];
     char        regstart;       /* Internal use only. */
     char        reganch;        /* Internal use only. */
     char        *regmust;       /* Internal use only. */
@@ -89,8 +89,8 @@ typedef struct {
 } regexp;
 
 /* regexp.c */
-extern regexp   *RegComp( char * );
-extern int      RegExec( regexp *, char *, char );
+extern regexp   *RegComp( const char * );
+extern int      RegExec( regexp *, const char *, bool );
 extern void     RegAnchor( regexp * );
 
 #define         MAGIC   '\x9C'

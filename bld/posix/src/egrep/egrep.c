@@ -345,7 +345,7 @@ static void insertPattern( const char *pat )
 #ifdef FGREP
     fPatterns[ PatCount ] = strdup( pat );
 #else
-    ePatterns[ PatCount ] = RegComp( (char *) pat );
+    ePatterns[ PatCount ] = RegComp( pat );
     if( ePatterns[ PatCount ] == NULL ) {
         errorExit( "error forming regular expression" );
     }

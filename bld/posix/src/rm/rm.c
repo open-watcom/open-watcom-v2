@@ -171,7 +171,7 @@ void DoRM( const char *f )
             i = -1;
         }
     }
-    d = OpenDirAll( (char*)f, wild );
+    d = OpenDirAll( f, wild );
     if( d == NULL ) {
         PrintALineThenDrop( "File (%s) not found.", f );
         if( !fflag ) {

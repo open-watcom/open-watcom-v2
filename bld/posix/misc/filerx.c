@@ -65,7 +65,7 @@ static char *rxErrorStrings[] = {
 };
 
 /* FileMatch - check if a file matches a wild card */
-int FileMatch( void *crx, char *name )
+int FileMatch( void *crx, const char *name )
 {
     int i;
 
@@ -77,7 +77,7 @@ int FileMatch( void *crx, char *name )
 }
 
 /* FileNameWild - determine if a file name has a wild card */
-int FileNameWild( char *wild, int isrx )
+int FileNameWild( const char *wild, int isrx )
 {
     size_t      len, i;
     int         ch;
@@ -100,7 +100,7 @@ int FileNameWild( char *wild, int isrx )
 }
 
 /* FileMatchInit - start file matching */
-char *FileMatchInit( void **crx, char *wild )
+char *FileMatchInit( void **crx, const char *wild )
 {
     char        *tomatch;
     size_t      j;
@@ -166,7 +166,7 @@ void FileMatchFini( void *crx )
 }
 
 /* OpenDirAll */
-DIR *OpenDirAll( char *filename, char *wild )
+DIR *OpenDirAll( const char *filename, char *wild )
 {
     size_t      i, j, len;
     char        npath[_MAX_PATH];
@@ -193,7 +193,7 @@ DIR *OpenDirAll( char *filename, char *wild )
 }
 
 /* FileMatchNoRx - match file name vs a wild card, the old dos way */
-int FileMatchNoRx( char *name, char *wild )
+int FileMatchNoRx( const char *name, const char *wild )
 {
     char        fname[_MAX_FNAME];
     char        ext[_MAX_EXT];
