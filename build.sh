@@ -5,23 +5,31 @@
 #
 # Expects POSIX or OW tools.
 
+OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
+
+output_redirect()
+{
+    $1 $2 $3 $4 $5 $6 >>$OWBUILDER_BOOTX_OUTPUT 2>&1
+}
+
+rm -f $OWBUILDER_BOOTX_OUTPUT
 cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
 if [ "$OWTOOLS" = "WATCOM" ]; then
-    wmake -f ../wmake clean
-    wmake -f ../wmake
+    output_redirect wmake -f ../wmake clean
+    output_redirect wmake -f ../wmake
 else
     case `uname` in
         FreeBSD)
-            make -f ../posmake clean
-            make -f ../posmake TARGETDEF=-D__BSD__
+            output_redirect make -f ../posmake clean
+            output_redirect make -f ../posmake TARGETDEF=-D__BSD__
             ;;
 #        Linux)
         *)
-            make -f ../posmake clean
-            make -f ../posmake TARGETDEF=-D__LINUX__
+            output_redirect make -f ../posmake clean
+            output_redirect make -f ../posmake TARGETDEF=-D__LINUX__
             ;;
     esac
 fi
@@ -29,8 +37,8 @@ cd $OWSRCDIR/builder
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
 rm -f $OWBINDIR/builder
-$OWBINDIR/wmake -f ../binmake clean
-$OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+output_redirect $OWBINDIR/wmake -f ../binmake clean
+output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
 cd $OWSRCDIR
 builder boot
 RC=$?
