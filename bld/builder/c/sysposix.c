@@ -75,7 +75,11 @@ int SysRunCommandPipe( const char *cmd, int *readpipe )
     if( pid == -1 )
         return( -1 );
     if( pid == 0 ) {
+#ifdef __WATCOMC__
         execvp( cmdnam, argv );
+#else
+        execvp( cmdnam, (char * const *)argv );
+#endif
         /* If above call to execvp() failed, do *not* call library termination routines! */
         _exit( 127 );
     }

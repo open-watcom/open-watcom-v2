@@ -82,7 +82,7 @@ char                    *CmdLine;
 char                    saveDirBuff[_MAX_PATH];
 char                    *SaveDir = saveDirBuff;
 
-static char *StringCopy( char *dst, char *src )
+static char *StringCopy( char *dst, const char *src )
 {
     while( ( *dst = *src ) != '\0' ) {
         ++dst;
@@ -226,12 +226,11 @@ static unsigned CheckTargets( char *filename )
 static void InitQueue( char *cwd )
 {
     dirqueue    *qp;
-    char        *p;
 
     qp = safe_malloc( sizeof( *qp ) );
     qp->next = NULL;
     qp->depth = 0;
-    p = StringCopy( qp->name, cwd );
+    StringCopy( qp->name, cwd );
     QueueHead = qp;
     QueueTail = qp;
 }
