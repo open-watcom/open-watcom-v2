@@ -68,7 +68,7 @@ extern bool             DlgAnyExpr( char *, char *, unsigned );
 extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern void             WndVarInspect( char * );
-extern void             DlgNewWithSym( char *title, char *buff, unsigned buff_len );
+extern void             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );

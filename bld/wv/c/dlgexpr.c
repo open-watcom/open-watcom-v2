@@ -41,9 +41,9 @@
 #include "dbgutil.h"
 
 /* to be moved to header files ! */
-extern bool             DlgNewWithMod(char*,char*,unsigned);
-extern bool             DlgNewWithSym(char*,char*,unsigned);
-extern void             ChkExpr(void);
+extern bool             DlgNewWithMod( const char *, char *, unsigned );
+extern bool             DlgNewWithSym( const char *, char *, unsigned );
+extern void             ChkExpr( void );
 extern void             ReqMemAddr(memory_expr , address *);
 extern void             NormalExpr(void);
 extern void             FreezeStack();
@@ -103,9 +103,9 @@ extern void DlgSetLong( gui_window *gui, unsigned id, long value )
     GUISetText( gui, id, TxtBuff );
 }
 
-static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, char *title,
+static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *title,
                                    void *value, bool (*rtn)(const char*,void*),
-                                   bool (*dlg)(char*,char*,unsigned) )
+                                   bool (*dlg)(const char*,char*,unsigned) )
 {
     bool        rc;
 
@@ -118,7 +118,7 @@ static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, char *title,
     }
 }
 
-static bool     DlgGetItem( char *buff, unsigned buff_len, char *title, void *value, bool (*rtn)(const char*,void*) )
+static bool     DlgGetItem( char *buff, unsigned buff_len, const char *title, void *value, bool (*rtn)(const char*,void*) )
 {
     return( DlgGetItemWithRtn( buff, buff_len, title, value, rtn, DlgNewWithSym ) );
 }
@@ -170,7 +170,7 @@ bool    DlgGivenAddr( char *title, address *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanGivenAddr ) );
 }
 
-bool    DlgModName( char *title, mod_handle *mod )
+bool    DlgModName( const char *title, mod_handle *mod )
 {
     char        new[EXPR_LEN];
 
@@ -182,7 +182,7 @@ bool    DlgModName( char *title, mod_handle *mod )
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, mod, DlgScanModName, DlgNewWithMod ) );
 }
 
-bool DlgString( char *title, char *buff )
+bool DlgString( const char *title, char *buff )
 {
     char        new[EXPR_LEN];
 
