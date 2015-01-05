@@ -423,6 +423,7 @@
 .fnw _wgetcwd                   getcwd.gml      DOS       WIN32
 .fn7 _getdcwd                   getdcwd.gml     DOS       WIN32
 .fnw _wgetdcwd                  getdcwd.gml     DOS       WIN32
+.fnc getdelim                   getdelim.gml    DOS QNX W WIN32
 .fnc _getdiskfree               getdiskf.gml    DOS       WIN32
 .fnc _getdrive                  getdrive.gml    DOS       WIN32
 .fnc getegid                    getegid.gml         QXO
@@ -444,6 +445,7 @@
 .fnc _getimage                  gr_getim.gml    DOS QNX W GRAPH
 .fnc _getimage_w                gr_getim.gml    DOS QNX W GRAPH
 .fnc _getimage_wxy              gr_getim.gml    DOS QNX W GRAPH
+.fnc getline                    getline.gml     DOS QNX W WIN32
 .fnc _getlinestyle              gr_getls.gml    DOS QNX W GRAPH
 .fnc getlogin                   getlogin.gml        QXO
 .fnm _getmbcp                   getmbcp.gml     DOS       WIN32

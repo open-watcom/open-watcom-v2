@@ -1435,12 +1435,14 @@ objs_lr2 = &
 ../doc/lr/src/getcwd.gml &
 ../doc/lr/src/getdate.gml &
 ../doc/lr/src/getdcwd.gml &
+../doc/lr/src/getdelim.gml &
 ../doc/lr/src/getdiskf.gml &
 ../doc/lr/src/getdrive.gml &
 ../doc/lr/src/getenv.gml &
 ../doc/lr/src/getenv_s.gml &
 ../doc/lr/src/getfattr.gml &
 ../doc/lr/src/getftime.gml &
+../doc/lr/src/getline.gml &
 ../doc/lr/src/getmbcp.gml &
 ../doc/lr/src/getopt.gml &
 ../doc/lr/src/getosfha.gml &

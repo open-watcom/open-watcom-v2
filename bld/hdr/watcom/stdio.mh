@@ -149,6 +149,8 @@ using std::wscanf;
 
 :include sizet.sp
 
+:include ssizet.sp
+
 :include null.sp
 
 :include valist.sp
@@ -370,6 +372,8 @@ _WCRTLINK extern long   ftell( FILE *__fp );
 _WCRTLINK extern size_t fwrite( const void *__ptr, size_t __size, size_t __n, FILE *__fp );
 _WCRTLINK extern int    getc( FILE *__fp );
 _WCRTLINK extern int    getchar( void );
+_WCRTLINK extern ssize_t getdelim( char **__ptr1, size_t *__ptr2, int __delim, FILE *__fp);
+_WCRTLINK extern ssize_t getline( char **__ptr1, size_t *__ptr2, FILE *__fp);
 _WCRTLINK extern char   *gets( char *__s );
 _WCRTLINK extern void   perror( const char *__s );
 _WCRTLINK extern int    printf( const char *__format, ... );
