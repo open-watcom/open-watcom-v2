@@ -119,7 +119,11 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     if( GUICurrWnd == wnd ) {
         GUICurrWnd = NULL;
     }
-    GUIMemFree( wnd->screen.title );
+    if( wnd->screen.dynamic_title ) {
+        GUIMemFree( (void *)wnd->screen.title );
+        wnd->screen.title = NULL;
+        wnd->screen.dynamic_title = false;
+    }
     GUIFreeColours( wnd );
     GUIMemFree( wnd );
 }

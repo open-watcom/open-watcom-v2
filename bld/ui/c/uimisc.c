@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "uidef.h"
 #include "uimenu.h"
 
@@ -99,8 +100,8 @@ void uiposition( SAREA *a, ORD h, ORD w, int rpos, int cpos, bool overmenus )
 }
 
 
-VSCREEN *uiopen( SAREA *area, char *title, unsigned flags )
-/********************************************************/
+VSCREEN *uiopen( SAREA *area, const char *title, unsigned flags )
+/***************************************************************/
 {
     VSCREEN             *s;
 
@@ -109,11 +110,22 @@ VSCREEN *uiopen( SAREA *area, char *title, unsigned flags )
         return( s );
     }
     s->area = *area;
-    s->title = title;
     s->flags = flags;
     s->col = 0;
     s->row = 0;
     s->cursor = C_OFF;
+    s->title = NULL;
+    s->dynamic_title = false;
+    if( title != NULL ) {
+        unsigned    len;
+        char        *str;
+        len = strlen( title );
+        str = uialloc( len + 1 );
+        memcpy( str, title, len );
+        str[len] = '\0';
+        s->title = str;
+        s->dynamic_title = true;
+    }
     uivopen( s );
     return( s );
 }
@@ -123,6 +135,8 @@ void uiclose( VSCREEN *s )
 /************************/
 {
     uivclose( s );
+    if( s->dynamic_title )
+        uifree( (void *)s->title );
     uifree( s );
 }
 

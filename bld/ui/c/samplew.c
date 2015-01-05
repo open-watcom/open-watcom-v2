@@ -112,7 +112,8 @@ static VSCREEN mainwin = {
     0,               /* flags defined in stdui.h       */
     0, 0,            /* cursor position                */
     C_NORMAL,        /* cursor types define in stdui.h */
-    FALSE            /* bool: virtual screen open      */
+    false,           /* bool: virtual screen open      */
+    false            /* title is dynamicaly allocated  */
 };
 
 static VSCREEN opwin = {
@@ -122,7 +123,8 @@ static VSCREEN opwin = {
     0,               /* flags defined in stdui.h       */
     0, 0,            /* cursor position                */
     C_OFF,           /* cursor types define in stdui.h */
-    FALSE            /* bool: virtual screen open      */
+    false,           /* bool: virtual screen open      */
+    false            /* title is dynamicaly allocated  */
 };
 
 static char Buffer[81] = { '1','2','3','4','5','6','7','8' };

@@ -305,7 +305,11 @@ bool GUIJustSetWindowText( gui_window *wnd, const char *title )
     if( !GUIStrDup( title, &new_title ) ) {
         return( false );
     } else {
-        GUIMemFree( wnd->screen.title );
+        if( wnd->screen.dynamic_title ) {
+            GUIMemFree( (void *)wnd->screen.title );
+        } else {
+            wnd->screen.dynamic_title = true;
+        }
         wnd->screen.title = new_title;
         return( true );
     }
