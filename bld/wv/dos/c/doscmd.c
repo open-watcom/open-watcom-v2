@@ -101,10 +101,11 @@ bool OptDelim( char ch )
  * ProcSysOption -- process system option
  */
 
-bool ProcSysOption( const char *start, unsigned len )
+bool ProcSysOption( const char *start, unsigned len, int pass )
 {
     unsigned long   num;
 
+    pass=pass;
     switch( Lookup( SysOptNameTab, start, len ) ) {
     case OPT_MONO:
         ScrnMode = MD_MONO;
