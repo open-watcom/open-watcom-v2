@@ -101,7 +101,7 @@ bool OptDelim( char ch )
  * ProcSysOption -- process system option
  */
 
-bool ProcSysOption( char *start, unsigned len )
+bool ProcSysOption( const char *start, unsigned len )
 {
     unsigned long   num;
 
@@ -136,13 +136,16 @@ bool ProcSysOption( char *start, unsigned len )
         break;
     case OPT_CHECKSIZE:
         num = GetMemory();
-        if( num < 32*1024UL ) num = 32*1024UL;
-        if( num > 640*1024UL ) num = 640*1024UL;
+        if( num < 32*1024UL )
+            num = 32*1024UL;
+        if( num > 640*1024UL )
+            num = 640*1024UL;
         CheckSize = num / 16; /* Checksize is in paragraphs */
         break;
     case OPT_SIZE:
         num = GetMemory();
-        if( num > 150*1024UL ) num = 150*1024UL;
+        if( num > 150*1024UL )
+            num = 150*1024UL;
         OvlAreaSize = num / 16; /* OvlAreaSize is in paragraphs */
         break;
     default:
@@ -156,7 +159,7 @@ bool ProcSysOption( char *start, unsigned len )
  * ProcSysOptInit -- initial system options
  */
 
-void ProcSysOptInit()
+void ProcSysOptInit( void )
 {
     char        __far *ptr;
     unsigned    len;

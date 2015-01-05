@@ -48,12 +48,12 @@ extern void             AddrFloat( address * );
 extern void             MakeMemoryAddr( bool, memory_expr def_seg, address *out_val );
 extern void             EvalLValExpr( int );
 extern void             NormalExpr(void);
-extern void             BreakOnExprSP(char*);
+extern void             BreakOnExprSP(const char *);
 extern void             LValue(stack_entry *);
 
 extern stack_entry      *ExprSP;
 
-extern void BreakOnSelected( char *item )
+extern void BreakOnSelected( const char *item )
 {
     const char      *old;
 

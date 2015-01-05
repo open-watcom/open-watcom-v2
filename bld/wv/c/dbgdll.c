@@ -42,7 +42,7 @@ extern void             DeleteRing( char_ring **owner, const char *start, unsign
 extern void             FreeRing( char_ring *p );
 extern char_ring        **RingEnd( char_ring **owner );
 extern char             *GetLastImageName( void );
-extern void             RecordEvent( char *p );
+extern void             RecordEvent( const char *p );
 extern void             GetBreakOnImageCmd( const char *, char *, bool );
 
 

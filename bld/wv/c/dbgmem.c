@@ -46,7 +46,7 @@ extern unsigned         PortPeek( unsigned, void *, unsigned );
 extern unsigned         PortPoke( unsigned, const void *, unsigned );
 extern void             AddrFix( address * );
 extern address          AddrAddWrap( address, long );
-extern void             RecordEvent( char * );
+extern void             RecordEvent( const char * );
 extern bool             AdvMachState( int );
 extern void             CollapseMachState( void );
 extern void             DbgUpdate( update_list );

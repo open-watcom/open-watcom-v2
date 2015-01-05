@@ -73,12 +73,12 @@ extern bool             DlgModName( char *title, mod_handle *mod );
 extern void             WndVarInspect( char * );
 extern void             SetUnderLine( a_window*, wnd_line_piece *);
 extern void             PushAddr( address );
-extern void             BreakOnExprSP( char *comment );
+extern void             BreakOnExprSP( const char *comment );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 
 extern void             *OpenSrcFile(cue_handle * );
 extern void             StepIntoFunction( char * );
-extern void             BreakOnSelected( char *item );
+extern void             BreakOnSelected( const char *item );
 extern void             GoHome(void);
 extern address          ModFirstAddr( mod_handle mod );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,

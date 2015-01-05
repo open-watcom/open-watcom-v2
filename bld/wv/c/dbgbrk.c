@@ -79,12 +79,12 @@ extern bool             DlgBreak( address );
 extern void             SetProgState( unsigned );
 extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern void             InvokeAFile( char * );
-extern void             CreateInvokeFile( char *name, void ( *rtn ) ( void ) );
+extern void             InvokeAFile( const char * );
+extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
 extern char             *GetCmdName( int );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
-extern void             RecordEvent( char *p );
+extern void             RecordEvent( const char *p );
 extern void             SetRecord( bool on );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
@@ -97,7 +97,7 @@ extern void             UnMapPoints( image_entry * );
 extern void             ReMapPoints( image_entry * );
 extern image_entry      *ImageEntry( mod_handle mh );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
-extern bool             DlgScanCodeAddr( char *str, address *value );
+extern bool             DlgScanCodeAddr( const char *str, address *value );
 extern void             DoInput( void );
 extern void             DbgUpdate( update_list );
 extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
@@ -1466,7 +1466,7 @@ done:;
 }
 
 
-bool BreakWrite( address addr, mad_type_handle th, char *comment )
+bool BreakWrite( address addr, mad_type_handle th, const char *comment )
 {
     brkp                *bp;
     mad_type_info       mti;
@@ -1505,7 +1505,7 @@ typedef struct tmp_break_struct
 {
     address     addr;
     int         size;
-    char        *comment;
+    const char  *comment;
 } tmp_break_struct;
 
 static void BreakOnAddress( void *_s )
@@ -1522,8 +1522,8 @@ static void BreakOnAddress( void *_s )
 }
 
 
-bool BreakOnRawMemory( address addr, char *comment, int size )
-/************************************************************/
+bool BreakOnRawMemory( address addr, const char *comment, int size )
+/******************************************************************/
 {
     tmp_break_struct s;
     s.addr = addr;
@@ -1532,7 +1532,7 @@ bool BreakOnRawMemory( address addr, char *comment, int size )
     return( SpawnP( BreakOnAddress, &s ) == 0 );
 }
 
-extern void BreakOnExprSP( char *comment )
+extern void BreakOnExprSP( const char *comment )
 {
     address             addr;
     dip_type_info       tinfo;
@@ -1806,7 +1806,7 @@ void InsertWPs( void )
 }
 
 
-void SaveBreaksToFile( char *name )
+void SaveBreaksToFile( const char *name )
 {
     UnMapPoints( NULL );
     CreateInvokeFile( name, ShowBPs );
@@ -1814,7 +1814,7 @@ void SaveBreaksToFile( char *name )
 }
 
 
-void RestoreBreaksFromFile( char *name )
+void RestoreBreaksFromFile( const char *name )
 {
     BrkClearAll();
     InvokeAFile( name );

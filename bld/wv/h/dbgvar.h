@@ -208,7 +208,7 @@ extern  bool            VarGetStackClass(type_kind *node_class);
 extern  var_node        *VarFindRowNode(var_info *i,int row);
 extern  bool            VarOldErrState(void);
 extern  void            VarDoneRow(var_info *i);
-extern  void            VarDoAssign(var_info *i, var_node *v, char *value );
+extern  void            VarDoAssign(var_info *i, var_node *v, const char *value );
 extern  var_node        *VarFindRoot(var_info *i,int row,int *skipped);
 extern  bool            VarIsPointer(type_kind node_class);
 extern  void            VarDeExpand(var_node *v);
@@ -226,7 +226,7 @@ extern  void            VarNodeInvalid(var_node *v);
 extern  var_node        *VarFirstNode(var_info *i);
 extern  void            VarInitInfo(var_info *i);
 extern  bool            VarInfoRefresh(var_type vtype,var_info *i,address *addr,void *wnd_handle);
-extern  void            VarSetValue(var_node *v,char *value);
+extern  void            VarSetValue( var_node *v, const char *value );
 extern void             VarSaveWndToScope( void *wnd );
 extern void             VarRestoreWndFromScope( void *wnd );
 
@@ -256,8 +256,8 @@ extern bool             VarDisplayedOnTop( var_node *v );
 extern void             VarDisplayUpdate( var_info *i );
 extern char             *VarDisplayType( var_node *v, char *buff, unsigned buff_len );
 
-extern type_display     *VarDisplayAddStruct( char *name );
-extern type_display     *VarDisplayAddField( type_display *parent, char *name );
+extern type_display     *VarDisplayAddStruct( const char *name );
+extern type_display     *VarDisplayAddField( type_display *parent, const char *name );
 extern void             VarDisplayAlias( type_display *type, type_display *to );
 extern void             VarDisplayDirty( type_display *curr );
 extern void             VarDisplayFlipHide( var_node *v, var_type_bits bit );

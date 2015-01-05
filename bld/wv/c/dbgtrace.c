@@ -118,7 +118,7 @@ extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern void             AddrSection( address *, unsigned );
 extern bool             IsSupportRoutine( sym_handle * );
-extern void             RecordEvent( char *p );
+extern void             RecordEvent( const char *p );
 extern void             CheckEventRecorded( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern void             ReadDbgRegs( void );

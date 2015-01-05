@@ -71,7 +71,7 @@ extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( char *, char *, unsigned );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( char *);
-extern void             BreakOnExprSP( void * );
+extern void             BreakOnExprSP( const char * );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
@@ -86,7 +86,7 @@ extern remap_return     ReMapImageAddress( mappable_addr *loc, image_entry *imag
 extern void             WndInspectExprSP( char *item );
 extern void             CollapseMachState( void );
 extern char             *GetCmdName( int );
-extern void             RecordEvent( char * );
+extern void             RecordEvent( const char * );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             DbgUpdate( update_list );
@@ -241,8 +241,8 @@ void VarDisplayDirty( type_display *curr )
     }
 }
 
-extern void VarDisplayInit( void )
-/********************************/
+void VarDisplayInit( void )
+/*************************/
 {
     TypeDisplay = NULL;
 }
@@ -292,8 +292,8 @@ static void VarDisplayFree( type_display *junk )
     DbgFree( junk );
 }
 
-extern void VarDisplayFini( void )
-/********************************/
+void VarDisplayFini( void )
+/*************************/
 {
     type_display *curr, *next, *alias;
     type_display *fcurr, *fnext;
@@ -313,8 +313,8 @@ extern void VarDisplayFini( void )
 }
 
 
-static type_display *VarDisplayAddType( type_display **owner, char *name )
-/*****************************************************************/
+static type_display *VarDisplayAddType( type_display **owner, const char *name )
+/******************************************************************************/
 {
     type_display        *new;
 
@@ -328,13 +328,15 @@ static type_display *VarDisplayAddType( type_display **owner, char *name )
     return( new );
 }
 
-type_display *VarDisplayAddStruct( char *name )
-/*********************************************/
+type_display *VarDisplayAddStruct( const char *name )
+/***************************************************/
 {
     type_display        *new;
 
     for( new = TypeDisplay; new != NULL; new = new->next ) {
-        if( strcmp( new->name, name ) == 0 ) return( new );
+        if( strcmp( new->name, name ) == 0 ) {
+            return( new );
+        }
     }
     new = VarDisplayAddType( &TypeDisplay, name );
     new->is_struct = TRUE;
@@ -371,14 +373,16 @@ static type_display *VarDisplayAddStructType( type_handle *th )
     return( VarDisplayAddStruct( TxtBuff ) );
 }
 
-type_display *VarDisplayAddField( type_display *parent, char *name )
-/******************************************************************/
+type_display *VarDisplayAddField( type_display *parent, const char *name )
+/************************************************************************/
 {
     type_display        *new;
     type_display        *alias;
 
     for( new = parent->fields; new != NULL; new = new->next ) {
-        if( strcmp( new->name, name ) == 0 ) return( new );
+        if( strcmp( new->name, name ) == 0 ) {
+            return( new );
+        }
     }
     new = VarDisplayAddType( &parent->fields, name );
     for( alias = parent->alias; alias != parent; alias = alias->alias ) {
@@ -2182,9 +2186,10 @@ char *VarGetValue( var_info *i, var_node *v )
 }
 
 
-void VarSetValue( var_node *v, char *value )
+void VarSetValue( var_node *v, const char *value )
 {
-    if( v->value_valid ) return;
+    if( v->value_valid )
+        return;
     DbgFree( v->value );
     v->value = DupStr( value );
     v->value_valid = TRUE;
@@ -2536,15 +2541,15 @@ void VarInspectCode()
     DUISrcOrAsmInspect( ExprSP->v.addr );
 }
 
-extern bool VarIsLValue()
-/***********************/
+bool VarIsLValue( void )
+/**********************/
 {
     LValue( ExprSP );
     return( ExprSP->v.loc.num == 1 && ExprSP->v.loc.e[0].type == LT_ADDR );
 }
 
-extern void VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit )
-/******************************************************************************/
+void VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit )
+/***********************************************************************/
 {
     var_node    *curr;
 
@@ -2559,8 +2564,8 @@ extern void VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit )
     }
 }
 
-extern void VarRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *dirty, void *wnd )
-/****************************************************************************************/
+void VarRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *dirty, void *wnd )
+/************************************************************************************/
 {
     int         row;
     var_node    *v;
@@ -2603,8 +2608,8 @@ extern void VarRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *dirty
     VarOldErrState();
 }
 
-void VarDoAssign( var_info *i, var_node *v, char *value )
-/**************************************************************/
+void VarDoAssign( var_info *i, var_node *v, const char *value )
+/*************************************************************/
 {
     char        *p;
     char        buff[TXT_LEN];
@@ -2625,7 +2630,7 @@ void VarDoAssign( var_info *i, var_node *v, char *value )
     CollapseMachState();
 }
 
-extern var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
+var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
 {
     var_node    *row_v;
     var_node    *v;

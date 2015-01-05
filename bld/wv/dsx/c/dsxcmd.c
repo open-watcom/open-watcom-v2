@@ -129,7 +129,7 @@ void SetNumColumns( int num )
  * ProcSysOption -- process system option
  */
 
-bool ProcSysOption( char *start, unsigned len, int pass )
+bool ProcSysOption( const char *start, unsigned len, int pass )
 {
     unsigned long   num;
 

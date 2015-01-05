@@ -46,7 +46,7 @@
 #include "dbgutil.h"
 
 extern int              AddrComp( address a, address b );
-extern void             RecordEvent( char *p );
+extern void             RecordEvent( const char *p );
 extern char             *GetCmdName( int index );
 extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );

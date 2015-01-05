@@ -49,8 +49,6 @@ extern unsigned         UndoLevel();
 extern address          GetRegIP();
 extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
-extern void             CreateInvokeFile( char *name, void (*rtn)(void) );
-extern void             InvokeAFile(char*);
 extern unsigned         ReqExpr();
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );

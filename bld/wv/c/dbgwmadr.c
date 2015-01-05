@@ -43,7 +43,6 @@ extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
 extern void             WndInspect( char *item );
 extern char             *GetCmdName( int index );
-extern void             RecordEvent( char *p );
 extern void             PushAddr( address val );
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,

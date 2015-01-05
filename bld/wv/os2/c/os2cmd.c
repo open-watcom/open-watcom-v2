@@ -77,7 +77,7 @@ void SetNumColumns( int num )
  * ProcSysOption -- process system option
  */
 
-bool ProcSysOption( char *start, unsigned len, int pass )
+bool ProcSysOption( const char *start, unsigned len, int pass )
 {
     pass=pass;
 #if 0
@@ -97,6 +97,6 @@ bool ProcSysOption( char *start, unsigned len, int pass )
  * ProcSysOptInit -- initial system options
  */
 
-void ProcSysOptInit()
+void ProcSysOptInit( void )
 {
 }

@@ -49,8 +49,8 @@ extern int              GetStackPos( void );
 extern char             *GetCmdName( int index );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
-extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
-extern void             InvokeAFile( char * );
+extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
+extern void             InvokeAFile( const char * );
 extern unsigned         ReqExpr( void );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
@@ -113,12 +113,12 @@ bool OkToSaveReplay( void )
     return( FALSE );
 }
 
-void SaveReplayToFile( char *name )
+void SaveReplayToFile( const char *name )
 {
     CreateInvokeFile( name, ShowReplay );
 }
 
-void RestoreReplayFromFile( char *name )
+void RestoreReplayFromFile( const char *name )
 {
     RecordFini();
     InvokeAFile( name );

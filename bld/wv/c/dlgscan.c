@@ -105,7 +105,7 @@ OVL_EXTERN void GetModName( void *value )
     *(mod_handle *)value = mod;
 }
 
-static bool DlgDoScan( char *str, void *value, void (*rtn)(void*) )
+static bool DlgDoScan( const char *str, void *value, void (*rtn)(void*) )
 {
     const char  *old;
     bool        ok;
@@ -120,7 +120,7 @@ static bool DlgDoScan( char *str, void *value, void (*rtn)(void*) )
     return( ok );
 }
 
-bool DlgScanLong( char *str, long *value )
+bool DlgScanLong( const char *str, long *value )
 {
     bool        ok;
 
@@ -128,7 +128,7 @@ bool DlgScanLong( char *str, long *value )
     return( ok );
 }
 
-bool DlgScanSyntax( char *str )
+bool DlgScanSyntax( const char *str )
 {
     bool        ok;
     char        dummy;
@@ -137,33 +137,33 @@ bool DlgScanSyntax( char *str )
     return( ok );
 }
 
-bool DlgScanCodeAddr( char *str, address *value )
+bool DlgScanCodeAddr( const char *str, address *value )
 {
     return( DlgDoScan( str, value, GetExprCodeAddr ) );
 }
 
-bool DlgScanDataAddr( char *str, address *value )
+bool DlgScanDataAddr( const char *str, address *value )
 {
     return( DlgDoScan( str, value, GetExprDataAddr ) );
 }
 
-bool DlgScanGivenAddr( char *str, address *value )
+bool DlgScanGivenAddr( const char *str, address *value )
 {
     return( DlgDoScan( str, value, GetExprGivenAddr ) );
 }
 
-bool DlgScanAny( char *str, void *value )
+bool DlgScanAny( const char *str, void *value )
 {
     return( DlgDoScan( str, value, GetExprAny ) );
 }
 
-bool DlgScanString( char *str, void *value )
+bool DlgScanString( const char *str, void *value )
 {
     strcpy( value, str );
     return( TRUE );
 }
 
-bool DlgScanModName( char *str, void *value )
+bool DlgScanModName( const char *str, void *value )
 {
     return( DlgDoScan( str, value, GetModName ) );
 }

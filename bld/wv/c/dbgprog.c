@@ -97,7 +97,7 @@ extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );
 extern char             *GetCmdName( int index );
 extern char             *GetCmdEntry( const char *tab, int index, char *buff );
-extern void             RecordEvent( char * );
+extern void             RecordEvent( const char * );
 extern bool             HookPendingPush( void );
 extern const char       *CheckForPowerBuilder( const char * );
 extern mod_handle       LookupImageName( const char *start, unsigned len );

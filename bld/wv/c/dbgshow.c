@@ -51,8 +51,8 @@ extern void             ConfigFlip( void );
 extern void             ConfigHook( void );
 extern void             ConfigEvent( void );
 extern void             ConfigCalls( void );
-extern void             InvokeAFile( char * );
-extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
+extern void             InvokeAFile( const char * );
+extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
 extern char             *GetCmdName( int );
 
 
@@ -233,12 +233,12 @@ OVL_EXTERN void ShowAll( void )
     }
 }
 
-void SaveConfigToFile( char *name )
+void SaveConfigToFile( const char *name )
 {
     CreateInvokeFile( name, ShowAll );
 }
 
-void RestoreConfigFromFile( char *name )
+void RestoreConfigFromFile( const char *name )
 {
     InvokeAFile( name );
 }

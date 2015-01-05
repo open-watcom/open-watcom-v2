@@ -82,7 +82,7 @@ bool OptDelim( char ch )
  * ProcSysOption -- process system option
  */
 
-bool ProcSysOption( char *start, unsigned len, int pass )
+bool ProcSysOption( const char *start, unsigned len, int pass )
 {
     char        *p;
 
@@ -110,7 +110,7 @@ bool ProcSysOption( char *start, unsigned len, int pass )
  * ProcSysOptInit -- initial system options
  */
 
-void ProcSysOptInit()
+void ProcSysOptInit( void )
 {
     _SwitchOn( SW_TRUE_ARGV );
 }

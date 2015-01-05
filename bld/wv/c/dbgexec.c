@@ -72,8 +72,8 @@ extern void             SetCodeDot( address );
 extern char             DlgFatal( void );
 extern void             InvalidateTblCache( void );
 extern bool             CheckStackPos( void );
-extern void             RecordEvent( char *p );
-extern void             RecordGo( char *p );
+extern void             RecordEvent( const char *p );
+extern void             RecordGo( const char *p );
 extern void             CheckEventRecorded( void );
 extern char             *GetCmdName( int );
 extern void             RecordAsynchEvent( void );
@@ -90,8 +90,8 @@ extern void             ReMapPoints( image_entry *);
 extern void             DbgUpdate( update_list );
 extern void             NameThread( dtid_t tid, char *name );
 extern unsigned         ProgPoke( address, const void *, unsigned );
-extern bool             DlgScanDataAddr( char *str, address *value );
-extern bool             DlgScanLong( char *str, long *value );
+extern bool             DlgScanDataAddr( const char *str, address *value );
+extern bool             DlgScanLong( const char *str, long *value );
 
 extern void             ProcACmd( void );
 extern bool             SymUserModLoad( char *fname, address *loadaddr );
@@ -188,7 +188,7 @@ bool SetMsgText( char *message, unsigned *conditions )
                 sizeof( DEBUGGER_SETTRUE_COMMAND )-1 ) == 0 ) {
         unsigned old = NewCurrRadix( 16 );
         NoCRLF( message );
-        if( DlgScanDataAddr( message + sizeof( DEBUGGER_SETTRUE_COMMAND )-1, &addr ) ) {
+        if( DlgScanDataAddr( message + sizeof( DEBUGGER_SETTRUE_COMMAND ) - 1, &addr ) ) {
             ProgPoke( addr, "\x1", 1 );
         }
         NewCurrRadix( old );
@@ -225,11 +225,14 @@ bool SetMsgText( char *message, unsigned *conditions )
         if( comma2 == NULL ) return( TRUE );
         *comma2++ = '\0';
         NoCRLF( comma2 );
-        if( !DlgScanDataAddr( message, &addr ) ) return( TRUE );
-        if( !DlgScanDataAddr( comma1, &buff_addr ) ) return( TRUE );
-        if( !DlgScanLong( comma2, &buff_len ) ) return( TRUE );
+        if( !DlgScanDataAddr( message, &addr ) )
+            return( TRUE );
+        if( !DlgScanDataAddr( comma1, &buff_addr ) )
+            return( TRUE );
+        if( !DlgScanLong( comma2, &buff_len ) )
+            return( TRUE );
         CnvNearestAddr( addr, TxtBuff, TXT_LEN );
-        sym_len = strlen( TxtBuff )+1;
+        sym_len = strlen( TxtBuff ) + 1;
         if( sym_len > buff_len ) {
             TxtBuff[buff_len-1] = '\0';
             sym_len = buff_len;

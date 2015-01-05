@@ -57,15 +57,15 @@ extern stack_entry      *ExprSP;
 
 #define EXPR_LEN        128
 
-extern bool DlgScanModName( char *str, void *value );
-extern bool DlgScanLong( char *str, void *value );
-extern bool DlgScanCodeAddr( char *str, void *value );
-extern bool DlgScanDataAddr( char *str, void *value );
-extern bool DlgScanGivenAddr( char *str, void *value );
-extern bool DlgScanAny( char *str, void *value );
-extern bool DlgScanString( char *str, void *value );
+extern bool DlgScanModName( const char *str, void *value );
+extern bool DlgScanLong( const char *str, void *value );
+extern bool DlgScanCodeAddr( const char *str, void *value );
+extern bool DlgScanDataAddr( const char *str, void *value );
+extern bool DlgScanGivenAddr( const char *str, void *value );
+extern bool DlgScanAny( const char *str, void *value );
+extern bool DlgScanString( const char *str, void *value );
 
-static bool DoDlgGet( gui_window *gui, unsigned id, void *value, bool (*rtn)(char*,void*) )
+static bool DoDlgGet( gui_window *gui, unsigned id, void *value, bool (*rtn)(const char *,void *) )
 {
     char        *str;
     bool        ok;
@@ -104,7 +104,7 @@ extern void DlgSetLong( gui_window *gui, unsigned id, long value )
 }
 
 static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, char *title,
-                                   void *value, bool (*rtn)(char*,void*),
+                                   void *value, bool (*rtn)(const char*,void*),
                                    bool (*dlg)(char*,char*,unsigned) )
 {
     bool        rc;
@@ -118,7 +118,7 @@ static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, char *title,
     }
 }
 
-static bool     DlgGetItem( char *buff, unsigned buff_len, char *title, void *value, bool (*rtn)(char*,void*) )
+static bool     DlgGetItem( char *buff, unsigned buff_len, char *title, void *value, bool (*rtn)(const char*,void*) )
 {
     return( DlgGetItemWithRtn( buff, buff_len, title, value, rtn, DlgNewWithSym ) );
 }

@@ -47,7 +47,7 @@ extern unsigned         Lookup( const char *, const char *, unsigned );
 extern unsigned         DUIEnvLkup( const char *name, char *buff, unsigned buff_len );
 extern bool             OptDelim( char );
 extern void             ProcSysOptInit( void );
-extern bool             ProcSysOption( char *, unsigned, int );
+extern bool             ProcSysOption( const char *, unsigned, int );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             SysSetMemLimit( void );

@@ -57,9 +57,9 @@ extern unsigned         ChangeMemUndoable( address addr, const void *data, unsig
 extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( char *title, char *buff );
 extern int              AddrComp(address,address);
-extern bool             BreakWrite( address addr, mad_type_handle, char *comment );
+extern bool             BreakWrite( address addr, mad_type_handle, const char *comment );
 extern a_window         *WndAsmInspect(address addr);
-extern bool             DlgScanGivenAddr( char *str, address *value );
+extern bool             DlgScanGivenAddr( const char *str, address *value );
 extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );

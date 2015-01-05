@@ -44,7 +44,7 @@
 #include "dbgutil.h"
 
 extern bool             ScanSelectedExpr( char * );
-extern void             BreakOnSelected( char *item );
+extern void             BreakOnSelected( const char *item );
 
 extern a_window         *WndFileInspect( char *file, bool binary );
 extern void             *OpenSrcFile( cue_handle * );

@@ -44,12 +44,12 @@
 
 
 extern a_window         *WndFileInspect( char *name, bool binary );
-extern void             SaveConfigToFile( char* );
-extern void             RestoreConfigFromFile( char* );
-extern void             SaveBreaksToFile( char * );
-extern void             RestoreBreaksFromFile( char * );
-extern void             SaveReplayToFile( char * );
-extern void             RestoreReplayFromFile( char * );
+extern void             SaveConfigToFile( const char * );
+extern void             RestoreConfigFromFile( char * );
+extern void             SaveBreaksToFile( const char * );
+extern void             RestoreBreaksFromFile( const char * );
+extern void             SaveReplayToFile( const char * );
+extern void             RestoreReplayFromFile( const char * );
 extern bool             OkToSaveReplay( void );
 extern void             FiniHelp( void );
 extern bool             KillProgOvlay( void );
@@ -216,7 +216,7 @@ bool WndShutDownHook( void )
         return( FALSE );
     }
     WritableConfig();
-    if( _IsOn( SW_AUTO_SAVE_CONFIG ) && LastCfg && *LastCfg ) {
+    if( _IsOn( SW_AUTO_SAVE_CONFIG ) && LastCfg != NULL && *LastCfg != '\0' ) {
         SaveConfigToFile( LastCfg );
         SaveMainWindowPos();
     }
@@ -234,8 +234,7 @@ bool WndShutDownHook( void )
 bool ConfigSave( bool writing )
 {
     WritableConfig();
-    if( DoFileBrowse( &LastCfg, LIT( Configuration_File_Name ), ConfigFilter,
-                      OFN_FLAGS( writing ) ) ) {
+    if( DoFileBrowse( &LastCfg, LIT( Configuration_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
         if( writing ) {
             SaveConfigToFile( TxtBuff );
             SaveMainWindowPos();

@@ -345,7 +345,7 @@ void ProcInvoke( void )
 }
 
 
-void CreateInvokeFile( char *name, void (*rtn)(void) )
+void CreateInvokeFile( const char *name, void(*rtn)(void) )
 {
     const char  *p;
 
@@ -357,7 +357,7 @@ void CreateInvokeFile( char *name, void (*rtn)(void) )
 }
 
 
-void InvokeAFile( char *name )
+void InvokeAFile( const char *name )
 {
     ReScan( name );
     ProcInvoke();
