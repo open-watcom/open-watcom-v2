@@ -110,7 +110,7 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
  * GUIGetNewVal --
  */
 
-gui_message_return GUIGetNewVal( char * title, char * old, char ** new_val )
+gui_message_return GUIGetNewVal( const char *title, char *old, char **new_val )
 {
     int         length;
     int         disp_length;
@@ -153,8 +153,7 @@ gui_message_return GUIGetNewVal( char * title, char * old, char ** new_val )
                          ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
 
 
-    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, NUM_CONTROLS,
-                &GetNewFunction, &info );
+    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, NUM_CONTROLS, &GetNewFunction, &info );
     *new_val = info.text;
     return( info.ret_val );
 }

@@ -350,13 +350,13 @@ typedef bool (GUICALLBACK)( gui_window *, gui_event, void * );
 typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, unsigned id, void *param );
 typedef void (PICKCALLBACK)( gui_window *, unsigned id );
-typedef void (PICKDLGOPEN)( char *title, int rows, int cols,
+typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
                              struct gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *rtn, void *extra );
 typedef const char *(PICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
-    char                *title;
+    const char          *title;
     gui_rect            rect;
     gui_scroll_styles   scroll;
     gui_create_styles   style;
@@ -623,7 +623,7 @@ extern bool GUIGetRGB( gui_colour colour, gui_rgb *rgb );
 extern bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set );
 extern bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set );
 extern bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb );
-extern bool GUIGetColourFromUser( char *title, gui_colour *init, gui_colour *new_colour );
+extern bool GUIGetColourFromUser( const char *title, gui_colour *init, gui_colour *new_colour );
 
 /* Hot Spot (sizzle spot) functions */
 
@@ -874,12 +874,10 @@ extern gui_ord GUIGetNumRows( gui_window *wnd );
 
 /* Built in user interactions */
 
-extern gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                             const char *message, char *title,
-                                             gui_message_type type );
-extern gui_message_return GUIGetNewVal( char *title, char *old, char **new_val );
-extern int GUIDlgPick( char *title, PICKCALLBACK *pickinit );
-extern int GUIDlgPickWithRtn( char *title, PICKCALLBACK *pickinit, PICKDLGOPEN * );
+extern gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message, const char *title, gui_message_type type );
+extern gui_message_return GUIGetNewVal( const char *title, char *old, char **new_val );
+extern int GUIDlgPick( const char *title, PICKCALLBACK *pickinit );
+extern int GUIDlgPickWithRtn( const char *title, PICKCALLBACK *pickinit, PICKDLGOPEN * );
 
 /* Dialog Functions */
 

@@ -76,7 +76,7 @@ static void PickColour( gui_window *wnd, unsigned list_ctrl )
     }
 }
 
-bool GUIGetColourFromUser( char *title, gui_colour *init, gui_colour *new_colour )
+bool GUIGetColourFromUser( const char *title, gui_colour *init, gui_colour *new_colour )
 {
     int result;
 

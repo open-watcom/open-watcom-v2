@@ -137,17 +137,14 @@ enum {
       GUI_TAB_GROUP | GUI_AUTOMATIC, \
       id }
 
-extern void GUIDlgOpen( char *title, int rows, int cols,
-                       gui_control_info *controls_info, int num_controls,
-                       GUICALLBACK *rtn, void *extra );
+extern void GUIDlgOpen( const char *title, int rows, int cols, gui_control_info *controls_info,
+                        int num_controls, GUICALLBACK *rtn, void *extra );
 
-extern void GUIModalDlgOpen( gui_window *parent, char *title, int rows,
-                             int cols, gui_control_info *controls_info,
-                             int num_controls, GUICALLBACK *rtn, void *extra );
+extern void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, int cols,
+            gui_control_info *controls_info, int num_controls, GUICALLBACK *rtn, void *extra );
 
-extern void GUISysModalDlgOpen( char *title, int rows, int cols,
-                           gui_control_info *controls_info, int num_controls,
-                           GUICALLBACK *rtn, void *extra );
+extern void GUISysModalDlgOpen( const char *title, int rows, int cols,
+            gui_control_info *controls_info, int num_controls, GUICALLBACK *rtn, void *extra );
 
 extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
                              char *buff, unsigned buff_len );
