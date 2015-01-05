@@ -30,68 +30,70 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
 #include <errno.h>
 
-_WCRTLINK ssize_t getdelim(char **s, size_t *n, int delim, FILE *fp)
-{    
-    long pos;
-    int c;
-    size_t linelength;
-    int i;
+_WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
+{
+    long    pos;
+    int     c;
+    size_t  linelength;
+    int     i;
 
-	if (!n || !s) {
-		errno = EINVAL;
-		return -1;
-	}
+    if( n == NULL || s == NULL ) {
+        errno = EINVAL;
+        return( -1 );
+    }
 
-	if (!*s) *n=0;
+    if( *s == '\0' )
+        *n = 0;
 
     /* First, determine line length */
-    pos = ftell(fp);
+    pos = ftell( fp );
     linelength = 1; /* For the null character */
     do {
-        c = getc(fp);
+        c = getc( fp );
         linelength++;
-    } while(c != EOF && c != delim);
-    fseek(fp, pos, SEEK_SET);
-    
+    } while( c != EOF && c != delim );
+    fseek( fp, pos, SEEK_SET );
+
     /* The EOF character should not be captured */
-    if(c == EOF)
+    if( c == EOF )
         linelength--;
-    
+
     /* If our line length is 1, we have nothing to read,
      * and we should return right now
      */
-    if(linelength == 1)
-        return -1;
-    
-    printf("size: %d\n", (int)linelength);
+    if( linelength == 1 )
+        return( -1 );
 
     /* Now with a line length, check if we need a reallocation */
-    if(linelength > *n) {
-        *s = realloc(*s, linelength*sizeof(char));
-        if(!*s) {
+    if( linelength > *n ) {
+        *s = realloc( *s, linelength * sizeof( char ) );
+        if( *s == '\0' ) {
             errno = ENOMEM;
-            return -1;
+            return( -1 );
         }
         *n = linelength;
     }
-    
+
     /* Copy in the characters */
-    i = 0; c = ' ';
-    while(i < linelength-1 && c != delim) {
-        c = getc(fp);
+    i = 0;
+    c = ' ';
+    while( ( i < linelength - 1 ) && c != delim ) {
+        c = getc( fp );
         (*s)[i++] = (char)c;
     }
     (*s)[i] = '\0';
 
-	return linelength-1;
+    return( linelength - 1 );
 }
 
-_WCRTLINK ssize_t getline(char **s, size_t *n, FILE *fp)
+_WCRTLINK ssize_t getline( char **s, size_t *n, FILE *fp )
 {
-    return getdelim(s, n, '\n', fp);
+    return( getdelim( s, n, '\n', fp ) );
 }
