@@ -69,7 +69,7 @@ extern gui_window *DlgGetParent( void )
     return( ( Nested == -1 ) ? WndMain->gui : Parents[ Nested ] );
 }
 
-extern void DlgOpen( char *title, int rows, int cols,
+extern void DlgOpen( const char *title, int rows, int cols,
                      gui_control_info *ctl, int num_controls,
                      GUICALLBACK *rtn, void *extra )
 {
@@ -77,8 +77,7 @@ extern void DlgOpen( char *title, int rows, int cols,
 
     parent = DlgGetParent();
     Routines[ Nested+1 ] = rtn;
-    GUIModalDlgOpen( parent, title, rows, cols,
-                     ctl, num_controls, DlgEventProc, extra );
+    GUIModalDlgOpen( parent, title, rows, cols, ctl, num_controls, DlgEventProc, extra );
 }
 
 static gui_create_info ResDialog = {

@@ -43,7 +43,7 @@ static void PickInit( gui_window *gui, unsigned list_ctrl )
     GUISetCurrSelect( gui, list_ctrl, DlgChosen );
 }
 
-int DlgPickWithRtn2( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER *pick )
+int DlgPickWithRtn2( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER *pick )
 {
     DlgChosen = def;
     _data_handle = data_handle;
@@ -53,13 +53,13 @@ int DlgPickWithRtn2( char *title, const void *data_handle, int def, PICKGETTEXT 
 }
 
 
-static int DoDlgPick( char *title, PICKCALLBACK *pickinit )
+static int DoDlgPick( const char *title, PICKCALLBACK *pickinit )
 {
     return( GUIDlgPickWithRtn( title, pickinit, DlgOpen ) );
 }
 
 
-int DlgPickWithRtn( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items )
+int DlgPickWithRtn( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items )
 {
     return( DlgPickWithRtn2( title, data_handle, def, getstring, items, DoDlgPick ) );
 }
@@ -69,7 +69,7 @@ static const char *DlgPickText( const void *data_handle, int item )
     return( ((const char **)data_handle)[item] );
 }
 
-int DlgPick( char *title, const void *data_handle, int def, int items )
+int DlgPick( const char *title, const void *data_handle, int def, int items )
 {
     return( DlgPickWithRtn( title, data_handle, def, DlgPickText, items ) );
 }

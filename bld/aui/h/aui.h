@@ -308,12 +308,12 @@ typedef struct wnd_info {
 } wnd_info;
 
 
-typedef int             GUIPICKER( char *, PICKCALLBACK * );
-extern int              DlgPickWithRtn( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
-extern int              DlgPickWithRtn2( char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
-extern int              DlgPick( char *title, const void *data_handle, int def, int items );
-extern bool             DlgNew( char *title, char *buff, unsigned buff_len );
-extern void             DlgOpen( char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
+typedef int             GUIPICKER( const char *, PICKCALLBACK * );
+extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
+extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
+extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
+extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
+extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
 extern void             ResDlgOpen( GUICALLBACK *, void *, int );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path,
@@ -376,7 +376,7 @@ extern bool             WndInit( char *title );
 extern bool             WndInitWithMenuRes( char *title, int );
 extern bool             WndFini( void );
 extern bool             WndMainMenuProc( a_window *, unsigned );
-extern void             WndSetSrchItem( a_window *wnd, char *expr );
+extern void             WndSetSrchItem( a_window *wnd, const char *expr );
 extern bool             WndSearch( a_window *, bool, int );
 extern void             WndInitNumRows( a_window * );
 extern void             WndRXError( int );
@@ -552,8 +552,7 @@ extern char             *WndLoadString( int );
 extern void             NullPopupMenu( gui_menu_struct *menu );
 
 extern void             WndChangeMenuAll( gui_menu_struct *menu, int num_popups, bool on, int bit );
-extern gui_message_return WndDisplayMessage( const char *msg, char *cap,
-                                             gui_message_type type );
+extern gui_message_return WndDisplayMessage( const char *msg, const char *cap, gui_message_type type );
 
 extern void     WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );
 extern void     WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale );
@@ -599,7 +598,7 @@ extern  void    WndSetMainMenu( gui_menu_struct *menu, int num_menus );
 // debugging stuff
 
 #define Say(x)      WndDisplayMessage( x, "Information", GUI_INFORMATION );
-#define Say2(y,x)   WndDisplayMessage( x, (char*)y, GUI_INFORMATION );
+#define Say2(y,x)   WndDisplayMessage( x, y, GUI_INFORMATION );
 
 #define GUI_IS_ASCII( x ) ( (x) < 256 )
 
