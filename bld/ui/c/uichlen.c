@@ -38,6 +38,7 @@
 int UIAPI uicharlen( int ch )
 /****************************/
 {
+    ch=ch;
     return( 1 );
 }
 

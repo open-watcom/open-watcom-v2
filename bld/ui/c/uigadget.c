@@ -150,6 +150,7 @@ void uisetgadgetnodraw( p_gadget g, int pos )
 
 void uifinigadget( p_gadget g )
 {
+    g=g;
 }
 
 EVENT uigadgetfilter( EVENT ev, p_gadget g )

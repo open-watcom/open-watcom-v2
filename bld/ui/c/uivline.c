@@ -189,6 +189,7 @@ bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
                                   int bufflen, ORD row, ORD col, int len )
 /************************************************************************/
 {
+    vptr=vptr;
     editline->index = 0;
     editline->dirty = FALSE;
     editline->row = row;
@@ -207,6 +208,7 @@ bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
 bool UIAPI uiveditfini( VSCREEN *vptr, VEDITLINE *editline )
 /***********************************************************/
 {
+    vptr=vptr;editline=editline;
     return( TRUE );
 }
 
