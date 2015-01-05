@@ -127,7 +127,6 @@ static const char SetNameTab[] = {
     "Dclick\0"
     "Implicit\0"
     "INput\0"
-
     "Radix\0"
     "RECursion\0"
     "SEarch\0"
@@ -412,20 +411,21 @@ void NewLang( const char *lang )
     char       *new_lang;
     unsigned    len;
 
-    if( lang == NULL ) return;
+    if( lang == NULL )
+        return;
     len = strlen( lang );
     new_lang = DbgMustAlloc( len + 1 );
     memcpy( new_lang, lang, len );
     new_lang[len] = NULLCHAR;
     strlwr( new_lang );
     if( ( len != strlen( Language ) ) || memcmp( new_lang, Language, len ) != 0 ) {
-        if( !LangLoad( new_lang, len ) ) {
-            LangLoad( Language, strlen( Language ) );
-            Error( ERR_NONE, LIT( ERR_NO_LANG ) );
+        if( LangLoad( new_lang, len ) ) {
+            _Free( Language );
+            Language = new_lang;
+            return;
         }
-        _Free( Language );
-        Language = new_lang;
-        return;
+        LangLoad( Language, strlen( Language ) );
+        Error( ERR_NONE, LIT( ERR_NO_LANG ) );
     }
     _Free( new_lang );
 }
