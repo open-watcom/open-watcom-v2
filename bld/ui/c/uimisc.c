@@ -120,7 +120,7 @@ VSCREEN *uiopen( SAREA *area, const char *title, unsigned flags )
         unsigned    len;
         char        *str;
         len = strlen( title );
-        str = uialloc( len + 1 );
+        str = uicalloc( 1, len + 1 );
         memcpy( str, title, len );
         str[len] = '\0';
         s->title = str;
