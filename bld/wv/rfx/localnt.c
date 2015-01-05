@@ -38,7 +38,7 @@
 #include <windows.h>
 #include "wio.h"
 #include "dbgdefn.h"
-#include "dbgdata.h"
+#include "rfxdata.h"
 #include "dbgio.h"
 #include "trprfx.h"
 #include "local.h"

@@ -36,7 +36,7 @@
 #include <process.h>
 #include <dos.h>
 #include "dbgdefn.h"
-#include "dbgdata.h"
+#include "rfxdata.h"
 #include "fparse.h"
 #include "banner.h"
 #include "dbgio.h"

@@ -29,10 +29,8 @@ extra_c_flags = -s
 
 objs = rfx.obj        &
        rfxacc.obj     &
-       stubs.obj      &
        remmisc.obj    &
        remfile.obj    &
-       remenv.obj     &
        doserr.obj     &
        dbgfile.obj    &
        local$(host_os).obj &

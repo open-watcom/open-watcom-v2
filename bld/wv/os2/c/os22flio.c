@@ -35,7 +35,11 @@
 #define INCL_BASE
 #include <os2.h>
 #include "dbgdefn.h"
+#if !defined( BUILD_RFX )
 #include "dbgdata.h"
+#else
+#include "rfxdata.h"
+#endif
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "doserr.h"

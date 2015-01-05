@@ -35,7 +35,7 @@
 #include <limits.h>
 #include <dos.h>
 #include "dbgdefn.h"
-#include "dbgdata.h"
+#include "rfxdata.h"
 #include "dbgio.h"
 #include "tinyio.h"
 #include "local.h"

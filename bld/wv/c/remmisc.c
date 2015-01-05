@@ -30,14 +30,16 @@
 
 
 #include "dbgdefn.h"
+#if !defined( BUILD_RFX )
 #include "dbgdata.h"
+#include "dbglit.h"
+#else
+#include "rfxdata.h"
+#endif
 #include "dbgmem.h"
 #include "trpld.h"
 #include "dbgio.h"
 #include "strutil.h"
-#if !defined( BUILD_RFX )
-#include "dbglit.h"
-#endif
 
 #include "clibext.h"
 

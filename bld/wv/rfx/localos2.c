@@ -35,7 +35,7 @@
 #define INCL_SUB
 #include "wos2.h"
 #include "dbgdefn.h"
-#include "dbgdata.h"
+#include "rfxdata.h"
 #include "dbgio.h"
 #ifdef _M_I86
 #include "dta.h"

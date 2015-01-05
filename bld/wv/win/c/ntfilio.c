@@ -35,7 +35,11 @@
 #include <stdio.h>
 #include "wio.h"
 #include "dbgdefn.h"
+#if !defined( BUILD_RFX )
 #include "dbgdata.h"
+#else
+#include "rfxdata.h"
+#endif
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "errno.h"

@@ -39,7 +39,11 @@
 #endif
 #include "wio.h"
 #include "dbgdefn.h"
+#if !defined( BUILD_RFX )
 #include "dbgdata.h"
+#else
+#include "rfxdata.h"
+#endif
 #include "dbgio.h"
 #include "trpfile.h"
 
@@ -505,6 +509,7 @@ rc_erridx RemoteErase( char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
+#if !defined( BUILD_RFX )
 rc_erridx RemoteFork( const char *cmd, size_t len )
 {
     in_mx_entry         in[2];
@@ -526,3 +531,4 @@ rc_erridx RemoteFork( const char *cmd, size_t len )
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
+#endif
