@@ -1931,7 +1931,7 @@ void VarBreakOnWrite( var_info *i, var_node *v )
 
     VarBuildName( i, v, FALSE );
     name = DupStr( TxtBuff );
-    SpawnP( BreakOnExprSP, name );
+    SpawnP( (void(*)(void*))BreakOnExprSP, name );
     DbgFree( name );
 }
 
