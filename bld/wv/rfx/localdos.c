@@ -208,12 +208,12 @@ rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, in
     return( DOSErrCode( TinyFindFirst( pattern, attrib )) );
 }
 
-rc_erridx LocalFindNext( void *info, unsigned info_len )
-/******************************************************/
+int LocalFindNext( void *info, unsigned info_len )
+/************************************************/
 {
     info_len = info_len;
     TinySetDTA( info );
-    return( DOSErrCode( TinyFindNext()) );
+    return( TinyFindNext() );
 }
 
 rc_erridx LocalSetFileAttr( const char *name, long attr )

@@ -143,6 +143,7 @@ int LocalGetDrv( void )
 rc_erridx LocalGetCwd( int drive, char *where )
 /*********************************************/
 {
+    drive=drive;
     return( StashErrCode( getcwd( where, 256 ) == NULL, OP_LOCAL ) );
 }
 
@@ -163,6 +164,7 @@ long LocalGetFileAttr( const char *name )
     }
     return( fileinfo.attrFile );
 #else
+    name=name;
     return 0;
 #endif
 }
@@ -180,6 +182,7 @@ rc_erridx LocalSetFileAttr( const char *name, long attr )
     return( StashErrCode( DosSetPathInfo( name, FIL_STANDARD,
         &fileinfo, sizeof( fileinfo ) , 0), OP_LOCAL ) );
 #else
+    name=name;attr=attr;
     return 0;
 #endif
 }
@@ -219,6 +222,7 @@ rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
     }
     return( 0 );
 #else
+    fh=fh;time=time;date=date;set=set;
     return 0;
 #endif
 }
@@ -239,6 +243,7 @@ rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, in
 {
     unsigned        rc;
 
+    info_len=info_len;
     rc = _dos_findfirst( pattern, attrib, &Findbuf );
     if( rc )
         return( StashErrCode( rc , OP_LOCAL ) );
@@ -246,13 +251,14 @@ rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, in
     return( 0 );
 }
 
-rc_erridx LocalFindNext( void *info, unsigned info_len )
-/*****************************************************/
+int LocalFindNext( void *info, unsigned info_len )
+/************************************************/
 {
     unsigned        rc;
 
+    info_len=info_len;
     rc = _dos_findnext( &Findbuf );
-    if( !rc ) {
+    if( rc == 0 ) {
         makeDOSDTA( &Findbuf, info );
         return( 0 );
     } else {

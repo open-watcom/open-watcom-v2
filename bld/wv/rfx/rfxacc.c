@@ -347,7 +347,7 @@ rc_erridx RemoteFindFirst( char *pattern, void *info, unsigned info_len, int att
 }
 
 
-rc_erridx RemoteFindNext( void *info, unsigned info_len )
+int RemoteFindNext( void *info, unsigned info_len )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
@@ -364,7 +364,7 @@ rc_erridx RemoteFindNext( void *info, unsigned info_len )
     out[1].ptr = info;
     out[1].len = info_len;
     TrapAccess( 2, in, 2, out );
-    return( StashErrCode( ret.err, OP_REMOTE ) );
+    return( ret.err );
 }
 
 rc_erridx RemoteFindClose()

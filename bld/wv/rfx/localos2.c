@@ -296,8 +296,8 @@ rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, in
     return( 0 );
 }
 
-rc_erridx LocalFindNext( void *info, unsigned info_len )
-/******************************************************/
+int LocalFindNext( void *info, unsigned info_len )
+/************************************************/
 {
 #ifdef _M_I86
     FILEFINDBUF   dta;
@@ -310,7 +310,7 @@ rc_erridx LocalFindNext( void *info, unsigned info_len )
     info_len = info_len;
     rc = DosFindNext( 1, &dta, sizeof( dta ), &count );
     if( rc != 0 )
-        return( StashErrCode( rc, OP_LOCAL ) );
+        return( -1 );
     if( count == 0 ) {
         DosFindClose( 1 );
         return( -1 );

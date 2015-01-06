@@ -119,7 +119,7 @@ extern long             RemoteGetFreeSpace( int );
 extern rc_erridx        RemoteDateTime( sys_handle , int *, int *, int );
 extern rc_erridx        RemoteGetCwd( int, char * );
 extern rc_erridx        RemoteFindFirst( const char *, void *, unsigned , int );
-extern rc_erridx        RemoteFindNext( void *, unsigned );
+extern int              RemoteFindNext( void *, unsigned );
 extern rc_erridx        RemoteFindClose( void );
 
 dbg_switches            DbgSwitches;
@@ -549,8 +549,8 @@ rc_erridx FindFirst( const char *name, int loc, int attr )
     }
 }
 
-rc_erridx FindNext( int loc )
-/***************************/
+int FindNext( int loc )
+/*********************/
 {
     if( loc == 1 ) {
         return( RemoteFindNext( &Info, sizeof( Info ) ) );
@@ -1456,7 +1456,7 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
     }
     date = dir->date;
     ItoD( ( date >> 5 ) & 0x000F, buff + 23 ); /* month */
-    ItoD( date & 0x0001F, buff + 26 ); /* day */
+    ItoD( date & 0x0001F, buff + 26 );         /* day */
     ItoD( ( date >> 9 ) + 1980, buff + 29 );
     buff[ 28 ] = '-';
     buff[ 25 ] = '-';
