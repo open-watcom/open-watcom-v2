@@ -27,7 +27,7 @@
 :set symbol='mn'        value=';.sf4 '.
 :set symbol='emn'       value=';.esf '.
 .*
-:set symbol="cpyyear"   value="2014".
+:INCLUDE file='cpyyear'.
 .*
 :set symbol="lang"      value="C".
 .*

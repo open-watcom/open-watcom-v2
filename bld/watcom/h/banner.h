@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2014 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2015 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 #define _BETA_          " " _BANEXSHORT
 #endif
 
-#define CURR_YEAR           "2014"
+#define CURR_YEAR           "2015"
 
 #define banner1p1(p)        p
 #define banner1p2(v)        "Version " v

@@ -10,7 +10,7 @@
 .if &e'&company eq 0 .do begin
 :set symbol="company"   value="Open Watcom".
 .do end
-:set symbol="cpyyear"   value="2014".
+:INCLUDE file='cpyyear'.
 .dm cpyrit begin
 Copyright (c) 2002-&cpyyear. the Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) &*.-2002 Sybase, Inc. All Rights Reserved.
