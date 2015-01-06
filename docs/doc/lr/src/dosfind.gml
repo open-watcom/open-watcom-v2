@@ -31,7 +31,7 @@ struct find_t {
 #endif
 };
 .if &'length(&wfunc.) ne 0 .do begin
-
+.sr wfunc=_wdos_find
 unsigned _wdos_findfirst( const wchar_t *path,
                           unsigned attributes,
                           struct _wfind_t *buffer );
@@ -148,12 +148,9 @@ to indicate that you are done matching files.
 This function deallocates any resources that were allocated by the
 .kw _dos_findfirst
 function.
-.if &'length(&wfunc.) ne 0 .do begin
-The wide-character
-.kw _wdos_find&grpsfx
-functions are similar to their counterparts but operate on
-wide-character strings.
-.do end
+.*==========================================
+.im widefun5
+.*==========================================
 .desc end
 .return begin
 The

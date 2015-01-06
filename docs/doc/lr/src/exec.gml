@@ -67,6 +67,7 @@ int _execvpe( file, argv, envp );
 .ixfunc2 '&Process' _execvp
 .ixfunc2 '&Process' _execvpe
 .if &'length(&wfunc.) ne 0 .do begin
+.sr wfunc=_wexec
 int _wexecl(   path, arg0, arg1..., argn, NULL );
 int _wexecle(  path, arg0, arg1..., argn, NULL, envp );
 int _wexeclp(  file, arg0, arg1..., argn, NULL );
@@ -228,12 +229,8 @@ and
 .kw execlpe
 functions are extensions to POSIX 1003.1.
 .*==========================================
-.if &'length(&wfunc.) ne 0 .do begin
-The wide-character
-.kw _wexec&grpsfx
-functions are similar to their counterparts but operate on
-wide-character strings.
-.do end
+.im widefun5
+.*==========================================
 .desc end
 .return begin
 When the invoked program is successfully initiated, no return occurs.

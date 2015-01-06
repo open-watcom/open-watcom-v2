@@ -67,6 +67,7 @@ int _spawnvpe( mode, file, argv, envp );
 .ixfunc2 '&Process' _spawnvp
 .ixfunc2 '&Process' _spawnvpe
 .if &'length(&wfunc.) ne 0 .do begin
+.sr wfunc=_wspawn
 int _wspawnl(   mode, path, arg0, arg1..., argn, NULL );
 int _wspawnle(  mode, path, arg0, arg1..., argn, NULL, envp);
 int _wspawnlp(  mode, file, arg0, arg1..., argn, NULL );
@@ -268,14 +269,6 @@ function.
 A program may read these values with the
 .kw getenv
 function.
-.*==========================================
-.if &'length(&wfunc.) ne 0 .do begin
-The wide-character
-.kw _wspawn&grpsfx
-functions are similar to their counterparts but operate on
-wide-character strings.
-.do end
-.*==========================================
 .np
 The following example invokes "myprog" as if
 .mono myprog ARG1 ARG2
@@ -322,6 +315,9 @@ char *arg_list[] = { "myprog", "ARG1", "ARG2", NULL };
 
 spawnv( P_WAIT, "myprog", arg_list );
 .millust end
+.*==========================================
+.im widefun5
+.*==========================================
 .desc end
 .return begin
 When the value of
