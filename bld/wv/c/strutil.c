@@ -182,7 +182,7 @@ char *Format( char *buff, const char *fmt, ... )
     return( FmtStr( buff, fmt, args ) );
 }
 
-char *DupStrLen( const char *str, unsigned len )
+char *DupStrLen( const char *str, size_t len )
 {
     char        *dup;
 

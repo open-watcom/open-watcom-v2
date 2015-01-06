@@ -143,7 +143,9 @@ extern void StatusFini( void )
     if( StatusWnd == NULL ){
         return;
     } else {
-        GUIMemFree( StatusInfo.title );
+        if( StatusInfo.title != NULL ) {
+            GUIMemFree( (void *)StatusInfo.title );
+        }
         GUIDestroyWnd( StatusWnd );
         StatusWnd = NULL;
     }
@@ -452,13 +454,14 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-extern bool OpenStatusWindow( char *title )
-/*****************************************/
+extern bool OpenStatusWindow( const char *title )
+/***********************************************/
 {
     gui_text_metrics    metrics;
     extern gui_coord    GUIScale;
 //    int                 i;
     gui_rect            rect;
+    char                *str;
 
 //    for( i = STAT_BLANK; i < sizeof( Messages ) / sizeof( Messages[0] ); ++i ) {
 //      Messages[i] = GetVariableStrVal( Messages[i] );
@@ -469,7 +472,8 @@ extern bool OpenStatusWindow( char *title )
     GUITruncToPixel( &CharSize );
 
     StatusInfo.parent = MainWnd;
-    GUIStrDup( title, &StatusInfo.title );
+    GUIStrDup( title, &str );
+    StatusInfo.title = str;
     StatusInfo.rect.width = STATUS_WIDTH * CharSize.x;
     StatusInfo.rect.height = STATUS_HEIGHT * CharSize.y;
     GUIGetClientRect( MainWnd, &rect );
