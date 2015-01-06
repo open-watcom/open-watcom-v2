@@ -475,7 +475,7 @@ void PopInpStack( void )
  * PushInpStack -- add a new level to the input stack
  */
 
-void PushInpStack( void *handle, bool (*rtn)( void *, inp_rtn_action ), bool save_lang )
+void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
 {
     input_stack *new;
     char        *lang;
@@ -500,7 +500,9 @@ void PushInpStack( void *handle, bool (*rtn)( void *, inp_rtn_action ), bool sav
     new->scan = ScanPos();
     new->link = InpStack;
     InpStack = new;
-    if( !new->rtn( handle, INP_RTN_INIT ) ) PopInpStack();
+    if( !new->rtn( handle, INP_RTN_INIT ) ) {
+        PopInpStack();
+    }
 }
 
 void CopyInpFlags( void )
@@ -511,7 +513,7 @@ void CopyInpFlags( void )
 }
 
 
-OVL_EXTERN bool DoneCmdList( void *_cmds, inp_rtn_action action )
+OVL_EXTERN bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
 {
     cmd_list    *cmds = _cmds;
 
@@ -541,7 +543,7 @@ void PushCmdList( cmd_list *cmds )
 
 
 #ifdef DEADCODE
-OVL_EXTERN bool DoneCmdText( char *cmds, inp_rtn_action action )
+OVL_EXTERN bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
@@ -582,10 +584,8 @@ bool PurgeInpStack( void )
     }
 }
 
-OVL_EXTERN bool DoneNull( void *_buff, inp_rtn_action action )
+OVL_EXTERN bool DoneNull( inp_data_handle buff, inp_rtn_action action )
 {
-    char    *buff = _buff;
-
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( buff );

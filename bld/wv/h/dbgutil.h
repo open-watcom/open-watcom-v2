@@ -51,16 +51,13 @@ extern void         TypeInpStack( input_type set );
 extern void         ClearInpStack( input_type clear );
 extern input_type   SetInpStack( input_type new );
 extern void         PopInpStack( void );
-extern void         PushInpStack( void *handle, bool (*rtn)( void *, inp_rtn_action ), bool save_lang );
+extern void         PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang );
 extern void         CopyInpFlags( void );
-OVL_EXTERN bool     DoneCmdList( void *_cmds, inp_rtn_action action );
 extern void         PushCmdList( cmd_list *cmds );
 #ifdef DEADCODE
-OVL_EXTERN bool     DoneCmdText( char *cmds, inp_rtn_action action );
 extern void         PushCmdText( char *cmds );
 #endif
 extern bool         PurgeInpStack( void );
-OVL_EXTERN bool     DoneNull( void *_buff, inp_rtn_action action );
 extern void         FreezeInpStack( void );
 extern void         UnAsm( address addr, char *buff, unsigned buff_len );
 extern char         *ModImageName( mod_handle handle );

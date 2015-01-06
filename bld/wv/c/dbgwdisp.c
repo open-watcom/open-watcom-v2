@@ -406,7 +406,7 @@ static void ProcStatus( void )
 }
 
 
-OVL_EXTERN bool DoneRefresh( void *dummy, inp_rtn_action action )
+OVL_EXTERN bool DoneRefresh( inp_data_handle dummy, inp_rtn_action action )
 {
     dummy = dummy;
     switch( action ) {

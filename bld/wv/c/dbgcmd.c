@@ -43,7 +43,7 @@
 
 extern bool             TBreak( void );
 
-static bool DoneCmd( void *buff, inp_rtn_action action )
+static bool DoneCmd( inp_data_handle buff, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:

@@ -50,11 +50,15 @@ typedef unsigned_16 input_type; enum {
         INP_REPLAYED    = 0x0200,
 };
 
+typedef void *inp_data_handle;
+
+typedef bool (inp_rtn_func)(inp_data_handle, inp_rtn_action);
+
 typedef struct input_stack {
         struct  input_stack     *link;
         const char              *scan;
-        void                    *handle;
-        bool                    (*rtn)( void *, inp_rtn_action );
+        inp_data_handle         handle;
+        inp_rtn_func            *rtn;
         input_type              type;
         char                    *lang;
 } input_stack;

@@ -175,7 +175,7 @@ void RecordStart( void )
     RecordPointStart();
 }
 
-OVL_EXTERN bool DoneRadix( void *parm, inp_rtn_action action )
+OVL_EXTERN bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
@@ -192,7 +192,7 @@ OVL_EXTERN bool DoneRadix( void *parm, inp_rtn_action action )
 
 static void PushRadChange( unsigned rad )
 {
-    PushInpStack( (void *)(pointer_int)rad, DoneRadix, FALSE );
+    PushInpStack( (inp_data_handle)(pointer_int)rad, DoneRadix, FALSE );
     TypeInpStack( INP_NO_CMD );
 }
 

@@ -564,7 +564,7 @@ void PerformTrace( void )
  * DoneTraceCmd
  */
 
-OVL_EXTERN bool DoneTraceCmd( void *cmds, inp_rtn_action action )
+OVL_EXTERN bool DoneTraceCmd( inp_data_handle cmds, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:

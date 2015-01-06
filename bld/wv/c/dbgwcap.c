@@ -54,13 +54,14 @@ extern void CaptureError( void )
     CaptureOk = FALSE;
 }
 
-OVL_EXTERN bool DoneCapture( void *cmds, inp_rtn_action action )
+OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
 {
+    cmd_list        *cmds = _cmds;
     const char      *old;
 
     switch( action ) {
     case INP_RTN_INIT:
-        ReScan( ((cmd_list *)cmds)->buff );
+        ReScan( cmds->buff );
         return( TRUE );
     case INP_RTN_EOL:
         return( FALSE );

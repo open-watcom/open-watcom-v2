@@ -212,13 +212,15 @@ static void Conclude( invokes *inv )
 }
 
 
-OVL_EXTERN bool DoneInvLine( void *inv, inp_rtn_action action )
+OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
 {
+    invokes *inv = _inv;
+
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_EOL:
         if( !GetInvkCmd( inv ) ) return( FALSE );
-        ReScan( ((invokes *)inv)->buff );
+        ReScan( inv->buff );
         return( TRUE );
     case INP_RTN_FINI:
         Conclude( inv );
