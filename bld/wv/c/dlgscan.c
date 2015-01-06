@@ -105,7 +105,7 @@ OVL_EXTERN void GetModName( void *value )
     *(mod_handle *)value = mod;
 }
 
-static bool DlgDoScan( const char *str, void *value, void (*rtn)(void*) )
+static bool DlgDoScan( const char *str, void *value, spawn_funcP *rtn )
 {
     const char  *old;
     bool        ok;

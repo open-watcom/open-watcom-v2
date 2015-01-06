@@ -349,7 +349,7 @@ void ProcCall( void )
     FreezeRegs();
     if( PerformExplicitCall( start, ctype, parm ) && results != NULL ) {
         old = ReScan( results );
-        if( Spawn( &CallResults ) == 0 ) {
+        if( Spawn( CallResults ) == 0 ) {
             ReScan( old );
         }
     }

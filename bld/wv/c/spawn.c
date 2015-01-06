@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 #include <setjmp.h>
+#include "spawn.h"
 
 extern void PopErrBox( const char *buff );
 
@@ -44,7 +45,7 @@ static jmp_buf  *ExitSP;
  * Debugger-stepping through the code could not be done with that technique.
  * 
  */
-int Spawn( void (*func)(void) )
+int Spawn( spawn_func *func )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -62,7 +63,7 @@ int Spawn( void (*func)(void) )
     return( ret );
 }
 
-int SpawnP( void (*func)(void*), void *parm )
+int SpawnP( spawn_funcP *func, void *parm )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -80,7 +81,7 @@ int SpawnP( void (*func)(void*), void *parm )
     return( ret );
 }
 
-int SpawnPP( void (*func)(void*, void*), void *p1, void *p2 )
+int SpawnPP( spawn_funcPP *func, void *p1, void *p2 )
 {
     jmp_buf env;
     jmp_buf *old;

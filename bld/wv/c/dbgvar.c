@@ -1761,7 +1761,7 @@ bool    VarIsPointer( type_kind class )
     return( FALSE );
 }
 
-bool VarPrintText( var_info *i, char *buff, void (*rtn)(void), int len )
+bool VarPrintText( var_info *i, char *buff, spawn_func *rtn, int len )
 {
     StartPrintBuff( buff, len );
     if( Spawn( rtn ) == 0 ) {
@@ -1931,7 +1931,7 @@ void VarBreakOnWrite( var_info *i, var_node *v )
 
     VarBuildName( i, v, FALSE );
     name = DupStr( TxtBuff );
-    SpawnP( (void(*)(void*))BreakOnExprSP, name );
+    SpawnP( (spawn_funcP *)BreakOnExprSP, name );
     DbgFree( name );
 }
 

@@ -387,7 +387,7 @@ void DebugMain( void )
     InitLocalInfo();
     ProcCmd();
 
-    Spawn( &DebugInit );
+    Spawn( DebugInit );
     FingOpen();
     DUIFreshAll();
 
@@ -396,7 +396,7 @@ void DebugMain( void )
     save = DUIStopRefresh( TRUE );
     FreezeInpStack();
     _SwitchOn( SW_RUNNING_PROFILE );
-    Spawn( &Profile );          /* run profile command file */
+    Spawn( Profile );           /* run profile command file */
     _SwitchOff( SW_RUNNING_PROFILE );
     PushInitCmdList();
     DUIStopRefresh( save );
