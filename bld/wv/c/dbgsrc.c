@@ -205,9 +205,9 @@ void *OpenSrcFile( cue_handle *ch )
 {
     void        *hndl;
     char_ring   *path;
-    char        *p;
+    const char  *p;
     char        *d;
-    char        *rem_name;
+    const char  *rem_name;
     bool        used_star;
     unsigned    len;
     char        *buff;
@@ -258,7 +258,8 @@ void *OpenSrcFile( cue_handle *ch )
             */
             p = SkipPathInfo( buff, OP_LOCAL );
             rem_name = SkipPathInfo( buff, OP_REMOTE );
-            if( rem_name > p ) p = rem_name;
+            if( rem_name > p )
+                p = rem_name;
             d = StrCopy( p, d );
             *d = NULLCHAR;
         }

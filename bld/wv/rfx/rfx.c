@@ -97,14 +97,14 @@ extern  void            FiniTrap( void );
 extern  void            InitInt( void );
 extern  void            FiniInt( void );
 extern  int             CtrlCHit( void );
-extern  char            *RealFName( char *, open_access * );
+extern  const char      *RealFName( const char *, open_access * );
 extern  sys_error       GetSystemErrCode( error_idx );
 extern  unsigned        RemoteWriteConsole( void *, unsigned );
 extern  unsigned        RemoteWriteConsoleNL( void );
 extern  error_idx       GetLastErr( void );
 extern  sys_handle      GetSystemHandle( handle );
 
-extern  char            *_FileParse( char *name, file_parse *file );
+extern  const char      *_FileParse( const char *name, file_parse *file );
 extern  char            *Squish( file_parse *parse, char *into );
 
 extern rc_erridx        RemoteRename( const char *, const char * );
@@ -232,7 +232,7 @@ static char * Day[] = {
 
 /* Forward declarations */
 extern  void    Replace( const char *frum, const char *to, char *into );
-extern  void    FinishName( char *fn, file_parse *parse, int loc, int addext );
+extern  void    FinishName( const char *fn, file_parse *parse, int loc, int addext );
 extern  int     GetFreeSpace( dir_handle *h, int loc );
 extern  void    CopyStrMax( const char *src, char *dst, unsigned max_len );
 
@@ -292,7 +292,7 @@ char *StrCopy( const char *src, char *dest )
     return( dest );
 }
 
-static char *RealRFXName( char *name, int *loc )
+static const char *RealRFXName( const char *name, int *loc )
 {
     open_access op;
 
@@ -316,7 +316,7 @@ static open_access RFX2Acc( int loc )
     return( OP_REMOTE );
 }
 
-static char *RealName( char *name, int * loc )
+static const char *RealName( const char *name, int * loc )
 {
     name = RealRFXName( name, loc );
     if( *loc == 0 ) {
@@ -857,7 +857,7 @@ int ProcessArgv( int argc, char **argv, const char *cmd ) {
 /* RENAME                                                                 */
 /**************************************************************************/
 
-rc_erridx   Renamef( char *fn1, int f1loc, char *fn2, int f2loc )
+rc_erridx   Renamef( const char *fn1, int f1loc, const char *fn2, int f2loc )
 {
     rc_erridx   retc;
     rc_erridx   err;
@@ -923,7 +923,8 @@ rc_erridx   Renamef( char *fn1, int f1loc, char *fn2, int f2loc )
 void ProcRename( int argc, char **argv )
 {
     int         src_loc, dst_loc;
-    char        *src, *dst;
+    const char  *src;
+    const char  *dst;
     int         i;
 
     dst = NULL;
@@ -1097,7 +1098,7 @@ rc_erridx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
     return( StashErrCode( IO_OK, OP_LOCAL ) );
 }
 
-extern  void    RRecurse( char *f1, char *f2, int f1loc, int f2loc )
+void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
 {
     rc_erridx   retc;
     long        retl;
@@ -1146,7 +1147,7 @@ extern  void    RRecurse( char *f1, char *f2, int f1loc, int f2loc )
     }
 }
 
-rc_erridx   CopyASpec( char *f1, char *f2, int f1loc, int f2loc )
+rc_erridx   CopyASpec( const char *f1, const char *f2, int f1loc, int f2loc )
 {
     rc_erridx   retc;
     char        *endptr;
@@ -1246,7 +1247,7 @@ void ProcCopy( int argc, char **argv )
 {
     int         recursive;
     int         src_loc, dst_loc;
-    char        *src, *dst;
+    const char  *src, *dst;
     int         i;
     char        name[80];
     char        *endp;
@@ -1302,7 +1303,7 @@ void ProcCopy( int argc, char **argv )
         }
         AddCopySpec( src, dst, src_loc, dst_loc );
         WildCopy( recursive );
-        #define CPYMSG "        x Files copied        x Directories created"
+#define CPYMSG "        x Files copied        x Directories created"
         strcpy( Buff, CPYMSG );
         DItoD( FilesCopied, Buff + 8 );
         DItoD( DirectoriesMade, Buff + 30 );
@@ -1319,7 +1320,7 @@ void ProcCopy( int argc, char **argv )
 void ProcType( int argc, char **argv )
 {
     int         src_loc;
-    char        *src;
+    const char  *src;
 
     src = NULL;
     if( argc != 1 ) {
@@ -1342,7 +1343,7 @@ static  void    DirClosef( dir_handle *h )
     DbgFree( h );
 }
 
-extern  dir_handle      *DirOpenf( char *fspec, int fnloc )
+extern  dir_handle      *DirOpenf( const char *fspec, int fnloc )
 {
     dir_handle  *h;
     rc_erridx   retc;
@@ -1495,7 +1496,7 @@ void ProcDir( int argc, char **argv )
     int         wide;
     int         pause;
     int         src_loc;
-    char        *src;
+    const char  *src;
     dir_handle  *io;
     int         count;
     int         i;
@@ -1574,7 +1575,7 @@ void ProcDir( int argc, char **argv )
 void ProcCD( int argc, char **argv, int crlf )
 {
     int         src_loc;
-    char        *src;
+    const char  *src;
 
     if( argc == 1 ) {
         src = RealRFXName( argv[0], &src_loc );
@@ -1630,7 +1631,7 @@ void ProcCD( int argc, char **argv, int crlf )
 void ProcMakeDir( int argc, char **argv )
 {
     int         src_loc;
-    char        *src;
+    const char  *src;
 
     if( argc == 1 ) {
         src = RealName( argv[0], &src_loc );
@@ -1644,7 +1645,7 @@ void ProcMakeDir( int argc, char **argv )
 /* ERASE/DELETE                                                           */
 /**************************************************************************/
 
-rc_erridx   Scratchf( char *fn, int fnloc )
+rc_erridx   Scratchf( const char *fn, int fnloc )
 {
     rc_erridx   retc;
     char        *endptr;
@@ -1693,7 +1694,7 @@ void BuildDFSList( void )
 void ProcErase( int argc, char **argv )
 {
     int         src_loc;
-    char        *src;
+    const char  *src;
     int         recursive;
     int         i;
     int         erased_one;
@@ -1716,8 +1717,10 @@ void ProcErase( int argc, char **argv )
     }
     src = RealName( src, &src_loc );
     AddCopySpec( src, src, src_loc, src_loc );
-    if( recursive ) BuildDFSList();
-    if( ErrorStatus != 0 ) return;
+    if( recursive )
+        BuildDFSList();
+    if( ErrorStatus != 0 )
+        return;
     erased_one = FALSE;
     while( CopySpecs != NULL ) {
         ErrorStatus = 0;
@@ -1739,7 +1742,8 @@ void ProcErase( int argc, char **argv )
 void ProcDelDir( int argc, char **argv )
 {
     int         src_loc;
-    char        *src;
+    const char  *src;
+    char        *tmp;
     int         recursive;
     int         i;
     rc_erridx   retc;
@@ -1769,9 +1773,9 @@ void ProcDelDir( int argc, char **argv )
     if( ErrorStatus != 0 )
         return;
     while( CopySpecs != NULL ) {
-        src = strstr( CopySpecs->src, "\\*.*" );
-        if( src != NULL ) {
-            *src = '\0';
+        tmp = strstr( CopySpecs->src, "\\*.*" );
+        if( tmp != NULL ) {
+            *tmp = '\0';
             retc = RemoveDir( CopySpecs->src, CopySpecs->src_loc );
             if( retc != 0 ) {
                 TransSetErr( retc );
@@ -1789,7 +1793,7 @@ void ProcDelDir( int argc, char **argv )
 
 int ProcDrive( int argc, char **argv )
 {
-    char        *src;
+    const char  *src;
     int         src_loc;
     int         len;
 
@@ -1822,11 +1826,12 @@ extern  char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigne
     return( buff );
 }
 
-extern  char    *_FileParse( char *name, file_parse *file )
+extern  const char    *_FileParse( const char *name, file_parse *file )
 {
-    char        *curr;
-    char        *dosname;
-    char        *p;
+    const char  *curr;
+    const char  *dosname;
+    const char  *p;
+    char        *p1;
     char        ch;
     int         extlen;
 
@@ -1876,15 +1881,15 @@ extern  char    *_FileParse( char *name, file_parse *file )
         if( ch == ':' ) break;
         --p;
     }
-    curr = CopyMax( p + 1, file->path, curr - p, MAX_PATH );
+    p1 = CopyMax( p + 1, file->path, curr - p, MAX_PATH );
     if( extlen == 1 ) {
         if( file->name[ 0 ] == '\0' ) {
-            *curr++ = '.';
+            *p1++ = '.';
             file->slash = 0;
             file->ext[ 0 ] = '\0';
         }
     }
-    *curr = '\0';
+    *p1 = '\0';
     strupr( file->drive );
     strupr( file->path );
     strupr( file->name );
@@ -1934,7 +1939,7 @@ extern  void    Replace( const char *frum, const char *to, char *into )
     *into = '\0';
 }
 
-extern  void    FinishName( char *fn, file_parse *parse, int loc, int addext )
+extern  void    FinishName( const char *fn, file_parse *parse, int loc, int addext )
 {
     char        *endptr;
     long        rc;

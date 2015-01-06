@@ -1010,7 +1010,6 @@ void SetPointAddr( brkp *bp, address addr )
     image_entry *image;
     mod_handle  mod;
     char  const *start;
-    size_t      len;
     bool        ok;
 
     if( bp->status.b.unmapped )
@@ -1036,8 +1035,7 @@ void SetPointAddr( brkp *bp, address addr )
         bp->mod_name = DupStr( TxtBuff );
         if( image->image_name != NULL ) {
             start = SkipPathInfo( image->image_name, OP_REMOTE );
-            len = ExtPointer( start, OP_REMOTE ) - start;
-            bp->image_name = DupStrLen( start, len );
+            bp->image_name = DupStrLen( start, ExtPointer( start, OP_REMOTE ) - start );
         } else {
             bp->image_name = NULL;
         }

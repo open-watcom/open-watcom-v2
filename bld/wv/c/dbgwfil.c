@@ -527,7 +527,7 @@ void    FileReset( a_window *wnd )
 static void FileSetTitle( a_window *wnd, mod_handle mod )
 {
     char        *p;
-    char        *image_name;
+    const char  *image_name;
     file_window *file = WndFile( wnd );
 
     if( file->track ) {

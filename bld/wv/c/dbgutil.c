@@ -615,7 +615,7 @@ void UnAsm( address addr, char *buff, unsigned buff_len )
     Rtrm( buff );
 }
 
-char *ModImageName( mod_handle handle )
+const char *ModImageName( mod_handle handle )
 {
     image_entry *image;
 

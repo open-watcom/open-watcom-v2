@@ -60,7 +60,7 @@ static const char *SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;
-    char                *image;
+    const char          *image_name;
     const ambig_info    *ambig = data_handle;
 
     sym = ambig->sym;
@@ -71,9 +71,9 @@ static const char *SymPickText( const void *data_handle, int item )
     if( len == 0 ) {
         len = SymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
     }
-    image = ModImageName( SymMod( SL2SH( sym ) ) );
-    if( *image != '\0' ) {
-        Format( &TxtBuff[ len ], " [%s]", image );
+    image_name = ModImageName( SymMod( SL2SH( sym ) ) );
+    if( *image_name != '\0' ) {
+        Format( &TxtBuff[ len ], " [%s]", image_name );
     }
     return( TxtBuff );
 }

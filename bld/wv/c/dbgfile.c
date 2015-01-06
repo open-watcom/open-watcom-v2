@@ -97,7 +97,7 @@ static error_idx        LastErr;
 
 handle PathOpen( const char *name, unsigned name_len, const char *ext );
 
-char  *RealFName( char const *name, open_access *loc )
+const char  *RealFName( char const *name, open_access *loc )
 {
     *loc &= ~(OP_REMOTE|OP_LOCAL);
     if( name[0] == LOC_ESCAPE ) {
@@ -111,7 +111,7 @@ char  *RealFName( char const *name, open_access *loc )
             name += 1;
         }
     }
-    return( (char*)name );
+    return( name );
 }
 
 static open_access DefaultLoc( open_access loc )
@@ -130,7 +130,7 @@ static open_access DefaultLoc( open_access loc )
     return( loc );
 }
 
-char    *FileLoc( char const *name, open_access *loc )
+const char  *FileLoc( char const *name, open_access *loc )
 {
     open_access ind;
 
@@ -141,7 +141,7 @@ char    *FileLoc( char const *name, open_access *loc )
         *loc |= ind;
     }
     *loc = DefaultLoc( *loc );
-    return( (char*)name );
+    return( name );
 }
 
 
@@ -339,15 +339,16 @@ sys_handle GetSystemHandle( handle h )
     return( SysHandles[ h & ~REMOTE_IND ] );
 }
 
-bool IsAbsolutePath( char *path )
+bool IsAbsolutePath( const char *path )
 {
     file_components     *info;
-    char                *p;
+    const char          *p;
     open_access         loc;
 
     p = RealFName( path, &loc );
     info = PathInfo( p, loc );
-    if( strlen( p ) == 0 ) return( FALSE );
+    if( strlen( p ) == 0 )
+        return( FALSE );
     return( CHECK_PATH_ABS( p, info ) );
 }
 
@@ -366,10 +367,10 @@ char *AppendPathDelim( char *path, open_access loc )
     return( end );
 }
 
-char  *SkipPathInfo( char const *path, open_access loc )
+const char  *SkipPathInfo( char const *path, open_access loc )
 {
     file_components     *info;
-    char      const     *name;
+    const char          *name;
     char                c;
 
     name = path;
@@ -381,22 +382,24 @@ char  *SkipPathInfo( char const *path, open_access loc )
             name = path;
         }
     }
-    return( (char*)name );
+    return( name );
 }
 
 
-char  *ExtPointer( char const *path, open_access loc )
+const char  *ExtPointer( char const *path, open_access loc )
 {
     file_components     *info;
-    char                *p,*end;
+    const char          *p;
+    const char          *end;
     char                c;
 
-    end = (char *)path + strlen( path );
+    end = path + strlen( path );
     info = PathInfo( path, loc );
     p = end;
     for( ;; ) {
         c = *--p;
-        if( p < path ) return( end );
+        if( p < path )
+            return( end );
         if( CHECK_PATH_SEP( c, info ) )
             return( end );
         if( c == info->ext_separator ) {
@@ -483,6 +486,7 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
 {
     char        buffer[TXT_LEN];
     char        *p;
+    const char  *p1;
     open_access loc;
     bool        have_ext;
     bool        have_path;
@@ -491,9 +495,9 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
     char        c;
 
     loc = 0;
-    p = FileLoc( name, &loc );
-    name_len -= p - name;
-    name = p;
+    p1 = FileLoc( name, &loc );
+    name_len -= p1 - name;
+    name = p1;
     have_ext = FALSE;
     have_path = FALSE;
     if( force_local ) {
@@ -533,8 +537,8 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
     if( f == NIL_HANDLE ) {
         strcpy( result, buffer );
     } else {
-        p = RealFName( result, &loc );
-        memmove( result, p, strlen( p ) + 1 );
+        p1 = RealFName( result, &loc );
+        memmove( result, p1, strlen( p1 ) + 1 );
     }
     return( f );
 }

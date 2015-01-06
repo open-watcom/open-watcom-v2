@@ -278,7 +278,7 @@ extern  void    AsmNewSrcNotify( a_window *src, mod_handle mod, bool track )
 static void AsmSetTitle( a_window *wnd )
 {
     char        *p;
-    char        *image_name;
+    const char  *image_name;
     asm_window  *asw = WndAsm( wnd );
 
     p = StrCopy( ": ", StrCopy( LIT( WindowAssembly ), TxtBuff ) );

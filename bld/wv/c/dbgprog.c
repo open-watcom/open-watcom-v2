@@ -60,7 +60,7 @@ extern bool             KillProgOvlay( void );
 extern void             ReportTask( task_status, unsigned );
 extern void             BPsDeac( void );
 extern void             BPsUnHit( void );
-extern unsigned         DoLoad( char *, unsigned long * );
+extern unsigned         DoLoad( const char *, unsigned long * );
 extern void             ClearMachState( void );
 extern void             SetupMachState( void );
 extern unsigned long    RemoteGetLibName( unsigned long, char *buff, unsigned buff_len );
@@ -116,7 +116,7 @@ extern char_ring        **RingEnd( char_ring **owner );
 
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)());
 static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
-char                    *RealFName( char *name, open_access *loc );
+const char              *RealFName( const char *name, open_access *loc );
 
 extern void             DUIImageLoaded( image_entry*, bool, bool, bool* );
 
@@ -210,19 +210,22 @@ bool InitCmd( void )
 
 void FindLocalDebugInfo( const char *name )
 {
-    char    *buff, *symname;
-    char    *ext;
-    int     len = strlen( name );
-    handle  local;
+    char        *buff, *symname;
+    const char  *ext;
+    unsigned    base_len;
+    unsigned    len;
+    handle      local;
 
+    base_len = len = strlen( name );
     _AllocA( buff, len + 1 + 4 + 2 );
     _AllocA( symname, len + 1 + 4 );
     strcpy( buff, "@l" );
     // If a .sym file is present, use it in preference to the .exe
     ext = ExtPointer( name, OP_LOCAL );
-    if( *ext != NULLCHAR )
-        *ext = NULLCHAR;
-    local = FullPathOpen( name, len, "sym", symname, len + 4 );
+    if( *ext != NULLCHAR ) {
+        base_len = ext - name;
+    }
+    local = FullPathOpen( name, base_len, "sym", symname, len + 4 );
     if( local != NIL_HANDLE ) {
         strcat( buff, symname );
         FileClose( local );
@@ -492,37 +495,29 @@ static image_entry *CreateImage( const char *exe, const char *sym )
 {
     image_entry         *image;
     bool                local;
-    char                *curr_name;
-    char                *curr_ext;
-    char                curr_extchar;
-    char                *this_name;
-    char                *this_ext;
-    char                this_extchar;
+    const char          *curr_name;
+    unsigned            curr_len;
+    const char          *this_name;
+    unsigned            this_len;
     char_ring           *curr;
     open_access         ind;
 
     if( exe != NULL && sym == NULL ) {
         local = FALSE;
         this_name = SkipPathInfo( exe, OP_REMOTE );
-        this_ext = ExtPointer( exe, OP_REMOTE );
-        this_extchar = *this_ext;
-        *this_ext = '\0';
+        this_len = ExtPointer( exe, OP_REMOTE ) - exe;
         for( curr = LocalDebugInfo; curr != NULL; curr = curr->next ) {
             curr_name = SkipPathInfo( curr->name, OP_LOCAL );
             curr_name = RealFName( curr_name, &ind );
             if( curr_name[0] == '@' && curr_name[1] == 'l' )
                 curr_name += 2;
-            curr_ext = ExtPointer( curr->name, OP_LOCAL );
-            curr_extchar = *curr_ext;
-            *curr_ext = '\0';
-            local = stricmp( this_name, curr_name ) == 0;
-            *curr_ext = curr_extchar;
+            curr_len = ExtPointer( curr_name, OP_LOCAL ) - curr_name;
+            local = ( this_len == curr_len && strnicmp( this_name, curr_name, this_len ) == 0 );
             if( local ) {
                 sym = curr->name;
                 break;
             }
         }
-        *this_ext = this_extchar;
     }
 
     _SwitchOn( SW_ERROR_RETURNS );
@@ -582,7 +577,7 @@ static bool ProcSymInfo( image_entry *image )
     unsigned    last;
     char        buff[TXT_LEN];
     char        *sym_name;
-    char        *nopath;
+    const char  *nopath;
     unsigned    len;
 
     image->deferred_symbols = FALSE;
@@ -616,7 +611,7 @@ static bool ProcSymInfo( image_entry *image )
         return( FALSE );
     _AllocA( sym_name, strlen( image->image_name ) + 1 );
     strcpy( sym_name, image->image_name );
-    *ExtPointer( sym_name, OP_REMOTE ) = '\0';
+    sym_name[ExtPointer( sym_name, OP_REMOTE ) - sym_name] = '\0';
     len = MakeFileName( buff, sym_name, "sym", OP_REMOTE );
     _Alloc( image->sym_name, len + 1 );
     if( image->sym_name != NULL ) {
@@ -902,7 +897,7 @@ static void WndNewProg( void )
 static int DoLoadProg( const char *task, const char *sym, unsigned *error )
 {
     open_access         loc;
-    char                *name;
+    const char          *name;
     unsigned            len;
     static char         fullname[2048];
     image_entry         *image;

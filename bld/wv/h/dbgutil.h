@@ -60,4 +60,4 @@ extern void         PushCmdText( char *cmds );
 extern bool         PurgeInpStack( void );
 extern void         FreezeInpStack( void );
 extern void         UnAsm( address addr, char *buff, unsigned buff_len );
-extern char         *ModImageName( mod_handle handle );
+extern const char   *ModImageName( mod_handle handle );

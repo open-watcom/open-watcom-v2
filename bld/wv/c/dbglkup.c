@@ -160,8 +160,7 @@ void LookSet( void )
             }
         }
     }
-    curr = new;
-    for( ; ; ) {
+    for( curr = new; ; ++curr ) {
         need_item = FALSE;
         if( CurrToken == T_DIV ) {
             Scan();
@@ -180,12 +179,13 @@ void LookSet( void )
                 break;
             }
         }
-        if( !ScanItem( TRUE, &curr->start, &curr->len ) ) break;
+        if( !ScanItem( TRUE, &curr->start, &curr->len ) )
+            break;
         just_respect = FALSE;
         curr->respect = respect;
-        ++curr;
     }
-    if( need_item ) Error( ERR_LOC, LIT( ERR_WANT_LOOKUP_ITEM ) );
+    if( need_item )
+        Error( ERR_LOC, LIT( ERR_WANT_LOOKUP_ITEM ) );
     ReqEOC();
     if( just_respect ) {
         LookCaseSet( respect );
@@ -258,31 +258,35 @@ int Lookup( const char *tokenlist,  const char *what, int tokenlen )
     const char  *t;
 
     _AllocA( ucwhat, tokenlen );
-    for( k=0;k<tokenlen;k++) ucwhat[k] = toupper( what[k] );
+    for( k = 0; k < tokenlen; k++ )
+        ucwhat[k] = toupper( what[k] );
 
-    t = tokenlist;
-    for( ;; ) {
-        tc = *t;
-        if( tc == 0 ) break;
+    for( t = tokenlist; (tc = *t) != '\0'; ++t ) {
         w = ucwhat;
         for( ;; ) {
             isuppertc = isupper( tc );
             if( (int) (w - ucwhat) == tokenlen ) {
-                if( isuppertc ) break;
+                if( isuppertc )
+                    break;
                 return( tokennum );
             }
             wc = *w++;
             if( isuppertc ) {
-                if( tc != wc ) break;
+                if( tc != wc ) {
+                    break;
+                }
             } else {
-                if( toupper( tc ) != wc ) break;
+                if( toupper( tc ) != wc ) {
+                    break;
+                }
             }
-            if( !tc ) return( tokennum );
+            if( !tc )
+                return( tokennum );
             t++;
             tc = *t;
         }
-        while( *t ) t++;
-        t++;
+        while( *t != '\0' )
+            t++;
         tokennum++;
     }
     return( 0 );
@@ -301,8 +305,10 @@ OVL_EXTERN walk_result CheckModName( mod_handle mh, void *d )
     unsigned            len;
 
     len = ModName( mh, name, sizeof( name ) );
-    if( len != md->len ) return( WR_CONTINUE );
-    if( memicmp( name, md->start, len ) != 0 ) return( WR_CONTINUE );
+    if( len != md->len )
+        return( WR_CONTINUE );
+    if( memicmp( name, md->start, len ) != 0 )
+        return( WR_CONTINUE );
     md->mh = mh;
     return( WR_STOP );
 }
@@ -335,15 +341,18 @@ OVL_EXTERN walk_result CheckImageName( mod_handle mh, void *d )
 {
     struct mod_lkup     *md = d;
     image_entry         *image;
-    char                *name;
+    const char          *name;
     unsigned            len;
 
     image = ImageEntry( mh );
-    if( image == NULL ) return( WR_CONTINUE );
+    if( image == NULL )
+        return( WR_CONTINUE );
     name = SkipPathInfo( image->image_name, OP_REMOTE );
     len = ExtPointer( name, OP_REMOTE ) - name;
-    if( len != md->len ) return( WR_CONTINUE );
-    if( memicmp( name, md->start, len ) != 0 ) return( WR_CONTINUE );
+    if( len != md->len )
+        return( WR_CONTINUE );
+    if( memicmp( name, md->start, len ) != 0 )
+        return( WR_CONTINUE );
     md->mh = mh;
     return( WR_STOP );
 }
@@ -362,8 +371,7 @@ mod_handle LookupImageName( const char *start, unsigned len )
 
 static char *strsubst( char *dest, char *pattern, lookup_token *source )
 {
-    for( ;; ) {
-        if( *pattern == NULLCHAR ) break;
+    for( ; *pattern != NULLCHAR; ++pattern ) {
         if( *pattern == '*' ) {
             memcpy( dest, source->start, source->len );
             source->start = dest;
@@ -372,7 +380,6 @@ static char *strsubst( char *dest, char *pattern, lookup_token *source )
             *dest = *pattern;
             ++dest;
         }
-        ++pattern;
     }
     *dest = NULLCHAR;
     return( dest );
@@ -399,7 +406,9 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
     if( ss == SS_SCOPED ) {
         if( li->mod == NO_MOD ) {
             DeAliasAddrMod( *(address *)d, &search_mod );
-            if( search_mod != CodeAddrMod ) check_codeaddr_mod = TRUE;
+            if( search_mod != CodeAddrMod ) {
+                check_codeaddr_mod = TRUE;
+            }
         } else {
             ss = SS_MODULE;
             search_mod = li->mod;
@@ -424,24 +433,21 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
     len = li->name.len;
     save_case = li->case_sensitive;
     li->name.start = TxtBuff;
-    curr = DefLookup;
-    for( ;; ) {
+    for( curr = DefLookup; curr != NULL; curr = curr->next ) {
         li->case_sensitive = curr->respect_case;
         li->source.start = start;
         li->source.len   = len;
-        li->name.len = strsubst( TxtBuff, curr->data, &li->source )
-                                - TxtBuff;
+        li->name.len = strsubst( TxtBuff, curr->data, &li->source ) - TxtBuff;
         if( check_codeaddr_mod ) {
             if(LookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead )!=SR_NONE) {
                 break;
             }
         }
-        if( LookupSym( ss, d, li, &SymListHead ) != SR_NONE ) break;
+        if( LookupSym( ss, d, li, &SymListHead ) != SR_NONE )
+            break;
         if( DIPStatus == (DS_ERR|DS_INVALID_OPERATOR) ) {
             Error( ERR_NONE, LIT( ERR_INVALID_OPERATOR ), li->name.start, li->name.len );
         }
-        curr = curr->next;
-        if( curr == NULL ) break;
     }
     li->case_sensitive = save_case;
     li->name.start = start;
@@ -454,12 +460,10 @@ void FreeSymHandle( sym_list *sl )
     sym_list    **owner;
     sym_list    *curr;
 
-    owner = &SymListHead;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) return;
-        if( curr == sl ) break;
-        owner = &curr->next;
+    for( owner = &SymListHead; (curr = *owner) != NULL; owner = &curr->next ) {
+        if( curr == sl ) {
+            break;
+        }
     }
     *owner = curr->next;
     _Free( curr );
@@ -483,7 +487,8 @@ static bool GetSymAddr( char *name, mod_handle mh, address *addr )
     location_list       ll;
     dip_status          ret;
 
-    if( mh == NO_MOD ) return( FALSE );
+    if( mh == NO_MOD )
+        return( FALSE );
     memset( &li, 0, sizeof( li ) );
     li.mod = mh;
     li.name.start = name;
@@ -499,8 +504,10 @@ static bool GetSymAddr( char *name, mod_handle mh, address *addr )
     }
     ret = SymLocation( SL2SH( SymListHead ), NULL, &ll );
     PurgeSymHandles();
-    if( ret != DS_OK ) return( FALSE );
-    if( ll.num != 1 || ll.e[0].type != LT_ADDR ) return( FALSE );
+    if( ret != DS_OK )
+        return( FALSE );
+    if( ll.num != 1 || ll.e[0].type != LT_ADDR )
+        return( FALSE );
     *addr = ll.e[0].u.addr;
     return( TRUE );
 }
@@ -515,8 +522,8 @@ bool SetWDPresent( mod_handle mh )
 {
     address     addr;
 
-    if( !GetSymAddr( "__WD_Present", mh, &addr ) &&
-        !GetSymAddr( "___WD_Present", mh, &addr ) ) return( FALSE );
+    if( !GetSymAddr( "__WD_Present", mh, &addr ) && !GetSymAddr( "___WD_Present", mh, &addr ) )
+        return( FALSE );
     ProgPoke( addr, "\x1", 1 );
     return( TRUE );
 }
