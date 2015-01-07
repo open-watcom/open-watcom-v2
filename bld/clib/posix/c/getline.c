@@ -73,9 +73,12 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
 
     /* Now with a line length, check if we need a reallocation */
     if( linelength > *n ) {
-        *s = realloc( *s, linelength * sizeof( char ) );
-        if( *s == '\0' ) {
+        if(*n > 0 && *s != NULL)
+            free(*s);
+        *s = malloc( linelength );
+        if( *s == NULL ) {
             errno = ENOMEM;
+            *n = 0;
             return( -1 );
         }
         *n = linelength;
