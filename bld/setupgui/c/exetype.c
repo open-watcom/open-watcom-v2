@@ -74,7 +74,7 @@ int main( int argc, char *argv[] )
 
 static void CheckFile( char *fname, char *drive, char *dir )
 {
-    int                 ok;
+    bool                ok;
     char                path[_MAX_PATH];
     char                exe_type[3];
 
@@ -91,7 +91,7 @@ static void CheckFile( char *fname, char *drive, char *dir )
 #endif
 
 
-int ExeType( char *fname, char *exe_type )
+bool ExeType( char *fname, char *exe_type )
 {
     int                 fp;
     int                 len;
@@ -101,14 +101,14 @@ int ExeType( char *fname, char *exe_type )
 
     fp = open( fname, O_RDONLY | O_BINARY );
     if( fp == -1 ) {
-        return( FALSE );
+        return( false );
     }
 
     // read executable header
     len = read( fp, &exe_header, sizeof( dos_exe_header ) );
     if( len < sizeof( dos_exe_header ) || exe_header.signature != DOS_SIGNATURE ) {
         close( fp );
-        return( FALSE );
+        return( false );
     }
 
     // at this point, its a valid executable - assume DOS
@@ -117,23 +117,23 @@ int ExeType( char *fname, char *exe_type )
     // get offset of extended header
     if( lseek( fp, NH_OFFSET, SEEK_SET ) == -1 ) {
         close( fp );
-        return( TRUE );
+        return( true );
     }
     len = read( fp, &offset, sizeof( long ) );
     if( len != sizeof( long ) ) {
         close( fp );
-        return( TRUE );
+        return( true );
     }
 
     // determine type of extended executable
     if( lseek( fp, offset, SEEK_SET ) == -1 ) {
         close( fp );
-        return( TRUE );
+        return( true );
     }
     len = read( fp, local_type, 2 * sizeof( char ) );
     if( len != 2 * sizeof( char ) ) {
         close( fp );
-        return( TRUE );
+        return( true );
     }
     local_type[2] = '\0';
     if( strcmp( local_type, "PE" ) == 0 ) {             // Windows NT
@@ -146,6 +146,5 @@ int ExeType( char *fname, char *exe_type )
         strcpy( exe_type, local_type );
     }
     close( fp );
-    return( TRUE );
+    return( true );
 }
-

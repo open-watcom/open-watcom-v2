@@ -50,10 +50,11 @@ extern void SetupTitle();
 extern void DeleteObsoleteFiles();
 extern void ResetDiskInfo( void );
 
+extern bool     SkipDialogs;
+extern bool     CancelSetup;
+extern vhandle  UnInstall;
+
 int IsPatch = 0;
-extern int SkipDialogs;
-extern bool CancelSetup;
-extern vhandle UnInstall;
 
 typedef enum {
     Stack_Push,
@@ -72,7 +73,7 @@ static bool SetupOperations( void )
 
     if( GetVariableIntVal( "IsUpgrade" ) == 1 ) {
         if( !CheckUpgrade() ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -81,7 +82,7 @@ static bool SetupOperations( void )
     if( GetVariableIntVal( "Patch" ) == 1 ) {
         IsPatch = 1;
         if( !PatchFiles() ) {
-            return( FALSE );
+            return( false );
         }
     }
 #endif
@@ -91,7 +92,7 @@ static bool SetupOperations( void )
     // Copy the files
     if( GetVariableIntVal( "DoCopyFiles" ) == 1 ) {
         if( !CopyAllFiles() ) {
-            return( FALSE );
+            return( false );
         }
     }
     DoSpawn( WHEN_AFTER );
@@ -99,21 +100,21 @@ static bool SetupOperations( void )
     // Modify AUTOEXEC.BAT and CONFIG.SYS
     if( GetVariableIntVal( "DoModifyAuto" ) == 1 ) {
         if( !ModifyStartup( uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     // Perform file associations
     if( GetVariableIntVal( "DoFileAssociations" ) == 1 ) {
         if( !ModifyAssociations( uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     // Generate batch file
     if( GetVariableIntVal( "GenerateBatchFile" ) == 1 ) {
         if( !GenerateBatchFile( uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -121,20 +122,20 @@ static bool SetupOperations( void )
     if( GetVariableIntVal( "DoCreateIcons" ) == 1 ||
         GetVariableIntVal( "DoCreateHelpIcons" ) == 1 ) {
         if( !ModifyEnvironment( uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     // Add uninstaller to Add/Remove Programs
     if( GetVariableIntVal( "DoUninstall" ) == 1 ) {
         if( !ModifyUninstall( uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     DoSpawn( WHEN_END );
 
-    return( TRUE );
+    return( true );
 }
 
 #define MAX_DIAGS 20
@@ -166,7 +167,7 @@ bool CheckForSetup32( int argc, char **argv )
         mem_needed += i; // spaces between arguments + terminating null
         buff = malloc( mem_needed );
         if( buff == NULL ) {
-            return( FALSE );
+            return( false );
         }
         strcpy( buff, new_exe );
         if( access( buff, F_OK ) == 0 ) {
@@ -175,10 +176,10 @@ bool CheckForSetup32( int argc, char **argv )
                 strcat( buff, argv[i] );
             }
             WinExec( buff, SW_SHOW );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -201,7 +202,7 @@ static bool CheckWin95Uninstall( int argc, char **argv )
         // copy setup program to unsetup.exe in system directory
         GetWindowsDirectory( buff, _MAX_PATH );
         strcat( buff, "\\UnSetup.exe" );
-        if( DoCopyFile( argv[0], buff, FALSE ) == CFE_NOERROR ) {
+        if( DoCopyFile( argv[0], buff, false ) == CFE_NOERROR ) {
             // add entry to wininit.ini to erase unsetup.exe
             WritePrivateProfileString( "rename", "NUL", buff, "wininit.ini" );
             // setup.inf should be in same directory as setup.exe
@@ -213,10 +214,10 @@ static bool CheckWin95Uninstall( int argc, char **argv )
             strcat( buff, "\"" );
             // execute unsetup
             WinExec( buff, SW_SHOW );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool CheckWow64( void )
@@ -232,11 +233,11 @@ static bool CheckWow64( void )
         InitGlobalVarList();
         SetVariableByName( "IDS_USEINST64BIT", "%s");
         if( MsgBox( NULL, "IDS_USEINST64BIT", GUI_OK_CANCEL, msg ) != GUI_RET_OK ) {
-            /* return TRUE to terminate installer */
-            return( TRUE );
+            /* return true to terminate installer */
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -256,14 +257,14 @@ bool DirParamStack( char **inf_name, char **tmp_path, DIR_PARAM_STACK_OPS functi
 
         *inf_name = GUIMemAlloc( _MAX_PATH );
         if( *inf_name == NULL ) {
-            return( FALSE );
+            return( false );
         }
         *tmp_path = GUIMemAlloc( _MAX_PATH );
         if( *tmp_path == NULL ) {
             GUIMemFree( *inf_name );
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
     } else if( function == Stack_Pop ) {
         // Pop
         GUIMemFree( *inf_name );
@@ -272,25 +273,25 @@ bool DirParamStack( char **inf_name, char **tmp_path, DIR_PARAM_STACK_OPS functi
         *tmp_path = old_tmp_path;
         old_inf_name = NULL;
         old_tmp_path = NULL;
-        return( TRUE );
+        return( true );
     } else {
         // IsEmpty
         return( old_inf_name == NULL );
     }
 }
 
-extern bool DoMainLoop( dlg_state * state )
-/*****************************************/
+bool DoMainLoop( dlg_state * state )
+/**********************************/
 {
     const char          *diag_list[MAX_DIAGS + 1];
     const char          *diags;
     const char          *dstdir;
     int                 dstlen;
-    bool                got_disk_sizes = FALSE;
+    bool                got_disk_sizes = false;
     int                 i;
     char                newdst[_MAX_PATH];
     char                *next;
-    bool                ret = FALSE;
+    bool                ret = false;
 
     SetupTitle();
 
@@ -316,18 +317,18 @@ extern bool DoMainLoop( dlg_state * state )
         if( i < 0 ) break;
         if( diag_list[i] == NULL ) {
             if( GetVariableIntVal( "DoCopyFiles" ) == 1 ) {
-                if( !CheckDrive( TRUE ) ) {
+                if( !CheckDrive( true ) ) {
                     i = 0;
                 }
             }
             if( GetVariableByName( "SetupPath" ) != NO_VAR ) {
-                ret = TRUE;
+                ret = true;
                 break;
             }
             if( diag_list[i] == NULL ) {
-                    StatusShow( TRUE );
+                    StatusShow( true );
                     ret = SetupOperations();
-                    StatusShow( FALSE );
+                    StatusShow( false );
                     if( ret ) DoDialog( "Finished" );
                     break;
             }
@@ -350,7 +351,7 @@ extern bool DoMainLoop( dlg_state * state )
                 }
                 SimSetNeedGetDiskSizes();
                 ResetDiskInfo();
-                got_disk_sizes = TRUE;
+                got_disk_sizes = true;
 
             }
         } else {
@@ -360,15 +361,15 @@ extern bool DoMainLoop( dlg_state * state )
         }
         if( *state == DLG_CAN ) {
             if( MsgBox( NULL, "IDS_QUERYABORT", GUI_YES_NO ) == GUI_RET_YES ) {
-                CancelSetup = TRUE;
+                CancelSetup = true;
                 break;
             }
         } else if( *state == DLG_DONE ) {
-            CancelSetup = TRUE;
+            CancelSetup = true;
             break;
         }
         if( got_disk_sizes ) {
-            if( !CheckDrive( FALSE ) ) {
+            if( !CheckDrive( false ) ) {
                 break;
             }
         }
@@ -398,8 +399,8 @@ extern bool DoMainLoop( dlg_state * state )
     return( ret );
 }
 
-extern void GUImain( void )
-/*************************/
+void GUImain( void )
+/******************/
 {
     int                 argc = 0;
     char                **argv = NULL;
@@ -410,7 +411,7 @@ extern void GUImain( void )
     char                *arc_name;
     char                *new_inf;
     char                current_dir[_MAX_PATH];
-    bool                ret = FALSE;
+    bool                ret = false;
     dlg_state           state;
 
     GUIMemOpen();
@@ -437,17 +438,17 @@ extern void GUImain( void )
         ret = DoMainLoop( &state );
 
         if( state == DLG_DONE ) break;
-//        if( CancelSetup == TRUE || !ret ) break;
-        if( CancelSetup == TRUE ) break;
+//        if( CancelSetup || !ret ) break;
+        if( CancelSetup ) break;
 //        if( !ret ) break;
 
         // look for another SETUP.INF
         if( GetVariableByName( "SetupPath" ) == NO_VAR ) {
-            if( DirParamStack( &inf_name, &tmp_path, Stack_IsEmpty ) == FALSE ) {  // "IsEmpty"?
+            if( !DirParamStack( &inf_name, &tmp_path, Stack_IsEmpty ) ) {  // "IsEmpty"?
                 DirParamStack( &inf_name, &tmp_path, Stack_Pop ); // "Pop"
                 CloseDownMessage( ret );
-                CancelSetup = FALSE;
-                ret = TRUE;
+                CancelSetup = false;
+                ret = true;
             } else {
                 CloseDownMessage( ret );
                 break;
@@ -480,15 +481,15 @@ extern void GUImain( void )
             GUIMemFree( dir );
         } /* if */
 
-        FreeGlobalVarList( FALSE );
+        FreeGlobalVarList( false );
         FreeDefaultDialogs();
         FreeAllStructs();
-        ConfigModified = FALSE;
+        ConfigModified = false;
     } /* while */
 
 
     FileFini();
-    FreeGlobalVarList( TRUE );
+    FreeGlobalVarList( true );
     FreeDefaultDialogs();
     FreeAllStructs();
     FreeDirParams( &inf_name, &tmp_path, &arc_name );

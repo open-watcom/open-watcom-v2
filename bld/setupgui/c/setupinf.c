@@ -65,12 +65,13 @@
 #ifdef PATCH
     #include "bdiff.h"
 #endif
+
 #include "clibext.h"
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
 extern char             *TrimQuote(char*);
-extern int              SkipDialogs;
+extern bool             SkipDialogs;
 extern int              VisibilityCondition;
 extern char             *VariablesFile;
 
@@ -130,7 +131,7 @@ struct patch_info {
     char                *condition;
 } *PatchInfo = NULL;
 
-extern int              ExeType( char *name, char *type );
+extern bool             ExeType( char *name, char *type );
 
 #endif
 
@@ -213,9 +214,9 @@ typedef struct tree_node {
 } tree_node;
 
 typedef struct file_cond_info {
-    tree_node *cond;
-    unsigned    one_uptodate    : 1;
-    unsigned    dont_touch      : 1;
+    tree_node   *cond;
+    bool        one_uptodate;
+    bool        dont_touch;
 } file_cond_info;
 
 file_cond_info *FileCondInfo = NULL;
@@ -324,8 +325,8 @@ typedef enum {
 static read_state       State;
 static size_t           NoLineCount;
 static size_t           *LineCountPointer = &NoLineCount;
-static bool             NeedGetDiskSizes = FALSE;
-static bool             NeedInitAutoSetValues = TRUE;
+static bool             NeedGetDiskSizes = false;
+static bool             NeedInitAutoSetValues = true;
 static char             *ReadBuf;
 static size_t           ReadBufSize;
 static char             *RawReadBuf;
@@ -367,7 +368,7 @@ MAGICVARS( defvar, 0 )
 NONMAGICVARS( defvar, 0 )
 
 #define orvar( x, y ) x == y ||
-#define IsMagicVar( v ) MAGICVARS( orvar, v ) FALSE
+#define IsMagicVar( v ) MAGICVARS( orvar, v ) false
 
 /**********************************************************************/
 /*                   EXPRESSION EVALUTORS                             */
@@ -439,7 +440,7 @@ static bool SameExprTree( tree_node *a, tree_node *b )
     if( b == NULL )
         return( a == NULL );
     if( a->op != b->op )
-        return( FALSE );
+        return( false );
     switch( a->op ) {
     case OP_AND:
     case OP_OR:
@@ -454,9 +455,9 @@ static bool SameExprTree( tree_node *a, tree_node *b )
         break;
     case OP_TRUE:
     case OP_FALSE:
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -499,8 +500,8 @@ static int NewFileCond( char *str )
     num = SetupInfo.fileconds.num;
     if( !BumpArray( &SetupInfo.fileconds ) ) return( 0 );
     FileCondInfo[num].cond = new;
-    FileCondInfo[num].one_uptodate = FALSE;
-    FileCondInfo[num].dont_touch = FALSE;
+    FileCondInfo[num].one_uptodate = false;
+    FileCondInfo[num].dont_touch = false;
     return( num );
 }
 
@@ -538,7 +539,7 @@ int GetOptionVarValue( vhandle var_handle, bool is_minimal )
         return( var_handle != HelpFiles );
     } else if( is_minimal ) {
         // is_minimal makes all file condition variables false
-        return( FALSE );
+        return( false );
     } else {
         return( VarGetIntVal( var_handle ) != 0 );
     }
@@ -594,7 +595,7 @@ static int DoEvalCondition( const char *str, bool is_minimal )
 int EvalCondition( const char *str )
 /**********************************/
 {
-    return( DoEvalCondition( str, FALSE ) );
+    return( DoEvalCondition( str, false ) );
 }
 
 static void PropagateValue( tree_node *tree, int value )
@@ -663,8 +664,8 @@ static void GetDestDir( int i, char *buffer )
     ConcatDirSep( buffer );
 }
 
-static int SecondaryPatchSearch( char *filename, char *buff, int Index )
-/**********************************************************************/
+int SecondaryPatchSearch( char *filename, char *buff, int Index )
+/***************************************************************/
 {
 // search for patch output files (originals to be patched) in following order
 // 1.)  check .INF specified directory in PatchInfo structure (if it exists)
@@ -684,14 +685,14 @@ static int SecondaryPatchSearch( char *filename, char *buff, int Index )
     strcat( path, filename );
     if( access( path, F_OK ) == 0 ) {
         strcpy( buff, path );
-        return( TRUE );
+        return( true );
     } else {
         ReplaceVars( path, GetVariableStrVal( "DstDir" ) );
         ConcatDirSep( path );
         strcat( path, filename );
         if( access( path, F_OK ) == 0 ) {
             strcpy( buff, path );
-            return( TRUE );
+            return( true );
         }
     }
     _splitpath( filename, NULL, NULL, NULL, ext );
@@ -701,8 +702,8 @@ static int SecondaryPatchSearch( char *filename, char *buff, int Index )
     return( buff[0] != '\0' );
 }
 
-extern void PatchingFile( char *patchname, char *path )
-/*****************************************************/
+void PatchingFile( const char *patchname, const char *path )
+/**********************************************************/
 {
     char        buff[200];
 
@@ -710,7 +711,7 @@ extern void PatchingFile( char *patchname, char *path )
     strcat( buff, " to file " );
     strcat( buff, path );
     StatusLines( STAT_PATCHFILE, buff );
-    StatusShow( TRUE );
+    StatusShow( true );
 }
 #endif
 
@@ -813,18 +814,18 @@ static bool valid_first_char( char *p )
         if( kanji_char < InvalidFirst[0] ||
             kanji_char > InvalidFirst[NUM_INVALID_FIRST - 1] ) {
             // list is sorted
-            return( TRUE );
+            return( true );
         }
         for( i = 0; i < NUM_INVALID_FIRST; ++i ) {
             if( kanji_char == InvalidFirst[i] ) {
-                return( FALSE );        // invalid
+                return( false );        // invalid
             } else if( kanji_char < InvalidFirst[i] ) {
-                return( TRUE );
+                return( true );
             }
         }
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -841,18 +842,18 @@ static bool valid_last_char( char *p )
         if( kanji_char < InvalidLast[0] ||
             kanji_char > InvalidLast[NUM_INVALID_LAST - 1] ) {
             // list is sorted
-            return( TRUE );
+            return( true );
         }
         for( i = 0; i < NUM_INVALID_LAST; ++i ) {
             if( kanji_char == InvalidLast[i] ) {
-                return( FALSE );        // invalid
+                return( false );        // invalid
             } else if( kanji_char < InvalidLast[i] ) {
-                return( TRUE );
+                return( true );
             }
         }
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -915,7 +916,7 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
     char                *line;
     int                 len;
     char                *text;
-    bool                rc = TRUE;
+    bool                rc = true;
     vhandle             var_handle;
 
     line = next; next = NextToken( line, '"' );
@@ -933,7 +934,7 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
         // dummy_var allows control to have an id - used by dynamic visibility feature
         var_handle = MakeDummyVar();
         if( text != NULL ) {
-            text = AddInstallName( text, TRUE );
+            text = AddInstallName( text, true );
             len = strlen( text );
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->array.num - 1,
                 text, VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
@@ -945,7 +946,7 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
                 "", VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + 0 );
         }
     } else {
-        rc = FALSE;
+        rc = false;
     }
     GUIMemFree( text );
     return( rc );
@@ -962,7 +963,7 @@ static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline
     char        *new_index = NULL;
     char        *break_candidate = NULL;
     int         chwidth;
-    bool        new_line = TRUE;
+    bool        new_line = true;
 
     if( text == NULL ) {
         return( NULL );
@@ -1038,14 +1039,14 @@ static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline
             *(new_index++) = '\n';
             *(new_index++) = *break_candidate;
             break_candidate = find_break( orig_index + 1, dlg, &chwidth );
-            new_line = TRUE;
+            new_line = true;
             continue;
         } else if( *orig_index == '\t' ) {
             *(new_index++) = ' ';
         } else {
             *(new_index++) = *orig_index;
         }
-        new_line = FALSE;
+        new_line = false;
     }
     *new_index = '\0';
 
@@ -1062,7 +1063,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
     char                *text;
     char                *file_name;
     unsigned int        rows;
-    bool                rc = TRUE;
+    bool                rc = true;
     void                *io;
     struct stat         buf;
     vhandle             var_handle;
@@ -1076,7 +1077,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
     if( line == NULL ) {
-        rc = FALSE;
+        rc = false;
     } else {
         if( *line == '@' ) {
             GUIStrDup( line + 1, &file_name );
@@ -1093,10 +1094,10 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
             GUIMemFree( file_name );
             //VERY VERY SLOW!!!!  Don't use large files!!!
             // bottleneck is the find_break function
-            text = textwindow_wrap( text, dlg, FALSE, license_file );
+            text = textwindow_wrap( text, dlg, false, license_file );
         } else {
             GUIStrDup( line, &text );
-            text = textwindow_wrap( text, dlg, TRUE, FALSE );
+            text = textwindow_wrap( text, dlg, true, false );
         }
 
         line = next; next = NextToken( line, ',' );
@@ -1120,7 +1121,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
             dlg->row_num += 2;
 #endif
         } else {
-            rc = FALSE;
+            rc = false;
         }
         GUIMemFree( text );
     }
@@ -1135,7 +1136,7 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
     vhandle             var_handle;
     char                *vbl_name;
     char                *text;
-    bool                rc = TRUE;
+    bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
     GUIStrDup( line, &vbl_name );
@@ -1166,7 +1167,7 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
                              text, VarGetId( var_handle ), C0, dlg->row_num,
                              C0 + dlg->max_width );
     } else {
-        rc = FALSE;
+        rc = false;
     }
     GUIMemFree( vbl_name );
     GUIMemFree( text );
@@ -1181,17 +1182,17 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
     char                *line_start;
     int                 id;
     bool                def_ret;
-    bool                rc = TRUE;
+    bool                rc = true;
     vhandle             var_handle;
 
     line_start = next; next = NextToken( line_start, ',' );
     line = next; next = NextToken( line, ',' );
     if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
         dlg->num_push_buttons += 1;
-        def_ret = FALSE;
+        def_ret = false;
         if( *line_start == '.' ) {
             ++line_start;
-            def_ret = TRUE;
+            def_ret = true;
         }
         var_handle = GetVariableByName( line_start );
         id = set_dlg_push_button( var_handle, line_start, dlg->curr_dialog->controls,
@@ -1209,7 +1210,7 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
             GUIStrDup( line, &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
         }
     } else {
-        rc = FALSE;
+        rc = false;
     }
     return( rc );
 }
@@ -1230,7 +1231,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     vhandle             var_handle;
     vhandle             var_handle_2;
     char                buff[MAXBUF];
-    bool                rc = TRUE;
+    bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
     GUIStrDup( line, &vbl_name );
@@ -1320,7 +1321,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
             dlg->max_width = 2 * strlen( buff );
         }
     } else {
-        rc = FALSE;
+        rc = false;
     }
     GUIMemFree( vbl_name );
     return( rc );
@@ -1332,7 +1333,7 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
     char                *line, *button_text, *next_copy, *text, *dialog_name;
     char                *condition, *vis_condition;
     vhandle             var_handle;
-    bool                rc = TRUE;
+    bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
     button_text = TrimQuote( line );
@@ -1366,7 +1367,7 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
             }
         }
     } else {
-        rc = FALSE;
+        rc = false;
     }
     GUIMemFree( next_copy );
     return( rc );
@@ -1410,7 +1411,7 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
     vhandle             var_handle;
     char                *text;
     char                *init_cond;
-    bool                rc = TRUE;
+    bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
     GUIStrDup( line, &vbl_name );
@@ -1438,7 +1439,7 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
             dlg->max_width = len;
         }
     } else {
-        rc = FALSE;
+        rc = false;
     }
     GUIMemFree( init_cond );
     GUIMemFree( vbl_name );
@@ -1456,7 +1457,7 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
     vhandle             var_handle;
     char                *text;
     char                *init_cond;
-    bool                rc = TRUE;
+    bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
     GUIStrDup( line, &vbl_name );
@@ -1493,7 +1494,7 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
             }
         }
     } else {
-        rc = FALSE;
+        rc = false;
     }
     GUIMemFree( init_cond );
     GUIMemFree( vbl_name );
@@ -1537,10 +1538,10 @@ static bool dialog_detail_check( char *next, DIALOG_INFO *dlg )
     return( added );
 }
 
-extern void SimSetNeedGetDiskSizes()
-/**********************************/
+void SimSetNeedGetDiskSizes( void )
+/*********************************/
 {
-    NeedGetDiskSizes = TRUE;
+    NeedGetDiskSizes = true;
 }
 
 
@@ -1556,7 +1557,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
 #endif
     vhandle             var_handle;
     char                buff[MAXBUF];
-    bool                rc = TRUE;
+    bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
     GUIStrDup( line, &vbl_name );
@@ -1631,7 +1632,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
             dlg->max_width = 2 * strlen( buff );
         }
     } else {
-        rc = FALSE;
+        rc = false;
     }
     GUIMemFree( vbl_name );
     return( rc );
@@ -1670,7 +1671,7 @@ static bool ProcLine( char *line, pass_type pass )
 
     // Check for comment
     if( *line == '#' ) {
-        return( TRUE );
+        return( true );
     }
 
     // Check if the state has changed.
@@ -1747,22 +1748,22 @@ static bool ProcLine( char *line, pass_type pass )
         } else {
             State = RS_UNDEFINED;   // Unrecognized section in SETUP.INF file.
         }
-        return( TRUE );
+        return( true );
     }
 
     // line is part of the current state.
     if( *line == ';' || *line == '\0' )
-        return( TRUE );
+        return( true );
     if( pass == PRESCAN_FILE ) {
         ++*LineCountPointer;
-        return( TRUE );
+        return( true );
     }
 
     switch( State ) {
     case RS_DIALOG:
         {
             static DIALOG_INFO  dialog_info;
-            bool                added = FALSE;
+            bool                added = false;
 
             next = NextToken( line, '=' );
             if( stricmp( line, "name" ) == 0 ) {
@@ -1824,9 +1825,9 @@ static bool ProcLine( char *line, pass_type pass )
                 } else if( stricmp(line, "edit_control") == 0 ) {
                     added = dialog_editcontrol( next, &dialog_info );
                 } else if( stricmp(line, "text_window") == 0 ) {
-                    added = dialog_textwindow( next, &dialog_info, FALSE );
+                    added = dialog_textwindow( next, &dialog_info, false );
                 } else if( stricmp(line, "text_window_license") == 0 ) {
-                    added = dialog_textwindow( next, &dialog_info, TRUE );
+                    added = dialog_textwindow( next, &dialog_info, true );
                 }
                 if( added ) {
                     dialog_info.row_num += 1;
@@ -1855,7 +1856,7 @@ static bool ProcLine( char *line, pass_type pass )
             GUIStrDup( line, &SetupInfo.pm_group_name );
             num = SetupInfo.all_pm_groups.num;
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
-                return( FALSE );
+                return( false );
             GUIStrDup( line, &AllPMGroups[num].group );
             GUIStrDup( SetupInfo.pm_group_file_name, &AllPMGroups[num].group_file_name );
             if( next == NULL ) {
@@ -1879,14 +1880,14 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_DISKS:
         num = SetupInfo.disks.num;
         if( !BumpArray( &SetupInfo.disks ) )
-            return( FALSE );
+            return( false );
         GUIStrDup( line, &DiskInfo[num].desc );
         break;
 
     case RS_DIRS:
         num = SetupInfo.dirs.num;
         if( !BumpArray( &SetupInfo.dirs ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, ',' );
         GUIStrDup( line, &DirInfo[num].desc );
         line = next; next = NextToken( line, ',' );
@@ -1900,7 +1901,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_FILES:
         num = SetupInfo.files.num;
         if( !BumpArray( &SetupInfo.files ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, ',' );
         GUIStrDup( line, &FileInfo[num].filename );
         line = next; next = NextToken( line, ',' );
@@ -1915,10 +1916,10 @@ static bool ProcLine( char *line, pass_type pass )
         } else {
             FileInfo[num].files = GUIMemAlloc( tmp * sizeof( a_file_info ) );
             if( FileInfo[num].files == NULL )
-                return( FALSE );
+                return( false );
         }
-        FileInfo[num].supplimental = FALSE;
-        FileInfo[num].core_component = FALSE;
+        FileInfo[num].supplimental = false;
+        FileInfo[num].core_component = false;
         FileInfo[num].num_files = tmp;
         while( --tmp >= 0 ) {
             a_file_info *file = &FileInfo[num].files[tmp];
@@ -1946,18 +1947,18 @@ static bool ProcLine( char *line, pass_type pass )
                 file->dst_var = NO_VAR;
             }
             line = p; p = NextToken( line, '!' );
-            file->executable = FALSE;
+            file->executable = false;
             if( p != NULL ) {
                 if( *p == 'e' ) {
-                    file->executable = TRUE;
+                    file->executable = true;
                 }
             }
             line = p; p = NextToken( line, '!' );
             if( p != NULL ) {
                 if( *p == 's' ) {
-                    FileInfo[num].supplimental = TRUE;
+                    FileInfo[num].supplimental = true;
                 } else if( *p == 'k' ) {
-                    FileInfo[num].core_component = TRUE;
+                    FileInfo[num].core_component = true;
                 }
             }
         }
@@ -1980,7 +1981,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_PATCH:
         num = SetupInfo.patch_files.num;
         if( !BumpArray( &SetupInfo.patch_files ) )
-            return( FALSE );
+            return( false );
         memset( &PatchInfo[num], 0, sizeof( *PatchInfo ) );
         next = NextToken( line, ',' );
         if( stricmp( line, "copy" ) == 0 ) {
@@ -2062,7 +2063,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_SPAWN:
         num = SetupInfo.spawn.num;
         if( !BumpArray( &SetupInfo.spawn ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, '=' );
         if( stricmp( line, "after" ) == 0 ) {
             SpawnInfo[num].when = WHEN_AFTER;
@@ -2079,7 +2080,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_DELETEFILES:
         num = SetupInfo.delete.num;
         if( !BumpArray( &SetupInfo.delete ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, '=' );
         if( stricmp( line, "dialog" ) == 0 ) {
             DeleteInfo[num].type = DELETE_DIALOG;
@@ -2095,13 +2096,13 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_PMINFO:
         num = SetupInfo.pm_files.num;
         if( !BumpArray( &SetupInfo.pm_files ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, ',' );
         GUIStrDup( line, &PMInfo[num].filename );
         if( strcmp( line, "GROUP" ) == 0 ) {
-            tmp = TRUE;
+            tmp = true;
         } else {
-            tmp = FALSE;
+            tmp = false;
         }
         line = next; next = NextToken( line, ',' );
         GUIStrDup( line, &PMInfo[num].parameters );
@@ -2112,7 +2113,7 @@ static bool ProcLine( char *line, pass_type pass )
             GUIStrDup( PMInfo[num].parameters,
                        &AllPMGroups[SetupInfo.all_pm_groups.num].group_file_name );
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
-                return( FALSE );
+                return( false );
         }
         if( next == NULL ) {
             PMInfo[num].icoioname = NULL;
@@ -2139,7 +2140,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_PROFILE:
         num = SetupInfo.profile.num;
         if( !BumpArray( &SetupInfo.profile ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, ',' );
         GUIStrDup( line, &ProfileInfo[num].app_name );
         line = next; next = NextToken( line, ',' );
@@ -2181,16 +2182,16 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_TARGET:
         num = SetupInfo.target.num;
         if( !BumpArray( &SetupInfo.target ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, ',' );
         GUIStrDup( line, &TargetInfo[num].name );
-        TargetInfo[num].supplimental = FALSE;
+        TargetInfo[num].supplimental = false;
         if( next != NULL && stricmp( next, "supplimental" ) == 0 ) {
-            TargetInfo[num].supplimental = TRUE;
+            TargetInfo[num].supplimental = true;
         }
         TargetInfo[num].temp_disk = GUIMemAlloc( _MAX_PATH );
         if( TargetInfo[num].temp_disk == NULL ) {
-            return( FALSE );
+            return( false );
         }
         *TargetInfo[num].temp_disk = 0;
         break;
@@ -2198,7 +2199,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_LABEL:
         num = SetupInfo.label.num;
         if( !BumpArray( &SetupInfo.label ) )
-            return( FALSE );
+            return( false );
         next = NextToken( line, '=' );
         GUIStrDup( line, &LabelInfo[num].dir );
         GUIStrDup( next, &LabelInfo[num].label );
@@ -2207,21 +2208,21 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_UPGRADE:
         num = SetupInfo.upgrade.num;
         if( !BumpArray( &SetupInfo.upgrade ) )
-            return( FALSE );
+            return( false );
         GUIStrDup( line, &UpgradeInfo[num].name );
         break;
 
     case RS_FORCEDLLINSTALL:
         num = SetupInfo.force_DLL_install.num;
         if( !BumpArray( &SetupInfo.force_DLL_install ) )
-            return( FALSE );
+            return( false );
         GUIStrDup( line, &ForceDLLInstall[num].name );
         break;
 
     case RS_ASSOCIATIONS:
         num = SetupInfo.associations.num;
         if( !BumpArray( &SetupInfo.associations ) )
-            return (FALSE );
+            return (false );
         next = NextToken( line, '=' );
         GUIStrDup( line, &AssociationInfo[num].ext );
         line = next; next = NextToken( line, ',' );
@@ -2268,7 +2269,7 @@ static bool ProcLine( char *line, pass_type pass )
         break;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 
@@ -2285,14 +2286,14 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     a_file_info *file;
 
     if( dir_index == -1 )
-        return( FALSE );
+        return( false );
     SimDirNoSlash( dir_index, buff );
     if( access( buff, F_OK ) != 0 )
-        return( FALSE );
+        return( false );
 
     ConcatDirSep( buff );
     dir_end = buff + strlen( buff );
-    found = FALSE;
+    found = false;
     supp = TargetInfo[DirInfo[FileInfo[i].dir_index].target].supplimental;
     if( supp ) {
         // don't turn off supplimental bit if file is already marked
@@ -2306,13 +2307,13 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
         strcpy( dir_end, file->name );
         if( access( buff, F_OK ) == 0 ) {
             stat( buff, &buf );
-            found = TRUE;
+            found = true;
             file->disk_size = buf.st_size;
             file->disk_date = buf.st_mtime;
             if( in_old_dir ) {
-                file->in_old_dir = TRUE;
+                file->in_old_dir = true;
             } else {
-                file->in_new_dir = TRUE;
+                file->in_new_dir = true;
             }
             file->read_only = !(buf.st_mode & S_IWRITE);
             if( supp )
@@ -2320,15 +2321,15 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
             if( !*pzeroed ) {
                 ZeroAutoSetValues();
                 for( k = 0; k < SetupInfo.fileconds.num; ++k ) {
-                    FileCondInfo[k].one_uptodate = FALSE;
+                    FileCondInfo[k].one_uptodate = false;
                 }
-                *pzeroed = TRUE;
+                *pzeroed = true;
             }
             PropagateValue( FileInfo[i].condition.p->cond, 1 );
             if( file->in_new_dir &&
                 RoundUp( file->disk_size, 512 ) == file->size &&
                 file->date == file->disk_date ) {
-                FileInfo[i].condition.p->one_uptodate = TRUE;
+                FileInfo[i].condition.p->one_uptodate = true;
             }
         }
     }
@@ -2343,7 +2344,7 @@ static bool GetDiskSizes()
     long        status_amount;
     long        status_curr;
     bool        zeroed;
-    bool        rc = TRUE;
+    bool        rc = true;
     bool        asked, dont_touch;
     bool        uninstall;
 
@@ -2351,16 +2352,16 @@ static bool GetDiskSizes()
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         status_amount += FileInfo[i].num_files;
     }
-    StatusShow( TRUE );
+    StatusShow( true );
     StatusLines( STAT_CHECKING, "" );
     SetVariableByHandle( PreviousInstall, "0" );
-    zeroed = FALSE;
+    zeroed = false;
     status_curr = 0;
     InitAutoSetValues();
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         StatusAmount( status_curr, status_amount );
         if( StatusCancelled() ) {
-            rc = FALSE;
+            rc = false;
             break;
         }
         status_curr += FileInfo[i].num_files;
@@ -2369,25 +2370,25 @@ static bool GetDiskSizes()
         for( j = 0; j < FileInfo[i].num_files; ++j ) {
             FileInfo[i].files[j].disk_size = 0;
             FileInfo[i].files[j].disk_date = 0;
-            FileInfo[i].files[j].in_old_dir = FALSE;
-            FileInfo[i].files[j].in_new_dir = FALSE;
-            FileInfo[i].files[j].read_only = FALSE;
+            FileInfo[i].files[j].in_old_dir = false;
+            FileInfo[i].files[j].in_new_dir = false;
+            FileInfo[i].files[j].read_only = false;
         }
-        GetFileInfo( FileInfo[i].dir_index, i, FALSE, &zeroed );
-        GetFileInfo( FileInfo[i].old_dir_index, i, TRUE, &zeroed );
+        GetFileInfo( FileInfo[i].dir_index, i, false, &zeroed );
+        GetFileInfo( FileInfo[i].old_dir_index, i, true, &zeroed );
     }
     StatusLines( STAT_BLANK, "" );
     StatusAmount( 0, 1 );
-    StatusShow( FALSE );
+    StatusShow( false );
     if( !rc )
         return( rc );
-    dont_touch = FALSE;
+    dont_touch = false;
     uninstall = VarGetIntVal( UnInstall );
     if( uninstall ) {
         // if uninstalling - remove all files, don't prompt
-        asked = TRUE;
+        asked = true;
     } else {
-        asked = FALSE;
+        asked = false;
     }
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         if( FileInfo[i].condition.p->one_uptodate &&
@@ -2396,7 +2397,7 @@ static bool GetDiskSizes()
             !SimFileUpToDate( i ) ) {
             if( !asked ) {
                 dont_touch = MsgBox( NULL, "IDS_INCONSISTENT", GUI_YES_NO ) == GUI_RET_NO;
-                asked = TRUE;
+                asked = true;
             }
             FileInfo[i].condition.p->dont_touch = dont_touch;
         }
@@ -2413,7 +2414,7 @@ static char *readLine( void *handle, char *buffer, size_t length )
     size_t          len;
     bool            done;
 
-    done = FALSE;
+    done = false;
     do {
         // Read data into raw buffer if it's empty
         if( RawBufPos == NULL ) {
@@ -2436,7 +2437,7 @@ static char *readLine( void *handle, char *buffer, size_t length )
         if( *RawBufPos == '\n' ) {
             // Found a newline; increment past it
             ++RawBufPos;
-            done = TRUE;
+            done = true;
         } else if( RawBufPos == RawReadBuf + raw_buf_size ) {
             // We're at the end of the buffer; copy what we have to output buffer
             len = RawBufPos - line_start;
@@ -2448,7 +2449,7 @@ static char *readLine( void *handle, char *buffer, size_t length )
             RawBufPos = NULL;
         } else {
             // No more space in output buffer
-            done = TRUE;
+            done = true;
         }
     } while( !done );
 
@@ -2478,12 +2479,12 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
     }
 
     // Read file in blocks, break up into lines
-    done = FALSE;
+    done = false;
     for( ;; ) {
         len = 0;
         for( ;; ) {
             if( readLine( io, ReadBuf + len, ReadBufSize - len ) == NULL ) {
-                done = TRUE;
+                done = true;
                 break;
             }
             // Eliminate leading blanks on continued lines
@@ -2520,7 +2521,7 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
         }
         if( done )
             break;
-        if( ProcLine( ReadBuf, pass ) == FALSE ) {
+        if( !ProcLine( ReadBuf, pass ) ) {
             result = SIM_INIT_NOMEM;
             break;
         }
@@ -2536,14 +2537,14 @@ extern bool CheckForceDLLInstall( char *name )
 {
     int         i;
     if( name == NULL ) {
-        return( TRUE );
+        return( true );
     }
     for( i = 0; i < SetupInfo.force_DLL_install.num; i++ ) {
         if( stristr( ForceDLLInstall[i].name, name ) != NULL ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern long SimInit( char *inf_name )
@@ -2866,9 +2867,9 @@ extern bool SimFileOldDir( int parm, char *buff )
 /***********************************************/
 {
     if( FileInfo[parm].old_dir_index == -1 )
-        return( FALSE );
+        return( false );
     SimGetDir( FileInfo[parm].old_dir_index, buff );
-    return( TRUE );
+    return( true );
 }
 
 extern bool SimFileSplit( int parm )
@@ -2972,29 +2973,29 @@ extern bool SimFileUpToDate( int parm )
 
     info = &FileInfo[parm];
     if( info->num_files == 0 )
-        return( FALSE );
+        return( false );
     for( i = 0; i < info->num_files; ++i ) {
         if( !info->files[i].in_new_dir )
-            return( FALSE );
+            return( false );
         if( info->files[i].disk_date > info->files[i].date )
-            return( TRUE );
+            return( true );
         if( info->files[i].date > info->files[i].disk_date )
-            return( FALSE );
+            return( false );
         if( RoundUp( info->files[i].disk_size, 512 ) != info->files[i].size )
-            return( FALSE );
+            return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
-extern bool SimFileAdd( int parm )
-/********************************/
+bool SimFileAdd( int parm )
+/*************************/
 {
     return( FileInfo[parm].add );
 }
 
-extern bool SimFileRemove( int parm )
-/***********************************/
+bool SimFileRemove( int parm )
+/****************************/
 {
     return( FileInfo[parm].remove );
 }
@@ -3092,7 +3093,7 @@ extern long SimGetPMIconInfo( int parm, char *buff )
     } else {
         strcpy( buff, PMInfo[parm].icoioname );
     }
-    return( MAKELONG( SimFindDirForFile( buff ), PMInfo[parm].icon_pos ) );
+    return( (unsigned long)(unsigned short)SimFindDirForFile( buff ) | ((unsigned long)(unsigned short)PMInfo[parm].icon_pos ) << 16 );
 }
 
 extern bool SimCheckPMCondition( int parm )
@@ -3377,10 +3378,10 @@ static void MarkUsed( int dir_index )
 {
     int         parent;
 
-    DirInfo[dir_index].used = TRUE;
+    DirInfo[dir_index].used = true;
     parent = DirInfo[dir_index].parent;
     while( parent != -1 ) {
-        DirInfo[parent].used = TRUE;
+        DirInfo[parent].used = true;
         parent = DirInfo[parent].parent;
     }
 }
@@ -3394,6 +3395,7 @@ extern void CheckDLLCount( char *install_name )
     // agrees to delete them.
     int                 i;
 
+    install_name=install_name;
     for( i = 0; i < SetupInfo.dlls_to_count.num; i++ ) {
         if( FileInfo[DLLsToCheck[i].index].core_component ) {
             continue;
@@ -3405,8 +3407,8 @@ extern void CheckDLLCount( char *install_name )
             if( DecrementDLLUsageCount( DLLsToCheck[i].full_path ) == 0 ) {
                 if( MsgBox( MainWnd, "IDS_REMOVE_DLL", GUI_YES_NO,
                             DLLsToCheck[i].full_path ) == GUI_RET_YES ) {
-                    FileInfo[DLLsToCheck[i].index].add = FALSE;
-                    FileInfo[DLLsToCheck[i].index].remove = TRUE;
+                    FileInfo[DLLsToCheck[i].index].add = false;
+                    FileInfo[DLLsToCheck[i].index].remove = true;
                 }
             }
         } else if( FileInfo[DLLsToCheck[i].index].add ) {
@@ -3457,20 +3459,20 @@ extern void SimCalcAddRemove()
         add = EvalExprTree( FileInfo[i].condition.p->cond,
                             VarGetIntVal( MinimalInstall ) != 0 );
         if( FileInfo[i].supplimental ) {
-            remove = FALSE;
+            remove = false;
             if( uninstall ) {
-                add = FALSE;
+                add = false;
             }
         } else {
             if( uninstall && !FileInfo[i].core_component ) {
-                add = FALSE;
-                remove = TRUE;
+                add = false;
+                remove = true;
             } else if( FileInfo[i].condition.p->dont_touch ) {
-                add = FALSE;
-                remove = FALSE;
+                add = false;
+                remove = false;
             } else if( FileInfo[i].core_component ) {
                 add = !SimSubFileExists( i, 0 );
-                remove = FALSE;
+                remove = false;
             } else {
                 remove = !add && previous;
             }
@@ -3531,8 +3533,7 @@ extern void SimCalcAddRemove()
                     }
                     if( flag == 0 ) {
                         if( !BumpArray( &SetupInfo.dlls_to_count ) ) return;
-                        if( GUIStrDup( dst_path,
-                            &DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path ) == FALSE ) {
+                        if( !GUIStrDup( dst_path, &DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path ) ) {
                             return;
                         }
                         DLLsToCheck[SetupInfo.dlls_to_count.num - 1].index = i;
@@ -3550,10 +3551,10 @@ extern void SimCalcAddRemove()
 #else
                 TargetInfo[targ_index].space_needed -= RoundUp( file->disk_size, cs );
 #endif
-                TargetInfo[targ_index].needs_update = TRUE;
+                TargetInfo[targ_index].needs_update = true;
             } else if( remove ) {
                 TargetInfo[targ_index].space_needed -= RoundUp( FileInfo[i].files[k].disk_size, cs );
-                TargetInfo[targ_index].needs_update = TRUE;
+                TargetInfo[targ_index].needs_update = true;
             }
         }
     }
@@ -3576,8 +3577,8 @@ extern void SimCalcAddRemove()
 }
 
 
-extern bool SimCalcTargetSpaceNeeded()
-/************************************/
+bool SimCalcTargetSpaceNeeded( void )
+/***********************************/
 {
     int                 i;
     void                *cursor;
@@ -3587,29 +3588,29 @@ extern bool SimCalcTargetSpaceNeeded()
 
     if( NeedGetDiskSizes ) {
         if( !GetDiskSizes() )
-            return( FALSE );
-        NeedGetDiskSizes = FALSE;
+            return( false );
+        NeedGetDiskSizes = false;
     }
     cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
         temp = SimGetTargetDriveLetter( i );
         if( temp == NULL )
-            return( FALSE );
+            return( false );
         strcpy( TargetInfo[i].temp_disk, temp );
         GUIMemFree( temp );
         TargetInfo[i].space_needed = 0;
         TargetInfo[i].max_tmp_file = 0;
         TargetInfo[i].num_files = 0;
-        TargetInfo[i].needs_update = FALSE;
+        TargetInfo[i].needs_update = false;
     }
     for( i = 0; i < SetupInfo.dirs.num; ++i ) {
-        DirInfo[i].used = FALSE;
+        DirInfo[i].used = false;
         DirInfo[i].num_existing = 0;
         DirInfo[i].num_files = 0;
     }
     SimCalcAddRemove();
     GUIResetMouseCursor( cursor );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -3648,13 +3649,13 @@ static bool CopyErrorDialog( int ret, int i, char *file )
         if( ret != CFE_ABORT ) {
             guiret = MsgBox( NULL, "IDS_COPYFILEERROR", GUI_YES_NO, file );
             if( guiret == GUI_RET_NO ) {
-                return( FALSE );
+                return( false );
             }
         } else {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -3669,13 +3670,13 @@ static bool PatchErrorDialog( int ret, int i )
             guiret = MsgBox ( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO,
                               PatchInfo[i].srcfile );
             if( guiret == GUI_RET_NO ) {
-                return( FALSE );
+                return( false );
             }
         } else {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -3691,7 +3692,7 @@ static bool FindStr( FILE *fp, char *fullpath, char *pattern )
     size_t          patternlen;
 
     patternlen = strlen( pattern );
-    found = FALSE;
+    found = false;
 
     buff = NULL;
     for( readsize = 8 * 1024; readsize > 0; readsize = readsize / 2 ) {
@@ -3702,14 +3703,14 @@ static bool FindStr( FILE *fp, char *fullpath, char *pattern )
     }
     if( readsize == 0 ) {
         free( buff );
-        return( FALSE );
+        return( false );
     }
     memset( buff, 0, patternlen );
     while( !found && !feof( fp ) ) {
         len = fread( &buff[patternlen], 1, readsize, fp );
         for( p = buff, i = 0; i < len; ++i, ++p ) {
             if( *p == pattern[0] && memcmp( p, pattern, patternlen ) == 0 ) {
-                found = TRUE;
+                found = true;
                 break;
             }
         }
@@ -3720,10 +3721,10 @@ static bool FindStr( FILE *fp, char *fullpath, char *pattern )
     if( found ) {
         fseek( fp,  -((long)len + patternlen - i), SEEK_CUR );
         free( buff );
-        return( TRUE );
+        return( true );
     }
     free( buff );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -3736,25 +3737,25 @@ bool ReadBlock( char *fullpath, char *pattern, void *block, long blocklen )
 
     if( stat( fullpath, &statbuf ) != 0 ) {
         // Cannot open file
-        return( FALSE );
+        return( false );
     }
     fp = fopen( fullpath, "rb" );
     if( fp == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( FindStr( fp, fullpath, pattern ) ) {
         len = fread( block, 1, blocklen, fp );
         if( len != blocklen ) {
             fclose( fp );
-            return( FALSE );
+            return( false );
         }
         if( fclose( fp ) != 0 ) {
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
     }
     fclose( fp );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -3769,16 +3770,16 @@ bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
 
     if( stat( fullpath, &statbuf ) != 0 ) {
         // Cannot open file
-        return( FALSE );
+        return( false );
     }
     utimbuf.actime = statbuf.st_atime;
     utimbuf.modtime = statbuf.st_mtime;
     fp = fopen( fullpath, "rb+" );
     if( fp == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    foundstr = FALSE;
+    foundstr = false;
 
     //there may be more than one block
     while( FindStr( fp, fullpath, pattern ) ) {
@@ -3786,9 +3787,9 @@ bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
         fflush( fp );
         if( len != blocklen ) {
             fclose( fp );
-            return( FALSE );
+            return( false );
         }
-        foundstr = TRUE;
+        foundstr = true;
     }
     fclose( fp );
     utime( fullpath, &utimbuf );
@@ -3864,8 +3865,8 @@ static void LogWriteMsgStr( log_state *ls, const char *msg_id, const char *str )
 }
 
 
-static int DoPatch( char *src, char *dst, unsigned_32 flag )
-/**********************************************************/
+static int DoPatch( const char *src, char *dst, unsigned_32 flag )
+/****************************************************************/
 {
     // TODO: Perform some useful function here
 
@@ -3911,14 +3912,14 @@ extern bool PatchFiles( void )
         log->log_file = LogFileOpen();
         if( log->log_file == NULL ) {
             MsgBox( NULL, "IDS_PATCHABORT", GUI_OK );
-            return( FALSE );
+            return( false );
         }
-        log->do_log = TRUE;
+        log->do_log = true;
         appname = GetVariableStrVal( "AppName" );
         fprintf( log->log_file, "%s\n\n", appname );
     } else {
         log->log_file = NULL;
-        log->do_log = FALSE;
+        log->do_log = false;
     }
 
     for( i = 0; i < SetupInfo.patch_files.num; i++, Index = -1 ) {
@@ -3937,19 +3938,18 @@ extern bool PatchFiles( void )
 
             if( access( srcfullpath, R_OK ) == 0 ) {
                 GetDestDir( i, destfullpath );
-                go_ahead = SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath,
-                                                 Index );
+                go_ahead = SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath, Index );
                 if( go_ahead ) {
                     if( PatchInfo[i].exetype[0] != '.' &&
                         ExeType( destfullpath, exetype ) &&
                         strcmp( exetype, PatchInfo[i].exetype ) != 0 ) {
-                        go_ahead = FALSE;
+                        go_ahead = false;
                     }
                 }
 
                 if( go_ahead ) {
                     StatusLines( STAT_PATCHFILE, destfullpath );
-                    StatusShow( TRUE );
+                    StatusShow( true );
                     LogWriteMsgStr( log, "IDS_UNPACKING", destfullpath );
                     if( DoPatch( srcfullpath, destfullpath, 0 ) == CFE_NOERROR ) {
                         ++count;
@@ -3960,7 +3960,7 @@ extern bool PatchFiles( void )
                         if( !PatchErrorDialog( CFE_ERROR, i ) ) {
                             LogWriteMsg( log, "IDS_PATCHABORT" );
                             LogFileClose( log );
-                            return( FALSE );
+                            return( false );
                         }
                     }
                 }
@@ -3979,10 +3979,10 @@ extern bool PatchFiles( void )
             if( access( destfullpath, F_OK ) == 0 ) {
                 AddFileName( i, destfullpath, 0 );
                 StatusLines( STAT_CREATEFILE, destfullpath );
-                StatusShow( TRUE );
+                StatusShow( true );
                 if( access( srcfullpath, R_OK ) == 0 ) {
                     LogWriteMsgStr( log, "IDS_UNPACKING", destfullpath );
-                    if( DoCopyFile( srcfullpath, destfullpath, FALSE ) == CFE_NOERROR ) {
+                    if( DoCopyFile( srcfullpath, destfullpath, false ) == CFE_NOERROR ) {
                         ++count;
                         LogWriteMsg( log, "IDS_SUCCESS" );
                         break;
@@ -3991,7 +3991,7 @@ extern bool PatchFiles( void )
                     if( !CopyErrorDialog( CFE_ERROR, i, srcfullpath ) ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
                         LogFileClose( log );
-                        return( FALSE );
+                        return( false );
                     }
                 }
             }
@@ -4001,7 +4001,7 @@ extern bool PatchFiles( void )
             GetDestDir( i, destfullpath );
             AddFileName( i, destfullpath, 0 );
             StatusLines( STAT_DELETEFILE, destfullpath );
-            StatusShow( TRUE );
+            StatusShow( true );
             if( access( destfullpath, F_OK | W_OK ) == 0 ) {
                 LogWriteMsgStr( log, "IDS_DELETING", destfullpath );
                 if( DoDeleteFile( destfullpath ) ) {
@@ -4014,7 +4014,7 @@ extern bool PatchFiles( void )
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
                         LogFileClose( log );
-                        return( FALSE );
+                        return( false );
                     }
                 }
             }
@@ -4024,7 +4024,7 @@ extern bool PatchFiles( void )
             ReplaceVars( destfullpath, PatchInfo[i].destdir );
 
             StatusLines( STAT_CREATEDIRECTORY, destfullpath );
-            StatusShow( TRUE );
+            StatusShow( true );
             if( access( destfullpath, F_OK ) != 0 ) {
                 LogWriteMsgStr( log, "IDS_CREATINGDIR", destfullpath );
                 if( mkdir( destfullpath ) == 0 ) {
@@ -4034,7 +4034,7 @@ extern bool PatchFiles( void )
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_FAILED_CREATINGDIR" );
                         LogFileClose( log );
-                        return( FALSE );
+                        return( false );
                     }
                 }
             }
@@ -4049,7 +4049,7 @@ extern bool PatchFiles( void )
         if( StatusCancelled() ) {
             LogWriteMsg( log, "IDS_PATCHABORT" );
             LogFileClose( log );
-            return( FALSE );
+            return( false );
         }
     }
     StatusCancelled(); /* make sure display gets updated */
@@ -4062,9 +4062,9 @@ extern bool PatchFiles( void )
     if( count == 0 ) {
         // no files patched successfully
         MsgBox( NULL, "IDS_NO_FILES_PATCHED", GUI_OK );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -4474,14 +4474,14 @@ extern when_time SimWhen( int i )
     return( SpawnInfo[i].when );
 }
 
-extern int SimNumSpawns()
-/***********************/
+int SimNumSpawns( void )
+/**********************/
 {
     return( SetupInfo.spawn.num );
 }
 
-static void ZeroAutoSetValues()
-/*****************************/
+static void ZeroAutoSetValues( void )
+/***********************************/
 {
     vhandle     var_handle;
 
@@ -4524,7 +4524,7 @@ static void InitAutoSetValues()
         SetDefaultAutoSetValue( var_handle );
         var_handle = NextGlobalVar( var_handle );
     }
-    NeedInitAutoSetValues = FALSE;
+    NeedInitAutoSetValues = false;
 }
 
 

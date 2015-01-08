@@ -57,10 +57,10 @@
 
 typedef struct  a_variable {
     char        *name;
-    unsigned    id          : 14;
-    unsigned    has_value   : 1;
     char        *strval;    /* value */
     char        *autoset;
+    vhandle     id;
+    bool        has_value;
     char        restriction;
     void        (*hook)( vhandle );
 } a_variable;
@@ -231,7 +231,7 @@ static vhandle NewVariable( char *vbl_name )
     tmp_variable = &GlobalVarList[var_handle];
     GUIStrDup( vbl_name, &tmp_variable->name );
     tmp_variable->id = var_handle;
-    tmp_variable->has_value = FALSE;
+    tmp_variable->has_value = false;
     tmp_variable->autoset = NULL;
     tmp_variable->restriction = 0;
     tmp_variable->hook = NULL;
@@ -277,7 +277,7 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, char *vbl_
     }
     tmp_variable = &GlobalVarList[var_handle];
     GUIStrDup( strval, &tmp_variable->strval );
-    tmp_variable->has_value = TRUE;
+    tmp_variable->has_value = true;
     if( tmp_variable->hook ) {
         tmp_variable->hook( var_handle );
     }

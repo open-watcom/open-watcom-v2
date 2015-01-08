@@ -55,9 +55,11 @@ bool BumpArray( array_info *info )
     if( ++info->num >= info->alloc ) {
         info->alloc = info->num + info->increment;
         *(info->array) = GUIMemRealloc( *(info->array), info->esize * info->alloc );
-        if( *(info->array) == NULL ) return( FALSE );
+        if( *(info->array) == NULL ) {
+            return( false );
+        }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool BumpDownArray( array_info *info )
@@ -66,8 +68,10 @@ bool BumpDownArray( array_info *info )
     if( info->alloc - info->num >= info->increment ) {
         info->alloc -= info->increment;
         *(info->array) = GUIMemRealloc( *(info->array), info->esize * info->alloc );
-        if( *(info->array) == NULL ) return( FALSE );
+        if( *(info->array) == NULL ) {
+            return( false );
+        }
     }
-    return( TRUE );
+    return( true );
 }
 

@@ -120,10 +120,10 @@ static LIST                 *SetupErrMsgList = NULL;
 static unsigned             MaxDiskFiles;
 static int                  FillFirst = 1;
 static int                  Lang = 1;
-static int                  Upgrade = FALSE;
-static int                  Verbose = FALSE;
-static int                  IgnoreMissingFiles = FALSE;
-static int                  CreateMissingFiles = FALSE;
+static bool                 Upgrade = false;
+static bool                 Verbose = false;
+static bool                 IgnoreMissingFiles = false;
+static bool                 CreateMissingFiles = false;
 static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
 
@@ -218,8 +218,8 @@ static long FileSize( char *file )
 }
 
 
-int CheckParms( int *pargc, char **pargv[] )
-/******************************************/
+bool CheckParms( int *pargc, char **pargv[] )
+/*******************************************/
 {
     struct stat         stat_buf;
     char                **argv;
@@ -252,13 +252,13 @@ int CheckParms( int *pargc, char **pargv[] )
                 new->item = strdup( &(*pargv)[1][2] );
                 AddToList( new, &Include );
             } else if( tolower( (*pargv)[1][1] ) == 'u' ) {
-                Upgrade = TRUE;
+                Upgrade = true;
             } else if( tolower( (*pargv)[1][1] ) == 'v' ) {
-                Verbose = TRUE;
+                Verbose = true;
             } else if( tolower( (*pargv)[1][1] ) == 'f' ) {
-                IgnoreMissingFiles = TRUE;
+                IgnoreMissingFiles = true;
             } else if( tolower( (*pargv)[1][1] ) == 'x' ) {
-                CreateMissingFiles = TRUE;
+                CreateMissingFiles = true;
             } else {
                 printf( "Unrecognized option %s\n", (*pargv)[1] );
             }
@@ -277,7 +277,7 @@ int CheckParms( int *pargc, char **pargv[] )
         printf( "-d<string> specify string to add to Application section\n" );
         printf( "-f         force script creation if files missing (testing only)\n" );
         printf( "-x         force creation of missing files (testing only)\n" );
-        return( FALSE );
+        return( false );
     }
     Product = argv[ 1 ];
     DiskSize = (1457664L-4096);
@@ -287,9 +287,9 @@ int CheckParms( int *pargc, char **pargv[] )
     RelRoot  = argv[ 3 ];
     if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -386,13 +386,15 @@ int AddPathTree( char *path, int target )
     int         parent;
     char        *p;
 
-    if( path == NULL ) return( -1 );
+    if( path == NULL )
+        return( -1 );
     parent = AddPath( ".", target, -1 );
     p = strchr( path, '/' );
     while( p != NULL ) {
         *p = '\0';
         parent = AddPath( path, target, parent );
-        if( parent == 0 ) return( FALSE );
+        if( parent == 0 )
+            return( 0 );
         *p = '/';
         p = strchr( p + 1, '/' );
     }
@@ -465,8 +467,8 @@ static int mkdir_nested( char *path )
     return( 0 );
 }
 
-int AddFile( char *path, char *old_path, char type, char redist, char *file, char *rel_file, char *dst_var, char *cond )
-/**********************************************************************************************************************/
+bool AddFile( char *path, char *old_path, char type, char redist, char *file, char *rel_file, char *dst_var, char *cond )
+/***********************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *new, *curr, **owner;
@@ -508,7 +510,7 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
         if( IgnoreMissingFiles ) {
             act_size = 1024;
             time = 0;
-//            return( TRUE );
+//            return( true );
         } else if( CreateMissingFiles ) {
             FILE    *fp;
             char    c;
@@ -527,14 +529,14 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
                 fp = fopen( src, "w" );
                 if( fp == NULL ) {
                     printf( "Cannot create '%s'\n", src );
-                    return( FALSE );
+                    return( false );
                 }
             }
             fclose( fp );
             act_size = 0;
             time = 0;
         } else {
-            return( FALSE );
+            return( false );
         }
     } else {
         act_size = stat_buf.st_size;
@@ -551,7 +553,7 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
         p = strchr( ++path, '%' );
         if( p == NULL ) {
             printf( "Invalid path(%s)\n", path );
-            return( FALSE );
+            return( false );
         }
         *p = '\0';
         target = AddTarget( path );
@@ -562,20 +564,20 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
             ++path;
         } else {
             printf( "Invalid path (%s)\n", path );
-            return( FALSE );
+            return( false );
         }
     } else {
         target = AddTarget( "DstDir" );
     }
     if( target == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     // handle sub-directories in path before full path
     path_dir = AddPathTree( path, target );
     old_path_dir = AddPathTree( old_path, target );
     if( path_dir == 0 ) {
-        return( FALSE );
+        return( false );
     }
     root_file = p = file;
     while( *p != '\0' ) {
@@ -620,13 +622,13 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
         ns = malloc( sizeof( size_list ) + strlen( root_file ) );
         if( ns == NULL ) {
             printf( "Out of memory\n" );
-            return( FALSE );
+            return( false );
         }
         strcpy( ns->name, root_file );
         for( sl = curr->sizes; sl != NULL; sl = sl->next ) {
             if( stricmp( sl->name, ns->name ) == 0 ) {
                 printf( "file '%s' included in archive '%s' more than once\n", sl->name, curr->pack );
-                return( FALSE );
+                return( false );
             }
         }
         ns->size = act_size;
@@ -637,20 +639,20 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
         ns->dst_var = dst_var;
         ns->next = curr->sizes;
         curr->sizes = ns;
-        return( TRUE );
+        return( true );
     }
 
     // add to list
     new = malloc( sizeof( FILE_INFO ) );
     if( new == NULL ) {
         printf( "Out of memory\n" );
-        return( FALSE );
+        return( false );
     }
     new->pack = strdup( archive_name );
     new->condition = strdup( cond );
     if( new->pack == NULL || new->condition == NULL ) {
         printf( "Out of memory\n" );
-        return( FALSE );
+        return( false );
     }
     new->path = path_dir;
     new->old_path = old_path_dir;
@@ -658,7 +660,7 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
     ns = malloc( sizeof( size_list ) + strlen( root_file ) );
     if( ns == NULL ) {
         printf( "Out of memory\n" );
-        return( FALSE );
+        return( false );
     }
     strcpy( ns->name, root_file );
     ns->size = act_size;
@@ -671,12 +673,12 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
     new->sizes = ns;
     new->next = NULL;
     *owner = new;
-    return( TRUE );
+    return( true );
 }
 
 
-int ReadList( FILE *fp )
-/**********************/
+bool ReadList( FILE *fp )
+/***********************/
 {
     const char  *p;
     char        *s;
@@ -691,10 +693,10 @@ int ReadList( FILE *fp )
     char        buf[ 1024 ];
     char        redist;
     char        type;
-    int         no_error;
+    bool        no_error;
 
     printf( "Checking files...\n" );
-    no_error = TRUE;
+    no_error = true;
     while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
         s = GetBracketedString( buf, &p );
         if( s == NULL ) {
@@ -767,7 +769,7 @@ int ReadList( FILE *fp )
             dst_var = NULL;
         }
         if( !AddFile( path, old_path, type, redist, file, rel_fil, dst_var, condition ) ) {
-            no_error = FALSE;
+            no_error = false;
         }
         free( path );
         free( old_path );
@@ -1050,12 +1052,12 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
     }
 }
 
-int CheckForDuplicateFiles( void )
-/********************************/
+bool CheckForDuplicateFiles( void )
+/*********************************/
 {
     FILE_INFO           *file1,*file2;
     size_list           *name1,*name2;
-    int                 ok = TRUE;
+    bool                ok = true;
 
     if( FileList != NULL ) {
         for( file1 = FileList; file1->next != NULL; file1 = file1->next ) {
@@ -1069,7 +1071,7 @@ int CheckForDuplicateFiles( void )
                                     name1->name,
                                     file1->pack,
                                     file2->pack );
-                            ok = FALSE;
+                            ok = false;
                         }
                     }
                 }
@@ -1422,7 +1424,7 @@ void MakeLaundryList( void )
 int main( int argc, char *argv[] )
 /********************************/
 {
-    int                 ok;
+    bool                ok;
     FILE                *fp;
 
     if( !CheckParms( &argc, &argv ) ) {

@@ -147,7 +147,7 @@ bool GetRegString( HKEY hive, char *section, char *value,
     DWORD               type;
     bool                ret;
 
-    ret = FALSE;
+    ret = false;
     rc = RegOpenKeyEx( hive, section, 0L, KEY_ALL_ACCESS, &hkey );
     if( rc == ERROR_SUCCESS ) {
         // get the value
@@ -275,19 +275,20 @@ bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int p
     int         app_len;
     int         old_len;
     int         num = 0;
-    bool        in_sect = FALSE;
+    bool        in_sect = false;
 
     /* invalidate cache copy of INI file */
     app_len = strlen( app_name );
     old_len = strlen( old );
     WritePrivateProfileString( NULL, NULL, NULL, file );
     io = fopen( hive, "r+t" );
-    if( io == NULL ) return( FALSE );
+    if( io == NULL )
+        return( false );
     while( fgets( buff, sizeof( buff ), io ) ) {
         if( buff[0] == '[' ) {
             if( in_sect ) break;
             if( strncmp( app_name, buff + 1, app_len ) == 0 && buff[app_len + 1] == ']' ) {
-                in_sect = TRUE;
+                in_sect = true;
             }
         } else if( in_sect ) {
             if( strncmp( old, buff, old_len ) == 0 && buff[old_len] == '=' ) {
@@ -296,14 +297,14 @@ bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int p
                     fseek( io, -(int)(strlen( buff ) + 1), SEEK_CUR );
                     fputs( buff, io );
                     fclose( io );
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
     fclose( io );
     WritePrivateProfileString( NULL, NULL, NULL, file );
-    return( FALSE );
+    return( false );
 }
 
 #define DEVICE_STRING "device"
@@ -318,7 +319,7 @@ void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff,
     char        new_name[_MAX_FNAME];
     char        old_ext[_MAX_EXT];
     char        new_ext[_MAX_EXT];
-    bool        done = FALSE;
+    bool        done = false;
 
     _splitpath( value, NULL, NULL, new_name, new_ext );
     for( i = 0; ZapKey( app_name, DEVICE_STRING, ALT_DEVICE, file, hive, i ); ++i ) {
@@ -326,7 +327,7 @@ void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff,
         _splitpath( buff, NULL, NULL, old_name, old_ext );
         if( !stricmp( old_name, new_name ) && !stricmp( old_ext, new_ext ) ) {
             WritePrivateProfileString( app_name, ALT_DEVICE, add ? value : NULL, file );
-            done = TRUE;
+            done = true;
         }
         ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
         if( done ) break;
@@ -437,7 +438,7 @@ extern void WriteProfileStrings( bool uninstall )
 
     num = SimNumProfile();
     if( uninstall ) {
-        add = FALSE;
+        add = false;
         i = num - 1;
         sign = -1;
         end = -1;
@@ -453,7 +454,7 @@ extern void WriteProfileStrings( bool uninstall )
         ReplaceVars( file_name, fname );
         if( !uninstall ) {
             add = SimCheckProfCondition( i );
-            if( add == FALSE ) {
+            if( !add ) {
                 continue;
             }
         }
@@ -473,7 +474,7 @@ extern void WriteProfileStrings( bool uninstall )
 }
 
 #if (defined( __NT__ ) || defined( __WINDOWS__ )) && !defined( _UI )
-static bool IsWin40()
+static bool IsWin40( void )
 {
 #if defined( __NT__ )
     OSVERSIONINFO       ver;
@@ -481,14 +482,14 @@ static bool IsWin40()
     ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     if( GetVersionEx( (OSVERSIONINFO *) &ver ) ) {
         if( ver.dwMajorVersion >= 4 ) {
-            return( TRUE );
+            return( true );
         } else {
-            return( FALSE );
+            return( false );
         }
     }
-    return( FALSE );
+    return( false );
 #else
-    return( FALSE );
+    return( false );
 #endif
 }
 #endif
@@ -538,6 +539,6 @@ bool IsWOW64( void )
             retval = FALSE;
         }
     }
-    return( retval );
+    return( retval != 0 );
 }
 #endif

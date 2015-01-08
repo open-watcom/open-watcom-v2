@@ -43,70 +43,71 @@
 #include "genvbl.h"
 #include "gendlg.h"
 #include "utils.h"
-#include "clibext.h"
-
 #include "nlmver.h"
 
-static void LenToASCIIZStr( char *tobuf, BYTE *frombuf )
+#include "clibext.h"
+
+static void LenToASCIIZStr( char *tobuf, unsigned char *frombuf )
 {
     memcpy( tobuf, frombuf + 1, *frombuf );
     tobuf[*frombuf] = '\0';
 }
 
-int ReturnNLMVersionInfoFromFile( char *__pathName, LONG *majorVersion,
-                                  LONG *minorVersion, LONG *revision, LONG *year,
-                                  LONG *month, LONG *day, char *copyrightString,
+int ReturnNLMVersionInfoFromFile( const char *__pathName, long *majorVersion,
+                                  long *minorVersion, long *revision, long *year,
+                                  long *month, long *day, char *copyrightString,
                                   char *description )
 {
-    int         handle, bytes, offset, found = FALSE;
-    LONG        *verPtr;
-    NLMHDR      *nlmHeader;
-    BYTE        buffer[READ_SIZE];
+    int             handle, bytes, offset;
+    bool            found = false;
+    nlm_header_3    *verPtr;
+    unsigned char   buffer[READ_SIZE];
 
     handle = open( __pathName, O_BINARY | O_RDONLY );
     if( handle != EFAILURE ) {
         bytes = read( handle, buffer, READ_SIZE );
         close( handle );
         if( bytes == READ_SIZE ) {
-            if( description ) {
-                nlmHeader = (NLMHDR *)buffer;
-                LenToASCIIZStr( description, &(nlmHeader->descriptionLength) );
+            offset = offsetof( nlm_header, descriptionLength );
+            if( description != NULL ) {
+                LenToASCIIZStr( description, buffer + offset );
             }
-
-            for( offset = 0; !found && ( offset < READ_SIZE ); offset++ ) {
-                if( !memcmp( "VeRsIoN", &buffer[offset], 7 ) ) {
-                    found = TRUE;
+            for( ; offset < READ_SIZE; offset++ ) {
+                if( !memcmp( VERSION_SIGNATURE, buffer + offset, VERSION_SIGNATURE_LENGTH ) ) {
+                    found = true;
+                    break;
                 }
             }
             if( found ) {
-                verPtr = (LONG *)(&buffer[offset + 7]);
-                if( majorVersion ) {
-                    *majorVersion = *verPtr++;
+                verPtr = (nlm_header_3 *)( buffer + offset );
+                if( majorVersion != NULL ) {
+                    *majorVersion = verPtr->majorVersion;
                 }
-                if( minorVersion ) {
-                    *minorVersion = *verPtr++;
+                if( minorVersion != NULL ) {
+                    *minorVersion = verPtr->minorVersion;
                 }
-                if( revision ) {
-                    *revision = *verPtr++;
+                if( revision != NULL ) {
+                    *revision = verPtr->revision;
                 }
-                if( year ) {
-                    *year = *verPtr++;
+                if( year != NULL ) {
+                    *year = verPtr->year;
                 }
-                if( month ) {
-                    *month = *verPtr++;
+                if( month != NULL ) {
+                    *month = verPtr->month;
                 }
-                if( day ) {
-                    *day = *verPtr++;
+                if( day != NULL ) {
+                    *day = verPtr->day;
                 }
-                found = FALSE;
-                for( ; !found && (offset < READ_SIZE); offset++ ) {
-                    if( !memcmp( "CoPyRiGhT", &buffer[offset], 9 ) ) {
-                        found = TRUE;
+                if( copyrightString != NULL ) {
+                    found = false;
+                    for( ; offset < READ_SIZE; offset++ ) {
+                        if( !memcmp( COPYRIGHT_SIGNATURE, buffer + offset, COPYRIGHT_SIGNATURE_LENGTH ) ) {
+                            found = true;
+                            break;
+                        }
                     }
-                }
-                if( found ) {
-                    if( copyrightString ) {
-                        LenToASCIIZStr( copyrightString, &buffer[offset + 9] );
+                    if( found ) {
+                        LenToASCIIZStr( copyrightString, buffer + offset + COPYRIGHT_SIGNATURE_LENGTH );
                     }
                 }
                 return( ESUCCESS );
@@ -116,28 +117,28 @@ int ReturnNLMVersionInfoFromFile( char *__pathName, LONG *majorVersion,
     return( EFAILURE );
 }
 
-#define NEWERNLM                    TRUE        // NLM newer than present
-#define OLDERNLM                    FALSE       // NLM older than present
-#define SAMENLM                     FALSE       // Same versions
-#define BAD_PATH_NAME               TRUE        // Version info not found
-#define NOT_IN_SYSTEM_DIRECTORY     TRUE        // NLM not found
+#define NEWERNLM                    true        // NLM newer than present
+#define OLDERNLM                    false       // NLM older than present
+#define SAMENLM                     false       // Same versions
+#define BAD_PATH_NAME               true        // Version info not found
+#define NOT_IN_SYSTEM_DIRECTORY     true        // NLM not found
 
 char sysPath[] = { "SYS:\\SYSTEM\\" };
 
-int CheckNewer( char *newNLM, char *oldNLM )
+bool CheckNewer( const char *newNLM, const char *oldNLM )
 {
     int  rc;
-    LONG year, month, day;
-    LONG newyear, newmonth, newday;
-    LONG majorVersion, minorVersion, revision;
-    LONG newmajorVersion, newminorVersion, newrevision;
+    long year, month, day;
+    long newyear, newmonth, newday;
+    long majorVersion, minorVersion, revision;
+    long newmajorVersion, newminorVersion, newrevision;
 
     /* Get the new NLMs creation date */
 
     if( (rc = ReturnNLMVersionInfoFromFile( newNLM, &newmajorVersion,
                 &newminorVersion, &newrevision, &newyear, &newmonth, &newday,
                 NULL, NULL )) != 0 ) {
-        return BAD_PATH_NAME;
+        return( BAD_PATH_NAME );
     }
 
     /* Get the old NLMs creation date */
@@ -145,32 +146,44 @@ int CheckNewer( char *newNLM, char *oldNLM )
     if( (rc = ReturnNLMVersionInfoFromFile( oldNLM, &majorVersion,
                 &minorVersion, &revision, &year, &month, &day,
                 NULL, NULL )) != 0 ) {
-        return NOT_IN_SYSTEM_DIRECTORY;
+        return( NOT_IN_SYSTEM_DIRECTORY );
     }
 
-    if( newmajorVersion > majorVersion ) return( NEWERNLM );
-    if( newmajorVersion < majorVersion ) return( OLDERNLM );
+    if( newmajorVersion > majorVersion )
+        return( NEWERNLM );
+    if( newmajorVersion < majorVersion )
+        return( OLDERNLM );
 
-    if( newminorVersion > minorVersion ) return( NEWERNLM );
-    if( newminorVersion < minorVersion ) return( OLDERNLM );
+    if( newminorVersion > minorVersion )
+        return( NEWERNLM );
+    if( newminorVersion < minorVersion )
+        return( OLDERNLM );
 
-    if( newrevision > revision ) return( NEWERNLM );
-    if( newrevision < revision ) return( OLDERNLM );
+    if( newrevision > revision )
+        return( NEWERNLM );
+    if( newrevision < revision )
+        return( OLDERNLM );
 
-    if( newyear > year ) return( NEWERNLM );
-    if( newyear < year ) return( OLDERNLM );
+    if( newyear > year )
+        return( NEWERNLM );
+    if( newyear < year )
+        return( OLDERNLM );
 
-    if( newmonth > month ) return( NEWERNLM );
-    if( newmonth < month ) return( OLDERNLM );
+    if( newmonth > month )
+        return( NEWERNLM );
+    if( newmonth < month )
+        return( OLDERNLM );
 
-    if( newday > day ) return( NEWERNLM );
-    if( newday < day ) return( OLDERNLM );
+    if( newday > day )
+        return( NEWERNLM );
+    if( newday < day )
+        return( OLDERNLM );
 
     /* must be the identical file */
     return( SAMENLM );
 }
 
-gui_message_return CheckInstallNLM( char *name, vhandle var_handle )
+gui_message_return CheckInstallNLM( const char *name, vhandle var_handle )
 {
     char        unpacked_as[_MAX_PATH];
     char        temp[_MAX_PATH];
@@ -185,7 +198,7 @@ gui_message_return CheckInstallNLM( char *name, vhandle var_handle )
         _makepath( temp, NULL, sysPath, fname, ext );
         if( CheckNewer( unpacked_as, temp ) ) {
             chmod( name, PMODE_RWX );
-            DoCopyFile( unpacked_as, name, FALSE );
+            DoCopyFile( unpacked_as, name, false );
             strcpy( temp, fname );
             strcat( temp, "_NLM_installed" );
             SetVariableByName( temp, "1" );

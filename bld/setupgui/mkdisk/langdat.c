@@ -124,7 +124,7 @@ static void ProcessOptions( char *argv[] )
     char        parm_buff[_MAX_PATH];
     bool        opt_end;
 
-    opt_end = FALSE;
+    opt_end = false;
     while( argv[0] != NULL ) {
         if( !opt_end && argv[0][0] == '-' ) {
             switch( tolower( argv[0][1] ) ) {
@@ -147,13 +147,13 @@ static void ProcessOptions( char *argv[] )
                 ++VerbLevel;
                 break;
             case 'u':
-                UndefWarn = TRUE;
+                UndefWarn = true;
                 break;
             case 'q':
-                Quiet = TRUE;
+                Quiet = true;
                 break;
             case '-':
-                opt_end = TRUE;
+                opt_end = true;
                 break;
             default:
                 fprintf( stderr, "Unknown option '%c'\n\n", argv[0][1] );
@@ -220,10 +220,10 @@ static bool PopInclude( void )
     IncludeStk = curr->prev;
     free( curr );
     if( IncludeStk == NULL ) {
-        return( FALSE );
+        return( false );
     }
     chdir( IncludeStk->cwd );
-    return( TRUE );
+    return( true );
 }
 
 static bool GetALine( char *line )
@@ -238,10 +238,10 @@ static bool GetALine( char *line )
             break;
         }
         if( !PopInclude() ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static char *SubstOne( const char **inp, char *out )
@@ -287,7 +287,7 @@ static char *SubstOne( const char **inp, char *out )
             }
             if( rep == NULL ) {
                 if( UndefWarn ) {
-                    Log( FALSE, "<%s> is undefined\n", out );
+                    Log( false, "<%s> is undefined\n", out );
                 }
                 rep = "";
             }
@@ -309,7 +309,7 @@ static void SubstLine( const char *in, char *out )
 {
     bool        first;
 
-    first = TRUE;
+    first = true;
     in = SkipBlanks( in );
     for( ;; ) {
         switch( *in ) {
@@ -346,7 +346,7 @@ static void SubstLine( const char *in, char *out )
         default:
             *out++ = *in++;
         }
-        first = FALSE;
+        first = false;
     }
 }
 
@@ -391,12 +391,12 @@ static bool ContainsWord( const char *str, ctl_file *word_list )
         for( w = word_list; w != NULL; w = w->next ) {
             if( !strcmp( p, w->name ) ) {
                 free( s_copy );
-                return( TRUE );
+                return( true );
             }
         }
     }
     free( s_copy );
-    return( FALSE );
+    return( false );
 }
 
 #define DEFVAL(x)   ((x==NULL)?"":x)
@@ -410,10 +410,10 @@ static void ProcessLine( const char *line )
     char    *where, *desc, *old, *dstvar;
     char    *keys;
 //    char    *pack, *patch;
-    int     special;
+    bool    special;
     size_t  len;
 
-    special = FALSE;
+    special = false;
     type = DEFVAL( DefType );
     redist = DEFVAL( DefRedist );
     dir = DEFVAL( DefDir );
@@ -434,8 +434,8 @@ static void ProcessLine( const char *line )
     do {
         str = strtok( NULL, "\"" );
         if( !stricmp( cmd, "echo" ) ) {
-            Log( TRUE, "%s\n", str );
-            special = TRUE;
+            Log( true, "%s\n", str );
+            special = true;
             break;
         } else if( !stricmp( cmd, "type" ) ) {
             type = str;
@@ -514,7 +514,7 @@ static void ProcessLine( const char *line )
         /* Check if 'where' matches specified product */
         if( ( Product == NULL || *where == '\0' || ContainsWord( where, Product ) )
           && ( *keys == '\0' || ContainsWord( keys, KeyList ) ) ) {
-            Log( TRUE, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
+            Log( true, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
         }
     }
     free( line_copy );
@@ -609,7 +609,7 @@ static int MatchFound( char *p )
     char   *Match[20];                     // 20 is enough for builder
     int     MatchWords = 0;
     int     i;
-    int     EmptyOk = FALSE;
+    bool    EmptyOk = false;
     int     WordsExamined = 0;
 
     p = NextWord( p );
@@ -622,7 +622,7 @@ static int MatchFound( char *p )
             if( p == NULL )
                 Fatal( "Missing match word\n" );
             if( stricmp( p, "\"\"" ) == 0 ) // 'No parameter' indicator
-                EmptyOk = TRUE;
+                EmptyOk = true;
             else
                 Match[MatchWords++] = p;
             p = NextWord( p );
@@ -710,18 +710,18 @@ static void ProcessCtlFile( const char *name )
             /* a command */
             logit = ( VerbLevel > 0 );
             if( *p == '@' ) {
-                logit = FALSE;
+                logit = false;
                 p = SkipBlanks( p + 1 );
             }
             if( IncludeStk->skipping == 0 && IncludeStk->ifdefskipping == 0 ) {
                 if( logit ) {
-                    Log( FALSE, "+++<%s>+++\n", p );
+                    Log( false, "+++<%s>+++\n", p );
                 }
                 strcpy( Line, p );
                 ProcessLine( p );
                 LogFlush();
             } else if( logit && ( VerbLevel > 1 ) ) {
-                Log( FALSE, "---<%s>---\n", p );
+                Log( false, "---<%s>---\n", p );
             }
         }
     }
@@ -742,12 +742,12 @@ static bool SearchUpDirs( const char *name, char *result )
         fp = fopen( result, "r" );
         if( fp != NULL ) {
             fclose( fp );
-            return( TRUE );
+            return( true );
         }
         _splitpath2( result, buff, &drive, &dir, &fn, &ext );
         end = &dir[strlen( dir ) - 1];
         if( end == dir )
-            return( FALSE );
+            return( false );
         if( IS_DIR_SEP( *end ) )
             --end;
         for( ;; ) {

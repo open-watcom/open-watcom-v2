@@ -43,36 +43,13 @@
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include "genvbl.h"
-#include "clibext.h"
-
-extern gui_colour_set   StatusColours[];
-extern gui_colour_set   StatusBackground;
-       gui_window       *StatusWnd;
-static gui_rect         StatusBarRect;
-static gui_coord        CharSize;
-static int              Percent;
-static long             Parts_Injob;
-static long             Parts_Complete;
-gui_colour_set          ToolPlain = { GUI_BLACK, GUI_BLUE, };
-gui_colour_set          ToolStandout = { GUI_BRIGHT_WHITE, GUI_BLUE };
-extern gui_window       *MainWnd;
-static char             StatusLine1[_MAX_PATH];
-static gui_ord          StatusBarLen;
-static gui_rect         StatusRect;
-static char             StatusBarBuf[256];
-extern int              IsPatch;
-
-extern gui_ord          BitMapBottom;
-
-int                     MsgLine0 = STAT_BLANK;
-bool                    CancelSetup = FALSE;
-
-#if defined( __UNIX__ )
+#include "utils.h"
+#if defined( _UI )
   #include "stdui.h"
-#elif defined( _UI )
-  #include <stdui.h>
+  #include "uigchar.h"
 #endif
 
+#include "clibext.h"
 
 #define LINE0_ROW       1
 #define LINE1_ROW       2
@@ -85,14 +62,35 @@ bool                    CancelSetup = FALSE;
 #define STATUS_ROW      4
 #define BAR_INDENT      4
 
-#undef pick
-#define pick( x, y ) y,
-char *Messages[] = {
-    #include "status.h"
-};
-#undef pick
+extern gui_colour_set   StatusColours[];
+extern gui_colour_set   StatusBackground;
+extern gui_window       *MainWnd;
+extern int              IsPatch;
+extern gui_ord          BitMapBottom;
+extern gui_coord        GUIScale;
 
-static GUICALLBACK StatusEventProc;
+int                     MsgLine0 = STAT_BLANK;
+bool                    CancelSetup = false;
+gui_colour_set          ToolPlain = { GUI_BLACK, GUI_BLUE, };
+gui_colour_set          ToolStandout = { GUI_BRIGHT_WHITE, GUI_BLUE };
+
+static gui_window       *StatusWnd;
+static gui_rect         StatusBarRect;
+static gui_coord        CharSize;
+static int              Percent;
+static long             Parts_Injob;
+static long             Parts_Complete;
+static char             StatusLine1[_MAX_PATH];
+static gui_ord          StatusBarLen;
+static gui_rect         StatusRect;
+static char             StatusBarBuf[256];
+static GUICALLBACK      StatusEventProc;
+
+static char *Messages[] = {
+    #define pick( x, y ) y,
+    #include "status.h"
+    #undef pick
+};
 
 static gui_create_info StatusInfo = {
     NULL,                               // Title
@@ -121,8 +119,8 @@ static gui_control_info Cancel = {
       GUI_NOSCROLL, GUI_TAB_GROUP | GUI_AUTOMATIC, CTL_CANCEL
 };
 
-extern void StatusShow( bool show )
-/********************************/
+void StatusShow( bool show )
+/**************************/
 {
     if( StatusWnd == NULL && show ) {
         StatusInit();
@@ -137,8 +135,8 @@ extern void StatusShow( bool show )
     }
 }
 
-extern void StatusFini( void )
-/***************************/
+void StatusFini( void )
+/*********************/
 {
     if( StatusWnd == NULL ){
         return;
@@ -151,8 +149,8 @@ extern void StatusFini( void )
     }
 }
 
-extern void StatusLines( int msg0, char *message1 )
-/*************************************************/
+void StatusLines( int msg0, const char *message1 )
+/******************************************/
 {
     if( StatusWnd != NULL ) {
         if( message1 != NULL ) {
@@ -170,8 +168,8 @@ extern void StatusLines( int msg0, char *message1 )
     }
 }
 
-extern void BumpStatus( long by )
-/*******************************/
+void BumpStatus( long by )
+/************************/
 {
     if( !IsPatch ) {
         // if a patch, don't change status because denominator of status
@@ -180,8 +178,8 @@ extern void BumpStatus( long by )
     }
 }
 
-extern void StatusAmount( long parts_complete, long parts_injob )
-/***************************************************************/
+void StatusAmount( long parts_complete, long parts_injob )
+/********************************************************/
 // Display slider bar indicating percentage complete
 {
     int                 old_percent;
@@ -257,8 +255,8 @@ extern void StatusAmount( long parts_complete, long parts_injob )
 #endif
 }
 
-extern bool StatusCancelled( void )
-/*********************************/
+bool StatusCancelled( void )
+/**************************/
 {
     // update windows and let other apps execute
     GUIDrainEvents();
@@ -268,19 +266,20 @@ extern bool StatusCancelled( void )
 static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 /**************************************************************************/
 {
-    static bool         button_pressed = FALSE;
+    static bool         button_pressed = false;
     unsigned            id;
     gui_key             key;
     gui_keystate        state;
     const char          *msg;
 
     parm = parm;
-    if( gui == NULL ) return( FALSE );
+    if( gui == NULL )
+        return( false );
 
     switch( gui_ev ) {
 
     case GUI_INIT_WINDOW:
-        return( TRUE );
+        return( true );
 
     case GUI_PAINT:
         {
@@ -294,7 +293,6 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
                                LINE1_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_COLUMN );
 #ifdef _UI
             {
-                #include "uigchar.h"
                 int         len1, len2;
                 char        num[20];
 
@@ -404,12 +402,12 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
                 GUIDrawLine( gui, &start, &end, GUI_PEN_SOLID, 1, WND_STATUS_FRAME );
             }
 #endif
-            return( FALSE );
+            return( false );
         }
 
     case GUI_DESTROY:
         StatusWnd = NULL;
-        return( FALSE );
+        return( false );
 
     case GUI_CONTROL_CLICKED:
         GUIGetFocus( gui, &id );
@@ -417,48 +415,47 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
         switch( id ) {
         case CTL_CANCEL:
             if( !button_pressed ) {
-                button_pressed = TRUE;
+                button_pressed = true;
                 if( MsgBox( gui, "IDS_QUERYABORT", GUI_YES_NO ) == GUI_RET_YES ) {
-                    CancelSetup = TRUE;
+                    CancelSetup = true;
                 }
-                button_pressed = FALSE;
+                button_pressed = false;
                 break;
             }
         case CTL_DONE:
             if( !button_pressed ) {
-                CancelSetup = TRUE;
+                CancelSetup = true;
                 break;
             }
         }
-        return( TRUE );
+        return( true );
     case GUI_KEYDOWN:
         GUI_GET_KEY_STATE( parm, key, state );
         state = state;
         switch( key ) {
         case GUI_KEY_ESCAPE:
             if( !button_pressed ) {
-                button_pressed = TRUE;
+                button_pressed = true;
                 if( MsgBox( gui, "IDS_QUERYABORT", GUI_YES_NO ) == GUI_RET_YES ) {
-                    CancelSetup = TRUE;
+                    CancelSetup = true;
                 }
-                button_pressed = FALSE;
+                button_pressed = false;
                 break;
             }
         default:
             break;
         }
-        return( TRUE );
+        return( true );
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
-extern bool OpenStatusWindow( const char *title )
+static bool OpenStatusWindow( const char *title )
 /***********************************************/
 {
     gui_text_metrics    metrics;
-    extern gui_coord    GUIScale;
 //    int                 i;
     gui_rect            rect;
     char                *str;
@@ -513,17 +510,16 @@ extern bool OpenStatusWindow( const char *title )
 
     if( !GUIAddControl( &Cancel, &ToolPlain, &ToolStandout ) ) {
         SetupError( "IDS_CONTROLERROR" );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
-extern bool StatusInit( void )
-/****************************/
+bool StatusInit( void )
+/*********************/
 {
     char        buff[MAXBUF];
 
     ReplaceVars( buff, GetVariableStrVal( "AppName" ) );
-    if( !OpenStatusWindow( buff ) ) return( FALSE );
-    return( TRUE );
+    return( OpenStatusWindow( buff ) );
 }

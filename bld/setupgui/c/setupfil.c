@@ -144,7 +144,7 @@ static bool GetOldConfigFileDir( char *newauto, const char *drive_path, bool uni
         strcpy( newauto, GetVariableStrVal( "DstDir" ) );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static char *StrNDup( char *str, size_t len )
@@ -380,16 +380,16 @@ static void CheckEnvironmentLine( char *line, int num, bool *Found, bool uninsta
     env_var = StrNDup( env_val, strlen( env_val ) );
     strcpy( env_val, p );
 
-    modified = FALSE;
+    modified = false;
     for( i = 0; i < num; ++i ) {
         if( Found[i] || !uninstall && !SimCheckEnvironmentCondition( i ) )
             continue;
         append = SimGetEnvironmentStrings( i, &new_var, new_val );
         if( stricmp( env_var, new_var ) == 0 ) {
             // found an environment variable, replace its value
-            Found[i] = TRUE;
+            Found[i] = true;
             modify_value( env_val, new_val, append, uninstall );
-            modified = TRUE;
+            modified = true;
         }
     }
     if( modified ) {
@@ -416,10 +416,10 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num, bool *Found, 
         if( Found[i] || !SimCheckEnvironmentCondition( i ) )
             continue;
         append = SimGetEnvironmentStrings( i, &new_var, new_val );
-        libpath_batch = FALSE;
+        libpath_batch = false;
         if( batch ) {
             if( stricmp( new_var, "LIBPATH" ) == 0 ) {
-                libpath_batch = TRUE;
+                libpath_batch = true;
                 strcpy( line, "SET BEGINLIBPATH=" );
                 val_before = line + 17;
                 strcpy( env_val, "SET ENDLIBPATH=" );
@@ -444,11 +444,11 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num, bool *Found, 
                 continue;
             append = SimGetEnvironmentStrings( j, &cur_var, new_val );
             if( stricmp( cur_var, new_var ) == 0 ) {
-                Found[j] = TRUE;
+                Found[j] = true;
                 if( libpath_batch ) {
                     modify_value_libpath( val_before, val_after, new_val, append );
                 } else {
-                    modify_value( env_val, new_val, append, FALSE );
+                    modify_value( env_val, new_val, append, false );
                 }
             }
         }
@@ -489,29 +489,29 @@ static bool ModFile( char *orig, char *new,
     fp1 = fopen( orig, "rt" );
     if( fp1 == NULL ) {
         MsgBox( NULL, "IDS_ERROR_OPENING", GUI_OK, orig );
-        return( FALSE );
+        return( false );
     }
     fp2 = fopen( new, "wt" );
     if( fp2 == NULL ) {
         MsgBox( NULL, "IDS_ERROR_OPENING", GUI_OK, new );
         fclose( fp1 );
-        return( FALSE );
+        return( false );
     }
     // allocate array to remember variables
     if( num ) {
         Found = GUIMemAlloc( num * sizeof( bool ) );
         if( Found == NULL ) {
-            return( FALSE );
+            return( false );
         }
-        memset( Found, 0, num * sizeof( bool ) );
+        memset( Found, false, num * sizeof( bool ) );
     }
     if( num_env ) {
         FoundEnv = GUIMemAlloc( num_env * sizeof( bool ) );
         if( FoundEnv == NULL ) {
             GUIMemFree( Found );
-            return( FALSE );
+            return( false );
         }
-        memset( FoundEnv, 0, num_env * sizeof( bool ) );
+        memset( FoundEnv, false, num_env * sizeof( bool ) );
     }
     while( fgets( envbuf, MAXENVVAR, fp1 ) != NULL ) {
         line = strchr( envbuf, '\n' );
@@ -533,14 +533,14 @@ static bool ModFile( char *orig, char *new,
         strcat( envbuf, "\n" );
         if( fputs( envbuf, fp2 ) < 0 ) {
             MsgBox( NULL, "IDS_ERROR_WRITING", GUI_OK, new );
-            return( FALSE );
+            return( false );
         }
     }
     fclose( fp1 );
     if( !uninstall ) {
         // handle any remaining variables
-        finish( fp2, envbuf, num, Found, FALSE );
-        FinishEnvironmentLines( fp2, envbuf, num_env, FoundEnv, FALSE );
+        finish( fp2, envbuf, num, Found, false );
+        FinishEnvironmentLines( fp2, envbuf, num_env, FoundEnv, false );
     }
     if( num ) {
         GUIMemFree( Found );
@@ -550,9 +550,9 @@ static bool ModFile( char *orig, char *new,
     }
     if( fclose( fp2 ) != 0 ) {
         MsgBox( NULL, "IDS_ERROR_CLOSING", GUI_OK, new );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -608,16 +608,16 @@ static void CheckAutoLine( char *line, int num, bool *Found, bool uninstall )
     env_var = StrNDup( env_val, strlen( env_val ) );
     strcpy( env_val, p );
 
-    modified = FALSE;
+    modified = false;
     for( i = 0; i < num; ++i ) {
         if( Found[i] || !uninstall && !SimCheckAutoExecCondition( i ) )
             continue;
         append = SimGetAutoExecStrings( i, &new_var, new_val );
         if( stricmp( env_var, new_var ) == 0 ) {
             // found an command, replace its value
-            Found[i] = TRUE;
+            Found[i] = true;
             modify_value( env_val, new_val, append, uninstall );
-            modified = TRUE;
+            modified = true;
         }
     }
     if( modified ) {
@@ -636,6 +636,7 @@ static void FinishAutoLines( FILE *fp, char *line, int num, bool *Found, bool ba
     const char          *cur_var;
     char                env_val[MAXENVVAR];
 
+    batch=batch;
     for( i = 0; i < num; ++i ) {
         if( Found[i] || !SimCheckAutoExecCondition( i ) )
             continue;
@@ -646,8 +647,8 @@ static void FinishAutoLines( FILE *fp, char *line, int num, bool *Found, bool ba
                 continue;
             append = SimGetAutoExecStrings( j, &cur_var, new_val );
             if( stricmp( cur_var, new_var ) == 0 ) {
-                Found[j] = TRUE;
-                modify_value( env_val, new_val, append, FALSE );
+                Found[j] = true;
+                modify_value( env_val, new_val, append, false );
             }
         }
         output_line( line, getAutoVarType( new_var ), new_var, env_val );
@@ -729,8 +730,8 @@ static void CheckConfigLine( char *line, int num, bool *Found, bool uninstall )
     strcpy( cfg_val, p );
 
     run_find = ( stricmp( cfg_var, "RUN" ) == 0 );
-    modified = FALSE;
-    run_found = FALSE;
+    modified = false;
+    run_found = false;
     for( i = 0; i < num; ++i ) {
         if( Found[i] || !uninstall && !SimCheckConfigCondition( i ) )
             continue;
@@ -741,21 +742,21 @@ static void CheckConfigLine( char *line, int num, bool *Found, bool uninstall )
                 // found RUN variable
                 if( memicmp( cfg_val, new_val, strlen( new_val ) ) == 0 ) {
                     // if already there, just mark it as found
-                    Found[i] = TRUE;
-                    run_found = TRUE;
+                    Found[i] = true;
+                    run_found = true;
                 }
                 continue;
             }
             if( isdigit( *cfg_val ) ) { // for files=20, linefers=30 etc
                 if( uninstall || atoi( new_val ) <= atoi( cfg_val ) ) {
-                    Found[i] = TRUE;
+                    Found[i] = true;
                     continue;
                 }
             }
-            Found[i] = TRUE;
+            Found[i] = true;
             // replace its value
             modify_value( cfg_val, new_val, append, uninstall );
-            modified = TRUE;
+            modified = true;
         }
     }
     if( run_found && uninstall ) {
@@ -776,6 +777,7 @@ static void FinishConfigLines( FILE *fp, char *line, int num, bool *Found, bool 
     const char          *cur_var;
     char                env_val[MAXENVVAR];
 
+    batch=batch;
     for( i = 0; i < num; ++i ) {
         if( Found[i] || !SimCheckConfigCondition( i ) )
             continue;
@@ -786,8 +788,8 @@ static void FinishConfigLines( FILE *fp, char *line, int num, bool *Found, bool 
                 continue;
             append = SimGetConfigStrings( j, &cur_var, new_val );
             if( stricmp( cur_var, new_var ) == 0 ) {
-                Found[j] = TRUE;
-                modify_value( env_val, new_val, append, FALSE );
+                Found[j] = true;
+                modify_value( env_val, new_val, append, false );
             }
         }
         output_line( line, getConfigVarType( new_var ), new_var, env_val );
@@ -815,7 +817,7 @@ static bool ModConfig( char *orig, char *new, bool uninstall )
     }
 #endif
     if( num_cfg == 0 && num_env == 0 ) {
-         return( TRUE );
+         return( true );
     }
     return( ModFile( orig, new, CheckConfigLine, FinishConfigLines, num_cfg, num_env, uninstall ) );
 }
@@ -865,7 +867,7 @@ extern bool ModifyAutoExec( bool uninstall )
     num_cfg = SimNumConfig();
     num_env = SimNumEnvironment();
     if( num_auto == 0 && num_cfg == 0 && num_env == 0 ) {
-        return( TRUE );
+        return( true );
     }
 #ifdef __OS2__
     SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_CONFIG" ) );
@@ -873,7 +875,7 @@ extern bool ModifyAutoExec( bool uninstall )
     SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_AUTOEXEC" ) );
 #endif
     if( DoDialog( "Modify" ) == DLG_CAN ) {
-        return( FALSE );
+        return( false );
     }
     if( GetVariableIntVal( "ModNow" ) == 1 ) {
         mod_type = MOD_IN_PLACE;
@@ -910,7 +912,7 @@ extern bool ModifyAutoExec( bool uninstall )
         SetVariableByName( "CfgDir", OrigConfig );
         if( DoDialog( "LocCfg" ) == DLG_CAN ) {
             MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
-            return( FALSE );
+            return( false );
         }
         strcpy( newcfg, GetVariableStrVal("CfgDir") );
         OrigConfig[0] = newcfg[0];
@@ -930,7 +932,7 @@ extern bool ModifyAutoExec( bool uninstall )
         SetVariableByName( "CfgDir", OrigAutoExec );
         if( DoDialog( "LocCfg" ) == DLG_CAN ) {
             MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
-            return( FALSE );
+            return( false );
         }
         strcpy( newcfg, GetVariableStrVal("CfgDir") );
         OrigAutoExec[0] = newcfg[0];
@@ -962,32 +964,32 @@ extern bool ModifyAutoExec( bool uninstall )
 #endif
 
 #ifndef __OS2__
-        if( DoCopyFile( OrigAutoExec, newauto, FALSE ) != CFE_NOERROR ) {
+        if( DoCopyFile( OrigAutoExec, newauto, false ) != CFE_NOERROR ) {
             MsgBox( NULL, "IDS_ERRORBACKAUTO", GUI_OK );
         } else {
             if( !ModAuto( newauto, OrigAutoExec, uninstall ) ) {
-                return( FALSE );
+                return( false );
             }
         }
-        if( DoCopyFile( OrigConfig, newcfg, FALSE ) != CFE_NOERROR ) {
+        if( DoCopyFile( OrigConfig, newcfg, false ) != CFE_NOERROR ) {
             MsgBox( NULL, "IDS_ERRORBACKCONFIG", GUI_OK );
         } else {
             if( !ModConfig( newcfg, OrigConfig, uninstall ) ) {
-                return( FALSE );
+                return( false );
             }
         }
 #else
-        if( DoCopyFile( OrigConfig, newcfg, FALSE ) != CFE_NOERROR ) {
+        if( DoCopyFile( OrigConfig, newcfg, false ) != CFE_NOERROR ) {
             MsgBox( NULL, "IDS_ERRORBACKCONFIG", GUI_OK );
         } else {
             if( !ModConfig( newcfg, OrigConfig, uninstall ) ) {
-                return( FALSE );
+                return( false );
             }
             MsgBox( NULL, "IDS_OS2CONFIGSYS", GUI_OK );
         }
 #endif
         // indicate config files were modified if and only if we got this far
-        ConfigModified = TRUE;
+        ConfigModified = true;
     } else {
         // place modifications in AUTOEXEC.NEW and CONFIG.NEW
 #ifndef __OS2__
@@ -1012,19 +1014,19 @@ extern bool ModifyAutoExec( bool uninstall )
 #ifdef __OS2__
         MsgBox( NULL, "IDS_NEWCONFIGSYS", GUI_OK, newcfg );
         if( !ModConfig( OrigConfig, newcfg, uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
 #else
         MsgBox( NULL, "IDS_NEWAUTOEXEC", GUI_OK, newauto, newcfg );
         if( !ModAuto( OrigAutoExec, newauto, uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
         if( !ModConfig( OrigConfig, newcfg, uninstall ) ) {
-            return( FALSE );
+            return( false );
         }
 #endif
     }
-    return( TRUE );
+    return( true );
 }
 
 #endif   // !__UNIX__
@@ -1073,7 +1075,7 @@ static char *ReplaceVarsInplace( char *buff, bool dorealloc )
                 break;  // no '?' operator
             } else {
                 colon = strchr( quest, ':' );
-                if( GetOptionVarValue( GetVariableByName( varname ), FALSE ) ) {
+                if( GetOptionVarValue( GetVariableByName( varname ), false ) ) {
                     *colon = '\0';
                     varval = GetVariableStrVal( quest );
                     break;
@@ -1109,7 +1111,7 @@ void ReplaceVars( char *dst, const char *src )
 //  and place the result in dst.
 {
     strcpy( dst, src );
-    ReplaceVarsInplace( dst, FALSE );
+    ReplaceVarsInplace( dst, false );
 }
 
 
@@ -1404,7 +1406,7 @@ extern gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
         }
 #endif
     } else if( GetVariableIntVal( "DLL_Replace_Old" ) == 1 ) {
-        DoCopyFile( unpacked_as, prev_path, FALSE );
+        DoCopyFile( unpacked_as, prev_path, false );
         SetVariableByHandle( var_handle, prev_path );
         remove( unpacked_as );
     } else if( GetVariableIntVal( "DLL_Dont_Install" ) == 1 ) {
@@ -1426,7 +1428,7 @@ extern gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
 static bool ModEnv( int num_env, bool uninstall )
 /***********************************************/
 {
-    BOOL                err = FALSE;
+    bool                err = false;
     int                 i, j, k, rc;
     append_mode         append;
     DWORD               oldvar_len, oldval_len;
@@ -1441,7 +1443,7 @@ static bool ModEnv( int num_env, bool uninstall )
 
         append = SimGetEnvironmentStrings( i, &new_var, new_val );
         for( j = CURRENT_USER; j < NUM_REG_LOCATIONS; j++ ) {
-            if( RegLocation[j].key_is_open == FALSE || RegLocation[j].modify == FALSE ) {
+            if( !RegLocation[j].key_is_open || !RegLocation[j].modify ) {
                 continue;
             }
             // Look for current definition
@@ -1479,7 +1481,7 @@ static bool ModEnv( int num_env, bool uninstall )
                 }
             }
             if( rc != 0 ) {
-                err = TRUE;
+                err = true;
             }
         }
     }
@@ -1504,35 +1506,27 @@ extern bool ModifyConfiguration( bool uninstall )
 
     num_env = SimNumEnvironment();
     if( num_env == 0 ) {
-        return( TRUE );
+        return( true );
     }
 
     rc = RegOpenKey( HKEY_CURRENT_USER, "Environment", &RegLocation[CURRENT_USER].key );
-    if( rc == 0 ) {
-        RegLocation[CURRENT_USER].key_is_open = TRUE;
-    } else {
-        RegLocation[CURRENT_USER].key_is_open = FALSE;
-    }
+    RegLocation[CURRENT_USER].key_is_open = ( rc == 0 );
 
     rc = RegOpenKeyEx( HKEY_LOCAL_MACHINE,
               "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
               0, KEY_ALL_ACCESS, &RegLocation[LOCAL_MACHINE].key );
-    if( rc == 0 ) {
-        RegLocation[LOCAL_MACHINE].key_is_open = TRUE;
-    } else {
-        RegLocation[LOCAL_MACHINE].key_is_open = FALSE;
-    }
+    RegLocation[LOCAL_MACHINE].key_is_open = ( rc == 0 );
 
     if( RegLocation[LOCAL_MACHINE].key_is_open && !uninstall ) {
         if( DoDialog( "ModifyEnvironment" ) == DLG_CAN ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         // Note we use the same dialog as for AUTOEXEC changes
         // We set the Variable AUTOTEXT to contain the proper wording
         SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_ENVIRONMENT" ) );
         if( DoDialog( "Modify" ) == DLG_CAN ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( GetVariableIntVal( "ModLater" ) == 1 ) {
@@ -1540,24 +1534,24 @@ extern bool ModifyConfiguration( bool uninstall )
     } else {
         mod_type = MOD_IN_PLACE;
         if( uninstall ) { //Clean up everywhere
-            RegLocation[LOCAL_MACHINE].modify = TRUE;
-            RegLocation[CURRENT_USER].modify  = TRUE;
+            RegLocation[LOCAL_MACHINE].modify = true;
+            RegLocation[CURRENT_USER].modify  = true;
         } else if( GetVariableIntVal( "ModMachine" ) == 1 ) {
-            RegLocation[LOCAL_MACHINE].modify = TRUE;
-            RegLocation[CURRENT_USER].modify  = FALSE;
+            RegLocation[LOCAL_MACHINE].modify = true;
+            RegLocation[CURRENT_USER].modify  = false;
         } else { // ModNow == 1 or ModUser == 1
-            RegLocation[LOCAL_MACHINE].modify = FALSE;
-            RegLocation[CURRENT_USER].modify  = TRUE;
+            RegLocation[LOCAL_MACHINE].modify = false;
+            RegLocation[CURRENT_USER].modify  = true;
         }
     }
 
     if( mod_type == MOD_IN_PLACE ) {
         bRet = ModEnv( num_env, uninstall );
         // indicate config files were modified if and only if we got this far
-        ConfigModified = TRUE;
+        ConfigModified = true;
     } else {  // handle MOD_LATER case
         found = GUIMemAlloc( num_env * sizeof( bool ) );
-        memset( found, FALSE, num_env * sizeof( bool ) );
+        memset( found, false, num_env * sizeof( bool ) );
         GetOldConfigFileDir( changes, GetVariableStrVal( "DstDir" ), uninstall );
         strcat( changes, "\\CHANGES.ENV" );
         MsgBox( NULL, "IDS_CHANGES", GUI_OK, changes );
@@ -1582,7 +1576,7 @@ extern bool ModifyConfiguration( bool uninstall )
                         continue;
                     append = SimGetEnvironmentStrings( j, &env_var, new_val );
                     if( stricmp( env_var, new_var ) == 0 ) {
-                        found[j] = TRUE;
+                        found[j] = true;
                         modify_value( envbuf, new_val, append, uninstall );
                     }
                 }
@@ -1591,7 +1585,7 @@ extern bool ModifyConfiguration( bool uninstall )
             fclose( fp );
         }
         GUIMemFree( found );
-        bRet = TRUE;
+        bRet = true;
     }
 
     if( RegLocation[CURRENT_USER].key_is_open ) {
@@ -1618,10 +1612,10 @@ extern bool ModifyRegAssoc( bool uninstall )
 
     if( !uninstall ) {
         if( DoDialog( "ModifyAssociations" ) == DLG_CAN ) {
-            return( FALSE );
+            return( false );
         }
         if( GetVariableIntVal( "NoModEnv" ) == 1 ) {
-            return( TRUE );
+            return( true );
         }
         num = SimNumAssociations();
         for( i = 0; i < num; i++ ) {
@@ -1639,17 +1633,17 @@ extern bool ModifyRegAssoc( bool uninstall )
             RegSetValue( hkey, NULL, REG_SZ, description, strlen( description ) );
             if( SimGetAssociationNoOpen( i ) != 1 ) {
                 sprintf( buf, "%s %%1", program );
-                ReplaceVarsInplace( buf, FALSE );
+                ReplaceVarsInplace( buf, false );
                 RegSetValue( hkey, "shell\\open\\command", REG_SZ, buf, strlen( buf ) );
             }
             sprintf( buf, "%s,%d", program, SimGetAssociationIconIndex( i ) );
-            ReplaceVarsInplace( buf, FALSE );
+            ReplaceVarsInplace( buf, false );
             RegSetValue( hkey, "DefaultIcon", REG_SZ, buf, strlen( buf ) );
             RegCloseKey( hkey );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 extern bool AddToUninstallList( bool uninstall )
@@ -1667,10 +1661,10 @@ extern bool AddToUninstallList( bool uninstall )
         val = GetVariableStrVal( "UninstallDisplayName" );
         RegSetValueEx( hkey, "DisplayName", 0L, REG_SZ, (LPBYTE)val, strlen( val ) + 1 );
         strcpy( buf, GetVariableStrVal( "UninstallCommand" ) );
-        ReplaceVarsInplace( buf, FALSE );
+        ReplaceVarsInplace( buf, false );
         RegSetValueEx( hkey, "UninstallString", 0L, REG_SZ, (LPBYTE)buf, strlen( buf ) + 1 );
         strcpy( buf, GetVariableStrVal( "UninstallIcon" ) );
-        ReplaceVarsInplace( buf, FALSE );
+        ReplaceVarsInplace( buf, false );
         RegSetValueEx( hkey, "DisplayIcon", 0L, REG_SZ, (LPBYTE)buf, strlen( buf ) + 1 );
         val = GetVariableStrVal( "UninstallCompany" );
         RegSetValueEx( hkey, "Publisher", 0L, REG_SZ, (LPBYTE)val, strlen( val ) + 1 );
@@ -1689,10 +1683,10 @@ extern bool AddToUninstallList( bool uninstall )
         RegSetValueEx( hkey, "NoRepair", 0L, REG_DWORD, (LPBYTE)&dw, sizeof( DWORD ) );
         RegCloseKey( hkey );
     } else {
-        RegDeleteKey( hkey, buf );
+        RegDeleteKey( HKEY_LOCAL_MACHINE, buf );
     }
     
-    return( TRUE );
+    return( true );
 }
 
 #endif
@@ -1714,7 +1708,7 @@ extern bool GenerateBatchFile( bool uninstall )
 #endif
 
     strcpy( batch_file, GetVariableStrVal( "BatchFileName" ) );
-    ReplaceVarsInplace( batch_file, FALSE );
+    ReplaceVarsInplace( batch_file, false );
     _splitpath( batch_file, drive, dir, fname, ext );
     if( ext[0] == '\0' ) {
         strcpy( ext, BATCHEXT );
@@ -1738,8 +1732,8 @@ extern bool GenerateBatchFile( bool uninstall )
             num = SimNumEnvironment();
             if( num > 0 ) {
                 found = GUIMemAlloc( num * sizeof( bool ) );
-                memset( found, FALSE, num * sizeof( bool ) );
-                FinishEnvironmentLines( fp, buf, num, found, TRUE );
+                memset( found, false, num * sizeof( bool ) );
+                FinishEnvironmentLines( fp, buf, num, found, true );
                 GUIMemFree( found );
             }
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
@@ -1748,5 +1742,5 @@ extern bool GenerateBatchFile( bool uninstall )
             fclose( fp );
         }
     }
-    return( TRUE );
+    return( true );
 }

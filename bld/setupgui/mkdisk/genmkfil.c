@@ -35,12 +35,9 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include "clibext.h"
+#include "bool.h"
 
-enum {
-    FALSE,
-    TRUE
-};
+#include "clibext.h"
 
 
 typedef struct file_info {
@@ -61,15 +58,15 @@ FILE_INFO               *FileList = NULL;
 VERSION_INFO            *VersionList = NULL;
 
 
-int AddFile( char *path, char *file, char *rel_file, char *patch )
-//================================================================
+bool AddFile( char *path, char *file, char *rel_file, char *patch )
+//=================================================================
 {
     FILE_INFO           *new, **owner;
 
     new = malloc( sizeof( FILE_INFO ) );
     if( new == NULL ) {
         printf( "Out of memory\n" );
-        return( FALSE );
+        return( false );
     } else {
         new->path = strdup( path );
         new->file = strdup( file );
@@ -77,7 +74,7 @@ int AddFile( char *path, char *file, char *rel_file, char *patch )
         new->pack = strdup( patch );
         if( new->path == NULL || new->file == NULL || new->pack == NULL ) {
             printf( "Out of memory\n" );
-            return( FALSE );
+            return( false );
         }
         new->next = NULL;
         owner = &FileList;
@@ -85,31 +82,31 @@ int AddFile( char *path, char *file, char *rel_file, char *patch )
             owner = &(*owner)->next;
         }
         *owner = new;
-        return( TRUE );
+        return( true );
     }
 }
 
 
-int InVersionList( char *str )
-//============================
+bool InVersionList( char *str )
+//=============================
 {
     VERSION_INFO        *ver;
 
     if( VersionList == NULL ) {
-        return( TRUE );
+        return( true );
     } else {
         for( ver = VersionList; ver != NULL; ver = ver->next ) {
             if( stricmp( str, ver->version ) == 0 ) {
-                return( TRUE );
+                return( true );
             }
         }
-        return( FALSE );
+        return( false );
     }
 }
 
 
-int ReadList( FILE *fp )
-//======================
+bool ReadList( FILE *fp )
+//=======================
 {
 //    char                *type;
     char                *path;
@@ -143,13 +140,13 @@ int ReadList( FILE *fp )
             if( where == NULL ) break;
             if( InVersionList( where ) ) {
                 if( !AddFile( path, file, rel_file, patch ) ) {
-                    return( FALSE );
+                    return( false );
                 }
                 break;
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -213,7 +210,8 @@ void AddVersion( char *str )
 int main( int argc, char *argv[] )
 //================================
 {
-    int                 i, ok;
+    int                 i;
+    bool                ok;
     FILE                *fp;
 
     if( argc < 2 ) {

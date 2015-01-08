@@ -29,22 +29,21 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <string.h>
 #include "gui.h"
 #include "guidlg.h"
 #include "guistr.h"
 #include "setup.h"
 #include "setupinf.h"
 #include "resource.h"
-#include <string.h>
-
 #include "banner.h"
-#include <stdio.h>
-
 #include "genvbl.h"
+#include "utils.h"
 
 extern gui_colour_set   MainColours[];
-extern  void            GUISetJapanese();
-extern int              Invisible;
+extern void             GUISetJapanese();
+extern bool             Invisible;
 gui_window              *MainWnd = NULL;
 int                     NominalButtonWidth = 11;
 
@@ -146,13 +145,13 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
     default:
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 gui_coord               GUIScale;
 
-extern bool SetupPreInit( void )
-/******************************/
+bool SetupPreInit( void )
+/***********************/
 {
     gui_rect            rect;
 
@@ -172,11 +171,11 @@ extern bool SetupPreInit( void )
     rect.height = GUIScale.y;
     GUISetScale( &rect );
 
-    return( TRUE );
+    return( true );
 }
 
-extern bool SetupInit( void )
-/***************************/
+bool SetupInit( void )
+/********************/
 {
     gui_rect            rect;
     gui_create_info     init;
@@ -210,12 +209,12 @@ extern bool SetupInit( void )
 
     /* remove GUI toolkit adjustment here as it is no longer required */
 
-    return( TRUE );
+    return( true );
 }
 
 
-extern void SetupTitle( void )
-/****************************/
+void SetupTitle( void )
+/*********************/
 {
     char        buff[MAXBUF];
 
@@ -224,18 +223,10 @@ extern void SetupTitle( void )
 }
 
 
-extern void SetupFini( void )
+void SetupFini( void )
 /***************************/
 {
     if( MainWnd != NULL ) {
         GUIDestroyWnd( MainWnd );
     }
-}
-
-
-extern void SetupError( char *msg )
-/*********************************/
-{
-//    MsgBox( NULL, "IDS_ERROR", GUI_OK, msg );
-    MsgBox( NULL, msg, GUI_OK );
 }

@@ -34,33 +34,13 @@
 #ifndef RVERHDR
 #define RVERHDR
 
-#define MAX_DESCRIPTION_LENGTH  127
+#include "watcom.h"
+#include "exenov.h"
+
 #define ESUCCESS    0
 #define EFAILURE    -1
-#define TRUE        1
-#define FALSE       0
 #define READ_SIZE   512
-#define MAX_SCREEN_NAME_LENGTH 71
-#define OLD_THREAD_NAME_LENGTH 5
-#define MAX_THREAD_NAME_LENGTH 17
 
-typedef struct _NLMHDR
-{
-        BYTE    signature[24];
-        LONG    version;
-        BYTE    moduleName[14];
-        LONG    reserved[22];
-        BYTE    descriptionLength;
-        BYTE    descriptionText[ MAX_DESCRIPTION_LENGTH + 1 ];/* variable length  */
-        LONG    reserved2[2];                                 /* for use by C Lib */
-        BYTE    oldThreadName[OLD_THREAD_NAME_LENGTH];        /* for use by C Lib */
-        BYTE    screenNameLength;
-        BYTE    screenName[ MAX_SCREEN_NAME_LENGTH + 1 ];     /* variable length  */
-        BYTE    threadNameLength;
-        BYTE    threadName[ MAX_THREAD_NAME_LENGTH + 1 ];     /* variable length  */
-        BYTE    otherData[400];
-} NLMHDR;
-
-int     ReturnNLMVersionInfoFromFile(char *,LONG *,LONG *,LONG *,LONG *,LONG *,LONG *,char *,char *);
+int     ReturnNLMVersionInfoFromFile( const char *,long *,long *,long *,long *,long *,long *,char *,char *);
 
 #endif

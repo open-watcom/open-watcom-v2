@@ -139,7 +139,7 @@ extern bool             SimCalcTargetSpaceNeeded( void );
 extern void             CheckDLLCount( char * );
 extern void             SimCalcAddRemove( void );
 extern void             SimSetNeedGetDiskSizes();
-extern unsigned char    PatchFiles( void );
+extern bool             PatchFiles( void );
 extern void             MsgPut( int resourceid, va_list arglist );
 extern void             PatchError( int format, ... );
 extern void             FilePatchError( int format, ... );

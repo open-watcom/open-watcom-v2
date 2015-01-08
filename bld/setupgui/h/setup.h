@@ -59,8 +59,6 @@
     #define INCL_DOSPROCESS
     #define INCL_ERRORS
     #include <os2.h>
-#else
-    #include "setupui.h"
 #endif
 
 #ifdef __OS2__
@@ -104,17 +102,15 @@ extern gui_window       *MainWnd;
 extern bool             SetupPreInit( void );
 extern bool             SetupInit( void );
 extern void             SetupFini( void );
-extern void             SetupError( char * );
-extern gui_message_return MsgBox( gui_window *, char *, gui_message_type, ... );
 extern void             ReplaceVars( char *, const char * );
 extern bool             StatusInit( void );
 extern void             StatusFini( void );
 extern void             StatusShow( bool );
-extern void             StatusLines( int, char * );
+extern void             StatusLines( int, const char * );
 extern void             StatusAmount( long, long );
 extern bool             StatusCancelled( void );
 extern gui_message_return CheckInstallDLL( char*, vhandle );
-extern gui_message_return CheckInstallNLM( char*, vhandle );
+extern gui_message_return CheckInstallNLM( const char *, vhandle );
 extern bool             IsNLMNewerThanExistingNLM(char *name);
 extern bool             CreatePMInfo( bool );
 extern bool             ModifyConfiguration( bool );
@@ -137,8 +133,7 @@ extern bool             CreateServices( void );
 extern bool             UpdateODBC( void );
 extern bool             RegUpdateODBC( void );
 extern bool             ApplyLicense( void );
-extern bool             DoDeleteFile( char * );
-extern bool             PatchFiles( void );
+extern bool             DoDeleteFile( const char * );
 
 enum {
      WND_PLAIN  = GUI_FIRST_UNUSED,

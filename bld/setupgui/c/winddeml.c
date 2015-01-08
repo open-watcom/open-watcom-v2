@@ -57,16 +57,16 @@ static bool SendCommand( DWORD ddeinst, HCONV hconv, char *buff )
     hData = DdeCreateDataHandle( ddeinst, (LPBYTE)buff, strlen( buff ) + 1,
                                  0, (HSZ)NULL, 0L, 0L );
     if( hData == (HDDEDATA)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hrc = DdeClientTransaction( (LPBYTE) hData, -1, hconv, (HSZ)NULL, 0L,
                                 XTYP_EXECUTE, DDE_WAITTIME, NULL );
     if( hrc == (HDDEDATA)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static bool UseDDE( bool uninstall )
@@ -90,14 +90,14 @@ static bool UseDDE( bool uninstall )
 
     SimGetPMGroup( t1 );
     if( t1[ 0 ] == '\0' ) {
-        return( TRUE );
+        return( true );
     }
 
     // Initiate a conversation with the Program Manager.
     // NOTE: No callback provided since we only issue execute commands
     rc = DdeInitialize( &ddeinst, NULL, APPCMD_CLIENTONLY, 0L );
     if( rc != 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     happ = DdeCreateStringHandle( ddeinst, progman, CP_WINANSI );
@@ -105,7 +105,7 @@ static bool UseDDE( bool uninstall )
 
     hconv = DdeConnect( ddeinst, happ, htopic, NULL );
     if( hconv == (HCONV)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     // Disable the Program Manager so that the user can't work with it
@@ -292,7 +292,7 @@ static void get_group_name( char *buff, char *group )
     munge_fname( buff );
 }
 
-static BOOL create_group( char *group )
+static bool create_group( char *group )
 {
     char                buff[_MAX_PATH];
     int                 rc;
@@ -301,9 +301,9 @@ static BOOL create_group( char *group )
     rc = mkdir( buff );
 
     if( rc == -1 && errno != EEXIST ) {
-        return( FALSE );
+        return( false );
     } else {
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -344,7 +344,7 @@ static void remove_group( char *group )
     delete_dir( buff );
 }
 
-static BOOL create_icon( char *group, char *pgm, char *desc,
+static bool create_icon( char *group, char *pgm, char *desc,
                          char *arg, char *work, char *icon, int icon_num )
 {
     HRESULT             hres;
@@ -401,7 +401,6 @@ static bool UseIShellLink( bool uninstall )
     char                prog_name[_MAX_PATH], prog_desc[_MAX_PATH];
     char                icon_name[_MAX_PATH], working_dir[_MAX_PATH];
     char                group[_MAX_PATH], prog_arg[_MAX_PATH], tmp[_MAX_PATH];
-    BOOL                rc;
 
     if( uninstall ) {
         num_groups = SimGetNumPMGroups();
@@ -412,12 +411,12 @@ static bool UseIShellLink( bool uninstall )
                 remove_group( group );
             }
         }
-        return( TRUE );
+        return( true );
     }
 
     SimGetPMGroup( group );
     if( group[0] == '\0' ) {
-        return( TRUE );
+        return( true );
     }
 
     CoInitialize( NULL );
@@ -425,7 +424,7 @@ static bool UseIShellLink( bool uninstall )
     // Create the PM Group box.
     if( !create_group( group ) ) {
         CoUninitialize();
-        return( FALSE );
+        return( false );
     }
 
     // Add the individual PM files to the Group box.
@@ -450,7 +449,7 @@ static bool UseIShellLink( bool uninstall )
             strcpy( group, prog_desc );
             if( !create_group( group ) ) {
                 CoUninitialize();
-                return( FALSE );
+                return( false );
             }
         } else {
             // Adding item to group
@@ -477,11 +476,10 @@ static bool UseIShellLink( bool uninstall )
                 strcpy( icon_name, tmp );
             }
             // Add the new file to the already created PM Group.
-            rc = create_icon( group, prog_name, prog_desc, prog_arg, working_dir,
-                              icon_name, icon_number );
-            if( rc == FALSE ) {
+            if( !create_icon( group, prog_name, prog_desc, prog_arg, working_dir,
+                              icon_name, icon_number ) ) {
                 CoUninitialize();
-                return( FALSE );
+                return( false );
             }
         }
         ++num_installed;
@@ -492,7 +490,7 @@ static bool UseIShellLink( bool uninstall )
     StatusAmount( num_total_install, num_total_install );
 
     CoUninitialize();
-    return( TRUE );
+    return( true );
 }
 
 #endif

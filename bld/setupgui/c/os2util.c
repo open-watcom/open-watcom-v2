@@ -71,8 +71,8 @@ static void remove_group( const char *group )
 }
 
 
-extern bool CreatePMInfo( bool uninstall )
-/****************************************/
+bool CreatePMInfo( bool uninstall )
+/*********************************/
 {
     char                PMProgName[_MAX_PATH], PMProgDesc[MAXBUF];
     char                PMIconFileName[_MAX_PATH], WorkingDir[_MAX_PATH];
@@ -99,12 +99,12 @@ extern bool CreatePMInfo( bool uninstall )
                 remove_group( GroupFileName );
             }
         }
-        return( TRUE );
+        return( true );
     }
 
     SimGetPMGroup( t1 );
     if( t1[0] == '\0' ) {
-        return( TRUE );
+        return( true );
     }
 
     SimGetPMGroupFileName( t2 );
@@ -141,7 +141,7 @@ extern bool CreatePMInfo( bool uninstall )
             // Process a group (ie. folder)
             SimGetPMParms( nPMProg, t1 );
             if( t1[0] == '\0' ) {
-                return( TRUE );
+                return( true );
             }
 
             if( PMProgDesc[0] != '\0' ) {
@@ -209,7 +209,7 @@ extern bool CreatePMInfo( bool uninstall )
         }
     }
     StatusAmount( nMaxPMProgs, nMaxPMProgs );
-    return( TRUE );
+    return( true );
 }
 
 

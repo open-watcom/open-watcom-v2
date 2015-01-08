@@ -57,7 +57,7 @@
 
 static a_dialog_header *FirstDialog = NULL;
 static a_dialog_header *LastDialog = NULL;
-extern int             SkipDialogs;
+extern bool            SkipDialogs;
 
 extern a_dialog_header *FindDialogByName( const char *dlg_name )
 /**************************************************************/
@@ -107,8 +107,9 @@ extern a_dialog_header *AddNewDialog( const char *dlg_name )
     memset( new_dialog, '\0', sizeof( *new_dialog ) );
 //    new_dialog->controls = GUIMemAlloc( sizeof(gui_control_info) );
     GUIStrDup( dlg_name, &new_dialog->name );
-    new_dialog->adjusted = FALSE;
-    new_dialog->def_dlg = FALSE;
+    new_dialog->adjusted = false;
+    new_dialog->def_dlg = false;
+    new_dialog->defaults_set = false;
     new_dialog->ret_val = DLG_NEXT;
     new_dialog->any_check = NO_VAR;
 
@@ -156,10 +157,10 @@ bool CheckDialog( const char *name )
 
     dlg = FindDialogByName( name );
     if( dlg == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( dlg->condition == NULL )
-        return( TRUE );
+        return( true );
     return( EvalCondition( dlg->condition ) );
 }
 
@@ -188,19 +189,19 @@ dlg_state DoDialogWithParent( void *parent, const char *name )
         // return DLG_DONE when the ESC key is pressed, if it has a
         // DONE button rather than a CANCEL button.
         int   i;
-        bool  can = FALSE;
-        bool  done = FALSE;
+        bool  can = false;
+        bool  done = false;
 
         for( i = 0; i < dlg->num_controls; i++ ) {
             if( dlg->controls[i].id == CTL_CANCEL ) {
-                can = TRUE;
+                can = true;
                 break;
             }
             if( dlg->controls[i].id == CTL_DONE ) {
-                done = TRUE;
+                done = true;
             }
         }
-        if( can == FALSE && done == TRUE ) {
+        if( can == false && done == true ) {
             return_state = DLG_DONE;
         }
     }
