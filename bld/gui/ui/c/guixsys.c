@@ -215,7 +215,7 @@ int GUIXMain( int argc, char * argv[] )
 void GUIXSetupWnd( gui_window *wnd )
 {
     wnd->screen.event = EV_NO_EVENT;
-    wnd->screen.flags = V_UNFRAMED | V_NO_ZOOM | GUI_WINDOW;
+    wnd->screen.flags = V_UNFRAMED | V_NO_ZOOM | V_GUI_WINDOW;
     wnd->screen.cursor = C_OFF;
     wnd->flags = CHECK_CHILDREN_ON_RESIZE;
     wnd->background = ' ';

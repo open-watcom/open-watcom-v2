@@ -575,7 +575,7 @@ bool GUIProcessEvent( EVENT ev )
     unsigned    id;
     gui_window  *menu_window;
     bool        new_curr_wnd;
-    VSCREEN     *vscreen;
+    VSCREEN     *screen;
 
     // this is processed before all others and signals the end for all
     // GUI UI windows ( unconditional )
@@ -586,16 +586,12 @@ bool GUIProcessEvent( EVENT ev )
 
     ev = MapMiddleToRight( ev );
     ev = CheckPrevEvent( ev );
+    wnd = NULL;
     if( uimouseinstalled() ) {
-        wnd = (gui_window *)uivmousepos( NULL, &row, &col );
-        if( wnd != NULL ) {
-            vscreen = (VSCREEN *)wnd;
-            if( !( vscreen->flags & GUI_WINDOW ) ) {
-                wnd = NULL;
-            }
+        screen = uivmousepos( NULL, &row, &col );
+        if( screen != NULL && (screen->flags & V_GUI_WINDOW) != 0 ) {
+            wnd = (gui_window *)((char *)screen - offsetof( gui_window, screen ));
         }
-    } else {
-        wnd = NULL;
     }
     if( GUIDoKeyboardMoveResize( ev ) ) {
         return( true );

@@ -30,15 +30,16 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
 #include <string.h>
+#include "guiwind.h"
+#include "guiutil.h"
 
 /*
  * GUIStripTralingBlanks -- return a copy of label with the appended blanks
  *                          stripped off
  */
 
-bool GUIStripTrailingBlanks( char *label, char **new )
+bool GUIStripTrailingBlanks( const char *label, char **new )
 {
     int         length;
 
@@ -67,7 +68,7 @@ bool GUIStripTrailingBlanks( char *label, char **new )
     return( true );
 }
 
-bool GUIStrDup( char *text, char **new )
+bool GUIStrDup( const char *text, char **new )
 {
     if( text == NULL ) {
         if( new == NULL ) {

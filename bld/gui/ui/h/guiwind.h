@@ -46,8 +46,6 @@
 
 #define GUI_IS_GUI      false
 
-#define GUI_WINDOW      0x1000
-
 #define BORDER_AMOUNT           2
 #define HALF_BORDER_AMOUNT      1
 #define MENU_AMOUNT             2
@@ -120,7 +118,7 @@ typedef struct statusinfo {
 } statusinfo;
 
 struct gui_window {
-    VSCREEN             screen; /* must be first field - see call to uivopen */
+    VSCREEN             screen;         /* must be first field - see call to uivopen */
     gui_create_styles   style;          // style window was created with
     int                 num_attrs;      // number of colours
     ATTR                *colours;       // colours for window

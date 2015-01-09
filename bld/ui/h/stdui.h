@@ -563,6 +563,7 @@ typedef struct monitor {
 #define         V_UNPROTECTED           0x0020
 #define         V_HIDDEN                0x0040
 #define         V_LISTBOX               0x0100
+#define         V_GUI_WINDOW            0x1000      /* reserved for use by gui project */
 
 enum {
         C_OFF,
