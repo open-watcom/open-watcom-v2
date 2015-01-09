@@ -143,7 +143,7 @@ int GUIGetCurrSelect( gui_window *wnd, unsigned id )
 
     if( GetList( wnd, id, &field, &list ) ) {
         if( !GUIListCurr( list, 0, false, &ret ) ) {
-            return( false );
+            return( 0 );
         }
         return( ret );
     }

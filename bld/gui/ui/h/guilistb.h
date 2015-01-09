@@ -32,6 +32,7 @@
 
 #ifndef _GUILISTB_H_
 #define _GUILISTB_H_
+
 extern void GUIFreeList( a_list *list, bool free_list );
 extern a_list *GUICreateListBox( void );
 extern a_list *GUICreateEditMLE( const char *text );

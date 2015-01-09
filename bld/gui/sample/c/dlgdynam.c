@@ -140,14 +140,14 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         for( i = RADIOBUTTON_CONTROL1; i <= RADIOBUTTON_CONTROL2; i++ ) {
             if( ( Controls[i].style & GUI_CHECKED ) &&
                 !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, true );
+                GUISetChecked( gui, i, GUI_CHECKED );
             }
         }
         num = CHECKBOX_CONTROL2;
         for( i = CHECKBOX_CONTROL1; i <= num; i++ ) {
             if( ( Controls[i].style & GUI_CHECKED ) &&
                 !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, true );
+                GUISetChecked( gui, i, GUI_CHECKED );
             }
         }
 
@@ -155,7 +155,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIInsertText( gui, LISTBOX_CONTROL, 0, ListBoxData[i] );
         }
 
-        GUISetChecked( gui, RADIOBUTTON_CONTROL1, false );
+        GUISetChecked( gui, RADIOBUTTON_CONTROL1, GUI_NOT_CHECKED );
 
         GUISetText( gui, EDIT_CONTROL, "default" );
         GUISelectAll( gui, EDIT_CONTROL, true );
@@ -288,7 +288,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIEnableControl( gui, RADIOBUTTON_CONTROL2,
                               !GUIIsControlEnabled( gui, RADIOBUTTON_CONTROL2 ) );
             GUIDisplayMessage( gui, "Clearing", "Sample Application", GUI_OK_CANCEL );
-            GUISetChecked( gui, RADIOBUTTON_CONTROL2, true );
+            GUISetChecked( gui, RADIOBUTTON_CONTROL2, GUI_CHECKED );
             GUIClearText( gui, STATIC_CONTROL );
             GUIClearText( gui, EDIT_CONTROL );
             size = GUIGetListSize( gui, LISTBOX_CONTROL );
