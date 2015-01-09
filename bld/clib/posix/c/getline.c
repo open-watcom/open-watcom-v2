@@ -37,63 +37,52 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#ifndef SIZE_MAX
+#define SIZE_MAX ((size_t)-1)
+#endif
+#ifndef SSIZE_MAX
+#define SSIZE_MAX ((ssize_t)(SIZE_MAX / 2))
+#endif
+
 _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
 {
-    long    pos;
     int     c;
     size_t  linelength;
-    int     i;
+    size_t  size;
+    char    *buff;
 
     if( n == NULL || s == NULL ) {
         errno = EINVAL;
         return( -1 );
     }
 
-    if( *s == '\0' )
-        *n = 0;
+    buff = *s;
+    size = *n;
+    if( buff == NULL )
+        size = 0;
 
-    /* First, determine line length */
-    pos = ftell( fp );
-    linelength = 1; /* For the null character */
-    do {
-        c = getc( fp );
-        linelength++;
-    } while( c != EOF && c != delim );
-    fseek( fp, pos, SEEK_SET );
-
-    /* The EOF character should not be captured */
-    if( c == EOF )
-        linelength--;
-
-    /* If our line length is 1, we have nothing to read,
-     * and we should return right now
-     */
-    if( linelength == 1 )
+    linelength = 0;
+    while( (c = getc( fp )) != EOF ) {
+        if( linelength + 1 >= size ) {
+            size = linelength * 2 | 0x7F;
+            buff = realloc( buff, size );
+            if( buff == NULL ) {
+                errno = ENOMEM;
+                return( -1 );
+            }
+            *s = buff;
+            *n = size;
+        }
+        buff[linelength++] = c;
+        if( c == delim ) {
+            break;
+        }
+    }
+    if( linelength == 0 )
         return( -1 );
 
-    /* Now with a line length, check if we need a reallocation */
-    if( linelength > *n ) {
-        if(*n > 0 && *s != NULL)
-            free(*s);
-        *s = malloc( linelength );
-        if( *s == NULL ) {
-            errno = ENOMEM;
-            *n = 0;
-            return( -1 );
-        }
-        *n = linelength;
-    }
-
-    /* Copy in the characters */
-    i = 0;
-    c = ' ';
-    while( ( i < linelength - 1 ) && c != delim ) {
-        c = getc( fp );
-        (*s)[i++] = (char)c;
-    }
-    (*s)[i] = '\0';
-
-    return( linelength - 1 );
+    buff[linelength] = '\0';    /* Add the null character */
+    return( linelength );
 }
 
 _WCRTLINK ssize_t getline( char **s, size_t *n, FILE *fp )
