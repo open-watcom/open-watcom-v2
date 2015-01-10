@@ -32,6 +32,9 @@
 !inject getpid.obj                                                                              l32 lpc lmp
 !inject getpname.obj                                                                            l32 lpc lmp
 !inject getppid.obj                                                                             l32 lpc lmp
+!inject getpwent.obj                                                                            l32 lpc lmp
+!inject getpwnam.obj                                                                            l32 lpc lmp
+!inject getpwuid.obj                                                                            l32 lpc lmp
 !inject getrlim.obj                                                                             l32 lpc lmp
 !inject gettmofd.obj                                                                            l32 lpc lmp
 !inject getuid.obj                                                                              l32 lpc lmp
