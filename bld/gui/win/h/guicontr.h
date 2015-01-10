@@ -43,7 +43,7 @@ typedef struct control_item {
     gui_control_class   control_class;
     WPI_PROC            call_back;
     HWND                hwnd;
-    char                *text;
+    const char          *text;
     gui_control_styles  style;
     struct control_item *next;
 };

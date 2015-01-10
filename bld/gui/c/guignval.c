@@ -56,11 +56,11 @@ enum {
 /* all 0 values are set in the code */
 
 static gui_control_info GetNew[] = {
-    DLG_STRING( NULL,  START_STATIC, TEXT_ROW,   0 ), /* STATIC */
-    DLG_STRING( "=",              0, TEXT_ROW,   1 ),            /* EQUAL  */
-    DLG_EDIT( NULL,       EDIT,   0, TEXT_ROW,   0 ),            /* EDIT   */
-    DLG_BUTTON( NULL, CANCEL, 0, BUTTON_ROW, BUTTON_WIDTH ), /* CANCEL */
-    DLG_DEFBUTTON( NULL,  OK,     0, BUTTON_ROW, BUTTON_WIDTH )  /* OK     */
+    DLG_STRING( NULL,             START_STATIC, TEXT_ROW,   0 ),            /* STATIC */
+    DLG_STRING( "=",              0,            TEXT_ROW,   1 ),            /* EQUAL  */
+    DLG_EDIT( NULL,       EDIT,   0,            TEXT_ROW,   0 ),            /* EDIT   */
+    DLG_BUTTON( NULL,     CANCEL, 0,            BUTTON_ROW, BUTTON_WIDTH ), /* CANCEL */
+    DLG_DEFBUTTON( NULL,  OK,     0,            BUTTON_ROW, BUTTON_WIDTH )  /* OK     */
 };
 
 #define NUM_CONTROLS  ( sizeof( GetNew ) / sizeof( gui_control_info ) )
@@ -110,7 +110,7 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
  * GUIGetNewVal --
  */
 
-gui_message_return GUIGetNewVal( const char *title, char *old, char **new_val )
+gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val )
 {
     int         length;
     int         disp_length;
@@ -118,7 +118,7 @@ gui_message_return GUIGetNewVal( const char *title, char *old, char **new_val )
     ret_info    info;
 
     info.ret_val = GUI_RET_ABORT;
-    info.text = old;
+    info.text = NULL;
     length = 0;
     if( old != NULL ) {
         length = strlen( old );

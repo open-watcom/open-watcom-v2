@@ -338,7 +338,7 @@ typedef struct gui_resource {
 
 typedef struct gui_control_info {
     gui_control_class   control_class;
-    char                *text;
+    const char          *text;
     gui_rect            rect;
     gui_window          *parent;
     gui_scroll_styles   scroll;
@@ -875,7 +875,7 @@ extern gui_ord GUIGetNumRows( gui_window *wnd );
 /* Built in user interactions */
 
 extern gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message, const char *title, gui_message_type type );
-extern gui_message_return GUIGetNewVal( const char *title, char *old, char **new_val );
+extern gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val );
 extern int GUIDlgPick( const char *title, PICKCALLBACK *pickinit );
 extern int GUIDlgPickWithRtn( const char *title, PICKCALLBACK *pickinit, PICKDLGOPEN * );
 
