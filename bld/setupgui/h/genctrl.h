@@ -32,7 +32,7 @@
 #include "vhandle.h"
 
 extern void set_dlg_textwindow( gui_control_info *gui_controls,
-                          int num_controls, char *s,
+                          int num_controls, const char *s,
                           int id,
                           gui_ord x1,                   //top-left x
                           gui_ord y1,                   //top-left y
@@ -41,23 +41,23 @@ extern void set_dlg_textwindow( gui_control_info *gui_controls,
                           gui_scroll_styles scroll );   // scroll style )
 
 extern void set_dlg_dynamstring( gui_control_info *gui_controls,
-                                 int num_controls, char *s,
+                                 int num_controls, const char *s,
                                  int id, gui_ord x1, gui_ord y1, gui_ord x2 );
 
 
 extern void set_dlg_radio( gui_control_info *gui_controls,
-                           int num_controls, int num_radio_buttons, char *s,
+                           int num_controls, int num_radio_buttons, const char *s,
                            int id, gui_ord x1, gui_ord y1, gui_ord x2 );
 
 extern void set_dlg_check( gui_control_info *gui_controls,
-                           int num_controls, char *s,
+                           int num_controls, const char *s,
                            int id, gui_ord x1, gui_ord y1, gui_ord x2 );
 
 extern void set_dlg_edit( gui_control_info *gui_controls,
-                          int num_controls, char *s,
+                          int num_controls, const char *s,
                           int id, gui_ord x1, gui_ord y1, gui_ord x2 );
 
-extern int set_dlg_push_button( vhandle var_handle, char *text,
+extern int set_dlg_push_button( vhandle var_handle, const char *text,
                                 gui_control_info *gui_controls,
                                 int num_controls, int row, int num_buttons,
                                 int of, int cols, int bwidth );

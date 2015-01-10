@@ -263,7 +263,7 @@ char *GUIMakeEditCopy( char *buffer, int length )
         copy = (char * )GUIMemAlloc( length + 1 );
         if( copy != NULL ) {
             memcpy( copy, buffer, length );
-            copy[length] = NULLCHAR;
+            copy[length] = '\0';
         }
     } else {
         copy = NULL;
@@ -301,18 +301,18 @@ void GUIMakeRelative( gui_window *wnd, gui_coord *point, gui_point *pt )
 bool GUIJustSetWindowText( gui_window *wnd, const char *title )
 {
     char        *new_title;
+    bool        ok;
 
-    if( !GUIStrDup( title, &new_title ) ) {
+    new_title = GUIStrDup( title, &ok );
+    if( !ok )
         return( false );
+    if( wnd->screen.dynamic_title ) {
+        GUIMemFree( (void *)wnd->screen.title );
     } else {
-        if( wnd->screen.dynamic_title ) {
-            GUIMemFree( (void *)wnd->screen.title );
-        } else {
-            wnd->screen.dynamic_title = true;
-        }
-        wnd->screen.title = new_title;
-        return( true );
+        wnd->screen.dynamic_title = true;
     }
+    wnd->screen.title = new_title;
+    return( true );
 }
 
 bool GUIInArea( ORD row, ORD col, SAREA *area )

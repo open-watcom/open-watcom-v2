@@ -44,16 +44,18 @@
 #include "setupinf.h"
 #include "genvbl.h"
 #include "dynarray.h"
+#include "genctrl.h"
+
 #include "clibext.h"
 
-extern void set_dlg_textwindow( gui_control_info *gui_controls,
-                                int num_controls, char *s,
-                                int id,
-                                gui_ord x1,                 // top-left x
-                                gui_ord y1,                 // top-left y
-                                gui_ord x2,                 // bottom-right x
-                                int lines,                  // number of lines
-                                gui_scroll_styles scroll )  // scroll style
+void set_dlg_textwindow( gui_control_info *gui_controls,
+                        int num_controls, const char *s,
+                        int id,
+                        gui_ord x1,                 // top-left x
+                        gui_ord y1,                 // top-left y
+                        gui_ord x2,                 // bottom-right x
+                        int lines,                  // number of lines
+                        gui_scroll_styles scroll )  // scroll style
 /**************************************************************/
 // see gui.h for gui_scroll_styles
 {
@@ -62,7 +64,7 @@ extern void set_dlg_textwindow( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class = GUI_EDIT_MLE;
-    GUIStrDup( s, &control->text );
+    control->text = GUIStrDup( s, NULL );
     DLG_SET_RECT( *control, x1, y1, x2, y1 + lines );
     control->parent = NULL;
     control->scroll = scroll;
@@ -71,15 +73,15 @@ extern void set_dlg_textwindow( gui_control_info *gui_controls,
 }
 
 
-extern void set_dlg_dynamstring( gui_control_info *gui_controls,
-                                 int num_controls, char *s,
+void set_dlg_dynamstring( gui_control_info *gui_controls,
+                                 int num_controls, const char *s,
                                  int id, gui_ord x1, gui_ord y1, gui_ord x2 )
 /***************************************************************************/
 {
       gui_control_info  *control;
       control = &gui_controls[num_controls];
       control->control_class = GUI_STATIC;
-      GUIStrDup( s, &control->text );
+      control->text = GUIStrDup( s, NULL );
       DLG_SET_RECT( *control, x1, y1, x2, y1 );
       control->parent       = NULL;
       control->scroll       = GUI_NOSCROLL;
@@ -88,8 +90,8 @@ extern void set_dlg_dynamstring( gui_control_info *gui_controls,
 }
 
 
-extern void set_dlg_radio( gui_control_info *gui_controls,
-                           int num_controls, int num_radio_buttons, char *s,
+void set_dlg_radio( gui_control_info *gui_controls,
+                           int num_controls, int num_radio_buttons, const char *s,
                            int id, gui_ord x1, gui_ord y1, gui_ord x2 )
 /**************************************************************************/
 {
@@ -98,7 +100,7 @@ extern void set_dlg_radio( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class = GUI_RADIO_BUTTON;
-    GUIStrDup( s, &control->text );
+    control->text = GUIStrDup( s, NULL );
     DLG_SET_RECT( *control, x1, y1, x2, y1 );
     control->parent = NULL;
     control->scroll = GUI_NOSCROLL;
@@ -112,8 +114,8 @@ extern void set_dlg_radio( gui_control_info *gui_controls,
     control->id     = id;
 }
 
-extern void set_dlg_check( gui_control_info *gui_controls,
-                           int num_controls, char *s,
+void set_dlg_check( gui_control_info *gui_controls,
+                           int num_controls, const char *s,
                            int id, gui_ord x1, gui_ord y1, gui_ord x2 )
 /*********************************************************************/
 {
@@ -122,7 +124,7 @@ extern void set_dlg_check( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class = GUI_CHECK_BOX;
-    GUIStrDup( s, &control->text );
+    control->text = GUIStrDup( s, NULL );
     DLG_SET_RECT( *control, x1, y1, x2, y1 );
     control->parent = NULL;
     control->scroll = GUI_NOSCROLL;
@@ -130,8 +132,8 @@ extern void set_dlg_check( gui_control_info *gui_controls,
     control->id     = id;
 }
 
-extern void set_dlg_edit( gui_control_info *gui_controls,
-                          int num_controls, char *s,
+void set_dlg_edit( gui_control_info *gui_controls,
+                          int num_controls, const char *s,
                           int id, gui_ord x1, gui_ord y1, gui_ord x2 )
 /********************************************************************/
 {
@@ -141,7 +143,7 @@ extern void set_dlg_edit( gui_control_info *gui_controls,
     control = &gui_controls[num_controls];
 
     control->control_class = GUI_EDIT;
-    GUIStrDup( s, &control->text );
+    control->text = GUIStrDup( s, NULL );
     if( s != NULL && s[0] != '\0' ) {
         text_size = strlen( s );
         DLG_SET_RECT( *control, x1 + text_size + 2, y1, text_size + 3, y1 );
@@ -168,7 +170,7 @@ char *TrimQuote( char *text )
 }
 
 
-extern int set_dlg_push_button( vhandle var_handle, char *text,
+int set_dlg_push_button( vhandle var_handle, const char *text,
                                 gui_control_info *gui_controls,
                                 int num_controls, int row, int num_buttons,
                                 int of, int cols, int bwidth )
@@ -177,50 +179,52 @@ extern int set_dlg_push_button( vhandle var_handle, char *text,
     int                 but_pos = 0;
     gui_control_info    *control;
     int                 id;
+    char                *str;
 
     control = &gui_controls[num_controls];
-
     control->control_class = GUI_PUSH_BUTTON;
-    switch( *text ) {
+
+    str = GUIStrDup( text, NULL );
+    switch( *str ) {
     case '0':
         id = CTL_FIRST;
-        ++text;
+        ++str;
         break;
     case '-':
         id = CTL_PREVIOUS;
-        ++text;
+        ++str;
         break;
     case '+':
         id = CTL_OK;
-        ++text;
+        ++str;
         break;
     case '^':
         id = CTL_CANCEL;
-        ++text;
+        ++str;
         break;
     case '*':
         id = CTL_DONE;
-        ++text;
+        ++str;
         break;
     case '?':
         id = CTL_HELP;
-        ++text;
+        ++str;
         break;
     case '>':
         id = CTL_SKIP;
-        ++text;
+        ++str;
         break;
     default:
-        text = TrimQuote( text );
-        if( stricmp( text, "Cancel" ) == 0 ) {
+        str = TrimQuote( str );
+        if( stricmp( str, "Cancel" ) == 0 ) {
             id = CTL_CANCEL;
-        } else if( stricmp( text, "Done" ) == 0 ) {
+        } else if( stricmp( str, "Done" ) == 0 ) {
             id = CTL_DONE;
-        } else if( stricmp(text, "OK" ) == 0 ) {
+        } else if( stricmp( str, "OK" ) == 0 ) {
             id = CTL_OK;
-        } else if( stricmp( text, "Options" ) == 0 ) {
+        } else if( stricmp( str, "Options" ) == 0 ) {
             id = CTL_OPTIONS;
-        } else if( stricmp( text, "Help" ) == 0 ) {
+        } else if( stricmp( str, "Help" ) == 0 ) {
             id = CTL_HELP;
         } else {
             id = VarGetId( var_handle );
@@ -231,11 +235,11 @@ extern int set_dlg_push_button( vhandle var_handle, char *text,
         }
         break;
     }
-    text = TrimQuote( text );
-    GUIStrDup( text, &control->text );
+    str = TrimQuote( str );
+    control->text = str;
     but_pos = BUTTON_POS( num_buttons, of, cols, bwidth );
 
-    DLG_SET_RECT( *control, but_pos, row, but_pos+BW, row );
+    DLG_SET_RECT( *control, but_pos, row, but_pos + BW, row );
     control->parent = NULL;
     control->scroll = GUI_NOSCROLL;
     control->style  = GUI_TAB_GROUP | GUI_AUTOMATIC;

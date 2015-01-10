@@ -103,19 +103,22 @@ void GUISetSystemMenuFlags( gui_window *wnd )
 
 bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
 {
-    int i;
+    int     i;
+    bool    ok;
 
     for( i = 0; i < NUM_SYSTEM_MENUS; i++ ) {
         menu[i].event = SystemMenu[i].event;
         menu[i].flags = SystemMenu[i].flags;
         switch( menu[i].event ) {
         case GUI_MENU_MOVE :
-            if( !GUIStrDup( LIT( Move ), &menu[i].name ) ) {
+            menu[i].name = GUIStrDup( LIT( Move ), &ok );
+            if( !ok ) {
                 return( false );
             }
             break;
         case GUI_MENU_SIZE :
-            if( !GUIStrDup( LIT( Size ), &menu[i].name ) ) {
+            menu[i].name = GUIStrDup( LIT( Size ), &ok );
+            if( !ok ) {
                 return( false );
             }
             if( !( style & GUI_RESIZEABLE ) ) {
@@ -123,13 +126,15 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
             }
             break;
         case GUI_MENU_RESTORE :
-            if( !GUIStrDup( LIT( Restore ), &menu[i].name ) ) {
+            menu[i].name = GUIStrDup( LIT( Restore ), &ok );
+            if( !ok ) {
                 return( false );
             }
             GUIChangeMenu( &menu[i], GUI_GRAYED );
             break;
         case GUI_MENU_MINIMIZE :
-            if( !GUIStrDup( LIT( Minimize ), &menu[i].name ) ) {
+            menu[i].name = GUIStrDup( LIT( Minimize ), &ok );
+            if( !ok ) {
                 return( false );
             }
             if( !( style & GUI_MINIMIZE ) ) {
@@ -137,7 +142,8 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
             }
             break;
         case GUI_MENU_MAXIMIZE :
-            if( !GUIStrDup( LIT( Maximize ), &menu[i].name ) ) {
+            menu[i].name = GUIStrDup( LIT( Maximize ), &ok );
+            if( !ok ) {
                 return( false );
             }
             if( !( style & GUI_MAXIMIZE ) ) {
@@ -145,7 +151,8 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
             }
             break;
         case GUI_MENU_CLOSE :
-            if( !GUIStrDup( LIT( Close ), &menu[i].name ) ) {
+            menu[i].name = GUIStrDup( LIT( Close ), &ok );
+            if( !ok ) {
                 return( false );
             }
             if( !( style & GUI_CLOSEABLE ) ) {

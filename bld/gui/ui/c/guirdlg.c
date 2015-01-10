@@ -93,9 +93,9 @@ static char *ResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
     if( name != NULL ) {
         if( name->ord.fFlag == 0xff) {
             sprintf( temp, ( base == 10 ) ? "%d" : "%x", name->ord.wOrdinalID );
-            ok = GUIStrDup( temp, &cp );
+            cp = GUIStrDup( temp, &ok );
         } else {
-            ok = GUIStrDup( name->name, &cp );
+            cp = GUIStrDup( name->name, &ok );
         }
         if( !ok || ( cp == NULL ) ) {
             return( NULL );
@@ -212,7 +212,6 @@ static DialogBoxHeader *Template2DlgHdr( uint_8 **data )
 {
     DialogBoxHeader     *hdr;
     bool                ok;
-    uint_8              *p;
 
     hdr = NULL;
 
@@ -236,12 +235,11 @@ static DialogBoxHeader *Template2DlgHdr( uint_8 **data )
     }
 
     if( ok ) {
-        ok = GUIStrDup( (char *)(*data), (char **)&p );
         /* Have to do this with a temp because &hdr->Caption is unaligned */
-        hdr->Caption = (char *)p;
-        ok = ok && ( p != NULL );
+        hdr->Caption = GUIStrDup( (char *)*data, &ok );
+        ok = ok && ( hdr->Caption != NULL );
         if( ok ) {
-            *data += ( strlen( (char *)p ) + 1 );
+            *data += strlen( hdr->Caption ) + 1;
         }
     }
 
@@ -252,12 +250,11 @@ static DialogBoxHeader *Template2DlgHdr( uint_8 **data )
             // data may not be aligned -- need memcpy for UNIX platforms
             memcpy( &hdr->PointSize, *data, sizeof( hdr->PointSize ) );
             *data += sizeof(uint_16);
-            ok = GUIStrDup( (char *)*data, (char **)&p );
             /* Have to do this with a temp because &hdr->FontName is unaligned */
-            hdr->FontName = (char *)p;
+            hdr->FontName = GUIStrDup( (char *)*data, &ok );
             ok = ok && ( hdr->FontName != NULL );
             if( ok ) {
-                *data += ( strlen( hdr->FontName ) + 1 );
+                *data += strlen( hdr->FontName ) + 1;
             }
         }
     }

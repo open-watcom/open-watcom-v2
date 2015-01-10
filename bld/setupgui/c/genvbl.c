@@ -81,8 +81,8 @@ vhandle NextGlobalVar( vhandle var_handle )
     return( var_handle );
 }
 
-extern void InitGlobalVarList( void )
-/***********************************/
+void InitGlobalVarList( void )
+/****************************/
 /* must be called before any other reference to GlobalVarList is made */
 {
     GlobalVarArray.num = 0;
@@ -93,15 +93,15 @@ extern void InitGlobalVarList( void )
 }
 
 
-void VarSetAutoSetCond( vhandle var_handle, char *cond )
-/******************************************************/
+void VarSetAutoSetCond( vhandle var_handle, const char *cond )
+/************************************************************/
 {
-    GUIStrDup( cond, &GlobalVarList[var_handle].autoset );
+    GlobalVarList[var_handle].autoset = GUIStrDup( cond, NULL );
 }
 
 
-void VarSetAutoSetRestriction( vhandle var_handle, char *cond )
-/*************************************************************/
+void VarSetAutoSetRestriction( vhandle var_handle, const char *cond )
+/*******************************************************************/
 {
     GlobalVarList[var_handle].restriction = cond[0]; // 't' or 'f'
 }
@@ -131,8 +131,8 @@ const char *VarGetAutoSetCond( vhandle var_handle )
     return( GlobalVarList[var_handle].autoset );
 }
 
-extern vhandle GetVariableByName( const char *vbl_name )
-/******************************************************/
+vhandle GetVariableByName( const char *vbl_name )
+/***********************************************/
 {
     int        i;
 
@@ -148,8 +148,8 @@ extern vhandle GetVariableByName( const char *vbl_name )
     return( NO_VAR );
 }
 
-extern vhandle GetVariableById( int id )
-/**************************************/
+vhandle GetVariableById( int id )
+/*******************************/
 {
     // id is always the same as var_handle!
     if( id >= GlobalVarArray.num )
@@ -158,8 +158,8 @@ extern vhandle GetVariableById( int id )
 }
 
 
-extern const char *VarGetName( vhandle var_handle )
-/*************************************************/
+const char *VarGetName( vhandle var_handle )
+/******************************************/
 {
     if( var_handle == NO_VAR )
         return( "" );
@@ -167,8 +167,8 @@ extern const char *VarGetName( vhandle var_handle )
 }
 
 
-extern int VarGetId( vhandle var_handle )
-/***************************************/
+int VarGetId( vhandle var_handle )
+/********************************/
 {
     if( var_handle == NO_VAR )
         return( 0 );
@@ -176,8 +176,8 @@ extern int VarGetId( vhandle var_handle )
 }
 
 
-extern const char *VarGetStrVal( vhandle var_handle )
-/***************************************************/
+const char *VarGetStrVal( vhandle var_handle )
+/********************************************/
 {
     if( var_handle == NO_VAR )
         return( "" );
@@ -186,42 +186,42 @@ extern const char *VarGetStrVal( vhandle var_handle )
     return( GlobalVarList[var_handle].strval );
 }
 
-extern int VarGetIntVal( vhandle var_handle )
-/*******************************************/
+int VarGetIntVal( vhandle var_handle )
+/************************************/
 {
     return( atoi( VarGetStrVal( var_handle ) ) );
 }
 
-extern bool VarHasValue( vhandle var_handle )
-/*******************************************/
+bool VarHasValue( vhandle var_handle )
+/************************************/
 {
     if( var_handle == NO_VAR )
         return( FALSE );
     return( GlobalVarList[var_handle].has_value );
 }
 
-extern void VarSetHook( vhandle var_handle, void (*hook)( vhandle ) )
-/*******************************************************************/
+void VarSetHook( vhandle var_handle, void (*hook)( vhandle ) )
+/************************************************************/
 {
     if( var_handle == NO_VAR )
         return;
     GlobalVarList[var_handle].hook = hook;
 }
 
-extern int GetVariableIntVal( const char *vbl_name )
-/**************************************************/
+int GetVariableIntVal( const char *vbl_name )
+/*******************************************/
 {
     return( VarGetIntVal( GetVariableByName( vbl_name ) ) );
 }
 
-extern const char *GetVariableStrVal( const char *vbl_name )
-/**********************************************************/
+const char *GetVariableStrVal( const char *vbl_name )
+/***************************************************/
 {
     return( VarGetStrVal( GetVariableByName( vbl_name ) ) );
 }
 
-static vhandle NewVariable( char *vbl_name )
-/******************************************/
+static vhandle NewVariable( const char *vbl_name )
+/************************************************/
 {
     a_variable  *tmp_variable;
     vhandle     var_handle;
@@ -229,7 +229,7 @@ static vhandle NewVariable( char *vbl_name )
     var_handle = GlobalVarArray.num;
     BumpArray( &GlobalVarArray );
     tmp_variable = &GlobalVarList[var_handle];
-    GUIStrDup( vbl_name, &tmp_variable->name );
+    tmp_variable->name = GUIStrDup( vbl_name, NULL );
     tmp_variable->id = var_handle;
     tmp_variable->has_value = false;
     tmp_variable->autoset = NULL;
@@ -242,8 +242,8 @@ static vhandle NewVariable( char *vbl_name )
     return( var_handle );
 }
 
-extern vhandle AddVariable( char *vbl_name )
-/******************************************/
+vhandle AddVariable( const char *vbl_name )
+/*****************************************/
 {
     vhandle var_handle;
 
@@ -253,8 +253,8 @@ extern vhandle AddVariable( char *vbl_name )
     return( var_handle );
 }
 
-static vhandle DoSetVariable( vhandle var_handle, const char *strval, char *vbl_name )
-/************************************************************************************/
+static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char *vbl_name )
+/******************************************************************************************/
 {
     a_variable  *tmp_variable;
 
@@ -276,7 +276,7 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, char *vbl_
         var_handle = NewVariable( vbl_name );
     }
     tmp_variable = &GlobalVarList[var_handle];
-    GUIStrDup( strval, &tmp_variable->strval );
+    tmp_variable->strval = GUIStrDup( strval, NULL );
     tmp_variable->has_value = true;
     if( tmp_variable->hook ) {
         tmp_variable->hook( var_handle );
@@ -284,22 +284,22 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, char *vbl_
     return( var_handle );
 }
 
-extern vhandle SetVariableByName( char *vbl_name, const char *strval )
-/********************************************************************/
+vhandle SetVariableByName( const char *vbl_name, const char *strval )
+/*******************************************************************/
 {
     return( DoSetVariable( GetVariableByName( vbl_name ), strval, vbl_name ) );
 }
 
-extern vhandle SetVariableByHandle( vhandle var_handle, const char *strval )
-/**************************************************************************/
+vhandle SetVariableByHandle( vhandle var_handle, const char *strval )
+/*******************************************************************/
 {
     if( var_handle == NO_VAR )
         return( NO_VAR );
     return( DoSetVariable( var_handle, strval, NULL ) );
 }
 
-extern void SetDefaultGlobalVarList( void )
-/*****************************************/
+void SetDefaultGlobalVarList( void )
+/**********************************/
 {
     char    szBuf[_MAX_PATH];
 #if defined( __NT__ )
@@ -449,8 +449,8 @@ extern void SetDefaultGlobalVarList( void )
 }
 
 
-extern void FreeGlobalVarList( bool including_real_globals )
-/**********************************************************/
+void FreeGlobalVarList( bool including_real_globals )
+/***************************************************/
 {
     int i, j;
 

@@ -45,30 +45,35 @@ static char *GetText( gui_window *wnd, unsigned id, int choice, bool get_curr )
     a_list              *list;
     a_combo_box         *combo_box;
     char                *text;
+    bool                ok;
 
     field = GUIGetField( wnd, id );
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_CHECK:
-            if( GUIStrDup( field->u.check->str, &text ) ) {
+            text = GUIStrDup( field->u.check->str, &ok ); 
+            if( ok ) {
                 return( text );
             }
             break;
 
         case FLD_RADIO:
-            if( GUIStrDup( field->u.radio->str, &text ) ) {
+            text = GUIStrDup( field->u.radio->str, &ok );
+            if( ok ) {
                 return( text );
             }
             break;
 
         case FLD_HOT:
-            if( GUIStrDup( field->u.hs->str, &text ) ) {
+            text = GUIStrDup( field->u.hs->str, &ok );
+            if( ok ) {
                 return( text );
             }
             break;
 
         case FLD_TEXT :
-            if( GUIStrDup( field->u.str, &text ) ) {
+            text = GUIStrDup( field->u.str, &ok );
+            if( ok ) {
                 return( text );
             }
             break;

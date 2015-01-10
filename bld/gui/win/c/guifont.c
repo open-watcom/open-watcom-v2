@@ -145,14 +145,9 @@ bool GUIChangeFont( gui_window *wnd )
 static char *GetFontInfo( LOGFONT *lf )
 {
     char                buff[MAX_STR];
-    char                *str;
 
     GetFontFormatString( lf, buff );
-    if( GUIStrDup( buff, &str ) ) {
-        return( str );
-    } else {
-        return( NULL );
-    }
+    return( GUIStrDup( buff, NULL ) );
 }
 #endif
 

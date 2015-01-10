@@ -36,25 +36,25 @@
 
 #include "vhandle.h"
 
-extern vhandle NextGlobalVar( vhandle var_handle );
-extern void InitGlobalVarList(void );
-extern int GetVariableByName(const char *vbl_name);
-extern vhandle GetVariableById(int id);
-extern int VarGetId(vhandle var_handle);
-extern const char   *VarGetStrVal(vhandle var_handle);
-extern int VarGetIntVal( vhandle var_handle );
-extern int GetVariableIntVal(const char *vbl_name);
-extern const char   *GetVariableStrVal(const char *vbl_name);
-extern vhandle      SetVariableByHandle(vhandle var_handle,const char *strval);
-extern vhandle      SetVariableByName(char *vbl_name,const char *strval);
-extern void SetDefaultGlobalVarList(void );
-extern void FreeGlobalVarList( bool );
+extern vhandle      NextGlobalVar( vhandle var_handle );
+extern void         InitGlobalVarList( void );
+extern int          GetVariableByName( const char *vbl_name );
+extern vhandle      GetVariableById( int id );
+extern int          VarGetId( vhandle var_handle );
+extern const char   *VarGetStrVal( vhandle var_handle );
+extern int          VarGetIntVal( vhandle var_handle );
+extern int          GetVariableIntVal( const char *vbl_name );
+extern const char   *GetVariableStrVal( const char *vbl_name );
+extern vhandle      SetVariableByHandle( vhandle var_handle, const char *strval );
+extern vhandle      SetVariableByName( const char *vbl_name, const char *strval );
+extern void         SetDefaultGlobalVarList( void );
+extern void         FreeGlobalVarList( bool );
 extern const char   *VarGetName( vhandle var_handle );
-extern void VarSetHook( vhandle var_handle, void (*hook)( vhandle ) );
-extern bool VarHasValue( vhandle var_handle );
-extern vhandle AddVariable( char *name );
-extern void VarSetAutoSetCond( vhandle var_handle, char *cond );
+extern void         VarSetHook( vhandle var_handle, void (*hook)(vhandle) );
+extern bool         VarHasValue( vhandle var_handle );
+extern vhandle      AddVariable( const char *name );
+extern void         VarSetAutoSetCond( vhandle var_handle, const char *cond );
 extern const char   *VarGetAutoSetCond( vhandle var_handle );
-extern void VarSetAutoSetRestriction( vhandle var_handle, char *val );
-extern int VarIsRestrictedFalse( vhandle var_handle );
-extern int VarIsRestrictedTrue( vhandle var_handle );
+extern void         VarSetAutoSetRestriction( vhandle var_handle, const char *val );
+extern int          VarIsRestrictedFalse( vhandle var_handle );
+extern int          VarIsRestrictedTrue( vhandle var_handle );

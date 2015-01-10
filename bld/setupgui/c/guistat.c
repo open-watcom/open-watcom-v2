@@ -458,7 +458,6 @@ static bool OpenStatusWindow( const char *title )
     gui_text_metrics    metrics;
 //    int                 i;
     gui_rect            rect;
-    char                *str;
 
 //    for( i = STAT_BLANK; i < sizeof( Messages ) / sizeof( Messages[0] ); ++i ) {
 //      Messages[i] = GetVariableStrVal( Messages[i] );
@@ -469,8 +468,7 @@ static bool OpenStatusWindow( const char *title )
     GUITruncToPixel( &CharSize );
 
     StatusInfo.parent = MainWnd;
-    GUIStrDup( title, &str );
-    StatusInfo.title = str;
+    StatusInfo.title = GUIStrDup( title, NULL );
     StatusInfo.rect.width = STATUS_WIDTH * CharSize.x;
     StatusInfo.rect.height = STATUS_HEIGHT * CharSize.y;
     GUIGetClientRect( MainWnd, &rect );

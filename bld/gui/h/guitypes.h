@@ -32,14 +32,6 @@
 
 /* to be included by the /gui directory */
 
-#ifndef NULLCHAR
-    #define NULLCHAR '\0'
-#endif
-
-#ifndef NULL
-    #define NULL     0
-#endif
-
 #include "bool.h"
 
 #define GUIEVENTWND( wnd, event, param ) ((*wnd->call_back)(wnd, event,param ))

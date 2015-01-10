@@ -1558,7 +1558,7 @@ static void NewFileToCheck( const char *name, bool is_dll )
     new = GUIMemAlloc( sizeof( *new ) );
     new->next = FileCheckThisPack;
     FileCheckThisPack = new;
-    GUIStrDup( name, &new->name );
+    new->name = GUIStrDup( name, NULL );
     new->var_handle = NO_VAR;
     new->is_dll = is_dll;
 }

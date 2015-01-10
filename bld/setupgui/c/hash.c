@@ -57,8 +57,8 @@ hash_table     *HashInit( size_t size, hash_key_cmp func )
     return( ht );
 }
 
-int HashInsert( hash_table *ht, hash_key k, hash_data d )
-/*******************************************************/
+bool HashInsert( hash_table *ht, hash_key k, hash_data d )
+/********************************************************/
 {
     unsigned int        i;
     hash_element        *he;
@@ -68,19 +68,19 @@ int HashInsert( hash_table *ht, hash_key k, hash_data d )
     assert( d >= 0 );
 
     he = GUIMemAlloc( sizeof( hash_element ) );
-    if( !he )
-        return( 0 );
+    if( he == NULL )
+        return( false );
     i = hashKey( ht->size, k );
     he->data = d;
-    GUIStrDup( k, &(he->key) );
+    he->key = GUIStrDup( k, NULL );
     he->next = ht->table[i];
     ht->table[i] = he;
-    return( 1 );
+    return( true );
 }
 
 
-hash_data HashFind( hash_table *ht, hash_key_const k )
-/****************************************************/
+hash_data HashFind( hash_table *ht, hash_key k )
+/**********************************************/
 {
     unsigned int        i;
     hash_element        *he;
@@ -88,7 +88,7 @@ hash_data HashFind( hash_table *ht, hash_key_const k )
     assert( ht );
     assert( k );
 
-    i = hashKey( ht->size, (char *)k );
+    i = hashKey( ht->size, k );
     he = ht->table[i];
 
     while( he ) {
@@ -118,7 +118,7 @@ void HashFini( hash_table *ht )
         while( he ) {
             tmp = he;
             he = he->next;
-            GUIMemFree( tmp->key );
+            GUIMemFree( (void *)tmp->key );
             GUIMemFree( tmp );
         }
     }
@@ -145,4 +145,3 @@ static unsigned int hashKey( unsigned int size, hash_key k )
     assert( hash < size );
     return( hash );
 }
-

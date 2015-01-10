@@ -72,7 +72,7 @@ int main( int argc, char *argv[] )
 }
 
 
-static void CheckFile( char *fname, char *drive, char *dir )
+static void CheckFile( const char *fname, const char *drive, const char *dir )
 {
     bool                ok;
     char                path[_MAX_PATH];
@@ -91,7 +91,7 @@ static void CheckFile( char *fname, char *drive, char *dir )
 #endif
 
 
-bool ExeType( char *fname, char *exe_type )
+bool ExeType( const char *fname, char *exe_type )
 {
     int                 fp;
     int                 len;

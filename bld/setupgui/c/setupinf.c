@@ -131,7 +131,7 @@ struct patch_info {
     char                *condition;
 } *PatchInfo = NULL;
 
-extern bool             ExeType( char *name, char *type );
+extern bool             ExeType( const char *name, char *type );
 
 #endif
 
@@ -370,6 +370,8 @@ NONMAGICVARS( defvar, 0 )
 #define orvar( x, y ) x == y ||
 #define IsMagicVar( v ) MAGICVARS( orvar, v ) false
 
+static vhandle GetTokenHandle( const char *p );
+
 /**********************************************************************/
 /*                   EXPRESSION EVALUTORS                             */
 /**********************************************************************/
@@ -385,8 +387,6 @@ static tree_node *TreeNode( tree_op op, void *left, void *right )
     return( tree );
 }
 
-static vhandle GetTokenHandle( char *p );
-
 static tree_node *BuildExprTree( const char *str )
 /************************************************/
 {
@@ -400,7 +400,7 @@ static tree_node *BuildExprTree( const char *str )
     if( str == NULL || IS_EMPTY( str ) ) {
         return( TreeNode( OP_TRUE, NULL, NULL ) );
     }
-    GUIStrDup( str, &str2 );
+    str2 = GUIStrDup( str, NULL );
     stack_top = -1;
     token = strtok( str2, " " ); // copy string so we can use STRTOK
     while( token != NULL ) {
@@ -413,7 +413,7 @@ static tree_node *BuildExprTree( const char *str )
         } else if( token[0] == '!' ) { // not top value
             stack[stack_top] = TreeNode( OP_NOT, stack[stack_top], NULL );
         } else if( token[0] == '?' ) {  // check for file existence
-            GUIStrDup( &token[1], &p );
+            p = GUIStrDup( token + 1, NULL );
             ++stack_top;
             stack[stack_top] = TreeNode( OP_EXIST, p, NULL );
         } else {                // push current value
@@ -505,8 +505,8 @@ static int NewFileCond( char *str )
     return( num );
 }
 
-static vhandle GetTokenHandle( char *p )
-/**************************************/
+static vhandle GetTokenHandle( const char *p )
+/********************************************/
 {
     if( p == NULL ) {
         return( NO_VAR );
@@ -595,6 +595,8 @@ static int DoEvalCondition( const char *str, bool is_minimal )
 int EvalCondition( const char *str )
 /**********************************/
 {
+    if( str == NULL || *str == '\0' )
+        return( true );
     return( DoEvalCondition( str, false ) );
 }
 
@@ -921,15 +923,14 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
 
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    GUIStrDup( line, &text );
+    text = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
-    if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
+    if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
         }
         // dummy_var allows control to have an id - used by dynamic visibility feature
         var_handle = MakeDummyVar();
@@ -1051,7 +1052,7 @@ static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline
     *new_index = '\0';
 
     GUIMemFree( text );
-    GUIStrDup( big_buffer, &text );
+    text = GUIStrDup( big_buffer, NULL );
     GUIMemFree( big_buffer );
     return( text );
 }
@@ -1080,7 +1081,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
         rc = false;
     } else {
         if( *line == '@' ) {
-            GUIStrDup( line + 1, &file_name );
+            file_name = GUIStrDup( line + 1, NULL );
             io = FileOpen( file_name, O_RDONLY + O_BINARY );
             if( io != NULL ) {
                 FileStat( file_name, &buf );
@@ -1096,18 +1097,17 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
             // bottleneck is the find_break function
             text = textwindow_wrap( text, dlg, false, license_file );
         } else {
-            GUIStrDup( line, &text );
+            text = GUIStrDup( line, NULL );
             text = textwindow_wrap( text, dlg, true, false );
         }
 
         line = next; next = NextToken( line, ',' );
         line = next; next = NextToken( line, ',' );
-        if( (line == NULL || *line == '\0' || EvalCondition( line )) && text != NULL ) {
+        if( EvalCondition( line ) && text != NULL ) {
             line = next; next = NextToken( line, ',' );
             if( line != NULL ) {
                 // condition for visibility (dynamic)
-                GUIStrDup( line,
-                    &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+                dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
             }
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
@@ -1139,14 +1139,14 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &vbl_name );
+    vbl_name = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
     var_handle = AddVariable( vbl_name );
-    GUIStrDup( line, &text );
+    text = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
-    if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
+    if( EvalCondition( line ) ) {
         if( text != NULL ) {
             SetVariableByHandle( var_handle, text );
         }
@@ -1156,8 +1156,7 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
         line = next; next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
         }
         if( dlg->max_width < len )
             dlg->max_width = len;
@@ -1187,7 +1186,7 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
 
     line_start = next; next = NextToken( line_start, ',' );
     line = next; next = NextToken( line, ',' );
-    if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
+    if( EvalCondition( line ) ) {
         dlg->num_push_buttons += 1;
         def_ret = false;
         if( *line_start == '.' ) {
@@ -1207,7 +1206,7 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
         next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line, &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
         }
     } else {
         rc = false;
@@ -1234,7 +1233,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &vbl_name );
+    vbl_name = GUIStrDup( line, NULL );
     var_handle = AddVariable( vbl_name );
     line = next; next = NextToken( line, ',' );
     val = NULL;
@@ -1285,16 +1284,14 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     dialog_name = line;
     line = next; next = NextToken( line, ',' );
 
-    if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
+    if( EvalCondition( line ) ) {
         dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
         dlg->num_variables += 1;
         line = next; next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 1] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 1] = GUIStrDup( line, NULL );
         }
         var_handle_2 = MakeDummyVar();
         SetVariableByHandle( var_handle_2, dialog_name );
@@ -1308,8 +1305,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
             BumpArray( &dlg->array );
             if( line != NULL ) {
                 // condition for visibility (dynamic)
-                GUIStrDup( line,
-                           &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 2] );
+                dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 2] = GUIStrDup( line, NULL );
             }
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
@@ -1339,7 +1335,7 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
     button_text = TrimQuote( line );
     line = next; next = NextToken( line, ',' );
     dialog_name = line;
-    GUIStrDup( next, &next_copy );
+    next_copy = GUIStrDup( next, NULL );
     line = next; next = NextToken( line, ',' );
     text = line;
     line = next; next = NextToken( line, ',' );
@@ -1347,7 +1343,7 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
     line = next; next = NextToken( line, ',' );
     vis_condition = line;
 
-    if( condition == NULL || *condition == '\0' || EvalCondition( condition ) ) {
+    if( EvalCondition( condition ) ) {
         var_handle = MakeDummyVar();
         SetVariableByHandle( var_handle, dialog_name );
         set_dlg_push_button( var_handle, button_text, dlg->curr_dialog->controls,
@@ -1359,11 +1355,9 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
         }
         if( vis_condition != NULL ) {
    // condition for visibility (dynamic)
-            GUIStrDup( vis_condition,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( vis_condition, NULL );
             if( text != NULL ) {
-                GUIStrDup( vis_condition,
-                           &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 1] );
+                dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 1] = GUIStrDup( vis_condition, NULL );
             }
         }
     } else {
@@ -1374,19 +1368,18 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
 }
 
 
-static vhandle dialog_set_variable( DIALOG_INFO *dlg, char *vbl_name,
-                                    char *init_cond )
+static vhandle dialog_set_variable( DIALOG_INFO *dlg, const char *vbl_name,
+                                    const char *init_cond )
 /*******************************************************************/
 {
     vhandle     var_handle;
 
-    dlg = dlg;
     var_handle = AddVariable( vbl_name );
     dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
     if( *init_cond == '\0' ) {
         dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
     } else {
-        GUIStrDup( init_cond, &dlg->curr_dialog->pConditions[dlg->num_variables] );
+        dlg->curr_dialog->pConditions[dlg->num_variables] = GUIStrDup( init_cond, NULL );
         if( SkipDialogs ) {
             if( stricmp( init_cond, "true" ) == 0 ) {
                 SetVariableByHandle( var_handle, "1" );
@@ -1414,23 +1407,22 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &vbl_name );
+    vbl_name = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &init_cond );
+    init_cond = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    GUIStrDup( line, &text );
+    text = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
-    if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
+    if( EvalCondition( line ) ) {
         var_handle = dialog_set_variable( dlg, vbl_name, init_cond );
         dlg->num_radio_buttons += 1;
         len = strlen( text ) + 4; // room for button
         line = next; next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
         }
         set_dlg_radio( dlg->curr_dialog->controls, dlg->array.num - 1,
                        dlg->num_radio_buttons, text, VarGetId( var_handle ), C0,
@@ -1460,22 +1452,21 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &vbl_name );
+    vbl_name = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &init_cond );
+    init_cond = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    GUIStrDup( line, &text );
+    text = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
-    if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
+    if( EvalCondition( line ) ) {
         var_handle = dialog_set_variable( dlg, vbl_name, init_cond );
         len = strlen( text ) + 4; // room for button
         line = next; next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
         }
         set_dlg_check( dlg->curr_dialog->controls, dlg->array.num - 1, text,
                        VarGetId( var_handle ), dlg->col_num, dlg->row_num,
@@ -1517,7 +1508,7 @@ static bool dialog_detail_check( char *next, DIALOG_INFO *dlg )
     var_handle = AddVariable( line );
     SetVariableByHandle( var_handle, line );
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( next, &next2_org );
+    next2_org = GUIStrDup( next, NULL );
     next2 = next2_org;
     added = dialog_checkbox( next, dlg );
     if( added ) {
@@ -1531,8 +1522,7 @@ static bool dialog_detail_check( char *next, DIALOG_INFO *dlg )
     line = next2; next2 = NextToken( line, ',' );
     if( next2 != NULL ) {
         // condition for visibility (dynamic)
-        GUIStrDup( next2,
-                   &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] + 1 );
+        dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 1] = GUIStrDup( next2, NULL );
     }
     GUIMemFree( next2_org );
     return( added );
@@ -1560,7 +1550,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &vbl_name );
+    vbl_name = GUIStrDup( line, NULL );
     var_handle = AddVariable( vbl_name );
     line = next; next = NextToken( line, ',' );
     val = NULL;
@@ -1604,14 +1594,13 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     ReplaceVars( buff, line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
-    if( line == NULL || *line == '\0' || EvalCondition( line ) ) {
+    if( EvalCondition( line ) ) {
         dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
         dlg->num_variables += 1;
         line = next; next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] = GUIStrDup( line, NULL );
         }
         set_dlg_edit( dlg->curr_dialog->controls, dlg->array.num - 1,
                       buff, VarGetId( var_handle ), C0, dlg->row_num, C0 + W - 1 );
@@ -1619,8 +1608,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
             BumpArray( &dlg->array );
             if( line != NULL ) {
                 // condition for visibility (dynamic)
-                GUIStrDup( line,
-                    &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 1] );
+                dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls + 1] = GUIStrDup( line, NULL );
             }
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
@@ -1638,7 +1626,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     return( rc );
 }
 
-static void CompileCondition( char *str, char **to );
+static char *CompileCondition( const char *str );
 
 static void GrabConfigInfo( char *line, array_info *info )
 /********************************************************/
@@ -1652,10 +1640,10 @@ static void GrabConfigInfo( char *line, array_info *info )
         return;
     array = *(info->array);
     next = NextToken( line, '=' );
-    GUIStrDup( line, &array[num].var );
+    array[num].var = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
-    GUIStrDup( line, &array[num].value );
-    CompileCondition( next, &array[num].condition );
+    array[num].value = GUIStrDup( line, NULL );
+    array[num].condition = CompileCondition( next );
 }
 
 static bool ProcLine( char *line, pass_type pass )
@@ -1774,9 +1762,9 @@ static bool ProcLine( char *line, pass_type pass )
                            sizeof( gui_control_info ), &dlg.array );
                 dlg.wrap_width = MaxWidthChars;
             } else if( stricmp( line, "condition" ) == 0 ) {
-                CompileCondition( next, &dlg.curr_dialog->condition );
+                dlg.curr_dialog->condition = CompileCondition( next );
             } else if( stricmp( line, "title" ) == 0 ) {
-                GUIStrDup( next, &dlg.curr_dialog->title );
+                dlg.curr_dialog->title = GUIStrDup( next, NULL );
             } else if( stricmp( line, "any_check" ) == 0 ) {
                 dlg.curr_dialog->any_check = AddVariable( next );
             } else if( stricmp( line, "width" ) == 0 ) {
@@ -1787,9 +1775,8 @@ static bool ProcLine( char *line, pass_type pass )
                 }
             } else if( stricmp( line, "vis_condition" ) == 0 ) {
                 line = next; next = NextToken( line, ',' );
-                if( next == NULL || EvalCondition( next ) ) {
-                    GUIStrDup( line,
-                               &dlg.curr_dialog->pVisibilityConds[dlg.curr_dialog->num_controls - 1] );
+                if( EvalCondition( next ) ) {
+                    dlg.curr_dialog->pVisibilityConds[dlg.curr_dialog->num_controls - 1] = GUIStrDup( line, NULL );
                 }
             } else {
                 // add another control to current dialog
@@ -1851,19 +1838,15 @@ static bool ProcLine( char *line, pass_type pass )
         next = NextToken( line, '=' );
         if( stricmp( line, "DefPMGroup" ) == 0 ) {
             line = next; next = NextToken( line, ',' );
-            GUIStrDup( line, &SetupInfo.pm_group_file_name );
+            SetupInfo.pm_group_file_name = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            GUIStrDup( line, &SetupInfo.pm_group_name );
+            SetupInfo.pm_group_name = GUIStrDup( line, NULL );
             num = SetupInfo.all_pm_groups.num;
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( false );
-            GUIStrDup( line, &AllPMGroups[num].group );
-            GUIStrDup( SetupInfo.pm_group_file_name, &AllPMGroups[num].group_file_name );
-            if( next == NULL ) {
-                SetupInfo.pm_group_icon = NULL;
-            } else {
-                GUIStrDup( next, &SetupInfo.pm_group_icon );
-            }
+            AllPMGroups[num].group = GUIStrDup( line, NULL );
+            AllPMGroups[num].group_file_name = GUIStrDup( SetupInfo.pm_group_file_name, NULL );
+            SetupInfo.pm_group_icon = GUIStrDup( next, NULL );
         } else {
             if( line[0] == '$' ) {
                 // global variables start with '$'
@@ -1881,7 +1864,7 @@ static bool ProcLine( char *line, pass_type pass )
         num = SetupInfo.disks.num;
         if( !BumpArray( &SetupInfo.disks ) )
             return( false );
-        GUIStrDup( line, &DiskInfo[num].desc );
+        DiskInfo[num].desc = GUIStrDup( line, NULL );
         break;
 
     case RS_DIRS:
@@ -1889,7 +1872,7 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.dirs ) )
             return( false );
         next = NextToken( line, ',' );
-        GUIStrDup( line, &DirInfo[num].desc );
+        DirInfo[num].desc = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
         DirInfo[num].target = atoi( line ) - 1;
         DirInfo[num].parent = atoi( next );
@@ -1903,7 +1886,7 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.files ) )
             return( false );
         next = NextToken( line, ',' );
-        GUIStrDup( line, &FileInfo[num].filename );
+        FileInfo[num].filename = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
         /*
             Multiple files in archive. First number is number of files,
@@ -1915,8 +1898,9 @@ static bool ProcLine( char *line, pass_type pass )
             FileInfo[num].files = NULL;
         } else {
             FileInfo[num].files = GUIMemAlloc( tmp * sizeof( a_file_info ) );
-            if( FileInfo[num].files == NULL )
+            if( FileInfo[num].files == NULL ) {
                 return( false );
+            }
         }
         FileInfo[num].supplimental = false;
         FileInfo[num].core_component = false;
@@ -1926,7 +1910,7 @@ static bool ProcLine( char *line, pass_type pass )
 
             line = next; next = NextToken( line, ',' );
             p = NextToken( line, '!' );
-            GUIStrDup( line, &file->name );
+            file->name = GUIStrDup( line, NULL );
             {
                 char    fext[_MAX_EXT];
                 _splitpath( file->name, NULL, NULL, NULL, fext );
@@ -1987,60 +1971,60 @@ static bool ProcLine( char *line, pass_type pass )
         if( stricmp( line, "copy" ) == 0 ) {
             PatchInfo[num].command = PATCH_COPY_FILE;
             line = next; next = NextToken( line, ',' );
-            GUIStrDup( line, &PatchInfo[num].srcfile );
+            PatchInfo[num].srcfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].destdir );
+                PatchInfo[num].destdir = GUIStrDup( line, NULL );
             }
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].destfile );
+                PatchInfo[num].destfile = GUIStrDup( line, NULL );
             }
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].condition );
+                PatchInfo[num].condition = GUIStrDup( line, NULL );
             }
         } else if( stricmp( line, "patch" ) == 0 ) {
             PatchInfo[num].command = PATCH_FILE;
             line = next; next = NextToken( line, ',' );
-            GUIStrDup( line, &PatchInfo[num].srcfile );
+            PatchInfo[num].srcfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].destdir );
+                PatchInfo[num].destdir = GUIStrDup( line, NULL );
             }
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].destfile );
+                PatchInfo[num].destfile = GUIStrDup( line, NULL );
             }
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].exetype );
+                PatchInfo[num].exetype = GUIStrDup( line, NULL );
             }
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].condition );
+                PatchInfo[num].condition = GUIStrDup( line, NULL );
             }
         } else if( stricmp( line, "delete" ) == 0 ) {
             PatchInfo[num].command = PATCH_DELETE_FILE;
             line = next; next = NextToken( line, ',' );
-            GUIStrDup( line, &PatchInfo[num].destfile );
+            PatchInfo[num].destfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].destdir );
+                PatchInfo[num].destdir = GUIStrDup( line, NULL );
             }
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].condition );
+                PatchInfo[num].condition = GUIStrDup( line, NULL );
             }
         } else if( stricmp( line, "mkdir" ) == 0 ) {
             PatchInfo[num].command = PATCH_MAKE_DIR;
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].destdir );
+                PatchInfo[num].destdir = GUIStrDup( line, NULL );
             }
             line = next; next = NextToken( line, ',' );
             if( line ) {
-                GUIStrDup( line, &PatchInfo[num].condition );
+                PatchInfo[num].condition = GUIStrDup( line, NULL );
             }
         }
         break;
@@ -2073,8 +2057,8 @@ static bool ProcLine( char *line, pass_type pass )
             SpawnInfo[num].when = WHEN_BEFORE;
         }
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &SpawnInfo[num].command );
-        CompileCondition( next, &SpawnInfo[num].condition );
+        SpawnInfo[num].command = GUIStrDup( line, NULL );
+        SpawnInfo[num].condition = CompileCondition( next );
         break;
 
     case RS_DELETEFILES:
@@ -2090,7 +2074,7 @@ static bool ProcLine( char *line, pass_type pass )
             DeleteInfo[num].type = DELETE_DIR;
         }
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &DeleteInfo[num].name );
+        DeleteInfo[num].name = GUIStrDup( line, NULL );
         break;
 
     case RS_PMINFO:
@@ -2098,43 +2082,37 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.pm_files ) )
             return( false );
         next = NextToken( line, ',' );
-        GUIStrDup( line, &PMInfo[num].filename );
+        PMInfo[num].filename = GUIStrDup( line, NULL );
         if( strcmp( line, "GROUP" ) == 0 ) {
             tmp = true;
         } else {
             tmp = false;
         }
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &PMInfo[num].parameters );
+        PMInfo[num].parameters = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &PMInfo[num].desc );
+        PMInfo[num].desc = GUIStrDup( line, NULL );
         if( tmp ) {
-            GUIStrDup( line, &AllPMGroups[SetupInfo.all_pm_groups.num].group );
-            GUIStrDup( PMInfo[num].parameters,
-                       &AllPMGroups[SetupInfo.all_pm_groups.num].group_file_name );
-            if( !BumpArray( &SetupInfo.all_pm_groups ) )
+            AllPMGroups[SetupInfo.all_pm_groups.num].group = GUIStrDup( line, NULL );
+            AllPMGroups[SetupInfo.all_pm_groups.num].group_file_name = GUIStrDup( PMInfo[num].parameters, NULL );
+            if( !BumpArray( &SetupInfo.all_pm_groups ) ) {
                 return( false );
+            }
         }
         if( next == NULL ) {
             PMInfo[num].icoioname = NULL;
             PMInfo[num].icon_pos = 0;
-            PMInfo[num].condition = NULL;
         } else {
             line = next; next = NextToken( line, ',' );
-            GUIStrDup( line, &PMInfo[num].icoioname );
+            PMInfo[num].icoioname = GUIStrDup( line, NULL );
             if( next == NULL ) {
                 PMInfo[num].icon_pos = 0;
-                PMInfo[num].condition = NULL;
             } else {
                 line = next; next = NextToken( line, ',' );
                 PMInfo[num].icon_pos = atoi( line );
-                if( next == NULL ) {
-                    PMInfo[num].condition = NULL;
-                } else {
-                    CompileCondition( next, &PMInfo[num].condition );
-                }
             }
         }
+        PMInfo[num].condition = CompileCondition( next );
         break;
 
     case RS_PROFILE:
@@ -2142,29 +2120,22 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.profile ) )
             return( false );
         next = NextToken( line, ',' );
-        GUIStrDup( line, &ProfileInfo[num].app_name );
+        ProfileInfo[num].app_name = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &ProfileInfo[num].key_name );
+        ProfileInfo[num].key_name = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &ProfileInfo[num].value );
+        ProfileInfo[num].value = GUIStrDup( line, NULL );
         if( next == NULL ) {
             ProfileInfo[num].file_name = NULL;
         } else {
             line = next; next = NextToken( line, ',' );
-            GUIStrDup( line, &ProfileInfo[num].file_name );
-            if( next == NULL ) {
-                ProfileInfo[num].hive_name = NULL;
-                ProfileInfo[num].condition = NULL;
-            } else {
+            ProfileInfo[num].file_name = GUIStrDup( line, NULL );
+            if( next != NULL ) {
                 line = next; next = NextToken( line, ',' );
-                GUIStrDup( line, &ProfileInfo[num].hive_name );
-                if( next == NULL ) {
-                    ProfileInfo[num].condition = NULL;
-                } else {
-                    CompileCondition( next, &ProfileInfo[num].condition );
-                }
             }
+            ProfileInfo[num].hive_name = GUIStrDup( line, NULL );
         }
+        ProfileInfo[num].condition = CompileCondition( next );
         break;
 
     case RS_AUTOEXEC:
@@ -2184,7 +2155,7 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.target ) )
             return( false );
         next = NextToken( line, ',' );
-        GUIStrDup( line, &TargetInfo[num].name );
+        TargetInfo[num].name = GUIStrDup( line, NULL );
         TargetInfo[num].supplimental = false;
         if( next != NULL && stricmp( next, "supplimental" ) == 0 ) {
             TargetInfo[num].supplimental = true;
@@ -2201,22 +2172,22 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.label ) )
             return( false );
         next = NextToken( line, '=' );
-        GUIStrDup( line, &LabelInfo[num].dir );
-        GUIStrDup( next, &LabelInfo[num].label );
+        LabelInfo[num].dir = GUIStrDup( line, NULL );
+        LabelInfo[num].label = GUIStrDup( next, NULL );
         break;
 
     case RS_UPGRADE:
         num = SetupInfo.upgrade.num;
         if( !BumpArray( &SetupInfo.upgrade ) )
             return( false );
-        GUIStrDup( line, &UpgradeInfo[num].name );
+        UpgradeInfo[num].name = GUIStrDup( line, NULL );
         break;
 
     case RS_FORCEDLLINSTALL:
         num = SetupInfo.force_DLL_install.num;
         if( !BumpArray( &SetupInfo.force_DLL_install ) )
             return( false );
-        GUIStrDup( line, &ForceDLLInstall[num].name );
+        ForceDLLInstall[num].name = GUIStrDup( line, NULL );
         break;
 
     case RS_ASSOCIATIONS:
@@ -2224,18 +2195,18 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.associations ) )
             return (false );
         next = NextToken( line, '=' );
-        GUIStrDup( line, &AssociationInfo[num].ext );
+        AssociationInfo[num].ext = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &AssociationInfo[num].keyname );
+        AssociationInfo[num].keyname = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &AssociationInfo[num].program );
+        AssociationInfo[num].program = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        GUIStrDup( line, &AssociationInfo[num].description );
+        AssociationInfo[num].description = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
         AssociationInfo[num].icon_index = strtol( line, NULL, 10 );
         line = next; next = NextToken( line, ',' );
         AssociationInfo[num].no_open = strtol( line, NULL, 10 );
-        CompileCondition( next, &AssociationInfo[num].condition );
+        AssociationInfo[num].condition = CompileCondition( next );
         break;
 
         /* for now Setup Error Messages, Status line Messages and Misc Messages
@@ -3524,18 +3495,21 @@ extern void SimCalcAddRemove()
                     disk_num = SimFileDisk( i, disk_desc );
                     _makepath( dst_path, NULL, dir, file_desc, NULL );
 
-                    flag = 0;
+                    flag = false;
                     for( m = 0; m < SetupInfo.dlls_to_count.num; m++ ) {
                         if( stricmp( DLLsToCheck[m].full_path, dst_path ) == 0 ) {
-                            flag = 1;
+                            flag = true;
                             break;
                         }
                     }
-                    if( flag == 0 ) {
-                        if( !BumpArray( &SetupInfo.dlls_to_count ) ) return;
-                        if( !GUIStrDup( dst_path, &DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path ) ) {
+                    if( !flag ) {
+                        bool    ok;
+
+                        if( !BumpArray( &SetupInfo.dlls_to_count ) )
                             return;
-                        }
+                        DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path = GUIStrDup( dst_path, &ok );
+                        if( !ok )
+                            return;
                         DLLsToCheck[SetupInfo.dlls_to_count.num - 1].index = i;
                     }
                 }
@@ -3924,11 +3898,9 @@ extern bool PatchFiles( void )
 
     for( i = 0; i < SetupInfo.patch_files.num; i++, Index = -1 ) {
         destfullpath[0] = srcfullpath[0] = '\0';
-        if( PatchInfo[i].condition ) {
-            if( !EvalCondition( PatchInfo[i].condition ) ) {
-                StatusAmount( i + 1, SetupInfo.patch_files.num );
-                continue;
-            }
+        if( !EvalCondition( PatchInfo[i].condition ) ) {
+            StatusAmount( i + 1, SetupInfo.patch_files.num );
+            continue;
         }
         switch( PatchInfo[i].command ) {
 
@@ -4528,8 +4500,8 @@ static void InitAutoSetValues()
 }
 
 
-static void CompileCondition( char *str, char **to )
-/**************************************************/
+static char *CompileCondition( const char *str )
+/**********************************************/
 // turn token names in an expression into #<var_handle>
 {
     char        buff[MAXBUF];
@@ -4538,10 +4510,9 @@ static void CompileCondition( char *str, char **to )
     char        *token;
 
     if( str == NULL || IS_EMPTY( str ) ) {
-        GUIStrDup( "", to );
-        return;
+        return( NULL );
     }
-    GUIStrDup( str, &str2 );
+    str2 = GUIStrDup( str, NULL );
     buff[0] = '\0';
     token = strtok( str2, " " ); // copy string so we can use STRTOK
     var_handle = NO_VAR;
@@ -4564,7 +4535,7 @@ static void CompileCondition( char *str, char **to )
         token = strtok( NULL, " " );
     }
     GUIMemFree( str2 );
-    GUIStrDup( buff, to );
+    return( GUIStrDup( buff, NULL ) );
 }
 
 vhandle MakeDummyVar( void )

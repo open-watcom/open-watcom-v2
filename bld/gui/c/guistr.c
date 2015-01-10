@@ -38,21 +38,16 @@
 #define BUFFER_SIZE     128
 
 static char     GUIStrTextBuffer[BUFFER_SIZE];
+
 static char *GUIGetInternalLiteralString( int id )
 {
-    char        *str;
-
-    str = NULL;
     GUIStrTextBuffer[0] = '\0';
     if( GUIIsLoadStrInitialized() ) {
         if( !GUILoadString( id, GUIStrTextBuffer, BUFFER_SIZE ) ) {
             GUIStrTextBuffer[0] = '\0';
         }
     }
-
-    GUIStrDup( GUIStrTextBuffer, &str );
-
-    return( str );
+    return( GUIStrDup( GUIStrTextBuffer, NULL ) );
 }
 
 bool GUIInitInternalStringTable( void )

@@ -329,7 +329,7 @@ static void DrawFrame( gui_window *wnd )
     buffer = alloca( wnd->screen.area.width + 1 );
     buff = buffer;
     memset( buff, TOP( inact ), width ); /* width at least 1 */
-    if( wnd->screen.title != NULL && *wnd->screen.title != NULLCHAR ) {
+    if( wnd->screen.title != NULL && *wnd->screen.title != '\0' ) {
         str_length = strlen( wnd->screen.title );
         if( ( str_length + TITLE_EXTRA_AMOUNT ) > width ) {
             title_extra = 0;

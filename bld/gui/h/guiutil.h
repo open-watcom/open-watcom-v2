@@ -32,7 +32,9 @@
 
 #ifndef _GUIUTIL_H_
 #define _GUIUTIL_H_
-extern bool GUIStripTrailingBlanks( const char *label, char **new );
-extern bool GUIStrDup( const char *text, char **new );
+
+extern char *GUIStripTrailingBlanks( const char *label, bool *ok );
+extern char *GUIStrDup( const char *text, bool *ok );
 extern void GUIStoreArgs( char **argv, int argc );
+
 #endif

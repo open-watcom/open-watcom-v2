@@ -257,8 +257,11 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
         wnd->toolbar->standout.back = standout->back;
     }
     for( i = 0; i < num_items; i++ ) {
-        if( !GUIStrDup( toolbar[i].label, &wnd->toolbar->info[i].label ) ) {
-            for( j=0; j < i; j++ ) {
+        bool    ok;
+
+        wnd->toolbar->info[i].label = GUIStrDup( toolbar[i].label, &ok );
+        if( !ok ) {
+            for( j = 0; j < i; j++ ) {
                 GUIMemFree( wnd->toolbar->info[j].label );
             }
             GUIMemFree( wnd->toolbar->info );

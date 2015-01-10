@@ -106,7 +106,7 @@ extern a_dialog_header *AddNewDialog( const char *dlg_name )
     new_dialog = (a_dialog_header *)GUIMemAlloc( sizeof( a_dialog_header ) );
     memset( new_dialog, '\0', sizeof( *new_dialog ) );
 //    new_dialog->controls = GUIMemAlloc( sizeof(gui_control_info) );
-    GUIStrDup( dlg_name, &new_dialog->name );
+    new_dialog->name = GUIStrDup( dlg_name, NULL );
     new_dialog->adjusted = false;
     new_dialog->def_dlg = false;
     new_dialog->defaults_set = false;
@@ -159,15 +159,13 @@ bool CheckDialog( const char *name )
     if( dlg == NULL ) {
         return( false );
     }
-    if( dlg->condition == NULL )
-        return( true );
     return( EvalCondition( dlg->condition ) );
 }
 
 dlg_state DoDialogByPointer( gui_window *parent, a_dialog_header *dlg )
 /*********************************************************************/
 {
-    if( dlg->condition != NULL && !EvalCondition( dlg->condition ) ) {
+    if( !EvalCondition( dlg->condition ) ) {
         return( dlg->ret_val );
     }
     return( GenericDialog( parent, dlg ) );

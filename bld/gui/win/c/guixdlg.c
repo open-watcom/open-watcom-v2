@@ -69,23 +69,23 @@ extern  bool            GUIIsDBCS( void );
 
 void GUISetJapanese( void )
 {
-    #ifndef __OS2_PM__
-        char *  newfont;
+#ifndef __OS2_PM__
+    char *  newfont;
 
-        if( GUIIsDBCS() ) {
-            #if 0
-                newfont = "";
-                PointSize = 0;
-            #else
-                newfont = "‚l‚r –¾’©";
-                PointSize = 10;
-            #endif
-            if( Font != NULL ) {
-                GUIMemFree( Font );
-            }
-            GUIStrDup( newfont, &Font );
+    if( GUIIsDBCS() ) {
+  #if 0
+        newfont = "";
+        PointSize = 0;
+  #else
+        newfont = "‚l‚r –¾’©";
+        PointSize = 10;
+  #endif
+        if( Font != NULL ) {
+            GUIMemFree( Font );
         }
-    #endif
+        Font = GUIStrDup( newfont, NULL );
+    }
+#endif
 }
 
 /*
@@ -784,11 +784,11 @@ void GUIInitDialog( void )
     bool                font_set;
 
     font_set = false;
-    #ifdef __OS2_PM__
-        GUIStrDup( LIT( OS2_Dialog_Font ), &Font );
-    #else
-        GUIStrDup( LIT( Windows_Dialog_Font ), &Font );
-    #endif
+#ifdef __OS2_PM__
+    Font = GUIStrDup( LIT( OS2_Dialog_Font ), NULL );
+#else
+    Font = GUIStrDup( LIT( Windows_Dialog_Font ), NULL );
+#endif
     if( Font ) {
         cp = strrchr( Font, '.' );
         if( cp ) {
@@ -804,7 +804,7 @@ void GUIInitDialog( void )
         if( Font != NULL ) {
             GUIMemFree( Font );
         }
-        GUIStrDup( "", &Font );
+        Font = GUIStrDup( "", NULL );
     }
 
     // create a dialog of known dialog units and use the resulting

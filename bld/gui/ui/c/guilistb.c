@@ -155,7 +155,7 @@ a_list *GUICreateEditMLE( const char *text )
         GUIMemFree( list );
         list = NULL;
     } else {
-        GUIStrDup( text, &text_copy );
+        text_copy = GUIStrDup( text, NULL );
         line = text_copy;
         absolute_end = text_copy + strlen( text_copy );
         end = strstr( line, MLE_NEWLINE );
@@ -227,7 +227,7 @@ static bool AddString( lb_data data, const char *text, int choice )
             GUIMemFree( (void *)data );
             return( false );
         }
-        str[0] = NULLCHAR;
+        str[0] = '\0';
     }
     data[choice] = str;
     return( true );
@@ -278,15 +278,13 @@ bool GUIListBoxAddTextList( a_list *list, int items, const void *data_handle, PI
 
 char *GUIGetListBoxText( a_list *list, int choice, bool get_curr )
 {
-    char        *text;
     lb_data     data;
 
     data = (lb_data)list->data_handle;
     if( get_curr ) {
         choice = list->choice;
     }
-    GUIStrDup( data[choice], &text );
-    return( text );
+    return( GUIStrDup( data[choice], NULL ) );
 }
 
 bool GUIListCurr( a_list *list, int choice, bool set, int *ret )

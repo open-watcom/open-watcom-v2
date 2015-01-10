@@ -46,6 +46,7 @@
 bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
 {
     a_hot_spot  *hot_spot;
+    bool        ok;
 
     if( field == NULL ) {
         return( false );
@@ -56,7 +57,8 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
         return( false );
     }
     field->typ = FLD_HOT;
-    if( !GUIStrDup( ctl_info->text, &hot_spot->str ) ) {
+    hot_spot->str = GUIStrDup( ctl_info->text, &ok );
+    if( !ok ) {
         return( false );
     }
     hot_spot->event = ctl_info->id + GUI_FIRST_USER_EVENT;
@@ -67,8 +69,8 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
         hot_spot->flags = HOT_DEFAULT;
     } else {
         hot_spot->flags = 0;
-   }
-   return( true );
+    }
+    return( true );
 }
 
 /*
@@ -85,18 +87,15 @@ void GUIFreeHotSpot( a_hot_spot *hot_spot )
 
 bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text )
 {
-    char        *new;
+    char        *new_str;
+    bool        ok;
 
-    if( text == NULL ) {
-        if( !GUIStrDup( "", &new ) ) {
-            return( false );
-        }
-    } else {
-        if( !GUIStrDup( text, &new) ) {
-            return( false );
-        }
+    if( text == NULL )
+        text = "";
+    new_str = GUIStrDup( text, &ok );
+    if( ok ) {
+        GUIMemFree( hot_spot->str );
+        hot_spot->str = new_str;
     }
-    GUIMemFree( hot_spot->str );
-    hot_spot->str = new;
-    return( true );
+    return( ok );
 }

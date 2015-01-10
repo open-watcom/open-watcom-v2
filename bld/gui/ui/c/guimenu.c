@@ -117,7 +117,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new,
             end++;      /* past & */
             strncpy( new_str + length - end_length, end, end_length - 1);
         }
-        new_str[length - 1] = NULLCHAR;
+        new_str[length - 1] = '\0';
     }
     return( true );
 }

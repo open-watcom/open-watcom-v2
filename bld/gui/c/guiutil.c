@@ -39,54 +39,50 @@
  *                          stripped off
  */
 
-bool GUIStripTrailingBlanks( const char *label, char **new )
+char *GUIStripTrailingBlanks( const char *label, bool *ok )
 {
-    int         length;
+    unsigned    length;
+    char        *new_str;
 
-    if( label == NULL ) {
-        *new = NULL;
-        return( true );
-    }
-    length = strlen( label ) - 1;
-    for( ; length >=0;  length-- ) {
-        if( label[length] != ' ' ) {
-            length++;
+    if( ok != NULL )
+        *ok = true;
+    if( label == NULL || *label == '\0' )
+        return( NULL );
+    for( length = strlen( label ); length > 0; --length ) {
+        if( label[length - 1] != ' ' ) {
             break;
         }
     }
-    if( length <= 0 ) {
-        *new = NULL;
-    } else {
-        *new = (char *)GUIMemAlloc( length + 1 );
-        if( *new == NULL ) {
-            return( false );
-        } else {
-            strncpy( *new, label, length );
-            (*new)[length] = NULLCHAR;
-        }
+    if( length == 0 )
+        return( NULL );
+    new_str = (char *)GUIMemAlloc( length + 1 );
+    if( new_str == NULL ) {
+        if( ok != NULL )
+            *ok = false;
+        return( NULL );
     }
-    return( true );
+    strncpy( new_str, label, length );
+    new_str[length] = '\0';
+    return( new_str );
 }
 
-bool GUIStrDup( const char *text, char **new )
+char *GUIStrDup( const char *text, bool *ok )
 {
-    if( text == NULL ) {
-        if( new == NULL ) {
-            new = GUIMemAlloc( sizeof( char * ) );
+    void    *new_str;
+
+    if( ok != NULL )
+        *ok = true;
+    if( text != NULL ) {
+        new_str = GUIMemAlloc( strlen( text ) + 1 );
+        if( new_str != NULL ) {
+            strcpy( new_str, text );
+            return( new_str );
         }
-        *new = NULL;
-        return( true );
-    } else {
-        if( new == NULL ) {
-            new = GUIMemAlloc( sizeof( char * ) );
+        if( ok != NULL ) {
+            *ok = false;
         }
-        *new = (char *)GUIMemAlloc( strlen( text ) + 1 );
-        if( *new == NULL ) {
-            return( false );
-        }
-        strcpy( *new, text );
     }
-    return( true );
+    return( NULL );
 }
 
 static char     **GUI_argv      = NULL;

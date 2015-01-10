@@ -446,6 +446,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     an_edit_control     *edit_control;
     bool                group_allocated;
     SAREA               area;
+    bool                ok;
 
     group_allocated = false;
     if( (ctl_info->style & GUI_GROUP) &&
@@ -456,7 +457,8 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
                 return( false );
             }
             RadioGroup->value = -1;
-            if( !GUIStrDup( ctl_info->text, &RadioGroup->caption ) ) {
+            RadioGroup->caption = GUIStrDup( ctl_info->text, &ok );
+            if( !ok ) {
                 CleanUpRadioGroups();
                 return( false );
             }
@@ -484,7 +486,11 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     case FLD_RADIO :
         radio = (a_radio * )GUIMemAlloc( sizeof( a_radio ) );
         field->u.radio = radio;
-        if( ( radio == NULL ) || !GUIStrDup( ctl_info->text, &radio->str ) ) {
+        ok = false;
+        if( radio != NULL ) {
+            radio->str = GUIStrDup( ctl_info->text, &ok );
+        }
+        if( !ok ) {
             if( group_allocated ) {
                 CleanUpRadioGroups();
             }
@@ -501,7 +507,10 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     case FLD_CHECK :
         check = (a_check * )GUIMemAlloc( sizeof( a_check ) );
         field->u.check = check;
-        if( ( check == NULL ) || !GUIStrDup( ctl_info->text, &check->str ) ) {
+        ok = false;
+        if( check != NULL )
+            check->str = GUIStrDup( ctl_info->text, &ok );
+        if( !ok ) {
             return( false );
         }
         check->val = 0;
@@ -555,7 +564,8 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         break;
     case FLD_TEXT :
     case FLD_FRAME :
-        if( !GUIStrDup( ctl_info->text, &field->u.str ) ) {
+        field->u.str = GUIStrDup( ctl_info->text, &ok );
+        if( !ok ) {
             return( false );
         }
         break;
@@ -801,6 +811,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     VFIELD      *focus;
     int         size;
     bool        colours_set;
+    bool        ok;
 
     if( dlg_id != -1 ) {
         if( !GUICreateDialogFromRes( dlg_id, dlg_info->parent,
@@ -844,8 +855,8 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     }
     CleanUpRadioGroups();
     fields[num_controls].typ = FLD_VOID; /* mark end of list */
-
-    if( !GUIStrDup( dlg_info->title, &title ) ) {
+    title = GUIStrDup( dlg_info->title, &ok );
+    if( !ok ) {
         GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
         return( false );
     }

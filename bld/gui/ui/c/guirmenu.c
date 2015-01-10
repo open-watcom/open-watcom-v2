@@ -297,9 +297,8 @@ static bool SetGUIMenuStruct( GUIRMenuEntry *rentry, gui_menu_struct *menu )
 
     if( ok ) {
         if( rentry->item->IsPopup ) {
-            GUIStrDup( rentry->item->Item.Popup.ItemText, &menu->label );
-            menu->style =
-                GetGUIMenuStyles( rentry->item->Item.Popup.ItemFlags );
+            menu->label = GUIStrDup( rentry->item->Item.Popup.ItemText, NULL );
+            menu->style = GetGUIMenuStyles( rentry->item->Item.Popup.ItemFlags );
             num_submenus = WCountMenuChildren( rentry->child );
             if( num_submenus ) {
                 menu->num_child_menus = num_submenus;
@@ -307,10 +306,9 @@ static bool SetGUIMenuStruct( GUIRMenuEntry *rentry, gui_menu_struct *menu )
                 ok = ( menu->child != NULL );
             }
         } else {
-            GUIStrDup( rentry->item->Item.Normal.ItemText, &menu->label );
+            menu->label = GUIStrDup( rentry->item->Item.Normal.ItemText, NULL );
             menu->id = rentry->item->Item.Normal.ItemID;
-            menu->style =
-                GetGUIMenuStyles( rentry->item->Item.Normal.ItemFlags );
+            menu->style = GetGUIMenuStyles( rentry->item->Item.Normal.ItemFlags );
         }
     }
 

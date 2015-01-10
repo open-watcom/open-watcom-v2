@@ -219,7 +219,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
         path += 2;
         for( ;; ) {
             ch = *path;
-            if( ch == NULLCHAR || ch == FILE_SEP_CHAR || ch == '.' ) {
+            if( ch == '\0' || ch == FILE_SEP_CHAR || ch == '.' ) {
                 break;
             }
             path++;

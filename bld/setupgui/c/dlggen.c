@@ -48,7 +48,6 @@
 #include "setupinf.h"
 #include "dlggen.h"
 #include "genvbl.h"
-#include "genctrl.h"
 #include "gendlg.h"
 #include "utils.h"
 #include "ctype.h"

@@ -86,7 +86,6 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
     VFIELD              *field;
     a_dialog            *ui_dlg_info;
     a_combo_box         *combo_box;
-    char                *new;
     bool                ret;
     an_edit_control     *edit;
 
@@ -106,18 +105,17 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
     case FLD_TEXT :
         {
             char    **fldtext;
+            char    *new_str;
 
             switch( field->typ ) {
             case FLD_CHECK: fldtext = &field->u.check->str; break;
             case FLD_RADIO: fldtext = &field->u.radio->str; break;
             case FLD_TEXT: fldtext = &field->u.str; break;
             }
-            if( !GUIStrDup( text, &new ) ) {
-                return( false );
-            } else {
+            new_str = GUIStrDup( text, &ret );
+            if( ret ) {
                 GUIMemFree( *fldtext );
-                *fldtext = new;
-                ret = true;
+                *fldtext = new_str;
             }
         }
         break;
