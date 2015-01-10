@@ -129,7 +129,7 @@ bool    DlgNew( const char *title, char *buff, unsigned buff_len )
     rc = DlgNewWithCtl( title, buff, buff_len,
                    Controls, ArraySize( Controls ), &DlgNewEvent,
                    DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS );
-    WndFree( Controls[1].text );
-    WndFree( Controls[2].text );
+    WndFree( (void *)Controls[1].text );
+    WndFree( (void *)Controls[2].text );
     return( rc );
 }
