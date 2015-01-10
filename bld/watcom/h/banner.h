@@ -124,23 +124,22 @@
 #define _WFC_VERSION_           BAN_VER_STR
 #define _WFL_VERSION_           BAN_VER_STR
 #define _WLINK_VERSION_         BAN_VER_STR
+#define _WMAKE_VERSION_         BAN_VER_STR
+#define _WASM_VERSION_          BAN_VER_STR
 /* these can be what ever they want to be */
 #define _BPATCH_VERSION_        BAN_VER_STR
 #define _MOUSEFIX_VERSION_      BAN_VER_STR
 #define _XXXSERV_VERSION_       BAN_VER_STR
 #define _RFX_VERSION_           BAN_VER_STR
-#define _WVIDEO_VERSION_        BAN_VER_STR
 #define _WD_VERSION_            BAN_VER_STR
 #define _WBED_VERSION_          BAN_VER_STR
 #define _WCEXP_VERSION_         BAN_VER_STR
-#define _WATFOR77_VERSION_      BAN_VER_STR
 #define _WHELP_VERSION_         BAN_VER_STR
 #define _WDISASM_VERSION_       BAN_VER_STR
 #define _FCENABLE_VERSION_      BAN_VER_STR
 #define _MS2WLINK_VERSION_      BAN_VER_STR
 #define _EXE2BIN_VERSION_       BAN_VER_STR
 #define _WLIB_VERSION_          BAN_VER_STR
-#define _WMAKE_VERSION_         BAN_VER_STR
 #define _WOMP_VERSION_          BAN_VER_STR
 #define _WPROF_VERSION_         BAN_VER_STR
 #define _WSAMP_VERSION_         BAN_VER_STR
@@ -149,10 +148,9 @@
 #define _WBIND_VERSION_         BAN_VER_STR
 #define _PERES_VERSION_         BAN_VER_STR
 #define _EDBIND_VERSION_        BAN_VER_STR
-#define _WASM_VERSION_          BAN_VER_STR
 #define _WBRW_VERSION_          BAN_VER_STR
 #define _WBRG_VERSION_          BAN_VER_STR
-#define _VIPER_VERSION_         BAN_VER_STR
+#define _IDE_VERSION_           BAN_VER_STR
 #define _RESEDIT_VERSION_       BAN_VER_STR
 #define _WRC_VERSION_           BAN_VER_STR
 #define _SPY_VERSION_           BAN_VER_STR
