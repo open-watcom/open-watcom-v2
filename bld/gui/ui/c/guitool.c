@@ -241,7 +241,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
         return( false );
     }
     size = sizeof( gui_toolbar_struct ) * num_items;
-    wnd->toolbar->info = (gui_toolbar_struct * )GUIMemAlloc( size );
+    wnd->toolbar->info = (gui_toolbar_struct *)GUIMemAlloc( size );
     if( wnd->toolbar->info == NULL ) {
         GUIMemFree( wnd->toolbar );
         wnd->toolbar = false;

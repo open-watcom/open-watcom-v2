@@ -90,8 +90,10 @@ int GUIDlgPickWithRtn( const char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *O
     dlg_pick    dlg;
 
     int len = strlen( title );
-    if( len < DLG_PICK_COLS ) len = DLG_PICK_COLS;
-    if( len > DLG_MAX_COLS ) len = DLG_MAX_COLS;
+    if( len < DLG_PICK_COLS )
+        len = DLG_PICK_COLS;
+    if( len > DLG_MAX_COLS )
+        len = DLG_MAX_COLS;
 
     Controls[1].text = LIT( OK );
     Controls[2].text = LIT( Cancel );

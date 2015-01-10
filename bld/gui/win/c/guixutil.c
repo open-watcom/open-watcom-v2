@@ -705,7 +705,7 @@ WPI_FONT GUIGetSystemFont( void )
     font = NULL;
     ret = _wpi_getsystemfont();
     if( ret ) {
-        font = (WPI_FONT) GUIMemAlloc( sizeof( *font ) );
+        font = (WPI_FONT)GUIMemAlloc( sizeof( *font ) );
         if( font ) {
             *font = *ret;
         }

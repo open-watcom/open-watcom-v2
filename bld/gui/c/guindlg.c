@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "guiwind.h"
 #include "guidlg.h"
-#include <string.h>
 
 #if !defined( __NT__ ) || (GUI_IS_GUI == false)
 static gui_colour_set DlgColours[GUI_NUM_ATTRS+1] = {

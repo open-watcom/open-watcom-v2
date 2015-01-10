@@ -106,7 +106,7 @@ extern void GUIMemPrtUsage( void )
 #endif
 }
 
-extern void * GUIMemAlloc( size_t size )
+extern void *GUIMemAlloc( size_t size )
 /*************************************/
 {
 #ifdef TRMEM
@@ -116,7 +116,7 @@ extern void * GUIMemAlloc( size_t size )
 #endif
 }
 
-extern void GUIMemFree( void * ptr )
+extern void GUIMemFree( void *ptr )
 /*********************************/
 {
 #ifdef TRMEM
@@ -126,8 +126,8 @@ extern void GUIMemFree( void * ptr )
 #endif
 }
 
-extern void * GUIMemRealloc( void * ptr, size_t size )
-/***************************************************/
+extern void *GUIMemRealloc( void *ptr, size_t size )
+/**************************************************/
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );

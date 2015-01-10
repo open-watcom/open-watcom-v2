@@ -103,7 +103,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new,
     if( end == NULL ) {
         length ++; /* no & so need room for NULL as it doesn't replace & */
     }
-    new_str = (char * )GUIMemAlloc( length );
+    new_str = (char *)GUIMemAlloc( length );
     *new = new_str;
     if( new_str == NULL ) {
         return( false );

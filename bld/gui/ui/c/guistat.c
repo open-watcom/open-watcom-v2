@@ -123,7 +123,7 @@ void GUIDrawStatus( gui_window *wnd )
 
 bool GUIDrawStatusText( gui_window *wnd, const char *text )
 {
-    bool        ret;
+    bool        ok;
 
     if( !GUIHasStatus( wnd ) ) {
         return( false );
@@ -131,12 +131,12 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     if( wnd->status->text != NULL ) {
         GUIMemFree( wnd->status->text );
     }
-    wnd->status->text = GUIStrDup( text, &ret );
+    wnd->status->text = GUIStrDup( text, &ok );
     GUIDrawStatus( wnd );
     if( GUI_WND_VISIBLE( wnd ) ) {
         uirefresh();
     }
-    return( ret );
+    return( ok );
 }
 
 bool GUIHasStatus( gui_window *wnd )

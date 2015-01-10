@@ -170,7 +170,7 @@ control_item *GUIControlInsert( gui_window *parent, gui_control_class control_cl
 {
     control_item        *item;
 
-    item = ( control_item * )GUIMemAlloc( sizeof( control_item ) );
+    item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
     if( item == NULL ) {
         return( NULL );
     }
@@ -196,7 +196,7 @@ control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent )
     if( ( parent == NULL ) || ( phwnd != parent->hwnd ) ) {
         return( NULL );
     }
-    item = ( control_item * )GUIMemAlloc( sizeof( control_item ) );
+    item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
     if( item == NULL ) {
         return( NULL );
     }

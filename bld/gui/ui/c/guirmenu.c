@@ -144,7 +144,7 @@ static int WAllocMenuEntry( uint_8 **data, int *size, GUIRMenuEntry **entry )
     ok = ( data && *data && size && *size && entry );
 
     if( ok ) {
-        *entry = (GUIRMenuEntry *) GUIMemAlloc( sizeof(GUIRMenuEntry) );
+        *entry = (GUIRMenuEntry *)GUIMemAlloc( sizeof(GUIRMenuEntry) );
         ok = ( *entry != NULL );
     }
 

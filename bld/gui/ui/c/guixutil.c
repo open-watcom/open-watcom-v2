@@ -260,7 +260,7 @@ char *GUIMakeEditCopy( char *buffer, int length )
     char        *copy;
 
     if( length > 0 ) {
-        copy = (char * )GUIMemAlloc( length + 1 );
+        copy = (char *)GUIMemAlloc( length + 1 );
         if( copy != NULL ) {
             memcpy( copy, buffer, length );
             copy[length] = '\0';

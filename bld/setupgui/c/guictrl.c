@@ -74,11 +74,12 @@ void set_dlg_textwindow( gui_control_info *gui_controls,
 
 
 void set_dlg_dynamstring( gui_control_info *gui_controls,
-                                 int num_controls, const char *s,
-                                 int id, gui_ord x1, gui_ord y1, gui_ord x2 )
-/***************************************************************************/
+                         int num_controls, const char *s,
+                         int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+/*******************************************************************/
 {
       gui_control_info  *control;
+
       control = &gui_controls[num_controls];
       control->control_class = GUI_STATIC;
       control->text = GUIStrDup( s, NULL );
@@ -91,9 +92,9 @@ void set_dlg_dynamstring( gui_control_info *gui_controls,
 
 
 void set_dlg_radio( gui_control_info *gui_controls,
-                           int num_controls, int num_radio_buttons, const char *s,
-                           int id, gui_ord x1, gui_ord y1, gui_ord x2 )
-/**************************************************************************/
+                   int num_controls, int num_radio_buttons, const char *s,
+                   int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+/************************************************************************/
 {
     gui_control_info    *control;
 
@@ -115,9 +116,9 @@ void set_dlg_radio( gui_control_info *gui_controls,
 }
 
 void set_dlg_check( gui_control_info *gui_controls,
-                           int num_controls, const char *s,
-                           int id, gui_ord x1, gui_ord y1, gui_ord x2 )
-/*********************************************************************/
+                   int num_controls, const char *s,
+                   int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+/*************************************************************/
 {
     gui_control_info    *control;
 
@@ -133,9 +134,9 @@ void set_dlg_check( gui_control_info *gui_controls,
 }
 
 void set_dlg_edit( gui_control_info *gui_controls,
-                          int num_controls, const char *s,
-                          int id, gui_ord x1, gui_ord y1, gui_ord x2 )
-/********************************************************************/
+                  int num_controls, const char *s,
+                  int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+/************************************************************/
 {
     int                 text_size;
     gui_control_info    *control;
@@ -171,10 +172,10 @@ char *TrimQuote( char *text )
 
 
 int set_dlg_push_button( vhandle var_handle, const char *text,
-                                gui_control_info *gui_controls,
-                                int num_controls, int row, int num_buttons,
-                                int of, int cols, int bwidth )
-/*************************************************************************/
+                        gui_control_info *gui_controls,
+                        int num_controls, int row, int num_buttons,
+                        int of, int cols, int bwidth )
+/*****************************************************************/
 {
     int                 but_pos = 0;
     gui_control_info    *control;
@@ -249,4 +250,3 @@ int set_dlg_push_button( vhandle var_handle, const char *text,
     }
     return( id );
 }
-

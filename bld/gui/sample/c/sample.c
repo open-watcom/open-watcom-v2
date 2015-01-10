@@ -446,7 +446,7 @@ static change_struct *MakeChangeStruct( char *str, int length,
 {
     change_struct       *old;
 
-    old = ( change_struct * )GUIMemAlloc( sizeof( change_struct  ) );
+    old = (change_struct *)GUIMemAlloc( sizeof( change_struct  ) );
     old->string = str;
     old->length = length;
     old->parent = 0;
@@ -1469,7 +1469,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             }
             if( col < strlen( out->display[row].data ) ) {
                 PrevRow = row;
-                new_attr = ( attr_entry  * )GUIMemAlloc( sizeof( attr_entry ) );
+                new_attr = (attr_entry *)GUIMemAlloc( sizeof( attr_entry ) );
                 new_attr->start = col;
                 new_attr->end = col;
 #if default_colours

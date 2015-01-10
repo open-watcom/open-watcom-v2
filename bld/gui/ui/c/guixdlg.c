@@ -452,7 +452,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     if( (ctl_info->style & GUI_GROUP) &&
         (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
         if( !Group ) {
-            RadioGroup = (a_radio_group * )GUIMemAlloc( sizeof( a_radio_group ) );
+            RadioGroup = (a_radio_group *)GUIMemAlloc( sizeof( a_radio_group ) );
             if( RadioGroup == NULL ) {
                 return( false );
             }
@@ -484,7 +484,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         break;
     case FLD_RADIO :
-        radio = (a_radio * )GUIMemAlloc( sizeof( a_radio ) );
+        radio = (a_radio *)GUIMemAlloc( sizeof( a_radio ) );
         field->u.radio = radio;
         ok = false;
         if( radio != NULL ) {
@@ -505,7 +505,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         break;
     case FLD_CHECK :
-        check = (a_check * )GUIMemAlloc( sizeof( a_check ) );
+        check = (a_check *)GUIMemAlloc( sizeof( a_check ) );
         field->u.check = check;
         ok = false;
         if( check != NULL )
@@ -522,7 +522,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         break;
     case FLD_COMBOBOX :
-        combo_box = (a_combo_box * )GUIMemAlloc( sizeof( a_combo_box ) );
+        combo_box = (a_combo_box *)GUIMemAlloc( sizeof( a_combo_box ) );
         if( combo_box == NULL ) {
             return( false );
         }
@@ -541,7 +541,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         break;
     case FLD_EDIT :
     case FLD_INVISIBLE_EDIT :
-        edit_control = (an_edit_control * )GUIMemAlloc( sizeof( an_edit_control ) );
+        edit_control = (an_edit_control *)GUIMemAlloc( sizeof( an_edit_control ) );
         if( edit_control == NULL ) {
             return( false );
         }

@@ -218,7 +218,7 @@ static DialogBoxHeader *Template2DlgHdr( uint_8 **data )
     ok = ( data != NULL && *data != '\0' );
 
     if( ok ) {
-        hdr = (DialogBoxHeader *) GUIMemAlloc( sizeof(DialogBoxHeader) );
+        hdr = (DialogBoxHeader *)GUIMemAlloc( sizeof(DialogBoxHeader) );
         ok = ( hdr != NULL );
     }
 
@@ -287,8 +287,7 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls,
     }
 
     if( ok ) {
-        *cntls = (DialogBoxControl *)
-            GUIMemAlloc( (*hdr)->NumOfItems * sizeof( DialogBoxControl ) );
+        *cntls = (DialogBoxControl *)GUIMemAlloc( (*hdr)->NumOfItems * sizeof( DialogBoxControl ) );
         ok = ( *cntls != NULL );
     }
 
@@ -494,7 +493,7 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
 
     if( !ok ) {
         if( ctl_info != NULL ) {
-            if( ctl_info->text ) {
+            if( ctl_info->text != NULL ) {
                 GUIMemFree( (void *)ctl_info->text );
             }
         }

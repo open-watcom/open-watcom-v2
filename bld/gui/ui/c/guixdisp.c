@@ -190,7 +190,7 @@ bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
  * GUIStrnDup -- duplicate the string text up to length characters
  */
 
-bool GUIStrnDup( char * text, char ** new, int length )
+bool GUIStrnDup( const char *text, char **new, int length )
 {
     int str_len;
 
@@ -225,7 +225,7 @@ char *TabFilter( const char *message )
 #define TAB_SIZE 4
                                 /* allocate another chunk of memory since */
                                 /* reallocating space for string literals is a no no */
-    new_message = ( char *)GUIMemAlloc( strlen( message )+1 );
+    new_message = (char *)GUIMemAlloc( strlen( message )+1 );
     strcpy( new_message, message );
     for( ; ; ){
         tab_pos = strcspn( new_message, "\t" );

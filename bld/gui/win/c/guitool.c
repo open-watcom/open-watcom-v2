@@ -252,7 +252,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     if( wnd->toolbar != NULL ) {
         GUICloseToolBar( wnd );
     }
-    wnd->toolbar = ( toolbarinfo * )GUIMemAlloc( sizeof( toolbarinfo ) );
+    wnd->toolbar = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
     if( wnd->toolbar == NULL ) {
         return( false );
     }

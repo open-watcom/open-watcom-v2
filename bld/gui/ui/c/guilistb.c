@@ -127,7 +127,7 @@ a_list *GUICreateListBox( void )
 {
     a_list      *list;
 
-    list = (a_list * )GUIMemAlloc( sizeof( a_list ) );
+    list = (a_list *)GUIMemAlloc( sizeof( a_list ) );
     if( list == NULL ) {
         return( NULL );
     }
@@ -147,7 +147,7 @@ a_list *GUICreateEditMLE( const char *text )
     char        *absolute_end;
     #define     MLE_NEWLINE     "\r\n"
 
-    list = (a_list * )GUIMemAlloc( sizeof( a_list ) );
+    list = (a_list *)GUIMemAlloc( sizeof( a_list ) );
     if( list == NULL ) {
         return( NULL );
     }
