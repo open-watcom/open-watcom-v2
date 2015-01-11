@@ -395,7 +395,7 @@ bool DlgGivenAddr( char *title, address *value )
     return( FALSE );
 }
 
-void DlgNewWithSym( const char *text, char *buff, int buff_len )
+void DlgNewWithSym( const char *title, char *buff, int buff_len )
 {
     // used by print command with no arguments
 }

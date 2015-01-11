@@ -1448,7 +1448,7 @@ bool DlgGivenAddr( char *title, address *value )
     // needed when segment's don't map (from new/sym command)
     return( FALSE );
 }
-void DlgNewWithSym( const char *text, char *buff, int buff_len )
+void DlgNewWithSym( const char *title, char *buff, int buff_len )
 {
     // used by print command with no arguments
 }

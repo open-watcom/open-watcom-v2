@@ -74,7 +74,7 @@ extern void             AddrFix( address * );
 extern void             StartSubscript( void );
 extern void             AddSubscript( void );
 extern void             EndSubscript( void );
-extern void             DlgNewWithSym( const char *, char *, unsigned);
+extern void             DlgNewWithSym( const char *title, char *, unsigned);
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern char             *GetCmdName( int );
 

@@ -41,8 +41,8 @@
 #include "dbgutil.h"
 
 /* to be moved to header files ! */
-extern bool             DlgNewWithMod( const char *, char *, unsigned );
-extern bool             DlgNewWithSym( const char *, char *, unsigned );
+extern bool             DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
+extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
 extern void             ChkExpr( void );
 extern void             ReqMemAddr(memory_expr , address *);
 extern void             NormalExpr(void);
@@ -111,7 +111,8 @@ static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *ti
 
     for( ;; ) {
         dlg( title, buff, buff_len );
-        if( buff[0] == '\0' ) return( FALSE );
+        if( buff[0] == '\0' )
+            return( FALSE );
         rc = rtn( buff, value );
         if( rc ) return( TRUE );
         PrevError( TxtBuff );
