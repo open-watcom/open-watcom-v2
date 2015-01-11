@@ -51,8 +51,8 @@ char    prev_dir[_MAX_DIR];
 char    name[_MAX_PATH];
 char    new_pack[_MAX_FNAME];
 
-static void ConcatDirElem( char *dir, char *elem )
-/************************************************/
+static void ConcatDirElem( char *dir, const char *elem )
+/******************************************************/
 {
     size_t      len;
 

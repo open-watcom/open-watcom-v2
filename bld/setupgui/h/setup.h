@@ -117,7 +117,7 @@ extern bool             ModifyConfiguration( bool );
 extern bool             ModifyAutoExec( bool );
 extern bool             GenerateBatchFile( bool );
 #if defined( __NT__ )
-extern bool             GetRegString( HKEY, char *, char *, char *, DWORD );
+extern bool             GetRegString( HKEY, const char *, const char *, char *, DWORD );
 extern bool             ModifyRegAssoc( bool );
 extern bool             AddToUninstallList( bool );
 #endif

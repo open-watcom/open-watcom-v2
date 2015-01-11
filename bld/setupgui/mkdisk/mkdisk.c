@@ -160,8 +160,8 @@ static char                     *BootText[ NUM_LINES ] =
 };
 
 
-static void ConcatDirElem( char *dir, char *elem )
-/************************************************/
+static void ConcatDirElem( char *dir, const char *elem )
+/******************************************************/
 {
     size_t      len;
 
@@ -176,18 +176,18 @@ static void ConcatDirElem( char *dir, char *elem )
 }
 
 
-static char *mygets( char *buf, unsigned len, FILE *fp )
-/******************************************************/
+static char *mygets( char *buf, size_t len, FILE *fp )
+/****************************************************/
 {
     char        *p,*q,*start;
     int         lang;
-    unsigned    got;
+    size_t      got;
 
     /* syntax is //nstring//mstring//0 */
 
     p = buf;
     for( ;; ) {
-        if( fgets( p, len, fp ) == NULL )
+        if( fgets( p, (int)len, fp ) == NULL )
             return( NULL );
         q = p;
         while( *q == ' ' || *q == '\t' )
@@ -242,8 +242,8 @@ static void AddToList( LIST *new, LIST **list )
 }
 
 
-long FileSize( char *file )
-//=========================
+long FileSize( const char *file )
+//===============================
 
 {
     struct stat         stat_buf;
@@ -306,10 +306,11 @@ void NextDisk( FILE *fp )
     NewDisk( fp );
 }
 
-void OneFile( FILE *fp, char *dir, char *name, char *dst )
+void OneFile( FILE *fp, const char *dir, const char *name, const char *dst )
 {
     fprintf( fp, "call %%DCOPY%% " );
-    if( dir != NULL ) fprintf( fp, "%s\\", dir );
+    if( dir != NULL )
+        fprintf( fp, "%s\\", dir );
     fprintf( fp, "%s", name );
     if( dst != NULL ) {
         fprintf( fp, "\t%s", dst );
@@ -493,8 +494,8 @@ bool CheckParms( int *pargc, char **pargv[] )
 }
 
 
-int AddTarget( char *target )
-//===========================
+int AddTarget( const char *target )
+//=================================
 {
     int                 count;
     LIST                *new, *curr, **owner;
@@ -523,8 +524,8 @@ int AddTarget( char *target )
 }
 
 
-int AddPath( char *path, int target, int parent )
-//===============================================
+int AddPath( const char *path, int target, int parent )
+//=====================================================
 {
     int                 count;
     PATH_INFO           *new, *curr, **owner;
@@ -577,7 +578,7 @@ int AddPathTree( char *path, int target )
 }
 
 
-bool AddFile( char *path, char *old_path, char redist, char *file, char *rel_file, char *patch, char *dst_var, char *cond )
+bool AddFile( char *path, char *old_path, char redist, const char *file, const char *rel_file, const char *patch, const char *dst_var, const char *cond )
 /*************************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
@@ -912,8 +913,8 @@ static char *ReplaceEnv( char *file_name )
 
 static char             SectionBuf[SECTION_BUF_SIZE];
 
-void ReadSection( FILE *fp, char *section, LIST **list )
-/******************************************************/
+void ReadSection( FILE *fp, const char *section, LIST **list )
+/************************************************************/
 {
     LIST                *new;
     int                 file_curr = 0;
@@ -925,9 +926,12 @@ void ReadSection( FILE *fp, char *section, LIST **list )
             printf( "%s section not found in '%s'\n", section, MkdiskInf );
             return;
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' ) continue;
+        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+            continue;
         SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( stricmp( SectionBuf, section ) == 0 ) break;
+        if( stricmp( SectionBuf, section ) == 0 ) {
+            break;
+        }
     }
     for( ;; ) {
         if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
@@ -939,9 +943,11 @@ void ReadSection( FILE *fp, char *section, LIST **list )
                 break;
             }
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' ) continue;
+        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+            continue;
         SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( SectionBuf[ 0 ] == '\0' ) break;
+        if( SectionBuf[ 0 ] == '\0' )
+            break;
         if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
             Setup = strdup( &SectionBuf[6] );
             Setup = ReplaceEnv( Setup );

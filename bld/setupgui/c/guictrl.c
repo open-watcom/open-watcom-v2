@@ -56,7 +56,7 @@ void set_dlg_textwindow( gui_control_info *gui_controls,
                         gui_ord x2,                 // bottom-right x
                         int lines,                  // number of lines
                         gui_scroll_styles scroll )  // scroll style
-/**************************************************************/
+/*****************************************************************/
 // see gui.h for gui_scroll_styles
 {
     gui_control_info    *control;
@@ -74,27 +74,27 @@ void set_dlg_textwindow( gui_control_info *gui_controls,
 
 
 void set_dlg_dynamstring( gui_control_info *gui_controls,
-                         int num_controls, const char *s,
-                         int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+                        int num_controls, const char *s,
+                        int id, gui_ord x1, gui_ord y1, gui_ord x2 )
 /*******************************************************************/
 {
-      gui_control_info  *control;
+    gui_control_info    *control;
 
-      control = &gui_controls[num_controls];
-      control->control_class = GUI_STATIC;
-      control->text = GUIStrDup( s, NULL );
-      DLG_SET_RECT( *control, x1, y1, x2, y1 );
-      control->parent       = NULL;
-      control->scroll       = GUI_NOSCROLL;
-      control->style        = GUI_CONTROL_NOPREFIX | GUI_AUTOMATIC;
-      control->id           = id;
+    control = &gui_controls[num_controls];
+    control->control_class = GUI_STATIC;
+    control->text = GUIStrDup( s, NULL );
+    DLG_SET_RECT( *control, x1, y1, x2, y1 );
+    control->parent     = NULL;
+    control->scroll     = GUI_NOSCROLL;
+    control->style      = GUI_CONTROL_NOPREFIX | GUI_AUTOMATIC;
+    control->id         = id;
 }
 
 
 void set_dlg_radio( gui_control_info *gui_controls,
-                   int num_controls, int num_radio_buttons, const char *s,
-                   int id, gui_ord x1, gui_ord y1, gui_ord x2 )
-/************************************************************************/
+                    int num_controls, int num_radio_buttons, const char *s,
+                    int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+/*************************************************************************/
 {
     gui_control_info    *control;
 
@@ -116,9 +116,9 @@ void set_dlg_radio( gui_control_info *gui_controls,
 }
 
 void set_dlg_check( gui_control_info *gui_controls,
-                   int num_controls, const char *s,
-                   int id, gui_ord x1, gui_ord y1, gui_ord x2 )
-/*************************************************************/
+                    int num_controls, const char *s,
+                    int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+/**************************************************************/
 {
     gui_control_info    *control;
 
@@ -134,9 +134,9 @@ void set_dlg_check( gui_control_info *gui_controls,
 }
 
 void set_dlg_edit( gui_control_info *gui_controls,
-                  int num_controls, const char *s,
-                  int id, gui_ord x1, gui_ord y1, gui_ord x2 )
-/************************************************************/
+                    int num_controls, const char *s,
+                    int id, gui_ord x1, gui_ord y1, gui_ord x2 )
+/**************************************************************/
 {
     int                 text_size;
     gui_control_info    *control;

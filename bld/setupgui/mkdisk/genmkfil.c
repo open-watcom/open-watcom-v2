@@ -58,8 +58,8 @@ FILE_INFO               *FileList = NULL;
 VERSION_INFO            *VersionList = NULL;
 
 
-bool AddFile( char *path, char *file, char *rel_file, char *patch )
-//=================================================================
+bool AddFile( const char *path, const char *file, const char *rel_file, const char *patch )
+//=========================================================================================
 {
     FILE_INFO           *new, **owner;
 
@@ -87,8 +87,8 @@ bool AddFile( char *path, char *file, char *rel_file, char *patch )
 }
 
 
-bool InVersionList( char *str )
-//=============================
+bool InVersionList( const char *str )
+//===================================
 {
     VERSION_INFO        *ver;
 
@@ -191,8 +191,8 @@ void CreateMakeFile( void )
 }
 
 
-void AddVersion( char *str )
-//==========================
+void AddVersion( const char *str )
+//================================
 {
     VERSION_INFO        *ver;
 
@@ -200,9 +200,21 @@ void AddVersion( char *str )
     if( ver == NULL ) {
         printf( "Out of memory\n" );
     } else {
-        ver->version = str;
+        ver->version = strdup( str );
         ver->next = VersionList;
         VersionList = ver;
+    }
+}
+
+void FreeVersion( void )
+//======================
+{
+    VERSION_INFO        *ver;
+
+    while( (ver = VersionList) != NULL ) {
+        VersionList = ver->next;
+        free( ver->version );
+        free( ver );
     }
 }
 
@@ -231,5 +243,6 @@ int main( int argc, char *argv[] )
     if( ok ) {
         CreateMakeFile();
     }
+    FreeVersion();
     return( 0 );
 }

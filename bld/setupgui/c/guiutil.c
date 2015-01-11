@@ -47,7 +47,7 @@ extern bool             Invisible;
 gui_window              *MainWnd = NULL;
 int                     NominalButtonWidth = 11;
 
-char *Bolt[] = {
+const char *Bolt[] = {
     "",
     "               ________                          ________              ",
     "              /:::::::/                         /:::::::/              ",

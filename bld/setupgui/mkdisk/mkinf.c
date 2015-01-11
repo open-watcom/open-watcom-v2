@@ -128,8 +128,8 @@ static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
 
 
-static void ConcatDirElem( char *dir, char *elem )
-/************************************************/
+static void ConcatDirElem( char *dir, const char *elem )
+/******************************************************/
 {
     size_t      len;
 
@@ -155,14 +155,18 @@ static char *mygets( char *buf, size_t len, FILE *fp )
 
     p = buf;
     for( ;; ) {
-        if( fgets( p, len, fp ) == NULL ) return( NULL );
+        if( fgets( p, (int)len, fp ) == NULL )
+            return( NULL );
         q = p;
         while( *q == ' ' || *q == '\t' ) ++q;
-        if( p != q ) strcpy( p, q );
+        if( p != q )
+            strcpy( p, q );
         got = strlen( p );
-        if( got <= 1 ) break;
+        if( got <= 1 )
+            break;
         got-=2;
-        if( p[got] != '\\' || p[got + 1] != '\n' ) break;
+        if( p[got] != '\\' || p[got + 1] != '\n' )
+            break;
         p += got;
         len -= got;
     }
@@ -172,7 +176,7 @@ static char *mygets( char *buf, size_t len, FILE *fp )
             start = p;
             lang = p[2] - '0';
             if( lang == 0 ) {
-                strcpy( start, start+3 );
+                strcpy( start, start + 3 );
                 continue;
             }
             p += 3;
@@ -180,7 +184,7 @@ static char *mygets( char *buf, size_t len, FILE *fp )
                 ++p;
             }
             if( lang == Lang ) {
-                strcpy( start, start+3 );
+                strcpy( start, start + 3 );
                 p -= 3;
             } else {
                 strcpy( start, p );
@@ -204,8 +208,8 @@ static void AddToList( LIST *new, LIST **list )
 }
 
 
-static long FileSize( char *file )
-/********************************/
+static long FileSize( const char *file )
+/**************************************/
 {
     struct stat         stat_buf;
 
@@ -293,8 +297,8 @@ bool CheckParms( int *pargc, char **pargv[] )
 }
 
 
-int AddTarget( char *target )
-/***************************/
+int AddTarget( const char *target )
+/*********************************/
 {
     int                 count;
     LIST                *new, *curr, **owner;
@@ -348,8 +352,8 @@ static char *GetBracketedString( const char *src, const char **end )
 }
 
 
-int AddPath( char *path, int target, int parent )
-/***********************************************/
+int AddPath( const char *path, int target, int parent )
+/*****************************************************/
 {
     int                 count;
     PATH_INFO           *new, *curr, **owner;
@@ -401,8 +405,8 @@ int AddPathTree( char *path, int target )
     return( AddPath( path, target, parent ) );
 }
 
-static int mkdir_nested( char *path )
-/***********************************/
+static int mkdir_nested( const char *path )
+/*****************************************/
 {
 #ifdef __UNIX__
     struct stat sb;
@@ -467,7 +471,7 @@ static int mkdir_nested( char *path )
     return( 0 );
 }
 
-bool AddFile( char *path, char *old_path, char type, char redist, char *file, char *rel_file, char *dst_var, char *cond )
+bool AddFile( char *path, char *old_path, char type, char redist, char *file, const char *rel_file, char *dst_var, const char *cond )
 /***********************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
@@ -879,8 +883,8 @@ static char *ReplaceEnv( char *file_name )
 
 static char             SectionBuf[SECTION_BUF_SIZE];
 
-void ReadSection( FILE *fp, char *section, LIST **list )
-/******************************************************/
+void ReadSection( FILE *fp, const char *section, LIST **list )
+/************************************************************/
 {
     LIST                *new;
     int                 file_curr = 0;
@@ -892,9 +896,12 @@ void ReadSection( FILE *fp, char *section, LIST **list )
             printf( "%s section not found in '%s'\n", section, MksetupInf );
             return;
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' ) continue;
+        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+            continue;
         SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( stricmp( SectionBuf, section ) == 0 ) break;
+        if( stricmp( SectionBuf, section ) == 0 ) {
+            break;
+        }
     }
     for( ;; ) {
         if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
@@ -906,9 +913,11 @@ void ReadSection( FILE *fp, char *section, LIST **list )
                 break;
             }
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' ) continue;
+        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+            continue;
         SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( SectionBuf[ 0 ] == '\0' ) break;
+        if( SectionBuf[ 0 ] == '\0' )
+            break;
         if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
             Setup = strdup( &SectionBuf[6] );
             Setup = ReplaceEnv( Setup );
@@ -1082,8 +1091,8 @@ bool CheckForDuplicateFiles( void )
 }
 
 
-void DumpFile( FILE *out, char *fname )
-/*************************************/
+void DumpFile( FILE *out, const char *fname )
+/*******************************************/
 {
     FILE                *in;
     char                *buf;

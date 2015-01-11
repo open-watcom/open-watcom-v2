@@ -86,7 +86,7 @@ static gui_rect         StatusRect;
 static char             StatusBarBuf[256];
 static GUICALLBACK      StatusEventProc;
 
-static char *Messages[] = {
+static const char *Messages[] = {
     #define pick( x, y ) y,
     #include "status.h"
     #undef pick

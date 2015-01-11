@@ -61,7 +61,7 @@
 
 #if defined( __NT__ )
 
-void CreateRegEntry( char *hive_key, char *app_name, char *key_name,
+void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
                      char *value, char *file_name, bool add )
 {
     char                buf[_MAX_PATH];
@@ -138,7 +138,7 @@ void CreateRegEntry( char *hive_key, char *app_name, char *key_name,
 }
 
 
-bool GetRegString( HKEY hive, char *section, char *value,
+bool GetRegString( HKEY hive, const char *section, const char *value,
                    char *buffer, DWORD buff_size )
 /*******************************************************/
 {
@@ -193,8 +193,8 @@ BYTE *ConvertDWORDToData( DWORD number, DWORD type )
     return( buff );
 }
 
-signed int AddToUsageCount( char *path, signed int value )
-/********************************************************/
+signed int AddToUsageCount( const char *path, signed int value )
+/**************************************************************/
 {
     HKEY                        key_handle;
     LONG                        result;

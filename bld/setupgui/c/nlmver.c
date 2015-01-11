@@ -47,7 +47,7 @@
 
 #include "clibext.h"
 
-static void LenToASCIIZStr( char *tobuf, unsigned char *frombuf )
+static void LenToASCIIZStr( char *tobuf, const unsigned char *frombuf )
 {
     memcpy( tobuf, frombuf + 1, *frombuf );
     tobuf[*frombuf] = '\0';
