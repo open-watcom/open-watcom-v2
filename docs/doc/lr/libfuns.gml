@@ -236,6 +236,7 @@
 .fnc _ellipse_w                 gr_ellip.gml    DOS QNX W GRAPH
 .fnc _ellipse_wxy               gr_ellip.gml    DOS QNX W GRAPH
 .fnc _enable                    _enable.gml     DOS QNX W WIN32
+.fnc endpwent                   endpwent.gml    DOS QNX W WIN32
 .fnc _endthread                 _ethread.gml    DOS QXO   WIN32
 .fnc _endthreadex               _ethread.gml    DOS       WIN32
 .fnc eof                        eof.gml         DOS QNX W WIN32
@@ -461,11 +462,9 @@
 .fnc _getplotaction             gr_getpa.gml    DOS QNX W GRAPH
 .fnc getppid                    getppid.gml         QXO
 .fnc getprio                    getprio.gml         QXO
-.fnc getpwent                   getpwent.gml        QXO
-.fnc setpwent                   getpwent.gml        QXO
-.fnc endpwent                   getpwent.gml        QXO
-.fnc getpwnam                   getpwnam.gml        QXO
-.fnc getpwuid                   getpwuid.gml        QXO
+.fnc getpwent                   getpwent.gml    DOS QNX W WIN32
+.fnc getpwnam                   getpwnam.gml    DOS QNX W WIN32
+.fnc getpwuid                   getpwuid.gml    DOS QNX W WIN32
 .fnc gets                       gets.gml        DOS QNX W WIN32
 .fnw _getws                     gets.gml        DOS QNX W WIN32
 .fnc gets_s                     gets_s.gml      DOS QNX W WIN32
@@ -1180,6 +1179,7 @@
 .fnc _setpixel_w                gr_setpx.gml    DOS QNX W GRAPH
 .fnc _setplotaction             gr_setpa.gml    DOS QNX W GRAPH
 .fnc setprio                    setprio.gml         QXO
+.fnc setpwent                   setpwent.gml    DOS QNX W WIN32
 .fnc setsid                     setsid.gml          QXO
 .fnc _settextalign              gr_setta.gml    DOS QNX W GRAPH
 .fnc _settextcolor              gr_settc.gml    DOS QNX W GRAPH
