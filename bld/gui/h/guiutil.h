@@ -34,6 +34,7 @@
 #define _GUIUTIL_H_
 
 extern char *GUIStripTrailingBlanks( const char *label, bool *ok );
+extern char *GUIStrDupLen( const char *text, size_t len, bool *ok );
 extern char *GUIStrDup( const char *text, bool *ok );
 extern void GUIStoreArgs( char **argv, int argc );
 

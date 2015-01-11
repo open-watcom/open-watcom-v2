@@ -35,6 +35,8 @@
 #include "guiwind.h"
 #include "guidlg.h"
 #include "guistr.h"
+#include "guiutil.h"
+
 #include "clibext.h"
 
 /* buttons and icons that can be in the dialog */
@@ -187,51 +189,27 @@ bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 /*
- * GUIStrnDup -- duplicate the string text up to length characters
+ * tabFilter -- Expand tabs to blanks
  */
 
-bool GUIStrnDup( const char *text, char **new, int length )
-{
-    int str_len;
+#define TAB_SIZE 4
 
-    if( text == NULL ) {
-        *new = NULL;
-        return( true );
-    } else {
-        str_len = strlen( text );
-        if( str_len < length ) {
-            length = str_len;
-        }
-        *new = (char *)GUIMemAlloc( length + 1 );
-        if( *new == NULL ) {
-            return( false );
-        }
-        strncpy( *new, text, length );
-        (*new)[length] = '\0';
-    }
-    return( true );
-}
-
-
-/*
-* TabFilter -- Expand tabs to blanks
-*/
-char *TabFilter( const char *message )
+static char *tabFilter( const char *message )
 {
     char *new_message;
     char *start;
     int  tab_pos;
 
-#define TAB_SIZE 4
-                                /* allocate another chunk of memory since */
-                                /* reallocating space for string literals is a no no */
-    new_message = (char *)GUIMemAlloc( strlen( message )+1 );
-    strcpy( new_message, message );
+    /* allocate another chunk of memory since */
+    /* reallocating space for string literals is a no no */
+    new_message = (char *)GUIStrDup( message, NULL );
     for( ; ; ){
         tab_pos = strcspn( new_message, "\t" );
-        if( tab_pos == strlen( new_message ) ) break;   /* no more tabs */
-        new_message = ( char *)GUIMemRealloc( new_message, strlen( new_message ) + TAB_SIZE + 1 );
-        start = new_message + tab_pos;                /* don't forget the NULL */
+        if( tab_pos == strlen( new_message ) )
+            break;      /* no more tabs */
+        new_message = (char *)GUIMemRealloc( new_message, strlen( new_message ) + TAB_SIZE + 1 );
+        /* don't forget the NULL */
+        start = new_message + tab_pos;
         memmove( start + TAB_SIZE, start + 1, strlen( start + 1 ) + 1 );
         strnset( start, ' ', TAB_SIZE );
     }
@@ -240,13 +218,12 @@ char *TabFilter( const char *message )
 
 
 /*
- * GetNumStringControls -- divide string up into segments that can be
+ * getNumStringControls -- divide string up into segments that can be
  *                         displayed one per line.  Attempt to break
  *                         lines at spaces.
  */
 
-static bool GetNumStringControls( int *num_controls, const char *old_message,
-                                  string_info **info )
+static bool getNumStringControls( int *num_controls, const char *old_message, string_info **info )
 {
     gui_rect            scale;
     gui_text_metrics    metrics;
@@ -257,14 +234,18 @@ static bool GetNumStringControls( int *num_controls, const char *old_message,
     char                *end_char;
     char                *message;
     char                *new_message;
+    bool                ok;
+    string_info         *new_info;
+    int                 new_num;
 
-    new_message = TabFilter( old_message );     /* expand out tab characters */
-    message = new_message;
+    *info = NULL;
+    *num_controls = 0;
 
-    if( message == NULL ) {
-        *num_controls = 0;
+    new_message = tabFilter( old_message );     /* expand out tab characters */
+    if( new_message == NULL ) {
         return( false );
     }
+
     GUIGetScale( &scale );
     GUIGetDlgTextMetrics( &metrics );
     if( strlen( old_message ) > 256 ) {
@@ -273,46 +254,62 @@ static bool GetNumStringControls( int *num_controls, const char *old_message,
     } else {
         max_width = ( 2 * ( scale.width / metrics.avg.x ) ) / 3;
     }
-    *info           = NULL;
-    tmp_n           = NULL;
-    *num_controls   = 0;
 
-    for( ;message != tmp_n; ) {
-        tmp_n = message + strcspn(message, "\n\r");
-
-        if( tmp_n-message < max_width ) {
+    tmp_n = NULL;
+    message = new_message;
+    while( message != tmp_n ) {
+        tmp_n = message + strcspn( message, "\n\r" );
+        if( tmp_n - message < max_width ) {
             start   = message;
-            len     = tmp_n-start;
+            len     = tmp_n - start;
             if( *tmp_n == '\0' ) {
-                message = tmp_n;      /* at the end of original string */
+                message = tmp_n;            /* at the end of original string */
             } else {
-                message = tmp_n+1;   /* skip over newline */
+                message = tmp_n + 1;        /* skip over newline */
             }
-        } else {                     /* search back for space */
-            for(end_char = message+max_width; (message < end_char) && (*end_char != ' '); --end_char );
+        } else {                            /* search back for space */
+            for(end_char = message + max_width; ( message < end_char ) && ( *end_char != ' ' ); --end_char )
+                ;
             if( end_char == message ) {
-                start   = message;           /* no spaces found */
+                start   = message;          /* no spaces found */
                 len     = max_width;
                 message += max_width;
             } else {
                 start   = message;
-                len     = end_char-start+1;
-                message = end_char+1;      /* skip over blank */
+                len     = end_char - start + 1;
+                message = end_char + 1;     /* skip over blank */
             }
-        }                                  /* add new line to error box */
-        (*num_controls)+=1;
-        *info = ( string_info * )GUIMemRealloc( *info, sizeof( string_info ) *
-                                            (*num_controls) );
-        if( *info == NULL ) return( false );
-        (*info)[*num_controls - 1].length = len;
-        if( !GUIStrnDup( start, &((*info)[*num_controls - 1].text), len ) ) {
-            return( false );
+        }                                   /* add new line to error box */
+        new_num = *num_controls + 1;
+        new_info = (string_info *)GUIMemRealloc( *info, sizeof( string_info ) * new_num );
+        ok = ( new_info != NULL );
+        if( !ok ) {
+            break;
+        }
+        *info = new_info;
+        *num_controls = new_num;
+        new_info[new_num - 1].length = len;
+        new_info[new_num - 1].text = GUIStrDupLen( start, len, &ok );
+        if( !ok ) {
+            break;
         }
     } /* for */
-
-    GUIMemFree( new_message );     /* allocated in TabFilter routine */
-    return( true );
+    // de-allocate memory allocated in tabFilter routine */
+    GUIMemFree( new_message );
+    return( ok );
 }
+
+
+static void freeStringControls( int num_controls, string_info *info )
+{
+    int i;
+
+    for( i = 0; i < num_controls; ++i ) {
+        GUIMemFree( info[i].text );
+    }
+    GUIMemFree( info );
+}
+
 
 /*
  * UpdateCols -- increase number of columns needed according to size
@@ -444,13 +441,16 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
 
     /* figure out how manu GUI_STATIC controls are required for the text */
     num_string_controls = 0;
-    if( !GetNumStringControls( &num_string_controls, message, &strings ) ) {
+    strings = NULL;
+    if( !getNumStringControls( &num_string_controls, message, &strings ) ) {
+        freeStringControls( num_string_controls, strings );
         return( GUI_RET_CANCEL );
     }
 
     num_controls += num_string_controls;
     controls_info = (gui_control_info *)GUIMemAlloc( sizeof( gui_control_info ) * num_controls );
     if( controls_info == NULL ) {
+        freeStringControls( num_string_controls, strings );
         return( GUI_RET_CANCEL );
     }
 
@@ -481,10 +481,8 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
     CentreButtons( cols, num_buttons, controls_info, num_controls );
     ret = GUI_RET_CANCEL; /* default -- if escape hit */
     GUIDlgOpen( title, rows, cols, controls_info, num_controls, &DisplayMessage, &ret );
-    for( i = 0; i < num_string_controls; i++ ) {
-        GUIMemFree( strings[i].text );
-    }
-    GUIMemFree( strings );
+    // deallocate used memory
+    freeStringControls( num_string_controls, strings );
     GUIMemFree( controls_info );
     return( ret );
 }

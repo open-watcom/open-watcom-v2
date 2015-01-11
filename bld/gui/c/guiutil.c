@@ -41,7 +41,7 @@
 
 char *GUIStripTrailingBlanks( const char *label, bool *ok )
 {
-    unsigned    length;
+    size_t      length;
     char        *new_str;
 
     if( ok != NULL )
@@ -61,10 +61,39 @@ char *GUIStripTrailingBlanks( const char *label, bool *ok )
             *ok = false;
         return( NULL );
     }
-    strncpy( new_str, label, length );
+    memcpy( new_str, label, length );
     new_str[length] = '\0';
     return( new_str );
 }
+
+/*
+ * GUIStrDupLen -- duplicate the string text up to length characters
+ */
+
+char *GUIStrDupLen( const char *text, size_t len, bool *ok )
+{
+    size_t  new_len;
+    char    *new_str;
+
+    if( ok != NULL )
+        *ok = true;
+    if( text == NULL )
+        return( NULL );
+    new_len = strlen( text );
+    if( new_len > len ) {
+        new_len = len;
+    }
+    new_str = (char *)GUIMemAlloc( new_len + 1 );
+    if( new_str == NULL ) {
+        if( ok != NULL )
+            *ok = false;
+        return( NULL );
+    }
+    memcpy( new_str, text, new_len );
+    new_str[new_len] = '\0';
+    return( new_str );
+}
+
 
 char *GUIStrDup( const char *text, bool *ok )
 {
@@ -75,8 +104,7 @@ char *GUIStrDup( const char *text, bool *ok )
     if( text != NULL ) {
         new_str = GUIMemAlloc( strlen( text ) + 1 );
         if( new_str != NULL ) {
-            strcpy( new_str, text );
-            return( new_str );
+            return( strcpy( new_str, text ) );
         }
         if( ok != NULL ) {
             *ok = false;

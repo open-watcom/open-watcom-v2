@@ -33,12 +33,12 @@
 
 #include <stddef.h>
 
-extern void  GUIMemOpen( void );
-extern void  GUIMemClose( void );
-extern void  GUIMemRedirect( int );
-extern void  GUIMemPrtUsage( void );
-extern void *GUIMemAlloc( size_t size );
-extern void  GUIMemFree( void * ptr );
-extern void *GUIMemRealloc( void * ptr, size_t size );
+extern void     GUIMemOpen( void );
+extern void     GUIMemClose( void );
+extern void     GUIMemRedirect( int );
+extern void     GUIMemPrtUsage( void );
+extern void     *GUIMemAlloc( size_t size );
+extern void     GUIMemFree( void * ptr );
+extern void     *GUIMemRealloc( void * ptr, size_t size );
 
 #endif

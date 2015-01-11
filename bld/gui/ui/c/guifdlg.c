@@ -95,7 +95,7 @@
 
 typedef struct {
     open_file_name      *currOFN;
-    char                **fileExtensions;
+    const char          **fileExtensions;
     char                *currExt;
     int                 currExtIndex;
     int                 dialogRC;
@@ -163,11 +163,14 @@ static bool     ControlsInitialized = false;
 #define NUM_CONTROLS ( sizeof( dlgControls ) / sizeof( gui_control_info ) )
 
 #define GetDriveTextList()      ((const char **)dlgControls[DRIVE_LIST_INDEX].text)
-#define SetDriveTextList(x)     dlgControls[DRIVE_LIST_INDEX].text = (char *)(x)
-#define freeDriveTextList( )    freeStringList((char ***)&dlgControls[DRIVE_LIST_INDEX].text)
+#define SetDriveTextList(x)     dlgControls[DRIVE_LIST_INDEX].text = ((const char *)(x))
+#define freeDriveTextList( )    freeStringList((const char ***)&dlgControls[DRIVE_LIST_INDEX].text)
 #define GetFileTypesTextList()  ((const char **)dlgControls[FILE_TYPES_INDEX].text)
-#define SetFileTypesTextList(x) dlgControls[FILE_TYPES_INDEX].text = (char *)(x)
-#define freeFileTypesTextList() freeStringList((char ***)&dlgControls[FILE_TYPES_INDEX].text)
+#define SetFileTypesTextList(x) dlgControls[FILE_TYPES_INDEX].text = ((const char *)(x))
+#define freeFileTypesTextList() freeStringList((const char ***)&dlgControls[FILE_TYPES_INDEX].text)
+#define GetFileExtsTextList()   (dlg.fileExtensions)
+#define SetFileExtsTextList(x)  dlg->fileExtensions = (x)
+#define freeFileExtsTextList()  freeStringList(&dlg.fileExtensions)
 
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
   #define PC '/'
@@ -395,7 +398,7 @@ static bool hasWild( const char *txt )
 /*
  * addToList - add an item to a list of items
  */
-static bool addToList( char ***list, int num, const char *data, size_t len )
+static bool addToList( const char ***list, int num, const char *data, size_t len )
 {
     char    *str;
 
@@ -418,7 +421,7 @@ static bool addToList( char ***list, int num, const char *data, size_t len )
 /*
  * freeStringList - release an array of strings
  */
-static void freeStringList( char ***list )
+static void freeStringList( const char ***list )
 {
     int         cnt;
 
@@ -427,7 +430,7 @@ static void freeStringList( char ***list )
     }
     cnt = 0;
     while( (*list)[cnt] != NULL ) {
-        GUIMemFree( (*list)[cnt] );
+        GUIMemFree( (void *)(*list)[cnt] );
         cnt++;
     }
     GUIMemFree( *list );
@@ -439,72 +442,74 @@ static void freeStringList( char ***list )
 /*
  * buildDriveList - get a list of all drives
  */
-static char **buildDriveList( void )
+static bool buildDriveList( void )
 {
     char        drv;
     int         cnt;
     char        str[_MAX_PATH];
-    char        **dirlist;
+    const char  **list;
 
     cnt = 0;
-    dirlist = NULL;
+    list = NULL;
     for( drv = 'A'; drv <= 'Z'; drv++ ) {
         if( getDriveType( drv ) != DRIVE_NONE ) {
             str[0] = drv;
             str[1] = ':';
-            str[2] = 0;
-            if( !addToList( &dirlist, cnt, str, 2 ) ) {
-                freeStringList( &dirlist );
-                return( NULL );
+            str[2] = '\0';
+            if( !addToList( &list, cnt, str, 2 ) ) {
+                freeStringList( &list );
+                break;
             }
             cnt++;
         }
     }
-    return( dirlist );
+    SetDriveTextList( list );
+    return( list != NULL );
 
 } /* buildDriveList */
 #endif
 
 /*
- * buildFileTypes - get a list of all file types
+ * buildFileTypesExts - get a lists of all file types and extensions
  */
-static char **buildFileTypes( dlg_info *dlg, char *data )
+static bool buildFileTypesExts( dlg_info *dlg, const char *data )
 {
     size_t      len;
-    char        **list1;
+    const char  **list1;
+    const char  **list2;
     int         num;
-    char        *ptr;
+    bool        ok;
 
     list1 = NULL;
-    dlg->fileExtensions = NULL;
-    num = 0;
-    if( data == NULL ) {
-        return( NULL );
-    }
-    for( ;; ) {
-        len = strlen( data );
-        if( len == 0 ) {
-            break;
+    list2 = NULL;
+    if( data != NULL ) {
+        num = 0;
+        ok = true;
+        while( *data != '\0' ) {
+            len = strlen( data );
+            ok = addToList( &list1, num, data, len );
+            if( !ok ) {
+                break;
+            }
+            data += len + 1;
+            len = strlen( data );
+            ok = addToList( &list2, num, data, len );
+            if( !ok ) {
+                break;
+            }
+            data += len + 1;
+            num++;
         }
-        ptr = data;
-        data += len+1;
-        if( !addToList( &list1, num, ptr, len ) ) {
+        if( !ok ) {
             freeStringList( &list1 );
-            freeStringList( &dlg->fileExtensions );
-            return( NULL );
+            freeStringList( &list2 );
         }
-        len = strlen( data );
-        if( !addToList( &dlg->fileExtensions, num, data, len ) ) {
-            freeStringList( &list1 );
-            freeStringList( &dlg->fileExtensions );
-            return( NULL );
-        }
-        data += len+1;
-        num++;
     }
-    return( list1 );
+    SetFileTypesTextList( list1 );
+    SetFileExtsTextList( list2 );
+    return( list1 != NULL && list2 != NULL );
 
-} /* buildFileTypes */
+} /* buildFileTypesExts */
 
 /*
  * goToDir - go to a specified directory
@@ -677,13 +682,13 @@ static bool isrdonly( struct dirent *dent, char *path )
 /*
  * setFileList - get list of files in current directory
  */
-static bool setFileList( gui_window *gui, char *ext )
+static bool setFileList( gui_window *gui, const char *ext )
 {
     char                path[_MAX_PATH];
     DIR                 *directory;
     struct dirent       *dent;
     char                *ptr;
-    char                **list;
+    const char          **list;
     int                 cnt;
     char                ext1[_MAX_PATH];
     int                 i;
@@ -734,7 +739,7 @@ static bool setFileList( gui_window *gui, char *ext )
     GUIClearList( gui, CTL_FILE_LIST );
     if( cnt > 0 ) {
         qsort( list, cnt, sizeof( char * ), Compare );
-        for( i=0;i<cnt;i++ ) {
+        for( i = 0; i < cnt; i++ ) {
             GUIAddText( gui, CTL_FILE_LIST, list[i] );
         }
         freeStringList( &list );
@@ -760,7 +765,7 @@ static bool setDirList( gui_window *gui )
     int                 i;
     size_t              len;
     int                 curr,cnt;
-    char                **list;
+    const char          **list;
 
     GUIClearList( gui, CTL_DIR_LIST );
     cnt = 0;
@@ -806,7 +811,7 @@ static bool setDirList( gui_window *gui )
     }
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drive[3] = '\\';
-    drive[4] = 0;
+    drive[4] = '\0';
 #endif
     if( !addToList( &list, cnt, drive, strlen( drive ) ) ) {
         freeStringList( &list );
@@ -820,11 +825,10 @@ static bool setDirList( gui_window *gui )
     while( *ptr != 0 ) {
         if( *ptr == FILE_SEP_CHAR ) {
             *ptr = 0;
-            strcpy( tmp, indent );
-            len = strlen( tmp );
-            tmp[len] = OPENED_DIR_CHAR;
-            tmp[len + 1] = 0;
-            strcat( tmp, start );
+            len = strlen( indent );
+            memcpy( tmp, indent, len );
+            tmp[len++] = OPENED_DIR_CHAR;
+            strcpy( tmp + len, start );
             if( !addToList( &list, cnt, tmp, strlen( tmp ) ) ) {
                 freeStringList( &list );
                 return( false );
@@ -843,11 +847,10 @@ static bool setDirList( gui_window *gui )
                 (dent->d_name[1] == '.' && dent->d_name[2] == 0)) ) {
                 continue;
             }
-            strcpy( tmp, indent );
-            len = strlen( tmp );
-            tmp[len] = UNOPENED_DIR_CHAR;
-            tmp[len + 1] = 0;
-            strcat( tmp, dent->d_name );
+            len = strlen( indent );
+            memcpy( tmp, indent, len );
+            tmp[len++] = UNOPENED_DIR_CHAR;
+            strcpy( tmp + len, dent->d_name );
             if( !addToList( &list, cnt, tmp, strlen( tmp ) ) ) {
                 freeStringList( &list );
                 return( false );
@@ -1193,43 +1196,42 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
 {
     char        olddir[_MAX_PATH];
     dlg_info    dlg;
+    bool        ok;
 
     if( !ControlsInitialized ) {
         InitDlgControls();
         ControlsInitialized = true;
     }
-
-    dlg.currOFN = ofn;
-    dlg.currExt = NULL;
-    dlg.currExtIndex = ofn->filter_index;
-    dlg.dialogRC = OFN_RC_NO_FILE_SELECTED;
-
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-    SetDriveTextList( buildDriveList() );
-    if( GetDriveTextList() == NULL ) {
+    if( !buildDriveList() ) {
         return( OFN_RC_FAILED_TO_INITIALIZE );
     }
 #endif
-    SetFileTypesTextList( buildFileTypes( &dlg, ofn->filter_list ) );
-    if( GetFileTypesTextList() == NULL || dlg.fileExtensions == NULL ) {
-        return( OFN_RC_FAILED_TO_INITIALIZE );
+    ok = buildFileTypesExts( &dlg, ofn->filter_list );
+    if( !ok ) {
+        dlg.currExt = NULL;
+        dlg.dialogRC = OFN_RC_FAILED_TO_INITIALIZE;
+    } else {
+        dlg.currOFN = ofn;
+        dlg.currExt = NULL;
+        dlg.currExtIndex = ofn->filter_index;
+        dlg.dialogRC = OFN_RC_NO_FILE_SELECTED;
+
+        getcwd( olddir, sizeof( olddir ) );
+        goToDir( gui, ofn->initial_dir );
+
+        GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
+                    dlgControls, NUM_CONTROLS, &GetFileNameEvent, &dlg );
+
+        if( !(ofn->flags & OFN_CHANGEDIR) ) {
+            goToDir( gui, olddir );
+        }
     }
-
-    getcwd( olddir, sizeof( olddir ) );
-    goToDir( gui, ofn->initial_dir );
-
-    GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
-                dlgControls, NUM_CONTROLS, &GetFileNameEvent, &dlg );
-
-    if( !(ofn->flags & OFN_CHANGEDIR) ) {
-        goToDir( gui, olddir );
-    }
-
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     freeDriveTextList();
 #endif
     freeFileTypesTextList();
-    freeStringList( &dlg.fileExtensions );
+    freeFileExtsTextList();
     GUIMemFree( dlg.currExt );
     return( dlg.dialogRC );
 
@@ -1239,4 +1241,3 @@ void GUIHookFileDlg( bool hook )
 {
     hook = hook;
 }
-
