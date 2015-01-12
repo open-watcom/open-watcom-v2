@@ -565,7 +565,7 @@ static int EvalExprTree( tree_node *tree, bool is_minimal )
         value = !EvalExprTree( tree->u.left, is_minimal );
         break;
     case OP_EXIST:
-        ReplaceVars( buff, (char*)tree->u.left );
+        ReplaceVars( buff, sizeof( buff ), (char *)tree->u.left );
         value = access( buff, F_OK ) == 0;
         break;
     case OP_VAR:
@@ -637,33 +637,33 @@ static void PropagateValue( tree_node *tree, int value )
 }
 
 #ifdef PATCH
-static void GetDestDir( int i, char *buffer )
-/*******************************************/
+static void GetDestDir( int i, char *buff, size_t buff_len )
+/**********************************************************/
 {
     char                *temp;
     char                temp2[_MAX_PATH];
     char                drive[_MAX_DRIVE];
     int                 intvalue = 0;
 
-    ReplaceVars( buffer, GetVariableStrVal( "DstDir" ) );
-    ConcatDirSep( buffer );
+    ReplaceVars( buff, buff_len, GetVariableStrVal( "DstDir" ) );
+    ConcatDirSep( buff );
     intvalue = atoi( PatchInfo[i].destdir );
     if( intvalue != 0 ) {
         temp = strchr( DirInfo[intvalue - 1].desc, '=' ) + 1;
     } else {
         // if destination dir specifies the drive, just use it
-        ReplaceVars( temp2, PatchInfo[i].destdir );
+        ReplaceVars( temp2, sizeof( temp2 ), PatchInfo[i].destdir );
         _splitpath( temp2, drive, NULL, NULL, NULL );
         if( drive[0] != 0 ) {  // drive specified
-            strcpy( buffer, temp2 );
-            ConcatDirSep( buffer );
+            strcpy( buff, temp2 );
+            ConcatDirSep( buff );
             return;
         } else {
             temp = temp2;
         }
     }
-    strcat( buffer, temp );
-    ConcatDirSep( buffer );
+    strcat( buff, temp );
+    ConcatDirSep( buff );
 }
 
 int SecondaryPatchSearch( char *filename, char *buff, int Index )
@@ -689,7 +689,7 @@ int SecondaryPatchSearch( char *filename, char *buff, int Index )
         strcpy( buff, path );
         return( true );
     } else {
-        ReplaceVars( path, GetVariableStrVal( "DstDir" ) );
+        ReplaceVars( path, sizeof( path ), GetVariableStrVal( "DstDir" ) );
         ConcatDirSep( path );
         strcat( path, filename );
         if( access( path, F_OK ) == 0 ) {
@@ -1272,7 +1272,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     }
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    ReplaceVars( buff, line );
+    ReplaceVars( buff, sizeof( buff ), line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
 
@@ -1591,7 +1591,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     }
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    ReplaceVars( buff, line );
+    ReplaceVars( buff, sizeof( buff ), line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -2258,7 +2258,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 
     if( dir_index == -1 )
         return( false );
-    SimDirNoSlash( dir_index, buff );
+    SimDirNoSlash( dir_index, buff, sizeof( buff ) );
     if( access( buff, F_OK ) != 0 )
         return( false );
 
@@ -2648,17 +2648,17 @@ extern int SimNumTargets()
     return( SetupInfo.target.num );
 }
 
-extern void SimTargetDir( int i, char *buffer )
-/*********************************************/
+void SimTargetDir( int i, char *buff, size_t buff_len )
+/*****************************************************/
 {
-    ReplaceVars( buffer, GetVariableStrVal( TargetInfo[i].name ) );
+    ReplaceVars( buff, buff_len, GetVariableStrVal( TargetInfo[i].name ) );
 }
 
-extern void SimTargetDirName( int i, char *buffer )
-/*************************************************/
+void SimTargetDirName( int i, char *buff, size_t buff_len )
+/*********************************************************/
 {
     // same as SimTargetDir, only don't expand macros
-    ReplaceVars( buffer, TargetInfo[i].name );
+    ReplaceVars( buff, buff_len, TargetInfo[i].name );
 }
 
 extern bool SimTargetNeedsUpdate( int i )
@@ -2733,12 +2733,12 @@ extern int SimNumDirs()
     return( SetupInfo.dirs.num );
 }
 
-extern void SimDirNoSlash( int i, char *buff )
-/********************************************/
+void SimDirNoSlash( int i, char *buff, size_t buff_len )
+/******************************************************/
 {
     char                dir[_MAX_DIR];
 
-    SimTargetDir( DirInfo[i].target, buff );
+    SimTargetDir( DirInfo[i].target, buff, buff_len );
     strcpy( dir, DirInfo[i].desc );
     if( !IS_EMPTY( dir ) ) {
         ConcatDirSep( buff );
@@ -2752,10 +2752,10 @@ extern bool SimDirUsed( int i )
     return( DirInfo[i].used );
 }
 
-extern void SimGetDir( int i, char *buff )
-/****************************************/
+extern void SimGetDir( int i, char *buff, size_t buff_len )
+/*********************************************************/
 {
-    SimDirNoSlash( i, buff );
+    SimDirNoSlash( i, buff, buff_len );
     ConcatDirSep( buff );
 }
 
@@ -2822,10 +2822,10 @@ extern int SimFileDiskNum( int parm )
     return( FileInfo[parm].disk_index );
 }
 
-extern void SimFileDir( int parm, char *buff )
-/********************************************/
+extern void SimFileDir( int parm, char *buff, size_t buff_len )
+/*************************************************************/
 {
-    SimGetDir( FileInfo[parm].dir_index, buff );
+    SimGetDir( FileInfo[parm].dir_index, buff, buff_len );
 }
 
 extern int SimFileDirNum( int parm )
@@ -2834,12 +2834,12 @@ extern int SimFileDirNum( int parm )
     return( FileInfo[parm].dir_index );
 }
 
-extern bool SimFileOldDir( int parm, char *buff )
-/***********************************************/
+extern bool SimFileOldDir( int parm, char *buff, size_t buff_len )
+/****************************************************************/
 {
     if( FileInfo[parm].old_dir_index == -1 )
         return( false );
-    SimGetDir( FileInfo[parm].old_dir_index, buff );
+    SimGetDir( FileInfo[parm].old_dir_index, buff, buff_len );
     return( true );
 }
 
@@ -2977,38 +2977,41 @@ bool SimFileRemove( int parm )
  * =======================================================================
  */
 
-extern void SimGetPMGroupFileName( char *buff )
-/*********************************************/
+void SimGetPMGroupFileName( char *buff, size_t buff_len )
+/*******************************************************/
 {
     if( SetupInfo.pm_group_file_name != NULL ) {
-        strcpy( buff, SetupInfo.pm_group_file_name );
+        strncpy( buff, SetupInfo.pm_group_file_name, buff_len - 1 );
+        buff[buff_len - 1] = '\0';
     } else {
         buff[0] = '\0';
     }
 }
 
-extern void SimGetPMGroupIcon( char *buff )
-/*****************************************/
+void SimGetPMGroupIcon( char *buff, size_t buff_len )
+/***************************************************/
 {
     if( SetupInfo.pm_group_icon != NULL ) {
-        strcpy( buff, SetupInfo.pm_group_icon );
+        strncpy( buff, SetupInfo.pm_group_icon, buff_len - 1 );
+        buff[buff_len - 1] = '\0';
     } else {
         buff[0] = '\0';
     }
 }
 
-extern void SimGetPMGroup( char *buff )
-/*************************************/
+void SimGetPMGroup( char *buff, size_t buff_len )
+/***********************************************/
 {
     if( SetupInfo.pm_group_name != NULL ) {
-        strcpy( buff, SetupInfo.pm_group_name );
+        strncpy( buff, SetupInfo.pm_group_name, buff_len - 1 );
+        buff[buff_len - 1] = '\0';
     } else {
         buff[0] = '\0';
     }
 }
 
-extern int SimGetNumPMProgs()
-/***************************/
+extern int SimGetNumPMProgs( void )
+/*********************************/
 {
     return( SetupInfo.pm_files.num );
 }
@@ -3053,16 +3056,14 @@ extern void SimGetPMDesc( int parm, char *buff )
     strcpy( buff, PMInfo[parm].desc );
 }
 
-extern long SimGetPMIconInfo( int parm, char *buff )
-/**************************************************/
+extern long SimGetPMIconInfo( int parm, char *buff, size_t buff_len )
+/*******************************************************************/
 {
-    char                t1[_MAX_PATH];
-
     if( PMInfo[parm].icoioname == NULL ) {
-        ReplaceVars( t1, PMInfo[parm].filename );
-        strcpy( buff, t1 );
+        ReplaceVars( buff, buff_len, PMInfo[parm].filename );
     } else {
-        strcpy( buff, PMInfo[parm].icoioname );
+        strncpy( buff, PMInfo[parm].icoioname, buff_len - 1 );
+        buff[buff_len - 1] = '\0';
     }
     return( (unsigned long)(unsigned short)SimFindDirForFile( buff ) | ((unsigned long)(unsigned short)PMInfo[parm].icon_pos ) << 16 );
 }
@@ -3073,22 +3074,24 @@ extern bool SimCheckPMCondition( int parm )
     return( EvalCondition( PMInfo[parm].condition ) );
 }
 
-extern int SimGetNumPMGroups()
-/****************************/
+int SimGetNumPMGroups( void )
+/***************************/
 {
     return( SetupInfo.all_pm_groups.num );
 }
 
-extern void SimGetPMGroupName( int parm, char *buff )
-/***************************************************/
+void SimGetPMGroupName( int parm, char *buff, size_t buff_len )
+/*************************************************************/
 {
-    strcpy( buff, AllPMGroups[parm].group );
+    strncpy( buff, AllPMGroups[parm].group, buff_len - 1 );
+    buff[buff_len - 1] = '\0';
 }
 
-extern void SimGetPMGroupFName( int parm, char *buff )
-/****************************************************/
+void SimGetPMGroupFName( int parm, char *buff, size_t buff_len )
+/**************************************************************/
 {
-    strcpy( buff, AllPMGroups[parm].group_file_name );
+    strncpy( buff, AllPMGroups[parm].group_file_name, buff_len - 1 );
+    buff[buff_len - 1] = '\0';
 }
 
 /*
@@ -3097,8 +3100,8 @@ extern void SimGetPMGroupFName( int parm, char *buff )
  * =======================================================================
  */
 
-extern int SimNumProfile()
-/************************/
+int SimNumProfile( void )
+/***********************/
 {
     return( SetupInfo.profile.num );
 }
@@ -3135,13 +3138,13 @@ extern bool SimCheckProfCondition( int parm )
  */
 
 static append_mode SimGetConfigStringsFrom( struct config_info *array, int i, 
-                                            const char **new_var, char *new_val )
-/*******************************************************************************/
+                           const char **new_var, char *buff, size_t buff_len )
+/****************************************************************************/
 {
     append_mode append;
     char        *p;
 
-    ReplaceVars( new_val, array[i].value );
+    ReplaceVars( buff, buff_len, array[i].value );
     p = array[i].var;
     if( *p != '+' ) {
         append = AM_OVERWRITE;
@@ -3164,10 +3167,10 @@ extern int SimNumAutoExec()
     return( SetupInfo.autoexec.num );
 }
 
-extern append_mode SimGetAutoExecStrings( int i, const char **new_var, char *new_val )
-/************************************************************************************/
+extern append_mode SimGetAutoExecStrings( int i, const char **new_var, char *buff, size_t buff_len )
+/**************************************************************************************************/
 {
-    return( SimGetConfigStringsFrom( AutoExecInfo, i, new_var, new_val ) );
+    return( SimGetConfigStringsFrom( AutoExecInfo, i, new_var, buff, buff_len ) );
 }
 
 extern bool SimCheckAutoExecCondition( int parm )
@@ -3183,10 +3186,10 @@ extern int SimNumConfig()
 }
 
 
-extern append_mode SimGetConfigStrings( int i, const char **new_var, char *new_val )
-/**********************************************************************************/
+extern append_mode SimGetConfigStrings( int i, const char **new_var, char *buff, size_t buff_len )
+/************************************************************************************************/
 {
-    return( SimGetConfigStringsFrom( ConfigInfo, i, new_var, new_val ) );
+    return( SimGetConfigStringsFrom( ConfigInfo, i, new_var, buff, buff_len ) );
 }
 
 extern bool SimCheckConfigCondition( int parm )
@@ -3202,10 +3205,10 @@ extern int SimNumEnvironment()
 }
 
 
-extern append_mode SimGetEnvironmentStrings( int i, const char **new_var, char *new_val )
-/***************************************************************************************/
+extern append_mode SimGetEnvironmentStrings( int i, const char **new_var, char *buff, size_t buff_len )
+/*****************************************************************************************************/
 {
-    return( SimGetConfigStringsFrom( EnvironmentInfo, i, new_var, new_val ) );
+    return( SimGetConfigStringsFrom( EnvironmentInfo, i, new_var, buff, buff_len ) );
 }
 
 extern bool SimCheckEnvironmentCondition( int parm )
@@ -3328,7 +3331,7 @@ extern char *SimGetTargetDriveLetter( int parm )
         return( NULL );
     }
 
-    SimTargetDir( parm, buff );
+    SimTargetDir( parm, buff, _MAX_PATH );
     if( buff[0] == '\0' ) {
         getcwd( buff, _MAX_DIR );
     } else if( buff[0] != '\\' || buff[1] != '\\' ) {
@@ -3489,7 +3492,7 @@ extern void SimCalcAddRemove()
                     bool                flag;
                     int                 m;
 
-                    SimFileDir( i, dir );
+                    SimFileDir( i, dir, sizeof( dir ) );
                     SimGetFileDesc( i, file_desc );
                     SimGetFileName( i, file_name );
                     disk_num = SimFileDisk( i, disk_desc );
@@ -3605,11 +3608,11 @@ static void AddFileName( int i, char *buffer, int rename )
 }
 
 
-static void GetSourcePath( int i, char *buffer )
-/**********************************************/
+static void GetSourcePath( int i, char *buff, size_t buff_len )
+/*************************************************************/
 {
-    ReplaceVars( buffer, GetVariableStrVal( "Srcdir" ) );
-    strcat( buffer, PatchInfo[i].srcfile );
+    ReplaceVars( buff, buff_len, GetVariableStrVal( "Srcdir" ) );
+    strcat( buff, PatchInfo[i].srcfile );
 }
 
 
@@ -3993,7 +3996,7 @@ extern bool PatchFiles( void )
             break;
 
         case PATCH_MAKE_DIR:
-            ReplaceVars( destfullpath, PatchInfo[i].destdir );
+            ReplaceVars( destfullpath, sizeof( destfullpath ), PatchInfo[i].destdir );
 
             StatusLines( STAT_CREATEDIRECTORY, destfullpath );
             StatusShow( true );
@@ -4425,13 +4428,13 @@ extern void FreeAllStructs( void )
 }
 
 
-void SimGetSpawnCommand( char *buff, int i )
-/******************************************/
+void SimGetSpawnCommand( char *buff, size_t buff_len, int i )
+/***********************************************************/
 {
     buff[0] = '\0';
     if( SpawnInfo[i].command == NULL || SpawnInfo[i].command[0] == '\0' )
         return;
-    ReplaceVars( buff, SpawnInfo[i].command );
+    ReplaceVars( buff, buff_len, SpawnInfo[i].command );
 }
 
 extern bool SimEvalSpawnCondition( int i )

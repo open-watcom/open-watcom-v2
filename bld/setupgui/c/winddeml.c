@@ -88,7 +88,7 @@ static bool UseDDE( bool uninstall )
     HCONV               hconv;
     char                progman[] = "PROGMAN";
 
-    SimGetPMGroup( t1 );
+    SimGetPMGroup( t1, sizeof( t1 ) );
     if( t1[ 0 ] == '\0' ) {
         return( true );
     }
@@ -120,7 +120,7 @@ static bool UseDDE( bool uninstall )
         // Delete the PM Group box
         num_groups = SimGetNumPMGroups();
         for( i = 0; i < num_groups; i++ ) {
-            SimGetPMGroupName( i, t1 );
+            SimGetPMGroupName( i, t1, sizeof( t1 ) );
             if( *t1 != '\0' ) {
                 // Delete the PM Group box
                 sprintf( buff, "[DeleteGroup(%s)]", t1 );
@@ -136,7 +136,7 @@ static bool UseDDE( bool uninstall )
         ok = SendCommand( ddeinst, hconv, buff );
 
         // re-Create the PM Group box.
-        SimGetPMGroupFileName( t2 );
+        SimGetPMGroupFileName( t2, sizeof( t2 ) );
         if( t2[ 0 ] == '\0' ) {
 #if defined( __NT__ )
             sprintf( buff, "[CreateGroup(%s,0)]", t1 );  // create a personal group
@@ -186,10 +186,10 @@ static bool UseDDE( bool uninstall )
             /* adding item to group */
             if( dir_index == SIM_INIT_ERROR ) {
                 working_dir[0] = '\0';
-                ReplaceVars( t2, prog_name );
+                ReplaceVars( t2, sizeof( t2 ), prog_name );
                 strcpy( prog_name, t2 );
             } else {
-                 SimDirNoSlash( dir_index, working_dir );
+                 SimDirNoSlash( dir_index, working_dir, sizeof( working_dir ) );
             }
 
             // get parameters
@@ -198,18 +198,18 @@ static bool UseDDE( bool uninstall )
                 // add parameters to end of prog_name
                 len = strlen( prog_name );
                 prog_name[len] = ' ';
-                ReplaceVars( &prog_name[len + 1], t1 );
+                ReplaceVars( &prog_name[len + 1], sizeof( prog_name ) - len - 1, t1 );
             }
 
             // Append the subdir where the icon file is and the icon file's name.
-            temp = SimGetPMIconInfo( i, icon_name );
+            temp = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ) );
             dir_index = LOWORD( temp );
             icon_number = HIWORD( temp );
             if( icon_number == SIM_INIT_ERROR ) {
                 icon_number = 0;
             }
             if( dir_index != SIM_INIT_ERROR ) {
-                SimGetDir( dir_index, t1 );
+                SimGetDir( dir_index, t1, sizeof( t1 ) );
                 strcat( t1, icon_name );
                 strcpy( icon_name, t1 );
             }
@@ -405,7 +405,7 @@ static bool UseIShellLink( bool uninstall )
     if( uninstall ) {
         num_groups = SimGetNumPMGroups();
         for( i = 0; i < num_groups; i++ ) {
-            SimGetPMGroupName( i, group );
+            SimGetPMGroupName( i, group, sizeof( group ) );
             if( *group != '\0' ) {
                 // Delete the PM Group box
                 remove_group( group );
@@ -414,7 +414,7 @@ static bool UseIShellLink( bool uninstall )
         return( true );
     }
 
-    SimGetPMGroup( group );
+    SimGetPMGroup( group, sizeof( group ) );
     if( group[0] == '\0' ) {
         return( true );
     }
@@ -455,23 +455,23 @@ static bool UseIShellLink( bool uninstall )
             // Adding item to group
             if( dir_index == SIM_INIT_ERROR ) {
                 working_dir[ 0 ] = '\0';
-                ReplaceVars( tmp, prog_name );
+                ReplaceVars( tmp, sizeof( tmp ), prog_name );
                 strcpy( prog_name, tmp );
             } else {
-                SimDirNoSlash( dir_index, working_dir );
+                SimDirNoSlash( dir_index, working_dir, sizeof( working_dir ) );
             }
 
             // Get parameters
             SimGetPMParms( i, tmp );
-            ReplaceVars( prog_arg, tmp );
+            ReplaceVars( prog_arg, sizeof( prog_arg ), tmp );
 
             // Append the subdir where the icon file is and the icon file's name.
-            temp = SimGetPMIconInfo( i, icon_name );
+            temp = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ) );
             dir_index = LOWORD( temp );
             icon_number = HIWORD( temp );
             if( icon_number == SIM_INIT_ERROR ) icon_number = 0;
             if( dir_index != SIM_INIT_ERROR ) {
-                SimGetDir( dir_index, tmp );
+                SimGetDir( dir_index, tmp, sizeof( tmp ) );
                 strcat( tmp, icon_name );
                 strcpy( icon_name, tmp );
             }

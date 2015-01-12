@@ -95,8 +95,7 @@ void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
         if( key_name[0] != '\0' ) {
             if( value[0] == '#' ) {     // dword
                 dword_val = atoi( value + 1 );
-                rc = RegSetValueEx( hkey1, key_name, 0, REG_DWORD, (LPBYTE)&dword_val,
-                                    sizeof( long ) );
+                rc = RegSetValueEx( hkey1, key_name, 0, REG_DWORD, (LPBYTE)&dword_val, sizeof( long ) );
             } else if( value[0] == '%' ) {      // binary
                 ++value;
                 len = strlen( value );
@@ -116,8 +115,7 @@ void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
                         }
                         value += 2;
                     }
-                    rc = RegSetValueEx( hkey1, key_name, 0, REG_BINARY, (LPBYTE)bin_buf,
-                                        len / 2 );
+                    rc = RegSetValueEx( hkey1, key_name, 0, REG_BINARY, (LPBYTE)bin_buf, len / 2 );
                     free( bin_buf );
                 }
             } else {
@@ -128,8 +126,7 @@ void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
                 } else {
                     type = REG_SZ;
                 }
-                rc = RegSetValueEx( hkey1, key_name, 0, type, (LPBYTE)value,
-                                    strlen( value ) + 1 );
+                rc = RegSetValueEx( hkey1, key_name, 0, type, (LPBYTE)value, strlen( value ) + 1 );
             }
         }
     } else {
@@ -450,8 +447,8 @@ extern void WriteProfileStrings( bool uninstall )
 
     for( ; i != end; i += sign ) {
         SimProfInfo( i, app_name, key_name, value, fname, hive_name );
-        ReplaceVars( buf, value );
-        ReplaceVars( file_name, fname );
+        ReplaceVars( buf, sizeof( buf ), value );
+        ReplaceVars( file_name, sizeof( file_name ), fname );
         if( !uninstall ) {
             add = SimCheckProfCondition( i );
             if( !add ) {

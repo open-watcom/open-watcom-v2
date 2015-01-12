@@ -518,6 +518,6 @@ bool StatusInit( void )
 {
     char        buff[MAXBUF];
 
-    ReplaceVars( buff, GetVariableStrVal( "AppName" ) );
+    ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
     return( OpenStatusWindow( buff ) );
 }

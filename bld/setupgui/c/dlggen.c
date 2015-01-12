@@ -124,7 +124,7 @@ static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked
             ++p;
         }
     }
-    ReplaceVars( buff, VarGetStrVal( var_handle ) );
+    ReplaceVars( buff, sizeof( buff ), VarGetStrVal( var_handle ) );
     AddInstallName( buff, false );
     GUISetText( gui, VarGetId( var_handle ), buff );
 }
@@ -888,8 +888,7 @@ extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog
     if( curr_dialog->title != NULL ) {
         title = curr_dialog->title;
     } else {
-        ReplaceVars( buff, GetVariableStrVal( "AppName" ) );
-        title = buff;
+        title = ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
     }
     width = curr_dialog->cols;
     height = curr_dialog->rows;

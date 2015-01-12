@@ -306,7 +306,7 @@ static bool WinSpawnWait( const char *cmd )
     inst = LoadModule( cmd, &parm );
     if( inst < HINSTANCE_ERROR )
         return( false );
-    ReplaceVars( buff, "%ToolHelp%" );
+    ReplaceVars( buff, sizeof( buff ), "%ToolHelp%" );
     if( buff[0] == '\0' )
         return( false );
     toolhelp = LoadModule( buff, &parm );
@@ -407,7 +407,7 @@ void DoSpawn( when_time when )
             continue;
         if( !SimEvalSpawnCondition( i ) )
             continue;
-        SimGetSpawnCommand( buff, i );
+        SimGetSpawnCommand( buff, sizeof( buff ), i );
         if( buff[0] == '\0' )
             continue;
         DoSpawnCmd( buff );
@@ -446,14 +446,14 @@ static void GetTmpFileName( char drive, char *buff )
     strcpy( buff, TMPFILENAME );
 }
 
-static void GetTmpFileNameInTarget( char drive, char *buff )
-/**********************************************************/
+static void GetTmpFileNameInTarget( char drive, char *buff, size_t buff_len )
+/***************************************************************************/
 {
     int         i;
     int         max_targets = SimNumTargets();
 
     for( i = 0; i < max_targets; ++i ) {
-        SimTargetDir( i, buff );
+        SimTargetDir( i, buff, buff_len );
         if( tolower( buff[0] ) == tolower( drive ) && buff[1] == ':' ) {
             ConcatDirSep( buff );
             strcat( buff, TMPFILENAME );
@@ -663,7 +663,7 @@ static int GetDriveInfo( char drive, bool removable )
             int         io;
             char        path[_MAX_PATH];
 
-            GetTmpFileNameInTarget( drive, path );
+            GetTmpFileNameInTarget( drive, path, sizeof( path ) );
             io = open( path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
             if( io == -1 ) {
                 GetTmpFileName( drive, path );
@@ -890,25 +890,25 @@ bool DriveInfoIsAvailable( const char *path )
 // ********** Functions for Creating the destination directory tree **********
 
 
-static void RemoveDstDir( int dir_index, char *dst_dir )
-/******************************************************/
+static void RemoveDstDir( int dir_index, char *buff, size_t buff_len )
+/********************************************************************/
 {
     int         child;
     int         max_dirs = SimNumDirs();
 
-    SimDirNoSlash( dir_index, dst_dir );
-    if( access( dst_dir, F_OK ) != 0 )
+    SimDirNoSlash( dir_index, buff, buff_len );
+    if( access( buff, F_OK ) != 0 )
         return;
     for( child = 0; child < max_dirs; ++child ) {
         if( SimDirParent( child ) == dir_index ) {
-            RemoveDstDir( child, dst_dir );
+            RemoveDstDir( child, buff, buff_len );
         }
     }
     if( SimDirParent( dir_index ) == -1 ) {
 //        return; // leave root dir (for config.new, etc)
     }
-    SimDirNoSlash( dir_index, dst_dir );
-    rmdir( dst_dir );
+    SimDirNoSlash( dir_index, buff, buff_len );
+    rmdir( buff );
 }
 
 
@@ -939,8 +939,8 @@ void MakeParentDir( const char *dir, char *drive, char *path )
 }
 
 
-bool CreateDstDir( int i, char *dst_dir )
-/***************************************/
+bool CreateDstDir( int i, char *buff, size_t buff_len )
+/*****************************************************/
 // check for directory exitstance.  If dir exists return true.
 // Else try and create directory.
 {
@@ -951,22 +951,22 @@ bool CreateDstDir( int i, char *dst_dir )
 
     parent = SimDirParent( i );
     if( parent != -1 ) {
-        ok = CreateDstDir( parent, dst_dir );
+        ok = CreateDstDir( parent, buff, buff_len );
         if( !ok ) {
             return( false );
         }
     }
-    SimDirNoSlash( i, dst_dir );
-    if( access( dst_dir, F_OK ) == 0 )          // check for existance
+    SimDirNoSlash( i, buff, buff_len );
+    if( access( buff, F_OK ) == 0 )          // check for existance
         return( true );
-    MakeParentDir( dst_dir, drive, path );
+    MakeParentDir( buff, drive, path );
 #if defined( __UNIX__ )
-    if( mkdir( dst_dir, 0777 ) == 0 )
+    if( mkdir( buff, 0777 ) == 0 )
 #else
-    if( mkdir( dst_dir ) == 0 )
+    if( mkdir( buff ) == 0 )
 #endif
         return( true );
-    MsgBox( NULL, "IDS_CANTMAKEDIR", GUI_OK, dst_dir );
+    MsgBox( NULL, "IDS_CANTMAKEDIR", GUI_OK, buff );
     return( false );
 }
 
@@ -1459,7 +1459,7 @@ static bool CreateDirectoryTree( void )
     num_installed = 0;
     for( i = 0; i < max_dirs; i++ ) {
         if( SimDirUsed( i ) ) {
-            if( !CreateDstDir( i, dst_path ) )
+            if( !CreateDstDir( i, dst_path, sizeof( dst_path ) ) )
                 return( false );
             StatusLines( STAT_SAME, dst_path );
             StatusAmount( ++num_installed, num_total_install );
@@ -1511,10 +1511,10 @@ static bool RelocateFiles( void )
         max_subfiles = SimNumSubFiles( filenum );
         for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
             if( SimSubFileInOldDir( filenum, subfilenum ) ) {
-                SimFileOldDir( filenum, dir );
+                SimFileOldDir( filenum, dir, sizeof( dir ) );
                 SimSubFileName( filenum, subfilenum, file_desc );
                 _makepath( src_path, NULL, dir, file_desc, NULL );
-                SimFileDir( filenum, dir );
+                SimFileDir( filenum, dir, sizeof( dir ) );
                 _makepath( dst_path, NULL, dir, file_desc, NULL );
                 StatusLines( STAT_SAME, src_path );
                 if( SimSubFileInNewDir( filenum, subfilenum ) ) {
@@ -1623,7 +1623,7 @@ static void CopySetupInfFile( void )
     // if DoCopyInf variable is set, copy/delete setup.inf
     p = GetVariableStrVal( "DoCopyInf" );
     if( (p != NULL) && (strlen( p ) > 0) ) {
-        ReplaceVars( tmp_path, p );
+        ReplaceVars( tmp_path, sizeof( tmp_path ), p );
         _makepath( dst_path, NULL, tmp_path, "setup.inf", NULL );
         if( VarGetIntVal( UnInstall ) ) {
             remove( dst_path );
@@ -1689,7 +1689,7 @@ static bool DoCopyFiles( void )
 
     num_total_install = 0;
     for( filenum = 0; filenum < max_files; filenum++ ) {
-        SimFileDir( filenum, dir );
+        SimFileDir( filenum, dir, sizeof( dir ) );
         if( SimFileAdd( filenum ) && !SimFileUpToDate( filenum ) ) {
             num_total_install += SimFileSize( filenum );
             if( SimFileSplit( filenum ) ) {
@@ -1749,7 +1749,7 @@ static bool DoCopyFiles( void )
 
     for( filenum = 0; filenum < max_files; filenum++ ) {
         if( SimFileRemove( filenum ) ) {
-            SimFileDir( filenum, dir );
+            SimFileDir( filenum, dir, sizeof( dir ) );
             max_subfiles = SimNumSubFiles( filenum );
             for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
                 if( !SimSubFileExists( filenum, subfilenum ) )
@@ -1760,7 +1760,7 @@ static bool DoCopyFiles( void )
                 StatusLines( STAT_REMOVING, tmp_path );
                 remove( tmp_path );
                 if( SimSubFileInOldDir( filenum, subfilenum ) ) {
-                    SimFileOldDir( filenum, old_dir );
+                    SimFileOldDir( filenum, old_dir, sizeof( old_dir ) );
                     _makepath( tmp_path, NULL, old_dir, file_desc, NULL );
                     StatusLines( STAT_REMOVING, tmp_path );
                     remove( tmp_path );
@@ -1787,7 +1787,7 @@ static bool DoCopyFiles( void )
             *owner_split = NULL;
             continue;
         }
-        SimFileDir( filenum, dir );
+        SimFileDir( filenum, dir, sizeof( dir ) );
         SimGetFileDesc( filenum, file_desc );
         SimGetFileName( filenum, file_name );
 //        disk_num = SimFileDisk( filenum, disk_desc );
@@ -1806,7 +1806,7 @@ static bool DoCopyFiles( void )
             strcat( src_path, dir + len );  // get rid of the dest directory, just keep the subdir
         } else {
             // use the macro as the directory name   eg: cd_drive:\winsys\filename
-            SimTargetDirName( SimDirTargNum( SimFileDirNum( filenum ) ), tmp_path );
+            SimTargetDirName( SimDirTargNum( SimFileDirNum( filenum ) ), tmp_path, sizeof( tmp_path ) );
             len = strlen( GetVariableStrVal( tmp_path ) );
             strcat( src_path, tmp_path );
             strcat( src_path, dir + len );
@@ -1891,7 +1891,7 @@ static void RemoveUnusedDirs( void )
 
     for( i = 0; i < max_dirs; i++ ) {
         if( !SimDirUsed( i ) ) {
-            RemoveDstDir( i, dst_path );
+            RemoveDstDir( i, dst_path, sizeof( dst_path ) );
         }
     }
 }
@@ -2056,7 +2056,7 @@ void DeleteObsoleteFiles( void )
         if( SimDeleteIsDialog( i ) ) {
             ++group;
         } else {
-            ReplaceVars( buff, SimDeleteName( i ) );
+            ReplaceVars( buff, sizeof( buff ), SimDeleteName( i ) );
             if( access( buff, F_OK ) == 0 ) {
                 found[group] = true;
                 found_any = true;
@@ -2072,7 +2072,7 @@ void DeleteObsoleteFiles( void )
                 ++group;
             }
             if( found[group] ) {
-                ReplaceVars( buff, SimDeleteName( i ) );
+                ReplaceVars( buff, sizeof( buff ), SimDeleteName( i ) );
                 if( SimDeleteIsDialog( i ) ) {
                     state = DoDialog( buff );
                 } else if( state == DLG_NEXT ) {

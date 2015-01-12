@@ -49,10 +49,10 @@ static HOBJECT create_group( const char *group, const char *grp_filename )
 
     sprintf( cmd, "OPEN=ICON;OBJECTID=%s;", grp_filename );   // add more parms here if necessary
 
-    SimGetPMGroupIcon( icon_file );
+    SimGetPMGroupIcon( icon_file, sizeof( icon_file ) );
     if( icon_file[0] != '\0' ) {
         strcat( cmd, "ICONFILE=" );
-        ReplaceVars( &cmd[strlen( cmd )], icon_file );
+        ReplaceVars( cmd + 9, sizeof( cmd ) - 9 - 1, icon_file );
         strcat( cmd, ";" );
     }
 
@@ -92,7 +92,7 @@ bool CreatePMInfo( bool uninstall )
 
         nMaxPMGroups = SimGetNumPMGroups();
         for( nPMGrp = 0; nPMGrp < nMaxPMGroups; nPMGrp++ ) {
-            SimGetPMGroupFName( nPMGrp, t1 );
+            SimGetPMGroupFName( nPMGrp, t1, sizeof( t1 ) );
             if( *t1 != '\0' ) {
                 sprintf( GroupFileName, "<%s>", t1 );
                 // Delete the PM Group box
@@ -102,12 +102,12 @@ bool CreatePMInfo( bool uninstall )
         return( true );
     }
 
-    SimGetPMGroup( t1 );
+    SimGetPMGroup( t1, sizeof( t1 ) );
     if( t1[0] == '\0' ) {
         return( true );
     }
 
-    SimGetPMGroupFileName( t2 );
+    SimGetPMGroupFileName( t2, sizeof( t2 ) );
     if( t2[0] != '\0' ) {
         sprintf( GroupFileName, "<%s>", t2 );
     } else {
@@ -155,15 +155,15 @@ bool CreatePMInfo( bool uninstall )
             // Process a regular object
             if( nDirIndex == SIM_INIT_ERROR ) {
                 WorkingDir[0] = '\0';
-                ReplaceVars( t2, PMProgName );
+                ReplaceVars( t2, sizeof( t2 ), PMProgName );
                 strcpy( PMProgName, t2 );
             } else {
-                SimGetDir( nDirIndex, WorkingDir );
+                SimGetDir( nDirIndex, WorkingDir, sizeof( WorkingDir ) );
             }
 
             // Get parameters
             SimGetPMParms( nPMProg, t1 );
-            ReplaceVars( PMParams, t1 );
+            ReplaceVars( PMParams, sizeof( PMParams ), t1 );
             if( PMParams[0] == '+' ) {
                 // Format is: +folder_name[+parameters]
                 p = strchr( &PMParams[1], '+' );
@@ -183,14 +183,14 @@ bool CreatePMInfo( bool uninstall )
             }
 
             // Append the subdir where the icon file is and the icon file's name.
-            dwTemp = SimGetPMIconInfo( nPMProg, PMIconFileName );
+            dwTemp = SimGetPMIconInfo( nPMProg, PMIconFileName, sizeof( PMIconFileName ) );
             nDirIndex = (short)(dwTemp & 0xFFFF);
             icon_number = (short)(dwTemp >> 16);
             if( icon_number == -1 ) {
                 icon_number = 0;
             }
             if( nDirIndex != -1 ) {
-                SimGetDir( nDirIndex, t1 );
+                SimGetDir( nDirIndex, t1, sizeof( t1 ) );
                 strcat( t1, PMIconFileName );
                 strcpy( PMIconFileName, t1 );
             }
@@ -270,7 +270,7 @@ void LabelDirs( void )
     num = SimNumLabels();
     for( i = 0; i < num; ++i ) {
         SimGetLabelDir( i, t1 );
-        ReplaceVars( dir_name, t1 );
+        ReplaceVars( dir_name, sizeof( dir_name ), t1 );
         SimGetLabelLabel( i, label );
         SetEAttr( dir_name, ".LONGNAME", label );
     }

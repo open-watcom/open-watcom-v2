@@ -102,7 +102,7 @@ extern gui_window       *MainWnd;
 extern bool             SetupPreInit( void );
 extern bool             SetupInit( void );
 extern void             SetupFini( void );
-extern void             ReplaceVars( char *, const char * );
+extern char             *ReplaceVars( char *, size_t, const char * );
 extern bool             StatusInit( void );
 extern void             StatusFini( void );
 extern void             StatusShow( bool );
