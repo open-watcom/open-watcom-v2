@@ -186,7 +186,7 @@ rc_erridx LocalErase(char *name)
     return StashErrCode(ret, OP_LOCAL);
 }
 
-sys_handle LocalHandle(handle h)
+sys_handle LocalHandleSys(handle h)
 {
     return h;
 }

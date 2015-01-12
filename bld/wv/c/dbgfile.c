@@ -70,7 +70,7 @@ extern unsigned         LocalWrite( sys_handle, const void *, unsigned );
 extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       LocalOpen( char const *, open_access );
 extern rc_erridx        LocalClose( sys_handle );
-extern sys_handle       LocalHandle( handle );
+extern sys_handle       LocalHandleSys( handle );
 extern void             DUIWndUser( void );
 
 
@@ -633,9 +633,9 @@ void SysFileInit( void )
     for( i = 0; i < MAX_OPENS; ++i ) {
         SysHandles[i] = NIL_SYS_HANDLE;
     }
-    SysHandles[STD_IN ] = LocalHandle( STD_IN  );
-    SysHandles[STD_OUT] = LocalHandle( STD_OUT );
-    SysHandles[STD_ERR] = LocalHandle( STD_ERR );
+    SysHandles[STD_IN ] = LocalHandleSys( STD_IN  );
+    SysHandles[STD_OUT] = LocalHandleSys( STD_OUT );
+    SysHandles[STD_ERR] = LocalHandleSys( STD_ERR );
 }
 
 #if !defined( BUILD_RFX )

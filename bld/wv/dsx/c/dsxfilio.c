@@ -132,7 +132,7 @@ rc_erridx LocalErase( char *name )
     return( 0 );
 }
 
-sys_handle LocalHandle( handle h )
+sys_handle LocalHandleSys( handle h )
 {
     return( h );
 }
