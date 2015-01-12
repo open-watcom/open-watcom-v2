@@ -38,8 +38,8 @@ struct passwd {
 _WCRTLINK extern struct passwd *getpwnam( const char *__name );
 _WCRTLINK extern struct passwd *getpwuid( uid_t __uid );
 _WCRTLINK extern struct passwd *getpwent( void );
-_WCRTLINK extern int           setpwent( void );
-_WCRTLINK extern int           endpwent( void );
+_WCRTLINK extern void          setpwent( void );
+_WCRTLINK extern void          endpwent( void );
 
 :include cplusepi.sp
 
