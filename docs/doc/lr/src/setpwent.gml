@@ -1,7 +1,12 @@
 .func setpwent
 .synop begin
 #include <pwd.h>
+.if '&machsys' eq 'QNX' .do begin
+int setpwent( );
+.do end
+.el .do begin
 void setpwent( );
+.do end
 .synop end
 .desc begin
 The
