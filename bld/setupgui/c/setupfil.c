@@ -482,8 +482,8 @@ static bool ModFile( char *orig, char *new,
 {
     FILE                *fp1, *fp2;
     char                *line;
-    bool                *Found;
-    bool                *FoundEnv;
+    bool                *Found = NULL;
+    bool                *FoundEnv = NULL;
     char                envbuf[MAXENVVAR + 1];
 
     fp1 = fopen( orig, "rt" );
