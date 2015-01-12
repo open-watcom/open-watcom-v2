@@ -683,7 +683,7 @@ int SecondaryPatchSearch( char *filename, char *buff, int Index )
     char                ext[_MAX_EXT];
 
     buff[0] = '\0';
-    GetDestDir( Index, path );
+    GetDestDir( Index, path, sizeof( path ) );
     strcat( path, filename );
     if( access( path, F_OK ) == 0 ) {
         strcpy( buff, path );
@@ -3044,16 +3044,18 @@ extern int SimGetPMProgName( int parm, char *buff )
     }
 }
 
-extern void SimGetPMParms( int parm, char *buff )
-/***********************************************/
+void SimGetPMParms( int parm, char *buff, size_t buff_len )
+/*********************************************************/
 {
-    strcpy( buff, PMInfo[parm].parameters );
+    strncpy( buff, PMInfo[parm].parameters, buff_len - 1 );
+    buff[buff_len - 1] = '\0';
 }
 
-extern void SimGetPMDesc( int parm, char *buff )
-/**********************************************/
+void SimGetPMDesc( int parm, char *buff, size_t buff_len )
+/********************************************************/
 {
-    strcpy( buff, PMInfo[parm].desc );
+    strncpy( buff, PMInfo[parm].desc, buff_len - 1 );
+    buff[buff_len - 1] = '\0';
 }
 
 extern long SimGetPMIconInfo( int parm, char *buff, size_t buff_len )
@@ -3909,10 +3911,10 @@ extern bool PatchFiles( void )
 
         case PATCH_FILE:
             Index = i;              // used in secondary search
-            GetSourcePath( i, srcfullpath );
+            GetSourcePath( i, srcfullpath, sizeof( srcfullpath ) );
 
             if( access( srcfullpath, R_OK ) == 0 ) {
-                GetDestDir( i, destfullpath );
+                GetDestDir( i, destfullpath, sizeof( destfullpath ) );
                 go_ahead = SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath, Index );
                 if( go_ahead ) {
                     if( PatchInfo[i].exetype[0] != '.' &&
@@ -3943,8 +3945,8 @@ extern bool PatchFiles( void )
             break;
 
         case PATCH_COPY_FILE:
-            GetSourcePath( i, srcfullpath );
-            GetDestDir( i, destfullpath );
+            GetSourcePath( i, srcfullpath, sizeof( srcfullpath ) );
+            GetDestDir( i, destfullpath, sizeof( destfullpath ) );
 
             // get rid of trailing slash: OS/2 needs this for access(...) to work
             if( destfullpath[strlen( destfullpath ) - 1] == '\\' ) {
@@ -3973,7 +3975,7 @@ extern bool PatchFiles( void )
             break;
 
         case PATCH_DELETE_FILE:
-            GetDestDir( i, destfullpath );
+            GetDestDir( i, destfullpath, sizeof( destfullpath ) );
             AddFileName( i, destfullpath, 0 );
             StatusLines( STAT_DELETEFILE, destfullpath );
             StatusShow( true );

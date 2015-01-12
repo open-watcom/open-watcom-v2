@@ -126,7 +126,7 @@ bool CreatePMInfo( bool uninstall )
         if( !SimCheckPMCondition( nPMProg ) ) {
             continue;
         }
-        SimGetPMDesc( nPMProg, PMProgDesc );
+        SimGetPMDesc( nPMProg, PMProgDesc, sizeof( PMProgDesc ) );
         // Replace '\n' in Description with LineFeed character
         for( p = PMProgDesc; *p != '\0'; ++p ) {
             if( *p == '\\' && *(p + 1) == 'n' ) {
@@ -139,7 +139,7 @@ bool CreatePMInfo( bool uninstall )
         nDirIndex = SimGetPMProgName( nPMProg, PMProgName );
         if( strcmp( PMProgName, "GROUP" ) == 0 ) {
             // Process a group (ie. folder)
-            SimGetPMParms( nPMProg, t1 );
+            SimGetPMParms( nPMProg, t1, sizeof( t1 ) );
             if( t1[0] == '\0' ) {
                 return( true );
             }
@@ -162,7 +162,7 @@ bool CreatePMInfo( bool uninstall )
             }
 
             // Get parameters
-            SimGetPMParms( nPMProg, t1 );
+            SimGetPMParms( nPMProg, t1, sizeof( t1 ) );
             ReplaceVars( PMParams, sizeof( PMParams ), t1 );
             if( PMParams[0] == '+' ) {
                 // Format is: +folder_name[+parameters]

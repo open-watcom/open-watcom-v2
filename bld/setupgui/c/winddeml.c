@@ -164,7 +164,7 @@ static bool UseDDE( bool uninstall )
         if( !SimCheckPMCondition( i ) ) {
             continue;
         }
-        SimGetPMDesc( i, prog_desc );
+        SimGetPMDesc( i, prog_desc, sizeof( prog_desc ) );
         dir_index = SimGetPMProgName( i, prog_name );
         if( strcmp( prog_name, "GROUP" ) == 0 ) {
             // Delete the PM Group box to get rid of stale icons
@@ -172,7 +172,7 @@ static bool UseDDE( bool uninstall )
             ok = SendCommand( ddeinst, hconv, buff );
 
             /* creating a new group */
-            SimGetPMParms( i, t1 );
+            SimGetPMParms( i, t1, sizeof( t1 ) );
             if( t1[ 0 ] == '\0' ) {
 #if defined( __NT__ )
                 sprintf( buff, "[CreateGroup(%s,0)]", prog_desc );  // create a personal group
@@ -193,7 +193,7 @@ static bool UseDDE( bool uninstall )
             }
 
             // get parameters
-            SimGetPMParms( i, t1 );
+            SimGetPMParms( i, t1, sizeof( t1 ) );
             if( t1[0] != '\0' ) {
                 // add parameters to end of prog_name
                 len = strlen( prog_name );
@@ -442,7 +442,7 @@ static bool UseIShellLink( bool uninstall )
         if( !SimCheckPMCondition( i ) ) {
             continue;
         }
-        SimGetPMDesc( i, prog_desc );
+        SimGetPMDesc( i, prog_desc, sizeof( prog_desc ) );
         dir_index = SimGetPMProgName( i, prog_name );
         if( strcmp( prog_name, "GROUP" ) == 0 ) {
             /* creating a new group */
@@ -462,7 +462,7 @@ static bool UseIShellLink( bool uninstall )
             }
 
             // Get parameters
-            SimGetPMParms( i, tmp );
+            SimGetPMParms( i, tmp, sizeof( tmp ) );
             ReplaceVars( prog_arg, sizeof( prog_arg ), tmp );
 
             // Append the subdir where the icon file is and the icon file's name.

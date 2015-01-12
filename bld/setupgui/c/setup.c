@@ -468,7 +468,7 @@ void GUImain( void )
                 break;
             }
             // construct new path relative to previous
-            ReplaceVars( new_inf, sizeof( new_inf ), GetVariableStrVal( "SetupPath" ) );
+            ReplaceVars( new_inf, _MAX_PATH, GetVariableStrVal( "SetupPath" ) );
             _splitpath( current_dir, drive, dir, NULL, NULL );
             _makepath( inf_name, drive, dir, new_inf, NULL );
 
