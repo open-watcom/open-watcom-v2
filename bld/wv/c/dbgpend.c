@@ -38,13 +38,13 @@
 #include "dbghook.h"
 #include "dbgio.h"
 #include "spawn.h"
+#include "dui.h"
 #include "dbgutil.h"
 
 
 extern void             NewLang( const char *lang );
 extern void             ProcACmd( void );
 extern bool             IsInternalMod( mod_handle );
-extern void             DUIProcPendingPaint( void );
 extern bool             HookPendingPush( void );
 
 

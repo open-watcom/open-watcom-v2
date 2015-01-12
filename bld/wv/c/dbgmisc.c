@@ -55,7 +55,6 @@ extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern address          GetRegIP( void );
 extern void             RecordSetRegIP( address );
-extern void             DUIWndUser( void );
 extern unsigned         RemoteReadUserKey( unsigned );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );

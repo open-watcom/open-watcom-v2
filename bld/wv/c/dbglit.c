@@ -30,6 +30,7 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dui.h"
 
 extern void InitEngineLiterals( void );

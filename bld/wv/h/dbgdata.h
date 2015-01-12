@@ -37,6 +37,8 @@
 #include "dbgbreak.h"
 #include "dbginp.h"
 #include "trpcore.h"
+#include "ambigsym.h"
+#include "diptypes.h"
 
 #if !defined( global )
 #define global  extern

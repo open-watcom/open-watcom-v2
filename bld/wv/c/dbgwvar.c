@@ -41,8 +41,9 @@
 #include "dlgvarx.h"
 #include "dbgvar.h"
 #include "spawn.h"
-#include "strutil.h"
 #include "dbgscan.h"
+#include "dui.h"
+#include "strutil.h"
 #include "dbgutil.h"
 
 extern void             ChkExpr( void );
@@ -76,7 +77,6 @@ extern void             WndInspectExprSP( char *item );
 extern char             *GetCmdName( int );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
-extern void             DUIMsgBox( char *text );
 
 
 extern stack_entry      *ExprSP;

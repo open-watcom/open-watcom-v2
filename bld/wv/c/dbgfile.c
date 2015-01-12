@@ -33,12 +33,12 @@
 #if !defined( BUILD_RFX )
 #include "dbgdata.h"
 #include "dbglit.h"
+#include "dui.h"
 #else
 #include "rfxdata.h"
 #endif
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "dui.h"
 #include "digio.h"
 #include "strutil.h"
 
@@ -48,7 +48,6 @@
 #define CHECK_PATH_SEP(c,i) (CHK_DIR_SEP((c),i) || CHK_DRV_SEP((c),i))
 #define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != '\0' && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
 
-extern unsigned         DUIEnvLkup( const char *name, char *buff, unsigned buff_len );
 extern void             FreeRing( char_ring * );
 extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
 extern void             StartupErr( const char * );
@@ -71,7 +70,6 @@ extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       LocalOpen( char const *, open_access );
 extern rc_erridx        LocalClose( sys_handle );
 extern sys_handle       LocalHandleSys( handle );
-extern void             DUIWndUser( void );
 
 
 extern file_components  RemFile;

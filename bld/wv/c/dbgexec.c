@@ -80,7 +80,6 @@ extern void             RecordAsynchEvent( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern char             *GetLastImageName( void );
 extern bool             DLLMatch( void );
-extern void             DUIPlayDead( bool );
 extern bool             TraceSimulate( void );
 extern bool             TraceStart( bool );
 extern mad_trace_how    TraceHow( bool force_into );

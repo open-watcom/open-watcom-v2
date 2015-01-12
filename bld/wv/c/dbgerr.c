@@ -44,9 +44,7 @@
 extern int              ScanSavePtr;
 
 extern void             ExprPurge( void );
-extern void             DUIFlushKeys( void );
 extern void             UnFreezeRegs( void );
-extern void             DUIWndDebug( void );
 extern void             CmdError( void );
 extern void             CaptureError( void );
 extern void             BrkCmdError( void );

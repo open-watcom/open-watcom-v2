@@ -100,8 +100,6 @@ extern char             *AddrToString( address *a, mad_address_format af, char *
 extern bool             DlgScanCodeAddr( const char *str, address *value );
 extern void             DoInput( void );
 extern void             DbgUpdate( update_list );
-extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
-extern void             DUIRemoveBreak( brkp *bp );
 extern void             CheckForNewThreads( bool );
 extern void             LValue( stack_entry * );
 

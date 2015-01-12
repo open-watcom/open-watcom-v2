@@ -61,7 +61,6 @@
 
 extern bool     VarInfoRelease( void );
 extern bool     DlgInfoRelease( void );
-extern unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len );
 extern void     PopErrBox( const char * );
 
 

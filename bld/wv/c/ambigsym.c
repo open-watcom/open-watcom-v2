@@ -35,13 +35,12 @@
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "dlgamb.h"
+#include "dui.h"
 #include "strutil.h"
-#include "ambigsym.h"
 #include "dbgutil.h"
 
 extern void             FreeSymHandle( sym_list * );
 extern int              AddrComp( address a, address b );
-extern int              DUIDisambiguate( const ambig_info *ambig, int count );
 
 sym_list *Disambiguate( sym_list *sym, location_context *lc )
 {

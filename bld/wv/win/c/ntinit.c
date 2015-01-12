@@ -51,6 +51,7 @@
 #ifdef __WATCOMC__
 #include "clibint.h"
 #endif
+#include "clibext.h"
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );

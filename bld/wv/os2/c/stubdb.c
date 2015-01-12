@@ -59,7 +59,6 @@ extern void             *WndAsmInspect( address addr );
 extern void             DebugMain( void );
 extern void             DebugFini( void );
 extern void             DoInput( void );
-extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
 extern void             *OpenSrcFile( cue_handle * );

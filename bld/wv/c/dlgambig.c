@@ -37,7 +37,7 @@
 #include "guidlg.h"
 #include "guipick.h"
 #include "dlgamb.h"
-#include "ambigsym.h"
+#include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"
 

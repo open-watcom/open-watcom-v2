@@ -118,8 +118,6 @@ extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)());
 static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
 const char              *RealFName( const char *name, open_access *loc );
 
-extern void             DUIImageLoaded( image_entry*, bool, bool, bool* );
-
 extern bool             DownLoadTask;
 
 static char             *SymFileName;

@@ -32,6 +32,7 @@
 
 #include "litdef.h"
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbgmem.h"
 #include "dui.h"
 
