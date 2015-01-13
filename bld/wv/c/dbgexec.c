@@ -97,7 +97,6 @@ extern bool             SymUserModLoad( char *fname, address *loadaddr );
 extern bool             SymUserModUnload( char *fname );
 extern bool             HaveRemoteAsync( void );
 extern unsigned         MakeAsyncRun( bool single );
-extern unsigned         DlgAsyncRun( void );
 
 
 static char             *MsgText;
@@ -310,7 +309,7 @@ static unsigned DoRun( bool step )
     if( HaveRemoteAsync() ) {
         conditions = MakeAsyncRun( step );
         if( conditions & COND_RUNNING ) {
-            conditions = DlgAsyncRun();
+            conditions = DUIDlgAsyncRun();
         }
     } else {
         conditions = MakeProgRun( step );

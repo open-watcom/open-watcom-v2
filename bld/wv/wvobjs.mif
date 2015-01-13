@@ -228,12 +228,12 @@ ui_objs_rdos386   = rdosscrn.obj helpio.obj
 !ifeq sys_windowed 1
 ui_objs_os2i86    = pmscrn2.obj
 ui_objs_os2386    = pmscrn2.obj
-ui_objs_nt        = ntguiscn.obj
+ui_objs_nt        = ntguiscn.obj ntdbgpb.obj
 ui_objs_win       = wguiscrn.obj
 !else
 ui_objs_os2i86    = os2scrn.obj helpio.obj
 ui_objs_os2386    = os2scrn.obj helpio.obj
-ui_objs_nt        = ntscrn.obj helpio.obj
+ui_objs_nt        = ntscrn.obj helpio.obj ntdbgpb.obj
 ui_objs_win       = winscrn.obj helpio.obj
 !endif
 

@@ -55,7 +55,7 @@ static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
     USHORT          prev_act;
 
     sig_arg = sig_arg;
-    BrkPending = TRUE;
+    BrkPending = true;
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }
 
@@ -180,7 +180,7 @@ bool TBreak()
     bool    ret;
 
     ret = BrkPending;
-    BrkPending = 0;
+    BrkPending = false;
     return( ret );
 }
 

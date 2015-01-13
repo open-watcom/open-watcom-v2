@@ -106,6 +106,10 @@ extern bool             VarInfoRelease( void );
 extern void             WndSrcOrAsmInspect( address );
 extern void             WndAddrInspect( address );
 extern void             RemovePoint( brkp *bp );
+extern unsigned         DlgAsyncRun( void );
+extern void             SetNumLines( int num );
+extern void             SetNumColumns( int num );
+extern void             InitRunThreadInfo( void );
 
 #define TIMER_MS        250
 
@@ -473,4 +477,24 @@ bool DUIImageLoaded( image_entry *image, bool load,
     }
     DUIDlgTxt( TxtBuff );
     return( FALSE );
+}
+
+unsigned DUIDlgAsyncRun( void )
+{
+    return( DlgAsyncRun() );
+}
+
+void DUISetNumLines( int num )
+{
+    SetNumLines( num );
+}
+
+void DUISetNumColumns( int num )
+{
+    SetNumColumns( num );
+}
+
+void DUIInitRunThreadInfo( void )
+{
+    InitRunThreadInfo();
 }

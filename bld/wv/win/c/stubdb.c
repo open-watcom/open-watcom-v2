@@ -37,7 +37,6 @@
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "bool.h"
-#include "ambigsym.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
@@ -61,6 +60,7 @@ extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
 extern void             *OpenSrcFile(cue_handle *);
 
+volatile bool           BrkPending;
 
 static char             *CmdData;
 static bool             Done;
@@ -87,18 +87,6 @@ bool DUIClose()
 {
     Done = TRUE;
     return( TRUE );
-}
-
-char *GetCmdArg( int num )
-{
-    if( num != 0 ) return( NULL );
-    return( CmdData );
-}
-
-void SetCmdArgStart( int num, char *ptr )
-{
-    num = num;
-    CmdData = ptr;
 }
 
 var_info        Locals;
@@ -683,15 +671,6 @@ void VarSaveWndToScope( void *wnd )
 void VarRestoreWndFromScope( void *wnd )
 {
 }
-void PopErrBox( const char *buff )
-{
-    MessageBox( (HWND)NULL, buff, LIT( Debugger_Startup_Error ),
-            MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-}
-void KillDebugger( int ret_code )
-{
-    ExitProcess( ret_code );
-}
 
 void DUIEnterCriticalSection()
 {
@@ -752,9 +731,9 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void RemovePoint( void *bp );
-extern void DUIRemoveBreak( void *bp )
-/***********************************/
+extern void RemovePoint( brkp *bp );
+extern void DUIRemoveBreak( brkp *bp )
+/************************************/
 {
     RemovePoint( bp );
 }
@@ -816,3 +795,30 @@ bool DUICopyCancelled( void * cookie )
     cookie = cookie;
     return( FALSE );
 }
+
+unsigned DUIDlgAsyncRun( void )
+/*****************************/
+{
+    return( 0 );
+}
+
+void DUISetNumLines( int num )
+{
+    num = num;
+}
+
+void DUISetNumColumns( int num )
+{
+    num = num;
+}
+
+void DUIInitRunThreadInfo( void )
+{
+}
+
+#if defined( __NT__ )
+const char *CheckForPowerBuilder( const char *name )
+{
+    return( name );
+}
+#endif

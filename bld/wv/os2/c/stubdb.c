@@ -38,7 +38,6 @@
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "bool.h"
-#include "ambigsym.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
@@ -98,6 +97,7 @@ bool DUIClose( void )
     return( TRUE );
 }
 
+#if 0
 // The following routine is cut & pasted verbatim from dbgwvar.c
 // (which we really don't want to drag in here)
 var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
@@ -153,6 +153,7 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
     VarGetDepths( i, v, pdepth, pinherit );
     return( v );
 }
+#endif
 
 var_info        Locals;
 HEV             Requestsem;
@@ -886,9 +887,9 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void RemovePoint( void *bp );
-extern void DUIRemoveBreak( void *bp )
-/***********************************/
+extern void RemovePoint( brkp *bp );
+extern void DUIRemoveBreak( brkp *bp )
+/************************************/
 {
     RemovePoint( bp );
 }
@@ -949,6 +950,26 @@ bool DUICopyCancelled( void * cookie )
 {
     cookie = cookie;
     return( FALSE );
+}
+
+unsigned DUIDlgAsyncRun( void )
+/*****************************/
+{
+    return( 0 );
+}
+
+void DUISetNumLines( int num )
+{
+    num = num;
+}
+
+void DUISetNumColumns( int num )
+{
+    num = num;
+}
+
+void DUIInitRunThreadInfo( void )
+{
 }
 
 unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )

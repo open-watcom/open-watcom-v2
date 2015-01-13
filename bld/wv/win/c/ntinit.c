@@ -59,12 +59,12 @@ extern void     DebugExit(void);
 extern void     StartupErr( const char *err );
 extern void     NewConsoleTitle();
 
-
-static char             *CmdData;
-extern volatile int     BrkPending;
+extern volatile bool    BrkPending;
 #ifdef __GUI__
 extern a_window         *WndMain;
 #endif
+
+static char             *CmdData;
 
 #ifdef __AXP__
     //NYI: temp until we can get all the unaligned stuff straightened out.
@@ -146,7 +146,7 @@ bool TBreak()
     bool    ret;
 
     ret = BrkPending;
-    BrkPending = 0;
+    BrkPending = false;
     return( ret );
 }
 
@@ -158,48 +158,4 @@ void PopErrBox( const char *buff )
 
 void SysSetMemLimit()
 {
-}
-
-static DWORD       PidPB;
-static bool         AlreadyRunning;
-
-BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
-{
-    char buff[256];
-
-    GetClassName( hwnd, buff, sizeof( buff ) );
-    if( strstr( buff, "PBFRAME" ) != NULL ) {
-        GetWindowThreadProcessId(hwnd, &PidPB );
-    }
-    if( GetWindowText( hwnd, buff, sizeof( buff ) ) != 0 ) {
-        if( stricmp( buff, LIT( The_WATCOM_Debugger_for_PowerBuilder ) ) == 0 ) {
-            AlreadyRunning = TRUE;
-        }
-    }
-    return( TRUE );
-}
-
-const char *CheckForPowerBuilder( const char *name )
-{
-    static char pid[20];
-
-    if( _IsOff( SW_POWERBUILDER ) ) return( name );
-    EnumWindows( FindPidPB, 0 );
-    if( AlreadyRunning ) {
-        StartupErr( LIT( PowerBuilder_Debugger_Already_Running ) );
-        return( "" );
-    }
-    if( PidPB == 0 ) {
-        StartupErr( LIT( PowerBuilder_Not_Running ) );
-        return( "" );
-    } else {
-        pid[0] = '#';
-        itoa( PidPB, pid + 1, 16 );
-#ifdef __GUI__
-        WndSetTitle( WndMain, LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
-#else
-        SetConsoleTitle( LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
-#endif
-        return( pid );
-    }
 }

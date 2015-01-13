@@ -68,12 +68,16 @@ Done:
 #include <stdio.h>
 #include <ctype.h>
 #include <process.h>
+#if defined( __NT__ )
 #include <windows.h>
+#elif defined( __OS2__ )
+#include <os2.h>
+#elif defined( __LINUX__ )
+#endif
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "bool.h"
-#include "ambigsym.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
@@ -94,7 +98,7 @@ enum {
 
 /* External Functions Used */
 extern brkp             *AddBreak( address addr );
-extern void             AddSourceSpec( char *str );
+extern void             AddSourceSpec( const char *start, unsigned len );
 extern void             BrkClearAll( void );
 extern void             BrkDisableAll( void );
 extern void             BrkEnableAll( void );
@@ -130,8 +134,10 @@ extern var_node         *VarExpandNode( var_node *v );
 extern var_node         *VarFirstExpandNode( var_info *i, var_node *v );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
 extern void             *WndAsmInspect( address addr );
-extern bool             WndEvalInspectExpr( char *item, bool pop );
+extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
+
+volatile bool           BrkPending;
 
 static char             *CmdData;
 static bool             Done;
@@ -277,6 +283,22 @@ char *MyStrTrim( char *s )
     StrLTrim( s );
     StrRTrim( s );
     return( s );
+} 
+
+const char *MyStrTrimLen( const char *start, unsigned *len )
+{
+    unsigned    new_len;
+
+    new_len = *len;
+    while( new_len > 0 && isspace( (unsigned char)*start )) {
+        ++start;
+        --new_len;
+    }
+    while( new_len > 0 && isspace( (unsigned char)start[new_len - 1] ) ) {
+        --new_len;
+    }
+    *len = new_len;
+    return( start );
 } 
 
 char *GetCmdPartByChar( const char *cmd, const char *delimit )
@@ -590,18 +612,26 @@ void ShowSourceDirectories( void )
 
 /*trims and adds a given source path to
 the global src path variable*/
-void AddSourcePathsToDebugger( char *srcpath )
+void AddSourcePathsToDebugger( const char *srcpath )
 {
     // if possible replace strtok with other 
     // efficient tokenizer
-    char    delims[] = ";";
-    char    *path = NULL;
+    const char  *path;
+    const char  *end;
+    const char  *s;
+    unsigned    len;
 
-    path = strtok( srcpath, delims );
-    while( path != NULL ) {
-        MyStrTrim( path );
-        AddSourceSpec( path );
-        path = strtok( NULL, delims );
+    path = srcpath;
+    while( (end = strchr( path, ';' )) != NULL ) {
+        len = end - path;
+        s = MyStrTrimLen( path, &len );
+        AddSourceSpec( s, len );
+        path = end + 1;
+    }
+    len = strlen( path );
+    s = MyStrTrimLen( path, &len );
+    if( len > 0 ) {
+        AddSourceSpec( s, len );
     }
 }
 
@@ -1003,7 +1033,7 @@ bool ProcessCmdInfo( const char *param )
         ShowDebuggerMsg( WDB_HELP_INFO );
         return( TRUE );
     }
-    if( §IsDbgProgramLoaded() ) {
+    if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( FALSE );
     }
@@ -1798,11 +1828,6 @@ void VarSaveWndToScope( void *wnd )
 void VarRestoreWndFromScope( void *wnd )
 {
 }
-void PopErrBox( const char *buff )
-{
-    MessageBox( (HWND)NULL, buff, LIT( Debugger_Startup_Error ),
-            MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-}
 
 void DUIEnterCriticalSection( void )
 {
@@ -1863,9 +1888,9 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void RemovePoint( void *bp );
-extern void DUIRemoveBreak( void *bp )
-/***********************************/
+extern void RemovePoint( brkp *bp );
+extern void DUIRemoveBreak( brkp *bp )
+/************************************/
 {
     RemovePoint( bp );
 }
@@ -1927,6 +1952,33 @@ bool DUICopyCancelled( void * cookie )
     cookie = cookie;
     return( FALSE );
 }
+
+unsigned DUIDlgAsyncRun( void )
+/*****************************/
+{
+    return( 0 );
+}
+
+void DUISetNumLines( int num )
+{
+    num = num;
+}
+
+void DUISetNumColumns( int num )
+{
+    num = num;
+}
+
+void DUIInitRunThreadInfo( void )
+{
+}
+
+#if defined( __NT__ )
+const char *CheckForPowerBuilder( const char *name )
+{
+    return( name );
+}
+#endif
 
 int main( int argc, char **argv )
 {

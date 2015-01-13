@@ -24,25 +24,66 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sybase Power Builder check routines for NT host.
 *
 ****************************************************************************/
 
 
+#include "wwindows.h"
 #include "dbgdefn.h"
+#include "dbgdata.h"
+#ifdef __GUI__
 #include "dbgwind.h"
-#include "guidlg.h"
-#include "dlglist.h"
+#endif
+#include "dbglit.h"
 
-extern void             FiniSource( void );
-extern void             AddSourceSpec( const char *start, unsigned len );
-extern char             *SourceName( char_ring *src );
-extern char_ring        *NextSourceSpec( char_ring *curr );
-extern void             DbgUpdate( update_list );
+extern void     StartupErr( const char *err );
 
-void DlgSource( void )
+#ifdef __GUI__
+extern a_window *WndMain;
+#endif
+
+static DWORD        PidPB;
+static bool         AlreadyRunning = false;
+
+BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
 {
-    DlgList( LIT( New_Source ), FiniSource, AddSourceSpec, NextSourceSpec, SourceName );
-    DbgUpdate( UP_NEW_SRC );
+    char buff[256];
+
+    GetClassName( hwnd, buff, sizeof( buff ) );
+    if( strstr( buff, "PBFRAME" ) != NULL ) {
+        GetWindowThreadProcessId(hwnd, &PidPB );
+    }
+    if( GetWindowText( hwnd, buff, sizeof( buff ) ) != 0 ) {
+        if( stricmp( buff, LIT( The_WATCOM_Debugger_for_PowerBuilder ) ) == 0 ) {
+            AlreadyRunning = true;
+        }
+    }
+    return( TRUE );
+}
+
+const char *CheckForPowerBuilder( const char *name )
+{
+    static char pid[20];
+
+    if( _IsOff( SW_POWERBUILDER ) )
+        return( name );
+    EnumWindows( FindPidPB, 0 );
+    if( AlreadyRunning ) {
+        StartupErr( LIT( PowerBuilder_Debugger_Already_Running ) );
+        return( "" );
+    }
+    if( PidPB == 0 ) {
+        StartupErr( LIT( PowerBuilder_Not_Running ) );
+        return( "" );
+    } else {
+        pid[0] = '#';
+        itoa( PidPB, pid + 1, 16 );
+#ifdef __GUI__
+        WndSetTitle( WndMain, LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
+#else
+        SetConsoleTitle( LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
+#endif
+        return( pid );
+    }
 }

@@ -45,7 +45,7 @@
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             WndEvalInspectExpr( char *item, bool pop );
+extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern void             WndInspectExprSP( char *item );
 extern int              AddrComp(address ,address );
 extern void             InitCache(address,unsigned);

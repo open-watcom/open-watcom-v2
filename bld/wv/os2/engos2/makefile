@@ -1,12 +1,10 @@
-#pmake: os_os2 cpu_386
+#pmake: build os_os2 cpu_386
 #
 # Open Watcom Debugger engine makefile for OS/2
 #
 
 host_os  = os2
 host_cpu = 386
-
-sys_windowed = 1
 
 dll = 1
 extra_c_flags = -br

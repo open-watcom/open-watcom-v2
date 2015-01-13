@@ -50,8 +50,6 @@ extern bool             ProcSysOption( const char *, unsigned, int );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             SysSetMemLimit( void );
-extern void             SetNumColumns( int cols );
-extern void             SetNumLines( int lines );
 void                    FindLocalDebugInfo( char *name );
 extern void             StartupErr( const char *err );
 
@@ -481,10 +479,10 @@ static void ProcOptList( int pass )
             _SwitchOn( SW_REMOTE_FILES );
             break;
         case OPT_LINES:
-            SetNumLines( GetValue() );
+            DUISetNumLines( GetValue() );
             break;
         case OPT_COLUMNS:
-            SetNumColumns( GetValue() );
+            DUISetNumColumns( GetValue() );
             break;
 #ifdef BACKWARDS
         case OPT_NO_FPU:

@@ -129,9 +129,9 @@ char_ring **RingEnd( char_ring **owner )
 }
 
 
-void AddSourceSpec( const char *str )
+void AddSourceSpec( const char *start, unsigned len )
 {
-    InsertRing( RingEnd( &SrcSpec ), str, strlen( str ), FALSE );
+    InsertRing( RingEnd( &SrcSpec ), start, len, FALSE );
 }
 
 char *SourceName( char_ring *src )

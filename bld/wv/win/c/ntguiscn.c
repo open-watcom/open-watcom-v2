@@ -46,8 +46,10 @@ extern HWND     GUIGetSysHandle( gui_window *wnd );
 extern void     DebugExit();
 extern void     TellHWND( HWND );
 
-volatile int    BrkPending;
 extern a_window *WndMain;
+
+volatile bool   BrkPending;
+
 static HWND     HwndFore = NULL;
 static HWND     FirstForeWnd = NULL;
 

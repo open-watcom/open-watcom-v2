@@ -69,7 +69,7 @@ void __sigabort() {}
 static void BrkHandler( int signo )
 {
     signo = signo;
-    BrkPending = 1;
+    BrkPending = true;
 }
 
 void GUImain( void )
@@ -140,7 +140,7 @@ bool TBreak()
     bool    ret;
 
     ret = BrkPending;
-    BrkPending = 0;
+    BrkPending = false;
     return( ret );
 }
 

@@ -1,9 +1,7 @@
-#pmake: os_nt cpu_386
+#pmake: build os_nt cpu_386
 
 host_os  = nt
 host_cpu = 386
-
-sys_windowed = 1
 
 dll = 1
 extra_c_flags= -br

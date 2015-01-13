@@ -70,9 +70,9 @@ char_ring *NextDLLList( char_ring *curr )
     return( curr->next );
 }
 
-void AddDLLList( const char *name )
+void AddDLLList( const char *start, unsigned len )
 {
-    InsertRing( RingEnd( &DLLList ), name, strlen( name ), TRUE );
+    InsertRing( RingEnd( &DLLList ), start, len, TRUE );
 }
 
 void BreakOnImageLoad( const char *name, unsigned len, bool clear )

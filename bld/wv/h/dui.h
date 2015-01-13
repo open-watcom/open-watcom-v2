@@ -79,3 +79,7 @@ extern bool     DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void     DUIRemoveBreak( brkp *bp );
 extern int      DUIDisambiguate( const ambig_info *ambig, int count );
 extern bool     DUIImageLoaded( image_entry *image, bool load, bool already_stopping, bool *force_stop );
+extern unsigned DUIDlgAsyncRun( void );
+extern void     DUISetNumLines( int num );
+extern void     DUISetNumColumns( int num );
+extern void     DUIInitRunThreadInfo( void );

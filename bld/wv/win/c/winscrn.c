@@ -62,11 +62,12 @@ extern unsigned char    NECBIOSGetMode(void);
 #define         NEC_20_LINES        0x01
 #define         NEC_31_LINES        0x10
 
+extern volatile bool   BrkPending;
+
 bool            WantFast;
 flip_types      FlipMech;
 mode_types      ScrnMode=MD_EGA;
 int             ScrnLines=25;
-volatile int    BrkPending;
 bool WndUseGMouse = FALSE;
 
 static display_configuration    HWDisplay;

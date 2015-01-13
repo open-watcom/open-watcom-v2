@@ -58,17 +58,17 @@ static BOOL     PASCAL GetCommandData( HWND );
 extern HWND     GUIGetSysHandle(gui_window*);
 extern void     InitHookFunc(void);
 extern void     FiniHookFunc(void);
-
-static char             *CmdData;
-extern volatile int             BrkPending;
-extern a_window         *WndMain;
-bool                    ToldWinHandle = FALSE;
-
-extern HWND     MainHwnd = NULL;
-
 #ifndef __NT__
 extern void  (WINAPI *InfoFunction)(HWND);
 #endif
+
+extern HWND     MainHwnd = NULL;
+extern a_window *WndMain;
+
+volatile bool   BrkPending;
+bool            ToldWinHandle = FALSE;
+
+static char     *CmdData;
 
 void TellWinHandle()
 {
@@ -158,7 +158,7 @@ bool TBreak()
     bool    ret;
 
     ret = BrkPending;
-    BrkPending = 0;
+    BrkPending = false;
     return( ret );
 }
 

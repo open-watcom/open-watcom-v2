@@ -45,21 +45,21 @@ extern void     GUISetModalDlgs( bool modal );
 extern void     SaveMainScreen( char * );
 extern void     RestoreMainScreen( char * );
 
-extern int      HardModeRequired;
+extern int              HardModeRequired;
+extern a_window         *WndMain;
+extern volatile bool    BrkPending;
+#ifdef __GUI__
+extern void  (__pascal *SetHardMode)( char );
+extern void  (__pascal *UnLockInput)( void );
+#endif
 
 unsigned        ScrnLines = 50;
 unsigned        FlipMech;
 unsigned        ScrnMode;
 HWND            DebuggerHwnd;
 bool            WantFast;
-extern a_window *WndMain;
-volatile int    BrkPending;
 int             ForceHardMode;
 static HWND     FocusWnd;
-#ifdef __GUI__
-extern void  (__pascal *SetHardMode)( char );
-extern void  (__pascal *UnLockInput)( void );
-#endif
 
 #if 0
 ToggleHardMode( void )

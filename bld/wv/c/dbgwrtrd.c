@@ -69,7 +69,7 @@ static unsigned char    Indents[MAX_PIECE_COUNT + 1];
 static unsigned char    InfoType[MAX_PIECE_COUNT];
 static char             HeaderArr[MAX_PIECE_COUNT][MAX_HEADER_SIZE + 1];
 
-void InitRunThreadWnd()
+void InitRunThreadInfo( void )
 {
     int     Width;
     int     i;

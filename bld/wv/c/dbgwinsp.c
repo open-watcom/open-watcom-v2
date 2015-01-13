@@ -77,7 +77,7 @@ extern void             WndSetOpenNoShow( void );
 extern void             ModNewHandle( a_window *wnd, mod_handle handle );
 extern bool             SrcHasFileOpen( a_window *wnd );
 extern address          ModFirstAddr( mod_handle mod );
-extern bool             WndEvalInspectExpr( char *item, bool pop );
+extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern bool             FindFirstCue( mod_handle mod, cue_handle *ch );
 
