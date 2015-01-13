@@ -420,7 +420,7 @@ extern bool             WndIgnoreAllEvents;
 
 extern bool             WndProcMacro( a_window *wnd, unsigned key );
 
-extern  void            WndSetTitle( a_window *wnd, char *title );
+extern  void            WndSetTitle( a_window *wnd, const char *title );
 extern  int             WndGetTitle( a_window *wnd, char *buff, unsigned buff_len );
 
 extern void             Ring( void );

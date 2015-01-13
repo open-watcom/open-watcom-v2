@@ -54,7 +54,7 @@ extern  void    WndSetTitleSize( a_window *wnd, int size )
 }
 
 
-extern  void    WndSetTitle( a_window *wnd, char *title )
+extern  void    WndSetTitle( a_window *wnd, const char *title )
 {
     GUISetWindowText( wnd->gui, title );
 }
@@ -151,7 +151,9 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
         WndNoMemory();
         return( NULL );
     } else {
-        if( buff[0] != '\0' ) WndSetTitle( wnd, buff );
+        if( buff[0] != '\0' ) {
+            WndSetTitle( wnd, buff );
+        }
     }
     ++NumWindows;
     return( wnd );
