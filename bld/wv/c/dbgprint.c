@@ -58,7 +58,7 @@ extern void             ExprValue( stack_entry * );
 extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             DoGivenField( sym_handle * );
-extern void             WriteToPgmScreen( void *, unsigned int );
+extern void             WriteToPgmScreen( const void *, unsigned );
 extern void             GraphicDisplay( void );
 extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern void             PushNum( long );

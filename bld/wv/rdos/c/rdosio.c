@@ -41,6 +41,7 @@
 #include "dbgio.h"
 #include "errno.h"
 #include "strutil.h"
+#include "filelcl.h"
 
 extern void FreeRing(char_ring *);
 
@@ -53,7 +54,7 @@ void LocalErrMsg( sys_error code, char *buff )
     StrCopy( strerror( code ), buff );
 }
 
-sys_handle LocalOpen( char *name, open_access access )
+sys_handle LocalOpen( const char *name, open_access access )
 {
     unsigned    openmode;
     int         ret;
@@ -88,7 +89,7 @@ unsigned LocalRead( sys_handle filehndl, void *ptr, unsigned len )
     return( ret );
 }
 
-unsigned LocalWrite( sys_handle filehndl, void *ptr, unsigned len )
+unsigned LocalWrite( sys_handle filehndl, const void *ptr, unsigned len )
 {
     int         ret;
 
@@ -100,7 +101,7 @@ unsigned LocalWrite( sys_handle filehndl, void *ptr, unsigned len )
     return( ret );
 }
 
-unsigned long LocalSeek( sys_handle hdl, unsigned long len, unsigned method )
+unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
 {
     off_t       ret;
 
@@ -119,7 +120,7 @@ rc_erridx LocalClose( sys_handle filehndl )
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-rc_erridx LocalErase( char *name )
+rc_erridx LocalErase( const char *name )
 {
     if( remove( name ) == 0 )
         return( 0 );

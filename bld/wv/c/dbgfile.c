@@ -41,6 +41,8 @@
 #include "dbgio.h"
 #include "digio.h"
 #include "strutil.h"
+#include "filelcl.h"
+#include "filermt.h"
 
 #define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
 #define CHK_DRV_SEP(c,i)    ((c) != '\0' && (c) == (i)->drv_separator)
@@ -53,32 +55,7 @@ extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsi
 extern void             StartupErr( const char * );
 extern bool             HaveRemoteFiles( void );
 
-extern rc_erridx        RemoteErase( char const * );
-extern void             RemoteErrMsg( sys_error, char * );
-extern unsigned         RemoteRead( sys_handle, void *, unsigned );
-extern unsigned         RemoteWrite( sys_handle, const void *, unsigned );
-extern unsigned long    RemoteSeek( sys_handle, unsigned long, seek_method );
-extern sys_handle       RemoteOpen( char const *, open_access );
-extern rc_erridx        RemoteClose( sys_handle );
-extern unsigned         RemoteWriteConsole( void *, unsigned );
-
-extern rc_erridx        LocalErase( char const * );
-extern void             LocalErrMsg( sys_error, char * );
-extern unsigned         LocalRead( sys_handle, void *, unsigned );
-extern unsigned         LocalWrite( sys_handle, const void *, unsigned );
-extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
-extern sys_handle       LocalOpen( char const *, open_access );
-extern rc_erridx        LocalClose( sys_handle );
-extern sys_handle       LocalHandleSys( handle );
-
-
-extern file_components  RemFile;
-extern file_components  LclFile;
-extern char             LclPathSep;
-
-
 static char_ring *LclPath;
-
 
 #define LOC_ESCAPE      '@'
 #define REMOTE_LOC      'r'
@@ -86,7 +63,6 @@ static char_ring *LclPath;
 #define REMOTE_IND      0x8000
 #define MAX_OPENS       100
 #define MAX_ERRORS      10
-
 
 static sys_handle       SysHandles[MAX_OPENS];
 static sys_error        SysErrors[MAX_ERRORS];
@@ -273,7 +249,7 @@ rc_erridx FileRemove( char const *name, open_access loc )
     }
 }
 
-void WriteToPgmScreen( void *buff, unsigned len )
+void WriteToPgmScreen( const void *buff, unsigned len )
 {
 #if !defined( BUILD_RFX )
     DUIWndUser();

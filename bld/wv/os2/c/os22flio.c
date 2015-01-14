@@ -43,6 +43,7 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "doserr.h"
+#include "filelcl.h"
 
 #define READONLY    0
 #define WRITEONLY   1
@@ -95,7 +96,7 @@ void LocalErrMsg(sys_error code, char *buff)
     *d = '\0';
 }
 
-sys_handle LocalOpen( char *name, open_access access )
+sys_handle LocalOpen( const char *name, open_access access )
 {
     HFILE       hdl;
     ULONG       action;
@@ -144,12 +145,12 @@ unsigned LocalRead(sys_handle filehndl, void *ptr, unsigned len)
     return read;
 }
 
-unsigned LocalWrite(sys_handle filehndl, void *ptr, unsigned len)
+unsigned LocalWrite(sys_handle filehndl, const void *ptr, unsigned len)
 {
     ULONG   written;
     APIRET  ret;
 
-    ret = DosWrite(filehndl, ptr, len, &written);
+    ret = DosWrite(filehndl, (PVOID)ptr, len, &written);
     if (ret != 0) {
         StashErrCode(ret, OP_LOCAL);
         return ERR_RETURN;
@@ -157,7 +158,7 @@ unsigned LocalWrite(sys_handle filehndl, void *ptr, unsigned len)
     return written;
 }
 
-unsigned long LocalSeek(sys_handle hdl, unsigned long len, unsigned method)
+unsigned long LocalSeek(sys_handle hdl, unsigned long len, seek_method method)
 {
     ULONG           new;
     APIRET          ret;
@@ -178,7 +179,7 @@ rc_erridx LocalClose(sys_handle filehndl)
     return StashErrCode(ret, OP_LOCAL);
 }
 
-rc_erridx LocalErase(char *name)
+rc_erridx LocalErase( const char *name )
 {
     APIRET      ret;
 

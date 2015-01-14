@@ -46,6 +46,7 @@
 #endif
 #include "dbgio.h"
 #include "trpfile.h"
+#include "filermt.h"
 
 
 extern trap_shandle     GetSuppId( char * );
@@ -213,7 +214,7 @@ unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
     }
 }
 
-sys_handle RemoteOpen( char *name, open_access mode )
+sys_handle RemoteOpen( const char *name, open_access mode )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -356,7 +357,7 @@ static unsigned doWriteConsole( const void *buff, unsigned len )
     return( total );
 }
 
-unsigned RemoteWriteConsole( void *buff, unsigned len )
+unsigned RemoteWriteConsole( const void *buff, unsigned len )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -429,7 +430,7 @@ unsigned RemoteRead( sys_handle hdl, void *buff, unsigned len )
     return( doRead( hdl, buff, len ) );
 }
 
-unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, unsigned method )
+unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method )
 {
     file_seek_req       acc;
     file_seek_ret       ret;
@@ -488,7 +489,7 @@ rc_erridx RemoteClose( sys_handle hdl )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteErase( char *name )
+rc_erridx RemoteErase( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

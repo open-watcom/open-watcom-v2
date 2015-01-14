@@ -35,6 +35,7 @@
 #include "dbgio.h"
 #include "trpcore.h"
 #include "trpfinfo.h"
+#include "filermt.h"
 
 extern trap_shandle     GetSuppId( char * );
 

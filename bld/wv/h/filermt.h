@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,53 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Remote file functions declaration
 *
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "dbgdefn.h"
-#include "dbgmem.h"
-#include "dbgio.h"
-#include "trptypes.h"
-#include "filelcl.h"
+extern rc_erridx        RemoteErase( char const * );
+extern void             RemoteErrMsg( sys_error, char * );
+extern unsigned         RemoteRead( sys_handle, void *, unsigned );
+extern unsigned         RemoteWrite( sys_handle, const void *, unsigned );
+extern unsigned long    RemoteSeek( sys_handle, unsigned long, seek_method );
+extern sys_handle       RemoteOpen( char const *, open_access );
+extern rc_erridx        RemoteClose( sys_handle );
+extern unsigned         RemoteWriteConsole( const void *, unsigned );
+extern unsigned         RemoteWriteConsoleNL( void );
+extern long             RemoteGetFileDate( const char *name );
+extern bool             RemoteSetFileDate( const char *name, long date );
 
-long LocalGetFileDate( const char *name )
-/***************************************/
-{
-    WIN32_FIND_DATA     ffb;
-    HANDLE              h;
-    WORD                md,mt;
-
-    h = FindFirstFile( name, &ffb );
-    if( h == (HANDLE)-1 ) {
-        return( -1 );
-    }
-    FindClose( h );
-    FileTimeToDosDateTime( &ffb.ftLastWriteTime, &md, &mt );
-    return( ( md << 16 ) + mt );
-}
-
-bool LocalSetFileDate( const char *name, long date )
-/**************************************************/
-{
-    HANDLE              h;
-    WORD                md,mt;
-    FILETIME            ft;
-
-    md = ( date >> 16 ) & 0xFFFF;
-    mt = date;
-    DosDateTimeToFileTime( md, mt, &ft );
-    h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                    OPEN_EXISTING, 0, NULL );
-    if( h == (HANDLE)-1 ) {
-        return( FALSE );
-    }
-    if( !SetFileTime( h, &ft, &ft, &ft ) ) {
-        return( FALSE );
-    }
-    CloseHandle( h );
-    return( TRUE );
-}
+extern file_components  RemFile;

@@ -43,10 +43,9 @@
 #include "dta.h"
 #include "tcerr.h"
 #include "trprfx.h"
-//#include "strutil.h"
-
 #include "local.h"
 #include "remote.h"
+#include "filermt.h"
 
 char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
 
@@ -100,8 +99,6 @@ extern  void            FiniInt( void );
 extern  int             CtrlCHit( void );
 extern  const char      *RealFName( const char *, open_access * );
 extern  sys_error       GetSystemErrCode( error_idx );
-extern  unsigned        RemoteWriteConsole( void *, unsigned );
-extern  unsigned        RemoteWriteConsoleNL( void );
 extern  error_idx       GetLastErr( void );
 extern  sys_handle      GetSystemHandle( handle );
 

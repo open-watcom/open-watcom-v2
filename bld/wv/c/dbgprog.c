@@ -45,6 +45,8 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "filelcl.h"
+#include "filermt.h"
 
 #include "clibext.h"
 
@@ -104,10 +106,6 @@ extern mod_handle       LookupImageName( const char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
 extern bool             GetBPSymAddr( brkp *bp, address *addr );
 extern void             DbgUpdate( update_list );
-extern long             RemoteGetFileDate( const char *name );
-extern long             LocalGetFileDate( const char *name );
-extern bool             RemoteSetFileDate( const char *name, long date );
-extern rc_erridx        RemoteErase( char const * );
 
 extern void             InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase );
 extern void             DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase );

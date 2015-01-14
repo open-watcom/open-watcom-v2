@@ -39,6 +39,7 @@
 #include "tinyio.h"
 #include "dbgio.h"
 #include "doserr.h"
+#include "filelcl.h"
 
 extern char     _osmajor;
 
@@ -51,7 +52,7 @@ void LocalErrMsg( sys_error code, char *buff )
 }
 
 
-sys_handle LocalOpen( char *name, open_access access )
+sys_handle LocalOpen( const char *name, open_access access )
 {
     tiny_ret_t  ret;
     unsigned    mode;
@@ -88,7 +89,7 @@ unsigned LocalRead( sys_handle filehndl, void *ptr, unsigned len )
     return( TINY_INFO( ret ) );
 }
 
-unsigned LocalWrite( sys_handle filehndl, void *ptr, unsigned len )
+unsigned LocalWrite( sys_handle filehndl, const void *ptr, unsigned len )
 {
     tiny_ret_t  ret;
 
@@ -100,7 +101,7 @@ unsigned LocalWrite( sys_handle filehndl, void *ptr, unsigned len )
     return( TINY_INFO( ret ) );
 }
 
-unsigned long LocalSeek( sys_handle hdl, unsigned long npos, unsigned method )
+unsigned long LocalSeek( sys_handle hdl, unsigned long npos, seek_method method )
 {
     tiny_ret_t      ret;
     unsigned long   pos;
@@ -124,7 +125,7 @@ rc_erridx LocalClose( sys_handle filehndl )
     return( 0 );
 }
 
-rc_erridx LocalErase( char *name )
+rc_erridx LocalErase( const char *name )
 {
     tiny_ret_t  ret;
 

@@ -37,11 +37,11 @@
 #include "dbgerr.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgio.h"
+#include "filermt.h"
 
 extern void             WndTmpFileInspect( char *file, bool binary );
 extern void             StdOutNew( void );
-
-extern file_components  RemFile;
 
 #define PREFIX_LEN      2
 static char             FileName[PREFIX_LEN+8+1+3+1] = { '@', 'r' };
