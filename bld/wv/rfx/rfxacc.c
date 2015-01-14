@@ -32,11 +32,11 @@
 
 #include <string.h>
 #include <time.h>
-
 #include "dbgdefn.h"
 #include "dbgio.h"
 #include "trpcore.h"
 #include "trprfx.h"
+#include "remote.h"
 
 extern trap_shandle     GetSuppId( char * );
 
@@ -57,7 +57,7 @@ bool InitRFXSupp()
 }
 
 
-rc_erridx RemoteRename( char * from, char *to )
+rc_erridx RemoteRename( const char * from, const char *to )
 {
     in_mx_entry         in[3];
     mx_entry            out[1];
@@ -77,7 +77,7 @@ rc_erridx RemoteRename( char * from, char *to )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteMkDir( char *name )
+rc_erridx RemoteMkDir( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -95,7 +95,7 @@ rc_erridx RemoteMkDir( char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteRmDir( char *name )
+rc_erridx RemoteRmDir( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -134,7 +134,7 @@ int RemoteGetDrv()
     return( ret.drive );
 }
 
-rc_erridx RemoteSetCWD( char *name )
+rc_erridx RemoteSetCWD( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -152,7 +152,7 @@ rc_erridx RemoteSetCWD( char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-long RemoteGetFileAttr( char * name )
+long RemoteGetFileAttr( const char * name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -174,7 +174,7 @@ long RemoteGetFileAttr( char * name )
     return( ret.attribute );
 }
 
-rc_erridx RemoteSetFileAttr( char * name, long attrib )
+rc_erridx RemoteSetFileAttr( const char * name, long attrib )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -325,7 +325,7 @@ rc_erridx RemoteGetCwd( int drv, char *where )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteFindFirst( char *pattern, void *info, unsigned info_len, int attrib )
+rc_erridx RemoteFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];

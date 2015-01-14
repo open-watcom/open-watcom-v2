@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,24 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Declaration of RFX functions for local side.
+* Description:  Declaration of RFX functions for remote side.
 *
 ****************************************************************************/
 
-extern rc_erridx LocalMkDir( const char * );
-extern rc_erridx LocalRmDir( const char * );
-extern rc_erridx LocalGetCwd( int, char * );
-extern rc_erridx LocalSetCWD( const char * );
-extern int       LocalGetDrv( void );
-extern rc_erridx LocalSetDrv( int );
-extern rc_erridx LocalFindFirst( const char *, void *, unsigned, int );
-extern int       LocalFindNext( void *, unsigned );
-extern long      LocalGetFileAttr( const char * );
-extern rc_erridx LocalSetFileAttr( const char *, long );
-extern long      LocalGetFreeSpace( int );
-extern rc_erridx LocalRename( const char *, const char * );
-extern void      LocalTime( int *hour, int *min, int *sec, int *hundredths );
-extern void      LocalDate( int *year, int *month, int *day, int *weekday );
-extern rc_erridx LocalDateTime( sys_handle, int *, int *, int );
-extern int       LocalInteractive( sys_handle );
-extern void      LocalGetBuff( char *, unsigned );
+
+extern rc_erridx        RemoteRename( const char *, const char * );
+extern rc_erridx        RemoteMkDir( const char * );
+extern rc_erridx        RemoteRmDir( const char * );
+extern rc_erridx        RemoteSetDrv( int );
+extern int              RemoteGetDrv( void );
+extern rc_erridx        RemoteSetCWD( const char * );
+extern long             RemoteGetFileAttr( const char * );
+extern rc_erridx        RemoteSetFileAttr( const char * , long );
+extern long             RemoteGetFreeSpace( int );
+extern rc_erridx        RemoteDateTime( sys_handle , int *, int *, int );
+extern rc_erridx        RemoteGetCwd( int, char * );
+extern rc_erridx        RemoteFindFirst( const char *, void *, unsigned , int );
+extern int              RemoteFindNext( void *, unsigned );
+extern rc_erridx        RemoteFindClose( void );
