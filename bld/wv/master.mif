@@ -101,7 +101,7 @@ extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
 
 # inc_dirs
 ###########
-inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)"
+inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -I"$(rdir)/strings"
 !ifndef dll
 inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
 inc_dirs += -I"$(gui_dir)/ui/h" -I"$(hlpview_dir)/h"
@@ -459,10 +459,10 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
 
 .asm: $(sysadir)
 
-litdefm.tmp : ../../h/menu.str
+litdefm.tmp : $(rdir)/strings/menu.str
         $(cpp) $(rc_aui_flags) $< >$@
 
-litdefs.tmp : ../../h/wdeng.str ../../h/wddui.str
+litdefs.tmp : $(rdir)/strings/wdeng.str $(rdir)/strings/wddui.str
         $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
 
 litdef.gh : litdefs.tmp litdefm.tmp
