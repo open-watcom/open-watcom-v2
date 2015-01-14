@@ -462,7 +462,7 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
 litdefm.tmp : ../../h/menu.str
         $(cpp) $(rc_aui_flags) $< >$@
 
-litdefs.tmp : ../../h/wdengin.str ../../h/wd.str
+litdefs.tmp : ../../h/wdeng.str ../../h/wddui.str
         $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
 
 litdef.gh : litdefs.tmp litdefm.tmp

@@ -972,6 +972,7 @@ void DUIInitRunThreadInfo( void )
 {
 }
 
+#if defined( __GUI__ )
 unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )
 {
     return( TrapAccess( in_num, in_mx, out_num, out_mx ) );
@@ -981,3 +982,4 @@ unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned
 {
     return( TrapSimpAccess( in_len, in_data, out_len, out_data ) );
 }
+#endif

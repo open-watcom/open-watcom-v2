@@ -44,21 +44,21 @@
 #endif
 #define LITSTR( x, y ) char *LIT( x );
 
-#include "wd.str"
+#include "wddui.str"
 
 #undef LITSTR
 
 void DUIInitLiterals()
 {
     #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_LITERAL_##x );
-    #include "wd.str"
+    #include "wddui.str"
     #undef LITSTR
 }
 
 void DUIFiniLiterals()
 {
     #define LITSTR( x, y ) DbgFree( LIT( x ) );
-    #include "wd.str"
+    #include "wddui.str"
     #undef LITSTR
 }
 #undef pick

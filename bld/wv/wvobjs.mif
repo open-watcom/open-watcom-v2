@@ -85,7 +85,7 @@ engine_objs = &
     srcmgt.obj &
     dbgupdt.obj &
     symcomp.obj &
-    litengin.obj &
+    litwdeng.obj &
     autoenv.obj
 
 engine_objs_dosi86 = &
@@ -212,7 +212,7 @@ ui_objs = &
     dlgvarx.obj &
     dlgwind.obj &
     dui.obj &
-    litwd.obj &
+    litwddui.obj &
     modcomp.obj &
     wndalloc.obj &
     wnddump.obj &

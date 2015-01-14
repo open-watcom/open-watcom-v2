@@ -43,11 +43,15 @@
 #else
   #define pick(c,e,j) LITSTR( c, e )
 #endif
+
 #define LITSTR( x, y ) extern char *LIT( x );
-
-#include "literals.h"
-
+#include "wdeng.str"
 #undef LITSTR
+
+#define LITSTR( x, y ) extern char *LIT( x );
+#include "wddui.str"
+#undef LITSTR
+
 #undef pick
 
 #endif /* _DBGLIT_H_INCLUDED */

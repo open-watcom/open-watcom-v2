@@ -43,21 +43,21 @@
 #endif
 #define LITSTR( x, y ) char *LIT( x );
 
-#include "wdengin.str"
+#include "wdeng.str"
 
 #undef LITSTR
 
 void InitEngineLiterals()
 {
     #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_LITERAL_##x );
-    #include "wdengin.str"
+    #include "wdeng.str"
     #undef LITSTR
 }
 
 void FiniEngineLiterals()
 {
     #define LITSTR( x, y ) DbgFree( LIT( x ) );
-    #include "wdengin.str"
+    #include "wdeng.str"
     #undef LITSTR
 }
 #undef pick

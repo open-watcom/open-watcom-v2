@@ -7,11 +7,18 @@ BEGIN
   #else
     #define pick(c,e,j) LITSTR( c, e )
   #endif
+
     #define LITSTR( x, y ) DBG_LITERAL_##x, [ y ]
-
-    #include "literals.h"
-    #include "menustr.h"
-
+    #include "wdeng.str"
     #undef LITSTR
+
+    #define LITSTR( x, y ) DBG_LITERAL_##x, [ y ]
+    #include "wddui.str"
+    #undef LITSTR
+
+    #define LITSTR( x, y ) DBG_LITERAL_##x, [ y ]
+    #include "menustr.h"
+    #undef LITSTR
+
     #undef pick
 END
