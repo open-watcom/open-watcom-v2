@@ -101,7 +101,7 @@ extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
 
 # inc_dirs
 ###########
-inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -I"$(rdir)/strings"
+inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -Ih -I"$(rdir)/strings"
 !ifndef dll
 inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
 inc_dirs += -I"$(gui_dir)/ui/h" -I"$(hlpview_dir)/h"
@@ -258,7 +258,7 @@ rc_inc_dir_nt  = -I"$(rdir)/win"
 rc_inc_dir_os2 = -I"$(rdir)/os2"
 rc_inc_dir_win = -I"$(rdir)/win"
 
-rc_inc_dirs = -I. $(rc_inc_dir_$(host_os)) -I"$(rdir)" -I"$(rdir)/strings"
+rc_inc_dirs = -I. -Ih $(rc_inc_dir_$(host_os)) -I"$(rdir)" -I"$(rdir)/strings"
 rc_inc_dirs += -I"$(hdir)" $(aui_rc_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
 
 !ifeq sys_windowed 1
@@ -452,6 +452,7 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
         $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
 
 ####################
+.EXTENSIONS: .str
 
 .h: $(syshdir);$(hdir);$(aui_dir)/h
 
@@ -459,14 +460,20 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
 
 .asm: $(sysadir)
 
-litdefm.tmp : $(rdir)/strings/menu.str
+.str: h;$(rdir)/strings
+
+litdefm.tmp : menu.str
         $(cpp) $(rc_aui_flags) $< >$@
 
-litdefs.tmp : $(rdir)/strings/wdeng.str $(rdir)/strings/wddui.str
+litdefs1.tmp : wdeng.str
         $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
 
-litdef.gh : litdefs.tmp litdefm.tmp
-        awk -v prefix=DBG_LITERAL_ -v base=DBG_LITERAL_BASE -f $(build_dir)/makemsg.awk litdefs.tmp >$^@
+litdefs2.tmp : wddui.str
+        $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
+
+litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp
+        awk -v prefix=DBG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg.awk litdefs1.tmp >$^@
+        awk -v prefix=DBG_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg.awk litdefs2.tmp >>$^@
         awk -v prefix=DBG_LITERAL_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg.awk litdefm.tmp >> $^@
 
 !ifeq release 0
