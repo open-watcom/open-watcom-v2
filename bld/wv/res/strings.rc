@@ -17,7 +17,7 @@ BEGIN
     #undef LITSTR
 
     #define LITSTR( x, y ) DBG_LITERAL_##x, [ y ]
-    #include "menustr.h"
+    #include "menu.str"
     #undef LITSTR
 
     #undef pick
