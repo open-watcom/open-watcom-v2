@@ -65,7 +65,7 @@ extern void             DoPoints( type_kind );
 extern void             DoAssign( void );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );
-extern bool             DlgAnyExpr( char *, char *, unsigned );
+extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern void             WndVarInspect( char * );
@@ -217,22 +217,22 @@ static  void    VarModify( a_window *wnd, int row, int piece )
     case VAR_PIECE_VALUE:
         if( !VarExpandable( class ) ) {
             char *value = DbgAlloc( TXT_LEN );
-            char *name = DbgAlloc( TXT_LEN );
+            char *title = DbgAlloc( TXT_LEN );
             old = VarNewCurrRadix( v );
             ExprValue( ExprSP );
             VarBuildName( &var->i, v, FALSE );
-            StrCopy( TxtBuff, name );
+            StrCopy( TxtBuff, title );
             VarPrintText( &var->i, value, PrintValue, TXT_LEN );
             VarKillExprSPCache( &var->i );
             v = VarFindRow( &var->i, row );
             FreezeStack();
-            ok = DlgAnyExpr( name, value, TXT_LEN );
+            ok = DlgAnyExpr( title, value, TXT_LEN );
             UnFreezeStack( FALSE );
             if( ok ) VarDoAssign( &var->i, v, value );
             NewCurrRadix( old );
             WndRowDirty( wnd, row );
             DbgFree( value );
-            DbgFree( name );
+            DbgFree( title );
         }
         break;
     }

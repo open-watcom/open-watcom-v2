@@ -84,7 +84,7 @@ extern void             FreeAliasInfo( void );
 extern void             CheckSegAlias( void );
 extern void             SetCodeDot( address );
 extern address          GetRegIP( void );
-extern bool             DlgGivenAddr( char *title, address *value );
+extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( char *name );
 extern void             SetPointAddr( brkp *bp, address addr );
 extern void             RemoteMapAddr( addr_ptr *, addr_off *, addr_off *, unsigned long handle );

@@ -53,15 +53,15 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 
-extern void     StartupErr( const char * );
-extern int      GUIInitMouse( int );
-extern void     GUIFiniMouse( void );
-extern void     ReleaseProgOvlay( bool );
-extern void     KillDebugger( int );
+extern void         StartupErr( const char * );
+extern int          GUIInitMouse( int );
+extern void         GUIFiniMouse( void );
+extern void         ReleaseProgOvlay( bool );
+extern void         KillDebugger( int );
 
-extern unsigned UIConHandle;
-extern char     *UITermType;
-extern char     XConfig[];
+extern unsigned     UIConHandle;
+extern char         *UITermType;
+extern char         XConfig[];
 
 char                *DbgTerminal;
 unsigned            DbgConsole;

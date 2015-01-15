@@ -46,9 +46,8 @@
 
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
 extern void             MemFiniTypes( mem_type_walk_data *data );
-extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
-
-extern bool             DlgGivenAddr( char *title, address *value );
+extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th );
+extern bool             DlgGivenAddr( const char *title, address *value );
 
 #define PIECE_TYPE( x ) ( (x)-MENU_IO_FIRST_TYPE )
 

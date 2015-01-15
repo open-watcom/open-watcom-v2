@@ -32,7 +32,6 @@
 
 #include <stdarg.h>
 
-
 extern char *StrCopy( char const *src, char *dest );
 extern char *StrTrim( char *str );
 extern char *FmtStr( char *buff, const char *fmt, va_list args );

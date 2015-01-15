@@ -49,13 +49,13 @@
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern void             SetDataDot( address );
-extern bool             DlgLongExpr( char *, long * );
-extern bool             DlgDataAddr( char *title, address *value );
+extern bool             DlgLongExpr( const char *title, long * );
+extern bool             DlgDataAddr( const char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
 extern long             AddrDiff( address a, address b );
 extern unsigned         ChangeMemUndoable( address addr, const void *data, unsigned len );
-extern bool             DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th );
-extern bool             DlgString( char *title, char *buff );
+extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th );
+extern bool             DlgString( const char *title, char *buff );
 extern int              AddrComp(address,address);
 extern bool             BreakWrite( address addr, mad_type_handle, const char *comment );
 extern a_window         *WndAsmInspect(address addr);
@@ -1053,7 +1053,7 @@ extern  a_window        *WndStkOpen()
 }
 
 
-extern  a_window        *DoWndBinOpen( const char *name, handle filehndl )
+extern  a_window        *DoWndBinOpen( const char *title, handle filehndl )
 {
     mem_window  *mem;
     a_window    *wnd;
@@ -1064,6 +1064,6 @@ extern  a_window        *DoWndBinOpen( const char *name, handle filehndl )
     mem->init_type = MAD_NIL_TYPE_HANDLE;
     mem->piece_type = MemByteType;
     mem->u.f.filehndl = filehndl;
-    wnd = DbgTitleWndCreate( name, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, FALSE );
+    wnd = DbgTitleWndCreate( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, FALSE );
     return( wnd );
 }

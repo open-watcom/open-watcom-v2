@@ -124,7 +124,7 @@ static bool     DlgGetItem( char *buff, unsigned buff_len, const char *title, vo
     return( DlgGetItemWithRtn( buff, buff_len, title, value, rtn, DlgNewWithSym ) );
 }
 
-bool    DlgLongExpr( char *title, long *value )
+bool    DlgLongExpr( const char *title, long *value )
 {
     char        new[EXPR_LEN];
 
@@ -132,7 +132,7 @@ bool    DlgLongExpr( char *title, long *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanLong ) );
 }
 
-bool    DlgAnyExpr( char *title, char *buff, unsigned buff_len )
+bool    DlgAnyExpr( const char *title, char *buff, unsigned buff_len )
 {
     return( DlgGetItem( buff, buff_len, title, NULL, DlgScanAny ) );
 }
@@ -147,7 +147,7 @@ static void InitAddr( char *new, address *value, unsigned max )
     }
 }
 
-bool    DlgCodeAddr( char *title, address *value )
+bool    DlgCodeAddr( const char *title, address *value )
 {
     char        new[EXPR_LEN];
 
@@ -155,7 +155,7 @@ bool    DlgCodeAddr( char *title, address *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanCodeAddr ) );
 }
 
-bool    DlgDataAddr( char *title, address *value )
+bool    DlgDataAddr( const char *title, address *value )
 {
     char        new[EXPR_LEN];
 
@@ -163,7 +163,7 @@ bool    DlgDataAddr( char *title, address *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanDataAddr ) );
 }
 
-bool    DlgGivenAddr( char *title, address *value )
+bool    DlgGivenAddr( const char *title, address *value )
 {
     char        new[EXPR_LEN];
 
@@ -191,7 +191,7 @@ bool DlgString( const char *title, char *buff )
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
 }
 
-bool DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th )
+bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
 {
     bool                ok;
     mad_type_info       mti;

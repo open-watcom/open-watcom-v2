@@ -68,7 +68,7 @@ extern void             DoPoints( type_kind );
 extern void             DoAssign( void );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand *);
-extern bool             DlgAnyExpr( char *, char *, unsigned );
+extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( char *);
 extern void             BreakOnExprSP( const char * );
