@@ -39,6 +39,7 @@
 #include "srcmgt.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgsrc.h"
 
 #include "clibext.h"
 

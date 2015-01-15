@@ -41,6 +41,7 @@
 #include "dbgscan.h"
 #include "madinter.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -75,8 +76,6 @@ extern void             SetUnderLine( a_window*, wnd_line_piece *);
 extern void             PushAddr( address );
 extern void             BreakOnExprSP( const char *comment );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
-
-extern void             *OpenSrcFile(cue_handle * );
 extern void             StepIntoFunction( const char * );
 extern void             BreakOnSelected( const char *item );
 extern void             GoHome(void);

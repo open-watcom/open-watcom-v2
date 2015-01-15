@@ -41,6 +41,7 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgsrc.h"
 
 
 extern a_window         *WndMain;
@@ -78,7 +79,6 @@ extern void             SetTargMenuItems( void );
 extern void             SetBrkMenuItems( void );
 extern void             SetIOMenuItems( void );
 extern void             DoInput( void );
-extern void             *OpenSrcFile( cue_handle * );
 extern bool             GUIIsDBCS( void );
 extern unsigned         EnvLkup( const char *name, char *buff, unsigned buff_len );
 extern void             PopErrBox( const char *buff );

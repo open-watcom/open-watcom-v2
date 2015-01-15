@@ -86,6 +86,7 @@ Done:
 #include "dbgscrn.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 enum {
     REQ_NONE,
@@ -97,7 +98,6 @@ enum {
 
 /* External Functions Used */
 extern brkp             *AddBreak( address addr );
-extern void             AddSourceSpec( const char *start, unsigned len );
 extern void             BrkClearAll( void );
 extern void             BrkDisableAll( void );
 extern void             BrkEnableAll( void );
@@ -108,7 +108,6 @@ extern void             DlgCmd( void );
 extern void             DoCmd(char*);
 extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern  void            FiniSource( void );
 extern brkp             *GetBPAt(int row);
 extern int              GetBPsCount( void );
 extern address          GetCodeDot();
@@ -116,10 +115,8 @@ extern address          GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, 
 extern unsigned         Go( bool );
 extern void             GoToReturn( void );
 extern bool             InsMemRef( mad_disasm_data *dd );
-extern void             InitSource( void );
 extern void             LoadNewProg( const char *cmd, const char *parms );
 extern address          ModFirstAddr( mod_handle mod );
-extern void             *OpenSrcFile( cue_handle *); 
 extern void             PerformTrace( void );
 extern void             ProcCall( void );
 extern void             ProcGo( void );

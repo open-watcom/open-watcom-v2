@@ -32,15 +32,12 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dlglist.h"
+#include "dbgsrc.h"
 
 #include "clibext.h"
 
 char_ring               *DLLList;
 
-extern void             InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase );
-extern void             DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase );
-extern void             FreeRing( char_ring *p );
-extern char_ring        **RingEnd( char_ring **owner );
 extern char             *GetLastImageName( void );
 extern void             RecordEvent( const char *p );
 extern void             GetBreakOnImageCmd( const char *, char *, bool );

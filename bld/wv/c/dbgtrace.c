@@ -40,6 +40,7 @@
 #include "dbgscan.h"
 #include "madinter.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 
 enum {
@@ -91,7 +92,6 @@ extern char             Opcode;
 extern char             SecondByte;
 
 
-extern void             *OpenSrcFile( cue_handle *ch );
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );

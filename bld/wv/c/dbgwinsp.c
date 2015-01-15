@@ -40,6 +40,7 @@
 #include "mad.h"
 #include "srcmgt.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 #include "clibext.h"
 
@@ -60,7 +61,6 @@ extern void             DupStack( void );
 extern a_window         *DoWndFileOpen( const char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,
                                     wnd_class class );
-extern void             *OpenSrcFile( cue_handle * );
 extern void             DoWndBinOpen( const char *title, handle );
 extern a_window         *DoWndModOpen( mod_handle handle );
 extern a_window         *DoWndGlobOpen( mod_handle handle );

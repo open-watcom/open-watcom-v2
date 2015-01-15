@@ -42,12 +42,12 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 extern bool             ScanSelectedExpr( const char * );
 extern void             BreakOnSelected( const char *item );
 
 extern a_window         *WndFileInspect( char *file, bool binary );
-extern void             *OpenSrcFile( cue_handle * );
 extern brkp             *FindBreakByLine( mod_handle, cue_fileid, unsigned );
 extern void             WndFuncInspect( mod_handle mod );
 extern void             *AddBreak( address );

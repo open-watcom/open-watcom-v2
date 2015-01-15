@@ -42,6 +42,7 @@
 #include "madinter.h"
 #include "dbgmad.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 #include "clibext.h"
 
@@ -53,12 +54,10 @@ extern void             WndUserAdd( char *, unsigned int );
 extern void             CallSet( void );
 extern void             ImplicitSet( void );
 extern void             LookSet( void );
-extern void             SourceSet( void );
 extern void             LevelSet( void );
 extern void             CallConf( void );
 extern void             ImplicitConf( void );
 extern void             LookConf( void );
-extern void             SourceConf( void );
 extern void             LevelConf( void );
 extern void             DoConfig( char *,const char *,void (**)(), void (**)() );
 extern void             ConfigLine( char * );

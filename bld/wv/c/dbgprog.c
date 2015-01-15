@@ -47,6 +47,7 @@
 #include "dbgutil.h"
 #include "filelcl.h"
 #include "filermt.h"
+#include "dbgsrc.h"
 
 #include "clibext.h"
 
@@ -106,12 +107,6 @@ extern mod_handle       LookupImageName( const char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
 extern bool             GetBPSymAddr( brkp *bp, address *addr );
 extern void             DbgUpdate( update_list );
-
-extern void             InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase );
-extern void             DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase );
-extern void             FreeRing( char_ring *p );
-extern char_ring        **RingEnd( char_ring **owner );
-
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)());
 static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
 const char              *RealFName( const char *name, open_access *loc );

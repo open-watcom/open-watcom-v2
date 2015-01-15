@@ -43,6 +43,8 @@
 #include "strutil.h"
 #include "filelcl.h"
 #include "filermt.h"
+#include "diptypes.h"
+#include "dbgsrc.h"
 
 #define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
 #define CHK_DRV_SEP(c,i)    ((c) != '\0' && (c) == (i)->drv_separator)
@@ -50,7 +52,6 @@
 #define CHECK_PATH_SEP(c,i) (CHK_DIR_SEP((c),i) || CHK_DRV_SEP((c),i))
 #define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != '\0' && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
 
-extern void             FreeRing( char_ring * );
 extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
 extern void             StartupErr( const char * );
 extern bool             HaveRemoteFiles( void );

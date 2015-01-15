@@ -45,6 +45,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 extern void             DoCmd(char*);
 extern bool             InsMemRef( mad_disasm_data *dd );
@@ -57,7 +58,6 @@ extern void             DlgCmd( void );
 extern address          GetCodeDot();
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
-extern void             *OpenSrcFile(cue_handle *);
 
 volatile bool           BrkPending;
 

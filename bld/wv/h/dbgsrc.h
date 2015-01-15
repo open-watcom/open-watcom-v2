@@ -24,23 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Source file access.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "guidlg.h"
-#include "dlglist.h"
-#include "diptypes.h"
-#include "dbgsrc.h"
-
-extern void             DbgUpdate( update_list );
-
-void DlgSource( void )
-{
-    DlgList( LIT( New_Source ), FiniSource, AddSourceSpec, NextSourceSpec, SourceName );
-    DbgUpdate( UP_NEW_SRC );
-}
+extern void         InitSource( void );
+extern void         FiniSource( void );
+extern void         FreeRing( char_ring *p );
+extern void         DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase );
+extern void         InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase );
+extern char_ring    **RingEnd( char_ring **owner );
+extern void         AddSourceSpec( const char *start, unsigned len );
+extern char         *SourceName( char_ring *src );
+extern char_ring    *NextSourceSpec( char_ring *curr );
+extern void         SourceSet( void );
+extern void         SourceConf( void );
+extern void         *OpenSrcFile( cue_handle *ch );

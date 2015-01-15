@@ -46,8 +46,6 @@
 #include "strutil.h"
 #include "filelcl.h"
 
-extern void FreeRing(char_ring *);
-
 file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
 

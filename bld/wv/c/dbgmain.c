@@ -40,6 +40,7 @@
 #include "dbgscan.h"
 #include "madinter.h"
 #include "dbgutil.h"
+#include "dbgsrc.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -65,7 +66,6 @@ extern void             FiniMemWindow( void );
 extern void             FiniMenus( void );
 extern void             FiniPaint( void );
 extern void             FiniScreen( void );
-extern void             FiniSource( void );
 extern void             FiniToolBar( void );
 extern void             FiniTrace( void );
 extern void             FiniTrap( void );
@@ -91,7 +91,6 @@ extern void             InitMemWindow( void );
 extern void             InitMenus( void );
 extern void             InitPaint( void );
 extern void             InitScreen( void );
-extern void             InitSource( void );
 extern void             InitToolBar( void );
 extern void             InitTrap( const char * );
 extern void             LangSetFini( void );
