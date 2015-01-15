@@ -30,7 +30,6 @@
 
 
 #include "sysdef.h"
-#include "bool.h"
 
 typedef int             handle;
 typedef error_idx       rc_erridx;

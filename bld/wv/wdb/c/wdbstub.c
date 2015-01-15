@@ -77,7 +77,6 @@ Done:
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
-#include "bool.h"
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"

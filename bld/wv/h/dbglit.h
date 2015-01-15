@@ -32,11 +32,10 @@
 
 #ifndef _DBGLIT_H_INCLUDED
 #define _DBGLIT_H_INCLUDED
-#include "dbgname.h"
 
-#include "bool.h"
-#include "litdef.h"
+#include "dbgname.h"
 #include "banner.h"
+#include "litdef.h"
 
 #ifdef JAPANESE
   #define pick(c,e,j) LITSTR( c, j )
