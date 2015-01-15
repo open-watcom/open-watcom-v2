@@ -50,7 +50,7 @@
 
 void DUIInitLiterals()
 {
-    #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_LITERAL_##x );
+    #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_DUI_LITERAL_##x );
     #include "wddui.str"
     #undef LITSTR
 }

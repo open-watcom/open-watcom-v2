@@ -472,9 +472,9 @@ litdefs2.tmp : wddui.str
         $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp
-        awk -v prefix=DBG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg.awk litdefs1.tmp >$^@
-        awk -v prefix=DBG_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg.awk litdefs2.tmp >>$^@
-        awk -v prefix=DBG_LITERAL_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg.awk litdefm.tmp >> $^@
+        awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg.awk litdefs1.tmp > $^@
+        awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg.awk litdefs2.tmp >> $^@
+        awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg.awk litdefm.tmp >>$^@
 
 !ifeq release 0
 wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN

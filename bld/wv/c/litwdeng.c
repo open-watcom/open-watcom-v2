@@ -49,7 +49,7 @@
 
 void InitEngineLiterals()
 {
-    #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_LITERAL_##x );
+    #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_ENG_LITERAL_##x );
     #include "wdeng.str"
     #undef LITSTR
 }

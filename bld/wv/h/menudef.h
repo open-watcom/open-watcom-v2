@@ -34,7 +34,7 @@
 #undef MENU_CASCADE
 #undef MENU_BAR
 #undef MENU_LIT
-#define MENU_LIT( x ) ((char*)DBG_LITERAL_##x )
+#define MENU_LIT( x ) ((char*)DBG_DUI_MENU_##x )
 #define _DO_ITEM( a, b, c, d ) { MENU_LIT( b ), a, GUI_ENABLED, MENU_LIT( HELP_##b ), c, d },
 #define MENU_ITEM( a, b ) _DO_ITEM( a, b, 0, 0 )
 #define MENU_CASCADE( a, b, c ) _DO_ITEM( a, b, ArraySize( c ), c )
