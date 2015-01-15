@@ -63,6 +63,6 @@ typedef enum
 #define LAST_CMDLN_DELIM   T_UNKNOWN
 
 typedef struct {
-    char *delims;
-    char *keywords;
+    const char  *delims;
+    const char  *keywords;
 } token_table;

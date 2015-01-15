@@ -64,7 +64,7 @@ extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
 extern gui_colour_set   *GetWndColours( wnd_class class );
 extern bool             WndDlgTxt( const char * );
-extern a_window         *WndSrchOpen( char * );
+extern a_window         *WndSrchOpen( const char * );
 extern void             *GetWndFont( a_window * );
 extern bool             AsmOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern bool             FileOpenGadget( a_window *, wnd_line_piece *, mod_handle );
@@ -239,8 +239,9 @@ void ProcSearchAll( void )
 {
     char        *expr;
 
-    if( !DlgSearchAll( &expr, SrchHistory ) ) return;
-    WndSrchOpen( expr );
+    if( DlgSearchAll( &expr, SrchHistory ) ) {
+        WndSrchOpen( expr );
+    }
 }
 
 void ProcWndPopUp( a_window *wnd )

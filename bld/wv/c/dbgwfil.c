@@ -43,7 +43,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 
-extern bool             ScanSelectedExpr( char * );
+extern bool             ScanSelectedExpr( const char * );
 extern void             BreakOnSelected( const char *item );
 
 extern a_window         *WndFileInspect( char *file, bool binary );
@@ -67,7 +67,7 @@ extern void             AsmJoinSrc( a_window *, a_window * );
 extern void             AsmFreeSrc( a_window * );
 extern void             AsmNewSrcNotify( a_window *, mod_handle, bool track );
 extern void             SkipToAddr( address );
-extern void             StepIntoFunction( char * );
+extern void             StepIntoFunction( const char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern bool             DbgWndSearch( a_window *, bool, int );
 extern bool             DlgCodeAddr( const char *title, address *value );

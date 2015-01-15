@@ -348,7 +348,7 @@ wnd_info SrchInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_SYMBOLS_LOST+UP_OPEN_CHANGE,
+    UP_SYMBOLS_LOST + UP_OPEN_CHANGE,
     DefPopUp( SrchMenu ),
 };
 
@@ -375,7 +375,7 @@ static a_window *DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cooki
     return( DbgWndCreate( LIT( WindowSearch ), &SrchInfo, WND_ALL, srch, &SrchIcon ) );
 }
 
-a_window *WndSrchOpen( char *expr )
+a_window *WndSrchOpen( const char *expr )
 {
     return( DoWndSrchOpen( expr, GlobalModWalker, NULL ) );
 }

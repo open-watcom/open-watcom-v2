@@ -1,4 +1,3 @@
-
 /****************************************************************************
 *
 *                            Open Watcom Project
@@ -649,7 +648,7 @@ static bool ScanId( void )
 }
 
 
-static bool ScanKeyword( char *table )
+static bool ScanKeyword( const char *table )
 {
     int   namelen;
     int   keylen;
@@ -681,7 +680,7 @@ const char *ReScan( const char *point )
 }
 
 
-void ScanExpr( void *tbl )
+void ScanExpr( token_table *tbl )
 {
     ExprTokens = tbl;
     ReScan( TokenStart );
@@ -759,7 +758,9 @@ void Scan( void )
         }
         TokenStart = ScanPtr;
         if( ExprTokens != NULL ) {
-            if( ScanExprDelim( ExprTokens->delims ) )     return;
+            if( ScanExprDelim( ExprTokens->delims ) ) {
+                return;
+            }
         }
         if( ScanCmdLnDelim() )      return;   /*sf do this if the others fail */
         if( ScanRealNum() )         return;

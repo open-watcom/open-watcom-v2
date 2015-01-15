@@ -77,7 +77,7 @@ extern void             BreakOnExprSP( const char *comment );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 
 extern void             *OpenSrcFile(cue_handle * );
-extern void             StepIntoFunction( char * );
+extern void             StepIntoFunction( const char * );
 extern void             BreakOnSelected( const char *item );
 extern void             GoHome(void);
 extern address          ModFirstAddr( mod_handle mod );

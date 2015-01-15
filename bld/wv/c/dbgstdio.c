@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "dbgscan.h"

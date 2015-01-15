@@ -811,7 +811,7 @@ bool IsCmdLoad( const char *cmd )
     return( IsCmdEqualCmd( cmd, WDB_CMD_LOAD, WDB_SHORT_CMD_LOAD ) || IsCmdEqualCmd( cmd, WDB_CMD_FILE, WDB_SHORT_CMD_FILE ) );
 }
 
-bool ProcessCmdLoad( char *param )
+bool ProcessCmdLoad( const char *param )
 {
     char    *program_name = GetFirstQuotedPart( param );
     char    *program_param = GetSecondQuotedPart( param );

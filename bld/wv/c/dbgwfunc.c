@@ -311,7 +311,7 @@ extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
 {
     func_window *func;
     wnd_class   class;
-    const char  *name;
+    const char  *title;
 
     func = WndMustAlloc( sizeof( func_window ) );
     func->mod = mod;
@@ -323,11 +323,11 @@ extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
         func->is_global = FALSE;
     }
     if( is_global ) {
-        name = LIT( WindowGlobal_Functions );
+        title = LIT( WindowGlobal_Functions );
     } else {
-        name = LIT( WindowFunctions );
+        title = LIT( WindowFunctions );
     }
-    return( DbgWndCreate( name, &FuncInfo, class, func, &FuncIcon ) );
+    return( DbgWndCreate( title, &FuncInfo, class, func, &FuncIcon ) );
 }
 
 extern WNDOPEN WndFuncOpen;

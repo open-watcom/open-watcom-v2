@@ -1036,8 +1036,7 @@ extern  a_window        *WndMemOpen()
 }
 
 
-extern WNDOPEN WndStkOpen;
-extern  a_window        *WndStkOpen()
+a_window        *WndStkOpen( void )
 {
     a_window    *wnd;
     mem_window  *mem;
@@ -1053,7 +1052,7 @@ extern  a_window        *WndStkOpen()
 }
 
 
-extern  a_window        *DoWndBinOpen( const char *title, handle filehndl )
+a_window        *DoWndBinOpen( const char *title, handle filehndl )
 {
     mem_window  *mem;
     a_window    *wnd;

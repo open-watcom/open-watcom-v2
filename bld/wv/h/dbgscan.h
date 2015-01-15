@@ -50,7 +50,7 @@ extern void         FlushEOC( void );
 extern const char   *NamePos( void );
 extern unsigned     NameLen( void );
 extern const char   *ReScan( const char *point );
-extern void         ScanExpr( void *tbl );
+extern void         ScanExpr( token_table *tbl );
 extern void         AddActualChar( char data );
 extern void         AddChar( void );
 extern void         AddCEscapeChar( void );

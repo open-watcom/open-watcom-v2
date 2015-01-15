@@ -64,7 +64,7 @@ extern void BreakOnSelected( const char *item )
 }
 
 
-bool ScanSelectedExpr( char *expr )
+bool ScanSelectedExpr( const char *expr )
 {
     const char  *old;
     bool        rc;

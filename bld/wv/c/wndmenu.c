@@ -480,8 +480,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
 }
 
 
-extern gui_menu_struct *AddMenuAccel( const char *key, const char *cmd,
-                                      wnd_class class, bool *is_main )
+gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class class, bool *is_main )
 {
     const char          *old;
     gui_menu_struct     *menu,*parent;

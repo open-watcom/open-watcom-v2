@@ -61,7 +61,7 @@ extern a_window         *DoWndFileOpen( const char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,
                                     wnd_class class );
 extern void             *OpenSrcFile( cue_handle * );
-extern void             DoWndBinOpen( const char *, handle );
+extern void             DoWndBinOpen( const char *title, handle );
 extern a_window         *DoWndModOpen( mod_handle handle );
 extern a_window         *DoWndGlobOpen( mod_handle handle );
 extern void             MemSetLength( a_window *wnd, unsigned size );
