@@ -258,7 +258,7 @@ rc_inc_dir_nt  = -I"$(rdir)/win"
 rc_inc_dir_os2 = -I"$(rdir)/os2"
 rc_inc_dir_win = -I"$(rdir)/win"
 
-rc_inc_dirs = -I. $(rc_inc_dir_$(host_os)) -I"$(rdir)"
+rc_inc_dirs = -I. $(rc_inc_dir_$(host_os)) -I"$(rdir)" -I"$(rdir)/strings"
 rc_inc_dirs += -I"$(hdir)" $(aui_rc_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
 
 !ifeq sys_windowed 1

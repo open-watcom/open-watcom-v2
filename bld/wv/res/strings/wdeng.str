@@ -736,3 +736,17 @@ pick( ERR_BAD_PARSE_VERSION,
        "jIncorrect version of parse file" )
 
 #include "mad.str"
+
+// these are DOS error messages #1 thru 14
+
+#define pickdoserr(id,text) pick( ERR_DOS_##id, text, "j" text )
+#include "_doserr.h"
+#undef pickdoserr
+
+pick( Unable_to_alloc_DOS_mem,
+       "Unable to allocate DOS memory",
+       "jUnable to allocate DOS memory" )
+
+pick( Unable_to_get_rm_sel,
+       "Unable to allocate real mode selector",
+       "jUnable to allocate real mode selector" )
