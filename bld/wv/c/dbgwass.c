@@ -47,7 +47,7 @@ extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );
-extern void             WndInspectExprSP( char *item );
+extern void             WndInspectExprSP( const char *item );
 extern int              AddrComp(address ,address );
 extern void             InitCache(address,unsigned);
 extern void             FiniCache(void);
@@ -71,7 +71,7 @@ extern void             FileBreakGadget( a_window *,wnd_line_piece *line, bool c
 extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern bool             DlgModName( const char *title, mod_handle *mod );
-extern void             WndVarInspect( char * );
+extern void             WndVarInspect( const char * );
 extern void             SetUnderLine( a_window*, wnd_line_piece *);
 extern void             PushAddr( address );
 extern void             BreakOnExprSP( const char *comment );

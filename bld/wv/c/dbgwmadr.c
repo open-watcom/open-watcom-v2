@@ -41,14 +41,14 @@
 
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
-extern void             WndInspect( char *item );
+extern void             WndInspect( const char *item );
 extern char             *GetCmdName( int index );
 extern void             PushAddr( address val );
 extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, int id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
-extern void             WndInspectExprSP( char *item );
+extern void             WndInspectExprSP( const char *item );
 extern void             RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mach );
 extern void             RegNewValue( const mad_reg_info *, item_mach const *, mad_type_handle  );
 

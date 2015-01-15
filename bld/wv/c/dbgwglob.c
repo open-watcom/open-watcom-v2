@@ -43,7 +43,7 @@ extern void             *AddBreak(address );
 extern void             RemoveBreak(address );
 extern void             GoToAddr( address addr );
 extern int              HasLinInfo( address );
-extern void             WndVarInspect( char *);
+extern void             WndVarInspect( const char *);
 extern void             WndAddrInspect(address);
 
 

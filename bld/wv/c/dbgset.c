@@ -59,7 +59,7 @@ extern void             CallConf( void );
 extern void             ImplicitConf( void );
 extern void             LookConf( void );
 extern void             LevelConf( void );
-extern void             DoConfig( char *,const char *,void (**)(), void (**)() );
+extern void             DoConfig( char *,const char *,void (**)(void), void (**)(void) );
 extern void             ConfigLine( char * );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );

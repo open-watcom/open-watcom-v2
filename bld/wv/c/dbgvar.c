@@ -70,7 +70,7 @@ extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern void             WndVarNewWindow( char *);
-extern void             WndVarInspect( char *);
+extern void             WndVarInspect( const char *);
 extern void             BreakOnExprSP( const char * );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
@@ -83,7 +83,6 @@ extern void             PushSymHandle( sym_handle * );
 extern void             SetUpExpr( unsigned addr_depth );
 extern bool             UnMapAddress( mappable_addr *loc, image_entry *image );
 extern remap_return     ReMapImageAddress( mappable_addr *loc, image_entry *image );
-extern void             WndInspectExprSP( char *item );
 extern void             CollapseMachState( void );
 extern char             *GetCmdName( int );
 extern void             RecordEvent( const char * );
@@ -1937,12 +1936,8 @@ void VarBreakOnWrite( var_info *i, var_node *v )
 
 void VarAddWatch( var_info *i, var_node *v )
 {
-    char                *name;
-
     VarBuildName( i, v, FALSE );
-    name = DupStr( TxtBuff );
-    WndVarInspect( name );
-    DbgFree( name );
+    WndVarInspect( TxtBuff );
 }
 
 void VarAddNodeToScope( var_info *i, var_node *v, const char *buff )

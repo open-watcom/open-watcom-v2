@@ -1757,7 +1757,7 @@ extern void ModChangeOptions( void )
 {
     // mod window options changed
 }
-extern void WndVarInspect(char*buff)
+extern void WndVarInspect( const char *buff )
 {
 }
 extern void *WndAsmInspect( address addr )

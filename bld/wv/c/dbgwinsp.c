@@ -50,7 +50,7 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
 extern void             NormalExpr( void );
-extern bool             WndVarAdd( a_window *, char *, unsigned, bool );
+extern bool             WndVarAdd( a_window *, const char *, unsigned, bool );
 extern WNDOPEN          WndVarOpen;
 extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
@@ -341,7 +341,7 @@ extern  void    WndModListInspect( mod_handle mod )
     }
 }
 
-static a_window *WndVarNewWindow( char *item )
+static a_window *WndVarNewWindow( const char *item )
 {
     a_window    *wnd;
 
@@ -357,7 +357,7 @@ static a_window *WndVarNewWindow( char *item )
 }
 
 
-static bool WndDoInspect( char *item, address *paddr, inspect_type t )
+static bool WndDoInspect( const char *item, address *paddr, inspect_type t )
 {
     switch( t ) {
     case INSP_CODE:
@@ -373,14 +373,14 @@ static bool WndDoInspect( char *item, address *paddr, inspect_type t )
     return( FALSE );
 }
 
-extern  void    WndInspectExprSP( char *item )
+extern  void    WndInspectExprSP( const char *item )
 {
     address     addr;
 
     WndDoInspect( item, &addr, WndGetExprSPInspectType( &addr ) );
 }
 
-extern  void    WndInspect( char *item )
+extern  void    WndInspect( const char *item )
 {
 /* #####  E1052: Expression has void type */
 /* #####  E1081: Expression must be scalar type */
@@ -401,7 +401,7 @@ a_window *WndClassInspect( wnd_class class )
 }
 
 
-extern void WndVarInspect( char *buff )
+extern void WndVarInspect( const char *buff )
 {
     a_window    *wnd;
 
