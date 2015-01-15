@@ -444,7 +444,7 @@ void FlushEOC( void )
 }
 
 
-static bool ScanExprDelim( char *table )
+static bool ScanExprDelim( const char *table )
 {
     const char  *ptr;
 
@@ -596,7 +596,8 @@ static bool ScanNumber( void )
 
 const char *NamePos( void )
 {
-    if( *TokenStart == NAME_ESC ) return( TokenStart + 1 );
+    if( *TokenStart == NAME_ESC )
+        return( TokenStart + 1 );
     return( TokenStart );
 }
 
@@ -674,7 +675,8 @@ const char *ReScan( const char *point )
 
     old = TokenStart;
     ScanPtr = point;
-    if( point != NULL ) Scan();
+    if( point != NULL )
+        Scan();
     return( old );
 }
 

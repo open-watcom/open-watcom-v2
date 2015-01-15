@@ -352,7 +352,7 @@ wnd_info SrchInfo = {
     DefPopUp( SrchMenu ),
 };
 
-static a_window *DoWndSrchOpen( char *expr, SRCH_WALKER *walk, void *cookie )
+static a_window *DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie )
 {
     srch_window *srch;
     void        *rx;

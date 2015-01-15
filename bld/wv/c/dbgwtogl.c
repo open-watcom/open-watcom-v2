@@ -40,7 +40,7 @@
 
 
 gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
-                                   gui_menu_struct *old, unsigned num_old, int id )
+                                   const gui_menu_struct *old, unsigned num_old, int id )
 {
     gui_menu_struct     *popup;
     unsigned            num_toggles;

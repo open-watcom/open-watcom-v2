@@ -69,7 +69,7 @@ extern a_window         *WndFindActive( void );
 extern void             WndRestoreToFront( a_window* );
 extern a_window         *WndFindClass( a_window*, wnd_class );
 extern wnd_class        ReqWndName( void );
-extern gui_menu_struct  *AddMenuAccel( char *, char *, wnd_class, bool * );
+extern gui_menu_struct  *AddMenuAccel( const char *, const char *, wnd_class, bool * );
 extern void             VarChangeOptions( void );
 extern void             AsmChangeOptions( void );
 extern void             FuncChangeOptions( void );
@@ -77,7 +77,7 @@ extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             WndDlgTxt( const char * );
-extern void             WndMenuSetHotKey( gui_menu_struct *, bool, char *);
+extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
 extern char             *GetCmdName( int );
 extern void             DbgUpdate( update_list );
 

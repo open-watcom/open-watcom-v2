@@ -117,7 +117,7 @@ extern unsigned         Go( bool );
 extern void             GoToReturn( void );
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             InitSource( void );
-extern void             LoadNewProg( char *cmd, char *parms );
+extern void             LoadNewProg( const char *cmd, const char *parms );
 extern address          ModFirstAddr( mod_handle mod );
 extern void             *OpenSrcFile( cue_handle *); 
 extern void             PerformTrace( void );

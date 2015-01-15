@@ -235,7 +235,7 @@ OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
  * Invoke -- invoke a file
  */
 
-static void DoInvoke( handle hndl, char *name, char_ring *parmlist )
+static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
 {
     invokes     *inv;
 
@@ -327,7 +327,8 @@ void ProcInvoke( void )
     char_ring   *path;
     size_t      len;
 
-    if( !ScanItem( TRUE, &fstart, &flen ) ) Error( ERR_LOC, LIT( ERR_WANT_FILENAME ) );
+    if( !ScanItem( TRUE, &fstart, &flen ) )
+        Error( ERR_LOC, LIT( ERR_WANT_FILENAME ) );
     parmlist = NULL;
     owner = &parmlist;
     while( !ScanEOC() ) {

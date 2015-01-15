@@ -41,7 +41,7 @@
 #define CTL_LIST_BROWSE 106
 
 #ifndef RC
-    extern void DlgList( char *title, void (*clear)(void), void (*add)(const char *,unsigned),
+    extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
                                char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
     typedef struct dlg_list {
         void (*clear)(void);

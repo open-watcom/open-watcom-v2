@@ -41,7 +41,7 @@ extern unsigned         GetProgName( char *where, unsigned len );
 extern unsigned         GetProgArgs( char *where, unsigned len );
 extern void             DoInput( void );
 
-extern void             LoadNewProg( char *cmd, char *parms );
+extern void             LoadNewProg( const char *cmd, const char *parms );
 extern bool             ExeBrowse( void );
 
 static char             prog[UTIL_LEN];

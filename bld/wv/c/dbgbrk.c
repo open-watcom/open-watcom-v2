@@ -1253,7 +1253,7 @@ void SetBPAutoDestruct( brkp *bp, int autodes )
     bp->status.b.autodestruct = autodes;
 }
 
-void SetBPCondition( brkp *bp, char *condition )
+void SetBPCondition( brkp *bp, const char *condition )
 {
     if( bp->condition != NULL ) {
         _Free( bp->condition );

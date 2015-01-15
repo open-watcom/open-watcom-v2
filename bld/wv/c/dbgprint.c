@@ -958,10 +958,13 @@ void ChkPrintList( void )
 
     first = TRUE;
     while( !ScanEOC() ) {
-        if( ScanQuote( &start, &len ) ) first = TRUE;
-        if( !first && CurrToken == T_COMMA ) Scan();
+        if( ScanQuote( &start, &len ) )
+            first = TRUE;
+        if( !first && CurrToken == T_COMMA )
+            Scan();
         ChkExpr();
-        if( CurrToken != T_COMMA ) ReqEOC();
+        if( CurrToken != T_COMMA )
+            ReqEOC();
         first = FALSE;
     }
 }

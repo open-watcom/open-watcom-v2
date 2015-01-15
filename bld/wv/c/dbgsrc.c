@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
 #include "dbglit.h"
@@ -87,20 +88,16 @@ void DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase 
     char_ring *p;
 
     if( len != 0 ) {
-        for( ;; ) {
-            p = *owner;
-            if( p == NULL ) break;
+        for( ; (p = *owner) != NULL; owner = &p->next ) {
             if( ucase && strnicmp( p->name, start, len ) == 0
               || !ucase && strncmp( p->name, start, len ) == 0 ) {
                 *owner = p->next;
                 _Free( p );
                 break;
             }
-            owner = &p->next;
         }
     }
 }
-
 
 void InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase )
 {

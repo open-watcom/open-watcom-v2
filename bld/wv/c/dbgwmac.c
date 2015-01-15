@@ -216,8 +216,7 @@ bool MacKeyHit( a_window *wnd, unsigned key )
             wndmac->creating = FALSE;
             new = DlgPickWithRtn( LIT( Enter_Window ), WndDisplayNames, WND_ALL, WndGetName, WND_CURRENT );
             if( new == -1 ) return( TRUE );
-            curr = MacAddDel( key, new, AllocCmdList( LIT( Quest_Marks ),
-                             strlen( LIT( Quest_Marks ) ) ) );
+            curr = MacAddDel( key, new, AllocCmdList( LIT( Quest_Marks ), strlen( LIT( Quest_Marks ) ) ) );
             row = 0;
             for( mac = WndMacroList; mac != curr; mac = mac->link ) {
                 ++row;

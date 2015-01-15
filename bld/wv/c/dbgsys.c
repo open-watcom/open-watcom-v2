@@ -72,7 +72,7 @@ void DoSystem( const char *cmd, size_t len, int loc )
     }
     DUISysEnd( rc >= 0 );
     if( rc < 0 ) {
-        Error( ERR_NONE, LIT( ERR_SYS_FAIL ), StashErrCode( rc & 0xFFFF, OP_REMOTE ) );
+        Error( ERR_NONE, LIT( ERR_SYS_FAIL ), StashErrCode( rc & 0xFFFF, OP_LOCAL ) );
     }
 }
 

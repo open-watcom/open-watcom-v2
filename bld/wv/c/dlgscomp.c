@@ -67,7 +67,7 @@ extern char *DlgGetMatchString( gui_window *gui, int id, int *matchoff )
         }
     }
     *matchoff = match + 1 - TxtBuff;
-    return( DupStr( match+1 ) );
+    return( DupStr( match + 1 ) );
 }
 
 

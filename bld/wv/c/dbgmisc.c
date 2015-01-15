@@ -208,7 +208,7 @@ void GoToAddr( address addr )
 }
 
 
-void StepIntoFunction( char *func )
+void StepIntoFunction( const char *func )
 {
     const char  *old;
     address     stop;
@@ -462,8 +462,7 @@ static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
     char *p;
     char *p1;
 
-    p = buff;
-    p = CnvULongHex( thd->tid, p, buff_len );
+    p = CnvULongHex( thd->tid, buff, buff_len );
     *p++ = ' ';
     *p++ = ' ';
     switch( thd->state ) {
@@ -610,8 +609,8 @@ dtid_t GetNextTID( void )
 }
 
 
-void NameThread( dtid_t tid, char *name )
-/***************************************/
+void NameThread( dtid_t tid, const char *name )
+/*********************************************/
 {
     thread_state        **owner, *curr, *new;
 

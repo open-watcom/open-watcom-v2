@@ -143,10 +143,10 @@ void ConfigLine( char *conf )
 
 void DoConfig( char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
 {
-    int num;
-    const char *start;
-    char *ptr;
-    unsigned i;
+    int         num;
+    const char  *start;
+    char        *ptr;
+    unsigned    i;
 
     ptr = StrCopy( cmd, NameBuff );
     *ptr++ = ' ';

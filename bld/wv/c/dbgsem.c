@@ -1148,8 +1148,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
                     CurrGet.li.mod = ILL_MOD; /* cause lookup to fail */
                 }
             } else {
-                CurrGet.li.mod = LookupImageName( CurrGet.li.name.start,
-                                    CurrGet.li.name.len );
+                CurrGet.li.mod = LookupImageName( CurrGet.li.name.start, CurrGet.li.name.len );
                 if( CurrGet.li.mod == NO_MOD ) {
                     #define ANY_IMAGE_NAME      "_anyimage"
                     #define ANY_IMAGE_NAME_LEN  (sizeof(ANY_IMAGE_NAME)-1)
@@ -1169,8 +1168,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
             ReScan( save_scan );
         }
         if( CurrGet.li.name.start != NULL ) {
-            CurrGet.li.mod = LookupModName( CurrGet.li.mod,
-                        CurrGet.li.name.start, CurrGet.li.name.len );
+            CurrGet.li.mod = LookupModName( CurrGet.li.mod, CurrGet.li.name.start, CurrGet.li.name.len );
             if( CurrGet.li.mod == NO_MOD ) {
                 Error( ERR_NONE, LIT( ERR_NO_MODULE ), CurrGet.li.name.start,
                                       CurrGet.li.name.len );

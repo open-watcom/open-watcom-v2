@@ -83,7 +83,7 @@ static void             __far *RMVTable[ NB_VECTORS ];
 static void             __far *PMVTable[ NB_VECTORS ];
 
 extern void             StoreDTs( DTreg *, unsigned *, DTreg * );
-extern int              _fork( char *, size_t );
+extern int              _fork( const char *, size_t );
 extern void __far       *GetPModeAddr( unsigned * );
 extern int              EnterPMode( void __far *, unsigned );
 extern int              GetRawAddrs( void __far **, void __far ** );

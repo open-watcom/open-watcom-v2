@@ -131,11 +131,11 @@ void ModListAddModules( module_list *list, mod_handle mod, bool any )
 }
 
 
-void    ModListInit( module_list *list, char *prefix )
+void    ModListInit( module_list *list, const char *prefix )
 {
     list->sort = NULL;
     list->prefix = NULL;
-    if( prefix ) {
+    if( prefix != NULL ) {
         list->prefix = DupStr( prefix );
         list->pref_len = strlen( prefix );
     }

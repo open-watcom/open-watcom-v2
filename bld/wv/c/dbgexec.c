@@ -87,11 +87,10 @@ extern unsigned         TraceCheck( unsigned );
 extern void             TraceStop( bool );
 extern void             ReMapPoints( image_entry *);
 extern void             DbgUpdate( update_list );
-extern void             NameThread( dtid_t tid, char *name );
+extern void             NameThread( dtid_t tid, const char *name );
 extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             DlgScanDataAddr( const char *str, address *value );
 extern bool             DlgScanLong( const char *str, long *value );
-
 extern void             ProcACmd( void );
 extern bool             SymUserModLoad( char *fname, address *loadaddr );
 extern bool             SymUserModUnload( char *fname );
@@ -173,17 +172,17 @@ bool SetMsgText( char *message, unsigned *conditions )
     cmd_list    *cmds;
 
     if( memcmp( message, DEBUGGER_THREADID_COMMAND,
-                sizeof( DEBUGGER_THREADID_COMMAND )-1 ) == 0 ) {
-        message += sizeof( DEBUGGER_THREADID_COMMAND )-1;
+                sizeof( DEBUGGER_THREADID_COMMAND ) - 1 ) == 0 ) {
+        message += sizeof( DEBUGGER_THREADID_COMMAND ) - 1;
         equal = strchr( message, '=' );
         if( equal == NULL ) return( TRUE );
         *equal = '\0';
         CheckForNewThreads( FALSE );
-        NoCRLF( equal+1 );
-        NameThread( strtoul( message, NULL, 16 ), equal+1 );
+        NoCRLF( equal + 1 );
+        NameThread( strtoul( message, NULL, 16 ), equal + 1 );
         return( FALSE );
     } else if( memcmp( message, DEBUGGER_SETTRUE_COMMAND,
-                sizeof( DEBUGGER_SETTRUE_COMMAND )-1 ) == 0 ) {
+                sizeof( DEBUGGER_SETTRUE_COMMAND ) - 1 ) == 0 ) {
         unsigned old = NewCurrRadix( 16 );
         NoCRLF( message );
         if( DlgScanDataAddr( message + sizeof( DEBUGGER_SETTRUE_COMMAND ) - 1, &addr ) ) {
@@ -192,8 +191,8 @@ bool SetMsgText( char *message, unsigned *conditions )
         NewCurrRadix( old );
         return( FALSE );
     } else if( memcmp( message, DEBUGGER_EXECUTE_COMMAND,
-                sizeof( DEBUGGER_EXECUTE_COMMAND )-1 ) == 0 ) {
-        message += sizeof( DEBUGGER_EXECUTE_COMMAND )-1;
+                sizeof( DEBUGGER_EXECUTE_COMMAND ) - 1 ) == 0 ) {
+        message += sizeof( DEBUGGER_EXECUTE_COMMAND ) - 1;
         NoCRLF( message );
         if( InCall == 0 ) {
             cmds = AllocCmdList( "go/keep", strlen( "go/keep" ) );
@@ -208,14 +207,14 @@ bool SetMsgText( char *message, unsigned *conditions )
         *conditions |= COND_STOP;
         return( FALSE );
     } else if( memcmp( message, DEBUGGER_MESSAGE_COMMAND,
-                sizeof( DEBUGGER_MESSAGE_COMMAND )-1 ) == 0 ) {
-        message += sizeof( DEBUGGER_MESSAGE_COMMAND )-1;
+                sizeof( DEBUGGER_MESSAGE_COMMAND ) - 1 ) == 0 ) {
+        message += sizeof( DEBUGGER_MESSAGE_COMMAND ) - 1;
         NoCRLF( message );
         AddMessageText( message );
         return( FALSE );
     } else if( memcmp( message, DEBUGGER_LOOKUP_COMMAND,
-                sizeof( DEBUGGER_LOOKUP_COMMAND )-1 ) == 0 ) {
-        message += sizeof( DEBUGGER_LOOKUP_COMMAND )-1;
+                sizeof( DEBUGGER_LOOKUP_COMMAND ) - 1 ) == 0 ) {
+        message += sizeof( DEBUGGER_LOOKUP_COMMAND ) - 1;
         comma1 = strchr( message, ',' );
         if( comma1 == NULL ) return( TRUE );
         *comma1++ = '\0';
@@ -232,14 +231,14 @@ bool SetMsgText( char *message, unsigned *conditions )
         CnvNearestAddr( addr, TxtBuff, TXT_LEN );
         sym_len = strlen( TxtBuff ) + 1;
         if( sym_len > buff_len ) {
-            TxtBuff[buff_len-1] = '\0';
+            TxtBuff[buff_len - 1] = '\0';
             sym_len = buff_len;
         }
         ProgPoke( buff_addr, TxtBuff, sym_len );
         return( FALSE );
     } else if( memcmp( message, DEBUGGER_LOADMODULE_COMMAND,
-                sizeof( DEBUGGER_LOADMODULE_COMMAND )-1 ) == 0 ) {
-        message += sizeof( DEBUGGER_LOADMODULE_COMMAND )-1;
+                sizeof( DEBUGGER_LOADMODULE_COMMAND ) - 1 ) == 0 ) {
+        message += sizeof( DEBUGGER_LOADMODULE_COMMAND ) - 1;
         comma1 = strchr( message, ',' );
         if( comma1 == NULL )
             return( TRUE );
@@ -250,14 +249,14 @@ bool SetMsgText( char *message, unsigned *conditions )
         SymUserModLoad( comma1, &addr );
         return( FALSE );
     } else if( memcmp( message, DEBUGGER_UNLOADMODULE_COMMAND,
-                sizeof( DEBUGGER_UNLOADMODULE_COMMAND )-1 ) == 0 ) {
-        message += sizeof( DEBUGGER_UNLOADMODULE_COMMAND )-1;
+                sizeof( DEBUGGER_UNLOADMODULE_COMMAND ) - 1 ) == 0 ) {
+        message += sizeof( DEBUGGER_UNLOADMODULE_COMMAND ) - 1;
         NoCRLF( message );
         SymUserModUnload( message );
         return( FALSE );
     } else if( memcmp( message, DEBUGGER_BREAKRETURN_COMMAND,
-                sizeof( DEBUGGER_BREAKRETURN_COMMAND )-1 ) == 0 ) {
-        message += sizeof( DEBUGGER_BREAKRETURN_COMMAND )-1;
+                sizeof( DEBUGGER_BREAKRETURN_COMMAND ) - 1 ) == 0 ) {
+        message += sizeof( DEBUGGER_BREAKRETURN_COMMAND ) - 1;
         NoCRLF( message );
         if( !DlgScanLong( message, &num_returns ) )
             return( TRUE );

@@ -47,7 +47,6 @@ extern unsigned         ReqExpr();
 extern unsigned         OptExpr();
 extern void             WndUserAdd(char *,unsigned int );
 extern void             WndDlgTxt(const char *);
-extern void             WndMenuSetHotKey( gui_menu_struct *, bool, char *);
 extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
 extern void             SymCompFini();
 extern char             *GetCmdName( int );
