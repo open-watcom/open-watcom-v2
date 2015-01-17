@@ -38,7 +38,7 @@
 
 void    WndNoMemory()
 {
-    Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_WINDOW ) );
+    Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
 }
 
 

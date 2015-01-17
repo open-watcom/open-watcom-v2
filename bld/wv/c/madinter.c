@@ -128,7 +128,7 @@ unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *
 unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
 {
     static  char ** strings[] = {
-        #define pick( e, es, js ) LITREF( e ),
+        #define pick( e, es, js ) LITREF_ENG( e ),
         #include "mad.str"
         #undef pick
     };
@@ -213,7 +213,7 @@ system_config   *DIGCLIENT MADCliSystemConfig( void )
 void InitMADInfo( void )
 {
     if( MADInit() != MS_OK ) {
-        StartupErr( LIT( STARTUP_MAD_Not_Init ) );
+        StartupErr( LIT_ENG( STARTUP_MAD_Not_Init ) );
     }
 }
 
@@ -244,7 +244,7 @@ void ReportMADFailure( mad_status ms )
 
     if( SysConfig.mad == MAD_NIL ) {
         /* we're in deep do do */
-        StartupErr( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
+        StartupErr( LIT_ENG( LMS_RECURSIVE_MAD_FAILURE ) );
     }
     old = SysConfig.mad;
     MADNameFile( old, buff, sizeof( buff ) );
@@ -254,27 +254,27 @@ void ReportMADFailure( mad_status ms )
     _SwitchOn( SW_ERROR_RETURNS );
     switch( ms & ~MS_ERR ) {
     case MS_UNREGISTERED_MAD:
-        Error( ERR_NONE, LIT( LMS_UNREGISTERED_MAD ), old );
+        Error( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), old );
         break;
     case MS_INVALID_MAD_VERSION:
-        Error( ERR_NONE, LIT( LMS_INVALID_MAD_VERSION ), buff );
+        Error( ERR_NONE, LIT_ENG( LMS_INVALID_MAD_VERSION ), buff );
         break;
     case MS_INVALID_STATE:
         Error( ERR_INTERNAL, "MAD state" );
         break;
     case MS_FOPEN_FAILED:
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), buff );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), buff );
         break;
     case MS_FREAD_FAILED:
     case MS_FSEEK_FAILED:
-        Error( ERR_NONE, LIT( LMS_FREAD_FAILED ), buff );
+        Error( ERR_NONE, LIT_ENG( LMS_FREAD_FAILED ), buff );
         break;
     case MS_NO_MEM:
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         break;
     case MS_INVALID_MAD:
     default:
-        Error( ERR_NONE, LIT( LMS_INVALID_MAD ), buff );
+        Error( ERR_NONE, LIT_ENG( LMS_INVALID_MAD ), buff );
         break;
     }
     _SwitchOff( SW_ERROR_RETURNS );

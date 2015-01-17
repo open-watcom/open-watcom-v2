@@ -131,7 +131,7 @@ static void DoWndDumpFile( const char *name, a_window *wnd )
         return;
     file = FileOpen( name, OP_WRITE | OP_CREATE | OP_TRUNC );
     if( file == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), name );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), name );
     }
     DoWndDump( wnd, WriteFile, file );
     FileClose( file );

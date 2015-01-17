@@ -72,7 +72,7 @@ void DoSystem( const char *cmd, size_t len, int loc )
     }
     DUISysEnd( rc >= 0 );
     if( rc < 0 ) {
-        Error( ERR_NONE, LIT( ERR_SYS_FAIL ), StashErrCode( rc & 0xFFFF, OP_LOCAL ) );
+        Error( ERR_NONE, LIT_ENG( ERR_SYS_FAIL ), StashErrCode( rc & 0xFFFF, OP_LOCAL ) );
     }
 }
 
@@ -88,7 +88,7 @@ void ProcSystem()
         Scan();
         loc = ScanCmd( SystemOps );
         if( loc == 0 ) {
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_SYSTEM ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_SYSTEM ) );
         }
         if( loc == 2 ) loc = -1;
     }

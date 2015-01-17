@@ -667,7 +667,7 @@ void PathInit( void )
   #endif
     _Alloc( buff, size );   /* allocate enough room for a very long PATH */
     if( buff == NULL ) {
-        StartupErr( LIT( ERR_NO_MEMORY ) );
+        StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
     }
     if( DUIEnvLkup( "PATH", buff, size ) != 0 ) {
         EnvParse( &LclPath, buff );

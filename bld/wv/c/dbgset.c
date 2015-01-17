@@ -270,7 +270,7 @@ bool SwitchOnOff( void )
     unsigned which;
 
     which = ScanCmd( "ON\0OFf\0" );
-    if( which == 0 ) Error( ERR_LOC, LIT( ERR_WANT_ON_OFF ) );
+    if( which == 0 ) Error( ERR_LOC, LIT_ENG( ERR_WANT_ON_OFF ) );
     ReqEOC();
     return( which == 1 );
 }
@@ -285,7 +285,7 @@ void ShowSwitch( bool on )
 
 static void BadSet( void )
 {
-    Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
 }
 
 
@@ -424,7 +424,7 @@ void NewLang( const char *lang )
             return;
         }
         LangLoad( Language, strlen( Language ) );
-        Error( ERR_NONE, LIT( ERR_NO_LANG ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_LANG ) );
     }
     _Free( new_lang );
 }
@@ -690,7 +690,7 @@ static void ToggleWindowSwitches( window_toggle *toggle, int len,
         }
         if( settings == NULL || i == len ) {
             if( wt >= MWT_LAST || !OneToggle( wt ) ) {
-                Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             }
         }
     }

@@ -443,12 +443,12 @@ char *VarDisplayType( var_node *v, char *buff, unsigned buff_len )
         if( VarNodeExpr( v )[0] != '\0' ) {
             return( StrCopy( VarNodeExpr( v ), buff ) );
         } else {
-            StrCopy( LIT( Unknown_type ), buff );
+            StrCopy( LIT_ENG( Unknown_type ), buff );
             return( NULL );
         }
     }
     if( !v->have_type || ( len = TypeName( v->th, 0, &tag, buff, buff_len ) ) == 0 ) {
-        StrCopy( LIT( Unknown_type ), buff );
+        StrCopy( LIT_ENG( Unknown_type ), buff );
         return( NULL );
     }
     tag_name = TagName( tag );
@@ -579,7 +579,7 @@ static var_node *NewNode( var_info *i, unsigned len )
     i->mem_lock = FALSE;
     if( new == NULL ) {
         _SwitchOn( SW_ERROR_RETURNS );
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_WINDOW ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
         _SwitchOff( SW_ERROR_RETURNS );
         return( NULL );
     }
@@ -816,7 +816,7 @@ static int ExpandArray( var_info *i, var_node *v,
     count = 0;
     if( elts > MAX_EXPAND_ARRAY_ELEMENTS ) {
         elts = MAX_EXPAND_ARRAY_ELEMENTS;
-        Format( buff, LIT( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS ), elts );
+        Format( buff, LIT_ENG( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS ), elts );
         Warn( buff );
     }
     for( element = start; element <= end; ++element ) {
@@ -1422,7 +1422,7 @@ static void ChkTxtBuffOverflow( char *newbuff )
     See VarBuildName
 */
 {
-    if( newbuff - TxtBuff >= TXT_LEN )  Error( ERR_NONE, LIT( ERR_EXPR_TOO_LONG ) );
+    if( newbuff - TxtBuff >= TXT_LEN )  Error( ERR_NONE, LIT_ENG( ERR_EXPR_TOO_LONG ) );
 }
 
 
@@ -1538,8 +1538,8 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
         switch( v->path->node_type ) {
         case NODE_FIELD:
             if( VarError || !FindField( field, v->path ) ) {
-                name = LIT( field );
-                len = strlen( LIT( field ) );
+                name = LIT_ENG( field );
+                len = strlen( LIT_ENG( field ) );
             } else {
                 len = SymName( field, NULL, SN_SOURCE, NULL, 0 );
                 _AllocA( name, len+1 );
@@ -1688,7 +1688,7 @@ void VarExpandRow( var_info *i, var_node *v, int row )
         } else {
             VarExpand( i, v, 0, -1 );
             if( v->expand != NULL && VarFirstExpandNode( i, v ) == NULL ) {
-                Warn( LIT( No_Visible_Members ) );
+                Warn( LIT_ENG( No_Visible_Members ) );
             }
         }
     } else {
@@ -1709,7 +1709,7 @@ void VarExpandRowNoCollapse( var_info *i, var_node *v, int row )
         } else {
             VarExpand( i, v, 0, -1 );
             if( v->expand != NULL && VarFirstExpandNode( i, v ) == NULL ) {
-                Warn( LIT( No_Visible_Members ) );
+                Warn( LIT_ENG( No_Visible_Members ) );
             }
         }
     } 
@@ -2114,14 +2114,14 @@ char *VarGetValue( var_info *i, var_node *v )
         if( VarNodeExpr( v )[0] != '\0' ) {
             p = StrCopy( VarNodeExpr( v ), p );
         } else {
-            p = StrCopy( LIT( inherited_members ), p );
+            p = StrCopy( LIT_ENG( inherited_members ), p );
         }
         p = StrCopy( ")", p );
         return( TxtBuff );
     }
     old = VarNewCurrRadix( v );
     if( VarError ) {
-        value = LIT( Quest_Marks );
+        value = LIT_ENG( Quest_Marks );
     } else {
         value = " ";
         switch( ExprSP->info.kind ) {
@@ -2150,7 +2150,7 @@ char *VarGetValue( var_info *i, var_node *v )
                 p = Append( end, p, "(" );
                 p = VarDisplayType( v, p, TXT_LEN-2 );
                 if( p == NULL ) {
-                    value = LIT( Struct );
+                    value = LIT_ENG( Struct );
                 } else {
                     p = Append( end, p, ")" );
                     value = TxtBuff;
@@ -2164,10 +2164,10 @@ char *VarGetValue( var_info *i, var_node *v )
             } else if( v->is_string ) {
                 value = TxtBuff;
                 if( !PrintAString( i, TxtBuff, TXT_LEN, FALSE ) ) {
-                    value = LIT( Array );
+                    value = LIT_ENG( Array );
                 }
             } else {
-                value = LIT( Array );
+                value = LIT_ENG( Array );
             }
             break;
         default:
@@ -2635,7 +2635,7 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
     if( row >= VarRowTotal( i ) ) return( NULL );
     row_v = VarFindRowNode( i, row );
     if( !row_v->value_valid ) {
-        VarSetValue( row_v, LIT( Quest_Marks ) );
+        VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
         row_v->value_valid = FALSE;
     }
     if( !row_v->gadget_valid ) {

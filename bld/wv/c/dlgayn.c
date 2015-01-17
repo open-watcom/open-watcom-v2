@@ -47,7 +47,7 @@ OVL_EXTERN bool AynEvent( gui_window * gui, gui_event gui_ev, void *param )
     ayn = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
-        Format( TxtBuff, LIT( WARN_Program_Will_Slow ), ayn->mult );
+        Format( TxtBuff, LIT_DUI( WARN_Program_Will_Slow ), ayn->mult );
         GUISetText( gui, CTL_AYN_NO_WAY, TxtBuff );
         GUISetFocus( gui, CTL_AYN_NO );
         return( TRUE );

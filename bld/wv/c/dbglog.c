@@ -120,9 +120,9 @@ static void OpenLog( open_access mode )
     size_t      len;
 
     if( LogHndl != NIL_HANDLE ) {
-        Error( ERR_NONE, LIT( ERR_LOG_STARTED ) );
+        Error( ERR_NONE, LIT_ENG( ERR_LOG_STARTED ) );
     } else if( !ScanItem( TRUE, &start, &len ) ) {
-        Error( ERR_LOC, LIT( ERR_WANT_FILENAME ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_FILENAME ) );
     } else {
         if( len > TXT_LEN ) len = TXT_LEN;
         ReqEOC();
@@ -130,7 +130,7 @@ static void OpenLog( open_access mode )
         TxtBuff[len] = NULLCHAR;
         LogHndl = FileOpen( TxtBuff, mode );
         if( LogHndl == NIL_HANDLE ) {
-            Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TxtBuff );
+            Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
         }
     }
 }
@@ -165,7 +165,7 @@ void LogEnd( void )
         FileClose( LogHndl );
         LogHndl = NIL_HANDLE;
     } else {
-        Error( ERR_NONE, LIT( ERR_LOG_NOT_STARTED ) );
+        Error( ERR_NONE, LIT_ENG( ERR_LOG_NOT_STARTED ) );
     }
 }
 
@@ -176,7 +176,7 @@ void LogEnd( void )
 
 OVL_EXTERN void BadLog( void )
 {
-    Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_LOG ) );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_LOG ) );
 }
 
 

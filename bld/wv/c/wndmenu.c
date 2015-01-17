@@ -312,14 +312,14 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
         main_menu = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
         if( main_menu == NULL ) {
             if( add_to_menu ) return( TRUE );
-            Error( ERR_NONE, LIT( ERR_WANT_MENU_ITEM ) );
+            Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         if( ScanItem( TRUE, &start, &len ) ) {
             child = FindSubMenu( start, len, main_menu->child, main_menu->num_child_menus );
         }
         if( child == NULL ) {
             if( add_to_menu ) return( TRUE );
-            Error( ERR_NONE, LIT( ERR_WANT_MENU_ITEM ) );
+            Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
         *parent = main_menu->child;
@@ -334,14 +334,14 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
         }
         if( child == NULL ) {
             if( add_to_menu ) return( FALSE );
-            Error( ERR_NONE, LIT( ERR_WANT_MENU_ITEM ) );
+            Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
         *parent = info->popupmenu;
         *num_siblings = info->num_popups;
         if( add_to_menu ) return( FALSE );
         wnd = WndFindActive();
-        if( WndClass( wnd ) != class ) Error( ERR_NONE, LIT( ERR_MACRO_NOT_VALID ) );
+        if( WndClass( wnd ) != class ) Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
         ReqEOC();
         AccelMenuItem( child, FALSE );
     }
@@ -505,7 +505,7 @@ static void     DoMatch( void )
     wnd = WndFindActive();
     if( wnd == NULL ) return;
     if( WndKeyPiece( wnd ) == WND_NO_PIECE ) {
-        Error( ERR_NONE, LIT( ERR_MATCH_NOT_SUPPORTED ) );
+        Error( ERR_NONE, LIT_DUI( ERR_MATCH_NOT_SUPPORTED ) );
     } else {
         WndSetSwitches( wnd, WSW_CHOOSING );
     }
@@ -517,7 +517,7 @@ static  void    ExamMemAt( void )
     address     addr;
 
     addr = NilAddr;
-    if( DlgDataAddr( LIT( Mem_Addr ), &addr ) ) {
+    if( DlgDataAddr( LIT_DUI( Mem_Addr ), &addr ) ) {
         WndAddrInspect( addr );
     }
 }
@@ -528,7 +528,7 @@ static  void    GoToPromptedAddr( void )
     address     addr;
 
     addr = NilAddr;
-    if( DlgCodeAddr( LIT( GoWhere ), &addr ) ) {
+    if( DlgCodeAddr( LIT_DUI( GoWhere ), &addr ) ) {
         GoToAddr( addr );
     }
 }

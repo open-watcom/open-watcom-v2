@@ -137,7 +137,7 @@ static void     IOMenuItem( a_window *wnd, unsigned id, int row, int piece )
         break;
     case MENU_IO_NEW_ADDRESS:
         addr = NilAddr;
-        if( !DlgGivenAddr( LIT( New_Port_Addr ), &addr ) ) return;
+        if( !DlgGivenAddr( LIT_DUI( New_Port_Addr ), &addr ) ) return;
         WndRowDirty( wnd, io->num_rows );
         IOAddNewAddr( wnd, &addr, MENU_IO_FIRST_TYPE );
         WndScrollBottom( wnd );
@@ -155,7 +155,7 @@ static void     IOMenuItem( a_window *wnd, unsigned id, int row, int piece )
             NewCurrRadix( old );
         } else {
             addr = curr->addr;
-            if( !DlgGivenAddr( LIT( New_Port_Addr ), &addr ) ) return;
+            if( !DlgGivenAddr( LIT_DUI( New_Port_Addr ), &addr ) ) return;
             curr->addr = addr;
             curr->value_known = FALSE;
         }
@@ -276,7 +276,7 @@ void InitIOWindow()
         IOTypeMenu[ i ].id = MENU_IO_FIRST_TYPE + i;
         IOTypeMenu[ i ].style = GUI_ENABLED | WND_MENU_ALLOCATED;
         IOTypeMenu[ i ].label = DupStr( IOData.labels[ i ] );
-        IOTypeMenu[ i ].hinttext = DupStr( LIT( Empty ) );
+        IOTypeMenu[ i ].hinttext = DupStr( LIT_ENG( Empty ) );
         IOTypeMenu[ i ].num_child_menus = 0;
         IOTypeMenu[ i ].child = NULL;
     }
@@ -361,7 +361,7 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
     }
     io->list->value.ud = 0;
     io->list->value_known = FALSE;
-    return( DbgWndCreate( LIT( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon ) );
+    return( DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon ) );
 }
 
 extern WNDOPEN WndIOOpen;
@@ -373,7 +373,7 @@ extern a_window *WndIOOpen()
     io = WndMustAlloc( sizeof( io_window ) );
     io->list = NULL;
     io->num_rows = 0;
-    wnd = DbgWndCreate( LIT( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon );
+    wnd = DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon );
     if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }

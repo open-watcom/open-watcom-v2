@@ -157,7 +157,7 @@ void SourceSet( void )
     if( CurrToken == T_DIV ) {
         Scan();
         if( ScanCmd( AddTab ) == 0 ) {
-            Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
         }
         owner = RingEnd( &SrcSpec );
     } else {

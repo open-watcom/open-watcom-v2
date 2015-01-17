@@ -197,7 +197,7 @@ static void GotoLine( a_window *wnd )
         line = row;
     }
     ++line;
-    if( DlgLongExpr( LIT( New_Line ), &line ) ) {
+    if( DlgLongExpr( LIT_DUI( New_Line ), &line ) ) {
         --line;
         WndDirtyCurr( wnd );
         Centre( wnd, line );
@@ -253,12 +253,12 @@ static void     FileMenuItem( a_window *wnd, unsigned id, int row, int piece )
         break;
     case MENU_FILE_SHOW_MODULE:
         mod = file->mod;
-        if( DlgModName( LIT( New_Module ), &mod ) ) {
+        if( DlgModName( LIT_DUI( New_Module ), &mod ) ) {
             WndModInspect( mod );
         }
         break;
     case MENU_FILE_SHOW_ADDRESS:
-        if( DlgCodeAddr( LIT( New_Addr ), &addr ) ) {
+        if( DlgCodeAddr( LIT_DUI( New_Addr ), &addr ) ) {
             WndSrcInspect( addr );
         }
         break;
@@ -436,7 +436,7 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
     bool        curr;
     DIPHDL( cue, ch );
 
-    line->text = LIT( Empty );
+    line->text = LIT_ENG( Empty );
     if( file->viewhndl == NULL && ModHasInfo( file->mod, HK_CUE ) != DS_OK ) {
         return( FALSE );
     }
@@ -463,7 +463,7 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
             line->indent = MaxGadgetLength;
         }
         if( file->viewhndl == NULL ) {
-            Format( TxtBuff, LIT( No_Source_Line ), row+1 );
+            Format( TxtBuff, LIT_DUI( No_Source_Line ), row+1 );
             if( LineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
                 if( (CueAdjust( ch, -1, ch ) & DS_ERR) ) {
                     file->eof = CueLine( ch );
@@ -531,7 +531,7 @@ static void FileSetTitle( a_window *wnd, mod_handle mod )
     file_window *file = WndFile( wnd );
 
     if( file->track ) {
-        p = StrCopy( ": ", StrCopy( LIT( WindowSource ), TxtBuff ) );
+        p = StrCopy( ": ", StrCopy( LIT_DUI( WindowSource ), TxtBuff ) );
     } else {
         p = TxtBuff;
     }
@@ -845,7 +845,7 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
     file->eof = UINT_MAX;
     file->name = DupStr( name );
     file->dotaddr = NilAddr;
-    wnd = DbgWndCreate( LIT( Empty ), &FileInfo, class, file, &SrcIcon );
+    wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, class, file, &SrcIcon );
     if( ch != NULL ) {
         FileSetDotAddr( wnd, CueAddr( ch ) );
         FileSetTitle( wnd, file->mod );
@@ -882,7 +882,7 @@ static  a_window        *SrcFileOpen( cue_handle *ch,
     } else {
         viewhndl = OpenSrcFile( ch );
     }
-    wnd = DoWndFileOpen( LIT( WindowSource ), viewhndl, ch,
+    wnd = DoWndFileOpen( LIT_DUI( WindowSource ), viewhndl, ch,
                            track, erase, track ? WND_SOURCE : WND_FILE );
     if( wnd == NULL ) return( wnd );
     file = WndFile( wnd );

@@ -93,7 +93,7 @@ void ProcHook()
 
     idx = ScanCmd( HookNames );
     if( idx == 0 ) {
-        Error( ERR_NONE, LIT( ERR_BAD_HOOK ) );
+        Error( ERR_NONE, LIT_ENG( ERR_BAD_HOOK ) );
     }
     idx -= 1;
     list = NULL;

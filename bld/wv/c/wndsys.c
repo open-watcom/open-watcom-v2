@@ -262,7 +262,7 @@ void ProcWndFindPrev( a_window *wnd )
 static void WndBadCmd( a_window *wnd )
 {
     wnd=wnd;
-    Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
 void ProcWindow( void )
@@ -466,7 +466,7 @@ void SetUnderLine( a_window *wnd, wnd_line_piece *line )
     line->attr = WND_STANDOUT;
     line->tabstop = FALSE;
     line->static_text = TRUE;
-    line->text = LIT( Empty );
+    line->text = LIT_ENG( Empty );
     line->underline = TRUE;
     line->indent = 0;
     line->extent = WndWidth( wnd );
@@ -630,19 +630,19 @@ extern a_window *DbgWndCreate( const char *title, wnd_info *info,
 }
 
 static char **RXErrTxt[] = {
-    LITREF( ERR_RX_1 ),
-    LITREF( ERR_RX_2 ),
-    LITREF( ERR_RX_3 ),
-    LITREF( ERR_RX_4 ),
-    LITREF( ERR_RX_5 ),
-    LITREF( ERR_RX_6 ),
-    LITREF( ERR_RX_7 ),
-    LITREF( ERR_RX_8 ),
-    LITREF( ERR_RX_9 ),
-    LITREF( ERR_RX_10 ),
-    LITREF( ERR_RX_11 ),
-    LITREF( ERR_RX_12 ),
-    LITREF( ERR_RX_13 )
+    LITREF_DUI( ERR_RX_1 ),
+    LITREF_DUI( ERR_RX_2 ),
+    LITREF_DUI( ERR_RX_3 ),
+    LITREF_DUI( ERR_RX_4 ),
+    LITREF_DUI( ERR_RX_5 ),
+    LITREF_DUI( ERR_RX_6 ),
+    LITREF_DUI( ERR_RX_7 ),
+    LITREF_DUI( ERR_RX_8 ),
+    LITREF_DUI( ERR_RX_9 ),
+    LITREF_DUI( ERR_RX_10 ),
+    LITREF_DUI( ERR_RX_11 ),
+    LITREF_DUI( ERR_RX_12 ),
+    LITREF_DUI( ERR_RX_13 )
 };
 
 extern void WndRXError( int num )

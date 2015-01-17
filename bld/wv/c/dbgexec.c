@@ -500,7 +500,7 @@ bool ReportTrap( unsigned conditions, bool stack_cmds )
 
     if( conditions & COND_EXCEPTION ) {
         RecordMsgText( &conditions ); // get the 'access violation, etc' message
-        p = StrCopy( LIT( Task_Exception ), TxtBuff );
+        p = StrCopy( LIT_ENG( Task_Exception ), TxtBuff );
         if( MsgText != NULL ) StrCopy( MsgText, p );
         MsgText = DbgRealloc( MsgText, strlen( TxtBuff ) + 1 );
         StrCopy( TxtBuff, MsgText );
@@ -511,17 +511,17 @@ bool ReportTrap( unsigned conditions, bool stack_cmds )
     }
     DisplayMsgText();
     if( conditions & COND_USER ) {
-        DUIInfoBox( LIT( User_Interupt ) );
+        DUIInfoBox( LIT_ENG( User_Interupt ) );
         PurgeInpStack();
         RecordAsynchEvent();
     } else if( conditions & COND_TERMINATE ) {
-        DUIInfoBox( LIT( Task_Completed ) );
+        DUIInfoBox( LIT_ENG( Task_Completed ) );
         _SwitchOff( SW_HAVE_TASK );
     } else if( conditions & COND_LIBRARIES ) {
-        Format( TxtBuff, "%s '%s'", LIT( Break_on_DLL_Load ), GetLastImageName() );
+        Format( TxtBuff, "%s '%s'", LIT_ENG( Break_on_DLL_Load ), GetLastImageName() );
         DUIInfoBox( TxtBuff );
     } else {
-        DUIStatusText( LIT( Empty ) );
+        DUIStatusText( LIT_ENG( Empty ) );
     }
     cmds_pushed = DispBPMsg( stack_cmds );
     DbgUpdate( UP_MEM_CHANGE | UP_CSIP_CHANGE | UP_REG_CHANGE |

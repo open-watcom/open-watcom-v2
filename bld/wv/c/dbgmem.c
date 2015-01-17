@@ -121,7 +121,7 @@ static bool ItemGet( address *addr, item_mach *item, item_type typ )
     if( typ & IT_IO ) {
         if( PortPeek( addr->mach.offset, item, size ) != size ) {
             if( typ & IT_ERR ) {
-                Error( ERR_NONE, LIT( ERR_NO_READ_PORT ), *addr );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_READ_PORT ), *addr );
             }
             return( FALSE );
         }
@@ -129,7 +129,7 @@ static bool ItemGet( address *addr, item_mach *item, item_type typ )
         if( ProgPeek( *addr , item, size ) != size ) {
             if( typ & IT_ERR ) {
                 AddrFix( addr );
-                Error( ERR_NONE, LIT( ERR_NO_READ_MEM ), *addr );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_READ_MEM ), *addr );
             }
             return( FALSE );
         }
@@ -150,14 +150,14 @@ static bool ItemPut( address *addr, const item_mach *item, item_type typ )
     if( typ & IT_IO ) {
         if( PortPoke( addr->mach.offset, item, size ) != size ) {
             if( typ & IT_ERR ) {
-                Error( ERR_NONE, LIT( ERR_NO_WRITE_PORT ), *addr );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_WRITE_PORT ), *addr );
             }
             return( FALSE );
         }
     } else {
         if( ChangeMem( *addr, item, size ) != size ) {
             if( typ & IT_ERR ) {
-                Error( ERR_NONE, LIT( ERR_NO_WRITE_MEM ), *addr );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_WRITE_MEM ), *addr );
             }
             return( FALSE );
         }

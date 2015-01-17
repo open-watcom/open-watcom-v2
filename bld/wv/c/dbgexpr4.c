@@ -129,7 +129,7 @@ void DoPlus( void )
         case TK_INTEGER:
             break;
         default:
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
         if( (left->info.modifier & TM_MOD_MASK) == TM_NEAR ) {
             //NYI: 64 bit offsets
@@ -147,7 +147,7 @@ void DoPlus( void )
         LDAdd( &left->v.cmplx.im, &ExprSP->v.cmplx.im, &left->v.cmplx.im );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -193,7 +193,7 @@ void DoMinus( void )
             left->th = NULL;
             break;
         default:
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
         break;
     case TK_REAL:
@@ -204,7 +204,7 @@ void DoMinus( void )
         LDSub( &left->v.cmplx.im, &ExprSP->v.cmplx.im, &left->v.cmplx.im );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -244,7 +244,7 @@ void DoMul( void )
         left->v.cmplx.im = im;
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -268,7 +268,7 @@ void DoDiv( void )
     case TK_CHAR:
     case TK_INTEGER:
         if( U64Test( &ExprSP->v.uint ) == 0 ) {
-            Error( ERR_NONE, LIT( ERR_ZERO_DIV ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
         if( (left->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
             U64Div( &left->v.uint, &ExprSP->v.uint, &left->v.uint, NULL );
@@ -279,7 +279,7 @@ void DoDiv( void )
     case TK_REAL:
         DToLD( 0.0, &t1 );
         if( LDCmp( &ExprSP->v.real, &t1 ) == 0 ) {
-            Error( ERR_NONE, LIT( ERR_ZERO_DIV ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
         LDDiv( &left->v.real, &ExprSP->v.real, &left->v.real );
         break;
@@ -287,7 +287,7 @@ void DoDiv( void )
         DToLD( 0.0, &t1 );
         if( LDCmp( &ExprSP->v.cmplx.re, &t1 ) == 0
          && LDCmp( &ExprSP->v.cmplx.im, &t1 ) == 0 ) {
-            Error( ERR_NONE, LIT( ERR_ZERO_DIV ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
         /*   (a,b)/(c,d) = (ac+bd,bc-ad) / (c^2+d^2)     */
         LDMul( &ExprSP->v.cmplx.re, &ExprSP->v.cmplx.re, &t1 );
@@ -306,7 +306,7 @@ void DoDiv( void )
         LDDiv( &im, &mag, &left->v.cmplx.im );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -333,7 +333,7 @@ void DoMod( void )
     case TK_CHAR:
     case TK_INTEGER:
         if( U64Test( &ExprSP->v.uint ) == 0 ) {
-            Error( ERR_NONE, LIT( ERR_ZERO_MOD ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ZERO_MOD ) );
         }
         if( (left->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
             U64Div( &left->v.uint, &ExprSP->v.uint, &dummy.u, &left->v.uint );
@@ -342,7 +342,7 @@ void DoMod( void )
         }
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -367,7 +367,7 @@ void DoAnd( void )
         U64And( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -392,7 +392,7 @@ void DoOr( void )
         U64Or( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -417,7 +417,7 @@ void DoXor( void )
         U64Xor( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -452,7 +452,7 @@ void DoShift( void )
         }
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     CombineEntries( left, left, ExprSP );
@@ -482,7 +482,7 @@ void DoAddr( void )
         }
         ExprSP->flags &= ~SF_FORM_MASK;
     } else {
-        Error( ERR_NONE, LIT( ERR_NEED_ADDRESS ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NEED_ADDRESS ) );
     }
 }
 
@@ -515,7 +515,7 @@ void DoAPoints( stack_entry *stk, type_kind def )
             LocationCreate( &stk->v.loc, LT_ADDR, &stk->v.addr );
             TypeBase( stk->th, stk->th, stk->lc, &stk->v.loc );
             ClassifyEntry( stk, &stk->info );
-            if( stk->info.kind == TK_VOID ) Error( ERR_NONE, LIT( ERR_VOID_BASE ) );
+            if( stk->info.kind == TK_VOID ) Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
         } else {
             if( def == TK_NONE ) def = TK_INTEGER;
             stk->info.kind = def;
@@ -533,7 +533,7 @@ void DoAPoints( stack_entry *stk, type_kind def )
         stk->flags |= SF_LOCATION | was_imp_addr;
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     stk->flags &= ~SF_CONST;
@@ -627,13 +627,13 @@ void DoLConvert( void )
         ClassifyEntry( left, &new );
         if( ExprSP->v.loc.e[ExprSP->v.loc.num-1].type != LT_ADDR ) {
             if( new.size > ExprSP->info.size ) {
-                Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+                Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
             }
         }
         ExprSP->info = new;
         MoveTH( left, ExprSP );
     } else {
-        Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+        Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     CombineEntries( ExprSP, left, ExprSP );
 }
@@ -654,12 +654,12 @@ void DoMakeComplex( void )
     DToLD( 0.0, &zero );
     if( ExprSP->info.kind == TK_COMPLEX ) {
         if( LDCmp( &ExprSP->v.cmplx.im, &zero ) != 0 ) {
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
     }
     if( left->info.kind == TK_COMPLEX ) {
         if( LDCmp( &left->v.cmplx.im, &zero ) != 0 ) {
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
     }
     ConvertTo( ExprSP, TK_REAL, TM_NONE, sizeof( ExprSP->v.real ) );
@@ -683,13 +683,13 @@ void DoStringConcat( void )
     RValue( rite );
     BinOp( left, rite );
     if( left->info.kind != TK_STRING ) {
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
     CreateEntry();
     ExprSP->info.kind = TK_STRING;
     ExprSP->info.modifier = TM_NONE;
     ExprSP->info.size = left->info.size + rite->info.size;
-    _ChkAlloc( ExprSP->v.string.allocated, ExprSP->info.size, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+    _ChkAlloc( ExprSP->v.string.allocated, ExprSP->info.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     LocationCreate( &ExprSP->v.string.loc, LT_INTERNAL, ExprSP->v.string.allocated );
     LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->info.size, FALSE );
     ExprSP->v.string.loc.e[0].u.p = left->info.size +
@@ -708,7 +708,7 @@ void DoGivenField( sym_handle *member_hdl )
 {
     LValue( ExprSP );
     if( !(ExprSP->flags & SF_LOCATION) ) {
-        Error( ERR_NONE, LIT( ERR_NEED_ADDRESS ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NEED_ADDRESS ) );
     }
     CreateLC( ExprSP );
     ExprSP->lc->object = ExprSP->v.loc;
@@ -750,18 +750,18 @@ void DoField( void )
     DIPHDL( sym, sh );
 
     if( !(ExprSP->flags & SF_NAME) ) {
-        Error( ERR_LOC, LIT( ERR_WANT_NAME ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_NAME ) );
     }
     object = StkEntry( 1 );
     LValue( object );
     if( object->info.kind == TK_FUNCTION ) {
         RValue( object );
         if( DeAliasAddrSym( NO_MOD, object->v.addr, sh ) == SR_NONE ) {
-            Error( ERR_NONE, LIT( ERR_NO_ROUTINE ), object->v.addr );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), object->v.addr );
         }
         if( SymLocation( sh, object->lc, &ll ) != DS_OK
           || ll.num != 1 || ll.e[0].type != LT_ADDR ) {
-            Error( ERR_NONE, LIT( ERR_NO_ROUTINE ), object->v.addr );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), object->v.addr );
         }
         find.proc_addr = ll.e[0].u.addr;
         find.found = FALSE;
@@ -783,7 +783,7 @@ void DoField( void )
         MoveLC( object, ExprSP );
         CreateLC( ExprSP );
         if( !(object->flags & SF_LOCATION) ) {
-            Error( ERR_NONE, LIT( ERR_NEED_ADDRESS ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NEED_ADDRESS ) );
         }
         ExprSP->lc->object = object->v.loc;
         ExprSP->lc->have_object = TRUE;
@@ -809,11 +809,11 @@ void DoScope( void )
     char                buff[TXT_LEN];
 
     if( !(ExprSP->flags & SF_NAME) ) {
-        Error( ERR_LOC, LIT( ERR_WANT_NAME ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_NAME ) );
     }
     scope = StkEntry( 1 );
     if( !(scope->flags & SF_NAME) ) {
-        Error( ERR_LOC, LIT( ERR_WANT_NAME ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_NAME ) );
     }
     p = buff;
     if( scope->flags & SF_SCOPE ) {
@@ -855,7 +855,7 @@ void DoAssign( void )
     LValue( ExprSP );
     if( (dest->flags & SF_NAME) && !NameResolve( dest, FALSE ) ) {
         if( !CreateSym( &dest->v.li, &ExprSP->info ) ) {
-            Error( ERR_NONE, LIT( ERR_SYM_NOT_CREATED ), dest->v.li.name.start,
+            Error( ERR_NONE, LIT_ENG( ERR_SYM_NOT_CREATED ), dest->v.li.name.start,
                         dest->v.li.name.len );
         }
     }
@@ -863,12 +863,12 @@ void DoAssign( void )
     if( dest->flags & SF_LOCATION ) {
         if( dest->info.kind == TK_STRING ) {
             if( ExprSP->info.kind != TK_STRING ) {
-                Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+                Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
             }
             copy = ExprSP->info.size;
             if( copy > dest->info.size ) copy = dest->info.size;
             if( LocationAssign( &dest->v.loc, &ExprSP->v.loc, copy, FALSE ) != DS_OK ) {
-                Error( ERR_NONE, LIT( ERR_NO_ACCESS ) );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
             }
             if( dest->info.size > copy ) {
                 /* have to pad */
@@ -882,7 +882,7 @@ void DoAssign( void )
                     if( copy > PAD_LEN ) copy = PAD_LEN;
                     LocationCreate( &src, LT_INTERNAL, PADDING );
                     if( LocationAssign( &ll, &src, copy, FALSE ) != DS_OK ) {
-                        Error( ERR_NONE, LIT( ERR_NO_ACCESS ) );
+                        Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                     }
                     pad -= copy;
                 } while( pad != 0 );
@@ -893,11 +893,11 @@ void DoAssign( void )
             ToItem( ExprSP, &item );
             LocationCreate( &src, LT_INTERNAL, &item );
             if( LocationAssign( &dest->v.loc, &src, dest->info.size, FALSE ) != DS_OK ) {
-                Error( ERR_NONE, LIT( ERR_NO_ACCESS ) );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
             }
         }
     } else {
-        Error( ERR_NONE, LIT( ERR_NEED_ADDRESS ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NEED_ADDRESS ) );
     }
     MoveTH( dest, ExprSP );
     CombineEntries( ExprSP, dest, ExprSP );
@@ -928,7 +928,7 @@ static address PokePgmStack( location_list *ll, unsigned long size )
     addr = AllocPgmStack( size );
     LocationCreate( &dst, LT_ADDR, &addr );
     if( LocationAssign( &dst, ll, size, FALSE ) != DS_OK ) {
-        Error( ERR_NONE, LIT( ERR_NO_WRITE_MEM ), addr );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_WRITE_MEM ), addr );
     }
     return( addr );
 }
@@ -1088,7 +1088,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
     unsigned            size;
     dip_status          ds;
 
-    if( _IsOn( SW_CALL_FATAL ) ) Error( ERR_NONE, LIT( ERR_CALL_NOT_ALLOWED ) );
+    if( _IsOn( SW_CALL_FATAL ) ) Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
     rtn_entry = StkEntry( num_parms );
     RValue( rtn_entry );
     switch( rtn_entry->info.kind ) {
@@ -1110,16 +1110,16 @@ void DoCall( unsigned num_parms, bool build_scbs )
         }
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     if( DeAliasAddrSym( NO_MOD, addr, rtn_sh ) != SR_EXACT ) {
         AddrFix( &addr );
-        Error( ERR_NONE, LIT( ERR_NO_ROUTINE ), addr );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), addr );
     }
     SymInfo( rtn_sh, rtn_entry->lc, &rtn_si );
     if( rtn_si.kind != SK_PROCEDURE ) {
-        Error( ERR_NONE, LIT( ERR_NO_ROUTINE ), addr );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), addr );
     }
     SymType( rtn_sh, rtn_th );
     TypeProcInfo( rtn_th, ret_th, 0 );
@@ -1133,7 +1133,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
             ret_kind = RET_SCB;
             if( ti.size == 0 ) {
                 /* character*(*) function -- not supported */
-                Error( ERR_NONE, LIT( ERR_CHAR_STAR_STAR ) );
+                Error( ERR_NONE, LIT_ENG( ERR_CHAR_STAR_STAR ) );
             }
             string_addr = AllocPgmStack( ti.size );
             size = MakeSCB( &item, string_addr, DerefToSCB( ret_th ) );
@@ -1146,7 +1146,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
     SymObjType( rtn_sh, obj_th, &this_ti );
     if( this_ti.kind == TK_POINTER ) {
         if( !rtn_entry->lc->have_object ) {
-            Error( ERR_NONE, LIT( ERR_NO_OBJECT_FOR_CALL ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_OBJECT_FOR_CALL ) );
         }
         parm_loc_adjust = 1;
     } else {
@@ -1155,7 +1155,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
     for( parm = num_parms; parm > 0; --parm ) {
         ds = SymParmLocation( rtn_sh, rtn_entry->lc, &ll, parm + parm_loc_adjust );
         if( ds & DS_ERR ) {
-            Error( ERR_NONE, LIT( ERR_CALL_NOT_ALLOWED ) );
+            Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
         }
         if( ds != DS_OK ) {
             LocationCreate( &ll, LT_INTERNAL, NULL );
@@ -1179,7 +1179,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
         ConvertTo( ExprSP, this_ti.kind, this_ti.modifier, this_ti.size );
         ds = SymParmLocation( rtn_sh, rtn_entry->lc, &ll, 1 );
         if( ds & DS_ERR ) {
-            Error( ERR_NONE, LIT( ERR_CALL_NOT_ALLOWED ) );
+            Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
         }
         if( ds != DS_OK ) {
             LocationCreate( &ll, LT_INTERNAL, NULL );
@@ -1193,7 +1193,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
     TypeInfo( ret_th, rtn_entry->lc, &ret_ti );
     ds = SymParmLocation( rtn_sh, rtn_entry->lc, &ret_ll, 0 );
     if( ds & DS_ERR ) {
-        Error( ERR_NONE, LIT( ERR_CALL_NOT_ALLOWED ) );
+        Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
     }
     if( ds != DS_OK ) {
         if( ret_kind != RET_SCB ) {
@@ -1252,7 +1252,7 @@ void InitReturnInfo( sym_handle *f, return_info *ri )
     memset( ri, 0, sizeof( *ri ) );
     SymInfo( f, &Context, &si );
     if( si.kind != SK_PROCEDURE ) {
-        Error( ERR_NONE, LIT( ERR_NOT_PROCEDURE ), f );
+        Error( ERR_NONE, LIT_ENG( ERR_NOT_PROCEDURE ), f );
         return;
     }
     SymType( f, rtn_th );
@@ -1273,7 +1273,7 @@ void InitReturnInfo( sym_handle *f, return_info *ri )
         }
     }
     if( !ri->scb && ri->ti.size == 0 ) {
-        Error( ERR_NONE, LIT( ERR_CANT_GET_RV ) );
+        Error( ERR_NONE, LIT_ENG( ERR_CANT_GET_RV ) );
         return;
     }
     if( si.ret_modifier != TM_NONE && si.rtn_calloc ) {
@@ -1316,7 +1316,7 @@ void PushReturnInfo( sym_handle *f, return_info *ri )
     DIPHDL( type, th );
 
     if( ri->rl_passed_in ) {
-        Error( ERR_NONE, LIT( ERR_CANT_GET_RV ) );
+        Error( ERR_NONE, LIT_ENG( ERR_CANT_GET_RV ) );
         return;
     }
     if( ri->ti.kind == TK_VOID ) {

@@ -259,6 +259,6 @@ extern a_window *WndCallOpen( void )
     a_window    *wnd;
 
     call = WndMustAlloc( sizeof( call_window ) );
-    wnd = DbgWndCreate( LIT( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon );
+    wnd = DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon );
     return( wnd );
 }

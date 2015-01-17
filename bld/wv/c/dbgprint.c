@@ -303,7 +303,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
         }
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
     PrtStr( buff, ptr - buff );
 }
@@ -456,7 +456,7 @@ void PrintChar( void )
         PrtChar( (char) ExprSP->v.addr.mach.offset );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
     PrtChar( '\'' );
 }
@@ -476,18 +476,18 @@ static void DoPrintString( bool force )
 
     MakeMemoryAddr( FALSE, EXPR_DATA, &addr );
     if( IS_NIL_ADDR( addr ) && !force ) {
-        Error( ERR_NONE, LIT( ERR_NOT_PRINTABLE ), addr );
+        Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
     }
     count = ProgPeek( addr, buff, MAX_PRINTSTRING_LEN );
     if( count == 0 && !force ) {
-        Error( ERR_NONE, LIT( ERR_NOT_PRINTABLE ), addr );
+        Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
     }
     p = buff;
     while( --count >= 0 ) {
         if( *p == '\0' ) break;
         if( !force ) {
             if( count == 0 ) {
-                Error( ERR_NONE, LIT( ERR_NOT_PRINTABLE ), addr );
+                Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
             }
         }
         PrtChar( *p );
@@ -910,7 +910,7 @@ void PrintValue( void )
         PrintCharBlock();
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
 }
 
@@ -990,12 +990,12 @@ void ProcPrint( void )
             GraphicDisplay();
             break;
         default:
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_PRINT ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_PRINT ) );
             break;
         }
     } else {
         if( ScanEOC() ) {
-            DlgNewWithSym( LIT( New_Expression ), PrintBuff, TXT_LEN );
+            DlgNewWithSym( LIT_ENG( New_Expression ), PrintBuff, TXT_LEN );
             if( PrintBuff[0] != '\0' ) {
                 old = ReScan( PrintBuff );
                 LogPrintList();

@@ -87,7 +87,7 @@ static void AddLookSpec( const char *start, unsigned len, bool respect, lookup *
     if( next == NULL ) {
         FreeList( DefLookup );
         DefLookup = old;
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
     next->next = DefLookup;
     next->respect_case = respect;
@@ -148,7 +148,7 @@ void LookSet( void )
         } else {
             switch( ScanCmd( CaseTab ) ) {
             case 0:
-                Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             case 1:
                 respect = FALSE;
                 just_respect = TRUE;
@@ -166,7 +166,7 @@ void LookSet( void )
             Scan();
             switch( ScanCmd( CaseTab ) ) {
             case 0:
-                Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             case 1:
                 respect = FALSE;
                 need_item = TRUE;
@@ -185,7 +185,7 @@ void LookSet( void )
         curr->respect = respect;
     }
     if( need_item )
-        Error( ERR_LOC, LIT( ERR_WANT_LOOKUP_ITEM ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_LOOKUP_ITEM ) );
     ReqEOC();
     if( just_respect ) {
         LookCaseSet( respect );
@@ -425,7 +425,7 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
         }
         LookupSym( ss, d, li, &SymListHead );
         if( DIPStatus == (DS_ERR|DS_INVALID_OPERATOR) ) {
-            Error( ERR_NONE, LIT( ERR_INVALID_OPERATOR ), li->name.start, li->name.len );
+            Error( ERR_NONE, LIT_ENG( ERR_INVALID_OPERATOR ), li->name.start, li->name.len );
         }
         return( SymListHead );
     }
@@ -446,7 +446,7 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
         if( LookupSym( ss, d, li, &SymListHead ) != SR_NONE )
             break;
         if( DIPStatus == (DS_ERR|DS_INVALID_OPERATOR) ) {
-            Error( ERR_NONE, LIT( ERR_INVALID_OPERATOR ), li->name.start, li->name.len );
+            Error( ERR_NONE, LIT_ENG( ERR_INVALID_OPERATOR ), li->name.start, li->name.len );
         }
     }
     li->case_sensitive = save_case;

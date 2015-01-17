@@ -157,7 +157,7 @@ extern void WndFileInspect( const char *file, bool binary )
     viewhndl = NULL;
     if( binary ) {
         filehndl = FileOpen( file, OP_READ );
-        if( filehndl == NIL_HANDLE ) Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), file );
+        if( filehndl == NIL_HANDLE ) Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
         DoWndBinOpen( file, filehndl );
     } else {
         mod = LookupModName( NO_MOD, file, strlen( file ) );
@@ -170,7 +170,7 @@ extern void WndFileInspect( const char *file, bool binary )
             viewhndl = FOpenSource( file, NO_MOD, 0 );
             ch = NULL;
         }
-        if( viewhndl == NULL ) Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), file );
+        if( viewhndl == NULL ) Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
         DoWndFileOpen( file, viewhndl, ch, FALSE, FALSE, WND_FILE );
     }
 }
@@ -295,7 +295,7 @@ extern  a_window        *WndSrcInspect( address addr )
     a_window    *wnd;
     wnd = DoWndSrcInspect( addr, TRUE );
     if( wnd == NULL )
-        Warn( LIT( WARN_Source_Not_Available ) );
+        Warn( LIT_DUI( WARN_Source_Not_Available ) );
     return( wnd );
 }
 

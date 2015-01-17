@@ -94,13 +94,13 @@ static void DoDlgNew( const char *title, char *buff, unsigned buff_len, comp_typ
 {
     if( type == COMPLETE_SYMBOL ) {
         CompRtn = &SymComplete;
-        Controls[2].text = LIT( XSymbol_ );
+        Controls[2].text = LIT_DUI( XSymbol_ );
     } else {
         CompRtn = &ModComplete;
-        Controls[2].text = LIT( XModule_ );
+        Controls[2].text = LIT_DUI( XModule_ );
     }
-    Controls[1].text = LIT( OK );
-    Controls[3].text = LIT( Cancel );
+    Controls[1].text = LIT_DUI( OK );
+    Controls[3].text = LIT_DUI( Cancel );
     DlgNewWithCtl( title, buff, buff_len,
                    Controls, ArraySize( Controls ), NewSymEvent,
                    DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS );

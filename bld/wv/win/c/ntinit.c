@@ -152,7 +152,7 @@ bool TBreak()
 
 void PopErrBox( const char *buff )
 {
-    MessageBox( (HWND) NULL, buff, LIT( Debugger_Startup_Error ),
+    MessageBox( (HWND) NULL, buff, LIT_ENG( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
 

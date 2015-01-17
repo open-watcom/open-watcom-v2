@@ -297,7 +297,7 @@ char *GetEventAddress( event_record *ev )
     char        *p;
 
     if( IS_NIL_ADDR( ev->ip ) ) {
-        p = StrCopy( LIT( Quest_Marks ), TxtBuff );
+        p = StrCopy( LIT_ENG( Quest_Marks ), TxtBuff );
     } else {
         p = StrAddr( &ev->ip, TxtBuff, TXT_LEN );
     }

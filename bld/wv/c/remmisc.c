@@ -69,7 +69,7 @@ unsigned int            MaxPacketLen;
 static void TrapFailed( void )
 {
     KillTrap();
-    StartupErr( LIT( ERR_REMOTE_LINK_BROKEN ) );
+    StartupErr( LIT_ENG( ERR_REMOTE_LINK_BROKEN ) );
 }
 
 void InitSuppServices( void )

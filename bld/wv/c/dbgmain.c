@@ -225,11 +225,11 @@ void DebugInit( void )
     InitTrap( TrapParms );
     if( !LangSetInit() ) {
         FiniTrap();
-        StartupErr( LIT( STARTUP_Loading_PRS ) );
+        StartupErr( LIT_ENG( STARTUP_Loading_PRS ) );
     }
     if( !InitCmd() ) {
         FiniTrap();
-        StartupErr( LIT( ERR_NO_MEMORY ) );
+        StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
     }
     InitScan();
     InitLook();
@@ -249,7 +249,7 @@ void DebugInit( void )
 OVL_EXTERN void ProcNil( void )
 {
     if( ScanLen() == 0 ) Scan();
-    Error( ERR_NONE, LIT( ERR_BAD_COMMAND ), ScanPos(), ScanLen() );
+    Error( ERR_NONE, LIT_ENG( ERR_BAD_COMMAND ), ScanPos(), ScanLen() );
 }
 
 
@@ -262,20 +262,20 @@ void ReportTask( task_status task, unsigned code )
     switch( task ) {
     case TASK_NEW:
         _SwitchOn( SW_HAVE_TASK );
-        DUIStatusText( LIT( New_Task ) );
-        DUIDlgTxt( LIT( New_Task ) );
+        DUIStatusText( LIT_ENG( New_Task ) );
+        DUIDlgTxt( LIT_ENG( New_Task ) );
         break;
     case TASK_NOT_LOADED:
         _SwitchOff( SW_HAVE_TASK );
-        Format( TxtBuff, LIT( Task_Not_Loaded ), code );
+        Format( TxtBuff, LIT_ENG( Task_Not_Loaded ), code );
         DUIMsgBox( TxtBuff );
         RingBell();
         RingBell();
         break;
     case TASK_NONE:
         _SwitchOff( SW_HAVE_TASK );
-        DUIStatusText( LIT( No_Task ) );
-        DUIDlgTxt( LIT( No_Task ) );
+        DUIStatusText( LIT_ENG( No_Task ) );
+        DUIDlgTxt( LIT_ENG( No_Task ) );
         break;
     }
 }
@@ -287,7 +287,7 @@ void ReportTask( task_status task, unsigned code )
 
 void ChkBreak( void )
 {
-    if( TBreak() ) Error( ERR_NONE, LIT( ERR_DBG_INTERRUPT ) );
+    if( TBreak() ) Error( ERR_NONE, LIT_ENG( ERR_DBG_INTERRUPT ) );
 }
 
 

@@ -169,7 +169,7 @@ void FingOpen()
 
 #ifdef _EXPIRY_YEAR
     if( !ChkDate() ) {
-        StartupErr( LIT( Tst_Per_Exp ) );
+        StartupErr( LIT_DUI( Tst_Per_Exp ) );
     }
 #endif
     WndInitCreateStruct( &info );

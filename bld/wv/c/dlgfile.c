@@ -112,7 +112,7 @@ static void SetLast( char **what, const char *to )
 {
     _Free( *what );
     if( to == NULL )
-        to = LIT( Empty );
+        to = LIT_ENG( Empty );
     *what = DupStr( to );
 }
 
@@ -136,18 +136,18 @@ static void WritableConfig( void )
     if( FindWritable( LastCfg, TxtBuff ) ) {
         SetLast( &LastCfg, TxtBuff );
     } else {
-        SetLast( &LastCfg, LIT( Empty ) );
+        SetLast( &LastCfg, LIT_ENG( Empty ) );
     }
 }
 
 void InitBrowse( void )
 {
-    SetLast( &LastFile, LIT( Empty ) );
-    SetLast( &LastExe, LIT( Empty ) );
-    SetLast( &LastDmp, LIT( Empty ) );
-    SetLast( &LastCfg, LIT( Empty ) );
-    SetLast( &LastBrk, LIT( Empty ) );
-    SetLast( &LastRep, LIT( Empty ) );
+    SetLast( &LastFile, LIT_ENG( Empty ) );
+    SetLast( &LastExe, LIT_ENG( Empty ) );
+    SetLast( &LastDmp, LIT_ENG( Empty ) );
+    SetLast( &LastCfg, LIT_ENG( Empty ) );
+    SetLast( &LastBrk, LIT_ENG( Empty ) );
+    SetLast( &LastRep, LIT_ENG( Empty ) );
 }
 
 void FiniBrowse( void )
@@ -199,7 +199,7 @@ void ProcConfigFile( void )
 
 static bool AskIfKillPB( void )
 {
-    return( WndDisplayMessage( LIT( WARN_Kill_PowerBuilder ), LIT( Empty ),
+    return( WndDisplayMessage( LIT_DUI( WARN_Kill_PowerBuilder ), LIT_ENG( Empty ),
                              GUI_YES_NO ) == GUI_RET_YES );
 }
 
@@ -234,7 +234,7 @@ bool WndShutDownHook( void )
 bool ConfigSave( bool writing )
 {
     WritableConfig();
-    if( DoFileBrowse( &LastCfg, LIT( Configuration_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
+    if( DoFileBrowse( &LastCfg, LIT_DUI( Configuration_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
         if( writing ) {
             SaveConfigToFile( TxtBuff );
             SaveMainWindowPos();
@@ -249,7 +249,7 @@ bool ConfigSave( bool writing )
 
 bool BreakSave( bool writing )
 {
-    if( DoFileBrowse( &LastBrk, LIT( Breakpoint_File_Name ), ConfigFilter,
+    if( DoFileBrowse( &LastBrk, LIT_DUI( Breakpoint_File_Name ), ConfigFilter,
                       OFN_FLAGS( writing ) ) ) {
         if( writing ) {
             SaveBreaksToFile( TxtBuff );
@@ -265,7 +265,7 @@ bool BreakSave( bool writing )
 bool ReplaySave( bool writing )
 {
     if( OkToSaveReplay() ) {
-        if( DoFileBrowse( &LastRep, LIT( Replay_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
+        if( DoFileBrowse( &LastRep, LIT_DUI( Replay_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
             if( writing ) {
                 SaveReplayToFile( TxtBuff );
             } else {
@@ -280,7 +280,7 @@ bool ReplaySave( bool writing )
 
 extern void FileBrowse( void )
 {
-    if( DoFileBrowse( &LastFile, LIT( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )){
+    if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )){
         WndFileInspect( TxtBuff, FALSE );
     }
 }
@@ -288,19 +288,19 @@ extern void FileBrowse( void )
 
 extern bool ExeBrowse( void )
 {
-    return( DoFileBrowse( &LastExe, LIT( Program_Name ), ExeFilter, OFN_FLAGS( 0 ) ) );
+    return( DoFileBrowse( &LastExe, LIT_DUI( Program_Name ), ExeFilter, OFN_FLAGS( 0 ) ) );
 }
 
 
 extern bool SymBrowse( char **name )
 {
-    return( DoFileBrowse( name, LIT( Symbol_File ), SymFilter, OFN_FLAGS( 0 ) ) );
+    return( DoFileBrowse( name, LIT_DUI( Symbol_File ), SymFilter, OFN_FLAGS( 0 ) ) );
 }
 
 
 extern bool AllBrowse( char *name )
 {
-    return( DlgFileBrowse( LIT( Enter_File_Name ), AllFilter, name, TXT_LEN, OFN_FLAGS( 0 ) ) );
+    return( DlgFileBrowse( LIT_DUI( Enter_File_Name ), AllFilter, name, TXT_LEN, OFN_FLAGS( 0 ) ) );
 }
 
 
@@ -308,7 +308,7 @@ extern char *GetDmpName( void )
 {
     bool        rc;
 
-    rc = DoFileBrowse( &LastDmp, LIT( Enter_File_Name ), AllFilter, OFN_FLAGS( 1 ) );
+    rc = DoFileBrowse( &LastDmp, LIT_DUI( Enter_File_Name ), AllFilter, OFN_FLAGS( 1 ) );
     if( !rc )
         return( NULL );
     return( LastDmp );

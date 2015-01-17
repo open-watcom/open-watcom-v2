@@ -147,11 +147,11 @@ void GUImain( void )
 #endif
     result = DPMIAllocateLDTDescriptors( 1 );
     if( result < 0 ) {
-        StartupErr( LIT( Unable_to_get_rm_sel ) );
+        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
     }
     _ExtenderRealModeSelector = result & 0xffff;
     if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-        StartupErr( LIT( Unable_to_get_rm_sel ) );
+        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
     }
     }
 #endif
@@ -160,7 +160,7 @@ void GUImain( void )
 
     RMData.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( RMSegEnd - RMSegStart ) );
     if( RMData.segm.pm == 0 ) {
-        StartupErr( LIT( Unable_to_alloc_DOS_mem ) );
+        StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
     PMData = MK_FP( RMData.segm.pm, 0 );
     _fmemcpy( PMData, RMSegStart, RMSegEnd - RMSegStart );

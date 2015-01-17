@@ -88,7 +88,7 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
             ToItemMAD( ExprSP, &item, &mti );
             PopEntry();
             if( CurrToken != T_COMMA && !ScanEOC() ) {
-                Error( ERR_LOC, LIT( ERR_WANT_EOC ) );
+                Error( ERR_LOC, LIT_ENG( ERR_WANT_EOC ) );
             }
             ItemPutMAD( &addr, &item, ops, th );
         }
@@ -120,7 +120,7 @@ void ProcModify( void )
         Scan();
         th = ScanType( MAS_ALL | MTK_ALL, &tk );
         if( th == MAD_NIL_TYPE_HANDLE ) {
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_MODIFY ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_MODIFY ) );
         }
         MemMod( th, tk );
     }

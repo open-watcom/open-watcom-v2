@@ -490,7 +490,8 @@ extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class class, gui_resourc
 
     reg = WndMustAlloc( sizeof( reg_window ) );
     reg->kind = kind;
-    wnd = DbgWndCreate( LIT( Empty ), &MadRegInfo, class, reg, icon );
-    if( wnd == NULL ) return( NULL );
+    wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, class, reg, icon );
+    if( wnd == NULL )
+        return( NULL );
     return( wnd );
 }

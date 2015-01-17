@@ -279,7 +279,7 @@ bool SysGUI( void )
 void PopErrBox( const char *buff )
 {
     WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, buff,
-                  LIT(Debugger_Startup_Error), 1001,
+                  LIT_ENG(Debugger_Startup_Error), 1001,
                   MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
 

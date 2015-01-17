@@ -207,7 +207,7 @@ void *DbgMustAlloc( size_t size )
 
     ptr = DbgAlloc( size );
     if( ptr == NULL ) {
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
     return( ptr );
 }

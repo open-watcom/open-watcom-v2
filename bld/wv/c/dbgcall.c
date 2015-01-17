@@ -101,7 +101,7 @@ static void GetLocation( location_list *ll, dip_type_info *ti )
     }
     ParseRegSet( reg_set, ll, ti );
     if( ti->size == 0 ) {
-        Error( ERR_LOC, LIT( ERR_WANT_REG_NAME ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_REG_NAME ) );
     }
     if( reg_set ) {
         Recog( T_RIGHT_BRACKET );
@@ -132,7 +132,7 @@ static void DoCallSet( void )
         Scan();
         ctype = ScanCall();
         if( ctype == MAD_MSTR_NIL ) {
-            Error( ERR_LOC, LIT( ERR_BAD_CALL_TYPE ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_CALL_TYPE ) );
         }
     } else {
         ctype = DefCallType;
@@ -143,7 +143,7 @@ static void DoCallSet( void )
         if( CurrToken != T_RIGHT_PAREN ) {
             for( ;; ) {
                 if( parm >= MAX_PARMS )
-                    Error( ERR_LOC, LIT( ERR_TOO_MANY_PARMS ) );
+                    Error( ERR_LOC, LIT_ENG( ERR_TOO_MANY_PARMS ) );
                 new_parms[parm].u.arg = ScanPos();
                 GetLocation( &ll, &ti );
                 new_parms[parm].len = ScanPos() - new_parms[parm].u.arg;
@@ -187,7 +187,7 @@ static void DoCallSet( void )
                 for( i = 0; i < parm; ++i ) {
                     _Free( new_parms[i].u.start );
                 }
-                Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 parm = 0;
                 break;
             } else {
@@ -277,7 +277,7 @@ void ProcCall( void )
         Scan();
         ctype = ScanCall();
         if( ctype == MAD_MSTR_NIL ) {
-            Error( ERR_LOC, LIT( ERR_BAD_CALL_TYPE ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_CALL_TYPE ) );
         }
     } else {
         ctype = DefCallType;

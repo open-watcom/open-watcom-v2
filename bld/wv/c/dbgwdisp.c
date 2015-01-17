@@ -114,7 +114,7 @@ static char     GetOption( void )
         Scan();
         optn = ScanCmd( DispOptions );
         if( optn == 0 ) {
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
         }
     } else {
         optn = OPEN;
@@ -287,7 +287,7 @@ static void ProcSize( int wnd_num )
 
     optn = GetOption();
     if( optn == FLOATING || optn == FIXED ) {
-        Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
+        Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
     }
     size.x = OptExpr( -1 );
     size.y = -1;
@@ -401,7 +401,7 @@ static void ProcStatus( void )
     } else if( optn == CLOSE ) {
         WndCloseStatusWindow();
     } else {
-        Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
+        Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
     }
 }
 

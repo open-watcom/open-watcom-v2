@@ -43,20 +43,20 @@
   #define pick(c,e,j) LITSTR( c, e )
 #endif
 
-#define LITSTR( x, y ) char *LIT( x );
+#define LITSTR( x, y ) char *LIT_DUI( x );
 #include "wddui.str"
 #undef LITSTR
 
-void DUIInitLiterals()
+void DUIInitLiterals( void )
 {
-    #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_DUI_LITERAL_##x );
+    #define LITSTR( x, y ) LIT_DUI( x ) = DUILoadString( DBG_DUI_LITERAL_##x );
     #include "wddui.str"
     #undef LITSTR
 }
 
-void DUIFiniLiterals()
+void DUIFiniLiterals( void )
 {
-    #define LITSTR( x, y ) DbgFree( LIT( x ) );
+    #define LITSTR( x, y ) DbgFree( LIT_DUI( x ) );
     #include "wddui.str"
     #undef LITSTR
 }

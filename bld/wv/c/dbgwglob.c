@@ -208,7 +208,7 @@ extern a_window *DoWndGlobOpen( mod_handle mod )
 
     glob = WndMustAlloc( sizeof( glob_window ) );
     glob->mod = mod;
-    return( DbgWndCreate( LIT( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
+    return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }
 
 extern WNDOPEN WndGlobOpen;

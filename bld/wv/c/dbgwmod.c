@@ -342,7 +342,7 @@ extern a_window *DoWndModOpen( mod_handle handle )
 
     mod = WndMustAlloc( sizeof( mod_window ) );
     mod->handle = handle;
-    return( DbgWndCreate( LIT( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
+    return( DbgWndCreate( LIT_DUI( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
 }
 
 extern WNDOPEN WndModOpen;

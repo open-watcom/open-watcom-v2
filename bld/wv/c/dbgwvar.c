@@ -121,7 +121,7 @@ static gui_menu_struct VarMenu[] = {
 #define INDENT_AMOUNT           2
 #define REASONABLE_NAME_WIDTH   30
 
-static char **VarNames[] = { LITREF( Empty ), LITREF( WindowWatches ), LITREF( Empty ), LITREF( WindowFile_Variables ) };
+static char **VarNames[] = { LITREF_ENG( Empty ), LITREF_DUI( WindowWatches ), LITREF_ENG( Empty ), LITREF_DUI( WindowFile_Variables ) };
 static wnd_class VarClass[] = { WND_VARIABLE, WND_WATCH, WND_LOCALS, WND_FILESCOPE };
 static gui_resource *VarIcons[] = { &VarIcon, &WatIcon, &LocIcon, &VarIcon };
 
@@ -277,7 +277,7 @@ static bool VarEdit( a_window *wnd, var_node *v )
         strcpy( TxtBuff, VarNodeExpr( v ) );
     }
     VarRepaint( wnd );
-    DlgNewWithSym( LIT( New_Expression ), TxtBuff, TXT_LEN );
+    DlgNewWithSym( LIT_ENG( New_Expression ), TxtBuff, TXT_LEN );
     if( TxtBuff[0] == '\0' ) return( FALSE );
     VarAddNodeToScope( &var->i, v, TxtBuff );
     VarRepaint( wnd );
@@ -682,7 +682,7 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece,
         line->tabstop = FALSE;
         if( WndDoingSearch ) break;
         if( v->gadget == VARGADGET_NONE ) {
-            line->text = LIT( Empty );
+            line->text = LIT_ENG( Empty );
         } else {
             wnd_gadget_type gadgets[] =
                  { WND_GADGET_NONE, GADGET_OPEN,
@@ -786,7 +786,7 @@ static  void VarRefresh( a_window *wnd )
         var->initialized = TRUE;
         repaint = VarInfoRefresh( var->vtype, &var->i, &addr, wnd );
         if( var->vtype == VAR_LOCALS ) {
-            p = StrCopy( LIT( WindowLocals ), TxtBuff );
+            p = StrCopy( LIT_DUI( WindowLocals ), TxtBuff );
             if( !IS_NIL_ADDR( addr ) ) {
                 p = StrCopy( " (", p );
                 p = CnvNearestAddr( addr, p, TXT_LEN - ( p - TxtBuff ) );

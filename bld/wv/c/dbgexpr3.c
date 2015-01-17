@@ -169,7 +169,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     dip_type_info       ti;
 
     if( entry->info.size > sizeof( *tmp ) ) {
-        Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+        Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     size = entry->info.size;
     switch( entry->info.kind ) {
@@ -239,7 +239,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
         }
         break;
     }
-    Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+    Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
 }
 
 
@@ -250,7 +250,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
     mad_type_info       dst_type;
 
     if( entry->info.size > sizeof( *tmp ) ) {
-        Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+        Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     //NYI: use MAD routines for all conversions
     size = entry->info.size;
@@ -317,7 +317,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
         }
         break;
     }
-    Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+    Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
 }
 
 
@@ -704,11 +704,11 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
         break;
     case STR:
         if( k != TK_STRING ) {
-            Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+            Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
         }
         if( s > entry->info.size ) {
             /* have to expand string */
-            _ChkAlloc( dest, s, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+            _ChkAlloc( dest, s, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
             memcpy( dest, entry->v.string.loc.e[0].u.p, entry->info.size );
             memset( &dest[entry->info.size], ' ', s - entry->info.size );
             if( AllocatedString( entry ) ) {
@@ -725,7 +725,7 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
     entry->info.modifier = m;
     entry->info.size = s;
     if( !ConvFunc[ ConvIdx( &entry->info ) ]( entry, from ) ) {
-        Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+        Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     entry->th = NULL;
 }
@@ -789,11 +789,11 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     lclass = ConvIdx( &left->info );
     rclass = ConvIdx( &right->info );
     if( lclass == ERR || rclass == ERR ) {
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
     result_class = BinResult[ lclass ][ rclass ];
     if( result_class == ERR ) {
-        Error( ERR_NONE, LIT( ERR_TYPE_CONVERSION ) );
+        Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     if( left->info.kind == TK_ENUM ) {
         result_info = &left->info;

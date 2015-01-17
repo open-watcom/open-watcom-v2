@@ -167,7 +167,7 @@ void DoConfig( char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**
             i = ScanCmd( name_tab );
             if( i == 0 ) {
                 Format( TxtBuff, "%s %s", GetCmdName( CMD_SHOW ), cmd );
-                Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), TxtBuff );
+                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), TxtBuff );
             }
         } while( !ScanEOC() );
         ReScan( start );
@@ -182,7 +182,7 @@ void DoConfig( char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**
 
 OVL_EXTERN void BadShow( void )
 {
-    Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SHOW ) );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SHOW ) );
 }
 
 

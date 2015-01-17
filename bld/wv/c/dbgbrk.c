@@ -296,7 +296,7 @@ void GetBPAddr( brkp *bp, char *buff )
     char                *p;
 
     if( bp->status.b.unmapped ) {
-        p = StrCopy( LIT( Image_Not_Loaded ), buff );
+        p = StrCopy( LIT_ENG( Image_Not_Loaded ), buff );
         if( bp->image_name != NULL ) {
             *p++ = '(';
             p = StrCopy( bp->image_name, p );
@@ -322,7 +322,7 @@ void GetBPText( brkp *bp, char *buff )
             strcpy( buff, bp->source_line );
         } else {
             if( IS_NIL_ADDR( bp->loc.addr ) ) {
-                strcpy( buff, LIT( Quest_Marks ) );
+                strcpy( buff, LIT_ENG( Quest_Marks ) );
             } else {
                 UnAsm( bp->loc.addr, buff, max );
             }
@@ -386,14 +386,14 @@ static char *StrVal( char *which, brkp *wp, char *p )
 static char     *GetBPAddrText( brkp *bp, char *p )
 {
     if( bp->th != MAD_NIL_TYPE_HANDLE ) {
-        p = StrCopy( LIT( Break_on_write ), p );
+        p = StrCopy( LIT_ENG( Break_on_write ), p );
         if( bp->source_line != NULL ) {
             p = StrCopy( bp->source_line, p );
         } else {
             p = Format( p, "%a", bp->loc.addr );
         }
     } else {
-        p = Format( p, LIT( Break_on_execute ) );
+        p = Format( p, LIT_ENG( Break_on_execute ) );
         p = Format( p, BrkFmt(), bp->loc.addr );
     }
     return( p );
@@ -425,9 +425,9 @@ bool DispBPMsg( bool stack_cmds )
             if( bp->th != MAD_NIL_TYPE_HANDLE ) {
                 p = GetBPAddrText( bp, TxtBuff );
                 p = StrCopy( " - ", p );
-                p = StrVal( LIT( OldVal ), bp, p );
+                p = StrVal( LIT_ENG( OldVal ), bp, p );
                 GetWPVal( bp );
-                p = StrVal( LIT( NewVal ), bp, p );
+                p = StrVal( LIT_ENG( NewVal ), bp, p );
                 *p = NULLCHAR;
             } else {
                 p = GetBPAddrText( bp, TxtBuff );
@@ -455,7 +455,7 @@ bool DispBPMsg( bool stack_cmds )
         }
     }
     if( UserTmpBrk.status.b.hit ) {
-        p = Format( TxtBuff, LIT( Break_on_execute ) );
+        p = Format( TxtBuff, LIT_ENG( Break_on_execute ) );
         Format( p, BrkFmt(), UserTmpBrk.loc.addr );
         DUIDlgTxt( TxtBuff );
     }
@@ -470,7 +470,7 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
     char        *p;
     char        *end = buff + buff_len ;
 
-    cmds = cond = LIT( Empty );
+    cmds = cond = LIT_ENG( Empty );
     if( bp != NULL ) {
         if( bp->cmds != NULL ) cmds = bp->cmds->buff;
         if( bp->condition != NULL ) cond = bp->condition;
@@ -801,7 +801,7 @@ OVL_EXTERN brkp *SetWatch( memory_expr def_seg )
 OVL_EXTERN brkp *BadPoint( memory_expr def_seg )
 {
     def_seg=def_seg;
-    Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
     return( NULL );
 }
 
@@ -826,7 +826,7 @@ OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
             clear = TRUE;
             break;
         default:
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
             break;
         }
     }
@@ -883,7 +883,7 @@ static brkp *PointBreak( memory_expr def_seg, address *addr )
 static brkp *BPNotNull( brkp *bp )
 {
     if( bp == NULL ) {
-        Error( ERR_NONE, LIT( ERR_NO_SUCH_POINT ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_POINT ) );
     }
     return( bp );
 }
@@ -1205,7 +1205,7 @@ OVL_EXTERN brkp *TogglePoint( memory_expr def_seg )
 
     bp = PointBreak( def_seg, &addr );
     if( IS_NIL_ADDR( addr ) ) {
-        Error( ERR_NONE, LIT( ERR_NO_SUCH_POINT ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_POINT ) );
         return( NULL );
     } else {
         ToggleBreak( addr );
@@ -1231,7 +1231,7 @@ void BrkAddrRefresh( void )
 static void ReqComma( void )
 {
     if( CurrToken != T_COMMA ) {
-        Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
+        Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
     }
     Scan();
 }
@@ -1389,7 +1389,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
             break;
             /* fall thru */
         default:
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
             break;
         }
     }
@@ -1399,7 +1399,7 @@ done:;
     }
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         if( AddrComp( bp->loc.addr, loc ) == 0 ) {
-            Error( ERR_NONE, LIT( ERR_POINT_EXISTS ) );
+            Error( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
         }
     }
     cmds = NULL;
@@ -1428,7 +1428,7 @@ done:;
             if( Supports8ByteBreakpoints )
                 break;
         default:
-            Error( ERR_NONE, LIT( ERR_NOT_WATCH_SIZE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
             break;
         }
     }
@@ -1482,7 +1482,7 @@ bool BreakWrite( address addr, mad_type_handle th, const char *comment )
     case 4:
         if( ok_to_try ) {
             if(  FindBreak( addr ) != NULL ) {
-                Error( ERR_NONE, LIT( ERR_POINT_EXISTS ) );
+                Error( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
             }
             bp = AddPoint( addr, th, FALSE );
             if( bp == NULL )
@@ -1513,7 +1513,7 @@ static void BreakOnAddress( void *_s )
      || !BreakWrite( s->addr,
                     FindMADTypeHandle( MAS_MEMORY|MTK_INTEGER, s->size ),
                      s->comment ) ) {
-        Error( ERR_NONE, LIT( ERR_NOT_WATCH_SIZE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
     }
 }
 

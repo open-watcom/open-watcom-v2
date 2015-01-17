@@ -128,7 +128,7 @@ static void GetTrueEntry( stack_entry *entry )
         mod = entry->info.modifier;
         if( !(mod & TM_FLAG_DEREF) ) break;
         DoAPoints( entry, TK_NONE );
-        if( entry->info.kind == TK_VOID ) Error( ERR_NONE, LIT( ERR_VOID_BASE ) );
+        if( entry->info.kind == TK_VOID ) Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
         switch( mod & TM_MOD_MASK ) {
         case TM_NEAR:
             if( entry->info.kind == TK_FUNCTION ) {
@@ -218,15 +218,15 @@ void SymResolve( stack_entry *entry )
         } else {
             if( entry->info.kind == TK_STRING ) {
                 _ChkAlloc( entry->v.string.allocated, entry->info.size,
-                            LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+                            LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 LocationCreate( &entry->v.string.loc, LT_INTERNAL,
                             entry->v.string.allocated );
                 if( SymValue( sh, entry->lc, entry->v.string.allocated ) != DS_OK ) {
-                    Error( ERR_NONE, LIT( ERR_NO_ACCESS ) );
+                    Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
             } else {
                 if( SymValue( sh, entry->lc, &tmp ) != DS_OK ) {
-                    Error( ERR_NONE, LIT( ERR_NO_ACCESS ) );
+                    Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
                 FromItem( &tmp, entry );
             }
@@ -256,7 +256,7 @@ void SymResolve( stack_entry *entry )
 void LValue( stack_entry *entry )
 {
     if( !NameResolve( entry, FALSE ) ) {
-        Error( ERR_NONE, LIT( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
+        Error( ERR_NONE, LIT_ENG( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
                             entry->v.li.name.len );
     }
     SymResolve( entry );
@@ -341,7 +341,7 @@ void ExprResolve( stack_entry *entry )
 {
     if( entry->flags & SF_NAME ) {
         if( !DoNameResolve( entry ) ) {
-            Error( ERR_NONE, LIT( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
+            Error( ERR_NONE, LIT_ENG( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
                                        entry->v.li.name.len );
         }
     }
@@ -424,11 +424,11 @@ void LRValue( stack_entry *entry )
                 break;
             case TK_STRING:
                 _ChkAlloc( entry->v.string.allocated, entry->info.size,
-                            LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+                            LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 LocationCreate( &ll, LT_INTERNAL, entry->v.string.allocated );
                 if( LocationAssign( &ll, &entry->v.loc, entry->info.size, FALSE ) != DS_OK ) {
                     _Free( entry->v.string.allocated );
-                    Error( ERR_NONE, LIT( ERR_NO_ACCESS ) );
+                    Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
                 entry->v.string.loc = ll;
                 break;
@@ -441,7 +441,7 @@ void LRValue( stack_entry *entry )
             default:
                 LocationCreate( &ll, LT_INTERNAL, &tmp );
                 if( LocationAssign( &ll, &entry->v.loc, entry->info.size, extend ) != DS_OK ) {
-                    Error( ERR_NONE, LIT( ERR_NO_ACCESS ) );
+                    Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
                 FromItem( &tmp, entry );
                 break;

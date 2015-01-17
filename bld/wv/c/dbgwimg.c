@@ -73,8 +73,8 @@ static void CalcIndents( a_window *wnd )
     gui_ord     max_symbol;
     gui_ord     curr;
 
-    max_image = WndExtentX( wnd, LIT( Executable_File ) );
-    max_symbol = WndExtentX( wnd, LIT( Debug_Information ) );
+    max_image = WndExtentX( wnd, LIT_DUI( Executable_File ) );
+    max_symbol = WndExtentX( wnd, LIT_DUI( Debug_Information ) );
     for( img = DbgImageList; img != NULL; img = img->link ) {
         curr = WndExtentX( wnd, img->image_name );
         if( curr > max_image ) max_image = curr;
@@ -192,13 +192,13 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
             line->tabstop = FALSE;
             switch( piece ) {
             case PIECE_IMAGE:
-                line->text = LIT( Executable_File );
+                line->text = LIT_DUI( Executable_File );
                 return( TRUE );
             case PIECE_SYMBOL:
-                line->text = LIT( Debug_Information );
+                line->text = LIT_DUI( Debug_Information );
                 return( TRUE );
             case PIECE_DIP:
-                line->text = LIT( Debug_Information_Type );
+                line->text = LIT_DUI( Debug_Information_Type );
                 return( TRUE );
             default:
                 return( FALSE );
@@ -281,6 +281,6 @@ wnd_info ImgInfo = {
 extern WNDOPEN WndImgOpen;
 extern a_window *WndImgOpen()
 {
-    return( DbgTitleWndCreate( LIT( WindowImages ), &ImgInfo, WND_IMAGE,
+    return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE,
             NULL, &ImgIcon, TITLE_SIZE, TRUE ) );
 }

@@ -58,20 +58,20 @@ extern gui_menu_struct  WndMainMenu[];
 extern int              WndNumMenus;
 
 static char **WndDisplayNames[] = {
-    #define pick( a,b,c,d,e,f ) LITREF( f ),
+    #define pick( a,b,c,d,e,f ) LITREF_DUI( f ),
     #include "wndnames.h"
     #undef pick
 };
 
 static char **WhatList[] = {
-    LITREF( mac_popup_menu ),
-    LITREF( mac_main_menu ),
-    LITREF( mac_command_string ),
+    LITREF_DUI( mac_popup_menu ),
+    LITREF_DUI( mac_main_menu ),
+    LITREF_DUI( mac_command_string ),
 };
 
 #define TITLE_SIZE      2
-static char **Titles[] = { LITREF( Key_Name ), LITREF( Mac_Window ),
-                         LITREF( Macro_Type ), LITREF( Definition ) };
+static char **Titles[] = { LITREF_DUI( Key_Name ), LITREF_DUI( Mac_Window ),
+                         LITREF_DUI( Macro_Type ), LITREF_DUI( Definition ) };
 
 enum {
     PIECE_KEY,
@@ -174,11 +174,11 @@ static bool MacModWhat( a_window *wnd, wnd_row row )
     wnd=wnd;
     old = mac->type;
     if( mac->class == WND_ALL ) {
-        new = DlgPickWithRtn( LIT( Macro_Type ), WhatList + 1,
+        new = DlgPickWithRtn( LIT_DUI( Macro_Type ), WhatList + 1,
                        mac->type == MACRO_COMMAND, WndGetName, ArraySize( WhatList ) - 1 );
         if( new != -1 ) ++new;
     } else {
-        new = DlgPickWithRtn( LIT( Macro_Type ), WhatList,
+        new = DlgPickWithRtn( LIT_DUI( Macro_Type ), WhatList,
                        mac->type, WndGetName, ArraySize( WhatList ) );
     }
     if( new != -1 ) {
@@ -214,9 +214,9 @@ bool MacKeyHit( a_window *wnd, unsigned key )
             MacChangeMac( wnd, mac, key, mac->class, wndmac->change_row );
         } else if( wndmac->creating ) {
             wndmac->creating = FALSE;
-            new = DlgPickWithRtn( LIT( Enter_Window ), WndDisplayNames, WND_ALL, WndGetName, WND_CURRENT );
+            new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, WND_ALL, WndGetName, WND_CURRENT );
             if( new == -1 ) return( TRUE );
-            curr = MacAddDel( key, new, AllocCmdList( LIT( Quest_Marks ), strlen( LIT( Quest_Marks ) ) ) );
+            curr = MacAddDel( key, new, AllocCmdList( LIT_ENG( Quest_Marks ), strlen( LIT_ENG( Quest_Marks ) ) ) );
             row = 0;
             for( mac = WndMacroList; mac != curr; mac = mac->link ) {
                 ++row;
@@ -307,7 +307,7 @@ static void MacModWhere( a_window *wnd, wnd_row row )
 
     wnd=wnd;
     def = mac->class == WND_NO_CLASS ? WND_ALL : mac->class;
-    new = DlgPickWithRtn( LIT( Enter_Window ), WndDisplayNames, def, WndGetName, WND_CURRENT );
+    new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, def, WndGetName, WND_CURRENT );
     if( new == -1 ) return;
 //    WndRepaint( wnd );
     MacChangeMac( wnd, mac, mac->key, new, row );
@@ -334,7 +334,7 @@ static void MacModCmd( a_window *wnd, wnd_row row )
     cmds = mac->cmd;
 //    p = StrCopy( cmds->buff, TxtBuff );
     StrCopy( cmds->buff, TxtBuff );
-    if( DlgNew( LIT( Enter_New_Command ), TxtBuff, TXT_LEN ) ) {
+    if( DlgNew( LIT_DUI( Enter_New_Command ), TxtBuff, TXT_LEN ) ) {
         cmds = AllocCmdList( TxtBuff, strlen( TxtBuff ) );
         FreeCmdList( mac->cmd );
         mac->cmd = cmds;
@@ -412,13 +412,13 @@ static void     MacMenuItem( a_window *wnd, unsigned id, int row, int piece )
         break;
     case MENU_MAC_TD:
         FiniMacros();
-        old = ReScan( LIT( Empty ) );
+        old = ReScan( LIT_ENG( Empty ) );
         Invoke( TDDBG, strlen( TDDBG ), NULL );
         ReScan( old );
         break;
     case MENU_MAC_WD:
         FiniMacros();
-        old = ReScan( LIT( Empty ) );
+        old = ReScan( LIT_ENG( Empty ) );
         Invoke( WDDBG, strlen( WDDBG ), NULL );
         ReScan( old );
         break;
@@ -458,9 +458,9 @@ static  bool    MacGetLine( a_window *wnd, int row, int piece,
             return( FALSE );
         } else if( row == WndTop( wnd ) + WndRows( wnd ) / 2 ) {
             if( wndmac->changing ) {
-                line->text = LIT( Redefine_Key );
+                line->text = LIT_DUI( Redefine_Key );
             } else {
-                line->text = LIT( Press_the_Key );
+                line->text = LIT_DUI( Press_the_Key );
             }
         } else {
             line->text = " ";
@@ -510,7 +510,7 @@ static  bool    MacGetLine( a_window *wnd, int row, int piece,
                 cmds = mac->cmd;
                 line->text = cmds->buff;
                 if( line->text[0] == '\0' ) {
-                    line->text = LIT( Quest_Marks );
+                    line->text = LIT_ENG( Quest_Marks );
                 }
                 break;
             case MACRO_MAIN_MENU:
@@ -522,7 +522,7 @@ static  bool    MacGetLine( a_window *wnd, int row, int piece,
                 /* fall thru */
             case MACRO_POPUP_MENU:
                 if( mac->menu == NULL ) {
-                    line->text = LIT( Quest_Marks );
+                    line->text = LIT_ENG( Quest_Marks );
                 } else {
                     line->text = TxtBuff;
                     p = GetMenuLabel( 1, mac->menu, mac->menu->id, p, TRUE );
@@ -629,6 +629,6 @@ extern a_window *WndMacOpen()
     mac_window  *wndmac;
 
     wndmac = WndMustAlloc( sizeof( *wndmac ) );
-    return( DbgTitleWndCreate( LIT( WindowAccelerator ), &MacInfo, WND_MACRO, wndmac, &AclIcon,
+    return( DbgTitleWndCreate( LIT_DUI( WindowAccelerator ), &MacInfo, WND_MACRO, wndmac, &AclIcon,
                           TITLE_SIZE, TRUE ) );
 }

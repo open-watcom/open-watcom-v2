@@ -194,7 +194,7 @@ void WantEquals( void )
 {
     SkipSpaces();
     if( CurrChar != '=' && CurrChar != '#' )
-        OptError( LIT( STARTUP_Expect_Eql ) );
+        OptError( LIT_ENG( STARTUP_Expect_Eql ) );
     NextChar();
     SkipSpaces();
 }
@@ -209,7 +209,7 @@ unsigned long GetValueLong( void )
 
     WantEquals();
     if( !isdigit( CurrChar ) )
-        OptError( LIT( STARTUP_Invalid_Num ) );
+        OptError( LIT_ENG( STARTUP_Invalid_Num ) );
     val = 0;
     do {
         val = val * 10 + CurrChar - '0';
@@ -224,7 +224,7 @@ unsigned GetValue( void )
 
     val = GetValueLong();
     if( val > 0xffff )
-        OptError( LIT( STARTUP_Num_Too_Big ) );
+        OptError( LIT_ENG( STARTUP_Num_Too_Big ) );
     return( val );
 }
 
@@ -294,7 +294,7 @@ void GetRawItem( char *start )
         num = 1;
         for( ;; ) {
             if( CurrChar == ARG_TERMINATE ) {
-                StartupErr( LIT( STARTUP_Expect_Brace ) );
+                StartupErr( LIT_ENG( STARTUP_Expect_Brace ) );
             } else if( CurrChar == '{' ) {
                 ++num;
             } else if( CurrChar == '}' ) {
@@ -391,7 +391,7 @@ static void ProcOptList( int pass )
                 SkipSpaces();
                 break;
             }
-            OptError( LIT( STARTUP_No_Recog_Optn ) );
+            OptError( LIT_ENG( STARTUP_No_Recog_Optn ) );
         }
         switch( Lookup( OptNameTab, buff, curr - buff ) ) {
         case OPT_CONTINUE_UNEXPECTED_BREAK:
@@ -506,7 +506,7 @@ static void ProcOptList( int pass )
             break;
         default:
             if( !ProcSysOption( buff, curr - buff, pass ) ) {
-                Format( err_buff, LIT( STARTUP_Invalid_Option ), buff, curr - buff );
+                Format( err_buff, LIT_ENG( STARTUP_Invalid_Option ), buff, curr - buff );
                 StartupErr( err_buff );
             }
             break;
@@ -547,7 +547,7 @@ void ProcCmd( void )
             CurrArgp = buff;
             ProcOptList( pass );
             if( CurrChar != ARG_TERMINATE ) {
-                OptError( LIT( STARTUP_Expect_End_Env_Str ) );
+                OptError( LIT_ENG( STARTUP_Expect_End_Env_Str ) );
             }
         }
         GetArg = &GetCmdArg;

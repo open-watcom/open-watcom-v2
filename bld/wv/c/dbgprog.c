@@ -235,7 +235,7 @@ static void DoDownLoadCode( void )
         return;
     local = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
     if( local == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TaskCmd );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TaskCmd );
     }
     FileClose( local );
     FindLocalDebugInfo( TxtBuff );
@@ -451,7 +451,7 @@ static image_entry *DoCreateImage( const char *exe, const char *sym )
 
 
     len = (exe==NULL) ? 0 : strlen( exe );
-    _ChkAlloc( image, sizeof( *image ) + len, LIT( ERR_NO_MEMORY_FOR_DEBUG ) );
+    _ChkAlloc( image, sizeof( *image ) + len, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     if( image == NULL )
         return( NULL );
     memset( image, 0, sizeof( *image ) );
@@ -461,7 +461,7 @@ static image_entry *DoCreateImage( const char *exe, const char *sym )
         _Alloc( image->sym_name, strlen( sym ) + 1 );
         if( image->sym_name == NULL ) {
             _Free( image );
-            Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_DEBUG ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
             return( NULL );
         }
         strcpy( image->sym_name, sym );
@@ -540,7 +540,7 @@ static bool CheckLoadDebugInfo( image_entry *image, handle h,
             name = image->sym_name;
             if( name == NULL )
                 name = image->image_name;
-            endstr = Format( buff, LIT( Sym_Info_Load_Failed ), name );
+            endstr = Format( buff, LIT_ENG( Sym_Info_Load_Failed ), name );
             *endstr++ = ' ';
             StrCopy( DIPMsgText( DIPStatus ), endstr );
             Warn( buff );
@@ -773,7 +773,7 @@ void ReMapPoints( image_entry *image )
     if( UserTmpBrk.status.b.has_address ) {
         switch( ReMapOnePoint( &UserTmpBrk, image ) ) {
         case REMAP_ERROR:
-// nobody cares about this warning!!        Warn( LIT( WARN_Unable_To_Remap_Tmp ) );
+// nobody cares about this warning!!        Warn( LIT_ENG( WARN_Unable_To_Remap_Tmp ) );
             UserTmpBrk.status.b.active = FALSE;
             break;
         }
@@ -980,7 +980,7 @@ void ReleaseProgOvlay( bool free_sym )
         CurrProcess = NULL;
     }
     if( !KillProgOvlay() ) {
-        Error( ERR_NONE, LIT( ERR_CANT_KILL_PROGRAM ) );
+        Error( ERR_NONE, LIT_ENG( ERR_CANT_KILL_PROGRAM ) );
     }
     if( free_sym ) {
         _Free( SymFileName );
@@ -997,7 +997,7 @@ void ReleaseProgOvlay( bool free_sym )
 
 OVL_EXTERN void BadNew( void )
 {
-    Error( ERR_LOC, LIT( ERR_BAD_OPTION ), "new" );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
 }
 
 
@@ -1187,12 +1187,12 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     strip = strip; // nyi - strip debug info here
     floc = FileOpen( local, OP_READ );
     if( floc == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), local );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), local );
         return( FALSE );
     }
     frem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
     if( frem == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), remote );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
         FileClose( floc );
         return( FALSE );
     }
@@ -1269,7 +1269,7 @@ static void ResNew( void )
     if( _IsOff( SW_PROC_ALREADY_STARTED ) && _IsOff( SW_POWERBUILDER ) ) {
         DoReStart( have_parms, clen, start, len );
     } else {
-        Error( ERR_NONE, LIT( ERR_CANT_RESTART ) );
+        Error( ERR_NONE, LIT_ENG( ERR_CANT_RESTART ) );
     }
 }
 
@@ -1283,7 +1283,7 @@ void ReStart( void )
         GetProgArgs( args, sizeof( args ) );
         LoadNewProg( prog, args );
     } else {
-        Error( ERR_NONE, LIT( ERR_CANT_RESTART ) );
+        Error( ERR_NONE, LIT_ENG( ERR_CANT_RESTART ) );
     }
 }
 
@@ -1318,7 +1318,7 @@ static void ProgNew( void )
     if( CurrToken == T_DIV ) {
         Scan();
         if( ScanCmd( NogoTab ) != 1 ) {
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), "new" );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
         }
         progstarthook = FALSE;
     }
@@ -1410,13 +1410,13 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
     for( ;; ) {
         switch( addr->segment ) {
         case MAP_FLAT_CODE_SELECTOR:
-            Format( TxtBuff, LIT( Map_Named_Selector ), "Flat Code", image->sym_name );
+            Format( TxtBuff, LIT_ENG( Map_Named_Selector ), "Flat Code", image->sym_name );
             break;
         case MAP_FLAT_DATA_SELECTOR:
-            Format( TxtBuff, LIT( Map_Named_Selector ), "Flat Data", image->sym_name );
+            Format( TxtBuff, LIT_ENG( Map_Named_Selector ), "Flat Data", image->sym_name );
             break;
         default:
-            Format( TxtBuff, LIT( Map_Selector ), addr->segment, image->sym_name );
+            Format( TxtBuff, LIT_ENG( Map_Selector ), addr->segment, image->sym_name );
         }
         mapped.mach.segment = NO_SEG;
         mapped.mach.offset = 0;
@@ -1446,7 +1446,7 @@ OVL_EXTERN void SymFileNew( void )
     addr_off    dummy;
 
     if( ! ScanItem( TRUE, &fname, &fname_len ) ) {
-        Error( ERR_NONE, LIT( ERR_WANT_FILENAME ) );
+        Error( ERR_NONE, LIT_ENG( ERR_WANT_FILENAME ) );
     }
     temp = ScanPos();
     while( !ScanEOC() ) {
@@ -1462,7 +1462,7 @@ OVL_EXTERN void SymFileNew( void )
     image->mapper = MapAddrUser;
     if( !ProcSymInfo( image ) ) {
         FreeImage( image );
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TxtBuff );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
     owner = &image->map_list;
     while( !ScanEOC() ) {
@@ -1470,7 +1470,7 @@ OVL_EXTERN void SymFileNew( void )
         _Alloc( curr, sizeof( *curr ) );
         if( curr == NULL ) {
             DIPUnloadInfo( image->dip_handle );
-            Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_DEBUG ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
         }
         *owner = curr;
         owner = &curr->link;
@@ -1556,14 +1556,14 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     image->mapper = MapAddrUsrMod;
     if( !ProcSymInfo( image ) ) {
         FreeImage( image );
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), fname );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), fname );
     }
     owner = &image->map_list;
 
     _Alloc( curr, sizeof( *curr ) );
     if( curr == NULL ) {
         DIPUnloadInfo( image->dip_handle );
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_DEBUG ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     }
 
     // Save off the load address in a map entry

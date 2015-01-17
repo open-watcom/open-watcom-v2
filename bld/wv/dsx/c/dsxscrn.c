@@ -948,7 +948,7 @@ static void AllocSave( void )
         if( VirtScreen != NULL ) {
             _Alloc( RegenSave, _64K*4 + PageSize );
             if( RegenSave == NULL ) {
-                StartupErr( LIT( ERR_NO_MEMORY ) );
+                StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
             }
             break;
         }
@@ -959,7 +959,7 @@ static void AllocSave( void )
         if( VirtScreen != NULL ) regen_size += PageSize;
         _Alloc( RegenSave, regen_size );
         if( RegenSave == NULL ) {
-            StartupErr( LIT( ERR_NO_MEMORY ) );
+            StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
         }
         regen_size = 8*1024;    /* Font table has to go in low memory */
         break;
@@ -973,7 +973,7 @@ static void AllocSave( void )
     SwapSeg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( regen_size + state_size +
                                           mouse_size * 2 ) );
     if( SwapSeg.segm.pm == 0 ) {
-        StartupErr( LIT( Unable_to_alloc_DOS_mem ) );
+        StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
     StateOff = regen_size;
     if( mouse_size != 0 ) {
@@ -1073,7 +1073,7 @@ void InitScreen( void )
     GUIInitGraphicsMouse( WndStyle );
     if( !uistart() ) {
         UserScreen();
-        StartupErr( LIT( Unable_to_init_ui ) );
+        StartupErr( LIT_DUI( Unable_to_init_ui ) );
     }
     if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 2 );
 }

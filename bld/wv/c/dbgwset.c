@@ -95,7 +95,7 @@ extern void DClickSet( void )
     old = SetCurrRadix( 10 );
     new = ReqExpr();
     ReqEOC();
-    if( new < MIN_DCLICK || new > MAX_DCLICK ) Error( ERR_NONE, LIT( ERR_BAD_DCLICK ) );
+    if( new < MIN_DCLICK || new > MAX_DCLICK ) Error( ERR_NONE, LIT_DUI( ERR_BAD_DCLICK ) );
     WndSetDClick( new );
     SetCurrRadix( old );
 }
@@ -118,7 +118,7 @@ extern void InputSet( void )
     wnd = WndFindClass( NULL, class );
     if( wnd == NULL ) {
         GetCmdEntry( WndNameTab, class+1, TxtBuff );
-        Error( ERR_NONE, LIT( ERR_WIND_NOT_OPEN ), TxtBuff );
+        Error( ERR_NONE, LIT_DUI( ERR_WIND_NOT_OPEN ), TxtBuff );
     }
     WndRestoreToFront( wnd );
 }
@@ -452,7 +452,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
             _Alloc( curr, sizeof( wnd_macro ) );
             if( curr == NULL ) {
                 FreeCmdList( cmds );
-                Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
             }
             curr->key = key;
             curr->class = class;
@@ -460,7 +460,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
             curr->menu = NULL;
             *owner = curr;
         } else {
-            WndMenuSetHotKey( curr->menu, curr->type == MACRO_MAIN_MENU, LIT( Empty ) );
+            WndMenuSetHotKey( curr->menu, curr->type == MACRO_MAIN_MENU, LIT_ENG( Empty ) );
             FreeCmdList( curr->cmd );
         }
         curr->cmd = cmds;
@@ -475,7 +475,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
     } else {
         if( curr != NULL ) {
             *owner = curr->link;
-            WndMenuSetHotKey( curr->menu, curr->type == MACRO_MAIN_MENU, LIT( Empty ) );
+            WndMenuSetHotKey( curr->menu, curr->type == MACRO_MAIN_MENU, LIT_ENG( Empty ) );
             FreeCmdList( curr->cmd );
             _Free( curr );
         }
@@ -503,7 +503,7 @@ extern void MacroSet( void )
     if( ScanItem( TRUE, &start, &len ) ) {
         key = MapKey( start, len );
     }
-    if( key == 0 ) Error( ERR_NONE, LIT( ERR_MACRO_NOT_VALID ) );
+    if( key == 0 ) Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
     scanned = ScanItem( TRUE, &start, &len );
     ReqEOC();
     if( scanned ) {
@@ -551,7 +551,7 @@ extern  void    FiniMacros( void )
     mac = WndMacroList;
     while( mac != NULL ) {
         junk = mac;
-        WndMenuSetHotKey( mac->menu, mac->type == MACRO_MAIN_MENU, LIT( Empty ) );
+        WndMenuSetHotKey( mac->menu, mac->type == MACRO_MAIN_MENU, LIT_ENG( Empty ) );
         mac = mac->link;
         FreeCmdList( junk->cmd );
         _Free( junk );
@@ -580,7 +580,7 @@ extern void TabSet( void )
     old = SetCurrRadix( 10 );
     new = ReqExpr();
     ReqEOC();
-    if( new < 0 || new > MAX_TAB ) Error( ERR_NONE, LIT( ERR_BAD_TAB ) );
+    if( new < 0 || new > MAX_TAB ) Error( ERR_NONE, LIT_DUI( ERR_BAD_TAB ) );
     TabIntervalSet( new );
     SetCurrRadix( old );
 }
@@ -628,7 +628,7 @@ extern void SearchSet( void )
             WndSetSrchRX( FALSE );
             break;
         default:
-            Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             break;
         }
     }

@@ -42,20 +42,20 @@
   #define pick(c,e,j) LITSTR( c, e )
 #endif
 
-#define LITSTR( x, y ) char *LIT( x );
+#define LITSTR( x, y ) char *LIT_ENG( x );
 #include "wdeng.str"
 #undef LITSTR
 
-void InitEngineLiterals()
+void InitEngineLiterals( void )
 {
-    #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_ENG_LITERAL_##x );
+    #define LITSTR( x, y ) LIT_ENG( x ) = DUILoadString( DBG_ENG_LITERAL_##x );
     #include "wdeng.str"
     #undef LITSTR
 }
 
-void FiniEngineLiterals()
+void FiniEngineLiterals( void )
 {
-    #define LITSTR( x, y ) DbgFree( LIT( x ) );
+    #define LITSTR( x, y ) DbgFree( LIT_ENG( x ) );
     #include "wdeng.str"
     #undef LITSTR
 }

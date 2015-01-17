@@ -1920,9 +1920,9 @@ bool DUIImageLoaded( image_entry *image, bool load,
     already_stopping=already_stopping;
     force_stop= force_stop;
     if( load ) {
-        sprintf( buff, "%s '%s'", LIT( DLL_Loaded ), image->image_name );
+        sprintf( buff, "%s '%s'", LIT_ENG( DLL_Loaded ), image->image_name );
     } else {
-        sprintf( buff, "%s '%s'", LIT( DLL_UnLoaded ), image->image_name );
+        sprintf( buff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( buff );
     return( FALSE );

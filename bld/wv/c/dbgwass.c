@@ -280,7 +280,7 @@ static void AsmSetTitle( a_window *wnd )
     const char  *image_name;
     asm_window  *asw = WndAsm( wnd );
 
-    p = StrCopy( ": ", StrCopy( LIT( WindowAssembly ), TxtBuff ) );
+    p = StrCopy( ": ", StrCopy( LIT_DUI( WindowAssembly ), TxtBuff ) );
     p += ModName( asw->mod, p, TXT_LEN );
     image_name = ModImageName( asw->mod );
     if( image_name[0] != '\0' ) {
@@ -535,12 +535,12 @@ static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
         break;
     case MENU_ASM_SHOW_MODULE:
         mod = asw->mod;
-        if( DlgModName( LIT( New_Module ), &mod ) ) {
+        if( DlgModName( LIT_DUI( New_Module ), &mod ) ) {
             WndAsmInspect( ModFirstAddr( mod ) );
         }
         break;
     case MENU_ASM_NEW_ADDRESS:
-        if( DlgCodeAddr( LIT( New_Addr ), &addr ) ) {
+        if( DlgCodeAddr( LIT_DUI( New_Addr ), &addr ) ) {
             WndAsmInspect( addr );
         }
         break;
@@ -723,7 +723,7 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
                  || CueFileId( ch ) != asw->src_list.file_id ) {
                     AsmNewSource( asw, ch );
                 }
-                Format( TxtBuff, LIT( No_Source_Line ), src_line );
+                Format( TxtBuff, LIT_DUI( No_Source_Line ), src_line );
                 if( asw->viewhndl != NULL ) {
                     len = FReadLine( asw->viewhndl, src_line, 0, TxtBuff, TXT_LEN );
                     if( len > 0 ) TxtBuff[len] = '\0';
@@ -1055,7 +1055,7 @@ extern a_window *DoWndAsmOpen( address addr, bool track )
     asw->cache_addr = NilAddr;
     asw->dotaddr = NilAddr;
     asw->last_width = 0;
-    wnd = DbgTitleWndCreate( LIT( WindowAssembly ), &AsmInfo, WND_ASSEMBLY,
+    wnd = DbgTitleWndCreate( LIT_DUI( WindowAssembly ), &AsmInfo, WND_ASSEMBLY,
                              asw, &AsmIcon, TITLE_SIZE, FALSE );
     if( wnd == NULL ) return( wnd );
     asw->track = track;

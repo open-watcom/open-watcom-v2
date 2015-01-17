@@ -341,15 +341,15 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         break;
     case 5:
         if( ScanSavePtr >= MAX_SCANSAVE_PTRS )
-            Error( ERR_INTERNAL, LIT( ERR_TOO_MANY_SCANSAVE ) );
+            Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANSAVE ) );
         CurrScan[ScanSavePtr++] = ScanPos();
         break;
     case 6:
-        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT( ERR_TOO_MANY_SCANRESTORE ) );
+        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
         ReScan( CurrScan[--ScanSavePtr] );
         break;
     case 7:
-        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT( ERR_TOO_MANY_SCANRESTORE ) );
+        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
         --ScanSavePtr;
         break;
     case 8:
@@ -378,7 +378,7 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         break;
     case 14:
         if( NestedCallLevel == MAX_NESTED_CALL - 1 ) {
-            Error( ERR_NONE, LIT( ERR_TOO_MANY_CALLS ) );
+            Error( ERR_NONE, LIT_ENG( ERR_TOO_MANY_CALLS ) );
         } else {
             PgmStackUsage[ ++NestedCallLevel ] = 0;
         }
@@ -390,13 +390,13 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         PopEntry();
         if( ExprSP->info.kind == TK_STRING ) {
             if( value < 0 || value >= ExprSP->info.size ) {
-                Error( ERR_NONE, LIT( ERR_BAD_SUBSTRING_INDEX ) );
+                Error( ERR_NONE, LIT_ENG( ERR_BAD_SUBSTRING_INDEX ) );
             }
             LocationAdd( &ExprSP->v.string.loc, value*8 );
             ExprSP->info.size -= value;
             ExprSP->v.string.ss_offset = value;
         } else {
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
         break;
     case 16:
@@ -407,11 +407,11 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         if( ExprSP->info.kind == TK_STRING ) {
             value -= ExprSP->v.string.ss_offset;
             if( value < 0 || value >= ExprSP->info.size ) {
-                Error( ERR_NONE, LIT( ERR_BAD_SUBSTRING_INDEX ) );
+                Error( ERR_NONE, LIT_ENG( ERR_BAD_SUBSTRING_INDEX ) );
             }
             ExprSP->info.size = value;
         } else {
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
         break;
     case 17:
@@ -573,7 +573,7 @@ static void DoMinusScaled( void )
             SwapStack( 3 );
             MoveSP( -1 );
             if( !TstEQ( 1 ) ) {
-                Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+                Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             }
             PopEntry();
             MoveSP( 1 );
@@ -589,7 +589,7 @@ static void DoMinusScaled( void )
     default:
         switch( ExprSP->info.kind ) {
         case TK_POINTER:
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             break;
         }
     }
@@ -728,7 +728,7 @@ static unsigned MechDo( unsigned select, unsigned parm )
             if( ExprSP->flags & SF_NAME ) {
                 ExprSP->v.li.file_scope = TRUE;
             } else {
-                Error( ERR_LOC, LIT( ERR_WANT_NAME ) );
+                Error( ERR_LOC, LIT_ENG( ERR_WANT_NAME ) );
             }
         } else {
             /* in a namespace */
@@ -801,7 +801,7 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
     case 2:
         ParseRegSet( TRUE, &ll, &ti );
         if( ti.size != 0 ) {
-            if( ti.kind == TK_NONE ) Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            if( ti.kind == TK_NONE ) Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             PushLocation( &ll, &ti );
             result = TRUE;
         }
@@ -1017,7 +1017,7 @@ static walk_result FindModCue( mod_handle mod, void *d )
         WalkFileList( mod, FindCue, fd );
         if( fd->id == 0 ) return( WR_CONTINUE );
         if( fd->ambig ) {
-            Error( ERR_NONE, LIT( ERR_AMBIG_SRC_FILE ), fd->name, fd->len );
+            Error( ERR_NONE, LIT_ENG( ERR_AMBIG_SRC_FILE ), fd->name, fd->len );
         }
     }
     fd->found_a_file = TRUE;
@@ -1051,7 +1051,7 @@ static search_result FindACue( cue_handle *ch )
 
     if( CurrGet.multi_module ) {
         if( data.len == 0 ) {
-            Error( ERR_NONE, LIT( ERR_WANT_MODULE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_WANT_MODULE ) );
         }
         if( WalkModList( CurrGet.li.mod, FindModCue, &data ) == WR_FAIL ) {
             return( SR_FAIL );
@@ -1063,7 +1063,7 @@ static search_result FindACue( cue_handle *ch )
         }
     }
     if( !data.found_a_file ) {
-        Error( ERR_NONE, LIT( ERR_NO_SRC_FILE ), data.name, data.len );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_SRC_FILE ), data.name, data.len );
     }
     if( data.best_line == 0 ) return( SR_NONE );
     if( data.best_line == CurrGet.li.name.len ) return( SR_EXACT );
@@ -1118,7 +1118,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
             case SR_CLOSEST:
                 if( ClosestLineOk ) break;
             default:
-                Error( ERR_NONE, LIT( ERR_NO_CODE ), CurrGet.li.name.len );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_CODE ), CurrGet.li.name.len );
             }
             PushAddr( CueAddr( ch ) );
             break;
@@ -1154,7 +1154,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
                     #define ANY_IMAGE_NAME_LEN  (sizeof(ANY_IMAGE_NAME)-1)
                     if( CurrGet.li.name.len != ANY_IMAGE_NAME_LEN
                       || memicmp( CurrGet.li.name.start, ANY_IMAGE_NAME, ANY_IMAGE_NAME_LEN ) != 0 ) {
-                        Error( ERR_NONE, LIT( ERR_NO_IMAGE ), CurrGet.li.name.start,
+                        Error( ERR_NONE, LIT_ENG( ERR_NO_IMAGE ), CurrGet.li.name.start,
                                               CurrGet.li.name.len );
                     } else {
                         CurrGet.any_image = TRUE;
@@ -1170,7 +1170,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
         if( CurrGet.li.name.start != NULL ) {
             CurrGet.li.mod = LookupModName( CurrGet.li.mod, CurrGet.li.name.start, CurrGet.li.name.len );
             if( CurrGet.li.mod == NO_MOD ) {
-                Error( ERR_NONE, LIT( ERR_NO_MODULE ), CurrGet.li.name.start,
+                Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), CurrGet.li.name.start,
                                       CurrGet.li.name.len );
             }
             CurrGet.multi_module = FALSE;
@@ -1309,36 +1309,36 @@ int SSLError( unsigned class, unsigned error )
     case 2: /* error stream */
         switch( error ) {
         case 0:
-            Error( ERR_NONE, LIT( ERR_DUPLICATE_TYPE_SPEC ) );
+            Error( ERR_NONE, LIT_ENG( ERR_DUPLICATE_TYPE_SPEC ) );
             break;
         case 1:
-            Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             break;
         case 2:
-            Error( ERR_NONE, LIT( ERR_ILLEGAL_TYPE_SPEC ) );
+            Error( ERR_NONE, LIT_ENG( ERR_ILLEGAL_TYPE_SPEC ) );
             break;
         case 3:
-            Error( ERR_LOC, LIT( ERR_WANT_REG_NAME ) );
+            Error( ERR_LOC, LIT_ENG( ERR_WANT_REG_NAME ) );
             break;
         case 4:
-            Error( ERR_LOC, LIT( ERR_WANT_OPERAND ) );
+            Error( ERR_LOC, LIT_ENG( ERR_WANT_OPERAND ) );
             break;
         case 5:
-            Error( ERR_LOC, LIT( ERR_WANT_NAME ) );
+            Error( ERR_LOC, LIT_ENG( ERR_WANT_NAME ) );
             break;
         case 6:
-            Error( ERR_NONE, LIT( ERR_BAD_PARSE_VERSION ) );
+            Error( ERR_NONE, LIT_ENG( ERR_BAD_PARSE_VERSION ) );
             break;
         default:
-            Error( ERR_INTERNAL, LIT( ERR_PARSE_FILE ) );
+            Error( ERR_INTERNAL, LIT_ENG( ERR_PARSE_FILE ) );
             break;
         }
         break;
     case 3: /* stack overflow */
-        Error( ERR_LOC, LIT( ERR_EXPR_STACK_OVER ) );
+        Error( ERR_LOC, LIT_ENG( ERR_EXPR_STACK_OVER ) );
         break;
     case 4: /* kill (error in SSL file) */
-        Error( ERR_INTERNAL, LIT( ERR_PARSE_FILE ) );
+        Error( ERR_INTERNAL, LIT_ENG( ERR_PARSE_FILE ) );
         break;
     }
     return( 1 );

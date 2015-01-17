@@ -92,14 +92,14 @@ extern void SymComplete( gui_window *gui, int id )
     }
     switch( num ) {
     case 0:
-        WndMsgBox( LIT( No_Match_Found ) );
+        WndMsgBox( LIT_DUI( No_Match_Found ) );
         new = -1;
         break;
     case 1:
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT( Symbol_List ), &first, 0, SymGetName, num );
+        new = DlgPickWithRtn( LIT_DUI( Symbol_List ), &first, 0, SymGetName, num );
         break;
     }
     strcpy( TxtBuff, savebuff );

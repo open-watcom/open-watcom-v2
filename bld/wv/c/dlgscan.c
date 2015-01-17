@@ -98,7 +98,7 @@ OVL_EXTERN void GetModName( void *value )
     ScanItem( FALSE, &start, &len );
     mod = LookupModName( NO_MOD, start, len );
     if( mod == NO_MOD ) {
-        Error( ERR_NONE, LIT( ERR_NO_MODULE ), start, len );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), start, len );
     }
     Scan();
     ReqEOC();

@@ -237,7 +237,7 @@ void GoToReturn( void )
     if( !IS_NIL_ADDR( ra ) ) {
         GoToAddr( ra );
     } else {
-        Error( ERR_NONE, LIT( ERR_NO_RETURN_ADDRESS ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_RETURN_ADDRESS ) );
     }
 }
 
@@ -275,7 +275,7 @@ void ProcGo( void )
             until = TRUE;
             break;
         default:
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_GO ) );
+            Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_GO ) );
         }
     }
     if( !have_keep ) TraceKill();
@@ -309,7 +309,7 @@ void ProcGo( void )
                 } else {
                     NullStatus( &UserTmpBrk );
                 }
-                Error( ERR_NONE, LIT( ERR_INCONSISTENT_GO ) );
+                Error( ERR_NONE, LIT_ENG( ERR_INCONSISTENT_GO ) );
             }
             SetTempBreak( stop );
         } else if( have_keep ) {
@@ -374,7 +374,7 @@ void ProcIf( void )
             res = ReqU64Expr();
         }
         if( !ScanQuote( &start, &len ) ) {
-            Error( ERR_LOC, LIT( ERR_WANT_COMMAND_LIST ) );
+            Error( ERR_LOC, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
         }
         if( U64Test( &res ) != 0 ) {
             true_start = start;
@@ -412,7 +412,7 @@ void ProcWhile( void )
 
     res = ReqU64Expr();
     if( !ScanQuote( &start, &len ) || len == 0 ) {
-        Error( ERR_LOC, LIT( ERR_WANT_COMMAND_LIST ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
     }
     ReqEOC();
     if( U64Test( &res ) != 0 ) {
@@ -438,7 +438,7 @@ void ProcError( void )
     ReqEOC();
     memcpy( TxtBuff, start, len );
     TxtBuff[ len ] = NULLCHAR;
-    Error( ERR_NONE, LIT( ERR_GENERIC ), TxtBuff );
+    Error( ERR_NONE, LIT_ENG( ERR_GENERIC ), TxtBuff );
 }
 
 
@@ -466,9 +466,9 @@ static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
     *p++ = ' ';
     *p++ = ' ';
     switch( thd->state ) {
-    case THD_THAW:  p1 = LIT( Runnable ); break;
-    case THD_FREEZE:p1 = LIT( Frozen );   break;
-    case THD_DEAD:  p1 = LIT( Dead );     break;
+    case THD_THAW:  p1 = LIT_ENG( Runnable ); break;
+    case THD_FREEZE:p1 = LIT_ENG( Frozen );   break;
+    case THD_DEAD:  p1 = LIT_ENG( Dead );     break;
     default:        p1 = "";              break;
     }
     p1 = StrCopy( p1, p );
@@ -485,7 +485,7 @@ void MakeThdCurr( thread_state *thd )
     // NYI - PUI - record the thread change?
     WriteDbgRegs();
     if( RemoteSetThreadWithErr( thd->tid, &err ) == 0 ) {
-        Error( ERR_NONE, LIT( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
     }
     DbgRegs->tid = thd->tid;
     ReadDbgRegs();
@@ -500,7 +500,7 @@ void MakeRunThdCurr( thread_state *thd )
 
     if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
     if( RemoteSetRunThreadWithErr( thd->tid, &err ) == 0 ) {
-        Error( ERR_NONE, LIT( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
     }
     DbgRegs->tid = thd->tid;
     ReadDbgRegs();
@@ -720,7 +720,7 @@ void ProcThread( void )
     if( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( ThreadOps );
-        if( cmd == T_BAD ) Error( ERR_NONE, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_THREAD ) );
+        if( cmd == T_BAD ) Error( ERR_NONE, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_THREAD ) );
     }
     CheckForNewThreads( FALSE );
     if( CurrToken == T_MUL ) {
@@ -744,13 +744,13 @@ void ProcThread( void )
     }
     ReqEOC();
     if( all ) {
-        if( cmd == T_CHANGE ) Error( ERR_NONE, LIT( ERR_CANT_SET_ALL_THREADS ) );
+        if( cmd == T_CHANGE ) Error( ERR_NONE, LIT_ENG( ERR_CANT_SET_ALL_THREADS ) );
         for( thd = HeadThd; thd != NULL; thd = thd->link ) {
             ThdCmd( thd, cmd );
         }
     } else {
         thd = FindThread( tid );
-        if( thd == NULL ) Error( ERR_NONE, LIT( ERR_NO_SUCH_THREAD ), tid );
+        if( thd == NULL ) Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_THREAD ), tid );
         ThdCmd( thd, cmd );
     }
 }

@@ -33,5 +33,8 @@
 #include "wdmsg.h"
 #include "litdef.gh"
 
-#define LIT( x ) _LIT_DBG_##x
-#define LITREF( x ) &LIT( x )
+#define LIT_ENG( x ) _LIT_DBG_ENG_##x
+#define LITREF_ENG( x ) &LIT_ENG( x )
+
+#define LIT_DUI( x ) _LIT_DBG_DUI_##x
+#define LITREF_DUI( x ) &LIT_DUI( x )

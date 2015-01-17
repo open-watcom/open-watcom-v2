@@ -122,7 +122,7 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
     bp = FindBreak( tmp_bp->loc.addr );
     if( bp != NULL && bp != dlg->bp ) {
         _SwitchOn( SW_ERROR_RETURNS );
-        Error( ERR_NONE, LIT( ERR_POINT_EXISTS ) );
+        Error( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
         _SwitchOff( SW_ERROR_RETURNS );
         return( FALSE );
     }
@@ -290,7 +290,7 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
             if( DlgEditField( dlg->last_edit ) ) {
                 SymComplete( gui, dlg->last_edit );
             } else {
-                WndMsgBox( LIT( No_text_to_complete ) );
+                WndMsgBox( LIT_DUI( No_text_to_complete ) );
             }
             return( TRUE );
         }
@@ -348,7 +348,7 @@ bool DlgBreak( address addr )
         dlg.cmd_error = TRUE;
     }
     dlg.tmpbp = *bp;
-    CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT( DlgBreak ), TxtBuff ) ), TXT_LEN );
+    CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
     ResDlgOpen( &BrkEvent, &dlg, DIALOG_BREAK );
     SetRecord( TRUE );
     return( !dlg.cancel );

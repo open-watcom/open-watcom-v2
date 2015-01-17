@@ -65,14 +65,14 @@ extern void ModComplete( gui_window *gui, int id )
     ModListAddModules( &list, NO_MOD, FALSE );
     switch( ModListNumRows( &list ) ) {
     case 0:
-        WndMsgBox( LIT( No_Match_Found ) );
+        WndMsgBox( LIT_DUI( No_Match_Found ) );
         new = -1;
         break;
     case 1:
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT( Modules ), &list, 0,
+        new = DlgPickWithRtn( LIT_DUI( Modules ), &list, 0,
                               ModGetName, ModListNumRows( &list ) );
         break;
     }

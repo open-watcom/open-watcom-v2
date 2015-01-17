@@ -105,7 +105,7 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
     if( row >= VarRowTotal( i ) ) return( NULL );
     row_v = VarFindRowNode( i, row );
     if( !row_v->value_valid ) {
-        VarSetValue( row_v, LIT( Quest_Marks ) );
+        VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
         row_v->value_valid = FALSE;
     }
     if( !row_v->gadget_valid ) {
@@ -818,8 +818,8 @@ void VarRestoreWndFromScope( void *wnd )
 
 void PopErrBox( const char *buff )
 {
-    printf( "%s: %s\n", buff, LIT( Debugger_Startup_Error ) );
-//    MessageBox( (HWND) NULL, buff, LIT( Debugger_Startup_Error ),
+    printf( "%s: %s\n", buff, LIT_ENG( Debugger_Startup_Error ) );
+//    MessageBox( (HWND) NULL, buff, LIT_ENG( Debugger_Startup_Error ),
 //            MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
 
@@ -918,9 +918,9 @@ bool DUIImageLoaded( image_entry *image, bool load,
     already_stopping=already_stopping;
     force_stop= force_stop;
     if( load ) {
-        sprintf( buff, "%s '%s'", LIT( DLL_Loaded ), image->image_name );
+        sprintf( buff, "%s '%s'", LIT_ENG( DLL_Loaded ), image->image_name );
     } else {
-        sprintf( buff, "%s '%s'", LIT( DLL_UnLoaded ), image->image_name );
+        sprintf( buff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( buff );
     return( FALSE );

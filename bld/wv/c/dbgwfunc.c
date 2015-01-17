@@ -323,9 +323,9 @@ extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
         func->is_global = FALSE;
     }
     if( is_global ) {
-        title = LIT( WindowGlobal_Functions );
+        title = LIT_DUI( WindowGlobal_Functions );
     } else {
-        title = LIT( WindowFunctions );
+        title = LIT_DUI( WindowFunctions );
     }
     return( DbgWndCreate( title, &FuncInfo, class, func, &FuncIcon ) );
 }

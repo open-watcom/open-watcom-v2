@@ -67,7 +67,7 @@ OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
         return( FALSE );
     case INP_RTN_FINI:
         FreeCmdList( cmds );
-        old = ReScan( LIT( Empty ) );
+        old = ReScan( LIT_ENG( Empty ) );
         StdOutNew();
         ReScan( old );
         if( CaptureOk ) {
@@ -89,7 +89,7 @@ extern void ProcCapture( void )
     char        *end;
 
     if( !ScanItem( FALSE, &start, &len ) )
-        Error( ERR_NONE, LIT( ERR_WANT_COMMAND_LIST ) );
+        Error( ERR_NONE, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
     ReqEOC();
     cmds = AllocCmdList( start, len );
     end = FileName + sizeof( FileName );

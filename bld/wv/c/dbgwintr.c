@@ -56,7 +56,7 @@ extern const char       WndNameTab[];
 static void BadCmd( a_window *wnd )
 {
     wnd=wnd;
-    Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
 

@@ -54,7 +54,7 @@ char *ImgSymName( image_entry *img, bool always )
             return( img->image_name );
         }
     } else {
-        return( LIT( Empty ) );
+        return( LIT_ENG( Empty ) );
     }
 }
 

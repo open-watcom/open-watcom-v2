@@ -72,8 +72,8 @@ static bool DoDlgGet( gui_window *gui, unsigned id, void *value, bool (*rtn)(con
 
     str = GUIGetText( gui, id );
     if( str == NULL ) {
-        str = LIT( Empty );
-        ok = rtn( LIT( Empty ), value );
+        str = LIT_ENG( Empty );
+        ok = rtn( LIT_ENG( Empty ), value );
     } else {
         ok = rtn( str, value );
         GUIMemFree( str );

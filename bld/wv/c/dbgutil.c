@@ -483,12 +483,12 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
     _Alloc( new, sizeof( input_stack ) );
     if( new == NULL ) {
         rtn( handle, INP_RTN_FINI ); /* clean up handle */
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
     if( save_lang ) {
         lang = DupStr( Language );
         if( lang == NULL ) {
-            Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         }
         new->lang = lang;
     } else {
@@ -600,7 +600,7 @@ OVL_EXTERN bool DoneNull( inp_data_handle buff, inp_rtn_action action )
 
 void FreezeInpStack( void )
 {
-    PushInpStack( LIT( Empty ), DoneNull, FALSE );
+    PushInpStack( LIT_ENG( Empty ), DoneNull, FALSE );
     TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
 }
 
@@ -621,7 +621,7 @@ const char *ModImageName( mod_handle handle )
 
     image = ImageEntry( handle );
     if( image == NULL || image == ImagePrimary() ) {
-        return( LIT( Empty ) );
+        return( LIT_ENG( Empty ) );
     } else {
         return( SkipPathInfo( image->image_name, OP_REMOTE ) );
     }

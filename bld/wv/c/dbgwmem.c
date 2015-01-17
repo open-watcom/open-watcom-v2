@@ -144,7 +144,7 @@ static void MemValidAddr( address addr )
 
     if( _IsOff( SW_RUNNING_PROFILE ) ) {
         if( ProgPeekWrap( addr, &ch, 1 ) != 1 ) {
-            Error( ERR_NONE, LIT( ERR_NO_READ_MEM ), addr );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_READ_MEM ), addr );
         }
     }
 }
@@ -153,7 +153,7 @@ static char *MemGetTitle( mem_window *mem )
 {
     char        *p;
 
-    p = StrCopy( LIT( WindowMemory ), TxtBuff );
+    p = StrCopy( LIT_DUI( WindowMemory ), TxtBuff );
     p = StrCopy( " (", p );
     p = AddrToString( &mem->u.m.home, MAF_FULL, p, TXT_LEN - ( p - TxtBuff ) );
     p = StrCopy( ")", p );
@@ -286,14 +286,14 @@ static void MemGetNewAddr( a_window *wnd )
 
         offset = mem->u.f.offset;
         old = NewCurrRadix( 10 );
-        rc = DlgLongExpr( LIT( New_Offset ), &offset );
+        rc = DlgLongExpr( LIT_DUI( New_Offset ), &offset );
         NewCurrRadix( old );
         if( !rc ) return;
         if( (unsigned long)offset > mem->u.f.size ) return;
         mem->u.f.offset = offset;
     } else {
         addr = mem->u.m.home;
-        if( !DlgDataAddr( LIT( New_Addr ), &addr ) ) return;
+        if( !DlgDataAddr( LIT_DUI( New_Addr ), &addr ) ) return;
         MemValidAddr( addr );
         MemSetStartAddr( wnd, addr, TRUE );
         WndNoCurrent( wnd );
@@ -512,7 +512,7 @@ static void MemNewBackout( a_window *wnd )
     mem->u.m.backout = backout;
     for( backout = backout->next; backout != NULL; backout = backout->next ) {
         if( AddrComp( mem->u.m.backout->home, backout->home ) == 0 ) {
-            Warn( LIT( WARN_Cycle_Detected ) );
+            Warn( LIT_DUI( WARN_Cycle_Detected ) );
             return;
         }
     }
@@ -534,7 +534,7 @@ static void MemFollow( a_window *wnd )
             mem->total_size = 0;
             if( ProgPeekWrap( new_addr, &ch, 1 ) != 1 ) {
                 MemBackout( wnd );
-                Error( ERR_NONE, LIT( ERR_NO_READ_MEM ), new_addr );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_READ_MEM ), new_addr );
             }
             MemSetStartAddr( wnd, new_addr, TRUE );
         }
@@ -575,7 +575,7 @@ static void SetBreakWrite( a_window *wnd )
     addr = AddrAddWrap( mem->u.m.addr, MemCurrOffset( wnd ) );
     StrAddr( &addr, buff, TXT_LEN );
     if( !BreakWrite( addr, MemData.info[ mem->piece_type ].type, buff ) ) {
-        Error( ERR_NONE, LIT( ERR_NOT_WATCH_SIZE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
     }
 }
 
@@ -876,7 +876,7 @@ void InitMemWindow()
         MemTypeMenu[ i ].id = MENU_MEMORY_FIRST_TYPE + i;
         MemTypeMenu[ i ].style = GUI_ENABLED | WND_MENU_ALLOCATED;
         MemTypeMenu[ i ].label = DupStr( MemData.labels[ i ] );
-        MemTypeMenu[ i ].hinttext = DupStr( LIT( Empty ) );
+        MemTypeMenu[ i ].hinttext = DupStr( LIT_ENG( Empty ) );
         MemTypeMenu[ i ].num_child_menus = 0;
         MemTypeMenu[ i ].child = NULL;
     }
@@ -1047,7 +1047,7 @@ a_window        *WndStkOpen( void )
     mem->init_type = GetMADTypeHandleDefaultAt( Context.stack, MTK_INTEGER );
     mem->file = FALSE;
     mem->stack = TRUE;
-    wnd = DbgTitleWndCreate( LIT( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, FALSE );
+    wnd = DbgTitleWndCreate( LIT_DUI( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, FALSE );
     return( wnd );
 }
 

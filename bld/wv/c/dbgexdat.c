@@ -107,7 +107,7 @@ OVL_EXTERN void TypeExam( void )
 
     th = ScanType( MAS_ALL | MTK_ALL, &tk );
     if( th == MAD_NIL_TYPE_HANDLE ) {
-        Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_EXAMINE ) );
+        Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_EXAMINE ) );
     }
     if( tk & MAS_IO ) {
         IOExam( th );

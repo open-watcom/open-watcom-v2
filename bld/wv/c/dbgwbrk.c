@@ -201,7 +201,7 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
     case PIECE_OPENER:
     {
         mod_handle              mh;
-        line->text = LIT( Empty );
+        line->text = LIT_DUI( Empty );
         if( bp->size == 0 ) {
             DeAliasAddrMod( bp->loc.addr, &mh );
             bp->status.b.source_open =
@@ -349,7 +349,7 @@ extern a_window *WndBrkOpen()
     break_window        *brkw;
 
     brkw = WndMustAlloc( sizeof( *brkw ) );
-    wnd = DbgWndCreate( LIT( WindowBrk ), &BrkInfo, WND_BREAK, brkw, &BrkIcon );
+    wnd = DbgWndCreate( LIT_DUI( WindowBrk ), &BrkInfo, WND_BREAK, brkw, &BrkIcon );
     if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }

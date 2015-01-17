@@ -41,6 +41,6 @@ extern void             DbgUpdate( update_list );
 
 void DlgSource( void )
 {
-    DlgList( LIT( New_Source ), FiniSource, AddSourceSpec, NextSourceSpec, SourceName );
+    DlgList( LIT_DUI( New_Source ), FiniSource, AddSourceSpec, NextSourceSpec, SourceName );
     DbgUpdate( UP_NEW_SRC );
 }

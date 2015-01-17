@@ -38,8 +38,8 @@
 
 
 char **DosErrMsgs[] = {
-    LITREF( Empty ),
-    #define pickdoserr(id,text) LITREF(ERR_DOS_##id),
+    LITREF_ENG( Empty ),
+    #define pickdoserr(id,text) LITREF_ENG(ERR_DOS_##id),
     #include "_doserr.h"
     #undef pickdoserr
 };

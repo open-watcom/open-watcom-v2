@@ -85,7 +85,7 @@ char DOS4GOPTIONS[] =
 void InitAboutMessage()
 {
     char *version = banner1( "", _WD_VERSION_ ) ".";
-    char *name = LIT( The_WATCOM_Debugger );
+    char *name = LIT_DUI( The_WATCOM_Debugger );
     AboutMessage[0] = WndMustAlloc( strlen( version ) + strlen( name ) + 1 );
     StrCopy( version, StrCopy( name, AboutMessage[0] ) );
 }

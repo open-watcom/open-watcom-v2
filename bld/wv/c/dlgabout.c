@@ -44,9 +44,9 @@ extern  void    DlgAbout()
     int         i;
     char        *p;
 
-    p = StrCopy( LIT( Empty ), TxtBuff );
+    p = StrCopy( LIT_ENG( Empty ), TxtBuff );
     for( i = 0; i < AboutSize; ++i ) {
         p = StrCopy( "\r", StrCopy( AboutMessage[i], p ) );
     }
-    Say2( LIT( About_The_WATCOM_Debugger ), TxtBuff );
+    Say2( LIT_DUI( About_The_WATCOM_Debugger ), TxtBuff );
 }

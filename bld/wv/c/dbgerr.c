@@ -72,7 +72,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
     va_start( args, fmt );
     ptr = buff;
     if( flg & ERR_INTERNAL ) {
-        ptr = StrCopy( LIT( Internal_Error ), ptr );
+        ptr = StrCopy( LIT_ENG( Internal_Error ), ptr );
     }
     ptr = FmtStr( ptr, fmt, args );
     ptr = StrCopy( ".", ptr );
@@ -80,14 +80,14 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         ptr = StrCopy( "\n    ", ptr );
         switch( CurrToken ) {
         case T_CMD_SEPARATOR:
-            ptr = StrCopy( LIT( ERR_NEAR_END_OF_COMMAND ), ptr );
+            ptr = StrCopy( LIT_ENG( ERR_NEAR_END_OF_COMMAND ), ptr );
             break;
         case T_LINE_SEPARATOR:
-            ptr = StrCopy( LIT( ERR_NEAR_END_OF_LINE ), ptr );
+            ptr = StrCopy( LIT_ENG( ERR_NEAR_END_OF_LINE ), ptr );
             break;
         default:
             if( ScanLen() == 0 ) Scan();
-            ptr = Format( ptr, LIT( ERR_NEAR_TOKEN ), ScanPos(), ScanLen() );
+            ptr = Format( ptr, LIT_ENG( ERR_NEAR_TOKEN ), ScanPos(), ScanLen() );
             break;
         }
     }
@@ -113,13 +113,13 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         Suicide();
     }
     if( (flg & ERR_SILENT) == 0 ) {
-        where = LIT( ERR_EXECUTING_AT );
+        where = LIT_ENG( ERR_EXECUTING_AT );
         for( inp = InpStack; inp != NULL; inp = inp->link ) {
             if( inp->type & INP_CMD_FILE ) {
                 inv = inp->handle;
                 ptr = StrCopy( "\n    ", ptr );
                 ptr = Format( ptr, where, inv->line, inv->name );
-                where = LIT( ERR_CALLED_FROM );
+                where = LIT_ENG( ERR_CALLED_FROM );
             }
         }
         DUIFlushKeys();
@@ -140,7 +140,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         }
     }
     PurgeInpStack();
-    if( cmderror && fmt != LIT( ERR_DBG_INTERRUPT ) ) {
+    if( cmderror && fmt != LIT_ENG( ERR_DBG_INTERRUPT ) ) {
         DlgCmd();
         ProcInput();
     }

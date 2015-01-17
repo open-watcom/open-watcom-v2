@@ -55,7 +55,7 @@ BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
         GetWindowThreadProcessId(hwnd, &PidPB );
     }
     if( GetWindowText( hwnd, buff, sizeof( buff ) ) != 0 ) {
-        if( stricmp( buff, LIT( The_WATCOM_Debugger_for_PowerBuilder ) ) == 0 ) {
+        if( stricmp( buff, LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) ) == 0 ) {
             AlreadyRunning = true;
         }
     }
@@ -70,19 +70,19 @@ const char *CheckForPowerBuilder( const char *name )
         return( name );
     EnumWindows( FindPidPB, 0 );
     if( AlreadyRunning ) {
-        StartupErr( LIT( PowerBuilder_Debugger_Already_Running ) );
+        StartupErr( LIT_DUI( PowerBuilder_Debugger_Already_Running ) );
         return( "" );
     }
     if( PidPB == 0 ) {
-        StartupErr( LIT( PowerBuilder_Not_Running ) );
+        StartupErr( LIT_DUI( PowerBuilder_Not_Running ) );
         return( "" );
     } else {
         pid[0] = '#';
         itoa( PidPB, pid + 1, 16 );
 #ifdef __GUI__
-        WndSetTitle( WndMain, LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
+        WndSetTitle( WndMain, LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
 #else
-        SetConsoleTitle( LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
+        SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
 #endif
         return( pid );
     }

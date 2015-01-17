@@ -46,6 +46,6 @@ extern void         AddDLLList( const char *start, unsigned len );
 void DlgBreakDLL( void )
 {
     RecordClearDLLBreaks();
-    DlgList( LIT( DLL_Name ), FiniDLLList, AddDLLList, NextDLLList, DLLListName );
+    DlgList( LIT_DUI( DLL_Name ), FiniDLLList, AddDLLList, NextDLLList, DLLListName );
     RecordSetDLLBreaks();
 }

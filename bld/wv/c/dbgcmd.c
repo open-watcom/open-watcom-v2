@@ -64,7 +64,7 @@ static void DoOneCmd( void *_cmd )
     char        *cmd = _cmd;
 
     if( cmd[0] == NULLCHAR ) {
-        DUIDlgTxt( LIT( Empty ) );
+        DUIDlgTxt( LIT_ENG( Empty ) );
     } else {
         PushInpStack( cmd, DoneCmd, FALSE );
         TypeInpStack( INP_DLG_CMD );

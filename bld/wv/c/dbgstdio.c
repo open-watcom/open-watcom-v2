@@ -53,10 +53,10 @@ static void StdioRedirect( bool input )
     ReqEOC();
     if( !Redirect( input, buff ) ) {
         if( len == 0 ) {
-            Error( ERR_NONE, input ? LIT( ERR_CANNOT_RESTORE_STDIN ) :
-                                     LIT( ERR_CANNOT_RESTORE_STDOUT ) );
+            Error( ERR_NONE, input ? LIT_ENG( ERR_CANNOT_RESTORE_STDIN ) :
+                                     LIT_ENG( ERR_CANNOT_RESTORE_STDOUT ) );
         } else {
-            Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), buff );
+            Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), buff );
         }
     }
 }

@@ -103,7 +103,7 @@ void CreateLC( stack_entry *entry )
     location_context    *new;
 
     if( entry->lc == NULL ) {
-        _ChkAlloc( new, sizeof( *new ), LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+        _ChkAlloc( new, sizeof( *new ), LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
         InitLC( new, FALSE );
         entry->lc = new;
     }
@@ -146,7 +146,7 @@ void CreateEntry( void )
     unsigned    size;
 
     size = sizeof( stack_entry ) + type_SIZE + sym_SIZE;
-    _ChkAlloc( new, size, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+    _ChkAlloc( new, size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     memset( new, 0, size );
     new->up = ExprSP;
     new->dn = ExprSP->dn;
@@ -194,12 +194,12 @@ stack_entry *StkEntry( int amount )
 
     new = ExprSP;
     for( ; amount > 0; --amount ) {
-        if( new == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT( ERR_STK_OVERFL ) );
+        if( new == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_OVERFL ) );
         new = new->up;
     }
     for( ; amount < 0; ++amount ) {
         new = new->dn;
-        if( new == NULL ) Error( ERR_LOC+ERR_INTERNAL, LIT( ERR_STK_UNDERFL ) );
+        if( new == NULL ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
     }
     return( new );
 }
@@ -287,8 +287,8 @@ char *DupStringVal( stack_entry *stk )
     char *dest;
 
     if( stk->info.size == 0 ) return( NULL );
-    if( stk->info.size >= UINT_MAX ) Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
-    _ChkAlloc( dest, stk->info.size, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+    if( stk->info.size >= UINT_MAX ) Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    _ChkAlloc( dest, stk->info.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     memcpy( dest, stk->v.string.loc.e[0].u.p, stk->info.size );
     return( dest );
 }
@@ -512,7 +512,7 @@ void PushString( void )
 
 void PopEntry( void )
 {
-    if( ExprSP == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT( ERR_STK_UNDERFL ) );
+    if( ExprSP == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
     DeleteEntry( ExprSP );
 }
 
@@ -573,7 +573,7 @@ unsigned TstEQ( unsigned true_value )
         break;
     default:
         temp = 0;
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     PushBool( temp ? true_value : 0 );
@@ -618,7 +618,7 @@ unsigned TstLT( unsigned true_value )
         break;
     default:
         temp = 0;
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         break;
     }
     PushBool( temp ? true_value : 0 );
@@ -778,7 +778,7 @@ void AddSubscript( void )
         ConvertTo( ExprSP, TK_INTEGER, TM_SIGNED, sizeof( ExprSP->v.sint ) );
         break;
     default:
-        Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
     PushNum( ai.low_bound );
     DoMinus();

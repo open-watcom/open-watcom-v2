@@ -248,7 +248,7 @@ static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
         if( inv != NULL ) _Free( inv );
         FileClose( hndl );
         FreeRing( parmlist );
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
     strcpy( inv->name, name );
     inv->in_size = 0;
@@ -271,7 +271,7 @@ void Invoke( const char *invfile, int len, char_ring *parmlist )
     if( hndl == NIL_HANDLE ) {
         MakeFileName( TxtBuff, invfile, "dbg", 0 );
         FreeRing( parmlist );
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TxtBuff );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
     DoInvoke( hndl, TxtBuff, parmlist );
 }
@@ -302,7 +302,7 @@ void ProfileInvoke( char *name )
         strcpy( &name[1], EXENAME );
         strcat( name, "rc" );
         strlwr( name );
-        hndl = LocalFullPathOpen( name, strlen( name ), LIT( Empty ), TxtBuff, TXT_LEN );
+        hndl = LocalFullPathOpen( name, strlen( name ), LIT_ENG( Empty ), TxtBuff, TXT_LEN );
         if( hndl != NIL_HANDLE ) {
             DoInvoke( hndl, TxtBuff, NULL );
             return;
@@ -328,7 +328,7 @@ void ProcInvoke( void )
     size_t      len;
 
     if( !ScanItem( TRUE, &fstart, &flen ) )
-        Error( ERR_LOC, LIT( ERR_WANT_FILENAME ) );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_FILENAME ) );
     parmlist = NULL;
     owner = &parmlist;
     while( !ScanEOC() ) {
@@ -336,7 +336,7 @@ void ProcInvoke( void )
         _Alloc( path, sizeof( char_ring ) + len );
         if( path == NULL ) {
             FreeRing( parmlist );
-            Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         }
         memcpy( path->name, start, len );
         path->name[ len ] = NULLCHAR;

@@ -213,7 +213,7 @@ void DUIInit( void )
     InitAboutMessage();
     InitIOWindow();
     InitMenus();
-    WndInit( LIT( The_WATCOM_Debugger ) );
+    WndInit( LIT_DUI( The_WATCOM_Debugger ) );
     _SwitchOff( SW_ERROR_STARTUP );
 #if defined(__GUI__)
     TellWinHandle();
@@ -286,7 +286,7 @@ wnd_class ReqWndName( void )
     wnd_class   class;
 
     class = ScanCmd( WndNameTab );
-    if( class == 0 ) Error( ERR_LOC, LIT( ERR_BAD_WIND_NAME ) );
+    if( class == 0 ) Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );
     return( class-1 );
 }
 
@@ -313,7 +313,7 @@ int DUIScreenSizeX( void )
 
 void DUIErrorBox( const char *buff )
 {
-    WndDisplayMessage( buff, LIT( Error ), GUI_INFORMATION + GUI_SYSTEMMODAL );
+    WndDisplayMessage( buff, LIT_DUI( Error ), GUI_INFORMATION + GUI_SYSTEMMODAL );
 }
 
 void DUIArrowCursor( void )
@@ -328,7 +328,7 @@ char *DUILoadString( int i )
 
 bool DUIAskIfAsynchOk( void )
 {
-    return( WndDisplayMessage( LIT( WARN_Asynch_Event ), LIT( Empty ), GUI_YES_NO ) == GUI_RET_YES );
+    return( WndDisplayMessage( LIT_DUI( WARN_Asynch_Event ), LIT_ENG( Empty ), GUI_YES_NO ) == GUI_RET_YES );
 }
 
 void DUIFlushKeys( void )
@@ -471,9 +471,9 @@ bool DUIImageLoaded( image_entry *image, bool load,
     already_stopping=already_stopping;
     force_stop= force_stop;
     if( load ) {
-        Format( TxtBuff, "%s '%s'", LIT( DLL_Loaded ), image->image_name );
+        Format( TxtBuff, "%s '%s'", LIT_ENG( DLL_Loaded ), image->image_name );
     } else {
-        Format( TxtBuff, "%s '%s'", LIT( DLL_UnLoaded ), image->image_name );
+        Format( TxtBuff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( TxtBuff );
     return( FALSE );

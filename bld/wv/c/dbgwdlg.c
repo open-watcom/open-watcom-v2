@@ -239,6 +239,6 @@ extern WNDOPEN WndDlgOpen;
 extern a_window *WndDlgOpen( void )
 {
     if( WndDlg != NULL ) WndClose( WndDlg );
-    WndDlg = DbgWndCreate( LIT( WindowLog ), &LogInfo, WND_DIALOGUE, NULL, &LogIcon );
+    WndDlg = DbgWndCreate( LIT_DUI( WindowLog ), &LogInfo, WND_DIALOGUE, NULL, &LogIcon );
     return( WndDlg );
 }

@@ -75,7 +75,7 @@ void InitScreen( void )
 {
     DebuggerHwnd = GetForegroundWindow();
     GetConsoleTitle( OldTitle, sizeof( OldTitle ) );
-    SetConsoleTitle( LIT( The_WATCOM_Debugger ) );
+    SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger ) );
     if( uistart() ) {
         if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
     }

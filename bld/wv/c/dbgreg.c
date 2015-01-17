@@ -407,7 +407,7 @@ void InitMachState( void )
     other = AllocState();
     other->action = ACTION_NONE;
     if( StateCurr == NULL || other == NULL ) {
-        StartupErr( LIT( ERR_NO_MEMORY ) );
+        StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
     }
     other->next = StateCurr;
     other->prev = StateCurr;
@@ -441,13 +441,13 @@ void SetupMachState( void )
         _Alloc( state->s.ovl, OvlSize );
         if( state->s.ovl == NULL ) {
             ReleaseProgOvlay( FALSE );
-            Error( ERR_NONE, LIT( ERR_NO_OVL_STATE ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_OVL_STATE ) );
         }
         state = state->next;
     } while( state != StateCurr );
     if( !InitOvlState() ) {
         ReleaseProgOvlay( FALSE );
-        Error( ERR_NONE, LIT( ERR_NO_OVL_STATE ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_OVL_STATE ) );
     }
     SectTblRead( DbgRegs );
 }
@@ -473,7 +473,7 @@ machine_state *AllocMachState( void )
         if( state->ovl == NULL ) {
             _Free( state );
             state = NULL;
-            Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         }
     }
     return( state );
@@ -708,7 +708,7 @@ void MoveStackPos( int by )
     move_info   info;
 
     if( StackPos + by > 0 ) {
-        Warn( LIT( Bottom_Of_Stack ) );
+        Warn( LIT_ENG( Bottom_Of_Stack ) );
         return;
     }
     info.targ = StackPos + by;
@@ -718,7 +718,7 @@ void MoveStackPos( int by )
     if( info.success ) {
         SetStackPos( &info.lc, info.targ );
     } else {
-        Warn( LIT( Top_Of_Stack ) );
+        Warn( LIT_ENG( Top_Of_Stack ) );
     }
 }
 
@@ -742,7 +742,7 @@ void PosMachState( int rel_pos )
     if( rel_pos > 0 ) {
         adv = UndoLevel();
         if( rel_pos > adv ) {
-            Warn( LIT( No_More_Undos ) );
+            Warn( LIT_ENG( No_More_Undos ) );
             rel_pos = adv;
         }
         for( i = rel_pos; i > 0; --i ) {
@@ -751,7 +751,7 @@ void PosMachState( int rel_pos )
     } else {
         bkup = RedoLevel();
         if( -rel_pos > bkup ) {
-            Warn( LIT( No_More_Undos ) );
+            Warn( LIT_ENG( No_More_Undos ) );
             rel_pos = -bkup;
         }
         for( i = rel_pos; i < 0; ++i ) {
@@ -760,7 +760,7 @@ void PosMachState( int rel_pos )
     }
     if( new->s.tid != DbgRegs->tid ) {
         if( FindThread( new->s.tid ) == NULL ) {
-            Warn( LIT( Thread_Not_Exist ) );
+            Warn( LIT_ENG( Thread_Not_Exist ) );
             rel_pos = 0;
         } else {
             RemoteSetThread( new->s.tid );
@@ -881,19 +881,19 @@ char *GetActionString( int action )
 {
     switch( action ) {
     case ACTION_EXECUTE:
-        return( LIT( Str_ACTION_EXECUTE ) );
+        return( LIT_ENG( Str_ACTION_EXECUTE ) );
     case ACTION_ASSIGNMENT:
-        return( LIT( Str_ACTION_ASSIGNMENT ) );
+        return( LIT_ENG( Str_ACTION_ASSIGNMENT ) );
     case ACTION_THREAD_CHANGE:
-        return( LIT( Str_ACTION_THREAD_CHANGE ) );
+        return( LIT_ENG( Str_ACTION_THREAD_CHANGE ) );
     case ACTION_MODIFY_IP:
-        return( LIT( Str_ACTION_MODIFY_IP ) );
+        return( LIT_ENG( Str_ACTION_MODIFY_IP ) );
     case ACTION_MODIFY_MEMORY:
-        return( LIT( Str_ACTION_MODIFY_MEMORY ) );
+        return( LIT_ENG( Str_ACTION_MODIFY_MEMORY ) );
     case ACTION_MODIFY_REGISTER:
-        return( LIT( Str_ACTION_MODIFY_REGISTER ) );
+        return( LIT_ENG( Str_ACTION_MODIFY_REGISTER ) );
     case ACTION_MODIFY_VARIABLE:
-        return( LIT( Str_ACTION_MODIFY_VARIABLE ) );
+        return( LIT_ENG( Str_ACTION_MODIFY_VARIABLE ) );
     case ACTION_NONE:
         return( NULL );
     default:

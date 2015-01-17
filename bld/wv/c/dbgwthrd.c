@@ -166,10 +166,10 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
         case 0:
             switch( piece ) {
             case PIECE_ID:
-                line->text = LIT( ID );
+                line->text = LIT_DUI( ID );
                 return( TRUE );
             case PIECE_STATE:
-                line->text = LIT( State );
+                line->text = LIT_DUI( State );
                 return( TRUE );
             case PIECE_NAME:
                 line->text = TxtBuff;
@@ -199,35 +199,35 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
             return( TRUE );
         case PIECE_STATE:
             if( IsThdCurr( thd ) ) {
-                line->text = LIT( Current );
+                line->text = LIT_ENG( Current );
             } else {
                 switch( thd->state ) {
                 case THD_THAW:
-                    line->text = LIT( Runnable );
+                    line->text = LIT_ENG( Runnable );
                     break;
                 case THD_FREEZE:
-                    line->text = LIT( Frozen );
+                    line->text = LIT_ENG( Frozen );
                     break;
                 case THD_WAIT:
-                    line->text = LIT( Wait );
+                    line->text = LIT_ENG( Wait );
                     break;  
                 case THD_SIGNAL:
-                    line->text = LIT( Signal );
+                    line->text = LIT_ENG( Signal );
                     break;  
                 case THD_KEYBOARD:
-                    line->text = LIT( Keyboard );
+                    line->text = LIT_ENG( Keyboard );
                     break;  
                 case THD_BLOCKED:
-                    line->text = LIT( Blocked );
+                    line->text = LIT_ENG( Blocked );
                     break;  
                 case THD_RUN:
-                    line->text = LIT( Executing );
+                    line->text = LIT_ENG( Executing );
                     break;  
                 case THD_DEBUG:
-                    line->text = LIT( Debug );
+                    line->text = LIT_ENG( Debug );
                     break;
                 case THD_DEAD:
-                    line->text = LIT( Dead );
+                    line->text = LIT_ENG( Dead );
                     break;
                 }
             }
@@ -262,6 +262,6 @@ wnd_info TrdInfo = {
 
 a_window *WndTrdOpen()
 {
-    return( DbgTitleWndCreate( LIT( WindowThreads ), &TrdInfo, WND_THREAD, NULL,
+    return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL,
                                &TrdIcon, TITLE_SIZE, TRUE ) );
 }

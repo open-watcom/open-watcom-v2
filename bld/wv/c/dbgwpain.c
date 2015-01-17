@@ -270,7 +270,7 @@ static wnd_attr ScanAttr( attr_map *map, int size )
             return( map[i].attr );
         }
     }
-    Error( ERR_LOC, LIT( ERR_BAD_WINDOW_ATTR ) );
+    Error( ERR_LOC, LIT_DUI( ERR_BAD_WINDOW_ATTR ) );
     return( 0 );
 }
 
@@ -291,7 +291,7 @@ static gui_colour ScanColour( void )
             return( ColourMap[i].colour );
         }
     }
-    Error( ERR_LOC, LIT( ERR_BAD_COLOUR_ATTR ) );
+    Error( ERR_LOC, LIT_DUI( ERR_BAD_COLOUR_ATTR ) );
     return( 0 );
 }
 

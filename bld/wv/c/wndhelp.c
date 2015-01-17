@@ -73,7 +73,7 @@ static void LocateHelpFile( void )
     }
 #if !defined(__UNIX__)
     if( DUIEnvLkup( "WWINHELP", buff, sizeof( buff ) ) == 0 ) {
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TxtBuff );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
     StrCopy( ".ihp", StrCopy( HELPNAME, StrCopy( "\\", StrCopy( buff, TxtBuff ) ) ) );
     h = FileOpen( TxtBuff, OP_READ );
@@ -82,7 +82,7 @@ static void LocateHelpFile( void )
         return;
     }
 #endif
-    Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TxtBuff );
+    Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
 }
 #endif
 
@@ -98,7 +98,7 @@ void DoProcHelp( gui_help_actions action )
         return;
     }
     if( Handle == 0 || !GUIShowHelp( Handle, WndGui( WndMain ), action, TxtBuff, "" ) ) {
-        Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TxtBuff );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
 }
 

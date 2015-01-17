@@ -121,7 +121,7 @@ static void SetRadixSpec( const char *str, unsigned len, unsigned radix, bool cl
 
 void InitScan( void )
 {
-    ScanPtr = LIT( Empty );
+    ScanPtr = LIT_ENG( Empty );
     TokenStart = ScanPtr;
     CurrToken = T_LINE_SEPARATOR;
     RadStrs = NULL;
@@ -247,7 +247,7 @@ mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
     mad_type_handle     th = 0;
 
     if( tk & MAS_MEMORY ) {
-        th = DoScanType( tk & ~MAS_IO, LIT( Empty ) );
+        th = DoScanType( tk & ~MAS_IO, LIT_ENG( Empty ) );
         if( th != MAD_NIL_TYPE_HANDLE ) {
             if( tkr != NULL )
                 *tkr = MAS_MEMORY;
@@ -255,7 +255,7 @@ mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
         }
     }
     if( tk & MAS_IO ) {
-        th = DoScanType( tk & ~MAS_MEMORY, LIT( IO ) );
+        th = DoScanType( tk & ~MAS_MEMORY, LIT_ENG( IO ) );
         if( th != MAD_NIL_TYPE_HANDLE ) {
             if( tkr != NULL )
                 *tkr = MAS_IO;
@@ -327,17 +327,17 @@ bool TokenName( unsigned token, const char **start, unsigned *len )
 {
     switch( token ) {
     case T_LINE_SEPARATOR:
-        *start = LIT( End_Of_Line );
-        *len = strlen( LIT( End_Of_Line ) ) + 1;
+        *start = LIT_ENG( End_Of_Line );
+        *len = strlen( LIT_ENG( End_Of_Line ) ) + 1;
         return( TRUE );
     case T_INT_NUM:
     case T_REAL_NUM:
-        *start = LIT( Num_Name );
-        *len = strlen( LIT( Num_Name ) ) + 1;
+        *start = LIT_ENG( Num_Name );
+        *len = strlen( LIT_ENG( Num_Name ) ) + 1;
         return( TRUE );
     case T_NAME:
-        *start = LIT( Sym_Name_Name );
-        *len = strlen( LIT( Sym_Name_Name ) ) + 1;
+        *start = LIT_ENG( Sym_Name_Name );
+        *len = strlen( LIT_ENG( Sym_Name_Name ) ) + 1;
         return( TRUE );
     }
     if( token < LAST_CMDLN_DELIM ) {
@@ -360,7 +360,7 @@ void Recog( unsigned token )
 
     if( token != CurrToken ) {
         TokenName( token, &start, &len );
-        Error( ERR_LOC, LIT( ERR_WANT_TOKEN ), start, len );
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_TOKEN ), start, len );
     }
     Scan();
 }
@@ -429,7 +429,7 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
 
 void ReqEOC( void )
 {
-    if( !ScanEOC() ) Error( ERR_LOC, LIT( ERR_WANT_EOC ) );
+    if( !ScanEOC() ) Error( ERR_LOC, LIT_ENG( ERR_WANT_EOC ) );
 }
 
 
@@ -696,7 +696,7 @@ void AddActualChar( char data )
     _Alloc( hold, len );
     if( hold == NULL ) {
         _Free( StringStart );
-        Error( ERR_NONE, LIT( ERR_NO_MEMORY_FOR_EXPR ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     }
     walk1 = hold;
     walk2 = StringStart;
@@ -730,7 +730,7 @@ static void RawScan( void )
         StringStart = NULL;   /* this is necessary */
         StringLength = 0;
         scan_string = FALSE;  /* this is essential */
-        Error( ERR_NONE, LIT( ERR_WANT_END_STRING ) );
+        Error( ERR_NONE, LIT_ENG( ERR_WANT_END_STRING ) );
     }
     if( *ScanPtr != NULLCHAR ) {
         TokenStart = ScanPtr;
@@ -876,7 +876,7 @@ void RadixSet( void )
     ReScan( TokenStart );
     ReqEOC();
     if( radix < 2 || radix > 36 ) {
-        Error( ERR_NONE, LIT( ERR_BAD_RADIX ), radix );
+        Error( ERR_NONE, LIT_ENG( ERR_BAD_RADIX ), radix );
     }
     SetCurrRadix( old );
     DefaultRadixSet( radix );

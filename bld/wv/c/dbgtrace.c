@@ -483,7 +483,7 @@ static char DoTrace( debug_level curr_level )
         if( TraceState.type == TRACE_NEXT ) {
             if( DeAliasAddrCue( NO_MOD, GetCodeDot(), line ) == SR_NONE
               || CueAdjust( line, 1, line ) != DS_OK ) {
-                Warn( LIT( WARN_No_Nxt_Src_Ln ) );
+                Warn( LIT_ENG( WARN_No_Nxt_Src_Ln ) );
                 return( STOP );
             }
             DbgTmpBrk.loc.addr = CueAddr( line );
@@ -621,7 +621,7 @@ void ExecTrace( trace_cmd_type type, debug_level level )
         break;
     case SOURCE:
         if( !HasLineInfo( TraceState.saveaddr ) ) {
-            Error( ERR_NONE, LIT( ERR_NO_SOURCE_INFO ) );
+            Error( ERR_NONE, LIT_ENG( ERR_NO_SOURCE_INFO ) );
         }
         /* fall through */
     default:
@@ -650,14 +650,14 @@ void ProcTrace( void )
         if( level_index == 0 ) {
             type_index = ScanCmd( TraceTab2 );
             if( type_index == 0 ) {
-                Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
+                Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
             }
         } else {
             if( CurrToken == T_DIV ) {  /* do second set of commands */
                 Scan();
                 type_index = ScanCmd( TraceTab2 );
                 if( type_index == 0 ) {
-                    Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
+                    Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
                 }
             }
         }
@@ -691,7 +691,7 @@ void LevelSet( void )
     int trace_level;
 
     trace_level = ScanCmd( LevelTab );
-    if( trace_level == 0 ) Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+    if( trace_level == 0 ) Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
     ReqEOC();
     DbgLevel = trace_level - 1;
 }

@@ -43,11 +43,11 @@
   #define pick(c,e,j) LITSTR( c, e )
 #endif
 
-#define LITSTR( x, y ) extern char *LIT( x );
+#define LITSTR( x, y ) extern char *LIT_ENG( x );
 #include "wdeng.str"
 #undef LITSTR
 
-#define LITSTR( x, y ) extern char *LIT( x );
+#define LITSTR( x, y ) extern char *LIT_DUI( x );
 #include "wddui.str"
 #undef LITSTR
 

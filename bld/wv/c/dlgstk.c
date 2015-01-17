@@ -99,13 +99,13 @@ bool DlgBackInTime( bool lost_mem_state )
     if( lost_mem_state ) {
         return( DoStackOrHistory( DIALOG_HISTORY ) );
     } else {
-        return( WndDisplayMessage( LIT( WARN_Losing_Redo ), LIT( Empty ),
+        return( WndDisplayMessage( LIT_DUI( WARN_Losing_Redo ), LIT_ENG( Empty ),
                              GUI_YES_NO ) == GUI_RET_YES );
     }
 }
 
 bool DlgIncompleteUndo( void )
 {
-    return( WndDisplayMessage( LIT( WARN_Incomplete_Undo ), LIT( Empty ),
+    return( WndDisplayMessage( LIT_DUI( WARN_Incomplete_Undo ), LIT_ENG( Empty ),
                              GUI_YES_NO ) == GUI_RET_YES );
 }

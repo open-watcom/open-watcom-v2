@@ -214,7 +214,7 @@ char *Attributes( type_display *curr, char *p )
 
 static void oops( void )
 {
-    Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_SET ) );
+    Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_SET ) );
 }
 
 static void ScanLeftBrace( void )

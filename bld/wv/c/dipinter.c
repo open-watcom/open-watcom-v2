@@ -96,7 +96,7 @@ sym_handle *DIGCLIENT DIPCliSymCreate( void *d )
     sym_list    **sl_head = d;
     sym_list    *new;
 
-    _ChkAlloc( new, sizeof(sym_list)-sizeof(byte) + sym_SIZE, LIT( ERR_NO_MEMORY_FOR_DEBUG ) );//
+    _ChkAlloc( new, sizeof(sym_list)-sizeof(byte) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );//
     new->next = *sl_head;
     *sl_head = new;
     return( SL2SH( new ) );
@@ -348,7 +348,7 @@ static unsigned DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im,
 static char *DIGREGISTER WVModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 {
     ii = ii; im = im;
-    return( LIT( Empty ) );
+    return( LIT_ENG( Empty ) );
 }
 
 static dip_status DIGREGISTER WVModInfo( imp_image_handle *ii, imp_mod_handle im,
@@ -898,31 +898,31 @@ static dip_imp_routines InternalInterface = {
 };
 
 static char **DIPErrTxt[] = {
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( LDS_TOO_MANY_DIPS ),
-    LITREF( LDS_INVALID_DIP_VERSION ),
-    LITREF( LDS_NO_MEM ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( LDS_FOPEN_FAILED ),
-    LITREF( LDS_FREAD_FAILED ),
-    LITREF( LDS_FWRITE_FAILED ),
-    LITREF( LDS_FSEEK_FAILED ),
-    LITREF( LDS_INVALID_DIP ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( LDS_INFO_INVALID ),
-    LITREF( LDS_INFO_BAD_VERSION ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( Empty ),
-    LITREF( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( LDS_TOO_MANY_DIPS ),
+    LITREF_ENG( LDS_INVALID_DIP_VERSION ),
+    LITREF_ENG( LDS_NO_MEM ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( LDS_FOPEN_FAILED ),
+    LITREF_ENG( LDS_FREAD_FAILED ),
+    LITREF_ENG( LDS_FWRITE_FAILED ),
+    LITREF_ENG( LDS_FSEEK_FAILED ),
+    LITREF_ENG( LDS_INVALID_DIP ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( LDS_INFO_INVALID ),
+    LITREF_ENG( LDS_INFO_BAD_VERSION ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
+    LITREF_ENG( Empty ),
 };
 
 char *DIPMsgText( dip_status status )
@@ -940,7 +940,7 @@ static bool CheckDIPLoad( char *dip, bool defaults )
     if( ret != DS_OK ) {
         if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) return( FALSE );
         DIPFini();
-        Format( TxtBuff, LIT( DIP_load_failed ), dip, DIPMsgText( ret ) );
+        Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ret ) );
         StartupErr( TxtBuff );
     }
     return( TRUE );
@@ -954,11 +954,11 @@ void InitDbgInfo()
     unsigned    dip_count;
 
     if( DIPInit() != DS_OK ) {
-        StartupErr( LIT( STARTUP_DIP_Not_Init ) );
+        StartupErr( LIT_ENG( STARTUP_DIP_Not_Init ) );
     }
     if( DIPRegister( &InternalInterface ) != DS_OK ) {
         DIPFini();
-        StartupErr( LIT( STARTUP_DIP_Not_Register ) );
+        StartupErr( LIT_ENG( STARTUP_DIP_Not_Register ) );
     }
     dip = DipFiles;
     if( *dip == NULL ) {
@@ -971,7 +971,7 @@ void InitDbgInfo()
         }
         if( dip_count == 0 ) {
             DIPFini();
-            d = StrCopy( LIT( No_DIPs_Found ), TxtBuff );
+            d = StrCopy( LIT_ENG( No_DIPs_Found ), TxtBuff );
             *d++ = ' ';
             *d++ = '(';
             p = DIPDefaults;

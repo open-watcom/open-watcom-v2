@@ -248,7 +248,7 @@ static void     SrchMenuItem( a_window *wnd, unsigned id, int row, int piece )
         new = WndModInspect( srch->found[ row ].mod );
         if( new == NULL ) break;
         WndSetSrchIgnoreCase( srch->ignore_case );
-        WndSetMagicStr( srch->use_rx ? srch->magic_str : LIT( Empty ) );
+        WndSetMagicStr( srch->use_rx ? srch->magic_str : LIT_ENG( Empty ) );
         WndSetSrchItem( new, srch->expr );
         WndSearch( new, TRUE, 1 );
         break;
@@ -372,7 +372,7 @@ static a_window *DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cooki
         return( NULL );
     }
     srch->rx = rx;
-    return( DbgWndCreate( LIT( WindowSearch ), &SrchInfo, WND_ALL, srch, &SrchIcon ) );
+    return( DbgWndCreate( LIT_DUI( WindowSearch ), &SrchInfo, WND_ALL, srch, &SrchIcon ) );
 }
 
 a_window *WndSrchOpen( const char *expr )
