@@ -390,9 +390,10 @@ bool DlgGivenAddr( const char *title, address *value )
     return( FALSE );
 }
 
-void DlgNewWithSym( const char *title, char *buff, int buff_len )
+bool DlgNewWithSym( const char *title, char *buff, int buff_len )
 {
     // used by print command with no arguments
+    return( true );
 }
 
 bool DlgUpTheStack( void )

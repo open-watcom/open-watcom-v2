@@ -90,7 +90,7 @@ static bool NewSymEvent( gui_window * gui, gui_event event, void * param )
     }
 }
 
-static void DoDlgNew( const char *title, char *buff, unsigned buff_len, comp_type type )
+static bool DoDlgNew( const char *title, char *buff, unsigned buff_len, comp_type type )
 {
     if( type == COMPLETE_SYMBOL ) {
         CompRtn = &SymComplete;
@@ -101,17 +101,17 @@ static void DoDlgNew( const char *title, char *buff, unsigned buff_len, comp_typ
     }
     Controls[1].text = LIT_DUI( OK );
     Controls[3].text = LIT_DUI( Cancel );
-    DlgNewWithCtl( title, buff, buff_len,
+    return( DlgNewWithCtl( title, buff, buff_len,
                    Controls, ArraySize( Controls ), NewSymEvent,
-                   DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS );
+                   DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS ) );
 }
 
-void    DlgNewWithMod( const char *title, char *buff, unsigned buff_len )
+bool    DlgNewWithMod( const char *title, char *buff, unsigned buff_len )
 {
-    DoDlgNew( title, buff, buff_len, COMPLETE_MODULE );
+    return( DoDlgNew( title, buff, buff_len, COMPLETE_MODULE ) );
 }
 
-void    DlgNewWithSym( const char *title, char *buff, unsigned buff_len )
+bool    DlgNewWithSym( const char *title, char *buff, unsigned buff_len )
 {
-    DoDlgNew( title, buff, buff_len, COMPLETE_SYMBOL );
+    return( DoDlgNew( title, buff, buff_len, COMPLETE_SYMBOL ) );
 }
