@@ -40,7 +40,7 @@
 #include "dbgio.h"
 #include "filermt.h"
 
-extern void             WndTmpFileInspect( char *file, bool binary );
+extern void             WndTmpFileInspect( const char *file );
 extern void             StdOutNew( void );
 
 #define PREFIX_LEN      2
@@ -71,7 +71,7 @@ OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
         StdOutNew();
         ReScan( old );
         if( CaptureOk ) {
-            WndTmpFileInspect( FileName, FALSE );
+            WndTmpFileInspect( FileName );
         }
         return( TRUE );
     }

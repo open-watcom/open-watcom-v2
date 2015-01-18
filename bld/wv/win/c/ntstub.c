@@ -50,9 +50,9 @@ void RestoreHandlers()
 {
 }
 
-bool TBreak()
+bool TBreak( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 long _fork( const char *cmd, size_t len )

@@ -135,7 +135,7 @@ void RestoreHandlers()
 {
 }
 
-bool TBreak()
+bool TBreak( void )
 {
     bool    ret;
 

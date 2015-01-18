@@ -175,7 +175,7 @@ long _fork( const char *cmd, size_t len )
     return( rc );
 }
 
-bool TBreak()
+bool TBreak( void )
 {
     bool    ret;
 

@@ -58,18 +58,18 @@ void interrupt Interrupt10( union REGS r )
     _chain_intr( _old10 );
 }
 
-static volatile char Pending;
+static volatile bool Pending;
 void interrupt Interrupt1b_23( void )
 {
-    Pending = 0xff;
+    Pending = true;
 }
 
-char TBreak( void ) {
+bool TBreak( void ) {
 
-    char tmp;
+    bool tmp;
 
     tmp = Pending;
-    Pending = 0;
+    Pending = false;
     return( tmp );
 }
 

@@ -1488,9 +1488,10 @@ bool DlgAreYouNuts( unsigned long mult )
     // used when too many break on write points are set
     return( FALSE );
 }
-bool DlgBackInTime( void )
+bool DlgBackInTime( bool news )
 {
     // used when trying to trace, but we've backed up over a call or asynch
+    warn = warn;
     return( FALSE );
 }
 bool DlgIncompleteUndo()
@@ -1786,29 +1787,33 @@ extern void WndIOInspect( address *addr, mad_type_handle type )
 {
     // used by examine/iobyte/ioword/etc command
 }
-extern void WndTmpFileInspect( char *file, bool binary )
+extern void WndTmpFileInspect( const char *file )
 {
     // used by capture command
+    file = file;
 }
 extern void GraphicDisplay( void )
 {
     // used by print/window command
 }
-extern void VarUnMapScopes( struct image_entry *image )
+extern void VarUnMapScopes( image_entry *img )
 {
     // unmap variable scopes - prog about to restart
+    img = img;
 }
-extern void VarReMapScopes( struct image_entry *image )
+extern void VarReMapScopes( image_entry *img )
 {
     // remap variable scopes - prog about to restart
+    img = img;
 }
 extern void VarFreeScopes( void )
 {
     // free variable scope info
 }
-extern void SetLastExe( char *name )
+extern void SetLastExe( const char *name )
 {
     // remember last exe debugged name
+    name = name;
 }
 extern void DUIProcPendingPaint( void )
 {

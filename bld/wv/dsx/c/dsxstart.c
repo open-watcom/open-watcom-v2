@@ -63,12 +63,12 @@ short   _ExtenderRealModeSelector;
 extern void CheckForBrk(void);
 #pragma aux CheckForBrk = "mov  ah,0xb"  "int   0x21"
 
-char TBreak( void )
+bool TBreak( void )
 {
-    char        tmp;
+    bool        tmp;
 
     tmp = PMData->pending;
-    PMData->pending = 0;
+    PMData->pending = false;
     return( tmp );
 }
 
