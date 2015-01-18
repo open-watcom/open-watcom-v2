@@ -314,7 +314,7 @@ static bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-void ModChangeOptions()
+void ModChangeOptions( void )
 {
     WndForAllClass( WND_MODULES, ModSetOptions );
 }
@@ -346,7 +346,7 @@ extern a_window *DoWndModOpen( mod_handle handle )
 }
 
 extern WNDOPEN WndModOpen;
-extern a_window *WndModOpen()
+extern a_window *WndModOpen( void )
 {
     return( DoWndModOpen( NO_MOD ) );
 }

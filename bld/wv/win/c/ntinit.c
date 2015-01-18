@@ -57,7 +57,7 @@ extern void     DebugMain( void );
 extern void     DebugFini( void );
 extern void     DebugExit(void);
 extern void     StartupErr( const char *err );
-extern void     NewConsoleTitle();
+extern void     NewConsoleTitle( void );
 
 extern volatile bool    BrkPending;
 #ifdef __GUI__
@@ -105,7 +105,7 @@ void GUISysFini( void  )
     DebugFini();
 }
 
-void WndCleanUp()
+void WndCleanUp( void )
 {
 }
 
@@ -126,11 +126,11 @@ void KillDebugger( int ret_code )
     ExitProcess( ret_code );
 }
 
-void GrabHandlers()
+void GrabHandlers( void )
 {
 }
 
-void RestoreHandlers()
+void RestoreHandlers( void )
 {
 }
 
@@ -156,6 +156,6 @@ void PopErrBox( const char *buff )
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
 
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 }

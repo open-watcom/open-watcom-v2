@@ -102,15 +102,15 @@ extern void             BrkClearAll( void );
 extern void             BrkDisableAll( void );
 extern void             BrkEnableAll( void );
 extern void             CallResults( void );
-extern void             DebugFini();
-extern void             DebugMain();
+extern void             DebugFini( void );
+extern void             DebugMain( void );
 extern void             DlgCmd( void );
 extern void             DoCmd(char*);
 extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern brkp             *GetBPAt(int row);
 extern int              GetBPsCount( void );
-extern address          GetCodeDot();
+extern address          GetCodeDot( void );
 extern address          GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool exact );
 extern unsigned         Go( bool );
 extern void             GoToReturn( void );
@@ -1488,13 +1488,13 @@ bool DlgAreYouNuts( unsigned long mult )
     // used when too many break on write points are set
     return( FALSE );
 }
-bool DlgBackInTime( bool news )
+bool DlgBackInTime( bool warn )
 {
     // used when trying to trace, but we've backed up over a call or asynch
     warn = warn;
     return( FALSE );
 }
-bool DlgIncompleteUndo()
+bool DlgIncompleteUndo( void )
 {
     // used when trying to trace, but we've backed up over a call or asynch
     return( FALSE );

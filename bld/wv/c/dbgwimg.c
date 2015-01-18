@@ -279,7 +279,7 @@ wnd_info ImgInfo = {
 };
 
 extern WNDOPEN WndImgOpen;
-extern a_window *WndImgOpen()
+extern a_window *WndImgOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE,
             NULL, &ImgIcon, TITLE_SIZE, TRUE ) );

@@ -43,12 +43,12 @@
 
 
 extern char             *GetCmdEntry(const char *,int ,char *);
-extern unsigned         ReqExpr();
-extern unsigned         OptExpr();
+extern unsigned         ReqExpr( void );
+extern unsigned         OptExpr( void );
 extern void             WndUserAdd(char *,unsigned int );
 extern void             WndDlgTxt(const char *);
 extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
-extern void             SymCompFini();
+extern void             SymCompFini( void );
 extern char             *GetCmdName( int );
 
 extern const char       WndNameTab[];
@@ -130,7 +130,7 @@ extern int WndNumMenus;
 extern wnd_info *WndInfoTab[];
 
 
-void XDumpMenus()
+void XDumpMenus( void )
 {
     int         class;
     char        *p;
@@ -147,7 +147,7 @@ void XDumpMenus()
     MenuDump( 4, WndNumMenus, WndMainMenu );
 }
 
-static void XTimeSymComp()
+static void XTimeSymComp( void )
 {
     int         i,num;
 
@@ -172,7 +172,7 @@ static void (*InternalJmpTab[])() =
     &XTimeSymComp,
 };
 
-void ProcInternal()
+void ProcInternal( void )
 {
     InternalJmpTab[ ScanCmd( InternalNameTab ) ]();
 }

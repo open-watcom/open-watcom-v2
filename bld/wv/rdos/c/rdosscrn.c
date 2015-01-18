@@ -97,13 +97,13 @@ bool DebugScreen( void )
     return( FALSE );
 }
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     DebugScreen();
     return( TRUE );
 }
 
-bool UserScreen()
+bool UserScreen( void )
 {
     int handle;
     image_entry *img;
@@ -122,7 +122,7 @@ bool UserScreen()
     return( FALSE );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
 }
 
@@ -133,12 +133,12 @@ void FiniScreen( void )
     uistop();
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( FALSE );
 }
 
-int mygetlasterr()
+int mygetlasterr( void )
 {
     return( 0 );
 }

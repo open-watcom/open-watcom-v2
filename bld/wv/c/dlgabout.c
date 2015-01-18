@@ -39,7 +39,7 @@
 extern int      AboutSize;
 extern char     *AboutMessage[];
 
-extern  void    DlgAbout()
+extern  void    DlgAbout( void )
 {
     int         i;
     char        *p;

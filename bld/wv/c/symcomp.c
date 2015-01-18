@@ -79,7 +79,7 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
 }
 
 
-extern void SymCompFini()
+extern void SymCompFini( void )
 {
     sorted_names        *curr, *next;
     for( curr = SortedNames; curr != NULL; curr = next ) {

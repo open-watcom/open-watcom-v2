@@ -93,7 +93,7 @@ enum {
     MISC_STATUS
 };
 
-bool ScanStatus()
+bool ScanStatus( void )
 {
     return( ScanCmd( MiscTab ) == MISC_STATUS );
 }
@@ -434,7 +434,7 @@ static void PushRefresh( void )
  * ProcDisplay -- process a display command
  */
 
-void ProcDisplay()
+void ProcDisplay( void )
 {
     wnd_class   class;
     unsigned    old;

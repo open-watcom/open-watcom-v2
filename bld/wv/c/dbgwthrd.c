@@ -260,7 +260,7 @@ wnd_info TrdInfo = {
     DefPopUp( TrdMenu ),
 };
 
-a_window *WndTrdOpen()
+a_window *WndTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL,
                                &TrdIcon, TITLE_SIZE, TRUE ) );

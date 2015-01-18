@@ -85,7 +85,7 @@ void GUISysFini( void  )
     DebugFini();
 }
 
-void WndCleanUp()
+void WndCleanUp( void )
 {
 }
 
@@ -107,11 +107,11 @@ void KillDebugger( int ret_code )
     DosExit( EXIT_PROCESS, ret_code );
 }
 
-void GrabHandlers()
+void GrabHandlers( void )
 {
 }
 
-void RestoreHandlers()
+void RestoreHandlers( void )
 {
 }
 
@@ -188,6 +188,6 @@ int _set_errno( int a )
 {
     return( a );
 }
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 }

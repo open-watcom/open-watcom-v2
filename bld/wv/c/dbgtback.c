@@ -143,7 +143,7 @@ OVL_EXTERN bool RecordOneLevel( call_chain_entry *entry, void *_info )
 }
 
 
-address ReturnAddress()
+address ReturnAddress( void )
 {
     return_info ret;
 

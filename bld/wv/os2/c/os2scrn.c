@@ -59,7 +59,7 @@ void Ring_Bell( void )
  * ConfigScreen -- figure out screen configuration we're going to use.
  */
 
-unsigned ConfigScreen()
+unsigned ConfigScreen( void )
 {
     return( 0 );
 }
@@ -69,7 +69,7 @@ unsigned ConfigScreen()
  * InitScreen
  */
 
-void InitScreen()
+void InitScreen( void )
 {
     VIOMODEINFO     new;
 
@@ -90,7 +90,7 @@ void InitScreen()
  * UsrScrnMode -- setup the user screen mode
  */
 
-bool UsrScrnMode()
+bool UsrScrnMode( void )
 {
     return( FALSE );
 }
@@ -105,12 +105,12 @@ void DbgScrnMode( void )
  * DebugScreen -- swap/page to debugger screen
  */
 
-bool DebugScreen()
+bool DebugScreen( void )
 {
     return( FALSE );
 }
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     return( TRUE );
 }
@@ -120,16 +120,16 @@ bool DebugScreenRecover()
  * UserScreen -- swap/page to user screen
  */
 
-bool UserScreen()
+bool UserScreen( void )
 {
     return( FALSE );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
 }
 
-void FiniScreen()
+void FiniScreen( void )
 {
     if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
     uistop();
@@ -153,7 +153,7 @@ void uifarfree( void __FAR *ptr )
 {
     ExtraFree( ptr );
 }
-bool SysGUI()
+bool SysGUI( void )
 {
     return( FALSE );
 }

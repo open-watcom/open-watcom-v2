@@ -52,7 +52,7 @@ extern address          GetCodeDot( void );
  * AsmExam -- process examine/assembly command
  */
 
-void AsmExam()
+void AsmExam( void )
 {
     address     addr;
 //    bool        prompt;
@@ -73,7 +73,7 @@ void AsmExam()
  * SrcExam -- process examine/source command
  */
 
-void SrcExam()
+void SrcExam( void )
 {
     address     addr;
 //    bool        prompt;

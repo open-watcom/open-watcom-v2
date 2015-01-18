@@ -866,7 +866,7 @@ static  int     MemScroll( a_window *wnd, int lines )
     return( lines );
 }
 
-void InitMemWindow()
+void InitMemWindow( void )
 {
     int                 i;
 
@@ -897,7 +897,7 @@ void InitMemWindow()
     }
 }
 
-void FiniMemWindow()
+void FiniMemWindow( void )
 {
     WndFree( MemTypeMenu );
     MemFiniTypes( &MemData );
@@ -1030,7 +1030,7 @@ extern  a_window        *DoWndMemOpen( address addr, mad_type_handle type )
     return( wnd );
 }
 
-extern  a_window        *WndMemOpen()
+extern  a_window        *WndMemOpen( void )
 {
     return( DoWndMemOpen( NilAddr, MAD_NIL_TYPE_HANDLE ) );
 }

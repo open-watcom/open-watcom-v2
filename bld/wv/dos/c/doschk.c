@@ -49,7 +49,7 @@ typedef struct {
 
 static      char *ChkFile;
 
-static void Cleanup()
+static void Cleanup( void )
 {
     TinyDelete( ChkFile );
 }
@@ -140,7 +140,7 @@ bool CheckPointMem( unsigned max, char *f_buff )
 }
 
 
-void CheckPointRestore()
+void CheckPointRestore( void )
 {
     dos_mem_block   __far *chk;
     tiny_ret_t      ret;

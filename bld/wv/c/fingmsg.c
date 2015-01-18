@@ -82,7 +82,7 @@ char DOS4GOPTIONS[] =
 ;
 #endif
 
-void InitAboutMessage()
+void InitAboutMessage( void )
 {
     char *version = banner1( "", _WD_VERSION_ ) ".";
     char *name = LIT_DUI( The_WATCOM_Debugger );
@@ -90,7 +90,7 @@ void InitAboutMessage()
     StrCopy( version, StrCopy( name, AboutMessage[0] ) );
 }
 
-void FiniAboutMessage()
+void FiniAboutMessage( void )
 {
     WndFree( AboutMessage[0] );
     AboutMessage[0] = "";

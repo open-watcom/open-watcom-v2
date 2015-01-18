@@ -46,7 +46,7 @@ extern trap_shandle     GetSuppId( char * );
 
 static trap_shandle     SuppFileInfoId = 0;
 
-bool InitFileInfoSupp()
+bool InitFileInfoSupp( void )
 {
     SuppFileInfoId = GetSuppId( FILE_INFO_SUPP_NAME );
     if( SuppFileInfoId != 0 )

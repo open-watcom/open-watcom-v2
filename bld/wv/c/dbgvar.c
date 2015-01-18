@@ -2511,7 +2511,7 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
     return( repaint );
 }
 
-void VarInspectPointer()
+void VarInspectPointer( void )
 /**********************/
 {
     ExprValue( ExprSP );
@@ -2522,14 +2522,14 @@ void VarInspectPointer()
     }
 }
 
-void VarInspectMemory()
+void VarInspectMemory( void )
 /*********************/
 {
     LValue( ExprSP );
     DUIAddrInspect( ExprSP->v.loc.e[0].u.addr );
 }
 
-void VarInspectCode()
+void VarInspectCode( void )
 /*******************/
 {
     ExprValue( ExprSP );

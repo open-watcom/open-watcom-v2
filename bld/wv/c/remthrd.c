@@ -47,7 +47,7 @@ trap_shandle    SuppThreadId = 0;
         in.req                  = request;
 
 
-bool InitThreadSupp()
+bool InitThreadSupp( void )
 {
     SuppThreadId = GetSuppId( THREAD_SUPP_NAME );
     return( SuppThreadId != 0 );

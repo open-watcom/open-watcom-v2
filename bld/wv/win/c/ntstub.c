@@ -42,11 +42,11 @@ int __stdcall LibMain( int hdll, int reason, void *reserved )
 }
 #endif
 
-void GrabHandlers()
+void GrabHandlers( void )
 {
 }
 
-void RestoreHandlers()
+void RestoreHandlers( void )
 {
 }
 
@@ -76,6 +76,6 @@ void SetNumColumns( int num )
     num = num;
 }
 
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 }

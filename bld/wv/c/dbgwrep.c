@@ -42,14 +42,14 @@
 
 extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
-extern void             PointFini();
-extern int              GetStackPos();
+extern void             PointFini( void );
+extern int              GetStackPos( void );
 extern char             *GetCmdName( int index );
-extern unsigned         UndoLevel();
-extern address          GetRegIP();
+extern unsigned         UndoLevel( void );
+extern address          GetRegIP( void );
 extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
-extern unsigned         ReqExpr();
+extern unsigned         ReqExpr( void );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
@@ -252,7 +252,7 @@ wnd_info RepInfo = {
 
 
 extern WNDOPEN WndRepOpen;
-extern a_window *WndRepOpen()
+extern a_window *WndRepOpen( void )
 {
     return( DbgWndCreate( LIT_DUI( WindowReplay ), &RepInfo, WND_REPLAY, NULL, &RepIcon ) );
 }

@@ -39,7 +39,7 @@ static address          DataAddr;
 
 extern void             DbgUpdate(update_list );
 
-address GetDotAddr()
+address GetDotAddr( void )
 {
     if( _IsOn( SW_DOT_IS_DATA ) ) {
         return( DataAddr );
@@ -71,12 +71,12 @@ void SetDataDot( address addr )
     _SwitchOn( SW_DOT_IS_DATA );
 }
 
-address GetCodeDot()
+address GetCodeDot( void )
 {
     return( CodeAddr );
 }
 
-address GetDataDot()
+address GetDataDot( void )
 {
     return( DataAddr );
 }

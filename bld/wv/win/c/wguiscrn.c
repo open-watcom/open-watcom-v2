@@ -135,7 +135,7 @@ enum {
     UNKNOWN_SCREEN
 } ScreenState = UNKNOWN_SCREEN;
 
-void UnknownScreen()
+void UnknownScreen( void )
 {
     ScreenState = UNKNOWN_SCREEN;
 }

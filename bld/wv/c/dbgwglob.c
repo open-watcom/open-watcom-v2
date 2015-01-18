@@ -180,7 +180,7 @@ bool GlobEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-void GlobChangeOptions()
+void GlobChangeOptions( void )
 {
     WndForAllClass( WND_GLOBALS, GlobSetOptions );
 }
@@ -212,7 +212,7 @@ extern a_window *DoWndGlobOpen( mod_handle mod )
 }
 
 extern WNDOPEN WndGlobOpen;
-extern a_window *WndGlobOpen()
+extern a_window *WndGlobOpen( void )
 {
     return( DoWndGlobOpen( NO_MOD ) );
 }

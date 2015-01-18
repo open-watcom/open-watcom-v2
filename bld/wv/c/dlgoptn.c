@@ -130,7 +130,7 @@ OVL_EXTERN bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
 }
 
 
-extern  bool    DlgOptSet()
+extern  bool    DlgOptSet( void )
 {
     dlg_window_set      optset;
 

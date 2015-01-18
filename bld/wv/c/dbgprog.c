@@ -107,7 +107,7 @@ extern mod_handle       LookupImageName( const char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
 extern bool             GetBPSymAddr( brkp *bp, address *addr );
 extern void             DbgUpdate( update_list );
-extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)());
+extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void));
 static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
 const char              *RealFName( const char *name, open_access *loc );
 
@@ -249,7 +249,7 @@ bool DownLoadCode( void )
     return( Spawn( DoDownLoadCode ) == 0 );
 }
 
-void FiniCmd()
+void FiniCmd( void )
 {
     _Free( TaskCmd );
 }

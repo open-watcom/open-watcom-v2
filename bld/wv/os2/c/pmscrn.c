@@ -57,11 +57,11 @@ extern void     ExtraFree( void __far * );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
 extern void     TellHandles( void __far *hab, void __far *hwnd );
-extern void __far *GUIGetHAB();
+extern void __far *GUIGetHAB( void );
 extern HWND     GUIGetSysHandle(gui_window*);
 extern void     SaveMainScreen(char*);
 extern void     RestoreMainScreen(char*);
-extern bool     IsTrapFilePumpingMessageQueue();
+extern bool     IsTrapFilePumpingMessageQueue( void );
 
 
 unsigned                NumLines;
@@ -81,7 +81,7 @@ void WndInitWndMain( wnd_create_struct *info )
     info->style |= GUI_INIT_INVISIBLE;
 }
 
-void TellWinHandle()
+void TellWinHandle( void )
 {
     if( !ToldWinHandle ) {
         TellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) );
@@ -103,7 +103,7 @@ void Ring_Bell( void )
  * ConfigScreen -- figure out screen configuration we're going to use.
  */
 
-unsigned ConfigScreen()
+unsigned ConfigScreen( void )
 {
     return( 0 );
 }
@@ -177,7 +177,7 @@ VOID PumpMessageQueue( VOID )
     }
 }
 
-void InitScreen()
+void InitScreen( void )
 {
     TID                 tid;
 
@@ -193,7 +193,7 @@ void InitScreen()
  * UsrScrnMode -- setup the user screen mode
  */
 
-bool UsrScrnMode()
+bool UsrScrnMode( void )
 {
     return( FALSE );
 }
@@ -210,7 +210,7 @@ void DbgScrnMode( void )
 
 static HWND FocusWnd, ActiveWnd;
 
-bool DebugScreen()
+bool DebugScreen( void )
 {
     if( !WndMain ) return( FALSE );
     if( FocusWnd && WinIsWindow( GUIGetHAB(), FocusWnd ) &&
@@ -225,7 +225,7 @@ bool DebugScreen()
 }
 
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     return( TRUE );
 }
@@ -235,7 +235,7 @@ bool DebugScreenRecover()
  * UserScreen -- swap/page to user screen
  */
 
-bool UserScreen()
+bool UserScreen( void )
 {
     if( !WndMain ) return( FALSE );
     FocusWnd = WinQueryFocus( HWND_DESKTOP, 0 );
@@ -243,12 +243,12 @@ bool UserScreen()
     return( FALSE );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
     SaveMainScreen( "WDPM" );
 }
 
-void FiniScreen()
+void FiniScreen( void )
 {
 }
 
@@ -270,7 +270,7 @@ void uifarfree( void __far *ptr )
     ExtraFree( ptr );
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( TRUE );
 }

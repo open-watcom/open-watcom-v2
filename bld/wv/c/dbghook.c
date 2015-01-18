@@ -54,14 +54,14 @@ static cmd_list         *HookCmdLists[HOOK_NUM];
 static bool             HadSrcInfo;
 
 
-void InitHook()
+void InitHook( void )
 {
     HookPendingBits = 0;
     /* this is so we run the src/asm stuff after first load */
     HadSrcInfo = 2;
 }
 
-void FiniHook()
+void FiniHook( void )
 {
     int         i;
 
@@ -84,7 +84,7 @@ static const char HookNames[] = {
     "Quit\0"
 };
 
-void ProcHook()
+void ProcHook( void )
 {
     const char  *start;
     size_t      len;
@@ -106,7 +106,7 @@ void ProcHook()
     HookCmdLists[idx] = list;
 }
 
-void ConfigHook()
+void ConfigHook( void )
 {
     unsigned    idx;
     char        *p;
@@ -148,7 +148,7 @@ void HookNotify( bool immediate, hook_type hook )
 }
 
 
-bool HookPendingPush()
+bool HookPendingPush( void )
 {
     unsigned long       test;
     cmd_list            **list;

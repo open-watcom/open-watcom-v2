@@ -485,7 +485,7 @@ bool InitCapabilities( void )
         in.supp.id              = SuppCapabilitiesId;       \
         in.req                  = request;
 
-bool CapabilitiesGet8ByteBreakpointSupport()
+bool CapabilitiesGet8ByteBreakpointSupport( void )
 {
     capabilities_get_8b_bp_req  acc;
     capabilities_get_8b_bp_ret  ret;

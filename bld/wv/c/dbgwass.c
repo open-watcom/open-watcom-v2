@@ -1013,7 +1013,7 @@ static void DoAsmChangeOptions( a_window *wnd )
     WndZapped( wnd );
 }
 
-void AsmChangeOptions()
+void AsmChangeOptions( void )
 {
     WndForAllClass( WND_ASSEMBLY, DoAsmChangeOptions );
 }
@@ -1071,7 +1071,7 @@ extern a_window *DoWndAsmOpen( address addr, bool track )
 
 
 extern WNDOPEN WndAsmOpen;
-extern a_window *WndAsmOpen()
+extern a_window *WndAsmOpen( void )
 {
     address     addr;
 

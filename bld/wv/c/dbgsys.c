@@ -77,7 +77,7 @@ void DoSystem( const char *cmd, size_t len, int loc )
 }
 
 
-void ProcSystem()
+void ProcSystem( void )
 {
     const char  *start;
     size_t      len;

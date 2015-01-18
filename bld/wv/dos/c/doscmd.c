@@ -78,7 +78,7 @@ enum { OPT_MONO = 1, OPT_COLOR, OPT_COLOUR, OPT_EGA43, OPT_VGA50,
 
 static  unsigned    cmdStart;
 
-static void GetLines()
+static void GetLines( void )
 {
     unsigned    num;
 

@@ -290,7 +290,7 @@ static dip_status DIGREGISTER WVMoreMem( unsigned amount )
 }
 
 #if 0
-static dip_status DIGREGISTER WVStartup()
+static dip_status DIGREGISTER WVStartup( void )
 {
     return( DS_OK );
 }
@@ -946,7 +946,7 @@ static bool CheckDIPLoad( char *dip, bool defaults )
     return( TRUE );
 }
 
-void InitDbgInfo()
+void InitDbgInfo( void )
 {
     char        **dip;
     char        *p;
@@ -995,7 +995,7 @@ void InitDbgInfo()
     }
 }
 
-void FiniDbgInfo()
+void FiniDbgInfo( void )
 {
     DIPFini();
     PurgeUserNames();

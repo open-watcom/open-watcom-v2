@@ -302,7 +302,7 @@ wnd_info RunTrdInfo = {
 };
 
 
-a_window *WndRunTrdOpen()
+a_window *WndRunTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL,
                                &TrdIcon, TITLE_SIZE, TRUE ) );

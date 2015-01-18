@@ -39,6 +39,6 @@ bool CheckPointMem( unsigned psp, unsigned max, char *f_buff )
 }
 
 
-void CheckPointRestore()
+void CheckPointRestore( void )
 {
 }

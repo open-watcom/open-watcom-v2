@@ -75,7 +75,7 @@ void ForceLines( unsigned lines )
  * ConfigScreen -- figure out screen configuration we're going to use.
  */
 
-unsigned ConfigScreen()
+unsigned ConfigScreen( void )
 {
     return( 25 * (80 * 2) + 256 );
 }
@@ -88,7 +88,7 @@ void Ring_Bell( void )
  * InitScreen
  */
 
-void InitScreen()
+void InitScreen( void )
 {
 }
 
@@ -96,7 +96,7 @@ void InitScreen()
  * FiniScreen -- finish screen swapping/paging
  */
 
-void FiniScreen()
+void FiniScreen( void )
 {
 }
 
@@ -108,7 +108,7 @@ void DbgScrnMode( void )
  * DebugScreen -- swap/page to debugger screen
  */
 
-bool DebugScreen()
+bool DebugScreen( void )
 {
     bool    usr_vis;
 
@@ -121,7 +121,7 @@ bool DebugScreen()
  * UsrScrnMode -- setup the user screen mode
  */
 
-bool UsrScrnMode()
+bool UsrScrnMode( void )
 {
     bool    usr_vis;
 
@@ -133,7 +133,7 @@ bool UsrScrnMode()
  * UserScreen -- swap/page to user screen
  */
 
-bool UserScreen()
+bool UserScreen( void )
 {
     bool    dbg_vis;
 

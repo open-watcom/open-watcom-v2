@@ -52,8 +52,8 @@
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
-extern void     HookInQueue();
-extern void     HookOutQueue();
+extern void     HookInQueue( void );
+extern void     HookOutQueue( void );
 static BOOL     PASCAL GetCommandData( HWND );
 extern HWND     GUIGetSysHandle(gui_window*);
 extern void     InitHookFunc(void);
@@ -70,7 +70,7 @@ bool            ToldWinHandle = FALSE;
 
 static char     *CmdData;
 
-void TellWinHandle()
+void TellWinHandle( void )
 {
     if( !ToldWinHandle && InfoFunction != NULL ) {
         InfoFunction( GUIGetSysHandle( WndGui( WndMain ) ) );
@@ -106,7 +106,7 @@ void GUISysFini( void  )
     DebugFini();
 }
 
-void WndCleanUp()
+void WndCleanUp( void )
 {
     InfoFunction( (HWND)0 );
     FiniHookFunc();
@@ -134,7 +134,7 @@ void KillDebugger( int ret_code )
 #endif
 }
 
-void GrabHandlers()
+void GrabHandlers( void )
 {
     if( !ToldWinHandle && InfoFunction != NULL ) {
         InfoFunction( (HWND)0 );
@@ -142,7 +142,7 @@ void GrabHandlers()
 }
 
 
-void RestoreHandlers()
+void RestoreHandlers( void )
 {
 }
 
@@ -186,6 +186,6 @@ void PopErrBox( const char *buff )
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
 
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 }

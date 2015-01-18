@@ -39,13 +39,13 @@
 extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class class, gui_resource *icon );
 extern void MadRegChangeOptions( a_window *wnd );
 
-void FPUChangeOptions()
+void FPUChangeOptions( void )
 {
     WndForAllClass( WND_FPU, MadRegChangeOptions );
 }
 
 extern WNDOPEN WndFPUOpen;
-extern a_window *WndFPUOpen()
+extern a_window *WndFPUOpen( void )
 {
     const mad_reg_set_data      *rsd;
 

@@ -43,7 +43,7 @@ extern void     ExtraFree( void * );
 extern void     SaveMainScreen(char*);
 extern void     RestoreMainScreen(char*);
 extern HWND     GUIGetSysHandle( gui_window *wnd );
-extern void     DebugExit();
+extern void     DebugExit( void );
 extern void     TellHWND( HWND );
 
 extern a_window *WndMain;
@@ -54,7 +54,7 @@ static HWND     HwndFore = NULL;
 static HWND     FirstForeWnd = NULL;
 
 
-void TellWinHandle()
+void TellWinHandle( void )
 {
     if( _IsOn( SW_POWERBUILDER ) ) return;
     TellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
@@ -108,7 +108,7 @@ static enum {
     UNKNOWN_SCREEN
 } ScreenState = UNKNOWN_SCREEN;
 
-void UnknownScreen()
+void UnknownScreen( void )
 {
     ScreenState = UNKNOWN_SCREEN;
 }
@@ -136,13 +136,13 @@ bool DebugScreen( void )
     return( FALSE );
 }
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     return( TRUE );
 }
 
 
-bool UserScreen()
+bool UserScreen( void )
 {
     if( ScreenState == USER_SCREEN ) return( FALSE );
     if( _IsOn( SW_POWERBUILDER ) ) return( FALSE );
@@ -161,7 +161,7 @@ bool UserScreen()
     return( FALSE );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
     SaveMainScreen( "WDNT" );
 }
@@ -174,7 +174,7 @@ void FiniScreen( void )
     }
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( TRUE );
 }

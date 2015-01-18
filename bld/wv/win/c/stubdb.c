@@ -49,13 +49,13 @@
 
 extern void             DoCmd(char*);
 extern bool             InsMemRef( mad_disasm_data *dd );
-extern address          GetCodeDot();
+extern address          GetCodeDot( void );
 extern void             *WndAsmInspect(address addr);
-extern void             DebugMain();
-extern void             DebugFini();
+extern void             DebugMain( void );
+extern void             DebugFini( void );
 extern void             DoInput(void);
 extern void             DlgCmd( void );
-extern address          GetCodeDot();
+extern address          GetCodeDot( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
 
@@ -82,7 +82,7 @@ unsigned ConfigScreen( void )
     return( 0 );
 }
 
-bool DUIClose()
+bool DUIClose( void )
 {
     Done = TRUE;
     return( TRUE );
@@ -92,7 +92,7 @@ var_info        Locals;
 HANDLE          Requestsem;
 HANDLE          Requestdonesem;
 
-static void DumpLocals()
+static void DumpLocals( void )
 {
 #if 0
     address     addr;
@@ -137,7 +137,7 @@ static void DumpLocals()
 #endif
 }
 
-static void DumpSource()
+static void DumpSource( void )
 {
     char        buff[256];
     DIPHDL( cue, ch );
@@ -226,7 +226,7 @@ int main( int argc, char **argv )
     return( 0 );
 }
 
-void DlgCmd()
+void DlgCmd( void )
 {
     char        buff[256];
 
@@ -324,7 +324,7 @@ bool DlgNewWithSym( const char *title, char *buff, int buff_len )
     // used by print command with no arguments
     return( true );
 }
-bool DlgUpTheStack()
+bool DlgUpTheStack( void )
 {
     // used when trying to trace, but we've unwound the stack a bit
     return( FALSE );
@@ -340,7 +340,7 @@ bool DlgBackInTime( bool warn )
     warn = warn;
     return( FALSE );
 }
-bool DlgIncompleteUndo()
+bool DlgIncompleteUndo( void )
 {
     // used when trying to trace, but we've backed up over a call or asynch
     return( FALSE );
@@ -351,7 +351,7 @@ bool DlgBreak( address addr )
     return( FALSE );
 }
 
-bool DUIInfoRelease()
+bool DUIInfoRelease( void )
 {
     // used when we're low on memory
     return( FALSE );
@@ -361,19 +361,19 @@ void DUIUpdate( update_list flags )
     // flags indicates what conditions have changed.  They should be saved
     // until an appropriate time, then windows updated accordingly
 }
-void DUIStop()
+void DUIStop( void )
 {
     // close down the UI - we're about to change modes.
 }
-void DUIFini()
+void DUIFini( void )
 {
     // finish up the UI
 }
-void DUIInit()
+void DUIInit( void )
 {
     // Init the UI
 }
-extern void DUIFreshAll()
+extern void DUIFreshAll( void )
 {
     // refresh all screens - initialization has been done
     UpdateFlags = 0;
@@ -384,47 +384,47 @@ extern bool DUIStopRefresh( bool stop )
     // big command file and we don't want flashing.
     return( FALSE );
 }
-extern void DUIShow()
+extern void DUIShow( void )
 {
     // show the main screen - the splash page has been closed
 }
-extern void DUIWndUser()
+extern void DUIWndUser( void )
 {
     // switch to the program screen
 }
-extern void DUIWndDebug()
+extern void DUIWndDebug( void )
 {
     // switch to the debugger screen
 }
-extern void DUIShowLogWindow()
+extern void DUIShowLogWindow( void )
 {
     // bring up the log window, cause some printout is coming
 }
-extern int DUIGetMonitorType()
+extern int DUIGetMonitorType( void )
 {
     // stub for old UI
     return( 1 );
 }
-extern int DUIScreenSizeY()
+extern int DUIScreenSizeY( void )
 {
     // stub for old UI
     return( 0 );
 }
-extern int DUIScreenSizeX()
+extern int DUIScreenSizeX( void )
 {
     // stub for old UI
     return( 0 );
 }
-extern void DUIArrowCursor()
+extern void DUIArrowCursor( void )
 {
     // we're about to suicide, so restore the cursor to normal
 }
-bool DUIAskIfAsynchOk()
+bool DUIAskIfAsynchOk( void )
 {
     // we're about to try to replay across an asynchronous event.  Ask user
     return( FALSE );
 }
-extern void DUIFlushKeys()
+extern void DUIFlushKeys( void )
 {
     // we're about to suicide - clear the keyboard typeahead
 }
@@ -434,13 +434,13 @@ extern void DUIPlayDead( bool dead )
 }
 extern void DUISysEnd( bool pause )
 {
-    // done calling system();
+    // done calling system( void );
 }
-extern void DUISysStart()
+extern void DUISysStart( void )
 {
     // about to call system();
 }
-extern void DUIRingBell()
+extern void DUIRingBell( void )
 {
     // ring ring (error)
 }
@@ -453,95 +453,95 @@ extern void *DUIHourGlass( void *x )
 {
     return( x );
 }
-void ProcAccel()
+void ProcAccel( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcDisplay()
+void ProcDisplay( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcFont()
+void ProcFont( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcHelp()
+void ProcHelp( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcInternal()
+void ProcInternal( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcPaint()
+void ProcPaint( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcView()
+void ProcView( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcWindow()
+void ProcWindow( void )
 {
     // stub for old UI
     FlushEOC();
 }
-void ProcConfigFile()
+void ProcConfigFile( void )
 {
     // called when main config file processed
     FlushEOC();
 }
-void ConfigDisp()
+void ConfigDisp( void )
 {
     // stub for old UI
 }
-void ConfigFont()
+void ConfigFont( void )
 {
     // stub for old UI
 }
-void ConfigPaint()
+void ConfigPaint( void )
 {
     // stub for old UI
 }
-extern void DClickSet()
-{
-    // stub for old UI
-    FlushEOC();
-}
-extern void DClickConf()
-{
-    // stub for old UI
-}
-extern void InputSet()
+extern void DClickSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
-extern void InputConf()
+extern void DClickConf( void )
 {
     // stub for old UI
 }
-extern void MacroSet()
+extern void InputSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
-extern void MacroConf()
+extern void InputConf( void )
 {
     // stub for old UI
 }
-extern  void    FiniMacros()
+extern void MacroSet( void )
+{
+    // stub for old UI
+    FlushEOC();
+}
+extern void MacroConf( void )
 {
     // stub for old UI
 }
-int TabIntervalGet()
+extern  void    FiniMacros( void )
+{
+    // stub for old UI
+}
+int TabIntervalGet( void )
 {
     // stub for old UI
     return( 0 );
@@ -550,53 +550,53 @@ void TabIntervalSet( int new )
 {
     // stub for old UI
 }
-extern void TabSet()
+extern void TabSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
-extern void TabConf()
+extern void TabConf( void )
 {
     // stub for old UI
 }
-extern void SearchSet()
+extern void SearchSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
-extern void SearchConf()
+extern void SearchConf( void )
 {
     // stub for old UI
 }
-extern void FingClose()
+extern void FingClose( void )
 {
     // open a splash page
 }
-extern void FingOpen()
+extern void FingOpen( void )
 {
     // close the splash page
 }
-extern void AsmChangeOptions()
+extern void AsmChangeOptions( void )
 {
     // assembly window options changed
 }
-extern void RegChangeOptions()
+extern void RegChangeOptions( void )
 {
     // reg window options changed
 }
-extern void VarChangeOptions()
+extern void VarChangeOptions( void )
 {
     // var window options changed
 }
-extern void FuncChangeOptions()
+extern void FuncChangeOptions( void )
 {
     // func window options changed
 }
-extern void GlobChangeOptions()
+extern void GlobChangeOptions( void )
 {
     // glob window options changed
 }
-extern void ModChangeOptions()
+extern void ModChangeOptions( void )
 {
     // mod window options changed
 }
@@ -638,7 +638,7 @@ extern void WndTmpFileInspect( const char *file )
     // used by capture command
     file = file;
 }
-extern void GraphicDisplay()
+extern void GraphicDisplay( void )
 {
     // used by print/window command
 }
@@ -652,7 +652,7 @@ extern void VarReMapScopes( image_entry *img )
     // remap variable scopes - prog about to restart
     img = img;
 }
-extern void VarFreeScopes()
+extern void VarFreeScopes( void )
 {
     // free variable scope info
 }
@@ -672,19 +672,19 @@ void VarRestoreWndFromScope( void *wnd )
 {
 }
 
-void DUIEnterCriticalSection()
+void DUIEnterCriticalSection( void )
 {
 }
 
-void DUIExitCriticalSection()
+void DUIExitCriticalSection( void )
 {
 }
 
-void DUIInitLiterals()
+void DUIInitLiterals( void )
 {
 }
 
-void DUIFiniLiterals()
+void DUIFiniLiterals( void )
 {
 }
 
@@ -699,7 +699,7 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
     return( TRUE );
 }
 
-bool DUIIsDBCS()
+bool DUIIsDBCS( void )
 {
     return( FALSE );
 }
@@ -711,7 +711,7 @@ unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
     return( EnvLkup( name, buff, buff_len ) );
 }
 
-void DUIDirty()
+void DUIDirty( void )
 {
 }
 

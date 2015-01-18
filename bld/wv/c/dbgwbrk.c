@@ -343,7 +343,7 @@ wnd_info BrkInfo = {
 };
 
 extern WNDOPEN WndBrkOpen;
-extern a_window *WndBrkOpen()
+extern a_window *WndBrkOpen( void )
 {
     a_window            *wnd;
     break_window        *brkw;

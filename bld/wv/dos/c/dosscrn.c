@@ -197,7 +197,7 @@ enum {
         parm caller [ ax ]                                      \
         modify [ bx ];
 
-extern void DoRingBell();
+extern void DoRingBell( void );
 
 void Ring_Bell( void )
 {
@@ -221,7 +221,7 @@ static bool ChkCntrlr( int port )
 }
 
 
-static unsigned char GetSwtchs()
+static unsigned char GetSwtchs( void )
 {
     auto unsigned char equip;
 
@@ -251,21 +251,21 @@ static void DoSetMode( unsigned char mode )
 }
 
 
-static bool TstMono()
+static bool TstMono( void )
 {
     if( !ChkCntrlr( VIDMONOINDXREG ) ) return( FALSE );
     return( TRUE );
 }
 
 
-static bool TstColour()
+static bool TstColour( void )
 {
     if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( FALSE );
     return( TRUE );
 }
 
 
-static void GetDispConfig()
+static void GetDispConfig( void )
 {
     signed long         info;
     unsigned char       colour;
@@ -330,7 +330,7 @@ static bool ChkForColour( hw_display_type display )
 }
 
 
-static void SwapActAlt()
+static void SwapActAlt( void )
 {
     hw_display_type     temp;
 
@@ -340,7 +340,7 @@ static void SwapActAlt()
     OnAlt = TRUE;
 }
 
-static bool ChkColour()
+static bool ChkColour( void )
 {
     if( ChkForColour( HWDisplay.active ) ) return( TRUE );
     if( ChkForColour( HWDisplay.alt    ) ) {
@@ -359,7 +359,7 @@ static bool ChkForMono( hw_display_type display )
 }
 
 
-static bool ChkMono()
+static bool ChkMono( void )
 {
     if( ChkForMono( HWDisplay.active ) ) return( TRUE );
     if( ChkForMono( HWDisplay.alt    ) ) {
@@ -386,7 +386,7 @@ static bool ChkForEGA( hw_display_type display )
 }
 
 
-static bool ChkEGA()
+static bool ChkEGA( void )
 {
     if( ChkForEGA( HWDisplay.active ) ) return( TRUE );
     if( ChkForEGA( HWDisplay.alt    ) ) {
@@ -397,7 +397,7 @@ static bool ChkEGA()
 }
 
 
-static void GetDefault()
+static void GetDefault( void )
 {
     if( StrtMode == 0x07 || StrtMode == 0x0f ) {
         if( FlipMech == FLIP_TWO ) {
@@ -421,7 +421,7 @@ static void GetDefault()
 }
 
 
-static void ChkPage()
+static void ChkPage( void )
 {
     switch( ScrnMode ) {
     case MD_MONO:
@@ -437,7 +437,7 @@ static void ChkPage()
 }
 
 
-static void ChkTwo()
+static void ChkTwo( void )
 {
     if( HWDisplay.alt == DISP_NONE ) {
         FlipMech = FLIP_PAGE;
@@ -487,7 +487,7 @@ static void SetEGA_VGA( int double_rows )
 }
 
 
-static void SetMonitor()
+static void SetMonitor( void )
 {
     DbgChrSet = USER_CHR_SET;
     switch( HWDisplay.active ) {
@@ -536,7 +536,7 @@ static void SetMonitor()
 }
 
 
-static void SaveBIOSSettings()
+static void SaveBIOSSettings( void )
 {
     SaveSwtchs = GetSwtchs();
     SaveMode = BIOSGetMode();
@@ -577,7 +577,7 @@ void ForceLines( unsigned lines )
  * ConfigScreen -- figure out screen configuration we're going to use.
  */
 
-unsigned ConfigScreen()
+unsigned ConfigScreen( void )
 {
     OnAlt = FALSE;
 
@@ -643,7 +643,7 @@ static bool SetMode( unsigned char mode )
 }
 
 
-static void SetRegenClear()
+static void SetRegenClear( void )
 {
     unsigned char regen;
 
@@ -654,7 +654,7 @@ static void SetRegenClear()
 }
 
 
-static unsigned RegenSize()
+static unsigned RegenSize( void )
 {
     unsigned    regen_size;
 
@@ -680,7 +680,7 @@ static unsigned RegenSize()
 }
 
 
-static void SetupEGA()
+static void SetupEGA( void )
 {
     _disablev( VIDPort + 6 );
     _seq_write( SEQ_MEM_MODE, MEM_NOT_ODD_EVEN );
@@ -690,7 +690,7 @@ static void SetupEGA()
     _graph_write( GRA_GRAPH_MODE, GRM_EN_ROT );
 }
 
-static void SwapSave()
+static void SwapSave( void )
 {
     switch( HWDisplay.active ) {
     case DISP_VGA_MONO:
@@ -724,7 +724,7 @@ static void SwapSave()
     }
 }
 
-static unsigned char RestoreEGA_VGA()
+static unsigned char RestoreEGA_VGA( void )
 {
     unsigned char       mode;
 
@@ -747,7 +747,7 @@ static unsigned char RestoreEGA_VGA()
     return( mode );
 }
 
-static void SwapRestore()
+static void SwapRestore( void )
 {
     unsigned char       mode;
 
@@ -787,7 +787,7 @@ static void RestoreMouse( unsigned from )
 }
 
 
-static void AllocSave()
+static void AllocSave( void )
 {
     unsigned    state_size;
     unsigned    mouse_size;
@@ -815,7 +815,7 @@ static void AllocSave()
  * InitScreen
  */
 
-void InitScreen()
+void InitScreen( void )
 {
     unsigned    scan_lines;
     char        __far *vect;
@@ -887,7 +887,7 @@ void InitScreen()
  * UsrScrnMode -- setup the user screen mode
  */
 
-bool UsrScrnMode()
+bool UsrScrnMode( void )
 {
     char user_mode;
     bool    usr_vis;
@@ -945,7 +945,7 @@ void DbgScrnMode( void )
  * DebugScreen -- swap/page to debugger screen
  */
 
-bool DebugScreen()
+bool DebugScreen( void )
 {
     bool    usr_vis;
 
@@ -987,7 +987,7 @@ bool DebugScreen()
  * UserScreen -- swap/page to user screen
  */
 
-bool UserScreen()
+bool UserScreen( void )
 {
     bool    dbg_vis;
 
@@ -1012,7 +1012,7 @@ bool UserScreen()
 }
 
 
-static void ReInitScreen()
+static void ReInitScreen( void )
 {
     RestoreMouse( PgmMouse );
     SetSwtchs( StrtSwtchs );
@@ -1041,7 +1041,7 @@ static void ReInitScreen()
  * FiniScreen -- finish screen swapping/paging
  */
 
-void FiniScreen()
+void FiniScreen( void )
 {
     uifini();
     if( SaveSwtchs != StrtSwtchs
@@ -1136,7 +1136,7 @@ void uimouse( int func )
                     0xa8 0x08           /* test al,8    */      \
                     0x74 0xfb           /* jz -5        */      \
                 modify [ax dx];
-extern void vertsync();
+extern void vertsync( void );
 
 static char __far *RegenPos( unsigned row, unsigned col )
 {

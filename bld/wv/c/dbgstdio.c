@@ -65,7 +65,7 @@ static void StdioRedirect( bool input )
  * StdInNew -- redirect the STDIN file
  */
 
-extern void StdInNew()
+extern void StdInNew( void )
 {
     StdioRedirect( TRUE );
 }
@@ -75,7 +75,7 @@ extern void StdInNew()
  * StdOutNew -- redirect the STDOUT file
  */
 
-extern void StdOutNew()
+extern void StdOutNew( void )
 {
     StdioRedirect( FALSE );
 }

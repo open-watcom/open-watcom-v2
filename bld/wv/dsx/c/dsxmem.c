@@ -50,7 +50,7 @@ extern int _d16ReserveExt( int );
                                 value [ eax ] \
                                 modify [ ebx ecx edx ]
 
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 #if !defined(__OSI__)
     _d16ReserveExt( MemSize + 1*1024UL*1024UL );

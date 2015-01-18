@@ -49,7 +49,7 @@ trap_shandle    SuppRFXId;
         in.supp.id              = SuppRFXId;    \
         in.req                  = request;
 
-bool InitRFXSupp()
+bool InitRFXSupp( void )
 {
     SuppRFXId = GetSuppId( RFX_SUPP_NAME );
     if( SuppRFXId == 0 ) return( FALSE );
@@ -124,7 +124,7 @@ rc_erridx RemoteSetDrv( int drv )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-int RemoteGetDrv()
+int RemoteGetDrv( void )
 {
     rfx_getdrive_req    acc;
     rfx_getdrive_ret    ret;
@@ -367,7 +367,7 @@ int RemoteFindNext( void *info, unsigned info_len )
     return( ret.err );
 }
 
-rc_erridx RemoteFindClose()
+rc_erridx RemoteFindClose( void )
 {
     rfx_findclose_req   acc;
     rfx_findclose_ret   ret;

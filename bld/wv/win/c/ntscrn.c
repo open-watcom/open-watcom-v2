@@ -98,13 +98,13 @@ bool DebugScreen( void )
     return( FALSE );
 }
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     DebugScreen();
     return( TRUE );
 }
 
-bool UserScreen()
+bool UserScreen( void )
 {
     if( IsWindow( HwndFore ) ) {
         if( !IsIconic( DebuggerHwnd ) ) SetForegroundWindow( HwndFore );
@@ -114,7 +114,7 @@ bool UserScreen()
     return( FALSE );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
 }
 
@@ -136,12 +136,12 @@ void uifarfree( void *ptr )
     ExtraFree( ptr );
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( FALSE );
 }
 
-int mygetlasterr()
+int mygetlasterr( void )
 {
     return( GetLastError() );
 }

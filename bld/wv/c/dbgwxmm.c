@@ -39,13 +39,13 @@
 extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class class, gui_resource *icon );
 extern void MadRegChangeOptions( a_window *wnd );
 
-void XMMChangeOptions()
+void XMMChangeOptions( void )
 {
     WndForAllClass( WND_XMM, MadRegChangeOptions );
 }
 
 extern WNDOPEN WndXMMOpen;
-extern a_window *WndXMMOpen()
+extern a_window *WndXMMOpen( void )
 {
     const mad_reg_set_data      *rsd;
 

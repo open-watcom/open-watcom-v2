@@ -83,7 +83,7 @@ void GUISysFini( void  )
     DebugFini();
 }
 
-void WndCleanUp()
+void WndCleanUp( void )
 {
 }
 
@@ -108,11 +108,11 @@ void KillDebugger( int ret_code )
     RdosUnloadExe( ret_code );
 }
 
-void GrabHandlers()
+void GrabHandlers( void )
 {
 }
 
-void RestoreHandlers()
+void RestoreHandlers( void )
 {
 }
 
@@ -127,6 +127,6 @@ bool TBreak( void )
     return( false );
 }
 
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 }

@@ -75,7 +75,7 @@ void AddAliasInfo( unsigned seg, unsigned alias )
     }
 }
 
-void FreeAliasInfo()
+void FreeAliasInfo( void )
 {
     alias_info      *temp;
 

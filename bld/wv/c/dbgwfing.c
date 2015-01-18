@@ -56,7 +56,7 @@ static gui_ord  Height;
 #define TOP_BLANK( wnd ) ( GUIIsGUI() ? 2 : ( ( WndRows(wnd) - FingMessageSize ) / 2 ) )
 
 #ifdef _EXPIRY_YEAR
-static bool ChkDate()
+static bool ChkDate( void )
 {
     struct date_st { char day; char month; int year; } date;
     extern struct date_st getdate();
@@ -72,7 +72,7 @@ static bool ChkDate()
 
 static a_window *WndFing = NULL;
 
-void FingClose()
+void FingClose( void )
 {
     a_window    *wnd;
 
@@ -161,7 +161,7 @@ static wnd_info FingInfo = {
     NoPopUp,
 };
 
-void FingOpen()
+void FingOpen( void )
 {
     wnd_create_struct   info;
     int                 i;

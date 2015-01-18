@@ -99,7 +99,7 @@ void GUISysFini( void  )
     DebugFini();
 }
 
-void WndCleanUp()
+void WndCleanUp( void )
 {
 }
 
@@ -122,16 +122,16 @@ void SetCmdArgStart( int num, char *ptr )
     cmdStart = ptr;
 }
 
-void KillDebugger()
+void KillDebugger( void )
 {
     __qnx_exit( 0 );
 }
 
-void GrabHandlers()
+void GrabHandlers( void )
 {
 }
 
-void RestoreHandlers()
+void RestoreHandlers( void )
 {
 }
 
@@ -183,11 +183,11 @@ long _fork( const char *cmd, size_t len )
     return( 0 );
 }
 
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( FALSE );
 }

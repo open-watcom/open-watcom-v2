@@ -50,7 +50,7 @@ extern bool             DlgBreak(address);
 extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup(address);
 extern void             SetStackPos( location_context *lc, int pos );
-extern int              GetStackPos();
+extern int              GetStackPos( void );
 
 #define MODEST_CALL_LEVEL       20
 #define MODEST_INCREMENT        10
@@ -228,7 +228,7 @@ call_chain *GetCallChain( cached_traceback *tb, int row )
     }
 }
 
-void ShowCalls()
+void ShowCalls( void )
 {
     cached_traceback    tb;
     int                 i;

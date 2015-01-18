@@ -38,13 +38,13 @@
 extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class class, gui_resource *icon );
 extern void MadRegChangeOptions( a_window *wnd );
 
-void RegChangeOptions()
+void RegChangeOptions( void )
 {
     WndForAllClass( WND_REGISTER, MadRegChangeOptions );
 }
 
 extern WNDOPEN WndRegOpen;
-extern a_window *WndRegOpen()
+extern a_window *WndRegOpen( void )
 {
     return( WndMadRegOpen( MTK_INTEGER, WND_REGISTER, &RegIcon ) );
 }

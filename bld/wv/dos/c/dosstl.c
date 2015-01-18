@@ -103,7 +103,7 @@ void RestoreHandlers( void )
     TinySetVect( 0x28, _old28 );
 }
 
-void KillDebugger()
+void KillDebugger( void )
 {
     RestoreHandlers();
     TinyTerminateProcess( 0 );
@@ -133,7 +133,7 @@ void GUISysFini( void  )
 }
 
 
-void WndCleanUp()
+void WndCleanUp( void )
 {
 }
 
@@ -161,15 +161,15 @@ struct tm __end_dst =                           /* end of daylight savings */
           0, 0, 0
         };
 
-void tzset()
+void tzset( void )
 {
 }
 
-void SysMemInit()
+void SysMemInit( void )
 {
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( FALSE );
 }

@@ -94,7 +94,7 @@ unsigned char DbgDrawDBCS[] = {
 };
 
 
-void DBCSCheck()
+void DBCSCheck( void )
 {
     if( UIData->dbcs )
         memcpy( DbgDraw, DbgDrawDBCS, sizeof( DbgDraw ) );

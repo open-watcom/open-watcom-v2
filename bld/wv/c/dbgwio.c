@@ -258,12 +258,12 @@ static void     IORefresh( a_window *wnd )
 }
 
 
-void SetIOMenuItems()
+void SetIOMenuItems( void )
 {
     WndEnableMainMenu( MENU_MAIN_OPEN_IO, IOData.num_types != 0 );
 }
 
-void InitIOWindow()
+void InitIOWindow( void )
 {
     int                 i;
 
@@ -289,7 +289,7 @@ void InitIOWindow()
     }
 }
 
-void FiniIOWindow()
+void FiniIOWindow( void )
 {
     WndFree( IOTypeMenu );
     MemFiniTypes( &IOData );
@@ -365,7 +365,7 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
 }
 
 extern WNDOPEN WndIOOpen;
-extern a_window *WndIOOpen()
+extern a_window *WndIOOpen( void )
 {
     io_window   *io;
     a_window    *wnd;

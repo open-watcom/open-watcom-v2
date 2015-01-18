@@ -624,7 +624,7 @@ wnd_info MacInfo = {
 };
 
 extern WNDOPEN WndMacOpen;
-extern a_window *WndMacOpen()
+extern a_window *WndMacOpen( void )
 {
     mac_window  *wndmac;
 

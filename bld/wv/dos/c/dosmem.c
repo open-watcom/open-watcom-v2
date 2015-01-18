@@ -53,7 +53,7 @@ struct heapstart     *LastSeg;
  * MemInit -- initialize dynamic and symbol memory
  */
 
-void MemInit()
+void MemInit( void )
 {
     addr_seg        last;
 

@@ -1171,7 +1171,7 @@ extern bool DebugScreen( void )
 }
 
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     return( TRUE );
 }
@@ -1229,7 +1229,7 @@ static void ReInitScreen( void )
     }
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
 }
 
@@ -1314,7 +1314,7 @@ extern void uifinicursor( void )
     }
 }
 
-void uirefresh()
+void uirefresh( void )
 {
     if( ScrnState & DBG_SCRN_ACTIVE ) {
         _uirefresh();

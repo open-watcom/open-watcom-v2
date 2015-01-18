@@ -36,7 +36,7 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 
-void    WndNoMemory()
+void    WndNoMemory( void )
 {
     Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
 }
@@ -64,12 +64,12 @@ void    WndFree( void *chunk )
 }
 
 
-void WndMemFini()
+void WndMemFini( void )
 {
     MemFini();
 }
 
-void WndMemInit()
+void WndMemInit( void )
 {
     MemInit();
 }
