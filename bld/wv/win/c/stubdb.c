@@ -456,11 +456,6 @@ void ProcAccel()
     // stub for old UI
     FlushEOC();
 }
-void ProcCapture()
-{
-    // stub for old UI
-    FlushEOC();
-}
 void ProcDisplay()
 {
     // stub for old UI
@@ -636,6 +631,10 @@ extern void WndIOInspect(address*addr,mad_type_handle type)
 {
     // used by examine/iobyte/ioword/etc command
 }
+extern void WndTmpFileInspect( char *file, bool binary )
+{
+    // used by capture command
+}
 extern void GraphicDisplay()
 {
     // used by print/window command
@@ -655,10 +654,6 @@ extern void VarFreeScopes()
 extern void SetLastExe( char *name )
 {
     // remember last exe debugged name
-}
-extern void CaptureError()
-{
-    // error in capture command (stub)
 }
 extern void DUIProcPendingPaint(void)
 {
