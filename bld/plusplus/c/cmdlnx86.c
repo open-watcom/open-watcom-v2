@@ -216,6 +216,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         SetTargetLiteral( &target_name, "QNX" );
 #elif defined( __LINUX__ )
         SetTargetLiteral( &target_name, "LINUX" );
+#elif defined( __HAIKU__ )
+        SetTargetLiteral( &target_name, "HAIKU" );
 #elif defined( __OSX__ ) || defined( __APPLE__ )
         SetTargetLiteral( &target_name, "OSX" );
 #elif defined( __SOLARIS__ ) || defined( __SUN__ )

@@ -1065,6 +1065,8 @@ static bool set_build_target( void )
         SetTargName( "QNX", 3 );
 #elif defined(__LINUX__)
         SetTargName( "LINUX", 5 );
+#elif defined(__HAIKU__)
+        SetTargName( "HAIKU", 5 );
 #elif defined(__BSD__)
         SetTargName( "BSD", 3 );
 #elif defined(__OSX__) || defined(__APPLE__)
