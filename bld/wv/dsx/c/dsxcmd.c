@@ -45,29 +45,15 @@
 
 
 extern unsigned                 Lookup( const char *, const char *, unsigned );
-extern void                     ForceLines( unsigned );
-extern bool                     HasEquals( void );
-extern unsigned                 GetValue( void );
 extern unsigned long            GetMemory( void );
 
 
 extern unsigned_8               DPMICheck;
-extern flip_types               FlipMech;
-extern mode_types               ScrnMode;
 extern addr_seg                 _psp;
 
 static char                     *cmdStart;
 
 static const char SysOptNameTab[] = {
-    "Monochrome\0"
-    "Color\0"
-    "Colour\0"
-    "Ega43\0"
-    "Vga50\0"
-    "Overwrite\0"
-    "Page\0"
-    "Swap\0"
-    "Two\0"
     "CHecksize\0"
     "NOCHarremap\0"
     "NOGraphicsmouse\0"
@@ -77,19 +63,7 @@ static const char SysOptNameTab[] = {
 };
 
 enum {
-    OPT_MONO = 1,
-   OPT_COLOR,
-   OPT_COLOUR,
-   OPT_EGA43,
-   OPT_VGA50,
-
-   OPT_OVERWRITE,
-   OPT_PAGE,
-   OPT_SWAP,
-   OPT_TWO,
-
-   OPT_CHECKSIZE,
-
+   OPT_CHECKSIZE = 1,
    OPT_NOREMAP,
    OPT_NOGMOUSE,
    OPT_HEAPENABLE,
@@ -100,30 +74,11 @@ enum {
 gui_window_styles WndStyle = GUI_PLAIN+GUI_GMOUSE;
 
 
-static void GetLines( void )
-{
-    if( HasEquals() ) {
-        ForceLines( GetValue() );
-    }
-}
-
 bool OptDelim( char ch )
 {
     return( ch == '/' || ch == '-' );
 }
 
-
-void SetNumLines( int num )
-{
-    if( num >= 43 ) {
-        ScrnMode = MD_EGA;
-    }
-}
-
-void SetNumColumns( int num )
-{
-    num=num;
-}
 
 /*
  * ProcSysOption -- process system option
@@ -135,32 +90,6 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
 
     pass=pass;
     switch( Lookup( SysOptNameTab, start, len ) ) {
-    case OPT_MONO:
-        ScrnMode = MD_MONO;
-        GetLines();
-        break;
-    case OPT_COLOR:
-    case OPT_COLOUR:
-        ScrnMode = MD_COLOUR;
-        GetLines();
-        break;
-    case OPT_EGA43:
-    case OPT_VGA50:
-        ScrnMode = MD_EGA;
-        break;
-    case OPT_OVERWRITE:
-        FlipMech = FLIP_OVERWRITE;
-        break;
-    case OPT_PAGE:
-        FlipMech = FLIP_PAGE;
-        break;
-    case OPT_SWAP:
-        FlipMech = FLIP_SWAP;
-        WndStyle &= ~( GUI_CHARMAP_MOUSE|GUI_CHARMAP_DLG);
-        break;
-    case OPT_TWO:
-        FlipMech = FLIP_TWO;
-        break;
     case OPT_NOREMAP:
         WndStyle &= ~GUI_CHARMAP_DLG;
         break;
@@ -198,10 +127,7 @@ void ProcSysOptInit( void )
     char                *ptr;
 
     CheckSize = 0;
-    ScrnMode = MD_DEFAULT;
-    FlipMech = FLIP_TWO;
     MemSize = 2L*1024*1024;
-
 #ifdef __OSI__
     {
         extern char *_LpCmdLine;

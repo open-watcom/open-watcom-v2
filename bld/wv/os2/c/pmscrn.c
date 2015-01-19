@@ -312,3 +312,27 @@ unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned
         return( result );
     }
 }
+
+void SetNumLines( int num )
+{
+    if( num < 10 || num > 999 )
+        num = 0;
+    DbgLines = num;
+}
+
+void SetNumColumns( int num )
+{
+    if( num < 10 || num > 999 )
+        num = 0;
+    DbgColumns = num;
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    start=start;len=len;pass=pass;
+    return( false );
+}
+
+void ScreenOptInit( void )
+{
+}

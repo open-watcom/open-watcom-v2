@@ -564,16 +564,6 @@ static void SaveBIOSSettings( void )
 
 
 /*
- * ForceLines -- force a specified number of lines for MDA/CGA systems
- */
-
-void ForceLines( unsigned lines )
-{
-    DbgRows = lines;
-}
-
-
-/*
  * ConfigScreen -- figure out screen configuration we're going to use.
  */
 
@@ -1171,3 +1161,85 @@ void uisetmouse( ORD row, ORD col )
     }
 }
 #endif
+
+static const char ScreenNameTab[] = {
+    "Monochrome\0"
+    "Color\0"
+    "Colour\0"
+    "Ega43\0"
+    "Vga50\0"
+    "Overwrite\0"
+    "Page\0"
+    "Swap\0"
+    "Two\0"
+};
+
+enum {
+    OPT_MONO = 1,
+    OPT_COLOR,
+    OPT_COLOUR,
+    OPT_EGA43,
+    OPT_VGA50,
+    OPT_OVERWRITE,
+    OPT_PAGE,
+    OPT_SWAP,
+    OPT_TWO
+};
+
+static void GetLines( void )
+{
+    unsigned    num;
+
+    if( HasEquals() ) {
+        num = GetValue();
+        if( num < 10 || num > 999 ) {
+            StartupErr( "lines out of range" );
+        }
+        /* force a specified number of lines for MDA/CGA systems */
+        DbgRows = num;
+    }
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    unsigned long   num;
+
+    pass=pass;
+    switch( Lookup( ScreenNameTab, start, len ) ) {
+    case OPT_MONO:
+        ScrnMode = MD_MONO;
+        GetLines();
+        break;
+    case OPT_COLOR:
+    case OPT_COLOUR:
+        ScrnMode = MD_COLOUR;
+        GetLines();
+        break;
+    case OPT_EGA43:
+    case OPT_VGA50:
+        ScrnMode = MD_EGA;
+        break;
+    case OPT_OVERWRITE:
+        FlipMech = FLIP_OVERWRITE;
+        break;
+    case OPT_PAGE:
+        FlipMech = FLIP_PAGE;
+        break;
+    case OPT_SWAP:
+        FlipMech = FLIP_SWAP;
+        break;
+    case OPT_TWO:
+        FlipMech = FLIP_TWO;
+        break;
+    default:
+        return( FALSE );
+    }
+    return( TRUE );
+}
+
+
+void ScreenOptInit( void )
+{
+    ScrnMode = MD_DEFAULT;
+    FlipMech = FLIP_TWO;
+}

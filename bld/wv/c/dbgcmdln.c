@@ -505,7 +505,7 @@ static void ProcOptList( int pass )
 #endif
             break;
         default:
-            if( !ProcSysOption( buff, curr - buff, pass ) ) {
+            if( !ProcSysOption( buff, curr - buff, pass ) && !DUIScreenOption( buff, curr - buff, pass ) ) {
                 Format( err_buff, LIT_ENG( STARTUP_Invalid_Option ), buff, curr - buff );
                 StartupErr( err_buff );
             }
@@ -538,6 +538,7 @@ void ProcCmd( void )
     _SwitchOn( SW_LOAD_SYMS );
     _SwitchOn( SW_USE_MOUSE );
     ProcSysOptInit();
+    DUIScreenOptInit();
 
     have_env = DUIEnvLkup( EXENAME, buff, sizeof( buff ) );
     for( pass = 1; pass <= 2; ++pass ) {

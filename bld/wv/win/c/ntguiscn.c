@@ -60,16 +60,6 @@ void TellWinHandle( void )
     TellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
 }
 
-void SetNumLines( int num )
-{
-    num = num;
-}
-
-void SetNumColumns( int num )
-{
-    num = num;
-}
-
 void Ring_Bell( void )
 {
     MessageBeep( 0 );
@@ -177,4 +167,24 @@ void FiniScreen( void )
 bool SysGUI( void )
 {
     return( TRUE );
+}
+
+void SetNumLines( int num )
+{
+    num = num;
+}
+
+void SetNumColumns( int num )
+{
+    num = num;
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    start=start;len=len;pass=pass;
+    return( false );
+}
+
+void ScreenOptInit( void )
+{
 }

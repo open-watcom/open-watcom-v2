@@ -38,12 +38,15 @@
 #include "dosscrn.h"
 #include "dbgscrn.h"
 
-extern void     *ExtraAlloc( size_t );
-extern void     ExtraFree( void * );
-extern HWND     GUIGetSysHandle( gui_window * );
-extern void     GUISetModalDlgs( bool modal );
-extern void     SaveMainScreen( char * );
-extern void     RestoreMainScreen( char * );
+extern void         *ExtraAlloc( size_t );
+extern void         ExtraFree( void * );
+extern HWND         GUIGetSysHandle( gui_window * );
+extern void         GUISetModalDlgs( bool modal );
+extern void         SaveMainScreen( char * );
+extern void         RestoreMainScreen( char * );
+extern unsigned     Lookup(const char *,const char *, unsigned);
+extern bool         HasEquals( void );
+extern unsigned     GetValue( void );
 
 extern int              HardModeRequired;
 extern a_window         *WndMain;
@@ -81,11 +84,6 @@ void InitHookFunc( void )
 void FiniHookFunc( void )
 {
     UnLockInput();
-}
-
-void ForceLines( unsigned lines )
-{
-    ScrnLines = lines;
 }
 
 void Ring_Bell( void )
@@ -189,4 +187,114 @@ bool SysGUI( void )
 char *GUIGetWindowClassName( void )
 {
     return( "WatcomDebugger" );
+}
+
+static const char ScreenOptNameTab[] = {
+    "Monochrome\0"
+    "Color\0"
+    "Colour\0"
+    "Ega43\0"
+    "FAstswap\0"
+    "Vga50\0"
+    "Overwrite\0"
+    "Page\0"
+    "Swap\0"
+    "Two\0"
+};
+
+enum {
+    OPT_MONO = 1,
+    OPT_COLOR,
+    OPT_COLOUR,
+    OPT_EGA43,
+    OPT_FASTSWAP,
+    OPT_VGA50,
+    OPT_OVERWRITE,
+    OPT_PAGE,
+    OPT_SWAP,
+    OPT_TWO
+};
+
+int SwapScrnLines( void )
+{
+    return( ScrnLines );
+}
+
+static void GetLines( void )
+{
+    if( HasEquals() ) {
+        ScrnLines = GetValue();
+    }
+}
+
+
+static void SetEGA43( void )
+{
+    FlipMech = FLIP_SWAP;
+    ScrnMode = MD_EGA;
+    ScrnLines = 43;
+}
+
+static void SetVGA50( void )
+{
+    FlipMech = FLIP_SWAP;
+    ScrnMode = MD_EGA;
+    ScrnLines = 50;
+}
+
+void SetNumLines( int num )
+{
+    if( num >= 43 ) {
+        if( num >= 50 ) {
+            SetVGA50();
+        } else {
+            SetEGA43();
+        }
+    }
+}
+
+void SetNumColumns( int num )
+{
+    num=num;
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    pass=pass;
+    switch( Lookup( ScreenOptNameTab, start, len ) ) {
+    case OPT_COLOR:
+    case OPT_COLOUR:
+        GetLines();
+        break;
+    case OPT_MONO:
+        GetLines();
+        break;
+    case OPT_FASTSWAP:
+        WantFast = true;
+        break;
+    case OPT_EGA43:
+        SetEGA43();
+        break;
+    case OPT_VGA50:
+        SetVGA50();
+        break;
+    case OPT_OVERWRITE:
+    case OPT_PAGE:
+    case OPT_SWAP:
+        FlipMech = FLIP_SWAP;
+        break;
+    case OPT_TWO:
+        FlipMech = FLIP_TWO;
+        break;
+    default:
+        return( FALSE );
+    }
+    return( TRUE );
+}
+
+
+void ScreenOptInit( void )
+{
+    ScrnMode = MD_DEFAULT;
+    FlipMech = FLIP_TWO;
 }

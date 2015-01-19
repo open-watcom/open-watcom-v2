@@ -49,16 +49,6 @@ HWND            DebuggerHwnd;
 HWND            HwndFore = NULL;
 
 
-void SetNumLines( int num )
-{
-    ScrnLines = num;
-}
-
-void SetNumColumns( int num )
-{
-    ScrnColumns=num;
-}
-
 void Ring_Bell( void )
 {
     Beep( 1000, 250 );
@@ -144,4 +134,24 @@ bool SysGUI( void )
 int mygetlasterr( void )
 {
     return( GetLastError() );
+}
+
+void SetNumLines( int num )
+{
+    ScrnLines = num;
+}
+
+void SetNumColumns( int num )
+{
+    ScrnColumns=num;
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    start=start;len=len;pass=pass;
+    return( false );
+}
+
+void ScreenOptInit( void )
+{
 }

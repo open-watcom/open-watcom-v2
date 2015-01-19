@@ -62,10 +62,14 @@ extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
 extern void     ReleaseProgOvlay( bool );
 extern void     KillDebugger( int );
+extern unsigned Lookup( const char *, const char *, unsigned );
+extern void     WantEquals(void);
+extern void     GetRawItem( char * );
+extern char     *GetFileName( int pass );
 
 extern char     *UITermType;
-extern char     XConfig[];
 
+char            XConfig[2048];
 char            *DbgTerminal;
 unsigned        DbgConsole;
 unsigned        PrevConsole;
@@ -464,4 +468,56 @@ void ScrnSpawnEnd( void )
 void PopErrBox( const char *buff )
 {
     WriteText( STD_ERR, buff, strlen( buff ) );
+}
+
+static const char SysOptNameTab[] = {
+    "Console\0"
+    "XConfig\0"
+};
+
+enum {
+    OPT_CONSOLE = 1,
+    OPT_XCONFIG
+};
+
+void SetNumLines( int num )
+{
+    if( num < 10 || num > 999 )
+        num = 0;
+    DbgLines = num;
+}
+
+void SetNumColumns( int num )
+{
+    if( num < 10 || num > 999 )
+        num = 0;
+    DbgColumns = num;
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    char        *p;
+
+    pass=pass;
+    switch( Lookup( SysOptNameTab, start, len ) ) {
+    case OPT_CONSOLE:
+        _Free( DbgTerminal );
+        DbgTerminal = GetFileName( pass );
+        break;
+    case OPT_XCONFIG:
+        WantEquals();
+        p = &XConfig[ strlen( XConfig ) ];
+        *p++ = ' ';
+        GetRawItem( p );
+        if( pass == 1 )
+            XConfig[0] = NULLCHAR;
+        break;
+    default:
+        return( false );
+    }
+    return( true );
+}
+
+void ScreenOptInit( void )
+{
 }

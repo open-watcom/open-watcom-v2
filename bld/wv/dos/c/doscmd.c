@@ -40,56 +40,27 @@
 
 
 extern unsigned         Lookup(const char *,const char *, unsigned);
-extern void             ForceLines( unsigned );
-extern bool             HasEquals( void );
-extern unsigned         GetValue( void );
 extern unsigned long    GetMemory( void );
 extern void             StartupErr( const char * );
 
 
-extern flip_types       FlipMech;
-extern mode_types       ScrnMode;
 extern addr_seg         _psp;
 extern unsigned         OvlAreaSize;
 
 
 static const char SysOptNameTab[] = {
-    'M','o','n','o','c','h','r','o','m','e',NULLCHAR,
-    'C','o','l','o','r',NULLCHAR,
-    'C','o','l','o','u','r',NULLCHAR,
-    'E','g','a','4','3',NULLCHAR,
-    'V','g','a','5','0',NULLCHAR,
-    'O','v','e','r','w','r','i','t','e',NULLCHAR,
-    'P','a','g','e',NULLCHAR,
-    'S','w','a','p',NULLCHAR,
-    'T','w','o',NULLCHAR,
-    'N','O','S','N','o','w',NULLCHAR,
-    'C','H','e','c','k','s','i','z','e',NULLCHAR,
-    'S','I','z','e',NULLCHAR,
-    NULLCHAR
+    "NOSNow\0"
+    "CHecksize\0"
+    "SIze\0"
 };
 
-enum { OPT_MONO = 1, OPT_COLOR, OPT_COLOUR, OPT_EGA43, OPT_VGA50,
-       OPT_OVERWRITE, OPT_PAGE, OPT_SWAP, OPT_TWO,
-       OPT_NOSNOW,
-       OPT_CHECKSIZE,
-       OPT_SIZE
+enum { 
+    OPT_NOSNOW = 1,
+    OPT_CHECKSIZE,
+    OPT_SIZE
 };
 
 static  unsigned    cmdStart;
-
-static void GetLines( void )
-{
-    unsigned    num;
-
-    if( HasEquals() ) {
-        num = GetValue();
-        if( num < 10 || num > 999 )
-            StartupErr( "lines out of range" );
-        ForceLines( num );
-    }
-}
-
 
 bool OptDelim( char ch )
 {
@@ -107,31 +78,6 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
 
     pass=pass;
     switch( Lookup( SysOptNameTab, start, len ) ) {
-    case OPT_MONO:
-        ScrnMode = MD_MONO;
-        GetLines();
-        break;
-    case OPT_COLOR:
-    case OPT_COLOUR:
-        ScrnMode = MD_COLOUR;
-        GetLines();
-        break;
-    case OPT_EGA43:
-    case OPT_VGA50:
-        ScrnMode = MD_EGA;
-        break;
-    case OPT_OVERWRITE:
-        FlipMech = FLIP_OVERWRITE;
-        break;
-    case OPT_PAGE:
-        FlipMech = FLIP_PAGE;
-        break;
-    case OPT_SWAP:
-        FlipMech = FLIP_SWAP;
-        break;
-    case OPT_TWO:
-        FlipMech = FLIP_TWO;
-        break;
     case OPT_NOSNOW:
         _SwitchOn( SW_NOSNOW );
         break;
@@ -166,8 +112,6 @@ void ProcSysOptInit( void )
     unsigned    len;
 
     CheckSize = 0;
-    ScrnMode = MD_DEFAULT;
-    FlipMech = FLIP_TWO;
     OvlAreaSize = 100UL * 1024U / 16U;
 
     ptr = MK_FP( _psp, 0x80 );

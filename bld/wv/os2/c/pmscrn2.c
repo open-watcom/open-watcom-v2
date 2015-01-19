@@ -316,3 +316,31 @@ unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned
         return result;
     }
 }
+
+void SetNumLines( int num )
+{
+    if( num < 10 )
+        num = 10;
+    if( num > 99 )
+        num = 99;
+    NumLines = num;
+}
+
+void SetNumColumns( int num )
+{
+    if( num < 25 )
+        num = 25;
+    if( num > 255 )
+        num = 255;
+    NumColumns = num;
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    start=start;len=len;pass=pass;
+    return( false );
+}
+
+void ScreenOptInit( void )
+{
+}

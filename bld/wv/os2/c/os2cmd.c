@@ -37,14 +37,11 @@
 #include "dbgname.h"
 
 
+#if 0
 extern unsigned     GetValue( void );
 extern unsigned     Lookup( const char *, const char *, unsigned );
 
 
-extern unsigned     NumLines;
-extern unsigned     NumColumns;
-
-#if 0
 static const char SysOptNameTab[] = {
     "\0"
     ""
@@ -57,20 +54,6 @@ enum { OPT_LINES = 1 };
 bool OptDelim( char ch )
 {
     return(  ch == '/' || ch == '-' );
-}
-
-void SetNumLines( int num )
-{
-    if( num < 10 ) num = 10;
-    if( num > 99 ) num = 99;
-    NumLines = num;
-}
-
-void SetNumColumns( int num )
-{
-    if( num < 25 ) num = 25;
-    if( num > 255 ) num = 255;
-    NumColumns = num;
 }
 
 /*

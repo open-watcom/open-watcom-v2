@@ -816,6 +816,16 @@ void DUIInitRunThreadInfo( void )
 {
 }
 
+void DUIScreenOptInit( void )
+{
+}
+
+bool DUIScreenOption( const char *start, unsigned len, int pass )
+{
+    start=start;len=len;pass=pass;
+    return( true );
+}
+
 #if defined( __NT__ )
 const char *CheckForPowerBuilder( const char *name )
 {

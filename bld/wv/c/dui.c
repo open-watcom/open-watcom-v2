@@ -110,6 +110,8 @@ extern unsigned         DlgAsyncRun( void );
 extern void             SetNumLines( int num );
 extern void             SetNumColumns( int num );
 extern void             InitRunThreadInfo( void );
+extern void             ScreenOptInit( void );
+extern bool             ScreenOption( const char *start, unsigned len, int pass );
 
 #define TIMER_MS        250
 
@@ -497,4 +499,14 @@ void DUISetNumColumns( int num )
 void DUIInitRunThreadInfo( void )
 {
     InitRunThreadInfo();
+}
+
+void DUIScreenOptInit( void )
+{
+    ScreenOptInit();
+}
+
+bool DUIScreenOption( const char *start, unsigned len, int pass )
+{
+    return( ScreenOption( start, len, pass ) );
 }

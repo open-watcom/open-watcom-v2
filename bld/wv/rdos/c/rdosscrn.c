@@ -51,16 +51,6 @@ static char my_key = 0;
 static char debug_key = 0;
 
 
-void SetNumLines( int num )
-{
-    ScrnLines = num;
-}
-
-void SetNumColumns( int num )
-{
-    ScrnColumns=num;
-}
-
 void Ring_Bell( void )
 {
 }
@@ -146,4 +136,23 @@ int mygetlasterr( void )
 void PopErrBox( const char *buff )
 {
     RdosWriteString( buff );
+}
+
+void SetNumLines( int num )
+{
+    ScrnLines = num;
+}
+
+void SetNumColumns( int num )
+{
+    ScrnColumns=num;
+}
+
+bool ScreenOption( const char *start, unsigned len, int pass )
+{
+    return( false );
+}
+
+void ScreenOptInit( void )
+{
 }
