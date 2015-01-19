@@ -36,7 +36,7 @@
 #include "spawn.h"
 #include "memout.h"
 #include "freelist.h"
-#include "sched.h"
+#include "inssched.h"
 #include "zoiks.h"
 #include "data.h"
 #include "x87.h"

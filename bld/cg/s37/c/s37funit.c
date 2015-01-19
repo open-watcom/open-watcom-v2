@@ -35,7 +35,7 @@
 #include "indvars.h"
 #include "opcodes.h"
 #include "model.h"
-#include "sched.h"
+#include "inssched.h"
 #include "funits.h"
 #include "pattern.h"
 

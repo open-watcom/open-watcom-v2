@@ -38,7 +38,7 @@
 #include "memout.h"
 #include "procdef.h"
 #include "freelist.h"
-#include "sched.h"
+#include "inssched.h"
 #include "dumpio.h"
 
 extern  void            DumpIns(instruction *);

@@ -33,7 +33,7 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "model.h"
-#include "sched.h"
+#include "inssched.h"
 
 enum {
     F_NONE      = 0x0000,
