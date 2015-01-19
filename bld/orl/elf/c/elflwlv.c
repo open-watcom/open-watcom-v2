@@ -34,10 +34,8 @@
 #include "elflwlv.h"
 #include "elforl.h"
 #include "orlhash.h"
+
 #include "clibext.h"
-#ifdef _BSD_SOURCE
-#define stricmp strcasecmp
-#endif
 
 static void fix_sym_byte_order( elf_file_handle elf_file_hnd, Elf32_Sym *e_sym )
 {

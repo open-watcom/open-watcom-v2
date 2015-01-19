@@ -34,14 +34,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef _BSD_SOURCE
-#define stricmp strcasecmp
-#endif
-
 #include "omfload.h"
 #include "omfmunge.h"
 #include "omforl.h"
 #include "orlhash.h"
+
+#include "clibext.h"
 
 /* Local definitions
  */

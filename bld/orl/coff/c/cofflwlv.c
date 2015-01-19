@@ -33,10 +33,8 @@
 #include "cofforl.h"
 #include "orlhash.h"
 #include "walloca.h"
+
 #include "clibext.h"
-#ifdef _BSD_SOURCE
-#define stricmp strcasecmp
-#endif
 
 orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 {
