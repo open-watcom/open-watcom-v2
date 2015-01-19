@@ -1264,6 +1264,17 @@ char *_cmdname( char *name )
     return( name );
 }
 
+#elif defined (__HAIKU__)
+
+#include <image.h>
+
+char *_cmdname( char *name )
+{
+       image_info info;
+       get_image_info( 0, &info );
+       return( strcpy( name, info.name ) );
+}
+
 #elif defined( __UNIX__ )
 
 char *_cmdname( char *name )
