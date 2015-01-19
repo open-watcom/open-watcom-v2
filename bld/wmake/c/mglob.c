@@ -129,6 +129,19 @@ const char FAR *BuiltIns = {
         #error Unknown CPU architecture
     #endif
 
+#elif defined( __HAIKU__ ) || defined( __haiku__ )
+    "__HAIKU__=\n"
+    "__UNIX__=\n"
+    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
+        "__HAIKUX64__=\n"
+    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
+        "__HAIKU386__=\n"
+    #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
+        "__HAIKUPPC__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
+
 #endif
 };
 
