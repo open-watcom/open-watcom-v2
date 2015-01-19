@@ -86,9 +86,11 @@ extern void GUImain( void )
 extern bool WndProcMacro( a_window * wnd, unsigned key )
 /******************************************************/
 {
+#if 0
     int     menu;
 
     menu=menu;
+#endif
     switch( key ) {
     case GUI_KEY_F3:
         WPFindDoPopUp( wnd, MENU_SAMP_ZOOM_IN );
@@ -109,6 +111,8 @@ extern bool WndProcMacro( a_window * wnd, unsigned key )
         return( FALSE );
     }
     /* for codes not handled by the pop-up */
-//    WndMainMenuProc( wnd, menu );
-//    return( TRUE );
+#if 0
+    WndMainMenuProc( wnd, menu );
+    return( TRUE );
+#endif
 }
