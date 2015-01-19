@@ -26,6 +26,10 @@ else
             output_redirect make -f ../posmake clean
             output_redirect make -f ../posmake TARGETDEF=-D__BSD__
             ;;
+        Haiku)
+            output_redirect make -f ../posmake clean
+            output_redirect make -f ../posmake TARGETDEF=-D__HAIKU__
+            ;;
 #        Linux)
         *)
             output_redirect make -f ../posmake clean
