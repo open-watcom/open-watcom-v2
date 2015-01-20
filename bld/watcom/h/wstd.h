@@ -82,6 +82,9 @@ typedef unsigned_8      sbit;
 #elif defined( __LINUX__ )
     #undef  OS_LINUX
     #define OS_LINUX            1
+#elif defined( __HAIKU__ )
+    #undef  OS_HAIKU
+    #define OS_HAIKU            1
 #elif defined( __BSD__ )
     #undef OS_BSD
     #define OS_BSD              1           
