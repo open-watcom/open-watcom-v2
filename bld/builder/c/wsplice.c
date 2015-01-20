@@ -77,10 +77,9 @@
 #include <sys/utime.h>
 #endif
 #include "watcom.h"
+
 #include "clibext.h"
 
-//#define local static
-#define local
 #define TRUE  1
 #define FALSE 0
 
@@ -157,31 +156,31 @@ struct ipathlst {                       // define ipathlst
 };
 
 // LOCAL ROUTINES
-local void ProcessSource( char *src_file );           // - process source file
-local void      ProcessTarget( void );                // - produce target file
-local void      SegmentCheck( void );                 // - check if a seg section should be output
-local SEGMENT   *ScanSegment( void );                 // - scan a new segment
-local void      AddText( void );                      // - add text to a ring
-local TEXTENT   *AddTextEntry( void );                // - add text entry
-local void      CmdAdd( void );                       // - execute or add a command
-local void      CmdExecute( void );                   // - execute a command
-local FILE      *OpenFileTruncate( char *, char * );  // - open a file, truncate if necessary
-local void      OpenFileNormal( char *, char * );     // - open a file
-local void      CloseFile( void );                    // - close a file
-local unsigned  ReadInput( void );                    // - read input record
-local SEGMENT   *SegmentLookUp( char *seg_name );     // - look up a segment
-local SEGSTK    *PushSegStack( void );                // - push the segment stack
-local void      PopSegStack( void );                  // - pop the segment stack
-local void      Error( char*, ... );                  // - write an error
-local int       ScanString( void );                   // - scan a string
-local void      *GetMem( size_t size );               // - get a block of memory
-local unsigned  RecordInitialize( char *record );     // - initialize for record processing
-local void      OutputString( char *p, char *record );// - send string to output file
-local void      PutNL( void );                        // - output a newline
-local void      AddIncludePathList( char *path );     // - add to list of include paths
-local void      ProcessRecord( int, char * );   // - PROCESS A RECORD OF INPUT
-local void      EatWhite( void );               // - eat white space
-local int       Expr( void );
+static void      ProcessSource( char *src_file );      // - process source file
+static void      ProcessTarget( void );                // - produce target file
+static void      SegmentCheck( void );                 // - check if a seg section should be output
+static SEGMENT   *ScanSegment( void );                 // - scan a new segment
+static void      AddText( void );                      // - add text to a ring
+static TEXTENT   *AddTextEntry( void );                // - add text entry
+static void      CmdAdd( void );                       // - execute or add a command
+static void      CmdExecute( void );                   // - execute a command
+static FILE      *OpenFileTruncate( char *, char * );  // - open a file, truncate if necessary
+static void      OpenFileNormal( char *, char * );     // - open a file
+static void      CloseFile( void );                    // - close a file
+static unsigned  ReadInput( void );                    // - read input record
+static SEGMENT   *SegmentLookUp( char *seg_name );     // - look up a segment
+static SEGSTK    *PushSegStack( void );                // - push the segment stack
+static void      PopSegStack( void );                  // - pop the segment stack
+static void      Error( char*, ... );                  // - write an error
+static int       ScanString( void );                   // - scan a string
+static void      *GetMem( size_t size );               // - get a block of memory
+static unsigned  RecordInitialize( char *record );     // - initialize for record processing
+static void      OutputString( char *p, char *record );// - send string to output file
+static void      PutNL( void );                        // - output a newline
+static void      AddIncludePathList( char *path );     // - add to list of include paths
+static void      ProcessRecord( int, char * );   // - PROCESS A RECORD OF INPUT
+static void      EatWhite( void );               // - eat white space
+static int       Expr( void );
 
 // DATA (READ ONLY)
 
@@ -198,7 +197,7 @@ enum                    // define KW codes
     KW_INCLUDE          // - INCLUDE
 };
 
-local KW KwTable[] =                            // - key words table
+static KW KwTable[] =                            // - key words table
 {
     {   KW_SEGMENT,     "segment"       },      // SEGMENT expr
     {   KW_ELSESEGMENT, "elsesegment"   },      // ELSESEGMENT [expr]
@@ -211,25 +210,25 @@ local KW KwTable[] =                            // - key words table
 
 
 // DATA (READ/WRITE)
-local unsigned  ErrCount;               // - number of errors
-local FILE      *OutputFile;            // - output file
-local FILESTK   *Files;                 // - stack of opened files
-local SEGMENT   *Segments;              // - list of segments
-local SEGSTK    *SegStk;                // - active-segments stack
-local char      KwChar = { ':' };       // - key word definition character
-local TEXTENT   *SourceText;            // - source text
-local char      Token[32];              // - scan token
-local char      Record[1024];           // - input record
-local char      *Rptr;                  // - ptr into record
-local PROCMODE  ProcessMode;            // - processing mode
-local char      *OutFmt = "%s";         // - output format
-local unsigned  OutNum = 0;             // - output number
-local int       UnixStyle;              // - Unix style newlines?
-local int       TabStop;                // - tab spacing
-local IPATHLST  *IncPathList;           // - list of include paths
-local int       RestoreTime = FALSE;    // - set tgt-file timestamp to src-file
-local char      OutBuffer[1024];        // - output buffer
-local unsigned  OutBufferLen;           // - output buffer current len
+static unsigned  ErrCount;               // - number of errors
+static FILE      *OutputFile;            // - output file
+static FILESTK   *Files;                 // - stack of opened files
+static SEGMENT   *Segments;              // - list of segments
+static SEGSTK    *SegStk;                // - active-segments stack
+static char      KwChar = { ':' };       // - key word definition character
+static TEXTENT   *SourceText;            // - source text
+static char      Token[32];              // - scan token
+static char      Record[1024];           // - input record
+static char      *Rptr;                  // - ptr into record
+static PROCMODE  ProcessMode;            // - processing mode
+static char      *OutFmt = "%s";         // - output format
+static unsigned  OutNum = 0;             // - output number
+static int       UnixStyle;              // - Unix style newlines?
+static int       TabStop;                // - tab spacing
+static IPATHLST  *IncPathList;           // - list of include paths
+static int       RestoreTime = FALSE;    // - set tgt-file timestamp to src-file
+static char      OutBuffer[1024];        // - output buffer
+static unsigned  OutBufferLen;           // - output buffer current len
 
 enum                    // PROCESSING MODES
 {
@@ -409,7 +408,7 @@ int main(               // MAIN-LINE
 }
 
 // PROCESS SOURCE FILE
-local void ProcessSource( char *src_file ) // - starting file
+static void ProcessSource( char *src_file ) // - starting file
 {
     int kw;     // - current key-word
 
@@ -429,7 +428,7 @@ local void ProcessSource( char *src_file ) // - starting file
 }
 
 
-local void ProcessRecord( // PROCESS A RECORD OF INPUT
+static void ProcessRecord( // PROCESS A RECORD OF INPUT
     int kw, // - key-word for record
     char *record )// - record
 {
@@ -505,7 +504,7 @@ local void ProcessRecord( // PROCESS A RECORD OF INPUT
     }
 }
 
-local void OutputChar( char p )
+static void OutputChar( char p )
 {
     OutBuffer[OutBufferLen++] = p;
     if( OutBufferLen >= sizeof( OutBuffer ) ) {
@@ -514,7 +513,7 @@ local void OutputChar( char p )
     }
 }
 
-local void OutputString( char *p, char *record )
+static void OutputString( char *p, char *record )
 {
     char        *r;
     unsigned    col;
@@ -565,7 +564,7 @@ local void OutputString( char *p, char *record )
     }
 }
 
-local void PutNL( void )
+static void PutNL( void )
 {
 #if !defined( __UNIX__ )
     if( !UnixStyle )
@@ -574,7 +573,7 @@ local void PutNL( void )
     OutputChar( '\n' );
 }
 
-local int GetToken( char op )
+static int GetToken( char op )
 {
     if( Token[0] != op || Token[1] != '\0' )
         return( FALSE );
@@ -582,7 +581,7 @@ local int GetToken( char op )
     return( TRUE );
 };
 
-local int PrimaryExpr( void )
+static int PrimaryExpr( void )
 {
     SEGMENT     *new;           // - new segment
     int         ret;
@@ -605,7 +604,7 @@ local int PrimaryExpr( void )
     return( ret );
 }
 
-local int NotExpr( void )
+static int NotExpr( void )
 {
     if( GetToken( OP_NOT ) ) {
         return( !PrimaryExpr() );
@@ -614,7 +613,7 @@ local int NotExpr( void )
     }
 }
 
-local int AndExpr( void )
+static int AndExpr( void )
 {
     int ret;
 
@@ -625,7 +624,7 @@ local int AndExpr( void )
     return( ret );
 }
 
-local int Expr( void )
+static int Expr( void )
 {
     int ret;
 
@@ -637,7 +636,7 @@ local int Expr( void )
 }
 
 // See if a segment section should be output
-local void SegmentCheck( void )
+static void SegmentCheck( void )
 {
     ScanString();       // Get next token ready
     if( Expr() ) {
@@ -652,7 +651,7 @@ local void SegmentCheck( void )
 }
 
 
-local SEGSTK *PushSegStack()// PUSH THE SEGMENT STACK
+static SEGSTK *PushSegStack()// PUSH THE SEGMENT STACK
 {
     SEGSTK      *stk;           // - new stack entry
 
@@ -668,7 +667,7 @@ local SEGSTK *PushSegStack()// PUSH THE SEGMENT STACK
 
 
 
-local void PopSegStack( void )// POP SEGMENTS STACK
+static void PopSegStack( void )// POP SEGMENTS STACK
 {
     SEGSTK      *top;           // - top entry on stack
 
@@ -683,7 +682,7 @@ local void PopSegStack( void )// POP SEGMENTS STACK
 }
 
 
-local SEGMENT *ScanSegment( void )// SCAN A SEGMENT
+static SEGMENT *ScanSegment( void )// SCAN A SEGMENT
 {
     SEGMENT     *new;           // - new segment
 
@@ -697,7 +696,7 @@ local SEGMENT *ScanSegment( void )// SCAN A SEGMENT
 }
 
 // LOOK UP A SEGMENT
-local SEGMENT *SegmentLookUp( char *seg_name )
+static SEGMENT *SegmentLookUp( char *seg_name )
 {
     SEGMENT     *sptr;          // - points to current segment
     size_t      size;           // - size of name
@@ -724,7 +723,7 @@ local SEGMENT *SegmentLookUp( char *seg_name )
 
 
 // ADD TO PATH LIST
-local void AddIncludePathList( char *path )
+static void AddIncludePathList( char *path )
 {
     IPATHLST    *lptr;          // - point to new path entry
     IPATHLST    *p;             // - point to list
@@ -756,7 +755,7 @@ local void AddIncludePathList( char *path )
 }
 
 //OPEN FILE, TRUNCATE NAME IF NECESSARY
-local FILE *OpenFileTruncate( 
+static FILE *OpenFileTruncate( 
     char *file_name, // - file to be opened
     char *mode )// - file mode
 {
@@ -783,7 +782,7 @@ local FILE *OpenFileTruncate(
 }
 
 
-local FILE *OpenFilePathList( //OPEN FILE, TRY EACH LOCATION IN PATH LIST
+static FILE *OpenFilePathList( //OPEN FILE, TRY EACH LOCATION IN PATH LIST
     char *file_name, // - file to be opened
     char *mode )// - file mode
 {
@@ -809,7 +808,7 @@ local FILE *OpenFilePathList( //OPEN FILE, TRY EACH LOCATION IN PATH LIST
 
 
 // OPEN FILE
-local void OpenFileNormal( 
+static void OpenFileNormal( 
     char *file_name, // - file to be opened
     char *mode )// - file mode
 {
@@ -835,7 +834,7 @@ local void OpenFileNormal(
 }
 
 // CLOSE CURRENT FILE
-local void CloseFile( void )
+static void CloseFile( void )
 {
     FILESTK     *stk;           // - file stack
 
@@ -851,7 +850,7 @@ local void CloseFile( void )
 }
 
 // READ A RECORD
-local unsigned ReadInput( void )
+static unsigned ReadInput( void )
 {
     unsigned    retn;           // - return: type of record
 
@@ -866,7 +865,7 @@ local unsigned ReadInput( void )
 }
 
 // INITIALIZE TO PROCESS RECORD
-local unsigned RecordInitialize( char *record )
+static unsigned RecordInitialize( char *record )
 {
     KW  *pkw;           // - ptr. into KW table
 
@@ -893,14 +892,14 @@ local unsigned RecordInitialize( char *record )
 }
 
 
-local void EatWhite( void )
+static void EatWhite( void )
 {
     while( isspace( *Rptr ) )
         ++Rptr;
 }
 
 
-local int IsOper( char ch )
+static int IsOper( char ch )
 {
     switch( ch ) {
     case OP_OR:
@@ -915,7 +914,7 @@ local int IsOper( char ch )
 }
 
 // SCAN A STRING
-local int ScanString( void )
+static int ScanString( void )
 {
     char        *eptr;          // - end-of-string ptr.
     char        *cptr;          // - points into string
@@ -954,7 +953,7 @@ local int ScanString( void )
 }
 
 
-local void Error( // ERROR MESSAGE
+static void Error( // ERROR MESSAGE
     char *msg, // - message
     ... )// - extra info
 {
@@ -978,7 +977,7 @@ local void Error( // ERROR MESSAGE
 }
 
 // GET MEMORY BLOCK
-local void *GetMem( size_t size )
+static void *GetMem( size_t size )
 {
     void        *block;                         // - new memory
     static int  FirstMemoryError = { TRUE };    // - indicates first "out of memory" error

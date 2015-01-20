@@ -59,7 +59,7 @@ typedef struct data_quad_list {
     struct data_quad_list   *prev, *next;
 } DATA_QUAD_LIST;
 
-local unsigned BitMask[] = {
+static unsigned BitMask[] = {
     0x00000001,
     0x00000003,
     0x00000007,
@@ -99,13 +99,13 @@ static DATA_QUAD_LIST   *CurDataQuad;
 static int              DataQuadSegIndex;
 static int              DataQuadIndex;
 
-local   DATA_QUAD_LIST  *NewDataQuad( void );
-local   bool            CharArray( TYPEPTR typ );
-local   bool            WCharArray( TYPEPTR typ );
-local   void            InitCharArray( TYPEPTR typ );
-local   void            InitWCharArray( TYPEPTR typ );
-local   void            StoreFloat( DATA_TYPE dtype, target_size size );
-local   void            StoreInt64( TYPEPTR typ );
+static DATA_QUAD_LIST   *NewDataQuad( void );
+static bool             CharArray( TYPEPTR typ );
+static bool             WCharArray( TYPEPTR typ );
+static void             InitCharArray( TYPEPTR typ );
+static void             InitWCharArray( TYPEPTR typ );
+static void             StoreFloat( DATA_TYPE dtype, target_size size );
+static void             StoreInt64( TYPEPTR typ );
 
 bool DataQuadsAvailable( void )
 {
@@ -166,7 +166,7 @@ DATA_QUAD *NextDataQuad( void )
     return( dq_ptr );
 }
 
-local DATA_QUAD_LIST *NewDataQuad( void )
+static DATA_QUAD_LIST *NewDataQuad( void )
 {
     static DATA_QUAD_LIST   *DataQuadPtr;
     DATA_QUAD_LIST          *dql;
@@ -189,7 +189,7 @@ local DATA_QUAD_LIST *NewDataQuad( void )
 
 /* splits the dataquad pointed to by dql so that the current one
    will have size "size" and the new one "oldsize - size" */
-local void SplitDataQuad( DATA_QUAD_LIST *dql, target_size size )
+static void SplitDataQuad( DATA_QUAD_LIST *dql, target_size size )
 {
     DATA_QUAD_LIST  *ndql;
     DATA_QUAD       *ndq;
@@ -239,7 +239,7 @@ local void SplitDataQuad( DATA_QUAD_LIST *dql, target_size size )
     }
 }
 
-local void DeleteDataQuad( DATA_QUAD_LIST *dql )
+static void DeleteDataQuad( DATA_QUAD_LIST *dql )
 {
     dql->prev->next = dql->next;
     if( dql->next != NULL ) {
@@ -247,7 +247,7 @@ local void DeleteDataQuad( DATA_QUAD_LIST *dql )
     }
 }
 
-local void GenDataQuad( DATA_QUAD *dq, target_size size )
+static void GenDataQuad( DATA_QUAD *dq, target_size size )
 {
     DATA_QUAD_LIST  *dql;
     target_size     cursize;
@@ -280,7 +280,7 @@ local void GenDataQuad( DATA_QUAD *dq, target_size size )
     CurDataQuad = dql;
 }
 
-local void ZeroBytes( target_size n )
+static void ZeroBytes( target_size n )
 {
     DATA_QUAD   dq;
 
@@ -292,7 +292,7 @@ local void ZeroBytes( target_size n )
     GenDataQuad( &dq, n );
 }
 
-local void RelSeekBytes( target_ssize n )
+static void RelSeekBytes( target_ssize n )
 {
     DATA_QUAD_LIST  *dql;
 
@@ -316,7 +316,7 @@ local void RelSeekBytes( target_ssize n )
     }
 }
 
-local void ChkConstant( unsigned value, unsigned max_value )
+static void ChkConstant( unsigned value, unsigned max_value )
 {
     if( value > max_value ) {
         if( (value | (max_value >> 1)) != ~0U ) {
@@ -325,7 +325,7 @@ local void ChkConstant( unsigned value, unsigned max_value )
     }
 }
 
-local void StoreIValue( DATA_TYPE dtype, int value, target_size size )
+static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
 {
     static DATA_QUAD_LIST   *LastCurDataQuad;
     DATA_QUAD_LIST          *dql;
@@ -372,7 +372,7 @@ local void StoreIValue( DATA_TYPE dtype, int value, target_size size )
     }
 }
 
-local void StoreIValue64( DATA_TYPE dtype, int64 value )
+static void StoreIValue64( DATA_TYPE dtype, int64 value )
 {
     DATA_QUAD           dq;
 
@@ -383,7 +383,7 @@ local void StoreIValue64( DATA_TYPE dtype, int64 value )
     GenDataQuad( &dq, TARGET_LONG64 );
 }
 
-local void AddrFold( TREEPTR tree, addrfold_info *info )
+static void AddrFold( TREEPTR tree, addrfold_info *info )
 {
 // Assume tree has been const folded
     SYM_ENTRY           sym;
@@ -527,7 +527,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
     }
 }
 
-local void StorePointer( TYPEPTR typ, target_size size )
+static void StorePointer( TYPEPTR typ, target_size size )
 {
     TREEPTR             tree;
     TYPEPTR             typ2;
@@ -604,7 +604,7 @@ local void StorePointer( TYPEPTR typ, target_size size )
     }
 }
 
-local void StoreInt64( TYPEPTR typ )
+static void StoreInt64( TYPEPTR typ )
 {
     TREEPTR     tree;
     DATA_QUAD   dq;
@@ -627,7 +627,7 @@ local void StoreInt64( TYPEPTR typ )
     GenDataQuad( &dq, TARGET_LONG64 );
 }
 
-local FIELDPTR InitBitField( FIELDPTR field )
+static FIELDPTR InitBitField( FIELDPTR field )
 {
     TYPEPTR             typ;
     target_size         size;
@@ -700,7 +700,7 @@ local FIELDPTR InitBitField( FIELDPTR field )
    equal to typ */
 
 /* Detects a C99 designated initializer */
-local void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
+static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
 {
     TREEPTR         tree;
     target_size     offs;
@@ -755,7 +755,7 @@ local void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
     return( field );
 }
 
-local bool DesignatedInSubAggregate( DATA_TYPE decl_type )
+static bool DesignatedInSubAggregate( DATA_TYPE decl_type )
 {
     switch( decl_type ) {
     case TYPE_ARRAY:
@@ -772,7 +772,7 @@ local bool DesignatedInSubAggregate( DATA_TYPE decl_type )
     }
 }
 
-local void InitArray( TYPEPTR typ, TYPEPTR ctyp )
+static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
 {
     target_size n;
     target_size m;
@@ -832,7 +832,7 @@ local void InitArray( TYPEPTR typ, TYPEPTR ctyp )
 
 /* Detects a C99 designated initializer for fields */
 /* Initialize struct or union fields */
-local void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
+static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
 {
     TYPEPTR         ftyp;
     target_size     n;
@@ -880,12 +880,12 @@ local void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
     RelSeekBytes( n - offset );
 }
 
-local void InitStruct( TYPEPTR typ, TYPEPTR ctyp )
+static void InitStruct( TYPEPTR typ, TYPEPTR ctyp )
 {
     InitStructUnion( typ, ctyp, typ->u.tag->u.field_list );
 }
 
-local void InitUnion( TYPEPTR typ, TYPEPTR ctyp )
+static void InitUnion( TYPEPTR typ, TYPEPTR ctyp )
 {
     FIELDPTR            field;
     TYPEPTR             ftyp;
@@ -1018,7 +1018,7 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
 }
 
 
-local bool CharArray( TYPEPTR typ )
+static bool CharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
@@ -1030,7 +1030,7 @@ local bool CharArray( TYPEPTR typ )
 }
 
 
-local bool WCharArray( TYPEPTR typ )
+static bool WCharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
@@ -1041,7 +1041,7 @@ local bool WCharArray( TYPEPTR typ )
     return( FALSE );
 }
 
-local void InitCharArray( TYPEPTR typ )
+static void InitCharArray( TYPEPTR typ )
 {
     target_size         len;
     STR_HANDLE          str_lit;
@@ -1077,7 +1077,7 @@ local void InitCharArray( TYPEPTR typ )
 }
 
 
-local void InitWCharArray( TYPEPTR typ )
+static void InitWCharArray( TYPEPTR typ )
 {
     target_size         len;
     target_size         i;
@@ -1122,7 +1122,7 @@ local void InitWCharArray( TYPEPTR typ )
 }
 
 
-local void StoreFloat( DATA_TYPE dtype, target_size size )
+static void StoreFloat( DATA_TYPE dtype, target_size size )
 {
     TREEPTR     tree;
     DATA_QUAD   dq;
@@ -1155,7 +1155,7 @@ local void StoreFloat( DATA_TYPE dtype, target_size size )
     GenDataQuad( &dq, size );
 }
 
-local void GenStaticDataQuad( SYM_HANDLE sym_handle )
+static void GenStaticDataQuad( SYM_HANDLE sym_handle )
 {
     DATA_QUAD       dq;
 
@@ -1249,7 +1249,7 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 }
 
-local void AssignAggregate( TREEPTR lvalue, TREEPTR rvalue, TYPEPTR typ )
+static void AssignAggregate( TREEPTR lvalue, TREEPTR rvalue, TYPEPTR typ )
 {
     TREEPTR tree;
 
@@ -1260,7 +1260,7 @@ local void AssignAggregate( TREEPTR lvalue, TREEPTR rvalue, TYPEPTR typ )
     AddStmt( tree );
 }
 
-local void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
+static void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     SYM_HANDLE  sym2_handle;
     SYM_ENTRY   sym2;
@@ -1277,7 +1277,7 @@ local void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
                      VarLeaf( &sym2, sym2_handle ), sym->sym_type );
 }
 
-local void InitStructVar( target_size base, SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ)
+static void InitStructVar( target_size base, SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ)
 {
     TYPEPTR     typ2;
     TREEPTR     opnd;
@@ -1369,7 +1369,7 @@ static bool SimpleStruct( TYPEPTR typ )
 }
 
 
-local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
+static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
 {
     target_size i;
     target_size n;

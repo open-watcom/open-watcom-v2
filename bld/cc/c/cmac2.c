@@ -51,8 +51,8 @@ static void    CLine( void );
 static void    CError( void );
 static void    CIdent( void );
 
-local void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *src_loc );
-local mac_parm_count FormalParm( MPPTR formal_parms );
+static void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *src_loc );
+static mac_parm_count FormalParm( MPPTR formal_parms );
 
 struct preproc {
     char  *directive;
@@ -107,7 +107,7 @@ static void PPFlush2EOL( void )
 }
 
 
-local void ChkEOL( void )
+static void ChkEOL( void )
 {
     if( CurToken != T_EOF ) {
         ExpectingToken( T_NULL );
@@ -115,7 +115,7 @@ local void ChkEOL( void )
 }
 
 
-local void WantEOL( void )
+static void WantEOL( void )
 {
     if( CompFlags.extensions_enabled ) {
         if( CurToken != T_NULL && CurToken != T_EOF ) {
@@ -129,7 +129,7 @@ local void WantEOL( void )
 }
 
 
-local void IncLevel( bool value )
+static void IncLevel( bool value )
 {
     struct cpp_info *cpp;
 
@@ -150,7 +150,7 @@ local void IncLevel( bool value )
 }
 
 
-local void CUnknown( void )
+static void CUnknown( void )
 {
     if( NestLevel == SkipLevel ) {
         CErr2p( ERR_UNKNOWN_DIRECTIVE, Buffer );
@@ -244,18 +244,18 @@ TOKEN ChkControl( void )
 }
 
 
-local void CSkip( void )
+static void CSkip( void )
 {
 }
 
 
-local void CSkipIf( void )
+static void CSkipIf( void )
 {
     IncLevel( FALSE );
 }
 
 
-local void CIdent( void )
+static void CIdent( void )
 {
     if( !CompFlags.extensions_enabled ) {
         CUnknown();
@@ -319,7 +319,7 @@ void CInclude( void )
 }
 
 
-local void CDefine( void )
+static void CDefine( void )
 {
     MPPTR           mp;
     MPPTR           prev_mp;
@@ -406,7 +406,7 @@ local void CDefine( void )
 }
 
 
-local void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *loc )
+static void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *loc )
 {
     MEPTR           mentry;
     size_t          len;
@@ -524,7 +524,7 @@ local void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR form
 }
 
 
-local mac_parm_count FormalParm( MPPTR formal_parms )
+static mac_parm_count FormalParm( MPPTR formal_parms )
 {
     mac_parm_count i;
 
@@ -539,7 +539,7 @@ local mac_parm_count FormalParm( MPPTR formal_parms )
 }
 
 
-local void CIfDef( void )
+static void CIfDef( void )
 {
     MEPTR       mentry;
 
@@ -561,7 +561,7 @@ local void CIfDef( void )
 }
 
 
-local void CIfNDef( void )
+static void CIfNDef( void )
 {
     MEPTR       mentry;
 
@@ -582,7 +582,7 @@ local void CIfNDef( void )
 }
 
 
-local bool GetConstExpr( void )
+static bool GetConstExpr( void )
 {
     bool        value;
     bool        useful_side_effect;
@@ -603,7 +603,7 @@ local bool GetConstExpr( void )
     return( value );
 }
 
-local void CIf( void )
+static void CIf( void )
 {
     bool    value;
 
@@ -616,7 +616,7 @@ local void CIf( void )
 }
 
 
-local void CElif( void )
+static void CElif( void )
 {
     bool    value;
 
@@ -646,7 +646,7 @@ local void CElif( void )
 }
 
 
-local void CElse( void )
+static void CElse( void )
 {
     if( ( NestLevel == 0 ) || ( CppStack->cpp_type == PRE_ELSE ) ) {
         CErr1( ERR_MISPLACED_ELSE );
@@ -668,7 +668,7 @@ local void CElse( void )
 }
 
 
-local void CEndif( void )
+static void CEndif( void )
 {
     if( NestLevel == 0 ) {
         CErr1( ERR_MISPLACED_ENDIF );
@@ -733,7 +733,7 @@ bool MacroDel( const char *name )
 }
 
 
-local void CUndef( void )
+static void CUndef( void )
 {
 
     PPNextToken();
@@ -745,7 +745,7 @@ local void CUndef( void )
 }
 
 
-local void CLine( void )
+static void CLine( void )
 {
     FNAMEPTR        flist;
     unsigned        src_line;
@@ -791,7 +791,7 @@ local void CLine( void )
 }
 
 
-local void CError( void )
+static void CError( void )
 {
     size_t      len;
     bool        save;

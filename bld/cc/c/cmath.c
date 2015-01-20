@@ -80,7 +80,7 @@
 #endif
 
 /* matches enum DATA_TYPE in ctypes.h */
-local  const unsigned char  AddResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
+static const unsigned char  AddResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
 /* CHR */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
@@ -118,7 +118,7 @@ local  const unsigned char  AddResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-local  const unsigned char  SubResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
+static const unsigned char  SubResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
 /* CHR */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FCX,DCX,LCX,PTR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,FCX,DCX,LCX, },
@@ -156,7 +156,7 @@ local  const unsigned char  SubResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-local  const unsigned char  IntResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
+static const unsigned char  IntResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX,  */
 /* BOL */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 /* CHR */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
@@ -194,7 +194,7 @@ local  const unsigned char  IntResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-local char ShiftResult[TYPE_LAST_ENTRY] = {
+static char ShiftResult[TYPE_LAST_ENTRY] = {
 /* >>      op2 */
 /* BOL */  INT,
 /* CHR */  INT,
@@ -232,7 +232,7 @@ local char ShiftResult[TYPE_LAST_ENTRY] = {
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
-local  const unsigned char  BinResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
+static const unsigned char  BinResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { BOL,INT,UCH,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 /* CHR */ { INT,CHR,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
@@ -897,7 +897,7 @@ TREEPTR FlowOp( TREEPTR op1, opr_code opr, TREEPTR op2 )
 }
 
 
-local TREEPTR MulByConst( TREEPTR opnd, target_ssize amount )
+static TREEPTR MulByConst( TREEPTR opnd, target_ssize amount )
 {
     TREEPTR     tree;
 
@@ -922,7 +922,7 @@ local TREEPTR MulByConst( TREEPTR opnd, target_ssize amount )
 }
 
 
-local TREEPTR PtrSubtract( TREEPTR result, target_ssize size, DATA_TYPE result_type)
+static TREEPTR PtrSubtract( TREEPTR result, target_ssize size, DATA_TYPE result_type)
 {
     int             shift_count;
     target_ssize    n;
@@ -1054,7 +1054,7 @@ static TREEPTR ArrayMinusConst( TREEPTR op1, TREEPTR op2 )
 }
 
 
-local bool LValue( TREEPTR op1 )
+static bool LValue( TREEPTR op1 )
 {
     TYPEPTR     typ;
 
@@ -1317,7 +1317,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
 }
 
 
-local void SetSymAssigned( TREEPTR opnd )
+static void SetSymAssigned( TREEPTR opnd )
 {
     SYM_ENTRY   sym;
 
@@ -1960,7 +1960,7 @@ TREEPTR UComplement( TREEPTR opnd )
 }
 
 
-local TYPEPTR MergedType( TYPEPTR typ1, TYPEPTR typ2 )
+static TYPEPTR MergedType( TYPEPTR typ1, TYPEPTR typ2 )
 {
     type_modifiers  flags, new_flags;
     TYPEPTR         typ;

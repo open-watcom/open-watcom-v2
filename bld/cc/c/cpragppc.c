@@ -249,7 +249,7 @@ void AsmSysLine( const char *buff )
     AsmLine( buff );
 }
 
-local bool GetByteSeq( byte_seq **code )
+static bool GetByteSeq( byte_seq **code )
 /**************************************/
 {
     auto unsigned char  buff[MAXIMUM_BYTESEQ + 32];

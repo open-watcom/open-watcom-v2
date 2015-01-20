@@ -62,7 +62,7 @@ void CCusage( void )
 #endif
 
 
-local void Wait_for_return( char const *press )
+static void Wait_for_return( char const *press )
 {
     if( ConTTY() ) {
         ConsMsg( press );

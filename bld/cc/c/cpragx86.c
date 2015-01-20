@@ -260,7 +260,7 @@ typedef enum {
     FIXWORD_RELOFF
 } fix_words;
 
-local fix_words FixupKeyword( void )
+static fix_words FixupKeyword( void )
 /**********************************/
 {
     if( CurToken == T_FLOAT ) {
@@ -355,7 +355,7 @@ static enum sym_type AsmDataType[] = {
     #undef  pick1
 };
 
-local int AsmType( TYPEPTR typ, type_modifiers flags )
+static int AsmType( TYPEPTR typ, type_modifiers flags )
 /****************************************************/
 {
     SKIP_TYPEDEFS( typ );
@@ -601,7 +601,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
 }
 
 
-local void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
+static void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
 /*************************************************************************/
 {
     struct asmfixup     *fix;
@@ -616,7 +616,7 @@ local void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
     FixupHead = fix;
 }
 
-local void FreeAsmFixups( void )
+static void FreeAsmFixups( void )
 /******************************/
 {
     struct asmfixup     *fix;
@@ -638,7 +638,7 @@ void AsmSysLine( const char *buff )
 #endif
 }
 
-local bool GetByteSeq( byte_seq **code )
+static bool GetByteSeq( byte_seq **code )
 /**************************************/
 {
     unsigned char       buff[MAXIMUM_BYTESEQ + 32];
@@ -790,7 +790,7 @@ hw_reg_set PragRegName( const char *str, size_t len )
 
 
 
-local void GetParmInfo( void )
+static void GetParmInfo( void )
 /****************************/
 {
     struct {
@@ -833,7 +833,7 @@ local void GetParmInfo( void )
 }
 
 
-local void GetSTRetInfo( void )
+static void GetSTRetInfo( void )
 /*****************************/
 {
     struct {
@@ -872,7 +872,7 @@ local void GetSTRetInfo( void )
 }
 
 
-local void GetRetInfo( void )
+static void GetRetInfo( void )
 /***************************/
 {
     struct {
@@ -905,7 +905,7 @@ local void GetRetInfo( void )
 }
 
 
-local void GetSaveInfo( void )
+static void GetSaveInfo( void )
 /****************************/
 {
     struct {

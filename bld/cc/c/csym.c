@@ -530,7 +530,7 @@ SYM_HANDLE Sym0Look( id_hash_idx h, const char *id )
 }
 
 
-local void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
+static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class != SC_EXTERN ) {
@@ -553,7 +553,7 @@ local void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
 }
 
 
-local void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
+static void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
 {
     TYPEPTR     typ;
 
@@ -578,7 +578,7 @@ local void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
 }
 
 
-local void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
+static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class == SC_STATIC ) {
@@ -605,7 +605,7 @@ local void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
     }
 }
 
-local void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
+static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
 {
 #if _CPU == 8086 || _CPU == 386
     if( sym->attribs.stg_class == SC_STATIC ) {
@@ -634,13 +634,13 @@ struct xlist {
     char            xname[8+1];
 };
 
-local  void InitExtName( struct xlist **where  )
+static  void InitExtName( struct xlist **where  )
 /*** Init extern name list***/
 {
     *where = NULL;
 }
 
-local void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
+static void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
@@ -667,7 +667,7 @@ local void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
     *link = new;
 }
 
-local void FiniExtName( struct xlist *head )
+static void FiniExtName( struct xlist *head )
 /*** Free xname list **********************/
 {
     struct xlist    *next;
@@ -705,7 +705,7 @@ static  void    Copy8( char const *nstr, char *name )
 
 #define BUCKETS 7
 
-local int SymBucket( SYMPTR sym )   /* determine bucket # for symbol */
+static int SymBucket( SYMPTR sym )   /* determine bucket # for symbol */
 {
     int             bucket;
     unsigned        size;
@@ -739,7 +739,7 @@ local int SymBucket( SYMPTR sym )   /* determine bucket # for symbol */
     return( bucket );
 }
 
-local SYM_HASHPTR GetSymList( void )
+static SYM_HASHPTR GetSymList( void )
 {
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     next_hsymptr;
@@ -806,7 +806,7 @@ local SYM_HASHPTR GetSymList( void )
     return( sym_list );
 }
 
-local SYM_HASHPTR FreeSym( void )
+static SYM_HASHPTR FreeSym( void )
 {
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     next_hsymptr;
@@ -933,7 +933,7 @@ void EndBlock( void )
 
 
 #if 0
-local void DumpWeights( SYMPTR sym )
+static void DumpWeights( SYMPTR sym )
 {
     if( DebugFlag > 0 ) {
         for( ; sym != NULL; sym = sym->thread ) {
@@ -1055,7 +1055,7 @@ void SymsPurge( void )
 
 #if 0           /* can't free these because they are in CPermArea */
 
-local void PurgeTags( TAGPTR tag_head )
+static void PurgeTags( TAGPTR tag_head )
 {
     TAGPTR      tag;
     FIELDPTR    field;
@@ -1077,7 +1077,7 @@ local void PurgeTags( TAGPTR tag_head )
 }
 
 
-local void PurgeEnums( ENUM_HANDLE list_head )
+static void PurgeEnums( ENUM_HANDLE list_head )
 {
     ENUMPTR     ep;
 

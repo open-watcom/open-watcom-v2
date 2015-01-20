@@ -122,7 +122,7 @@ void MacroOverflow( size_t amount_needed, size_t amount_used )
 }
 
 
-local MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
+static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 {
     size_t      len;
     MEPTR       mentry;

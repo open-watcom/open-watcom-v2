@@ -61,19 +61,19 @@ typedef struct  try_table_back_handles {
 extern  SYM_LIST_HEADS  *SymListHeads;
 extern  LABEL_INDEX     LabelIndex;
 
-local void      FreeExtVars( void );
-local void      FreeGblVars( SYM_HANDLE sym_handle );
-local void      FreeLocalVars( SYM_HANDLE sym_list );
-local cg_type   CodePtrType( type_modifiers flags );
-local bool      DoFuncDefn( SYM_HANDLE funcsym_handle );
-local void      EmitSyms( void );
-local void      Emit1String( STR_HANDLE str_handle );
-local void      EmitLiteral( STR_HANDLE strlit );
-local void      EmitCS_Strings( void );
-local void      FreeStrings( void );
-local void      CDoAutoDecl( SYM_HANDLE sym_handle );
-local void      CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle );
-local void      ParmReverse( SYM_HANDLE sym_handle );
+static void      FreeExtVars( void );
+static void      FreeGblVars( SYM_HANDLE sym_handle );
+static void      FreeLocalVars( SYM_HANDLE sym_list );
+static cg_type   CodePtrType( type_modifiers flags );
+static bool      DoFuncDefn( SYM_HANDLE funcsym_handle );
+static void      EmitSyms( void );
+static void      Emit1String( STR_HANDLE str_handle );
+static void      EmitLiteral( STR_HANDLE strlit );
+static void      EmitCS_Strings( void );
+static void      FreeStrings( void );
+static void      CDoAutoDecl( SYM_HANDLE sym_handle );
+static void      CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle );
+static void      ParmReverse( SYM_HANDLE sym_handle );
 #ifdef __SEH__
 static void     FreeTrySymBackInfo( void );
 static void     FreeTryTableBackHandles( void );
@@ -282,7 +282,7 @@ static cg_type DataPointerType( OPNODE *node )
 #endif
 }
 
-local cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ )
+static cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ )
 {
     if( CompFlags.op_switch_used ) {
         if( typ->decl_type == TYPE_FLOAT || typ->decl_type == TYPE_DOUBLE ) {
@@ -421,7 +421,7 @@ static void CallTryUnwind( tryindex_t scope_index )
 #endif
 
 #if _CPU == _AXP
-local void GenVaStart( cg_name op1, cg_name offset )
+static void GenVaStart( cg_name op1, cg_name offset )
 {
     cg_name     name;
     cg_name     baseptr;
@@ -433,7 +433,7 @@ local void GenVaStart( cg_name op1, cg_name offset )
     CGDone( name );
 }
 #elif _CPU == _PPC
-local void GenVaStart( cg_name op1, cg_name offset )
+static void GenVaStart( cg_name op1, cg_name offset )
 {
     cg_name     name;
 
@@ -446,7 +446,7 @@ local void GenVaStart( cg_name op1, cg_name offset )
  * vararg and va_list.__offset initially to zero. Strictly speaking
  * we don't need va_list.__offset.
  */
-local void GenVaStart( cg_name op1, cg_name offset )
+static void GenVaStart( cg_name op1, cg_name offset )
 {
     cg_name     name;
     cg_name     baseptr;
@@ -747,7 +747,7 @@ static call_handle InitIndFuncCall( OPNODE *node, cg_name name )
     return( CGInitCall( name, CGenType( typ->object ), (CGSYM_HANDLE)node->u2.sym_handle ) );
 }
 
-local void DoSwitch( OPNODE *node, cg_name name )
+static void DoSwitch( OPNODE *node, cg_name name )
 {
     sel_handle  table;
     SWITCHPTR   sw;
@@ -776,7 +776,7 @@ static bool IsStruct( TYPEPTR typ )
     return( FALSE );
 }
 
-local void EmitNodes( TREEPTR tree )
+static void EmitNodes( TREEPTR tree )
 {
     cg_name     op1;
     cg_name     op2;
@@ -1108,7 +1108,7 @@ local void EmitNodes( TREEPTR tree )
     }
 }
 
-local void ThreadNode( TREEPTR node )
+static void ThreadNode( TREEPTR node )
 {
     if( FirstNode == NULL )
         FirstNode = node;
@@ -1117,7 +1117,7 @@ local void ThreadNode( TREEPTR node )
     LastNode = node;
 }
 
-local TREEPTR LinearizeTree( TREEPTR tree )
+static TREEPTR LinearizeTree( TREEPTR tree )
 {
     FirstNode = NULL;
     LastNode = NULL;
@@ -1135,7 +1135,7 @@ void EmitInit( void )
 }
 
 
-local int NewRefno( void )
+static int NewRefno( void )
 {
     return( Refno++ );
 }
@@ -1145,7 +1145,7 @@ void EmitAbort( void )
 {
 }
 
-local TREEPTR GenOptimizedCode( TREEPTR tree )
+static TREEPTR GenOptimizedCode( TREEPTR tree )
 {
     unroll_type unroll_count;
 
@@ -1267,7 +1267,7 @@ bool IsInLineFunc( SYM_HANDLE sym_handle )
    In that case, and for normal function calls, the function is marked
    as FUNC_USED and can't be skipped by the GenOptimizedCode().
 */
-local int ScanFunction( TREEPTR tree, int inline_depth )
+static int ScanFunction( TREEPTR tree, int inline_depth )
 {
     TREEPTR             right;
     struct func_info   *f;
@@ -1313,7 +1313,7 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
    any functions called, and not inlined.
    These functions are marked as used.
 */
-local void PruneFunctions( void )
+static void PruneFunctions( void )
 {
     TREEPTR     tree;
     SYM_ENTRY   sym;
@@ -1342,7 +1342,7 @@ local void PruneFunctions( void )
     }
 }
 
-local void GenModuleCode( void )
+static void GenModuleCode( void )
 {
     TREEPTR     tree;
 
@@ -1428,7 +1428,7 @@ void DoCompile( void )
 }
 
 
-local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
+static void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR             typ;
     segment_id          segid;
@@ -1478,7 +1478,7 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
 }
 
 
-local void EmitSyms( void )
+static void EmitSyms( void )
 {
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
@@ -1502,7 +1502,7 @@ local void EmitSyms( void )
 }
 
 
-local bool DoFuncDefn( SYM_HANDLE funcsym_handle )
+static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
 {
     bool        parms_reversed;
     SYM_HANDLE  sym_handle;
@@ -1581,7 +1581,7 @@ local bool DoFuncDefn( SYM_HANDLE funcsym_handle )
     return( parms_reversed );
 }
 
-local void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
+static void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR typ;
     cg_type dtype;
@@ -1602,7 +1602,7 @@ local void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 }
 
-local void ParmReverse( SYM_HANDLE sym_handle )
+static void ParmReverse( SYM_HANDLE sym_handle )
 {
     SYMPTR      sym;
 
@@ -1614,7 +1614,7 @@ local void ParmReverse( SYM_HANDLE sym_handle )
     CDoParmDecl( sym, sym_handle );
 }
 
-local void CDoAutoDecl( SYM_HANDLE sym_handle )
+static void CDoAutoDecl( SYM_HANDLE sym_handle )
 {
     TYPEPTR             typ;
     cg_type             dtype;
@@ -1683,7 +1683,7 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
 }
 
 
-local void FreeSymBackInfo( SYMPTR sym, SYM_HANDLE sym_handle )
+static void FreeSymBackInfo( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     if( sym->info.backinfo != NULL ) {
         BEFiniBack( sym->info.backinfo );
@@ -1714,7 +1714,7 @@ static void FreeTryTableBackHandles( void )
 }
 #endif
 
-local void FreeLocalVars( SYM_HANDLE sym_list )
+static void FreeLocalVars( SYM_HANDLE sym_list )
 {
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
@@ -1732,7 +1732,7 @@ local void FreeLocalVars( SYM_HANDLE sym_list )
 }
 
 
-local void FreeGblVars( SYM_HANDLE sym_handle )
+static void FreeGblVars( SYM_HANDLE sym_handle )
 {
     SYMPTR      sym;
 
@@ -1745,7 +1745,7 @@ local void FreeGblVars( SYM_HANDLE sym_handle )
     }
 }
 
-local void RelExtVars( SYM_HANDLE sym_handle )
+static void RelExtVars( SYM_HANDLE sym_handle )
 {
     SYMPTR      sym;
 
@@ -1763,7 +1763,7 @@ local void RelExtVars( SYM_HANDLE sym_handle )
     }
 }
 
-local void FreeExtVars( void )
+static void FreeExtVars( void )
 {
     SYM_LIST_HEADS   *sym_list_head;
     SYM_LIST_HEADS   *next_sym_list_head;
@@ -1832,7 +1832,7 @@ cg_type CGenType( TYPEPTR typ )
 }
 
 
-local cg_type CodePtrType( type_modifiers flags )
+static cg_type CodePtrType( type_modifiers flags )
 {
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
     cg_type     dtype;
@@ -1878,7 +1878,7 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
 }
 
 
-local segment_id StringSegment( STR_HANDLE strlit )
+static segment_id StringSegment( STR_HANDLE strlit )
 {
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
     if( strlit->flags & STRLIT_FAR )
@@ -1897,7 +1897,7 @@ void EmitStrPtr( STR_HANDLE str_handle, cg_type pointer_type )
 }
 
 
-local void Emit1String( STR_HANDLE str_handle )
+static void Emit1String( STR_HANDLE str_handle )
 {
     if( str_handle->back_handle == NULL ) {
         str_handle->back_handle = BENewBack( NULL );
@@ -1915,7 +1915,7 @@ target_size EmitBytes( STR_HANDLE strlit )
 }
 
 
-local void EmitLiteral( STR_HANDLE strlit )
+static void EmitLiteral( STR_HANDLE strlit )
 {
     segment_id  old_segid;
 
@@ -1929,7 +1929,7 @@ local void EmitLiteral( STR_HANDLE strlit )
 }
 
 
-local void FreeStrings( void )
+static void FreeStrings( void )
 {
     STR_HANDLE      strlit;
     STR_HANDLE      strlit_next;
@@ -1950,7 +1950,7 @@ local void FreeStrings( void )
 }
 
 
-local void DumpCS_Strings( STR_HANDLE strlit )
+static void DumpCS_Strings( STR_HANDLE strlit )
 {
     for( ; strlit != NULL; strlit = strlit->next_string ) {
         if( (strlit->flags & STRLIT_CONST) && strlit->ref_count != 0 ) {
@@ -1961,7 +1961,7 @@ local void DumpCS_Strings( STR_HANDLE strlit )
 }
 
 
-local void EmitCS_Strings( void )
+static void EmitCS_Strings( void )
 {
     str_hash_idx    h;
 

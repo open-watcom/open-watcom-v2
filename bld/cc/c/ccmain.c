@@ -81,7 +81,7 @@ static  bool        TryOpen( const char *path, const char *filename );
 static  void        ParseInit( void );
 static  void        CPP_Parse( void );
 static  bool        FCB_Alloc( FILE *fp, const char *filename );
-local   void        Parse( void );
+static  void        Parse( void );
 static  bool        OpenPgmFile( void );
 static  void        DelDepFile( void );
 static  const char  *IncludeAlias( const char *filename, bool is_lib );
@@ -457,7 +457,7 @@ static void MakePgmName( void )
     }
 }
 
-local void CantOpenFile( const char *name )
+static void CantOpenFile( const char *name )
 {
     char    msgtxt[80];
     char    msgbuf[MAX_MSG_LEN];
@@ -1289,7 +1289,7 @@ static void ParseInit( void )
 }
 
 
-local void Parse( void )
+static void Parse( void )
 {
     EmitInit();
     // The first token in a file should be #include if a user wants to

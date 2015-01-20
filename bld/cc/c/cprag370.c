@@ -180,7 +180,7 @@ void PragAux()
         PragEnding();
     }
 
-local int TryForReg( hw_reg_set *field, char *name )
+static int TryForReg( hw_reg_set *field, char *name )
     {
         if( HW_CEqual( *field, HW_EMPTY ) && PragRecog( name ) ) {
             *field = PragRegName("");
@@ -191,7 +191,7 @@ local int TryForReg( hw_reg_set *field, char *name )
     }
 
 
-local void NotEmpty( hw_reg_set *link, hw_reg_set *curr )
+static void NotEmpty( hw_reg_set *link, hw_reg_set *curr )
     {
         if( HW_CEqual( *link, HW_EMPTY ) ) {
             HW_Asgn( *link, *curr );
@@ -199,7 +199,7 @@ local void NotEmpty( hw_reg_set *link, hw_reg_set *curr )
     }
 
 
-local void GetLinkInfo()
+static void GetLinkInfo()
     {
         linkage_regs    *link;
 
@@ -224,7 +224,7 @@ local void GetLinkInfo()
     }
 
 
-local void GetParmInfo()
+static void GetParmInfo()
     {
         if( PragRegSet() != T_NULL ) {
             PragManyRegSets();
@@ -232,7 +232,7 @@ local void GetParmInfo()
     }
 
 
-local int CheckForOrigin()
+static int CheckForOrigin()
     {
         if( !PragRecog( "origin" ) ) return( FALSE );
         if( CurToken != T_CONSTANT ) return( FALSE );
@@ -242,7 +242,7 @@ local int CheckForOrigin()
     }
 
 
-local void GetOffsetInfo()
+static void GetOffsetInfo()
     {
         if( CurToken != T_CONSTANT ) return;
         CurrEntry->offset = Offset;
@@ -251,7 +251,7 @@ local void GetOffsetInfo()
     }
 
 
-local void GetSaveInfo()
+static void GetSaveInfo()
     {
         hw_reg_set      reg;
 
@@ -260,7 +260,7 @@ local void GetSaveInfo()
     }
 
 
-local void GetRetInfo()
+static void GetRetInfo()
     {
         CurrInfo->returns = PragRegList();
     }

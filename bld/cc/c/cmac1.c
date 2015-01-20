@@ -267,7 +267,7 @@ void GetMacroToken( void )
 }
 
 /* returns Dynamically allocated buffer with expanded macro */
-local char *ExpandMacroToken( void )
+static char *ExpandMacroToken( void )
 {
     size_t      i;
     size_t      len;
@@ -390,7 +390,7 @@ TOKEN SpecialMacro( special_macros spc_macro )
 }
 
 
-local TOKEN NextMToken( void )
+static TOKEN NextMToken( void )
 {
     CompFlags.doing_macro_expansion = TRUE;
     GetMacroToken();
@@ -416,7 +416,7 @@ void EnlargeBuffer( size_t size )
     BufSize = size;
 }
 
-local void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
+static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
                      MACRO_ARG *macro_parms, tokens *token_list )
 {
     tokens          *token;
@@ -910,7 +910,7 @@ static MACRO_TOKEN **NextString( MACRO_TOKEN **lnk, const char *buf )
 }
 
 
-local MACRO_TOKEN *BuildString( const char *p )
+static MACRO_TOKEN *BuildString( const char *p )
 {
     MACRO_TOKEN     *head;
     MACRO_TOKEN     **lnk;

@@ -33,10 +33,10 @@
 
 extern  unsigned SymTypedef;
 
-local TYPEPTR StructDecl(DATA_TYPE,bool);
-//local TYPEPTR ComplexDecl(int,bool);
-local void      SetPlainCharType( DATA_TYPE char_type );
-local void CheckBitfieldType( TYPEPTR typ );
+static TYPEPTR StructDecl(DATA_TYPE,bool);
+//static TYPEPTR ComplexDecl(int,bool);
+static void      SetPlainCharType( DATA_TYPE char_type );
+static void CheckBitfieldType( TYPEPTR typ );
 
 #if _CPU == 386
 #define _CHECK_SIZE( s )
@@ -325,7 +325,7 @@ type_modifiers TypeQualifier( void )
     return( flags );
 }
 
-local TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
+static TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
 {
     DATA_TYPE   data_type;
     TYPEPTR     typ;
@@ -400,7 +400,7 @@ local TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
 }
 
 
-local void AdvanceToken( void )
+static void AdvanceToken( void )
 {
     if( CurToken == T_SAVED_ID ) {
         CMemFree( SavedId );
@@ -763,7 +763,7 @@ TAGPTR VfyNewTag( TAGPTR tag, DATA_TYPE tag_type )
 }
 
 
-local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
+static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
 {
     FIELDPTR    field;
     FIELDPTR    prev_field;
@@ -823,7 +823,7 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
 }
 
 
-local TYPEPTR EnumFieldType( TYPEPTR ftyp, bool plain_int,
+static TYPEPTR EnumFieldType( TYPEPTR ftyp, bool plain_int,
                     bitfield_width start, bitfield_width width )
 {
     TYPEPTR     typ;
@@ -877,7 +877,7 @@ align_type GetTypeAlignment( TYPEPTR typ )
 }
 
 
-local target_size FieldAlign( target_size next_offset, FIELDPTR field, align_type *worst_alignment )
+static target_size FieldAlign( target_size next_offset, FIELDPTR field, align_type *worst_alignment )
 {
     align_type  pack_adjustment;
     align_type  align;
@@ -902,7 +902,7 @@ local target_size FieldAlign( target_size next_offset, FIELDPTR field, align_typ
     return( next_offset );
 }
 
-local DATA_TYPE UnQualifiedType( TYPEPTR typ )
+static DATA_TYPE UnQualifiedType( TYPEPTR typ )
 {
     SKIP_TYPEDEFS( typ );
     SKIP_ENUM( typ );
@@ -932,7 +932,7 @@ local DATA_TYPE UnQualifiedType( TYPEPTR typ )
 
 /* clear the hash table of all fields that were just defined
    in the struct with tag tag */
-local void ClearFieldHashTable( TAGPTR tag )
+static void ClearFieldHashTable( TAGPTR tag )
 {
     FIELDPTR field;
     FIELDPTR hash_field;
@@ -984,7 +984,7 @@ static void AdjFieldTypeNode( FIELDPTR field, type_modifiers decl_mod )
     }
 }
 
-local target_size GetFields( TYPEPTR decl )
+static target_size GetFields( TYPEPTR decl )
 {
     target_size         start;
     TYPEPTR             typ;
@@ -1129,7 +1129,7 @@ local target_size GetFields( TYPEPTR decl )
 }
 
 
-local TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
+static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
 {
     TYPEPTR     typ;
     TAGPTR      tag;
@@ -1202,7 +1202,7 @@ struct {
 */
 
 /*
-local void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
+static void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
 {
     info->stg = SC_NONE;      // indicate don't want any storage class specifiers
     info->mod = FLAG_NONE;
@@ -1214,7 +1214,7 @@ local void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
 }
 
 
-local target_size GetComplexFields( TYPEPTR decl )
+static target_size GetComplexFields( TYPEPTR decl )
 {
     target_size         start;
     TYPEPTR             typ;
@@ -1270,7 +1270,7 @@ local target_size GetComplexFields( TYPEPTR decl )
 }
 
 
-local TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
+static TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
 {
     TYPEPTR     typ;
     TAGPTR      tag;
@@ -1297,7 +1297,7 @@ local TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
 }
 */
 
-local void CheckBitfieldType( TYPEPTR typ )
+static void CheckBitfieldType( TYPEPTR typ )
 {
     SKIP_TYPEDEFS( typ );
     if( CompFlags.extensions_enabled ) {
@@ -1437,7 +1437,7 @@ TYPEPTR ArrayNode( TYPEPTR the_object )
 }
 
 
-local TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
+static TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
     segment_id segid, SYM_HANDLE base, BASED_KIND based_kind )
 {
     TYPEPTR     ptrtyp;

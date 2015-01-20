@@ -45,7 +45,7 @@ extern void CErr1( int msgnum );
 extern void CErr( int msgnum, ... );
 
 
-local int GetConst( int token )
+static int GetConst( int token )
 {
     if( token != T_CONSTANT ) CErr1( ERR_NOT_A_CONSTANT_EXPR );
     return( Constant );

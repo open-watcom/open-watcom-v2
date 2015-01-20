@@ -37,8 +37,8 @@
 static  TYPEPTR     DeclPart2( TYPEPTR typ, type_modifiers mod );
 static  TYPEPTR     DeclPart3( TYPEPTR typ, type_modifiers mod );
 static  void        AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ );
-local   void        FreeParmList( void );
-local   void        GetFuncParmList( void );
+static  void        FreeParmList( void );
+static   void        GetFuncParmList( void );
 
 static segment_id   ThreadSeg;
 
@@ -61,7 +61,7 @@ void Chk_Struct_Union_Enum( TYPEPTR typ )
 }
 
 
-local void FlushBadCode( void )
+static void FlushBadCode( void )
 {
     int         count;
 
@@ -110,7 +110,7 @@ void InvDecl( void )
     CErr1( ERR_INVALID_DECLARATOR );
 }
 
-local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
+static void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
 {
     TYPEPTR     type_new, type_old;
 
@@ -151,7 +151,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
 }
 
 
-local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
+static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
 {
     SYM_HANDLE          sym_handle;
     SYM_HANDLE          old_sym_handle;
@@ -274,7 +274,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     return( sym_handle );
 }
 
-local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
+static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
 {
     bool                old_def;
     TYPEPTR             typ;
@@ -517,7 +517,7 @@ new_var:
     return( sym_handle );
 }
 
-local void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
+static void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
 {
     TYPEPTR     typ;
 
@@ -849,7 +849,7 @@ TYPEPTR TypeName( void )
 }
 
 
-local type_modifiers GetModifiers( void )
+static type_modifiers GetModifiers( void )
 {
     type_modifiers      modifier;
 
@@ -899,7 +899,7 @@ struct mod_info {
     SYM_HANDLE       based_sym;
 };
 
-local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
+static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
 {
     type_modifiers  flags;
     SYM_HANDLE      sym_handle;
@@ -1068,7 +1068,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
 }
 
 
-local void ParseDeclPart2( TYPEPTR *typep, TYPEPTR typ, type_modifiers mod )
+static void ParseDeclPart2( TYPEPTR *typep, TYPEPTR typ, type_modifiers mod )
 {
     TYPEPTR         decl1;
     TYPEPTR         decl2;
@@ -1273,7 +1273,7 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
 }
 
 
-local TYPEPTR ArrayDecl( TYPEPTR typ )
+static TYPEPTR ArrayDecl( TYPEPTR typ )
 {
     target_size dimension;
     TYPEPTR     first_node, next_node, prev_node;
@@ -1337,7 +1337,7 @@ local TYPEPTR ArrayDecl( TYPEPTR typ )
 }
 
 
-local TYPEPTR  *FuncProtoType( void );
+static TYPEPTR  *FuncProtoType( void );
 
 static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
 {
@@ -1407,7 +1407,7 @@ static TYPEPTR DeclPart2( TYPEPTR typ, type_modifiers mod )
 }
 
 
-local void CheckUniqueName( PARMPTR parm, const char *name )
+static void CheckUniqueName( PARMPTR parm, const char *name )
 {
     size_t  len;
 
@@ -1454,7 +1454,7 @@ void AdjParmType( SYMPTR sym )
 }
 
 
-local TYPEPTR *GetProtoType( decl_info *first )
+static TYPEPTR *GetProtoType( decl_info *first )
 {
     PARMPTR             parm;
     PARMPTR             prev_parm = NULL;
@@ -1615,7 +1615,7 @@ TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
     return( parm_types );
 }
 
-local bool VoidType( TYPEPTR typ )
+static bool VoidType( TYPEPTR typ )
 {
     if( typ != NULL ) {
         SKIP_TYPEDEFS( typ );
@@ -1626,7 +1626,7 @@ local bool VoidType( TYPEPTR typ )
     return( FALSE );
 }
 
-local TYPEPTR *FuncProtoType( void )
+static TYPEPTR *FuncProtoType( void )
 {
     TYPEPTR             *parm_types;
     TAGPTR              old_taghead;
@@ -1668,7 +1668,7 @@ local TYPEPTR *FuncProtoType( void )
 }
 
 
-local void GetFuncParmList( void )
+static void GetFuncParmList( void )
 {
     PARMPTR     parm = NULL;
     PARMPTR     newparm;
@@ -1720,7 +1720,7 @@ local void GetFuncParmList( void )
 }
 
 
-local void FreeParmList( void )
+static void FreeParmList( void )
 {
     PARMPTR     parm;
 
@@ -1732,7 +1732,7 @@ local void FreeParmList( void )
 }
 
 #if _CPU == 370
-local bool IsIntComp( TYPEPTR ret1 )
+static bool IsIntComp( TYPEPTR ret1 )
     /*
      * what's target compatible between default int as ret type
      * and a later declaration

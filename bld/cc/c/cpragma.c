@@ -118,7 +118,7 @@ void CPragmaFini( void )
     }
 }
 
-local void EndOfPragma( void )
+static void EndOfPragma( void )
 /*****************************/
 {
     if( CurToken == T_SEMI_COLON )
@@ -154,7 +154,7 @@ bool SetToggleFlag( char const *name, int const value )
     return( ret );
 }
 
-local bool PragIdRecog( const char *what )
+static bool PragIdRecog( const char *what )
 /****************************************/
 {
     size_t  len;
@@ -175,7 +175,7 @@ local bool PragIdRecog( const char *what )
 }
 
 
-local bool startPragRecog( const char *what )
+static bool startPragRecog( const char *what )
 /*******************************************/
 {
     bool rc;
@@ -196,7 +196,7 @@ bool PragRecog( const char *what )
     return( FALSE );
 }
 
-local void PragFlag( int value )
+static void PragFlag( int value )
 /******************************/
 {
 
@@ -243,7 +243,7 @@ void AddLibraryName( const char *name, const char priority )
     *new_owner = lib;
 }
 
-local void GetLibraryNames( void )
+static void GetLibraryNames( void )
 /********************************/
 {
     while( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
@@ -252,7 +252,7 @@ local void GetLibraryNames( void )
     }
 }
 
-local void PragLibs( void )
+static void PragLibs( void )
 /*************************/
 {
     if( CurToken == T_LEFT_PAREN ) {
@@ -264,7 +264,7 @@ local void PragLibs( void )
     }
 }
 
-local void PragComment( void )
+static void PragComment( void )
 /****************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
@@ -295,7 +295,7 @@ void SetPackAmount( unsigned amount )
     }
 }
 
-local void getPackArgs( void )
+static void getPackArgs( void )
 /****************************/
 {
     struct pack_info    *pi;
@@ -327,7 +327,7 @@ local void getPackArgs( void )
     }
 }
 
-local void PragPack( void )
+static void PragPack( void )
 /*************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
@@ -448,7 +448,7 @@ void XferPragInfo( const char *from, const char *to )
 }
 
 
-local void CopyLinkage( void )
+static void CopyLinkage( void )
 /****************************/
 {
 #if _CPU == 370
@@ -467,7 +467,7 @@ local void CopyLinkage( void )
 }
 
 
-local void CopyParms( void )
+static void CopyParms( void )
 /**************************/
 {
     int         i;
@@ -486,7 +486,7 @@ local void CopyParms( void )
     CurrInfo->parms = regs;
 }
 
-local void CopyCode( void )
+static void CopyCode( void )
 /*************************/
 {
     byte_seq    *code;
@@ -503,7 +503,7 @@ local void CopyCode( void )
     CurrInfo->code = code;
 }
 
-local void CopyObjName( void )
+static void CopyObjName( void )
 /****************************/
 {
     if( CurrInfo->objname == NULL )
@@ -514,7 +514,7 @@ local void CopyObjName( void )
 }
 
 #if _CPU == _AXP
-local void CopyExceptRtn( void )
+static void CopyExceptRtn( void )
 /******************************/
 {
     if( CurrInfo->except_rtn == NULL )
@@ -728,7 +728,7 @@ textsegment *LkSegName( const char *segname, const char *classname )
     return( NewTextSeg( segname, "", classname ) );
 }
 
-local void PragAllocText( void )
+static void PragAllocText( void )
 /******************************/
 {
     struct textsegment  *tseg;
@@ -796,7 +796,7 @@ void EnableDisableMessage( int enable, unsigned msg_num )
 //
 // dis- enable display of selected message number
 //
-local void PragEnableDisableMessage( int enable )
+static void PragEnableDisableMessage( int enable )
 /***********************************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
@@ -1102,7 +1102,7 @@ static void PragOnce( void )
     SetSrcFNameOnce();
 }
 
-local void PragSTDCOption( void )
+static void PragSTDCOption( void )
 /*******************************/
 {
     if( PragRecog( "ON" ) ) {

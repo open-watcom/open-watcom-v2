@@ -185,7 +185,7 @@ static void SetCharacterEncoding( void )
     }
 }
 
-local void SetTargName( const char *name, size_t len )
+static void SetTargName( const char *name, size_t len )
 {
     char        *p;
 
@@ -206,7 +206,7 @@ local void SetTargName( const char *name, size_t len )
 
 #define _SetConstTarg( name ) SetTargName( name, sizeof( name ) - 1 )
 
-local void SetTargSystem( void )
+static void SetTargSystem( void )
 {
     char        buff[128];
     size_t      len;
@@ -1991,7 +1991,7 @@ static char *ReadIndirectFile( void )
 
 #define MAX_NESTING 32
 
-local void ProcOptions( const char *str )
+static void ProcOptions( const char *str )
 {
     unsigned    level;
     const char  *save[MAX_NESTING];
@@ -2112,7 +2112,7 @@ static void InitCPUModInfo( void )
 #endif
 }
 
-local void Define_Memory_Model( void )
+static void Define_Memory_Model( void )
 {
 #if _CPU == 8086 || _CPU == 386
     char        model;

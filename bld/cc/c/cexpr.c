@@ -50,26 +50,26 @@ struct mathfuncs {
     { NULL,      0, 0 }
 };
 
-local   TREEPTR GenNextParm(TREEPTR,TYPEPTR **);
-local   TREEPTR StartFunc(TREEPTR,TYPEPTR **);
-local   TREEPTR GetExpr(void);
-local   TREEPTR ExprId(void);
-local   TREEPTR ExprOpnd(void);
-local   TREEPTR SizeofOp(TYPEPTR);
-local   TREEPTR ScalarExpr(TREEPTR);
-local   TREEPTR UnaryPlus(TREEPTR);
-local   TREEPTR TernOp(TREEPTR,TREEPTR,TREEPTR);
-local   TREEPTR ColonOp(TREEPTR);
-local   TREEPTR StartTernary(TREEPTR);
-local   TREEPTR NotOp(TREEPTR);
-local   TREEPTR AndAnd(TREEPTR);
-local   TREEPTR OrOr(TREEPTR);
-local   TREEPTR GenFuncCall(TREEPTR);
-local   TREEPTR IndexOp(TREEPTR,TREEPTR);
-local   TREEPTR SegOp(TREEPTR,TREEPTR);
-local      void PopNestedParms( TYPEPTR **plistptr );
-local      void IncSymWeight( SYMPTR sym );
-local      void AddCallNode( TREEPTR tree );
+static   TREEPTR GenNextParm(TREEPTR,TYPEPTR **);
+static   TREEPTR StartFunc(TREEPTR,TYPEPTR **);
+static   TREEPTR GetExpr(void);
+static   TREEPTR ExprId(void);
+static   TREEPTR ExprOpnd(void);
+static   TREEPTR SizeofOp(TYPEPTR);
+static   TREEPTR ScalarExpr(TREEPTR);
+static   TREEPTR UnaryPlus(TREEPTR);
+static   TREEPTR TernOp(TREEPTR,TREEPTR,TREEPTR);
+static   TREEPTR ColonOp(TREEPTR);
+static   TREEPTR StartTernary(TREEPTR);
+static   TREEPTR NotOp(TREEPTR);
+static   TREEPTR AndAnd(TREEPTR);
+static   TREEPTR OrOr(TREEPTR);
+static   TREEPTR GenFuncCall(TREEPTR);
+static   TREEPTR IndexOp(TREEPTR,TREEPTR);
+static   TREEPTR SegOp(TREEPTR,TREEPTR);
+static      void PopNestedParms( TYPEPTR **plistptr );
+static      void IncSymWeight( SYMPTR sym );
+static      void AddCallNode( TREEPTR tree );
 
 extern    int64 LongValue64( TREEPTR leaf );
 
@@ -298,7 +298,7 @@ TREEPTR LongLeaf( target_long value )
     return( leaf );
 }
 
-local TREEPTR EnumLeaf( ENUMPTR ep )
+static TREEPTR EnumLeaf( ENUMPTR ep )
 {
     DATA_TYPE   decl_type;
     TREEPTR     leaf;
@@ -439,7 +439,7 @@ TREEPTR SymLeaf( void )
 }
 
 
-local void IncSymWeight( SYMPTR sym )
+static void IncSymWeight( SYMPTR sym )
 {
     static int  LoopWeights[] = { 1, 0x10, 0x100, 0x1000 };
 
@@ -499,7 +499,7 @@ static bool IsCallValue( TREEPTR tree )
 }
 
 // This RVALUE thing is backwards -mjc
-local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
+static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
 {
     TYPEPTR             typ;
     sym_flags           symb_flags;
@@ -953,7 +953,7 @@ FIELDPTR SearchFields( TYPEPTR *class_typ, target_size *field_offset, const char
 }
 
 
-local TYPEPTR Ptr2Struct( TYPEPTR typ )
+static TYPEPTR Ptr2Struct( TYPEPTR typ )
 {
     if( typ->decl_type != TYPE_POINTER ) {
         return( NULL );
@@ -1170,7 +1170,7 @@ TREEPTR SingleExpr( void )
 }
 
 
-local TREEPTR GetExpr( void )
+static TREEPTR GetExpr( void )
 {
     TREEPTR     tree, op1;
     TYPEPTR     typ;
@@ -1454,7 +1454,7 @@ local TREEPTR GetExpr( void )
 }
 
 
-local TREEPTR ExprOpnd( void )
+static TREEPTR ExprOpnd( void )
 {
     TREEPTR     tree;
     TYPEPTR     typ;
@@ -1617,7 +1617,7 @@ local TREEPTR ExprOpnd( void )
 }
 
 
-local bool IsMacroDefined( void )
+static bool IsMacroDefined( void )
 {
     MEPTR       mentry;
 
@@ -1634,7 +1634,7 @@ local bool IsMacroDefined( void )
 }
 
 
-local TREEPTR ExprId( void )
+static TREEPTR ExprId( void )
 {
     TREEPTR     tree;
     int         value;
@@ -1691,7 +1691,7 @@ local TREEPTR ExprId( void )
 
 
 #if 0
-local bool LValueArray( TREEPTR tree )
+static bool LValueArray( TREEPTR tree )
 {
     TYPEPTR     typ;
 
@@ -1710,7 +1710,7 @@ local bool LValueArray( TREEPTR tree )
 }
 #endif
 
-local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
+static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
 {
     TYPEPTR         typ;
     op_flags        tree_flags;
@@ -1774,14 +1774,14 @@ local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
     return( tree );
 }
 
-local TREEPTR ArrayIndex( TREEPTR tree, TREEPTR index_expr )
+static TREEPTR ArrayIndex( TREEPTR tree, TREEPTR index_expr )
 {
     tree = GenIndex( tree, index_expr );
     return( tree );
 }
 
 
-local TREEPTR IndexOp( TREEPTR tree, TREEPTR index_expr )
+static TREEPTR IndexOp( TREEPTR tree, TREEPTR index_expr )
 {
     TYPEPTR     typ;
 
@@ -1810,7 +1810,7 @@ local TREEPTR IndexOp( TREEPTR tree, TREEPTR index_expr )
     return( tree );
 }
 
-local void AddCallNode( TREEPTR tree )
+static void AddCallNode( TREEPTR tree )
 // if a function call has no prototype wait till end
 // to check it out
 {
@@ -1852,7 +1852,7 @@ static int ParmNum( void )
     return( parm_count );
 }
 
-local TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
+static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 {
     TYPEPTR     *plist;
     TYPEPTR     typ;
@@ -1923,7 +1923,7 @@ local TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 }
 
 
-local bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR sym )
+static bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR sym )
 {
     size_t  j;
 
@@ -1946,7 +1946,7 @@ local bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR sy
 #else
     #define REG_SIZE    4
 #endif
-local TREEPTR GenVaStartNode( TREEPTR last_parm )
+static TREEPTR GenVaStartNode( TREEPTR last_parm )
 {
     // there should be 3 parms __builtin_va_start( list, parm_name, stdarg )
     // - first parm should be name of va_list
@@ -1999,7 +1999,7 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
     return( tree );
 }
 
-local TREEPTR GenAllocaNode( TREEPTR size_parm )
+static TREEPTR GenAllocaNode( TREEPTR size_parm )
 {
     // there should be 1 parm __builtin_alloca( size )
     TREEPTR     tree;
@@ -2016,7 +2016,7 @@ local TREEPTR GenAllocaNode( TREEPTR size_parm )
 #endif
 
 #if _CPU == _PPC
-local TREEPTR GenVaArgNode( TREEPTR last_parm )
+static TREEPTR GenVaArgNode( TREEPTR last_parm )
 {
     // there should be 2 parms __builtin_varg( list, type_arg )
     // - first parm should be name of va_list
@@ -2049,7 +2049,7 @@ local TREEPTR GenVaArgNode( TREEPTR last_parm )
 }
 #endif
 
-local TREEPTR GenFuncCall( TREEPTR last_parm )
+static TREEPTR GenFuncCall( TREEPTR last_parm )
 {
     expr_level_type i;
     expr_level_type n;
@@ -2201,7 +2201,7 @@ done_call:
     return( tree );
 }
 
-local void PopNestedParms( TYPEPTR **plistptr )
+static void PopNestedParms( TYPEPTR **plistptr )
 {
     struct nested_parm_lists    *npl;
 
@@ -2231,7 +2231,7 @@ static TREEPTR DummyFuncName( void )
     return( tree );
 }
 
-local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
+static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
 {
     TYPEPTR             typ;
     TYPEPTR             orig_typ;
@@ -2378,7 +2378,7 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
 }
 
 
-local TREEPTR OrOr( TREEPTR tree )
+static TREEPTR OrOr( TREEPTR tree )
 {
     // This routine is called when || token is found
     if( tree->op.opr == OPR_PUSHINT ) {
@@ -2391,7 +2391,7 @@ local TREEPTR OrOr( TREEPTR tree )
 }
 
 
-local TREEPTR AndAnd( TREEPTR tree )
+static TREEPTR AndAnd( TREEPTR tree )
 {
     // This routine is called when && token is found
     if( tree->op.opr == OPR_PUSHINT ) {
@@ -2439,7 +2439,7 @@ TREEPTR BoolExpr( TREEPTR tree )
 }
 
 
-local TREEPTR NotOp( TREEPTR tree )
+static TREEPTR NotOp( TREEPTR tree )
 {
     TREEPTR     opnd;
     FLOATVAL    *flt;
@@ -2492,14 +2492,14 @@ local TREEPTR NotOp( TREEPTR tree )
 }
 
 
-local TREEPTR StartTernary( TREEPTR tree )
+static TREEPTR StartTernary( TREEPTR tree )
 {
     tree = BoolExpr( tree );
     return( tree );
 }
 
 
-local TREEPTR ColonOp( TREEPTR true_part )
+static TREEPTR ColonOp( TREEPTR true_part )
 {
     if( Class[ExprLevel] != TC_TERNARY ) {
         CErr1( ERR_MISSING_QUESTION_OR_MISPLACED_COLON );
@@ -2574,7 +2574,7 @@ static TREEPTR TernOp( TREEPTR expr1, TREEPTR true_part, TREEPTR false_part )
 }
 
 
-local TREEPTR UnaryPlus( TREEPTR tree )
+static TREEPTR UnaryPlus( TREEPTR tree )
 {
     TYPEPTR     typ;
 
@@ -2627,7 +2627,7 @@ TREEPTR ScalarExpr( TREEPTR tree )
 }
 
 
-local TREEPTR SizeofOp( TYPEPTR typ )
+static TREEPTR SizeofOp( TYPEPTR typ )
 {
     TREEPTR             tree;
     target_size         size;
@@ -2658,7 +2658,7 @@ local TREEPTR SizeofOp( TYPEPTR typ )
     return( tree );
 }
 
-local TREEPTR SegOp( TREEPTR seg, TREEPTR offset )
+static TREEPTR SegOp( TREEPTR seg, TREEPTR offset )
 {
     TREEPTR     tree;
     TYPEPTR     typ;

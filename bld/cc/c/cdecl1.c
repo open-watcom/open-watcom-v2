@@ -35,13 +35,13 @@
 #include "pragdefn.h"
 #include "cfeinfo.h"
 
-local   void    ParmDeclList( void );
-local   void    AddParms( void );
-local   void    ChkParms( void );
-local   void    FuncDefn( SYMPTR );
+static   void    ParmDeclList( void );
+static   void    AddParms( void );
+static   void    ChkParms( void );
+static   void    FuncDefn( SYMPTR );
 
-local   void    BeginFunc( void );
-local   void    ReverseParms( void );       /* reverse order of parms */
+static   void    BeginFunc( void );
+static   void    ReverseParms( void );       /* reverse order of parms */
 
 
 void ParsePgm( void )
@@ -85,7 +85,7 @@ void ParsePgm( void )
 }
 
 
-local void FuncDefn( SYMPTR sym )
+static void FuncDefn( SYMPTR sym )
 {
     SYM_NAMEPTR sym_name;
     size_t      sym_len;
@@ -164,7 +164,7 @@ static struct {
     #undef pick
 };
 
-local void BeginFunc( void )
+static void BeginFunc( void )
 {
     char                *name;
     char                *segname;
@@ -267,7 +267,7 @@ static void  ArgPromotion( SYMPTR sym )
 }
 
 
-local void ParmDeclList( void )     /* process old style function definitions */
+static void ParmDeclList( void )     /* process old style function definitions */
 {
     TYPEPTR             typ;
     PARMPTR             parm;
@@ -353,7 +353,7 @@ local void ParmDeclList( void )     /* process old style function definitions */
 }
 
 
-local void ReverseParms( void )       /* reverse order of parms */
+static void ReverseParms( void )       /* reverse order of parms */
 {
     PARMPTR     prev_parm, parm, next_parm;
 
@@ -369,7 +369,7 @@ local void ReverseParms( void )       /* reverse order of parms */
 }
 
 
-local void ChkProtoType( void )
+static void ChkProtoType( void )
 {
     TYPEPTR     ret1;
     TYPEPTR     ret2;
@@ -390,7 +390,7 @@ local void ChkProtoType( void )
 }
 
 
-local void AddParms( void )
+static void AddParms( void )
 {
     PARMPTR             parm;
     PARMPTR             prev_parm;
@@ -503,7 +503,7 @@ local void AddParms( void )
 }
 
 
-local void ChkParms( void )
+static void ChkParms( void )
 {
     PARMPTR             parm;
     PARMPTR             prev_parm;

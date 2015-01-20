@@ -46,7 +46,7 @@ void EnumInit( void )
 }
 
 
-local ENUMPTR EnumLkAdd( TAGPTR tag )
+static ENUMPTR EnumLkAdd( TAGPTR tag )
 {
     ENUMPTR     esym;
     size_t      len;
