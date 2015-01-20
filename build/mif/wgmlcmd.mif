@@ -63,6 +63,14 @@ use_dosemu = dosbox
 # only DOSBOX use upper cased file name
 wgml_ucase=1
 
+!else ifeq bld_os haiku
+
+WGMLCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+GENDEVCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
+use_dosemu = dosbox
+# only DOSBOX use upper cased file name
+wgml_ucase=1
+
 !else
 !error Unsupported building platform !!!!!!
 !endif
