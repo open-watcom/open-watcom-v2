@@ -33,7 +33,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined( _M_IX86 )
+#if defined( _M_IX86 ) && !defined( __UNIX__ )
 #include <i86.h>
 #endif
 
@@ -782,7 +782,7 @@ memsize _trmem_get_peak_usage( _trmem_hdl hdl ) {
     return( hdl->max_mem );
 }
 
-#ifndef _M_IX86
+#if !defined( _M_IX86 ) || !defined( __WATCOMC__)
 _trmem_who  _trmem_guess_who( void )
 /**********************************/
 /* NYI: stubbed for now */
