@@ -32,7 +32,7 @@
 :cmt                                            between options can be simulated
 
 :cmt    where:
-:cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc
+:cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc, haiku
 
 :cmt    Translations are required for the :jtitle. and :jusage. tags
 :cmt    if there is no text associated with the tag.
@@ -55,7 +55,7 @@
 :title. \t    ( /option is also accepted )
 :jtitle. \t    ( /optionも使用できます )
 :target. i86 386 axp ppc
-:ntarget. qnx linux
+:ntarget. qnx linux bsd haiku
 :title. \t    ( '=' is always optional, i.e., -w4 -zp4 )
 :jtitle. \t    ( '='は常に省略可能です。つまり -w4 -zp4 )
 :target. any

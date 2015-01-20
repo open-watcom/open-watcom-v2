@@ -263,6 +263,7 @@ optencod_targ_bsd   = bsd
 optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx
 optencod_targ_linux = linux
+optencod_targ_haiku = haiku
 !ifeq release 0
 optencod_targ_dbg = dbg
 !endif

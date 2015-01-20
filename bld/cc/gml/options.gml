@@ -40,7 +40,7 @@
 :cmt
 
 :cmt    where:
-:cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc
+:cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc, haiku
 
 :cmt    Translations are required for the :jtitle. and :jusage. tags
 :cmt    if there is no text associated with the tag.
@@ -68,12 +68,12 @@
 
 :title. Options:
 :jtitle. オプション:
-:target. bsd linux osx qnx
+:target. bsd linux osx qnx haiku
 
 :title.  :          ( /option is also accepted )
 :jtitle. :          ( /optionも使用できます )
 :target. any
-:ntarget. bsd linux osx qnx
+:ntarget. bsd linux osx qnx haiku
 
 :page. (Press return to continue)
 :jusage. (リターンを押すと，続行します)

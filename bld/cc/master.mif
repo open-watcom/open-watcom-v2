@@ -240,6 +240,7 @@ weights.gh keywords.gh : $(key_objs)
 # optencod options and targets for various hosts
 optencod_opt_qnx = -u $(extra_link_res_$(host_os)) 
 optencod_targ_bsd   = bsd
+optencod_targ_haiku = haiku
 optencod_targ_qnx   = qnx
 optencod_targ_linux = linux
 optencod_targ_osx   = linux

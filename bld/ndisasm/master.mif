@@ -98,6 +98,7 @@ msg.gh : ../stand/wdis.msg
 
 optencod_opt_qnx = -u $(extra_link_res_qnx) 
 optencod_targ_bsd   = bsd
+optencod_targ_haiku = haiku
 optencod_targ_linux = linux
 optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx
