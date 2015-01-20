@@ -322,6 +322,7 @@ static void DumpDQuad( DATA_QUAD *dq, target_size *psize )
     }
     switch( dq->type ) {
     case QDT_STATIC:
+        SymGet( &sym, dq->u.var.sym_handle );
         printf( "%6u bytes (QDT_STATIC): segment %d\n", 0U, sym.u.var.segid );
         *psize = 0;
         break;
