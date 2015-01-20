@@ -40,6 +40,7 @@
 
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
+extern int              TabIntervalGet( void );
 extern void             TabIntervalSet( int );
 extern void             AsmChangeOptions( void );
 extern void             VarChangeOptions( void );

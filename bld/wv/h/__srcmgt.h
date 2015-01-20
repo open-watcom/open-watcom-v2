@@ -29,32 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include "dbgdefn.h"
-#include "diptypes.h"
-#include "dbgio.h"
-#include "dbgmem.h"
+#include "_srcmgt.h"
 
-#define SMTabIntervalGet()              TabIntervalGet()
-
-#define _SMAlloc( pointer, size )       _Alloc( pointer, size )
-#define _SMFree( pointer )              _Free( pointer )
-
-#define sm_file_handle                  handle
-#define sm_mod_handle                   mod_handle
-#define sm_cue_fileid                   cue_fileid
-
-#define SM_NO_MOD                       NO_MOD
-#define SM_BUF_SIZE                     512
-
-#define SMSeekStart( fp )               SeekStream( fp, 0L, DIO_SEEK_CUR )
-#define SMSeekOrg( fp, offset )         SeekStream( fp, offset, DIO_SEEK_ORG )
-#define SMSeekEnd( fp )                 SeekStream( fp, 0L, DIO_SEEK_END );
-
-#define SMOpenRead( name )              FileOpen( name, OP_READ )
-#define SMNilHandle( fp)                ( fp == NIL_HANDLE )
-#define SMClose( fp )                   FileClose( fp )
-
-#define SMReadStream( fp, buff, len )   ReadStream( fp, buff, len )
-
-#define SMFileRemote( fp )              ( (FileHandleInfo( hndl->file_ptr ) & OP_REMOTE) != 0 )
+extern int TabIntervalGet( void );

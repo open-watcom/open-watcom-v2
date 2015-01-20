@@ -97,7 +97,7 @@ extra_c_flags_dos_i86 = -wo -of -D_OVERLAYED_
 
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_dynmem = $(trmem_cover_cflags)
-extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
+extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 
 # inc_dirs
 ###########
