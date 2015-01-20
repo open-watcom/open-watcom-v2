@@ -353,11 +353,11 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
 {
-    RcBuffer    *buff;
-    long        currpos;
-    int         diff;
-    bool        error;
-    int         i;
+    RcBuffer        *buff;
+    WResFileOffset  currpos;
+    int             diff;
+    bool            error;
+    int             i;
 
     i = RcFindIndex( handle );
     if( i >= RC_MAX_FILES ) {
