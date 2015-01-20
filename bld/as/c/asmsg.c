@@ -70,12 +70,10 @@ static unsigned         msgShift;
 #define NO_RES_MESSAGE  "Error: could not open message resource file\r\n"
 #define NO_RES_SIZE     (sizeof(NO_RES_MESSAGE)-1)
 
-extern long             FileShift;
-
 static HANDLE_INFO      hInstance = {0};
 
-static off_t resSeek( int handle, off_t position, int where )
-//***********************************************************
+static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int where )
+//************************************************************************************
 {
     if( where == SEEK_SET ) {
         return( lseek( handle, position + FileShift, where ) - FileShift );

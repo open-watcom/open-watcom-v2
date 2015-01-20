@@ -49,9 +49,9 @@ static res_info ResInfo;
 STATIC handle RESInitFile( const char *name )
 /*******************************************/
 {
-    DepInfo     *depends;
-    res_info    *ret_val;
-    long        old_shift;
+    DepInfo         *depends;
+    res_info        *ret_val;
+    WResFileOffset  old_shift;
 
     ret_val = NULL;
     old_shift = FileShift;

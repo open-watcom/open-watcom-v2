@@ -84,24 +84,24 @@ typedef struct {
 #define FOX_SIGNATURE2  0x8301
 #define WAT_RES_SIG     0x8302
 
-long                    FileShift = 0;
+WResFileOffset          FileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
 bool FindResources( PHANDLE_INFO hInstance )
 {
-    long        currpos;
-    long        offset;
-    dbgheader   header;
-    zip_eocd    eocd;
-    zip_cdfh    cdfh;
-    bool        notfound;
+    WResFileOffset  currpos;
+    WResFileOffset  offset;
+    dbgheader       header;
+    zip_eocd        eocd;
+    zip_cdfh        cdfh;
+    bool            notfound;
 
     notfound = true;
     FileShift = 0;
     offset = sizeof( dbgheader );
 
     /* Look for a PKZIP header and skip archive if present */
-    if( WRESSEEK( hInstance->handle, -(long)sizeof( eocd ), SEEK_END ) != -1 ) {
+    if( WRESSEEK( hInstance->handle, -(WResFileOffset)sizeof( eocd ), SEEK_END ) != -1 ) {
         if( WRESREAD( hInstance->handle, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
             if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
                 if( WRESSEEK( hInstance->handle, eocd.cd_offset, SEEK_SET ) != -1 ) {

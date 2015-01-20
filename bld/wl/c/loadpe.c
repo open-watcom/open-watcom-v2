@@ -773,7 +773,7 @@ WResFileSSize  RcWrite( WResFileID hdl, const void *buf, WResFileSize len )
     return( len );
 }
 
-long RcSeek( int hdl, long off, int pos )
+WResFileOffset RcSeek( WResFileID hdl, WResFileOffset off, int pos )
 {
     DbgAssert( pos != SEEK_END );
     DbgAssert( !(pos == SEEK_CUR && off < 0) );
@@ -794,7 +794,7 @@ long RcSeek( int hdl, long off, int pos )
     }
 }
 
-long RcTell( int hdl )
+WResFileOffset RcTell( WResFileID hdl )
 {
     DbgAssert( hdl == Root->outfile->handle );
 

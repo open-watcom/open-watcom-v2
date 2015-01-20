@@ -60,8 +60,6 @@ static const char *txtmsgs[] = {
 #define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
 
-extern  long            FileShift;
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
