@@ -242,6 +242,7 @@ static char *validTargets[] = {
     "os2",
     "osx",
     "qnx",
+    "haiku",
     NULL
 };
 
