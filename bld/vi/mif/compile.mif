@@ -1,5 +1,5 @@
 c_dirs_root = $(vi_dir)/$(host_os)
-!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx"
+!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
 c_dirs_root = $(vi_dir)/unix
 !endif
 !ifdef curses

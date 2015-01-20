@@ -2,7 +2,7 @@
 
 # target_cpu = 386 | i86 | ppc | axp | mps
 # host_cpu = 386 | ppc | axp
-# host_os  = nt | os2 | qnx | dos | linux | osx | bsd
+# host_os  = nt | os2 | qnx | dos | linux | osx | bsd | haiku
 
 !include $(owl_dir)/client.mif
 !include $(cfloat_dir)/client.mif

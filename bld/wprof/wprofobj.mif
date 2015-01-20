@@ -6,6 +6,7 @@ dig_os_win      = win
 dig_os_linux    = linux
 dig_os_bsd      = bsd
 dig_os_osx      = osx
+dig_os_haiku    = haiku
 
 dig_os          = $(dig_os_$(host_os))
 

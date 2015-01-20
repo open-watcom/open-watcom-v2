@@ -3,6 +3,7 @@ ui_os_linux = unix
 ui_os_bsd   = unix
 ui_os_nov   = nlm
 ui_os_osx   = unix
+ui_os_haiku = unix
 !ifdef ui_os_$(host_os)
 ui_os = $(ui_os_$(host_os))
 !else
