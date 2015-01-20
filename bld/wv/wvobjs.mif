@@ -91,7 +91,7 @@ eng_objs = &
 
 eng_objs_dosi86 = &
     $(_subdir_)fork.obj &
-    $(_subdir_)dosstl.obj &
+    $(_subdir_)dosinit.obj &
     $(_subdir_)doschk.obj &
     $(_subdir_)doscmd.obj &
     $(_subdir_)dosfilio.obj &
@@ -103,7 +103,7 @@ eng_objs_dosi86 = &
 
 eng_objs_dos386 = &
     $(_subdir_)dsxfork.obj &
-    $(_subdir_)dsxstart.obj &
+    $(_subdir_)dsxinit.obj &
     $(_subdir_)dsxchk.obj &
     $(_subdir_)dsxcmd.obj &
     $(_subdir_)dsxfilio.obj &
@@ -123,7 +123,7 @@ eng_objs_os2 = &
     $(_subdir_)os2cmd.obj
 
 eng_objs_os2386 = &
-    $(_subdir_)os22ini.obj &
+    $(_subdir_)os22init.obj &
     $(_subdir_)os22flio.obj
 
 eng_objs_os2i86 = &
