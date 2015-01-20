@@ -1270,9 +1270,13 @@ char *_cmdname( char *name )
 
 char *_cmdname( char *name )
 {
-       image_info info;
-       get_image_info( 0, &info );
-       return( strcpy( name, info.name ) );
+    image_info info;
+    int32 cookie;
+    while ( get_next_image_info( 0, &cookie, &info ) == B_OK) {
+        if ( info.type != B_APP_IMAGE )
+            continue;
+        return( strcpy( name, info.name ) );
+    }
 }
 
 #elif defined( __UNIX__ )
