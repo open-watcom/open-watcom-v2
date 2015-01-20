@@ -453,7 +453,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags_bsd) $(common_cppflags_$(bld_cpu))
+bld_cppflags = $(common_cppflags_haiku) $(common_cppflags_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
@@ -485,8 +485,8 @@ cl  = gcc -pipe
 
 librarian = ar
 
-cppflags_bsd   = $(common_cppflags_bsd)
-cppflags_osi   = $(common_cppflags_bsd)
+cppflags_haiku = $(common_cppflags_haiku)
+cppflags_osi   = $(common_cppflags_haiku)
 cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_x64   = $(common_cppflags_x64)

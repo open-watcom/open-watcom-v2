@@ -36,6 +36,7 @@ inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 sys_bsd   = sys.obj sysposix.obj
 sys_dos   = sys.obj sysdos.obj sysdoscd.obj
 sys_linux = sys.obj sysposix.obj
+sys_haiku = sys.obj sysposix.obj
 sys_nt    = sysnt.obj sysdoscd.obj
 sys_os2   = sys.obj sysos2.obj sysdoscd.obj
 

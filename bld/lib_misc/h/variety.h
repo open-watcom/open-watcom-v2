@@ -164,6 +164,16 @@
     #else
         #error unrecognized processor for Linux
     #endif
+#elif defined(__HAIKU__)
+    #define __PROTECT_MODE__
+    #define __UNIX__
+    #if defined(__386__)
+        #define __HAIKU_386__
+    #elif defined(__PPC__)
+        #define __HAIKU_PPC__
+    #else
+        #error unrecognized processor for Haiku
+    #endif
 #elif defined(__NETWARE__)
     #define __PROTECT_MODE__
     #if defined(__386__)

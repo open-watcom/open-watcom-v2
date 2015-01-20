@@ -125,6 +125,7 @@ wlink_ide_objs = $(_subdir_)idedrv.obj
 wlink_objs_dos   = $(_subdir_)linkio.obj
 wlink_objs_qnx   = $(_subdir_)posixio.obj
 wlink_objs_linux = $(_subdir_)posixio.obj
+wlink_objs_haiku = $(_subdir_)posixio.obj
 wlink_objs_osx   = $(_subdir_)posixio.obj
 wlink_objs_bsd   = $(_subdir_)posixio.obj
 wlink_objs_nt    = $(_subdir_)ntio.obj

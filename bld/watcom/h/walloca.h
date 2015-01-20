@@ -41,7 +41,7 @@
 #if !defined( __WATCOMC__ )
 #if defined( _MSC_VER )
     #define __alloca    _alloca
-#else
+#elif !defined(__HAIKU__)
     #define __alloca    alloca
 #endif
 #endif
