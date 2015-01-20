@@ -88,7 +88,7 @@ void SemWriteRawDataItem( RawDataItem item )
     }
 }
 
-RcStatus SemCopyDataUntilEOF( long offset, WResFileID handle,
+RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
                          void *buff, int buffsize, int *err_code )
 /****************************************************************/
 {
@@ -122,13 +122,13 @@ RcStatus SemCopyDataUntilEOF( long offset, WResFileID handle,
 ResLocation SemCopyRawFile( const char *filename )
 /************************************************/
 {
-    WResFileID  handle;
-    RcStatus    ret;
-    char        *buffer;
-    char        full_filename[_MAX_PATH];
-    ResLocation loc;
-    int         err_code;
-    long        pos;
+    WResFileID      handle;
+    RcStatus        ret;
+    char            *buffer;
+    char            full_filename[_MAX_PATH];
+    ResLocation     loc;
+    int             err_code;
+    WResFileOffset  pos;
 
     buffer = RCALLOC( BUFFER_SIZE );
 

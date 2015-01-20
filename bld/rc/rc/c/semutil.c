@@ -56,7 +56,7 @@ void ReportCopyError( RcStatus status, int read_msg, const char *filename, int e
 /*
  * CopyData -
  */
-RcStatus CopyData( uint_32 offset, uint_32 length, WResFileID handle,
+RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID handle,
                 void *buff, int buffsize, int *err_code )
 /***************************************************************************/
 {

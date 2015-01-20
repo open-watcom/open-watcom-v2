@@ -162,14 +162,14 @@ static RcStatus readFontInfo( WResFileID handle, FontInfo *info, int *err_code )
 
 #define FONT_BUFFER_SIZE  0x1000
 
-static RcStatus copyFont( FontInfo * info, WResFileID handle, WResID * name,
+static RcStatus copyFont( FontInfo *info, WResFileID handle, WResID *name,
                                 ResMemFlags flags, int *err_code )
 /************************************************************************/
 {
     RcStatus            ret;
     char *              buffer;
     ResLocation         loc;
-    long                pos;
+    WResFileOffset      pos;
 
     buffer = RCALLOC( FONT_BUFFER_SIZE );
 
