@@ -84,11 +84,11 @@ bool WResWriteDir( WResFileID handle, WResDir currdir )
     WResHeader      head;
     WResExtHeader   ext_head;
     bool            error;
-    long            diroffset;
+    WResFileOffset  diroffset;
 
     /* get the offset of the start of the directory */
     diroffset = WRESTELL( handle );
-    error = (diroffset == -1L);
+    error = (diroffset == -1);
 
     if( error ) {
         WRES_ERROR( WRS_TELL_FAILED );

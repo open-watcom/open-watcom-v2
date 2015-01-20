@@ -65,7 +65,7 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  int             Res_Flag;
 static  unsigned        MsgShift;
 
-static long res_seek( WResFileID handle, long position, int where )
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {

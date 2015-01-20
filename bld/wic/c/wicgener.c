@@ -68,9 +68,8 @@ const char *FingerMsg[] = {
 
 #define NIL_HANDLE      ((int)-1)
 static  HANDLE_INFO     hInstance = { 0 };
-extern  long            FileShift;
 
-static long res_seek( int handle, long position, int where )
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {

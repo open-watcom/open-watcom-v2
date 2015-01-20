@@ -60,8 +60,8 @@ static  int             Res_Flag;
 
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
 
-static long res_seek( WResFileID handle, long position, int where )
-/*****************************************************************/
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
+/*************************************************************************************/
 {
     if( ( where == SEEK_SET ) && ( handle == hInstance.handle ) ) {
         return( lseek( handle, position + FileShift, where ) - FileShift );

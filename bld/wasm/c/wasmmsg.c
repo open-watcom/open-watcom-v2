@@ -158,7 +158,7 @@ void MsgPrintf1( int resourceid, const char *token )
 
 #if !defined( USE_TEXT_MSGS )
 
-static off_t res_seek( int handle, off_t position, int where )
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {

@@ -47,7 +47,7 @@
 static HANDLE_INFO      hInstance = {0};
 static unsigned         MsgShift;
 
-static long res_seek( WResFileID handle, long position, int where )
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 {
     if( where == SEEK_SET ) {
         return( lseek( handle, position + FileShift, where ) - FileShift );

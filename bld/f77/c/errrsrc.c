@@ -47,7 +47,7 @@ static  unsigned        MsgShift;
 #define RF_OPENED       0x01            // Resource file opened
 #define RF_INITIALIZED  0x02            // Resource system initialized
 
-static  long    res_seek( int handle, long position, int where ) {
+static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where ) {
 // Fool the resource compiler into thinking that the resource information
 // starts at offset 0.
     if( where == SEEK_SET ) {

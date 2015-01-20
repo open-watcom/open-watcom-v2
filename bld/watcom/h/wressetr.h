@@ -40,12 +40,12 @@
 #if !defined( __WATCOMC__ ) && defined( __UNIX__ )
 #define WResFileSSize   ssize_t
 #define WResFileSize    size_t
+#define WResFileOffset  off_t
 #else
 #define WResFileSSize   int
 #define WResFileSize    unsigned
-#endif
 #define WResFileOffset  long
-#define WResSeekReturn  long
+#endif
 
 typedef int             WResFileID;
 
@@ -57,7 +57,7 @@ typedef struct WResRoutines {                                           /* defau
     int             (*close)(WResFileID);                               /* close */
     WResFileSSize   (*read)(WResFileID, void *, WResFileSize);          /* read */
     WResFileSSize   (*write)(WResFileID, const void *, WResFileSize);   /* write */
-    WResSeekReturn  (*seek)(WResFileID, WResFileOffset, int );          /* lseek */
+    WResFileOffset  (*seek)(WResFileID, WResFileOffset, int );          /* lseek */
     WResFileOffset  (*tell)(WResFileID);                                /* tell */
     /* memory routines */
     void            *(*alloc)(size_t);                                  /* malloc */

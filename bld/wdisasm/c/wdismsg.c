@@ -50,7 +50,6 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-extern  long            FileShift;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
@@ -58,7 +57,7 @@ extern  long            FileShift;
 #define EXE_EXT         ".exe"
 
 
-static long res_seek( int handle, long position, int where )
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {

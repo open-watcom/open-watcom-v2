@@ -60,16 +60,16 @@ long    FileShift = 0;
 unsigned char FindResources( PHANDLE_INFO hInstance )
 /* look for the resource information in a debugger record at the end of file */
 {
-    long        currpos;
-    long        offset;
-    dbgheader   header;
-    bool        notfound;
-    char        buffer[sizeof( PATCH_LEVEL )];
+    WResFileOffset  currpos;
+    WResFileOffset  offset;
+    dbgheader       header;
+    bool            notfound;
+    char            buffer[sizeof( PATCH_LEVEL )];
 
     notfound = true;
     FileShift = 0;
     offset = sizeof( dbgheader );
-    if( WRESSEEK( hInstance->handle, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
+    if( WRESSEEK( hInstance->handle, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
         if( WRESREAD( hInstance->handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
             if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                 offset += sizeof( PATCH_LEVEL );
