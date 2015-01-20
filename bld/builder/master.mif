@@ -13,9 +13,6 @@ posix_commands_nt    = diff.exe
 
 !ifneq bootstrap 1
 all_commands         += builder.exe
-posix_commands_dos   += rm.exe
-posix_commands_os2   += rm.exe
-posix_commands_nt    += rm.exe
 !endif
 
 !ifndef __WATCOM__
@@ -31,7 +28,7 @@ all : $(all_commands) $(posix_commands_$(host_os))
 
 inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
-.c : ../c;$(pmake_dir);$(posix_dir)/src/rm;$(posix_dir)/misc;$(watcom_dir)/c
+.c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c
 
 sys_bsd   = sys.obj sysposix.obj
 sys_dos   = sys.obj sysdos.obj sysdoscd.obj
@@ -40,7 +37,6 @@ sys_haiku = sys.obj sysposix.obj
 sys_nt    = sysnt.obj sysdoscd.obj
 sys_os2   = sys.obj sysos2.obj sysdoscd.obj
 
-rm_objs      = rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj regexp.obj fnlower.obj die.obj isdotdot.obj $(cl_objs_gen)
 builder_objs = builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs_gen)
 sweep_objs   = sweep.obj $(cl_objs_gen)
 wsplice_objs = wsplice.obj $(cl_objs_gen)
@@ -55,22 +51,6 @@ sweep.exe :   $(sweep_objs)
 wsplice.exe : $(wsplice_objs)
 diff.exe :    $(diff_objs)
 cdsay.exe :   $(cdsay_objs)
-
-rm.exe: $(rm_objs)
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(rm_objs) $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$(rm_objs)}
-!endif
-!if "$(host_os)" == "$(bld_os)"         # Don't copy unless host_os=build_os
-!ifndef %LOGFNAME                       # Don't copy unless build outside builder
-!ifdef __UNIX__
-        cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
-!else
-        copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
-!endif
-!endif
-!endif
 
 builder.exe : $(builder_objs)
 !ifndef __WATCOM__
