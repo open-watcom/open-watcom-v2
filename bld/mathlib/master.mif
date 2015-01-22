@@ -20,6 +20,8 @@ clib_host_os_qnx     = qnx
 clib_host_os_windows = win
 clib_host_os_winnt   = nt
 clib_host_os_linux   = linux
+clib_host_os_rdos    = rdos
+clib_host_os_rdosdev = rdosdev
 host_os = $(clib_host_os_$(system))
 
 !include cproj.mif
