@@ -62,9 +62,9 @@ static void DlgListPush( const char *buff, unsigned len, unsigned attr )
     dlg_entry   *entry;
 
     entry = DbgMustAlloc( sizeof( dlg_entry ) + len + 1 );
-    entry->data[0] = len;
-    memcpy( &entry->data[1], buff, len );
-    entry->data[len+1] = '\0';
+    SET_SYM_NAME_LEN( entry->data, len );
+    memcpy( SYM_NAME_NAME( entry->data ), buff, len );
+    SYM_NAME_NAME( entry->data )[len] = '\0';
     entry->attr = attr;
     entry->next = NULL;
     entry->prev = DlgListBot;
@@ -162,22 +162,23 @@ bool WndDlgTxt( const char *buff )
 
 
 static  WNDGETLINE DlgGetLine;
-static  bool    DlgGetLine( a_window *wnd, int row, int piece,
-                            wnd_line_piece *line )
+static  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     int         i;
     dlg_entry   *curr;
 
     wnd = wnd;
     curr = DlgListTop;
-    if( piece != 0 ) return( FALSE );
+    if( piece != 0 )
+        return( FALSE );
     i = 0;
     while( i < row && curr != NULL ) {
         curr = curr->next;
         ++i;
     }
-    if( curr == NULL ) return( FALSE );
-    line->text = &curr->data[1];
+    if( curr == NULL )
+        return( FALSE );
+    line->text = SYM_NAME_NAME( curr->data );
     line->attr = curr->attr;
     return( TRUE );
 }

@@ -91,19 +91,19 @@ static void SetRadixSpec( const char *str, unsigned len, unsigned radix, bool cl
     owner = &RadStrs;
     pref = RadStrs;
     while( pref != NULL ) {
-        if( pref->radstr[0] == len
-          && memicmp( &pref->radstr[1], str, pref->radstr[0] ) == 0 )
+        if( SYM_NAME_LEN( pref->radstr ) == len
+          && memicmp( SYM_NAME_NAME( pref->radstr ), str, len ) == 0 )
             break;
-        if( pref->radstr[0] < len )
+        if( SYM_NAME_LEN( pref->radstr ) < len )
             break;
         owner = &pref->next;
         pref = pref->next;
     }
-    if( pref == NULL || pref->radstr[0] != len ) {
+    if( pref == NULL || SYM_NAME_LEN( pref->radstr ) != len ) {
         if( clear ) return;
         pref = DbgMustAlloc( sizeof( rad_str ) + len );
-        memcpy( &pref->radstr[1], str, len );
-        pref->radstr[0] = len;
+        memcpy( SYM_NAME_NAME( pref->radstr ), str, len );
+        SET_SYM_NAME_LEN( pref->radstr, len );
         pref->next = *owner;
         *owner = pref;
     } else if( clear ) {
@@ -571,15 +571,15 @@ static bool ScanNumber( void )
     } else {
         CurrToken = T_BAD_NUM; /* assume we'll find a bad number */
         for( pref = RadStrs; pref != NULL; pref = pref->next ) {
-            if( memicmp( ScanPtr, &pref->radstr[1], pref->radstr[0] ) == 0 ) {
+            if( memicmp( ScanPtr, SYM_NAME_NAME( pref->radstr ), SYM_NAME_LEN( pref->radstr ) ) == 0 ) {
                 ret = TRUE;
-                ScanPtr += pref->radstr[0];
+                ScanPtr += SYM_NAME_LEN( pref->radstr );
                 hold_scan = ScanPtr;
                 if( GetNum( pref->radval ) ) {
                     CurrToken = T_INT_NUM;
                     return( TRUE );
                 }
-                ScanPtr -= pref->radstr[0];
+                ScanPtr -= SYM_NAME_LEN( pref->radstr );
             }
         }
         if( isdigit( *ScanPtr ) && GetNum( CurrRadix ) ) {
@@ -898,8 +898,8 @@ void FindRadixSpec( unsigned char value, const char **start, unsigned *len )
     *len = 0;
     for( rad = RadStrs; rad != NULL; rad = rad->next ) {
         if( rad->radval == value ) {
-            *start = &rad->radstr[1];
-            *len   = rad->radstr[0];
+            *start = SYM_NAME_NAME( rad->radstr );
+            *len   = SYM_NAME_LEN( rad->radstr );
             return;
         }
     }

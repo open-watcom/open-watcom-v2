@@ -109,18 +109,17 @@ unsigned ConfigScreen( void )
 }
 
 
-unsigned GetSystemDir( char *buff, int max )
-/***********************************************/
+unsigned GetSystemDir( char *buff, unsigned buff_len )
+/****************************************************/
 {
     // inst
     PRFPROFILE                  prof;
-    int                         i;
-    char                        c;
-    int                         len;
+    unsigned                    i;
 
     prof.cchUserName = 0L;
     prof.cchSysName = 0L;
 
+    i = 0;
     if( PrfQueryProfile( GUIGetHAB(), &prof ) ) {
         if( prof.cchSysName > 0 ) {
             _AllocA( prof.pszSysName, prof.cchSysName );
@@ -128,23 +127,18 @@ unsigned GetSystemDir( char *buff, int max )
             PrfQueryProfile( GUIGetHAB(), &prof );
         }
 
-        strcpy( buff, prof.pszSysName );
-        if( prof.cchSysName <= max ) {
-            len = prof.cchSysName;
-        } else {
-            len = max;
-        }
-
-        for( i = len - 1; i >= 0; i-- ) {
-            c = buff[i];
-            buff[i] = '\0';
-            if( c == '\\' ) {
+        if( buff_len > prof.cchSysName )
+            buff_len = prof.cchSysName;
+        memcpy( buff, prof.pszSysName, buff_len );
+        if( buff_len > 0 )
+            i = --buff_len;     // reserve space for terminating null character
+        while( i > 0 ) {
+            if( buff[--i] == '\\' ) {
                 break;
             }
         }
-    } else {
-        buff[0] = '\0';
     }
+    buff[i] = '\0';
     return( strlen( buff ) );
 } /* _wpi_getinidirectory */
 

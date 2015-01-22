@@ -653,11 +653,11 @@ extern void WndRXError( int num )
 #if defined(__GUI__)
 extern unsigned GetSystemDir( char *, unsigned );
 
-static bool GetInitName( char *name, char *buff, unsigned len )
+static bool GetInitName( char *name, char *buff, unsigned buff_len )
 {
-    len = GetSystemDir( buff, len );
-    if( len == 0 ) return( FALSE );
-    buff += len;
+    buff_len = GetSystemDir( buff, buff_len );
+    if( buff_len == 0 ) return( FALSE );
+    buff += buff_len;
     *buff++ = '\\';
     buff = StrCopy( name, buff );
     buff = StrCopy( ".INI", buff );

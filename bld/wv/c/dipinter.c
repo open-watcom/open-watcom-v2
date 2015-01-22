@@ -486,17 +486,19 @@ static unsigned DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
     char  const *p;
 
     ii = ii; lc = lc;
-    if( sn == SN_DEMANGLED ) return( 0 );
+    if( sn == SN_DEMANGLED )
+        return( 0 );
     if( is->ri != NULL ) {
         p   = is->ri->name;
         len = strlen( p );
     } else {
-        p   = &is->p->name[1];
-        len =  is->p->name[0];
+        p   = SYM_NAME_NAME( is->p->name );
+        len =  SYM_NAME_LEN( is->p->name );
     }
     if( max > 0 ) {
         --max;
-        if( max > len ) max = len;
+        if( max > len )
+            max = len;
         memcpy( name, p, max );
         name[max] = '\0';
     }

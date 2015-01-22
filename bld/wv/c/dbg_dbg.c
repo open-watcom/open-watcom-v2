@@ -99,7 +99,7 @@ enum {
 #define CONST static const
 #endif
 
-#define WV_SYM_DEF(size) struct { fixed_wv_sym_entry s; char len, name[size]; }
+#define WV_SYM_DEF(size) struct { fixed_wv_sym_entry s; unsigned char len, name[size]; }
 
 #define WV_SYM( prfx, tk, tm, ts, sc, intrnl, vn, np ) \
     CONST WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
@@ -197,8 +197,8 @@ static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item
         cmp = memicmp;
     }
     for( ; (curr = (wv_sym_entry *)*list) != NULL; ++list ) {
-        if( li->name.len == curr->name[0]
-          && cmp( li->name.start, &curr->name[1], li->name.len ) == 0 ) {
+        if( li->name.len == SYM_NAME_LEN( curr->name )
+          && cmp( li->name.start, SYM_NAME_NAME( curr->name ), li->name.len ) == 0 ) {
             return( curr );
         }
     }
@@ -280,9 +280,9 @@ wv_sym_entry *LookupUserName( lookup_item *li )
         cmp = memicmp;
     }
     for( sl = WmonSymLst; sl != NULL; sl = sl->next ) {
-        if( li->name.len != sl->s.name[0] )
+        if( li->name.len != SYM_NAME_LEN( sl->s.name ) )
             continue;
-        if( cmp( li->name.start, &sl->s.name[1], li->name.len ) != 0 )
+        if( cmp( li->name.start, SYM_NAME_NAME( sl->s.name ), li->name.len ) != 0 )
             continue;
         return( &sl->s );
     }
@@ -343,8 +343,8 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     WmonSymLst = new;
     new->s.t = info;
     new->s.sc = SC_USER;
-    new->s.name[0] = li->name.len;
-    memcpy( &new->s.name[1], li->name.start, li->name.len );
+    SET_SYM_NAME_LEN( new->s.name, li->name.len );
+    memcpy( SYM_NAME_NAME( new->s.name ), li->name.start, li->name.len );
     return( TRUE );
 }
 

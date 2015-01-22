@@ -192,6 +192,10 @@ enum {
     ACTION_MODIFY_VARIABLE,
 };
 
+#define SYM_NAME_LEN(n)         ((unsigned char)(n)[0])
+#define SYM_NAME_NAME(n)        ((n)+1)
+#define SET_SYM_NAME_LEN(n,l)   ((n)[0]=(char)l)
+
 #undef ArraySize
 #define ArraySize( x ) ( sizeof( x ) / sizeof( (x)[0] ) )
 
