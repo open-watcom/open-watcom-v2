@@ -73,14 +73,6 @@ void WndMemInit( void )
 {
 }
 
-void InitScreen( void )
-{
-}
-
-void FiniScreen( void )
-{
-}
-
 unsigned ConfigScreen( void )
 {
     return( 0 );

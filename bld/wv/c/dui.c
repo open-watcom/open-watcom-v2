@@ -62,6 +62,7 @@ extern void             InitPaint( void );
 extern void             InitBrowse( void );
 extern void             InitFont( void );
 extern void             InitFileMap( void );
+extern void             InitScreen( void );
 extern void             FiniMacros( void );
 extern void             FiniBrowse( void );
 extern void             FiniPaint( void );
@@ -73,6 +74,7 @@ extern void             FiniIOWindow( void );
 extern void             FiniMemWindow( void );
 extern void             FiniToolBar( void );
 extern void             FiniFileMap( void );
+extern void             FiniScreen( void );
 extern void             WndDlgFini( void );
 extern void             DoProcPending( void );
 extern void             SetTargMenuItems( void );
@@ -208,6 +210,7 @@ bool DUIClose( void )
 
 void DUIInit( void )
 {
+    InitScreen();
     CmdHistory = WndInitHistory();
     SrchHistory = WndInitHistory();
     InitToolBar();
@@ -245,6 +248,7 @@ void DUIFini( void )
     FiniMemWindow();
     FiniToolBar();
     WndDlgFini();
+    FiniScreen();
 }
 
 void DUIFreshAll( void )
