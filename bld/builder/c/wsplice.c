@@ -157,13 +157,8 @@ struct ipathlst {                       // define ipathlst
 
 // LOCAL ROUTINES
 static void      ProcessSource( char *src_file );      // - process source file
-static void      ProcessTarget( void );                // - produce target file
 static void      SegmentCheck( void );                 // - check if a seg section should be output
 static SEGMENT   *ScanSegment( void );                 // - scan a new segment
-static void      AddText( void );                      // - add text to a ring
-static TEXTENT   *AddTextEntry( void );                // - add text entry
-static void      CmdAdd( void );                       // - execute or add a command
-static void      CmdExecute( void );                   // - execute a command
 static FILE      *OpenFileTruncate( char *, char * );  // - open a file, truncate if necessary
 static void      OpenFileNormal( char *, char * );     // - open a file
 static void      CloseFile( void );                    // - close a file
