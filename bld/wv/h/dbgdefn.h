@@ -46,7 +46,6 @@
 #endif
 
 #define NULLCHAR '\0'
-#define NULL_RTN (void (*)())0
 #define ARG_TERMINATE   '\xff'
 
 /* Handles */
@@ -161,15 +160,15 @@ typedef struct {
 #define TRP_LEN         80
 #define NAM_LEN         40
 
-#define MAX_NESTED_CALL  10
+#define MAX_NESTED_CALL     10
 
-#define DBG_EXTENSION "dbg"
-#define SETUP_FILENAME "setup"
-#define PROFILE_FILENAME "dvprof"
+#define DBG_EXTENSION       "dbg"
+#define SETUP_FILENAME      "setup"
+#define PROFILE_FILENAME    "dvprof"
 
-#define DECIMAL_BYTE_LEN        3               // 256
-#define DECIMAL_WORD_LEN        5               // 65535
-#define DECIMAL_DWORD_LEN       10              // 4294967295
+#define DECIMAL_BYTE_LEN    3               // 256
+#define DECIMAL_WORD_LEN    5               // 65535
+#define DECIMAL_DWORD_LEN   10              // 4294967295
 
 #define OVL_MAP_CURR    0
 #define OVL_MAP_EXE     1

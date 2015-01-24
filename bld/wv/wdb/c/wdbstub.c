@@ -1358,7 +1358,7 @@ void WndMemInit( void )
 {
 }
 
-unsigned ConfigScreen( void )
+unsigned DUIConfigScreen( void )
 {
     return( 0 );
 }

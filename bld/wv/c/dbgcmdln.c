@@ -561,7 +561,7 @@ void ProcCmd( void )
             }
         }
         if( pass == 1 ) {
-            screen_mem = ConfigScreen();
+            screen_mem = DUIConfigScreen();
             if( MemSize + screen_mem >= MemSize ) {
                 MemSize += screen_mem;
             } else {

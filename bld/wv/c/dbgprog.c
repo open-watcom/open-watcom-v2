@@ -202,28 +202,22 @@ bool InitCmd( void )
 void FindLocalDebugInfo( const char *name )
 {
     char        *buff, *symname;
-    const char  *ext;
-    unsigned    base_len;
     unsigned    len;
     handle      local;
 
-    base_len = len = strlen( name );
+    len = strlen( name );
     _AllocA( buff, len + 1 + 4 + 2 );
     _AllocA( symname, len + 1 + 4 );
     strcpy( buff, "@l" );
-    // If a .sym file is present, use it in preference to the .exe
-    ext = ExtPointer( name, OP_LOCAL );
-    if( *ext != NULLCHAR ) {
-        base_len = ext - name;
-    }
-    local = FullPathOpen( name, base_len, "sym", symname, len + 4 );
+    // If a .sym file is present, use it in preference to the executable
+    local = FullPathOpen( name, ExtPointer( name, OP_LOCAL ) - name, "sym", symname, len + 4 );
     if( local != NIL_HANDLE ) {
         strcat( buff, symname );
         FileClose( local );
     } else {
         strcat( buff, name );
     }
-    InsertRing( RingEnd( &LocalDebugInfo ), buff, len + 4 + 2, FALSE );
+    InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), FALSE );
 }
 
 static void DoDownLoadCode( void )

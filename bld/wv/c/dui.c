@@ -114,6 +114,7 @@ extern void             SetNumColumns( int num );
 extern void             InitRunThreadInfo( void );
 extern void             ScreenOptInit( void );
 extern bool             ScreenOption( const char *start, unsigned len, int pass );
+extern unsigned         ConfigScreen( void );
 
 #define TIMER_MS        250
 
@@ -513,4 +514,9 @@ void DUIScreenOptInit( void )
 bool DUIScreenOption( const char *start, unsigned len, int pass )
 {
     return( ScreenOption( start, len, pass ) );
+}
+
+unsigned DUIConfigScreen( void )
+{
+    return( ConfigScreen() );
 }
