@@ -108,10 +108,12 @@ extern mod_handle       LookupModName( mod_handle search, const char *start, uns
 extern bool             GetBPSymAddr( brkp *bp, address *addr );
 extern void             DbgUpdate( update_list );
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void));
-static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
-const char              *RealFName( const char *name, open_access *loc );
 
 extern bool             DownLoadTask;
+
+const char              *RealFName( const char *name, open_access *loc );
+
+static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
 
 static char             *SymFileName;
 static char             *TaskCmd;
