@@ -37,11 +37,6 @@
 #endif
 
 extern unsigned         Lookup(const char *,const char *, unsigned);
-extern bool             HasEquals( void );
-extern unsigned         GetValue( void );
-extern unsigned long    GetMemory( void );
-
-extern int              ScrnLines;
 
 static const char SysOptNameTab[] = {
     "Popups\0"
@@ -51,7 +46,11 @@ static const char SysOptNameTab[] = {
 #endif
 };
 
-enum { OPT_POPUPS = 1, OPT_ALIGN_TRAP, OPT_ALIGN_EMULATE };
+enum {
+    OPT_POPUPS = 1,
+    OPT_ALIGN_TRAP,
+    OPT_ALIGN_EMULATE
+};
 
 
 bool OptDelim( char ch )
