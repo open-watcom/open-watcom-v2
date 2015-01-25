@@ -284,7 +284,7 @@ static char *SubstOne( const char **inp, char *out )
     const char  *in;
     char        *p;
     char        *starpos;
-    char        *rep;
+    const char  *rep;
     unsigned    parm;
 
     in = *inp;
