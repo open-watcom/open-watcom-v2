@@ -430,6 +430,13 @@ typedef struct {
     devicefont_block    devicefonts;
 } cop_device;
 
+#define OUT_DEV_MAP_OFF(x)      (void *)((char *)out_device + (size_t)x)
+#define OUT_DEV_CUR_PTR()       (void *)((char *)out_device + (size_t)out_device->next_offset)
+#define OUT_DEV_CUR_OFF()       (void *)(out_device->next_offset)
+#define OUT_DEV_ADD_OFF(x)      out_device->next_offset += x
+#define OUT_DEV_REMAP_MBR(x)    out_device->x = (void *)((char *)out_device + (size_t)out_device->x)
+#define OUT_DEV_EXPAND_CHK(x)   (out_device->allocated_size < (out_device->next_offset + x))
+
 /* This struct embodies the binary form of the :DRIVER block.
  *
  * The "unknown" block is not mentioned because it never has any data in it.
@@ -467,6 +474,21 @@ typedef struct {
     line_block          dbox;
 } cop_driver;
 
+#define OUT_DRV_MAP_OFF(x)      (void *)((char *)out_driver + (size_t)x)
+#define OUT_DRV_CUR_PTR()       (void *)((char *)out_driver + (size_t)out_driver->next_offset)
+#define OUT_DRV_CUR_OFF()       ((void *)out_driver->next_offset)
+#define OUT_DRV_ADD_OFF(x)      out_driver->next_offset += x
+#define OUT_DRV_REMAP_MBR(x)    out_driver->x = (void *)((char *)out_driver + (size_t)out_driver->x)
+#define OUT_DRV_EXPAND_CHK(x)   (out_driver->allocated_size < (out_driver->next_offset + x))
+
+#define IN_DRV_MAP_OFF(x)       (void *)((char *)in_driver + (size_t)x)
+#define IN_DRV_CUR_PTR()        (void *)((char *)in_driver + (size_t)in_driver->next_offset)
+#define IN_DRV_CUR_OFF()        ((void *)in_driver->next_offset)
+#define IN_DRV_ADD_OFF(x)       in_driver->next_offset += x
+#define IN_DRV_REMAP_MBR(x)     in_driver->x = (void *)((char *)in_driver + (size_t)in_driver->x)
+#define IN_DRV_EXPAND_CHK(x)    (in_driver->allocated_size < (in_driver->next_offset + x))
+#define IN_DRV_GET_OFF(x)       ((char *)x - (char *)in_driver)
+
 #ifdef __WATCOMC__
 #pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
 #endif
@@ -495,6 +517,13 @@ typedef struct cop_font {
     outtrans_block  *   outtrans;
     width_block     *   width;
 } cop_font;
+
+#define OUT_FONT_MAP_OFF(x)     (void *)((char *)out_font + (size_t)x)
+#define OUT_FONT_CUR_PTR()      (void *)((char *)out_font + (size_t)out_font->next_offset)
+#define OUT_FONT_CUR_OFF()      (void *)(out_font->next_offset)
+#define OUT_FONT_ADD_OFF(x)     out_font->next_offset += x
+#define OUT_FONT_REMAP_MBR(x)   out_font->x = (void *)((char *)out_font + (size_t)out_font->x)
+#define OUT_FONT_EXPAND_CHK(x)  (out_font->allocated_size < (out_font->next_offset + x))
 
 /* This struct was originally developed for use with the output buffer. It's
  * use has since expanded. current records the current write position, length
