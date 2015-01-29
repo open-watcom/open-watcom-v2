@@ -643,7 +643,6 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
                         translation_start = outtrans_data + (uint16_array[i] & 0x00ff);
                         size = *translation_start;
                     }
-                    translation_ptr->count = size;
 
                     /* Allocate space and perform other common operations. */
 
