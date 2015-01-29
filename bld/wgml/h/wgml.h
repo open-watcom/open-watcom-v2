@@ -444,7 +444,7 @@ extern  void    g_banner( void );
 extern  bool    get_line( bool researchoutput );
 extern  void    inc_inc_level( void );
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma aux     my_exit aborts;
 #endif
 extern  void    my_exit( int );

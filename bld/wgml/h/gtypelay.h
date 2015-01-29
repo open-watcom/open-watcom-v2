@@ -818,7 +818,7 @@ typedef struct banner_lay_tag {
 /*  sequence of definitions as seen by :CONVERT output                     */
 /***************************************************************************/
  
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma disable_message( 128 ); // suppress: Warning! W128: 3 padding byte(s) added
 #endif
 
@@ -893,10 +893,9 @@ typedef struct layout_data {
  
 } layout_data;
  
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma enable_message( 128 );// reenable: Warning! W128: 3 padding byte(s) added
 #endif
- 
  
  
 /***************************************************************************/

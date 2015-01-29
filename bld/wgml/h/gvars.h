@@ -42,7 +42,7 @@
 #include "gtype.h"
 #include "gtypelay.h"
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
 #endif
 
@@ -232,7 +232,7 @@ global struct ProcFlags {
 
 } ProcFlags;                            // processing flags
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
 #endif
 

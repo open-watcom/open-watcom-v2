@@ -29,7 +29,7 @@
 *
 ****************************************************************************/
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma disable_message( 128 );
 #endif
 
@@ -42,7 +42,7 @@
 #include "wresset2.h"
 #include "wreslang.h"
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma enable_message( 128 );
 #endif
 

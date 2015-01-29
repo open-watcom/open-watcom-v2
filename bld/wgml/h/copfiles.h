@@ -102,7 +102,7 @@ typedef struct {
     uint8_t         table[0x100];
 } intrans_block;
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma disable_message( 128 ); // suppress: Warning! W128: 3 padding byte(s) added
 #endif
 
@@ -489,7 +489,7 @@ typedef struct {
 #define IN_DRV_EXPAND_CHK(x)    (in_driver->allocated_size < (in_driver->next_offset + x))
 #define IN_DRV_GET_OFF(x)       ((char *)x - (char *)in_driver)
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
 #pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
 #endif
 
