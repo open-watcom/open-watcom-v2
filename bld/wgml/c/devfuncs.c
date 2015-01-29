@@ -2582,7 +2582,7 @@ static void fb_font_switch( void )
         }
     }
 
-    /* Restore the value of font. */
+    /* Restore the value of font number. */
 
     font = save_font;
 
@@ -2755,7 +2755,7 @@ static void fb_first_text_chars( text_chars * in_chars, line_proc * in_lineproc 
     bool    font_switch_needed  = true;
     bool    undo_shift          = false;        
 
-    /* Set font and initialize the locals. */
+    /* Set font number and initialize the locals. */
 
     font = desired_state.font;
     active_font = desired_state.font;
@@ -3673,7 +3673,7 @@ void fb_empty_text_line( text_line * out_line )
  * eventually be refactored if needed in other functions.
  *
  * Note:
- *      active_font and font are set to "0" to ensure that all function
+ *      active_font and font number are set to "0" to ensure that all function
  *      blocks will be done in the context of the default font. They are
  *      restored to their initial value on exit.
  */

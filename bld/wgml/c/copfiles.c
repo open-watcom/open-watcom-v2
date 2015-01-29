@@ -819,7 +819,7 @@ void cop_setup( void )
         ProcFlags.ps_device = true;
     }
 
-    /* Get the highest font and reduce it by one so it contains the
+    /* Get the highest font number and reduce it by one so it contains the
      * highest valid array index.
      */
 
@@ -985,7 +985,7 @@ void cop_setup( void )
     free_opt_fonts();
 
     /* Generate any entries required by the BOX and/or UNDERSCORE blocks.
-     * Note that the font will become non-zero and will be used in
+     * Note that the font number will become non-zero and will be used in
      * document processing instead of the font name. If the device is PS,
      * then gen_cnt will be "0" and no fonts will be generated.
      */

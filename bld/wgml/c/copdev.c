@@ -472,7 +472,7 @@ cop_device * parse_device( FILE * in_file )
     switch( designator ) {
     case 0x0101:
 
-        /* The font attribute is numeric: get the font_number. */
+        /* The font attribute is numeric: get the font number. */
 
         fread( &count8, sizeof( count8 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
@@ -524,7 +524,7 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
 
-        /* Ensure that the font_number is 0. */
+        /* Ensure that the font number is 0. */
     
         out_device->box.font = 0;
         break;
@@ -581,7 +581,7 @@ cop_device * parse_device( FILE * in_file )
     switch( designator ) {
     case 0x0101:
 
-        /* The font attribute is numeric: get the font_number. */
+        /* The font attribute is numeric: get the font number. */
 
         fread( &count8, sizeof( count8 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
@@ -597,7 +597,7 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
 
-        /* Ensure that the font_number is used. */
+        /* Ensure that the font number is used. */
 
         out_device->underscore.specified_font = true;
         out_device->underscore.font_name = NULL;
@@ -640,7 +640,7 @@ cop_device * parse_device( FILE * in_file )
             out_device->underscore.font_name = NULL;
         }
 
-        /* Ensure that the font_number is 0. */
+        /* Ensure that the font number is 0. */
 
         out_device->underscore.font = 0;
         break;

@@ -133,16 +133,16 @@ typedef struct {
 
 /* Fonts in box_block and underscore_block.
  *
- * These structs have two font fields: font_name and font_number.
+ * These structs have two font fields: font_name and font.
  *
  * For the UnderscoreBlock only, if specified_font is false, then both font_name
- * and font_number are to be ignored and whatever font is in use when the
+ * and font number are to be ignored and whatever font is in use when the
  * underscore character is needed is to be used.
  *
- * If font_name is NULL, then font_name is to be ignored and font_number
+ * If font_name is NULL, then font_name is to be ignored and font
  * is to be used.
  *
- * If font_name is not NULL, then font_name is to be used and font_number is
+ * If font_name is not NULL, then font_name is to be used and font is
  * to be ignored.
  *
  * If the font_name is not NULL but the font indicated cannot be found, then

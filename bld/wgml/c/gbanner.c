@@ -42,7 +42,8 @@ static  banner_lay_tag  *   ban_bot[max_ban][2];
 /***************************************************************************/
 /*  Split banregion into left middle right part if region is script format */
 /***************************************************************************/
-static  void    preprocess_script_region( banner_lay_tag * ban ) {
+static  void    preprocess_script_region( banner_lay_tag * ban )
+{
     char    *   pl;
     char        sep;
     int         k;
