@@ -161,14 +161,14 @@ static  void    doc_header( su *p_sk, su *top_sk, xx_str *h_string,
                             font_number font, int8_t spc, bool no_eject )
 {
     doc_element     *   cur_el;
-    font_number         s_font;
+    font_number         font_save;
     int32_t             h_left;
     text_chars      *   curr_t;
     text_line       *   hd_line;
 
-    s_font = g_curr_font;
+    font_save = g_curr_font;
     g_curr_font = font;
-    g_curr_font = s_font;
+    g_curr_font = font_save;
     set_skip_vars( NULL, top_sk, p_sk, spc, g_curr_font );
 
     if( (h_string == NULL) || (*h_string == '\0') ||

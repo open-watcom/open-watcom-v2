@@ -565,10 +565,10 @@ typedef struct {
     #define global  extern
 #endif
 
-global cop_device   *   bin_device;     // binary device being used
-global cop_driver   *   bin_driver;     // binary driver being used
-global uint16_t         wgml_font_cnt;  // number of available fonts
-global wgml_font    *   wgml_fonts;     // the available fonts
+global cop_device   *bin_device;     // binary device being used
+global cop_driver   *bin_driver;     // binary driver being used
+global font_number  wgml_font_cnt;   // number of available fonts
+global wgml_font    *wgml_fonts;     // the available fonts
 
 /* Reset so can be reused with other headers. */
 
