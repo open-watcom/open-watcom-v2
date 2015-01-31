@@ -1618,7 +1618,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the Devicefonts. */
 
-    size = out_device->devicefonts.font_count * sizeof( default_font );
+    size = out_device->devicefonts.font_count * sizeof( device_font );
     if( OUT_DEV_EXPAND_CHK( size ) ) {
         out_device = resize_cop_device( out_device, size );
     }
