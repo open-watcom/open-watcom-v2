@@ -66,9 +66,7 @@ void g_banner( void )
         out_msg( banner3a CRLF );
         out_msg( "Compiled with WATCOMC "xmystr(__WATCOMC__)
                  " "__DATE__" "__TIME__ CRLF);
-#ifdef  TRMEM
-        out_msg( "Compiled with TRMEM memory tracker (trmem)" CRLF );
-#endif
+        mem_banner();
         GlobalFlags.bannerprinted = 1;
     }
 }

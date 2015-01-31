@@ -3964,7 +3964,7 @@ void fb_lineproc_endvalue( void )
         }
         if( wgml_fonts[df_font].font_style->lineprocs != NULL ) {       
             if( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue != NULL ) {
-                df_interpret_driver_functions( wgml_fonts[font].font_style->lineprocs[line_pass_number].endvalue->text );
+                df_interpret_driver_functions( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue->text );
             }
         }
     }

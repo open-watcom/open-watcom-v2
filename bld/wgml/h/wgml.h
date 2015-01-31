@@ -215,14 +215,14 @@ extern  mac_entry * find_macro( mac_entry * dict, char const * name );
 
 
 /* gmemory.c                            */
-extern  void        mem_free( void * p );
-extern  void    *   mem_alloc( size_t size );
-extern  void    *   mem_realloc( void * p, size_t size );
-
-extern  void        g_trmem_init( void );
-extern  void        g_trmem_prt_list( void );
-extern  void        g_trmem_close( void );
-extern  unsigned long   g_trmem_peak_usage( void );
+extern  void            mem_free( void * p );
+extern  void            *mem_alloc( size_t size );
+extern  void            *mem_realloc( void * p, size_t size );
+extern  void            mem_init( void );
+extern  void            mem_fini( void );
+extern  unsigned long   mem_get_peak_usage( void );
+extern  void            mem_prt_curr_usage( void );
+extern  void            mem_banner( void );
 
 
 /* gnestut.c                            */

@@ -661,10 +661,11 @@ static  void    proc_input( char * filename )
 
 static  void    print_stats( clock_t duration_ticks )
 {
-    char        linestr[30];
-    char        linestr2[30];
-    ldiv_t      hour_min;
-    ldiv_t      sec_frac;
+    char            linestr[30];
+    char            linestr2[30];
+    ldiv_t          hour_min;
+    ldiv_t          sec_frac;
+    unsigned long   peak;
 
     g_info_lm( inf_stat_0 );
 
@@ -689,10 +690,11 @@ static  void    print_stats( clock_t duration_ticks )
     utoa( err_count ? 8 : wng_count ? 4 : 0, linestr, 10 );
     g_info_lm( inf_stat_5, linestr );
 
-    #ifdef TRMEM
-        utoa( g_trmem_peak_usage(), linestr, 10 );
+    peak = mem_get_peak_usage();
+    if( peak ) {
+        ultoa( peak, linestr, 10 );
         g_info_lm( inf_stat_6, linestr );
-    #endif
+    }
 
     // convert duration from clock ticks to HH:MM:SS.hh
     hour_min = ldiv( duration_ticks / CLOCKS_PER_SEC / 60L, 60L );
@@ -776,7 +778,7 @@ int main( int argc, char * argv[] )
 
     start_time = clock();               // remember start time
     passcount = 0;
-    g_trmem_init();                     // init memory tracker if necessary
+    mem_init();                         // init memory tracker if necessary
 
     init_global_vars();
 
@@ -838,7 +840,7 @@ int main( int argc, char * argv[] )
             g_info_lm( INF_PASS_1, passnoval->value, passofval->value,
                     GlobalFlags.research ? "research" : "normal" );
 //          if( GlobalFlags.research ) {
-//              g_trmem_prt_list();
+//              mem_prt_curr_usage();
 //          }
 
             proc_input( master_fname );
@@ -857,7 +859,7 @@ int main( int argc, char * argv[] )
                     GlobalFlags.research ? "research" : "normal" );
 
 //          if( GlobalFlags.research && (pass < passes) ) {
-//              g_trmem_prt_list();     // show allocated memory at pass end
+//              mem_prt_curr_usage();
 //          }
             passcount = pass;
             if( !GlobalFlags.lastpass && (err_count > 0) ) {
@@ -917,11 +919,9 @@ int main( int argc, char * argv[] )
     pass = passcount;
     print_stats( end_time - start_time );
 
-    fini_msgs();                        // end of msg resources
-              /* no more msgs built from resources possible after this point */
-
-    g_trmem_prt_list();            // all memory freed if no output from call
-    g_trmem_close();
+    fini_msgs();                        // end of msg resources, no more msgs built from
+                                        // resources possible after this point
+    mem_fini();
 
 /// test
 //    for( ; ; );
@@ -931,4 +931,3 @@ int main( int argc, char * argv[] )
     my_exit( err_count ? 8 : wng_count ? 4 : 0 );
     return( 0 );                    // never reached, but makes compiler happy
 }
-
