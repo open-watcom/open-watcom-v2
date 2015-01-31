@@ -103,7 +103,7 @@ bool        gotarget_reached( void )
 /*  check whether new label is duplicate                                   */
 /***************************************************************************/
 
-static  condcode    test_duplicate( char * name, line_number lineno )
+static  condcode    test_duplicate( char *name, line_number lineno )
 {
     labelcb     *   lb;
 

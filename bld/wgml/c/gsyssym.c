@@ -460,7 +460,7 @@ static void sysfncfun( symvar *e )
 
 static void sysfnumfun( symvar *e )// lineno of current input file not macro
 {
-    inputcb * wk;
+    inputcb     *wk;
     line_number l = 0;
 
     if( input_cbs != NULL ) {

@@ -136,8 +136,8 @@ global  mac_entry   *   macro_dict;     // macro dictionary
 global  gtentry     *   tag_dict;       // user tag dictionary
 
 global  char            research_file_name[48]; // filename for research
-global  ulong           research_from;  // line no start for research output
-global  ulong           research_to;    // line no end   for research output
+global  line_number     research_from;  // line no start for research output
+global  line_number     research_to;    // line no end   for research output
 
 global  struct GlobalFlags {
     unsigned        quiet         : 1;  // suppress product info
