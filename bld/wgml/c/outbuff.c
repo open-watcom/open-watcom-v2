@@ -117,9 +117,10 @@ static char             tr_table[0x100]; // .TR-controlled translation table
 static void ob_insert_ps_text( char *in_block, size_t count, font_number font )
 {
     size_t              difference;
-    translation *   *   cur_table   = NULL;
-    translation *       cur_trans   = NULL;
-    char                ch;
+    translation         **cur_table  = NULL;
+    translation         *cur_trans   = NULL;
+    unsigned char       trbyte_out;
+    unsigned char       trbyte_in;
     uint32_t            i;
 
     /* If the buffer is full, flush it. */
@@ -140,24 +141,25 @@ static void ob_insert_ps_text( char *in_block, size_t count, font_number font )
 
             /* buffout has room for at least one character. */
 
-            ch = tr_table[(uint8_t)in_block[i]];
-            if( ch == in_block[i] ) {
+            trbyte_in = in_block[i];
+            trbyte_out = tr_table[trbyte_in];
+            if( trbyte_out == trbyte_in ) {
                 if( cur_table == NULL ) {
 
                     /* No output translation was found. */
 
-                    buffout.text[buffout.current] = ch;
+                    buffout.text[buffout.current] = trbyte_out;
                     buffout.current++;
                 } else {
 
                     /* An :OUTTRANS block exists. */
 
-                    cur_trans = cur_table[(uint8_t)ch];
+                    cur_trans = cur_table[trbyte_out];
                     if( cur_trans == NULL ) {
 
                         /* No output translation was found. */
 
-                        buffout.text[buffout.current] = ch;
+                        buffout.text[buffout.current] = trbyte_out;
                         buffout.current++;
                     } else {
 
@@ -201,7 +203,7 @@ static void ob_insert_ps_text( char *in_block, size_t count, font_number font )
 
                 /* A single-byte .tr output translation was found. */
 
-                buffout.text[buffout.current] = ch;
+                buffout.text[buffout.current] = trbyte_out;
                 buffout.current++;
             }
         } else {
@@ -341,9 +343,10 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 {
     size_t              test_length;
     size_t              text_count;
-    translation *   *   cur_table   = NULL;
-    translation *       cur_trans   = NULL;
-    char                ch;
+    translation         **cur_table  = NULL;
+    translation         *cur_trans   = NULL;
+    unsigned char       trbyte_out;
+    unsigned char       trbyte_in;
     uint32_t            i;
     uint32_t            j;
     uint32_t            k;
@@ -352,7 +355,8 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
     if( font >= wgml_font_cnt )
         font = 0;
-    if( wgml_fonts[font].outtrans != NULL ) cur_table = wgml_fonts[font].outtrans->table;
+    if( wgml_fonts[font].outtrans != NULL )
+        cur_table = wgml_fonts[font].outtrans->table;
     text_count = count;
     for( i = 0; i < count; i++ ) {
 
@@ -366,24 +370,25 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
             /* Now check for an output translation. */
 
-            ch = tr_table[(uint8_t)in_block[i]];
-            if( ch == in_block[i] ) {
+            trbyte_in = in_block[i];
+            trbyte_out = tr_table[trbyte_in];
+            if( trbyte_out == trbyte_in ) {
                 if( cur_table == NULL ) {
 
                     /* No output translation was found. */
 
-                    buffout.text[buffout.current] = ch;
+                    buffout.text[buffout.current] = trbyte_out;
                     buffout.current++;
                 } else {
 
                     /* An :OUTTRANS block exists. */
 
-                    cur_trans = cur_table[(uint8_t)ch];
+                    cur_trans = cur_table[trbyte_out];
                     if( cur_trans == NULL ) {
 
                         /* No output translation was found. */
 
-                        buffout.text[buffout.current] = ch;
+                        buffout.text[buffout.current] = trbyte_out;
                         buffout.current++;
                     } else {
 
@@ -424,7 +429,7 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
                 /* A single-byte .tr output translation was found. */
 
-                buffout.text[buffout.current] = ch;
+                buffout.text[buffout.current] = trbyte_out;
                 buffout.current++;
             }
             text_count--;
@@ -453,24 +458,25 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
             /* Add the non-space character to translated. */
 
-            ch = tr_table[(uint8_t)in_block[j]];
-            if( ch == in_block[j] ) {
+            trbyte_in = in_block[j];
+            trbyte_out = tr_table[trbyte_in];
+            if( trbyte_out == trbyte_in ) {
                 if( wgml_fonts[font].outtrans == NULL ) {
 
                     /* No translation exists: copy the character. */
 
-                    translated.text[k] = ch;
+                    translated.text[k] = trbyte_out;
                     k++;
                 } else {
 
                     /* An :OUTTRANS block exists. */
 
-                    cur_trans = cur_table[(uint8_t)ch];
+                    cur_trans = cur_table[trbyte_out];
                     if( cur_trans == NULL ) {
 
                         /* No output translation was found. */
 
-                        translated.text[k] = ch;
+                        translated.text[k] = trbyte_out;
                         k++;
                     } else {
 
@@ -506,7 +512,7 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
                 /* A single-byte .tr translation found. */
 
-                translated.text[k] = ch;
+                translated.text[k] = trbyte_out;
                 k++;
             }
         }
@@ -616,16 +622,18 @@ static void ob_insert_def( char *in_block, size_t count )
 static void ob_insert_def_ot( char *in_block, size_t count, font_number font )
 {
     size_t              text_count;
-    translation *   *   cur_table   = NULL;
-    translation *       cur_trans   = NULL;
-    char                ch;
+    translation         **cur_table  = NULL;
+    translation         *cur_trans   = NULL;
+    unsigned char       trbyte_out;
+    unsigned char       trbyte_in;
     uint32_t            i;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
     if( font >= wgml_font_cnt )
         font = 0;
-    if( wgml_fonts[font].outtrans != NULL ) cur_table = wgml_fonts[font].outtrans->table;
+    if( wgml_fonts[font].outtrans != NULL )
+        cur_table = wgml_fonts[font].outtrans->table;
     text_count = count;
 
     for( i = 0; i < count; i++ ) {
@@ -636,24 +644,25 @@ static void ob_insert_def_ot( char *in_block, size_t count, font_number font )
 
         /* Now check for an output translation. */
 
-        ch = tr_table[(uint8_t)in_block[i]];
-        if( ch == in_block[i] ) {
+        trbyte_in = in_block[i];
+        trbyte_out = tr_table[trbyte_in];
+        if( trbyte_out == trbyte_in ) {
             if( cur_table == NULL ) {
 
                 /* No output translation was found. */
 
-                buffout.text[buffout.current] = ch;
+                buffout.text[buffout.current] = trbyte_out;
                 buffout.current++;
             } else {
 
                 /* An :OUTTRANS block exists. */
 
-                cur_trans = cur_table[(uint8_t)ch];
+                cur_trans = cur_table[trbyte_out];
                 if( cur_trans == NULL ) {
 
                     /* No output translation was found. */
 
-                    buffout.text[buffout.current] = ch;
+                    buffout.text[buffout.current] = trbyte_out;
                     buffout.current++;
                 } else {
 
@@ -692,7 +701,7 @@ static void ob_insert_def_ot( char *in_block, size_t count, font_number font )
 
             /* A single-byte .tr output translation was found. */
 
-            buffout.text[buffout.current] = ch;
+            buffout.text[buffout.current] = trbyte_out;
             buffout.current++;
         }
         text_count--;

@@ -83,7 +83,7 @@
 
 static cop_font        *   bin_fonts;       // binary fonts being used (linked list)
 static record_buffer   *   cur_token;       // Current token.
-static uint8_t             ti_table[0x100]; // .TI-controlled translation table
+static unsigned char       ti_table[0x100]; // .TI-controlled translation table
 
 /* Static function definitions. */
 
@@ -686,10 +686,10 @@ static void free_opt_fonts( void )
  *      The appropriate character, which may be the same as in_char.
  */
 
-uint8_t cop_in_trans( uint8_t in_char, font_number font )
+unsigned char cop_in_trans( unsigned char in_char, font_number font )
 {
-    intrans_block   *   block   = NULL;
-    uint8_t             retval;
+    intrans_block   *block   = NULL;
+    unsigned char   retval;
 
     if( font >= wgml_font_cnt )
         font = 0;
@@ -1312,16 +1312,16 @@ uint32_t cop_text_width( const char *text, size_t count, font_number font )
 /* update ti_table as specified by the data                                */
 /***************************************************************************/
 
-void cop_ti_table( char * p )
+void cop_ti_table( char *p )
 {
-    bool        first_found;
-    bool        no_data;
-    char    *   pa;
-    int         i;
-    uint8_t     token_char;
-    uint8_t     first_char;
-    uint32_t    len;
-    char        cwcurr[4];
+    bool            first_found;
+    bool            no_data;
+    char            *pa;
+    int             i;
+    unsigned char   token_char;
+    unsigned char   first_char;
+    uint32_t        len;
+    char            cwcurr[4];
 
     first_char = '\0';
     cwcurr[0] = SCR_char;
