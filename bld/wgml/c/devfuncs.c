@@ -197,8 +197,8 @@
 /* This keeps track of where we are in the compiled function block. */
 
 typedef struct {
-    unsigned char   *base;
-    unsigned char   *current;
+    char            *base;
+    char            *current;
     bool            last_function_done;
     unsigned char   parameter_type;
     unsigned char   df_code;
@@ -264,7 +264,7 @@ static df_data          current_df_data;
 static df_function      device_function_table[MAX_FUNC_INDEX + 1];
 static df_function      driver_function_table[MAX_FUNC_INDEX + 1];
 static df_function      *current_function_table = NULL;
-static unsigned char    *current_function       = NULL;
+static char             *current_function       = NULL;
 
 /* These are used in outputting spaces and underscore characters. */
 
@@ -1169,7 +1169,7 @@ static void *df_y_size( void )
  *
 */
 
-static void *get_parameters ( parameters *in_parameters )
+static void *get_parameters( parameters *in_parameters )
 {
     uint16_t    offset;
 
@@ -1547,7 +1547,7 @@ static void *df_sleep( void )
     current_df_data.current = current_df_data.base + my_parameters.first;
     first = (uintptr_t)process_parameter();
 
-    sleep( (unsigned) first);
+    sleep( (unsigned)first );
 
     return( NULL );
 }
@@ -1625,7 +1625,7 @@ static void *df_binary( void )
     /* Now invoke the parameter's handler. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    ob_insert_byte( (unsigned char)process_parameter() );
+    ob_insert_byte( (uintptr_t)process_parameter() );
     
     return( NULL );
 }
@@ -2326,11 +2326,11 @@ static df_function driver_function_table[MAX_FUNC_INDEX + 1] = {
  *          restored to their value on entry on exit.
 */
 
-static void interpret_functions( unsigned char *in_function )
+static void interpret_functions( char *in_function )
 {
     bool            old_last_done = false;
     df_function     *old_function_table = NULL;
-    unsigned char   *old_function = NULL;
+    char            *old_function = NULL;
     uint16_t        current_offset;
 
     /* An empty or missing block is not an error, but a warning is issued
@@ -3442,7 +3442,7 @@ void df_start_page( void )
  *      current_function_table is set to device_function_table.
 */
 
-void df_interpret_device_functions( unsigned char *in_function )
+void df_interpret_device_functions( char *in_function )
 {
     /* Select the table and invoke the interpreter. */
 
@@ -3462,7 +3462,7 @@ void df_interpret_device_functions( unsigned char *in_function )
  *      current_function_table is set to driver_function_table.
 */
 
-void df_interpret_driver_functions( unsigned char *in_function )
+void df_interpret_driver_functions( char *in_function )
 {
     /* Select the table and invoke the interpreter. */
 
