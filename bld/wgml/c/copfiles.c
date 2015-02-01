@@ -519,13 +519,11 @@ static cop_font * find_cop_font( char const * in_name )
     cop_font    *   current = NULL;
     cop_font    *   retval  = NULL;
 
-    current = bin_fonts;
-    while( current != NULL ) {
+    for( current = bin_fonts; current != NULL; current = current->next_font ) {
         if( !stricmp( in_name, current->defined_name ) ) {
             retval = current;
             break;
         }
-        current = current->next_font;
     }
 
     if( retval == NULL ) {
@@ -1590,8 +1588,7 @@ void fb_output_textline( text_line * out_line )
 
     /* Ensure out_line has at least one text_chars instance. */
 
-    current = out_line->first;
-    if( current == NULL ) {
+    if( out_line->first == NULL ) {
         fb_empty_text_line( out_line );
         return;
     }
@@ -1599,7 +1596,7 @@ void fb_output_textline( text_line * out_line )
     /* Determine the maximum number of passes. */
 
     line_passes = 0;
-    while( current != NULL ) {
+    for( current = out_line->first; current != NULL; current = current->next ) {
         if( current->font >= wgml_font_cnt )
             current->font = 0;
         if( wgml_fonts[current->font].font_style->line_passes > line_passes ) {

@@ -284,6 +284,8 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
  *          the format must be entirely present for there to be no error.
 */
 
+#define CHECK_LINE_PASS(x) (x > 0 && x <= fontstyle_block_ptr->line_passes)
+
 static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
         fontstyle_block *fontstyle_block_ptr, p_buffer **p_buffer_set,
         char **current, uint8_t count )
@@ -297,13 +299,13 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
     ptrdiff_t       fontstyle_block_offset;
     uint8_t *       text_ptr                = NULL;
     uint16_t        count16;
+    uint16_t        line_pass;
 
     size_t          size;
 
     /* Get the number of line passes, which can be 0. */
 
-    fread( &fontstyle_block_ptr->line_passes,
-           sizeof( fontstyle_block_ptr->line_passes ), 1, in_file );
+    fread( &fontstyle_block_ptr->line_passes, sizeof( fontstyle_block_ptr->line_passes ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( in_driver );
         in_driver = NULL;
@@ -430,7 +432,8 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
     
     /* If the count is 0, we are done: the P-buffer is empty. */
 
-    if( count16 == 0 ) return( in_driver );
+    if( count16 == 0 )
+        return( in_driver );
 
     /* Get the CodeBlocks. */
 
@@ -442,8 +445,11 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
 
         /* Trap zero-length CodeBlocks. */
         
-        if( cop_codeblocks[i].count == 0 ) continue;
+        if( cop_codeblocks[i].count == 0 )
+            continue;
         
+        line_pass = cop_codeblocks[i].line_pass;
+
         switch( cop_codeblocks[i].designator ) {
         case 0x04 :
 
@@ -523,7 +529,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
 
             /* Ensure that the line pass is within range. */
 
-            if( cop_codeblocks[i].line_pass > fontstyle_block_ptr->line_passes ) {
+            if( !CHECK_LINE_PASS( line_pass ) ) {
                 mem_free( *p_buffer_set );
                 *p_buffer_set = NULL;
                 mem_free( in_driver );
@@ -539,7 +545,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
             }
-            line_proc_ptr[cop_codeblocks[i].line_pass - 1].endvalue = IN_DRV_CUR_OFF();
+            line_proc_ptr[line_pass - 1].endvalue = IN_DRV_CUR_OFF();
 
             code_text_ptr = IN_DRV_CUR_PTR();
             IN_DRV_ADD_OFF( sizeof( code_text ) );
@@ -553,7 +559,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 in_driver = resize_cop_driver( in_driver, size );
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
-                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[cop_codeblocks[i].line_pass - 1].endvalue );
+                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[line_pass - 1].endvalue );
             }
             code_text_ptr->count = size;
             code_text_ptr->text = IN_DRV_CUR_OFF();
@@ -569,7 +575,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
 
             /* Ensure that the line pass is within range. */
 
-            if( cop_codeblocks[i].line_pass > fontstyle_block_ptr->line_passes ) {
+            if( !CHECK_LINE_PASS( line_pass ) ) {
                 mem_free( *p_buffer_set );
                 *p_buffer_set = NULL;
                 mem_free( in_driver );
@@ -585,7 +591,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
             }
-            line_proc_ptr[cop_codeblocks[i].line_pass - 1].startvalue = IN_DRV_CUR_OFF();
+            line_proc_ptr[line_pass - 1].startvalue = IN_DRV_CUR_OFF();
 
             code_text_ptr = IN_DRV_CUR_PTR();
             IN_DRV_ADD_OFF( sizeof( code_text ) );
@@ -599,7 +605,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 in_driver = resize_cop_driver( in_driver, size );
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
-                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[cop_codeblocks[i].line_pass - 1].startvalue );
+                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[line_pass - 1].startvalue );
             }
             code_text_ptr->count = size;
             code_text_ptr->text = IN_DRV_CUR_OFF();
@@ -615,7 +621,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
 
             /* Ensure that the line pass is within range. */
 
-            if( cop_codeblocks[i].line_pass > fontstyle_block_ptr->line_passes ) {
+            if( !CHECK_LINE_PASS( line_pass ) ) {
                 mem_free( *p_buffer_set );
                 *p_buffer_set = NULL;
                 mem_free( in_driver );
@@ -631,7 +637,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
             }
-            line_proc_ptr[cop_codeblocks[i].line_pass - 1].endword = IN_DRV_CUR_OFF();
+            line_proc_ptr[line_pass - 1].endword = IN_DRV_CUR_OFF();
 
             code_text_ptr = IN_DRV_CUR_PTR();
             IN_DRV_ADD_OFF( sizeof( code_text ) );
@@ -645,7 +651,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 in_driver = resize_cop_driver( in_driver, size );
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
-                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[cop_codeblocks[i].line_pass - 1].endword );
+                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[line_pass - 1].endword );
             }
             code_text_ptr->count = size;
             code_text_ptr->text = IN_DRV_CUR_OFF();
@@ -661,7 +667,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
 
             /* Ensure that the line pass is within range. */
 
-            if( cop_codeblocks[i].line_pass > fontstyle_block_ptr->line_passes ) {
+            if( !CHECK_LINE_PASS( line_pass ) ) {
                 mem_free( *p_buffer_set );
                 *p_buffer_set = NULL;
                 mem_free( in_driver );
@@ -677,7 +683,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
             }
-            line_proc_ptr[cop_codeblocks[i].line_pass - 1].startword = IN_DRV_CUR_OFF();
+            line_proc_ptr[line_pass - 1].startword = IN_DRV_CUR_OFF();
 
             code_text_ptr = IN_DRV_CUR_PTR();
             IN_DRV_ADD_OFF( sizeof( code_text ) );
@@ -691,7 +697,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 in_driver = resize_cop_driver( in_driver, size );
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
-                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[cop_codeblocks[i].line_pass - 1].startword );
+                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[line_pass - 1].startword );
             }
             code_text_ptr->count = size;
             code_text_ptr->text = IN_DRV_CUR_OFF();
@@ -707,7 +713,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
 
             /* Ensure that the line pass is within range. */
 
-            if( cop_codeblocks[i].line_pass > fontstyle_block_ptr->line_passes ) {
+            if( !CHECK_LINE_PASS( line_pass ) ) {
                 mem_free( *p_buffer_set );
                 *p_buffer_set = NULL;
                 mem_free( in_driver );
@@ -723,7 +729,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
             }
-            line_proc_ptr[cop_codeblocks[i].line_pass - 1].firstword = IN_DRV_CUR_OFF();
+            line_proc_ptr[line_pass - 1].firstword = IN_DRV_CUR_OFF();
 
             code_text_ptr = IN_DRV_CUR_PTR();
             IN_DRV_ADD_OFF( sizeof( code_text ) );
@@ -737,7 +743,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
                 in_driver = resize_cop_driver( in_driver, size );
                 fontstyle_block_ptr = IN_DRV_MAP_OFF( fontstyle_block_offset );
                 line_proc_ptr = IN_DRV_MAP_OFF( fontstyle_block_ptr->lineprocs );
-                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[cop_codeblocks[i].line_pass - 1].firstword );
+                code_text_ptr = IN_DRV_MAP_OFF( line_proc_ptr[line_pass - 1].firstword );
             }
             code_text_ptr->count = size;
             code_text_ptr->text = IN_DRV_CUR_OFF();
