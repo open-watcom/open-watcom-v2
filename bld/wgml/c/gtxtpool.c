@@ -242,13 +242,13 @@ box_col_set * alloc_box_col_set( void )
         curr = box_col_set_pool;
         curr->current = 0;
         curr->length = BOXCOL_COUNT;
-        curr->cols = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+        curr->cols = mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
         for( k = 0; k < 10; k++ ) {     // alloc 10 box_col_sets if pool empty
             curr->next = mem_alloc( sizeof( *curr ) );
             curr = curr->next;
             curr->current = 0;
             curr->length = BOXCOL_COUNT;
-            curr->cols = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+            curr->cols = mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
         }
         curr->next = NULL;
     }

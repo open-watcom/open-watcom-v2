@@ -945,8 +945,7 @@ void cop_setup( void )
 
     /* Process the FONT command-line option instances. */
 
-    cur_opt = opt_fonts;
-    while( cur_opt != NULL ) {
+    for( cur_opt = opt_fonts; cur_opt != NULL; cur_opt = cur_opt->nxt ) {
         fnt = cur_opt->font;
         wgml_fonts[fnt].bin_font = find_cop_font( cur_opt->name );
         if( cur_opt->style == NULL ) {
@@ -980,7 +979,6 @@ void cop_setup( void )
         }
 
         compute_metrics( &wgml_fonts[fnt] );
-        cur_opt = cur_opt->nxt;
     }
     free_opt_fonts();
 

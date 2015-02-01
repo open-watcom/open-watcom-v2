@@ -167,15 +167,19 @@ condcode    getarg( void )
             quote = '\0';
             quoted = false;
         }
-        for( ; p <= scan_stop; p++ ) {
+        for( ;; p++ ) {
 
+            if( p > scan_stop || *p == '\0' ) {
+                if( quoted ) {
+                    quote = '\0';
+                    quoted = false;
+                }
+                break;
+            }
             if( *p == ' ' && quote == '\0' ) {  // unquoted, blank is end
                 break;
             }
             if( *p == quote ) {
-                break;
-            }
-            if( *p == '\0' ) {
                 break;
             }
             if( quote == '\0' && (*p == '=') && is_quote_char( *(p+1) ) ) {
