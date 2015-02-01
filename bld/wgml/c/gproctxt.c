@@ -199,13 +199,13 @@ static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
 /*  return the width of text up to the first tab stop                      */
 /***************************************************************************/
 
-static uint32_t text_chars_width( char *text, uint32_t count, font_number font )
+static uint32_t text_chars_width( const char *text, size_t count, font_number font )
 {
-    uint32_t    i;
-    uint32_t    cur_count   = 0;
+    size_t      i;
+    size_t      cur_count   = 0;
     uint32_t    retval      = 0;
 
-    for( i = 0; i < count; i++) {
+    for( i = 0; i < count; i++ ) {
         if( (text[i] == '\t') || (text[i] == tab_char) ) {
             break;
         }

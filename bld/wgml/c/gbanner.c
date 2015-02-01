@@ -281,18 +281,14 @@ static void content_reg( banner_lay_tag * ban )
                     substitute_vars( pbuf, ban->region->script_region[k].string,
                                      ban->region->script_region[k].len );
                     if( *pbuf ) {
-                        curr_t = alloc_text_chars( pbuf, strlen( pbuf ),
-                                                   ban->region->font );
-
+                        curr_t = alloc_text_chars( pbuf, strlen( pbuf ), ban->region->font );
                         /***************************************************/
                         /* use font 0 for width calculation                */
                         /* even if another font is used for banregion      */
                         /* to get the same result as wgml4            TBD  */
                         /***************************************************/
-                        curr_t->width = cop_text_width( curr_t->text,
-                                                        curr_t->count,
-                                                   //   ban->region->font );
-                                                        0 );// TBD
+                        curr_t->width = cop_text_width( curr_t->text, curr_t->count, 0 );
+                                                       //   ban->region->font );
                         reg_text[k] = curr_t;
                     }
                 }
@@ -301,16 +297,11 @@ static void content_reg( banner_lay_tag * ban )
             substitute_vars( pbuf, ban->region->contents.string,
                              strlen( ban->region->contents.string ) );
             if( *pbuf ) {
-                curr_t = alloc_text_chars( pbuf, strlen( pbuf ),
-                                    ban->region->font );
-                curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-
+                curr_t = alloc_text_chars( pbuf, strlen( pbuf ), ban->region->font );
                 /***********************************************************/
                 /*  is font 0 used for width calc?                    TBD  */
                 /***********************************************************/
-
-                                                ban->region->font );
-
+                curr_t->width = cop_text_width( curr_t->text, curr_t->count, ban->region->font );
                 if( ban->region->region_position == pos_left ) {
                     reg_text[0] = curr_t;
                 } else if( ban->region->region_position == pos_center ) {
@@ -328,8 +319,7 @@ static void content_reg( banner_lay_tag * ban )
     case author_content :
         rc = find_symvar( &global_dict, "$author", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "author", 6, ban->region->font );
         }
@@ -337,8 +327,7 @@ static void content_reg( banner_lay_tag * ban )
     case bothead_content :
         rc = find_symvar( &global_dict, "$bothead", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "bothead", 7, ban->region->font );
         }
@@ -346,8 +335,7 @@ static void content_reg( banner_lay_tag * ban )
     case date_content :
         rc = find_symvar( &global_dict, "$date", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "date", 4, ban->region->font );
         }
@@ -355,8 +343,7 @@ static void content_reg( banner_lay_tag * ban )
     case docnum_content :
         rc = find_symvar( &global_dict, "$docnum", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "docnum", 6, ban->region->font );
         }
@@ -364,8 +351,7 @@ static void content_reg( banner_lay_tag * ban )
     case head0_content :
         rc = find_symvar( &global_dict, "$head0", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "head0", 5, ban->region->font );
         }
@@ -373,8 +359,7 @@ static void content_reg( banner_lay_tag * ban )
     case head1_content :
         rc = find_symvar( &global_dict, "$head1", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "head1", 5, ban->region->font );
         }
@@ -382,8 +367,7 @@ static void content_reg( banner_lay_tag * ban )
     case head2_content :
         rc = find_symvar( &global_dict, "$head2", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "head2", 5, ban->region->font );
         }
@@ -391,8 +375,7 @@ static void content_reg( banner_lay_tag * ban )
     case head3_content :
         rc = find_symvar( &global_dict, "$head3", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "head3", 5, ban->region->font );
         }
@@ -400,8 +383,7 @@ static void content_reg( banner_lay_tag * ban )
     case head4_content :
         rc = find_symvar( &global_dict, "$head4", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "head4", 5, ban->region->font );
         }
@@ -409,8 +391,7 @@ static void content_reg( banner_lay_tag * ban )
     case head5_content :
         rc = find_symvar( &global_dict, "$head5", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "head5", 5, ban->region->font );
         }
@@ -418,8 +399,7 @@ static void content_reg( banner_lay_tag * ban )
     case head6_content :
         rc = find_symvar( &global_dict, "$head6", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "head6", 5, ban->region->font );
         }
@@ -427,8 +407,7 @@ static void content_reg( banner_lay_tag * ban )
     case headnum0_content :
         rc = find_symvar( &global_dict, "$hnum0", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "hnum0", 5, ban->region->font );
         }
@@ -436,8 +415,7 @@ static void content_reg( banner_lay_tag * ban )
     case headnum1_content :
         rc = find_symvar( &global_dict, "$hnum1", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "hnum1", 5, ban->region->font );
         }
@@ -445,8 +423,7 @@ static void content_reg( banner_lay_tag * ban )
     case headnum2_content :
         rc = find_symvar( &global_dict, "$hnum2", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "hnum2", 5, ban->region->font );
         }
@@ -454,8 +431,7 @@ static void content_reg( banner_lay_tag * ban )
     case headnum3_content :
         rc = find_symvar( &global_dict, "$hnum3", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "hnum3", 5, ban->region->font );
         }
@@ -463,8 +439,7 @@ static void content_reg( banner_lay_tag * ban )
     case headnum4_content :
         rc = find_symvar( &global_dict, "$hnum4", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "hnum4", 5, ban->region->font );
         }
@@ -472,8 +447,7 @@ static void content_reg( banner_lay_tag * ban )
     case headnum5_content :
         rc = find_symvar( &global_dict, "$hnum5", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "hnum5", 5, ban->region->font );
         }
@@ -481,8 +455,7 @@ static void content_reg( banner_lay_tag * ban )
     case headnum6_content :
         rc = find_symvar( &global_dict, "$hnum6", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "hnum6", 5, ban->region->font );
         }
@@ -490,8 +463,7 @@ static void content_reg( banner_lay_tag * ban )
     case headtext0_content :
         rc = find_symvar( &global_dict, "$htext0", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "htext0", 5, ban->region->font );
         }
@@ -499,8 +471,7 @@ static void content_reg( banner_lay_tag * ban )
     case headtext1_content :
         rc = find_symvar( &global_dict, "$htext1", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "htext1", 5, ban->region->font );
         }
@@ -508,8 +479,7 @@ static void content_reg( banner_lay_tag * ban )
     case headtext2_content :
         rc = find_symvar( &global_dict, "$htext2", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "htext2", 5, ban->region->font );
         }
@@ -517,8 +487,7 @@ static void content_reg( banner_lay_tag * ban )
     case headtext3_content :
         rc = find_symvar( &global_dict, "$htext3", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "htext3", 5, ban->region->font );
         }
@@ -526,8 +495,7 @@ static void content_reg( banner_lay_tag * ban )
     case headtext4_content :
         rc = find_symvar( &global_dict, "$htext4", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "htext4", 5, ban->region->font );
         }
@@ -535,8 +503,7 @@ static void content_reg( banner_lay_tag * ban )
     case headtext5_content :
         rc = find_symvar( &global_dict, "$htext5", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "htext5", 5, ban->region->font );
         }
@@ -544,8 +511,7 @@ static void content_reg( banner_lay_tag * ban )
     case headtext6_content :
         rc = find_symvar( &global_dict, "$htext6", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "htext6", 5, ban->region->font );
         }
@@ -553,8 +519,7 @@ static void content_reg( banner_lay_tag * ban )
     case pgnuma_content :
         rc = find_symvar( &global_dict, "$pgnuma", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "pgnuma", 6, ban->region->font );
         }
@@ -562,8 +527,7 @@ static void content_reg( banner_lay_tag * ban )
     case pgnumad_content :
         rc = find_symvar( &global_dict, "$pgnumad", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "pgnumad", 7, ban->region->font );
         }
@@ -571,8 +535,7 @@ static void content_reg( banner_lay_tag * ban )
     case pgnumc_content :
         rc = find_symvar( &global_dict, "$pgnumc", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "pgnumc", 6, ban->region->font );
         }
@@ -580,8 +543,7 @@ static void content_reg( banner_lay_tag * ban )
     case pgnumcd_content :
         rc = find_symvar( &global_dict, "$pgnumcd", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "pgnumcd", 7, ban->region->font );
         }
@@ -589,8 +551,7 @@ static void content_reg( banner_lay_tag * ban )
     case pgnumr_content :
         rc = find_symvar( &global_dict, "$pgnumr", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "pgnumr", 6, ban->region->font );
         }
@@ -598,8 +559,7 @@ static void content_reg( banner_lay_tag * ban )
     case pgnumrd_content :
         rc = find_symvar( &global_dict, "$pgnumrd", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "pgnumrd", 7, ban->region->font );
         }
@@ -607,8 +567,7 @@ static void content_reg( banner_lay_tag * ban )
     case sec_content :
         rc = find_symvar( &global_dict, "$sec", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "sec", 3, ban->region->font );
         }
@@ -616,8 +575,7 @@ static void content_reg( banner_lay_tag * ban )
     case stitle_content :
         rc = find_symvar( &global_dict, "$stitle", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "stitle", 6, ban->region->font );
         }
@@ -625,8 +583,7 @@ static void content_reg( banner_lay_tag * ban )
     case title_content :
         rc = find_symvar( &global_dict, "$title", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "title", 6, ban->region->font );
         }
@@ -634,8 +591,7 @@ static void content_reg( banner_lay_tag * ban )
     case time_content :
         rc = find_symvar( &global_dict, "$time", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "time", 4, ban->region->font );
         }
@@ -643,8 +599,7 @@ static void content_reg( banner_lay_tag * ban )
     case tophead_content :
         rc = find_symvar( &global_dict, "$tophead", no_subscript, &symsubval );
         if( rc == 2 ) {
-            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ),
-                                       ban->region->font );
+            curr_t = alloc_text_chars( symsubval->value, strlen( symsubval->value ), ban->region->font );
         } else {
             curr_t = alloc_text_chars( "tophead", 7, ban->region->font );
         }
@@ -660,15 +615,13 @@ static void content_reg( banner_lay_tag * ban )
         break;
     }
     if( curr_t == NULL ) {
-            /* do nothing                                              */
+        /* do nothing                                              */
     } else {
         if( ban->region->contents.content_type != string_content ) {
-            curr_t->width = cop_text_width( curr_t->text, curr_t->count, ban->region->font );
-
             /***********************************************************/
             /*  is font 0 used for width calc?                    TBD  */
             /***********************************************************/
-
+            curr_t->width = cop_text_width( curr_t->text, curr_t->count, ban->region->font );
             if( ban->region->region_position == pos_left ) {
                 reg_text[0] = curr_t;
             } else if( ban->region->region_position == pos_center ) {
@@ -780,7 +733,7 @@ static  void    out_ban_common( banner_lay_tag * ban, bool top )
                    break;
                 }
                 curr_p->count -= 1;     // truncate text, adjust width
-                curr_p->width -= wgml_fonts[curr_p->font].width_table[(uint8_t)curr_p->text[curr_p->count]];
+                curr_p->width -= wgml_fonts[curr_p->font].width_table[(unsigned char)curr_p->text[curr_p->count]];
             }
             curr_p = curr_t;
         }

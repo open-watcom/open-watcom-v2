@@ -267,7 +267,7 @@ char    *scr_single_func_w( char * in, char * end, char * * result )
                               &symsubval );
         }
         if( rc == 2 ) {
-            width = cop_text_width( symsubval->value, strlen( symsubval->value ), g_curr_font);
+            width = cop_text_width( symsubval->value, strlen( symsubval->value ), g_curr_font );
         } else {
 
         /*******************************************************************/

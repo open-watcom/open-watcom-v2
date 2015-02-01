@@ -64,7 +64,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 extern uint8_t      cop_in_trans( uint8_t in_char, font_number font );
 extern void         cop_setup( void );
 extern void         cop_teardown( void );
-extern uint32_t     cop_text_width( char *text, uint32_t count, font_number font );
+extern uint32_t     cop_text_width( const char *text, size_t count, font_number font );
 extern void         cop_ti_table( char * p );
 extern void         fb_dbox( dbox_element * in_dbox );
 extern void         fb_document( void );
