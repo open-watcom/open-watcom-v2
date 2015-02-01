@@ -46,25 +46,32 @@ static loc_to_name  l2n_names[L2N_ENTRIES] = { { address_tag, "EADDRESS" },
 /*  display offending text line and mark the offending token               */
 /***************************************************************************/
 
-static void show_line_error( const char * pa )
+static void show_line_error_len( const char *pa, size_t len )
 {
-    char    *   buf = NULL;
-    int         cnt;
+    char    *buf = NULL;
+    size_t  cnt;
 
     msg_indent = 0;
-    cnt = pa - buff2;   // number of characters before the offending input
-    cnt ++;             // allow space for "*" at start of offending input
+    cnt = pa - buff2 + len;
     buf = mem_alloc( cnt + 1 );
-    memset( buf, ' ', cnt - 1 );
-    buf[cnt - 1] = '*'; // puts "*" after last memset position; no, really
+    memcpy( buf, buff2, cnt );
     buf[cnt] = '\0';
-    out_msg( "%s\n", buff2 );
+    out_msg( "%s\n", buf );
+    // number of characters before the offending input + "*" at start of offending input
+    cnt = pa - buff2 - 1;
+    memset( buf, ' ', cnt );
+    buf[cnt] = '*';         // puts "*" after last memset position; no, really
+    buf[cnt + 1] = '\0';
     out_msg( "%s\n", buf );
     mem_free( buf );
     out_msg( "\n" );
-    return;
 }
 
+
+static void show_line_error( const char *pa )
+{
+    show_line_error_len( pa, strlen( pa ) );
+}
 
 /***************************************************************************/
 /*  display lineno of file/macro and include stack                         */
@@ -144,14 +151,14 @@ void    file_mac_info_nest( void )
 }
 
 
-void internal_err( char * file, int line )
+void internal_err( const char * file, int line )
 {
     err_count++;
     g_err( err_intern, file, line );
     return;
 }
 
-void    att_val_err( char * attname )
+void    att_val_err( const char * attname )
 {
 //****ERROR**** SC--045: Value 'xxx' for the 'yyy' attribute is not defined
     err_count++;
@@ -181,7 +188,7 @@ void    cw_err( void )
 }
 
 
-void    dc_opt_warn( const char * pa )
+void    dc_opt_warn( const char *pa )
 {
     wng_count++;
     g_warn( err_dc_opt, pa );
@@ -191,7 +198,7 @@ void    dc_opt_warn( const char * pa )
 }
 
 
-void    parm_miss_err( const char * pa )
+void    parm_miss_err( const char *pa )
 {
     err_count++;
     g_err( err_parm_missing, pa );
@@ -200,7 +207,7 @@ void    parm_miss_err( const char * pa )
 }
 
 
-void    parm_extra_err( const char *cw, const char * pa )
+void    parm_extra_err( const char *cw, const char *pa )
 {
     err_count++;
     g_err( err_extra_ignored, cw, pa );
@@ -313,6 +320,15 @@ void    xx_line_err( const msg_ids errid, const char *pa )
     return;
 }
 
+void    xx_line_err_len( const msg_ids errid, const char *pa, size_t len )
+{
+    err_count++;
+    g_err( errid );
+    file_mac_info();
+    show_line_error_len( pa, len );
+    return;
+}
+
 void    xx_simple_err( const msg_ids errid )
 {
     err_count++;
@@ -387,9 +403,9 @@ void    g_err_tag_nest( const char *tag )
     return;
 }
 
-void    g_err_tag_rsloc( locflags inloc, const char * pa )
+void    g_err_tag_rsloc( locflags inloc, const char *pa )
 {
-    char    *   tag_name    = NULL;
+    const char  *tag_name    = NULL;
     int         i;
 
     for( i = 0; i < L2N_ENTRIES; i++ ) {
@@ -441,6 +457,3 @@ void    g_err_tag_x_in_y( const char *tag1, const char *tag2 )
     err_count++;
     return;
 }
-
-
-

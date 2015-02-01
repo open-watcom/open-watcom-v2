@@ -65,15 +65,15 @@ extern unsigned char cop_in_trans( unsigned char in_char, font_number font );
 extern void         cop_setup( void );
 extern void         cop_teardown( void );
 extern uint32_t     cop_text_width( const char *text, size_t count, font_number font );
-extern void         cop_ti_table( char * p );
-extern void         fb_dbox( dbox_element * in_dbox );
+extern void         cop_ti_table( char *p );
+extern void         fb_dbox( dbox_element *in_dbox );
 extern void         fb_document( void );
 extern void         fb_document_page( void );
 extern void         fb_finish( void );
-extern void         fb_hline( hline_element * in_hline );
-extern void         fb_output_textline( text_line * out_line );
+extern void         fb_hline( hline_element *in_hline );
+extern void         fb_output_textline( text_line *out_line );
 extern void         fb_start( void );
-extern void         fb_vline( vline_element * in_vline );
+extern void         fb_vline( vline_element *in_vline );
 
 
 /* devfuncs.c                           */
@@ -95,8 +95,8 @@ extern  bool        is_macro_char( char c );
 extern  bool        is_space_tab_char( char c );
 extern  bool        is_stop_char( char c );
 extern  bool        is_symbol_char( char c );
-extern  char        parse_char( char * pa, int len );
-extern  void        unquote_if_quoted( char * * a, char * * z );
+extern  char        parse_char( const char *pa, size_t len );
+extern  void        unquote_if_quoted( char **a, char **z );
 
 
 /* gbanner.c                            */
@@ -146,14 +146,14 @@ extern  void    g_suicide( void );
 
 
 /* gerrorxx.c                           */
-extern  void    att_val_err( char * attname );
+extern  void    att_val_err( const char * attname );
 extern  void    auto_att_err( void );
 extern  void    cw_err( void );
 extern  void    dc_opt_err( const msg_ids num, const char *pa );
 extern  void    dc_opt_warn( const char *pa );
 extern  void    file_mac_info( void );
 extern  void    file_mac_info_nest( void );
-extern  void    internal_err( char * file, int line );
+extern  void    internal_err( const char * file, int line );
 extern  void    nottag_err( void );
 extern  void    numb_err( void );
 extern  void    parm_extra_err( const char *cw, const char *pa );
@@ -164,6 +164,7 @@ extern  void    tag_text_err( const char *tagname );
 extern  void    tag_text_req_err( const char *tagname );
 extern  void    xx_err( const msg_ids errid );
 extern  void    xx_line_err( const msg_ids errid, const char * pa );
+extern  void    xx_line_err_len( const msg_ids errid, const char * pa, size_t len );
 extern  void    xx_nest_err( const msg_ids errid );
 extern  void    xx_opt_err( const char *cw, const char *pa );
 extern  void    xx_simple_err( const msg_ids errid );
@@ -257,7 +258,7 @@ extern  void    split_input( char * buf, char * split_pos, bool startofline );
 
 /* gproctxt.c                           */
 extern  void        do_justify( uint32_t left_m, uint32_t right_m, text_line *line );
-extern  size_t      intrans( char *data, size_t len, font_number font );
+extern  size_t      intrans( char *text, size_t count, font_number font );
 extern  void        process_line_full( text_line *a_line, bool justify );
 extern  void        process_text( const char *text, font_number font );
 extern  text_chars  *process_word( const char *text, size_t count, font_number font );
@@ -383,7 +384,7 @@ extern  gtentry *   find_tag( gtentry * * dict, char const * name );
 
 /* gtxtpool.c                           */
 extern  void            add_text_chars_to_pool( text_line * a_line );
-extern  text_chars      *alloc_text_chars( char *p, size_t cnt, font_number font );
+extern  text_chars      *alloc_text_chars( const char *text, size_t cnt, font_number font );
 extern  void            add_text_line_to_pool( text_line * a_line );
 extern  text_line       *alloc_text_line( void );
 extern  void            add_ban_col_to_pool( ban_column * a_column );
@@ -410,21 +411,21 @@ extern  bool        process_tag( gtentry * ge, mac_entry * me );
 /* gutil.c                              */
 extern  bool        att_val_to_su( su * spaceunit, bool pos );
 extern  int32_t     conv_hor_unit( su * spaceunit );
-extern  int32_t     conv_vert_unit( su * spaceunit, uint8_t spacing );
+extern  int32_t     conv_vert_unit( su * spaceunit, unsigned char spacing );
 extern  bool        cw_val_to_su( char * * scaninput, su * spaceunit );
-extern  char    *   format_num( uint32_t n, char * r, size_t rsize, num_style ns );
-extern  char    *   get_att_value( char * p );
-extern  su      *   greater_su( su * su_a, su * su_b, uint8_t spacing );
-extern  char    *   int_to_roman( uint32_t n, char * r, size_t rsize );
+extern  char        *format_num( uint32_t n, char * r, size_t rsize, num_style ns );
+extern  char        *get_att_value( char * p );
+extern  su          *greater_su( su * su_a, su * su_b, unsigned char spacing );
+extern  char        *int_to_roman( uint32_t n, char * r, size_t rsize );
 extern  bool        lay_init_su( const char * p, su * in_su );
 extern  size_t      len_to_trail_space( const char *p , size_t len );
 extern  void        start_line_with_string( const char *text, font_number font, bool leave1space );
 
 
 /* outbuff.c                            */
-extern void     cop_tr_table( char * p );
+extern void     cop_tr_table( const char *p );
 extern void     ob_binclude( binclude_element * in_el );
-extern void     ob_direct_out( char * p );
+extern void     ob_direct_out( const char *p );
 extern void     ob_graphic( graphic_element * in_el );
 
 

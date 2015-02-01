@@ -716,11 +716,11 @@ int32_t conv_hor_unit( su * s )
     return( ds );
 }
 
-int32_t conv_vert_unit( su * s, uint8_t spc )
+int32_t conv_vert_unit( su *s, unsigned char spc )
 {
-    int32_t     ds;
-    int32_t     fp;
-    uint8_t     space;
+    int32_t         ds;
+    int32_t         fp;
+    unsigned char   space;
 
     if( spc > 0 ) {                     // if spacing valid use it
         space = spc;
@@ -969,7 +969,7 @@ char * get_att_value( char * p )
 /*  these are intended to be vertical values                               */
 /***************************************************************************/
 
-su * greater_su( su * su_a, su * su_b, uint8_t spacing )
+su * greater_su( su *su_a, su *su_b, unsigned char spacing )
 {
     uint32_t    val_a;
     uint32_t    val_b;

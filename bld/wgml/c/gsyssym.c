@@ -66,9 +66,9 @@
 
 #define pica( var, next, flag )
 #define pics( var, next, flag )
-#define picc( var, next, flag )   picl( var, next, flag )
-#define pick( var, next, flag )   picl( var, next, flag )
-#define picl( var, next, flag )   static void sysf( var )( symvar *entry );
+#define picc( var, next, flag ) picl( var, next, flag )
+#define pick( var, next, flag ) picl( var, next, flag )
+#define picl( var, next, flag ) static void sysf( var )( symvar * entry );
 #include "gsyssym.h"
 #undef pick
 #undef pica
@@ -82,14 +82,10 @@
 
 #define pica( var, next, flag )
 #define pick( var, next, flag )
-#define picc( var, next, flag ) static char syss( var )[2]; // for single char values as string
-
+#define picc( var, next, flag ) static char syss( var )[2];             // for single char values as string
 #define picl( var, next, flag ) static char syss( var )[MAX_L_AS_STR];  // for long as string and sysbxchar
-
-#define pics( var, next, flag ) static char syss( var )[60];  // for special string $docnum
-                                                              // arbitrary length
+#define pics( var, next, flag ) static char syss( var )[60];            // for special string $docnum arbitrary length
 #include "gsyssym.h"
-
 #undef pick
 #undef pica
 #undef picc
@@ -110,26 +106,22 @@
 #define picc( var, next, flag )     picl( var, next, flag )
 #define picl( var, next, flag )     \
 static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag \
-}; \
+    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag };\
 static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, syss( var ) };
 
 #define pica( var, next, flag )     \
 static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag \
-}; \
+    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag };\
 static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
 
 #define pics( var, next, flag )     \
 static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag \
-}; \
+    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag };\
 static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, syss( var ) };
 
 #define pick( var, next, flag )     \
 static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag \
-}; \
+    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag };\
 static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
 
 #include "gsyssym.h"

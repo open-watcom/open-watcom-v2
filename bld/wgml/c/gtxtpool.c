@@ -54,7 +54,7 @@
 /*  allocate / reuse and init a text_chars instance                        */
 /*      optionally fill in text                                            */
 /***************************************************************************/
-text_chars  *alloc_text_chars( const char * p, size_t cnt, font_number font )
+text_chars  *alloc_text_chars( const char *text, size_t cnt, font_number font )
 {
     text_chars   *   curr;
     text_chars   *   prev;
@@ -96,8 +96,8 @@ text_chars  *alloc_text_chars( const char * p, size_t cnt, font_number font )
     curr->type = norm;
     curr->font = font;
     curr->width = 0;
-    if( p != NULL ) {                   // text supplied
-        memcpy_s(curr->text, cnt + 1, p, cnt ); // yes copy text
+    if( text != NULL ) {                   // text supplied
+        memcpy_s( curr->text, cnt + 1, text, cnt ); // yes copy text
         curr->count = cnt;              // set current size
     } else {
         curr->count = 0;                // init current size

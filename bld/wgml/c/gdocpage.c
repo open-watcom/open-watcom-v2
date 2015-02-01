@@ -57,7 +57,7 @@
 /*  does the actual output to the device                                   */
 /***************************************************************************/
  
-static void do_el_list_out( doc_element * array, uint8_t count )
+static void do_el_list_out( doc_element * array, unsigned char count )
 {
     doc_element *   cur_el;
     doc_element *   save;
@@ -266,10 +266,10 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
 
 static void do_ban_column_out( ban_column * a_column, uint32_t v_start )
 {
-    ban_column  *       cur_col;
-    doc_element *   *   cur_el;
+    ban_column          *cur_col;
+    doc_element         **cur_el;
     int                 i;
-    uint8_t             col_count;
+    unsigned char       col_count;
 
     col_count = 0;
     for( cur_col = a_column; cur_col != NULL; cur_col = cur_col->next ) {
@@ -305,7 +305,7 @@ static void do_doc_column_out( doc_column * a_column, uint32_t v_start )
     doc_element *   *   cur_el;
     doc_element *       last;
     int                 i;
-    uint8_t             col_count;
+    unsigned char       col_count;
 
     v_start = v_start;
     col_count = 0;

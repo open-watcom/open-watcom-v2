@@ -45,10 +45,10 @@
 /* validate and return the character parameter, or raise an error          */
 /***************************************************************************/
 
-char parse_char( char * pa, int len )
+char parse_char( const char *pa, size_t len )
 {
-    char        *   p;
-    char            c;
+    const char  *p;
+    char        c;
 
     c = '\0';
     p = pa + len;
@@ -64,14 +64,12 @@ char parse_char( char * pa, int len )
                 pa++;
             }
         } else {
-            *p = '\0';
-            xx_line_err( err_cw_not_char, pa );
+            xx_line_err_len( err_cw_not_char, pa, p - pa );
             return( c );
         }
     } else {
         if( len != 1 ) {
-            *p = '\0';
-            xx_line_err( err_cw_not_char, pa );
+            xx_line_err_len( err_cw_not_char, pa, p - pa );
             return( c );
         }
         c = *pa;
@@ -397,7 +395,7 @@ bool    is_space_tab_char( char c )
  * If first and last character are the same and one of the quote chars
  * the start and end pointers are adjusted
  */
-void    unquote_if_quoted( char * * a, char * * z )
+void    unquote_if_quoted( char **a, char **z )
 {
 
     if( **a == **z && is_quote_char( **a ) ) {

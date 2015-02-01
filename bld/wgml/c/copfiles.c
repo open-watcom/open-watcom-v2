@@ -962,10 +962,11 @@ void cop_setup( void )
             wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
         }
         wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-        if( cur_dev_font->resident == 0x00 )
+        if( cur_dev_font->resident == 0x00 ) {
             wgml_fonts[fnt].font_resident = 'n';
-        else
+        } else {
             wgml_fonts[fnt].font_resident = 'y';
+        }
         if( wgml_fonts[fnt].bin_font->outtrans == NULL ) {
             wgml_fonts[fnt].outtrans = bin_device->outtrans;
         } else {
@@ -1595,10 +1596,10 @@ void fb_output_textline( text_line * out_line )
         return;
     }
 
-    /* Determine the number of passes. */
+    /* Determine the maximum number of passes. */
 
     line_passes = 0;
-    for( ; current != NULL; current = current->next ) {
+    while( current != NULL ) {
         if( current->font >= wgml_font_cnt )
             current->font = 0;
         if( wgml_fonts[current->font].font_style->line_passes > line_passes ) {
@@ -1636,7 +1637,8 @@ void fb_start( void )
 
     /* Interpret the START INIT block. */
 
-    if( bin_driver->inits.start != NULL ) fb_init( bin_driver->inits.start );
+    if( bin_driver->inits.start != NULL )
+        fb_init( bin_driver->inits.start );
 
     return;
 }

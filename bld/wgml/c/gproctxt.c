@@ -361,20 +361,20 @@ static void wgml_tabs( void )
     bool                    skip_tab    = false;    // skip current tab
     uint32_t                i;
     int32_t                 offset      = 0;        // offset for position adjustment
-    text_chars          *   c_chars     = NULL;     // current text_chars
-    text_chars          *   c_multi;                // used to traverse parts of multipart word
-    text_chars          *   in_chars    = t_line->last; // text_chars being processed
-    text_chars          *   s_chars     = NULL;     // source text_chars
-    char                *   in_text     = in_chars->text;
+    text_chars              *c_chars    = NULL;     // current text_chars
+    text_chars              *c_multi;               // used to traverse parts of multipart word
+    text_chars              *in_chars   = t_line->last; // text_chars being processed
+    text_chars         	    *s_chars    = NULL;     // source text_chars
+    char                    *in_text    = in_chars->text;
     uint32_t                in_count    = in_chars->count;
     uint32_t                m_width;                // multi-part word width
     uint32_t                pre_space   = 0;        // space before current word
     uint32_t                pre_width;              // tab_space in hbus & adjusted for alignment
-    uint32_t                t_count     = 0;        // text count
+    size_t                  t_count     = 0;        // text count
     uint32_t                t_start;                // text start
     uint32_t                t_width;                // text width
     static  bool            text_found  = false;    // text found after tab character
-    static  text_chars  *   s_multi     = NULL;     // first part of multipart word
+    static  text_chars      *s_multi     = NULL;     // first part of multipart word
     static  text_line       tab_chars   = { NULL, 0, 0, NULL, NULL };   // current tab markers/fill chars
     static  text_type       c_type      = norm;     // type for current tab character
     static  font_number     c_font      = 0;        // font for current tab character
@@ -860,10 +860,10 @@ static void wgml_tabs( void )
 /*  returns number of characters which will not fit on the current line    */
 /***************************************************************************/
 
-static uint32_t split_text( text_chars * in_chars, uint32_t limit )
+static uint32_t split_text( text_chars *in_chars, uint32_t limit )
 {
     uint32_t    retval;
-    uint32_t    t_count;
+    size_t      t_count;
     uint32_t    t_limit;
     uint32_t    t_width;
 
@@ -1243,9 +1243,9 @@ void    process_line_full( text_line * a_line, bool justify )
 /*  create a text_chars instance and fill it with a 'word'                 */
 /***************************************************************************/
 
-text_chars * process_word( const char *pword, size_t count, font_number font )
+text_chars *process_word( const char *pword, size_t count, font_number font )
 {
-    text_chars  *   n_char;
+    text_chars  *n_char;
 
     n_char = alloc_text_chars( pword, count, font );
     // remove end-of-line spaces if .co off before input translation
@@ -1285,8 +1285,8 @@ void    process_text( const char *text, font_number font )
     text_chars          *   n_char;     // new text char
     text_chars          *   s_char;     // save text char
     size_t                  count;
-    const char          *   pword;
-    const char          *   p;
+    const char              *pword;
+    const char              *p;
     uint32_t                o_count = 0;
     uint32_t                offset = 0;
     // when hyph can be set, it will need to be used here & below

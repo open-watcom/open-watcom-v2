@@ -554,7 +554,7 @@ typedef struct {
     uint32_t                spc_width;
     uint32_t                width_table[0x100];
     char                    font_resident;
-    uint8_t                 shift_count;
+    unsigned char           shift_count;
     char                    shift_height[4];
 } wgml_font;
 
