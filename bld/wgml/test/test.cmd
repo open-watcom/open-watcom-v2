@@ -44,14 +44,28 @@ rem NT/XP? or OS/2 or eCS?
 
 :BLD1
 
-set options=set date 'April 28, 2009' set time '21:11:02' wscript dev ps pass 1 verbose warn stat incl index
+set options=set date 'April 28, 2009' set time '21:11:02' wscript dev ps pass 1 verbose warn stat incl
+set options=wscript dev ps pass 1 verbose warn stat incl index
 
-set gmlinc=%OWDOCSDIR%\doc\devguide;%OWDOCSDIR%\doc\gml;%OWDOCSDIR%\doc\whelp;%OWDOCSDIR%\doc\hlp
-set gmllib=%OWDOCSDIR%\gml\syslib;%OWDOCSDIR%\doc\whelp;%OWDOCSDIR%\doc\hlp
-%OWDOCSDIR%\gml\%wg4_dir%\wgml  %1.gml     ( %options% out %1.ops %2 %3 %4 %5 %6 %7 %8 %9 >%1.old
-%OWSRCDIR%\wgml\%wgml_dir%\wgml %1.gml     ( %options% out %1.nps %2 %3 %4 %5 %6 %7 %8 %9 >%1.ntr
-%OWSRCDIR%\wgml\%wgml_dir%\wgml %1.gml  -r ( %options% out %1.nps %2 %3 %4 %5 %6 %7 %8 %9 >%1.new
-goto eof
+set gmlinc=%owroot%\docs\doc\devguide;%owroot%\docs\doc\gml;%owroot%\docs\doc\whelp;%owroot%\docs\doc\hlp
+set gmllib=%owroot%\docs\gml\syslib;%owroot%\docs\doc\whelp;%owroot%\docs\doc\hlp
+
+If [%OWDOSBOX%] == [] %owroot%\docs\gml\%wg4_dir%\wgml.exe %1.gml ( %options% out %1.ops %2 %3 %4 %5 %6 %7 %8 %9 >%1.old
+If [%OWDOSBOX%] == [] goto pause1
+REM   create DOSBOX batch script for run wgml on 64-bit Windows under DOSBOX
+   echo d: > wgml.bat
+   echo set GMLINC=c:\doc\devguide;c:\doc\gml;c:\doc\whelp;c:\doc\hlp >> wgml.bat
+   echo set GMLLIB=c:\gml\syslib;c:\doc\whelp;c:\doc\hlp;.\testlib >> wgml.bat
+   echo c:\gml\dos\wgml.exe %1.gml ( %options% out %1.ops %2 %3 %4 %5 %6 %7 %8 %9 ^>%1.old >> wgml.bat
+   echo exit >> wgml.bat
+   %OWDOSBOX% -noautoexec -c "mount c %owroot%\docs" -c "mount d ." -c "mount e %owroot%\bld" -c "d:wgml.bat" -noconsole
+:PAUSE1
+   pause
+   %owroot%\bld\wgml\%wgml_dir%\wgml     %1.gml     ( %options% out %1.nps %2 %3 %4 %5 %6 %7 %8 %9 >%1.ntr
+   %owroot%\bld\wgml\%wgml_dir%\wgml     %1.gml  -r ( %options% out %1.nps %2 %3 %4 %5 %6 %7 %8 %9 >%1.new
+   pause
+   wdw %owroot%\bld\wgml\%wgml_dir%\wgml %1.gml  -r ( %options% out %1.nps %2 %3 %4 %5 %6 %7 %8 %9
+   goto eof
 
 :PARMMISS
    echo Parameter missing
