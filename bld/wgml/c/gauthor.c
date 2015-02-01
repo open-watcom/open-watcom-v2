@@ -35,7 +35,7 @@
 /*  prepare author line                                                    */
 /***************************************************************************/
  
-static void prep_author_line( text_line * p_line, char * p )
+static void prep_author_line( text_line *p_line, const char *p )
 {
     text_chars  *   curr_t;
     uint32_t        h_left;

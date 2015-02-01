@@ -181,7 +181,7 @@ void    cw_err( void )
 }
 
 
-void    dc_opt_warn( char *pa )
+void    dc_opt_warn( const char * pa )
 {
     wng_count++;
     g_warn( err_dc_opt, pa );
@@ -191,7 +191,7 @@ void    dc_opt_warn( char *pa )
 }
 
 
-void    parm_miss_err( char *pa )
+void    parm_miss_err( const char * pa )
 {
     err_count++;
     g_err( err_parm_missing, pa );
@@ -200,7 +200,7 @@ void    parm_miss_err( char *pa )
 }
 
 
-void    parm_extra_err( char * cw, char * pa )
+void    parm_extra_err( const char *cw, const char * pa )
 {
     err_count++;
     g_err( err_extra_ignored, cw, pa );
@@ -244,7 +244,7 @@ void    tag_name_missing_err( void )
 }
 
 
-void    tag_text_err( char * tagname )
+void    tag_text_err( const char *tagname )
 {
 //****ERROR**** SC--038: Tag text may not be specified for the 'xxx' tag
     err_count++;
@@ -254,7 +254,7 @@ void    tag_text_err( char * tagname )
 }
 
 
-void    tag_text_req_err( char * tagname )
+void    tag_text_req_err( const char *tagname )
 {
 //****ERROR**** SC--039: Tag text must be specified with the 'xxx' tag
     err_count++;
@@ -264,7 +264,7 @@ void    tag_text_req_err( char * tagname )
 }
 
 
-void    val_parse_err( const char * pa, bool tag )
+void    val_parse_err( const char *pa, bool tag )
 {
     err_count++;
     if( tag ) {
@@ -294,7 +294,7 @@ void    xx_nest_err( const msg_ids errid )
 }
 
 
-void    xx_opt_err( char *cw, char *pa )
+void    xx_opt_err( const char *cw, const char *pa )
 {
     err_count++;
     g_err( err_xx_opt, cw, pa );
@@ -304,7 +304,7 @@ void    xx_opt_err( char *cw, char *pa )
 }
 
 
-void    xx_line_err( const msg_ids errid, char *pa )
+void    xx_line_err( const msg_ids errid, const char *pa )
 {
     err_count++;
     g_err( errid );
@@ -360,7 +360,7 @@ void    xx_warn( const msg_ids errid )
 /***************************************************************************/
 /*  error msgs for missing or duplicate :XXX :eXXX tags                    */
 /***************************************************************************/
-static  void    g_err_tag_common( char * tag, bool nest )
+static  void    g_err_tag_common( const char *tag, bool nest )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
@@ -375,19 +375,19 @@ static  void    g_err_tag_common( char * tag, bool nest )
     return;
 }
 
-void    g_err_tag( char * tag )
+void    g_err_tag( const char *tag )
 {
     g_err_tag_common( tag, 0 );         // 'normal' stack display
     return;
 }
 
-void    g_err_tag_nest( char * tag )
+void    g_err_tag_nest( const char *tag )
 {
     g_err_tag_common( tag, 1 );         // nested tag stack display
     return;
 }
 
-void    g_err_tag_rsloc( locflags inloc, char *pa )
+void    g_err_tag_rsloc( locflags inloc, const char * pa )
 {
     char    *   tag_name    = NULL;
     int         i;
@@ -407,7 +407,7 @@ void    g_err_tag_rsloc( locflags inloc, char *pa )
     return;
 }
 
-void    g_err_tag_no( char * tag )
+void    g_err_tag_no( const char *tag )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
@@ -418,7 +418,7 @@ void    g_err_tag_no( char * tag )
     return;
 }
 
-void    g_err_tag_prec( char * tag )
+void    g_err_tag_prec( const char *tag )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
@@ -429,7 +429,7 @@ void    g_err_tag_prec( char * tag )
     return;
 }
 
-void    g_err_tag_x_in_y( char * tag1, char * tag2 )
+void    g_err_tag_x_in_y( const char *tag1, const char *tag2 )
 {
     char    tagn1[TAG_NAME_LENGTH + 1];
     char    tagn2[TAG_NAME_LENGTH + 1];

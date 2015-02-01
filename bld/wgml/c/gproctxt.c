@@ -295,8 +295,8 @@ static void next_tab( void )
 /*  create c_chars instance and link it in correctly                       */
 /***************************************************************************/
 
-static text_chars * do_c_chars( text_chars * c_chars, text_chars * in_chars,
-                                 char *in_text, uint32_t count,
+static text_chars * do_c_chars( text_chars *c_chars, text_chars *in_chars,
+                                 const char *in_text, size_t count,
                                  uint32_t in_x_address, uint32_t width,
                                  font_number font, text_type type )
 {
@@ -578,7 +578,7 @@ static void wgml_tabs( void )
             }
         }
         t_count = i - t_start;
-        t_width = cop_text_width( &in_text[t_start], t_count, in_chars->font );
+        t_width = cop_text_width( in_text + t_start, t_count, in_chars->font );
         if( t_count > 0 ) {             // text found after tab char
             text_found = true;
         }
@@ -747,7 +747,7 @@ static void wgml_tabs( void )
             }
 
             // the text positioned by the tab stop
-            c_chars = do_c_chars( c_chars, in_chars, &in_text[t_start],
+            c_chars = do_c_chars( c_chars, in_chars, in_text + t_start,
                                     t_count, g_cur_h_start, t_width,
                                     in_chars->font, in_chars->type );
             if( t_width == 0 ) {    // no text: position marker
@@ -1243,7 +1243,7 @@ void    process_line_full( text_line * a_line, bool justify )
 /*  create a text_chars instance and fill it with a 'word'                 */
 /***************************************************************************/
 
-text_chars * process_word( char * pword, size_t count, font_number font )
+text_chars * process_word( const char *pword, size_t count, font_number font )
 {
     text_chars  *   n_char;
 
@@ -1279,14 +1279,14 @@ text_chars * process_word( char * pword, size_t count, font_number font )
 /*      handle line and page overflow conditions                           */
 /***************************************************************************/
 
-void    process_text( char * text, font_number font )
+void    process_text( const char *text, font_number font )
 {
     text_chars          *   h_char;     // hyphen text char
     text_chars          *   n_char;     // new text char
     text_chars          *   s_char;     // save text char
     size_t                  count;
-    char                *   pword;
-    char                *   p;
+    const char          *   pword;
+    const char          *   p;
     uint32_t                o_count = 0;
     uint32_t                offset = 0;
     // when hyph can be set, it will need to be used here & below

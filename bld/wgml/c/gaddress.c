@@ -133,7 +133,7 @@ extern  void    gml_eaddress( const gmltag * entry )
 /*  prepare address line for output                                        */
 /***************************************************************************/
 
-static void prep_aline( text_line * p_line, char * p )
+static void prep_aline( text_line *p_line, const char *p )
 {
     text_chars  *   curr_t;
     uint32_t        h_left;

@@ -149,35 +149,35 @@ extern  void    g_suicide( void );
 extern  void    att_val_err( char * attname );
 extern  void    auto_att_err( void );
 extern  void    cw_err( void );
-extern  void    dc_opt_err( const msg_ids num, char * pa );
-extern  void    dc_opt_warn( char * pa );
+extern  void    dc_opt_err( const msg_ids num, const char *pa );
+extern  void    dc_opt_warn( const char *pa );
 extern  void    file_mac_info( void );
 extern  void    file_mac_info_nest( void );
 extern  void    internal_err( char * file, int line );
 extern  void    nottag_err( void );
 extern  void    numb_err( void );
-extern  void    parm_extra_err( char *cw, char *pa );
-extern  void    parm_miss_err( char *cw );
+extern  void    parm_extra_err( const char *cw, const char *pa );
+extern  void    parm_miss_err( const char *cw );
 extern  void    val_parse_err( const char *pa, bool tag );
 extern  void    tag_name_missing_err( void );
-extern  void    tag_text_err( char * tagname );
-extern  void    tag_text_req_err( char * tagname );
+extern  void    tag_text_err( const char *tagname );
+extern  void    tag_text_req_err( const char *tagname );
 extern  void    xx_err( const msg_ids errid );
-extern  void    xx_line_err( const msg_ids errid, char * pa );
+extern  void    xx_line_err( const msg_ids errid, const char * pa );
 extern  void    xx_nest_err( const msg_ids errid );
-extern  void    xx_opt_err( char *cw, char *pa );
+extern  void    xx_opt_err( const char *cw, const char *pa );
 extern  void    xx_simple_err( const msg_ids errid );
 extern  void    xx_simple_err_c( const msg_ids errid, const char * arg );
 extern  void    xx_simple_err_i( const msg_ids errid, int arg );
 extern  void    xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
 extern  void    xx_tag_err( const msg_ids errid, char const * cw );
 extern  void    xx_warn( const msg_ids errid );
-extern  void    g_err_tag( char *tagname );
-extern  void    g_err_tag_nest( char *tagname );
-extern  void    g_err_tag_rsloc( locflags inloc, char *pa );
-extern  void    g_err_tag_no( char *tagname );
-extern  void    g_err_tag_prec( char *tagname );
-extern  void    g_err_tag_x_in_y( char *tagname1, char *tagname2 );
+extern  void    g_err_tag( const char *tagname );
+extern  void    g_err_tag_nest( const char *tagname );
+extern  void    g_err_tag_rsloc( locflags inloc, const char *pa );
+extern  void    g_err_tag_no( const char *tagname );
+extern  void    g_err_tag_prec( const char *tagname );
+extern  void    g_err_tag_x_in_y( const char *tagname1, const char *tagname2 );
 
 
 /* getnum.c                             */
@@ -259,8 +259,8 @@ extern  void    split_input( char * buf, char * split_pos, bool startofline );
 extern  void        do_justify( uint32_t left_m, uint32_t right_m, text_line *line );
 extern  size_t      intrans( char *data, size_t len, font_number font );
 extern  void        process_line_full( text_line *a_line, bool justify );
-extern  void        process_text( char *text, font_number font );
-extern  text_chars  *process_word( char *text, size_t count, font_number font );
+extern  void        process_text( const char *text, font_number font );
+extern  text_chars  *process_word( const char *text, size_t count, font_number font );
 extern  void        set_h_start( void );
 
 
@@ -418,7 +418,7 @@ extern  su      *   greater_su( su * su_a, su * su_b, uint8_t spacing );
 extern  char    *   int_to_roman( uint32_t n, char * r, size_t rsize );
 extern  bool        lay_init_su( const char * p, su * in_su );
 extern  int32_t     len_to_trail_space( char p[] , int32_t len );
-extern  void        start_line_with_string( char * text, font_number font, bool leave1space );
+extern  void        start_line_with_string( const char *text, font_number font, bool leave1space );
 
 
 /* outbuff.c                            */

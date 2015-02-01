@@ -1051,7 +1051,7 @@ char * int_to_roman( uint32_t n, char * r, size_t rsize )
 /* influencing the left margin for the paragraph                           */
 /***************************************************************************/
 
-void    start_line_with_string( char * text, font_number font, bool leave_1space )
+void    start_line_with_string( const char *text, font_number font, bool leave_1space )
 {
     text_chars          *   n_char;     // new text char
     size_t                  count;

@@ -54,7 +54,7 @@
 /*  allocate / reuse and init a text_chars instance                        */
 /*      optionally fill in text                                            */
 /***************************************************************************/
-text_chars  *alloc_text_chars( char *p, size_t cnt, font_number font )
+text_chars  *alloc_text_chars( const char * p, size_t cnt, font_number font )
 {
     text_chars   *   curr;
     text_chars   *   prev;

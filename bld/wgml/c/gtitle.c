@@ -37,7 +37,7 @@
 /*  Note: only used when text exists                                       */
 /***************************************************************************/
 
-static void prep_title_line( text_line * p_line, char * p )
+static void prep_title_line( text_line * p_line, const char * p )
 {
     text_chars  *   curr_t;
     uint32_t        h_left;
