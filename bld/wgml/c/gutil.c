@@ -388,16 +388,14 @@ static bool su_expression( su * in_su )
 /* return 1 for all blank string                                           */
 /***************************************************************************/
 
-int32_t     len_to_trail_space( char *p , int32_t len )
+size_t  len_to_trail_space( const char *p , size_t len )
 {
-    int32_t len_b = len;
-
-    while( (len_b > 0) && (p[--len_b] == ' ') )
+    while( (len > 0) && (p[--len] == ' ') )
         /* empty */;
-    len_b++;
-    if( len_b < 1 )
-        len_b = 1;
-    return( len_b );
+    len++;
+    if( len < 1 )
+        len = 1;
+    return( len );
 }
 
 

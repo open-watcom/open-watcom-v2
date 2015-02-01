@@ -417,7 +417,7 @@ extern  char    *   get_att_value( char * p );
 extern  su      *   greater_su( su * su_a, su * su_b, uint8_t spacing );
 extern  char    *   int_to_roman( uint32_t n, char * r, size_t rsize );
 extern  bool        lay_init_su( const char * p, su * in_su );
-extern  int32_t     len_to_trail_space( char p[] , int32_t len );
+extern  size_t      len_to_trail_space( const char *p , size_t len );
 extern  void        start_line_with_string( const char *text, font_number font, bool leave1space );
 
 
