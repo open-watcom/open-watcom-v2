@@ -392,7 +392,8 @@ int32_t     len_to_trail_space( char *p , int32_t len )
 {
     int32_t len_b = len;
 
-    while( (len_b > 0) && (p[--len_b] == ' ') ) /* empty */;
+    while( (len_b > 0) && (p[--len_b] == ' ') )
+        /* empty */;
     len_b++;
     if( len_b < 1 )
         len_b = 1;

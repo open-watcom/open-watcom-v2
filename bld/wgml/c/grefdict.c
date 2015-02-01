@@ -76,7 +76,7 @@ char * get_refid_value( char * p )
     /*  much longer ids                                  TBD       */
     /***************************************************************/
 
-    val_len = len;                      // restrict length
+    val_len = len;       // restrict length
     if( val_len > ID_LEN )
         val_len = ID_LEN;
     *(val_start + val_len) = '\0';

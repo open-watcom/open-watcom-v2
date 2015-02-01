@@ -133,8 +133,7 @@ void    gml_hdref( const gmltag * entry )
             while( *p && is_id_char( *p ) ) {
                 p++;
             }
-            // restrict length as in ghx.c
-            len = p - pa;
+            len = p - pa;       // restrict length as in ghx.c
             if( len > ID_LEN )
                 len = ID_LEN;
 
