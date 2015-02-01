@@ -1147,33 +1147,32 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
 /*      delete the escape char                                             */
 /***************************************************************************/
 
-void intrans( char * data, uint16_t * len, font_number font )
+size_t intrans( char *data, size_t len, font_number font )
 {
-    char    *   ps;                     // source ptr
-    char    *   pt;                     // target ptr
-    uint32_t    k;
+    char    *ps;                        // source ptr
+    char    *pt;                        // target ptr
+    size_t  k;
 
-    if( !ProcFlags.in_trans ) {
-        return;                         // input translation not active
-    }
-    k = *len;
-    ps = data;
-    pt = data;
-    for( k = 0; k <= *len; k++ ) {
-        if( *ps == in_esc ) {           // translate needed
-            ps++;                       // skip escape char
-            k++;                        // and count
-            *pt = cop_in_trans( *ps, font );   // translate
-            ps++;
-            pt++;
-        } else {
-            *pt++ = *ps++;              // else copy byte
+    if( ProcFlags.in_trans ) {
+        ps = data;
+        pt = data;
+        for( k = 0; k <= len; k++ ) {
+            if( *ps == in_esc ) {           // translate needed
+                ps++;                       // skip escape char
+                k++;                        // and count
+                *pt = cop_in_trans( *ps, font );   // translate
+                ps++;
+                pt++;
+            } else {
+                *pt++ = *ps++;              // else copy byte
+            }
+        }
+        if( pt < ps ) {                     // something translated
+            len -= (ps - pt);               // new length
+            *pt = ' ';
         }
     }
-    if( pt < ps ) {                     // something translated
-        *len -= (ps - pt);              // new length
-        *pt = ' ';
-    }
+    return( len );
 }
 
 
@@ -1258,7 +1257,7 @@ text_chars * process_word( char * pword, size_t count, font_number font )
             n_char->width = text_chars_width( n_char->text, n_char->count, font );
         }
     }
-    intrans( n_char->text, &n_char->count, font );
+    n_char->count = intrans( n_char->text, n_char->count, font );
     if( n_char->count == 0 ) {
         n_char->width = 0;
     } else {

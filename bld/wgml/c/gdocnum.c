@@ -56,10 +56,10 @@ static void prep_docnum_line( text_line * p_line, char * p )
     }
     curr_t->count = strlen( curr_t->text );
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
-    intrans( curr_t->text, &curr_t->count, g_curr_font );
+    curr_t->count = intrans( curr_t->text, curr_t->count, g_curr_font );
     curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     while( curr_t->width > (h_right - h_left) ) {   // too long for line
-        if( curr_t->count < 2) {        // sanity check
+        if( curr_t->count < 2 ) {        // sanity check
             break;
         }
         curr_t->count -= 1;             // truncate text

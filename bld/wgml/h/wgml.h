@@ -215,14 +215,15 @@ extern  mac_entry * find_macro( mac_entry * dict, char const * name );
 
 
 /* gmemory.c                            */
-extern  void            mem_free( void * p );
 extern  void            *mem_alloc( size_t size );
-extern  void            *mem_realloc( void * p, size_t size );
+extern  void            mem_banner( void );
+extern  void            mem_free( void * p );
 extern  void            mem_init( void );
 extern  void            mem_fini( void );
 extern  unsigned long   mem_get_peak_usage( void );
 extern  void            mem_prt_curr_usage( void );
-extern  void            mem_banner( void );
+extern  void            *mem_realloc( void * p, size_t size );
+extern  int             mem_validate( void );
 
 
 /* gnestut.c                            */
@@ -255,12 +256,12 @@ extern  void    split_input( char * buf, char * split_pos, bool startofline );
 
 
 /* gproctxt.c                           */
-extern  void            do_justify( uint32_t left_m, uint32_t right_m, text_line * line );
-extern  void            intrans( char * data, uint16_t * len, font_number font );
-extern  void            process_line_full( text_line * a_line, bool justify );
-extern  void            process_text( char * text, font_number font );
-extern  text_chars  *   process_word( char * text, size_t count, font_number font );
-extern  void            set_h_start( void );
+extern  void        do_justify( uint32_t left_m, uint32_t right_m, text_line *line );
+extern  size_t      intrans( char *data, size_t len, font_number font );
+extern  void        process_line_full( text_line *a_line, bool justify );
+extern  void        process_text( char *text, font_number font );
+extern  text_chars  *process_word( char *text, size_t count, font_number font );
+extern  void        set_h_start( void );
 
 
 /* grefdict.c                           */
