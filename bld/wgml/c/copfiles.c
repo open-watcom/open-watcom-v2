@@ -1307,14 +1307,14 @@ uint32_t cop_text_width( const char *text, size_t count, font_number font )
 /* update ti_table as specified by the data                                */
 /***************************************************************************/
 
-void cop_ti_table( char *p )
+void cop_ti_table( const char *p )
 {
     bool            first_found;
     bool            no_data;
-    char            *pa;
+    const char      *pa;
     int             i;
-    unsigned char   token_char;
-    unsigned char   first_char;
+    char            token_char;
+    char            first_char;
     uint32_t        len;
     char            cwcurr[4];
 
@@ -1350,8 +1350,7 @@ void cop_ti_table( char *p )
                         ProcFlags.in_trans = false;
                         in_esc = ' ';
                     } else if( len > 1 ) { // hex digits are not allowed here
-                        *p = '\0';
-                        xx_line_err( err_char_only, pa );
+                        xx_line_err_len( err_char_only, pa, len );
                         return;
                     } else {
                         ProcFlags.in_trans = true;
@@ -1367,19 +1366,16 @@ void cop_ti_table( char *p )
                     }
                     len = p - pa;
                     if( len > 0 ) {     // additional text not allowed
-                        *p = '\0';
-                        xx_line_err( err_char_only, p );
+                        xx_line_err_len( err_char_only, pa, len );
                         return;
                     }
                     return;     // done if was ".ti set"
                 } else {
-                    *p = '\0';
-                    xx_opt_err( cwcurr, pa );
+                    xx_opt_err_len( cwcurr, pa, len );
                     return;
                 }
             } else {
-                *p = '\0';
-                xx_opt_err( cwcurr, pa );
+                xx_opt_err_len( cwcurr, pa, len );
                 return;
             }
         }
@@ -1406,7 +1402,7 @@ void cop_ti_table( char *p )
             no_data = false;
 
             if( first_found ) {     // we now have two chars
-                ti_table[first_char] = token_char;
+                ti_table[(unsigned char)first_char] = token_char;
                 first_found = false;
             } else {                // we found a first or only char
                 first_char = token_char;
@@ -1416,7 +1412,7 @@ void cop_ti_table( char *p )
     }
 
     if( first_found ) {     // an only char, set table so it returns itself
-        ti_table[first_char] = first_char;
+        ti_table[(unsigned char)first_char] = first_char;
     }
 
     if( no_data ) {         // reset the table if no_data is still true

@@ -198,6 +198,16 @@ void    dc_opt_warn( const char *pa )
 }
 
 
+void    dc_opt_warn_len( const char *pa, size_t len )
+{
+    wng_count++;
+    g_warn( err_dc_opt, pa );
+    file_mac_info();
+    show_line_error_len( pa, len );
+    return;
+}
+
+
 void    parm_miss_err( const char *pa )
 {
     err_count++;
@@ -307,6 +317,16 @@ void    xx_opt_err( const char *cw, const char *pa )
     g_err( err_xx_opt, cw, pa );
     file_mac_info();
     show_line_error( pa );
+    return;
+}
+
+
+void    xx_opt_err_len( const char *cw, const char *pa, size_t len )
+{
+    err_count++;
+    g_err( err_xx_opt, cw, pa );
+    file_mac_info();
+    show_line_error_len( pa, len );
     return;
 }
 

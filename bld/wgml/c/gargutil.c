@@ -64,12 +64,12 @@ char parse_char( const char *pa, size_t len )
                 pa++;
             }
         } else {
-            xx_line_err_len( err_cw_not_char, pa, p - pa );
+            xx_line_err_len( err_cw_not_char, pa, len );
             return( c );
         }
     } else {
         if( len != 1 ) {
-            xx_line_err_len( err_cw_not_char, pa, p - pa );
+            xx_line_err_len( err_cw_not_char, pa, len );
             return( c );
         }
         c = *pa;

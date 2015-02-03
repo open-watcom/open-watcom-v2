@@ -270,7 +270,7 @@ void ff_teardown( void )
  *      and try_fp to the name as found and FILE * of the file.
  */
 
-bool search_file_in_dirs( const char *filename, char *defext, char *altext, dirseq sequence )
+bool search_file_in_dirs( const char *filename, const char *defext, const char *altext, dirseq sequence )
 {
     char            buff[_MAX_PATH2];
     char            alternate_file[FILENAME_MAX];

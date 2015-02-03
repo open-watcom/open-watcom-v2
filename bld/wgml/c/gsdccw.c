@@ -352,8 +352,7 @@ void    scr_dc( void )
         }
     }
     if( opt == 0 ) {                   // omitted / unknown / not implemented
-        *p = '\0';
-        dc_opt_warn( pa );
+        dc_opt_warn_len( pa, len );
         return;
     }
     while( *p && *p == ' ' ) {          // next word start = option value
@@ -373,13 +372,11 @@ void    scr_dc( void )
         if( len > 2 ) {
             if( len == 3 ) {
                 if( strnicmp( pa, "OFF", len ) ) {
-                    *p = '\0';
-                    xx_line_err( err_dc_not_off, pa );   // only OFF is valid
+                    xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
                     return;
                 }
             } else {
-                *p = '\0';
-                xx_line_err( err_dc_not_off, pa );   // only OFF is valid
+                xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
                 return;
             }
         } else {
@@ -393,14 +390,12 @@ void    scr_dc( void )
         if( len > 2 ) {
             if( len == 3 ) {
                 if( strnicmp( pa, "OFF", len ) ) {
-                    *p = '\0';
-                    xx_line_err( err_dc_not_off, pa );   // only OFF is valid
+                    xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
                     return;
                 }
                 c = ' ';                    // OFF is blank
             } else {
-                *p = '\0';
-                xx_line_err( err_dc_not_off, pa );   // only OFF is valid
+                xx_line_err_len( err_dc_not_off, pa, len );   // only OFF is valid
                 return;
             }
         } else {
@@ -417,14 +412,12 @@ void    scr_dc( void )
         if( len > 2 ) {
             if( len == 3 ) {
                 if( strnicmp( pa, "OFF", len ) ) {
-                    *p = '\0';
-                    xx_line_err( err_dc_not_off, pa );  // only OFF is valid
+                    xx_line_err_len( err_dc_not_off, pa, len );  // only OFF is valid
                     return;
                 }
                 c = 0x09;               // OFF is 0x09
             } else {
-                *p = '\0';
-                xx_line_err( err_dc_not_off, pa );  // only OFF is valid
+                xx_line_err_len( err_dc_not_off, pa, len );  // only OFF is valid
                 return;
             }
         } else {
@@ -449,8 +442,7 @@ void    scr_dc( void )
         /* fall thru */
 
     default:                            // unknown / unimplemented option
-        *p = '\0';
-        dc_opt_warn( pa );
+        dc_opt_warn_len( pa, len );
         break;
     }
     return;
