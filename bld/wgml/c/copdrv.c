@@ -290,7 +290,6 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
         fontstyle_block *fontstyle_block_ptr, p_buffer **p_buffer_set,
         char **current, uint8_t count )
 {
-
     char *          string_ptr              = NULL;
     code_block *    cop_codeblocks          = NULL;
     code_text *     code_text_ptr           = NULL;

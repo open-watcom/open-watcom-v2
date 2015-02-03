@@ -213,10 +213,9 @@ char * get_member_name( char const * in_name )
     size_t          member_length;
     uint16_t        entry_type;
 
-    /* See if in_name is found in in_dir. */
+    /* See if in_name is found in try_file_name. */
 
     file_type = parse_header( try_fp );
-
     switch( file_type ) {
     case file_error:
 
