@@ -36,7 +36,7 @@
 
 
 /***************************************************************************/
-/* Layout attributes as character strings                                                                         */
+/* Layout attributes as character strings                                  */
 /***************************************************************************/
 
 const   char    att_names[e_dummy_max + 1][18] = {

@@ -61,7 +61,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 //================= Function Prototypes ========================
 
 /* copfiles.c                           */
-extern unsigned char cop_in_trans( unsigned char in_char, font_number font );
+extern char         cop_in_trans( char in_char, font_number font );
 extern void         cop_setup( void );
 extern void         cop_teardown( void );
 extern uint32_t     cop_text_width( const char *text, size_t count, font_number font );
@@ -116,19 +116,19 @@ extern  void    init_def_lay( void );
 
 
 /* gdocpage.c                           */
-extern  void            clear_doc_element( doc_element * element );
-extern  void            do_page_out( void );
-extern  void            full_page_out( void );
-extern  void            insert_col_bot( doc_element * a_element );
-extern  void            insert_col_fn( doc_element * a_element );
-extern  void            insert_col_main( doc_element * a_element );
-extern  void            insert_col_top( doc_element * a_element );
-extern  void            insert_page_width( doc_element * a_element );
-extern  void            last_page_out( void );
-extern  void            reset_t_page( void );
-extern  void            set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip, uint32_t spacing, font_number font );
-extern  bool            split_element( doc_element * a_element, uint32_t req_depth );
-extern  void            text_page_out( void );
+extern  void        clear_doc_element( doc_element * element );
+extern  void        do_page_out( void );
+extern  void        full_page_out( void );
+extern  void        insert_col_bot( doc_element * a_element );
+extern  void        insert_col_fn( doc_element * a_element );
+extern  void        insert_col_main( doc_element * a_element );
+extern  void        insert_col_top( doc_element * a_element );
+extern  void        insert_page_width( doc_element * a_element );
+extern  void        last_page_out( void );
+extern  void        reset_t_page( void );
+extern  void        set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip, uint32_t spacing, font_number font );
+extern  bool        split_element( doc_element * a_element, uint32_t req_depth );
+extern  void        text_page_out( void );
 
 
 /* gdocsect.c                           */

@@ -684,22 +684,22 @@ static void free_opt_fonts( void )
  *      The appropriate character, which may be the same as in_char.
  */
 
-unsigned char cop_in_trans( unsigned char in_char, font_number font )
+char cop_in_trans( char in_char, font_number font )
 {
     intrans_block   *block   = NULL;
-    unsigned char   retval;
+    char            retval;
 
     if( font >= wgml_font_cnt )
         font = 0;
-    retval = ti_table[in_char];
+    retval = ti_table[(unsigned char)in_char];
 
     block = wgml_fonts[font].bin_font->intrans;
     if( retval == in_char && block != NULL )
-        retval = block->table[in_char];
+        retval = block->table[(unsigned char)in_char];
 
     block = bin_device->intrans;
     if( retval == in_char && block != NULL )
-        retval = block->table[in_char];
+        retval = block->table[(unsigned char)in_char];
 
     return( retval );
 }
@@ -828,12 +828,10 @@ void cop_setup( void )
      * numbers given with the FONT command-line option.
      */
 
-    cur_opt = opt_fonts;
-    while( cur_opt != NULL ) {
+    for( cur_opt = opt_fonts; cur_opt != NULL; cur_opt = cur_opt->nxt ) {
         if( cur_opt->font > wgml_font_cnt ) {
            wgml_font_cnt = cur_opt->font;
         }
-        cur_opt = cur_opt->nxt;
     }
 
     /* The value needed for the upper bound of the zero-based array is the
@@ -887,7 +885,7 @@ void cop_setup( void )
         }
         wgml_fonts[fnt].font_resident = 'n';
         wgml_fonts[fnt].shift_count = 0;
-        for( j = 0; j < 0x04; j++ ) {
+        for( j = 0; j < 4; j++ ) {
             wgml_fonts[fnt].shift_height[j] = '\0';
         }
     }
@@ -920,7 +918,7 @@ void cop_setup( void )
             wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
         }
         wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-        if( cur_dev_font->resident == 0x00 ) {
+        if( cur_dev_font->resident == 0 ) {
             wgml_fonts[fnt].font_resident = 'n';
         } else {
             wgml_fonts[fnt].font_resident = 'y';
@@ -960,7 +958,7 @@ void cop_setup( void )
             wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
         }
         wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-        if( cur_dev_font->resident == 0x00 ) {
+        if( cur_dev_font->resident == 0 ) {
             wgml_fonts[fnt].font_resident = 'n';
         } else {
             wgml_fonts[fnt].font_resident = 'y';
@@ -1225,12 +1223,10 @@ void cop_teardown( void )
         bin_driver = NULL;
     }
 
-    if( bin_fonts != NULL) {
-        while( bin_fonts != NULL) {
-            old = bin_fonts;
-            bin_fonts = bin_fonts->next_font;
-            mem_free( old );
-        }
+    while( bin_fonts != NULL) {
+        old = bin_fonts;
+        bin_fonts = bin_fonts->next_font;
+        mem_free( old );
     }
 
     if( wgml_fonts != NULL) {
@@ -1535,10 +1531,11 @@ void fb_finish( void )
      * is present, interpret it.
      */
 
-    if( bin_driver->finishes.end != NULL )
+    if( bin_driver->finishes.end != NULL ) {
         df_interpret_driver_functions( bin_driver->finishes.end->text );
-    else if( bin_driver->finishes.document != NULL )
+    } else if( bin_driver->finishes.document != NULL ) {
         df_interpret_driver_functions( bin_driver->finishes.document->text );
+    }
 
     return;
 }
