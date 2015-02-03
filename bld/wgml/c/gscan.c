@@ -97,7 +97,7 @@ static void scan_gml( void )
     gtentry     *   ge;                 // GML user tag entry
     mac_entry   *   me;                // script macro for processing GML tag
     char            linestr[MAX_L_AS_STR];
-    char            tok_upper[TAG_NAME_LENGTH];
+    char            tok_upper[TAG_NAME_LENGTH + 1];
 
     cb = input_cbs;
 
