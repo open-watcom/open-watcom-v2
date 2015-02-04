@@ -215,7 +215,7 @@ static int do_paren( void )
  *  Get an operator
  */
 
-static  operator * get_op( char * str )
+static  operator *get_op( const char *str )
 {
     operator *op;
 
@@ -232,9 +232,9 @@ static  operator * get_op( char * str )
  *  Get an expression
  */
 
-static char * get_exp( char * str )
+static char *get_exp( const char *str )
 {
-    char *ptr  = str;
+    const char *ptr  = str;
     char *tptr = tokbuf;
     struct operator *op;
 
@@ -274,7 +274,7 @@ static char * get_exp( char * str )
     return tokbuf;
 }
 
-static  int evaluate( char * * line, long *val )
+static  int evaluate( char **line, long *val )
 {
     long        arg;
     char    *   ptr;

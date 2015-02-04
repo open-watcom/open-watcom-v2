@@ -94,7 +94,7 @@ static  void    update_headnumx( int lvl, char *hnumstr, size_t hnsize )
 /*  output hx Header  only  called if display_heading = yes                */
 /***************************************************************************/
 
-static  void    hx_header( int hx_lvl, char * hnumstr, char * txt )
+static  void    hx_header( int hx_lvl, const char *hnumstr, const char *txt )
 {
     doc_element     *   cur_el;
     font_number         font_save;

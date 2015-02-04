@@ -197,8 +197,8 @@
 /* This keeps track of where we are in the compiled function block. */
 
 typedef struct {
-    char            *base;
-    char            *current;
+    const char      *base;
+    const char      *current;
     bool            last_function_done;
     unsigned char   parameter_type;
     unsigned char   df_code;
@@ -264,7 +264,7 @@ static df_data          current_df_data;
 static df_function      device_function_table[MAX_FUNC_INDEX + 1];
 static df_function      driver_function_table[MAX_FUNC_INDEX + 1];
 static df_function      *current_function_table = NULL;
-static char             *current_function       = NULL;
+static const char       *current_function       = NULL;
 
 /* These are used in outputting spaces and underscore characters. */
 
@@ -2326,11 +2326,11 @@ static df_function driver_function_table[MAX_FUNC_INDEX + 1] = {
  *          restored to their value on entry on exit.
 */
 
-static void interpret_functions( char *in_function )
+static void interpret_functions( const char *in_function )
 {
     bool            old_last_done = false;
     df_function     *old_function_table = NULL;
-    char            *old_function = NULL;
+    const char      *old_function = NULL;
     uint16_t        current_offset;
 
     /* An empty or missing block is not an error, but a warning is issued
@@ -3442,7 +3442,7 @@ void df_start_page( void )
  *      current_function_table is set to device_function_table.
 */
 
-void df_interpret_device_functions( char *in_function )
+void df_interpret_device_functions( const char *in_function )
 {
     /* Select the table and invoke the interpreter. */
 
@@ -3462,7 +3462,7 @@ void df_interpret_device_functions( char *in_function )
  *      current_function_table is set to driver_function_table.
 */
 
-void df_interpret_driver_functions( char *in_function )
+void df_interpret_driver_functions( const char *in_function )
 {
     /* Select the table and invoke the interpreter. */
 

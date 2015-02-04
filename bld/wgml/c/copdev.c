@@ -251,7 +251,7 @@ cop_device * parse_device( FILE * in_file )
     functions_block *   cop_functions       = NULL;
     index_status        return_value;
     p_buffer *          raw_functions       = NULL;
-    char                *current;
+    const char          *current;
     uint8_t             j;
     uint16_t            cumulative_index;
     uint16_t            nulls;

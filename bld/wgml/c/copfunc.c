@@ -63,7 +63,7 @@
  *      mem_alloc() will call exit() if the allocation fails.
  */
 
-code_block *get_code_blocks( char **current, uint16_t count, char *base )
+code_block *get_code_blocks( const char **current, uint16_t count, const char *base )
 {
     code_block *    out_block   = NULL;
     size_t          difference;
@@ -249,7 +249,7 @@ p_buffer * get_p_buffer( FILE * in_file )
  *          but its code_blocks field will be NULL.
  */
 
-functions_block * parse_functions_block( char **current, char *base )
+functions_block *parse_functions_block( const char **current, const char *base )
 {
     uint16_t            code_count;
     functions_block *   out_block   = NULL;

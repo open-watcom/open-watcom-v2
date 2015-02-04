@@ -55,7 +55,7 @@ static void ix_out_sp( int spaces )
     out_msg("%s", &blanks[10 - k] );
 }
 
-static void ix_out( char * t, int spaces )
+static void ix_out( const char * t, int spaces )
 {
     if( spaces > 0 ) {
         ix_out_sp( spaces );

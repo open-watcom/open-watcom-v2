@@ -56,8 +56,8 @@
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 extern void df_start_page( void );
-extern void df_interpret_device_functions( char *in_function );
-extern void df_interpret_driver_functions( char *in_function );
+extern void df_interpret_device_functions( const char *in_function );
+extern void df_interpret_driver_functions( const char *in_function );
 extern void df_new_section( uint32_t v_start );
 extern void df_populate_device_table( void );
 extern void df_populate_driver_table( void );

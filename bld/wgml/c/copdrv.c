@@ -129,7 +129,7 @@ static cop_driver * resize_cop_driver( cop_driver * in_driver, size_t in_size )
  *          the allocation fails.
  */
 
-static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, char *base )
+static cop_driver *parse_finish_block( cop_driver *in_driver, const char **current, const char *base )
 {
 
     code_block *    cop_codeblocks  = NULL;
@@ -288,7 +288,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
 
 static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
         fontstyle_block *fontstyle_block_ptr, p_buffer **p_buffer_set,
-        char **current, uint8_t count )
+        const char **current, uint8_t count )
 {
     char *          string_ptr              = NULL;
     code_block *    cop_codeblocks          = NULL;
@@ -791,7 +791,7 @@ static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
  *      get_code_blocks() calls mem_alloc(), which will call exit() if
  *          the allocation fails.
  */
-static cop_driver *parse_init_block( cop_driver *in_driver, char **current, char *base )
+static cop_driver *parse_init_block( cop_driver *in_driver, const char **current, const char *base )
 {
 
     code_block *    cop_codeblocks  = NULL;
@@ -1052,7 +1052,7 @@ cop_driver * parse_driver( FILE * in_file )
     newline_block *     newline_block_ptr       = NULL;
     p_buffer *          p_buffer_set            = NULL;
     size_t              span;
-    char                *current                = NULL;
+    const char          *current                = NULL;
     uint8_t *           text_ptr                = NULL;
     uint8_t             the_flags[21];
 
