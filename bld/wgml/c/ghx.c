@@ -359,7 +359,7 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
     }
     rc = add_symvar( &global_dict, htextx, p, no_subscript, 0 );
 
-    update_headnumx( hx_lvl, &hnumstr, sizeof( hnumstr ) );
+    update_headnumx( hx_lvl, hnumstr, sizeof( hnumstr ) );
 
     txtlen = strlen( p );
     headlen = strlen( hnumstr) + txtlen + 2;
