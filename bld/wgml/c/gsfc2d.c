@@ -79,7 +79,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
     n = 0;
     while( pval <= pend ) {
         n *= 256;                      // ignore overflow, let it wrap around
-        n += *pval;
+        n += (unsigned char)*pval;
         pval++;
     }
     ultoa( n, linestr, 10 );
