@@ -36,72 +36,58 @@
 #include "gvars.h"
 
 #define NULC    '\0'
-#define not_ok  (-1)
-#define ok      0
+#define not_ok  true
+#define ok      false
 
-typedef struct operator {
-        int     priority;
-        char    operc;
+#define OPERATORS_DEF \
+    pick( PLUS,     1,  '+' ), \
+    pick( MINUS,    2,  '-' ), \
+    pick( MUL,      3,  '*' ), \
+    pick( DIV,      4,  '/' ), \
+    pick( RPAREN,   5,  ')' ), \
+    pick( LPAREN,   0,  '(' )
+
+typedef enum {
+    #define pick(e,f,c) OPER_##e
+    OPERATORS_DEF,
+    #undef pick
+    OPER_NULL
 } operator;
 
-static  operator opers[] = {
-    {  4,    '+'  },
-    {  8,    '-'  },
-    { 64,    '*'  },
-    {128,    '/'  },
-    {256,    ')'  },
-    {  0,    '('  },
+#define OPER_FIRST  OPER_PLUS
+#define OPER_LAST   OPER_NULL
+
+typedef struct operator_info {
+    int     priority;
+    char    operc;
+} operator_info;
+
+static  operator_info opers[] = {
+    #define pick(e,f,c) {f,c}
+    OPERATORS_DEF,
+    #undef pick
     {  0,    NULC }                     // terminating entry
 };
 
 #define MAXOPER 128                     // operator maximum
 #define MAXTERM 128                     // terms maximum
 
-static  char    tokbuf[256];            // workarea
+static char     tokbuf[256];            // workarea
 
-static  int     coper;                  // current operator stack ptr
-static  int     cvalue;                 // current argument stack ptr
-static  int     nparens;                // nesting level
+static int      coper;                  // current operator stack ptr
+static int      cvalue;                 // current argument stack ptr
+static int      nparens;                // nesting level
 
-static  char    oper_stack[MAXOPER];    // operator stack
-static  long    value_stack[MAXTERM];   // argument stack
-static  int     ignore_blanks;
-
-
-/*
- *   get priority of operator
- */
-
-static  int get_prio( char token )
-{
-    operator *op;
-
-    for( op = opers; op->operc; ++op ) {
-        if( token == op->operc ) {
-            break;
-        }
-    }
-    return( op->priority );
-}
-
-/*
- *  get priority of the top of stack operator
- */
-
-static  int get_prio_m1( void )
-{
-    if( !coper ) {
-        return( 0 );
-    }
-    return( get_prio( oper_stack[coper - 1] ) );
-}
+static operator oper_stack[MAXOPER];    // operator stack
+static long     value_stack[MAXTERM];   // argument stack
+static bool     ignore_blanks;
 
 
 /*
  * stack functions
  */
 
-static  int pop_val( long *arg )
+static bool pop_val( long *arg )
 {
     if( --cvalue < 0 ) {
         return( not_ok );
@@ -115,7 +101,7 @@ static  void push_val( long arg )
     value_stack[cvalue++] = arg;
 }
 
-static  int pop_op( int *op )
+static bool pop_op( operator *op )
 {
     if( --coper < 0 ) {
         return( not_ok );
@@ -124,9 +110,9 @@ static  int pop_op( int *op )
     return( ok );
 }
 
-static  void push_op( char op )
+static void push_op( operator op )
 {
-    if( !get_prio( op ) ) {
+    if( opers[op].priority == 0 ) {
         nparens++;
     }
     oper_stack[coper++] = op;
@@ -137,54 +123,48 @@ static  void push_op( char op )
  *  evaluate expression
  */
 
-static  int do_expr( void )
+static operator do_expr( void )
 {
     long arg1;
     long arg2;
-    int op;
+    operator op;
 
-    if( not_ok == pop_op( &op ) ) {
-        return( not_ok );
+    if( pop_op( &op ) ) {
+        return( OPER_NULL );
     }
-
-    if( not_ok == pop_val( &arg1 ) ) {
-        return( not_ok );
+    if( pop_val( &arg1 ) ) {
+        return( OPER_NULL );
     }
-
     pop_val( &arg2 );
 
     switch( op ) {
-    case '+':
+    case OPER_PLUS:
         push_val( arg2 + arg1 );
         break;
-
-    case '-':
+    case OPER_MINUS:
         push_val( arg2 - arg1 );
         break;
-
-    case '*':
+    case OPER_MUL:
         push_val( arg2 * arg1 );
         break;
-
-    case '/':
-        if( 0 == arg1 ) {
-            return( not_ok );
+    case OPER_DIV:
+        if( arg1 == 0 ) {
+            return( OPER_NULL );
         }
         push_val( arg2 / arg1 );
         break;
-
-    case '(':
+    case OPER_LPAREN:
         cvalue += 2;
         break;
-
+    case OPER_RPAREN:
     default:
-        return( not_ok );
+        return( OPER_NULL );
     }
 
-    if( 1 > cvalue ) {
-        return( not_ok );
-    } else {
+    if( cvalue > 0 ) {
         return( op );
+    } else {
+        return( OPER_NULL );
     }
 }
 
@@ -192,20 +172,20 @@ static  int do_expr( void )
  *  Evaluate one level
  */
 
-static int do_paren( void )
+static operator do_paren( void )
 {
-    int op;
+    operator    op;
 
-    if( 1 > nparens-- ) {
-        return( not_ok );
+    if( nparens-- == 0 ) {
+        return( OPER_NULL );
     }
 
     do {
         op = do_expr();
-        if( op < ok ) {
+        if( op == OPER_NULL ) {
             break;
         }
-    } while( get_prio( (char)op ) );
+    } while( opers[op].priority != 0 );
 
     return( op );
 }
@@ -215,16 +195,16 @@ static int do_paren( void )
  *  Get an operator
  */
 
-static  operator *get_op( const char *str )
+static operator get_op( char token )
 {
-    operator *op;
+    operator    op;
 
-    for( op = opers; op->operc; ++op ) {
-        if( *str == op->operc ) {
-            return( op );
+    for( op = OPER_FIRST; op < OPER_LAST; ++op ) {
+        if( token == opers[op].operc ) {
+            break;
         }
     }
-    return( NULL );
+    return( op );
 }
 
 
@@ -232,137 +212,128 @@ static  operator *get_op( const char *str )
  *  Get an expression
  */
 
-static char *get_exp( const char *str )
+static char *get_exp( const char *str, const char *stop )
 {
-    const char *ptr  = str;
-    char *tptr = tokbuf;
-    struct operator *op;
+    const char  *ptr;
+    char        *tptr;
+    operator    op;
+    char        c;
 
-    while( *ptr ) {
-        if( *ptr == ' ' ) {
+    tptr = tokbuf;
+    for( ptr = str; ptr < stop; ++ptr ) {
+        c = *ptr;
+        if( c == ' ' ) {
             if( ignore_blanks ) {
-                ptr++;
                 continue;
             } else {
                 break;
             }
         }
-        op = get_op( ptr );
-        if (NULL != op ) {
-            if( ('-' == *ptr)  || ('+' == *ptr) ) {
-                if( ('-' == *(ptr+1))  || ('+' == *(ptr+1)) ) {
+        op = get_op( c );
+        if( op != OPER_NULL ) {
+            if( (op == OPER_MINUS) || (op == OPER_PLUS) ) {
+                char c1 = ptr[1];
+                if( (c1 == '-') || (c1 == '+') )
                     return( NULL );
+                if( str == ptr ) {
+                    if( isdigit( c1 ) || (c1 == '.') ) {
+                        *tptr++ = c;
+                        continue;
+                    }
+                    push_val( 0 );
                 }
-                if( str != ptr )
-                    break;
-                if( str == ptr && !isdigit( ptr[1] ) && '.' != *(ptr+1) ) {
-                    push_val(0);
-                    *tptr++ = *ptr++;
-                    break;
-                }
-            } else if (str == ptr) {
-                *tptr++ = *ptr++;
-                break;
-            } else
-                break;
+            }
+            if( str == ptr )
+                *tptr++ = c;
+            break;
         }
-
-        *tptr++ = *ptr++;
+        *tptr++ = c;
     }
     *tptr = NULC;
 
-    return tokbuf;
+    return( tokbuf );
 }
 
-static  int evaluate( char **line, long *val )
+static bool evaluate( const char **line, const char *stop, long *val )
 {
     long        arg;
-    char    *   ptr;
-    char    *   str;
-    char    *   endptr;
-    int         ercode;
-    operator *  op;
-    int         expr_oper;              // looking for term or operator
+    const char  *ptr;
+    char        *str;
+    char        *endptr;
+    operator    op;
+    bool        expr_oper;              // looking for term or operator
 
-    expr_oper = 0;
     coper     = 0;
     cvalue    = 0;
     nparens   = 0;
-    ptr       = *line;
 
-    while( *ptr ) {
+    expr_oper = false;
+    for( ptr = *line; ptr < stop; ++ptr ) {
         if( *ptr == ' ' ) {
             if( ignore_blanks ) {
-                ptr++;
                 continue;
             } else {
                 break;
             }
         }
-        switch( expr_oper ) {
-        case 0:                         // look for term
-            str = get_exp( ptr );
-
-            if( str == NULL ) {         // nothing is error
+        if( !expr_oper ) {
+            // look for term
+            str = get_exp( ptr, stop );
+            if( str == NULL || *str == NULC ) {         // nothing is error
                 return( not_ok );
             }
 
-            op = get_op( str );
-            if( *(str +1) == NULC ) {
-                if( NULL != op ) {
-                    push_op( op->operc );
-                    ptr++;
-                    break;
+            if( str[1] == NULC ) {
+                op = get_op( *str );
+                if( op != OPER_NULL ) {
+                    push_op( op );
+                    continue;
                 }
-
+#if 0
                 if( (*str == '-' ) || (*str == '+' ) ) {
                     push_op(*str);
-                    ++ptr;
-                    break;
+                    continue;
                 }
+#endif
             }
 
             arg = strtol( str, &endptr, 10 );
-            if( (((arg == LONG_MIN) || (arg == LONG_MAX)) && errno == ERANGE)
-                 || (str == endptr) ) {
+            if( (((arg == LONG_MIN) || (arg == LONG_MAX)) && errno == ERANGE) || (str == endptr) ) {
                  return( not_ok );
             }
 
             push_val( arg );
 
-            ptr += endptr - str;        // to the next unprocessed char
+            ptr += endptr - str - 1;    // to the next unprocessed char
 
-            expr_oper = 1;              // look for operator next
-            break;
-
-        case 1:                         // look for operator
-            op = get_op( ptr );
-            if( NULL == op ) {
+            expr_oper = true;           // look for operator next
+        } else {
+            // look for operator
+            op = get_op( *ptr );
+            if( op == OPER_NULL ) {
                 return( not_ok );
             }
-            if( ')' == *ptr ) {
-                ercode = do_paren();
-                if( ok > ercode ) {
-                    return( ercode );
+            if( op == OPER_RPAREN ) {
+                if( do_paren() == OPER_NULL ) {
+                    return( not_ok );
                 }
             } else {
-                while( coper && op->priority <= get_prio_m1() ) {
+                int op_priority = opers[op].priority;
+                while( coper != 0 && opers[oper_stack[coper - 1]].priority >= op_priority ) {
                     do_expr();
                 }
-                push_op( op->operc );
-                expr_oper = 0;      // look for term next
+                push_op( op );
+                expr_oper = false;      // look for term next
             }
-            ptr++;
-            break;
         }
     }
 
-    while( 1 < cvalue ) {
-        ercode = do_expr();
-        if( ok > ercode )
-             return ercode;
+    while( cvalue > 1 ) {
+        if( do_expr() == OPER_NULL ) {
+            return( not_ok );
+        }
     }
-    if( !coper ) {
+    if( coper == 0 ) {
         *line = ptr;                    // next scan position
         return( pop_val( val ) );       // no operations left return result
     } else {
@@ -378,10 +349,11 @@ static  int evaluate( char **line, long *val )
 
 condcode getnum( getnum_block *gn )
 {
-    char    *   a;                      // arg start  (X2)
-    char    *   z;                      // arg stop   (R1)
+    char        *a;                     // arg start  (X2)
+    char        *z;                     // arg stop   (R1)
     char        c;
-    int         rc;
+    const char  *start;
+    const char  *stop;
 
     a = gn->argstart;
     z = gn->argstop;
@@ -394,23 +366,20 @@ condcode getnum( getnum_block *gn )
         gn->cc = omit;
         return( omit );                 // nothing there
     }
-    c = *a;
+    start = a;
+    stop = z + 1;
+    c = *start;
     if( c == '+' || c == '-' ) {
         gn->num_sign = c;               // unary sign
     } else {
         gn->num_sign = ' ';             // no unary sign
     }
     ignore_blanks = gn->ignore_blanks;
-    c = *(z + 1);
-    *(z + 1) = '\0';                    // make null terminated string
-    rc = evaluate( &a, &gn->result );
-    *(z + 1) = c;
-    if( rc != 0 ) {
+    if( evaluate( &start, stop, &gn->result ) ) {
         gn->cc = notnum;
     } else {
-        gn->argstart = a + 1;           // start for next scan
-        gn->length = sprintf_s( gn->resultstr, sizeof( gn->resultstr ), "%ld",
-                                gn->result );
+        gn->argstart = (char *)start;   // start for next scan
+        gn->length = sprintf_s( gn->resultstr, sizeof( gn->resultstr ), "%ld", gn->result );
         if( gn->result >= 0 ) {
             gn->cc = pos;
         } else {
@@ -419,4 +388,3 @@ condcode getnum( getnum_block *gn )
     }
     return( gn->cc );
 }
-
