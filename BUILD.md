@@ -38,7 +38,9 @@ be readily available for all platforms. See `docs/howto.txt` for more
 information.
 
 Start by modifying `setvars.bat` (DOS/Windows), `setvars.cmd` (OS/2), or
-`setvars.sh` (Linux) to reflect your system. See the comments in the file
+`setvars.sh` (Linux) to reflect your system. Copy appropriate `setvars` 
+script outside OW directory tree and rename it to something useful (you can 
+have multiple configurations). See the comments in the file
 for additional information. Of particular interest is the `OWROOT` variable
 that specifies the location of the source tree and the `OWTOOLS` variable
 that specifies which build compiler you intend to use.
