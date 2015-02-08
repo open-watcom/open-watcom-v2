@@ -95,8 +95,8 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     char            *   phayend;
     int                 rc;
     int                 index;
-    int                 hay_len;
-    int                 needle_len;
+    size_t              hay_len;
+    size_t              needle_len;
     char                c;
     sub_index           var_ind;
     symvar              symvar_entry;
@@ -110,16 +110,16 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     }
 
     pneedle = parms[0].start;
-    pneedlend = parms[0].stop - 1;
+    pneedlend = parms[0].stop;
 
     unquote_if_quoted( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle + 1;   // needle length
+    needle_len = pneedlend - pneedle;   // needle length
 
     phay = parms[1].start;
-    phayend = parms[1].stop - 1;
+    phayend = parms[1].stop;
 
     unquote_if_quoted( &phay, &phayend );
-    hay_len = phayend - phay + 1;       // haystack length
+    hay_len = phayend - phay;           // haystack length
 
     rc = 0;
     scan_err = false;
@@ -128,16 +128,15 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     if( (hay_len > 0) ||                // not null string
         (needle_len > 0) ) {            // needle not null
 
-
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
         scan_err = false;
-        c = *(phayend + 1);
-        *(phayend + 1) = '\0';
+        c = *phayend;
+        *phayend = '\0';
 
         scan_sym( phay, &symvar_entry, &var_ind );
 
-        *(phayend + 1) = c;
+        *phayend = c;
         ProcFlags.suppress_msg = suppress_msg;;
 
         if( !scan_err ) {
@@ -152,20 +151,20 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
             if( rc > 0 ) {              // variable found
                 psymvar = symsubval->base;
                 if( psymvar->flags & subscripted ) {
-                    c = *(pneedlend + 1);
-                    *(pneedlend + 1) = '\0';   // make nul delimited
+//                    c = *pneedlend;
+//                    *pneedlend = '\0';   // make nul delimited
                     for( symsubval = psymvar->subscripts;
                          symsubval != NULL;
                          symsubval = symsubval->next ) {
 
-                        if( !strcmp( symsubval->value, pneedle ) ) {
+                        if( strlen( symsubval->value ) == needle_len && !memcmp( symsubval->value, pneedle, needle_len ) ) {
                            index = symsubval->subscript;
                            if( vec_pos ) {
                                break;// finished for vec_pos, go for veclastpos
                            }
                         }
                     }
-                    *(pneedlend + 1) = c;
+//                    *pneedlend = c;
                 }
             }
         }

@@ -67,16 +67,16 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     }
 
     pval = parms[0].start;
-    pend = parms[0].stop - 1;
+    pend = parms[0].stop;
 
     unquote_if_quoted( &pval, &pend );
 
-    len = pend - pval + 1;              // default length
-
-    if( len <= 0 ) {                    // null string nothing to do
+    if( pend == pval ) {                // null string nothing to do
         **result = '\0';
         return( pos );
     }
+
+    len = pend - pval;                  // default length
 
     if( parms[1].stop > parms[1].start ) {// length specified
         gn.argstart = parms[1].start;
@@ -101,7 +101,7 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     }
 
     for( k = 0; k < len; k++ ) {        // copy from start
-        if( (pval > pend) || (ressize <= 0) ) {
+        if( (pval >= pend) || (ressize <= 0) ) {
             break;
         }
         **result = *pval++;
@@ -122,4 +122,3 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
 
     return( pos );
 }
-

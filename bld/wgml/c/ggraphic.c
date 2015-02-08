@@ -74,7 +74,7 @@ void    gml_graphic( const gmltag * entry )
  
                     process_line();
                     scan_start = buff2;
-                    scan_stop  = buff2 + buff2_lg;
+                    scan_stop  = buff2 + buff2_lg - 1;
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
                         ProcFlags.tag_end_found = true; 

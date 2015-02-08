@@ -58,7 +58,6 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
     char            *   pend;
     condcode            cc;
     int                 k;
-    int                 len;
     getnum_block        gn;
     long                minimum;
     char                linestr[MAX_L_AS_STR];
@@ -74,20 +73,16 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
     gn.ignore_blanks = false;
 
     for( k = 0; k < parmcount; k++ ) {
-
-
         pval = parms[k].start;
-        pend = parms[k].stop - 1;
+        pend = parms[k].stop;
 
         unquote_if_quoted( &pval, &pend );
 
-        len = pend - pval + 1;          // length
-
-        if( len <= 0 ) {                // null string nothing to do
+        if( pend == pval ) {            // null string nothing to do
             continue;                   // skip empty value
         }
         gn.argstart = pval;
-        gn.argstop  = pend + 1;
+        gn.argstop  = pend;
         cc = getnum( &gn );
         if( !(cc == pos  || cc == neg) ) {
             if( !ProcFlags.suppress_msg ) {

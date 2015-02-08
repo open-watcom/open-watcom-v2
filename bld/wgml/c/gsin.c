@@ -103,14 +103,10 @@ void    scr_in( void )
     cwcurr[3] = '\0';
  
     p = scan_start;
-    while( *p && *p != ' ' ) {          // over cw
-        p++;
-    }
     while( *p && *p == ' ' ) {          // next word start
         p++;
     }
     pa = p;
- 
     while( *p && *p != ' ' ) {          // end of word
         p++;
     }

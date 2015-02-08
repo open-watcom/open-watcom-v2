@@ -69,7 +69,6 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     condcode            cc;
     int                 k;
     int                 n;
-    int                 stringlen;
     int                 len;
     getnum_block        gn;
     char                padchar;
@@ -80,16 +79,13 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     pval = parms[0].start;
-    pend = parms[0].stop - 1;
+    pend = parms[0].stop;
 
     unquote_if_quoted( &pval, &pend );
 
-    stringlen = pend - pval + 1;        // length of string
-    padchar = ' ';                      // default padchar
-    len = 0;
+    gn.ignore_blanks = false;
 
     n = 0;                              // default start pos
-    gn.ignore_blanks = false;
 
     if( parmcount > 1 ) {               // evalute start pos
         if( parms[1].stop > parms[1].start ) {// start pos specified
@@ -115,6 +111,8 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         }
     }
 
+    len = 0;                            // default length
+
     if( parmcount > 2 ) {               // evalute length
         if( parms[2].stop > parms[2].start ) {// length specified
             gn.argstart = parms[2].start;
@@ -139,10 +137,12 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         }
     }
 
+    padchar = ' ';                      // default padchar
+
     if( parmcount > 3 ) {               // isolate padchar
         if( parms[3].stop > parms[3].start ) {
-            char *  pa = parms[3].start;
-            char *  pe = parms[3].stop - 1;
+            char *pa = parms[3].start;
+            char *pe = parms[3].stop;
 
             unquote_if_quoted( &pa, &pe );
             padchar = *pa;
@@ -151,13 +151,13 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
 
     pval += n;                          // position to startpos
     if( len == 0 ) {                    // no length specified
-        len = pend - pval + 1;          // take rest of string
+        len = pend - pval;              // take rest of string
         if( len < 0 ) {                 // if there is one
             len = 0;
         }
     }
     for( k = 0; k < len; k++ ) {
-        if( (pval > pend) || (ressize <= 0) ) {
+        if( (pval >= pend) || (ressize <= 0) ) {
             break;
         }
         **result = *pval++;

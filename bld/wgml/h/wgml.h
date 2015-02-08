@@ -96,7 +96,7 @@ extern  bool        is_space_tab_char( char c );
 extern  bool        is_stop_char( char c );
 extern  bool        is_symbol_char( char c );
 extern  char        parse_char( const char *pa, size_t len );
-extern  void        unquote_if_quoted( char **a, char **z );
+extern  void        unquote_if_quoted( char **start, char **stop );
 
 
 /* gbanner.c                            */

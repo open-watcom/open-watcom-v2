@@ -60,7 +60,6 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     char            *   pend;
     char            *   pa;
     char            *   pe;
-    int                 len;
     char                stripchar;
     char                type;
     char                linestr[MAX_L_AS_STR];
@@ -70,13 +69,11 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
 
     pval = parms[0].start;
-    pend = parms[0].stop - 1;
+    pend = parms[0].stop;
 
     unquote_if_quoted( &pval, &pend );
 
-    len = pend - pval + 1;              // default length
-
-    if( len <= 0 ) {                    // null string nothing to do
+    if( pend == pval ) {                // null string nothing to do
         **result = '\0';
         return( pos );
     }
@@ -87,7 +84,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     if( parmcount > 1 ) {               // evalute type
         if( parms[1].stop > parms[1].start ) {// type
             pa  = parms[1].start;
-            pe  = parms[1].stop - 1;
+            pe  = parms[1].stop;
 
             unquote_if_quoted( &pa, &pe );
             type = tolower( *pa );
@@ -120,7 +117,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     if( parmcount > 2 ) {               // stripchar
         if( parms[2].stop > parms[2].start ) {
             pa  = parms[2].start;
-            pe  = parms[2].stop - 1;
+            pe  = parms[2].stop;
 
             unquote_if_quoted( &pa, &pe );
             stripchar = *pa;
@@ -128,14 +125,14 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
 
     if( type != 't' ) {                 // strip leading requested
-        for( ; pval <= pend; pval++ ) {
+        for( ; pval < pend; pval++ ) {
             if( *pval != stripchar ) {
                 break;
             }
         }
     }
 
-    for( ; pval <= pend; pval++ ) {
+    for( ; pval < pend; pval++ ) {
         if( ressize <= 0 ) {
             break;
         }

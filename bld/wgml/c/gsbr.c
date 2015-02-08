@@ -78,9 +78,6 @@ void    scr_br( void )
     char        *   p;
 
     p = scan_start;
-    while( *p && *p != ' ' ) {          // over cw
-        p++;
-    }
     if( *p ) {
         p++;                            // over space
         if( *p ) {

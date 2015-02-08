@@ -75,17 +75,17 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
     }
 
     pval = parms[0].start;
-    pend = parms[0].stop - 1;
+    pend = parms[0].stop;
     unquote_if_quoted( &pval, &pend );
 
-    if( pend - pval + 1 <= 0 ) {        // null string nothing to do
+    if( pend == pval ) {                // null string nothing to do
         **result = '\0';
         return( pos );
     }
 
     ptaboa = parms[1].start;
-    ptaboe = parms[1].stop - 1;
-    if( (parmcount > 1) && (ptaboe >= ptaboa) ) {   // tableo is not empty
+    ptaboe = parms[1].stop;
+    if( (parmcount > 1) && (ptaboe > ptaboa) ) {   // tableo is not empty
         unquote_if_quoted( &ptaboa, &ptaboe );
     } else {
         ptaboa = NULL;
@@ -93,8 +93,8 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
     }
 
     ptabia = parms[2].start;
-    ptabie = parms[2].stop - 1;
-    if( (parmcount > 2) && (ptabie >= ptabia) ) {   // tablei is not empty
+    ptabie = parms[2].stop;
+    if( (parmcount > 2) && (ptabie > ptabia) ) {   // tablei is not empty
         unquote_if_quoted( &ptabia, &ptabie );
     } else {
         ptabia = NULL;
@@ -102,8 +102,8 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
     }
 
     if( parmcount > 3 ) {               // padchar specified
-        char    * pa = parms[3].start;
-        char    * pe = parms[3].stop - 1;
+        char *pa = parms[3].start;
+        char *pe = parms[3].stop;
 
         unquote_if_quoted( &pa, &pe );
         padchar = *pa;
@@ -114,24 +114,24 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
     }
 
     if( (ptabia == NULL) && (ptaboa == NULL) && !padchar_set ) {
-        while( (pval <= pend) && (ressize > 0) ) {  // translate to upper
+        while( (pval < pend) && (ressize > 0) ) {  // translate to upper
             **result = toupper( *pval++ );
             *result += 1;
             ressize--;
         }
     } else {                   // translate as specified in tablei and tableo
-        for( ; pval <= pend; pval++ ) {
+        for( ; pval < pend; pval++ ) {
             c = *pval;
             ifound = false;
             if( ptabia == NULL ) {
                 c = padchar;
             } else {
-                for( iptr = ptabia; iptr <= ptabie; iptr++ ) {
+                for( iptr = ptabia; iptr < ptabie; iptr++ ) {
                     if( c == *iptr ) {
                         ifound = true;  // char found in input table
                         offset = iptr - ptabia;
                         optr = ptaboa + offset;
-                        if( optr <= ptaboe ) {
+                        if( optr < ptaboe ) {
                             **result = *optr;  // take char from output table
                         } else {
                             **result = padchar;// output table too short use padchar

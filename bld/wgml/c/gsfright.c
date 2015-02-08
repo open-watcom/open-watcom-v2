@@ -68,11 +68,9 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
 
     pval = parms[0].start;
-    pend = parms[0].stop - 1;
+    pend = parms[0].stop;
 
     unquote_if_quoted( &pval, &pend );
-
-    len = pend - pval + 1;              // total length
 
     gn.ignore_blanks = false;
 
@@ -96,13 +94,15 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
     n = gn.result;
 
+    len = pend - pval;                  // total length
+
     if( n > 0 ) {                       // result not nullstring
         if( n > len ) {                 // padding needed
             padchar = ' ';              // default padchar
             if( parmcount > 2 ) {       // pad character specified
                 if( parms[2].stop > parms[2].start ) {
-                    char * pa = parms[2].start;
-                    char * pe = parms[2].stop - 1;
+                    char *pa = parms[2].start;
+                    char *pe = parms[2].stop;
 
                     unquote_if_quoted( &pa, &pe);
                     padchar = *pa;
@@ -116,7 +116,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
                 *result += 1;
                 ressize--;
             }
-            for( ; pval <= pend; pval++ ) {
+            for( ; pval < pend; pval++ ) {
                 if( ressize <= 0 ) {
                     break;
                 }
@@ -127,7 +127,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
         } else {                        // no padding
 
             pval += len - n;
-            for( ; pval <= pend; pval++ ) {
+            for( ; pval < pend; pval++ ) {
                 if( ressize <= 0 ) {
                     break;
                 }

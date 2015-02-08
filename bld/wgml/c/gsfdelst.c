@@ -66,13 +66,11 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     pval = parms[0].start;
-    pend = parms[0].stop - 1;
+    pend = parms[0].stop;
 
     unquote_if_quoted( &pval, &pend );
 
-    len = pend - pval + 1;              // default length
-
-    if( len <= 0 ) {                    // null string nothing to do
+    if( pend == pval ) {                // null string nothing to do
         **result = '\0';
         return( pos );
     }
@@ -127,7 +125,7 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     k = 0;
-    while( (k < n) && (pval <= pend) && (ressize > 0) ) {// copy unchanged before startpos
+    while( (k < n) && (pval < pend) && (ressize > 0) ) {// copy unchanged before startpos
         **result = *pval++;
         *result += 1;
         k++;
@@ -135,12 +133,12 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     k = 0;
-    while( (k < len) && (pval <= pend) ) {  // delete
+    while( (k < len) && (pval < pend) ) {  // delete
         pval++;
         k++;
     }
 
-    while( (pval <= pend) && (ressize > 0) ) {// copy unchanged
+    while( (pval < pend) && (ressize > 0) ) {// copy unchanged
         **result = *pval++;
         *result += 1;
         ressize--;

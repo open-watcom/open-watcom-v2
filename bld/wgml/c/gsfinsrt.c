@@ -64,7 +64,6 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     condcode            cc;
     int                 k;
     int                 n;
-    int                 len;
     getnum_block        gn;
     char            *   ptarget;
     char            *   ptargetend;
@@ -75,21 +74,17 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         return( cc );
     }
 
-    pval = parms[0].start;                // string to insert
-    pend = parms[0].stop - 1;
+    pval = parms[0].start;              // string to insert
+    pend = parms[0].stop;
 
     unquote_if_quoted( &pval, &pend );
 
-    len = pend - pval + 1;              // length to insert
-
-
-    ptarget    = parms[1].start;          // string to be modified
-    ptargetend = parms[1].stop - 1;
+    ptarget    = parms[1].start;        // string to be modified
+    ptargetend = parms[1].stop;
 
     unquote_if_quoted( &ptarget, &ptargetend );
 
-
-    if( len <= 0 ) {                    // null string insert nothing to do
+    if( pend == pval ) {                // null string insert nothing to do
         **result = '\0';
         return( pos );
     }
@@ -122,7 +117,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     k = 0;
-    while( (k < n) && (ptarget <= ptargetend) && (ressize > 0) ) { // copy up to startpos
+    while( (k < n) && (ptarget < ptargetend) && (ressize > 0) ) { // copy up to startpos
         **result = *ptarget++;
         *result += 1;
         k++;
@@ -134,13 +129,13 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         ressize--;
     }
 
-    while( (pval <= pend) && (ressize > 0) ) { // insert new string
+    while( (pval < pend) && (ressize > 0) ) { // insert new string
         **result = *pval++;
         *result += 1;
         ressize--;
     }
 
-    while( (ptarget <= ptargetend) && (ressize > 0) ) { // copy rest (if any)
+    while( (ptarget < ptargetend) && (ressize > 0) ) { // copy rest (if any)
         **result = *ptarget++;
         *result += 1;
         ressize--;

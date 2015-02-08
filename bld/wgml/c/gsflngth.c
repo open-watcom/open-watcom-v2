@@ -63,11 +63,11 @@ condcode    scr_length( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resu
     }
 
     pval = parms[0].start;
-    pend = parms[0].stop - 1;
+    pend = parms[0].stop;
 
     unquote_if_quoted( &pval, &pend );
 
-    len = pend - pval + 1;
+    len = pend - pval;
 
     *result += sprintf( *result, "%d", len );
 
