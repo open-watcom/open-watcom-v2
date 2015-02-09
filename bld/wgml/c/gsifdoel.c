@@ -219,10 +219,10 @@ static condcode gargterm( termcb * t )
     condcode        cc;
 
     gn.argstart = scan_start;
-    gn.argstop  = scan_stop;
+    gn.argstop = scan_stop + 1;
     gn.ignore_blanks = 0;
 
-    cc = getnum ( &gn );                // try to get numeric value
+    cc = getnum( &gn );                // try to get numeric value
     if( cc == notnum ) {
         t->numeric = false;
         t->term_number = 0;

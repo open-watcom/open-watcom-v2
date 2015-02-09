@@ -353,7 +353,6 @@ condcode getnum( getnum_block *gn )
     char        *z;                     // arg stop   (R1)
     char        c;
     const char  *start;
-    const char  *stop;
 
     a = gn->argstart;
     z = gn->argstop;
@@ -361,13 +360,12 @@ condcode getnum( getnum_block *gn )
         a++;                            // skip leading blanks
     }
     gn->errstart = a;
-    gn->first    = a;
-    if( a > z ) {
+    gn->first = a;
+    if( a == z ) {
         gn->cc = omit;
         return( omit );                 // nothing there
     }
     start = a;
-    stop = z + 1;
     c = *start;
     if( c == '+' || c == '-' ) {
         gn->num_sign = c;               // unary sign
@@ -375,7 +373,7 @@ condcode getnum( getnum_block *gn )
         gn->num_sign = ' ';             // no unary sign
     }
     ignore_blanks = gn->ignore_blanks;
-    if( evaluate( &start, stop, &gn->result ) ) {
+    if( evaluate( &start, z, &gn->result ) ) {
         gn->cc = notnum;
     } else {
         gn->argstart = (char *)start;   // start for next scan

@@ -153,10 +153,10 @@ void    scr_pe( void )
         init_pe_line( INT_MAX );
     } else {
         gn.argstart = pa;
-        gn.argstop  = scan_stop;
+        gn.argstop = scan_stop + 1;
         gn.ignore_blanks = 0;
  
-        cc = getnum ( &gn );            // try to get numeric value
+        cc = getnum( &gn );             // try to get numeric value
         if( cc == notnum ) {
             switch( len ) {
             case 2 :

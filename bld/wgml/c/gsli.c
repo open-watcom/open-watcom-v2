@@ -106,10 +106,10 @@ void    scr_li( void )
         }
     } else {
         gn.argstart = pa;
-        gn.argstop  = scan_stop;
+        gn.argstop = scan_stop + 1;
         gn.ignore_blanks = 0;
 
-        cc = getnum ( &gn );            // try to get numeric value
+        cc = getnum( &gn );            // try to get numeric value
         if( cc == notnum ) {
             switch( len ) {
             case 2 :

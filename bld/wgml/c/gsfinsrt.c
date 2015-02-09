@@ -100,7 +100,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     if( parmcount > 2 ) {               // evalute startpos
         if( parms[2].e >= parms[2].a ) {
             gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e;
+            gn.argstop  = parms[2].e + 1;
             cc = getnum( &gn );
             if( cc != pos ) {
                 if( !ProcFlags.suppress_msg ) {

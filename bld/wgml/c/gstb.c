@@ -261,7 +261,7 @@ void    scr_tb( void )
                 p--;
             }
             pb = p + 1;
-            t_pos.argstop = p;
+            t_pos.argstop = pb;
             cc = getnum( &t_pos );
             p = pb;                             // alignment start
             if( t_pos.num_sign == ' ' ) {

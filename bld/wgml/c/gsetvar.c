@@ -152,20 +152,16 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         } else {
             getnum_block    gn;
             condcode        cc;
-            char            csave;
 
-            gn.argstart      = p;
+            gn.argstart = p;
             while( *p && (*p != ')') ) {
                 p++;
             }
-            gn.argstop       = p - 1;
-            csave            = *p;
-            *p               = '\0';    // make nul terminated string
+            gn.argstop = p;
             gn.ignore_blanks = 0;
 
             cc = getnum( &gn );     // try numeric expression evaluation
 
-            *p = csave;
             if( cc == pos || cc == neg ) {
                 *subscript = gn.result;
                 if( *p == ')' ) {
@@ -272,7 +268,7 @@ void    scr_se( void )
                 condcode        cc;
 
                 gn.argstart      = valstart;
-                gn.argstop       = scan_stop;
+                gn.argstop       = scan_stop + 1;
                 gn.ignore_blanks = 1;
 
                 cc = getnum( &gn );     // try numeric expression evaluation

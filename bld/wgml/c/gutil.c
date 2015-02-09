@@ -366,7 +366,7 @@ static bool su_expression( su * in_su )
     while( *p ) {
         p++;
     }
-    value.argstop = p - 1;
+    value.argstop = p;
     cc = getnum( &value );
 
     if( cc == notnum ) {

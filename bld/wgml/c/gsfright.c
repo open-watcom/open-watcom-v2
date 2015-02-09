@@ -77,7 +77,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     gn.ignore_blanks = false;
 
     gn.argstart = parms[1].a;
-    gn.argstop  = parms[1].e;
+    gn.argstop  = parms[1].e + 1;
     cc = getnum( &gn );
     if( cc != pos ) {
         if( !ProcFlags.suppress_msg ) {

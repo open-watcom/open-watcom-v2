@@ -270,10 +270,10 @@ void    scr_cp( void )
     len = p - pa;
     if( len > 0 ) {                     // no action if no parm
         gn.argstart = pa;
-        gn.argstop  = scan_stop;
+        gn.argstop = scan_stop + 1;
         gn.ignore_blanks = 0;
 
-        cc = getnum ( &gn );            // try to get numeric value
+        cc = getnum( &gn );            // try to get numeric value
         if( cc == notnum ) {
             xx_opt_err( cwcurr, pa );
             scan_restart = scan_stop +1;

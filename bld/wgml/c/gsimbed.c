@@ -167,7 +167,7 @@ void    scr_im( void )
     }
 
     gn.argstart = p;
-    gn.argstop  = scan_stop;
+    gn.argstop  = scan_stop + 1;
     gn.ignore_blanks = 0;
 
     cc = getnum( &gn );
