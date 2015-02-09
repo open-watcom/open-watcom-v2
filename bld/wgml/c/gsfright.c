@@ -67,8 +67,8 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -76,8 +76,8 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
 
     gn.ignore_blanks = false;
 
-    gn.argstart = parms[1].a;
-    gn.argstop  = parms[1].e + 1;
+    gn.argstart = parms[1].start;
+    gn.argstop  = parms[1].stop;
     cc = getnum( &gn );
     if( cc != pos ) {
         if( !ProcFlags.suppress_msg ) {
@@ -100,9 +100,9 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
         if( n > len ) {                 // padding needed
             padchar = ' ';              // default padchar
             if( parmcount > 2 ) {       // pad character specified
-                if( parms[2].e >= parms[2].a ) {
-                    char * pa = parms[2].a;
-                    char * pe = parms[2].e;
+                if( parms[2].stop > parms[2].start ) {
+                    char * pa = parms[2].start;
+                    char * pe = parms[2].stop - 1;
 
                     unquote_if_quoted( &pa, &pe);
                     padchar = *pa;

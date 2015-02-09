@@ -113,14 +113,14 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resul
         return( cc );
     }
 
-    phay = parms[0].a;
-    phayend = parms[0].e;
+    phay = parms[0].start;
+    phayend = parms[0].stop - 1;
 
     unquote_if_quoted( &phay, &phayend );
     hay_len = phayend - phay + 1;       // haystack length
 
-    pneedle = parms[1].a;
-    pneedlend = parms[1].e;
+    pneedle = parms[1].start;
+    pneedlend = parms[1].stop - 1;
 
     unquote_if_quoted( &pneedle, &pneedlend );
     needle_len = pneedlend - pneedle + 1;   // needle length
@@ -129,9 +129,9 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resul
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].e >= parms[2].a ) {// start pos specified
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e + 1;
+        if( parms[2].stop > parms[2].start ) {// start pos specified
+            gn.argstart = parms[2].start;
+            gn.argstop  = parms[2].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -198,13 +198,13 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         return( neg );
     }
 
-    pwk = parms[0].a;
-    parms[0].a = parms[1].a;
-    parms[1].a = pwk;
+    pwk = parms[0].start;
+    parms[0].start = parms[1].start;
+    parms[1].start = pwk;
 
-    pwk = parms[0].e;
-    parms[0].e = parms[1].e;
-    parms[1].e = pwk;
+    pwk = parms[0].stop;
+    parms[0].stop = parms[1].stop;
+    parms[1].stop = pwk;
 
     return( scr_index( parms, parmcount, result, ressize ) );
 }
@@ -235,14 +235,14 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
         return( cc );
     }
 
-    pneedle = parms[0].a;
-    pneedlend = parms[0].e;
+    pneedle = parms[0].start;
+    pneedlend = parms[0].stop - 1;
 
     unquote_if_quoted( &pneedle, &pneedlend );
     needle_len = pneedlend - pneedle + 1;   // needle length
 
-    phay = parms[1].a;
-    phayend = parms[1].e;
+    phay = parms[1].start;
+    phayend = parms[1].stop - 1;
 
     unquote_if_quoted( &phay, &phayend );
     hay_len = phayend - phay + 1;       // haystack length
@@ -251,9 +251,9 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].e >= parms[2].a ) {// start pos specified
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e + 1;
+        if( parms[2].stop > parms[2].start ) {// start pos specified
+            gn.argstart = parms[2].start;
+            gn.argstop  = parms[2].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

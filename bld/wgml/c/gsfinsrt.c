@@ -75,16 +75,16 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         return( cc );
     }
 
-    pval = parms[0].a;                // string to insert
-    pend = parms[0].e;
+    pval = parms[0].start;                // string to insert
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
     len = pend - pval + 1;              // length to insert
 
 
-    ptarget    = parms[1].a;          // string to be modified
-    ptargetend = parms[1].e;
+    ptarget    = parms[1].start;          // string to be modified
+    ptargetend = parms[1].stop - 1;
 
     unquote_if_quoted( &ptarget, &ptargetend );
 
@@ -98,9 +98,9 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute startpos
-        if( parms[2].e >= parms[2].a ) {
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e + 1;
+        if( parms[2].stop > parms[2].start ) {
+            gn.argstart = parms[2].start;
+            gn.argstop  = parms[2].stop;
             cc = getnum( &gn );
             if( cc != pos ) {
                 if( !ProcFlags.suppress_msg ) {

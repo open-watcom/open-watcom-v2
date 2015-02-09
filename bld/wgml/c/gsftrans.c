@@ -74,8 +74,8 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
     unquote_if_quoted( &pval, &pend );
 
     if( pend - pval + 1 <= 0 ) {        // null string nothing to do
@@ -83,8 +83,8 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
         return( pos );
     }
 
-    ptaboa = parms[1].a;
-    ptaboe = parms[1].e;
+    ptaboa = parms[1].start;
+    ptaboe = parms[1].stop - 1;
     if( (parmcount > 1) && (ptaboe >= ptaboa) ) {   // tableo is not empty
         unquote_if_quoted( &ptaboa, &ptaboe );
     } else {
@@ -92,8 +92,8 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
         ptaboe = NULL;
     }
 
-    ptabia = parms[2].a;
-    ptabie = parms[2].e;
+    ptabia = parms[2].start;
+    ptabie = parms[2].stop - 1;
     if( (parmcount > 2) && (ptabie >= ptabia) ) {   // tablei is not empty
         unquote_if_quoted( &ptabia, &ptabie );
     } else {
@@ -102,8 +102,8 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
     }
 
     if( parmcount > 3 ) {               // padchar specified
-        char    * pa = parms[3].a;
-        char    * pe = parms[3].e;
+        char    * pa = parms[3].start;
+        char    * pe = parms[3].stop - 1;
 
         unquote_if_quoted( &pa, &pe );
         padchar = *pa;

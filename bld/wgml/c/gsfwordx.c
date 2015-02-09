@@ -87,9 +87,8 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
         return( neg );
     }
 
-    ptok = NULL;
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -103,9 +102,9 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
 
-    if( parms[1].e >= parms[1].a ) {// start pos specified
-        gn.argstart = parms[1].a;
-        gn.argstop  = parms[1].e + 1;
+    if( parms[1].stop > parms[1].start ) {// start pos specified
+        gn.argstart = parms[1].start;
+        gn.argstop  = parms[1].stop;
         cc = getnum( &gn );
         if( (cc != pos) || (gn.result > len) ) {
             if( !ProcFlags.suppress_msg ) {
@@ -129,9 +128,9 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
         len = 1;                        // only one word
     } else {
         if( parmcount > 2 ) {           // evalute word count
-            if( parms[2].e >= parms[2].a ) {
-                gn.argstart = parms[2].a;
-                gn.argstop  = parms[2].e + 1;
+            if( parms[2].stop > parms[2].start ) {
+                gn.argstart = parms[2].start;
+                gn.argstop  = parms[2].stop;
                 cc = getnum( &gn );
                 if( (cc != pos) || (gn.result == 0) ) {
                     if( !ProcFlags.suppress_msg ) {
@@ -258,8 +257,8 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -333,15 +332,15 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
         return( neg );
     }
 
-    phrase = parms[0].a;
-    phrasend = parms[0].e;
+    phrase = parms[0].start;
+    phrasend = parms[0].stop - 1;
 
     unquote_if_quoted( &phrase, &phrasend );
 
     len = phrasend - phrase + 1;
 
-    pstr    = parms[1].a;
-    pstrend = parms[1].e;
+    pstr    = parms[1].start;
+    pstrend = parms[1].stop - 1;
 
     unquote_if_quoted( &pstr, &pstrend );
 
@@ -358,10 +357,10 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
     n = 0;                              // default start word - 1
 
     if( parmcount > 2 ) {               // evalute start word
-        if( parms[2].e >= parms[2].a ) {
+        if( parms[2].stop > parms[2].start ) {
             gn.ignore_blanks = false;
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e + 1;
+            gn.argstart = parms[2].start;
+            gn.argstop  = parms[2].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

@@ -76,8 +76,8 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
     for( k = 0; k < parmcount; k++ ) {
 
 
-        pval = parms[k].a;
-        pend = parms[k].e;
+        pval = parms[k].start;
+        pend = parms[k].stop - 1;
 
         unquote_if_quoted( &pval, &pend );
 

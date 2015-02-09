@@ -91,8 +91,8 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], size_t parmcount,
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -107,9 +107,9 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], size_t parmcount,
     gn.ignore_blanks = false;
 
     if( parmcount > 1 ) {               // evalute start pos
-        if( parms[1].e >= parms[1].a ) {// start pos specified
-            gn.argstart = parms[1].a;
-            gn.argstop  = parms[1].e + 1;
+        if( parms[1].stop > parms[1].start ) {// start pos specified
+            gn.argstart = parms[1].start;
+            gn.argstop  = parms[1].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result > len) ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -131,9 +131,9 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], size_t parmcount,
     }
 
     if( parmcount > 2 ) {               // evalute length for upper
-        if( parms[2].e >= parms[2].a ) {// length specified
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e + 1;
+        if( parms[2].stop > parms[2].start ) {// length specified
+            gn.argstart = parms[2].start;
+            gn.argstop  = parms[2].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

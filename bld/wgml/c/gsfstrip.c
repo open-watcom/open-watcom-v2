@@ -69,8 +69,8 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -85,9 +85,9 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     type      = 'b';                    // default strip both ends
 
     if( parmcount > 1 ) {               // evalute type
-        if( parms[1].e >= parms[1].a ) {// type
-            pa  = parms[1].a;
-            pe  = parms[1].e;
+        if( parms[1].stop > parms[1].start ) {// type
+            pa  = parms[1].start;
+            pe  = parms[1].stop - 1;
 
             unquote_if_quoted( &pa, &pe );
             type = tolower( *pa );
@@ -118,9 +118,9 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
 
     if( parmcount > 2 ) {               // stripchar
-        if( parms[2].e >= parms[2].a ) {
-            pa  = parms[2].a;
-            pe  = parms[2].e;
+        if( parms[2].stop > parms[2].start ) {
+            pa  = parms[2].start;
+            pe  = parms[2].stop - 1;
 
             unquote_if_quoted( &pa, &pe );
             stripchar = *pa;

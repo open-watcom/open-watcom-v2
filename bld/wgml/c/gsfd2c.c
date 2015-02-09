@@ -70,8 +70,8 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result,
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -85,7 +85,7 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result,
     n   = 0;
     gn.ignore_blanks = false;
 
-    if( parms[1].e >= parms[1].a ) {
+    if( parms[1].stop > parms[1].start ) {
         gn.argstart = pval;
         gn.argstop  = pend + 1;
         cc = getnum( &gn );

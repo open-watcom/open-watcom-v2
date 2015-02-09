@@ -66,8 +66,8 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -78,9 +78,9 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
         return( pos );
     }
 
-    if( parms[1].e >= parms[1].a ) {// length specified
-        gn.argstart = parms[1].a;
-        gn.argstop  = parms[1].e + 1;
+    if( parms[1].stop > parms[1].start ) {// length specified
+        gn.argstart = parms[1].start;
+        gn.argstop  = parms[1].stop;
         cc = getnum( &gn );
         if( cc != pos ) {
             if( !ProcFlags.suppress_msg ) {

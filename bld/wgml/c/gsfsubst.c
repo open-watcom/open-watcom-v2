@@ -79,8 +79,8 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -92,9 +92,9 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     gn.ignore_blanks = false;
 
     if( parmcount > 1 ) {               // evalute start pos
-        if( parms[1].e >= parms[1].a ) {// start pos specified
-            gn.argstart = parms[1].a;
-            gn.argstop  = parms[1].e + 1;
+        if( parms[1].stop > parms[1].start ) {// start pos specified
+            gn.argstart = parms[1].start;
+            gn.argstop  = parms[1].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -116,9 +116,9 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     if( parmcount > 2 ) {               // evalute length
-        if( parms[2].e >= parms[2].a ) {// length specified
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e + 1;
+        if( parms[2].stop > parms[2].start ) {// length specified
+            gn.argstart = parms[2].start;
+            gn.argstop  = parms[2].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -140,9 +140,9 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     if( parmcount > 3 ) {               // isolate padchar
-        if( parms[3].e >= parms[3].a ) {
-            char *  pa = parms[3].a;
-            char *  pe = parms[3].e;
+        if( parms[3].stop > parms[3].start ) {
+            char *  pa = parms[3].start;
+            char *  pe = parms[3].stop - 1;
 
             unquote_if_quoted( &pa, &pe );
             padchar = *pa;

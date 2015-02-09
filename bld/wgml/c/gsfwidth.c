@@ -73,8 +73,8 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    pval = parms[0].start;
+    pend = parms[0].stop - 1;
 
     unquote_if_quoted( &pval, &pend );
 
@@ -88,9 +88,9 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
 
     if( parmcount > 1 ) {               // evalute type
-        if( parms[1].e >= parms[1].a ) {// type
-            pa  = parms[1].a;
-            pe  = parms[1].e;
+        if( parms[1].stop > parms[1].start ) {// type
+            pa  = parms[1].start;
+            pe  = parms[1].stop - 1;
 
             unquote_if_quoted( &pa, &pe );
 

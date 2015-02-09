@@ -531,8 +531,8 @@ typedef enum condcode {            // return code for some scanning functions
 /***************************************************************************/
 
 typedef struct parm {
-    char    *       a;                  // start of parm ptr
-    char    *       e;                  // end of parm ptr
+    char            *start;             // start of parm ptr
+    char            *stop;              // end of parm ptr
     bool            incomplete;         // parm contains symvar or function
 } parm;
 
