@@ -577,6 +577,6 @@ void    scr_gt( void )
             break;
         }
     }
-    scan_restart = scan_stop +1;
+    scan_restart = scan_stop;
     return;
 }

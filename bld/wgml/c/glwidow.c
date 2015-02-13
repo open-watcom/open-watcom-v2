@@ -65,7 +65,7 @@ void    lay_widow( const gmltag * entry )
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -104,6 +104,6 @@ void    lay_widow( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get one with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }

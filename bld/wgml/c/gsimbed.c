@@ -167,7 +167,7 @@ void    scr_im( void )
     }
 
     gn.argstart = p;
-    gn.argstop  = scan_stop + 1;
+    gn.argstop = scan_stop;
     gn.ignore_blanks = 0;
 
     cc = getnum( &gn );
@@ -194,7 +194,7 @@ void    scr_im( void )
         strcpy_s( token_buf, buf_size, fnstart );
     }
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     ProcFlags.newLevelFile = 1;
     line_from = LINEFROM_DEFAULT;
     line_to   = LINETO_DEFAULT;

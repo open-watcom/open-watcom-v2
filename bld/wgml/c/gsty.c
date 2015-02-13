@@ -71,7 +71,7 @@ void    scr_ty( void )
         p--;
     }
     out_msg( "%s\n", p );        // no output translation, add if needed TBD
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

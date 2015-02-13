@@ -93,7 +93,7 @@ extern  void    gml_xmp( const gmltag * entry )
     }
     if( ProcFlags.xmp_active ) {        // nested :XMP tag not supported
         g_err_tag_nest( "eXMP" );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -102,17 +102,17 @@ extern  void    gml_xmp( const gmltag * entry )
     /******************************************************************/
     if( ProcFlags.address_active ) {
         g_err_tag_x_in_y( "XMP", "ADDRESS" );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     } else {
         if( ProcFlags.fig_active ) {
             g_err_tag_x_in_y( "XMP", "FIG" );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return;
         } else {
             if( ProcFlags.fn_active ) {
                 g_err_tag_x_in_y( "XMP", "FN" );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return;
             }
         }
@@ -149,7 +149,7 @@ extern  void    gml_xmp( const gmltag * entry )
     if( *p ) {
         process_text( p, g_curr_font ); // if text follows
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -170,7 +170,7 @@ void    gml_exmp( const gmltag * entry )
     scr_process_break();
     if( !ProcFlags.xmp_active ) {       // no preceding :XMP tag
         g_err_tag_prec( "XMP" );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
     g_curr_font = font_save;
@@ -206,6 +206,6 @@ void    gml_exmp( const gmltag * entry )
 
     t_doc_el_group.depth    = 0;
     t_doc_el_group.last     = NULL;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }

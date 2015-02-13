@@ -148,7 +148,7 @@ extern  void    gml_set( const gmltag * entry )
                 err_count++;
  
                 g_err( err_att_name_inv );
-                if( input_cbs->fmflags & II_macro ) {
+                if( input_cbs->fmflags & II_tag_mac ) {
                     ultoa( input_cbs->s.m->lineno, linestr, 10 );
                     g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
@@ -178,10 +178,7 @@ extern  void    gml_set( const gmltag * entry )
  
             if( !(input_cbs->fmflags & II_eof) ) {
                 if( get_line( true ) ) {      // next line for missing attribute
- 
                     process_line();
-                    scan_start = buff2;
-                    scan_stop  = buff2 + buff2_lg - 1;
                     if( (*scan_start == SCR_char) ||
                         (*scan_start == GML_char) ) {
                                         //  missing attribute not supplied error
@@ -200,7 +197,7 @@ extern  void    gml_set( const gmltag * entry )
             // AT-001 Required attribute not found
  
             g_err( err_att_missing );
-            if( input_cbs->fmflags & II_macro ) {
+            if( input_cbs->fmflags & II_tag_mac ) {
                 ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
@@ -213,7 +210,7 @@ extern  void    gml_set( const gmltag * entry )
             break;
         }
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
  

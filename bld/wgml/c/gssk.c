@@ -178,7 +178,7 @@ void    scr_sk( void )
     scr_process_break();
     g_skip = skip;
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

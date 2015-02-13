@@ -146,5 +146,5 @@ void    gml_author( const gmltag * entry )
 
     g_curr_font = font_save;
     ProcFlags.author_tag_seen = true;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 }

@@ -156,7 +156,7 @@ void    lay_p( const gmltag * entry )
 
     entry = entry;
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -168,7 +168,7 @@ void    lay_p( const gmltag * entry )
         cvterr = process_arg( &l_args, &layout_work.p );
         cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -185,7 +185,7 @@ void    lay_pc( const gmltag * entry )
 
     entry = entry;
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -197,7 +197,7 @@ void    lay_pc( const gmltag * entry )
         cvterr = process_arg( &l_args, &layout_work.pc );
         cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

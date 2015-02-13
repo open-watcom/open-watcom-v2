@@ -80,6 +80,8 @@ void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
         nip->fmflags    = II_tag;
     }
     nip->fmflags |= input_cbs->fmflags & II_research;   // copy research mode
+    nip->fmflags |= input_cbs->fmflags & II_sol;        // copy start-of-line
+    nip->fmflags |= input_cbs->fmflags & II_eol;        // copy end-of-line
 
     nip->prev = input_cbs;
     input_cbs = nip;
@@ -511,7 +513,7 @@ void    scr_dm( void )
         show_include_stack();
         return;
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -576,7 +578,7 @@ void    scr_me( void )
 
     input_cbs->if_cb->if_level = 0;     // terminate
     ProcFlags.keep_ifstate = false;     // ... all .if controls
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -586,7 +588,7 @@ static void macro_missing( void )
     char        linestr[MAX_L_AS_STR];
 
     g_err( err_mac_name_inv );
-    if( input_cbs->fmflags & II_macro ) {
+    if( input_cbs->fmflags & II_tag_mac ) {
         ultoa( input_cbs->s.m->lineno, linestr, 10 );
         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
     } else {
@@ -702,7 +704,7 @@ void    scr_em( void )
     } else {
         split_input( buff2, tok_start, true ); // stack line operand in input
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

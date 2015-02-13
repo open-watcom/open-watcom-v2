@@ -142,5 +142,5 @@ void    gml_date( const gmltag * entry )
     insert_col_main( cur_el );
 
     g_curr_font = font_save;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 }

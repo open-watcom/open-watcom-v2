@@ -324,7 +324,8 @@ typedef struct pecb {                   // for .pe control
 typedef enum {
     II_file     = 0x01,                 // inputcb is file
     II_macro    = 0x02,                 // inputcb is macro
-    II_tag      = 0x06,                 // inputcb is macro via tag
+    II_tag      = 0x04,                 // inputcb is macro via tag
+    II_tag_mac  = II_tag | II_macro,    // input is tag or macro
     II_input    = II_file | II_macro | II_tag, // all input types
     II_research = 0x08,                 // research mode (for file only)
     II_eof      = 0x10,                 // end of file (input)
@@ -868,13 +869,17 @@ typedef struct laystack {
 #define BOXCOL_COUNT 16
 
 typedef enum {
-    bx_v_down,
-    bx_v_up,
-    bx_v_both,
+    bx_v_both,  // current box "both" column
+    bx_v_down,  // current box "down" column
+    bx_v_hid,   // column hidden by prior box & current box
+    bx_v_new,   // column hidden by current box
+    bx_v_out,   // column outside of (but not hidden by) current box
+    bx_v_up,    // current box "up" column
 } bx_v_ind;
 
 typedef struct {
             uint32_t        col;
+            uint32_t        depth;
             bx_v_ind        v_ind;
 } box_col;
 
@@ -884,6 +889,13 @@ typedef struct box_col_set {
             uint32_t        length;
             box_col     *   cols;
 } box_col_set;
+
+typedef struct box_col_stack {
+    struct  box_col_stack   *   next;
+            box_col_set     *   first;
+            bool                had_cols;
+            bool                inner_box;
+} box_col_stack;
 
 /***************************************************************************/
 /*  a single tab stop and an array of tab stops                            */
@@ -987,6 +999,7 @@ typedef struct {
     uint32_t        spacing;
     text_line   *   first;
     bool            overprint;          // placement avoids padding warning
+    bool            force_op;           // forces overprint at top of page
 } text_element;
 
 typedef struct {

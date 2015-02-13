@@ -325,7 +325,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             *att_flags |= att_range;
 
             gn.argstart = scan_start;
-            gn.argstop  = scan_stop + 1;
+            gn.argstop = scan_stop;
             gn.ignore_blanks = false;
             ranges[2] = LONG_MIN;
             ranges[3] = LONG_MIN;
@@ -381,7 +381,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
 
             *val_flags |= val_length;
             gn.argstart = scan_start;
-            gn.argstop  = scan_stop + 1;
+            gn.argstop = scan_stop;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
             if( cc == notnum || cc == omit ) {
@@ -492,7 +492,7 @@ void    scr_ga( void )
     }
     if( tag_entry == NULL ) {           // error during previous .gt
 
-        scan_restart = scan_stop + 1;   // ignore .ga
+        scan_restart = scan_stop;       // ignore .ga
         return;
     }
 
@@ -681,6 +681,6 @@ void    scr_ga( void )
     } else if( val_flags & val_valptr ) {
         gaval->a.valptr = valptr;
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }

@@ -57,7 +57,7 @@ void    gml_graphic( const gmltag * entry )
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
             xx_tag_err( err_tag_before_gdoc, entry->tagname );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return;
         }
     }
@@ -71,10 +71,7 @@ void    gml_graphic( const gmltag * entry )
         if( *p == '\0' ) {              // end of line: get new line
             if( !(input_cbs->fmflags & II_eof) ) {
                 if( get_line( true ) ) {      // next line for missing attribute
- 
                     process_line();
-                    scan_start = buff2;
-                    scan_stop  = buff2 + buff2_lg - 1;
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
                         ProcFlags.tag_end_found = true; 
@@ -120,7 +117,7 @@ void    gml_graphic( const gmltag * entry )
             depth = conv_vert_unit( &cur_su, spacing );
             if( depth == 0 ) {
                 xx_line_err( err_inv_depth_graphic, pa );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return;
             }
             if( ProcFlags.tag_end_found ) {
@@ -144,7 +141,7 @@ void    gml_graphic( const gmltag * entry )
                 width = conv_hor_unit( &cur_su );
                 if( width == 0 ) {
                     xx_line_err( err_inv_width_graphic, pa );
-                    scan_start = scan_stop + 1;
+                    scan_start = scan_stop;
                     return;
                 }
                 /* there should be a check somewhere for width > page width */
@@ -161,7 +158,7 @@ void    gml_graphic( const gmltag * entry )
             pa = val_start;
             if( (*pa == '+') || (*pa == '-') ) {  // signs not allowed
                 xx_line_err( err_num_too_large, pa );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return;
             }
             scale = 0;
@@ -174,12 +171,12 @@ void    gml_graphic( const gmltag * entry )
             }
             if( scale > 0x7fffffff ) {              // wgml 4.0 limit
                 xx_line_err( err_num_too_large, val_start );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return;
             }
             if( (pa - val_start) < val_len ) {      // value continues on
                 xx_line_err( err_num_too_large, val_start );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return;
             }
             if( ProcFlags.tag_end_found ) {
@@ -218,14 +215,14 @@ void    gml_graphic( const gmltag * entry )
     }
     if( !depth_found || !file_found ) { // detect missing required attributes
         xx_err( err_att_missing );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
     scr_process_break();                // flush existing text
     start_doc_sect();                   // if not already done
 
-    cur_el = alloc_doc_el(  el_graph );
+    cur_el = alloc_doc_el( el_graph );
     cur_el->depth = depth;              // always used with GRAPHIC
     if( !ProcFlags.ps_device ) {        // character devices ignore SK & post_skip
         g_skip = 0;

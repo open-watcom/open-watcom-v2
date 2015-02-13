@@ -34,7 +34,7 @@
 #include    "gvars.h"
 
 
-line_number     titlep_lineno;              // TITLEP tag line number
+line_number     titlep_lineno;      // TITLEP tag line number
 
 /***************************************************************************/
 /*  error routine for wrong sequence of doc section tags                   */
@@ -173,7 +173,7 @@ static  void    doc_header( su *p_sk, su *top_sk, xx_str *h_string,
 
     if( (h_string == NULL) || (*h_string == '\0') ||
         (*h_string == ' ') || (*h_string == '\t')  ) {
-    
+
         /********************************************************/
         /*  header contained "yes" but the string was empty:    */
         /*  the OW docs do this with APPENDIX for PS/PDF output */
@@ -469,7 +469,7 @@ static  void    gml_doc_xxx( doc_section ds )
     ProcFlags.doc_sect_nxt = ds;        // remember new section
     ProcFlags.start_section = false;    // do real section start later
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -596,7 +596,7 @@ void    gml_index( const gmltag * entry )
 
     if( ProcFlags.doc_sect_nxt == doc_sect_index ) {// duplicate :INDEX tag
 
-        scan_start = scan_stop + 1;     // ignore this call
+        scan_start = scan_stop;         // ignore this call
         return;                         // wgml4 OS/2 crashes with page fault
     }
 
@@ -607,7 +607,7 @@ void    gml_index( const gmltag * entry )
     }
     if( !GlobalFlags.index ) {          // index option not active
         g_err( wng_index_opt );         // give hint to activate index
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
     gml_doc_xxx( doc_sect_index );
@@ -655,7 +655,7 @@ void    gml_titlep( const gmltag * entry )
     rs_loc = titlep_tag;
     if( input_cbs->fmflags & II_file ) {    // save line number
         titlep_lineno = input_cbs->s.f->lineno;
-    } else if( input_cbs->fmflags & II_macro ) {
+    } else if( input_cbs->fmflags & II_tag_mac ) {
         titlep_lineno = input_cbs->s.m->lineno;
     } else {
         titlep_lineno = 0;                  // not clear what to do here

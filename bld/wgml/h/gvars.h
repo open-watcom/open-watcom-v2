@@ -203,6 +203,8 @@ global struct ProcFlags {
     unsigned        literal         : 1;// .li is active
     unsigned        concat          : 1;// .co ON if set
     unsigned        ct              : 1;// .ct continue text is active
+    unsigned        fsp             : 1;// force space in spite of .ct
+    unsigned        utc             : 1;// user tag with "continue" is active
     unsigned        in_trans        : 1;// esc char is specified (.ti set x)
     unsigned        reprocess_line  : 1;// unget for current input line
 #if 0
@@ -211,8 +213,15 @@ global struct ProcFlags {
     unsigned        overprint       : 1;// .sk -1 active or not
     unsigned        tag_end_found   : 1;// '.' ending tag found
     unsigned        skips_valid     : 1;// controls set_skip_vars() useage
-    unsigned        in_bx_box       : 1;// identifies first BX line
+
     unsigned        box_cols_cur    : 1;// current BX line had column list
+    unsigned        bx_set_done     : 1;// BX SET was done last before current BX line
+    unsigned        draw_v_line     : 1;// vertical lines are to be drawn for this BX line
+    unsigned        force_op        : 1;// force overprint (used with BX CAN/BX DEL)
+    unsigned        in_bx_box       : 1;// identifies first BX line
+    unsigned        no_bx_hline     : 1;// determines if a horizontal line is to be emitted or not
+    unsigned        top_line        : 1;// determines if current line is at top of page
+    unsigned        vline_done      : 1;// determines if a vertical line was done
 
     unsigned        no_var_impl_err : 1;// suppress err_var_not_impl msg
     unsigned        keep_left_margin: 1;// for indent NOTE tag paragraph
@@ -253,12 +262,14 @@ global  long        li_cnt;             // remaining count for .li processing
 
 global  uint8_t     in_esc;             // input escape char from .ti
 
-global  box_col_set *   box_col_set_pool;   // pool of box_col_set instances
-global  box_col_set *   box_line;       // the current line to be drawn
-global  box_col_set *   cur_line;       // the line from the current BX line
-global  box_col_set *   prev_line;      // the previously drawn line
-global  uint32_t        box_col_width;  // width of one column, as used with BX
-global  uint32_t        h_vl_offset;    // horizontal offset used to position VLINE output
+global  box_col_set     *   box_col_set_pool;   // pool of box_col_set instances
+global  box_col_set     *   cur_line;           // the line from the current BX line
+global  box_col_set     *   prev_line;          // the previously drawn line
+global  box_col_stack   *   box_col_stack_pool; // pool of box_col_stack instances
+global  box_col_stack   *   box_line;           // the current line to be drawn
+global  uint32_t            box_col_width;      // width of one column, as used with BX
+global  uint32_t            h_vl_offset;        // horizontal offset used to position VLINE output
+global  uint32_t            max_depth;          // space left on page (used by BX)
 
 global  tab_stop    *   c_stop;         // current tab_stop
 global  uint32_t        first_tab;      // first default top position
@@ -305,6 +316,7 @@ global  int32_t     g_resh;             // horiz base units
 global  int32_t     g_resv;             // vert base units
 
 global  font_number g_curr_font;        // the font to use for current line
+global  font_number g_prev_font;        // the font used for the last text output
 global  uint32_t    g_cl;               // column length
 global  uint32_t    g_ll;               // line length
 global  uint32_t    g_cd;               // no of columns

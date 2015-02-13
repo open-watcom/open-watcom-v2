@@ -453,7 +453,7 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
         hx_header( hx_lvl, hnumstr, p );
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

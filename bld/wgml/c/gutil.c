@@ -144,7 +144,7 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
     if( (*ps >= '0') && (*ps <= '9') ) {      // too many digits in whole part
         val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
 
@@ -170,7 +170,7 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
         }
         if( (*ps >= '0') && (*ps <= '9') ) {      // too many digits in decimals
             val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( cvterr );
         }
     }
@@ -190,7 +190,7 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
     if( *ps && isalpha( *ps ) ) {             // too many characters in unit
         val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
 
@@ -206,7 +206,7 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
             s->su_u = SU_ems;
             if( pd != NULL ) {          // no decimals with "M"
                 val_parse_err( base + (ps - s->su_txt), tag );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return( cvterr );
             }
             break;
@@ -223,7 +223,7 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
             break;
         default:
             val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( cvterr );
         }
     } else {                            // two letter unit
@@ -234,7 +234,7 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
                 s->su_u = SU_mm;
             } else {                    // invalid unit
                 val_parse_err( base + (ps - s->su_txt), tag );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return( cvterr );
             }
         } else if( unit[0] == 'd' ) {   // dv ?
@@ -242,12 +242,12 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
                 s->su_u = SU_dv;
             } else {                    // invalid unit
                 val_parse_err( base + (ps - s->su_txt), tag );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return( cvterr );
             }
         } else {                        // invalid unit
             val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( cvterr );
         }
     }
@@ -265,13 +265,13 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
     if( (*ps >= '0') && (*ps <= '9') ) {      // too many digits after "C" or "P"
         val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
 
     if( *ps ) {                             // value continues on: it shouldn't
         val_parse_err( base + (ps - s->su_txt), tag );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
     s->su_whole = wh;
@@ -283,7 +283,7 @@ const bool internal_to_su( su *in_su, bool tag, const char *base )
     if( pd != NULL ) {                  // dec point found
         if( pu == NULL ) {              // need trailing unit
             val_parse_err( base + (ps - s->su_txt), tag );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( cvterr );
         }
     }
@@ -496,7 +496,7 @@ bool att_val_to_su( su * in_su, bool pos )
 
     if( (val_len + 1) > MAX_SU_CHAR ) {             // won't fit
         xx_line_err( err_inv_att_val, val_start );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
     memcpy_s( ps, MAX_SU_CHAR - 1, val_start, val_len );
@@ -505,18 +505,18 @@ bool att_val_to_su( su * in_su, bool pos )
     s->su_u = SU_undefined;
     if( *ps == '+' ) {                   // not allowed with tags
         xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     } else if( *ps == '-' ) {            // not relative, just negative
         if( pos ) {                     // value must be positive
             xx_line_err( err_inv_att_val, ps );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( cvterr );
         }
         sign = *ps;
         if( *(ps + 1) == '+' || *(ps + 1) == '-' ) {  // only one sign is allowed
             xx_line_err( err_inv_att_val, ps );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( cvterr );
         }
     } else {
@@ -524,7 +524,7 @@ bool att_val_to_su( su * in_su, bool pos )
     }
     if( !*ps ) {                          // value end reached, not valid
         xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
     s->su_relative = false;             // no relative positioning with tags
@@ -577,7 +577,7 @@ bool cw_val_to_su( char * * scanp, su * in_su )
     *scanp = p;                     // report back value of p
     if( (len + 1) > MAX_SU_CHAR ) {
         xx_line_err( err_inv_cw_op_val, val_start );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
     memcpy_s( ps, MAX_SU_CHAR - 1, pa, len );
@@ -620,14 +620,14 @@ bool cw_val_to_su( char * * scanp, su * in_su )
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
 
-bool lay_init_su( const char * p, su * in_su )
+bool lay_init_su( const char *p, su *in_su )
 {
     bool        cvterr  = true;
-    const char    *   pa      = NULL; // start of value text
-    char    *   ps      = NULL; // destination for value text
+    const char  *pa = NULL;     // start of value text
+    char        *ps = NULL;     // destination for value text
     char        sign;
     size_t      len;
-    su      *   s;
+    su          *s;
 
     s = in_su;
     pa = p;
@@ -644,7 +644,7 @@ bool lay_init_su( const char * p, su * in_su )
 
     if( (len + 1) > MAX_SU_CHAR ) {                 // won't fit
         xx_line_err( err_inv_att_val, val_start );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
     memcpy_s( ps, MAX_SU_CHAR - 1, pa, len );
@@ -653,13 +653,13 @@ bool lay_init_su( const char * p, su * in_su )
     s->su_u = SU_undefined;
     if( *ps == '+' ) {                   // not allowed with tags
         xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     } else if( *ps == '-' ) {            // not relative, just negative
         sign = *ps;
         if( *(ps + 1) == '+' || *(ps + 1) == '-' ) {  // only one sign is allowed
             xx_line_err( err_inv_att_val, ps );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( cvterr );
         }
     } else {
@@ -667,7 +667,7 @@ bool lay_init_su( const char * p, su * in_su )
     }
     if( !*ps ) {                          // value end reached, not valid
         xx_line_err( err_inv_att_val, ps );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( cvterr );
     }
     s->su_relative = false;             // no relative positioning with tags
@@ -908,7 +908,7 @@ char * get_att_value( char * p )
             ProcFlags.tag_end_found = true;
         }
         xx_line_err( err_eq_missing, p );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( p );
     }
     if( (*p == '\0') || (*p == '.') ) { // value is missing
@@ -916,7 +916,7 @@ char * get_att_value( char * p )
             ProcFlags.tag_end_found = true;
         }
         xx_line_err( err_att_val_missing, p );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return( p );
     }
     if( *p == '"' || *p == '\'' ) {
@@ -946,7 +946,7 @@ char * get_att_value( char * p )
         val_len = p - val_start;    // up to (not including) final quote
         if( *p != quote ) {         // terminating quote not found
             xx_line_err( err_att_val_open, val_start - 1 );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return( p );
         }
         ++p;                        // over final quote

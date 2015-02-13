@@ -47,7 +47,7 @@ extern  void    gml_address( const gmltag * entry )
         g_err( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
         err_count++;
         show_include_stack();
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
     ProcFlags.address_active = true;
@@ -72,7 +72,7 @@ extern  void    gml_address( const gmltag * entry )
 
     ProcFlags.group_elements = true;
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -88,7 +88,7 @@ extern  void    gml_eaddress( const gmltag * entry )
     entry = entry;
     if( !ProcFlags.address_active ) {   // no preceding :ADDRESS tag
         g_err_tag_prec( "ADDRESS" );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
     g_curr_font = font_save;
@@ -124,7 +124,7 @@ extern  void    gml_eaddress( const gmltag * entry )
 
     t_doc_el_group.depth    = 0;
     t_doc_el_group.last     = NULL;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -225,6 +225,6 @@ void    gml_aline( const gmltag * entry )
     insert_col_main( cur_el );
 
     first_aline = false;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 }
 

@@ -152,7 +152,7 @@ void    scr_pa( void )
         xx_opt_err( cwcurr, pa );
         break;
     }
-    scan_restart = scan_stop +1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -263,13 +263,13 @@ void    scr_cp( void )
     len = p - pa;
     if( len > 0 ) {                     // no action if no parm
         gn.argstart = pa;
-        gn.argstop = scan_stop + 1;
+        gn.argstop = scan_stop;
         gn.ignore_blanks = 0;
 
         cc = getnum( &gn );            // try to get numeric value
         if( cc == notnum ) {
             xx_opt_err( cwcurr, pa );
-            scan_restart = scan_stop +1;
+            scan_restart = scan_stop;
         } else {
             if( gn.result > 0 ) {       // ignore values < 1
                 if( ((gn.result * wgml_fonts[g_curr_font].line_height) + t_page.cur_depth) > t_page.max_depth ) {
@@ -280,7 +280,7 @@ void    scr_cp( void )
             scan_restart = gn.argstart;
         }
     } else {
-       scan_restart = scan_stop +1;
+       scan_restart = scan_stop;
     }
     return;
 }

@@ -702,20 +702,19 @@ void        process_line( void )
     classify_record( *buff2 );      // classify script CW, GML tag or nothing
 
     if( !split_input_buffer() ) {
-        return;                         // .* .cm .dm :cmt found
+        // .* .cm .dm :cmt found
+    } else {
+        anything_substituted |= resolve_symvar_functions( buff2 );
+    
+        if( input_cbs->fmflags & II_research && GlobalFlags.firstpass &&
+            anything_substituted ) {
+            g_info_lm( inf_subst_line, buff2 ); // show line with substitution(s)
+        }
     }
-
-    anything_substituted |= resolve_symvar_functions( buff2 );
 
     buff2_lg = strnlen_s( buff2, buf_size );
-
-    if( input_cbs->fmflags & II_research && GlobalFlags.firstpass &&
-        anything_substituted ) {
-        g_info_lm( inf_subst_line, buff2 ); // show line with substitution(s)
-    }
-
     scan_start = buff2;
-    scan_stop  = buff2 + buff2_lg - 1;
+    scan_stop  = buff2 + buff2_lg;
     return;
 }
 

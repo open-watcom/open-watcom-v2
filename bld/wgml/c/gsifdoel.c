@@ -219,7 +219,7 @@ static condcode gargterm( termcb * t )
     condcode        cc;
 
     gn.argstart = scan_start;
-    gn.argstop = scan_stop + 1;
+    gn.argstop = scan_stop;
     gn.ignore_blanks = 0;
 
     cc = getnum( &gn );                // try to get numeric value
@@ -321,7 +321,7 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
 
     default:
         result = false;
-        if( input_cbs->fmflags & II_macro ) {
+        if( input_cbs->fmflags & II_tag_mac ) {
             out_msg( "ERR_ifcompare internal logic error\n"
                      "\t\t\tLine %d of macro '%s'\n",
                      input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
@@ -424,7 +424,7 @@ void    scr_if( void )
             scan_err = true;
             err_count++;
             g_err( err_if_term );
-            if( input_cbs->fmflags & II_macro ) {
+            if( input_cbs->fmflags & II_tag_mac ) {
                 ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
@@ -438,7 +438,7 @@ void    scr_if( void )
             scan_err = true;
             err_count++;
             g_err( err_if_relop );
-            if( input_cbs->fmflags & II_macro ) {
+            if( input_cbs->fmflags & II_tag_mac ) {
                 ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
@@ -466,7 +466,7 @@ void    scr_if( void )
             } else {
                 scan_err = true;
                 g_err( err_if_nesting );
-                if( input_cbs->fmflags & II_macro ) {
+                if( input_cbs->fmflags & II_tag_mac ) {
                     ultoa( input_cbs->s.m->lineno, linestr, 10 );
                     g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
@@ -566,7 +566,7 @@ void    scr_if( void )
     if( *scan_start ) {                 // rest of line is not empty
         split_input(  buff2, scan_start, false );   // split and process next
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -624,7 +624,7 @@ void    scr_th( void )
 
         scan_err = true;
         g_err( err_if_then );
-        if( input_cbs->fmflags & II_macro ) {
+        if( input_cbs->fmflags & II_tag_mac ) {
             ultoa( input_cbs->s.m->lineno, linestr, 10 );
             g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
         } else {
@@ -652,7 +652,7 @@ void    scr_th( void )
     if( *scan_start ) {                 // rest of line is not empty split
         split_input( buff2, scan_start, false );// and process next
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -700,7 +700,7 @@ void    scr_el( void )
 
         scan_err = true;
         g_err( err_if_else );
-        if( input_cbs->fmflags & II_macro ) {
+        if( input_cbs->fmflags & II_tag_mac ) {
             ultoa( input_cbs->s.m->lineno, linestr, 10 );
             g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
         } else {
@@ -726,7 +726,7 @@ void    scr_el( void )
     if( *scan_start ) {                 // rest of line is not empty split
         split_input( buff2, scan_start, false );// and process next
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -770,7 +770,7 @@ void    scr_do( void )
 
             scan_err = true;
             g_err( err_if_do );
-            if( input_cbs->fmflags & II_macro ) {
+            if( input_cbs->fmflags & II_tag_mac ) {
                 ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
@@ -786,7 +786,7 @@ void    scr_do( void )
         if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
             show_ifcb( "dobegin", cb );
         }
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
         return;
     } else {
         if( !strnicmp( tok_start, "end", 3 )) {
@@ -802,7 +802,7 @@ void    scr_do( void )
                         GlobalFlags.firstpass ) {
                         show_ifcb( "doend", cb );
                     }
-                    scan_restart = scan_stop + 1;
+                    scan_restart = scan_stop;
                     return;
                 }
                 if( cb->if_flags[cb->if_level].ifthen
@@ -812,7 +812,7 @@ void    scr_do( void )
 
                     scan_err = true;
                     g_err( err_if_do_end );
-                    if( input_cbs->fmflags & II_macro ) {
+                    if( input_cbs->fmflags & II_tag_mac ) {
                         ultoa( input_cbs->s.m->lineno, linestr, 10 );
                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
@@ -838,7 +838,7 @@ void    scr_do( void )
         } else {
             scan_err = true;
             g_err( err_if_do_fun );
-            if( input_cbs->fmflags & II_macro ) {
+            if( input_cbs->fmflags & II_tag_mac ) {
                 ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
@@ -853,7 +853,7 @@ void    scr_do( void )
     if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
         show_ifcb( "do xx", cb );
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

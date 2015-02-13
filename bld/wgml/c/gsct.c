@@ -79,17 +79,19 @@ void    scr_ct( void )
     if( *p ) {                          // line operand specified
         p++;                            // over space
         if( *p ) {
-            post_space = 0;
+            if( !ProcFlags.fsp ) {      // preserved forced space
+                post_space = 0;
+            }
             ProcFlags.ct = true;
             if( (*p == SCR_char) ||     // script control word follows
                 (*p == GML_char) ) {    // GML tag follows
-                split_input( scan_start, p, (*p == SCR_char) );
+                split_input( scan_start, p, false ); // TBD, fixes problem with macro
             } else {
                 process_text( p, g_curr_font ); // text follows
             }
         }
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

@@ -27,21 +27,23 @@
 * Description:  WGML utility functions for alloc / free / reuse of
 *                           different structs
 *
-*               add_ban_col_to_pool     prepare reuse of ban_column instance(s)
-*               add_box_col_set_to_pool prepare reuse of box_col_set instance(s)
-*               add_doc_col_to_pool     prepare reuse of doc_column instance(s)
-*               add_doc_el_to_pool      prepare reuse of doc_element instance(s)
-*               add_tag_cb_to_pool      add nested tag cb
-*               add_text_chars_to_pool  prepare reuse of text_chars instance(s)
-*               add_text_line_to_pool   prepare reuse of a text_line instance(s)
-*               alloc_ban_col           create a ban_column instance
-*               alloc_box_col_set       create a box_col_set instance
-*               alloc_doc_col           create a doc_column instance
-*               alloc_doc_el            create a doc_element instance
-*               alloc_tag_cb            nested tag cb
-*               alloc_text_chars        create a text_chars instance
-*               alloc_text_line         create a text_line instance
-*               free_pool_storage       do free for all pools
+*       add_ban_col_to_pool         prepare reuse of ban_column instance(s)
+*       add_box_col_set_to_pool     prepare reuse of box_col_set instance(s)
+*       add_box_col_stack_to_pool   prepare reuse of box_col_stack instance(s)
+*       add_doc_col_to_pool         prepare reuse of doc_column instance(s)
+*       add_doc_el_to_pool          prepare reuse of doc_element instance(s)
+*       add_tag_cb_to_pool          add nested tag cb
+*       add_text_chars_to_pool      prepare reuse of text_chars instance(s)
+*       add_text_line_to_pool       prepare reuse of a text_line instance(s)
+*       alloc_ban_col               create a ban_column instance
+*       alloc_box_col_set           create a box_col_set instance
+*       alloc_box_col_stack         create a box_col_stack instance
+*       alloc_doc_col               create a doc_column instance
+*       alloc_doc_el                create a doc_element instance
+*       alloc_tag_cb                nested tag cb
+*       alloc_text_chars            create a text_chars instance
+*       alloc_text_line             create a text_line instance
+*       free_pool_storage           do free for all pools
 *
 ****************************************************************************/
 
@@ -256,6 +258,7 @@ box_col_set * alloc_box_col_set( void )
     box_col_set_pool = curr->next;
     curr->next = NULL;
     curr->current = 0;                  // clear before returning
+    memset( curr->cols, 0, curr->length * sizeof( box_col ));
 
     return( curr );
 }
@@ -276,6 +279,55 @@ void    add_box_col_set_to_pool( box_col_set * a_set )
     for( tw = a_set; tw->next != NULL; tw = tw->next ); //empty
     tw->next = box_col_set_pool;
     box_col_set_pool = a_set;
+}
+
+
+/***************************************************************************/
+/*  allocate / reuse a box_col_stack instance                              */
+/***************************************************************************/
+
+box_col_stack * alloc_box_col_stack( void )
+{
+    box_col_stack   *   curr;
+    int                 k;
+
+    if( box_col_stack_pool == NULL ) {                // pool is empty
+        box_col_stack_pool = mem_alloc( sizeof( *curr ) );
+        curr = box_col_stack_pool;
+        curr->first = NULL;
+        for( k = 0; k < 10; k++ ) {     // alloc 10 box_col_sets if pool empty
+            curr->next = mem_alloc( sizeof( *curr ) );
+            curr = curr->next;
+            curr->first = NULL;
+        }
+        curr->next = NULL;
+    }
+    curr = box_col_stack_pool;
+    box_col_stack_pool = curr->next;
+    curr->next = NULL;
+    curr->first = NULL;                 // clear before returning
+    curr->had_cols = false;
+    curr->inner_box = false;
+
+    return( curr );
+}
+
+
+/***************************************************************************/
+/*  add a linked list of box_col_stack instances to free pool for reuse    */
+/***************************************************************************/
+
+void    add_box_col_stack_to_pool( box_col_stack * a_stack )
+{
+    box_col_stack * tw;
+
+    if( a_stack == NULL ) {
+        return;
+    }
+
+    for( tw = a_stack; tw->next != NULL; tw = tw->next ); //empty
+    tw->next = box_col_stack_pool;
+    box_col_stack_pool = a_stack;
 }
 
 
@@ -332,23 +384,19 @@ void add_doc_col_to_pool( doc_column * a_column )
 doc_element * alloc_doc_el(  element_type type )
 {
     doc_element *   curr;
-    doc_element *   prev;
     int             k;
 
-    curr = doc_el_pool;
-    if( curr != NULL ) {                // there is one to use
-        doc_el_pool = curr->next;
-    } else {                            // pool is empty
-        curr = mem_alloc( sizeof( doc_element ) );
-
-        doc_el_pool = mem_alloc( sizeof( *prev ) );
-        prev = doc_el_pool;
+    if( doc_el_pool == NULL ) {         // pool is empty
+        doc_el_pool = mem_alloc( sizeof( *curr ) );
+        curr = doc_el_pool;
         for( k = 0; k < 10; k++ ) {     // alloc 10 doc_els if pool empty
-            prev->next = mem_alloc( sizeof( *prev ) );
-            prev = prev->next;
+            curr->next = mem_alloc( sizeof( *curr ) );
+            curr = curr->next;
         }
-        prev->next = NULL;
+        curr->next = NULL;
     }
+    curr = doc_el_pool;
+    doc_el_pool = curr->next;
 
     curr->next = NULL;
     curr->blank_lines = 0;

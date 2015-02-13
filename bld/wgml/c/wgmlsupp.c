@@ -283,7 +283,7 @@ void    free_some_mem( void )
         mem_free( workbuf );
     }
     if( box_line != NULL ) {
-        add_box_col_set_to_pool( box_line );
+        add_box_col_stack_to_pool( box_line );
     }
     if( cur_line != NULL ) {
         add_box_col_set_to_pool( cur_line );

@@ -273,7 +273,7 @@ void    lay_banregion( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -371,7 +371,7 @@ void    lay_banregion( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -408,7 +408,7 @@ void    lay_ebanregion( const gmltag * entry )
     bool                region_deleted;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -509,6 +509,6 @@ void    lay_ebanregion( const gmltag * entry )
         err_count++;
         file_mac_info();
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }

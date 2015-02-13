@@ -299,6 +299,10 @@ extern  void    test_out_t_line( text_line  * a_line );
 extern  void    scr_process_break( void );
 
 
+/* gsbx.c                               */
+extern  void    eop_bx_box( void );
+
+
 /* gscan.c                              */
 extern  const   gmltag * find_lay_tag( char * token, size_t toklen );
 extern  const   gmltag * find_sys_tag( char * token, size_t toklen );
@@ -393,6 +397,8 @@ extern  void            add_ban_col_to_pool( ban_column * a_column );
 extern  ban_column      *alloc_ban_col( void );
 extern  void            add_box_col_set_to_pool( box_col_set * a_set );
 extern  box_col_set     *alloc_box_col_set( void );
+extern  void            add_box_col_stack_to_pool( box_col_stack * a_stack );
+extern  box_col_stack   *alloc_box_col_stack( void );
 extern  void            add_doc_col_to_pool( doc_column * a_column );
 extern  doc_column      *alloc_doc_col( void );
 extern  void            add_doc_el_to_pool( doc_element * a_element );

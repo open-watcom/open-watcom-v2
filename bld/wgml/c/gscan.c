@@ -103,7 +103,7 @@ static void scan_gml( void )
 
     p = scan_start + 1;
     tok_start = scan_start;
-    while( is_id_char( *p ) && p <= scan_stop ) { // search end of TAG
+    while( is_id_char( *p ) && p < scan_stop ) { // search end of TAG
         p++;
     }
     scan_start = p;                      // store argument start address
@@ -113,7 +113,7 @@ static void scan_gml( void )
     if( toklen >= TAG_NAME_LENGTH ) {
         err_count++;
         // SC--009 The tagname is too long
-        if( cb->fmflags & II_macro ) {
+        if( cb->fmflags & II_tag_mac ) {
             ultoa( cb->s.m->lineno, linestr, 10 );
             g_err( err_tag_name, tok_start + 1, linestr, "macro",
                    cb->s.m->mac->name );
@@ -134,7 +134,7 @@ static void scan_gml( void )
 
         if(  stricmp( tok_start + 1, "cmt" ) ) {   // quiet for :cmt.
 
-            if( cb->fmflags & II_macro ) {
+            if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s tag found in macro %s(%d)\n\n",
                                  inc_level, GML_char, tok_start + 1,
                                  cb->s.m->mac->name, cb->s.m->lineno );
@@ -165,7 +165,7 @@ static void scan_gml( void )
             err_count++;
             // SC--037: The macro 'xxxxxx' for the gml tag 'yyyyy'
             //          is not defined
-            if( cb->fmflags & II_macro ) {
+            if( cb->fmflags & II_tag_mac ) {
                 ultoa( cb->s.m->lineno, linestr, 10 );
                 g_err( err_tag_macro, ge->macname, ge->name,
                          linestr, "macro", cb->s.m->mac->name );
@@ -236,7 +236,7 @@ static void scan_gml( void )
                             err_count++;
                             file_mac_info();
                             processed = true;
-                            scan_start = scan_stop + 1;
+                            scan_start = scan_stop;
                             break;
                         }
                     }
@@ -254,7 +254,7 @@ static void scan_gml( void )
                             err_count++;
                             file_mac_info();
                             processed = true;
-                            scan_start = scan_stop + 1;
+                            scan_start = scan_stop;
                             break;
                         }
                         *p = csave;
@@ -296,7 +296,7 @@ static void scan_gml( void )
                             err_count++;
                             file_mac_info();
                             processed = true;
-                            scan_start = scan_stop + 1;
+                            scan_start = scan_stop;
                             break;
                         }
                     }
@@ -369,7 +369,7 @@ static void     scan_script( void )
     scan_restart = scan_start;
 
     if( (*p == '*') || !strnicmp( p, "cm ", 3 ) ) {
-        scan_start = scan_stop + 1;     // .cm  +++ ignore comment up to EOL
+        scan_start = scan_stop;         // .cm  +++ ignore comment up to EOL
         return;                         // .*   +++ ignore comment up to EOL
     }
 
@@ -447,7 +447,7 @@ static void     scan_script( void )
 
     if( me != NULL ) {                  // macro found
         if( GlobalFlags.firstpass && cb->fmflags & II_research ) {
-            if( cb->fmflags & II_macro ) {
+            if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s macro found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
                                  cb->s.m->mac->name, cb->s.m->lineno );
@@ -461,11 +461,11 @@ static void     scan_script( void )
         add_macro_cb_entry( me, NULL );
         inc_inc_level();
         add_macro_parms( p );
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
     } else {                            // try script controlword
         cwfound = false;
         if( cb->fmflags & II_research && GlobalFlags.firstpass ) {
-            if( cb->fmflags & II_macro ) {
+            if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s CW found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
                                  cb->s.m->mac->name, cb->s.m->lineno );
@@ -656,7 +656,7 @@ condcode    test_process( ifcb * cb )
         }
     }
     if( cc == no ) {                    // cc not set program logic error
-        if( input_cbs->fmflags & II_macro ) {
+        if( input_cbs->fmflags & II_tag_mac ) {
             ultoa( input_cbs->s.m->lineno, linestr, 10 );
             g_err( err_if_intern, linestr, "macro", input_cbs->s.m->mac->name );
         } else {
@@ -732,8 +732,6 @@ void    scan_line( void )
     ifcb        *   cb;
 
     cb         = input_cbs->if_cb;
-    scan_start = buff2;
-    scan_stop  = buff2 + buff2_lg - 1;
 
     if( !ProcFlags.literal ) {
         set_if_then_do( cb );
@@ -761,7 +759,7 @@ void    scan_line( void )
         /*  or for attributes of LAYOUT tags                               */
         /*******************************************************************/
 
-        if( (*scan_start != '\0') && (scan_start <= scan_stop) ) {
+        if( (*scan_start != '\0') && (scan_start < scan_stop) ) {
             if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
                 g_info_lm( inf_text_line, scan_start );
             }
@@ -782,8 +780,20 @@ void    scan_line( void )
         /* For .co off or :xmp and the last part of the line just processed*/
         /* ensure the line is output                                       */
         /*******************************************************************/
+
         if( !ProcFlags.layout && (input_cbs->fmflags & II_eol) ) {
             if( !ProcFlags.concat || ProcFlags.xmp_active ) {
+
+                /*******************************************************************/
+                /* This fixes a problem found when BX was implemented: when PA is  */
+                /* used inside a box before a text line with CO OFF. But whether   */
+                /* this is the best place or whether the restriction is needed     */
+                /* remains to be determined                                        */
+                /*******************************************************************/
+
+                if( ProcFlags.in_bx_box ) {
+                    g_cur_h_start = g_page_left_org + g_indent;
+                }
                 scr_process_break();
             }
         }

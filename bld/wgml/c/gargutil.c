@@ -95,8 +95,8 @@ void    garginit( void )
     char    *   p;
 
     p = buff2;                          // adress of input buffer
-    scan_stop = buff2 + buff2_lg - 1;   // store scan stop address
-    while( *p != ' ' && p <= scan_stop ) {// search end of script control word
+    scan_stop = buff2 + buff2_lg;   // store scan stop address
+    while( *p != ' ' && p < scan_stop ) {// search end of script control word
         p++;
     }
     scan_start = p;                     // store control word end address
@@ -112,8 +112,8 @@ void    garginitdot( void )
     char    *   p;
 
     p = buff2;                          // adress of input buffer
-    scan_stop = buff2 + buff2_lg - 1;   // store scan stop address
-    while( *p != ' ' && *p != '.' && p <= scan_stop ) {// search end of gml tag
+    scan_stop = buff2 + buff2_lg;   // store scan stop address
+    while( *p != ' ' && *p != '.' && p < scan_stop ) {// search end of gml tag
         p++;
     }
     scan_start = p;                     // store tag end or space address
@@ -140,14 +140,14 @@ condcode    getarg( void )
     bool        valquoted;
 
 
-    if( scan_stop <= scan_start ) {     // already at end
+    if( scan_start >= scan_stop ) {     // already at end
         cc = omit;                      // arg omitted
     } else {
         p = scan_start;
-        while( *p && *p == ' ' && p <= scan_stop ) {// skip leading blanks
+        while( *p && *p == ' ' && p < scan_stop ) {// skip leading blanks
             p++;
         }
-        if( p > scan_stop ) {
+        if( p >= scan_stop ) {
             return( omit );             // nothing found
         }
 
@@ -167,7 +167,7 @@ condcode    getarg( void )
         }
         for( ;; p++ ) {
 
-            if( p > scan_stop || *p == '\0' ) {
+            if( p >= scan_stop || *p == '\0' ) {
                 if( quoted ) {
                     quote = '\0';
                     quoted = false;
@@ -184,7 +184,7 @@ condcode    getarg( void )
                 valquoted = true;
                 valquote = *(p+1);
                 p += 2;
-                for( ; p <= scan_stop; p++ ) {
+                for( ; p < scan_stop; p++ ) {
                     if( *p == valquote ) {
                         p++;
                         break;
@@ -234,15 +234,15 @@ condcode    getqst( void )
     char        quote;
     bool        quoted;
 
-    if( scan_stop <= scan_start ) {     // already at end
+    if( scan_start >= scan_stop  ) {     // already at end
         cc = omit;                      // arg omitted
     } else {
         p = scan_start;
-        while( *p && *p == ' ' && p <= scan_stop ) {// skip leading blanks
+        while( *p && *p == ' ' && p < scan_stop ) {// skip leading blanks
             p++;
         }
 
-        if( p > scan_stop ) {
+        if( p >= scan_stop ) {
             return( omit );             // nothing found
         }
 
@@ -258,7 +258,7 @@ condcode    getqst( void )
             quote = '\0';
             quoted = false;
         }
-        for( ; p <= scan_stop; p++ ) {  // look for end of string
+        for( ; p < scan_stop; p++ ) {  // look for end of string
 
             if( *p == '\0' ) {          // null char is end
                 break;

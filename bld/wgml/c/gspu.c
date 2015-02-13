@@ -161,7 +161,7 @@ void    scr_pu( void )
         return;
     }
     workn = *p - '0';
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
 
     cc = getarg();                      // text follows
 

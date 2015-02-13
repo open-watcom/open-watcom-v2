@@ -155,6 +155,6 @@ void    scr_us( void )
     if( *p != '\0' ) {
         process_text( p, 1 );           // hilite the remaining text
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }

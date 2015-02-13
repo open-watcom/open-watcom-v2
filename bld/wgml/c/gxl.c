@@ -147,7 +147,7 @@ void    gml_dl( const gmltag * entry )  // not tested TBD
     nest_cb->lm = g_cur_left;
     nest_cb->rm = g_page_right;
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -199,7 +199,7 @@ void    gml_gl( const gmltag * entry )  // not tested TBD
     nest_cb->lm = g_cur_left;
     nest_cb->rm = g_page_right;
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -249,7 +249,7 @@ void    gml_ol( const gmltag * entry )
     nest_cb->lm = g_cur_left;
     nest_cb->rm = g_page_right;
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -298,7 +298,7 @@ void    gml_sl( const gmltag * entry )
     nest_cb->lm = g_cur_left;
     nest_cb->rm = g_page_right;
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -349,7 +349,7 @@ void    gml_ul( const gmltag * entry )
     nest_cb->lm = g_cur_left;
     nest_cb->rm = g_page_right;
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -391,7 +391,7 @@ void    gml_exl_common( const gmltag * entry, e_tags t )
     }
 
     ProcFlags.need_li_lp = false;        // :LI or :LP no longer needed
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 }
 
 
@@ -495,7 +495,7 @@ static  void    gml_li_ol( const gmltag * entry )
 
     if( nest_cb == NULL ) {
         xx_nest_err( err_li_lp_no_list );   // tag must be in a list
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -559,7 +559,7 @@ static  void    gml_li_ol( const gmltag * entry )
         process_text( p, g_curr_font ); // if text follows
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -578,7 +578,7 @@ static  void    gml_li_sl( const gmltag * entry )
 
     if( nest_cb == NULL ) {
         xx_nest_err( err_li_lp_no_list );   // tag must be in a list
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -611,7 +611,7 @@ static  void    gml_li_sl( const gmltag * entry )
         process_text( p, g_curr_font ); // if text follows
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -631,7 +631,7 @@ static  void    gml_li_ul( const gmltag * entry )
 
     if( nest_cb == NULL ) {
         xx_nest_err( err_li_lp_no_list );   // tag must be in a list
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -690,7 +690,7 @@ static  void    gml_li_ul( const gmltag * entry )
         process_text( p, g_curr_font ); // if text fullows
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -757,7 +757,7 @@ void    gml_lp( const gmltag * entry )
 
     if( nest_cb == NULL ) {
         xx_nest_err( err_li_lp_no_list );   // tag must be in a list
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -825,7 +825,7 @@ void    gml_lp( const gmltag * entry )
         process_text( p, g_curr_font ); // if text follows
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

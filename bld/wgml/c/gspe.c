@@ -150,7 +150,7 @@ void    scr_pe( void )
         init_pe_line( INT_MAX );
     } else {
         gn.argstart = pa;
-        gn.argstop = scan_stop + 1;
+        gn.argstop = scan_stop;
         gn.ignore_blanks = 0;
  
         cc = getnum( &gn );             // try to get numeric value
@@ -183,7 +183,7 @@ void    scr_pe( void )
             }
         }
     }
-    scan_restart = scan_stop +1;
+    scan_restart = scan_stop;
     return;
 }
  

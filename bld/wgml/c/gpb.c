@@ -50,6 +50,6 @@ extern  void    gml_pb( const gmltag * entry )
  
     scr_process_break();
  
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }

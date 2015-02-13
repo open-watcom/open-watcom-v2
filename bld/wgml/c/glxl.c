@@ -540,7 +540,7 @@ void    lay_dl( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -613,7 +613,7 @@ void    lay_dl( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -635,7 +635,7 @@ void    lay_gl( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -704,7 +704,7 @@ void    lay_gl( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -726,7 +726,7 @@ void    lay_ol( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -808,7 +808,7 @@ void    lay_ol( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -830,7 +830,7 @@ void    lay_sl( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -899,7 +899,7 @@ void    lay_sl( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -921,7 +921,7 @@ void    lay_ul( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -1007,7 +1007,7 @@ void    lay_ul( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

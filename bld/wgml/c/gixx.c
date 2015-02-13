@@ -43,21 +43,21 @@
 /*   returns created block                                                 */
 /*                                                                         */
 /***************************************************************************/
-static ix_h_blk * find_create_ix_h_entry( ix_h_blk * * ixhwork,
-                                          char * * printtxt, size_t printtxtlen,
-                                          char * txt, size_t txtlen,
-                                          int lvl )
+static ix_h_blk *find_create_ix_h_entry( ix_h_blk **ixhwork,
+                                          char **printtxt, size_t printtxtlen,
+                                          char *txt, size_t txtlen,
+                                          uint32_t lvl )
 {
-    ix_h_blk * ixhwk;
-    size_t  comp_len;       // compare length for searching existing entries
-    int     comp_res;       // compare result
-    bool    do_nothing;
+    ix_h_blk    *ixhwk;
+    size_t      comp_len;               // compare length for searching existing entries
+    int         comp_res;               // compare result
+    bool        do_nothing;
 
     do_nothing = false;
     while( (*ixhwork != NULL) ) {       // find alfabetic point to insert
-        comp_len = txtlen;
-        if( comp_len > (*ixhwork)->ix_term_len )
-            comp_len = (*ixhwork)->ix_term_len;
+        comp_len = (*ixhwork)->ix_term_len;
+        if( comp_len > txtlen )
+            comp_len = txtlen;
         comp_res = strnicmp( txt, (*ixhwork)->ix_term, comp_len + 1 );
         if( comp_res > 0 ) {            // new is later in alfabet
             ixhwork = &((*ixhwork)->next);
@@ -167,10 +167,10 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
     char          lvlc;
 
     if( !GlobalFlags.index ) {          // index option not active
-        scan_start = scan_stop + 1;     // ignore tag
+        scan_start = scan_stop;         // ignore tag
         return;
     }
-    lvlc = '0' + (char)hx_lvl;
+    lvlc = '0' + hx_lvl;
     *hxstring = GML_char;         // construct tagname for possible error msg
     strcpy_s( (hxstring + 1), TAG_NAME_LENGTH, entry->tagname );
 
@@ -181,7 +181,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
         g_err( err_tag_before_gdoc, hxstring );
         err_count++;
         file_mac_info();
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -190,7 +190,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
             g_err( err_parent_undef );
             err_count++;
             file_mac_info();
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return;
         }
     }
@@ -257,7 +257,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
                             g_err( inf_id_duplicate );
                             err_count++;
                             file_mac_info();
-                            scan_start = scan_stop + 1;
+                            scan_start = scan_stop;
                             return;
                         }
                     }
@@ -265,7 +265,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     g_err( err_refid_not_allowed, hxstring );
                     err_count++;
                     file_mac_info();
-                    scan_start = scan_stop + 1;
+                    scan_start = scan_stop;
                     return;
                 }
             }
@@ -291,7 +291,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
                             g_err( inf_id_unknown );// during lastpass
                             err_count++;
                             file_mac_info();
-                            scan_start = scan_stop + 1;
+                            scan_start = scan_stop;
                             return;
                         }
                     }
@@ -299,7 +299,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     g_err( err_refid_not_allowed, hxstring );
                     err_count++;
                     file_mac_info();
-                    scan_start = scan_stop + 1;
+                    scan_start = scan_stop;
                     return;
                 }
             }
@@ -386,7 +386,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     g_err( err_refid_not_allowed, hxstring );
                     err_count++;
                     file_mac_info();
-                    scan_start = scan_stop + 1;
+                    scan_start = scan_stop;
                     return;
                 }
             }
@@ -411,7 +411,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
                             g_err( inf_id_unknown );
                             err_count++;
                             file_mac_info();
-                            scan_start = scan_stop + 1;
+                            scan_start = scan_stop;
                             return;
                         }
                     }
@@ -419,7 +419,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     g_err( err_refid_not_allowed, hxstring );
                     err_count++;
                     file_mac_info();
-                    scan_start = scan_stop + 1;
+                    scan_start = scan_stop;
                     return;
                 }
             }
@@ -465,7 +465,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
             g_err( err_att_missing );
             err_count++;
             file_mac_info();
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return;
         }
         if( GlobalFlags.lastpass ) {
@@ -691,7 +691,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
     if( seetext != NULL ) {
         mem_free( seetext );
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

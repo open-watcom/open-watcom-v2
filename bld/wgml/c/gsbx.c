@@ -1216,18 +1216,6 @@ static void do_line_device( void )
             box_depth = hl_depth;
             ProcFlags.in_bx_box = true;             // box has started
         }
-                }
-                h_line_el->subs_skip = 0;
-                // insert the HLINEs
-                for( cur_el = h_line_el; cur_el != NULL; cur_el = h_line_el ) {
-                    h_line_el = h_line_el->next;
-                    cur_el->next = NULL;
-                    insert_col_main( cur_el );
-                }
-                // iterate over all horizontal lines
-                for( cur_hline = box_line; cur_hline != NULL; cur_hline = cur_hline->next ) {
-                    box_draw_vlines( cur_hline, hl_depth, 0, 0, true, st_ext );
-                }
     } else {                                        // inside outermost box
 /// needs to be verified again; at least box_skip shouldn't matter!
         if( max_depth < (el_skip + hl_depth + def_height) ) {    // HLINE to top of page
@@ -1238,11 +1226,6 @@ static void do_line_device( void )
         if( (h_line_el != NULL) && ProcFlags.in_bx_box ) {     // adjust for HLINE skips
             if( ProcFlags.top_line ) {
                 box_depth += h_line_el->top_skip;
-                // iterate over all horizontal lines
-                for( cur_hline = box_line; cur_hline != NULL; cur_hline = cur_hline->next ) {
-                    if( cur_hline == box_line ) {
-                        box_draw_vlines( cur_hline, box_depth, max_depth - hl_depth,
-                                                        0, box_depth == 0, st_none );
             } else {
                 box_depth += h_line_el->subs_skip + h_line_el->blank_lines;
             }
@@ -1442,12 +1425,7 @@ static void eop_line_device( void ) {
                 box_draw_vlines( cur_hline, 0, 0, st_none );
             }
             cur_hline = cur_hline->next;
-                    cur_el->next = NULL;
-                    insert_col_main( cur_el );
         }
-                // iterate over all horizontal lines
-                for( cur_hline = box_line; cur_hline != NULL; cur_hline = cur_hline->next ) {
-                    box_draw_vlines( cur_hline, hl_depth, 0, 0, true, st_ext );
     }
 
     box_depth = 0;
@@ -1608,10 +1586,6 @@ static void merge_lines( void )
         box_temp = alloc_box_col_set(); // initialize box_line->first
         cur_temp = cur_line;
         prev_temp = prev_line;
-    if( (prev_line == NULL) && (cur_line == NULL) ) {   // nothing to do
-        internal_err( __FILE__, __LINE__ );
-    } else if( prev_line == NULL ) {    // cur_line becomes box_line
-        box_line = cur_line;
         box_line->first = box_temp;
 
         while( (cur_temp != NULL) || (prev_temp != NULL) ) {    // at least one has not ended
@@ -1697,8 +1671,6 @@ static void merge_lines( void )
                         cur_temp = cur_temp->next;
                         cur_col = 0;
                         if( cur_temp != NULL ) {
-                        box_temp->next = alloc_box_col_set();
-                        box_temp = box_temp->next;
                             cur_break = true;
                         }
                         continue;
@@ -1804,8 +1776,10 @@ static void merge_lines( void )
                 box_temp->cols[box_col].col = prev_temp->cols[prev_col].col;
                 box_temp->cols[box_col].depth += prev_temp->cols[prev_col].depth;
                 if( (cur_op == bx_can) || (cur_op == bx_off) ) {    // box ends: up only
-                box_temp->cols[box_col].col = cur_temp->cols[cur_col].col;
-                box_temp->cols[box_col].v_ind = bx_v_both;
+                    box_temp->cols[box_col].v_ind = bx_v_up;
+                } else {
+                    box_temp->cols[box_col].v_ind = bx_v_both;
+                }
                 box_temp->current++;
                 box_col++;
                 cur_col++;
@@ -1814,27 +1788,24 @@ static void merge_lines( void )
         }
     }
 
-    /* Ensure cur_line and prev_line are empty */
-
-    if( cur_line != NULL ) {
-        add_box_col_set_to_pool( cur_line );        
-        cur_line = NULL;
-    }
-    if( prev_line != NULL ) {
-        add_box_col_set_to_pool( prev_line );        
-        prev_line = NULL;
-    }
+    /************************************************************/
+    /* Note: at this point, prev_line should still contain the  */
+    /* same column list it had on entry, as this will be needed */
+    /* should the end of a page be encountered.                 */
+    /************************************************************/
 
 /// temp
     out_msg( "Merged\n" );
-    if( box_line == NULL ) {
+    if( box_line->first == NULL ) {
         out_msg( "No box_line (this should never happen)\n" );
     } else {
-        out_msg( "box_line length: %i\n", box_line->length );
-        for( box_temp = box_line; box_temp != NULL; box_temp = box_temp->next ) {
+        out_msg( "box_line inner_box: %i\n", box_line->inner_box );
+        out_msg( "box_line length: %i\n", box_line->first->length );
+        for( box_temp = box_line->first; box_temp != NULL; box_temp = box_temp->next ) {
             out_msg( "box_line hline:\n" );
             for( box_col = 0; box_col < box_temp->current; box_col++ ) {
-                out_msg( "column: %i v_ind: %i\n", box_temp->cols[box_col].col,
+                out_msg( "column: %i depth: %i v_ind: %i\n",
+                        box_temp->cols[box_col].col, box_temp->cols[box_col].depth,
                                            box_temp->cols[box_col].v_ind );
             }
         }
@@ -1844,6 +1815,40 @@ static void merge_lines( void )
     return;
 }
 
+/***************************************************************************/
+/*  end-of-page processing for do_page_out()                               */
+/*  box_line should be NULL at entry and exit, but be useable in between   */
+/*  the method used only works because box_line is not modified            */
+/***************************************************************************/
+
+void eop_bx_box( void ) {
+
+    bool    sav_group_elements;
+    bx_op   sav_cur_op;
+
+    sav_cur_op = cur_op;
+    cur_op = bx_eop;                    // do eop processing
+    sav_group_elements = ProcFlags.group_elements;
+    ProcFlags.group_elements = false;   // processed doc_elements go direct to page
+    ProcFlags.page_started = (t_page.last_col_main != NULL);
+
+    max_depth = t_page.max_depth - t_page.cur_depth;
+
+    /************************************************************/
+    /* This should always match the equivalent code in scr_bx() */
+    /************************************************************/
+
+    if( bin_driver->hline.text == NULL ) {
+        eop_char_device();
+    } else {
+        eop_line_device();
+    }
+
+    cur_op = sav_cur_op;                            // restore value on entry
+    ProcFlags.group_elements = sav_group_elements;  // restore value on entry
+
+    return;
+}
 
 /***************************************************************************/
 /*  implement control word BX                                              */
@@ -1867,15 +1872,18 @@ static void merge_lines( void )
 
 void scr_bx( void )
 {
-    bool            first_col;
-    box_col_set *   cur_temp;
-    bx_op           cur_op;
-    char        *   p;
-    char        *   pa;
-    int32_t         cur_col;            // signed to catch negative relative values
-    size_t          len;
-    su              boxcolwork;
-    uint32_t        prev_col;           // previous value across horizontal splits
+    bool                first_col;
+    box_col_set     *   box_temp;
+    box_col_set     *   cur_temp;
+    box_col_set     *   prev_temp;
+    box_col_stack   *   stack_temp;
+    char            *   p;
+    char            *   pa;
+    int                 i;
+    int32_t             cur_col;    // signed to catch negative relative values
+    size_t              len;
+    su                  boxcolwork;
+    uint32_t            prev_col;   // previous value across horizontal splits
     
     ProcFlags.box_cols_cur = false;     // new BX line: no box column list yet
     ProcFlags.group_elements = false;   // stop accumulating doc_elements
@@ -1907,7 +1915,7 @@ void scr_bx( void )
             cur_op = bx_set;
         }
     } else if( (len == 4) && !memicmp( pa , "char", len ) ) {
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
         return;
     }
 
@@ -1915,7 +1923,22 @@ void scr_bx( void )
         p = pa;
     }
 
-    /* Now for the numerics, if any */
+    while( *p && (*p == ' ') ) {
+        p++;
+    }
+
+    if( !ProcFlags.in_bx_box && !*p ) {     // if not in a box, box columns must be given
+        scan_restart = scan_stop;
+        return;
+    }
+
+    if( *p && (cur_op == bx_can) ) {        // CAN and DEL cannot have column lists
+        xx_line_err( err_too_many_ops, pa );
+        scan_restart = scan_stop;
+        return;
+    }
+
+    /* Now for the box column list, if any */
 
     if( *p ) {
         ProcFlags.box_cols_cur = true;      // box column list found
@@ -1924,10 +1947,8 @@ void scr_bx( void )
         first_col = true;                   // first column not yet found
         prev_col = 0;
         while( *p ) {
-            if( cur_temp->current == cur_temp->length) {
-                cur_temp->length += BOXCOL_COUNT;  // add space for new box columns
-                cur_temp->cols = mem_realloc( cur_temp->cols, cur_temp->length *
-                                             sizeof( box_col ) );
+            if( cur_temp->current == cur_temp->length ) {
+                resize_box_cols( cur_temp );
             }
             cur_temp->cols[cur_temp->current].v_ind = bx_v_down;
             if( cur_temp->current == 0 ) {
@@ -2223,7 +2244,7 @@ if( mem_validate() ) {
     ProcFlags.skips_valid = false;          // ensures following text will use correct skips
     set_h_start();                          // pick up any indents
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
 
     return;
 }

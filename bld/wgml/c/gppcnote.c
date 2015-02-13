@@ -65,7 +65,7 @@ void    proc_p_pc( p_lay_tag * p_pc )
 
     process_text( p, g_curr_font );
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -161,7 +161,7 @@ extern  void    gml_note( const gmltag * entry )
         post_space = 0;
     }
     g_curr_font = font_save;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

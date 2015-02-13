@@ -55,7 +55,7 @@ void    gml_binclude( const gmltag * entry )
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
             xx_tag_err( err_tag_before_gdoc, entry->tagname );
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return;
         }
     }
@@ -69,10 +69,7 @@ void    gml_binclude( const gmltag * entry )
         if( *p == '\0' ) {              // end of line: get new line
             if( !(input_cbs->fmflags & II_eof) ) {
                 if( get_line( true ) ) {      // next line for missing attribute
- 
                     process_line();
-                    scan_start = buff2;
-                    scan_stop  = buff2 + buff2_lg - 1;
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
                         ProcFlags.tag_end_found = true; 
@@ -134,7 +131,7 @@ void    gml_binclude( const gmltag * entry )
                 reposition = false; // device at proper position after insertion
             } else {
                 xx_line_err( err_inv_att_val, val_start );
-                scan_start = scan_stop + 1;
+                scan_start = scan_stop;
                 return;
             }
             if( ProcFlags.tag_end_found ) {
@@ -148,7 +145,7 @@ void    gml_binclude( const gmltag * entry )
     // detect missing required attributes
     if( !depth_found || !file_found || !reposition_found ) {
         xx_err( err_att_missing );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -174,6 +171,6 @@ void    gml_binclude( const gmltag * entry )
 
     insert_col_main( cur_el );
 
-    scan_start = scan_stop + 1;         // skip following text
+    scan_start = scan_stop;         // skip following text
 }
 

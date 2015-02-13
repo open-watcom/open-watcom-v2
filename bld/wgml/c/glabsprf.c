@@ -141,7 +141,7 @@ void    lay_abspref( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -176,8 +176,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case   e_font:
                     cvterr = i_font_number( p, curr, &(ap->font) );
-                    if( ap->font >= wgml_font_cnt )
-                        ap->font = 0;
+                    if( ap->font >= wgml_font_cnt ) ap->font = 0;
                     break;
                 case   e_spacing:
                     cvterr = i_int8( p, curr, &(ap->spacing) );
@@ -224,7 +223,7 @@ void    lay_abspref( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get one with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

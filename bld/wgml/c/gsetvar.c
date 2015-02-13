@@ -91,7 +91,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
 
                     g_err( err_sym_long, sym_start );
                     g_info( inf_sym_10 );
-                    if( input_cbs->fmflags & II_macro ) {
+                    if( input_cbs->fmflags & II_tag_mac ) {
                         ultoa( input_cbs->s.m->lineno, linestr, 10 );
                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
@@ -110,7 +110,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         if( *p != '&' ) {               // not &*&xx construct
 
             if( (sym->flags & local_var)
-                && (input_cbs->fmflags & II_macro) ) {
+                && (input_cbs->fmflags & II_tag_mac) ) {
 
                 strcpy_s( sym->name, SYM_NAME_LENGTH, MAC_STAR_NAME );
             } else {
@@ -268,7 +268,7 @@ void    scr_se( void )
                 condcode        cc;
 
                 gn.argstart      = valstart;
-                gn.argstop       = scan_stop + 1;
+                gn.argstop       = scan_stop;
                 gn.ignore_blanks = 1;
 
                 cc = getnum( &gn );     // try numeric expression evaluation
@@ -298,7 +298,7 @@ void    scr_se( void )
 
                      wng_count++;
                      g_err( wng_miss_inv_value, sym.name, p );
-                     if( input_cbs->fmflags & II_macro ) {
+                     if( input_cbs->fmflags & II_tag_mac ) {
                          ultoa( input_cbs->s.m->lineno, linestr, 10 );
                          g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                      } else {

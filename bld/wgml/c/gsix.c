@@ -163,7 +163,7 @@ void    scr_ix( void )
     uint32_t        wkpage;
 
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
 
     if( !(GlobalFlags.index && GlobalFlags.lastpass) ) {
         return;                         // no need to process .ix

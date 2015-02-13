@@ -684,5 +684,6 @@ pick( ERR_INV_BOX_POS,          "Invalid box position",
 pick( ERR_SPC_NOT_VALID,        "Space value is not valid",
                                 "Space value is not valid")
 
-
+pick( ERR_TOO_MANY_OPS,         "Too many operands in .BX command",
+                                "Too many operands in .BX command")
 

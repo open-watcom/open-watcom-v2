@@ -215,7 +215,7 @@ void    lay_banner( const gmltag * entry )
     cvterr = false;
  
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -290,7 +290,7 @@ void    lay_banner( const gmltag * entry )
         }
         cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
  
@@ -398,7 +398,7 @@ void    lay_ebanner( const gmltag * entry )
     ProcFlags.lay_xxx = el_zero;        // banner no longer active
  
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -459,6 +459,6 @@ void    lay_ebanner( const gmltag * entry )
         err_count++;
         file_mac_info();
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }

@@ -50,7 +50,7 @@ void    scr_dummy( void )
     cwcurr[2] = *(token_buf + 1);
     cwcurr[3] = '\0';
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
 
     g_warn( wng_unsupp_cw, cwcurr );
     wng_count++;
@@ -65,7 +65,7 @@ void    scr_dummy( void )
 void    gml_dummy( const gmltag * entry )
 {
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 
     g_warn( wng_unsupp_tag, entry->tagname );
     wng_count++;
@@ -79,7 +79,7 @@ void    gml_dummy( const gmltag * entry )
 void    lay_dummy( const gmltag * entry )
 {
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 
     if( GlobalFlags.firstpass ) {       // layout msg only in pass 1
         g_warn( wng_unsupp_lay, entry->tagname );

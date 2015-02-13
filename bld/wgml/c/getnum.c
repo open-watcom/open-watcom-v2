@@ -349,23 +349,21 @@ static bool evaluate( const char **line, const char *stop, long *val )
 
 condcode getnum( getnum_block *gn )
 {
-    char        *a;                     // arg start  (X2)
-    char        *z;                     // arg stop   (R1)
     char        c;
-    const char  *start;
+    char        *start;                 // arg start  (X2)
+    char        *stop;                  // arg stop   (R1)
 
-    a = gn->argstart;
-    z = gn->argstop;
-    while( a < z && *a == ' ' ) {
-        a++;                            // skip leading blanks
+    start = gn->argstart;
+    stop = gn->argstop;
+    while( start < stop && *start == ' ' ) {
+        start++;                        // skip leading blanks
     }
-    gn->errstart = a;
-    gn->first = a;
-    if( a == z ) {
+    gn->errstart = start;
+    gn->first = start;
+    if( start == stop ) {
         gn->cc = omit;
         return( omit );                 // nothing there
     }
-    start = a;
     c = *start;
     if( c == '+' || c == '-' ) {
         gn->num_sign = c;               // unary sign
@@ -373,10 +371,10 @@ condcode getnum( getnum_block *gn )
         gn->num_sign = ' ';             // no unary sign
     }
     ignore_blanks = gn->ignore_blanks;
-    if( evaluate( &start, z, &gn->result ) ) {
+    if( evaluate( (const char **)&start, stop, &gn->result ) ) {
         gn->cc = notnum;
     } else {
-        gn->argstart = (char *)start;   // start for next scan
+        gn->argstart = start;   // start for next scan
         gn->length = sprintf_s( gn->resultstr, sizeof( gn->resultstr ), "%ld", gn->result );
         if( gn->result >= 0 ) {
             gn->cc = pos;
