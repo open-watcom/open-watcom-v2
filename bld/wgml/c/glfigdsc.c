@@ -68,7 +68,7 @@ const   lay_att     figdesc_att[3] =
 /*  lay_figdesc                                                            */
 /***************************************************************************/
 
-void    lay_figdesc( const gmltag * entry )
+void    lay_figdesc( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -77,7 +77,7 @@ void    lay_figdesc( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

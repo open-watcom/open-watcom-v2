@@ -406,7 +406,7 @@ void    scr_gt( void )
 
         while( *p && is_macro_char( *p ) ) {
             if( len < TAG_NAME_LENGTH ) {
-                *pn++ = tolower( *p++ );// copy lowercase tagname
+                *pn++ = toupper( *p++ );// copy lowercase tagname
                 *pn   = '\0';
             } else {
                 break;
@@ -504,7 +504,7 @@ void    scr_gt( void )
 
         while( *p && is_macro_char( *p ) ) {
             if( len < MAC_NAME_LENGTH ) {
-                *pn++ = tolower( *p++ );    // copy lowercase macroname
+                *pn++ = toupper( *p++ );    // copy lowercase macroname
                 *pn   = '\0';
             } else {
                 break;

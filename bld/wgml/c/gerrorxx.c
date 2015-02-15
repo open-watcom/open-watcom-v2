@@ -83,7 +83,7 @@ void    file_mac_info( void )
     char        linemac[MAX_L_AS_STR];
 
     if( input_cbs != NULL ) {
-        if( input_cbs->fmflags & II_macro ) {
+        if( input_cbs->fmflags & II_tag_mac ) {
             ultoa( input_cbs->s.m->lineno, linestr, 10 );
             ultoa( input_cbs->s.m->mac->lineno, linemac, 10 );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
@@ -111,7 +111,7 @@ void    file_mac_info_nest( void )
     nest_stack  *   nw;
 
     if( input_cbs != NULL ) {
-        if( input_cbs->fmflags & II_macro ) {
+        if( input_cbs->fmflags & II_tag_mac ) {
             ultoa( input_cbs->s.m->lineno, linestr, 10 );
             ultoa( input_cbs->s.m->mac->lineno, linemac, 10 );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
@@ -231,7 +231,7 @@ void    numb_err( void )
     char    linestr[MAX_L_AS_STR];
 
     err_count++;
-    if( input_cbs->fmflags & II_macro ) {
+    if( input_cbs->fmflags & II_tag_mac ) {
         ultoa( input_cbs->s.m->lineno, linestr, 10 );
         g_err( ERR_PU_NUM, linestr, "macro", input_cbs->s.m->mac->name );
     } else {

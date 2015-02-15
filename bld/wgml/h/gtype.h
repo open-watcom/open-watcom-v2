@@ -102,6 +102,18 @@
     #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
 #endif
 
+/***************************************************************************/
+/*  GML tags as enum list                                                  */
+/***************************************************************************/
+
+typedef enum gml_tag {
+    #define pick( name, length, routine, gmlflags, locflags )  GML_TAG_##name,
+    #include "gtags.h"
+    #undef pick
+    GML_TAGMAX                           // the last one for range check
+} gml_tag;
+
+
 typedef uint32_t    line_number;
 
 /***************************************************************************/
@@ -400,7 +412,7 @@ typedef enum {
 typedef struct gmltag {
    char             tagname[TAG_NAME_LENGTH + 1];
    size_t           taglen;
-   void             (*gmlproc)( const struct gmltag * entry );
+   void             (*gmlproc)( gml_tag tag );
    gmlflags         tagflags;
    locflags         taglocs;
 } gmltag;
@@ -788,9 +800,9 @@ typedef enum functs {
 
 typedef enum e_tags {
     t_NONE,
-    #define pickg( name, length, routine, gmlflags, locflags )  t_##name,
+    #define pick( name, length, routine, gmlflags, locflags )  t_##name,
     #include "gtags.h"
-    #undef pickg
+    #undef pick
 //    #define picks( name, routine, flags )  t_##name,
 //    #define picklab( name, routine, flags )  t_label,
 //    #include "gscrcws.h" TBD

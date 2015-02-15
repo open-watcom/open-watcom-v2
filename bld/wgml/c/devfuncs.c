@@ -3163,10 +3163,12 @@ static void fb_normal_vertical_positioning( void )
         /* If there is no difference, reset to start of current line, except
          * for the first output line on each document page, including the
          * first document page in a section and the very first in the document.
-         * This matches wgml 4.0's behavior.
+         * This matches wgml 4.0's behavior, including the exception which
+         * occurs with BX CAN and BX DEL and allows a page to start with an
+         * overprinted blank line.
          */
 
-        if( page_start ) {
+        if( page_start && !ProcFlags.force_op ) {
             page_start = false;
         } else {
             current_state.x_address = bin_device->x_start;

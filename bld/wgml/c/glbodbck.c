@@ -113,7 +113,7 @@ const   lay_att     backbod_att[10] =
 /*  lay_backbod   for :BACKM and :BODY                                     */
 /***************************************************************************/
 
-void    lay_backbod( const gmltag * entry )
+void    lay_backbod( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -126,22 +126,25 @@ void    lay_backbod( const gmltag * entry )
 
     p = scan_start;
     cvterr = false;
-
     if( !GlobalFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( !strcmp( "BACKM", entry->tagname ) ) {
+    switch( tag ) {
+    case LAY_TAG_BACKM:
         x_tag = el_backm;
-        ap  = &layout_work.backm;
-    } else if( !strcmp( "BODY", entry->tagname ) ) {
+        ap = &layout_work.backm;
+        break;
+    case LAY_TAG_BODY:
         x_tag = el_body;
-        ap  = &layout_work.body;
-    } else {
-         out_msg( "WGML logic error glbodbck.c.\n");
-         file_mac_info();
-         err_count++;
+        ap = &layout_work.body;
+        break;
+    default:
+        out_msg( "WGML logic error glbodbck.c.\n");
+        file_mac_info();
+        err_count++;
+        break;
     }
     if( ProcFlags.lay_xxx != x_tag ) {
         ProcFlags.lay_xxx = x_tag;

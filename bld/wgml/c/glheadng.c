@@ -81,7 +81,7 @@ const   lay_att     heading_att[6] =
 /*  lay_heading                                                            */
 /***************************************************************************/
 
-void    lay_heading( const gmltag * entry )
+void    lay_heading( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -90,7 +90,7 @@ void    lay_heading( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {

@@ -45,7 +45,7 @@ const   lay_att     title_att[7] =
 /*  lay_title                                                              */
 /***************************************************************************/
 
-void    lay_title( const gmltag * entry )
+void    lay_title( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -54,7 +54,7 @@ void    lay_title( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

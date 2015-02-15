@@ -105,7 +105,7 @@ const   lay_att     date_att[7] =
 /*  lay_date                                                               */
 /***************************************************************************/
 
-void    lay_date( const gmltag * entry )
+void    lay_date( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -114,7 +114,7 @@ void    lay_date( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

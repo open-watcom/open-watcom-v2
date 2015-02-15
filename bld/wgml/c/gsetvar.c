@@ -45,7 +45,6 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
     size_t      k;
     char    *   sym_start;
     char        quote;
-    char        linestr[MAX_L_AS_STR];
 
     scan_err = false;
     sym->next = NULL;
@@ -91,13 +90,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
 
                     g_err( err_sym_long, sym_start );
                     g_info( inf_sym_10 );
-                    if( input_cbs->fmflags & II_tag_mac ) {
-                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                    } else {
-                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                    }
+                    g_info_inp_pos();
                     show_include_stack();
                     err_count++;
                 }
@@ -109,9 +102,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
     if( p == sym_start ) {              // special for &*
         if( *p != '&' ) {               // not &*&xx construct
 
-            if( (sym->flags & local_var)
-                && (input_cbs->fmflags & II_tag_mac) ) {
-
+            if( (sym->flags & local_var) && (input_cbs->fmflags & II_tag_mac) ) {
                 strcpy_s( sym->name, SYM_NAME_LENGTH, MAC_STAR_NAME );
             } else {
                 scan_err = true;
@@ -294,18 +285,10 @@ void    scr_se( void )
                 }
             } else {
                 if( !ProcFlags.suppress_msg ) {
-                     char    linestr[MAX_L_AS_STR];
-
-                     wng_count++;
-                     g_err( wng_miss_inv_value, sym.name, p );
-                     if( input_cbs->fmflags & II_tag_mac ) {
-                         ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                     } else {
-                         ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                     }
-                     show_include_stack();
+                    wng_count++;
+                    g_err( wng_miss_inv_value, sym.name, p );
+                    g_info_inp_pos();
+                    show_include_stack();
                 }
                 scan_err = true;
             }

@@ -203,23 +203,21 @@ static void split_at_CW_sep_char( char * splitpos ) {
     /*  also don't split if last char of record                */
     /***********************************************************/
 
-    if( !(*(buff2 + 1) == '\'') ) {
+    if( buff2[1] != '\'' ) {
         if( splitpos == NULL ) {        // splitpos not yet known
             splitpos = strchr( buff2 + 2, CW_sep_char );
         }
-        if( (splitpos != NULL) && (*(splitpos + 1) != '\0') ) {
+        if( (splitpos != NULL) && (splitpos[1] != '\0') ) {
 
-            if( (*(splitpos - 1) == '\'') && (*(splitpos + 1) == '\'') ) {
+            if( (splitpos[-1] == '\'') && (splitpos[1] == '\'') ) {
                 ;
             // hack for testing macro repchars docs\doc\hlp\fmtmacro.gml(174)
                                         // don't split &'index("&x.",';') TBD
             } else {
 
-                if( *(splitpos + 1) != CW_sep_char ) {
-                    split_input( buff2, splitpos + 1, false );// split after CW_sep_char
-
-                    buff2_lg = strnlen_s( buff2, buf_size ) - 1;
-                    *(buff2 + buff2_lg) = '\0'; // terminate 1. part
+                if( splitpos[1] != CW_sep_char ) {
+                    split_input( buff2, splitpos + 1, false );  // split after CW_sep_char
+                    splitpos[0] = '\0'; // terminate 1. part
 #if 0
                 } else {                // ignore 1 CW_sep_char
                     memmove_s( splitpos, splitpos - buff2 + buff2_lg + 1,
@@ -242,7 +240,6 @@ static  bool    split_input_buffer( void )
 {
     char            *   p2;
     char            *   pchar;
-    int                 k;
 
     /***********************************************************************/
     /*  look for GML tag start character and split line at GML tag         */
@@ -274,7 +271,8 @@ static  bool    split_input_buffer( void )
         /* for :cmt. minimal processing                                    */
         /*******************************************************************/
 
-        if( (*buff2 == GML_char) && !strnicmp( buff2 + 1, "cmt.", 4 ) ) {
+        p2 = buff2;
+        if( (*p2 == GML_char) && !strnicmp( p2 + 1, "cmt.", 4 ) ) {
             return( false );
         }
 
@@ -282,9 +280,9 @@ static  bool    split_input_buffer( void )
         /*  .xx SCRIPT control line                                        */
         /*******************************************************************/
 
-        if( (*buff2 == SCR_char) ) {
-
-            if( (*(buff2 + 1) == '*') || !strnicmp( buff2 + 1, "cm ", 3 ) ) {
+        if( (*p2 == SCR_char) ) {
+            ++p2;
+            if( (*p2 == '*') || !strnicmp( p2, "cm ", 3 ) ) {
                 return( false );  // for .* or .cm comment minimal processing
             }
 
@@ -295,12 +293,10 @@ static  bool    split_input_buffer( void )
             /*  and                                                        */
             /* ..dm xxx / &*1 / &*2 / &*0 / &* /                           */
             /***************************************************************/
-            if( *(buff2 + 1) == SCR_char ) {
-                k = 2;
-            } else {
-                k = 1;
+            if( *p2 == SCR_char ) {
+                ++p2;
             }
-            if( !strnicmp( buff2 + k, "dm ", 3 ) ) {
+            if( !strnicmp( p2, "dm ", 3 ) ) {
                 return( false );
             }
 
@@ -308,7 +304,7 @@ static  bool    split_input_buffer( void )
             /*  for records starting  .' ignore control word separator     */
             /*  or if control word separator is 0x00                       */
             /***************************************************************/
-            if( (*(buff2 + k) == '\'') || (CW_sep_char == '\0') ) {
+            if( (*p2 == '\'') || (CW_sep_char == '\0') ) {
                 ProcFlags.CW_sep_ignore = true;
             } else {
                 ProcFlags.CW_sep_ignore = false;
@@ -677,7 +673,8 @@ static  bool    remove_leading_space( void )
         do {
             *p2++ = *p++;
         } while( *p );
-        *p2 = '\0';
+        *p2++ = '\0';
+        *p2   = '\0';
         removed = true;
     }
     return( removed );

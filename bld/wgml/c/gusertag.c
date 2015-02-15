@@ -267,19 +267,11 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                     }
                 }
                 if( ga == NULL ) {      // attribute Not found
-                    char        linestr[MAX_L_AS_STR];
-
                     processed = false;
                     wng_count++;
                     //***WARNING*** SC--040: 'abd' is not a valid attribute name
                     g_warn( wng_att_name, token_buf );
-                    if( input_cbs->fmflags & II_macro ) {
-                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                    } else {
-                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                    }
+                    g_info_inp_pos();
                     show_include_stack();
                 }
             }
@@ -333,8 +325,6 @@ bool        process_tag( gtentry * ge, mac_entry * me )
             }
         }
         if( *token_buf != '\0' ) {      // some req attr missing
-            char        linestr[MAX_L_AS_STR];
-
         // the errmsg in wgml 4.0 is wrong, it shows the macroname, not tag.
 // ****ERROR**** SC--047: For the tag '@willi', the required attribute(s)
 //                       'muss2'
@@ -344,13 +334,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
             processed = false;
             err_count++;
             g_err( err_att_req, ge->name, token_buf );
-            if( input_cbs->fmflags & II_macro ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             show_include_stack();
         }
 
@@ -386,8 +370,10 @@ bool        process_tag( gtentry * ge, mac_entry * me )
         input_cbs->local_dict = loc_dict;
         inc_inc_level();                // start new include level
         if( ge->tagflags & tag_cont ) {   // +++++++++++++++++++ TBD trial
-            post_space = 0;
-            ProcFlags.ct = true;
+//            post_space = 0;
+            if( !(input_cbs->fmflags & II_sol) ) {
+                ProcFlags.utc = true;
+            }
         }
 
         if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
@@ -455,8 +441,10 @@ bool        process_tag( gtentry * ge, mac_entry * me )
         input_cbs->local_dict = loc_dict;
         inc_inc_level();                // start new include level
         if( ge->tagflags & tag_cont ) { // +++++++++++++++++++ TBD trial
-            post_space = 0;
-            ProcFlags.ct = true;
+//            post_space = 0;
+            if( !(input_cbs->fmflags & II_sol) ) {
+                ProcFlags.utc = true;
+            }
         }
 
         if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {

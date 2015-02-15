@@ -104,7 +104,7 @@ const   lay_att     note_att[8] =
 /*  lay_note                                                               */
 /***************************************************************************/
 
-void    lay_note( const gmltag * entry )
+void    lay_note( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -113,7 +113,7 @@ void    lay_note( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

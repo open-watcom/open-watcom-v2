@@ -40,9 +40,9 @@
 /*    try to process as .br                                                */
 /*                                                                         */
 /***************************************************************************/
-extern  void    gml_pb( const gmltag * entry )
+extern  void    gml_pb( gml_tag tag )
 {
-    entry = entry;
+    tag = tag;
 
     scan_err = false;
  

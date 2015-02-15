@@ -111,7 +111,7 @@ const   lay_att     tochx_att[9] =
 /*  lay_tochx                                                              */
 /***************************************************************************/
 
-void    lay_tochx( const gmltag * entry )
+void    lay_tochx( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -120,6 +120,7 @@ void    lay_tochx( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
     int             hx_l;
+    int             hx;
 
     p = scan_start;
 
@@ -128,42 +129,39 @@ void    lay_tochx( const gmltag * entry )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( entry->tagname[4] ) {
-    case   '0':
+    switch( tag ) {
+    case LAY_TAG_TOCH0:
         hx_l = el_toch0;
         break;
-    case   '1':
+    case LAY_TAG_TOCH1:
         hx_l = el_toch1;
         break;
-    case   '2':
+    case LAY_TAG_TOCH2:
         hx_l = el_toch2;
         break;
-    case   '3':
+    case LAY_TAG_TOCH3:
         hx_l = el_toch3;
         break;
-    case   '4':
+    case LAY_TAG_TOCH4:
         hx_l = el_toch4;
         break;
-    case   '5':
+    case LAY_TAG_TOCH5:
         hx_l = el_toch5;
         break;
-    case   '6':
+    case LAY_TAG_TOCH6:
         hx_l = el_toch6;
         break;
     default:
         hx_l = el_toch6;
+        out_msg( "WGML logic error in glhx.c\n" );
+        err_count++;
         break;
     }
     if( ProcFlags.lay_xxx != hx_l ) {
         ProcFlags.lay_xxx = hx_l;
     }
 
-    hx_l = entry->tagname[4] - '0';     // construct TOCHx level
-    if( hx_l > 6 ) {
-        hx_l = 6;
-        out_msg( "WGML logic error in glhx.c\n" );
-        err_count++;
-    }
+    hx = hx_l - el_toch0;     // construct TOCHx level
 
     cc = get_lay_sub_and_value( &l_args );  // get one with value
     while( cc == pos ) {
@@ -175,37 +173,37 @@ void    lay_tochx( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_group:
-                    cvterr = i_int8( p, curr, &layout_work.tochx[hx_l].group );
+                    cvterr = i_int8( p, curr, &layout_work.tochx[hx].group );
                     break;
                 case   e_indent:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx_l].indent );
+                                           &layout_work.tochx[hx].indent );
                     break;
                 case   e_skip:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx_l].skip );
+                                           &layout_work.tochx[hx].skip );
                     break;
                 case   e_pre_skip:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx_l].pre_skip );
+                                           &layout_work.tochx[hx].pre_skip );
                     break;
                 case   e_post_skip:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx_l].post_skip );
+                                           &layout_work.tochx[hx].post_skip );
                     break;
                 case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.tochx[hx_l].font );
-                    if( layout_work.tochx[hx_l].font >= wgml_font_cnt ) {
-                        layout_work.tochx[hx_l].font = 0;
+                    cvterr = i_font_number( p, curr, &layout_work.tochx[hx].font );
+                    if( layout_work.tochx[hx].font >= wgml_font_cnt ) {
+                        layout_work.tochx[hx].font = 0;
                     }
                     break;
                 case   e_align:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx_l].align );
+                                           &layout_work.tochx[hx].align );
                     break;
                 case   e_display_in_toc:
                     cvterr = i_yes_no( p, curr,
-                                     &layout_work.tochx[hx_l].display_in_toc );
+                                     &layout_work.tochx[hx].display_in_toc );
                     break;
                 default:
                     out_msg( "WGML logic error.\n");

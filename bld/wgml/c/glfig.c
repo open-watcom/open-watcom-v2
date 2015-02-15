@@ -110,7 +110,7 @@ const   lay_att     fig_att[9] =
 /*  lay_fig                                                                */
 /***************************************************************************/
 
-void    lay_fig( const gmltag * entry )
+void    lay_fig( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -119,7 +119,7 @@ void    lay_fig( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

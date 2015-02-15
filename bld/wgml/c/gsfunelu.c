@@ -313,20 +313,13 @@ char    *scr_single_func_w( char * in, char * end, char * * result )
 
 static  char    *scr_single_func_unsupport( char * in, char * * result )
 {
-    char        linestr[MAX_L_AS_STR];
     char        charstr[2];
 
     result = result;
     charstr[0] = *(in + 1);
     charstr[1] = '\0';
     g_warn( wng_func_unsupport, charstr );
-    if( input_cbs->fmflags & II_macro ) {
-        ultoa( input_cbs->s.m->lineno, linestr, 10 );
-        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-    } else {
-        ultoa( input_cbs->s.f->lineno, linestr, 10 );
-        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-    }
+    g_info_inp_pos();
 
     // do nothing
     return( in + 3 );
@@ -355,21 +348,25 @@ char    *scr_single_funcs( char * in, char * end, char * * result )
 
     if( *(in + 2) == '\'' ) {
         switch( *(in + 1) ) {
+        case  'E' :                     // exist function
         case  'e' :                     // exist function
             pw = scr_single_func_e( in, end, result );
             break;
+        case  'L' :                     // length function
         case  'l' :                     // length function
             pw = scr_single_func_l( in, end, result );
-            break;
-        case  's' :                     // subscript
-            pw = scr_single_func_sS( in, end, result, function_subscript );
             break;
         case  'S' :                     // superscript
             pw = scr_single_func_sS( in, end, result, function_superscript );
             break;
+        case  's' :                     // subscript
+            pw = scr_single_func_sS( in, end, result, function_subscript );
+            break;
+        case  'U' :                     // upper function
         case  'u' :                     // upper function
             pw = scr_single_func_u( in, end, result );
             break;
+        case  'W' :                     // width function
         case  'w' :                     // width function
             pw = scr_single_func_w( in, end, result );
             break;

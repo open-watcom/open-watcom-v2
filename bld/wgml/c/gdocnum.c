@@ -85,7 +85,7 @@ static void prep_docnum_line( text_line * p_line, char * p )
 /*  :docnum.docnum   tag                                                       */
 /***************************************************************************/
  
-void    gml_docnum( const gmltag * entry )
+void    gml_docnum( gml_tag tag )
 {
     char        *   p;
     doc_element *   cur_el;
@@ -98,7 +98,7 @@ void    gml_docnum( const gmltag * entry )
  
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        g_err( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        g_err( err_tag_wrong_sect, gml_tagname( tag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
     }

@@ -44,7 +44,7 @@ const   lay_att     xx_att[2] =
 
 
 
-void    lay_xx( const gmltag * entry )
+void    lay_xx( lay_tag tag )
 {
     char            *p;
     condcode        cc;
@@ -63,34 +63,44 @@ void    lay_xx( const gmltag * entry )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( !strcmp( "CIT", entry->tagname ) ) {
+    switch( tag ) {
+    case LAY_TAG_CIT:
         x_tag = el_cit;
         fontptr = &layout_work.cit.font;
-    } else if( !strcmp( "DTHD", entry->tagname ) ) {
+        break;
+    case LAY_TAG_DTHD:
         x_tag = el_dthd;
         fontptr = &layout_work.dthd.font;
-    } else if( !strcmp( "DT", entry->tagname ) ) {
+        break;
+    case LAY_TAG_DT:
         x_tag = el_dt;
         fontptr = &layout_work.dt.font;
-    } else if( !strcmp( "GT", entry->tagname ) ) {
+        break;
+    case LAY_TAG_GT:
         x_tag = el_gt;
         fontptr = &layout_work.gt.font;
-    } else if( !strcmp( "GD", entry->tagname ) ) {
+        break;
+    case LAY_TAG_GD:
         x_tag = el_gd;
         fontptr = &layout_work.gd.font;
-    } else if( !strcmp( "DDHD", entry->tagname ) ) {
+        break;
+    case LAY_TAG_DDHD:
         x_tag = el_ddhd;
         fontptr = &layout_work.ddhd.font;
-    } else if( !strcmp( "IXPGNUM", entry->tagname ) ) {
+        break;
+    case LAY_TAG_IXPGNUM:
         x_tag = el_ixpgnum;
         fontptr = &layout_work.ixpgnum.font;
-    } else if( !strcmp( "IXMAJOR", entry->tagname ) ) {
+        break;
+    case LAY_TAG_IXMAJOR:
         x_tag = el_ixmajor;
         fontptr = &layout_work.ixmajor.font;
-    } else {
+        break;
+    default:
          out_msg( "WGML logic error glxxfont.c.\n");
          file_mac_info();
          err_count++;
+        break;
     }
     if( ProcFlags.lay_xxx != x_tag ) {
         ProcFlags.lay_xxx = x_tag;

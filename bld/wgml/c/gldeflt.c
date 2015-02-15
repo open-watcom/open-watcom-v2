@@ -99,7 +99,7 @@ const   lay_att     default_att[8] =
 /*  lay_default                                                            */
 /***************************************************************************/
  
-void    lay_default( const gmltag * entry )
+void    lay_default( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -108,7 +108,7 @@ void    lay_default( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
  
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
  

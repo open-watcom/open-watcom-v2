@@ -62,12 +62,12 @@ void    scr_dummy( void )
 /*  gml_dummy        processing                                            */
 /***************************************************************************/
 
-void    gml_dummy( const gmltag * entry )
+void    gml_dummy( gml_tag tag )
 {
 
     scan_start = scan_stop;
 
-    g_warn( wng_unsupp_tag, entry->tagname );
+    g_warn( wng_unsupp_tag, gml_tagname( tag ) );
     wng_count++;
     file_mac_info();
 }
@@ -76,17 +76,15 @@ void    gml_dummy( const gmltag * entry )
 /*  lay_dummy        processing                                            */
 /***************************************************************************/
 
-void    lay_dummy( const gmltag * entry )
+void    lay_dummy( lay_tag tag )
 {
 
     scan_start = scan_stop;
 
     if( GlobalFlags.firstpass ) {       // layout msg only in pass 1
-        g_warn( wng_unsupp_lay, entry->tagname );
+        g_warn( wng_unsupp_lay, lay_tagname( tag ) );
         wng_count++;
         show_include_stack();
     }
     eat_lay_sub_tag();                  // ignore any attribute / value
 }
-
-

@@ -61,7 +61,6 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result,
     condcode            cc;
     int                 n;
     getnum_block        gn;
-    char                linestr[MAX_L_AS_STR];
 
     ressize = ressize;
     if( parmcount != 1 ) {
@@ -89,13 +88,7 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result,
         if( (cc != pos) ) {
             if( !ProcFlags.suppress_msg ) {
                 g_err( err_func_parm, "1 (number)" );
-                if( input_cbs->fmflags & II_macro ) {
-                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                } else {
-                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                }
+                g_info_inp_pos();
                 err_count++;
                 show_include_stack();
             }

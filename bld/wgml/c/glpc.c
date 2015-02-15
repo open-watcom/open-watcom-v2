@@ -148,13 +148,13 @@ static  int     process_arg( att_args * aa, p_lay_tag * p_or_pc )
 /*  lay_p                                                                  */
 /***************************************************************************/
 
-void    lay_p( const gmltag * entry )
+void    lay_p( lay_tag tag )
 {
     condcode        cc;
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     if( !GlobalFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
@@ -177,13 +177,13 @@ void    lay_p( const gmltag * entry )
 /*  lay_pc                                                                 */
 /***************************************************************************/
 
-void    lay_pc( const gmltag * entry )
+void    lay_pc( lay_tag tag )
 {
     condcode        cc;
     att_args        l_args;
     bool            cvterr;
 
-    entry = entry;
+    tag = tag;
     if( !GlobalFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();

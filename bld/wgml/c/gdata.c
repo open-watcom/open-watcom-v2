@@ -38,9 +38,9 @@
 
 char str_tags[t_MAX + 1][10] = {
     { "NONE" },
-    #define pickg( name, length, routine, gmlflags, locflags )  { #name },
+    #define pick( name, length, routine, gmlflags, locflags )  { #name },
     #include "gtags.h"
-    #undef pickg
+    #undef pick
 //    #define picks( name, routine, flags) { #name },
 //    #define picklab( name, routine, flags) { #name },
 //    #include "gscrcws.h" TBD
@@ -125,9 +125,11 @@ void init_global_vars( void )
     tab_char            = 0x09;
 
     box_col_set_pool    = NULL;
+    box_col_stack_pool  = NULL;
     box_line            = NULL;
     cur_line            = NULL;
     prev_line           = NULL;
+    max_depth           = 0;
 
     c_stop              = NULL;
 

@@ -116,7 +116,7 @@ const   lay_att     ix_att[9] =
 /*  lay_ix          for :I1 - :I3                                          */
 /***************************************************************************/
 
-void    lay_ix( const gmltag * entry )
+void    lay_ix( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -125,6 +125,7 @@ void    lay_ix( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
     int                 ix_l;
+    int                 ix;
 
     p = scan_start;
 
@@ -133,27 +134,26 @@ void    lay_ix( const gmltag * entry )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( entry->tagname[1] ) {
-    case   '1':
+    switch( tag ) {
+    case LAY_TAG_I1:
         ix_l = el_i1;
         break;
-    case   '2':
+    case LAY_TAG_I2:
         ix_l = el_i2;
+        break;
+    case LAY_TAG_I3:
+        ix_l = el_i3;
         break;
     default:
         ix_l = el_i3;
+        out_msg( "WGML logic error in glix.c\n" );
+        err_count++;
         break;
     }
     if( ProcFlags.lay_xxx != ix_l ) {
         ProcFlags.lay_xxx = ix_l;
     }
-
-    ix_l = entry->tagname[1] - '1';     // construct Ix level  0 - 2
-    if( ix_l > 2 ) {
-        ix_l = 2;
-        out_msg( "WGML logic error in glix.c\n" );
-        err_count++;
-    }
+    ix = ix_l - el_i1;      // construct Ix level  0 - 2
 
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {
@@ -166,38 +166,38 @@ void    lay_ix( const gmltag * entry )
                 switch( curr ) {
                 case   e_pre_skip:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix_l].pre_skip );
+                                           &layout_work.ix[ix].pre_skip );
                     break;
                 case   e_post_skip:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix_l].post_skip );
+                                           &layout_work.ix[ix].post_skip );
                     break;
                 case   e_skip:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix_l].skip );
+                                           &layout_work.ix[ix].skip );
                     break;
                 case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.ix[ix_l].font );
-                    if( layout_work.ix[ix_l].font >= wgml_font_cnt ) {
-                        layout_work.ix[ix_l].font = 0;
+                    cvterr = i_font_number( p, curr, &layout_work.ix[ix].font );
+                    if( layout_work.ix[ix].font >= wgml_font_cnt ) {
+                        layout_work.ix[ix].font = 0;
                     }
                     break;
                 case   e_indent:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix_l].indent );
+                                           &layout_work.ix[ix].indent );
                     break;
                 case   e_wrap_indent:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix_l].wrap_indent );
+                                           &layout_work.ix[ix].wrap_indent );
                     break;
                 case   e_index_delim:
-                    cvterr = i_xx_string( p, curr, layout_work.ix[ix_l].index_delim );
+                    cvterr = i_xx_string( p, curr, layout_work.ix[ix].index_delim );
                     break;
                 case   e_string_font:
-                    if( ix_l < 2 ) {
-                        cvterr = i_font_number( p, curr, &layout_work.ix[ix_l].string_font );
-                        if( layout_work.ix[ix_l].string_font >= wgml_font_cnt ) {
-                            layout_work.ix[ix_l].string_font = 0;
+                    if( ix < 2 ) {
+                        cvterr = i_font_number( p, curr, &layout_work.ix[ix].string_font );
+                        if( layout_work.ix[ix].string_font >= wgml_font_cnt ) {
+                            layout_work.ix[ix].string_font = 0;
                         }
                     }
                     break;
@@ -224,4 +224,3 @@ void    lay_ix( const gmltag * entry )
     scan_start = scan_stop;
     return;
 }
-

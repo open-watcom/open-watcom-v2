@@ -43,9 +43,9 @@
 /* point in the GML source                                                 */
 /***************************************************************************/
 
-extern  void    gml_cmt( const gmltag * entry )
+extern  void    gml_cmt( gml_tag tag )
 {
-    entry = entry;
+    tag = tag;
     scan_start = scan_stop;
     return;
 }

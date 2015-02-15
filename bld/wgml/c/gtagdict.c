@@ -51,24 +51,16 @@ void    init_tag_dict( gtentry * * dict )
 /*              if tag already defined error                               */
 /***************************************************************************/
 
-gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac,
-                     const int flags )
+gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac, const int flags )
 {
     gtentry     *   ge;
     gtentry     *   wk;
-    char            linestr[MAX_L_AS_STR];
 
     wk = find_tag( dict, name );
     if( wk != NULL ) {
         err_count++;
         g_err( err_tag_exist, name );
-        if( input_cbs->fmflags & II_macro ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-        } else {
-            ultoa( input_cbs->s.f->lineno, linestr, 10 );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-        }
+        g_info_inp_pos();
         show_include_stack();
         return( NULL );
     }

@@ -142,7 +142,7 @@ const   lay_att     index_att[14] =
 /*  lay_index      for :INDEX                                              */
 /***************************************************************************/
 
-void    lay_index( const gmltag * entry )
+void    lay_index( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -151,7 +151,7 @@ void    lay_index( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

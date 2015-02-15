@@ -142,6 +142,7 @@ extern  void    g_err( const msg_ids err, ... );
 extern  void    g_warn( const msg_ids err, ... );
 extern  void    g_info( const msg_ids err, ... );
 extern  void    g_info_lm( const msg_ids err, ... );
+extern  void    g_info_inp_pos( void );
 extern  void    g_suicide( void );
 
 
@@ -304,14 +305,14 @@ extern  void    eop_bx_box( void );
 
 
 /* gscan.c                              */
-extern  const   gmltag * find_lay_tag( char * token, size_t toklen );
-extern  const   gmltag * find_sys_tag( char * token, size_t toklen );
-extern  void             scan_line( void );
-extern  void             set_if_then_do( ifcb * cb );
-extern  condcode         test_process( ifcb * cb );
+extern  const laytag    *find_lay_tag( char *token, size_t toklen );
+extern  const gmltag    *find_sys_tag( char *token, size_t toklen );
+extern  const char      *lay_tagname( lay_tag tag );
+extern  const char      *gml_tagname( gml_tag tag );
+extern  void            scan_line( void );
+extern  void            set_if_then_do( ifcb *cb );
+extern  condcode        test_process( ifcb *cb );
 
-
-/* gsfuncs.c                            */
 extern  char    *   scr_multi_funcs( char * in, char * end, char * * ppval, int32_t valsize );
 
 
@@ -465,15 +466,15 @@ extern  void    show_include_stack( void );
  * prototypes for the gml tag processing routines
  */
 
-#define pickg( name, length, routine, gmlflags, locflags )  extern void routine( const gmltag * entry );
+#define pick( name, length, routine, gmlflags, locflags )  extern void routine( gml_tag tag );
 #include "gtags.h"
-#undef pickg
+#undef pick
 
 /*
  * prototypes for the layout tag processing routines
  */
 
-#define pick( name, length, routine, flags )  extern void routine( const gmltag * entry );
+#define pick( name, length, routine )  extern void routine( lay_tag tag );
 #include "gtagslay.h"
 #undef pick
 
@@ -495,11 +496,11 @@ extern  void    show_include_stack( void );
  * prototypes for the script control word processing routines
  */
 
-#define picks( name, routine, flags )  extern void routine( void );
-#define picklab( name, routine, flags )  extern void routine( void );
+#define pick( name, routine, flags )  extern void routine( void );
 #include "gscrcws.h"
-#undef picklab
-#undef picks
+#undef pick
+
+extern void scr_label( void );
 
 /*
  * prototypes for the script string function routines , ie. &'substr( ,..
@@ -507,8 +508,8 @@ extern  void    show_include_stack( void );
 
 #define pick( name, length, mand_parms, opt_parms, routine ) \
     extern condcode routine( parm parms[MAX_FUN_PARMS], size_t parm_count, char **ppval, int32_t valsize );
-
 #include "gsfuncs.h"
+#undef pick
 
 
 #ifdef  __cplusplus

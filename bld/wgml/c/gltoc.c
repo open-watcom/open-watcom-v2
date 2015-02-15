@@ -87,7 +87,7 @@ const   lay_att     toc_att[7] =
 /*  lay_toc                                                                */
 /***************************************************************************/
 
-void    lay_toc( const gmltag * entry )
+void    lay_toc( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -96,7 +96,7 @@ void    lay_toc( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {

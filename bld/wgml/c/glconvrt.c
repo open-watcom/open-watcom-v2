@@ -2064,11 +2064,11 @@ static  void    put_layout( char * in_name, layout_data * lay )
 /*  lay_convert   process :CONVERT tag                                     */
 /***************************************************************************/
 
-void    lay_convert( const gmltag * entry )
+void    lay_convert( lay_tag tag )
 {
     char        *   p;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     scan_start = scan_stop;
 

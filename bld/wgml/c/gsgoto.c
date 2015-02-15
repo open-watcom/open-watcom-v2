@@ -169,13 +169,7 @@ void    scr_label( void )
         scan_err = true;
         err_count++;
         g_err( err_missing_name, "" );
-        if( input_cbs->fmflags & II_tag_mac ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-        } else {
-            ultoa( input_cbs->s.f->lineno, linestr, 10 );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-        }
+        g_info_inp_pos();
         show_include_stack();
         return;
     } else {
@@ -191,30 +185,18 @@ void    scr_label( void )
 
             // check if lineno from label matches actual lineno
 
-            if( input_cbs->fmflags & II_tag_mac ) {
-                if( gn.result != input_cbs->s.m->lineno ) {
-                    scan_err = true;
-                    err_count++;
-                    g_err( err_label_line, gn.resultstr );
-                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                    show_include_stack();
-                    return;
-                }
-            } else {
-                if( gn.result != input_cbs->s.f->lineno ) {
-                    scan_err = true;
-                    err_count++;
-                    g_err( err_label_line, gn.resultstr );
-                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                    show_include_stack();
-                    return;
-                }
+            if( (input_cbs->fmflags & II_tag_mac) && gn.result != input_cbs->s.m->lineno
+              || (input_cbs->fmflags & II_tag_mac) == 0 && gn.result != input_cbs->s.f->lineno ) {
+                scan_err = true;
+                err_count++;
+                g_err( err_label_line, gn.resultstr );
+                g_info_inp_pos();
+                show_include_stack();
+                return;
             }
 
             if( input_cbs->fmflags & II_tag_mac ) {
-                  // numeric macro label no need to store
+                // numeric macro label no need to store
             } else {
                 wng_count++;
                 g_warn( wng_label_num );
@@ -301,13 +283,7 @@ void    scr_label( void )
                 scan_err = true;
                 err_count++;
                 g_err( err_missing_name, "" );
-                if( input_cbs->fmflags & II_tag_mac ) {
-                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                } else {
-                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                }
+                g_info_inp_pos();
                 show_include_stack();
                 return;
             }
@@ -377,7 +353,6 @@ void    scr_go( void )
     getnum_block    gn;
     labelcb     *   golb;
     int             k;
-    char            linestr[MAX_L_AS_STR];
 
     input_cbs->if_cb->if_level = 0;     // .go terminates
     ProcFlags.keep_ifstate = false;     // ... all .if controls
@@ -389,13 +364,7 @@ void    scr_go( void )
         scan_err = true;
         err_count++;
         g_err( err_missing_name, "" );
-        if( input_cbs->fmflags & II_tag_mac ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-        } else {
-            ultoa( input_cbs->s.f->lineno, linestr, 10 );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-        }
+        g_info_inp_pos();
         show_include_stack();
         return;
     }
@@ -422,13 +391,7 @@ void    scr_go( void )
             scan_err = true;
             err_count++;
             g_err( err_label_zero );
-            if( input_cbs->fmflags & II_tag_mac ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             show_include_stack();
             return;
         }
@@ -444,13 +407,7 @@ void    scr_go( void )
         if( arg_flen >  MAC_NAME_LENGTH ) {
             err_count++;
             g_err( err_sym_long, tok_start );
-            if( input_cbs->fmflags & II_tag_mac ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             show_include_stack();
             arg_flen = MAC_NAME_LENGTH;
         }

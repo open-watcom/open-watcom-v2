@@ -404,7 +404,6 @@ void    scr_if( void )
     bool            ifcond;             // current condition
     bool            totalcondition;     // resultant condition
     bool            firstcondition;     // first comparison .if
-    char            linestr[MAX_L_AS_STR];
 
     scan_err = false;
 
@@ -424,13 +423,7 @@ void    scr_if( void )
             scan_err = true;
             err_count++;
             g_err( err_if_term );
-            if( input_cbs->fmflags & II_tag_mac ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             show_include_stack();
             return;
         }
@@ -438,13 +431,7 @@ void    scr_if( void )
             scan_err = true;
             err_count++;
             g_err( err_if_relop );
-            if( input_cbs->fmflags & II_tag_mac ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             show_include_stack();
             return;
         }
@@ -466,13 +453,7 @@ void    scr_if( void )
             } else {
                 scan_err = true;
                 g_err( err_if_nesting );
-                if( input_cbs->fmflags & II_tag_mac ) {
-                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                } else {
-                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                }
+                g_info_inp_pos();
                 show_include_stack();
                 err_count++;
                 return;
@@ -609,7 +590,6 @@ void    scr_if( void )
 void    scr_th( void )
 {
     ifcb    *   cb = input_cbs->if_cb;
-    char        linestr[MAX_L_AS_STR];
 
     scan_err = false;
     cb->if_flags[cb->if_level].ifcwte = false;
@@ -624,13 +604,7 @@ void    scr_th( void )
 
         scan_err = true;
         g_err( err_if_then );
-        if( input_cbs->fmflags & II_tag_mac ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-        } else {
-            ultoa( input_cbs->s.f->lineno, linestr, 10 );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-        }
+        g_info_inp_pos();
         show_ifcb( "then", cb );
         show_include_stack();
         err_count++;
@@ -685,7 +659,6 @@ void    scr_th( void )
 void    scr_el( void )
 {
     ifcb    *   cb = input_cbs->if_cb;
-    char        linestr[MAX_L_AS_STR];
 
     scan_err = false;
     cb->if_flags[cb->if_level].iflast = false;
@@ -700,13 +673,7 @@ void    scr_el( void )
 
         scan_err = true;
         g_err( err_if_else );
-        if( input_cbs->fmflags & II_tag_mac ) {
-            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-        } else {
-            ultoa( input_cbs->s.f->lineno, linestr, 10 );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-        }
+        g_info_inp_pos();
         show_ifcb( "else", cb );
         show_include_stack();
         err_count++;
@@ -755,7 +722,6 @@ void    scr_do( void )
 {
     ifcb    *   cb = input_cbs->if_cb;
     condcode    cc;
-    char        linestr[MAX_L_AS_STR];
 
     scan_err = false;
     garginit();                         // find end of control word
@@ -770,13 +736,7 @@ void    scr_do( void )
 
             scan_err = true;
             g_err( err_if_do );
-            if( input_cbs->fmflags & II_tag_mac ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             show_ifcb( "dobegin", cb );
             show_include_stack();
             err_count++;
@@ -812,13 +772,7 @@ void    scr_do( void )
 
                     scan_err = true;
                     g_err( err_if_do_end );
-                    if( input_cbs->fmflags & II_tag_mac ) {
-                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                    } else {
-                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                    }
+                    g_info_inp_pos();
                     show_ifcb( "doend", cb );
                     show_include_stack();
                     err_count++;
@@ -838,13 +792,7 @@ void    scr_do( void )
         } else {
             scan_err = true;
             g_err( err_if_do_fun );
-            if( input_cbs->fmflags & II_tag_mac ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             show_include_stack();
             err_count++;
             return;

@@ -526,7 +526,7 @@ const   lay_att     ul_att[13] =
 /*  lay_dl                                                                 */
 /***************************************************************************/
 
-void    lay_dl( const gmltag * entry )
+void    lay_dl( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -535,7 +535,7 @@ void    lay_dl( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 
@@ -621,7 +621,7 @@ void    lay_dl( const gmltag * entry )
 /*  lay_gl                                                                 */
 /***************************************************************************/
 
-void    lay_gl( const gmltag * entry )
+void    lay_gl( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -630,7 +630,7 @@ void    lay_gl( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 
@@ -712,7 +712,7 @@ void    lay_gl( const gmltag * entry )
 /*  lay_ol                                                                 */
 /***************************************************************************/
 
-void    lay_ol( const gmltag * entry )
+void    lay_ol( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -721,7 +721,7 @@ void    lay_ol( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 
@@ -816,7 +816,7 @@ void    lay_ol( const gmltag * entry )
 /*  lay_sl                                                                 */
 /***************************************************************************/
 
-void    lay_sl( const gmltag * entry )
+void    lay_sl( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -825,7 +825,7 @@ void    lay_sl( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 
@@ -907,7 +907,7 @@ void    lay_sl( const gmltag * entry )
 /*  lay_ul                                                                 */
 /***************************************************************************/
 
-void    lay_ul( const gmltag * entry )
+void    lay_ul( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -916,7 +916,7 @@ void    lay_ul( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

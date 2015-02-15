@@ -202,7 +202,7 @@ static  void    init_banner_wk( banner_lay_tag * ban )
 /*  lay_banner                                                             */
 /***************************************************************************/
  
-void    lay_banner( const gmltag * entry )
+void    lay_banner( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -226,7 +226,7 @@ void    lay_banner( const gmltag * entry )
     } else {
         if( !strnicmp( ":banner", buff2, sizeof( ":banner" ) ) ) {
             err_count++;                // nested :banner
-            g_err( err_nested_tag, entry->tagname );
+            g_err( err_nested_tag, lay_tagname( tag ) );
             file_mac_info();
  
             while( !ProcFlags.reprocess_line  ) {
@@ -390,7 +390,7 @@ void    lay_banner_end_prepare( void )
 /*  lay_ebanner                                                            */
 /***************************************************************************/
  
-void    lay_ebanner( const gmltag * entry )
+void    lay_ebanner( lay_tag tag )
 {
     banner_lay_tag  *   banwk;
     region_lay_tag  *   reg;
@@ -455,7 +455,7 @@ void    lay_ebanner( const gmltag * entry )
             curr_ban = NULL;
         }
     } else {
-        g_err( err_no_lay, &(entry->tagname[1]), entry->tagname );
+        g_err( err_no_lay, &(lay_tagname( tag )[1]), lay_tagname( tag ) );
         err_count++;
         file_mac_info();
     }

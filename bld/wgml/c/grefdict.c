@@ -200,7 +200,7 @@ void init_ref_entry( ref_entry * re, char * id, size_t len )
 
     fill_id( re, id, len );
 
-    if( input_cbs->fmflags & II_macro ) {
+    if( input_cbs->fmflags & II_tag_mac ) {
         re->lineno = input_cbs->s.m->lineno;
     } else {
         re->lineno = input_cbs->s.f->lineno;

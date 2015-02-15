@@ -59,11 +59,11 @@ static  font_number font_save;              // save for font
 /*                                                                         */
 /***************************************************************************/
 
-extern  void    gml_xmp( const gmltag * entry )
+extern  void    gml_xmp( gml_tag tag )
 {
     char    *   p;
 
-    entry = entry;
+    tag = tag;
 
     start_doc_sect();
     scr_process_break();
@@ -162,11 +162,11 @@ extern  void    gml_xmp( const gmltag * entry )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_exmp( const gmltag * entry )
+void    gml_exmp( gml_tag tag )
 {
     tag_cb  *   wk;
 
-    entry = entry;
+    tag = tag;
     scr_process_break();
     if( !ProcFlags.xmp_active ) {       // no preceding :XMP tag
         g_err_tag_prec( "XMP" );

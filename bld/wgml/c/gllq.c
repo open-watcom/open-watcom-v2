@@ -98,7 +98,7 @@ const   lay_att     lq_att[7] =
 /*  lay_lq                                                                 */
 /***************************************************************************/
 
-void    lay_lq( const gmltag * entry )
+void    lay_lq( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -107,7 +107,7 @@ void    lay_lq( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

@@ -32,6 +32,17 @@
 #define GTYPELAY_H_INCLUDED
  
 /***************************************************************************/
+/*  Layout tags as enum list                                               */
+/***************************************************************************/
+ 
+typedef enum {
+    #define pick( name, length, routine ) LAY_TAG_##name,
+    #include "gtagslay.h"
+    #undef pick
+    LAY_TAGMAX
+} lay_tag;
+
+/***************************************************************************/
 /*  Layout attributes as enum list                                         */
 /*    these are used in LAYOUT tag processing to control the attributes    */
 /***************************************************************************/
@@ -143,6 +154,12 @@ typedef enum case_t {
 } case_t;
  
  
+typedef struct laytag {
+   char             tagname[TAG_NAME_LENGTH + 1];
+   size_t           taglen;
+   void             (*layproc)( lay_tag tag );
+} laytag;
+
 /***************************************************************************/
 /*  :ADDRESS  Layout tag data                                               */
 /***************************************************************************/
@@ -907,6 +924,5 @@ typedef struct att_args {
     int         len[2];
     bool        quoted;                 // only for value
 } att_args;
- 
  
 #endif  /* GTYPELAY_H_INCLUDED */

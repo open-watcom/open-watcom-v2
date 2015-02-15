@@ -52,7 +52,7 @@ const   lay_att     widow_att[2] = { e_threshold, e_dummy_zero };
 /*  lay_widow                                                              */
 /***************************************************************************/
 
-void    lay_widow( const gmltag * entry )
+void    lay_widow( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -61,7 +61,7 @@ void    lay_widow( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {

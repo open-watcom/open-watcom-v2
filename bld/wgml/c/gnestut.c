@@ -87,7 +87,7 @@ nest_stack * copy_to_nest_stack( void )
         } else {
             nest_o->prev = nest_p;
         }
-        if( inwk->fmflags & II_macro ) {
+        if( inwk->fmflags & II_tag_mac ) {
             nest_p->s.mt.m = inwk->s.m->mac;
             nest_p->lineno = inwk->s.m->lineno;
             if( inwk->fmflags & II_tag ) {

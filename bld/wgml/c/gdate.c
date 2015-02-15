@@ -81,7 +81,7 @@ static void prep_date_line( text_line *p_line, const char *p )
 /*  :DATE.date   tag                                                       */
 /***************************************************************************/
  
-void    gml_date( const gmltag * entry )
+void    gml_date( gml_tag tag )
 {
     char        *   p;
     doc_element *   cur_el;
@@ -91,7 +91,7 @@ void    gml_date( const gmltag * entry )
  
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        g_err( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        g_err( err_tag_wrong_sect, gml_tagname( tag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
     }

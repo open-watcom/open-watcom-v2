@@ -177,7 +177,7 @@ static void reopen_inc_fp( filecb *cb )
 /*  Report resource exhaustion: may eventually try to correct the problem  */
 /***************************************************************************/
 
-bool    free_resources( int in_errno )
+bool    free_resources( errno_t in_errno )
 {
     if( in_errno == ENOMEM) {
         g_err( err_no_memory );
@@ -379,7 +379,6 @@ static  void    get_macro_line( void )
         cb->lineno++;
         cb->flags          &= ~FF_eof;
         input_cbs->fmflags &= ~II_eof;
-        input_cbs->fmflags |= (II_sol | II_eol);
         strcpy_s( buff2, buf_size, cb->macline->value );
         cb->macline         = cb->macline->next;
     }
@@ -427,7 +426,7 @@ bool    get_line( bool display_line )
                 reset_pe_cb();
             }
         } else {
-            if( input_cbs->fmflags & II_macro ) {
+            if( input_cbs->fmflags & II_tag_mac ) {
                 get_macro_line();       // input from macro line
             } else {
                 cb = input_cbs->s.f;    // input from file
@@ -530,7 +529,7 @@ void    show_include_stack( void )
 
 
     if( input_cbs != NULL ) {
-        if( input_cbs->fmflags & II_macro ) {
+        if( input_cbs->fmflags & II_tag_mac ) {
             ultoa( input_cbs->s.m->lineno, linestr, 10 );
             ultoa( input_cbs->s.m->mac->lineno, linemac, 10 );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,

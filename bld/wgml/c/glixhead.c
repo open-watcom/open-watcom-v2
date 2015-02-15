@@ -96,7 +96,7 @@ const   lay_att     ixhead_att[7] =
 /*  lay_ixhead                                                             */
 /***************************************************************************/
 
-void    lay_ixhead( const gmltag * entry )
+void    lay_ixhead( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -105,7 +105,7 @@ void    lay_ixhead( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

@@ -81,7 +81,6 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
     int                 n;
     int                 len;
     getnum_block        gn;
-    char                linestr[MAX_L_AS_STR];
 
     if( (parmcount < 2) || (parmcount > 3) ) {
         return( neg );
@@ -108,13 +107,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
         if( (cc != pos) || (gn.result > len) ) {
             if( !ProcFlags.suppress_msg ) {
                 g_err( err_func_parm, "2 (startword)" );
-                if( input_cbs->fmflags & II_tag_mac ) {
-                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                } else {
-                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                }
+                g_info_inp_pos();
                 err_count++;
                 show_include_stack();
             }
@@ -136,13 +129,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
                 if( (cc != pos) || (gn.result == 0) ) {
                     if( !ProcFlags.suppress_msg ) {
                         g_err( err_func_parm, "3 (length)" );
-                        if( input_cbs->fmflags & II_tag_mac ) {
-                            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                        } else {
-                            ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                        }
+                        g_info_inp_pos();
                         err_count++;
                         show_include_stack();
                     }
@@ -322,7 +309,6 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
     getnum_block        gn;
     bool                inword;
     bool                found;
-    char                linestr[MAX_L_AS_STR];
 
     ressize = ressize;
     if( (parmcount < 2) || (parmcount > 3) ) {
@@ -359,14 +345,8 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                        g_err( err_func_parm, "3 (startword)" );
-                        if( input_cbs->fmflags & II_tag_mac ) {
-                            ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                        } else {
-                            ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                        }
+                    g_err( err_func_parm, "3 (startword)" );
+                    g_info_inp_pos();
                     err_count++;
                     show_include_stack();
                 }

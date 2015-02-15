@@ -49,7 +49,7 @@
 /* the symbol referred to by the symbol name is deleted.                   */
 /***************************************************************************/
  
-extern  void    gml_set( const gmltag * entry )
+extern  void    gml_set( gml_tag tag )
 {
     char        *   p;
     char        *   symstart;
@@ -62,7 +62,7 @@ extern  void    gml_set( const gmltag * entry )
     int             rc;
     symvar      * * working_dict;
  
-    entry = entry;
+    tag = tag;
     subscript = no_subscript;           // not subscripted
     scan_err = false;
  
@@ -143,18 +143,9 @@ extern  void    gml_set( const gmltag * entry )
                 }
                 valuethere = true;
             } else {
-                char    linestr[MAX_L_AS_STR];
- 
                 err_count++;
- 
                 g_err( err_att_name_inv );
-                if( input_cbs->fmflags & II_tag_mac ) {
-                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                } else {
-                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                }
+                g_info_inp_pos();
                 if( inc_level > 1 ) {
                     show_include_stack();
                 }
@@ -191,19 +182,11 @@ extern  void    gml_set( const gmltag * entry )
             }
         }
         if( c == '.' ) {                // end of tag found
-            char    linestr[MAX_L_AS_STR];
- 
             err_count++;
             // AT-001 Required attribute not found
  
             g_err( err_att_missing );
-            if( input_cbs->fmflags & II_tag_mac ) {
-                ultoa( input_cbs->s.m->lineno, linestr, 10 );
-                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-            } else {
-                ultoa( input_cbs->s.f->lineno, linestr, 10 );
-                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-            }
+            g_info_inp_pos();
             if( inc_level > 1 ) {
                 show_include_stack();
             }

@@ -76,7 +76,7 @@ const   lay_att     page_att[5] =
 /*  lay_page                                                               */
 /***************************************************************************/
 
-void    lay_page( const gmltag * entry )
+void    lay_page( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -85,7 +85,7 @@ void    lay_page( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

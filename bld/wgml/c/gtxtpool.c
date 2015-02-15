@@ -437,9 +437,10 @@ doc_element * alloc_doc_el(  element_type type )
         curr->element.hline.h_len = 0;
         break;
     case el_text :
-        curr->element.text.overprint = false;
         curr->element.text.spacing = 0;
         curr->element.text.first = NULL;
+        curr->element.text.overprint = false;
+        curr->element.text.force_op = false;
         break;
     case el_vline :
         curr->element.vline.h_start = 0;
@@ -555,6 +556,12 @@ void    free_pool_storage( void )
             mem_free( ((box_col_set *) v)->cols );
         }
         wv = ( (box_col_set *) v)->next;
+        mem_free( v );
+        v = wv;
+    }
+
+    for( v = box_col_stack_pool; v != NULL; ) {
+        wv = ( (box_col_stack *) v)->next;
         mem_free( v );
         v = wv;
     }

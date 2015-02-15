@@ -187,7 +187,7 @@ const   lay_att     hx_att[18] =
 /*  lay_hx                                                                 */
 /***************************************************************************/
 
-void    lay_hx( const gmltag * entry )
+void    lay_hx( lay_tag tag )
 {
     char        *   p;
     condcode        cc;
@@ -196,6 +196,7 @@ void    lay_hx( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
     int             hx_l;
+    int             hx;
 
     p = scan_start;
 
@@ -204,43 +205,39 @@ void    lay_hx( const gmltag * entry )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( entry->tagname[1] ) {
-    case   '0':
+    switch( tag ) {
+    case LAY_TAG_H0:
         hx_l = el_h0;
         break;
-    case   '1':
+    case LAY_TAG_H1:
         hx_l = el_h1;
         break;
-    case   '2':
+    case LAY_TAG_H2:
         hx_l = el_h2;
         break;
-    case   '3':
+    case LAY_TAG_H3:
         hx_l = el_h3;
         break;
-    case   '4':
+    case LAY_TAG_H4:
         hx_l = el_h4;
         break;
-    case   '5':
+    case LAY_TAG_H5:
         hx_l = el_h5;
         break;
-    case   '6':
+    case LAY_TAG_H6:
         hx_l = el_h6;
         break;
     default:
         hx_l = el_h6;
+        out_msg( "WGML logic error.\n");
+        err_count++;
         break;
     }
     if( ProcFlags.lay_xxx != hx_l ) {
         ProcFlags.lay_xxx = hx_l;
     }
-
-    hx_l = entry->tagname[1] - '0';     // construct Hx level
-    if( hx_l > 6 ) {
-        hx_l = 6;
-        out_msg( "WGML logic error in glhx.c\n" );
-        err_count++;
-    }
-    ProcFlags.hx_level = hx_l;
+    hx = hx_l - el_h0;
+    ProcFlags.hx_level = hx;
 
     cc = get_lay_sub_and_value( &l_args );  // get one with value
     while( cc == pos ) {
@@ -252,63 +249,63 @@ void    lay_hx( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_group:
-                    cvterr = i_int8( p, curr, &layout_work.hx[hx_l].group );
+                    cvterr = i_int8( p, curr, &layout_work.hx[hx].group );
                     break;
                 case   e_indent:
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.hx[hx_l].indent );
+                                           &layout_work.hx[hx].indent );
                     break;
                 case   e_pre_top_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx_l].pre_top_skip );
+                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].pre_top_skip );
                     break;
                 case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx_l].pre_skip );
+                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].pre_skip );
                     break;
                 case   e_post_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx_l].post_skip );
+                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].post_skip );
                     break;
                 case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.hx[hx_l].spacing );
+                    cvterr = i_int8( p, curr, &layout_work.hx[hx].spacing );
                     break;
                 case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.hx[hx_l].font );
-                    if( layout_work.hx[hx_l].font >= wgml_font_cnt ) {
-                        layout_work.hx[hx_l].font = 0;
+                    cvterr = i_font_number( p, curr, &layout_work.hx[hx].font );
+                    if( layout_work.hx[hx].font >= wgml_font_cnt ) {
+                        layout_work.hx[hx].font = 0;
                     }
                     break;
                 case   e_number_font:
-                    cvterr = i_font_number( p, curr, &layout_work.hx[hx_l].number_font );
-                    if( layout_work.hx[hx_l].number_font >= wgml_font_cnt ) {
-                        layout_work.hx[hx_l].number_font = 0;
+                    cvterr = i_font_number( p, curr, &layout_work.hx[hx].number_font );
+                    if( layout_work.hx[hx].number_font >= wgml_font_cnt ) {
+                        layout_work.hx[hx].number_font = 0;
                     }
                     break;
                 case   e_number_form:
-                    cvterr = i_number_form( p, curr, &layout_work.hx[hx_l].number_form );
+                    cvterr = i_number_form( p, curr, &layout_work.hx[hx].number_form );
                     break;
                 case   e_page_position:
-                    cvterr = i_page_position( p, curr, &layout_work.hx[hx_l].page_position );
+                    cvterr = i_page_position( p, curr, &layout_work.hx[hx].page_position );
                     break;
                 case   e_number_style:
-                    cvterr = i_number_style( p, curr, &layout_work.hx[hx_l].number_style );
+                    cvterr = i_number_style( p, curr, &layout_work.hx[hx].number_style );
                     break;
                 case   e_page_eject:
-                    cvterr = i_page_eject( p, curr, &layout_work.hx[hx_l].page_eject );
+                    cvterr = i_page_eject( p, curr, &layout_work.hx[hx].page_eject );
                     break;
                 case   e_line_break:
-                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx_l].line_break );
+                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx].line_break );
                     break;
                     break;
                 case   e_display_heading:
-                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx_l].display_heading );
+                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx].display_heading );
                     break;
                 case   e_number_reset:
-                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx_l].number_reset );
+                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx].number_reset );
                     break;
                 case   e_case:
-                    cvterr = i_case( p, curr, &layout_work.hx[hx_l].cases );
+                    cvterr = i_case( p, curr, &layout_work.hx[hx].cases );
                     break;
                 case   e_align:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx_l].align );
+                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].align );
                     break;
                 default:
                     out_msg( "WGML logic error.\n");

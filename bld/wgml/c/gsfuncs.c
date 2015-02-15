@@ -45,22 +45,22 @@
 /***************************************************************************/
 /*    SCR multi letter functions                                           */
 /***************************************************************************/
-
-#define pick( name, length, parms, optparms, routine ) \
-            { #name, length, parms, optparms, routine },
+typedef enum {
+    #define pick( name, length, parms, optparms, routine ) SCR_FUNC_##name,
+    #include "gsfuncs.h"
+    #undef pick
+    SCR_FUNCMAX
+} scr_function;
 
 static  const   scrfunc scr_functions[] = {
-
-#include "gsfuncs.h"
-
-    { " ", 0, 0, 0, NULL }              // end
+    #define pick( name, length, parms, optparms, routine ) { #name, length, parms, optparms, routine },
+    #include "gsfuncs.h"
+    #undef pick
 };
-
-#define SCR_FUNC_MAX (sizeof( scr_functions ) / sizeof( scr_functions[0] ) - 1)
 
 static const char   ampchar = '&';
 static bool         multiletter_function;   // parm contains function
-static bool         var_in_parm;        // parm contains variable
+static bool         var_in_parm;            // parm contains variable
 
 
 
@@ -203,15 +203,7 @@ static  char    * find_start_of_parm( char * pchar )
 
 static  void    err_info( char * * result )
 {
-    char                linestr[MAX_L_AS_STR];
-
-    if( input_cbs->fmflags & II_macro ) {
-        ultoa( input_cbs->s.m->lineno, linestr, 10 );
-        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-    } else {
-        ultoa( input_cbs->s.f->lineno, linestr, 10 );
-        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-    }
+    g_info_inp_pos();
     err_count++;
     show_include_stack();
 
@@ -232,11 +224,10 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
     char            *   pchar;
     int                 rc;
     size_t              fnlen;
-    int                 funcind;
+    scr_function        funcind;
     int                 k;
     int                 m;
     char                fn[FUN_NAME_LENGTH + 1];
-    bool                found;
     parm                parms[MAX_FUN_PARMS];
     int                 parmcount;
     condcode            cc;
@@ -251,7 +242,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
 
     // collect function name
     while( *pchar && pchar <= end && is_function_char( *pchar ) ) {
-        fn[fnlen] = *pchar++;
+        fn[fnlen] = toupper( *pchar++ );
         if( fnlen < FUN_NAME_LENGTH ) {
             fnlen++;
         } else {
@@ -267,25 +258,20 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
     }
 
     // test for valid functionname
-    found = false;
-    for( k = 0; k < SCR_FUNC_MAX; k++ ) {
-        if( fnlen == scr_functions[k].length
-            && !stricmp( fn, scr_functions[k].fname ) ) {
-
-            found = true;
+    for( funcind = 0; funcind < SCR_FUNCMAX; ++funcind ) {
+        if( fnlen == scr_functions[funcind].length && !memcmp( fn, scr_functions[funcind].fname, fnlen ) ) {
             if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
-                out_msg( " Function %s found\n", scr_functions[k].fname );
+                out_msg( " Function %s found\n", scr_functions[funcind].fname );
                 add_multi_func_research( fn );
             }
             break;
         }
     }
-    if( !found ) {
+    if( funcind == SCR_FUNCMAX ) {
         g_err( err_func_name, fn );
         err_info( result );
         return( in + 1 );               // avoid endless loop
     }
-    funcind = k;
 
     // collect the mandatory parm(s)
 
@@ -311,8 +297,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
             parms[k].stop = ps;
             parms[k].start = resbuf;
             if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
-                out_msg( " Function %s parm %s found\n",
-                         scr_functions[funcind].fname, resbuf );
+                out_msg( " Function %s parm %s found\n", scr_functions[funcind].fname, resbuf );
             }
 
             resolve_symvar_functions( resbuf );

@@ -54,7 +54,7 @@
 /* page.                                                                   */
 /***************************************************************************/
 
-void    gml_hdref( const gmltag * entry )
+void    gml_hdref( gml_tag tag )
 {
     char    *   p;
     char    *   pa;
@@ -70,7 +70,7 @@ void    gml_hdref( const gmltag * entry )
     ref_entry   *   re;
     static char undefid[] = "\"Undefined Heading\" on page XXX";
 
-    entry = entry;
+    tag = tag;
 
     idseen = false;
     pageseen = false;

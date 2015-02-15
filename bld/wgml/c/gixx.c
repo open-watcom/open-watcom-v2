@@ -128,7 +128,7 @@ static ix_h_blk *find_create_ix_h_entry( ix_h_blk **ixhwork,
 /*   hx_lvl is 1 to 3 for :Ix and :IHx                                     */
 /*         and 0      for :IREF                                            */
 /***************************************************************************/
-static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
+static  void    gml_ixxx_common( gml_tag tag, int hx_lvl )
 {
     bool          idseen;
     bool          refidseen;
@@ -172,7 +172,7 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
     }
     lvlc = '0' + hx_lvl;
     *hxstring = GML_char;         // construct tagname for possible error msg
-    strcpy_s( (hxstring + 1), TAG_NAME_LENGTH, entry->tagname );
+    strcpy_s( (hxstring + 1), TAG_NAME_LENGTH, gml_tagname( tag ) );
 
     if( (hxstring[2] == lvlc) &&        // :Ix tags not allowed before :GDOC
         !((ProcFlags.doc_sect >= doc_sect_gdoc) ||
@@ -736,19 +736,19 @@ static  void    gml_ixxx_common( const gmltag * entry, int hx_lvl )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_i1( const gmltag * entry )
+void    gml_i1( gml_tag tag )
 {
-    gml_ixxx_common( entry, 1 );
+    gml_ixxx_common( tag, 1 );
 }
 
-void    gml_i2( const gmltag * entry )
+void    gml_i2( gml_tag tag )
 {
-    gml_ixxx_common( entry, 2 );
+    gml_ixxx_common( tag, 2 );
 }
 
-void    gml_i3( const gmltag * entry )
+void    gml_i3( gml_tag tag )
 {
-    gml_ixxx_common( entry, 3 );
+    gml_ixxx_common( tag, 3 );
 }
 
 
@@ -806,19 +806,19 @@ void    gml_i3( const gmltag * entry )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_ih1( const gmltag * entry )
+void    gml_ih1( gml_tag tag )
 {
-    gml_ixxx_common( entry, 1 );
+    gml_ixxx_common( tag, 1 );
 }
 
-void    gml_ih2( const gmltag * entry )
+void    gml_ih2( gml_tag tag )
 {
-    gml_ixxx_common( entry, 2 );
+    gml_ixxx_common( tag, 2 );
 }
 
-void    gml_ih3( const gmltag * entry )
+void    gml_ih3( gml_tag tag )
 {
-    gml_ixxx_common( entry, 3 );
+    gml_ixxx_common( tag, 3 );
 }
 
 
@@ -870,8 +870,8 @@ void    gml_ih3( const gmltag * entry )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_iref( const gmltag * entry )
+void    gml_iref( gml_tag tag )
 {
-    gml_ixxx_common( entry, 0 );
+    gml_ixxx_common( tag, 0 );
 }
 

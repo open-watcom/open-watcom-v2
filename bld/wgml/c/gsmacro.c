@@ -302,7 +302,7 @@ void    scr_dm( void )
      */
     while( *p && is_macro_char( *p ) ) {
         if( len < MAC_NAME_LENGTH ) {
-            *pn++ = tolower( *p++ );    // copy lowercase macroname
+            *pn++ = toupper( *p++ );    // copy lowercase macroname
             *pn   = '\0';
         } else {
             break;
@@ -585,16 +585,8 @@ void    scr_me( void )
 
 static void macro_missing( void )
 {
-    char        linestr[MAX_L_AS_STR];
-
     g_err( err_mac_name_inv );
-    if( input_cbs->fmflags & II_tag_mac ) {
-        ultoa( input_cbs->s.m->lineno, linestr, 10 );
-        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-    } else {
-        ultoa( input_cbs->s.f->lineno, linestr, 10 );
-        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-    }
+    g_info_inp_pos();
 }
 
 

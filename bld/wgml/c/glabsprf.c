@@ -126,7 +126,7 @@ const   lay_att     abspref_att[11] =
 /*  lay_abspref   for :ABSTRACT and :PREFACE                               */
 /***************************************************************************/
 
-void    lay_abspref( const gmltag * entry )
+void    lay_abspref( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -145,16 +145,20 @@ void    lay_abspref( const gmltag * entry )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( !strcmp( "ABSTRACT", entry->tagname ) ) {
+    switch( tag ) {
+    case LAY_TAG_ABSTRACT:
         x_tag = el_abstract;
-        ap  = &layout_work.abstract;
-    } else if( !strcmp( "PREFACE", entry->tagname ) ) {
+        ap = &layout_work.abstract;
+        break;
+    case LAY_TAG_PREFACE:
         x_tag = el_preface;
-        ap  = &layout_work.preface;
-    } else {
-         out_msg( "WGML logic error glabsprf.c.\n");
-         file_mac_info();
-         err_count++;
+        ap = &layout_work.preface;
+        break;
+    default:
+        out_msg( "WGML logic error glabsprf.c.\n");
+        file_mac_info();
+        err_count++;
+        break;
     }
     if( ProcFlags.lay_xxx != x_tag ) {
         ProcFlags.lay_xxx = x_tag;

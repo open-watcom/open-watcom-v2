@@ -225,3 +225,20 @@ void g_info_lm( const msg_ids num, ... )
     va_end( args );
 }
 
+/***************************************************************************/
+/*  informational about line position in macro/file                        */
+/***************************************************************************/
+
+void g_info_inp_pos( void )
+{
+    char        linestr[MAX_L_AS_STR];
+
+    if( input_cbs->fmflags & II_tag_mac ) {
+        ultoa( input_cbs->s.m->lineno, linestr, 10 );
+        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
+    } else {
+        ultoa( input_cbs->s.f->lineno, linestr, 10 );
+        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+    }
+}
+

@@ -93,7 +93,7 @@ const   lay_att     author_att[7] =
 /*  lay_author                                                             */
 /***************************************************************************/
 
-void    lay_author( const gmltag * entry )
+void    lay_author( lay_tag tag )
 {
     char            *   p;
     condcode            cc;
@@ -102,7 +102,7 @@ void    lay_author( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
-    entry = entry;
+    tag = tag;
     p = scan_start;
     cvterr = false;
 

@@ -40,11 +40,11 @@ static  font_number     font_save;      // save for font
 /*  :ADDRESS                                                               */
 /***************************************************************************/
 
-extern  void    gml_address( const gmltag * entry )
+extern  void    gml_address( gml_tag tag )
 {
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        g_err( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        g_err( err_tag_wrong_sect, gml_tagname( tag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
         scan_start = scan_stop;
@@ -81,13 +81,12 @@ extern  void    gml_address( const gmltag * entry )
 /*  :eADDRESS                                                              */
 /***************************************************************************/
 
-extern  void    gml_eaddress( const gmltag * entry )
+extern  void    gml_eaddress( gml_tag tag )
 {
     tag_cb  *   wk;
 
-    entry = entry;
     if( !ProcFlags.address_active ) {   // no preceding :ADDRESS tag
-        g_err_tag_prec( "ADDRESS" );
+        g_err_tag_prec( gml_tagname( tag ) );
         scan_start = scan_stop;
         return;
     }
@@ -171,7 +170,7 @@ static void prep_aline( text_line *p_line, const char *p )
 /*  :ALINE tag                                                             */
 /***************************************************************************/
 
-void    gml_aline( const gmltag * entry )
+void    gml_aline( gml_tag tag )
 {
     char        *   p;
     doc_element *   cur_el;
@@ -179,7 +178,7 @@ void    gml_aline( const gmltag * entry )
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        g_err( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        g_err( err_tag_wrong_sect, gml_tagname( tag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
     }

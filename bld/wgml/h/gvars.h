@@ -360,7 +360,6 @@ extern char str_tags[t_MAX + 1][10];
 /*  :LAYOUT  data                                                          */
 /***************************************************************************/
 
-global  int32_t         lay_ind;// index into lay_tab for attribute processing
 global  layout_data     layout_work;    // layout used for formatting
 global  laystack    *   lay_files;      // layout file(s) specified on cmdline
 

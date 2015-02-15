@@ -252,7 +252,7 @@ static  void    del_input_cb_entry( void )
         mem_free( wk->pe_cb.line );
     }
 
-    if( wk->fmflags & II_macro ) {
+    if( wk->fmflags & II_tag_mac ) {
 /*
  *  The macrolines in s.m don't need to be freed, as these point to
  *  mac_entry, and freeing is done with macro_dict
@@ -504,7 +504,7 @@ static  void    proc_input( char * filename )
 
                     ProcFlags.goto_active = false;
                     err_count++;
-                    if( input_cbs->fmflags & II_macro ) {
+                    if( input_cbs->fmflags & II_tag_mac ) {
                         if( gotargetno > 0 ) {
                             utoa( gotargetno, linestr, 10 );
                             g_err( err_goto, linestr,
