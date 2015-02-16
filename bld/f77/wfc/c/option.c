@@ -69,6 +69,7 @@ extern  uint            DataThreshold;
 /* Forward declarations */
 static  int     GetDirective( char *buff );
 static  void    ScanOpts( char *buff );
+static  void    CompoundOptOption( char *buff );
 
 // Compiler directives
 
@@ -509,7 +510,6 @@ static  opt_entry       *GetOptn( char *buff, bool *negated ) {
     return( NULL );
 }
 
-
 void    CmdOption( char *buff ) {
 //===============================
 
@@ -521,7 +521,11 @@ void    CmdOption( char *buff ) {
 
     optn = GetOptn( buff, &negated );
     if( optn == NULL ) {
-        Warning( CO_NOT_RECOG, buff );
+        // Check if we've encountered a compound optimization option    
+        if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 )
+            CompoundOptOption( buff );
+        else
+            Warning( CO_NOT_RECOG, buff );
     } else {
         if( optn->flags & VAL ) {
             if( negated ) {
@@ -533,6 +537,42 @@ void    CmdOption( char *buff ) {
         } else {
             optn->proc_rtnbool( optn, negated );
         }
+    }
+}
+
+
+static  void  CompoundOptOption( char *buff ) {
+//===============================
+
+// Process a "compound" optimization option - multiple in one option
+    char        single_opt[4];
+    int         i;
+    int         opt_i;
+
+    single_opt[0] = buff[0];
+    i = 0;
+    
+    while( buff[++i] != NULL ) {
+        opt_i = 1;
+        single_opt[opt_i++] = buff[i];
+        
+        switch( tolower( buff[i] ) ) {
+            case 'l':
+                if( buff[i+1] == '+' )
+                    single_opt[opt_i++] = buff[++i];
+                break;
+            case 'b':
+                if( tolower( buff[i+1] ) == 'p' )
+                    single_opt[opt_i++] = buff[++i];
+                break;
+            case 'd':
+                if( tolower( buff[i+1] ) == 'o' )
+                    single_opt[opt_i++] = buff[++i];
+                break;
+        }
+        
+        single_opt[opt_i] = '\0';
+        CmdOption( single_opt );
     }
 }
 

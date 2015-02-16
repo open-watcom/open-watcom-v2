@@ -92,9 +92,13 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
             if( quoted ) {
                 if( *ptr == '\"' ) {
                     quoted = FALSE;
+                    if(scanning_file_name)
+                        *ptr = NULLCHAR;
                 }
             } else if( *ptr == '\"' ) {
                 quoted = TRUE;
+                if(scanning_file_name)
+                    *fn = ptr+1;
             } else if( ( *ptr == ' ' ) || ( *ptr == '\t' ) ) {
                 *ptr = NULLCHAR;
                 ++ptr;

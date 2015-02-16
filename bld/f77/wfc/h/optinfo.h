@@ -58,7 +58,9 @@ opt( "TYpe",       OPT_TYPE,         CMD,         NULL,         &BitOption, MS_O
 opt( "DIsk",       DISK_MASK,        CMD|NEG,     NULL,         &NegOption, MS_OPT_DISK ),
 opt( "INCList",    OPT_INCLIST,      CMD,         NULL,         &BitOption, MS_OPT_INCLIST ),
 opt( "ERrorfile",  OPT_ERRFILE,      CMD,         NULL,         &BitOption, MS_OPT_ERRFILE ),
+opt( "FR",         OPT_ERRFILE,      CMD,         NULL,         &BitOption, MS_OPT_ERRFILE ),
 opt( "INCPath",    OPT_INCPATH,      CMD|VAL,     &PathOption,  NULL,       MS_OPT_INCPATH ),
+opt( "I",          OPT_INCPATH,      CMD|VAL,     &PathOption,  NULL,       MS_OPT_INCPATH ),
 opt( "FO",         CGOPT_OBJ_NAME,   CMD|VAL|CG,  &FOOption,    NULL,       MS_CGOPT_OBJ_NAME ),
 //                      Diagnostic Options
 opt( "",           0,                CTG,         NULL,         NULL,       MS_CTG_DIAGNOSTIC ),
@@ -174,6 +176,7 @@ opt( "FORmat",     OPT_EXTEND_FORMAT,CMD,         NULL,         &BitOption, MS_O
 opt( "WILd",       OPT_WILD,         CMD,         NULL,         &BitOption, MS_OPT_WILD ),
 opt( "TErminal",   OPT_TERM,         CMD,         NULL,         &BitOption, MS_OPT_TERM ),
 opt( "Quiet",      OPT_QUIET,        CMD,         NULL,         &BitOption, MS_OPT_QUIET ),
+opt( "ZQ",         OPT_QUIET,        CMD,         NULL,         &BitOption, MS_OPT_QUIET ),
 opt( "RESources",  OPT_RESOURCES,    CMD,         NULL,         &BitOption, MS_OPT_RESOURCES ),
 opt( "CC",         OPT_UNIT_6_CC,    CMD,         NULL,         &BitOption, MS_OPT_UNIT_6_CC ),
 opt( "LFwithff",   OPT_LF_WITH_FF,   CMD,         NULL,         &BitOption, MS_OPT_LF_WITH_FF ),

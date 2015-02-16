@@ -70,30 +70,35 @@
 #if defined( _M_I86 )
 #define CC          BPRFX "wcc"           /* Open Watcom C compiler (16-bit)   */
 #define CCXX        BPRFX "wpp"           /* Open Watcom C++ compiler (16-bit) */
+#define FC          BPRFX "wfc"           /* Open Watcom F77 compiler (16-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
 #define _TARGET_    "x86 16-bit"
 #define ARCH        TARGET_ARCH_I86
 #elif defined( __AXP__ )
 #define CC          BPRFX "wccaxp"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppaxp"        /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfcaxp"        /* Open Watcom F77 compiler (32-bit) */
 #define ASM         BPRFX "wasaxp"        /* Open Watcom assembler             */
 #define _TARGET_    "Alpha AXP"
 #define ARCH        TARGET_ARCH_AXP
 #elif defined( __PPC__ )
 #define CC          BPRFX "wccppc"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppppc"        /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfcppc"        /* Open Watcom F77 compiler (32-bit) */
 #define ASM         BPRFX "wasppc"        /* Open Watcom assembler             */
 #define _TARGET_    "PowerPC"
 #define ARCH        TARGET_ARCH_PPC
 #elif defined( __MIPS__ )
 #define CC          BPRFX "wccmps"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppmps"        /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfcmps"        /* Open Watcom F77 compiler (32-bit) */
 #define ASM         BPRFX "wasmps"        /* Open Watcom assembler             */
 #define _TARGET_    "MIPS"
 #define ARCH        TARGET_ARCH_MIPS
 #else
 #define CC          BPRFX "wcc386"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wpp386"        /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfc386"        /* Open Watcom F77 compiler (32-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
 #define _TARGET_    "x86 32-bit"
 #define ARCH        TARGET_ARCH_X86
@@ -114,6 +119,8 @@
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
 #endif
 
+#define MAX_CC_OPTS     256
+
 typedef enum {
     TARGET_ARCH_DEFAULT,
     TARGET_ARCH_I86,
@@ -129,7 +136,7 @@ char *OptEnvVar = WCLENV;               /* Data interface for GetOpt()        */
 static  char    *Word;                  /* one parameter                      */
 static  char    *SystemName;            /* system to link for                 */
 static  list    *Files_List;            /* list of filenames from Cmd         */
-static  char    CC_Opts[MAX_CMD];       /* list of compiler options from Cmd  */
+static  char    *CC_Opts[MAX_CC_OPTS];  /* list of compiler options from Cmd  */
 static  char    PathBuffer[_MAX_PATH];  /* buffer for path name of tool       */
 static  char    *Link_Name;             /* Temp_Link copy if /fd specified    */
 static  list    *Directive_List;        /* linked list of directives          */
@@ -304,6 +311,15 @@ static etool tools_ccxx_arch[TARGET_ARCH_COUNT] = {
     { BPRFX "wppppc", BPRFX "wppppc" EXE_EXT, NULL },   // ppc
 };
 
+static etool tools_f77_arch[TARGET_ARCH_COUNT] = {
+    { FC,             FC EXE_EXT,             NULL },   // default
+    { BPRFX "wfc",    BPRFX "wfc" EXE_EXT,    NULL },   // i86
+    { BPRFX "wfc386", BPRFX "wfc386" EXE_EXT, NULL },   // i386
+    { BPRFX "wfcaxp", BPRFX "wfcaxp" EXE_EXT, NULL },   // axp
+    { BPRFX "wfcmps", BPRFX "wfcmps" EXE_EXT, NULL },   // mips
+    { BPRFX "wfcppc", BPRFX "wfcppc" EXE_EXT, NULL },   // ppc
+};
+
 void print_banner( void )
 {
     static int  done;
@@ -351,19 +367,61 @@ static char *strfdup( const char *source )
     return( xlate_fname( MemStrDup( source ) ) );
 }
 
+void addccstring( char *string )
+{
+    char *op;
+    int i;
+    
+    if( string == NULL || strlen(string) == 0 )
+        return;
+        
+    op = MemAlloc( (strlen(string)+1)*sizeof(char) );
+    strcpy(op, string);
+    
+    i = 0;
+    while(CC_Opts[i] != NULL) i++;
+    
+    CC_Opts[i] = op;
+    CC_Opts[i+1] = NULL;
+}
+
+void addcclongopt( char *option, char *tail )
+{
+    char *op;
+    int i;
+    
+    if( option == NULL || strlen(option) == 0 )
+        return;
+        
+    /* Calculate our necessary memory here for readability */
+    i = (strlen(option)+(tail == NULL ? 0 : strlen(tail))+2);
+        
+    op = MemAlloc( i*sizeof(char) );
+    op[0] = '-';
+    op[1] = '\0';
+    strcat( op, option );
+    if( tail != NULL )
+        strcat( op, tail );
+    
+    addccstring( op );
+    MemFree( op );
+}
+
 void addccopt( char option, char *opt )
 /*************************************/
 {
-    char    op[4];
+    char    *op;
 
-    op[0] = ' ';
-    op[1] = '-';
-    op[2] = option;
-    op[3] = '\0';
-    strcat( CC_Opts, op );
+    op = MemAlloc( (3 + (opt == NULL ? 0 : strlen(opt)))*sizeof(char) );
+
+    op[0] = '-';
+    op[1] = option;
+    op[2] = '\0';
     if( opt != NULL ) {
-        strcat( CC_Opts, opt );
+        strcat( op, opt );
     }
+    addccstring( op );
+    MemFree( op );
 }
 
 static int FileExtension( char *p, char *ext )
@@ -493,8 +551,11 @@ static  int  ConsultSpecsFile( const char *target )
                 p = strtok( NULL, "\n" );
                 if( p != NULL ) {
                     /* if there are further options, copy them */
-                    strcat( CC_Opts, " " );
-                    strcat( CC_Opts, p );
+                    p = strtok( p, " " );
+                    while(p != NULL) {
+                        addccstring(p);
+                        p = strtok( NULL, " ");
+                    }
                 }
                 rc = 1;
                 break;
@@ -598,6 +659,7 @@ static  int  ParseArgs( int argc, char **argv )
     char        c;
     int         i;
     list        *new_item;
+    char        pelc[6];
 
     initialize_Flags();
     DebugFlag          = 1;
@@ -638,8 +700,7 @@ static  int  ParseArgs( int argc, char **argv )
                 continue;
             if( OptArg == NULL ) {
                 if( m->LongName[1] == '\0' ) {
-                    strcat( CC_Opts, " -" );
-                    strcat( CC_Opts, m->WatcomName );
+                    addcclongopt( m->WatcomName, NULL );
                     found_mapping = TRUE;
                     break;
                 }
@@ -648,15 +709,12 @@ static  int  ParseArgs( int argc, char **argv )
             }
             if( tail != NULL ) {
                 if( strncmp( OptArg, m->LongName + 1, tail - m->LongName - 1 ) == 0 ) {
-                    strcat( CC_Opts, " -" );
-                    strcat( CC_Opts, m->WatcomName );
-                    strcat( CC_Opts, OptArg + ( tail - m->LongName - 1) );
+                    addcclongopt( m->WatcomName, OptArg + ( tail - m->LongName - 1) );
                     found_mapping = TRUE;
                     break;
                 }
             } else if( strcmp( OptArg, m->LongName + 1 ) == 0 ) {
-                strcat( CC_Opts, " -" );
-                strcat( CC_Opts, m->WatcomName );
+                addcclongopt( m->WatcomName, NULL );
                 found_mapping = TRUE;
                 break;
             }
@@ -1037,16 +1095,19 @@ static  int  ParseArgs( int argc, char **argv )
             MemFree( Obj_Name );           /* preprocess to stdout by default */
             Obj_Name = NULL;
         }
-        strcat( CC_Opts, " -p" );
+        pelc[0] = 'p';
+        pelc[1] = '\0';
+
         if( cpp_encrypt_names )
-            strcat( CC_Opts, "e" );
+            strcat( pelc, "e" );
         if( cpp_want_lines )
-            strcat( CC_Opts, "l" );
+            strcat( pelc, "l" );
         if( cpp_keep_comments )
-            strcat( CC_Opts, "c" );
-        if( cpp_linewrap != NULL ) {
-            strcat( CC_Opts, cpp_linewrap );
-        }
+            strcat( pelc, "c" );
+        
+        /* cpp_linewrap may be NULL, and that's fine */
+        addcclongopt( pelc, cpp_linewrap );
+        
     }
     if( CPU_Arch != TARGET_ARCH_DEFAULT || CPU_Class != -1 || *Conventions != '\0' ) {
         owcc_target_arch    arch;
@@ -1107,11 +1168,10 @@ static  int  ParseArgs( int argc, char **argv )
         O_Name = NULL;
     }
     if( Obj_Name != NULL ) {
-        strcat( CC_Opts, " -fo=" );
-        strcat( CC_Opts, Obj_Name );
+        addcclongopt("fo=", Obj_Name );
     }
     if( !Flags.want_errfile ) {
-        strcat( CC_Opts, " -fr" );
+        addcclongopt("fr", NULL );
     }
     for( i = 1; i < argc ; i++ ) {
         Word = argv[i];
@@ -1200,6 +1260,9 @@ static etool *FindToolGetPath( tool_type utl )
     case TYPE_CPP:
         tool = &tools_ccxx_arch[CPU_Arch];
         break;
+    case TYPE_FORT:
+        tool = &tools_f77_arch[CPU_Arch];
+        break;
     default:
         return( NULL );
     }
@@ -1211,30 +1274,43 @@ static etool *FindToolGetPath( tool_type utl )
     return( tool );
 }
 
-static int tool_exec( tool_type utl, char *p1, char *p2 )
+static int tool_exec( tool_type utl, char *fn, char **options )
 /*******************************************************/
 {
     int     rc;
     etool   *tool;
+    int     i;
+    int     pass_argc;
+    char    *pass_argv[MAX_CC_OPTS+5];
 
     tool = FindToolGetPath( utl );
+
+    pass_argv[0] = tool->name;
+    pass_argc = 1; 
+    
+    while(options != NULL && options[pass_argc-1] != NULL && pass_argc < MAX_CC_OPTS) {
+        pass_argv[pass_argc] = options[pass_argc-1];
+        pass_argc++;
+    } 
+    
+    if( utl == TYPE_DIS ) {
+        pass_argv[pass_argc++] = "-s";
+        pass_argv[pass_argc++] = "-a";
+    }
+    
+    pass_argv[pass_argc++] = fn;
+    pass_argv[pass_argc] = NULL;    
+    
     if( !Flags.be_quiet ) {
-        if( utl == TYPE_DIS ) {
-            PrintMsg( "\t%s -s -a %s %s\n", tool->name, p1, p2 );
-        } else if( p2 == NULL ) {
-            PrintMsg( "\t%s %s\n", tool->name, p1 );
-        } else {
-            PrintMsg( "\t%s %s %s\n", tool->name, p1, p2 );
-        }
+        printf("\t");
+        for( i=0; i<pass_argc; i++ )
+            printf("%s ", pass_argv[i]);
+        printf("\n");
     }
     fflush( NULL );
-    if( utl == TYPE_DIS ) {
-        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, "-s", "-a", p1, p2, NULL );
-    } else if( p2 == NULL ) {
-        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, p1, NULL );
-    } else {
-        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, p1, p2, NULL );
-    }
+    
+    rc = (int)_spawnvp( P_WAIT, tool->path, (char const *const *)pass_argv );
+    
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
             PrintMsg( WclMsgs[UNABLE_TO_INVOKE_EXE], tool->path );
@@ -1244,7 +1320,7 @@ static int tool_exec( tool_type utl, char *p1, char *p2 )
             } else if( utl == TYPE_PACK ) {
                 PrintMsg( WclMsgs[CVPACK_RETURNED_A_BAD_STATUS] );
             } else {
-                PrintMsg( WclMsgs[COMPILER_RETURNED_A_BAD_STATUS], p1 );
+                PrintMsg( WclMsgs[COMPILER_RETURNED_A_BAD_STATUS], fn );
             }
         }
     }
@@ -1260,8 +1336,15 @@ static tool_type SrcName( char *name )
     p = strrchr( name, '.' );
     if( p == NULL || strpbrk( p, PATH_SEPS_STR ) != NULL )
         p = name + strlen( name );
-    if( strfcmp( p, ".asm" ) == 0 || stricmp( p, ".s" ) == 0 ) {
+    if( strfcmp( p, ".asm" ) == 0 || 
+        stricmp( p, ".s" ) == 0 ) 
+    {
         utl = TYPE_ASM;
+    } else if( strfcmp( p, ".f" ) == 0 || 
+                stricmp( p, ".for" ) == 0 ||
+                strfcmp( p, ".ftn" ) == 0 ) 
+    {
+        utl = TYPE_FORT;
     } else {
         utl = TYPE_C;               // assume C compiler
         if( !Flags.force_c ) {
@@ -1360,6 +1443,7 @@ static  int  CompLink( void )
             if( Obj_List != NULL && Flags.do_disas ) {
                 char    sfname[_MAX_PATH + 3];
                 char    ofname[_MAX_PATH];
+                char    *dis_args[2];
 
                 sfname[0] = '-';
                 sfname[1] = 'l';
@@ -1383,7 +1467,9 @@ static  int  CompLink( void )
                     strcat( Word, ".s" );
                     DoQuoted( sfname + 3, Word );
                 }
-                rc = tool_exec( TYPE_DIS, ofname, sfname );
+                dis_args[0] = sfname;
+                dis_args[1] = NULL;
+                rc = tool_exec( TYPE_DIS, ofname, dis_args );
             }
             if( Exe_Name == NULL ) {
 #ifdef __UNIX__
