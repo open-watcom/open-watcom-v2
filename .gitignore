@@ -177,6 +177,13 @@
 #
 /bld/wcl/owcc/*/*.owc
 #
+/bld/wgml/test/*.ops
+/bld/wgml/test/*.OPS
+/bld/wgml/test/*.nps
+/bld/wgml/test/*.old
+/bld/wgml/test/*.OLD
+/bld/wgml/test/*.new
+/bld/wgml/test/*.ntr
 /bld/wgml/test/testlib/*.bat
 #
 /bld/win386/vxd/*.386
