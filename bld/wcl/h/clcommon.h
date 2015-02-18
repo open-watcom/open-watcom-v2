@@ -56,6 +56,7 @@ typedef enum tool_type {
     TYPE_ASM,
     TYPE_C,
     TYPE_CPP,
+    TYPE_FORT,
     TYPE_MAX
 } tool_type;
 
