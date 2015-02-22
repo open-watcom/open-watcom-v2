@@ -47,8 +47,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -99,7 +97,7 @@ text_chars  *alloc_text_chars( const char *text, size_t cnt, font_number font )
     curr->font = font;
     curr->width = 0;
     if( text != NULL ) {                   // text supplied
-        memcpy_s( curr->text, cnt + 1, text, cnt ); // yes copy text
+        memcpy( curr->text, text, cnt ); // yes copy text
         curr->count = cnt;              // set current size
     } else {
         curr->count = 0;                // init current size

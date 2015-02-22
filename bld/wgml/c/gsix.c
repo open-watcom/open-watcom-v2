@@ -39,8 +39,6 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -267,7 +265,7 @@ void    scr_ix( void )
                 ixhwk->prt_term_len = 0;
                 ixhwk->ix_term_len   = ixlen[k];
                 ixhwk->ix_term = mem_alloc( ixlen[k] + 1 );
-                strcpy_s( ixhwk->ix_term, ixlen[k] + 1, ix[k] );
+                strcpy( ixhwk->ix_term, ix[k] );
                 *ixhwork = ixhwk;
             } else {            // string already in dictionary at this level
                 ixhwk = *ixhwork;

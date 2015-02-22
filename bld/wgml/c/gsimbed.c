@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1       /* use safer C library             */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -191,7 +189,7 @@ void    scr_im( void )
             ++p;
         }
         *p = '\0';
-        strcpy_s( token_buf, buf_size, fnstart );
+        strcpy( token_buf, fnstart );
     }
 
     scan_restart = scan_stop;

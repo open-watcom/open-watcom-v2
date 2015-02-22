@@ -37,8 +37,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -290,7 +288,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
         if( parms[k].incomplete ) {
 
             resbuf = alloc_resbuf( &in_wk );
-            strcpy_s( resbuf, buf_size, parms[k].start);// copy parm
+            strcpy( resbuf, parms[k].start);// copy parm
 
             ps = resbuf + (pchar - parms[k].start);
             *ps = '\0';
@@ -302,7 +300,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
 
             resolve_symvar_functions( resbuf );
 
-            parms[k].stop = resbuf + strnlen_s( resbuf, buf_size );
+            parms[k].stop = resbuf + strlen( resbuf );
             if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
                 out_msg( " Function      parm %s return\n", resbuf );
             }
@@ -340,7 +338,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
             if( parms[m + k].incomplete ) {
 
                 resbuf = alloc_resbuf( &in_wk );
-                strcpy_s( resbuf, buf_size, parms[m + k].start);// copy parm
+                strcpy( resbuf, parms[m + k].start);// copy parm
 
                 ps = resbuf + (pchar - parms[m + k].start);
                 *ps = '\0';
@@ -354,7 +352,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
 
                 resolve_symvar_functions( resbuf );
 
-                parms[m + k].stop = resbuf + strnlen_s( resbuf, buf_size );
+                parms[m + k].stop = resbuf + strlen( resbuf );
                 if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
                     out_msg( " Function      parm %s return\n", resbuf );
                 }

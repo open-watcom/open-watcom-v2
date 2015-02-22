@@ -29,8 +29,6 @@
 *               comments taken from script-tso.txt
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -238,14 +236,15 @@ static condcode gargterm( termcb * t )
         }
         // prepare string   quoted or unquoted
         t->term_string  = mem_alloc( arg_flen + 1 );
-        strncpy_s( t->term_string, arg_flen + 1, tok_start, arg_flen );
+        strncpy( t->term_string, tok_start, arg_flen );
+        t->term_string[arg_flen] = '\0';
         t->term_length  = arg_flen;
     } else {
         scan_start = gn.argstart;
         t->numeric = true;
         t->term_number = gn.result;
         t->term_string  = mem_alloc( sizeof( gn.resultstr ) );
-        strcpy_s( t->term_string, sizeof( gn.resultstr ), gn.resultstr );
+        strcpy( t->term_string, gn.resultstr );
         t->term_length  = gn.length;
     }
     return( cc );

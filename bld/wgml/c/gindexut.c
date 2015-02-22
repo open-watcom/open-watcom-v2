@@ -31,8 +31,6 @@
 *                   :INDEX output dummy implementation        TBD
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -213,7 +211,7 @@ ix_e_blk *  fill_ix_e_blk( ix_e_blk * * anchor, ix_h_blk * ref, ereftyp ptyp,
     ixewk->entry_typ = ptyp;
     if( ptyp >= pgstring ) {
         ixewk->u.page_text = mem_alloc( text_len + 1);
-        strcpy_s( ixewk->u.page_text, text_len + 1, text );
+        strcpy( ixewk->u.page_text, text );
     } else {
         ixewk->u.page_text = NULL;
 //      if( ProcFlags.page_started ) {

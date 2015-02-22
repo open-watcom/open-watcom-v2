@@ -28,8 +28,6 @@
 *                                          i.e. non production formatting
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include <stdarg.h>
 #include "wgml.h"
 #include "gvars.h"
@@ -54,7 +52,7 @@ void printf_research( char * msg, ... )
     va_list args;
 
     va_start( args, msg );
-    vfprintf_s( stdout, msg, args );
+    vfprintf( stdout, msg, args );
     va_end( args );
 }
 
@@ -100,7 +98,7 @@ void add_GML_tag_research( char * tag )
         wk->nxt = new;
     }
     new->nxt = NULL;
-    strcpy_s( new->tagname, sizeof( new->tagname ), tag );
+    strcpy( new->tagname, tag );
     strupr( new->tagname );
     new->count = 1;
 }
@@ -178,7 +176,7 @@ void    add_SCR_tag_research( char * tag )
         wk->nxt = new;
     }
     new->nxt = NULL;
-    strcpy_s( new->tagname, sizeof( new->tagname ), tag );
+    strcpy( new->tagname, tag );
     strlwr( new->tagname );
     new->count = 1;
 }
@@ -243,7 +241,7 @@ void    add_multi_func_research( char * fun )
         wk->nxt = new;
     }
     new->nxt = NULL;
-    strcpy_s( new->tagname, sizeof( new->tagname ), fun );
+    strcpy( new->tagname, fun );
     strlwr( new->tagname );
     new->count = 1;
 }

@@ -192,7 +192,7 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
 
     /* Ensure in_name contains a value. */
 
-    length = strnlen_s( in_name, TYPE_MAX );
+    length = strlen( in_name );
     if( (in_name == NULL) || (length == 0) ) {
         return( out_font );
     }
@@ -219,7 +219,7 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
     out_font->defined_name = OUT_FONT_CUR_OFF();
 
     string_ptr = OUT_FONT_CUR_PTR();
-    strcpy_s( string_ptr, length, in_name );
+    strcpy( string_ptr, in_name );
     OUT_FONT_ADD_OFF( length );
 
     /* Get the font_out_name1. */
@@ -663,7 +663,7 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
                         *byte_ptr = (uint16_array[i] & 0x00ff);
                     } else {
                         ++translation_start;
-                        memcpy_s( byte_ptr, size, translation_start, size );
+                        memcpy( byte_ptr, translation_start, size );
                     }
                 }
             }

@@ -45,7 +45,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__ 1
 #include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -93,12 +92,11 @@ static bool try_open( char *prefix, char *filename )
 {
     FILE        *fp;
     char        buff[FILENAME_MAX];
-    errno_t     erc;
     size_t      filename_length;
 
     /* Prevent buffer overflow. */
 
-    filename_length = strnlen_s( prefix, FILENAME_MAX ) + strnlen_s( filename, FILENAME_MAX ) + 1;
+    filename_length = strlen( prefix ) + strlen( filename ) + 1;
     if( filename_length > FILENAME_MAX ) {
         xx_simple_err_cc( err_file_max, prefix, filename );
         return( false );
@@ -106,8 +104,8 @@ static bool try_open( char *prefix, char *filename )
 
     /* Create the full file name to search for. */
 
-    strcpy_s( buff, FILENAME_MAX, prefix );
-    strcat_s( buff, FILENAME_MAX, filename );
+    strcpy( buff, prefix );
+    strcat( buff, filename );
 
     /* Clear the global variables used to contain the results. */
 
@@ -124,8 +122,8 @@ static bool try_open( char *prefix, char *filename )
     /* Try to open the file. Return false on failure. */
 
     for( ;; ) {
-        erc = fopen_s( &fp, buff, "rb" );
-        if( erc == 0 ) {
+        fp = fopen( buff, "rb" );
+        if( fp != NULL ) {
             break;
         }
         if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) {
@@ -142,7 +140,7 @@ static bool try_open( char *prefix, char *filename )
     /* Set the globals on success. */
 
     try_file_name = mem_alloc( filename_length );
-    strcpy_s( try_file_name, filename_length, buff );
+    strcpy( try_file_name, buff );
     try_fp = fp;
 
     return( true );
@@ -291,7 +289,7 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
 
     /* Ensure filename will fit into buff. */
 
-    if( strnlen_s( filename, FILENAME_MAX ) == FILENAME_MAX ) {
+    if( strlen( filename ) == FILENAME_MAX ) {
         xx_simple_err_c( err_file_max, filename );
         return( false );
     }
@@ -320,7 +318,7 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
          */
 
         if( *fn_ext == '\0' ) {
-            if( strnlen_s( filename, FILENAME_MAX ) + 4 >= FILENAME_MAX ) {
+            if( strlen( filename ) + 4 >= FILENAME_MAX ) {
                 switch( sequence ) {
                 case ds_opt_file:
                     xx_simple_err_cc( err_file_max, filename, OPT_EXT );
@@ -347,11 +345,11 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
     pd = searchdirs;
     switch( sequence ) {
     case ds_opt_file:
-        strcpy_s( primary_file, FILENAME_MAX, fn_name );
+        strcpy( primary_file, fn_name );
         if( *fn_ext == '\0' ) {
-            strcat_s( primary_file, FILENAME_MAX, OPT_EXT );
+            strcat( primary_file, OPT_EXT );
         } else {
-            strcat_s( primary_file, FILENAME_MAX, fn_ext );
+            strcat( primary_file, fn_ext );
         }
         *pd++ = cur_dir_list;
         *pd++ = gml_lib_dirs;
@@ -359,19 +357,19 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
         *pd++ = path_dirs;
         break;
     case ds_doc_spec:
-        strcpy_s( primary_file, FILENAME_MAX, fn_name );
+        strcpy( primary_file, fn_name );
         if( *fn_ext == '\0' ) {
-            strcat_s( primary_file, FILENAME_MAX, GML_EXT );
+            strcat( primary_file, GML_EXT );
         } else {
-            strcat_s( primary_file, FILENAME_MAX, fn_ext );
+            strcat( primary_file, fn_ext );
         }
         if( *altext != '\0' && *fn_ext == '\0' ) {
-            strcpy_s( alternate_file, FILENAME_MAX, fn_name );
-            strcat_s( alternate_file, FILENAME_MAX, altext );
+            strcpy( alternate_file, fn_name );
+            strcat( alternate_file, altext );
         }
         if( *fn_ext == '\0' && FNAMECMPSTR( defext, GML_EXT )) {
-            strcpy_s( default_file, FILENAME_MAX, fn_name );
-            strcat_s( default_file, FILENAME_MAX, GML_EXT );
+            strcpy( default_file, fn_name );
+            strcat( default_file, GML_EXT );
         }
         *pd++ = cur_dir_list;
         *pd++ = gml_inc_dirs;
@@ -384,17 +382,17 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
         *pd++ = path_dirs;
         break;
     case ds_lib_src:
-        strcpy_s( primary_file, FILENAME_MAX, fn_name );
+        strcpy( primary_file, fn_name );
         if( *fn_ext == '\0' ) {
-            strcat_s( primary_file, FILENAME_MAX, PCD_EXT );
+            strcat( primary_file, PCD_EXT );
         } else {
-            strcat_s( primary_file, FILENAME_MAX, fn_ext );
+            strcat( primary_file, fn_ext );
         }
-        strcpy_s( alternate_file, FILENAME_MAX, fn_name );
+        strcpy( alternate_file, fn_name );
         if( *altext == '\0' ) {
-            strcat_s( alternate_file, FILENAME_MAX, FON_EXT );
+            strcat( alternate_file, FON_EXT );
         } else {
-            strcat_s( alternate_file, FILENAME_MAX, altext );
+            strcat( alternate_file, altext );
         }
         *pd++ = cur_dir_list;
         *pd++ = gml_inc_dirs;
@@ -441,18 +439,18 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
 
                 /* Construct primary_file and open it normally. */
 
-                member_length = strnlen_s( member_name, FILENAME_MAX );
+                member_length = strlen( member_name );
                 if( memchr( member_name, '.', member_length ) == NULL ) {
 
                     /* Avoid buffer overflow from member_name. */
 
                     if( member_length < FILENAME_MAX ) {
-                        strcpy_s( primary_file, FILENAME_MAX, member_name );
+                        strcpy( primary_file, member_name );
 
                         /* Avoid buffer overflow from the extension. */
 
                         if( member_length + 4 < FILENAME_MAX ) {
-                            strcat_s( primary_file, FILENAME_MAX, COP_EXT );
+                            strcat( primary_file, COP_EXT );
                             mem_free( member_name );
                             member_name = NULL;
                         } else {

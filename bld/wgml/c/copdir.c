@@ -322,9 +322,9 @@ char * get_member_name( char const * in_name )
                             /* Return the member name, if found. */
 
                             if( !stricmp( in_name, current_entry.defined_name ) ) {
-                                member_length = strnlen_s( current_entry.member_name, FILENAME_MAX ) + 1;
+                                member_length = strlen( current_entry.member_name ) + 1;
                                 member_name = mem_alloc( member_length );
-                                strcpy_s( member_name, member_length, current_entry.member_name );
+                                strcpy( member_name, current_entry.member_name );
                                 return( member_name );
                             }
 
@@ -368,9 +368,9 @@ char * get_member_name( char const * in_name )
                     /* Return the member name, if found. */
 
                     if( !stricmp( in_name, current_entry.defined_name) ) {
-                        member_length = strnlen_s( current_entry.member_name, FILENAME_MAX ) + 1;
+                        member_length = strlen( current_entry.member_name ) + 1;
                         member_name = mem_alloc( member_length );
-                        strcpy_s( member_name, member_length, current_entry.member_name );
+                        strcpy( member_name, current_entry.member_name );
                         return( member_name );
                     }
 

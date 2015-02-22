@@ -33,8 +33,6 @@
 #pragma disable_message( 128 );
 #endif
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "bool.h"
 #include "wio.h"

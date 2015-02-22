@@ -31,8 +31,6 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -48,7 +46,7 @@ char    *get_pu_file_name( char *buf, size_t buf_size, int n )
     char    filename[] = "sysusr00" GML_EXT;
 
     filename[7] = '0' + n;
-    strcpy_s( buf, buf_size, filename );
+    strcpy( buf, filename );
     return( token_buf );
 }
 
@@ -85,15 +83,18 @@ void    close_all_pu_files( void )
 /*  open  workfile n if not yet done                                       */
 /***************************************************************************/
 
-static  errno_t open_pu_file( int n )
+static  int open_pu_file( int n )
 {
-    errno_t     erc = 0;
+    int         erc = 0;
     char        filename[13];
 
     if( n > 0 && n < 10 ) {
         if( workfile[n - 1] == NULL ) {   // not yet open
             get_pu_file_name( filename, sizeof( filename ), n );
-            erc = fopen_s( &workfile[n - 1], filename, "uwt" );
+            workfile[n - 1] = fopen( filename, "uwt" );
+            if( workfile[n - 1] == NULL ) {
+                erc = errno;
+            }
         }
     }
     return( erc );

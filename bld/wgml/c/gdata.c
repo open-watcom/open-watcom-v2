@@ -82,7 +82,7 @@ void init_global_vars( void )
     alt_ext             = mem_alloc( 5 );   // alternate extension   .xxx
     *alt_ext            = '\0';
     def_ext             = mem_alloc( sizeof( GML_EXT ) );
-    strcpy_s( def_ext, sizeof( GML_EXT ), GML_EXT );
+    strcpy( def_ext, GML_EXT );
 
     gotarget[0]         = '\0';         // no .go to target yet
     gotargetno          = 0;            // no .go to target lineno

@@ -100,7 +100,7 @@ void    gml_author( gml_tag tag )
     if( !ProcFlags.author_tag_seen ) {
         rc = find_symvar( &sys_dict, "$author", no_subscript, &authorval );
         if( *p ) {                      // author specified
-            strcpy_s( authorval->value, 60, p );
+            strcpy( authorval->value, p );
         } else {
             *(authorval->value) = 0;
         }

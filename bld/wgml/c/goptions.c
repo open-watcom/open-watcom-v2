@@ -157,7 +157,8 @@ static  int     split_tokens( char *str )
         new->bol = linestart;
         linestart = false;
         new->toklen = tokl;
-        strncpy_s( new->token, new->toklen + 1, tokstart, tokl );
+        strncpy( new->token, tokstart, tokl );
+        new->token[tokl] = '\0';
         if( tok == NULL ) {
             cmd_tokens[level] = new;
         } else {
@@ -357,7 +358,7 @@ static void set_bind( option * opt )
             err_count++;
             tokennext = tokennext->nxt;
         } else {
-            memcpy_s( &bind_odd, sizeof( bind_odd), &bindwork, sizeof( bindwork ) );
+            memcpy( &bind_odd, &bindwork, sizeof( bindwork ) );
 
             out_msg( "\tbind odd  value %lii (%limm) '%s' %li %li \n",
                      bind_odd.su_inch, bind_odd.su_mm, bind_odd.su_txt,
@@ -365,7 +366,7 @@ static void set_bind( option * opt )
 
             tokennext = tokennext->nxt; // check for optional bind even val
             if( IS_OPTION_END1( tokennext ) ) {
-                memcpy_s( &bind_even, sizeof( bind_even), &bind_odd, sizeof( bind_odd ) );  // use bind_odd
+                memcpy( &bind_even, &bind_odd, sizeof( bind_odd ) );  // use bind_odd
             } else {
                 val_start = tokennext->token;
                 val_len = tokennext->toklen;
@@ -884,8 +885,8 @@ static void set_layout( option * opt )
         len = tokennext->toklen;
         laywk = mem_alloc( sizeof( laystack ) + len );
 
-        memcpy_s( laywk->layfn, len + 1, tokennext->token, len );
-        *(laywk->layfn + len) = '\0';
+        memcpy( laywk->layfn, tokennext->token, len );
+        laywk->layfn[len] = '\0';
         laywk->next = NULL;
 
         split_attr_file( laywk->layfn, attrwork, sizeof( attrwork ) );
@@ -924,14 +925,14 @@ static void set_outfile( option * opt )
         len = tokennext->toklen;
         out_file = mem_alloc( len + 1 );
 
-        memcpy_s( out_file, len + 1, tokennext->token, len );
-        *(out_file + len) = '\0';
+        memcpy( out_file, tokennext->token, len );
+        out_file[len] = '\0';
 
         split_attr_file( out_file, attrwork, sizeof( attrwork ) );
         if( attrwork[0] ) {
             len = 1 + strlen( attrwork );
             out_file_attr = mem_alloc( len );
-            strcpy_s( out_file_attr, len, attrwork );
+            strcpy( out_file_attr, attrwork );
         } else {
             out_file_attr = NULL;
         }
@@ -1101,7 +1102,7 @@ static void set_OPTFile( option * opt )
         str = tokennext->token;
 
         g_info_lm( inf_recognized_xxx, "option file", str );
-        strcpy_s( token_buf, buf_size, str );
+        strcpy( token_buf, str );
         if( try_file_name != NULL ) {
             mem_free( try_file_name );
             try_file_name = NULL;
@@ -1205,7 +1206,7 @@ static void set_research( option * opt )
         research_file_name[0] = '\0';   // no filename
         if( isalpha( *str ) ) {         // filename ?
             if( len < sizeof( research_file_name ) ) {
-                strcpy_s( research_file_name, sizeof( research_file_name ), str );
+                strcpy( research_file_name, str );
             }
             tokennext = tokennext->nxt;
             if( IS_OPTION_END1( tokennext ) ) {
@@ -1667,7 +1668,7 @@ static cmd_tok  *process_master_filename( cmd_tok * tok )
 
     len = tok->toklen;
     p = mem_alloc( len + 1 );
-    memcpy_s( p, len + 1, tok->token, len );
+    memcpy( p, tok->token, len );
     p[len] = '\0';
     g_info_lm( inf_recognized_xxx, "document source file", p );
     strip_quotes( p );

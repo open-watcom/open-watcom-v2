@@ -44,8 +44,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1       /* use safer C library             */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -499,7 +497,7 @@ bool att_val_to_su( su * in_su, bool pos )
         scan_start = scan_stop;
         return( cvterr );
     }
-    memcpy_s( ps, MAX_SU_CHAR - 1, val_start, val_len );
+    memcpy( ps, val_start, val_len );
     ps[val_len] = '\0';
 
     s->su_u = SU_undefined;
@@ -580,7 +578,7 @@ bool cw_val_to_su( char * * scanp, su * in_su )
         scan_start = scan_stop;
         return( cvterr );
     }
-    memcpy_s( ps, MAX_SU_CHAR - 1, pa, len );
+    memcpy( ps, pa, len );
     ps[len] = '\0';
 
     s->su_u = SU_undefined;
@@ -647,7 +645,7 @@ bool lay_init_su( const char *p, su *in_su )
         scan_start = scan_stop;
         return( cvterr );
     }
-    memcpy_s( ps, MAX_SU_CHAR - 1, pa, len );
+    memcpy( ps, pa, len );
     ps[len] = '\0';
 
     s->su_u = SU_undefined;

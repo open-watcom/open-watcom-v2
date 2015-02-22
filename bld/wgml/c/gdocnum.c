@@ -52,7 +52,7 @@ static void prep_docnum_line( text_line * p_line, char * p )
                                    1 + strlen( layout_work.docnum.string ), g_curr_font );
     }
     if( *p  ) {
-        strcat_s( curr_t->text, curr_t->length, p );
+        strcat( curr_t->text, p );
     }
     curr_t->count = strlen( curr_t->text );
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
@@ -116,7 +116,7 @@ void    gml_docnum( gml_tag tag )
     }
     rc = find_symvar( &sys_dict, "$docnum", no_subscript, &docnumval );
     if( *p ) {                          // docnum specified
-        strcpy_s( docnumval->value, 60, p );
+        strcpy( docnumval->value, p );
     } else {
         *(docnumval->value) = 0;
     }

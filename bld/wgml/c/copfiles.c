@@ -60,7 +60,6 @@
 *               This should help in most cases.
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__ 1
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
@@ -240,7 +239,10 @@ static void compute_metrics( wgml_font * in_font )
 
         height = (shift_height * 3 ) / 10;
         utoa( height, in_font->shift_height, 10 );
-        in_font->shift_count = strnlen_s( in_font->shift_height, 4 );
+        in_font->shift_count = strlen( in_font->shift_height );
+        if( in_font->shift_count > 4 ) {
+            in_font->shift_count = 4;
+        }
     }
 
     return;

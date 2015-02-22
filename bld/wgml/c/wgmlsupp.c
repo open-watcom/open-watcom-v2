@@ -38,8 +38,6 @@
 *                   show_include_stack()
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__ 1
-
 #include <errno.h>
 
 #include "wgml.h"
@@ -112,15 +110,13 @@ static  bool    free_inc_fp( void )
                 if( (cb->flags & FF_open) ) {   // and file is open
                     rc = fgetpos( cb->fp, &cb->pos );
                     if( rc != 0 ) {
-                        strerror_s( buff2, buf_size, errno );
-                        g_err( err_file_io, buff2, cb->filename );
+                        g_err( err_file_io, strerror( errno ), cb->filename );
                         err_count++;
                         g_suicide();
                     }
                     rc = fclose( cb->fp );
                     if( rc != 0 ) {
-                        strerror_s( buff2, buf_size, errno );
-                        g_err( err_file_io, buff2, cb->filename );
+                        g_err( err_file_io, strerror( errno ), cb->filename );
                         err_count++;
                         g_suicide();
                     }
@@ -143,29 +139,26 @@ static  bool    free_inc_fp( void )
 static void reopen_inc_fp( filecb *cb )
 {
     int         rc;
-    errno_t     erc;
-    errno_t     erc2;
+    int         erc2;
 
     if( ! cb->flags & FF_open ) {
         for( ;; ) {
-            erc = fopen_s( &cb->fp, cb->filename, "rb" );
-            if( erc == 0 ) break;
+            cb->fp = fopen( cb->filename, "rb" );
+            if( cb->fp != NULL ) break;
             erc2 = errno;
             if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) break;
             if( !free_inc_fp() ) break; // try closing an include file
         }
-        if( erc == 0 ) {
+        if( cb->fp != NULL ) {
             rc = fsetpos( cb->fp, &cb->pos );
             if( rc != 0 ) {
-                strerror_s( buff2, buf_size, errno );
-                g_err( err_file_io, buff2, cb->filename );
+                g_err( err_file_io, strerror( errno ), cb->filename );
                 err_count++;
                 g_suicide();
             }
             cb->flags |= FF_open;
         } else {
-            strerror_s( buff2, buf_size, erc2 );
-            g_err( err_file_io, buff2, cb->filename );
+            g_err( err_file_io, strerror( erc2 ), cb->filename );
             err_count++;
             g_suicide();
         }
@@ -177,7 +170,7 @@ static void reopen_inc_fp( filecb *cb )
 /*  Report resource exhaustion: may eventually try to correct the problem  */
 /***************************************************************************/
 
-bool    free_resources( errno_t in_errno )
+bool    free_resources( int in_errno )
 {
     if( in_errno == ENOMEM) {
         g_err( err_no_memory );
@@ -379,7 +372,7 @@ static  void    get_macro_line( void )
         cb->lineno++;
         cb->flags          &= ~FF_eof;
         input_cbs->fmflags &= ~II_eof;
-        strcpy_s( buff2, buf_size, cb->macline->value );
+        strcpy( buff2, cb->macline->value );
         cb->macline         = cb->macline->next;
     }
 }
@@ -470,9 +463,7 @@ bool    get_line( bool display_line )
                             *buff2 = '\0';
                             break;
                         } else {
-                            strerror_s( buff2, buf_size, errno );
-                            g_err( err_file_io, buff2, cb->filename );
-
+                            g_err( err_file_io, strerror( errno ), cb->filename );
                             err_count++;
                             g_suicide();
                         }
@@ -482,7 +473,7 @@ bool    get_line( bool display_line )
         }
     }
 
-    buff2_lg = strnlen_s( buff2, buf_size );
+    buff2_lg = strlen( buff2 );
     *(buff2 + buff2_lg) = '\0';
     *(buff2 + buff2_lg + 1) = '\0';
     if( input_cbs->fmflags & II_file ) {

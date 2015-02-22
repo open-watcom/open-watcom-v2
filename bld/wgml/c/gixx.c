@@ -33,8 +33,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include    "wgml.h"
 #include    "gvars.h"
 
@@ -102,7 +100,7 @@ static ix_h_blk *find_create_ix_h_entry( ix_h_blk **ixhwork,
         ixhwk->ix_lvl = lvl;
         ixhwk->ix_term_len = txtlen;
         ixhwk->ix_term = mem_alloc( txtlen + 1);
-        strcpy_s( ixhwk->ix_term, txtlen + 1,txt );
+        strcpy( ixhwk->ix_term, txt );
         if( *printtxt != NULL ) {
             ixhwk->prt_term_len = printtxtlen;
             ixhwk->prt_term = *printtxt;
@@ -172,7 +170,7 @@ static  void    gml_ixxx_common( gml_tag tag, int hx_lvl )
     }
     lvlc = '0' + hx_lvl;
     *hxstring = GML_char;         // construct tagname for possible error msg
-    strcpy_s( (hxstring + 1), TAG_NAME_LENGTH, gml_tagname( tag ) );
+    strcpy( hxstring + 1, gml_tagname( tag ) );
 
     if( (hxstring[2] == lvlc) &&        // :Ix tags not allowed before :GDOC
         !((ProcFlags.doc_sect >= doc_sect_gdoc) ||

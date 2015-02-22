@@ -56,7 +56,6 @@
 *               not apparent. This should help in most cases.
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__ 1
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
@@ -193,8 +192,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
 
                             /* At this point, it is known that it will fit. */
 
-                            memcpy_s( &buffout.text[buffout.current], cur_trans->count,
-                                        cur_trans->data, cur_trans->count );
+                            memcpy( &buffout.text[buffout.current], cur_trans->data, cur_trans->count );
                             buffout.current += cur_trans->count;
                         }
                     }
@@ -290,8 +288,7 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
 
             /* Copy up the token and any initial space characters. */
 
-            memcpy_s( &buffout.text[buffout.current], tkn_end - spc_start,
-                      &in_block[spc_start], tkn_end - spc_start );
+            memcpy( &buffout.text[buffout.current], &in_block[spc_start], tkn_end - spc_start );
             buffout.current += tkn_end - spc_start;
             text_count -= tkn_end - spc_start;
             current = tkn_end;
@@ -308,7 +305,7 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
     /* Insert any remaining text. */
 
     if( text_count > 0 ) {
-        memcpy_s( &buffout.text[buffout.current], text_count, &in_block[current], text_count );
+        memcpy( &buffout.text[buffout.current], &in_block[current], text_count );
         buffout.current += text_count;
     }
 
@@ -419,8 +416,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
 
                             /* At this point, it is known that it will fit. */
 
-                            memcpy_s( &buffout.text[buffout.current],
-                                cur_trans->count, cur_trans->data, cur_trans->count );
+                            memcpy( &buffout.text[buffout.current], cur_trans->data, cur_trans->count );
                             buffout.current += cur_trans->count;
                         }
                     }
@@ -503,7 +499,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
                                 translated.text = mem_realloc( translated.text, translated.length );
                             }
 
-                            memcpy_s( &translated.text[k], cur_trans->count, cur_trans->data, cur_trans->count );
+                            memcpy( &translated.text[k], cur_trans->data, cur_trans->count );
                             k += cur_trans->count;
                         }
                     }
@@ -541,8 +537,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
 
         /* Now insert the translated token into the buffer. */
 
-        memcpy_s( &buffout.text[buffout.current], translated.current,
-                  translated.text, translated.current );
+        memcpy( &buffout.text[buffout.current], translated.text, translated.current );
         buffout.current += translated.current;
         text_count -= translated.current;
     }
@@ -584,7 +579,7 @@ static void ob_insert_def( const char *in_block, size_t count )
         if( text_count <= difference )
             break;
 
-        memcpy_s( &buffout.text[buffout.current], difference, &in_block[current], difference );
+        memcpy( &buffout.text[buffout.current], &in_block[current], difference );
         buffout.current += difference;
         current += difference;
         text_count -= difference;
@@ -594,7 +589,7 @@ static void ob_insert_def( const char *in_block, size_t count )
     /* Insert any remaining text. */
 
     if( text_count > 0 ) {
-        memcpy_s( &buffout.text[buffout.current], text_count, &in_block[current], text_count );
+        memcpy( &buffout.text[buffout.current], &in_block[current], text_count );
         buffout.current += text_count;
     }
 
@@ -696,7 +691,7 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
 
                         /* At this point, it is known that it will fit. */
 
-                        memcpy_s( &buffout.text[buffout.current], cur_trans->count, cur_trans->data, cur_trans->count );
+                        memcpy( &buffout.text[buffout.current], cur_trans->data, cur_trans->count );
                         buffout.current += cur_trans->count;
                     }
                 }
@@ -873,8 +868,8 @@ static void set_out_file( void )
     if( temp_outfile[0] != '\0' ) {
         if( out_file != NULL )
             mem_free( out_file );
-        out_file = mem_alloc( strnlen_s( temp_outfile, _MAX_PATH ) + 1 );
-        strcpy_s( out_file, _MAX_PATH, temp_outfile );
+        out_file = mem_alloc( strlen( temp_outfile ) + 1 );
+        strcpy( out_file, temp_outfile );
     }
 
     return;
@@ -906,7 +901,7 @@ static void set_out_file_attr( void )
 
                 len = 1 + strlen( "t:132" );
                 out_file_attr = mem_alloc( len );
-                strcpy_s( out_file_attr, len, "t:132" );
+                strcpy( out_file_attr, "t:132" );
 
             } else {
 
@@ -916,7 +911,7 @@ static void set_out_file_attr( void )
 
                 len -= 1;
                 out_file_attr = mem_alloc( len );
-                memcpy_s( out_file_attr, len, &bin_driver->rec_spec[1], len - 1 );
+                memcpy( out_file_attr, &bin_driver->rec_spec[1], len - 1 );
                 out_file_attr[len - 1] = '\0';
             }
         } else {
@@ -925,7 +920,7 @@ static void set_out_file_attr( void )
 
             size_t len = 1 + strlen( "t:132" );
             out_file_attr = mem_alloc( len );
-            strcpy_s( out_file_attr, len, "t:132" );
+            strcpy( out_file_attr, "t:132" );
         }
     }
 
@@ -1084,12 +1079,12 @@ void ob_direct_out( const char *text )       // used from .oc
         return;
     }
 #ifdef __UNIX__
-    if( fprintf_s( out_file_fp, "\n" ) < strlen( "\n" ) ) {
+    if( fprintf( out_file_fp, "\n" ) < strlen( "\n" ) ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
 #else
-    if( fprintf_s( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
+    if( fprintf( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
@@ -1117,12 +1112,12 @@ void ob_flush( void )
     }
     buffout.current = 0;
 #ifdef __UNIX__
-    if( fprintf_s( out_file_fp, "\n" ) < strlen( "\n" ) ) {
+    if( fprintf( out_file_fp, "\n" ) < strlen( "\n" ) ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
 #else
-    if( fprintf_s( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
+    if( fprintf( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
@@ -1158,22 +1153,21 @@ void ob_graphic( graphic_element * in_el )
         ob_flush();
 
         ps_size = strlen( graphobj );
-        strcpy_s( buffout.text, buffout.length, graphobj );
+        strcpy( buffout.text, graphobj );
         buffout.current = ps_size;
         ob_flush();
 
         memset( buffout.text, buffout.length, '\0' );
-        ps_size = sprintf_s( buffout.text, buffout.length,
-                  "%d %d %d %d %d %d %d graphhead",
+        ps_size = sprintf( buffout.text, "%d %d %d %d %d %d %d graphhead",
                   in_el->cur_left, in_el->y_address, in_el->width, in_el->depth,
                   in_el->xoff, -1 * (in_el->depth + in_el->yoff), in_el->scale );
         buffout.current = strlen( buffout.text );
         ob_flush();
 
         ps_size = strlen( begindoc );
-        strcpy_s( buffout.text, buffout.length, begindoc );
+        strcpy( buffout.text, begindoc );
         buffout.current = ps_size;
-        strcpy_s( buffout.text + ps_size, buffout.length - ps_size, in_name );
+        strcpy( buffout.text + ps_size, in_name );
         buffout.current = strlen( buffout.text );
         ob_flush();
 
@@ -1196,12 +1190,12 @@ void ob_graphic( graphic_element * in_el )
         buffout.current = 0;
 
         ps_size = strlen( enddoc );
-        strcpy_s( buffout.text, buffout.length, enddoc );
+        strcpy( buffout.text, enddoc );
         buffout.current = ps_size;
         ob_flush();
 
         ps_size = strlen( restore );
-        strcpy_s( buffout.text, buffout.length, restore );
+        strcpy( buffout.text, restore );
         buffout.current = ps_size;
         ob_flush();
         if( ferror( try_fp ) ) {
@@ -1381,7 +1375,7 @@ void ob_setup( void )
 
     /* Create (truncate) the output file. */
 
-    fopen_s( &out_file_fp, out_file, "uwb" );
+    out_file_fp = fopen( out_file, "uwb" );
 
     if( out_file_fp == NULL ) {
         xx_simple_err_c( err_open_out_file, out_file );

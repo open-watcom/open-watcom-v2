@@ -183,7 +183,7 @@ void    gml_hdref( gml_tag tag )
         } else {
             process_text( idp, g_curr_font );
             if( withpage || (!pageseen && (page != re->u.info.pageno)) ) {
-                sprintf_s( buf64, sizeof( buf64 ), "on page %d", re->u.info.pageno );
+                sprintf( buf64, "on page %d", re->u.info.pageno );
                 process_text( buf64, g_curr_font );
             }
             mem_free( idp );

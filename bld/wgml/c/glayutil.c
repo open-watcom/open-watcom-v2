@@ -33,8 +33,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -263,7 +261,7 @@ void    o_case( FILE * f, lay_att curr, case_t * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -284,7 +282,7 @@ bool    i_char( char * p, lay_att curr, char * tm )
 
 void    o_char( FILE * f, lay_att curr, char * tm )
 {
-    fprintf_s( f, "        %s = '%c'\n", att_names[curr], *tm );
+    fprintf( f, "        %s = '%c'\n", att_names[curr], *tm );
     return;
 }
 
@@ -324,10 +322,10 @@ void    o_content( FILE * f, lay_att curr, content * tm )
     if( tm->content_type >= no_content && tm->content_type < max_content) {
         p = tm->string;
         if( tm->content_type == string_content ) { // user string with quotes
-            fprintf_s( f, "        %s = '", att_names[curr] );
+            fprintf( f, "        %s = '", att_names[curr] );
             while( (c = *p++) != '\0' ) {
                 if( c == '&' ) {
-                    fprintf_s( f, "&$amp." );
+                    fprintf( f, "&$amp." );
                 } else {
                     fputc( c, f );
                 }
@@ -339,7 +337,7 @@ void    o_content( FILE * f, lay_att curr, content * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -369,7 +367,7 @@ bool    i_default_frame( char * p, lay_att curr, def_frame * tm )
         } else {
             if( sizeof( tm->string ) > len - 2 ) {
                 *(p + len - 1 ) = '\0';
-                strcpy_s( tm->string, sizeof( tm->string ), p + 1 );
+                strcpy( tm->string, p + 1 );
                 tm->type = char_frame;
             } else {
                 cvterr = true; // string too long;
@@ -390,19 +388,19 @@ void    o_default_frame( FILE * f, lay_att curr, def_frame * tm )
 
     switch( tm->type ) {
     case   none:
-        fprintf_s( f, "        %s = none\n", att_names[curr] );
+        fprintf( f, "        %s = none\n", att_names[curr] );
         break;
     case   rule_frame:
-        fprintf_s( f, "        %s = rule\n", att_names[curr] );
+        fprintf( f, "        %s = rule\n", att_names[curr] );
         break;
     case   box_frame:
-        fprintf_s( f, "        %s = box\n", att_names[curr] );
+        fprintf( f, "        %s = box\n", att_names[curr] );
         break;
     case   char_frame:
-        fprintf_s( f, "        %s = '%s'\n", att_names[curr], tm->string );
+        fprintf( f, "        %s = '%s'\n", att_names[curr], tm->string );
         break;
     default:
-        fprintf_s( f, "        %s = ???\n", att_names[curr] );
+        fprintf( f, "        %s = ???\n", att_names[curr] );
         break;
     }
     return;
@@ -446,7 +444,7 @@ void    o_docsect( FILE * f, lay_att curr, ban_docsect * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -483,7 +481,7 @@ void    o_frame( FILE * f, lay_att curr, bool * tm )
     } else {
         p = "none";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -502,7 +500,7 @@ bool    i_int32( char * p, lay_att curr, int32_t * tm )
 void    o_int32( FILE * f, lay_att curr, int32_t * tm )
 {
 
-    fprintf_s( f, "        %s = %ld\n", att_names[curr], *tm );
+    fprintf( f, "        %s = %ld\n", att_names[curr], *tm );
     return;
 }
 
@@ -523,7 +521,7 @@ void    o_int8( FILE * f, lay_att curr, int8_t * tm )
 {
     int     wk = *tm;
 
-    fprintf_s( f, "        %s = %d\n", att_names[curr], wk );
+    fprintf( f, "        %s = %d\n", att_names[curr], wk );
     return;
 }
 
@@ -545,7 +543,7 @@ void    o_uint8( FILE * f, lay_att curr, uint8_t *tm )
 {
     unsigned wk = *tm;
 
-    fprintf_s( f, "        %s = %u\n", att_names[curr], wk );
+    fprintf( f, "        %s = %u\n", att_names[curr], wk );
     return;
 }
 
@@ -601,7 +599,7 @@ void    o_number_form( FILE * f, lay_att curr, num_form * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -722,7 +720,7 @@ void    o_number_style( FILE * f, lay_att curr, num_style * tm )
         p++;
     }
     *p = '\0';
-    fprintf_s( f, "        %s = %s\n", att_names[curr], str );
+    fprintf( f, "        %s = %s\n", att_names[curr], str );
     return;
 }
 
@@ -768,7 +766,7 @@ void    o_page_eject( FILE * f, lay_att curr, page_ej * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -810,7 +808,7 @@ void    o_page_position( FILE * f, lay_att curr, page_pos * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -868,7 +866,7 @@ void    o_place( FILE * f, lay_att curr, bf_place * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -934,7 +932,7 @@ void    o_pouring( FILE * f, lay_att curr, reg_pour * tm )
     } else {
         p = "???";
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 
@@ -953,9 +951,9 @@ void    o_space_unit( FILE * f, lay_att curr, su * tm )
 
     if( tm->su_u == SU_chars_lines || tm->su_u == SU_undefined ||
         tm->su_u >= SU_lay_left ) {
-        fprintf_s( f, "        %s = %s\n", att_names[curr], tm->su_txt );
+        fprintf( f, "        %s = %s\n", att_names[curr], tm->su_txt );
     } else {
-        fprintf_s( f, "        %s = '%s'\n", att_names[curr], tm->su_txt );
+        fprintf( f, "        %s = '%s'\n", att_names[curr], tm->su_txt );
     }
     return;
 }
@@ -973,8 +971,8 @@ bool    i_xx_string( char * p, lay_att curr, xx_str * tm )
     p = p; curr = curr;
     cvterr = false;
     if( (val_start != NULL) && (val_len < str_size) ) {
-        memcpy_s( tm, str_size, val_start, val_len );
-        *(tm + val_len) = '\0';
+        memcpy( tm, val_start, val_len );
+        tm[val_len] = '\0';
     } else {
         cvterr = true;
     }
@@ -984,7 +982,7 @@ bool    i_xx_string( char * p, lay_att curr, xx_str * tm )
 void    o_xx_string( FILE * f, lay_att curr, xx_str * tm )
 {
 
-    fprintf_s( f, "        %s = \"%s\"\n", att_names[curr], tm );
+    fprintf( f, "        %s = \"%s\"\n", att_names[curr], tm );
     return;
 }
 
@@ -1032,7 +1030,7 @@ void    o_yes_no( FILE * f, lay_att curr, bool * tm )
     } else {
         p = stryes;
     }
-    fprintf_s( f, "        %s = %s\n", att_names[curr], p );
+    fprintf( f, "        %s = %s\n", att_names[curr], p );
     return;
 }
 

@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include <errno.h>
 
 #include "wgml.h"
@@ -375,7 +373,7 @@ condcode getnum( getnum_block *gn )
         gn->cc = notnum;
     } else {
         gn->argstart = start;   // start for next scan
-        gn->length = sprintf_s( gn->resultstr, sizeof( gn->resultstr ), "%ld", gn->result );
+        gn->length = sprintf( gn->resultstr, "%ld", gn->result );
         if( gn->result >= 0 ) {
             gn->cc = pos;
         } else {

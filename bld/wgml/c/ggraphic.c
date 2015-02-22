@@ -27,7 +27,7 @@
 * Description:  WGML tag :GRAPHIC processing
 *
 ****************************************************************************/
-#define __STDC_WANT_LIB_EXT1__  1
+
 #include <string.h>
 #include    "wgml.h"
 //#include    "findfile.h"
@@ -90,7 +90,7 @@ void    gml_graphic( gml_tag tag )
                 break;
             }
             file_found = true;
-            memcpy_s( file, FILENAME_MAX, val_start, val_len );
+            memcpy( file, val_start, val_len );
             if( val_len < FILENAME_MAX ) {
                 file[val_len] = '\0';
             } else {
@@ -242,8 +242,8 @@ void    gml_graphic( gml_tag tag )
     cur_el->element.graph.xoff = xoff;
     cur_el->element.graph.yoff = yoff;
     ProcFlags.skips_valid = false;
-    strncpy_s( cur_el->element.graph.file, FILENAME_MAX, file, FILENAME_MAX );
-
+    strncpy( cur_el->element.graph.file, file, FILENAME_MAX );
+    cur_el->element.graph.file[FILENAME_MAX] = '\0';
     insert_col_main( cur_el );
 
     if( *p == '.' ) {

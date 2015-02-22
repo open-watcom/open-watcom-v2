@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 #include <stdarg.h>
@@ -74,7 +72,7 @@ void out_msg( const char *msg, ... )
     va_list args;
 
     va_start( args, msg );
-    vprintf_s( msg, args );
+    vprintf( msg, args );
     va_end( args );
 }
 

@@ -85,7 +85,7 @@ static  void    update_headnumx( int lvl, char *hnumstr, size_t hnsize )
             layout_work.hx[lvl].headnsub->value =
                 mem_realloc( layout_work.hx[lvl].headnsub->value, strlen( hnumstr ) + 1 );
         }
-        strcpy_s( layout_work.hx[lvl].headnsub->value, strlen( hnumstr ) + 1, hnumstr );
+        strcpy( layout_work.hx[lvl].headnsub->value, hnumstr );
     }
 }
 
@@ -365,12 +365,12 @@ static  void    gml_hx_common( gml_tag tag, int hx_lvl )
     headlen = strlen( hnumstr) + txtlen + 2;
     headp = mem_alloc( headlen );
     if( layout_work.hx[hx_lvl].number_form != num_none ) {
-        strcpy_s( headp, headlen, hnumstr); // numbered header
-        strcat_s( headp, headlen, " " );
+        strcpy( headp, hnumstr); // numbered header
+        strcat( headp, " " );
     } else {
         *headp = '\0';
     }
-    strcat_s( headp, headlen, p );
+    strcat( headp, p );
     rc = add_symvar( &global_dict, headx, headp, no_subscript, 0 );
 
     out_msg( " %s\n", headp );          // always verbose output ? TBD
@@ -385,7 +385,7 @@ static  void    gml_hx_common( gml_tag tag, int hx_lvl )
         if( !rwk ) {                    // new entry
             if( txtlen > 0 ) {          // text line not empty
                 re->u.info.text_cap = mem_alloc( txtlen + 1 );
-                strcpy_s( re->u.info.text_cap, txtlen + 1, p );
+                strcpy( re->u.info.text_cap, p );
             }
             add_ref_entry( &ref_dict, re );
             re = NULL;                  // free will be done via dictionary

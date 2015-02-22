@@ -171,7 +171,6 @@
 *               Wiki.
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1
 #include <conio.h>
 #include <string.h>
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
@@ -397,7 +396,7 @@ static char *char_convert( const char *in_val )
         ret_val[0] = '\0';
     } else {
         ret_val = mem_alloc( strlen( in_val ) + 1 );
-        strcpy_s( ret_val, strlen( in_val ) + 1, in_val );
+        strcpy( ret_val, in_val );
     }
 
     return( ret_val );
@@ -1175,22 +1174,22 @@ static void *get_parameters( parameters *in_parameters )
 
     /* Skip the offset1 value. */
 
-    memcpy_s( &offset, sizeof( offset ), current_df_data.current, sizeof( offset ) );
+    memcpy( &offset, current_df_data.current, sizeof( offset ) );
     current_df_data.current += sizeof( offset );
 
     /* Get the first parameter offset (offset2). */
 
-    memcpy_s( &in_parameters->first, sizeof( in_parameters->first ), current_df_data.current, sizeof( in_parameters->first ) );
+    memcpy( &in_parameters->first, current_df_data.current, sizeof( in_parameters->first ) );
     current_df_data.current += sizeof( in_parameters->first );
 
     /* Get the second parameter offset (offset3). */
 
-    memcpy_s( &in_parameters->second, sizeof( in_parameters->second ), current_df_data.current, sizeof( in_parameters->second ) );
+    memcpy( &in_parameters->second, current_df_data.current, sizeof( in_parameters->second ) );
     current_df_data.current += sizeof( in_parameters->second );
 
     /* Skip the offset4 value. */
 
-    memcpy_s( &offset, sizeof( offset ), current_df_data.current, sizeof( offset ) );
+    memcpy( &offset, current_df_data.current, sizeof( offset ) );
     current_df_data.current += sizeof( offset );
 
     return( NULL );    
@@ -1217,7 +1216,7 @@ static void *process_parameter( void )
 {
     /* Reset current_df_data for the parameter. */
 
-    memcpy_s( &current_df_data.df_code, sizeof( current_df_data.df_code ), current_df_data.current, sizeof( current_df_data.df_code ) );
+    memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
     current_df_data.current += sizeof( current_df_data.df_code );
 
     /* Invoke parameter function. */
@@ -1264,7 +1263,7 @@ static void *df_out_text_device( void )
 
         /* Character literal parameter. */
         
-        memcpy_s( &count, sizeof( count ), current_df_data.current, sizeof( count ) );
+        memcpy( &count, current_df_data.current, sizeof( count ) );
         current_df_data.current += sizeof( count );
 
         /* Emit parameter byte-by-byte since may contain nulls. */
@@ -1318,7 +1317,7 @@ static void out_text_driver( bool out_trans, bool out_text )
 
         /* Character literal parameter. */
         
-        memcpy_s( &count, sizeof( count ), current_df_data.current, sizeof( count ) );
+        memcpy( &count, current_df_data.current, sizeof( count ) );
         current_df_data.current += sizeof( count );
         ob_insert_block( current_df_data.current, count, out_trans, out_text, active_font );
         break;
@@ -1391,7 +1390,7 @@ static void *char_literal( void )
 
     /* Get the count. */
 
-    memcpy_s( &count, sizeof( count ), current_df_data.current, sizeof( count ) );
+    memcpy( &count, current_df_data.current, sizeof( count ) );
     current_df_data.current += sizeof( count );
 
     /* Convert the character literal into a char *. */
@@ -1416,7 +1415,7 @@ static void *numeric_literal( void )
 
     /* Get and return the value. */
 
-    memcpy_s( &value, sizeof( value ), current_df_data.current, sizeof( value ) );
+    memcpy( &value, current_df_data.current, sizeof( value ) );
     return( (void *)value );
 }
 
@@ -1663,7 +1662,7 @@ static void skip_functions( void )
 
     current_function = current_df_data.base;
     current_function -= 3;
-    memcpy_s( &current_offset, sizeof( current_offset ), current_function, sizeof( current_offset ) );
+    memcpy( &current_offset, current_function, sizeof( current_offset ) );
     current_function = current_df_data.base + current_offset;
 
     for( ;; ) {
@@ -1677,15 +1676,12 @@ static void skip_functions( void )
 
         /* Get the offset to the next element in the linked list. */
 
-        memcpy_s( &current_offset, sizeof( current_offset ), current_df_data.current, sizeof( current_offset ) );
+        memcpy( &current_offset, current_df_data.current, sizeof( current_offset ) );
         current_df_data.current += sizeof( current_offset );
 
         /* Get the parameter type for the current device function */
 
-        memcpy_s( &current_df_data.parameter_type,
-                  sizeof( current_df_data.parameter_type ),
-                  current_df_data.current,
-                  sizeof( current_df_data.parameter_type ) );
+        memcpy( &current_df_data.parameter_type, current_df_data.current, sizeof( current_df_data.parameter_type ) );
         current_df_data.current += sizeof( current_df_data.parameter_type );
 
         /* Either reset current_function to the next list element
@@ -1707,8 +1703,7 @@ static void skip_functions( void )
 
         /* Get the function code. */
 
-        memcpy_s( &current_df_data.df_code, sizeof( current_df_data.df_code ),
-                  current_df_data.current, sizeof( current_df_data.df_code ) );
+        memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
         current_df_data.current += sizeof( current_df_data.df_code );
 
         /* If the function code is for %endif(), exit the loop. */
@@ -2365,15 +2360,12 @@ static void interpret_functions( const char *in_function )
 
         /* Get the offset to the next element in the linked list. */
 
-        memcpy_s( &current_offset, sizeof( current_offset ), current_df_data.current, sizeof( current_offset ) );
+        memcpy( &current_offset, current_df_data.current, sizeof( current_offset ) );
         current_df_data.current += sizeof( current_offset );
 
         /* Get the parameter type for the current device function */
 
-        memcpy_s( &current_df_data.parameter_type,
-                  sizeof( current_df_data.parameter_type ),
-                  current_df_data.current,
-                  sizeof( current_df_data.parameter_type ) );
+        memcpy( &current_df_data.parameter_type, current_df_data.current, sizeof( current_df_data.parameter_type ) );
         current_df_data.current += sizeof( current_df_data.parameter_type );
 
         /* Either reset current_function to the next list element
@@ -2388,7 +2380,7 @@ static void interpret_functions( const char *in_function )
 
         /* Get the function code. */
 
-        memcpy_s( &current_df_data.df_code, sizeof( current_df_data.df_code ), current_df_data.current, sizeof( current_df_data.df_code ) );
+        memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
         current_df_data.current += sizeof( current_df_data.df_code );
 
         /* This is where the df_code processing occurs. */

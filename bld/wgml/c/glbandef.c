@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -78,8 +76,7 @@ void    banner_defaults( void )
     reg->pouring = last_pour;
     reg->script_format = true;
     reg->contents.content_type = string_content;
-    strcpy_s( reg->contents.string, sizeof( "/&$htext0.// &$pgnuma./" ),
-              "/&$htext0.// &$pgnuma./" );
+    strcpy( reg->contents.string, "/&$htext0.// &$pgnuma./" );
     reg->script_region[0].len = 0;
     reg->script_region[1].len = 0;
     reg->script_region[2].len = 0;
@@ -100,8 +97,7 @@ void    banner_defaults( void )
     reg = regwk;
     ban->region = reg;
     reg->next = NULL;
-    strcpy_s( reg->contents.string, sizeof( "/&$htext1.// &$pgnuma./" ),
-              "/&$htext1.// &$pgnuma./" );
+    strcpy( reg->contents.string, "/&$htext1.// &$pgnuma./" );
     reg->script_region[0].len = 0;
     reg->script_region[1].len = 0;
     reg->script_region[2].len = 0;
@@ -130,7 +126,7 @@ void    banner_defaults( void )
     reg->region_position = pos_center;
     reg->script_format = false;
     reg->contents.content_type = pgnumr_content;
-    strcpy_s( reg->contents.string, sizeof( reg->contents ), nr );
+    strcpy( reg->contents.string, nr );
     reg->script_region[0].len = 0;
     reg->script_region[1].len = 0;
     reg->script_region[2].len = 0;
@@ -174,8 +170,7 @@ void    banner_defaults( void )
     lay_init_su( n1, &(reg->voffset) );
     reg->font = 3;
     reg->contents.content_type = string_content;
-    strcpy_s( reg->contents.string, sizeof( "Table of Contents" ),
-              "Table of Contents" );
+    strcpy( reg->contents.string, "Table of Contents" );
     reg->script_region[0].len = 0;
     reg->script_region[1].len = 0;
     reg->script_region[2].len = 0;
@@ -198,8 +193,7 @@ void    banner_defaults( void )
     reg = regwk;
     ban->region = reg;
     reg->next = NULL;
-    strcpy_s( reg->contents.string, sizeof( "List of Figures" ),
-              "List of Figures" );
+    strcpy( reg->contents.string, "List of Figures" );
 
 
 
@@ -217,11 +211,7 @@ void    banner_defaults( void )
     reg = regwk;
     ban->region = reg;
     reg->next = NULL;
-    strcpy_s( reg->contents.string, sizeof( "Index" ), "Index" );
-
-
-
-
+    strcpy( reg->contents.string, "Index" );
     wk = ban;
     ban = mem_alloc( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
@@ -241,11 +231,7 @@ void    banner_defaults( void )
     reg->font = 0;
     reg->pouring = no_pour;
     reg->script_format = true;
-    strcpy_s( reg->contents.string,
-              sizeof( "/&date.// Page &$pgnuma./" ),
-              "/&date.// Page &$pgnuma./" );
-
-
+    strcpy( reg->contents.string, "/&date.// Page &$pgnuma./" );
     wk = ban;
     ban = mem_alloc( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );

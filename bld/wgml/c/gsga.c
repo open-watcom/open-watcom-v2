@@ -30,8 +30,6 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1       /* use safer C library             */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -302,12 +300,13 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             cc = getarg();
             if( cc == quotes || cc == pos || cc == quotes0) {
                 if( arg_flen < sizeof( stringval ) ) {
-                    strncpy_s( stringval, sizeof( stringval), tok_start,
-                               arg_flen );
+                    strncpy( stringval, tok_start, arg_flen );
+                    stringval[arg_flen] = '\0';
                     *val_flags |= val_value;
                 } else {
                     valptr = mem_alloc( arg_flen + 1 );
-                    strncpy_s( valptr, arg_flen + 1, tok_start, arg_flen );
+                    strncpy( valptr, tok_start, arg_flen );
+                    valptr[arg_flen] = '\0';
                     *val_flags |= val_valptr;
                 }
                 if( *att_flags & att_any ) { // default for any specified
@@ -404,8 +403,8 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             if( (cc == pos) || (cc == quotes) || (cc == quotes0) ) {
                  if( arg_flen <= VAL_LENGTH ) {
                     *val_flags |= val_value;
-                    strncpy_s( stringval, VAL_LENGTH + 1, tok_start,
-                               arg_flen );
+                    strncpy( stringval, tok_start, arg_flen );
+                    stringval[arg_flen] = '\0';
                     if( *att_flags & att_upper ) {
                         strupr( stringval );
                     }
@@ -417,7 +416,8 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
 #else
                     *val_flags |= val_valptr;
                     valptr = mem_alloc( arg_flen + 1 );
-                    strncpy_s( valptr, arg_flen + 1, tok_start, arg_flen );
+                    strncpy( valptr, tok_start, arg_flen );
+                    valptr[arg_flen] = '\0';
                     if( *att_flags & att_upper ) {
                         strupr( valptr );
                     }
@@ -677,7 +677,7 @@ void    scr_ga( void )
             gaval->a.range[k] = ranges[k];
         }
     } else if( val_flags & val_value ) {
-        strcpy_s( gaval->a.value, sizeof( gaval->a.value ), stringval );
+        strcpy( gaval->a.value, stringval );
     } else if( val_flags & val_valptr ) {
         gaval->a.valptr = valptr;
     }

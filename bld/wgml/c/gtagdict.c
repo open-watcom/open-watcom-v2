@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -72,7 +70,7 @@ gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac, cons
 
     memcpy( ge->name, name, sizeof( ge->name ) );
     ge->namelen = strlen( ge->name );
-    strcpy_s( ge->macname, sizeof( ge->macname ), mac );
+    strcpy( ge->macname, mac );
     ge->tagflags = flags;
     ge->attribs = NULL;
     ge->usecount = 0;
@@ -92,7 +90,7 @@ gtentry *   change_tag( gtentry * * dict, const char * name, const char * mac )
     if( *dict != NULL ) {
         ge = find_tag( dict, name );
         if( ge != NULL ) {
-           strcpy_s( ge->macname, sizeof( ge->macname ), mac );
+           strcpy( ge->macname, mac );
         }
     }
     return( ge );

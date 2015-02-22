@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -88,7 +86,7 @@ extern  void    gml_include( gml_tag tag )
             ++p;
         }
         *p = '\0';
-        strcpy_s( token_buf, buf_size, fnstart );
+        strcpy( token_buf, fnstart );
 #if defined( __UNIX__ )
         strlwr( token_buf );
 #endif

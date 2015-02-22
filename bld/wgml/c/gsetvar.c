@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -103,7 +101,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         if( *p != '&' ) {               // not &*&xx construct
 
             if( (sym->flags & local_var) && (input_cbs->fmflags & II_tag_mac) ) {
-                strcpy_s( sym->name, SYM_NAME_LENGTH, MAC_STAR_NAME );
+                strcpy( sym->name, MAC_STAR_NAME );
             } else {
                 scan_err = true;
                 if( !ProcFlags.suppress_msg ) {

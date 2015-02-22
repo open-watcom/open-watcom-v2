@@ -29,8 +29,6 @@
 *   see comment in wgml.c
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -167,8 +165,8 @@ static void split_at_GML_tag( void )
                             p++;
                         }
                         if( p == pchar ) {  // only leading blanks
-                            memmove_s( buff2, buf_size, pchar, buf_size - (p - buff2) );
-                            buff2_lg = strnlen_s( buff2, buf_size );// new length
+                            memmove( buff2, pchar, buf_size - (p - buff2) );
+                            buff2_lg = strlen( buff2 );// new length
                             pchar = strchr( buff2 + 1, GML_char );  // try next GMLchar
                             continue;       // dummy split done try again
                         }
@@ -220,9 +218,8 @@ static void split_at_CW_sep_char( char * splitpos ) {
                     splitpos[0] = '\0'; // terminate 1. part
 #if 0
                 } else {                // ignore 1 CW_sep_char
-                    memmove_s( splitpos, splitpos - buff2 + buff2_lg + 1,
-                               splitpos + 1, splitpos - buff2 + buff2_lg );
-                    buff2_lg = strnlen_s( buff2, buf_size );
+                    memmove( splitpos, splitpos + 1, splitpos - buff2 + buff2_lg );
+                    buff2_lg = strlen( buff2 );
 #endif
                 }
             }
@@ -363,8 +360,8 @@ bool    resolve_symvar_functions( char * buf )
     workb = in_wk->value;               // allocate workbuffer
 
     do {                                // until no more substitutions
-        strcpy_s( workb, buf_size, buf );   // copy input buffer
-        buf_lg = strnlen_s( buf, buf_size );
+        strcpy( workb, buf );   // copy input buffer
+        buf_lg = strlen( buf );
         pwend = workb + buf_lg - 1;
         if( var_unresolved == NULL ) {
             pw = workb;
@@ -387,7 +384,7 @@ bool    resolve_symvar_functions( char * buf )
             while( pw < pchar ) {       // copy all data preceding &
                 *p2++ = *pw++;
             }
-            buf_lg = strnlen_s( buf, buf_size );
+            buf_lg = strlen( buf );
 
             if( isalpha( *(pchar + 1) ) && *(pchar + 2) == '\''
                 && *(pchar + 3) > ' ' ) {
@@ -709,7 +706,7 @@ void        process_line( void )
         }
     }
 
-    buff2_lg = strnlen_s( buff2, buf_size );
+    buff2_lg = strlen( buff2 );
     scan_start = buff2;
     scan_stop  = buff2 + buff2_lg;
     return;

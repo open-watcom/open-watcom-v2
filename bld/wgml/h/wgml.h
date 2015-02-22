@@ -31,10 +31,6 @@
 #ifndef WGML_H_INCLUDED
 #define WGML_H_INCLUDED
 
-#ifndef __STDC_WANT_LIB_EXT1__
-    #define __STDC_WANT_LIB_EXT1__  1   /* use safer C library             */
-#endif
-
 #include <stdio.h>
 #include <setjmp.h>
 #include <string.h>
@@ -447,7 +443,7 @@ extern  int     get_msg( msg_ids resourceid, char *buffer, size_t buflen );
 
 
 /* wgmlsupp.c                           */
-extern  bool    free_resources( errno_t in_errno );
+extern  bool    free_resources( int in_errno );
 extern  void    free_some_mem( void );
 extern  void    free_layout_banner( void );
 extern  void    g_banner( void );

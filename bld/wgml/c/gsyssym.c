@@ -29,8 +29,6 @@
 *                     incomplete                               TBD
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1       /* use safer C library             */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -905,7 +903,7 @@ static void sysseqnofun( symvar *e )    // seqno current input record
             l = input_cbs->s.m->lineno;
         }
     }
-    sprintf_s( e->sub_0->value, MAX_L_AS_STR, "%.8lu", l );
+    sprintf( e->sub_0->value, "%.8lu", l );
     return;
 };
 

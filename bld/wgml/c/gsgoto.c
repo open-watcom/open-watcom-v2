@@ -30,8 +30,6 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -250,8 +248,7 @@ void    scr_label( void )
                             input_cbs->s.m->mac->label_cb = lb;
                             lb->pos         = 0;
                             lb->lineno      = input_cbs->s.m->lineno;
-                            strcpy_s( lb->label_name, sizeof( lb->label_name ),
-                                      token_buf );
+                            strcpy( lb->label_name, token_buf );
                         }
                     }
                 } else {
@@ -274,8 +271,7 @@ void    scr_label( void )
                             input_cbs->s.f->label_cb = lb;
                             lb->pos         = input_cbs->s.f->pos;
                             lb->lineno      = input_cbs->s.f->lineno;
-                            strcpy_s( lb->label_name, sizeof( lb->label_name ),
-                                      token_buf );
+                            strcpy( lb->label_name, token_buf );
                         }
                     }
                 }

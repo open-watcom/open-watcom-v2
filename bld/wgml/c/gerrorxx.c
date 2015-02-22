@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
 #include "wgml.h"
 #include "gvars.h"
 
@@ -400,7 +398,7 @@ static  void    g_err_tag_common( const char *tag, bool nest )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
-    sprintf_s( tagn, TAG_NAME_LENGTH + 1, "%s", tag );
+    sprintf( tagn, "%s", tag );
     g_err( err_tag_expected, tagn );
     if( nest ) {
         file_mac_info_nest();
@@ -447,7 +445,7 @@ void    g_err_tag_no( const char *tag )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
-    sprintf_s( tagn, TAG_NAME_LENGTH + 1, "%c%s", GML_char, tag );
+    sprintf( tagn, "%c%s", GML_char, tag );
     g_err( err_tag_not_expected, tagn );
     file_mac_info_nest();
     err_count++;
@@ -458,7 +456,7 @@ void    g_err_tag_prec( const char *tag )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
-    sprintf_s( tagn, TAG_NAME_LENGTH + 1, "%c%s", GML_char, tag );
+    sprintf( tagn, "%c%s", GML_char, tag );
     g_err( err_tag_preceding, tagn );
     file_mac_info();
     err_count++;
@@ -470,8 +468,8 @@ void    g_err_tag_x_in_y( const char *tag1, const char *tag2 )
     char    tagn1[TAG_NAME_LENGTH + 1];
     char    tagn2[TAG_NAME_LENGTH + 1];
 
-    sprintf_s( tagn1, TAG_NAME_LENGTH + 1, "%c%s", GML_char, tag1 );
-    sprintf_s( tagn2, TAG_NAME_LENGTH + 1, "%c%s", GML_char, tag2 );
+    sprintf( tagn1, "%c%s", GML_char, tag1 );
+    sprintf( tagn2, "%c%s", GML_char, tag2 );
     g_err( err_tag_x_in_y, tagn1, tagn2 );
     file_mac_info();
     err_count++;

@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
  
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
- 
 #include "wgml.h"
 #include "gvars.h"
  
@@ -136,7 +134,7 @@ extern  void    gml_set( gml_tag tag )
                 }
                 c = *p;
                 *p = '\0';
-                strcpy_s( token_buf, buf_size, valstart );
+                strcpy( token_buf, valstart );
                 *p = c;
                 if( c == '"' || c == '\'' ) {
                     p++;
