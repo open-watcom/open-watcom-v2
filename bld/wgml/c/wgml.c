@@ -745,7 +745,7 @@ static  void    init_pass( void )
     }
 
     line_from   = 1;                  // processing line range Masterdocument
-    line_to     = _UI32_MAX - 1;
+    line_to     = LINENO_MAX;
 
     apage               = 0;            // absolute pageno 1 - n
     page                = 0;            // current pageno (in body 1 - n)

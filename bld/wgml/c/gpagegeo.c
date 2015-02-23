@@ -259,7 +259,7 @@ static void finish_banners( void )
         ban_line = 0;
         max_reg_depth = 0;
         max_reg_font = 0;
-        min_top_line = MAX_SPACING_BU;      // start at very large positive number
+        min_top_line = SPACING_BU_MAX;      // start at very large positive number
         top_line_reg = NULL;
         for( cur_reg = cur_ban->region; cur_reg != NULL; cur_reg = cur_reg->next ) {
             g_curr_font = font_save;        // horizontal attributes use default font

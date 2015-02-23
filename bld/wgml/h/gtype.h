@@ -116,6 +116,9 @@ typedef enum gml_tag {
 
 typedef uint32_t    line_number;
 
+#define LINENO_MAX  ( _UI32_MAX - 1 )
+
+
 /***************************************************************************/
 /*  Space units Horiz + Vert              to be redesigned      TBD        */
 /***************************************************************************/

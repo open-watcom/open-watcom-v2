@@ -85,7 +85,7 @@ typedef int8_t      spacing_line;
 typedef uint32_t    spacing_bu;
 //typedef long        spacing_bu;
 
-#define MAX_SPACING_BU  UINT32_MAX
+#define SPACING_BU_MAX  _UI32_MAX
 
 /* struct declarations. */
 

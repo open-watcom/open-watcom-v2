@@ -1199,7 +1199,7 @@ static void set_research( option * opt )
         }
         ProcFlags.researchfile = true;  // only one file
         research_from = 1;
-        research_to = _UI32_MAX - 1;
+        research_to = LINENO_MAX;
 
         research_file_name[0] = '\0';   // no filename
         if( isalpha( *str ) ) {         // filename ?
