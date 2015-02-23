@@ -27,12 +27,15 @@
 * Description:  define and initialize global variables for wgml
 *
 ****************************************************************************/
-#include    "wgml.h"
-#include    "findfile.h"
-#include    "swchar.h"
+
+#include "wgml.h"
+#include "findfile.h"
+#include "swchar.h"
+
+#include "clibext.h"
 
 #define global                          // allocate storage for global vars
-#include    "gvars.h"
+#include "gvars.h"
 #undef  global
 
 
@@ -67,7 +70,7 @@ void init_global_vars( void )
     master_fname        = NULL;         // Master input file name
     master_fname_attr   = NULL;         // Master input file name attributes
     line_from           = 1;            // default first line to process
-    line_to             = ULONG_MAX -1; // default last line to process
+    line_to             = _UI32_MAX -1; // default last line to process
     dev_name            = NULL;         // device defined_name
     opt_fonts           = NULL;         // option FONT parameters (linked list)
 
@@ -129,7 +132,7 @@ void init_global_vars( void )
     box_line            = NULL;
     cur_line            = NULL;
     prev_line           = NULL;
-    max_depth           = 0;
+    g_max_depth         = 0;
 
     c_stop              = NULL;
 

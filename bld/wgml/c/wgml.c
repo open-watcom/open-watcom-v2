@@ -47,6 +47,7 @@
 #include "gvars.h"
 #include "banner.h"
 
+#include "clibext.h"
 
 /***************************************************************************/
 /*  Usage info and end program                                             */
@@ -699,7 +700,7 @@ static  void    print_stats( clock_t duration_ticks )
     // convert duration from clock ticks to HH:MM:SS.hh
     hour_min = ldiv( duration_ticks / CLOCKS_PER_SEC / 60L, 60L );
     sec_frac  = ldiv( duration_ticks, CLOCKS_PER_SEC );
-    sprintf( linestr, "%02lu:%02lu:%02lu.%02lu\0",
+    sprintf( linestr, "%02lu:%02lu:%02lu.%02lu",
         hour_min.quot, hour_min.rem, sec_frac.quot % 60, sec_frac.rem / 10 );
     g_info_lm( inf_stat_7, linestr );
 }
@@ -744,7 +745,7 @@ static  void    init_pass( void )
     }
 
     line_from   = 1;                  // processing line range Masterdocument
-    line_to     = ULONG_MAX - 1;
+    line_to     = _UI32_MAX - 1;
 
     apage               = 0;            // absolute pageno 1 - n
     page                = 0;            // current pageno (in body 1 - n)

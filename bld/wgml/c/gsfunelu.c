@@ -99,9 +99,9 @@ char    *scr_single_func_l( char * in, char * end, char * * result )
                               &symsubval );
         }
         if( rc == 2 ) {
-            sprintf( *result, "%d", strlen( symsubval->value ) );
+            sprintf( *result, "%lu", (unsigned long)strlen( symsubval->value ) );
         } else {
-            sprintf( *result, "%d", strlen( symvar_entry.name ) );
+            sprintf( *result, "%lu", (unsigned long)strlen( symvar_entry.name ) );
         }
     } else {                            // string
         pchar = in + 3;

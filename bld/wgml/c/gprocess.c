@@ -32,6 +32,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
 
 /*  split_input
  *  The (physical) line is split

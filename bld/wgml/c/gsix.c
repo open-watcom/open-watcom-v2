@@ -42,6 +42,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /**************************************************************************/
 /*                                                                        */
 /*  !not all options are supported / implemented                          */

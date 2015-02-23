@@ -34,11 +34,8 @@
 *
 ****************************************************************************/
 
-#include <stdlib.h>
-#include <string.h>
-
-#include "copfunc.h"
 #include "wgml.h"
+#include "copfunc.h"
 
 /* Extern function definitions. */
 

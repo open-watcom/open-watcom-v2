@@ -61,13 +61,7 @@
 ****************************************************************************/
 
 #include <math.h>
-#include <stdlib.h>
 #include <time.h>
-
-#define global
-#include "copfiles.h"   // ensures globals are allocated
-#undef  global
-
 #include "wgml.h"
 #include "copdev.h"
 #include "copdrv.h"
@@ -77,6 +71,12 @@
 #include "findfile.h"
 #include "gvars.h"
 #include "outbuff.h"
+
+#include "clibext.h"
+
+#define global
+#include "copfiles.h"   // ensures globals are allocated
+#undef  global
 
 /* Static data. */
 
@@ -817,7 +817,7 @@ void cop_setup( void )
 
     /* Set ProcFlags.ps_device to "true" if the driver name begins with "ps" or "PS". */
 
-    if( !_strnicmp( bin_device->driver_name, "ps", 2 ) ) {
+    if( !strnicmp( bin_device->driver_name, "ps", 2 ) ) {
         ProcFlags.ps_device = true;
     }
 

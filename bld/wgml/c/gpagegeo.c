@@ -59,7 +59,7 @@ void    init_page_geometry( void )
     g_resh = bin_device->horizontal_base_units; // hor resolution  &sysresh
     g_resv = bin_device->vertical_base_units;   // vert resolution &sysresv
 
-    spacing = layout_work.defaults.spacing;
+    g_spacing_ln = layout_work.defaults.spacing;
 
     g_cur_threshold = layout_work.widow.threshold;
 
@@ -245,29 +245,29 @@ void    init_page_geometry( void )
 
 static void finish_banners( void )
 {
-    banner_lay_tag  *   cur_ban;
-    region_lay_tag  *   cur_reg;
-    region_lay_tag  *   top_line_reg;
-    font_number         font_save;
-    uint32_t            ban_line;
-    uint32_t            max_reg_depth;
-    font_number         max_reg_font;
-    uint32_t            min_top_line;
+    banner_lay_tag  *cur_ban;
+    region_lay_tag  *cur_reg;
+    region_lay_tag  *top_line_reg;
+    font_number     font_save;
+    spacing_bu      ban_line;
+    spacing_bu      max_reg_depth;
+    font_number     max_reg_font;
+    spacing_bu      min_top_line;
 
     font_save = g_curr_font;
     for( cur_ban = layout_work.banner; cur_ban != NULL; cur_ban = cur_ban->next ) {
         ban_line = 0;
         max_reg_depth = 0;
         max_reg_font = 0;
-        min_top_line = UINT32_MAX;      // start at very large positive number
+        min_top_line = MAX_SPACING_BU;      // start at very large positive number
         top_line_reg = NULL;
         for( cur_reg = cur_ban->region; cur_reg != NULL; cur_reg = cur_reg->next ) {
-            g_curr_font = font_save;   // horizontal attributes use default font
+            g_curr_font = font_save;        // horizontal attributes use default font
             cur_reg->reg_indent = conv_hor_unit( &cur_reg->indent );
             cur_reg->reg_hoffset = conv_hor_unit( &cur_reg->hoffset );
             cur_reg->reg_width = conv_hor_unit( &cur_reg->width );
 
-            g_curr_font = cur_reg->font; // vertical attributes use the banregion font
+            g_curr_font = cur_reg->font;    // vertical attributes use the banregion font
             cur_reg->reg_voffset = conv_vert_unit( &cur_reg->voffset, 1 );
             cur_reg->reg_depth = conv_vert_unit( &cur_reg->depth, 1 );
 
@@ -283,11 +283,11 @@ static void finish_banners( void )
                 top_line_reg = cur_reg;
             }
         }
-        g_curr_font = font_save;       // horizontal attributes use default font
+        g_curr_font = font_save;            // horizontal attributes use default font
         cur_ban->ban_left_adjust = conv_hor_unit( &cur_ban->left_adjust );
         cur_ban->ban_right_adjust = conv_hor_unit( &cur_ban->right_adjust );
 
-        g_curr_font = max_reg_font; // vertical attribute uses the largest banregion font
+        g_curr_font = max_reg_font;         // vertical attribute uses the largest banregion font
         cur_ban->ban_depth = conv_vert_unit( &cur_ban->depth, 1 );
 
         cur_ban->top_line = top_line_reg;

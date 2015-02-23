@@ -63,12 +63,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bool.h"
 #include "wgml.h"
 #include "devfuncs.h"
 #include "findfile.h"
 #include "gvars.h"
 #include "outbuff.h"
+
+#include "clibext.h"
 
 /* Local variable declaration. */
 
@@ -120,7 +121,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    uint32_t            i;
+    size_t              i;
 
     /* If the buffer is full, flush it. */
 
@@ -344,9 +345,9 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    uint32_t            i;
-    uint32_t            j;
-    uint32_t            k;
+    size_t              i;
+    size_t              j;
+    size_t              k;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
@@ -624,7 +625,7 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    uint32_t            i;
+    size_t              i;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
@@ -998,7 +999,7 @@ void cop_tr_table( const char *p )
 
 void ob_binclude( binclude_element * in_el )
 {
-    uint32_t    count;
+    size_t      count;
     char        *in_name;
 #if defined( __UNIX__ )
     char        fname[_MAX_PATH];
@@ -1136,7 +1137,7 @@ void ob_graphic( graphic_element * in_el )
     char        graphobj[] = "/graphobj save def /showpage { } def";
     char        restore[] = "graphobj restore";
     size_t      ps_size;
-    uint32_t    count;
+    size_t      count;
     char        *in_name;
 #if defined( __UNIX__ )
     char        fname[_MAX_PATH];
@@ -1330,7 +1331,7 @@ void ob_insert_ps_text_start( void )
 
 void ob_setup( void )
 {
-    int     i;
+    size_t  i;
     size_t  count;
 
     /* Finalize out_file and out_file_attr. */
@@ -1365,7 +1366,7 @@ void ob_setup( void )
     buffout.current = 0;
     buffout.length = strtoul( &out_file_attr[2], NULL, 0 );
     if( errno == ERANGE ) {
-        xx_simple_err_i( err_out_rec_size2, ULONG_MAX );
+        xx_simple_err_ul( err_out_rec_size2, ULONG_MAX );
     }
     buffout.text = mem_alloc( buffout.length );
 

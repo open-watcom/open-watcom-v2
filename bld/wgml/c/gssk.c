@@ -109,7 +109,7 @@ void    scr_sk( void )
     char        *   p;
     int             skip;
     int             sign;
-    int             spc;
+    spacing_line    spacing_ln;
 
 #if 0
     char            cwcurr[4];          // if errmsg becomes neccessary
@@ -122,7 +122,7 @@ void    scr_sk( void )
 
     skip = -1;
     sign = 1;                           // default sign +
-    spc =  spacing;
+    spacing_ln = g_spacing_ln;
 
     p = scan_start;
     if( *p ) {
@@ -142,7 +142,7 @@ void    scr_sk( void )
             p++;
         }
         if( toupper( *p ) == 'A' ) {
-            spc = 1;                    // with abs always single spacing
+            spacing_ln = 1;                 // with abs always single spacing
             while( isalpha( *p ) ) {
                 p++;
             }
@@ -163,7 +163,7 @@ void    scr_sk( void )
     } else {
         skip = sign * skip;             // apply sign
     }
-    skip = skip * spc;                  // apply spacing
+    skip = skip * spacing_ln;           // apply spacing
     if( skip <= -1 ) {
         ProcFlags.overprint = true;     // enable overprint
     } else {

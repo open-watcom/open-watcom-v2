@@ -28,8 +28,11 @@
 *               fill strings are not implemented; fill chars are
 *
 ****************************************************************************/
-#include    "wgml.h"
-#include    "gvars.h"
+
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 /***************************************************************************/
 /* TAB defines tab-stop positions for subsequent output lines, or a user-  */

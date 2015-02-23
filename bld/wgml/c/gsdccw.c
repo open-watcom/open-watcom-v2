@@ -33,6 +33,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /***************************************************************************/
 /* DEFINE CHARACTER defines  characters of special meaning  when found in  */
 /* input and produced as output.                                           */

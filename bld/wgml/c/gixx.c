@@ -33,8 +33,10 @@
 *
 ****************************************************************************/
 
-#include    "wgml.h"
-#include    "gvars.h"
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 /***************************************************************************/
 /*  find or create index header block                                      */

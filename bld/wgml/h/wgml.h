@@ -31,6 +31,7 @@
 #ifndef WGML_H_INCLUDED
 #define WGML_H_INCLUDED
 
+#include <stddef.h>
 #include <stdio.h>
 #include <setjmp.h>
 #include <string.h>
@@ -42,7 +43,6 @@
 #include <process.h>
 #endif
 #include "bool.h"
-#include "clibext.h"
 
 #include "copfiles.h"       // mostly for access to bin_device & wgml_fonts
 #include "gtype.h"
@@ -122,8 +122,8 @@ extern  void        insert_col_top( doc_element * a_element );
 extern  void        insert_page_width( doc_element * a_element );
 extern  void        last_page_out( void );
 extern  void        reset_t_page( void );
-extern  void        set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip, uint32_t spacing, font_number font );
-extern  bool        split_element( doc_element * a_element, uint32_t req_depth );
+extern  void        set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, spacing_line spacing_ln, font_number font );
+extern  bool        split_element( doc_element * a_element, spacing_bu req_depth );
 extern  void        text_page_out( void );
 
 
@@ -169,6 +169,7 @@ extern  void    xx_opt_err_len( const char *cw, const char *pa, size_t len );
 extern  void    xx_simple_err( const msg_ids errid );
 extern  void    xx_simple_err_c( const msg_ids errid, const char * arg );
 extern  void    xx_simple_err_i( const msg_ids errid, int arg );
+extern  void    xx_simple_err_ul( const msg_ids errid, unsigned long arg );
 extern  void    xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
 extern  void    xx_tag_err( const msg_ids errid, char const * cw );
 extern  void    xx_warn( const msg_ids errid );
@@ -416,11 +417,11 @@ extern  bool        process_tag( gtentry * ge, mac_entry * me );
 /* gutil.c                              */
 extern  bool        att_val_to_su( su * spaceunit, bool pos );
 extern  int32_t     conv_hor_unit( su * spaceunit );
-extern  int32_t     conv_vert_unit( su * spaceunit, unsigned char spacing );
-extern  bool        cw_val_to_su( char * * scaninput, su * spaceunit );
+extern  int32_t     conv_vert_unit( su *spaceunit, spacing_line spacing_ln );
+extern  bool        cw_val_to_su( char * * scaninput, su *spaceunit );
 extern  char        *format_num( uint32_t n, char * r, size_t rsize, num_style ns );
 extern  char        *get_att_value( char * p );
-extern  su          *greater_su( su * su_a, su * su_b, unsigned char spacing );
+extern  su          *greater_su( su * su_a, su * su_b, spacing_line spacing_ln );
 extern  char        *int_to_roman( uint32_t n, char * r, size_t rsize );
 extern  bool        lay_init_su( const char * p, su * in_su );
 extern  size_t      len_to_trail_space( const char *p , size_t len );

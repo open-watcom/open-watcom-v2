@@ -28,10 +28,10 @@
 *
 ****************************************************************************/
 
-#include <string.h>
-#include    "wgml.h"
-//#include    "findfile.h"
-#include    "gvars.h"
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 /***************************************************************************/
 /*  :GRAPHIC tag                                                           */
@@ -114,7 +114,7 @@ void    gml_graphic( gml_tag tag )
             if( att_val_to_su( &cur_su, true ) ) {
                 return;
             }
-            depth = conv_vert_unit( &cur_su, spacing );
+            depth = conv_vert_unit( &cur_su, g_spacing_ln );
             if( depth == 0 ) {
                 xx_line_err( err_inv_depth_graphic, pa );
                 scan_start = scan_stop;
@@ -204,7 +204,7 @@ void    gml_graphic( gml_tag tag )
             if( att_val_to_su( &cur_su, false ) ) {
                 return;
             }
-            yoff = conv_vert_unit( &cur_su, spacing );
+            yoff = conv_vert_unit( &cur_su, g_spacing_ln );
             if( ProcFlags.tag_end_found ) {
                 break;
             }

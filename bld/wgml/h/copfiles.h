@@ -78,13 +78,14 @@
 #ifndef COPFILE_H_INCLUDED
 #define COPFILE_H_INCLUDED
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include "bool.h"
-
 typedef uint8_t     font_number;
-//typedef long     font_number;
+//typedef long        font_number;
+typedef int8_t      spacing_line;
+//typedef long        spacing_line;
+typedef uint32_t    spacing_bu;
+//typedef long        spacing_bu;
+
+#define MAX_SPACING_BU  UINT32_MAX
 
 /* struct declarations. */
 
@@ -102,15 +103,11 @@ typedef struct {
     uint8_t         table[0x100];
 } intrans_block;
 
-#if defined( __WATCOMC__ )
-#pragma disable_message( 128 ); // suppress: Warning! W128: 3 padding byte(s) added
-#endif
-
 /* To hold the data extracted from an OuttransData struct. */
 
 typedef struct {
-    uint8_t         count;
     uint8_t *       data;
+    uint8_t         count;
 } translation;
 
 /* To hold the data extracted from an OuttransBlock struct.
@@ -125,8 +122,8 @@ typedef struct {
 /* To hold the data extracted from a CodeBlock struct. */
 
 typedef struct {
-    uint16_t            count;
     char                *text;
+    uint16_t            count;
 } code_text;
 
 /* These structs are unique to the top-level struct cop_device. */
@@ -170,8 +167,8 @@ typedef struct {
 /* To hold the data from the UnderscoreBlock struct. */
 
 typedef struct {
-    bool                specified_font;
     char                *font_name;
+    bool                specified_font;
     font_number         font;
     char                underscore_char;
 } underscore_block;
@@ -188,8 +185,8 @@ typedef struct {
 /* To hold the data from the DefaultfontBlock struct. */
 
 typedef struct {
-    uint16_t            font_count;
     default_font *      fonts;
+    uint16_t            font_count;
 } defaultfont_block;
 
 /* To hold the data from the PauseBlock struct. */
@@ -206,15 +203,15 @@ typedef struct {
 typedef struct {
     char *              font_name;
     char *              font_switch;
-    uint8_t             resident;
     code_text *         font_pause;
+    uint8_t             resident;
 } device_font;
 
 /* To hold the data from the DevicefontBlock struct. */
 
 typedef struct {
-    uint16_t            font_count;
     device_font *       fonts;
+    uint16_t            font_count;
 } devicefont_block;
 
 /* These structs are unique to the top-level struct cop_driver. */
@@ -232,17 +229,17 @@ typedef struct {
  */
 
 typedef struct {
-    bool                is_fontvalue;
-    uint16_t            count;
     char                *text;
+    uint16_t            count;
+    bool                is_fontvalue;
 } init_text;
 
 /* To hold the data from the InitBlock struct. */
 /* The field names do not all correspond to those in the Wiki. */
 
 typedef struct {
-    uint16_t            count;
     init_text *         codeblock;
+    uint16_t            count;
 } init_block;
 
 /* To hold the data from the InitFuncs struct.
@@ -277,16 +274,16 @@ typedef struct {
  */
 
 typedef struct {
+    char                *text;
     uint16_t            advance;
     uint16_t            count;
-    char                *text;
 } newline_block;
 
 /* To hold the data extracted from a NewlineFuncs struct. */
 
 typedef struct {
-    uint16_t            count;
     newline_block *     newlineblocks;
+    uint16_t            count;
 } newline_funcs;
 
 /* To hold the data from the FontswitchBlock struct.
@@ -300,6 +297,8 @@ typedef struct {
 
 typedef struct {
     char *              type;
+    code_text *         startvalue;
+    code_text *         endvalue;
     bool                do_always;
     bool                default_width_flag;
     bool                font_height_flag;
@@ -309,15 +308,13 @@ typedef struct {
     bool                font_space_flag;
     bool                line_height_flag;
     bool                line_space_flag;
-    code_text *         startvalue;
-    code_text *         endvalue;
 } fontswitch_block;
 
 /* To hold the data extracted from a FontswitchFuncs struct. */
 
 typedef struct {
-    uint16_t            count;
     fontswitch_block *  fontswitchblocks;
+    uint16_t            count;
 } fontswitch_funcs;
 
 /* To hold some of the data extracted from a FontstyleFuncs struct.
@@ -342,11 +339,11 @@ typedef struct {
  */
 
 typedef struct {
-    uint16_t            line_passes;
     char *              type;
     code_text *         startvalue;
     code_text *         endvalue;
     line_proc *         lineprocs;
+    uint16_t            line_passes;
 } fontstyle_block;
 
 /* To hold the data extracted from a FontstyleGroup struct.
@@ -355,8 +352,8 @@ typedef struct {
  */
 
 typedef struct {
-    uint16_t            count;
     fontstyle_block *   fontstyleblocks;
+    uint16_t            count;
 } fontstyle_group;
 
 /* To hold the data extracted from an HlineBlock, a VlineBlock, or a DboxBlock
@@ -366,9 +363,9 @@ typedef struct {
  */
 
 typedef struct {
+    char                *text;
     uint32_t            thickness;
     uint16_t            count;
-    char                *text;
 } line_block;
 
 /* This struct is unique to the top-level struct cop_font. */
@@ -407,7 +404,7 @@ typedef struct {
     char            *   output_name;
     char            *   output_extension;
     uint32_t            page_width;
-    uint32_t            page_depth;
+    spacing_bu          page_depth;
     uint32_t            horizontal_base_units;
     uint32_t            vertical_base_units;
     /* PagegeometryBlock */
@@ -451,6 +448,7 @@ typedef struct {
     /* PageAddressBlock */
     uint8_t             x_positive;
     uint8_t             y_positive;
+    int                 :0;
     /* InitFuncs */
     init_funcs          inits;
     /* FinishFuncs */
@@ -488,10 +486,6 @@ typedef struct {
 #define IN_DRV_REMAP_MBR(x)     in_driver->x = (void *)((char *)in_driver + (size_t)in_driver->x)
 #define IN_DRV_EXPAND_CHK(x)    (in_driver->allocated_size < (in_driver->next_offset + x))
 #define IN_DRV_GET_OFF(x)       ((char *)x - (char *)in_driver)
-
-#if defined( __WATCOMC__ )
-#pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
-#endif
 
 /* This struct embodies the binary form of the :FONT block.
  * Only the fonts need to be treated as a linked list.
@@ -558,6 +552,7 @@ typedef struct {
     char                    shift_height[4];
 } wgml_font;
 
+#endif  /* COPFILE_H_INCLUDED */
 
 /* Variable declarations. */
 
@@ -573,5 +568,3 @@ global wgml_font    *wgml_fonts;     // the available fonts
 /* Reset so can be reused with other headers. */
 
 #undef global
-
-#endif  /* COPFILE_H_INCLUDED */

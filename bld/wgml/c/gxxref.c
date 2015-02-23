@@ -28,9 +28,11 @@
 *
 *                         :FIGREF :FNREF not yet implemented    TBD
 ****************************************************************************/
-#include    "wgml.h"
-#include    "gvars.h"
 
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 /***************************************************************************/
 /*         :HDREF refid='id-name'                                          */

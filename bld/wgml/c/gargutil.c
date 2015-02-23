@@ -39,6 +39,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /***************************************************************************/
 /* validate and return the character parameter, or raise an error          */
 /***************************************************************************/
@@ -309,7 +311,7 @@ bool    is_lay_att_char( char c )
 {
     bool    test;
 
-    test = isalpha( c );
+    test = ( isalpha( c ) != 0 );
     if( !test ) {
         test = ( c == '_' );
     }

@@ -30,11 +30,14 @@
 *
 *                  incomplete heading output TBD
 ****************************************************************************/
-#include    "wgml.h"
-#include    "gvars.h"
+
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
+
 
 static char hnumx[7] = "$hnumX";
-
 
 /***************************************************************************/
 /*  construct Header numbers  1.2.3.V ...                                  */
@@ -49,7 +52,7 @@ static  void    update_headnumx( int lvl, char *hnumstr, size_t hnsize )
 
     *hnumstr = 0;
     pos = 0;
-    if( layout_work.hx[lvl].number_form == none ) {
+    if( layout_work.hx[lvl].number_form == num_none ) {
         return;                         // no number output
     }
 
@@ -107,19 +110,19 @@ static  void    hx_header( int hx_lvl, const char *hnumstr, const char *txt )
 
     hd_line = NULL;
     font_save = g_curr_font;
-    spacing = layout_work.hx[hx_lvl].spacing;
+    g_spacing_ln = layout_work.hx[hx_lvl].spacing;
 
     if( layout_work.hx[hx_lvl].line_break ) {
         set_skip_vars( &layout_work.hx[hx_lvl].pre_skip,
                        &layout_work.hx[hx_lvl].pre_top_skip,
                        &layout_work.hx[hx_lvl].post_skip,
-                       spacing,
+                       g_spacing_ln,
                        layout_work.hx[hx_lvl].number_font );
     } else {
         set_skip_vars( &layout_work.hx[hx_lvl].pre_skip,
                        &layout_work.hx[hx_lvl].pre_top_skip,
                        NULL,
-                       spacing,
+                       g_spacing_ln,
                        layout_work.hx[hx_lvl].number_font );
     }
 
@@ -131,7 +134,7 @@ static  void    hx_header( int hx_lvl, const char *hnumstr, const char *txt )
     widthn  = 0;
     hd_line = alloc_text_line();
 
-    if( layout_work.hx[hx_lvl].number_form != none ) {
+    if( layout_work.hx[hx_lvl].number_form != num_none ) {
         font = layout_work.hx[hx_lvl].number_font;
         curr_tn = alloc_text_chars( hnumstr, strlen( hnumstr ), font );
         curr_tn->width = cop_text_width( curr_tn->text, curr_tn->count, font );

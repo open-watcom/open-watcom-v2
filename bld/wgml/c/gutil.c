@@ -47,6 +47,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /***************************************************************************/
 /*  parses in_su->su_txt to complete initialization of in_su               */
 /*  Notes:                                                                 */
@@ -714,22 +716,19 @@ int32_t conv_hor_unit( su * s )
     return( ds );
 }
 
-int32_t conv_vert_unit( su *s, unsigned char spc )
+int32_t conv_vert_unit( su *s, spacing_line spacing_ln )
 {
     int32_t         ds;
     int32_t         fp;
-    unsigned char   space;
 
-    if( spc > 0 ) {                     // if spacing valid use it
-        space = spc;
-    } else {
-        space = spacing;                // else default
+    if( !( spacing_ln > 0 ) ) {         // if spacing is not valid
+        spacing_ln = g_spacing_ln;      // use default
     }
     switch( s->su_u ) {
     case SU_chars_lines :
     case SU_ems :
         // no decimals, use spacing, round negative values down
-        ds = space * s->su_whole * wgml_fonts[g_curr_font].line_height;
+        ds = spacing_ln * s->su_whole * wgml_fonts[g_curr_font].line_height;
         if( ds < 0 ) {
             ds++;
         }
@@ -967,13 +966,13 @@ char * get_att_value( char * p )
 /*  these are intended to be vertical values                               */
 /***************************************************************************/
 
-su * greater_su( su *su_a, su *su_b, unsigned char spacing )
+su *greater_su( su *su_a, su *su_b, spacing_line spacing_ln )
 {
     uint32_t    val_a;
     uint32_t    val_b;
 
-    val_a = conv_vert_unit( su_a, spacing );
-    val_b = conv_vert_unit( su_b, spacing );
+    val_a = conv_vert_unit( su_a, spacing_ln );
+    val_b = conv_vert_unit( su_b, spacing_ln );
 
     if( val_a > val_b ) {
         return( su_a );
@@ -1049,22 +1048,23 @@ char * int_to_roman( uint32_t n, char * r, size_t rsize )
 
 void    start_line_with_string( const char *text, font_number font, bool leave_1space )
 {
-    text_chars          *   n_char;     // new text char
-    size_t                  count;
+    text_chars      *n_char;     // new text char
+    size_t          count;
+    unsigned        space_count;
 
     count = strlen( text );
     if( count == 0 ) {
         return;
     }
-    post_space = 0;
+    space_count = 0;
     while( *(text + count - 1) == ' ' ) {   // strip trailing spaces
-        post_space++;
+        space_count++;
         if( --count == 0 ) {
             break;
         }
     }
-    if( leave_1space && post_space > 0 ) {// for ordered :LI keep 1 trailing space
-        post_space--;
+    if( leave_1space && space_count > 0 ) {// for ordered :LI keep 1 trailing space
+        space_count--;
         count++;
     }
 
@@ -1101,7 +1101,7 @@ void    start_line_with_string( const char *text, font_number font, bool leave_1
     t_line->last  = n_char;
 
     g_cur_h_start = n_char->x_address + n_char->width;
-    post_space = post_space * wgml_fonts[layout_work.defaults.font].spc_width;
+    post_space = space_count * wgml_fonts[layout_work.defaults.font].spc_width;
 }
 
 

@@ -47,18 +47,14 @@
 
 /* Struct declarations. */
 
-#if defined( __WATCOMC__ )
-#pragma disable_message( 128 ); // suppress: Warning! W128: 3 padding byte(s) added
-#endif
-
 /* This holds the raw contents of one or more contiguous P-buffers. The
  * buffer is to be interpreted as an array of count uint8_t value. The
  * value of count should always be a multiple of 80.
  */
 
 typedef struct {
-    uint16_t    count;
     char        *buffer;
+    uint16_t    count;
 } p_buffer;
 
 /* To hold the data extracted from the CodeBlock struct. This is the CodeBlock
@@ -67,23 +63,19 @@ typedef struct {
  */
 
 typedef struct {
-    uint8_t     designator;
+    const char  *text;
     uint16_t    line_pass;
     uint16_t    count;
     uint16_t    cumulative_index;
-    const char  *text;
+    uint8_t     designator;
 } code_block;
 
 /* To hold the data extracted from the Variant A FunctionsBlock struct. */
 
 typedef struct {
-    uint16_t        count;
     code_block *    code_blocks;
+    uint16_t        count;
 } functions_block;
-
-#if defined( __WATCOMC__ )
-#pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
-#endif
 
 /* Function declarations. */
 

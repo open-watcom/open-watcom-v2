@@ -31,6 +31,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 typedef struct {
     locflags    location;
     char        tagname[TAG_NAME_LENGTH + 1];
@@ -362,6 +364,13 @@ void    xx_simple_err_c( const msg_ids errid, const char * arg )
 }
 
 void    xx_simple_err_i( const msg_ids errid, int arg )
+{
+    err_count++;
+    g_err( errid, arg );
+    return;
+}
+
+void    xx_simple_err_ul( const msg_ids errid, unsigned long arg )
 {
     err_count++;
     g_err( errid, arg );

@@ -171,19 +171,13 @@
 *               Wiki.
 ****************************************************************************/
 
-#include <conio.h>
-#include <string.h>
-#if defined( __UNIX__ ) || defined( __WATCOMC__ )
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
-
-#include "bool.h"
 #include "wgml.h"
+#include "wio.h"
 #include "devfuncs.h"
 #include "gvars.h"
 #include "outbuff.h"
+
+#include "clibext.h"
 
 /* Macros. */
 
@@ -940,7 +934,7 @@ static void *df_wait( void )
         internal_err( __FILE__, __LINE__ );
     }
 
-    getch();
+    getchar();
     return( df_recordbreak_device() );
 }
 
@@ -961,7 +955,7 @@ static void *df_date( void )
  
 static void *df_default_width( void )
 {
-    return( (void *)wgml_fonts[df_font].bin_font->char_width );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].bin_font->char_width );
 }
 
 /* Function df_font_height().
@@ -970,7 +964,7 @@ static void *df_default_width( void )
  
 static void *df_font_height( void )
 {
-    return( (void *)wgml_fonts[df_font].font_height );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].font_height );
 }
 
 /* Function df_font_number().
@@ -979,7 +973,7 @@ static void *df_font_height( void )
  
 static void *df_font_number( void )
 {
-    return( (void *)df_font );
+    return( (void *)(uintptr_t)df_font );
 }
 
 /* Function df_font_outname1().
@@ -1029,7 +1023,7 @@ static void *df_font_resident( void )
  
 static void *df_font_space( void )
 {
-    return( (void *)wgml_fonts[df_font].font_space );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].font_space );
 }
 
 /* Function df_line_height().
@@ -1038,7 +1032,7 @@ static void *df_font_space( void )
  
 static void *df_line_height( void )
 {
-    return( (void *)wgml_fonts[df_font].line_height );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].line_height );
 }
 
 /* Function df_line_space().
@@ -1047,7 +1041,7 @@ static void *df_line_height( void )
  
 static void *df_line_space( void )
 {
-    return( (void *)wgml_fonts[df_font].line_space );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].line_space );
 }
 
 /* Function df_page_depth().
@@ -1056,7 +1050,7 @@ static void *df_line_space( void )
  
 static void *df_page_depth( void )
 {
-    return( (void *)bin_device->page_depth );
+    return( (void *)(uintptr_t)bin_device->page_depth );
 }
 
 /* Function df_page_width().
@@ -1065,7 +1059,7 @@ static void *df_page_depth( void )
  
 static void *df_page_width( void )
 {
-    return( (void *)bin_device->page_width );
+    return( (void *)(uintptr_t)bin_device->page_width );
 }
 
 /* Function df_pages().
@@ -1074,7 +1068,7 @@ static void *df_page_width( void )
  
 static void *df_pages( void )
 {
-    return( (void *)apage );
+    return( (void *)(uintptr_t)apage );
 }
 
 /* Function df_tab_width().
@@ -1083,7 +1077,7 @@ static void *df_pages( void )
  
 static void *df_tab_width( void )
 {
-    return( (void *)tab_width );
+    return( (void *)(uintptr_t)tab_width );
 }
 
 /* Function df_thickness().
@@ -1092,7 +1086,7 @@ static void *df_tab_width( void )
  
 static void *df_thickness( void )
 {
-    return( (void *)thickness );
+    return( (void *)(uintptr_t)thickness );
 }
 
 /* Function df_time().
@@ -1119,7 +1113,7 @@ static void *df_wgml_header( void )
  
 static void *df_x_address( void )
 {
-    return( (void *)x_address );
+    return( (void *)(uintptr_t)x_address );
 }
 
 /* Function df_x_size().
@@ -1128,7 +1122,7 @@ static void *df_x_address( void )
  
 static void *df_x_size( void )
 {
-    return( (void *)x_size );
+    return( (void *)(uintptr_t)x_size );
 }
 
 /* Function df_y_address().
@@ -1137,7 +1131,7 @@ static void *df_x_size( void )
  
 static void *df_y_address( void )
 {
-    return( (void *)y_address );
+    return( (void *)(uintptr_t)y_address );
 }
 
 /* Function df_y_size().
@@ -1146,7 +1140,7 @@ static void *df_y_address( void )
  
 static void *df_y_size( void )
 {
-    return( (void *)y_size );
+    return( (void *)(uintptr_t)y_size );
 }
 
 /* Parameter block parsing functions. */
@@ -1416,7 +1410,7 @@ static void *numeric_literal( void )
     /* Get and return the value. */
 
     memcpy( &value, current_df_data.current, sizeof( value ) );
-    return( (void *)value );
+    return( (void *)(uintptr_t)value );
 }
 
 /* These functions take parameters in parameter blocks only. */
@@ -1942,7 +1936,7 @@ static void *df_decimal( void )
     /* Convert and return the value. */
 
     value = mem_alloc( 12 );
-    return( (void *)_ltoa( first, value, 10 ) );
+    return( (void *)ltoa( first, value, 10 ) );
 }
 
 /* Function df_divide().
@@ -2006,7 +2000,7 @@ static void *df_getnumsymbol( void )
 
     mem_free( name );
 
-    return( (void *)ret_val );
+    return( (void *)(uintptr_t)ret_val );
 }
 
 /* Function df_getstrsymbol().
@@ -2067,7 +2061,7 @@ static void *df_hex( void )
     /* Convert and return a pointer to the parameter */
 
     value = mem_alloc( 9 );
-    return( (void *)_ltoa( first, value, 16 ) );
+    return( (void *)ltoa( first, value, 16 ) );
 }
 
 /* Function df_lower().

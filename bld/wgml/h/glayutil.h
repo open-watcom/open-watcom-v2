@@ -110,7 +110,7 @@
   pick( see_also_string,   i_xx_string,     o_xx_string,     xx_str          )
   pick( size,              i_space_unit,    o_space_unit,    su              )
   pick( skip,              i_space_unit,    o_space_unit,    su              )
-  pick( spacing,           i_int8,          o_int8,          int8_t          )
+  pick( spacing,           i_spacing_line,  o_spacing_line,  spacing_line    )
   pick( stop_eject,        i_yes_no,        o_yes_no,        bool            )
   pick( string_font,       i_font_number,   o_font_number,   font_number     )
   pick( threshold,         i_uint8,         o_uint8,         uint8_t         )

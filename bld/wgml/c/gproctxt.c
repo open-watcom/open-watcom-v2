@@ -573,9 +573,9 @@ static void wgml_tabs( void )
     /*  c_type contains the type of the prior input text                    */
     /************************************************************************/
 
-    for( i; i < in_count; i++ ) {
+    for( i = i; i < in_count; i++ ) {
         t_start = i;
-        for( i; i < in_count; i++ ) {   // get the text up to the next tab
+        for( i = i; i < in_count; i++ ) {   // get the text up to the next tab
             if( (in_text[i] == '\t') || (in_text[i] == tab_char) ) {
                 break;
             }
@@ -1714,7 +1714,7 @@ void    process_text( const char *text, font_number font )
     /***********************************************************************/
 
     if( !ProcFlags.concat && (post_space > 0) && (t_line->first == NULL) ) {
-        blank_lines++;
+        g_blank_lines_ln++;
     }
 
     if( t_line->first != NULL ) {           // something in the line

@@ -31,6 +31,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /***************************************************************************/
 /*                     several  attributes  with only font as value        */
 /*                                                                         */

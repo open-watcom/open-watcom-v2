@@ -29,8 +29,11 @@
 *
 *
 ****************************************************************************/
-#include    "wgml.h"
-#include    "gvars.h"
+
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 static  ju_enum     justify_save;           // for ProcFlags.justify
 static  bool        first_xline;            // special for first xmp LINE
@@ -136,9 +139,9 @@ extern  void    gml_xmp( gml_tag tag )
     nest_cb->p_stack = copy_to_nest_stack();
     nest_cb->c_tag = t_XMP;
 
-    spacing = layout_work.xmp.spacing;
+    g_spacing_ln = layout_work.xmp.spacing;
 
-    set_skip_vars( NULL, &layout_work.xmp.pre_skip, NULL, spacing, g_curr_font );
+    set_skip_vars( NULL, &layout_work.xmp.pre_skip, NULL, g_spacing_ln, g_curr_font );
 
     ProcFlags.group_elements = true;
 

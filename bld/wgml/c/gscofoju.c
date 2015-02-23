@@ -34,6 +34,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /****************************************************************************/
 /* FORMAT combines the effect of Concatenate and Justify.                   */
 /*                                                                          */

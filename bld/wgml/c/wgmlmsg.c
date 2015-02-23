@@ -29,20 +29,14 @@
 *
 ****************************************************************************/
 
-#if defined( __WATCOMC__ )
-#pragma disable_message( 128 );
-#endif
 
 #include "wgml.h"
-#include "bool.h"
 #include "wio.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
 
-#if defined( __WATCOMC__ )
-#pragma enable_message( 128 );
-#endif
+#include "clibext.h"
 
 HANDLE_INFO Instance;
 

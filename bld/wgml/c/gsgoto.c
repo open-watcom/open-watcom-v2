@@ -33,7 +33,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
-
+#include "clibext.h"
 
 
 /***************************************************************************/
@@ -246,7 +246,7 @@ void    scr_label( void )
                             lb              = mem_alloc( sizeof( labelcb ) );
                             lb->prev        = input_cbs->s.m->mac->label_cb;
                             input_cbs->s.m->mac->label_cb = lb;
-                            lb->pos         = 0;
+                            memset( &lb->pos, 0, sizeof( lb->pos ) );
                             lb->lineno      = input_cbs->s.m->lineno;
                             strcpy( lb->label_name, token_buf );
                         }

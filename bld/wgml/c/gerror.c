@@ -28,9 +28,11 @@
 *
 ****************************************************************************/
 
+#include <stdarg.h>
 #include "wgml.h"
 #include "gvars.h"
-#include <stdarg.h>
+
+#include "clibext.h"
 
 #define MAX_ERR_LEN     1020
 
@@ -58,8 +60,8 @@ void g_suicide( void )
         print_sym_dict( sys_dict );
     }
     out_msg( "\n\nWGML suicide\n\n" );
-    flushall();                         // TBD
-    fcloseall();                        // TBD
+//    flushall();                         // TBD
+//    fcloseall();                        // TBD
     if( environment ) {
         longjmp( *environment, 1 );
     }

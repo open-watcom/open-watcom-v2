@@ -28,9 +28,11 @@
 *                         :SF  and :eSF processing
 *
 ****************************************************************************/
-#include    "wgml.h"
-#include    "gvars.h"
 
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 /***************************************************************************/
 /*  :HPx :SF common processing                                             */

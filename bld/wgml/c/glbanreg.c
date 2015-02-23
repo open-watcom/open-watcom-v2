@@ -31,6 +31,9 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
+
 extern  banner_lay_tag  *   curr_ban;   // in glbanner.c
 extern  banner_lay_tag  *   del_ban;    // in glbanner.c
 

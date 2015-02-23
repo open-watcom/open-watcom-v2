@@ -46,20 +46,19 @@
 ****************************************************************************/
 
 #include <errno.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "wgml.h"
 #include "copdir.h"
 #include "gvars.h"
 #include "iopath.h"
 #include "pathlist.h"
 
+#include "clibext.h"
+
 /* Define the global variables. */
 
 #define global
 #include "findfile.h"
+#undef global
 
 /* Extern function definitions. */
 

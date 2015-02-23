@@ -650,8 +650,8 @@ pick( ERR_WRITE_OUT_FILE,       "Error writing output file %s\n",
 pick( ERR_OUT_REC_SIZE,         "Output file's record size is too small for the device '%s'\n",
                                 "Output file's record size is too small for the device '%s'\n")
 
-pick( ERR_OUT_REC_SIZE2,        "Output record length is too large, max is %s\n",
-                                "Output record length is too large, max is %s\n")
+pick( ERR_OUT_REC_SIZE2,        "Output record length is too large, max is %lu\n",
+                                "Output record length is too large, max is %lu\n")
 
 pick( ERR_REC_ATT_NOT_SUP,      "Record attribute %s is not currently supported\n",
                                 "Record attribute %s is not currently supported\n")

@@ -32,6 +32,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 #define sys(x)  sys##x                  // construct symvar varname
 #define sysf(x) sys##x##fun             // construct access function name
 #define sys0(x) sys##x##0               // construct subscript 0 name
@@ -903,7 +905,7 @@ static void sysseqnofun( symvar *e )    // seqno current input record
             l = input_cbs->s.m->lineno;
         }
     }
-    sprintf( e->sub_0->value, "%.8lu", l );
+    sprintf( e->sub_0->value, "%.8lu", (unsigned long)l );
     return;
 };
 

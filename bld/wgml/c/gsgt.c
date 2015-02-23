@@ -34,6 +34,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
 
 /***************************************************************************/
 /*  reset last used  tag and att entries                                   */

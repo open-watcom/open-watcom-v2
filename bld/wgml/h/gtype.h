@@ -891,7 +891,7 @@ typedef enum {
 
 typedef struct {
             uint32_t        col;
-            uint32_t        depth;
+            spacing_bu      depth;
             bx_v_ind        v_ind;
 } box_col;
 
@@ -975,7 +975,7 @@ typedef enum {
 
 typedef struct {
     uint32_t    cur_left;
-    uint32_t    depth;
+    spacing_bu  depth;
     uint32_t    y_address;
     bool        at_top;
     bool        has_rec_type;
@@ -991,7 +991,7 @@ typedef struct {
 
 typedef struct {
     uint32_t    cur_left;
-    uint32_t    depth;
+    spacing_bu  depth;
     uint32_t    scale;
     uint32_t    width;
     uint32_t    y_address;
@@ -1008,7 +1008,7 @@ typedef struct {
 } hline_element;
 
 typedef struct {
-    uint32_t        spacing;
+    spacing_bu      spacing;
     text_line   *   first;
     bool            overprint;          // placement avoids padding warning
     bool            force_op;           // forces overprint at top of page
@@ -1023,9 +1023,9 @@ typedef struct {
 
 typedef struct doc_element {
     struct doc_element  *next;
-    uint32_t            blank_lines;
-    uint32_t            depth;
-    uint32_t            subs_skip;
+    spacing_bu          blank_lines;
+    spacing_bu          depth;
+    spacing_bu          subs_skip;
     uint32_t            top_skip;
     union {
         binclude_element    binc;
@@ -1039,7 +1039,7 @@ typedef struct doc_element {
 } doc_element;
 
 typedef struct doc_el_group {
-    uint32_t        depth;
+    spacing_bu      depth;
     doc_element *   first;
     doc_element *   last;
 } doc_el_group;
@@ -1051,9 +1051,9 @@ typedef struct ban_column {
 
 typedef struct doc_column {
     struct doc_column   *next;
-    uint32_t            fig_top;
-    uint32_t            fn_top;
-    uint32_t            main_top;
+    spacing_bu          fig_top;
+    spacing_bu          fn_top;
+    spacing_bu          main_top;
     doc_element         *main;
     doc_element         *bot_fig;
     doc_element         *footnote;
@@ -1062,9 +1062,9 @@ typedef struct doc_column {
 struct banner_lay_tag;  // avoids include circularity with gtypelay.h
 
 typedef struct {
-    uint32_t                main_top;
-    uint32_t                max_depth;
-    uint32_t                cur_depth;
+    spacing_bu              main_top;
+    spacing_bu              max_depth;
+    spacing_bu              cur_depth;
     doc_element             *last_col_main;
     doc_element             *last_col_bot;
     doc_element             *last_col_fn;

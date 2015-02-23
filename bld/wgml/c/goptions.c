@@ -28,15 +28,12 @@
 *               several options are still ignored                 TBD
 ****************************************************************************/
 
-#if defined( __UNIX__ ) || defined( __WATCOMC__ )
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
-#include <fcntl.h>
+#include "wio.h"
 #include "wgml.h"
 #include "findfile.h"
 #include "gvars.h"
+
+#include "clibext.h"
 
 #define str( a ) # a
 
@@ -1005,7 +1002,7 @@ static void set_symbol( option * opt )
 {
     char    *   name;
     char    *   value;
-    int32_t     rc;
+//    int32_t     rc;
 
     if( IS_OPTION_END1( tokennext ) ) {
         g_err( err_missing_name, opt->option );
@@ -1020,7 +1017,8 @@ static void set_symbol( option * opt )
             err_count++;
         } else {
             value = tokennext->token;
-            rc = add_symvar( &global_dict, name, value, no_subscript, 0 );
+//            rc = add_symvar( &global_dict, name, value, no_subscript, 0 );
+            add_symvar( &global_dict, name, value, no_subscript, 0 );
             tokennext = tokennext->nxt;
         }
 
@@ -1087,7 +1085,7 @@ static void set_stats( option * opt )
 
 static void set_OPTFile( option * opt )
 {
-    size_t      len;
+//    size_t      len;
     char        attrwork[MAX_FILE_ATTR];
     char    *   str;
 
@@ -1097,7 +1095,7 @@ static void set_OPTFile( option * opt )
         g_err( err_missing_value, opt->option );
         err_count++;
     } else {
-        len = tokennext->toklen;
+//        len = tokennext->toklen;
 
         str = tokennext->token;
 
@@ -1201,7 +1199,7 @@ static void set_research( option * opt )
         }
         ProcFlags.researchfile = true;  // only one file
         research_from = 1;
-        research_to = ULONG_MAX - 1;
+        research_to = _UI32_MAX - 1;
 
         research_file_name[0] = '\0';   // no filename
         if( isalpha( *str ) ) {         // filename ?
@@ -1602,19 +1600,19 @@ static bool is_option( cmd_tok *token )
     char    *   opt;
     char        c;
     char    *   p;
-    char    *   option_start;
+//    char    *   option_start;
 
     if( token == NULL )
         return( false );
     p = token->token;
-    option_start = p;
+//    option_start = p;
     len = token->toklen;
     c = tolower( *p );
     if( c == '(' ) {
         if( len == 1 ) {            // skip single (
             token = token->nxt;
             p = token->token;
-            option_start = p;
+//            option_start = p;
             len = token->toklen;
             c = tolower( *p );
         } else {
@@ -1634,7 +1632,7 @@ static bool is_option( cmd_tok *token )
     }
 
     p = token->token;
-    option_start = p;
+//    option_start = p;
     len = token->toklen;
     c = tolower( *p );
     if( option_delimiter( c ) ) {
@@ -1663,7 +1661,7 @@ static cmd_tok  *process_master_filename( cmd_tok * tok )
 {
     char        attrwork[MAX_FILE_ATTR];
     char    *   p;
-    char    *   str;
+//    char    *   str;
     size_t      len;
 
     len = tok->toklen;
@@ -1674,7 +1672,8 @@ static cmd_tok  *process_master_filename( cmd_tok * tok )
     strip_quotes( p );
     if( master_fname != NULL ) {         // more than one master file ?
         g_banner();
-        str = bad_cmd_line( err_doc_duplicate, tok->token, ' ' );
+//        str = bad_cmd_line( err_doc_duplicate, tok->token, ' ' );
+        bad_cmd_line( err_doc_duplicate, tok->token, ' ' );
         mem_free( p );
     } else {
         split_attr_file( p , attrwork, sizeof( attrwork ) );

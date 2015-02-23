@@ -95,7 +95,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         }
     }
 
-    *result += sprintf( *result, "%d", minimum );
+    *result += sprintf( *result, "%ld", minimum );
 
     return( pos );
 }

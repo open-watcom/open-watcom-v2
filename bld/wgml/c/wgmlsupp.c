@@ -39,11 +39,11 @@
 ****************************************************************************/
 
 #include <errno.h>
-
 #include "wgml.h"
 #include "gvars.h"
 #include "banner.h"
 
+#include "clibext.h"
 
 #define mystr(x)            # x
 #define xmystr(s)           mystr(s)

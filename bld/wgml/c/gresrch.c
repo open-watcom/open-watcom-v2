@@ -32,6 +32,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
 
 typedef struct taglist {
     struct  taglist *   nxt;

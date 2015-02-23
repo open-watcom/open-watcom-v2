@@ -42,10 +42,6 @@
 #include "gtype.h"
 #include "gtypelay.h"
 
-#if defined( __WATCOMC__ )
-#pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
-#endif
-
 global struct tm        doc_tm;         // document time/date
 
 global  jmp_buf     *   environment;    // var for GSuicide()
@@ -241,9 +237,6 @@ global struct ProcFlags {
 
 } ProcFlags;                            // processing flags
 
-#if defined( __WATCOMC__ )
-#pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
-#endif
 
 global  size_t          buf_size;       // default buffer size
 global  char        *   token_buf;
@@ -262,14 +255,14 @@ global  long        li_cnt;             // remaining count for .li processing
 
 global  uint8_t     in_esc;             // input escape char from .ti
 
-global  box_col_set     *   box_col_set_pool;   // pool of box_col_set instances
-global  box_col_set     *   cur_line;           // the line from the current BX line
-global  box_col_set     *   prev_line;          // the previously drawn line
-global  box_col_stack   *   box_col_stack_pool; // pool of box_col_stack instances
-global  box_col_stack   *   box_line;           // the current line to be drawn
-global  uint32_t            box_col_width;      // width of one column, as used with BX
-global  uint32_t            h_vl_offset;        // horizontal offset used to position VLINE output
-global  uint32_t            max_depth;          // space left on page (used by BX)
+global  box_col_set     *box_col_set_pool;      // pool of box_col_set instances
+global  box_col_set     *cur_line;              // the line from the current BX line
+global  box_col_set     *prev_line;             // the previously drawn line
+global  box_col_stack   *box_col_stack_pool;    // pool of box_col_stack instances
+global  box_col_stack   *box_line;              // the current line to be drawn
+global  uint32_t        box_col_width;          // width of one column, as used with BX
+global  uint32_t        h_vl_offset;            // horizontal offset used to position VLINE output
+global  spacing_bu      g_max_depth;            // space left on page (used by BX)
 
 global  tab_stop    *   c_stop;         // current tab_stop
 global  uint32_t        first_tab;      // first default top position
@@ -297,19 +290,19 @@ global doc_element  *   doc_el_pool;    // for reuse of doc_element structs
 
 global  uint32_t    g_cur_h_start;
 global  uint32_t    g_cur_left;
-global  uint32_t    g_cur_v_start;
-global  uint32_t    g_page_bottom;
-global  uint32_t    g_page_bottom_org;
+global  spacing_bu  g_cur_v_start;
+global  spacing_bu  g_page_bottom;
+global  spacing_bu  g_page_bottom_org;
 global  uint32_t    g_page_left;
 global  uint32_t    g_page_left_org;
 global  uint32_t    g_page_right;
 global  uint32_t    g_page_right_org;
-global  uint32_t    g_page_top;
-global  uint32_t    g_page_top_org;
-global  uint32_t    g_page_depth;
+global  spacing_bu  g_page_top;
+global  spacing_bu  g_page_top_org;
+global  spacing_bu  g_page_depth;
 global  uint32_t    g_max_char_width;
-global  uint32_t    g_max_line_height;
-global  uint32_t    g_net_page_depth;
+global  spacing_bu  g_max_line_height;
+global  spacing_bu  g_net_page_depth;
 global  uint32_t    g_net_page_width;
 
 global  int32_t     g_resh;             // horiz base units
@@ -323,14 +316,14 @@ global  uint32_t    g_cd;               // no of columns
 global  uint32_t    g_gutter;           // space between columns
 global  uint32_t    g_offset[9];        // column start offset
 
-global  uint32_t    blank_lines;        // blank lines (line count)
-global  uint32_t    g_blank_lines;      // blank lines (in vertical base units)
-global  uint32_t    g_post_skip;        // post_skip
-global  uint32_t    g_subs_skip;        // subs_skip
-global  uint32_t    g_top_skip;         // top_skip
-global  uint32_t    g_spacing;          // spacing (in vertical base units)
+global spacing_line g_blank_lines_ln;   // blank lines (line count)
+global spacing_bu   g_blank_lines;      // blank lines (in vertical base units)
+global spacing_bu   g_post_skip;        // post_skip
+global spacing_bu   g_subs_skip;        // subs_skip
+global spacing_bu   g_top_skip;         // top_skip
+global spacing_bu   g_spacing;          // spacing (in vertical base units)
 global  int32_t     g_skip;             // .sk skip value ( -1 to +nn )
-global  uint32_t    spacing;            // spacing between lines (line count)
+global spacing_line g_spacing_ln;       // spacing between lines (line count)
 
 global  uint32_t    post_space;         // spacing within a line
 global  uint32_t    ju_x_start;         // .. formatting

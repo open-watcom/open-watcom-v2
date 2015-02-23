@@ -28,11 +28,10 @@
 *
 ****************************************************************************/
 
-#include <string.h>
+#include "wgml.h"
+#include "gvars.h"
 
-#include    "wgml.h"
-#include    "gvars.h"
-
+#include "clibext.h"
 
 /***************************************************************************/
 /*  :BINCLUDE tag                                                          */
@@ -114,7 +113,7 @@ void    gml_binclude( gml_tag tag )
             if( att_val_to_su( &depth_su, true ) ) {
                 return;
             }
-            depth = conv_vert_unit( &depth_su, spacing );
+            depth = conv_vert_unit( &depth_su, g_spacing_ln );
             if( ProcFlags.tag_end_found ) {
                 break;
             }

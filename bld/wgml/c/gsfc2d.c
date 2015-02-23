@@ -31,6 +31,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /***************************************************************************/
 /*  script string function &'c2d()                                         */
 /*                                                                         */

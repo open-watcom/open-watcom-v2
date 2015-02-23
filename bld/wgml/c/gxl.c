@@ -29,9 +29,11 @@
 *                         :LI and :LP processing
 *               only some of the attributes are supported   TBD
 ****************************************************************************/
-#include    "wgml.h"
-#include    "gvars.h"
 
+#include "wgml.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 /***************************************************************************/
 /*  end_lp  processing as if the non existant :eLP tag was seen            */
@@ -550,7 +552,7 @@ static  void    gml_li_ol( gml_tag tag )
     g_cur_h_start = g_cur_left;
     ju_x_start = g_cur_h_start;
 
-    spacing = ((ol_lay_tag *)(nest_cb->lay_tag))->spacing;
+    g_spacing_ln = ((ol_lay_tag *)(nest_cb->lay_tag))->spacing;
     g_curr_font = ((ol_lay_tag *)(nest_cb->lay_tag))->font;
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
@@ -602,7 +604,7 @@ static  void    gml_li_sl( gml_tag tag )
     g_cur_h_start = g_cur_left;
     ju_x_start = g_cur_h_start;
 
-    spacing = ((sl_lay_tag *)(nest_cb->lay_tag))->spacing;
+    g_spacing_ln = ((sl_lay_tag *)(nest_cb->lay_tag))->spacing;
     g_curr_font = ((sl_lay_tag *)(nest_cb->lay_tag))->font;
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
@@ -655,7 +657,7 @@ static  void    gml_li_ul( gml_tag tag )
     }
 
 
-    spacing = ((ul_lay_tag *)(nest_cb->lay_tag))->spacing;
+    g_spacing_ln = ((ul_lay_tag *)(nest_cb->lay_tag))->spacing;
     g_curr_font = ((ul_lay_tag *)(nest_cb->lay_tag))->bullet_font;
     post_space = 0;
 
@@ -681,7 +683,7 @@ static  void    gml_li_ul( gml_tag tag )
     g_cur_h_start = g_cur_left;
     ju_x_start = g_cur_h_start;
 
-    spacing = ((ul_lay_tag *)(nest_cb->lay_tag))->spacing;
+    g_spacing_ln = ((ul_lay_tag *)(nest_cb->lay_tag))->spacing;
     g_curr_font = ((ul_lay_tag *)(nest_cb->lay_tag))->font;
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
@@ -796,13 +798,13 @@ void    gml_lp( gml_tag tag )
 
     scr_process_break();
 
-    spacing = ((lp_lay_tag *)(nest_cb->lay_tag))->spacing;
+    g_spacing_ln = ((lp_lay_tag *)(nest_cb->lay_tag))->spacing;
 
     ProcFlags.keep_left_margin = true;  // keep special Note indent
     post_space = 0;
 
     if( ProcFlags.need_li_lp ) {        // :LP first tag in list
-        pre_skip_su = greater_su( lp_skip_su, list_skip_su, spacing );
+        pre_skip_su = greater_su( lp_skip_su, list_skip_su, g_spacing_ln );
     } else {
         pre_skip_su = &((lp_lay_tag *)(nest_cb->lay_tag))->pre_skip;
     }

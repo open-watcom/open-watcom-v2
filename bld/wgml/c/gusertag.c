@@ -32,6 +32,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 static  symvar  *   loc_dict;           // for preparing local vars
 
 
@@ -81,7 +83,7 @@ static  void    add_defaults_to_dict( gtentry * ge, symvar * * dict )
                         }
                     }
                     if( gaval->valflags & val_range ) { // range default
-                        sprintf( token_buf, "%d", gaval->a.range[2] );
+                        sprintf( token_buf, "%ld", gaval->a.range[2] );
                         valp = token_buf;
                     }
                     if( valp != NULL ) {
@@ -253,8 +255,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                                      }
                                 }
                                 if( gaval != NULL ) {
-                                     sprintf( token_buf, "%d",
-                                              gaval->a.range[3] );
+                                     sprintf( token_buf, "%ld", gaval->a.range[3] );
                                      rc = add_symvar( &loc_dict, ga->name,
                                                       token_buf, no_subscript,
                                                       local_var );
@@ -360,7 +361,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
 
         rc = add_symvar( &loc_dict, "_tag", ge->name, no_subscript, local_var );
         ge->usecount++;
-        sprintf( longwork, "%d", ge->usecount );
+        sprintf( longwork, "%lu", ge->usecount );
         rc = add_symvar( &loc_dict, "_n", longwork, no_subscript, local_var );
 
 
@@ -431,7 +432,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
 
         rc = add_symvar( &loc_dict, "_tag", ge->name, no_subscript, local_var );
         ge->usecount++;
-        sprintf( longwork, "%d", ge->usecount );
+        sprintf( longwork, "%lu", ge->usecount );
         rc = add_symvar( &loc_dict, "_n", longwork, no_subscript, local_var );
 
 

@@ -27,6 +27,7 @@
 * Description:  WGML tags :AUTHOR processing
 *
 ****************************************************************************/
+
 #include    "wgml.h"
 #include    "gvars.h"
  
@@ -80,7 +81,7 @@ void    gml_author( gml_tag tag )
     char        *   p;
     doc_element *   cur_el;
     text_line   *   p_line;
-    int8_t          a_spacing;
+    spacing_line    spacing_ln;
     font_number     font_save;
     int32_t         rc;
     symsub      *   authorval;
@@ -110,7 +111,7 @@ void    gml_author( gml_tag tag )
 
     font_save = g_curr_font;
     g_curr_font = layout_work.author.font;
-    a_spacing = layout_work.titlep.spacing;
+    spacing_ln = layout_work.titlep.spacing;
 
     /************************************************************/
     /*  pre_skip and skip are treated as pre_top_skip because   */
@@ -119,9 +120,9 @@ void    gml_author( gml_tag tag )
     /************************************************************/
 
     if( !ProcFlags.author_tag_seen ) {
-        set_skip_vars( NULL, &layout_work.author.pre_skip, NULL, a_spacing, g_curr_font );
+        set_skip_vars( NULL, &layout_work.author.pre_skip, NULL, spacing_ln, g_curr_font );
     } else {
-        set_skip_vars( NULL, &layout_work.author.skip, NULL, a_spacing, g_curr_font );
+        set_skip_vars( NULL, &layout_work.author.skip, NULL, spacing_ln, g_curr_font );
     }
 
     p_line = alloc_text_line();

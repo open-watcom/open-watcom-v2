@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
-#include    "wgml.h"
-#include    "gvars.h"
+#include "wgml.h"
+#include "gvars.h"
 
+#include "clibext.h"
 
 line_number     titlep_lineno;      // TITLEP tag line number
 
@@ -134,7 +135,7 @@ static  void    new_section( doc_section ds )
     ProcFlags.doc_sect = ds;
     set_section_banners( ds );
 
-    spacing = layout_work.defaults.spacing;
+    g_spacing_ln = layout_work.defaults.spacing;
     g_curr_font = layout_work.defaults.font;
 }
 
@@ -158,7 +159,7 @@ static  void    finish_page_section( doc_section ds, bool eject )
 /***************************************************************************/
 
 static  void    doc_header( su *p_sk, su *top_sk, xx_str *h_string,
-                            font_number font, int8_t spc, bool no_eject )
+                            font_number font, spacing_line spacing_ln, bool no_eject )
 {
     doc_element     *   cur_el;
     font_number         font_save;
@@ -169,7 +170,7 @@ static  void    doc_header( su *p_sk, su *top_sk, xx_str *h_string,
     font_save = g_curr_font;
     g_curr_font = font;
     g_curr_font = font_save;
-    set_skip_vars( NULL, top_sk, p_sk, spc, g_curr_font );
+    set_skip_vars( NULL, top_sk, p_sk, spacing_ln, g_curr_font );
 
     if( (h_string == NULL) || (*h_string == '\0') ||
         (*h_string == ' ') || (*h_string == '\t')  ) {
@@ -221,8 +222,8 @@ static  void    doc_header( su *p_sk, su *top_sk, xx_str *h_string,
 
 static void document_new_position( void )
 {
-    region_lay_tag  *   top_reg;
-    uint32_t            top_pos;
+    region_lay_tag  *top_reg;
+    spacing_bu      top_pos;
 
     /* The value used for fb_position() should be the first line of text,
      * even if that is from a TITLE tag (top banners do not apply to TITLEP).
@@ -266,17 +267,17 @@ static void document_new_position( void )
 
 void    start_doc_sect( void )
 {
-    bool                first_section;
-    bool                header;
-    bool                page_r;
-    doc_section         ds;
-    font_number         font;
-    int8_t              h_spc;
-    page_ej             page_e;
-    su              *   p_sk;
-    su              *   top_sk;
-    uint32_t            ind;
-    xx_str          *   h_string;
+    bool            first_section;
+    bool            header;
+    bool            page_r;
+    doc_section     ds;
+    font_number     font;
+    spacing_line    spacing_ln;
+    page_ej         page_e;
+    su              *p_sk;
+    su              *top_sk;
+    uint32_t        ind;
+    xx_str          *h_string;
 
     if( ProcFlags.start_section ) {
         return;                         // once is enough
@@ -312,7 +313,7 @@ void    start_doc_sect( void )
             top_sk   = &layout_work.body.pre_top_skip;
             p_sk     = &layout_work.body.post_skip;
             font     = layout_work.body.font;
-            h_spc    = spacing;         // standard spacing
+            spacing_ln = g_spacing_ln;  // standard spacing
         }
         break;
     case   doc_sect_titlep:             // for preceding :BINCLUDE/:GRAPHIC
@@ -331,7 +332,7 @@ void    start_doc_sect( void )
             top_sk   = &layout_work.abstract.pre_top_skip;
             p_sk     = &layout_work.abstract.post_skip;
             font     = layout_work.abstract.font;
-            h_spc    = layout_work.abstract.spacing;
+            spacing_ln = layout_work.abstract.spacing;
         }
         break;
     case   doc_sect_preface:
@@ -343,7 +344,7 @@ void    start_doc_sect( void )
             top_sk   = &layout_work.preface.pre_top_skip;
             p_sk     = &layout_work.preface.post_skip;
             font     = layout_work.preface.font;
-            h_spc    = layout_work.preface.spacing;
+            spacing_ln = layout_work.preface.spacing;
         }
         break;
     case   doc_sect_appendix:
@@ -355,7 +356,7 @@ void    start_doc_sect( void )
             top_sk   = &layout_work.appendix.pre_top_skip;
             p_sk     = &layout_work.appendix.post_skip;
             font     = layout_work.appendix.font;
-            h_spc    = layout_work.appendix.spacing;
+            spacing_ln = layout_work.appendix.spacing;
         }
         break;
     case   doc_sect_backm:
@@ -367,7 +368,7 @@ void    start_doc_sect( void )
             top_sk   = &layout_work.backm.pre_top_skip;
             p_sk     = &layout_work.backm.post_skip;
             font     = layout_work.backm.font;
-            h_spc    = spacing;         // standard spacing
+            spacing_ln = g_spacing_ln;  // standard spacing
         }
         break;
     case   doc_sect_index:
@@ -379,7 +380,7 @@ void    start_doc_sect( void )
             top_sk   = &layout_work.index.pre_top_skip;
             p_sk     = &layout_work.index.post_skip;
             font     = layout_work.index.font;
-            h_spc    = layout_work.index.spacing;
+            spacing_ln = layout_work.index.spacing;
         }
         break;
     default:
@@ -451,7 +452,7 @@ void    start_doc_sect( void )
     g_cur_left = g_page_left_org;
     g_cur_h_start = g_page_left_org + g_indent;
     if( header ) {
-        doc_header( p_sk, top_sk, h_string, font, h_spc, page_e == ej_no );
+        doc_header( p_sk, top_sk, h_string, font, spacing_ln, page_e == ej_no );
     }
     ProcFlags.doc_sect = ds;
 }
@@ -503,12 +504,12 @@ void    gml_abstract( gml_tag tag )
         xx_line_err( err_doc_sec_expected_1, tok_start );
         return;
     }
-    if( blank_lines > 0 ) {
+    if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
     scr_process_break();
     gml_doc_xxx( doc_sect_abstract );
-    spacing = layout_work.abstract.spacing;
+    g_spacing_ln = layout_work.abstract.spacing;
     g_cur_left = g_page_left;
     g_cur_h_start = g_page_left;
 
@@ -517,12 +518,12 @@ void    gml_abstract( gml_tag tag )
 void    gml_appendix( gml_tag tag )
 {
     tag = tag;
-    if( blank_lines > 0 ) {
+    if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
     scr_process_break();
     gml_doc_xxx( doc_sect_appendix );
-    spacing = layout_work.appendix.spacing;
+    g_spacing_ln = layout_work.appendix.spacing;
     ProcFlags.frontm_seen = false;  // no longer in FRONTM section
     if( !ProcFlags.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
@@ -532,7 +533,7 @@ void    gml_appendix( gml_tag tag )
 void    gml_backm( gml_tag tag )
 {
     tag = tag;
-    if( blank_lines > 0 ) {
+    if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
     scr_process_break();
@@ -546,7 +547,7 @@ void    gml_backm( gml_tag tag )
 void    gml_body( gml_tag tag )
 {
     tag = tag;
-    if( blank_lines > 0 ) {
+    if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
     scr_process_break();
@@ -567,14 +568,14 @@ void    gml_figlist( gml_tag tag )
 {
     tag = tag;
     gml_doc_xxx( doc_sect_figlist );
-    spacing = layout_work.figlist.spacing;
+    g_spacing_ln = layout_work.figlist.spacing;
 }
 
 void    gml_frontm( gml_tag tag )
 {
     tag = tag;
     gml_doc_xxx( doc_sect_frontm );
-    spacing = layout_work.defaults.spacing;
+    g_spacing_ln = layout_work.defaults.spacing;
     if( !ProcFlags.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
@@ -627,12 +628,12 @@ void    gml_preface( gml_tag tag )
         xx_line_err( err_doc_sec_expected_1, tok_start );
         return;
     }
-    if( blank_lines > 0 ) {
+    if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
     scr_process_break();
     gml_doc_xxx( doc_sect_preface );
-    spacing = layout_work.preface.spacing;
+    g_spacing_ln = layout_work.preface.spacing;
 }
 
 void    gml_titlep( gml_tag tag )
@@ -647,7 +648,7 @@ void    gml_titlep( gml_tag tag )
         return;
     }
     gml_doc_xxx( doc_sect_titlep );
-    spacing = layout_work.titlep.spacing;
+    g_spacing_ln = layout_work.titlep.spacing;
 
     add_symvar( &global_dict, "$stitle", "", no_subscript, 0 );// set nullstring
     add_symvar( &global_dict, "$title", "", no_subscript, 0 );// set nullstring
@@ -682,13 +683,13 @@ void    gml_toc( gml_tag tag )
 {
     tag = tag;
     gml_doc_xxx( doc_sect_toc );
-    spacing = layout_work.toc.spacing;
+    g_spacing_ln = layout_work.toc.spacing;
 }
 
 void    gml_egdoc( gml_tag tag )
 {
     tag = tag;
-    if( blank_lines > 0 ) {
+    if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
     scr_process_break();                // outputs last element in file

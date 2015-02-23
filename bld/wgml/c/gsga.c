@@ -33,6 +33,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
 
 /***************************************************************************/
 /* GML ATTRIBUTE defines an attribute of a GML tag.  Multiple uses of the  */

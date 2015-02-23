@@ -27,10 +27,12 @@
 * Description:  WGML tag :TITLE processing
 *
 ****************************************************************************/
-#include    "wgml.h"
-#include    "findfile.h"
-#include    "gvars.h"
 
+#include "wgml.h"
+#include "findfile.h"
+#include "gvars.h"
+
+#include "clibext.h"
 
 /***************************************************************************/
 /*  prepare title line                                                     */
@@ -85,7 +87,7 @@ void    gml_title( gml_tag tag )
     char        *   p;
     doc_element *   cur_el;
     text_line   *   p_line      = NULL;
-    int8_t          t_spacing;
+    spacing_line    spacing_ln;
     font_number     font_save;
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
@@ -145,12 +147,12 @@ void    gml_title( gml_tag tag )
 
     font_save = g_curr_font;
     g_curr_font = layout_work.title.font;
-    t_spacing = layout_work.titlep.spacing;
+    spacing_ln = layout_work.titlep.spacing;
     if( !ProcFlags.title_tag_top ) {
-        set_skip_vars( NULL, &layout_work.title.pre_top_skip, NULL, t_spacing, g_curr_font );
+        set_skip_vars( NULL, &layout_work.title.pre_top_skip, NULL, spacing_ln, g_curr_font );
         ProcFlags.title_tag_top = true;
     } else {
-        set_skip_vars( &layout_work.title.skip, NULL, NULL, t_spacing, g_curr_font );
+        set_skip_vars( &layout_work.title.skip, NULL, NULL, spacing_ln, g_curr_font );
     }
     
     p_line = alloc_text_line();

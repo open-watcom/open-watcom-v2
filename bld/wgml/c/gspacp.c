@@ -40,6 +40,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /**************************************************************************/
 /* PAGE EJECT positions output to the top of the next physical page.      */
 /*                                                                        */

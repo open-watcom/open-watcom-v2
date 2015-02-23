@@ -34,6 +34,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 static  symsub      *   ixrefval;       // &sysixref value
 
 

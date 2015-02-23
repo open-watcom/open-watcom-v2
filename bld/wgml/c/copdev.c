@@ -37,8 +37,6 @@
 *
 ****************************************************************************/
 
-#include <string.h>
-
 #include "wgml.h"
 #include "copdev.h"
 #include "copfunc.h"

@@ -31,6 +31,7 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+#include <errno.h>
 #include "wgml.h"
 #include "gvars.h"
 

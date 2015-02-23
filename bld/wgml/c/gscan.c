@@ -31,6 +31,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
 
 /***************************************************************************/
 /*    GML tags                                                             */

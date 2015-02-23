@@ -38,11 +38,6 @@
 *
 ****************************************************************************/
 
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "wgml.h"
 #include "copdrv.h"
 #include "copfunc.h"

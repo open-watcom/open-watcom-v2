@@ -130,11 +130,11 @@ static void do_el_list_out( doc_element * array, unsigned char count )
 /*  set the vertical positions in a linked list of elements                */
 /***************************************************************************/
 
-static void set_v_positions( doc_element * list, uint32_t v_start )
+static void set_v_positions( doc_element * list, spacing_bu v_start )
 {
     doc_element *   cur_el;
     text_line   *   cur_line;
-    uint32_t        cur_spacing;
+    spacing_bu      cur_spacing;
 
     g_cur_v_start = v_start;
     
@@ -262,7 +262,7 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
 /*  output the ban_column(s)                                               */
 /***************************************************************************/
 
-static void do_ban_column_out( ban_column * a_column, uint32_t v_start )
+static void do_ban_column_out( ban_column * a_column, spacing_bu v_start )
 {
     ban_column          *cur_col;
     doc_element         **cur_el;
@@ -297,7 +297,7 @@ static void do_ban_column_out( ban_column * a_column, uint32_t v_start )
 /*  output the doc_column(s)                                          */
 /***************************************************************************/
  
-static void do_doc_column_out( doc_column * a_column, uint32_t v_start )
+static void do_doc_column_out( doc_column * a_column, spacing_bu v_start )
 {
     doc_column  *       cur_col;
     doc_element *   *   cur_el;
@@ -369,7 +369,7 @@ static void update_t_page( void )
     bool            fig_placed;
     bool            splittable;
     doc_element *   cur_el;
-    uint32_t        depth;
+    spacing_bu      depth;
 
     reset_t_page();
 
@@ -701,7 +701,7 @@ void full_page_out( void )
 void insert_col_bot( doc_element * a_element )
 {
     bool        on_t_page;
-    uint32_t    depth;
+    spacing_bu  depth;
 
     /*  the model used, may require update when FIG implemented         */
     /*  if space exists, place a_element in t_page.main->bot_fig        */
@@ -769,7 +769,7 @@ void insert_col_bot( doc_element * a_element )
 void insert_col_fn( doc_element * a_element )
 {
     bool        on_t_page;
-    uint32_t    depth;
+    spacing_bu  depth;
 
     /*  the model used, may require update when FN implemented          */
     /*  if space exists, place a_element in t_page.main->footnote       */
@@ -834,8 +834,8 @@ void insert_col_main( doc_element * a_element )
 {
     bool        page_full;
     bool        splittable;
-    uint32_t    cur_skip;
-    uint32_t    depth;
+    spacing_bu  cur_skip;
+    spacing_bu  depth;
 
     /****************************************************************/
     /*  alternate procesing: accumulate elements for later          */
@@ -998,7 +998,7 @@ void insert_col_main( doc_element * a_element )
 
 void insert_page_width( doc_element * a_element )
 {
-    uint32_t    depth;
+    spacing_bu  depth;
 
     /* depth is used to update t_page.cur_depth and so must be kept separate */
 
@@ -1064,8 +1064,8 @@ void last_page_out( void )
 
 void reset_t_page( void )
 {
-    uint32_t    bottom_depth;
-    uint32_t    top_depth;
+    spacing_bu  bottom_depth;
+    spacing_bu  top_depth;
 
     t_page.top_banner = sect_ban_top[!(page & 1)];
     t_page.bottom_banner = sect_ban_bot[!(page & 1)];
@@ -1107,7 +1107,7 @@ void reset_t_page( void )
 /*  merge the various skips and set the externs appropriately              */
 /***************************************************************************/
 
-void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, uint32_t spacing, font_number font )
+void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, spacing_line spacing_ln, font_number font )
 {
     int32_t skiptop;
     int32_t skippost;
@@ -1116,12 +1116,12 @@ void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, uint32_t spac
 
     skipsk = calc_skip_value();     // pending .sk value?
     if( pre_skip != NULL ) {
-        skippre = conv_vert_unit( pre_skip, spacing );
+        skippre = conv_vert_unit( pre_skip, spacing_ln );
     } else {
         skippre = 0;
     }
     if( pre_top_skip != NULL ) {
-        skiptop = conv_vert_unit( pre_top_skip, spacing );
+        skiptop = conv_vert_unit( pre_top_skip, spacing_ln );
     } else {
         skiptop = 0;
     }
@@ -1150,13 +1150,13 @@ void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, uint32_t spac
     g_top_skip = skiptop;
 
     if( post_skip != NULL ) {
-        g_post_skip = conv_vert_unit( post_skip, spacing );
+        g_post_skip = conv_vert_unit( post_skip, spacing_ln );
     } else {
         g_post_skip = 0;
     }
-    g_blank_lines = blank_lines * wgml_fonts[font].line_height;
-    blank_lines = 0;
-    g_spacing = (spacing - 1) * wgml_fonts[font].line_height;
+    g_blank_lines = g_blank_lines_ln * wgml_fonts[font].line_height;
+    g_blank_lines_ln = 0;
+    g_spacing = ( spacing_ln - 1 ) * wgml_fonts[font].line_height;
     ProcFlags.skips_valid = true;
 
     return;
@@ -1169,14 +1169,14 @@ void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, uint32_t spac
 /*  the return value will be false if the doc_element could not be split   */
 /***************************************************************************/
 
-bool split_element( doc_element * a_element, uint32_t req_depth )
+bool split_element( doc_element * a_element, spacing_bu req_depth )
 {
     bool            splittable;
     doc_element *   split_el;
     text_line   *   cur_line;
     text_line   *   last;
     uint32_t        count;
-    uint32_t        cur_depth;
+    spacing_bu      cur_depth;
 
     count = 0;
     cur_depth = 0;

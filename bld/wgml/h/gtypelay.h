@@ -211,7 +211,7 @@ typedef struct default_lay_tag {
     su              gutter;             // horizontal space unit
     su              binding;            // horizontal space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     int8_t          columns;            // positive integer
     bool            justify;            // yes / no  -> bool
     char            input_esc;          // none or quoted char
@@ -223,6 +223,7 @@ typedef struct default_lay_tag {
  
 typedef struct widow_lay_tag {
     uint8_t         threshold;          // non-negative integer
+    int             :0;
 } widow_lay_tag;
  
  
@@ -237,7 +238,7 @@ typedef struct fn_lay_tag {
     su              skip;               // vertical space unit
     font_number     font;               // non-negative integer
     font_number     number_font;        // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     bool            frame;              // rule=1  none=0 bool
     num_style       number_style;       // special enum
 } fn_lay_tag;
@@ -274,7 +275,7 @@ typedef struct fig_lay_tag {
     su              pre_skip;           // vertical space unit
     su              post_skip;          // vertical space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     bf_place        default_place;      // special enum
     def_frame       default_frame;      // special
 } fig_lay_tag;
@@ -290,7 +291,7 @@ typedef struct xmp_lay_tag {
     su              pre_skip;           // vertical space unit
     su              post_skip;          // vertical space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
 } xmp_lay_tag;
  
  
@@ -303,7 +304,7 @@ typedef struct note_lay_tag {
     su              pre_skip;           // vertical space unit
     su              post_skip;          // vertical space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     xx_str          string[str_size];   // special string
 } note_lay_tag;
  
@@ -320,7 +321,7 @@ typedef struct appendix_lay_tag {
     su              align;              // horizontal space unit
     font_number     font;               // non-negative integer
     font_number     number_font;        // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     num_form        number_form;        // special enum ( none, prop, new )
     page_pos        page_position;      // special enum (left, right, center)
     page_ej         page_eject;         // enum for yes, no, odd, even
@@ -351,7 +352,7 @@ typedef struct hx_lay_tag {
     symsub      *   headnsub;           // ptr to $HEADNUMx symvar entry
     font_number     font;               // non-negative integer
     font_number     number_font;        // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     num_form        number_form;        // special enum ( none, prop, new )
     page_pos        page_position;      // special enum (left, right, center)
     int8_t          group;              // 0 - 9
@@ -374,6 +375,7 @@ typedef struct heading_lay_tag {
     bool            para_indent;        // yes, no -> bool
     uint8_t         threshold;          // non-negative integer
     int8_t          max_group;          // non-negative integer
+    int             :0;
 } heading_lay_tag;
  
 /***************************************************************************/
@@ -386,7 +388,7 @@ typedef struct lq_lay_tag {
     su              pre_skip;           // vertical space unit
     su              post_skip;          // vertical space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
 } lq_lay_tag;
  
 /***************************************************************************/
@@ -396,6 +398,7 @@ typedef struct lq_lay_tag {
  
 typedef struct xx_lay_tag {
     font_number     font;               // non-negative integer
+    int             :0;
 } xx_lay_tag;
  
 /***************************************************************************/
@@ -427,7 +430,7 @@ typedef struct figlist_lay_tag {
     su              left_adjust;        // horizontal space unit
     su              right_adjust;       // horizontal space unit
     su              skip;               // vertical space unit
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     int8_t          columns;            // positive integer
     int8_t          toc_levels;         // non-negative integer
     xx_str          fill_string[str_size];  // special string
@@ -485,7 +488,7 @@ typedef struct abspref_lay_tag {
     su              post_skip;          // vertical space unit
     su              pre_top_skip;       // vertical space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     bool            header;             // yes, no -> bool
     xx_str          string[str_size];   // special string
     page_ej         page_eject;         // enum for yes, no, odd, even
@@ -519,7 +522,7 @@ typedef struct lp_lay_tag {
     su              line_indent;        // horizontal space unit
     su              pre_skip;           // vertical space unit
     su              post_skip;          // vertical space unit
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
 } lp_lay_tag;
  
 /***************************************************************************/
@@ -532,7 +535,7 @@ typedef struct index_lay_tag {
     su              left_adjust;        // horizontal space unit
     su              right_adjust;       // horizontal space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     int8_t          columns;            // positive integer
     xx_str          see_string[str_size];// special string
     xx_str          see_also_string[str_size];  // special string
@@ -588,8 +591,9 @@ typedef struct title_lay_tag {
 /***************************************************************************/
  
 typedef struct titlep_lay_tag {
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     int8_t          columns;            // positive integer
+    int             :0;
 } titlep_lay_tag;
  
 /***************************************************************************/
@@ -599,7 +603,7 @@ typedef struct titlep_lay_tag {
 typedef struct toc_lay_tag {
     su              left_adjust;        // horizontal space unit
     su              right_adjust;       // horizontal space unit
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     int8_t          columns;            // positive integer
     int8_t          toc_levels;         // non-negative integer
     xx_str          fill_string[str_size];  // special string
@@ -640,7 +644,7 @@ typedef struct sl_lay_tag {
     su              skip;               // vertical space unit
     su              post_skip;          // vertical space unit
     font_number     font;               // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     int8_t          level;              // only level 1 supported
 } sl_lay_tag;
  
@@ -657,7 +661,7 @@ typedef struct ol_lay_tag {
     su              align;              // horizontal space unit
     font_number     font;               // non-negative integer
     font_number     number_font;        // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     int8_t          level;              // only level 1 supported
     num_style       number_style;       // enum special
 } ol_lay_tag;
@@ -675,7 +679,7 @@ typedef struct ul_lay_tag {
     su              align;              // horizontal space unit
     font_number     font;               // non-negative integer
     font_number     bullet_font;        // non-negative integer
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     char            bullet;             // char
     bool            bullet_translate;   // yes, no -> bool
     int8_t          level;              // only level 1 supported
@@ -692,7 +696,7 @@ typedef struct dl_lay_tag {
     su              skip;               // vertical space unit
     su              post_skip;          // vertical space unit
     su              align;              // horizontal space unit
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     bool            line_break;         // yes, no -> bool
     int8_t          level;              // only level 1 supported
 } dl_lay_tag;
@@ -708,7 +712,7 @@ typedef struct gl_lay_tag {
     su              skip;               // vertical space unit
     su              post_skip;          // vertical space unit
     su              align;              // horizontal space unit
-    int8_t          spacing;            // positive integer
+    spacing_line    spacing;            // positive integer
     char            delim;              // yes, no -> bool
     int8_t          level;              // only level 1 supported
 } gl_lay_tag;
@@ -787,12 +791,12 @@ typedef struct script_ban_reg {         // for script format region
 /***************************************************************************/
  
 typedef struct region_lay_tag {
-    struct region_lay_tag       *   next;   // next banner region
+    struct region_lay_tag   *next;      // next banner region
     uint32_t        reg_indent;         // value of 'indent' in base units
     uint32_t        reg_hoffset;        // value of 'hoffset' in base units
     uint32_t        reg_width;          // value of 'width' in base units
-    uint32_t        reg_voffset;        // value of 'voffset' in base units
-    uint32_t        reg_depth;          // value of 'depth' in base units
+    spacing_bu      reg_voffset;        // value of 'voffset' in base units
+    spacing_bu      reg_depth;          // value of 'depth' in base units
     su              indent;             // horizontal space unit or keywords
     su              hoffset;            // horizontal space unit or keywords
     su              width;              // horizontal space unit or extend
@@ -818,7 +822,7 @@ typedef struct banner_lay_tag {
     region_lay_tag          *   top_line;// region containing top line in banner
     uint32_t        ban_left_adjust;    // value of 'left_adjust' in base units
     uint32_t        ban_right_adjust;   // value of 'right_adjust' in base units
-    uint32_t        ban_depth;          // value of 'depth' in base units
+    spacing_bu      ban_depth;          // value of 'depth' in base units
     su              left_adjust;        // horizontal space unit
     su              right_adjust;       // horizontal space unit
     su              depth;              // vertical space unit
@@ -835,10 +839,6 @@ typedef struct banner_lay_tag {
 /*  sequence of definitions as seen by :CONVERT output                     */
 /***************************************************************************/
  
-#if defined( __WATCOMC__ )
-#pragma disable_message( 128 ); // suppress: Warning! W128: 3 padding byte(s) added
-#endif
-
 typedef struct layout_data {
     page_lay_tag        page;
     default_lay_tag     defaults;
@@ -909,10 +909,6 @@ typedef struct layout_data {
     banner_lay_tag  *   banner;
  
 } layout_data;
- 
-#if defined( __WATCOMC__ )
-#pragma enable_message( 128 );// reenable: Warning! W128: 3 padding byte(s) added
-#endif
  
  
 /***************************************************************************/

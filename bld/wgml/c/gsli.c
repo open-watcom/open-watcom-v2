@@ -32,6 +32,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
 
 /***************************************************************************/
 /* LITERAL causes  following input  records to be  treated as  text lines  */

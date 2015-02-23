@@ -28,11 +28,12 @@
 *                    with helper functions
 *
 ****************************************************************************/
+
 #include    "wgml.h"
 #include    "gvars.h"
 
 static  bool            first_aline;    // special for first :ALINE
-static  int8_t          a_spacing;      // spacing between adr lines
+static  spacing_line    a_spacing_ln;   // spacing between adr lines
 static  font_number     font_save;      // save for font
 
 
@@ -60,7 +61,7 @@ extern  void    gml_address( gml_tag tag )
     nest_cb->p_stack = copy_to_nest_stack();
     nest_cb->c_tag = t_ADDRESS;
 
-    spacing = layout_work.titlep.spacing;
+    g_spacing_ln = layout_work.titlep.spacing;
 
     /************************************************************/
     /*  pre_skip is treated as pre_top_skip because             */
@@ -68,7 +69,7 @@ extern  void    gml_address( gml_tag tag )
     /*  this is not what the docs say                           */
     /************************************************************/
 
-    set_skip_vars( NULL, &layout_work.address.pre_skip, NULL, spacing, g_curr_font );
+    set_skip_vars( NULL, &layout_work.address.pre_skip, NULL, g_spacing_ln, g_curr_font );
 
     ProcFlags.group_elements = true;
 
@@ -189,7 +190,7 @@ void    gml_aline( gml_tag tag )
     if( *p == '.' ) p++;                // over '.'
 
     start_doc_sect();               // if not already done
-    a_spacing = layout_work.titlep.spacing;
+    a_spacing_ln = layout_work.titlep.spacing;
     g_curr_font = layout_work.address.font;
     if( !first_aline ) {
 
@@ -199,7 +200,7 @@ void    gml_aline( gml_tag tag )
         /*  this is not what the docs say                           */
         /************************************************************/
 
-        set_skip_vars( NULL, &layout_work.aline.skip, NULL, a_spacing, g_curr_font );
+        set_skip_vars( NULL, &layout_work.aline.skip, NULL, a_spacing_ln, g_curr_font );
     }
 
     ad_line = alloc_text_line();

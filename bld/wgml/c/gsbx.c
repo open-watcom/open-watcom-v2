@@ -46,6 +46,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /**************************************************************************/
 /* BOX generates the horizontal lines and initiates the vertical lines of */
 /* a box.                                                                 */
@@ -200,12 +202,12 @@ typedef enum {
 } stub_type;
 
 static  bx_op       cur_op          = bx_none;  // current BX operator
-static  uint32_t    box_depth       = 0;        // depth of box (used with VLINES)
-static  uint32_t    def_height      = 0;        // default font line height
-static  uint32_t    box_skip        = 0;        // skip for outer (entire) box
-static  uint32_t    el_skip         = 0;        // skip for current element
-static  uint32_t    hl_depth        = 0;        // height from VLINE drawn to lower boundary of def_height
-static  uint32_t    v_offset        = 0;        // space reserved for the box line which is above the line drawn
+static  spacing_bu  box_depth       = 0;        // depth of box (used with VLINES)
+static  spacing_bu  def_height      = 0;        // default font line height
+static  spacing_bu  box_skip        = 0;        // skip for outer (entire) box
+static  spacing_bu  el_skip         = 0;        // skip for current element
+static  spacing_bu  hl_depth        = 0;        // height from VLINE drawn to lower boundary of def_height
+static  spacing_bu  v_offset        = 0;        // space reserved for the box line which is above the line drawn
 
 
 /***************************************************************************/
@@ -223,7 +225,7 @@ static box_col_set * resize_box_cols( box_col_set * in_cols ) {
 /*  output blank lines with vertical box characters                        */
 /***************************************************************************/
 
-static void box_blank_lines( uint32_t lines )
+static void box_blank_lines( spacing_bu lines_bu )
 {
     box_col_set *   cur_hline;
     doc_element *   blank_el;
@@ -231,14 +233,15 @@ static void box_blank_lines( uint32_t lines )
     int             i_b;        // box_line index
     text_chars  *   cur_chars;
     text_line   *   cur_blank;
+    int             lines;
 
-    if( lines == 0 ) {          // why are we here?
+    if( lines_bu == 0 ) {          // why are we here?
         return;
     }
 
     blank_el = alloc_doc_el( el_text );
-    blank_el->depth = lines + g_spacing;
-    lines /= def_height;
+    blank_el->depth = lines_bu + g_spacing;
+    lines = lines_bu / def_height;
 
     for( i = 0; i < lines; i++ ) {
         if( i == 0 ) {
@@ -432,14 +435,14 @@ static void box_char_element( doc_element * cur_el ) {
 /*  Note: only processes columns for one specific box_col_set              */
 /***************************************************************************/
 
-static void box_draw_vlines( box_col_set * hline, uint32_t subs_skip,
-                              uint32_t top_skip, stub_type stub )
+static void box_draw_vlines( box_col_set * hline, spacing_bu subs_skip,
+                              spacing_bu top_skip, stub_type stub )
 {
     bool            first_done;
     bx_v_ind        cur_col_type;
     doc_element *   v_line_el;
     int             i_h;                    // hline index
-    uint32_t        cur_depth;              // local box_depth (keeps box_depth unchanged)
+    spacing_bu      cur_depth;              // local box_depth (keeps box_depth unchanged)
 
     cur_depth = box_depth;
     first_done = false;
@@ -516,9 +519,9 @@ static void draw_box_lines( doc_element * h_line_el )
     doc_element *   cur_el          = NULL;
     int             i_h;
     stub_type       off_stub        = st_down;
-    uint32_t        sav_blank_lines;
-    uint32_t        sav_subs_skip;
-    uint32_t        sav_top_skip;
+    spacing_bu      sav_blank_lines;
+    spacing_bu      sav_subs_skip;
+    spacing_bu      sav_top_skip;
 
     if( cur_op == bx_can ) {            // no HLINES exist
         cur_hline = box_line->first;
@@ -815,12 +818,12 @@ static void  do_char_device( void )
     size_t          len;
     text_chars  *   cur_chars   = NULL; // current text_chars in cur_text
     uint32_t        cur_col;            // current column (not hbus)
-    uint32_t        skippage;           // lines to skip (not hbus)
+    spacing_bu      skippage;           // lines to skip (not hbus)
 
     /* process any accumulated doc_elements */
 
     while( t_doc_el_group.first != NULL ) {
-        if( t_doc_el_group.depth <= max_depth ) {   // doc_elements will all fit
+        if( t_doc_el_group.depth <= g_max_depth ) { // doc_elements will all fit
             cur_el = t_doc_el_group.first;
             while( cur_el != NULL ) {
                 if( ProcFlags.page_started ) {
@@ -835,7 +838,7 @@ static void  do_char_device( void )
                 if( skippage > 0 ) {
                     box_blank_lines( skippage );
                 }
-                max_depth -= skippage + cur_el->depth;
+                g_max_depth -= skippage + cur_el->depth;
                 t_doc_el_group.first = cur_el->next;
                 cur_el->next = NULL;
                 box_char_element( cur_el );
@@ -982,7 +985,7 @@ static void  do_char_device( void )
                 skippage = box_el->blank_lines + box_el->subs_skip;
             }
             if( (t_page.cur_depth + skippage) > t_page.max_depth ) {
-                skippage = max_depth;
+                skippage = g_max_depth;
             }
             if( skippage > 0 ) {
                 box_blank_lines( skippage );
@@ -1010,7 +1013,7 @@ static void do_line_device( void )
     doc_element *   cur_el          = NULL;
     doc_element *   h_line_el;
     uint32_t        h_offset;
-    uint32_t        prev_height;
+    spacing_bu      prev_height;
 
     /********************************************************/
     /* this code does not do what wgml 4.0 does             */
@@ -1045,7 +1048,7 @@ static void do_line_device( void )
     /* process any accumulated doc_elements */
 
     while( t_doc_el_group.first != NULL ) {
-        if( t_doc_el_group.depth <= max_depth ) {   // doc_elements will all fit    
+        if( t_doc_el_group.depth <= g_max_depth ) { // doc_elements will all fit    
             while( t_doc_el_group.first != NULL ) {
                 box_line_element();
            }
@@ -1190,19 +1193,19 @@ static void do_line_device( void )
     /*   have a column list and cannot be CAN (or DEL)              */
     /****************************************************************/
 
-    max_depth = t_page.max_depth - t_page.cur_depth;    // reset value
-    if( !ProcFlags.in_bx_box ) {                    // outermost box starts
+    g_max_depth = t_page.max_depth - t_page.cur_depth;          // reset value
+    if( !ProcFlags.in_bx_box ) {                                // outermost box starts
         if( cur_op == bx_set ) {
-            if( max_depth < (box_skip + (v_offset - 1)) ) {        // to top of next page
+            if( g_max_depth < (box_skip + (v_offset - 1)) ) {   // to top of next page
                 do_page_out();
                 reset_t_page();
-                ProcFlags.top_line = !ProcFlags.page_started;     // reset for new page
+                ProcFlags.top_line = !ProcFlags.page_started;   // reset for new page
             }
         } else {
-            if( max_depth < (h_line_el->subs_skip + (v_offset - 1) + def_height) ) {        // to top of next page
+            if( g_max_depth < (h_line_el->subs_skip + (v_offset - 1) + def_height) ) {        // to top of next page
                 do_page_out();
                 reset_t_page();
-                ProcFlags.top_line = !ProcFlags.page_started;     // reset for new page
+                ProcFlags.top_line = !ProcFlags.page_started;   // reset for new page
             }
         }
         box_depth = 0;                              // top line of box
@@ -1216,7 +1219,7 @@ static void do_line_device( void )
         }
     } else {                                        // inside outermost box
 /// needs to be verified again; at least box_skip shouldn't matter!
-        if( max_depth < (el_skip + hl_depth + def_height) ) {    // HLINE to top of page
+        if( g_max_depth < (el_skip + hl_depth + def_height) ) {    // HLINE to top of page
             do_page_out();
             reset_t_page();
             ProcFlags.top_line = !ProcFlags.page_started;     // reset for new page
@@ -1262,7 +1265,7 @@ static void do_line_device( void )
     if( (t_page.last_col_main != NULL) && (cur_op != bx_can)
             && !ProcFlags.no_bx_hline ) {      // HLINEs, VLINEs, or both drawn, presumably
         t_page.last_col_main->depth = hl_depth;
-        t_page.cur_depth +=hl_depth;
+        t_page.cur_depth += hl_depth;
     }
 
     /************************************************************/
@@ -1290,8 +1293,8 @@ static void do_line_device( void )
 static void eop_char_device( void ) {
     bool            splittable;
     doc_element *   cur_el;
-    uint32_t        cur_skip;               // top_skip or subs_skip, as appropriate
-    uint32_t        skippage;               // lines to skip (not hbus)
+    spacing_bu      cur_skip;               // top_skip or subs_skip, as appropriate
+    spacing_bu      skippage;               // lines to skip (not hbus)
 
     /* process any accumulated doc_elements */
 
@@ -1314,7 +1317,7 @@ static void eop_char_device( void ) {
             if( skippage > 0 ) {            // convert skipped lines to output lines
                 box_blank_lines( skippage );
             }
-            max_depth -= skippage + cur_el->depth;
+            g_max_depth -= skippage + cur_el->depth;
             t_doc_el_group.depth -= skippage + cur_el->depth;
             t_doc_el_group.first = cur_el->next;
             cur_el->next = NULL;
@@ -1322,14 +1325,14 @@ static void eop_char_device( void ) {
             cur_el = t_doc_el_group.first;
         } else {                // the entire element will not fit
             if( (t_page.cur_depth + skippage) > t_page.max_depth ) {    // skippage too large
-                if( cur_el->blank_lines > max_depth ) { // split blank_lines
-                    cur_el->blank_lines -= max_depth;
-                    skippage = max_depth;
+                if( cur_el->blank_lines > g_max_depth ) { // split blank_lines
+                    cur_el->blank_lines -= g_max_depth;
+                    skippage = g_max_depth;
                 } else {
                     cur_el->blank_lines = 0;
                 }
-                if( cur_skip > max_depth ) {    // cap top_skip or subs_skip
-                    skippage = max_depth;
+                if( cur_skip > g_max_depth ) {    // cap top_skip or subs_skip
+                    skippage = g_max_depth;
                 }
                 box_blank_lines( skippage );
             } else if( (t_page.cur_depth + skippage + cur_el->depth) > t_page.max_depth ) {    // element too large
@@ -1365,8 +1368,8 @@ static void eop_char_device( void ) {
 static void eop_line_device( void ) {
     bool            splittable;
     box_col_set *   cur_hline;
-    uint32_t        cur_skip;               // top_skip or subs_skip, as appropriate
-    uint32_t        skippage       = 0;     // current element skip
+    spacing_bu      cur_skip;               // top_skip or subs_skip, as appropriate
+    spacing_bu      skippage       = 0;     // current element skip
 
     /* process any accumulated doc_elements */
 
@@ -1377,22 +1380,22 @@ static void eop_line_device( void ) {
             cur_skip = t_doc_el_group.first->top_skip;
             ProcFlags.page_started = true;
         }
-        max_depth = t_page.max_depth - t_page.cur_depth;    // reset value
+        g_max_depth = t_page.max_depth - t_page.cur_depth;    // reset value
         skippage = t_doc_el_group.first->blank_lines + cur_skip;
-        if( (t_doc_el_group.first->depth + skippage) <= max_depth ) {  // t_doc_el_group.first will fit on the page
+        if( (t_doc_el_group.first->depth + skippage) <= g_max_depth ) { // t_doc_el_group.first will fit on the page
             box_line_element();
         } else {        // the entire element will not fit
-            if( skippage > max_depth ) {    // skippage too large
-                if( t_doc_el_group.first->blank_lines > max_depth ) { // split blank_lines
-                    t_doc_el_group.first->blank_lines -= max_depth;
-                    skippage = max_depth;
+            if( skippage > g_max_depth ) {    // skippage too large
+                if( t_doc_el_group.first->blank_lines > g_max_depth ) { // split blank_lines
+                    t_doc_el_group.first->blank_lines -= g_max_depth;
+                    skippage = g_max_depth;
                 } else {
                     t_doc_el_group.first->blank_lines = 0;
                 }
-                if( cur_skip > max_depth ) {    // cap top_skip or subs_skip
-                    skippage = max_depth;
+                if( cur_skip > g_max_depth ) {    // cap top_skip or subs_skip
+                    skippage = g_max_depth;
                 }
-            } else if( (t_doc_el_group.first->depth + skippage) > max_depth ) {  // t_doc_el_group.first will fill the page
+            } else if( (t_doc_el_group.first->depth + skippage) > g_max_depth ) {  // t_doc_el_group.first will fill the page
                 splittable = split_element( t_doc_el_group.first, t_page.max_depth -
                                                 t_page.cur_depth - skippage );
                 if( splittable ) {
@@ -1409,16 +1412,16 @@ static void eop_line_device( void ) {
 
     /* Now finish off the page */
 
-    max_depth = t_page.max_depth - t_page.cur_depth;    // reset value
+    g_max_depth = t_page.max_depth - t_page.cur_depth;    // reset value
 
     /* This is a guess: the box_depth used must be > 0 */
 
-    if( (box_depth + max_depth) > hl_depth ) {
-        box_depth += max_depth - hl_depth;              // finalize current page box_depth
+    if( (box_depth + g_max_depth) > hl_depth ) {
+        box_depth += g_max_depth - hl_depth;              // finalize current page box_depth
         cur_hline = prev_line;
         while( cur_hline != NULL ) {                    // iterate over all horizontal lines
             if( cur_hline == box_line->first ) {
-                box_draw_vlines( cur_hline, max_depth - hl_depth, 0, st_none );
+                box_draw_vlines( cur_hline, g_max_depth - hl_depth, 0, st_none );
             } else {
                 box_draw_vlines( cur_hline, 0, 0, st_none );
             }
@@ -1830,7 +1833,7 @@ void eop_bx_box( void ) {
     ProcFlags.group_elements = false;   // processed doc_elements go direct to page
     ProcFlags.page_started = (t_page.last_col_main != NULL);
 
-    max_depth = t_page.max_depth - t_page.cur_depth;
+    g_max_depth = t_page.max_depth - t_page.cur_depth;
 
     /************************************************************/
     /* This should always match the equivalent code in scr_bx() */
@@ -2058,10 +2061,10 @@ void scr_bx( void )
     /* set the basic layout values for BX */
 
     def_height = wgml_fonts[g_curr_font].line_height;       // normal box line height
-    max_depth = t_page.max_depth - t_page.cur_depth;        // maximum depth available
+    g_max_depth = t_page.max_depth - t_page.cur_depth;        // maximum depth available
 
     if( !ProcFlags.no_bx_hline || (cur_op == bx_set) ) {
-        set_skip_vars( NULL, NULL, NULL, spacing, bin_device->box.font );
+        set_skip_vars( NULL, NULL, NULL, g_spacing_ln, bin_device->box.font );
 
         /************************************************************/
         /* This will cause the box to be drawn with BOX characters  */

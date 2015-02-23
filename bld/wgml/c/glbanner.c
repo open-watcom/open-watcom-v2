@@ -31,10 +31,11 @@
 #include "wgml.h"
 #include "gvars.h"
  
- 
-    banner_lay_tag  *   curr_ban;       // also needed for glbanreg.c
-    banner_lay_tag  *   del_ban;        // ... banner to be deleted
- 
+#include "clibext.h"
+
+
+banner_lay_tag  *curr_ban;       // also needed for glbanreg.c
+banner_lay_tag  *del_ban;        // ... banner to be deleted
  
 /***************************************************************************/
 /*   :BANNER    attributes                                                 */

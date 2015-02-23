@@ -400,7 +400,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
 
 
 #if 0
-
+/*
 +++++++++++++++++++++++++++++++  used functions in OW documentation +++++++++
 used single letter functions: others are unused
 &e'  exist 0 or 1
@@ -436,5 +436,5 @@ used other functions:
 
 &'c2x(           implemented for internal use
 &'width(         implemented for internal use
-
+*/
 #endif

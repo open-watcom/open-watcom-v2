@@ -31,6 +31,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /***************************************************************************/
 /*   :P and :PC    attributes                                              */
 /***************************************************************************/
@@ -150,7 +152,7 @@ void    lay_p( lay_tag tag )
 {
     condcode        cc;
     att_args        l_args;
-    int             cvterr;
+//    int             cvterr;
 
     tag = tag;
     if( !GlobalFlags.firstpass ) {
@@ -163,7 +165,8 @@ void    lay_p( lay_tag tag )
     }
     cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     while( cc == pos ) {
-        cvterr = process_arg( &l_args, &layout_work.p );
+//        cvterr = process_arg( &l_args, &layout_work.p );
+        process_arg( &l_args, &layout_work.p );
         cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     }
     scan_start = scan_stop;
@@ -179,7 +182,7 @@ void    lay_pc( lay_tag tag )
 {
     condcode        cc;
     att_args        l_args;
-    bool            cvterr;
+//    bool            cvterr;
 
     tag = tag;
     if( !GlobalFlags.firstpass ) {
@@ -192,7 +195,8 @@ void    lay_pc( lay_tag tag )
     }
     cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     while( cc == pos ) {
-        cvterr = process_arg( &l_args, &layout_work.pc );
+//        cvterr = process_arg( &l_args, &layout_work.pc );
+        process_arg( &l_args, &layout_work.pc );
         cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     }
     scan_start = scan_stop;

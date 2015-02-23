@@ -27,6 +27,7 @@
 * Description:  WGML processing :DATE tag
 *
 ****************************************************************************/
+
 #include    "wgml.h"
 #include    "gvars.h"
  
@@ -86,7 +87,7 @@ void    gml_date( gml_tag tag )
     char        *   p;
     doc_element *   cur_el;
     text_line   *   p_line;
-    int8_t          d_spacing;
+    spacing_line    spacing_ln;
     font_number     font_save;
  
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
@@ -119,7 +120,7 @@ void    gml_date( gml_tag tag )
 
     prep_date_line( p_line, p );
 
-    d_spacing = layout_work.titlep.spacing;
+    spacing_ln = layout_work.titlep.spacing;
     font_save = g_curr_font;
     g_curr_font = layout_work.date.font;
 
@@ -127,7 +128,7 @@ void    gml_date( gml_tag tag )
     /*  pre_skip is treated as pre_top_skip because it is       */
     /*  always used at the top of the page, despite the docs    */
     /************************************************************/
-    set_skip_vars( NULL, &layout_work.date.pre_skip, NULL, d_spacing, g_curr_font );
+    set_skip_vars( NULL, &layout_work.date.pre_skip, NULL, spacing_ln, g_curr_font );
  
     cur_el = alloc_doc_el( el_text );
     cur_el->depth = p_line->line_height + g_spacing;
