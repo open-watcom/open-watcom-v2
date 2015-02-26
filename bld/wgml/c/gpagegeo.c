@@ -31,6 +31,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
+#include "clibext.h"
+
 /***************************************************************************/
 /*   The page geometry and margins are set up here to match the wgml 4     */
 /*  behaviour. Some values are guesswork and some are hardcoded, if no     */
