@@ -261,17 +261,14 @@ static void box_blank_lines( spacing_bu lines_bu )
                 if( (cur_hline->cols[i_b].v_ind == bx_v_both)
                         || (cur_hline->cols[i_b].v_ind == bx_v_up) ) {  // ascender needed
                     if( cur_blank->first == NULL ) {
-                        cur_chars = alloc_text_chars( &bin_device->box.vertical_line, 1,
-                                                  g_curr_font );
+                        cur_chars = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
                         cur_blank->first = cur_chars;
                     } else {
-                        cur_chars->next = alloc_text_chars(
-                                &bin_device->box.vertical_line, 1, g_curr_font );
+                        cur_chars->next = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
                         cur_chars->next->prev = cur_chars;
                         cur_chars = cur_chars->next;
                     }
-                    cur_chars->x_address = cur_hline->cols[i_b].col + g_page_left -
-                                                                       box_col_width;
+                    cur_chars->x_address = cur_hline->cols[i_b].col + g_page_left - box_col_width;
                     cur_chars->width = cop_text_width( cur_chars->text, cur_chars->count, g_curr_font );
                 }
                 cur_blank->last = cur_chars;
@@ -354,9 +351,7 @@ static void box_char_element( doc_element * cur_el ) {
 
                                         /* box col position is not inside any text_chars */
 
-                                        new_chars = alloc_text_chars(
-                                                    &bin_device->box.vertical_line,
-                                                    1, g_curr_font );
+                                        new_chars = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
                                         new_chars->x_address = cur_pos;
                                         new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
                                         if( cur_chars->prev == NULL ) { // first text_chars in cur_text
@@ -380,9 +375,7 @@ static void box_char_element( doc_element * cur_el ) {
                             }
                             if( (cur_chars == NULL) && (cur_pos >= last_pos) ) {   // append ascender if out of text_chars
                                 if( cur_text->first == NULL ) { // empty line
-                                    new_chars = alloc_text_chars(
-                                                &bin_device->box.vertical_line,
-                                                      1, g_curr_font );
+                                    new_chars = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
                                     new_chars->prev = new_chars;
                                     new_chars->x_address = cur_pos;
                                     new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
@@ -390,9 +383,7 @@ static void box_char_element( doc_element * cur_el ) {
                                     cur_text->last = new_chars;
                                 } else {
                                     new_chars = cur_text->last;
-                                    new_chars->next = alloc_text_chars(
-                                                    &bin_device->box.vertical_line,
-                                                    1, g_curr_font );
+                                    new_chars->next = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
                                     new_chars->next->prev = new_chars;
                                     new_chars->next->x_address = cur_pos;
                                     new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
@@ -904,62 +895,62 @@ static void  do_char_device( void )
                 i_b = 0;
                 for( i = 0; i < len; i++ ) {                    // iterate over all output columns
                     if( cur_col < cur_hline->cols[i_b].col ) {  // not a box column
-                        *p = bin_device->box.horizontal_line;
+                        *p = bin_device->box.chars.horizontal_line;
                     } else {                                    // box column found
                         cur_v_ind = cur_hline->cols[i_b].v_ind;
                         if( cur_hline->current == 1 ) {         // vertical only
-                            *p = bin_device->box.vertical_line;
+                            *p = bin_device->box.chars.vertical_line;
                         } else if ( cur_v_ind == bx_v_hid ) {   // hidden in all boxes
-                            *p = bin_device->box.horizontal_line;
+                            *p = bin_device->box.chars.horizontal_line;
                         } else if ( cur_v_ind == bx_v_out ) {   // visible but outside of current box
-                            *p = bin_device->box.vertical_line;
+                            *p = bin_device->box.chars.vertical_line;
                         } else if( i_b == 0 ) {                 // first box column
                             if( cur_v_ind == bx_v_new ) {       // hidden in current box only
                                 if( cur_op == bx_new ) {        // BX NEW: up
-                                    *p = bin_device->box.bottom_left;
+                                    *p = bin_device->box.chars.bottom_left;
                                 } else if( cur_op == bx_off ) { // BX OFF: down
-                                    *p = bin_device->box.top_left;
+                                    *p = bin_device->box.chars.top_left;
                                 } else {                        // anything else
-                                    *p = bin_device->box.horizontal_line;
+                                    *p = bin_device->box.chars.horizontal_line;
                                 }
                             } else if( cur_v_ind == bx_v_both ) {      // both up and down
-                                *p = bin_device->box.left_join;
+                                *p = bin_device->box.chars.left_join;
                             } else if( cur_v_ind == bx_v_down ) {   // down only
-                                *p = bin_device->box.top_left;
+                                *p = bin_device->box.chars.top_left;
                             } else {                            // up only
-                                *p = bin_device->box.bottom_left;
+                                *p = bin_device->box.chars.bottom_left;
                             }
                         } else if( i_b == cur_hline->current - 1 ) {    // last box column
                             if( cur_v_ind == bx_v_new ) {       // hidden in current box only
                                 if( cur_op == bx_new ) {        // BX NEW: up
-                                    *p = bin_device->box.bottom_right;
+                                    *p = bin_device->box.chars.bottom_right;
                                 } else if( cur_op == bx_off ) { // BX OFF: down
-                                    *p = bin_device->box.top_right;
+                                    *p = bin_device->box.chars.top_right;
                                 } else {                        // anything else
-                                    *p = bin_device->box.horizontal_line;
+                                    *p = bin_device->box.chars.horizontal_line;
                                 }
                             } else if( cur_v_ind == bx_v_both ) {              // both up and down
-                                *p = bin_device->box.right_join;
+                                *p = bin_device->box.chars.right_join;
                             } else if( cur_v_ind == bx_v_down ) {   // down only
-                                *p = bin_device->box.top_right;
+                                *p = bin_device->box.chars.top_right;
                             } else {                                    // up only
-                                *p = bin_device->box.bottom_right;
+                                *p = bin_device->box.chars.bottom_right;
                             }
                         } else {                            // all other box columns
                             if( cur_v_ind == bx_v_new ) {       // hidden in current box only
                                 if( cur_op == bx_new ) {        // BX NEW: up
-                                    *p = bin_device->box.bottom_join;
+                                    *p = bin_device->box.chars.bottom_join;
                                 } else if( cur_op == bx_off ) { // BX OFF: down
-                                    *p = bin_device->box.top_join;
+                                    *p = bin_device->box.chars.top_join;
                                 } else {                        // anything else
-                                    *p = bin_device->box.horizontal_line;
+                                    *p = bin_device->box.chars.horizontal_line;
                                 }
                             } else if( cur_v_ind == bx_v_both ) {   // both up and down
-                                *p = bin_device->box.inside_join;
+                                *p = bin_device->box.chars.inside_join;
                             } else if( cur_v_ind == bx_v_down ) {   // down only
-                                *p = bin_device->box.top_join;
+                                *p = bin_device->box.chars.top_join;
                             } else {                        // up only
-                                *p = bin_device->box.bottom_join;
+                                *p = bin_device->box.chars.bottom_join;
                             }
                         }
                         cur_col = cur_hline->cols[i_b].col;

@@ -548,7 +548,7 @@ cop_device * parse_device( FILE * in_file )
     
     /* There are 0x0F bytes in the file but only 11 values. */
 
-    fread( &out_device->box.horizontal_line, sizeof( out_device->box.horizontal_line ), 11, in_file );
+    fread( &out_device->box.chars, 1, 11, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;

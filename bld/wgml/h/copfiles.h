@@ -146,11 +146,7 @@ typedef struct {
  * font number "0" should be used. There is always a font numbered "0".
  */
 
-/* To hold the data from the BoxBlock struct. */
-
-typedef struct {
-    char                *font_name;
-    font_number         font;
+typedef struct box_chars {
     char                horizontal_line;
     char                vertical_line;
     char                top_left;
@@ -162,6 +158,14 @@ typedef struct {
     char                left_join;
     char                right_join;
     char                inside_join;
+} box_chars;
+
+/* To hold the data from the BoxBlock struct. */
+
+typedef struct {
+    char                *font_name;
+    font_number         font;
+    box_chars           chars;
 } box_block;
 
 /* To hold the data from the UnderscoreBlock struct. */
