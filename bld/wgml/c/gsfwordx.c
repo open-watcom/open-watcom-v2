@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 #include "wgml.h"
-#include "gvars.h"
 
 static  bool    is_word;          // true if word call, false if subword call
 

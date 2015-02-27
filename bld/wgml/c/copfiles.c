@@ -69,7 +69,6 @@
 #include "cophdr.h"
 #include "devfuncs.h"
 #include "findfile.h"
-#include "gvars.h"
 #include "outbuff.h"
 
 #include "clibext.h"

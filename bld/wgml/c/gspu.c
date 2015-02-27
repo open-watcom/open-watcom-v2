@@ -33,7 +33,6 @@
 
 #include <errno.h>
 #include "wgml.h"
-#include "gvars.h"
 
 static FILE * workfile[9] =           // support for 9 workfiles sysusr0n.gml
     { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };

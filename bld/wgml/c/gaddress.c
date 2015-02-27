@@ -29,8 +29,7 @@
 *
 ****************************************************************************/
 
-#include    "wgml.h"
-#include    "gvars.h"
+#include "wgml.h"
 
 static  bool            first_aline;    // special for first :ALINE
 static  spacing_line    a_spacing_ln;   // spacing between adr lines

@@ -28,7 +28,6 @@
 ****************************************************************************/
 
 #include "wgml.h"
-#include "gvars.h"
 
 static unsigned char hex( unsigned char c )
 {

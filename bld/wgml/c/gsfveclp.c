@@ -33,7 +33,6 @@
 ****************************************************************************/
 
 #include "wgml.h"
-#include "gvars.h"
 
 static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
 

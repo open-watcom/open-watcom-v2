@@ -35,107 +35,7 @@
 #include <setjmp.h>
 #include <time.h>
 
-#ifndef global
-    #define global  extern
-#endif
-
-#include "gtype.h"
-#include "gtypelay.h"
-
-global struct tm        doc_tm;         // document time/date
-
-global  jmp_buf     *   environment;    // var for GSuicide()
-
-global  char        *   scan_start;
-global  char        *   scan_stop;
-global  char        *   scan_char_ptr;  // used by character scanning routines
-global  char        *   scan_restart;   // used by character scanning routines
-global  bool            scan_err;       // used by character scanning routines
-global  char        *   tok_start;      // start of scanned token
-global  size_t          arg_flen;       // arg length
-global  char        *   var_start;      // variable start
-global  size_t          var_len;        // variable length
-global  size_t          val_len;        // value length
-global  char        *   val_start;      // value start
-global  char            quote_char;     // value is quoted by this char or \0
-global  locflags        rs_loc;         // restricted location
-
-global  int             switch_char;    // DOS switch character
-global  char        *   alt_ext;        // alternate extension
-global  char        *   def_ext;        // default extension
-
-global  char        *   master_fname;   // Primary input file name
-global  char        *   master_fname_attr;// Primary input file name attributes
-global  ulong           print_from;     // first page to print
-global  ulong           print_to;       // last page to print
-global  char        *   dev_name;       // device defined_name
-global  opt_font    *   opt_fonts;      // option FONT parameters (linked list)
-
-global  inputcb     *   input_cbs;      // GML input stack (files + macros)
-global  fnstack     *   fn_stack;       // input filename stack
-global  char        *   out_file;       // output file name
-global  char        *   out_file_attr;  // output file attributes (T:2222)
-global  unsigned        inc_level;   // include nesting level 1 = MasterFname
-global  unsigned        max_inc_level;  // maximum include level depth
-global  line_number     line_from;      // starting lineno to process
-global  line_number     line_to;        // ending lineno to process
-#define LINEFROM_DEFAULT    1
-#define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
-
-global  char            gotarget[MAC_NAME_LENGTH +1];   // .go to target name
-global  uint32_t        gotargetno;     // .go to line no
-
-global  int             err_count;      // Overall Errorcount
-global  int             wng_count;      // Overall warning count
-
-global  char            GML_char;       // GML Keywword start char :
-global  char            SCR_char;       // SCRIPT keywword start char .
-global  char            CW_sep_char;    // Control Word separator char ;
-
-global  int             CPI;            // chars per inch
-global  space_units     CPI_units;      // unit for chars per inch
-global  int             LPI;            // lines per inch
-global  space_units     LPI_units;      // unit for lines per inch
-
-global  su              bind_odd;       // Bind value for odd pages
-
-global  su              bind_even;      // Bind value for even pages
-
-global  int             passes;         // Max no of document passes
-global  int             pass;           // current document pass no
-
-global  uint32_t        apage;          // current absolute pageno &$apage
-global  uint32_t        page;           // current document pageno &$page
-global  line_number     line;           // current output lineno   &$line
-global  int32_t         lcmax;          // remaining lines on page initial
-global  int32_t         lc;             // remaining lines on page &$lc
-
-global  int32_t         hm;             // heading margin          &$hm
-global  int32_t         tm;             // top margin              &$tm
-
-global  int32_t         bm;             // bottom margin           &$bm
-global  int32_t         fm;             // footing margin          &$fm
-
-global  int32_t         lm;             // left margin             &$pagelm
-global  int32_t         rm;             // right margin            &$pagerm
-
-global  ix_h_blk    *   ixhtag[4];// last higher level :IH1 :IH2 tags in index
-global  ix_h_blk    *   index_dict;     // index structure dictionary
-global  ref_entry   *   iref_dict;  // reference id dictionary :Ix :IHx :IREF
-global  ref_entry   *   ref_dict;       // reference dictionary :Hx tags
-global  ref_entry   *   fig_dict;       // reference dictionary :FIG tags
-global  ref_entry   *   fn_dict;        // reference dictionary :FN tags
-
-global  symvar      *   global_dict;    // global symbol dictionary
-global  symvar      *   sys_dict;       // global system symbol dictionary
-global  mac_entry   *   macro_dict;     // macro dictionary
-global  gtentry     *   tag_dict;       // user tag dictionary
-
-global  char            research_file_name[48]; // filename for research
-global  line_number     research_from;  // line no start for research output
-global  line_number     research_to;    // line no end   for research output
-
-global  struct GlobalFlags {
+typedef  struct global_flags {
     unsigned        quiet         : 1;  // suppress product info
     unsigned        bannerprinted : 1;  // product info shown
     unsigned        wscript       : 1;  // enable WATCOM script extension
@@ -153,9 +53,9 @@ global  struct GlobalFlags {
     unsigned        freed         : 1;
     unsigned        freee         : 1;
     unsigned        research      : 1;  // -r global research mode output
-} GlobalFlags;                          // Global flags
+} global_flags;                         // Global flags
 
-global struct ProcFlags {
+typedef struct proc_flags {
     doc_section     doc_sect;           // which part are we in (FRONTM, BODY, ...
     doc_section     doc_sect_nxt;       // next section (tag already seen)
     doc_section     header_sect;        // header      placeholder for now    TBD
@@ -235,112 +135,7 @@ global struct ProcFlags {
 
     ju_enum         justify         : 8;// .ju on half off ...
 
-} ProcFlags;                            // processing flags
-
-
-global  size_t          buf_size;       // default buffer size
-global  char        *   token_buf;
-
-global char         *   workbuf;        // work for input buffer
-global char         *   buff2;          // input buffer
-global size_t           buff2_lg;       // input buffer used length
-
-// the following to manage .gt * and .ga * * syntax
-global char         tagname[TAG_NAME_LENGTH + 1];// last defined GML tag name
-global gtentry  *   tag_entry;          // ... entry in tag_dict
-global char         attname[ATT_NAME_LENGTH + 1];// last defined GML attribute
-global gaentry  *   att_entry;          // ... entry in tag_dict
-
-global  long        li_cnt;             // remaining count for .li processing
-
-global  uint8_t     in_esc;             // input escape char from .ti
-
-global  box_col_set     *box_col_set_pool;      // pool of box_col_set instances
-global  box_col_set     *cur_line;              // the line from the current BX line
-global  box_col_set     *prev_line;             // the previously drawn line
-global  box_col_stack   *box_col_stack_pool;    // pool of box_col_stack instances
-global  box_col_stack   *box_line;              // the current line to be drawn
-global  uint32_t        box_col_width;          // width of one column, as used with BX
-global  uint32_t        h_vl_offset;            // horizontal offset used to position VLINE output
-global  spacing_bu      g_max_depth;            // space left on page (used by BX)
-
-global  tab_stop    *   c_stop;         // current tab_stop
-global  uint32_t        first_tab;      // first default top position
-global  uint32_t        inter_tab;      // distance between default tabs
-global  char            tab_char;       // tab character from .tb
-global  uint32_t        tab_col;        // width of one column, as used with tabs
-
-// the document page and related items
-global doc_el_group     t_doc_el_group; // for accumulating a group of doc_elements
-global doc_element  *   t_element;      // the current element for main
-global text_line    *   t_el_last;      // attachment point to t_element
-global doc_page         t_page;         // for constructing output page
-global doc_next_page    n_page;         // for deferred elements
-global text_line    *   t_line;         // for constructing output line
-global text_chars   *   text_pool;      // for reuse of text_chars structs
-global text_line    *   line_pool;      // for reuse of text_line structs
-global ban_column   *   ban_col_pool;   // for reuse of ban_column structs
-global doc_column   *   doc_col_pool;   // for reuse of doc_column structs
-global doc_element  *   doc_el_pool;    // for reuse of doc_element structs
-
-/***************************************************************************/
-/*  some globals which are to be redesigned when the :LAYOUT tag is coded. */
-/*  Defined here so some script control words can be prototyped            */
-/***************************************************************************/
-
-global  uint32_t    g_cur_h_start;
-global  uint32_t    g_cur_left;
-global  spacing_bu  g_cur_v_start;
-global  spacing_bu  g_page_bottom;
-global  spacing_bu  g_page_bottom_org;
-global  uint32_t    g_page_left;
-global  uint32_t    g_page_left_org;
-global  uint32_t    g_page_right;
-global  uint32_t    g_page_right_org;
-global  spacing_bu  g_page_top;
-global  spacing_bu  g_page_top_org;
-global  spacing_bu  g_page_depth;
-global  uint32_t    g_max_char_width;
-global  spacing_bu  g_max_line_height;
-global  spacing_bu  g_net_page_depth;
-global  uint32_t    g_net_page_width;
-
-global  int32_t     g_resh;             // horiz base units
-global  int32_t     g_resv;             // vert base units
-
-global  font_number g_curr_font;        // the font to use for current line
-global  font_number g_prev_font;        // the font used for the last text output
-global  uint32_t    g_cl;               // column length
-global  uint32_t    g_ll;               // line length
-global  uint32_t    g_cd;               // no of columns
-global  uint32_t    g_gutter;           // space between columns
-global  uint32_t    g_offset[9];        // column start offset
-
-global spacing_line g_blank_lines_ln;   // blank lines (line count)
-global spacing_bu   g_blank_lines;      // blank lines (in vertical base units)
-global spacing_bu   g_post_skip;        // post_skip
-global spacing_bu   g_subs_skip;        // subs_skip
-global spacing_bu   g_top_skip;         // top_skip
-global spacing_bu   g_spacing;          // spacing (in vertical base units)
-global  int32_t     g_skip;             // .sk skip value ( -1 to +nn )
-global spacing_line g_spacing_ln;       // spacing between lines (line count)
-
-global  uint32_t    post_space;         // spacing within a line
-global  uint32_t    ju_x_start;         // .. formatting
-
-global  uint32_t    g_indent;           // .in 1. value (left) default 0
-global  int32_t     g_indentr;          // .in 2. value (right) default 0
-
-global  uint32_t    g_cur_threshold;    // current widow threshold value
-                                        // from layout (widow or heading)
-
-global  tag_cb  *   nest_cb;            // infos about nested tags
-global  tag_cb  *   tag_pool;           // list of reusable tag_cbs
-
-global  banner_lay_tag  * sect_ban_top[2];// top even / odd banner for curr sect
-global  banner_lay_tag  * sect_ban_bot[2];// bot even / odd banner for curr sect
-
-global  uint32_t    msg_indent;         // indent for message output (to screen, not to device)
+} proc_flags;                           // processing flags
 
 
 /***************************************************************************/
@@ -348,21 +143,6 @@ global  uint32_t    msg_indent;         // indent for message output (to screen,
 /***************************************************************************/
 
 extern char str_tags[t_MAX + 1][10];
-
-/***************************************************************************/
-/*  :LAYOUT  data                                                          */
-/***************************************************************************/
-
-global  layout_data     layout_work;    // layout used for formatting
-global  laystack    *   lay_files;      // layout file(s) specified on cmdline
-
-
-/***************************************************************************/
-/* The tab lists.                                                          */
-/***************************************************************************/
-
-global  tab_list        def_tabs;   // tabs at columns 6, 11, 16, ..., 81
-global  tab_list        user_tabs;  // for tabs defined by control word TB
 
 /***************************************************************************/
 /* Layout attribute names as character strings                             */
@@ -570,8 +350,230 @@ extern  const   lay_att     ul_att[13];
 extern  const   lay_att     banner_att[8];
 extern  const   lay_att     banregion_att[12];
 
-/* Reset so can be reused with other headers. */
-#undef global
-
 #endif  /* GVARS_H_INCLUDED */
 
+#ifndef global
+    #define global  extern
+#endif
+
+//#include "gtype.h"
+//#include "gtypelay.h"
+
+global struct tm        doc_tm;         // document time/date
+
+global  jmp_buf     *   environment;    // var for GSuicide()
+
+global  char        *   scan_start;
+global  char        *   scan_stop;
+global  char        *   scan_char_ptr;  // used by character scanning routines
+global  char        *   scan_restart;   // used by character scanning routines
+global  bool            scan_err;       // used by character scanning routines
+global  char        *   tok_start;      // start of scanned token
+global  size_t          arg_flen;       // arg length
+global  char        *   var_start;      // variable start
+global  size_t          var_len;        // variable length
+global  size_t          val_len;        // value length
+global  char        *   val_start;      // value start
+global  char            quote_char;     // value is quoted by this char or \0
+global  locflags        rs_loc;         // restricted location
+
+global  int             switch_char;    // DOS switch character
+global  char        *   alt_ext;        // alternate extension
+global  char        *   def_ext;        // default extension
+
+global  char        *   master_fname;   // Primary input file name
+global  char        *   master_fname_attr;// Primary input file name attributes
+global  ulong           print_from;     // first page to print
+global  ulong           print_to;       // last page to print
+global  char        *   dev_name;       // device defined_name
+global  opt_font    *   opt_fonts;      // option FONT parameters (linked list)
+
+global  inputcb     *   input_cbs;      // GML input stack (files + macros)
+global  fnstack     *   fn_stack;       // input filename stack
+global  char        *   out_file;       // output file name
+global  char        *   out_file_attr;  // output file attributes (T:2222)
+global  unsigned        inc_level;   // include nesting level 1 = MasterFname
+global  unsigned        max_inc_level;  // maximum include level depth
+global  line_number     line_from;      // starting lineno to process
+global  line_number     line_to;        // ending lineno to process
+#define LINEFROM_DEFAULT    1
+#define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
+
+global  char            gotarget[MAC_NAME_LENGTH +1];   // .go to target name
+global  uint32_t        gotargetno;     // .go to line no
+
+global  int             err_count;      // Overall Errorcount
+global  int             wng_count;      // Overall warning count
+
+global  char            GML_char;       // GML Keywword start char :
+global  char            SCR_char;       // SCRIPT keywword start char .
+global  char            CW_sep_char;    // Control Word separator char ;
+
+global  int             CPI;            // chars per inch
+global  space_units     CPI_units;      // unit for chars per inch
+global  int             LPI;            // lines per inch
+global  space_units     LPI_units;      // unit for lines per inch
+
+global  su              bind_odd;       // Bind value for odd pages
+
+global  su              bind_even;      // Bind value for even pages
+
+global  int             passes;         // Max no of document passes
+global  int             pass;           // current document pass no
+
+global  uint32_t        apage;          // current absolute pageno &$apage
+global  uint32_t        page;           // current document pageno &$page
+global  line_number     line;           // current output lineno   &$line
+global  int32_t         lcmax;          // remaining lines on page initial
+global  int32_t         lc;             // remaining lines on page &$lc
+
+global  int32_t         hm;             // heading margin          &$hm
+global  int32_t         tm;             // top margin              &$tm
+
+global  int32_t         bm;             // bottom margin           &$bm
+global  int32_t         fm;             // footing margin          &$fm
+
+global  int32_t         lm;             // left margin             &$pagelm
+global  int32_t         rm;             // right margin            &$pagerm
+
+global  ix_h_blk    *   ixhtag[4];// last higher level :IH1 :IH2 tags in index
+global  ix_h_blk    *   index_dict;     // index structure dictionary
+global  ref_entry   *   iref_dict;  // reference id dictionary :Ix :IHx :IREF
+global  ref_entry   *   ref_dict;       // reference dictionary :Hx tags
+global  ref_entry   *   fig_dict;       // reference dictionary :FIG tags
+global  ref_entry   *   fn_dict;        // reference dictionary :FN tags
+
+global  symvar      *   global_dict;    // global symbol dictionary
+global  symvar      *   sys_dict;       // global system symbol dictionary
+global  mac_entry   *   macro_dict;     // macro dictionary
+global  gtentry     *   tag_dict;       // user tag dictionary
+
+global  char            research_file_name[48]; // filename for research
+global  line_number     research_from;  // line no start for research output
+global  line_number     research_to;    // line no end   for research output
+
+global  global_flags    GlobalFlags;    // Global flags
+
+global  proc_flags      ProcFlags;      // processing flags
+
+global  size_t          buf_size;       // default buffer size
+global  char        *   token_buf;
+
+global char         *   workbuf;        // work for input buffer
+global char         *   buff2;          // input buffer
+global size_t           buff2_lg;       // input buffer used length
+
+// the following to manage .gt * and .ga * * syntax
+global char         tagname[TAG_NAME_LENGTH + 1];// last defined GML tag name
+global gtentry  *   tag_entry;          // ... entry in tag_dict
+global char         attname[ATT_NAME_LENGTH + 1];// last defined GML attribute
+global gaentry  *   att_entry;          // ... entry in tag_dict
+
+global  long        li_cnt;             // remaining count for .li processing
+
+global  uint8_t     in_esc;             // input escape char from .ti
+
+global  box_col_set     *box_col_set_pool;      // pool of box_col_set instances
+global  box_col_set     *cur_line;              // the line from the current BX line
+global  box_col_set     *prev_line;             // the previously drawn line
+global  box_col_stack   *box_col_stack_pool;    // pool of box_col_stack instances
+global  box_col_stack   *box_line;              // the current line to be drawn
+global  uint32_t        box_col_width;          // width of one column, as used with BX
+global  uint32_t        h_vl_offset;            // horizontal offset used to position VLINE output
+global  spacing_bu      g_max_depth;            // space left on page (used by BX)
+
+global  tab_stop    *   c_stop;         // current tab_stop
+global  uint32_t        first_tab;      // first default top position
+global  uint32_t        inter_tab;      // distance between default tabs
+global  char            tab_char;       // tab character from .tb
+global  uint32_t        tab_col;        // width of one column, as used with tabs
+
+// the document page and related items
+global doc_el_group     t_doc_el_group; // for accumulating a group of doc_elements
+global doc_element  *   t_element;      // the current element for main
+global text_line    *   t_el_last;      // attachment point to t_element
+global doc_page         t_page;         // for constructing output page
+global doc_next_page    n_page;         // for deferred elements
+global text_line    *   t_line;         // for constructing output line
+global text_chars   *   text_pool;      // for reuse of text_chars structs
+global text_line    *   line_pool;      // for reuse of text_line structs
+global ban_column   *   ban_col_pool;   // for reuse of ban_column structs
+global doc_column   *   doc_col_pool;   // for reuse of doc_column structs
+global doc_element  *   doc_el_pool;    // for reuse of doc_element structs
+
+/***************************************************************************/
+/*  some globals which are to be redesigned when the :LAYOUT tag is coded. */
+/*  Defined here so some script control words can be prototyped            */
+/***************************************************************************/
+
+global  uint32_t    g_cur_h_start;
+global  uint32_t    g_cur_left;
+global  spacing_bu  g_cur_v_start;
+global  spacing_bu  g_page_bottom;
+global  spacing_bu  g_page_bottom_org;
+global  uint32_t    g_page_left;
+global  uint32_t    g_page_left_org;
+global  uint32_t    g_page_right;
+global  uint32_t    g_page_right_org;
+global  spacing_bu  g_page_top;
+global  spacing_bu  g_page_top_org;
+global  spacing_bu  g_page_depth;
+global  uint32_t    g_max_char_width;
+global  spacing_bu  g_max_line_height;
+global  spacing_bu  g_net_page_depth;
+global  uint32_t    g_net_page_width;
+
+global  int32_t     g_resh;             // horiz base units
+global  int32_t     g_resv;             // vert base units
+
+global  font_number g_curr_font;        // the font to use for current line
+global  font_number g_prev_font;        // the font used for the last text output
+global  uint32_t    g_cl;               // column length
+global  uint32_t    g_ll;               // line length
+global  uint32_t    g_cd;               // no of columns
+global  uint32_t    g_gutter;           // space between columns
+global  uint32_t    g_offset[9];        // column start offset
+
+global spacing_line g_blank_lines_ln;   // blank lines (line count)
+global spacing_bu   g_blank_lines;      // blank lines (in vertical base units)
+global spacing_bu   g_post_skip;        // post_skip
+global spacing_bu   g_subs_skip;        // subs_skip
+global spacing_bu   g_top_skip;         // top_skip
+global spacing_bu   g_spacing;          // spacing (in vertical base units)
+global  int32_t     g_skip;             // .sk skip value ( -1 to +nn )
+global spacing_line g_spacing_ln;       // spacing between lines (line count)
+
+global  uint32_t    post_space;         // spacing within a line
+global  uint32_t    ju_x_start;         // .. formatting
+
+global  uint32_t    g_indent;           // .in 1. value (left) default 0
+global  int32_t     g_indentr;          // .in 2. value (right) default 0
+
+global  uint32_t    g_cur_threshold;    // current widow threshold value
+                                        // from layout (widow or heading)
+
+global  tag_cb  *   nest_cb;            // infos about nested tags
+global  tag_cb  *   tag_pool;           // list of reusable tag_cbs
+
+global  banner_lay_tag  * sect_ban_top[2];// top even / odd banner for curr sect
+global  banner_lay_tag  * sect_ban_bot[2];// bot even / odd banner for curr sect
+
+global  uint32_t    msg_indent;         // indent for message output (to screen, not to device)
+
+/***************************************************************************/
+/*  :LAYOUT  data                                                          */
+/***************************************************************************/
+
+global  layout_data     layout_work;    // layout used for formatting
+global  laystack    *   lay_files;      // layout file(s) specified on cmdline
+
+
+/***************************************************************************/
+/* The tab lists.                                                          */
+/***************************************************************************/
+
+global  tab_list        def_tabs;   // tabs at columns 6, 11, 16, ..., 81
+global  tab_list        user_tabs;  // for tabs defined by control word TB
+
+/* Reset so can be reused with other headers. */
+#undef global

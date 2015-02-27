@@ -30,7 +30,6 @@
 
 #include <stdarg.h>
 #include "wgml.h"
-#include "gvars.h"
 
 #include "clibext.h"
 

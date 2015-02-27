@@ -40,7 +40,6 @@
 
 #include <errno.h>
 #include "wgml.h"
-#include "gvars.h"
 #include "banner.h"
 
 #include "clibext.h"

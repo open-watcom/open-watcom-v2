@@ -31,7 +31,6 @@
 #include "wio.h"
 #include "wgml.h"
 #include "findfile.h"
-#include "gvars.h"
 
 #include "clibext.h"
 

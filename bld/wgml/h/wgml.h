@@ -47,6 +47,8 @@
 #include "copfiles.h"       // mostly for access to bin_device & wgml_fonts
 #include "gtype.h"
 #include "gtypelay.h"
+#include "gtypegml.h"
+#include "gvars.h"
 
 
 #ifdef  __cplusplus

@@ -30,7 +30,6 @@
 
 #include "wgml.h"
 #include "findfile.h"
-#include "gvars.h"
 
 #include "clibext.h"
 

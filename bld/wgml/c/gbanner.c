@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include "wgml.h"
-#include "gvars.h"
 
 static  text_line       ban_line;       // for constructing banner line
 static  text_chars  *   reg_text[3];    // 3 possible ban region parts

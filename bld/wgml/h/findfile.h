@@ -39,23 +39,6 @@
 
 #include <stdio.h>
 
-/* Extern variable declaration. */
-
-/* This allows the same declarations to function as definitions.
- * Just #define global before including this file.
- */
-
-#ifndef global
-    #define global  extern
-#endif
-
-global  char    *   try_file_name;
-global  FILE    *   try_fp;
-
-/* Reset so can be reused with other headers. */
-
-#undef global
-
 /* Extern enum declaration. */
 
 /* Search sequences for various types of files. */
@@ -82,3 +65,20 @@ extern  bool        search_file_in_dirs( const char * filename, const char * def
 #endif
 
 #endif  /* FINDFILE_H_INCLUDED */
+
+/* Extern variable declaration. */
+
+/* This allows the same declarations to function as definitions.
+ * Just #define global before including this file.
+ */
+
+#ifndef global
+    #define global  extern
+#endif
+
+global  char    *   try_file_name;
+global  FILE    *   try_fp;
+
+/* Reset so can be reused with other headers. */
+
+#undef global

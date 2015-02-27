@@ -31,7 +31,6 @@
 #include <errno.h>
 
 #include "wgml.h"
-#include "gvars.h"
 
 #define NULC    '\0'
 #define not_ok  true

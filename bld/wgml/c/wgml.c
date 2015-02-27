@@ -44,7 +44,6 @@
 
 #include "wgml.h"
 #include "findfile.h"
-#include "gvars.h"
 #include "banner.h"
 
 #include "clibext.h"

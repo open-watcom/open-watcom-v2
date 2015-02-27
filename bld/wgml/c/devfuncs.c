@@ -174,7 +174,6 @@
 #include "wgml.h"
 #include "wio.h"
 #include "devfuncs.h"
-#include "gvars.h"
 #include "outbuff.h"
 
 #include "clibext.h"

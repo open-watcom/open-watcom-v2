@@ -42,7 +42,6 @@
 ****************************************************************************/
 
 #include "wgml.h"
-#include "gvars.h"
 
 static  bool            phrase_start    = false;    // current token started new phrase
 static  bool            tabbing         = false;    // current tab exists

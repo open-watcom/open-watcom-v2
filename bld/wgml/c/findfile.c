@@ -48,7 +48,6 @@
 #include <errno.h>
 #include "wgml.h"
 #include "copdir.h"
-#include "gvars.h"
 #include "iopath.h"
 #include "pathlist.h"
 

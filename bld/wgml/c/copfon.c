@@ -38,7 +38,6 @@
 #include "wgml.h"
 #include "copfon.h"
 #include "copfunc.h"
-#include "gvars.h"
 
 /*  Local macros */
 
