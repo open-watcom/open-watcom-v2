@@ -1031,7 +1031,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the number of DefaultFonts. */
     
-    out_device->defaultfonts.font_count = fread_u8( in_file );
+    out_device->defaultfonts.font_count = fread_u16( in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;

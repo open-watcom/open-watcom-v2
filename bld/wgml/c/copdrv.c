@@ -1122,7 +1122,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Get the x_positive flag. */
 
-    out_driver->x_positive = fread_u32( in_file );
+    out_driver->x_positive = fread_u8( in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_driver );
         out_driver = NULL;
@@ -1131,7 +1131,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Get the y_positive flag. */
 
-    out_driver->y_positive = fread_u32( in_file );
+    out_driver->y_positive = fread_u8( in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_driver );
         out_driver = NULL;
@@ -1546,7 +1546,7 @@ cop_driver * parse_driver( FILE * in_file )
 
             /* Process some of the 21 flags. */
 
-            get_buff( &the_flags, sizeof( the_flags ), &current );
+            get_buff( the_flags, sizeof( the_flags ), &current );
 
             /* Set do_always to true or false per the Wiki. The device
              * functions in the order checked are: %wgml_header(), %time(),
@@ -2168,7 +2168,7 @@ cop_driver * parse_driver( FILE * in_file )
     
         /* Get the thickness. */
 
-        out_driver->dbox.thickness = fread_u16( in_file );
+        out_driver->dbox.thickness = fread_u32( in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_driver );
             out_driver = NULL;

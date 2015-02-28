@@ -319,6 +319,6 @@ unsigned long get_u32( const char **buff )
 
 void get_buff( void *obuff, size_t len, const char **buff )
 {
-    memcpy( obuff, buff, len );
+    memcpy( obuff, *buff, len );
     *buff += len;
 }
