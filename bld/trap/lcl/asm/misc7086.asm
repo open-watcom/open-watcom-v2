@@ -44,12 +44,12 @@ xdefp   "C",NPXType
         sub     ax,ax                   ; set initial control word to 0
         push    ax                      ; push it on stack
         mov     bp,sp                   ; point to control word
-        finit                           ; initialize math coprocessor
-        fstcw   [bp]                    ; store control word in memory
-        fwait
+        fninit                          ; initialize math coprocessor
+        fnstcw  [bp]                    ; store control word in memory
+        mov     ax,[bp]                 ; delay CPU to synchronize with FPU
         mov     al,0                    ; assume no coprocessor present
-        mov     ah,[bp + 1]             ; upper byte is 03h if
-        cmp     ah,03h                  ;   coprocessor is present
+        mov     ah,3                    ; upper byte is 03h if
+        cmp     ah,[bp + 1]             ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present
         mov     al,1                    ; assume it is an 8087
         and     word ptr [bp],NOT 80h   ; turn interrupts on (IEM=0)

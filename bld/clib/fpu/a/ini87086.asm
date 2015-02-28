@@ -54,13 +54,15 @@ __x87id proc near
         mov     BP,SP                   ; get access to stack
         sub     AX,AX
         push    AX                      ; allocate space for status word
-        finit                           ; use default infinity mode
-        fstcw   word ptr [BP-2]         ; save control word
-        fwait
+        ; we can not use FWAIT until FPU will be detected
+        fninit                          ; use default infinity mode
+        fnstcw  word ptr [BP-2]         ; save control word
+        mov     AX,[BP-2]               ; delay CPU to sync with FPU if present
         mov     AL,0                    ; assume no coprocessor present
-        mov     AH,[BP-1]               ; upper byte is 03h if
-        cmp     AH,3                    ;   coprocessor is present
+        mov     AH,3                    ; upper byte is 03h if 
+        cmp     byte ptr [BP-1],AH      ;   coprocessor is present
         jnz     nox87                   ; exit if no coprocessor present
+        ; now we can use FWAIT if necessary because FPU is present
         and     word ptr [BP-2],NOT 80h ; turn interrupts on (IEM=0)
         fldcw   [bp-2]                  ; load control word
         fdisi                           ; disable interrupts (IEM=1)

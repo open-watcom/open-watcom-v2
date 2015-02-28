@@ -38,13 +38,15 @@ include mdef.inc
 __x87id proc
         sub     EAX,EAX
         push    EAX                     ; allocate space for status word
-        finit                           ; use default infinity mode
-        fstcw   word ptr [ESP]          ; save control word
-        fwait
+        ; we can not use FWAIT until FPU will be detected
+        fninit                          ; use default infinity mode
+        fnstcw  word ptr [ESP]          ; save control word
+        mov     EAX,[ESP]               ; delay CPU to sync with FPU if present
         pop     EAX
-        mov     AL,0
-        cmp     AH,3
-        jnz     nox87
+        mov     AL,0                    ; assume no coprocessor present
+        cmp     AH,3                    ; upper byte is 03h if coprocessor is present
+        jnz     nox87                   ; exit if no coprocessor present
+        ; now we can use FWAIT because FPU is present
         push    EAX                     ; allocate space for status word
         fld1                            ; generate infinity by
         fldz                            ;   dividing 1 by 0

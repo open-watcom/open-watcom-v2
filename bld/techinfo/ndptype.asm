@@ -54,9 +54,10 @@ NDPType_ proc    near
 ;
         fninit                          ; initialize math coprocessor
         fnstcw  0[bp]                   ; store control word in memory
+        mov     ax,[bp]                 ; delay CPU to synchronize with FPU
         mov     al,0                    ; assume no coprocessor present
-        mov     ah,1[bp]                ; upper byte is 03h if
-        cmp     ah,03h                  ;   coprocessor is present
+        mov     ah,3                    ; upper byte is 03h if
+        cmp     ah,[bp+1]               ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present
         mov     al,1                    ; assume it is an 8087
         and     word ptr 0[bp],NOT 0080h; turn interrupts on (IEM=0)
