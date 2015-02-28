@@ -1985,7 +1985,7 @@ static  void    put_layout( char * in_name, layout_data * lay )
     in_name = fname;
 #endif
 
-    layfile = fopen( in_name, "uwt" );
+    layfile = fopen( in_name, "wt" );
     if( layfile == NULL ) {
         out_msg( "open error %s\n", in_name );
         return;

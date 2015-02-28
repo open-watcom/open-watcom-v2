@@ -91,7 +91,7 @@ static  int open_pu_file( int n )
     if( n > 0 && n < 10 ) {
         if( workfile[n - 1] == NULL ) {   // not yet open
             get_pu_file_name( filename, sizeof( filename ), n );
-            workfile[n - 1] = fopen( filename, "uwt" );
+            workfile[n - 1] = fopen( filename, "wt" );
             if( workfile[n - 1] == NULL ) {
                 erc = errno;
             }
