@@ -550,7 +550,7 @@ typedef struct {
     uint32_t                line_height;
     uint32_t                line_space;
     uint32_t                spc_width;
-    uint32_t                width_table[0x100];
+    width_block             width;
     char                    font_resident;
     unsigned char           shift_count;
     char                    shift_height[4];
