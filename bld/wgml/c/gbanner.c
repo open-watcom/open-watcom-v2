@@ -730,7 +730,7 @@ static  void    out_ban_common( banner_lay_tag * ban, bool top )
                    break;
                 }
                 curr_p->count -= 1;     // truncate text, adjust width
-                curr_p->width -= wgml_fonts[curr_p->font].width_table[(unsigned char)curr_p->text[curr_p->count]];
+                curr_p->width -= wgml_fonts[curr_p->font].width.table[(unsigned char)curr_p->text[curr_p->count]];
             }
             curr_p = curr_t;
         }

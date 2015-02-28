@@ -453,7 +453,7 @@ static void output_uscores( text_chars *in_chars )
      * with the underscore character, the current font is used.
      */
 
-    uscore_width = wgml_fonts[in_chars->font].width_table[(unsigned char)uscore_char];
+    uscore_width = wgml_fonts[in_chars->font].width.table[(unsigned char)uscore_char];
 
     /* The number of underscore characters is determined by the amount of
      * space from the current position to the text start point plus the

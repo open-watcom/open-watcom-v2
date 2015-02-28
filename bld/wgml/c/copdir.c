@@ -38,6 +38,7 @@
 #include "wgml.h"
 #include "copdir.h"
 #include "cophdr.h"
+#include "copfunc.h"
 #include "findfile.h"
 
 #include "clibext.h"
@@ -71,7 +72,7 @@ entry_found get_compact_entry( FILE * in_file, directory_entry * entry )
 
     /* Get the defined_name_length. */
 
-    count = fgetc( in_file );
+    count = fread_u8( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
@@ -85,14 +86,14 @@ entry_found get_compact_entry( FILE * in_file, directory_entry * entry )
     if( count == 0 ) {
         entry->defined_name[0] = '\0';
     } else {
-        fread( entry->defined_name, count, 1, in_file );
+        fread_buff( entry->defined_name, count, in_file );
         if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
         entry->defined_name[count] = '\0';
     }
 
     /* Get the member_name_length. */
 
-    count = fgetc( in_file );
+    count = fread_u8( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
@@ -103,7 +104,7 @@ entry_found get_compact_entry( FILE * in_file, directory_entry * entry )
 
     /* Get the member_name. */
 
-    fread( entry->member_name, count, 1, in_file );
+    fread_buff( entry->member_name, count, in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
     entry->member_name[count] = '\0';
 
@@ -137,7 +138,7 @@ entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
 
     /* Get the defined_name_length. */
 
-    count = fgetc( in_file );
+    count = fread_u8( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
@@ -151,7 +152,7 @@ entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
     if( count == 0 ) {
         entry->defined_name[0] = '\0';
     } else {
-        fread( entry->defined_name, count, 1, in_file );
+        fread_buff( entry->defined_name, count, in_file );
         if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
         entry->defined_name[count] = '\0';
     }
@@ -163,7 +164,7 @@ entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
 
     /* Get the the member_name_length. */
 
-    count = fgetc( in_file );
+    count = fread_u8( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
@@ -174,7 +175,7 @@ entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
 
     /* Get the member_name. */
 
-    fread( entry->member_name, count, 1, in_file );
+    fread_buff( entry->member_name, count, in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
     entry->member_name[count] = '\0';
 
@@ -258,7 +259,7 @@ char * get_member_name( char const * in_name )
              * ExtendedDirEntry.
              */
 
-            fread( &entry_type, sizeof( entry_type ), 1, try_fp );
+            entry_type = fread_u16( try_fp );
 
             /* Exit the loop when the final entry has been processed. */
 
@@ -285,7 +286,7 @@ char * get_member_name( char const * in_name )
                      * metatype has already been read.
                      */
 
-                    fread( &entry_type, sizeof( entry_type ), 1, try_fp );
+                    entry_type = fread_u16( try_fp );
 
                     /* Exit the loop when the final entry has been processed. */
 

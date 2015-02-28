@@ -884,7 +884,7 @@ void cop_setup( void )
         wgml_fonts[fnt].line_space = 0;
         wgml_fonts[fnt].spc_width = 0;
         for( j = 0; j < 0x100; j++ ) {
-            wgml_fonts[fnt].width_table[j] = 0;
+            wgml_fonts[fnt].width.table[j] = 0;
         }
         wgml_fonts[fnt].font_resident = 'n';
         wgml_fonts[fnt].shift_count = 0;
@@ -1133,7 +1133,7 @@ void cop_setup( void )
 
     /* Initialize items dependent on the device library. */
 
-    /* Initialize the width_table entries. This is done here because it is
+    /* Initialize the width.table entries. This is done here because it is
      * not clear whether or not a more efficient method is needed. Note that
      * all wgml_font instances will have a valid table, and that different
      * wgml_font instances may have identical tables. However, since the
@@ -1141,29 +1141,29 @@ void cop_setup( void )
      * cop_font may still differ. Also set the base values for the "Em" and
      * "Device Unit" ("DV") Horizontal Space Units, and record the width of
      * the space character for quick reference. It is not clear if this is
-     * actually necessary, but it is a bit faster than using the width_table
+     * actually necessary, but it is a bit faster than using the width.table
      * directly.
      */
 
     for( fnt = 0; fnt < wgml_font_cnt; fnt++ ) {
         if( wgml_fonts[fnt].bin_font->width == NULL ) {
             for( j = 0; j < 0x100; j++ ) {
-                wgml_fonts[fnt].width_table[j] = wgml_fonts[fnt].default_width;
+                wgml_fonts[fnt].width.table[j] = wgml_fonts[fnt].default_width;
             }
         } else {
             if( wgml_fonts[fnt].bin_font->scale_basis == 0 ) {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[fnt].width_table[j] = wgml_fonts[fnt].bin_font->width->table[j];
+                    wgml_fonts[fnt].width.table[j] = wgml_fonts[fnt].bin_font->width->table[j];
                 }
             } else {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[fnt].width_table[j] =
+                    wgml_fonts[fnt].width.table[j] =
                         scale_basis_to_horizontal_base_units( wgml_fonts[fnt].bin_font->width->table[j], &wgml_fonts[fnt] );
                 }
             }
         }
-        wgml_fonts[fnt].em_base = wgml_fonts[fnt].width_table['M'];
-        wgml_fonts[fnt].spc_width = wgml_fonts[fnt].width_table[' '];
+        wgml_fonts[fnt].em_base = wgml_fonts[fnt].width.table['M'];
+        wgml_fonts[fnt].spc_width = wgml_fonts[fnt].width.table[' '];
     }
 
     /* Initialize the column width used with BX. */
@@ -1300,7 +1300,7 @@ uint32_t cop_text_width( const char *text, size_t count, font_number font )
 
     width = 0;
     for( i = 0; i < count; i++ ) {
-        width += wgml_fonts[font].width_table[(unsigned char)text[i]];
+        width += wgml_fonts[font].width.table[(unsigned char)text[i]];
     }
 
     return( width );

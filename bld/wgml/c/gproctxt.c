@@ -328,7 +328,7 @@ static text_chars * do_c_chars( text_chars *c_chars, text_chars *in_chars,
 
 static void do_fc_comp( void )
 {
-    fill_width = wgml_fonts[g_curr_font].width_table[c_stop->fill_char];
+    fill_width = wgml_fonts[g_curr_font].width.table[c_stop->fill_char];
     fill_count = (g_cur_h_start - g_cur_left) / fill_width;
 
     fill_start = (gap_start - g_cur_left) / fill_width;
@@ -1299,7 +1299,7 @@ void    process_text( const char *text, font_number font )
     uint32_t                o_count = 0;
     uint32_t                offset = 0;
     // when hyph can be set, it will need to be used here & below
-    uint32_t                hy_width = wgml_fonts[0].width_table['-'];
+    uint32_t                hy_width = wgml_fonts[0].width.table['-'];
     static      text_type   typ = norm;
     static      text_type   typn = norm;
 

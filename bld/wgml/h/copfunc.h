@@ -87,6 +87,15 @@ extern code_block       *get_code_blocks( const char **position, uint16_t count,
 extern p_buffer         *get_p_buffer( FILE *file );
 extern functions_block  *parse_functions_block( const char **position, const char *base );
 
+extern unsigned char    fread_u8( FILE *in_file );
+extern unsigned short   fread_u16( FILE *in_file );
+extern unsigned long    fread_u32( FILE *in_file );
+extern void             fread_buff( void *buff, size_t len, FILE *in_file );
+extern unsigned char    get_u8( const char **buff );
+extern unsigned short   get_u16( const char **buff );
+extern unsigned long    get_u32( const char **buff );
+extern void             get_buff( void *obuff, size_t len, const char **buff );
+
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */
 #endif

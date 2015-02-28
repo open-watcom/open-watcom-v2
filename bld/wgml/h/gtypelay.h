@@ -39,8 +39,10 @@ typedef enum {
     #define pick( name, length, routine ) LAY_TAG_##name,
     #include "gtagslay.h"
     #undef pick
-    LAY_TAGMAX
+    LAY_TAG_NONE
 } lay_tag;
+
+#define LAY_TAGMAX LAY_TAG_NONE
 
 /***************************************************************************/
 /*  Layout attributes as enum list                                         */

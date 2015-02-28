@@ -84,9 +84,8 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
         if( position == 79 ) {
             *current += 1;
         }
-            
-        memcpy( &out_block[i].designator, *current, 1 );
-        *current += 1;
+
+        out_block[i].designator = get_u8( current );
 
         /* Skip the cb05_flag and the lp_flag. */
 
@@ -97,18 +96,16 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
         if( position == 76 ) {
             *current += 1;
         }
-            
-        memcpy( &out_block[i].line_pass, *current, 2 );
-        *current += 2;
+
+        out_block[i].line_pass = get_u16( current );
 
         /* Get the count, shifting it if necessary */
             
         if( position == 74 ) {
             *current += 1;
         }
-            
-        memcpy( &out_block[i].count, *current, 2 );
-        *current += 2;
+
+        out_block[i].count = get_u16( current );
 
         /* Set function, which is the pointer to the actual compiled code. */
 
@@ -146,16 +143,16 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
 
 p_buffer * get_p_buffer( FILE * in_file )
 {
-    char        *current     = NULL;
-    uint8_t     i;
-    p_buffer    *out_buffer  = NULL;
-    uint8_t     p_count;
-    char        test_char;
+    char            *current     = NULL;
+    uint8_t         i;
+    p_buffer        *out_buffer  = NULL;
+    uint8_t         p_count;
+    unsigned char   test_char;
 
     /* Determine the number of contiguous P-buffers in the file. */
 
     p_count = 0;
-    test_char = fgetc( in_file );
+    test_char = fread_u8( in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         return( out_buffer );
     }
@@ -165,7 +162,7 @@ p_buffer * get_p_buffer( FILE * in_file )
         if( ferror( in_file ) || feof( in_file ) ) {
             return( out_buffer );
         }
-        test_char = fgetc( in_file );
+        test_char = fread_u8( in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             return( out_buffer );
         }
@@ -193,7 +190,7 @@ p_buffer * get_p_buffer( FILE * in_file )
     /* Now get the data into the out_buffer. */
 
     for( i = 0; i < p_count; i++ ) {
-        test_char = fgetc( in_file );    
+        test_char = fread_u8( in_file );    
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_buffer );
             out_buffer = NULL;
@@ -206,7 +203,7 @@ p_buffer * get_p_buffer( FILE * in_file )
             return( out_buffer );
         }
 
-        fread( current, 80, 1, in_file );
+        fread_buff( current, 80, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_buffer );
             out_buffer = NULL;
@@ -252,8 +249,7 @@ functions_block *parse_functions_block( const char **current, const char *base )
 
     /* Get the number of CodeBlocks. */
 
-    memcpy( &code_count, *current, 2 );
-    *current += 2;
+    code_count = get_u16( current );
 
     /* Allocate the out_block. */
 
@@ -271,3 +267,58 @@ functions_block *parse_functions_block( const char **current, const char *base )
     return( out_block );
 }
 
+unsigned char fread_u8( FILE *in_file )
+{
+    unsigned char   u8;
+    fread( &u8, sizeof( u8 ), 1, in_file );
+    return( u8 );
+}
+
+unsigned short fread_u16( FILE *in_file )
+{
+    uint16_t        u16;
+    fread( &u16, sizeof( u16 ), 1, in_file );
+    return( u16 );
+}
+
+unsigned long fread_u32( FILE *in_file )
+{
+    uint32_t        u32;
+    fread( &u32, sizeof( u32 ), 1, in_file );
+    return( u32 );
+}
+
+void fread_buff( void *buff, size_t len, FILE *in_file )
+{
+    fread( buff, len, 1, in_file );
+}
+
+unsigned char get_u8( const char **buff )
+{
+    unsigned char   u8;
+    memcpy( &u8, *buff, sizeof( u8 ) );
+    *buff += sizeof( u8 );
+    return( u8 );
+}
+
+unsigned short get_u16( const char **buff )
+{
+    uint16_t        u16;
+    memcpy( &u16, *buff, sizeof( u16 ) );
+    *buff += sizeof( u16 );
+    return( u16 );
+}
+
+unsigned long get_u32( const char **buff )
+{
+    uint32_t        u32;
+    memcpy( &u32, *buff, sizeof( u32 ) );
+    *buff += sizeof( u32 );
+    return( u32 );
+}
+
+void get_buff( void *obuff, size_t len, const char **buff )
+{
+    memcpy( obuff, buff, len );
+    *buff += len;
+}
