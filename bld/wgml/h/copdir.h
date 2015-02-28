@@ -57,7 +57,7 @@
  */
 
 typedef struct {
-    char    defined_name[DEFINED_NAME_MAX];
+    char    defined_name[DEFINED_NAME_MAX + 1];
     char    member_name[FILENAME_MAX];
 } directory_entry;
 
