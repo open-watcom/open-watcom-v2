@@ -27,12 +27,12 @@
 * Description: WGML implement :LAYOUT and :eLAYOUT tags
 *
 ****************************************************************************/
- 
+
 #include "wgml.h"
- 
+
 #include "clibext.h"
- 
- 
+
+
 /***************************************************************************/
 /*                                                                         */
 /*  Format: :LAYOUT.                                                       */
@@ -43,7 +43,7 @@
 /* must appear before the :gdoc tag. The :elayout tag terminates a layout  */
 /* section.                                                                */
 /***************************************************************************/
- 
+
 /***************************************************************************/
 /*                                                                         */
 /*  Format: :eLAYOUT.                                                      */
@@ -51,25 +51,25 @@
 /* This tag signals the end of a layout section. A corresponding :layout   */
 /* tag must be previously specified for each :elayout tag.                 */
 /***************************************************************************/
- 
+
 /***************************************************************************/
 /*  gml_layout                                                             */
 /***************************************************************************/
- 
+
 void    gml_layout( gml_tag gtag )
 {
     char        *   p;
- 
+
     p = scan_start;
     scan_start = scan_stop;
- 
+
     if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = true;
- 
+
         /*******************************************************************/
         /*  read and ignore all lines up to :eLAYOUT                       */
         /*******************************************************************/
- 
+
         while( !ProcFlags.reprocess_line  ) {
             eat_lay_sub_tag();
             if( strnicmp( ":elayout", buff2, 8 ) ) {
@@ -78,12 +78,12 @@ void    gml_layout( gml_tag gtag )
         }
         return;
     }
- 
+
     if( !ProcFlags.lay_specified ) {
         ProcFlags.lay_specified = true;
         out_msg( "Processing layout\n" );
     }
- 
+
     if( *p == '\0' || *p == '.' ) {
         if( ProcFlags.layout ) {        // nested layout
             err_count++;
@@ -100,24 +100,24 @@ void    gml_layout( gml_tag gtag )
     }
     return;
 }
- 
- 
+
+
 /***************************************************************************/
 /*  lay_elayout     end of layout processing                               */
 /***************************************************************************/
- 
+
 void    lay_elayout( lay_tag ltag )
 {
     char        *   p;
- 
+
     p = scan_start;
     scan_start = scan_stop;
- 
+
     if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = false;
         return;                         // process during first pass only
     }
- 
+
     if( *p == '\0' || *p == '.' ) {
         if( !ProcFlags.layout ) {       // not in layout processing
             err_count++;
@@ -127,7 +127,7 @@ void    lay_elayout( lay_tag ltag )
         }
         ProcFlags.layout = false;
         ProcFlags.lay_xxx = el_zero;
- 
+
         return;
     } else {
         err_count++;

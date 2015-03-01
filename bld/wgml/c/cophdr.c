@@ -39,7 +39,7 @@
 
 /* Function parse_header().
  * Determine if the current position of the input stream points to the
- * start of a valid same-endian version 4.1 binary device file and, if 
+ * start of a valid same-endian version 4.1 binary device file and, if
  * it does, advance the stream to the first byte following the header.
  *
  * Parameter:
@@ -75,7 +75,7 @@ cop_file_type parse_header( FILE * in_file )
     *  Note: checking 0x0c00 would, presumably, identify a different-endian
     *  version 4.1 header, if that ever becomes necessary.
     */
-        
+
     fread_buff( &version, sizeof( version ), in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         return( file_error );
@@ -112,18 +112,18 @@ cop_file_type parse_header( FILE * in_file )
     count = fread_u8( in_file );
 
     /* If there is no more data, this is not a valid .COP file. */
-    
+
     if( ferror( in_file ) || feof( in_file ) ) {
         return( file_error );
     }
-    
+
     /* Valid header, more data exists, determine the file type. */
 
     if( count == 0x03 ) {
         return( se_v4_1_not_dir );
     }
     if( count == 0x04 ) {
-        return( dir_v4_1_se ); 
+        return( dir_v4_1_se );
     }
 
     /* Invalid file type: this cannot be a valid .COP file. */

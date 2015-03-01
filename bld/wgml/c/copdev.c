@@ -93,8 +93,8 @@ static index_status find_cumulative_index( functions_block * in_block, uint16_t 
  *      in_size is the minimum acceptable increase in size.
  *
  * Returns:
- *      A pointer to a cop_device instance at least in_size larger with 
- *          the same data (except for the allocated_size field, which 
+ *      A pointer to a cop_device instance at least in_size larger with
+ *          the same data (except for the allocated_size field, which
  *          reflects the new size) on success.
  *
  * Notes:
@@ -144,7 +144,7 @@ static void set_cumulative_index( functions_block * in_block )
 
     if( in_block->count > 1 ) {
         for( i = 1; i < in_block->count; i++ ) {
-            in_block->code_blocks[i].cumulative_index = 
+            in_block->code_blocks[i].cumulative_index =
                 in_block->code_blocks[i-1].cumulative_index + in_block->code_blocks[i-1].count;
         }
     }
@@ -180,13 +180,13 @@ bool is_dev_file( FILE * in_file )
     /* Verify that the descriminator is for a .COP device file. */
 
     if( memcmp( descriminator, "DEV", 3 ) ) return( false );
-    
+
     return( true );
 }
 
 /* Function parse_device().
  * Constructs a cop_device instance from the given input stream.
- *  
+ *
  * Parameters:
  *      in_file points to the first byte of a .COP file encoding a :DEVICE
  *          struct after the "DEV" descriminator.
@@ -200,7 +200,7 @@ bool is_dev_file( FILE * in_file )
  *      resize_cop_device() uses mem_realloc(), which calls exit() if the
  *          allocation fails.
  *      parse_functions_block() uses mem_alloc, which calls exit() if the
- *          allocation fails. 
+ *          allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
  *          a file error indicates premature termination of the file and
@@ -210,7 +210,7 @@ bool is_dev_file( FILE * in_file )
 cop_device * parse_device( FILE * in_file )
 {
     /* The cop_device instance. */
-    
+
     cop_device *        out_device          = NULL;
 
     /* Used to acquire string attributes. */
@@ -234,8 +234,8 @@ cop_device * parse_device( FILE * in_file )
     outtrans_block *    outtrans_ptr        = NULL;
     translation *       translation_ptr     = NULL;
     uint8_t *           translation_start   = NULL;
-    uint8_t             uint8_array[0x100];    
-    uint16_t            uint16_array[0x100];    
+    uint8_t             uint8_array[0x100];
+    uint16_t            uint16_array[0x100];
 
     /* Used to acquire the DefaultFonts and DeviceFonts. */
 
@@ -260,7 +260,7 @@ cop_device * parse_device( FILE * in_file )
     size_t              size;
 
     /* Initialize the out_device. */
-        
+
     out_device = mem_alloc( START_SIZE );
 
     out_device->allocated_size = START_SIZE;
@@ -354,7 +354,7 @@ cop_device * parse_device( FILE * in_file )
     } else {
         out_device->output_extension = NULL;
     }
-    
+
     /* Get the numeric attributes, the "next codeblock" value, and the
      * PagegeometryBlock attributes.
      */
@@ -367,13 +367,13 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-    
+
     if( designator != 0x2200 ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
     }
-    
+
     /* Get the page_width. */
 
     out_device->page_width = fread_u32( in_file );
@@ -418,7 +418,7 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-        
+
     /* Get the x_start value. */
 
     out_device->x_start = fread_u32( in_file );
@@ -465,7 +465,7 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-    
+
     switch( designator ) {
     case 0x0101:
 
@@ -522,7 +522,7 @@ cop_device * parse_device( FILE * in_file )
         }
 
         /* Ensure that the font number is 0. */
-    
+
         out_device->box.font = 0;
         break;
     default:
@@ -545,7 +545,7 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-    
+
     /* There are 0x0F bytes in the file but only 11 values. */
 
     fread_buff( &out_device->box.chars, 11, in_file );
@@ -563,7 +563,7 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-    
+
     /* Get the UnderscoreBlock. */
 
     /* Get the FontAttribute, which can be a string or a number. */
@@ -574,7 +574,7 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-    
+
     switch( designator ) {
     case 0x0101:
 
@@ -661,7 +661,7 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-    
+
     /* There are 0x05 bytes in the file but only one value. */
 
     out_device->underscore.underscore_char = fread_u8( in_file );
@@ -696,7 +696,7 @@ cop_device * parse_device( FILE * in_file )
         out_device = NULL;
         return( out_device );
     }
-    
+
     /* Now get the data_count and flags. */
 
     data_count = fread_u8( in_file );
@@ -742,7 +742,7 @@ cop_device * parse_device( FILE * in_file )
         }
 
         /* Get the count byte and verify that it contains 0x00. */
-        
+
         count8 = fread_u8( in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_device );
@@ -755,7 +755,7 @@ cop_device * parse_device( FILE * in_file )
             out_device = NULL;
             return( out_device );
         }
-    
+
         /* Get the data into the array. */
 
         if( OUT_DEV_EXPAND_CHK( sizeof( out_device->intrans->table ) ) ) {
@@ -771,7 +771,7 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
         OUT_DEV_ADD_OFF( sizeof( out_device->intrans->table ) );
-    }  
+    }
 
     /* Get the OuttransBlock, if present. */
 
@@ -818,7 +818,7 @@ cop_device * parse_device( FILE * in_file )
                 out_device = NULL;
                 return( out_device );
             }
-            
+
             /* Reserve space for the outtrans_block. */
 
             if( OUT_DEV_EXPAND_CHK( sizeof( out_device->outtrans->table ) ) ) {
@@ -835,7 +835,7 @@ cop_device * parse_device( FILE * in_file )
              *      for each iteration:
              *          translation_ptr is the pointer version of
              *              outtrans->ptr->table[i].
-             *          byte_ptr is the pointer version of 
+             *          byte_ptr is the pointer version of
              *              translation_ptr->ptr.data.
              */
 
@@ -863,7 +863,7 @@ cop_device * parse_device( FILE * in_file )
                     OUT_DEV_ADD_OFF( sizeof( translation ) );
 
                     /* The translation always contains exactly one character. */
-                    
+
                     size = 1;
 
                     if( OUT_DEV_EXPAND_CHK( size ) ) {
@@ -880,7 +880,7 @@ cop_device * parse_device( FILE * in_file )
                     /* The translation character is the value in the input
                      * array.
                      */
-                    
+
                     *byte_ptr = uint8_array[i];
                 }
             }
@@ -888,7 +888,7 @@ cop_device * parse_device( FILE * in_file )
         case 0x82:
 
             /* The count byte should be equal to data_count. */
-        
+
             if( count8 != data_count ) {
                 mem_free( out_device );
                 out_device = NULL;
@@ -937,7 +937,7 @@ cop_device * parse_device( FILE * in_file )
              *      for each iteration:
              *          translation_ptr is the pointer version of
              *              outtrans->ptr->table[i].
-             *          byte_ptr is the pointer version of 
+             *          byte_ptr is the pointer version of
              *              translation_ptr->ptr.data.
              */
 
@@ -1010,7 +1010,7 @@ cop_device * parse_device( FILE * in_file )
             out_device = NULL;
             return( out_device );
         }
-    }  
+    }
 
     /* Get the DefaultfontBlock. */
 
@@ -1030,7 +1030,7 @@ cop_device * parse_device( FILE * in_file )
     }
 
     /* Get the number of DefaultFonts. */
-    
+
     out_device->defaultfonts.font_count = fread_u16( in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
@@ -1082,7 +1082,7 @@ cop_device * parse_device( FILE * in_file )
         } else {
             defaultfont_ptr[i].font_style = NULL;
         }
-        
+
         /* Get the count and verify that it is 0x04. */
 
         count8 = fread_u8( in_file );
@@ -1146,7 +1146,7 @@ cop_device * parse_device( FILE * in_file )
         }
     }
 
-    /* Now get the FunctionsBlock and position in_file to the start of 
+    /* Now get the FunctionsBlock and position in_file to the start of
      * the PauseBlock. This must be done even if no functions are present.
      */
 
@@ -1267,7 +1267,7 @@ cop_device * parse_device( FILE * in_file )
         memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
         OUT_DEV_ADD_OFF( size );
     }
-    
+
     /* Get the document_pause. */
 
     /* Get the count and verify that it is 0x02. */
@@ -1366,7 +1366,7 @@ cop_device * parse_device( FILE * in_file )
         memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
         OUT_DEV_ADD_OFF( size );
     }
-    
+
     /* Get the docpage_pause. */
 
     /* Get the count and verify that it is 0x02. */
@@ -1465,7 +1465,7 @@ cop_device * parse_device( FILE * in_file )
         memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
         OUT_DEV_ADD_OFF( size );
     }
-    
+
     /* Get the devpage_pause. */
 
     /* Get the count and verify that it is 0x02. */
@@ -1625,7 +1625,7 @@ cop_device * parse_device( FILE * in_file )
 
     devicefont_ptr = OUT_DEV_CUR_PTR();
     OUT_DEV_ADD_OFF( size );
-    
+
     for( i = 0; i < out_device->devicefonts.font_count; i++ ) {
 
         /* Get the font_name. */
@@ -1772,7 +1772,7 @@ cop_device * parse_device( FILE * in_file )
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
-        }   
+        }
 
         if( count8 != 0x03 ) {
             mem_free( raw_functions );
@@ -1808,7 +1808,7 @@ cop_device * parse_device( FILE * in_file )
         /* Get the fontpause. */
 
         /* Get the value to use to find the CodeBlock. */
- 
+
         cumulative_index = fread_u16( in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( raw_functions );
@@ -1893,30 +1893,30 @@ cop_device * parse_device( FILE * in_file )
     if( out_device->driver_name != NULL ) {
         OUT_DEV_REMAP_MBR( driver_name );
     }
-    
+
     if( out_device->output_name != NULL ) {
         OUT_DEV_REMAP_MBR( output_name );
     }
-    
+
     if( out_device->output_extension != NULL ) {
         OUT_DEV_REMAP_MBR( output_extension );
     }
-    
+
     if( out_device->box.font_name != NULL ) {
         OUT_DEV_REMAP_MBR( box.font_name );
     }
-    
+
     if( out_device->underscore.font_name != NULL ) {
         OUT_DEV_REMAP_MBR( underscore.font_name );
     }
-    
+
     if( out_device->intrans != NULL ) {
         OUT_DEV_REMAP_MBR( intrans );
     }
-    
+
     if( out_device->outtrans != NULL ) {
         OUT_DEV_REMAP_MBR( outtrans );
-    
+
         for( i = 0; i < sizeof( outtrans_block ) / sizeof( translation * ); i++ ) {
             if( out_device->outtrans->table[i] != NULL ) {
                 OUT_DEV_REMAP_MBR( outtrans->table[i] );
@@ -1926,7 +1926,7 @@ cop_device * parse_device( FILE * in_file )
             }
         }
     }
-    
+
     if( out_device->defaultfonts.fonts != NULL ) {
         OUT_DEV_REMAP_MBR( defaultfonts.fonts );
         for( i = 0; i < out_device->defaultfonts.font_count; i++ ) {
@@ -1936,35 +1936,35 @@ cop_device * parse_device( FILE * in_file )
             }
         }
     }
-    
+
     if( out_device->pauses.start_pause != NULL ) {
         OUT_DEV_REMAP_MBR( pauses.start_pause );
         if( out_device->pauses.start_pause->text != NULL ) {
             OUT_DEV_REMAP_MBR( pauses.start_pause->text );
         }
     }
-    
+
     if( out_device->pauses.document_pause != NULL ) {
         OUT_DEV_REMAP_MBR( pauses.document_pause );
         if( out_device->pauses.document_pause->text != NULL ) {
             OUT_DEV_REMAP_MBR( pauses.document_pause->text );
         }
     }
-    
+
     if( out_device->pauses.docpage_pause != NULL ) {
         OUT_DEV_REMAP_MBR( pauses.docpage_pause );
         if( out_device->pauses.docpage_pause->text != NULL ) {
             OUT_DEV_REMAP_MBR( pauses.docpage_pause->text );
         }
     }
-    
+
     if( out_device->pauses.devpage_pause != NULL ) {
         OUT_DEV_REMAP_MBR( pauses.devpage_pause );
         if( out_device->pauses.devpage_pause->text != NULL ) {
             OUT_DEV_REMAP_MBR( pauses.devpage_pause->text );
         }
     }
-    
+
     if( out_device->devicefonts.fonts != NULL ) {
         OUT_DEV_REMAP_MBR( devicefonts.fonts );
         for( i = 0; i < out_device->devicefonts.font_count; i++ ) {
@@ -1982,6 +1982,6 @@ cop_device * parse_device( FILE * in_file )
             }
         }
     }
-    
+
     return( out_device );
 }

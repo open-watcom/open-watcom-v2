@@ -70,8 +70,8 @@ void    gml_binclude( gml_tag gtag )
                     process_line();
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
-                        ProcFlags.tag_end_found = true; 
-                        break;          
+                        ProcFlags.tag_end_found = true;
+                        break;
                     } else {
                         p = scan_start; // new line is part of current tag
                         continue;

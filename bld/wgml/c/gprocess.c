@@ -699,7 +699,7 @@ void        process_line( void )
         // .* .cm .dm :cmt found
     } else {
         anything_substituted |= resolve_symvar_functions( buff2 );
-    
+
         if( input_cbs->fmflags & II_research && GlobalFlags.firstpass &&
             anything_substituted ) {
             g_info_lm( inf_subst_line, buff2 ); // show line with substitution(s)

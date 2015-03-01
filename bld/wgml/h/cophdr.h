@@ -25,7 +25,7 @@
 *  ========================================================================
 *
 * Description:  Declares an enum and a function which are used to parse
-*               .COP file headers: 
+*               .COP file headers:
 *                   cop_file_type
 *                   parse_header()
 *

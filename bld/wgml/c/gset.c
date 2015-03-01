@@ -27,11 +27,11 @@
 * Description:  GML :SET processing
 *
 ****************************************************************************/
- 
+
 #include "wgml.h"
- 
+
 #include "clibext.h"
- 
+
 /***************************************************************************/
 /*   :SET symbol='symbol-name'                                             */
 /*        value='character-string'                                         */
@@ -46,7 +46,7 @@
 /* be assigned to the symbol name.  If the attribute value delete is used, */
 /* the symbol referred to by the symbol name is deleted.                   */
 /***************************************************************************/
- 
+
 extern  void    gml_set( gml_tag gtag )
 {
     char        *   p;
@@ -59,21 +59,21 @@ extern  void    gml_set( gml_tag gtag )
     sub_index       subscript;
     int             rc;
     symvar      * * working_dict;
- 
+
     gtag = gtag;
     subscript = no_subscript;           // not subscripted
     scan_err = false;
- 
+
     p = scan_start;
     p++;
- 
+
     for( ;;) {
         while( *p == ' ' ) {            // over WS to attribute
             p++;
         }
- 
+
         if( !strnicmp( "symbol", p, 6 ) ) {
- 
+
             p += 6;
             while( *p == ' ' ) {        // over WS to attribute
                 p++;
@@ -87,7 +87,7 @@ extern  void    gml_set( gml_tag gtag )
                 continue;
             }
             symstart = p;
- 
+
             p = scan_sym( symstart, &sym, &subscript );
             if( scan_err ) {
                 return;
@@ -101,15 +101,15 @@ extern  void    gml_set( gml_tag gtag )
                 working_dict = &global_dict;
             }
             symbolthere = true;
- 
+
             while( *p == ' ' ) {
                 p++;
             }
         } else {
- 
+
             if( !strnicmp( "value", p, 5 ) ) {
                 char    quote;
- 
+
                 p += 5;
                 while( *p == ' ' ) {    // over WS to attribute
                     p++;
@@ -148,11 +148,11 @@ extern  void    gml_set( gml_tag gtag )
                     show_include_stack();
                 }
                 break;
- 
+
             }
         }
         if( symbolthere && valuethere ) {   // both attributes
- 
+
             if( !strnicmp( token_buf, "delete", 6 ) ) {
                 sym.flags |= deleted;
             }
@@ -160,18 +160,18 @@ extern  void    gml_set( gml_tag gtag )
                              sym.flags );
             break;                          // tag complete with attributes
         }
- 
+
         c = *p;
         if( p >= scan_stop ) {
             c = '.';                    // simulate end of tag if EOF
- 
+
             if( !(input_cbs->fmflags & II_eof) ) {
                 if( get_line( true ) ) {      // next line for missing attribute
                     process_line();
                     if( (*scan_start == SCR_char) ||
                         (*scan_start == GML_char) ) {
                                         //  missing attribute not supplied error
- 
+
                     } else {
                         p = scan_start;
                         continue;       // scanning
@@ -182,7 +182,7 @@ extern  void    gml_set( gml_tag gtag )
         if( c == '.' ) {                // end of tag found
             err_count++;
             // AT-001 Required attribute not found
- 
+
             g_err( err_att_missing );
             g_info_inp_pos();
             if( inc_level > 1 ) {
@@ -194,4 +194,4 @@ extern  void    gml_set( gml_tag gtag )
     scan_start = scan_stop;
     return;
 }
- 
+

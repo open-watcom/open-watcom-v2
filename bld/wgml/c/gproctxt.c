@@ -588,7 +588,7 @@ static void wgml_tabs( void )
             m_width = t_width;
         } else {                        // get sizing for total word
             m_width = (g_cur_h_start + t_width) - s_multi->x_address;
-            pre_space = in_chars->x_address - (in_chars->prev->x_address +
+            pre_space = in_chars->x_address - (in_chars->prev->x_address
                                                in_chars->prev->width);
         }
         // set text start position and accept/reject current tab stop

@@ -153,7 +153,7 @@ void    gml_title( gml_tag gtag )
     } else {
         set_skip_vars( &layout_work.title.skip, NULL, NULL, spacing_ln, g_curr_font );
     }
-    
+
     p_line = alloc_text_line();
     p_line->line_height = wgml_fonts[g_curr_font].line_height;
     if( *p ) {

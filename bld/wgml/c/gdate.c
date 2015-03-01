@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 #include "wgml.h"
- 
- 
+
+
 /***************************************************************************/
 /*  prepare date line                                                      */
 /***************************************************************************/
- 
+
 static void prep_date_line( text_line *p_line, const char *p )
 {
     text_chars  *   curr_t;
@@ -42,10 +42,10 @@ static void prep_date_line( text_line *p_line, const char *p )
     uint32_t        h_right;
     symsub      *   subdate;
     int             rc;
- 
+
     h_left = g_page_left + conv_hor_unit( &layout_work.date.left_adjust );
     h_right = g_page_right - conv_hor_unit( &layout_work.date.right_adjust );
- 
+
     if( *p ) {
         curr_t = alloc_text_chars( p, strlen( p ), g_curr_font );
     } else {
@@ -73,14 +73,14 @@ static void prep_date_line( text_line *p_line, const char *p )
         curr_t->x_address = h_right - curr_t->width;
     }
     ju_x_start = curr_t->x_address;
- 
+
     return;
 }
- 
+
 /***************************************************************************/
 /*  :DATE.date   tag                                                       */
 /***************************************************************************/
- 
+
 void    gml_date( gml_tag gtag )
 {
     char        *   p;
@@ -88,7 +88,7 @@ void    gml_date( gml_tag gtag )
     text_line   *   p_line;
     spacing_line    spacing_ln;
     font_number     font_save;
- 
+
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
         g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
@@ -111,9 +111,9 @@ void    gml_date( gml_tag gtag )
     if( *p ) {                                              // date specified
         add_symvar( &global_dict, "date", p, no_subscript, 0 );
     }
- 
+
     start_doc_sect();                   // if not already done
- 
+
     p_line = alloc_text_line();
     p_line->line_height = wgml_fonts[layout_work.docnum.font].line_height;
 
@@ -128,7 +128,7 @@ void    gml_date( gml_tag gtag )
     /*  always used at the top of the page, despite the docs    */
     /************************************************************/
     set_skip_vars( NULL, &layout_work.date.pre_skip, NULL, spacing_ln, g_curr_font );
- 
+
     cur_el = alloc_doc_el( el_text );
     cur_el->depth = p_line->line_height + g_spacing;
     cur_el->subs_skip = g_subs_skip;

@@ -120,7 +120,7 @@ void    scr_sk( void )
 #endif
 
     skip = -1;
-    sign = 1;                           // default sign +
+    sign = 1;                           // default sign
     spacing_ln = g_spacing_ln;
 
     p = scan_start;

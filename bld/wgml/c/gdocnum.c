@@ -29,23 +29,23 @@
 ****************************************************************************/
 
 #include    "wgml.h"
- 
+
 
 /***************************************************************************/
 /*  prepare docnum line                                                    */
 /***************************************************************************/
- 
+
 static void prep_docnum_line( text_line * p_line, char * p )
 {
     text_chars  *   curr_t;
     uint32_t        h_left;
     uint32_t        h_right;
- 
+
     h_left = g_page_left + conv_hor_unit( &layout_work.docnum.left_adjust );
     h_right = g_page_right - conv_hor_unit( &layout_work.docnum.right_adjust );
- 
+
     if( *p ) {
-        curr_t = alloc_text_chars( layout_work.docnum.string, 1 + strlen( p ) +
+        curr_t = alloc_text_chars( layout_work.docnum.string, 1 + strlen( p )
                                    strlen( layout_work.docnum.string ), g_curr_font );
     } else {
         curr_t = alloc_text_chars( layout_work.docnum.string,
@@ -77,14 +77,14 @@ static void prep_docnum_line( text_line * p_line, char * p )
         curr_t->x_address = h_right - curr_t->width;
     }
     ju_x_start = curr_t->x_address;
- 
+
     return;
 }
- 
+
 /***************************************************************************/
 /*  :docnum.docnum   tag                                                       */
 /***************************************************************************/
- 
+
 void    gml_docnum( gml_tag gtag )
 {
     char        *   p;
@@ -94,8 +94,8 @@ void    gml_docnum( gml_tag gtag )
     font_number     font_save;
     int32_t         rc;
     symsub      *   docnumval;
- 
- 
+
+
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
         g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
@@ -120,13 +120,13 @@ void    gml_docnum( gml_tag gtag )
     } else {
         *(docnumval->value) = 0;
     }
- 
+
     start_doc_sect();                   // if not already done
 
     p_line = alloc_text_line();
     p_line->line_height = wgml_fonts[layout_work.docnum.font].line_height;
     prep_docnum_line( p_line, docnumval->value );
- 
+
     spacing_ln = layout_work.titlep.spacing;
     font_save = g_curr_font;
     g_curr_font = layout_work.docnum.font;
@@ -137,7 +137,7 @@ void    gml_docnum( gml_tag gtag )
     /************************************************************/
 
     set_skip_vars( NULL, &layout_work.docnum.pre_skip, NULL, spacing_ln, g_curr_font );
- 
+
     cur_el = alloc_doc_el( el_text );
     cur_el->blank_lines = g_blank_lines;
     g_blank_lines = 0;

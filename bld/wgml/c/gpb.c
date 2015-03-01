@@ -27,10 +27,10 @@
 * Description:  WGML tag  :PB trial implementation
 *                         PB is not documented, so this is guessing
 ****************************************************************************/
- 
+
 #include "wgml.h"
- 
- 
+
+
 /***************************************************************************/
 /*  :PB.                                                                   */
 /*                                                                         */
@@ -42,11 +42,11 @@ extern  void    gml_pb( gml_tag gtag )
     gtag = gtag;
 
     scan_err = false;
- 
+
     start_doc_sect();                   // if not already done
- 
+
     scr_process_break();
- 
+
     scan_start = scan_stop;
     return;
 }

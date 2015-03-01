@@ -31,11 +31,11 @@
 *
 *  comments are from script-tso.txt
 ****************************************************************************/
- 
+
 #include "wgml.h"
- 
+
 #include "clibext.h"
- 
+
 /**************************************************************************/
 /* PERFORM processes the remainder of the current physical input line (if */
 /* any) or the next physical input line (if none) the specified number of */
@@ -82,12 +82,12 @@
 /* (4) The same example as above, using nested performs:                  */
 /*       .sr i=0;.pe 10;.pp;.pe 100;.sr i=&i+1;&i                         */
 /**************************************************************************/
- 
- 
+
+
 /***************************************************************************/
 /*  fill the data for perform processing                                   */
 /***************************************************************************/
- 
+
 static  void    init_pe_line( int pe_count )
 {
     if( input_cbs->pe_cb.count > 0) {   // count >0 is switch for .pe active
@@ -103,12 +103,12 @@ static  void    init_pe_line( int pe_count )
     }
     return;
 }
- 
- 
+
+
 /***************************************************************************/
 /*  reset perform   deactivate perform processing                          */
 /***************************************************************************/
- 
+
 void    reset_pe_cb( void )
 {
     input_cbs->pe_cb.count = -1;
@@ -118,8 +118,8 @@ void    reset_pe_cb( void )
     }
     return;
 }
- 
- 
+
+
 void    scr_pe( void )
 {
     char        *   pa;
@@ -128,18 +128,18 @@ void    scr_pe( void )
     getnum_block    gn;
     condcode        cc;
     char            cwcurr[4];
- 
+
     cwcurr[0] = SCR_char;
     cwcurr[1] = 'p';
     cwcurr[2] = 'e';
     cwcurr[3] = '\0';
- 
+
     p = scan_start;
     while( *p && *p == ' ' ) {          // next word start
         p++;
     }
     pa = p;
- 
+
     while( *p && *p != ' ' ) {          // end of word
         p++;
     }
@@ -150,7 +150,7 @@ void    scr_pe( void )
         gn.argstart = pa;
         gn.argstop = scan_stop;
         gn.ignore_blanks = 0;
- 
+
         cc = getnum( &gn );             // try to get numeric value
         if( cc == notnum ) {
             switch( len ) {
@@ -184,4 +184,4 @@ void    scr_pe( void )
     scan_restart = scan_stop;
     return;
 }
- 
+

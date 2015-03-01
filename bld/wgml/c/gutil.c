@@ -546,7 +546,7 @@ bool att_val_to_su( su * in_su, bool pos )
 /*      they cannot be delimited                                           */
 /*      they cannot contain whitespace                                     */
 /*      they can be expressions, provided they do not include a unit       */
-/*                                                                         */ 
+/*                                                                         */
 /*    returns cvterr: false on success (no conversion error)               */
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
@@ -567,11 +567,11 @@ bool cw_val_to_su( char * * scanp, su * in_su )
     ps = s->su_txt;
     *ps = '\0';
     while( *p && (*p == ' ' ) ) {   // just in case
-        p++;    
+        p++;
     }
     while( *p && (*p != ' ' ) ) {
         p++;
-    }    
+    }
     len = p - pa;
     *scanp = p;                     // report back value of p
     if( (len + 1) > MAX_SU_CHAR ) {
@@ -634,11 +634,11 @@ bool lay_init_su( const char *p, su *in_su )
     *ps = '\0';
 
     while( *p && (*p == ' ' ) ) {   // just in case
-        p++;    
+        p++;
     }
     while( *p && (*p != ' ' ) ) {
         p++;
-    }    
+    }
     len = p - pa;
 
     if( (len + 1) > MAX_SU_CHAR ) {                 // won't fit

@@ -53,7 +53,7 @@
 /***************************************************************************/
 /*  does the actual output to the device                                   */
 /***************************************************************************/
- 
+
 static void do_el_list_out( doc_element * array, unsigned char count )
 {
     doc_element *   cur_el;
@@ -117,10 +117,10 @@ static void do_el_list_out( doc_element * array, unsigned char count )
             save = cur_el->next;
             cur_el->next = NULL;            // clear only current element
             clear_doc_element( cur_el );
-            add_doc_el_to_pool( cur_el ); 
+            add_doc_el_to_pool( cur_el );
             cur_el = save;
         }
-    }    
+    }
 
     return;
 }
@@ -136,7 +136,7 @@ static void set_v_positions( doc_element * list, spacing_bu v_start )
     spacing_bu      cur_spacing;
 
     g_cur_v_start = v_start;
-    
+
     for( cur_el = list; cur_el != NULL; cur_el = cur_el->next ) {
         cur_spacing = cur_el->blank_lines;
         if( cur_el->type == el_text ) {
@@ -219,7 +219,7 @@ static void set_v_positions( doc_element * list, spacing_bu v_start )
                         cur_spacing -= cur_line->line_height;   // overprint
                         cur_el->element.text.overprint = false;
                     }
-                } else {                                
+                } else {
                     if( t_page.top_ban == NULL ) {      // minimun height
                         if( cur_spacing < wgml_fonts[g_curr_font].line_height ) {
                             cur_spacing = wgml_fonts[g_curr_font].line_height;
@@ -295,7 +295,7 @@ static void do_ban_column_out( ban_column * a_column, spacing_bu v_start )
 /***************************************************************************/
 /*  output the doc_column(s)                                          */
 /***************************************************************************/
- 
+
 static void do_doc_column_out( doc_column * a_column, spacing_bu v_start )
 {
     doc_column  *       cur_col;
@@ -395,7 +395,7 @@ static void update_t_page( void )
     /*  was placed in t_page.page_width                                     */
     /*  this is preliminary and may be changed as needed                    */
     /*  Note: t_page.main is NULL at this point, initialize if needed       */
-    
+
     if( !fig_placed ) {
         if( n_page.col_top != NULL ) {   // at most one item can be placed
             switch( n_page.col_top->type ) {
@@ -404,7 +404,7 @@ static void update_t_page( void )
             default :
                 internal_err( __FILE__, __LINE__ );
             }
-        } 
+        }
     }
 
     /***********************************************************************/
@@ -459,7 +459,7 @@ static void update_t_page( void )
     /*      here, and then the function calling update_t_page()     */
     /*      should be relied on to output the page                  */
     /****************************************************************/
-    
+
     while( n_page.col_main != NULL ) {
         cur_el = n_page.col_main;
         n_page.col_main = n_page.col_main->next;
@@ -472,19 +472,19 @@ static void update_t_page( void )
         /*  the current page and then exits the loop after adjusting    */
         /*  the element field values as needed                          */
         /****************************************************************/
-        
+
         if( cur_el->blank_lines > 0 ) {
             if( (t_page.cur_depth + cur_el->blank_lines) >= t_page.max_depth ) {
                 cur_el->blank_lines -= (t_page.max_depth - t_page.cur_depth);
                 break;
-            } else if( !ProcFlags.page_started && ((t_page.cur_depth +
+            } else if( !ProcFlags.page_started && ((t_page.cur_depth
                         cur_el->blank_lines + cur_el->top_skip) >=
                         t_page.max_depth) ) {
                 cur_el->top_skip -= (t_page.max_depth - t_page.cur_depth);
                 cur_el->top_skip += cur_el->blank_lines;
                 cur_el->blank_lines = 0;
                 break;
-            } else if( (t_page.cur_depth + cur_el->blank_lines +
+            } else if( (t_page.cur_depth + cur_el->blank_lines
                          cur_el->subs_skip) >= t_page.max_depth ) {
                 cur_el->blank_lines = 0;
                 break;
@@ -743,9 +743,9 @@ void insert_col_bot( doc_element * a_element )
         t_page.main->bot_fig = a_element;
         t_page.last_col_bot = t_page.main->bot_fig;
         if( bin_driver->y_positive == 0) {
-            t_page.main->fig_top += t_page.cur_depth; 
+            t_page.main->fig_top += t_page.cur_depth;
         } else {
-            t_page.main->fig_top -= t_page.cur_depth; 
+            t_page.main->fig_top -= t_page.cur_depth;
         }
     } else {
         if( n_page.last_col_bot == NULL ) {
@@ -868,19 +868,19 @@ void insert_col_main( doc_element * a_element )
     /*  combinations                                                */
     /*  element field values are adjusted as needed                 */
     /****************************************************************/
-        
+
     if( a_element->blank_lines > 0 ) {
         if( (t_page.cur_depth + a_element->blank_lines) >= t_page.max_depth ) {
             a_element->blank_lines -= (t_page.max_depth - t_page.cur_depth);
             page_full = true;
-        } else if( !ProcFlags.page_started && ((t_page.cur_depth +
+        } else if( !ProcFlags.page_started && ((t_page.cur_depth
                     a_element->blank_lines + a_element->top_skip) >=
                     t_page.max_depth) ) {
             a_element->top_skip -= (t_page.max_depth - t_page.cur_depth);
             a_element->top_skip += a_element->blank_lines;
             a_element->blank_lines = 0;
             page_full = true;
-        } else if( (t_page.cur_depth + a_element->blank_lines +
+        } else if( (t_page.cur_depth + a_element->blank_lines
                      a_element->subs_skip) >= t_page.max_depth ) {
             a_element->blank_lines = 0;
             page_full = true;
@@ -986,7 +986,7 @@ void insert_col_main( doc_element * a_element )
             n_page.last_col_main = n_page.last_col_main->next;
         }
         text_page_out();
-    } 
+    }
     return;
 }
 
@@ -1031,7 +1031,7 @@ void insert_page_width( doc_element * a_element )
                 }
             } else {        // discard second section heading
                 internal_err( __FILE__, __LINE__ );
-            }        
+            }
         } else {
             xx_err( err_heading_too_deep );
         }
@@ -1048,7 +1048,7 @@ void insert_page_width( doc_element * a_element )
 /*  force output of the current page, even if not full                     */
 /*  t_page and n_page will both be empty on return                         */
 /***************************************************************************/
- 
+
 void last_page_out( void )
 {
     full_page_out();
@@ -1143,7 +1143,7 @@ void set_skip_vars( const su *pre_skip, const su *pre_top_skip, const su *post_s
 
     if( skippost > skippre ) { // final merger per Wiki
         skippre = skippost;
-    }    
+    }
 
     g_subs_skip = skippre;
     g_top_skip = skiptop;
@@ -1185,12 +1185,12 @@ bool split_element( doc_element * a_element, spacing_bu req_depth )
     switch( a_element->type ) {
     // add code for other element types; FIGs are documented to split only
     // when they will not fit by themselves on a page
-    case el_binc :  // given how BINCLUDE/GRAPHIC work, this seems reasonable 
+    case el_binc :  // given how BINCLUDE/GRAPHIC work, this seems reasonable
     case el_dbox :  // splitting boxes/lines is probably best done elsewhere
     case el_graph :
     case el_hline :
     case el_vline :
-        splittable = false;     
+        splittable = false;
         break;
     case el_text :
         for( cur_line = a_element->element.text.first; cur_line != NULL;
@@ -1231,7 +1231,7 @@ bool split_element( doc_element * a_element, spacing_bu req_depth )
             split_el->next = a_element->next;
             a_element->next = split_el;
         }
-        
+
         break;
     default :
         internal_err( __FILE__, __LINE__ );

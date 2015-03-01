@@ -186,7 +186,7 @@ void    gml_exmp( gml_tag gtag )
 
     ProcFlags.group_elements = false;
     if( t_doc_el_group.first != NULL ) {
-        t_doc_el_group.depth += (t_doc_el_group.first->blank_lines +
+        t_doc_el_group.depth += (t_doc_el_group.first->blank_lines
                                 t_doc_el_group.first->subs_skip);
     }
 

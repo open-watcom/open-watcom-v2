@@ -934,7 +934,7 @@ void cop_setup( void )
 
         /* If scale_basis is not "0", then font_height must not be "0". */
 
-        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && 
+        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) &&
                 (wgml_fonts[fnt].font_height == 0)) {
             xx_simple_err_i( err_font_scaled, fnt );
         }

@@ -73,8 +73,8 @@ void    gml_graphic( gml_tag gtag )
                     process_line();
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
-                        ProcFlags.tag_end_found = true; 
-                        break;          
+                        ProcFlags.tag_end_found = true;
+                        break;
                     } else {
                         p = scan_start; // new line is part of current tag
                         continue;
@@ -248,6 +248,6 @@ void    gml_graphic( gml_tag gtag )
     if( *p == '.' ) {
         p++;
     }
-    scan_start = p;                 // process following text    
+    scan_start = p;                 // process following text
 }
 

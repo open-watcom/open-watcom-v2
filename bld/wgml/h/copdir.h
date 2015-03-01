@@ -29,7 +29,7 @@
 *                   get_extended_entry()
 *                   get_member_name()
 *
-* Note:         The field names are intended to correspond to the field names 
+* Note:         The field names are intended to correspond to the field names
 *               shown in the Wiki. The Wiki structs are named when the structs
 *               defined here are defined; they are not identical.
 *
@@ -49,7 +49,7 @@
 
 /* FILENAME_MAX is used for the member_name because gendev will embed member
  * names which exceed the space allowed by NAME_MAX or _MAX_FNAME in DOS if
- * such a member name is present in the source file. 
+ * such a member name is present in the source file.
  */
 
 /* To hold the data from either the CompactDirEntry struct or the

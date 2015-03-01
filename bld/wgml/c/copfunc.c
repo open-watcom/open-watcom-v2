@@ -44,7 +44,7 @@
  * CodeBlocks in a P-buffer.
  *
  * Parameters:
- *      current points to the first byte of the data to be processed. 
+ *      current points to the first byte of the data to be processed.
  *      count contains the number of CodeBlocks expected.
  *      base points to the first byte of the underlying P-buffer.
  *
@@ -66,9 +66,9 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
     size_t          position;
     uint8_t         i;
 
-    /* Allocate out_block. */ 
-             
-    out_block = mem_alloc( sizeof( code_block ) * count ); 
+    /* Allocate out_block. */
+
+    out_block = mem_alloc( sizeof( code_block ) * count );
 
     /* Initialize each code_block. */
 
@@ -80,7 +80,7 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
         position = difference % 80;
 
         /* Get the designator, shifting it if necessary. */
-            
+
         if( position == 79 ) {
             *current += 1;
         }
@@ -92,7 +92,7 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
         *current += 2;
 
         /* Get the line pass, shifting it if necessary. */
-            
+
         if( position == 76 ) {
             *current += 1;
         }
@@ -100,7 +100,7 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
         out_block[i].line_pass = get_u16( current );
 
         /* Get the count, shifting it if necessary */
-            
+
         if( position == 74 ) {
             *current += 1;
         }
@@ -111,12 +111,12 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
 
         if( &out_block[i].count == 0 ) {
             out_block[i].text = NULL;
-        } else {                        
+        } else {
             out_block[i].text = *current;
             *current += out_block[i].count;
         }
     }
-        
+
     return( out_block );
 }
 
@@ -179,7 +179,7 @@ p_buffer * get_p_buffer( FILE * in_file )
     if( ferror( in_file ) || feof( in_file ) )
         return( out_buffer );
 
-    /* Allocate the out_buffer. */ 
+    /* Allocate the out_buffer. */
 
     out_buffer = mem_alloc( sizeof( p_buffer ) + 80 * p_count );
 
@@ -190,7 +190,7 @@ p_buffer * get_p_buffer( FILE * in_file )
     /* Now get the data into the out_buffer. */
 
     for( i = 0; i < p_count; i++ ) {
-        test_char = fread_u8( in_file );    
+        test_char = fread_u8( in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_buffer );
             out_buffer = NULL;
