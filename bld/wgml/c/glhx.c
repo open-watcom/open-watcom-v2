@@ -186,7 +186,7 @@ const   lay_att     hx_att[18] =
 /*  lay_hx                                                                 */
 /***************************************************************************/
 
-void    lay_hx( lay_tag tag )
+void    lay_hx( lay_tag ltag )
 {
     char        *   p;
     condcode        cc;
@@ -204,7 +204,7 @@ void    lay_hx( lay_tag tag )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_H0:
         hx_l = el_h0;
         break;

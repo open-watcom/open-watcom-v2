@@ -115,7 +115,7 @@ const   lay_att     ix_att[9] =
 /*  lay_ix          for :I1 - :I3                                          */
 /***************************************************************************/
 
-void    lay_ix( lay_tag tag )
+void    lay_ix( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -133,7 +133,7 @@ void    lay_ix( lay_tag tag )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_I1:
         ix_l = el_i1;
         break;

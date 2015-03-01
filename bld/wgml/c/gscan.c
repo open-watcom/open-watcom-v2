@@ -75,19 +75,19 @@ static  const   scrtag  scr_tags[] = {
 
 static lay_tag      lay_ind = LAY_TAGMAX;   // index into lay_tab for attribute processing
 
-const char *gml_tagname( gml_tag tag )
+const char *gml_tagname( gml_tag gtag )
 {
-    return( gml_tags[tag].tagname );
+    return( gml_tags[gtag].tagname );
 }
 
-const char *lay_tagname( lay_tag tag )
+const char *lay_tagname( lay_tag ltag )
 {
-    return( lay_tags[tag].tagname );
+    return( lay_tags[ltag].tagname );
 }
 
-void  lay_cmt( lay_tag tag )
+void  lay_cmt( lay_tag ltag )
 {
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_CMT:
         gml_cmt( GML_TAG_CMT );
         break;
@@ -97,9 +97,9 @@ void  lay_cmt( lay_tag tag )
     }
 }
 
-void  lay_include( lay_tag tag )
+void  lay_include( lay_tag ltag )
 {
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_INCLUDE:
         gml_include( GML_TAG_INCLUDE );
         break;

@@ -110,7 +110,7 @@ const   lay_att     tochx_att[9] =
 /*  lay_tochx                                                              */
 /***************************************************************************/
 
-void    lay_tochx( lay_tag tag )
+void    lay_tochx( lay_tag ltag )
 {
     char        *   p;
     condcode        cc;
@@ -128,7 +128,7 @@ void    lay_tochx( lay_tag tag )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_TOCH0:
         hx_l = el_toch0;
         break;

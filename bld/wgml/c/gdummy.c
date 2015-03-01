@@ -59,12 +59,12 @@ void    scr_dummy( void )
 /*  gml_dummy        processing                                            */
 /***************************************************************************/
 
-void    gml_dummy( gml_tag tag )
+void    gml_dummy( gml_tag gtag )
 {
 
     scan_start = scan_stop;
 
-    g_warn( wng_unsupp_tag, gml_tagname( tag ) );
+    g_warn( wng_unsupp_tag, gml_tagname( gtag ) );
     wng_count++;
     file_mac_info();
 }
@@ -73,13 +73,13 @@ void    gml_dummy( gml_tag tag )
 /*  lay_dummy        processing                                            */
 /***************************************************************************/
 
-void    lay_dummy( lay_tag tag )
+void    lay_dummy( lay_tag ltag )
 {
 
     scan_start = scan_stop;
 
     if( GlobalFlags.firstpass ) {       // layout msg only in pass 1
-        g_warn( wng_unsupp_lay, lay_tagname( tag ) );
+        g_warn( wng_unsupp_lay, lay_tagname( ltag ) );
         wng_count++;
         show_include_stack();
     }

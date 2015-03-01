@@ -2062,11 +2062,11 @@ static  void    put_layout( char * in_name, layout_data * lay )
 /*  lay_convert   process :CONVERT tag                                     */
 /***************************************************************************/
 
-void    lay_convert( lay_tag tag )
+void    lay_convert( lay_tag ltag )
 {
     char        *   p;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     scan_start = scan_stop;
 

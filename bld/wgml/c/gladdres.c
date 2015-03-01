@@ -105,7 +105,7 @@ const   lay_att     aline_att[2] =
 /*  lay_address                                                            */
 /***************************************************************************/
 
-void    lay_address( lay_tag tag )
+void    lay_address( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -114,7 +114,7 @@ void    lay_address( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 
@@ -184,7 +184,7 @@ void    lay_address( lay_tag tag )
 /*  lay_aline                                                              */
 /***************************************************************************/
 
-void    lay_aline( lay_tag tag )
+void    lay_aline( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -193,7 +193,7 @@ void    lay_aline( lay_tag tag )
     att_args            l_args;
     bool                cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

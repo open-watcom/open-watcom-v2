@@ -260,7 +260,7 @@ static  void    init_banregion_wk( region_lay_tag * reg )
 /*  lay_banregion                                                          */
 /***************************************************************************/
 
-void    lay_banregion( lay_tag tag )
+void    lay_banregion( lay_tag ltag )
 {
     char        *   p;
     condcode        cc;
@@ -288,7 +288,7 @@ void    lay_banregion( lay_tag tag )
     } else {
         if( !strnicmp( ":banregion", buff2, sizeof( ":banregion" ) ) ) {
             err_count++;
-            g_err( err_nested_tag, lay_tagname( tag ) );
+            g_err( err_nested_tag, lay_tagname( ltag ) );
             file_mac_info();
 
             while( !ProcFlags.reprocess_line  ) {
@@ -400,7 +400,7 @@ static region_lay_tag * find_region( banner_lay_tag * ban )
 /*  lay_ebanregion                                                         */
 /***************************************************************************/
 
-void    lay_ebanregion( lay_tag tag )
+void    lay_ebanregion( lay_tag ltag )
 {
     region_lay_tag  *   reg;
     banner_lay_tag  *   reg_ban;
@@ -505,7 +505,7 @@ void    lay_ebanregion( lay_tag tag )
         }
 
     } else {
-        g_err( err_no_lay, &(lay_tagname( tag )[1]), lay_tagname( tag ) );
+        g_err( err_no_lay, &(lay_tagname( ltag )[1]), lay_tagname( ltag ) );
         err_count++;
         file_mac_info();
     }

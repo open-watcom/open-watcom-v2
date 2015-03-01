@@ -81,7 +81,7 @@ static void prep_title_line( text_line * p_line, const char * p )
 /*  :TITLE tag                                                             */
 /***************************************************************************/
 
-void    gml_title( gml_tag tag )
+void    gml_title( gml_tag gtag )
 {
     char        *   p;
     doc_element *   cur_el;
@@ -91,7 +91,7 @@ void    gml_title( gml_tag tag )
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        g_err( err_tag_wrong_sect, gml_tagname( tag ), ":TITLEP section" );
+        g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
     }

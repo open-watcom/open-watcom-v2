@@ -484,7 +484,7 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
 
             /* Get the data into the local buffer. */
 
-            fread_buff( &uint8_array, 0x100, in_file );
+            fread_buff( uint8_array, 0x100, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
                 mem_free( out_font );
                 out_font = NULL;

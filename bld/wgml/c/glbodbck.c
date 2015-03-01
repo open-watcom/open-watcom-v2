@@ -112,7 +112,7 @@ const   lay_att     backbod_att[10] =
 /*  lay_backbod   for :BACKM and :BODY                                     */
 /***************************************************************************/
 
-void    lay_backbod( lay_tag tag )
+void    lay_backbod( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -130,7 +130,7 @@ void    lay_backbod( lay_tag tag )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_BACKM:
         x_tag = el_backm;
         ap = &layout_work.backm;

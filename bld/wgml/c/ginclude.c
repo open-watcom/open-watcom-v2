@@ -59,11 +59,11 @@
 /*                                                                         */
 /***************************************************************************/
 
-extern  void    gml_include( gml_tag tag )
+extern  void    gml_include( gml_tag gtag )
 {
     char    *   p;
 
-    tag = tag;
+    gtag = gtag;
     p = scan_start;
     p++;
     while( *p == ' ' ) {

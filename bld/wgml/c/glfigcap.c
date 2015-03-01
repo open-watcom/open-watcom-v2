@@ -90,7 +90,7 @@ const   lay_att     figcap_att[6] =
 /*  lay_figcap                                                             */
 /***************************************************************************/
 
-void    lay_figcap( lay_tag tag )
+void    lay_figcap( lay_tag ltag )
 {
     char        *   p;
     condcode        cc;
@@ -99,7 +99,7 @@ void    lay_figcap( lay_tag tag )
     att_args        l_args;
     int             cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

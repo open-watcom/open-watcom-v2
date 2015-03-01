@@ -53,11 +53,11 @@ static  void    end_lp( void )
 /*  :SL, ... common processing                                             */
 /***************************************************************************/
 
-static void gml_xl_lp_common( gml_tag tag, e_tags t )
+static void gml_xl_lp_common( gml_tag gtag, e_tags t )
 {
     char        *   p;
 
-    tag = tag;
+    gtag = gtag;
 
     end_lp();                           // terminate :LP if active
 
@@ -119,7 +119,7 @@ static void gml_xl_lp_common( gml_tag tag, e_tags t )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_dl( gml_tag tag )  // not tested TBD
+void    gml_dl( gml_tag gtag )  // not tested TBD
 {
     char    *   p;
     bool        compact;
@@ -136,7 +136,7 @@ void    gml_dl( gml_tag tag )  // not tested TBD
     } else {
         compact = false;
     }
-    gml_xl_lp_common( tag, t_DL );
+    gml_xl_lp_common( gtag, t_DL );
 
     nest_cb->compact = compact;
 
@@ -171,7 +171,7 @@ void    gml_dl( gml_tag tag )  // not tested TBD
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_gl( gml_tag tag )  // not tested TBD
+void    gml_gl( gml_tag gtag )  // not tested TBD
 {
     char    *   p;
     bool        compact;
@@ -188,7 +188,7 @@ void    gml_gl( gml_tag tag )  // not tested TBD
     } else {
         compact = false;
     }
-    gml_xl_lp_common( tag, t_GL );
+    gml_xl_lp_common( gtag, t_GL );
 
     nest_cb->compact = compact;
 
@@ -219,7 +219,7 @@ void    gml_gl( gml_tag tag )  // not tested TBD
 /*attributes which does not have an attribute value associated with it.    */
 /***************************************************************************/
 
-void    gml_ol( gml_tag tag )
+void    gml_ol( gml_tag gtag )
 {
     char    *   p;
     bool        compact;
@@ -238,7 +238,7 @@ void    gml_ol( gml_tag tag )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
-    gml_xl_lp_common( tag, t_OL );
+    gml_xl_lp_common( gtag, t_OL );
 
     nest_cb->compact = compact;
 
@@ -269,7 +269,7 @@ void    gml_ol( gml_tag tag )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_sl( gml_tag tag )
+void    gml_sl( gml_tag gtag )
 {
     char    *   p;
     bool        compact;
@@ -287,7 +287,7 @@ void    gml_sl( gml_tag tag )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
-    gml_xl_lp_common( tag, t_SL );
+    gml_xl_lp_common( gtag, t_SL );
 
     nest_cb->compact = compact;
 
@@ -320,7 +320,7 @@ void    gml_sl( gml_tag tag )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_ul( gml_tag tag )
+void    gml_ul( gml_tag gtag )
 {
     char    *   p;
     bool        compact;
@@ -338,7 +338,7 @@ void    gml_ul( gml_tag tag )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
-    gml_xl_lp_common( tag, t_UL );
+    gml_xl_lp_common( gtag, t_UL );
 
     nest_cb->compact = compact;
 
@@ -358,12 +358,12 @@ void    gml_ul( gml_tag tag )
 /*  common :eXXX processing                                                */
 /***************************************************************************/
 
-void    gml_exl_common( gml_tag tag, e_tags t )
+void    gml_exl_common( gml_tag gtag, e_tags t )
 {
     char    *   p;
     tag_cb  *   wk;
 
-    tag = tag;
+    gtag = gtag;
     if( nest_cb->c_tag == t_LP ) {      // terminate :LP if active
         end_lp();
     }
@@ -428,54 +428,54 @@ void    gml_exl_common( gml_tag tag, e_tags t )
 /*                                                                         */
 /***************************************************************************/
 
-void    gml_edl( gml_tag tag ) // not tested TBD
+void    gml_edl( gml_tag gtag ) // not tested TBD
 {
     scr_process_break();
     if( nest_cb->c_tag == t_DL ) {
         set_skip_vars( NULL, NULL,
             &((dl_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( tag, t_DL );
+    gml_exl_common( gtag, t_DL );
 }
 
-void    gml_egl( gml_tag tag ) // not tested TBD
+void    gml_egl( gml_tag gtag ) // not tested TBD
 {
     scr_process_break();
     if( nest_cb->c_tag == t_GL ) {
         set_skip_vars( NULL, NULL,
             &((gl_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( tag, t_GL );
+    gml_exl_common( gtag, t_GL );
 }
 
-void    gml_eol( gml_tag tag )
+void    gml_eol( gml_tag gtag )
 {
     scr_process_break();
     if( nest_cb->c_tag == t_OL ) {
         set_skip_vars( NULL, NULL,
             &((ol_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( tag, t_OL );
+    gml_exl_common( gtag, t_OL );
 }
 
-void    gml_esl( gml_tag tag )
+void    gml_esl( gml_tag gtag )
 {
     scr_process_break();
     if( nest_cb->c_tag == t_SL ) {
         set_skip_vars( NULL, NULL,
             &((sl_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( tag, t_SL );
+    gml_exl_common( gtag, t_SL );
 }
 
-void    gml_eul( gml_tag tag )
+void    gml_eul( gml_tag gtag )
 {
     scr_process_break();
     if( nest_cb->c_tag == t_UL ) {
         set_skip_vars( NULL, NULL,
             &((ul_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( tag, t_UL );
+    gml_exl_common( gtag, t_UL );
 }
 
 
@@ -483,14 +483,14 @@ void    gml_eul( gml_tag tag )
 /* :LI within :OL tag                                                      */
 /***************************************************************************/
 
-static  void    gml_li_ol( gml_tag tag )
+static  void    gml_li_ol( gml_tag gtag )
 {
     char        *   p;
     char        *   pn;
     uint32_t        num_len;
     char            charnumber[MAX_L_AS_STR];
 
-    tag = tag;
+    gtag = gtag;
     scan_err = false;
     p = scan_start;
 
@@ -569,11 +569,11 @@ static  void    gml_li_ol( gml_tag tag )
 /* :LI within :SL tag                                                      */
 /***************************************************************************/
 
-static  void    gml_li_sl( gml_tag tag )
+static  void    gml_li_sl( gml_tag gtag )
 {
     char        *   p;
 
-    tag = tag;
+    gtag = gtag;
     scan_err = false;
     p = scan_start;
 
@@ -621,12 +621,12 @@ static  void    gml_li_sl( gml_tag tag )
 /* :LI within :UL tag                                                      */
 /***************************************************************************/
 
-static  void    gml_li_ul( gml_tag tag )
+static  void    gml_li_ul( gml_tag gtag )
 {
     char        *   p;
     char            bullet[3];
 
-    tag = tag;
+    gtag = gtag;
     scan_err = false;
     p = scan_start;
 
@@ -711,7 +711,7 @@ static  void    gml_li_ul( gml_tag tag )
 /*wgml 4.0 does not allow LI inside a DL or GL, but does produce an error   */
 /****************************************************************************/
 
-void    gml_li( gml_tag tag )
+void    gml_li( gml_tag gtag )
 {
     if( nest_cb->c_tag == t_LP ) {      // terminate :LP if active
         end_lp();
@@ -719,20 +719,20 @@ void    gml_li( gml_tag tag )
 
     switch( nest_cb->c_tag ) {
     case t_OL :
-        gml_li_ol( tag );
+        gml_li_ol( gtag );
         break;
     case t_SL :
-        gml_li_sl( tag );
+        gml_li_sl( gtag );
         break;
     case t_UL :
-        gml_li_ul( tag );
+        gml_li_ul( gtag );
         break;
 #if 0
     case t_DL :
-        gml_li_dl( tag );             // error message here?
+        gml_li_dl( gtag );             // error message here?
         break;
     case t_GL :
-        gml_li_gl( tag );             // error message here?
+        gml_li_gl( gtag );             // error message here?
         break;
 #endif
     default:
@@ -746,7 +746,7 @@ void    gml_li( gml_tag tag )
 /* :LP                                                                     */
 /***************************************************************************/
 
-void    gml_lp( gml_tag tag )
+void    gml_lp( gml_tag gtag )
 {
     char        *   p;
     su          *   list_skip_su;
@@ -783,7 +783,7 @@ void    gml_lp( gml_tag tag )
     }
     lp_skip_su = &layout_work.lp.pre_skip;
 
-    gml_xl_lp_common( tag, t_LP );
+    gml_xl_lp_common( gtag, t_LP );
 
     nest_cb->compact = false;
 

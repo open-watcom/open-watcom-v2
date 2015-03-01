@@ -206,7 +206,7 @@ const   lay_att     appendix_att[22] =
 /*  lay_appendix                                                           */
 /***************************************************************************/
 
-void    lay_appendix( lay_tag tag )
+void    lay_appendix( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -215,7 +215,7 @@ void    lay_appendix( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

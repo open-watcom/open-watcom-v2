@@ -125,7 +125,7 @@ const   lay_att     abspref_att[11] =
 /*  lay_abspref   for :ABSTRACT and :PREFACE                               */
 /***************************************************************************/
 
-void    lay_abspref( lay_tag tag )
+void    lay_abspref( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -144,7 +144,7 @@ void    lay_abspref( lay_tag tag )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_ABSTRACT:
         x_tag = el_abstract;
         ap = &layout_work.abstract;

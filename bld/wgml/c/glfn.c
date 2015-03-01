@@ -142,7 +142,7 @@ const   lay_att     fnref_att[3] = { e_font, e_number_style, e_dummy_zero };
 /*  lay_fn                                                                 */
 /***************************************************************************/
 
-void    lay_fn( lay_tag tag )
+void    lay_fn( lay_tag ltag )
 {
     char        *   p;
     condcode        cc;
@@ -151,7 +151,7 @@ void    lay_fn( lay_tag tag )
     att_args        l_args;
     bool            cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 
@@ -229,7 +229,7 @@ void    lay_fn( lay_tag tag )
 /***************************************************************************/
 /*  lay_fnref                                                              */
 /***************************************************************************/
-void    lay_fnref( lay_tag tag )
+void    lay_fnref( lay_tag ltag )
 {
     char        *   p;
     condcode        cc;
@@ -238,7 +238,7 @@ void    lay_fnref( lay_tag tag )
     att_args        l_args;
     int             cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

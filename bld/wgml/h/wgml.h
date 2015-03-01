@@ -279,10 +279,10 @@ extern  char        *get_refid_value( char *p );
 
 
 /* gresrch.c                            */
-extern  void    add_GML_tag_research( char * tag );
+extern  void    add_GML_tag_research( char *gtag );
 extern  void    free_GML_tags_research( void );
 extern  void    print_GML_tags_research( void );
-extern  void    add_SCR_tag_research( char * tag );
+extern  void    add_SCR_tag_research( char *stag );
 extern  void    free_SCR_tags_research( void );
 extern  void    print_SCR_tags_research( void );
 extern  void    add_single_func_research( char * in );
@@ -306,8 +306,8 @@ extern  void    eop_bx_box( void );
 /* gscan.c                              */
 extern  const laytag    *find_lay_tag( char *token, size_t toklen );
 extern  const gmltag    *find_sys_tag( char *token, size_t toklen );
-extern  const char      *lay_tagname( lay_tag tag );
-extern  const char      *gml_tagname( gml_tag tag );
+extern  const char      *lay_tagname( lay_tag ltag );
+extern  const char      *gml_tagname( gml_tag gtag );
 extern  void            scan_line( void );
 extern  void            set_if_then_do( ifcb *cb );
 extern  condcode        test_process( ifcb *cb );
@@ -465,7 +465,7 @@ extern  void    show_include_stack( void );
  * prototypes for the gml tag processing routines
  */
 
-#define pick( name, length, routine, gmlflags, locflags )  extern void routine( gml_tag tag );
+#define pick( name, length, routine, gmlflags, locflags )  extern void routine( gml_tag gtag );
 #include "gtags.h"
 #undef pick
 
@@ -473,7 +473,7 @@ extern  void    show_include_stack( void );
  * prototypes for the layout tag processing routines
  */
 
-#define pick( name, length, routine )  extern void routine( lay_tag tag );
+#define pick( name, length, routine )  extern void routine( lay_tag ltag );
 #include "gtagslay.h"
 #undef pick
 

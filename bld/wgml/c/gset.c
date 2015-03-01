@@ -47,7 +47,7 @@
 /* the symbol referred to by the symbol name is deleted.                   */
 /***************************************************************************/
  
-extern  void    gml_set( gml_tag tag )
+extern  void    gml_set( gml_tag gtag )
 {
     char        *   p;
     char        *   symstart;
@@ -60,7 +60,7 @@ extern  void    gml_set( gml_tag tag )
     int             rc;
     symvar      * * working_dict;
  
-    tag = tag;
+    gtag = gtag;
     subscript = no_subscript;           // not subscripted
     scan_err = false;
  

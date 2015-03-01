@@ -214,7 +214,7 @@ static  void    hx_header( int hx_lvl, const char *hnumstr, const char *txt )
 /*  :H0 - :H6  common processing                                           */
 /***************************************************************************/
 
-static  void    gml_hx_common( gml_tag tag, int hx_lvl )
+static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
 {
     char    *   p;
     char    *   headp;
@@ -231,7 +231,7 @@ static  void    gml_hx_common( gml_tag tag, int hx_lvl )
     static char htextx[8] = "$htextX";
     static char headx[7]  = "$headX";
 
-    tag = tag;
+    gtag = gtag;
 
     *(hxstr + 2) = '0' + hx_lvl;
     htextx[6] = '0' + hx_lvl;
@@ -500,38 +500,38 @@ static  void    gml_hx_common( gml_tag tag, int hx_lvl )
 /******************************************************************************/
 
 
-void    gml_h0( gml_tag tag )
+void    gml_h0( gml_tag gtag )
 {
-    gml_hx_common( tag, 0 );
+    gml_hx_common( gtag, 0 );
 }
 
-void    gml_h1( gml_tag tag )
+void    gml_h1( gml_tag gtag )
 {
-    gml_hx_common( tag, 1 );
+    gml_hx_common( gtag, 1 );
 }
 
-void    gml_h2( gml_tag tag )
+void    gml_h2( gml_tag gtag )
 {
-    gml_hx_common( tag, 2 );
+    gml_hx_common( gtag, 2 );
 }
 
-void    gml_h3( gml_tag tag )
+void    gml_h3( gml_tag gtag )
 {
-    gml_hx_common( tag, 3 );
+    gml_hx_common( gtag, 3 );
 }
 
-void    gml_h4( gml_tag tag )
+void    gml_h4( gml_tag gtag )
 {
-    gml_hx_common( tag, 4 );
+    gml_hx_common( gtag, 4 );
 }
 
-void    gml_h5( gml_tag tag )
+void    gml_h5( gml_tag gtag )
 {
-    gml_hx_common( tag, 5 );
+    gml_hx_common( gtag, 5 );
 }
 
-void    gml_h6( gml_tag tag )
+void    gml_h6( gml_tag gtag )
 {
-    gml_hx_common( tag, 6 );
+    gml_hx_common( gtag, 6 );
 }
 

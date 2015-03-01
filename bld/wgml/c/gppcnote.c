@@ -69,9 +69,9 @@ void    proc_p_pc( p_lay_tag * p_pc )
 /***************************************************************************/
 /*  :P.perhaps paragraph elements                                          */
 /***************************************************************************/
-extern  void    gml_p( gml_tag tag )
+extern  void    gml_p( gml_tag gtag )
 {
-    tag = tag;
+    gtag = gtag;
     proc_p_pc( &layout_work.p );
     ProcFlags.empty_doc_el = true;  // for next break, not this tag's break
 }
@@ -79,23 +79,23 @@ extern  void    gml_p( gml_tag tag )
 /***************************************************************************/
 /*  :PC.perhaps paragraph elements                                         */
 /***************************************************************************/
-extern  void    gml_pc( gml_tag tag )
+extern  void    gml_pc( gml_tag gtag )
 {
-    tag = tag;
+    gtag = gtag;
     proc_p_pc( &layout_work.pc );
 }
 
 /***************************************************************************/
 /*  :NOTE.perhaps paragraph elements                                       */
 /***************************************************************************/
-extern  void    gml_note( gml_tag tag )
+extern  void    gml_note( gml_tag gtag )
 {
     char            *p;
     font_number     font_save;
     text_chars      *marker;
     uint32_t        spc_cnt;
 
-    tag = tag;
+    gtag = gtag;
     scan_err = false;
     p = scan_start;
 

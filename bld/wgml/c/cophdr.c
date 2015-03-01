@@ -98,7 +98,7 @@ cop_file_type parse_header( FILE * in_file )
 
     /* Verify the text_version. */
 
-    fread_buff( &text_version, 0x0b, in_file );
+    fread_buff( text_version, 0x0b, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         return( file_error );
     }

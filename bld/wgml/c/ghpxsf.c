@@ -37,11 +37,11 @@
 /*  :HPx :SF common processing                                             */
 /***************************************************************************/
 
-static void gml_hp_sf_common( gml_tag tag, int level, e_tags t )
+static void gml_hp_sf_common( gml_tag gtag, int level, e_tags t )
 {
     char    *   p;
 
-    tag = tag;
+    gtag = gtag;
 // keep any existing post_space, even if CT follows -- TBD
     if( (input_cbs->fmflags & II_sol) ) {
         ProcFlags.fsp = true;
@@ -91,24 +91,24 @@ static void gml_hp_sf_common( gml_tag tag, int level, e_tags t )
 /* A corresponding :EHPn tag must be specified for each :HPn tag.          */
 /***************************************************************************/
 
-void    gml_hp0( gml_tag tag )
+void    gml_hp0( gml_tag gtag )
 {
-    gml_hp_sf_common( tag, 0, t_HP0 );
+    gml_hp_sf_common( gtag, 0, t_HP0 );
 }
 
-void    gml_hp1( gml_tag tag )
+void    gml_hp1( gml_tag gtag )
 {
-    gml_hp_sf_common( tag, 1, t_HP1 );
+    gml_hp_sf_common( gtag, 1, t_HP1 );
 }
 
-void    gml_hp2( gml_tag tag )
+void    gml_hp2( gml_tag gtag )
 {
-    gml_hp_sf_common( tag, 2, t_HP2 );
+    gml_hp_sf_common( gtag, 2, t_HP2 );
 }
 
-void    gml_hp3( gml_tag tag )
+void    gml_hp3( gml_tag gtag )
 {
-    gml_hp_sf_common( tag, 3, t_HP3 );
+    gml_hp_sf_common( gtag, 3, t_HP3 );
 }
 
 
@@ -116,12 +116,12 @@ void    gml_hp3( gml_tag tag )
 /*  :eHPx :eSF common processing                                           */
 /***************************************************************************/
 
-static  void    gml_ehp_esf_common( gml_tag tag, e_tags t )
+static  void    gml_ehp_esf_common( gml_tag gtag, e_tags t )
 {
     char    *   p;
     tag_cb  *   wk;
 
-    tag = tag;
+    gtag = gtag;
     if( nest_cb->c_tag != t ) {         // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
             g_err_tag_no( str_tags[t + 1] );// no exxx expected
@@ -163,24 +163,24 @@ static  void    gml_ehp_esf_common( gml_tag tag, e_tags t )
 /* Each :ehpn tag must be preceded by a corresponding :hpn tag.            */
 /***************************************************************************/
 
-void    gml_ehp0( gml_tag tag )
+void    gml_ehp0( gml_tag gtag )
 {
-    gml_ehp_esf_common( tag, t_HP0 );
+    gml_ehp_esf_common( gtag, t_HP0 );
 }
 
-void    gml_ehp1( gml_tag tag )
+void    gml_ehp1( gml_tag gtag )
 {
-    gml_ehp_esf_common( tag, t_HP1 );
+    gml_ehp_esf_common( gtag, t_HP1 );
 }
 
-void    gml_ehp2( gml_tag tag )
+void    gml_ehp2( gml_tag gtag )
 {
-    gml_ehp_esf_common( tag, t_HP2 );
+    gml_ehp_esf_common( gtag, t_HP2 );
 }
 
-void    gml_ehp3( gml_tag tag )
+void    gml_ehp3( gml_tag gtag )
 {
-    gml_ehp_esf_common( tag, t_HP3 );
+    gml_ehp_esf_common( gtag, t_HP3 );
 }
 
 /***************************************************************************/
@@ -191,9 +191,9 @@ void    gml_ehp3( gml_tag tag )
 /*   This tag ends the highlighting of phrases started by the last :sf tag */
 /***************************************************************************/
 
-void    gml_esf( gml_tag tag )
+void    gml_esf( gml_tag gtag )
 {
-    gml_ehp_esf_common( tag, t_SF );
+    gml_ehp_esf_common( gtag, t_SF );
 }
 
 
@@ -217,7 +217,7 @@ void    gml_esf( gml_tag tag )
 /*  each :SF tag.                                                          */
 /***************************************************************************/
 
-void    gml_sf( gml_tag tag )
+void    gml_sf( gml_tag gtag )
 {
     char    *   p;
     char    *   pe;
@@ -235,7 +235,7 @@ void    gml_sf( gml_tag tag )
         if( (font < 0) || (font >= wgml_font_cnt) ) {// invalid font use default
             font = 0;
         }
-        gml_hp_sf_common( tag, font, t_SF );
+        gml_hp_sf_common( gtag, font, t_SF );
     } else {
         err_count++;
         // AT-001 Required attribute not found

@@ -312,7 +312,7 @@ typedef enum {
 typedef struct gmltag {
    char             tagname[TAG_NAME_LENGTH + 1];
    size_t           taglen;
-   void             (*gmlproc)( gml_tag tag );
+   void             (*gmlproc)( gml_tag gtag );
    gmlflags         tagflags;
    locflags         taglocs;
 } gmltag;

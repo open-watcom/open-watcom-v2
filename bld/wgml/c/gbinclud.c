@@ -36,7 +36,7 @@
 /*  :BINCLUDE tag                                                          */
 /***************************************************************************/
 
-void    gml_binclude( gml_tag tag )
+void    gml_binclude( gml_tag gtag )
 {
     bool            depth_found             = false;
     bool            file_found              = false;
@@ -52,7 +52,7 @@ void    gml_binclude( gml_tag tag )
 
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
-            xx_tag_err( err_tag_before_gdoc, gml_tagname( tag ) );
+            xx_tag_err( err_tag_before_gdoc, gml_tagname( gtag ) );
             scan_start = scan_stop;
             return;
         }

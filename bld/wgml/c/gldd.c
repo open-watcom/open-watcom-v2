@@ -64,7 +64,7 @@ const   lay_att     dd_att[3] =
 /*  lay_dd                                                                 */
 /***************************************************************************/
 
-void    lay_dd( lay_tag tag )
+void    lay_dd( lay_tag ltag )
 {
     char        *   p;
     condcode        cc;
@@ -73,7 +73,7 @@ void    lay_dd( lay_tag tag )
     att_args        l_args;
     int             cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

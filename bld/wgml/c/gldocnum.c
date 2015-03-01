@@ -44,7 +44,7 @@ const   lay_att     docnum_att[7] =
 /*  lay_docnum                                                             */
 /***************************************************************************/
 
-void    lay_docnum( lay_tag tag )
+void    lay_docnum( lay_tag ltag )
 {
     char                *p;
     condcode            cc;
@@ -53,7 +53,7 @@ void    lay_docnum( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

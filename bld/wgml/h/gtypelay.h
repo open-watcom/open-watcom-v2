@@ -159,7 +159,7 @@ typedef enum case_t {
 typedef struct laytag {
    char             tagname[TAG_NAME_LENGTH + 1];
    size_t           taglen;
-   void             (*layproc)( lay_tag tag );
+   void             (*layproc)( lay_tag ltag );
 } laytag;
 
 /***************************************************************************/

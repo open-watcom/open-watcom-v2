@@ -43,7 +43,7 @@ const   lay_att     tocpgnum_att[3] =
 /*  lay_tocpgnum                                                           */
 /***************************************************************************/
 
-void    lay_tocpgnum( lay_tag tag )
+void    lay_tocpgnum( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -52,7 +52,7 @@ void    lay_tocpgnum( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

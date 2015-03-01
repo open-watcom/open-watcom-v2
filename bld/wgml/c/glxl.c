@@ -525,7 +525,7 @@ const   lay_att     ul_att[13] =
 /*  lay_dl                                                                 */
 /***************************************************************************/
 
-void    lay_dl( lay_tag tag )
+void    lay_dl( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -534,7 +534,7 @@ void    lay_dl( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 
@@ -620,7 +620,7 @@ void    lay_dl( lay_tag tag )
 /*  lay_gl                                                                 */
 /***************************************************************************/
 
-void    lay_gl( lay_tag tag )
+void    lay_gl( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -629,7 +629,7 @@ void    lay_gl( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 
@@ -711,7 +711,7 @@ void    lay_gl( lay_tag tag )
 /*  lay_ol                                                                 */
 /***************************************************************************/
 
-void    lay_ol( lay_tag tag )
+void    lay_ol( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -720,7 +720,7 @@ void    lay_ol( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 
@@ -815,7 +815,7 @@ void    lay_ol( lay_tag tag )
 /*  lay_sl                                                                 */
 /***************************************************************************/
 
-void    lay_sl( lay_tag tag )
+void    lay_sl( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -824,7 +824,7 @@ void    lay_sl( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 
@@ -906,7 +906,7 @@ void    lay_sl( lay_tag tag )
 /*  lay_ul                                                                 */
 /***************************************************************************/
 
-void    lay_ul( lay_tag tag )
+void    lay_ul( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -915,7 +915,7 @@ void    lay_ul( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
     cvterr = false;
 

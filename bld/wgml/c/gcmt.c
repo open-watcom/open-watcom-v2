@@ -40,9 +40,9 @@
 /* point in the GML source                                                 */
 /***************************************************************************/
 
-extern  void    gml_cmt( gml_tag tag )
+extern  void    gml_cmt( gml_tag gtag )
 {
-    tag = tag;
+    gtag = gtag;
     scan_start = scan_stop;
     return;
 }

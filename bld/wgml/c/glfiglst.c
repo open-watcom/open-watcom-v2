@@ -83,7 +83,7 @@ const   lay_att     figlist_att[7] =
 /*  lay_figlist                                                            */
 /***************************************************************************/
 
-void    lay_figlist( lay_tag tag )
+void    lay_figlist( lay_tag ltag )
 {
     char            *   p;
     condcode            cc;
@@ -92,7 +92,7 @@ void    lay_figlist( lay_tag tag )
     att_args            l_args;
     int                 cvterr;
 
-    tag = tag;
+    ltag = ltag;
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {

@@ -43,7 +43,7 @@ const   lay_att     xx_att[2] =
 
 
 
-void    lay_xx( lay_tag tag )
+void    lay_xx( lay_tag ltag )
 {
     char            *p;
     condcode        cc;
@@ -62,7 +62,7 @@ void    lay_xx( lay_tag tag )
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( tag ) {
+    switch( ltag ) {
     case LAY_TAG_CIT:
         x_tag = el_cit;
         fontptr = &layout_work.cit.font;

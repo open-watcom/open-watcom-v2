@@ -976,7 +976,7 @@ bool is_drv_file( FILE * in_file)
 
     /* Get the descriminator. */
 
-    fread_buff( &descriminator, 3, in_file );
+    fread_buff( descriminator, 3, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         return( false );
     }

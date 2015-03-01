@@ -56,7 +56,7 @@
 /*  gml_layout                                                             */
 /***************************************************************************/
  
-void    gml_layout( gml_tag tag )
+void    gml_layout( gml_tag gtag )
 {
     char        *   p;
  
@@ -87,7 +87,7 @@ void    gml_layout( gml_tag tag )
     if( *p == '\0' || *p == '.' ) {
         if( ProcFlags.layout ) {        // nested layout
             err_count++;
-            g_err( err_nested_tag, gml_tagname( tag ) );
+            g_err( err_nested_tag, gml_tagname( gtag ) );
             file_mac_info();
             return;
         }
@@ -106,7 +106,7 @@ void    gml_layout( gml_tag tag )
 /*  lay_elayout     end of layout processing                               */
 /***************************************************************************/
  
-void    lay_elayout( lay_tag tag )
+void    lay_elayout( lay_tag ltag )
 {
     char        *   p;
  
@@ -121,7 +121,7 @@ void    lay_elayout( lay_tag tag )
     if( *p == '\0' || *p == '.' ) {
         if( !ProcFlags.layout ) {       // not in layout processing
             err_count++;
-            g_err( err_no_lay, &(gml_tagname( tag )[1]), gml_tagname( tag ) );
+            g_err( err_no_lay, &(lay_tagname( ltag )[1]), lay_tagname( ltag ) );
             file_mac_info();
             return;
         }

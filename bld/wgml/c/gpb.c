@@ -37,9 +37,9 @@
 /*    try to process as .br                                                */
 /*                                                                         */
 /***************************************************************************/
-extern  void    gml_pb( gml_tag tag )
+extern  void    gml_pb( gml_tag gtag )
 {
-    tag = tag;
+    gtag = gtag;
 
     scan_err = false;
  
