@@ -270,27 +270,27 @@ functions_block *parse_functions_block( const char **current, const char *base )
 unsigned char fread_u8( FILE *in_file )
 {
     unsigned char   u8;
-    fread( &u8, sizeof( u8 ), 1, in_file );
+    fread( &u8, 1, sizeof( u8 ), in_file );
     return( u8 );
 }
 
 unsigned short fread_u16( FILE *in_file )
 {
     uint16_t        u16;
-    fread( &u16, sizeof( u16 ), 1, in_file );
+    fread( &u16, 1, sizeof( u16 ), in_file );
     return( u16 );
 }
 
 unsigned long fread_u32( FILE *in_file )
 {
     uint32_t        u32;
-    fread( &u32, sizeof( u32 ), 1, in_file );
+    fread( &u32, 1, sizeof( u32 ), in_file );
     return( u32 );
 }
 
-void fread_buff( void *buff, size_t len, FILE *in_file )
+size_t fread_buff( void *buff, size_t len, FILE *in_file )
 {
-    fread( buff, len, 1, in_file );
+    return( fread( buff, 1, len, in_file ) );
 }
 
 unsigned char get_u8( const char **buff )

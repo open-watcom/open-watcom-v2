@@ -1012,24 +1012,24 @@ void ob_binclude( binclude_element * in_el )
 #endif
     if( search_file_in_dirs( in_name, "", "", ds_doc_spec ) ) {
         fb_binclude_support( in_el );
-        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+        if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
         }
         buffout.current = 0;
 
         if( in_el->has_rec_type ) {
-            count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
+            count = fread_buff( buffout.text, buffout.length, try_fp );
             while( count == buffout.length ) {
                 buffout.current = count;
-                if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+                if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
                     xx_simple_err_c( err_write_out_file, out_file );
                     count = 0;
                     break;
                 }
-                count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
+                count = fread_buff( buffout.text, buffout.length, try_fp );
             }
             buffout.current = count;
-            if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+            if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
                 xx_simple_err_c( err_write_out_file, out_file );
             }
             if( ferror( try_fp ) ) {
@@ -1037,20 +1037,19 @@ void ob_binclude( binclude_element * in_el )
             }
             buffout.current = 0;
         } else {
-            count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, try_fp );
+            count = fread_buff( binc_buff.text, binc_buff.length, try_fp );
             while( count == binc_buff.length ) {
                 binc_buff.current = count;
                 ob_flush();
-                if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
-                        < binc_buff.current ) {
+                if( fwrite( binc_buff.text, 1, binc_buff.current, out_file_fp ) < binc_buff.current ) {
                     xx_simple_err_c( err_write_out_file, out_file );
                     count = 0;
                     break;
                 }
-                count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, try_fp );
+                count = fread_buff( binc_buff.text, binc_buff.length, try_fp );
             }
             binc_buff.current = count;
-            if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp ) < binc_buff.current ) {
+            if( fwrite( binc_buff.text, 1, binc_buff.current, out_file_fp ) < binc_buff.current ) {
                 xx_simple_err_c( err_write_out_file, out_file );
             }
             if( in_el->depth > 0 ) {
@@ -1074,7 +1073,7 @@ void ob_binclude( binclude_element * in_el )
 
 void ob_direct_out( const char *text )       // used from .oc
 {
-    if( fwrite( text, sizeof( uint8_t ), strlen( text ), out_file_fp ) < strlen( text ) ) {
+    if( fwrite( text, 1, strlen( text ), out_file_fp ) < strlen( text ) ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
@@ -1106,7 +1105,7 @@ void ob_direct_out( const char *text )       // used from .oc
 void ob_flush( void )
 {
 
-    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+    if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
@@ -1171,19 +1170,17 @@ void ob_graphic( graphic_element * in_el )
         buffout.current = strlen( buffout.text );
         ob_flush();
 
-        count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
+        count = fread_buff( buffout.text, buffout.length, try_fp );
         while( count == buffout.length ) {
             buffout.current = count;
-            if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
-                    < buffout.current ) {
+            if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
                 xx_simple_err_c( err_write_out_file, out_file );
                 return;
             }
-            count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
+            count = fread_buff( buffout.text, buffout.length, try_fp );
         }
         buffout.current = count;
-        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
-                < buffout.current ) {
+        if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
             return;
         }

@@ -90,7 +90,7 @@ extern functions_block  *parse_functions_block( const char **position, const cha
 extern unsigned char    fread_u8( FILE *in_file );
 extern unsigned short   fread_u16( FILE *in_file );
 extern unsigned long    fread_u32( FILE *in_file );
-extern void             fread_buff( void *buff, size_t len, FILE *in_file );
+extern size_t           fread_buff( void *buff, size_t len, FILE *in_file );
 extern unsigned char    get_u8( const char **buff );
 extern unsigned short   get_u16( const char **buff );
 extern unsigned long    get_u32( const char **buff );
