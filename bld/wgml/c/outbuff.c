@@ -64,6 +64,7 @@
 #include <string.h>
 
 #include "wgml.h"
+#include "copfunc.h"
 #include "devfuncs.h"
 #include "findfile.h"
 #include "outbuff.h"
