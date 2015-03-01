@@ -173,6 +173,7 @@
 
 #include "wgml.h"
 #include "wio.h"
+#include "copfunc.h"
 #include "devfuncs.h"
 #include "outbuff.h"
 
@@ -327,7 +328,7 @@ static void fb_newline( void )
      * which rely on :NEWLINE blocks.
      */
 
-    if( (desired_units > 0 ) && (desired_lines == 0) ) {
+    if( ( desired_units > 0 ) && ( desired_lines == 0 ) ) {
         internal_err( __FILE__, __LINE__ );
     }
 
@@ -445,7 +446,7 @@ static void output_uscores( text_chars *in_chars )
 
     /* Undersore characters cannot be emitted "backwards". */
 
-    if( current_state.x_address > desired_state.x_address) {
+    if( current_state.x_address > desired_state.x_address ) {
         internal_err( __FILE__, __LINE__ );
     }
 
@@ -1167,23 +1168,19 @@ static void *get_parameters( parameters *in_parameters )
 
     /* Skip the offset1 value. */
 
-    memcpy( &offset, current_df_data.current, sizeof( offset ) );
-    current_df_data.current += sizeof( offset );
+    offset = get_u16( &current_df_data.current );
 
     /* Get the first parameter offset (offset2). */
 
-    memcpy( &in_parameters->first, current_df_data.current, sizeof( in_parameters->first ) );
-    current_df_data.current += sizeof( in_parameters->first );
+    in_parameters->first = get_u16( &current_df_data.current );
 
     /* Get the second parameter offset (offset3). */
 
-    memcpy( &in_parameters->second, current_df_data.current, sizeof( in_parameters->second ) );
-    current_df_data.current += sizeof( in_parameters->second );
+    in_parameters->second = get_u16( &current_df_data.current );
 
     /* Skip the offset4 value. */
 
-    memcpy( &offset, current_df_data.current, sizeof( offset ) );
-    current_df_data.current += sizeof( offset );
+    offset = get_u16( &current_df_data.current );
 
     return( NULL );    
 }
@@ -1209,8 +1206,7 @@ static void *process_parameter( void )
 {
     /* Reset current_df_data for the parameter. */
 
-    memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
-    current_df_data.current += sizeof( current_df_data.df_code );
+    current_df_data.df_code = get_u8( &current_df_data.current );
 
     /* Invoke parameter function. */
 
@@ -1251,13 +1247,12 @@ static void *df_out_text_device( void )
     parameters  my_parameters;
     uint16_t    count;
 
-    switch( current_df_data.parameter_type) {
+    switch( current_df_data.parameter_type ) {
     case 0x00:
 
         /* Character literal parameter. */
-        
-        memcpy( &count, current_df_data.current, sizeof( count ) );
-        current_df_data.current += sizeof( count );
+
+        count = get_u16( &current_df_data.current );
 
         /* Emit parameter byte-by-byte since may contain nulls. */
 
@@ -1305,13 +1300,13 @@ static void out_text_driver( bool out_trans, bool out_text )
     parameters      my_parameters;
     uint16_t        count;
 
-    switch( current_df_data.parameter_type) {
+    switch( current_df_data.parameter_type ) {
     case 0x00:
 
         /* Character literal parameter. */
-        
-        memcpy( &count, current_df_data.current, sizeof( count ) );
-        current_df_data.current += sizeof( count );
+
+        count = get_u16( &current_df_data.current );
+
         ob_insert_block( current_df_data.current, count, out_trans, out_text, active_font );
         break;
 
@@ -1383,8 +1378,7 @@ static void *char_literal( void )
 
     /* Get the count. */
 
-    memcpy( &count, current_df_data.current, sizeof( count ) );
-    current_df_data.current += sizeof( count );
+    count = get_u16( &current_df_data.current );
 
     /* Convert the character literal into a char *. */
 
@@ -1408,7 +1402,8 @@ static void *numeric_literal( void )
 
     /* Get and return the value. */
 
-    memcpy( &value, current_df_data.current, sizeof( value ) );
+    value = get_u16( &current_df_data.current );
+
     return( (void *)(uintptr_t)value );
 }
 
@@ -1653,9 +1648,8 @@ static void skip_functions( void )
      * must be added to current_df_data.base.
      */
 
-    current_function = current_df_data.base;
-    current_function -= 3;
-    memcpy( &current_offset, current_function, sizeof( current_offset ) );
+    current_function = current_df_data.base - 3;
+    current_offset = get_u16( &current_function );
     current_function = current_df_data.base + current_offset;
 
     for( ;; ) {
@@ -1663,19 +1657,16 @@ static void skip_functions( void )
          * the byte before where the parameter block starts, if one is present.
          */
 
-        current_df_data.base = current_function;
-        current_df_data.base += 3;
+        current_df_data.base = current_function + 3;
         current_df_data.current = current_function;
 
         /* Get the offset to the next element in the linked list. */
 
-        memcpy( &current_offset, current_df_data.current, sizeof( current_offset ) );
-        current_df_data.current += sizeof( current_offset );
+        current_offset = get_u16( &current_df_data.current );
 
         /* Get the parameter type for the current device function */
 
-        memcpy( &current_df_data.parameter_type, current_df_data.current, sizeof( current_df_data.parameter_type ) );
-        current_df_data.current += sizeof( current_df_data.parameter_type );
+        current_df_data.parameter_type = get_u8( &current_df_data.current );
 
         /* Either reset current_function to the next list element
          * or exit the loop. If this is the last function, it is either
@@ -1696,8 +1687,7 @@ static void skip_functions( void )
 
         /* Get the function code. */
 
-        memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
-        current_df_data.current += sizeof( current_df_data.df_code );
+        current_df_data.df_code = get_u8( &current_df_data.current );
 
         /* If the function code is for %endif(), exit the loop. */
 
@@ -2347,19 +2337,16 @@ static void interpret_functions( const char *in_function )
          * the byte before where the parameter block starts, if one is present.
          */
 
-        current_df_data.base = current_function;
-        current_df_data.base += 3;
+        current_df_data.base = current_function + 3;
         current_df_data.current = current_function;
 
         /* Get the offset to the next element in the linked list. */
 
-        memcpy( &current_offset, current_df_data.current, sizeof( current_offset ) );
-        current_df_data.current += sizeof( current_offset );
+        current_offset = get_u16( &current_df_data.current );
 
         /* Get the parameter type for the current device function */
 
-        memcpy( &current_df_data.parameter_type, current_df_data.current, sizeof( current_df_data.parameter_type ) );
-        current_df_data.current += sizeof( current_df_data.parameter_type );
+        current_df_data.parameter_type = get_u8( &current_df_data.current );
 
         /* Either reset current_function to the next list element
          * or record that the last function will be done this iteration.
@@ -2373,8 +2360,7 @@ static void interpret_functions( const char *in_function )
 
         /* Get the function code. */
 
-        memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
-        current_df_data.current += sizeof( current_df_data.df_code );
+        current_df_data.df_code = get_u8( &current_df_data.current );
 
         /* This is where the df_code processing occurs. */
 
@@ -2672,7 +2658,7 @@ static void fb_initial_horizontal_positioning( void )
 
         /* Spaces cannot be emitted and tabs cannot be done "backwards". */
 
-        if( current_state.x_address > desired_state.x_address) {
+        if( current_state.x_address > desired_state.x_address ) {
             internal_err( __FILE__, __LINE__ );
         }
 
@@ -2711,7 +2697,7 @@ static void fb_internal_horizontal_positioning( void )
 
     /* Spaces cannot be emitted and tabs cannot be done "backwards". */
 
-    if( current_state.x_address > desired_state.x_address) {
+    if( current_state.x_address > desired_state.x_address ) {
         internal_err( __FILE__, __LINE__ );
     }
 
@@ -3215,7 +3201,7 @@ static void fb_normal_vertical_positioning( void )
 
                 if( ProcFlags.has_aa_block ) {
                     if( at_start ) {
-                        if( wgml_fonts[0].font_style->lineprocs != NULL ) {       
+                        if( wgml_fonts[0].font_style->lineprocs != NULL ) {
 
                             /* Set the value of current_state.y_address and the
                              * value returned by %y_address() to the last line
@@ -3307,7 +3293,7 @@ static void fb_subsequent_text_chars( text_chars *in_chars, line_proc *in_linepr
     /* Initialize desired_state.x_address. */
 
     desired_state.x_address = in_chars->x_address;
-    
+
     /* Since only the :STARTWORD (if present) is interpreted, and since device
      * funtion %textpass() is not allowed in a :STARTWORD block, it cannot be
      * set here. Instead, it retains its setting from the last time a new line
@@ -3465,7 +3451,7 @@ void df_interpret_driver_functions( const char *in_function )
  * will, in fact work. This should be called after the START :PAUSE is
  * interpreted and before the DOCUMENT :PAUSE is interpreted.
  */
- 
+
 void df_populate_device_table( void )
 {
     device_function_table[0x27] = &df_default_width;
@@ -3490,7 +3476,7 @@ void df_populate_device_table( void )
  * virtual %enterfont(0) is performed and before the initial vertical
  * positioning. 
  */
- 
+
 void df_populate_driver_table( void )
 {
     driver_function_table[0x1D] = &df_flushpage;
@@ -3534,7 +3520,7 @@ void df_setup( void )
     if( bin_driver->htab.text != NULL)
         has_htab = true;
 
-    /* Initialize space_chars to hold 80 space characters. */     
+    /* Initialize space_chars to hold 80 space characters. */
 
     space_chars.text = mem_alloc( 80 );
     space_chars.length = 80;
@@ -3542,7 +3528,7 @@ void df_setup( void )
     for( i = 0; i < space_chars.length; i++ )
         space_chars.text[i] = ' ';
 
-    /* Initialize uscore_chars to hold 80 :UNDERSCORE characters. */     
+    /* Initialize uscore_chars to hold 80 :UNDERSCORE characters. */
 
     uscore_char = bin_device->underscore.underscore_char;
     uscore_chars.text = mem_alloc( 80 );
@@ -3569,7 +3555,7 @@ void df_teardown( void )
         mem_free( time_val );
         time_val = NULL;
     }
-    
+
     if( space_chars.text != NULL ) {
         mem_free( space_chars.text);
         space_chars.current = 0;
@@ -3599,7 +3585,7 @@ void fb_absoluteaddress( void )
 {
     df_interpret_driver_functions( bin_driver->absoluteaddress.text );
     current_state.x_address = desired_state.x_address;
-    current_state.y_address = desired_state.y_address;    
+    current_state.y_address = desired_state.y_address;
     return;
 }
 
@@ -3630,7 +3616,7 @@ void fb_binclude_support( binclude_element *in_el )
     if( ProcFlags.ps_device ) {   // always do ABSOLUTEADDRESS block
         y_address = desired_state.y_address;
         fb_initial_horizontal_positioning();
-    } else {            
+    } else {
         if( in_el->depth > 0 ) {    // do nothing when depth == 0
             if( current_state.y_address == desired_state.y_address ) {
                 fb_overprint_vertical_positioning();
@@ -3709,11 +3695,11 @@ void fb_enterfont( void )
         }
     }
 
-    if( wgml_fonts[0].font_style != NULL ) {       
+    if( wgml_fonts[0].font_style != NULL ) {
         if( wgml_fonts[0].font_style->startvalue != NULL ) {
             df_interpret_driver_functions( wgml_fonts[0].font_style->startvalue->text );
         }
-        if( wgml_fonts[0].font_style->lineprocs != NULL ) {       
+        if( wgml_fonts[0].font_style->lineprocs != NULL ) {
             if( wgml_fonts[0].font_style->lineprocs[0].startvalue != NULL ) {
                 df_interpret_driver_functions( wgml_fonts[0].font_style->lineprocs[0].startvalue->text );
             }
@@ -3787,7 +3773,7 @@ void fb_first_text_line_pass( text_line *out_line )
         desired_state.type = current->type;
         if( current_state.font != current->font ) {
             if( wgml_fonts[current->font].font_style != NULL ) {
-                if( wgml_fonts[current->font].font_style->lineprocs == NULL ) {       
+                if( wgml_fonts[current->font].font_style->lineprocs == NULL ) {
                     cur_lineproc = NULL;
                 } else {
                     cur_lineproc = &wgml_fonts[current->font].font_style->lineprocs[0];
@@ -3970,7 +3956,7 @@ void fb_lineproc_endvalue( void )
             }
             post_text_output();
         }
-        if( wgml_fonts[df_font].font_style->lineprocs != NULL ) {       
+        if( wgml_fonts[df_font].font_style->lineprocs != NULL ) {
             if( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue != NULL ) {
                 df_interpret_driver_functions( wgml_fonts[df_font].font_style->lineprocs[line_pass_number].endvalue->text );
             }

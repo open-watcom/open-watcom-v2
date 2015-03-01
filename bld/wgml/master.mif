@@ -30,7 +30,7 @@ res_depends = wgml.res wgmlmsgs.gh wgmlmsge.gh
 
 .c: ../c;../../watcom/c;$(trmem_dir)
 
-extra_c_flags      += -zpw
+#  extra_c_flags      += -zpw
 #  extra_c_flags      += -fti
 #  extra_c_flags      += -pcl
 #extra_c_flags_gsyssym = -P

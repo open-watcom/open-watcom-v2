@@ -687,7 +687,7 @@ bool lay_init_su( const char *p, su *in_su )
 /*  return value is signed as space unit can be relative (+ -)             */
 /***************************************************************************/
 
-int32_t conv_hor_unit( su * s )
+int32_t conv_hor_unit( const su *s )
 {
     int32_t     ds;
 
@@ -715,7 +715,7 @@ int32_t conv_hor_unit( su * s )
     return( ds );
 }
 
-int32_t conv_vert_unit( su *s, spacing_line spacing_ln )
+int32_t conv_vert_unit( const su *s, spacing_line spacing_ln )
 {
     int32_t         ds;
     int32_t         fp;

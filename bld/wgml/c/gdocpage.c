@@ -1106,7 +1106,7 @@ void reset_t_page( void )
 /*  merge the various skips and set the externs appropriately              */
 /***************************************************************************/
 
-void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, spacing_line spacing_ln, font_number font )
+void set_skip_vars( const su *pre_skip, const su *pre_top_skip, const su *post_skip, spacing_line spacing_ln, font_number font )
 {
     int32_t skiptop;
     int32_t skippost;

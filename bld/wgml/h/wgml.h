@@ -124,7 +124,7 @@ extern  void        insert_col_top( doc_element * a_element );
 extern  void        insert_page_width( doc_element * a_element );
 extern  void        last_page_out( void );
 extern  void        reset_t_page( void );
-extern  void        set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, spacing_line spacing_ln, font_number font );
+extern  void        set_skip_vars( const su *pre_skip, const su *pre_top_skip, const su *post_skip, spacing_line spacing_ln, font_number font );
 extern  bool        split_element( doc_element * a_element, spacing_bu req_depth );
 extern  void        text_page_out( void );
 
@@ -417,10 +417,10 @@ extern  bool        process_tag( gtentry * ge, mac_entry * me );
 
 
 /* gutil.c                              */
-extern  bool        att_val_to_su( su * spaceunit, bool pos );
-extern  int32_t     conv_hor_unit( su * spaceunit );
-extern  int32_t     conv_vert_unit( su *spaceunit, spacing_line spacing_ln );
-extern  bool        cw_val_to_su( char * * scaninput, su *spaceunit );
+extern  bool        att_val_to_su( su *spaceunit, bool pos );
+extern  int32_t     conv_hor_unit( const su *spaceunit );
+extern  int32_t     conv_vert_unit( const su *spaceunit, spacing_line spacing_ln );
+extern  bool        cw_val_to_su( char **scaninput, su *spaceunit );
 extern  char        *format_num( uint32_t n, char * r, size_t rsize, num_style ns );
 extern  char        *get_att_value( char * p );
 extern  su          *greater_su( su * su_a, su * su_b, spacing_line spacing_ln );
