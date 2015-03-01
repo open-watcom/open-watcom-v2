@@ -45,11 +45,11 @@ static void prep_docnum_line( text_line * p_line, char * p )
     h_right = g_page_right - conv_hor_unit( &layout_work.docnum.right_adjust );
 
     if( *p ) {
-        curr_t = alloc_text_chars( layout_work.docnum.string, 1 + strlen( p )
-                                   strlen( layout_work.docnum.string ), g_curr_font );
+        curr_t = alloc_text_chars( layout_work.docnum.string,
+            1 + strlen( p ) + strlen( layout_work.docnum.string ), g_curr_font );
     } else {
         curr_t = alloc_text_chars( layout_work.docnum.string,
-                                   1 + strlen( layout_work.docnum.string ), g_curr_font );
+            1 + strlen( layout_work.docnum.string ), g_curr_font );
     }
     if( *p  ) {
         strcat( curr_t->text, p );

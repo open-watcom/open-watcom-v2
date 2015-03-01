@@ -477,15 +477,13 @@ static void update_t_page( void )
             if( (t_page.cur_depth + cur_el->blank_lines) >= t_page.max_depth ) {
                 cur_el->blank_lines -= (t_page.max_depth - t_page.cur_depth);
                 break;
-            } else if( !ProcFlags.page_started && ((t_page.cur_depth
-                        cur_el->blank_lines + cur_el->top_skip) >=
-                        t_page.max_depth) ) {
+            } else if( !ProcFlags.page_started
+              && ((t_page.cur_depth + cur_el->blank_lines + cur_el->top_skip) >= t_page.max_depth) ) {
                 cur_el->top_skip -= (t_page.max_depth - t_page.cur_depth);
                 cur_el->top_skip += cur_el->blank_lines;
                 cur_el->blank_lines = 0;
                 break;
-            } else if( (t_page.cur_depth + cur_el->blank_lines
-                         cur_el->subs_skip) >= t_page.max_depth ) {
+            } else if( (t_page.cur_depth + cur_el->blank_lines + cur_el->subs_skip) >= t_page.max_depth ) {
                 cur_el->blank_lines = 0;
                 break;
             }
@@ -873,15 +871,13 @@ void insert_col_main( doc_element * a_element )
         if( (t_page.cur_depth + a_element->blank_lines) >= t_page.max_depth ) {
             a_element->blank_lines -= (t_page.max_depth - t_page.cur_depth);
             page_full = true;
-        } else if( !ProcFlags.page_started && ((t_page.cur_depth
-                    a_element->blank_lines + a_element->top_skip) >=
-                    t_page.max_depth) ) {
+        } else if( !ProcFlags.page_started
+          && ((t_page.cur_depth + a_element->blank_lines + a_element->top_skip) >= t_page.max_depth) ) {
             a_element->top_skip -= (t_page.max_depth - t_page.cur_depth);
             a_element->top_skip += a_element->blank_lines;
             a_element->blank_lines = 0;
             page_full = true;
-        } else if( (t_page.cur_depth + a_element->blank_lines
-                     a_element->subs_skip) >= t_page.max_depth ) {
+        } else if( (t_page.cur_depth + a_element->blank_lines + a_element->subs_skip) >= t_page.max_depth ) {
             a_element->blank_lines = 0;
             page_full = true;
         }
@@ -928,8 +924,7 @@ void insert_col_main( doc_element * a_element )
 
         depth = cur_skip + a_element->depth;
         if( (depth + t_page.cur_depth) > t_page.max_depth ) {   // a_element fills the page
-            splittable = split_element( a_element, t_page.max_depth -
-                                        t_page.cur_depth - cur_skip );
+            splittable = split_element( a_element, t_page.max_depth - t_page.cur_depth - cur_skip );
             if( a_element->next != NULL ) { // a_element was split
                 if( t_page.main == NULL ) {
                     t_page.main = alloc_doc_col();

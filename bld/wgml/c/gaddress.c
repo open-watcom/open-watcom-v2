@@ -101,8 +101,7 @@ extern  void    gml_eaddress( gml_tag gtag )
 
     ProcFlags.group_elements = false;
     if( t_doc_el_group.first != NULL ) {
-        t_doc_el_group.depth += (t_doc_el_group.first->blank_lines
-                                t_doc_el_group.first->subs_skip);
+        t_doc_el_group.depth += (t_doc_el_group.first->blank_lines + t_doc_el_group.first->subs_skip);
     }
 
     if( (t_doc_el_group.depth + t_page.cur_depth) > t_page.max_depth ) {

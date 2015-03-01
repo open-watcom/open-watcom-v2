@@ -323,8 +323,7 @@ static void box_char_element( doc_element * cur_el ) {
                                 if( cur_chars == cur_text->first ) {    // first text_chars
                                     last_pos = g_page_left;
                                 } else {
-                                    last_pos = cur_chars->prev->x_address
-                                               cur_chars->prev->width;
+                                    last_pos = cur_chars->prev->x_address + cur_chars->prev->width;
                                 }
                                 if( cur_pos < last_pos ) {  // can't use current column
                                     continue;
@@ -335,14 +334,12 @@ static void box_char_element( doc_element * cur_el ) {
                                 while( cur_chars != NULL ) {
                                     if( cur_chars->x_address <= cur_pos ) { // need to check next text_chars
                                         if( cur_chars->next == NULL) {
-                                            last_pos = cur_chars->x_address
-                                                       cur_chars->width;
+                                            last_pos = cur_chars->x_address + cur_chars->width;
                                             cur_chars = cur_chars->next;
                                             break;
                                         } else {
                                             cur_chars = cur_chars->next;
-                                            last_pos = cur_chars->prev->x_address
-                                                       cur_chars->prev->width;
+                                            last_pos = cur_chars->prev->x_address + cur_chars->prev->width;
                                         }
                                         if( cur_pos < last_pos ) { // can't use current column
                                             break;
@@ -579,8 +576,7 @@ static void draw_box_lines( doc_element * h_line_el )
                         sav_top_skip = 0;
                     } else {
                         add_doc_el_to_pool( cur_el );
-                        box_draw_vlines( cur_hline, sav_subs_skip
-                                    sav_blank_lines, sav_top_skip, off_stub );
+                        box_draw_vlines( cur_hline, sav_subs_skip + sav_blank_lines, sav_top_skip, off_stub );
                         if( ProcFlags.vline_done ) {
                             sav_blank_lines = 0;        // skips used, zero saved skips
                             sav_subs_skip = 0;

@@ -536,8 +536,7 @@ static  void    gml_li_ol( gml_tag gtag )
     ProcFlags.keep_left_margin = true;  // keep special Note indent
 
     start_line_with_string( charnumber, g_curr_font, true );
-    g_cur_h_start = g_cur_left
-        conv_hor_unit( &(((ol_lay_tag *)(nest_cb->lay_tag))->align) );
+    g_cur_h_start = g_cur_left + conv_hor_unit( &(((ol_lay_tag *)(nest_cb->lay_tag))->align) );
 
     if( t_line != NULL ) {
         if( t_line->last != NULL ) {
@@ -667,8 +666,7 @@ static  void    gml_li_ul( gml_tag gtag )
     ProcFlags.keep_left_margin = true;  // keep special Note indent
 
     start_line_with_string( bullet, g_curr_font, true );
-    g_cur_h_start = g_cur_left
-        conv_hor_unit( &(((ul_lay_tag *)(nest_cb->lay_tag))->align) );
+    g_cur_h_start = g_cur_left + conv_hor_unit( &(((ul_lay_tag *)(nest_cb->lay_tag))->align) );
 
     if( t_line != NULL ) {
         if( t_line->last != NULL ) {

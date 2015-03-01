@@ -287,8 +287,7 @@ void    scr_tb( void )
                 } else {
                     if( relative && ( i > 0) ) {
                         t_pos.result *= tab_col;
-                        user_tabs.tabs[i].column = user_tabs.tabs[i-1].column
-                                                   t_pos.result;
+                        user_tabs.tabs[i].column = user_tabs.tabs[i-1].column + t_pos.result;
                     } else {
                         t_pos.result --;
                         t_pos.result *= tab_col;
