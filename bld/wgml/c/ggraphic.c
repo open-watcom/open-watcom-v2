@@ -49,9 +49,10 @@ void    gml_graphic( gml_tag gtag )
     uint32_t        depth;
     uint32_t        scale                   = 100;
     // the initial value of width is only correct for one-column pages.
-    uint32_t    width                   = g_net_page_width;
-    int32_t     xoff                    = 0;
-    int32_t     yoff                    = 0;
+    uint32_t        width                   = g_net_page_width;
+    int32_t         xoff                    = 0;
+    int32_t         yoff                    = 0;
+    size_t          len;
 
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
@@ -60,6 +61,7 @@ void    gml_graphic( gml_tag gtag )
             return;
         }
     }
+    len = 0;
     file[0] = '\0';
     rt_buff[0] = '\0';
     p = scan_start;
@@ -89,12 +91,11 @@ void    gml_graphic( gml_tag gtag )
                 break;
             }
             file_found = true;
-            memcpy( file, val_start, val_len );
-            if( val_len < FILENAME_MAX ) {
-                file[val_len] = '\0';
-            } else {
-                file[FILENAME_MAX - 1] = '\0';
-            }
+            len = val_len;
+            if( len >= FILENAME_MAX )
+                len = FILENAME_MAX - 1;
+            memcpy( file, val_start, len );
+            file[len] = '\0';
             split_attr_file( file, rt_buff, sizeof( rt_buff ) );
             if( (rt_buff[0] != '\0') ) {
                 xx_warn( wng_rec_type_graphic );
@@ -241,8 +242,7 @@ void    gml_graphic( gml_tag gtag )
     cur_el->element.graph.xoff = xoff;
     cur_el->element.graph.yoff = yoff;
     ProcFlags.skips_valid = false;
-    strncpy( cur_el->element.graph.file, file, FILENAME_MAX );
-    cur_el->element.graph.file[FILENAME_MAX] = '\0';
+    memcpy( cur_el->element.graph.file, file, len + 1 );
     insert_col_main( cur_el );
 
     if( *p == '.' ) {

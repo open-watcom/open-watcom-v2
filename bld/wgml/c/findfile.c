@@ -287,7 +287,7 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
 
     /* Ensure filename will fit into buff. */
 
-    if( strlen( filename ) == FILENAME_MAX ) {
+    if( strlen( filename ) >= FILENAME_MAX ) {
         xx_simple_err_c( err_file_max, filename );
         return( false );
     }

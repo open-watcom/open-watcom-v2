@@ -1164,7 +1164,7 @@ cop_device * parse_device( FILE * in_file )
     current = raw_functions->buffer;
     cop_functions = parse_functions_block( &current, raw_functions->buffer );
 
-    if( cop_functions->count > 0)
+    if( cop_functions->count > 0 )
         set_cumulative_index( cop_functions );
 
     /* Get the PauseBlock. */

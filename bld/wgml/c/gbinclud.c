@@ -49,6 +49,7 @@ void    gml_binclude( gml_tag gtag )
     doc_element *   cur_el;
     su              depth_su;
     uint32_t        depth;
+    size_t          len;
 
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
@@ -57,6 +58,7 @@ void    gml_binclude( gml_tag gtag )
             return;
         }
     }
+    len = 0;
     file[0] = '\0';
     rt_buff[0] = '\0';
     p = scan_start;
@@ -86,12 +88,11 @@ void    gml_binclude( gml_tag gtag )
                 break;
             }
             file_found = true;
-            memcpy( file, val_start, val_len );
-            if( val_len < FILENAME_MAX ) {
-                file[val_len] = '\0';
-            } else {
-                file[FILENAME_MAX - 1] = '\0';
-            }
+            len = val_len;
+            if( len >= FILENAME_MAX )
+                len = FILENAME_MAX - 1;
+            memcpy( file, val_start, len );
+            file[len] = '\0';
             split_attr_file( file, rt_buff, MAX_FILE_ATTR );
             if( (rt_buff[0] != '\0') ) {
                 has_rec_type = true;
@@ -165,8 +166,7 @@ void    gml_binclude( gml_tag gtag )
     cur_el->element.binc.cur_left = g_cur_h_start;
     cur_el->element.binc.has_rec_type = has_rec_type;
     ProcFlags.skips_valid = false;
-    strncpy( cur_el->element.binc.file, file, FILENAME_MAX );
-    cur_el->element.binc.file[FILENAME_MAX] = '\0';
+    memcpy( cur_el->element.binc.file, file, len + 1 );
     insert_col_main( cur_el );
 
     scan_start = scan_stop;         // skip following text

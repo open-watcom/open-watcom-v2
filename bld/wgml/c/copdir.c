@@ -68,12 +68,13 @@
 
 entry_found get_compact_entry( FILE * in_file, directory_entry * entry )
 {
-    uint8_t count;
+    int count;
 
     /* Get the defined_name_length. */
 
     count = fread_u8( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
 
@@ -83,29 +84,31 @@ entry_found get_compact_entry( FILE * in_file, directory_entry * entry )
 
     /* Get the defined_name. An empty value is allowed; see the Wiki. */
 
-    if( count == 0 ) {
-        entry->defined_name[0] = '\0';
-    } else {
+    if( count > 0 ) {
         fread_buff( entry->defined_name, count, in_file );
-        if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
-        entry->defined_name[count] = '\0';
+        if( ferror( in_file ) || feof( in_file ) ) {
+            return( not_valid_entry );
+        }
     }
+    entry->defined_name[count] = '\0';
 
     /* Get the member_name_length. */
 
     count = fread_u8( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( not_valid_entry );
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
-    if( (count == 0) || ((uint16_t) count > FILENAME_MAX) ) {
+    if( (count == 0) || (count >= FILENAME_MAX) ) {
         return( not_valid_entry );
     }
 
     /* Get the member_name. */
 
     fread_buff( entry->member_name, count, in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( not_valid_entry );
     entry->member_name[count] = '\0';
 
     return( valid_entry );
@@ -134,12 +137,13 @@ entry_found get_compact_entry( FILE * in_file, directory_entry * entry )
 
 entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
 {
-    uint8_t count;
+    int count;
 
     /* Get the defined_name_length. */
 
     count = fread_u8( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
 
@@ -149,40 +153,44 @@ entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
 
     /* Get the defined_name. An empty value is allowed; see the Wiki. */
 
-    if( count == 0 ) {
-        entry->defined_name[0] = '\0';
-    } else {
+    if( count > 0 ) {
         fread_buff( entry->defined_name, count, in_file );
-        if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
-        entry->defined_name[count] = '\0';
+        if( ferror( in_file ) || feof( in_file ) ) {
+            return( not_valid_entry );
+        }
     }
+    entry->defined_name[count] = '\0';
 
     /* Skip the marker. */
 
     fseek( in_file, sizeof( uint16_t ), SEEK_CUR );
-    if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( not_valid_entry );
 
     /* Get the the member_name_length. */
 
     count = fread_u8( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( not_valid_entry );
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
-    if( (count == 0) || ((uint16_t) count > FILENAME_MAX) ) {
+    if( (count == 0) || (count >= FILENAME_MAX) ) {
         return( not_valid_entry );
     }
 
     /* Get the member_name. */
 
     fread_buff( entry->member_name, count, in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( not_valid_entry );
     entry->member_name[count] = '\0';
 
     /* Skip the preview. */
 
     fseek( in_file, sizeof( uint16_t ), SEEK_CUR );
-    if( ferror( in_file ) || feof( in_file ) ) return( valid_entry );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( valid_entry );
 
     return( valid_entry );
 }
