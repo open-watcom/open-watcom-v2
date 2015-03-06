@@ -61,9 +61,11 @@ typedef enum {
     #define pick( name, routine, flags) SCR_TAG_##name,
     #include "gscrcws.h"
     #undef pick
-    SCR_TAG_LABEL,
-    SCR_TAGMAX
+    SCR_TAG_LABEL
 } scr_tag;
+
+#define SCR_TAGMIN SCR_TAG_AD
+#define SCR_TAGMAX (SCR_TAG_LABEL + 1)
 
 static  const   scrtag  scr_tags[] = {
     #define pick( name, routine, flags) { #name, routine, flags },
