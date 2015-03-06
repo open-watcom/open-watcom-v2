@@ -176,7 +176,7 @@ extern  void    xx_simple_err_cc( const msg_ids errid, const char * arg1, const 
 extern  void    xx_tag_err( const msg_ids errid, char const * cw );
 extern  void    xx_warn( const msg_ids errid );
 extern  void    g_err_tag( const char *tagname );
-extern  void    g_err_tag_nest( const char *tagname );
+extern  void    g_err_tag_nest( e_tags c_tag );
 extern  void    g_err_tag_rsloc( locflags inloc, const char *pa );
 extern  void    g_err_tag_no( const char *tagname );
 extern  void    g_err_tag_prec( const char *tagname );

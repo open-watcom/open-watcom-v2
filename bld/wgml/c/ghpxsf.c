@@ -126,7 +126,7 @@ static  void    gml_ehp_esf_common( gml_tag gtag, e_tags t )
         if( nest_cb->c_tag == t_NONE ) {
             g_err_tag_no( str_tags[t + 1] );// no exxx expected
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag ); // exxx expected
         }
     } else {
         wk = nest_cb;

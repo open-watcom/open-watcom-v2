@@ -94,7 +94,7 @@ extern  void    gml_xmp( gml_tag gtag )
         }
     }
     if( ProcFlags.xmp_active ) {        // nested :XMP tag not supported
-        g_err_tag_nest( "eXMP" );
+        g_err_tag_nest( t_XMP );
         scan_start = scan_stop;
         return;
     }

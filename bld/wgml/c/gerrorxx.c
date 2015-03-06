@@ -423,9 +423,9 @@ void    g_err_tag( const char *tag )
     return;
 }
 
-void    g_err_tag_nest( const char *tag )
+void    g_err_tag_nest( e_tags c_tag )
 {
-    g_err_tag_common( tag, 1 );         // nested tag stack display
+    g_err_tag_common( str_tags[c_tag + 1], 1 );         // nested tag stack display
     return;
 }
 
