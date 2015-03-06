@@ -100,6 +100,7 @@ typedef enum gml_tag {
     GML_TAG_NONE
 } gml_tag;
 
+#define GML_TAGMIN GML_TAG_ABSTRACT     // the first one for range check
 #define GML_TAGMAX GML_TAG_NONE         // the last one for range check
 
 typedef uint32_t    line_number;
