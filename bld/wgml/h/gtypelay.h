@@ -42,6 +42,7 @@ typedef enum {
     LAY_TAG_NONE
 } lay_tag;
 
+#define LAY_TAGMIN LAY_TAG_ABSTRACT
 #define LAY_TAGMAX LAY_TAG_NONE
 
 /***************************************************************************/
