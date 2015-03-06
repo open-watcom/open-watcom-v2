@@ -61,9 +61,11 @@ typedef enum {
     #define pick( name, routine, flags) SCR_TAG_##name,
     #include "gscrcws.h"
     #undef pick
-    SCR_TAG_LABEL,
-    SCR_TAGMAX
+    SCR_TAG_LABEL
 } scr_tag;
+
+#define SCR_TAGMIN SCR_TAG_AD
+#define SCR_TAGMAX (SCR_TAG_LABEL + 1)
 
 static  const   scrtag  scr_tags[] = {
     #define pick( name, routine, flags) { #name, routine, flags },
@@ -239,7 +241,7 @@ static void scan_gml( void )
     } else {
         if( ProcFlags.layout ) {        // different tags within :LAYOUT
             lay_tag     ltag;
-            for( ltag = 0; ltag < LAY_TAGMAX; ++ltag ) {
+            for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
                 if( taglen == lay_tags[ltag].taglen && !memcmp( lay_tags[ltag].tagname, tag_name, taglen ) ) {
                     lay_ind = LAY_TAGMAX;   // process tag not attribute
 
@@ -255,7 +257,7 @@ static void scan_gml( void )
             }
             if( !processed ) {          // check for gml only tag in :LAYOUT
                 gml_tag     gtag;
-                for( gtag = 0; gtag < GML_TAGMAX; ++gtag ) {
+                for( gtag = GML_TAGMIN; gtag < GML_TAGMAX; ++gtag ) {
                     if( taglen == gml_tags[gtag].taglen && !memcmp( gml_tags[gtag].tagname, tag_name, taglen ) ) {
                         g_err( err_gml_in_lay, gml_tags[gtag].tagname );
                         err_count++;
@@ -268,7 +270,7 @@ static void scan_gml( void )
             }
         } else {                        // not within :LAYOUT
             gml_tag     gtag;
-            for( gtag = 0; gtag < GML_TAGMAX; ++gtag ) {
+            for( gtag = GML_TAGMIN; gtag < GML_TAGMAX; ++gtag ) {
                 if( taglen == gml_tags[gtag].taglen && !memcmp( gml_tags[gtag].tagname, tag_name, taglen ) ) {
                     if( GlobalFlags.firstpass && gtag == GML_TAG_LAYOUT && ProcFlags.fb_document_done  ) {
                         g_err( err_lay_too_late );
@@ -309,7 +311,7 @@ static void scan_gml( void )
             }
             if( !processed ) {         // check for layout tag in normal text
                 lay_tag     ltag;
-                for( ltag = 0; ltag < LAY_TAGMAX; ++ltag ) {
+                for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
                     if( taglen == lay_tags[ltag].taglen ) {
                         if( !memcmp( lay_tags[ltag].tagname, tag_name, taglen ) ) {
                             g_err( err_lay_in_gml, lay_tags[ltag].tagname );
@@ -495,7 +497,7 @@ static void     scan_script( void )
 
         if( toklen == SCR_KW_LENGTH ) {
             scr_tag stag;
-            for( stag = 0; stag < SCR_TAGMAX; ++stag ) {
+            for( stag = SCR_TAGMIN; stag < SCR_TAGMAX; ++stag ) {
                 if( !memcmp( scr_tags[stag].tagname, token_buf, SCR_KW_LENGTH ) ) {
 #if 0
                     if( !ProcFlags.fb_document_done &&
@@ -842,7 +844,7 @@ gmltag  const   *   find_sys_tag( char * token, size_t toklen )
 {
     gml_tag gtag;
 
-    for( gtag = 0; gtag < GML_TAGMAX; ++gtag ) {
+    for( gtag = GML_TAGMIN; gtag < GML_TAGMAX; ++gtag ) {
         if( toklen == gml_tags[gtag].taglen ) {
             if( !stricmp( gml_tags[gtag].tagname, token ) ) {
                 return( &gml_tags[gtag] );
@@ -864,7 +866,7 @@ laytag  const   *find_lay_tag( char * token, size_t toklen )
 {
     lay_tag ltag;
 
-    for( ltag = 0; ltag < LAY_TAGMAX; ++ltag ) {
+    for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
         if( toklen == lay_tags[ltag].taglen ) {
             if( !stricmp( lay_tags[ltag].tagname, token ) ) {
                 return( &lay_tags[ltag] );
