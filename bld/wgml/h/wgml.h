@@ -230,8 +230,7 @@ extern  int             mem_validate( void );
 
 
 /* gnestut.c                            */
-extern  void            init_nest_cb( void );
-extern  nest_stack  *   copy_to_nest_stack( void );
+extern  void            init_nest_cb( bool copy_stack );
 
 
 /* goptions.c                           */

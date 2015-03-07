@@ -133,9 +133,8 @@ extern  void    gml_xmp( gml_tag gtag )
     g_cur_h_start = g_cur_left;
     ProcFlags.keep_left_margin = true;  // keep special indent
 
+    init_nest_cb( true );
 
-    init_nest_cb();
-    nest_cb->p_stack = copy_to_nest_stack();
     nest_cb->c_tag = t_XMP;
 
     g_spacing_ln = layout_work.xmp.spacing;

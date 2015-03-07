@@ -56,8 +56,7 @@ extern  void    gml_address( gml_tag gtag )
     g_curr_font = layout_work.address.font;
     rs_loc = address_tag;
 
-    init_nest_cb();
-    nest_cb->p_stack = copy_to_nest_stack();
+    init_nest_cb( true );
     nest_cb->c_tag = t_ADDRESS;
 
     g_spacing_ln = layout_work.titlep.spacing;

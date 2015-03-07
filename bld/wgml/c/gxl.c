@@ -61,8 +61,7 @@ static void gml_xl_lp_common( gml_tag gtag, e_tags t )
 
     end_lp();                           // terminate :LP if active
 
-    init_nest_cb();
-    nest_cb->p_stack = copy_to_nest_stack();
+    init_nest_cb( true );
 
     nest_cb->c_tag = t;
 

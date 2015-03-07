@@ -50,8 +50,7 @@ static void gml_hp_sf_common( gml_tag gtag, int level, e_tags t )
         }
     }
 
-    init_nest_cb();
-    nest_cb->p_stack = copy_to_nest_stack();
+    init_nest_cb( true );
 
     if( level >= wgml_font_cnt ) {      // invalid font use default
         level = 0;

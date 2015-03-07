@@ -733,7 +733,7 @@ static  void    init_pass( void )
 //      free_dict( &global_dict );      // free dictionaries
 //      free_macro_dict( &macro_dict );
         free_tag_dict( &tag_dict );
-        init_nest_cb();
+        init_nest_cb( false );
     } else {
         GlobalFlags.firstpass = 1;
     }

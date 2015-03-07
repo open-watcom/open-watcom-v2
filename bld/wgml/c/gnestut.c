@@ -27,55 +27,22 @@
 * Description:  WGML utility functions for nested :sl, :ol, ... and friends
 *
 *               init_nest_cb         alloc + init a tag_cb
-*               copy_to_nest_stack   copy input stack to nest stack
 *
 ****************************************************************************/
 
 #include "wgml.h"
-
-/***************************************************************************/
-/*  alloc and (partially) initialize a nest_cb                             */
-/***************************************************************************/
-
-void init_nest_cb( void )
-{
-    tag_cb  *   wk;
-
-    wk = alloc_tag_cb();
-    memset( wk, 0, sizeof( *wk ) );
-
-    wk->prev = nest_cb;
-    wk->c_tag = t_NONE;
-    wk->p_stack = NULL;
-    wk->lay_tag = NULL;
-
-    if( nest_cb == NULL ) {             // if first one set defaults
-        wk->left_indent  = 0;
-        wk->right_indent = 0;
-        wk->post_skip    = 0;
-        wk->tsize        = 0;
-        wk->termhi       = 0;
-        wk->headhi       = 0;
-        wk->dl_break     = false;
-        wk->compact      = false;
-        wk->font         = g_curr_font;
-    }
-
-    nest_cb = wk;                       // new top of stack
-    return;
-}
 
 
 /***************************************************************************/
 /*  copy input stack to nest stack (called at :tag start)                  */
 /***************************************************************************/
 
-nest_stack * copy_to_nest_stack( void )
+static nest_stack *copy_to_nest_stack( void )
 {
-    nest_stack  *   head;
-    nest_stack  *   nest_p;
-    nest_stack  *   nest_o;
-    inputcb     *   inwk;
+    nest_stack  *head;
+    nest_stack  *nest_p;
+    nest_stack  *nest_o;
+    inputcb     *inwk;
 
     head = NULL;
     for( inwk = input_cbs; inwk != NULL; inwk = inwk->prev ) {
@@ -104,3 +71,38 @@ nest_stack * copy_to_nest_stack( void )
     return( head );
 }
 
+
+/***************************************************************************/
+/*  alloc and (partially) initialize a nest_cb                             */
+/***************************************************************************/
+
+void init_nest_cb( bool copy_stack )
+{
+    tag_cb  *wk;
+
+    wk = alloc_tag_cb();
+    memset( wk, 0, sizeof( *wk ) );
+
+    wk->prev = nest_cb;
+    wk->c_tag = t_NONE;
+    wk->p_stack = NULL;
+    wk->lay_tag = NULL;
+
+    if( nest_cb == NULL ) {             // if first one set defaults
+        wk->left_indent  = 0;
+        wk->right_indent = 0;
+        wk->post_skip    = 0;
+        wk->tsize        = 0;
+        wk->termhi       = 0;
+        wk->headhi       = 0;
+        wk->dl_break     = false;
+        wk->compact      = false;
+        wk->font         = g_curr_font;
+    }
+    if( copy_stack ) {
+        wk->p_stack = copy_to_nest_stack();
+    }
+
+    nest_cb = wk;                       // new top of stack
+    return;
+}
