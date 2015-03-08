@@ -101,10 +101,13 @@ static  int     split_tokens( char *str )
     int             cnt;
     char        *   tokstart;
     bool            linestart;
+    bool            next_linestart;
     size_t          tokl;
     char            quote;
+    bool            skip;
 
     linestart = true;                   // assume start of line
+    next_linestart = false;
     cnt = 0;                            // found tokens
 
     tok = cmd_tokens[level];            // first token at this level
@@ -123,44 +126,46 @@ static  int     split_tokens( char *str )
         if( *str == '"' || *str == '\'' ) {
             quote = *str++;
         } else {
-           quote = '\0';
+            quote = '\0';
         }
         tokstart = str;
-        while( *str ) {
-            if( (quote == '\0' && ((*str == ' ') || (*str == '\t'))) || *str == '\n' ) {
+        skip = false;
+        while( *str != '\0' ) {
+            if( (quote == '\0') && ( (*str == ' ') || (*str == '\t') ) ) {
+                break;
+            }
+            if( *str == '\n' ) {
+                next_linestart = true;
+                skip = true;
                 break;
             }
             if( *str == quote ) {
+                skip = true;
                 break;
             }
             str++;
         }
         cnt++;
         tokl = str - tokstart;
-        if( *str == '\n' ) {
-            linestart =  true;
+        if( tokl != 0 ) {
+            new = mem_alloc( sizeof( *new ) + tokl );
+            new->nxt = NULL;
+            new->bol = linestart;
+            new->toklen = tokl;
+            strncpy( new->token, tokstart, tokl );
+            new->token[tokl] = '\0';
+            if( tok == NULL ) {
+                cmd_tokens[level] = new;
+            } else {
+                tok->nxt = new;
+            }
+            tok = new;
+        }
+        if( skip ) {
             str++;
         }
-        if( quote ) {
-            str++;
-        }
-        if( tokl == 0 ) {
-            continue;
-        }
-
-        new = mem_alloc( sizeof( *new ) + tokl );
-        new->nxt = NULL;
-        new->bol = linestart;
-        linestart = false;
-        new->toklen = tokl;
-        strncpy( new->token, tokstart, tokl );
-        new->token[tokl] = '\0';
-        if( tok == NULL ) {
-            cmd_tokens[level] = new;
-        } else {
-            tok->nxt = new;
-        }
-        tok = new;
+        linestart = next_linestart;
+        next_linestart = false;
     }
     return( cnt );
 }

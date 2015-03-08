@@ -444,7 +444,9 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
 
                     if( member_length < FILENAME_MAX ) {
                         strcpy( primary_file, member_name );
-
+#ifdef __UNIX__
+                        strlwr( primary_file );
+#endif
                         /* Avoid buffer overflow from the extension. */
 
                         if( member_length + 4 < FILENAME_MAX ) {
