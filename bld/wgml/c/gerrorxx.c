@@ -449,11 +449,11 @@ void    g_err_tag_rsloc( locflags inloc, const char *pa )
     return;
 }
 
-void    g_err_tag_no( const char *tag )
+void    g_err_tag_no( e_tags c_tag )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
-    sprintf( tagn, "%c%s", GML_char, tag );
+    sprintf( tagn, "%c%s", GML_char, str_tags[c_tag + 1] );
     g_err( err_tag_not_expected, tagn );
     file_mac_info_nest();
     err_count++;
