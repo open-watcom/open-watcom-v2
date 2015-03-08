@@ -449,7 +449,7 @@ void    g_err_tag_rsloc( locflags inloc, const char *pa )
     return;
 }
 
-void    g_err_tag_no( e_tags c_tag )
+static void g_err_tag_no( e_tags c_tag )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
@@ -458,6 +458,19 @@ void    g_err_tag_no( e_tags c_tag )
     file_mac_info_nest();
     err_count++;
     return;
+}
+
+bool g_err_tag_t_nest( e_tags c_tag )
+{
+    if( nest_cb->c_tag != c_tag ) {             // unexpected exxx tag
+        if( nest_cb->c_tag == t_NONE ) {
+            g_err_tag_no( c_tag );              // no exxx expected
+        } else {
+            g_err_tag_nest( nest_cb->c_tag );   // exxx expected
+        }
+        return( true );
+    }
+    return( false );
 }
 
 void    g_err_tag_prec( const char *tag )

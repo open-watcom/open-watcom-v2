@@ -121,13 +121,7 @@ static  void    gml_ehp_esf_common( gml_tag gtag, e_tags t )
     tag_cb  *   wk;
 
     gtag = gtag;
-    if( nest_cb->c_tag != t ) {         // unexpected exxx tag
-        if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t );          // no exxx expected
-        } else {
-            g_err_tag_nest( nest_cb->c_tag ); // exxx expected
-        }
-    } else {
+    if( !g_err_tag_t_nest( t ) ) {
         wk = nest_cb;
         nest_cb = nest_cb->prev;
         add_tag_cb_to_pool( wk );

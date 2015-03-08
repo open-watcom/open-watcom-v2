@@ -367,13 +367,7 @@ void    gml_exl_common( gml_tag gtag, e_tags t )
         end_lp();
     }
 
-    if( nest_cb->c_tag != t ) {         // unexpected exxx tag
-        if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t );          // no exxx expected, no tag active
-        } else {
-            g_err_tag_nest( nest_cb->c_tag ); // exxx expected
-        }
-    } else {
+    if( !g_err_tag_t_nest( t ) ) {
         g_cur_left = nest_cb->lm;
         g_cur_h_start = nest_cb->lm;
         g_page_right = nest_cb->rm;
