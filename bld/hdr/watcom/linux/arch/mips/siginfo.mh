@@ -7,8 +7,8 @@
 :include clockt.sp
 
 union sigval {
-    int         sigval_int;
-    void        *sigval_ptr;
+    int         sival_int;
+    void        *sival_ptr;
 };
 
 /* Generic definition of siginfo struct borrowed from
