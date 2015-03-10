@@ -242,25 +242,25 @@ static bool CheckWow64( void )
 #endif
 
 
-bool DirParamStack( char **inf_name, char **tmp_path, DIR_PARAM_STACK_OPS function)
+bool DirParamStack( char **inf_name, char **src_path, DIR_PARAM_STACK_OPS function)
 /*********************************************************************************/
 {
     // Not really a stack; stores only one "node"
 
     static char *       old_inf_name = NULL;
-    static char *       old_tmp_path = NULL;
+    static char *       old_src_path = NULL;
 
     if( function == Stack_Push ) {
         // Push values on "stack"
         old_inf_name = *inf_name;
-        old_tmp_path = *tmp_path;
+        old_src_path = *src_path;
 
         *inf_name = GUIMemAlloc( _MAX_PATH );
         if( *inf_name == NULL ) {
             return( false );
         }
-        *tmp_path = GUIMemAlloc( _MAX_PATH );
-        if( *tmp_path == NULL ) {
+        *src_path = GUIMemAlloc( _MAX_PATH );
+        if( *src_path == NULL ) {
             GUIMemFree( *inf_name );
             return( false );
         }
@@ -268,11 +268,11 @@ bool DirParamStack( char **inf_name, char **tmp_path, DIR_PARAM_STACK_OPS functi
     } else if( function == Stack_Pop ) {
         // Pop
         GUIMemFree( *inf_name );
-        GUIMemFree( *tmp_path );
+        GUIMemFree( *src_path );
         *inf_name = old_inf_name;
-        *tmp_path = old_tmp_path;
+        *src_path = old_src_path;
         old_inf_name = NULL;
-        old_tmp_path = NULL;
+        old_src_path = NULL;
         return( true );
     } else {
         // IsEmpty
@@ -285,8 +285,6 @@ bool DoMainLoop( dlg_state * state )
 {
     const char          *diag_list[MAX_DIAGS + 1];
     const char          *diags;
-    const char          *dstdir;
-    int                 dstlen;
     bool                got_disk_sizes = false;
     int                 i;
     char                newdst[_MAX_PATH];
@@ -326,33 +324,19 @@ bool DoMainLoop( dlg_state * state )
                 break;
             }
             if( diag_list[i] == NULL ) {
-                    StatusShow( true );
-                    ret = SetupOperations();
-                    StatusShow( false );
-                    if( ret ) DoDialog( "Finished" );
-                    break;
+                StatusShow( true );
+                ret = SetupOperations();
+                StatusShow( false );
+                if( ret )
+                    DoDialog( "Finished" );
+                break;
             }
         }
         if( stricmp( diag_list[i], "GetDiskSizesHere" ) == 0 ) {
             if( *state == DLG_NEXT ) {
-
-                dstdir = GetVariableStrVal( "DstDir" );
-                dstlen = strlen( dstdir );
-                if( dstlen != 0 &&
-                    (dstdir[dstlen - 1] == '\\' || dstdir[dstlen - 1] == '/') ) {
-                    strcpy( newdst, dstdir );
-                    if( dstlen == 3 && dstdir[1] == ':' ) {
-                        newdst[dstlen] = '.';
-                        newdst[dstlen + 1] = '\0';
-                    } else {
-                        newdst[dstlen - 1] = '\0';
-                    }
-                    SetVariableByName( "DstDir", newdst );
-                }
                 SimSetNeedGetDiskSizes();
                 ResetDiskInfo();
                 got_disk_sizes = true;
-
             }
         } else {
             *state = DoDialog( diag_list[i] );
@@ -367,6 +351,10 @@ bool DoMainLoop( dlg_state * state )
         } else if( *state == DLG_DONE ) {
             CancelSetup = true;
             break;
+        } else if( *state == DLG_NEXT && stricmp( diag_list[i], "DstDir" ) == 0 ) {
+            strcpy( newdst, GetVariableStrVal( "DstDir" ) );
+            RemoveDirSep( newdst );
+            SetVariableByName( "DstDir", newdst );
         }
         if( got_disk_sizes ) {
             if( !CheckDrive( false ) ) {
@@ -407,7 +395,7 @@ void GUImain( void )
     char                *dir;
     char                *drive;
     char                *inf_name;
-    char                *tmp_path;
+    char                *src_path;
     char                *arc_name;
     char                *new_inf;
     char                current_dir[_MAX_PATH];
@@ -427,13 +415,14 @@ void GUImain( void )
     // initialize paths and env. vbls.
 
     if( !SetupPreInit() ) return;
-    if( !GetDirParams( argc, argv, &inf_name, &tmp_path, &arc_name ) ) return;
+    if( !GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) ) return;
     if( !SetupInit() ) return;
     GUIDrainEvents();   // push things along
     FileInit( arc_name );
     InitGlobalVarList();
-    strcpy( current_dir, tmp_path );
-    while( InitInfo( inf_name, tmp_path ) ) {
+    strcpy( current_dir, src_path );
+    ConcatDirSep( current_dir );
+    while( InitInfo( inf_name, src_path ) ) {
 
         ret = DoMainLoop( &state );
 
@@ -444,8 +433,8 @@ void GUImain( void )
 
         // look for another SETUP.INF
         if( GetVariableByName( "SetupPath" ) == NO_VAR ) {
-            if( !DirParamStack( &inf_name, &tmp_path, Stack_IsEmpty ) ) {  // "IsEmpty"?
-                DirParamStack( &inf_name, &tmp_path, Stack_Pop ); // "Pop"
+            if( !DirParamStack( &inf_name, &src_path, Stack_IsEmpty ) ) {  // "IsEmpty"?
+                DirParamStack( &inf_name, &src_path, Stack_Pop ); // "Pop"
                 CloseDownMessage( ret );
                 CancelSetup = false;
                 ret = true;
@@ -456,7 +445,7 @@ void GUImain( void )
         } else {
             if( GetVariableIntVal( "IsMultiInstall" ) ) {
                 // push current script on stack
-                DirParamStack( &inf_name, &tmp_path, Stack_Push ); // "Push"
+                DirParamStack( &inf_name, &src_path, Stack_Push ); // "Push"
             }
             new_inf = GUIMemAlloc( _MAX_PATH );
             drive = GUIMemAlloc( _MAX_DRIVE );
@@ -473,8 +462,10 @@ void GUImain( void )
             _makepath( inf_name, drive, dir, new_inf, NULL );
 
             _splitpath( inf_name, drive, dir, NULL, NULL );
-            _makepath( tmp_path, drive, dir, NULL, NULL );
-//          strcpy( current_dir, tmp_path );
+            _makepath( src_path, drive, dir, NULL, NULL );
+            RemoveDirSep( src_path );
+//            strcpy( current_dir, src_path );
+//            ConcatDirSep( current_dir );
 
             GUIMemFree( new_inf );
             GUIMemFree( drive );
@@ -492,7 +483,7 @@ void GUImain( void )
     FreeGlobalVarList( true );
     FreeDefaultDialogs();
     FreeAllStructs();
-    FreeDirParams( &inf_name, &tmp_path, &arc_name );
+    FreeDirParams( &inf_name, &src_path, &arc_name );
     CloseDownProgram();
 }
 
