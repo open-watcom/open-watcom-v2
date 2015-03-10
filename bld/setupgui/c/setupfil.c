@@ -1037,112 +1037,82 @@ char *ReplaceVars( char *buff, size_t buff_len, const char *src )
 //  and place the result in buffer.
 {
     char                *quest;
-    char                *dst;
-    const char          *e;
+    char                *p;
+    char                *e;
     char                varname[128];
     const char          *varval;
     char                *colon;
     char                *newbuff;
     size_t              len;
-    size_t              dst_len;
-    bool                buff_alloc;
-    char                c;
+    size_t              buff_alloc;
 
+    len = strlen( src );
     if( buff_len == 0 ) {
-        buff_len = strlen( src );
+        buff_len = len;
         buff_alloc = true;
         buff = GUIMemAlloc( buff_len + 1 );
     } else {
         --buff_len;     // reserve place for NULL character
         buff_alloc = false;
     }
-    dst = buff;
-    while( (c = *src++) != '\0' ) {
-        if( c != '%' || *src == '%' ) {
-            if( c == '%' )
-                ++src;
-            dst_len = dst - buff;
-            if( dst_len >= buff_len ) {
-                if( buff_alloc ) {
-                    newbuff = GUIMemRealloc( buff, buff_len * 2 + 1 );
-                    if( newbuff != NULL ) {
-                        dst = newbuff + dst_len;
-                        buff = newbuff;
-                        buff_len *= 2;
-                    } else {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }
-            *dst++ = c;
+    memcpy( buff, src, len + 1 );
+    p = buff;
+    while( *p != '\0' ) {
+        if( *p++ != '%' )
+            continue;
+        if( *p == '%' ) {
+            memmove( p - 1, p, strlen( p ) + 1 );
             continue;
         }
-        e = strchr( src, '%' );
-        if( e != NULL ) {
-            // replace variable by it's value
-            len = e - src;
-            memcpy( varname, src, len );
-            varname[len] = '\0';
-            src = e + 1;
-            for( ;; ) {     // loop for multiple '?' operators
-                quest = strchr( varname, '?' );
-                if( quest != NULL ) {
-                    *quest++ = '\0';
-                }
-                if( stricmp( varname, "root" ) == 0 ) { // kludge?
-                    varval = GetVariableStrVal( "DstDir" );
-                } else if( varname[0] == '@' ) {
-                    varval = getenv( &varname[1] );
+        e = strchr( p, '%' );
+        if( e == NULL )
+            break;
+        len = e - p;
+        memcpy( varname, p, len );
+        varname[len] = '\0';
+        for( ;; ) {     // loop for multiple '?' operators
+            quest = strchr( varname, '?' );
+            if( quest != NULL ) {
+                *quest++ = '\0';
+            }
+            if( stricmp( varname, "root" ) == 0 ) { // kludge?
+                varval = GetVariableStrVal( "DstDir" );
+            } else if( varname[0] == '@' ) {
+                varval = getenv( &varname[1] );
+            } else {
+                varval = GetVariableStrVal( varname );
+            }
+            if( quest == NULL ) {
+                break;  // no '?' operator
+            } else {
+                colon = strchr( quest, ':' );
+                if( GetOptionVarValue( GetVariableByName( varname ), false ) ) {
+                    *colon = '\0';
+                    varval = GetVariableStrVal( quest );
+                    break;
                 } else {
-                    varval = GetVariableStrVal( varname );
-                }
-                if( quest == NULL ) {
-                    break;  // no '?' operator
-                } else {
-                    colon = strchr( quest, ':' );
-                    if( GetOptionVarValue( GetVariableByName( varname ), false ) ) {
-                        *colon = '\0';
-                        varval = GetVariableStrVal( quest );
-                        break;
-                    } else {
-                        strcpy( varname, colon + 1 );
-                        continue;
-                    }
+                    strcpy( varname, colon + 1 );
+                    continue;
                 }
             }
-        } else {
-            // copy rest of src to buffer
-            varval = src - 1;
-            src += strlen( src );
         }
+        --p;
         if( varval != NULL ) {
             len = strlen( varval );
-            dst_len = dst - buff;
-            if( dst_len + len > buff_len ) {
-                if( buff_alloc ) {
-                    newbuff = GUIMemRealloc( buff, buff_len * 2 + 1 );
-                    if( newbuff != NULL ) {
-                        dst = newbuff + dst_len;
-                        buff = newbuff;
-                        buff_len *= 2;
-                    } else {
-                        if( dst_len >= buff_len )
-                            break;
-                        len = buff_len - dst_len;
-                    }
-                } else {
-                    if( dst_len >= buff_len )
-                        break;
-                    len = buff_len - dst_len;
+            if( buff_alloc ) {
+                if( len > e - p ) {
+                    newbuff = GUIMemRealloc( buff, buff_len + len - (e - p) + 1 );
+                    p = newbuff + (p - buff);
+                    e = newbuff + (e - buff);
+                    buff = newbuff;
                 }
             }
-            memcpy( dst, varval, len );
-            dst += len;
+            memmove( p + len, e + 1, strlen( e + 1 ) + 1 );
+            memcpy( p, varval, len );
+        } else {
+            memmove( p, e + 1, strlen( e + 1 ) + 1 );
         }
     }
-    *dst = '\0';
     return( buff );
 }
 
