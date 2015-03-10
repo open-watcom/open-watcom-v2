@@ -52,6 +52,18 @@ extern int FileFini( void )
 }
 
 
+extern int FileIsPlainFS( void )
+{
+    return( 1 );
+}
+
+
+extern int FileIsArchive( void )
+{
+    return( 0 );
+}
+
+
 extern int FileStat( const char *path, struct stat *buf )
 {
     return( stat( path, buf ) );
