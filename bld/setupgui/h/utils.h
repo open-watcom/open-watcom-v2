@@ -63,4 +63,5 @@ extern signed int       IncrementDLLUsageCount( char *path );
 extern signed int       DecrementDLLUsageCount( char *path );
 extern void             ReadVariablesFile( const char * name );
 extern void             ConcatDirSep( char *dir );
+extern void             RemoveDirSep( char *dir );
 extern void             SetupError( const char * );

@@ -109,12 +109,52 @@ void ConcatDirSep( char *dir )
     int     len;
     char    c;
 
-    if( *dir != '\0' ) {
+    if( *dir == '\0' ) {
+        dir[0] = '.';
+        dir[1] = DIR_SEP;
+        dir[2] = '\0';
+    } else {
         len = strlen( dir );
         c = dir[len - 1];
         if( !IS_PATH_SEP( c ) ) {
-            dir[len++] = DIR_SEP;
-            dir[len] = '\0';
+            if( len > 1 && IS_PATH_SEP( dir[len - 2] ) && dir[len - 1] == '.' ) {
+                dir[len - 1] = '\0';
+            } else if( len == 2 && dir[1] == ':' ) {
+                dir[2] = '.';
+                dir[3] = DIR_SEP;
+                dir[4] = '\0';
+            } else {
+                dir[len++] = DIR_SEP;
+                dir[len] = '\0';
+            }
+        }
+    }
+}
+
+void RemoveDirSep( char *dir )
+/****************************/
+{
+    int     len;
+    char    c;
+
+    if( *dir == '\0' ) {
+        dir[0] = '.';
+        dir[1] = '\0';
+    } else {
+        len = strlen( dir );
+        c = dir[len - 1];
+        if( IS_PATH_SEP( c ) ) {
+            if( len == 1 || len == 3 && dir[1] == ':' ) {
+                dir[len++] = '.';
+                dir[len] = '\0';
+            } else {
+                dir[len - 1] = '\0';
+            }
+        } else {
+            if( len == 2 && dir[1] == ':' ) {
+                dir[len++] = '.';
+                dir[len] = '\0';
+            }
         }
     }
 }
@@ -1684,6 +1724,7 @@ static bool DoCopyFiles( void )
     int                 max_files = SimNumFiles();
     int                 len;
     char                *p;
+    char                *p1;
     const char          *cp;
 
 
@@ -1775,6 +1816,14 @@ static bool DoCopyFiles( void )
 
     /* now go ahead and add files */
 
+    if( FileIsPlainFS() ) {
+        strcpy( src_path, GetVariableStrVal( "SrcDir" ) );
+        ConcatDirSep( src_path );
+        p1 = src_path + strlen( src_path );
+    } else {
+        *src_path = '\0';
+        p1 = src_path;
+    }
     for( filenum = 0; filenum < max_files; filenum++ ) {
         if( !SimFileAdd( filenum ) || SimFileUpToDate( filenum ) ) {
             while( split != NULL ) {
@@ -1796,23 +1845,21 @@ static bool DoCopyFiles( void )
 //      _splitpath( file_desc, NULL, NULL, NULL, file_ext );
         _makepath( dst_path, NULL, dir, file_desc, NULL );
 
-        strcpy( src_path, GetVariableStrVal( "SrcDir" ) );
-        ConcatDirSep( src_path );
         cp = GetVariableStrVal( "DstDir" );
         len = strlen( cp );
         if( strncmp( dir, cp, len ) == 0 ) {
             if( dir[len] == DIR_SEP )       // if 1st char to concat is a backslash, skip it
                 len++;
-            strcat( src_path, dir + len );  // get rid of the dest directory, just keep the subdir
+            strcpy( p1, dir + len );  // get rid of the dest directory, just keep the subdir
         } else {
             // use the macro as the directory name   eg: cd_drive:\winsys\filename
             SimTargetDirName( SimDirTargNum( SimFileDirNum( filenum ) ), tmp_path, sizeof( tmp_path ) );
             len = strlen( GetVariableStrVal( tmp_path ) );
-            strcat( src_path, tmp_path );
-            strcat( src_path, dir + len );
+            strcpy( p1, tmp_path );
+            strcat( p1, dir + len );
         }
-        p = src_path + strlen( src_path );
-        strcat( src_path, file_desc );
+        p = p1 + strlen( p1 );
+        strcpy( p, file_desc );
 
         if( StatusCancelled() ) {
             return( false );
@@ -1826,7 +1873,7 @@ static bool DoCopyFiles( void )
                 _makepath( tmp_path, NULL, dir, file_desc, NULL );
 
                 *p = '\0';  // nuke name from end of src_path
-                strcat( src_path, file_desc );
+                strcpy( p, file_desc );
                 StatusLines( STAT_COPYINGFILE, tmp_path );
                 UnPackHook( filenum, subfilenum, tmp_path );
                 copy_error = DoCopyFile( src_path, tmp_path, false );
@@ -2314,9 +2361,8 @@ char *GetSelfWithPath( char *buff, int len, char **argv )
     return( strcpy( buff, argv[0] ) );
 }
 
-bool GetDirParams( int argc, char **argv, char **inf_name, char **tmp_path,
-                          char **arc_name )
-/*************************************************************************/
+bool GetDirParams( int argc, char **argv, char **inf_name, char **src_path, char **arc_name )
+/*******************************************************************************************/
 {
     char                dir[_MAX_DIR];
     char                drive[_MAX_DRIVE];
@@ -2327,8 +2373,8 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **tmp_path,
         return( false );
     }
 
-    *tmp_path = GUIMemAlloc( _MAX_PATH );
-    if( *tmp_path == NULL ) {
+    *src_path = GUIMemAlloc( _MAX_PATH );
+    if( *src_path == NULL ) {
         GUIMemFree( *inf_name );
         return( false );
     }
@@ -2336,7 +2382,7 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **tmp_path,
     *arc_name = GUIMemAlloc( _MAX_PATH );
     if( *arc_name == NULL ) {
         GUIMemFree( *inf_name );
-        GUIMemFree( *tmp_path );
+        GUIMemFree( *src_path );
         return( false );
     }
 
@@ -2436,29 +2482,29 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **tmp_path,
     }
 
     if( i < argc ) {
-        strcpy( *tmp_path, argv[i] );
-        ConcatDirSep( *tmp_path );
+        strcpy( *src_path, argv[i] );
     } else {
         _splitpath( *inf_name, drive, dir, NULL, NULL );
-        _makepath( *tmp_path, drive, dir, NULL, NULL );
+        _makepath( *src_path, drive, dir, NULL, NULL );
     }
+    RemoveDirSep( *src_path );
 
     return( true );
 }
 
 
-bool FreeDirParams( char **inf_name, char **tmp_path, char **arc_name )
+bool FreeDirParams( char **inf_name, char **src_path, char **arc_name )
 /*********************************************************************/
 {
-    if( inf_name == NULL || tmp_path == NULL || arc_name == NULL )
+    if( inf_name == NULL || src_path == NULL || arc_name == NULL )
         return( false );
 
     GUIMemFree( *inf_name );
-    GUIMemFree( *tmp_path );
+    GUIMemFree( *src_path );
     GUIMemFree( *arc_name );
 
     *inf_name = NULL;
-    *tmp_path = NULL;
+    *src_path = NULL;
     *arc_name = NULL;
 
     return( true );
@@ -2516,7 +2562,7 @@ void ReadVariablesFile( const char *name )
     fclose( fp );
 }
 
-bool InitInfo( char *inf_name, char *tmp_path )
+bool InitInfo( char *inf_name, char *src_path )
 /*********************************************/
 // initialize global vbls. and read setup.inf into memory.
 {
@@ -2524,11 +2570,10 @@ bool InitInfo( char *inf_name, char *tmp_path )
     char                drive[_MAX_DRIVE];
     int                 ret;
 
-    SetVariableByName( "SrcDir", tmp_path );
-    DetermineSrcState( tmp_path );
-    SetVariableByName( "SrcDir2", tmp_path );
+    SetVariableByName( "SrcDir", src_path );
+    DetermineSrcState( src_path );
+    SetVariableByName( "SrcDir2", src_path );
     _splitpath( inf_name, drive, dir, NULL, NULL );
-    _makepath( tmp_path, drive, dir, "diskset", "inf" );
 
     ret = SimInit( inf_name );
     if( ret == SIM_INIT_NOERROR ) {
