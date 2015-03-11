@@ -75,7 +75,7 @@ typedef short unsigned  msg_t;  /* Used for message passing         */
 typedef long            nid_t;  /* Used for network IDs             */
 #ifndef _TIMER_T_DEFINED_
 #define _TIMER_T_DEFINED_
- typedef int            timer_t;/* Used for timer IDs               */
+ typedef void *         timer_t;/* Used for timer IDs               */
 #endif
 #ifndef _CLOCKID_T_DEFINED_
 #define _CLOCKID_T_DEFINED_

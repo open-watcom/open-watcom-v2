@@ -298,6 +298,12 @@
 #define SYS_sched_setaffinity   241
 #define SYS_sched_getaffinity   242
 #define SYS_set_thread_area     243
+/* ... */
+#define SYS_timer_create        259
+#define SYS_timer_settime       260
+#define SYS_timer_gettime       261
+#define SYS_timer_getoverrun    262
+#define SYS_timer_delete        263
 
 /*
  * internal sub-numbers for SYS_socketcall

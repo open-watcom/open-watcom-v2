@@ -118,13 +118,13 @@ typedef int clockid_t;              /* clockid type */
 #ifndef __POSIX_TIMERS
 #define __POSIX_TIMERS
 struct timespec {
-    long tv_sec;
+    time_t tv_sec;
     long tv_nsec;
 };
 
 struct itimerspec {
-    struct timespec it_value;
     struct timespec it_interval;
+    struct timespec it_value;
     int             notify_type;            /* Uses native int size */
     int             timer_type;
     long            data;                   /* Used by gettimer only */
@@ -139,7 +139,13 @@ struct itimercb {
 #endif
 
 /*  Clock types */
-#define CLOCK_REALTIME          0
+#define CLOCK_REALTIME                  0
+:segment LINUX
+#define CLOCK_MONOTONIC                 1
+#define CLOCK_PROCESS_CPUTIME_ID        2
+#define CLOCK_THREAD_CPUTIME_ID         3
+#define CLOCK_MONOTONIC_RAW             4
+:endsegment
 
 /* Timer settime flags */
 #define TIMER_ABSTIME           0x0001
@@ -173,8 +179,9 @@ _WCRTLINK extern int qnx_clock( nid_t nid, clockid_t clock_id, struct timespec *
 
 struct sigevent;               /* for C++ */
 
-_WCRTLINK extern timer_t timer_create( clockid_t clock_id, struct sigevent *evp );
+_WCRTLINK extern int     timer_create( clockid_t clock_id, struct sigevent *evp, timer_t *tmr );
 _WCRTLINK extern int     timer_delete( timer_t timerid );
+_WCRTLINK extern int     timer_getoverrun( timer_t timerid );
 _WCRTLINK extern int     timer_gettime( timer_t timerid, struct itimerspec *value );
 _WCRTLINK extern int     timer_settime( timer_t timerid, int flags, struct itimerspec *value, struct itimerspec *ovalue );
 :segment QNX
