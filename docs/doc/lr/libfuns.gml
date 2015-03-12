@@ -1550,7 +1550,12 @@
 .fnc timer_delete               timerdel.gml        QXO
 .fnc timer_gettime              timerget.gml        QXO
 .fnc timer_settime              timerset.gml        QXO
-.fnc times                      times.gml           QXO
+.fnc timer_create               tmrcreat.gml    DOS     W WIN32
+.fnc timer_delete               tmrdel.gml      DOS     W WIN32
+.fnc timer_gettime              tmrget.gml      DOS     W WIN32
+.fnc timer_settime              tmrset.gml      DOS     W WIN32
+.fnc timer_getoverrun           tmrover.gml     DOS     W WIN32
+.fnc times                      times.gml           QX0
 .fnc tmpfile                    tmpfile.gml     DOS QNX W WIN32
 .fnc tmpfile_s                  tmpfil_s.gml    DOS QNX W WIN32
 .fnc tmpnam_s                   tmpnam_s.gml    DOS QNX W WIN32

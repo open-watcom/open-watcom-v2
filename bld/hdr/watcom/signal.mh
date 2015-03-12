@@ -129,6 +129,7 @@ extern int sigaltstack(const stack_t *ss, stack_t *oss);
 struct sigevent {
     int          sigev_signo;
     union sigval sigev_value;
+    int          sigev_notify;
 };
 struct msigevent {
     long         sigev_signo;

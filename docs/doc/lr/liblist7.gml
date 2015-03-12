@@ -1546,10 +1546,11 @@
 .sys tfork QNX32
 .sys tgamma MATH
 .sys time DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
-.sys timer_create QNX16 QNX32
-.sys timer_delete QNX16 QNX32
-.sys timer_gettime QNX16 QNX32
-.sys timer_settime QNX16 QNX32
+.sys timer_create QNX16 QNX32 LNX32
+.sys timer_delete QNX16 QNX32 LNX32
+.sys timer_gettime QNX16 QNX32 LNX32
+.sys timer_settime QNX16 QNX32 LNX32
+.sys timer_getoverrun LNX32
 .sys times QNX16 QNX32 LNX32
 .sys timezone NET32
 .sys tmpfile DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32

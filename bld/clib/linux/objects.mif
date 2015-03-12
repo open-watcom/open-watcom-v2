@@ -91,6 +91,7 @@
 !inject sys_open.obj                                                                            l32 lpc lmp
 !inject sysmips.obj                                                                                     lmp
 !inject time.obj                                                                                l32 lpc lmp
+!inject timer.obj                                                                               l32 lpc lmp
 !inject times.obj                                                                               l32 lpc lmp
 !inject truncate.obj                                                                            l32 lpc lmp
 !inject umask.obj                                                                               l32 lpc lmp
