@@ -33,7 +33,9 @@
 
 #include "guimem.h"
 
-typedef int gui_ord;
+typedef int         gui_ord;
+
+typedef unsigned    gui_ctl_id;
 
 #define GUI_LAST_INTERNAL_MSG 255
 
