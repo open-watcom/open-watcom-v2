@@ -165,9 +165,14 @@ struct itimercb {
 #define _TICKSIZE_EXTERNAL      2
 
 _WCRTLINK extern int clock_gettime( clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int clock_settime( clockid_t clock_id, struct timespec *tp );
 _WCRTLINK extern int clock_getres( clockid_t clock_id, struct timespec *res );
+:segment LINUX
+_WCRTLINK extern int clock_settime( clockid_t clock_id, const struct timespec *tp );
+_WCRTLINK extern int clock_nanosleep( clockid_t clock_id, int flags, const struct timespec *req, struct timespec *rmdr );
+:endsegment
+
 :segment QNX
+_WCRTLINK extern int clock_settime( clockid_t clock_id, struct timespec *tp );
 _WCRTLINK extern int clock_setres( clockid_t clock_id, struct timespec *res );
 
 :include ext.sp

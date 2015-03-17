@@ -304,6 +304,10 @@
 #define SYS_timer_gettime       261
 #define SYS_timer_getoverrun    262
 #define SYS_timer_delete        263
+#define SYS_clock_settime       264
+#define SYS_clock_gettime       265
+#define SYS_clock_getres        266
+#define SYS_clock_nanosleep     267
 
 /*
  * internal sub-numbers for SYS_socketcall

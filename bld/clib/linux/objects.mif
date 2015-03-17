@@ -8,6 +8,10 @@
 !inject chmod.obj                                                                               l32 lpc lmp
 !inject chown.obj                                                                               l32 lpc lmp
 !inject chroot.obj                                                                              l32 lpc lmp
+!inject clkget.obj                                                                              l32 lpc lmp
+!inject clkset.obj                                                                              l32 lpc lmp
+!inject clkres.obj                                                                              l32 lpc lmp
+!inject clkns.obj                                                                               l32 lpc lmp
 !inject clone.obj                                                                               l32 lpc lmp
 !inject close.obj                                                                               l32 lpc lmp
 !inject dup.obj                                                                                 l32 lpc lmp
