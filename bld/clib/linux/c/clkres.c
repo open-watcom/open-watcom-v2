@@ -36,7 +36,7 @@
 #include <errno.h>
 #include "linuxsys.h"
 
-_WCRTLINK int clock_gettime( clockid_t __clk, struct timespec *__ts)
+_WCRTLINK int clock_getres( clockid_t __clk, struct timespec *__ts)
 {
     u_long ures;
     long res;
