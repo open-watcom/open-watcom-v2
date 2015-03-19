@@ -562,36 +562,38 @@ typedef struct gui_end_session {
     bool        logoff;
 } gui_end_session;
 
+#if defined( _WIN64 )
+typedef unsigned __int64    gui_timer_id;
+#else
+typedef unsigned long       gui_timer_id;
+#endif
+
 typedef struct gui_timer_event {
-    int id;
+    gui_timer_id    id;
 } gui_timer_event;
 
-#define GUI_GET_TIMER( param, i ) { \
-                                i = ((gui_timer_event *)param)->id; \
-                            }
+#define GUI_GET_TIMER( param, i ) ( i = ((gui_timer_event *)param)->id )
 
-#define GUI_GET_BOOL( param, b ) {                                          \
-                                b = ((gui_end_session *)param)->endsession; \
-                            }
+#define GUI_GET_BOOL( param, b )  ( b = *(bool *)param )
 
 #define GUI_GET_ENDSESSION( param, b, l ) {                                 \
                                 b = ((gui_end_session *)param)->endsession; \
                                 l = ((gui_end_session *)param)->logoff;     \
                             }
 
-#define GUI_GET_POINT( param, point ) ( point = *( gui_point * )param )
+#define GUI_GET_POINT( param, point ) ( point = *(gui_point *)param )
 
 #define GUI_GET_ROWS( param, gui_start, gui_num ) {                          \
-                                gui_start = (( gui_row_num * )param)->start; \
-                                gui_num =   (( gui_row_num * )param)->num;   \
+                                gui_start = ((gui_row_num *)param)->start; \
+                                gui_num =   ((gui_row_num *)param)->num;   \
                                                    }
 
-#define GUI_GETID( param, id ) ( id = ( unsigned short )(*( unsigned * )param ) )
+#define GUI_GETID( param, id ) ( id = (unsigned short)(*(unsigned *)param ) )
 
-#define GUI_GET_SIZE( param, size ) { size.x = (( gui_coord * )param)->x; \
-                                      size.y = (( gui_coord * )param)->y; }
+#define GUI_GET_SIZE( param, size ) { size.x = ((gui_coord *)param)->x; \
+                                      size.y = ((gui_coord *)param)->y; }
 
-#define GUI_GET_SCROLL( param, scroll ) ( scroll = *( int * )param )
+#define GUI_GET_SCROLL( param, scroll ) ( scroll = *(int *)param )
 
 /* Initialization Functions */
 
@@ -975,9 +977,12 @@ void GUIHookF1( void );
 void GUIUnHookF1( void );
 
 /* DBCS functions */
-extern int GUICharLen( int );
+extern int  GUICharLen( int );
 
-bool GUIIsFirstInstance( void );
+extern bool GUIIsFirstInstance( void );
 
-void GUIHookFileDlg( bool hook );
+extern void GUIHookFileDlg( bool hook );
+
+/* include from the app */
+extern void GUITimer( void );
 

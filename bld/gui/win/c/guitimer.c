@@ -33,14 +33,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "guixutil.h"
-
-/* include from the app */
-extern void GUITimer( void );
+#include "guitimer.h"
 
 #if defined(__NT__)
 VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime )
 {
-    gui_window *wnd;
+    gui_window      *wnd;
     gui_timer_event timer;
 
     uMsg = uMsg; dwTime = dwTime;
@@ -53,19 +51,19 @@ VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime
     }
 }
 
-void GUIStartTimer( gui_window *wnd, int id, int msec )
+void GUIStartTimer( gui_window *wnd, gui_timer_id id, int msec )
 {
-    if( wnd )
+    if( wnd != NULL )
         SetTimer( wnd->hwnd, id, (UINT)msec, GUITimerProc );
     else
-        SetTimer( 0, id, (UINT)msec, GUITimerProc );
+        SetTimer( NULL, id, (UINT)msec, GUITimerProc );
 }
 
-void GUIStopTimer( gui_window *wnd, int id )
+void GUIStopTimer( gui_window *wnd, gui_timer_id id )
 {
-    if( wnd )
+    if( wnd != NULL )
         KillTimer( wnd->hwnd, id );
     else
-        KillTimer( 0, id );
+        KillTimer( NULL, id );
 }
 #endif

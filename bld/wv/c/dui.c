@@ -118,32 +118,37 @@ extern unsigned         ConfigScreen( void );
 
 #define TIMER_MS        250
 
+#if defined( __NT__ ) && defined( __GUI__ )
+
+#include "guitimer.h"
+
+#define TIMER_ID        200
+
 void GUITimer( void )
 {
     AsyncNotify();
     RunThreadNotify();
 }
 
-#if defined( __NT__ ) && defined( __GUI__ )
-
-#define TIMER_ID        200
-
-extern void GUIStartTimer( gui_window *wnd, int id, int msec );
-extern void GUIStopTimer( gui_window *wnd, int id );
-
 static void StartTimer( void )
 {
-    GUIStartTimer( 0, TIMER_ID, TIMER_MS );
+    GUIStartTimer( NULL, TIMER_ID, TIMER_MS );
 }
 
 static void StopTimer( void )
 {
-    GUIStopTimer( 0, TIMER_ID );
+    GUIStopTimer( NULL, TIMER_ID );
 }
 
 #elif defined( __RDOS__ )
 
-extern void uitimer( void ( *proc )(), int ms );
+extern void uitimer( void (*proc)( void ), int ms );
+
+void GUITimer( void )
+{
+    AsyncNotify();
+    RunThreadNotify();
+}
 
 static void StartTimer( void )
 {
@@ -152,7 +157,7 @@ static void StartTimer( void )
 
 static void StopTimer( void )
 {
-    uitimer( 0, 0 );
+    uitimer( NULL, 0 );
 }
 
 #else
