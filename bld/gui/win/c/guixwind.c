@@ -1066,15 +1066,17 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         }
         break;
 #ifndef __OS2_PM__
-    case WM_ACTIVATEAPP :
-        root = GUIGetRootWindow();
-        ActivateNC( root, ( wparam != 0 ) );
-        if( GUICurrWnd != NULL ) {
-            ActivateNC( GUICurrWnd, ( wparam != 0 ) );
+    case WM_ACTIVATEAPP : {
+            bool activate = ( wparam != 0 );
+            root = GUIGetRootWindow();
+            ActivateNC( root, activate );
+            if( GUICurrWnd != NULL ) {
+                ActivateNC( GUICurrWnd, activate );
+            }
+            if( root != NULL ) {
+                GUIEVENTWND( root, GUI_ACTIVATEAPP, &activate );
+            }
         }
-        use_defproc = (bool)wparam; // I'm cheating and using 'use_defproc'
-                                    // outside of its self-documented purpose
-        if( root ) GUIEVENTWND( root, GUI_ACTIVATEAPP, &use_defproc );
         use_defproc = true;
         break;
 #if 0

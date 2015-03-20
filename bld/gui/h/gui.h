@@ -535,8 +535,8 @@ typedef enum {
  **************************************************************
  * GUI_PAINT : 2 parameters - gui_ord, int : GUI_GET_ROWS
  **************************************************************
- * GUI_ENDSESSION : historical 1 parameter - bool : GUI_GET_BOOL
- * GUI_QUERYENDSESSION : 2 parameters - bool, long : GUI_GET_ENDSESSION
+ * GUI_ENDSESSION :
+ * GUI_QUERYENDSESSION : 2 parameters - bool, bool : GUI_GET_ENDSESSION
  **************************************************************
  * GUI_CONTROL_NOT_ACTIVE :
  * GUI_CLICKED :
@@ -547,6 +547,9 @@ typedef enum {
  **************************************************************
  * GUI_SCROLL_VERTICAL :
  * GUI_SCROLL_HORIZONTAL : 1 parametr - int : GUI_GET_SCROLL
+ **************************************************************
+ * GUI_ACTIVATEAPP :
+ * GUI_CONTEXTHELP : 1 parametr - bool : GUI_GET_BOOL
  **************************************************************
  *
  *
