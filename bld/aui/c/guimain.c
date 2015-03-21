@@ -484,9 +484,10 @@ static void DoMainEventProc( spawn_parms *spawnp )
         break;
     case GUI_ENDSESSION:
         {
-            bool            endsession;
+            bool    endsession;
+            bool    dummy;
 
-            GUI_GET_BOOL( parm, endsession );
+            GUI_GET_ENDSESSION( parm, endsession, dummy );
             if( endsession ) {
                 WndEndSessionHook();
             }

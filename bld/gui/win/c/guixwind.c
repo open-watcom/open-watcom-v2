@@ -1292,16 +1292,16 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     case WM_ENDSESSION : {
         gui_end_session     es;
 
-        es.endsession = (bool)wparam;
-        es.logoff = (bool)( lparam == 0x80000000L );
+        es.endsession = ( wparam != 0 );
+        es.logoff = ( lparam == 0x80000000L );
         GUIEVENTWND( wnd, GUI_ENDSESSION, &es );
         return( 0L );
     }
     case WM_QUERYENDSESSION : {
         gui_end_session     es;
 
-        es.endsession = (bool)wparam;
-        es.logoff = (bool)( lparam == 0x80000000L ); // ENDSESSION_LOGOFF
+        es.endsession = ( wparam != 0 );
+        es.logoff = ( lparam == 0x80000000L );  // ENDSESSION_LOGOFF
         if( !GUIEVENTWND( wnd, GUI_QUERYENDSESSION, &es ) ) {
             return( true );
         }
@@ -1404,10 +1404,13 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     if( wnd != NULL ) {
         switch( msg ) {
 
-        case WM_SAVEAPPLICATION:
-            call_def = true; // I'm cheating and using 'call_def'
-                             // outside of its self-documented purpose
-            GUIEVENTWND( wnd, GUI_ENDSESSION, &call_def );
+        case WM_SAVEAPPLICATION: {
+                gui_end_session     es;
+
+                es.endsession = true;
+                es.logoff = false;
+                GUIEVENTWND( wnd, GUI_ENDSESSION, &es );
+            }
             return( 0L );
 
         case WM_TRANSLATEACCEL:  {
