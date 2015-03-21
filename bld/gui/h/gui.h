@@ -353,7 +353,7 @@ typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, unsigned id, void *param );
 typedef void (PICKCALLBACK)( gui_window *, unsigned id );
 typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
-                             struct gui_control_info *controls_info, int num_controls,
+                             gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *rtn, void *extra );
 typedef const char *(PICKGETTEXT)( const void *data_handle, int item );
 
@@ -793,15 +793,15 @@ extern bool GUIInsertMenuToPopup( gui_window *wnd, unsigned id, int offset, gui_
 
 extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
                                    gui_ord height, int num_items,
-                                   gui_toolbar_struct *toolbar, bool excl,
+                                   gui_toolbar_struct *toolinfo, bool excl,
                                    gui_colour_set *plain,
                                    gui_colour_set *standout, gui_rect *rect );
 extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                              int num_items, gui_toolbar_struct *toolbar,
+                              int num_items, gui_toolbar_struct *toolinfo,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout );
 extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                      int num_items, gui_toolbar_struct *toolbar,
+                                      int num_items, gui_toolbar_struct *toolinfo,
                                       bool excl, gui_colour_set *plain,
                                       gui_colour_set *standout );
 extern bool GUICloseToolBar( gui_window *wnd );

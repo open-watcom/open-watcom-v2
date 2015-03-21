@@ -35,7 +35,7 @@
 #include "dlgstat.h"
 #include "dlgtest.h"
 
-bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param );
+GUICALLBACK TestDialogEventWnd;
 
 static gui_create_info DialogControl = {
     "Test Dialog Box",                  // Title

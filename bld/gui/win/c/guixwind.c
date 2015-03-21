@@ -1264,8 +1264,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         break;
 #ifdef __OS2_PM__
     case WM_CONTROL :
-        GUIProcessControlNotification( SHORT1FROMMP(wparam),
-                                       SHORT2FROMMP(wparam), wnd );
+        GUIProcessControlNotification( SHORT1FROMMP( wparam ), SHORT2FROMMP( wparam ), wnd );
         break;
 #else
     case WM_PARENTNOTIFY:

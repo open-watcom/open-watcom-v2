@@ -246,9 +246,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
                 return( true );
             }
             param = _wpi_getid( wparam );
-            if( _wpi_ismenucommand( wparam, lparam ) &&
-                ( param >= GUI_MDI_MENU_FIRST ) &&
-                ( param <= GUI_MDI_MENU_LAST ) ) {
+            if( _wpi_ismenucommand( wparam, lparam ) && IS_MDIMENU( param ) ) {
                 switch( param ) {
                 case GUI_MDI_CASCADE :
                     MDICascade();
@@ -268,8 +266,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
                     GUIMDIMoreWindows();
                     break;
                 default :
-                    if( ( param >= GUI_MDI_FIRST_WINDOW ) &&
-                        ( param <= GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS ) ) {
+                    if( IS_MDIWIN( param ) ) {
                         /* window selected */
                         GUIMDIBringToFront( GUIMDIGetWindow( param ) );
                     }

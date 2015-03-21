@@ -87,17 +87,17 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
-            case CANCEL :
-                GUICloseDialog( gui );
-                info->ret_val = GUI_RET_CANCEL;
-                break;
-            case OK :
-                info->text = GUIGetText( gui, EDIT );
-                GUICloseDialog( gui );
-                info->ret_val = GUI_RET_OK;
-                break;
-            default :
-                break;
+        case CANCEL :
+            GUICloseDialog( gui );
+            info->ret_val = GUI_RET_CANCEL;
+            break;
+        case OK :
+            info->text = GUIGetText( gui, EDIT );
+            GUICloseDialog( gui );
+            info->ret_val = GUI_RET_OK;
+            break;
+        default :
+            break;
         }
         break;
     default :

@@ -34,25 +34,25 @@
 #include "guixutil.h"
 #include "guixdlg.h"
 
-unsigned GUIIsChecked( gui_window *wnd, unsigned control )
+unsigned GUIIsChecked( gui_window *wnd, unsigned id )
 {
     unsigned    ret;
 
     ret = (unsigned)
-        GUISendDlgItemMessage( wnd->hwnd, control, BM_GETCHECK,
+        GUISendDlgItemMessage( wnd->hwnd, id, BM_GETCHECK,
                                (WPI_PARAM1)NULL, (WPI_PARAM2)NULL );
 
     return( ret & 0x3 );
 }
 
-bool GUISetChecked( gui_window *wnd, unsigned control, unsigned check )
+bool GUISetChecked( gui_window *wnd, unsigned id, unsigned check )
 {
     if( ( check == GUI_CHECKED ) && !( wnd->flags & IS_RES_DIALOG ) ) {
-        if( GUIIsChecked( wnd, control ) != GUI_CHECKED ) {
-            return( GUIProcessControlNotification( control, BN_CLICKED, wnd ) );
+        if( GUIIsChecked( wnd, id ) != GUI_CHECKED ) {
+            return( GUIProcessControlNotification( id, BN_CLICKED, wnd ) );
         }
     } else {
-        GUISendDlgItemMessage( wnd->hwnd, control, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)NULL );
+        GUISendDlgItemMessage( wnd->hwnd, id, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)NULL );
     }
 
     return( true );

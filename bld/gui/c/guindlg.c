@@ -127,7 +127,7 @@ static void GetHalfAndAdjust( gui_coord *charuse,
     }
 }
 
-static void DlgSetCtlSizes( gui_control_info *control,
+static void DlgSetCtlSizes( gui_control_info *controls_info,
                             int num, gui_coord *charuse, gui_coord *charspace )
 {
     gui_coord   half;
@@ -137,36 +137,36 @@ static void DlgSetCtlSizes( gui_control_info *control,
     charspace=charspace;
     GetHalfAndAdjust( charuse, &half, &char_ui_adjust );
     while( --num >= 0 ) {
-        if( DlgRelocNum( &control->rect.x, 1, charuse ) ) {
-            control->rect.x += half.x;
+        if( DlgRelocNum( &controls_info->rect.x, 1, charuse ) ) {
+            controls_info->rect.x += half.x;
         }
-        if( DlgRelocNum( &control->rect.y, 0, charuse ) ) {
-            control->rect.y += half.y + char_ui_adjust;
+        if( DlgRelocNum( &controls_info->rect.y, 0, charuse ) ) {
+            controls_info->rect.y += half.y + char_ui_adjust;
         }
         reloc = false;
-        if( DlgRelocNum( &control->rect.width, 0, charuse ) ) {
+        if( DlgRelocNum( &controls_info->rect.width, 0, charuse ) ) {
             reloc = true;
         }
-        if( DlgRelocNum( &control->rect.height, 0, charuse ) ) {
+        if( DlgRelocNum( &controls_info->rect.height, 0, charuse ) ) {
             reloc = true;
         }
         if( reloc ) {
-            switch( control->control_class ) {
+            switch( controls_info->control_class ) {
 #ifdef __OS2_PM__
             // brutal hack to get OS/2 and Windows dialogs to look the same.
             case GUI_EDIT:
-                control->rect.height = charspace->y;
+                controls_info->rect.height = charspace->y;
                 break;
 #endif
             case GUI_GROUPBOX:
-                control->rect.width -= half.x;
-                control->rect.height -= half.y;
+                controls_info->rect.width -= half.x;
+                controls_info->rect.height -= half.y;
                 break;
             default :
                 break;
             }
         }
-        ++control;
+        ++controls_info;
     }
 }
 

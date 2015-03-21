@@ -34,48 +34,48 @@
 
 extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
                                    gui_ord height, int num_items,
-                                   gui_toolbar_struct *toolbar, bool excl,
+                                   gui_toolbar_struct *toolinfo, bool excl,
                                    gui_colour_set *plain,
                                    gui_colour_set *standout, gui_rect *rect )
 {
-    if( ( num_items == 0 ) || ( toolbar == NULL ) ) {
+    if( ( num_items == 0 ) || ( toolinfo == NULL ) ) {
         return( false );
     }
-    if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolbar, excl,
+    if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolinfo, excl,
                            plain, standout, rect ) ) {
-        GUIInitToolbarHint( wnd, num_items, toolbar );
+        GUIInitToolbarHint( wnd, num_items, toolinfo );
         return( true );
     }
     return( false );
 }
 
 extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                              int num_items, gui_toolbar_struct *toolbar,
+                              int num_items, gui_toolbar_struct *toolinfo,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout )
 {
-    if( ( num_items == 0 ) || ( toolbar == NULL ) ) {
+    if( ( num_items == 0 ) || ( toolinfo == NULL ) ) {
         return( false );
     }
-    if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolbar, excl,
+    if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolinfo, excl,
                            plain, standout, NULL ) ) {
-        GUIInitToolbarHint( wnd, num_items, toolbar );
+        GUIInitToolbarHint( wnd, num_items, toolinfo );
         return( true );
     }
     return( false );
 }
 
 extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                      int num_items, gui_toolbar_struct *toolbar,
+                                      int num_items, gui_toolbar_struct *toolinfo,
                                       bool excl, gui_colour_set *plain,
                                       gui_colour_set *standout )
 {
-    if( ( num_items == 0 ) || ( toolbar == NULL ) ) {
+    if( ( num_items == 0 ) || ( toolinfo == NULL ) ) {
         return( false );
     }
-    if( GUIXCreateToolBarWithTips( wnd, fixed, height, num_items, toolbar, excl,
+    if( GUIXCreateToolBarWithTips( wnd, fixed, height, num_items, toolinfo, excl,
                                    plain, standout, NULL, true ) ) {
-        GUIInitToolbarHint( wnd, num_items, toolbar );
+        GUIInitToolbarHint( wnd, num_items, toolinfo );
         return( true );
     }
     return( false );

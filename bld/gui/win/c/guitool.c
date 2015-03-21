@@ -352,7 +352,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 
     for( i = 0; i < num_toolbar_items; i++ ) {
         info.u.bmp = toolbar->bitmaps[i];
-        info.id = (WORD)toolinfo[i].id;
+        info.id = toolinfo[i].id;
         info.flags = 0;
         if( use_tips && toolinfo[i].tip != NULL ) {
             strncpy( info.tip, toolinfo[i].tip, MAX_TIP );

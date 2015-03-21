@@ -45,7 +45,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define GETID( ev ) ( ev - GUI_FIRST_USER_EVENT )
 
 extern EVENT GUIUserEvents[];
 
@@ -496,7 +495,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             }
             return( false );
         }
-        radio->value = GUI_FIRST_USER_EVENT + ctl_info->id;
+        radio->value = ID2EV( ctl_info->id );
         radio->group = RadioGroup;
         if( ( ctl_info->style & GUI_CHECKED ) &&
             ( ctl_info->style & GUI_AUTOMATIC ) ) {
@@ -786,8 +785,8 @@ EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd 
         EditNotify( GUI_KEY_DOWN, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
     default :
-        if( ev >= GUI_FIRST_USER_EVENT ) {
-            id = GETID( ev );
+        if( IS_CTLEVENT( ev ) ) {
+            id = EV2ID( ev );
             GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
             return( EV_NO_EVENT );
         }

@@ -310,14 +310,15 @@ static void Icons( void )
 static bool ProcessEvent( EVENT ev )
 {
     gui_window  *wnd;
+    gui_ctl_id  id;
 
-    ev -= GUI_FIRST_USER_EVENT;
-    switch( ev ) {
+    id = EV2ID( ev );
+    switch( id ) {
     case GUI_MDI_CASCADE :
     case GUI_MDI_TILE_HORZ :
     case GUI_MDI_TILE_VERT :
         Icons();
-        Arrange( ev );
+        Arrange( id );
         break;
     case GUI_MDI_ARRANGE_ICONS :
         Icons();
@@ -326,9 +327,8 @@ static bool ProcessEvent( EVENT ev )
         GUIMDIMoreWindows();
         break;
     default :
-        if( ( ev >= GUI_MDI_FIRST_WINDOW ) &&
-            ( ev <= ( GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1 ) ) ) {
-            wnd = GUIMDIGetWindow( ev );
+        if( IS_MDIWIN( id ) ) {
+            wnd = GUIMDIGetWindow( id );
             if( wnd != NULL ) {
                 if( GUIIsMinimized( wnd ) ) {
                     GUIRestoreWindow( wnd );
@@ -359,6 +359,6 @@ void XChangeTitle( gui_window *wnd )
 
 bool GUICascadeWindows( void )
 {
-    return( ProcessEvent( GUI_MDI_CASCADE + GUI_FIRST_USER_EVENT ) );
+    return( ProcessEvent( ID2EV( GUI_MDI_CASCADE ) ) );
 }
 

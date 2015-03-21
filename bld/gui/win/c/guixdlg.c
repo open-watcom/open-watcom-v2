@@ -147,7 +147,7 @@ static bool InitDialog( gui_window *wnd )
     return( false );
 }
 
-bool GUIProcessControlNotification( WORD id, WORD wNotify, gui_window *wnd )
+bool GUIProcessControlNotification( unsigned id, int wNotify, gui_window *wnd )
 {
     unsigned            check;
     control_item        *item;
@@ -199,11 +199,9 @@ bool GUIProcessControlNotification( WORD id, WORD wNotify, gui_window *wnd )
             case BN_CLICKED :
                 GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
                 return( true );
-                break;
             case BN_DOUBLECLICKED :
                 GUIEVENTWND( wnd, GUI_CONTROL_DCLICKED, &id );
                 return( true );
-                break;
             }
             break;
         case GUI_LISTBOX :
@@ -245,13 +243,12 @@ bool GUIProcessControlNotification( WORD id, WORD wNotify, gui_window *wnd )
  * GUIProcessControlMsg
  */
 
-bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
-                           gui_window *wnd, WPI_DLGRESULT *ret )
+bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, WPI_DLGRESULT *ret )
 {
-    WORD        id;
+    unsigned    id;
 #ifndef __OS2_PM__
     bool        my_ret;
-    WORD        notify_code;
+    int         notify_code;
 
     lparam=lparam;
     id = LOWORD( wparam );
@@ -288,7 +285,7 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
 
 WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    WORD                param;
+    unsigned            id;
     bool                escape_pressed;
     gui_window          *wnd;
     bool                msg_processed;
@@ -376,8 +373,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         break;
 #ifdef __OS2_PM__
     case WM_CONTROL :
-        GUIProcessControlNotification( SHORT1FROMMP(wparam),
-                                       SHORT2FROMMP(wparam), wnd );
+        GUIProcessControlNotification( SHORT1FROMMP( wparam ), SHORT2FROMMP( wparam ), wnd );
         break;
     case WM_RBUTTONDOWN :
         WPI_MAKEPOINT( wparam, lparam, pnt );
@@ -428,23 +424,21 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         break;
     case WM_COMMAND :
         escape_pressed = false;
-        param = _wpi_getid( wparam );
+        id = _wpi_getid( wparam );
         if( _wpi_ismenucommand( wparam, lparam ) ) {  /* from menu */
             if( wnd != NULL ) {
 #ifndef __OS2_PM__
-                escape_pressed = ( !GET_WM_COMMAND_CMD( wparam, lparam ) &&
-                                   ( param == IDCANCEL ) );
+                escape_pressed = ( !GET_WM_COMMAND_CMD( wparam, lparam ) && ( id == IDCANCEL ) );
 #endif
                 if( !escape_pressed ) {
-                    GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &param );
+                    GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
                 }
             }
         } else {
 #ifdef __OS2_PM__
-            escape_pressed = (((ULONG)lparam == 1) && (param == IDCANCEL));
+            escape_pressed = (((ULONG)lparam == 1) && (id == IDCANCEL));
 #else
-            escape_pressed = ( !GET_WM_COMMAND_CMD( wparam, lparam ) &&
-                               ( param == IDCANCEL ) );
+            escape_pressed = ( !GET_WM_COMMAND_CMD( wparam, lparam ) && ( id == IDCANCEL ) );
 #endif
             if( !escape_pressed ) {
                 GUIProcessControlMsg( wparam, lparam, wnd, &ret );

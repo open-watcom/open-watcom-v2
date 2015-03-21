@@ -49,13 +49,13 @@ static gui_control_info Controls[] = {
 
 #define NUM_CONTROLS ( sizeof( Controls ) / sizeof( gui_control_info ) )
 
-bool GUIPickEvent( gui_window *gui, gui_event event, void *param )
+bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
     unsigned            id;
     dlg_pick            *dlg;
 
     dlg = (dlg_pick*)GUIGetExtra( gui );
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         GUIClearList( gui, CTL_PICK_LIST );
         (*dlg->func)( gui, CTL_PICK_LIST );

@@ -60,25 +60,25 @@
 #define MIN_GADGET_SIZE         2
 
 typedef enum {
-        NONE                            = 0x0000,
-        TITLE_INVALID                   = 0x0001,
-        FRAME_INVALID                   = 0x0002,
-        CONTENTS_INVALID                = 0x0004,
-        HSCROLL_INVALID                 = 0x0008,
-        VSCROLL_INVALID                 = 0x0010,
-        MAXIMIZED                       = 0x0020,
-        MINIMIZED                       = 0x0040,
-        SETHRANGE                       = 0x0080,
-        SETVRANGE                       = 0x0100,
-        DONT_SEND_PAINT                 = 0x0200,
-        NEEDS_RESIZE_REDRAW             = 0x0400,
-        DIALOG                          = 0x0800,
-        IS_ROOT                         = 0x1000,
-        CHECK_CHILDREN_ON_RESIZE        = 0x2000,
-        WHOLE_WND_INVALID       = TITLE_INVALID | FRAME_INVALID \
-                                | CONTENTS_INVALID | HSCROLL_INVALID | VSCROLL_INVALID,
-        NON_CLIENT_INVALID      = FRAME_INVALID | TITLE_INVALID | \
-                                  VSCROLL_INVALID | HSCROLL_INVALID
+    NONE                        = 0x0000,
+    TITLE_INVALID               = 0x0001,
+    FRAME_INVALID               = 0x0002,
+    CONTENTS_INVALID            = 0x0004,
+    HSCROLL_INVALID             = 0x0008,
+    VSCROLL_INVALID             = 0x0010,
+    MAXIMIZED                   = 0x0020,
+    MINIMIZED                   = 0x0040,
+    SETHRANGE                   = 0x0080,
+    SETVRANGE                   = 0x0100,
+    DONT_SEND_PAINT             = 0x0200,
+    NEEDS_RESIZE_REDRAW         = 0x0400,
+    DIALOG                      = 0x0800,
+    IS_ROOT                     = 0x1000,
+    CHECK_CHILDREN_ON_RESIZE    = 0x2000,
+    WHOLE_WND_INVALID       = TITLE_INVALID | FRAME_INVALID \
+                            | CONTENTS_INVALID | HSCROLL_INVALID | VSCROLL_INVALID,
+    NON_CLIENT_INVALID      = FRAME_INVALID | TITLE_INVALID | \
+                              VSCROLL_INVALID | HSCROLL_INVALID
 } gui_flags;
 
 #define GUI_HRANGE_SET( wnd ) ( ( wnd->hgadget != NULL ) && ( ( wnd->flags & SETHRANGE ) != 0 ) )
@@ -151,7 +151,7 @@ struct gui_window {
 #define XMIN 0
 
 enum {
-    EV_SCROLL_UP = EV_FIRST_UNUSED,
+    EV_SCROLL_UP            = EV_FIRST_UNUSED,
     EV_SCROLL_DOWN,
     EV_SCROLL_LEFT,
     EV_SCROLL_RIGHT,
@@ -160,26 +160,38 @@ enum {
     EV_DESTROY
 };
 
+enum {
+    EV_SYS_MENU_RESTORE     = EV_FIRST_UNUSED,
+    EV_SYS_MENU_MOVE,
+    EV_SYS_MENU_SIZE,
+    EV_SYS_MENU_MINIMIZE,
+    EV_SYS_MENU_MAXIMIZE,
+    EV_SYS_MENU_CLOSE,
+};
+#define EV_SYS_MENU_FIRST   EV_SYS_MENU_RESTORE
+#define EV_SYS_MENU_LAST    EV_SYS_MENU_CLOSE
+
 #include "guix.h"
 #include "guixmdi.h"
 
 #define NUM_GUI_EVENTS 100
 
+//                          default ui events
+//  EV_FIRST_UNUSED:        100 (NUM_GUI_EVENTS)
+//  GUI_FIRST_USER_EVENT:   10000 (GUI_LAST_MENU_ID) control IDs
+//  LAST_EVENT:             1
+//  FIRST_GUI_EVENT:        GUI_MDI_MENU_LAST
+//  LAST_GUI_EVENT:
+
 #define GUI_FIRST_USER_EVENT ( EV_FIRST_UNUSED + NUM_GUI_EVENTS )
 
-#define LAST_EVENT ( GUI_FIRST_USER_EVENT + GUI_LAST_MENU_ID )
+#define LAST_EVENT      ( GUI_FIRST_USER_EVENT + GUI_LAST_MENU_ID )
 #define FIRST_GUI_EVENT ( LAST_EVENT + 1 )
-#define LAST_GUI_EVENT ( GUI_FIRST_USER_EVENT + GUI_MDI_MENU_LAST )
+#define LAST_GUI_EVENT  ( GUI_FIRST_USER_EVENT + GUI_MDI_MENU_LAST )
 
-enum {
-  GUI_MENU_RESTORE      = EV_FIRST_UNUSED,
-  GUI_FIRST_SYS_MENU    = GUI_MENU_RESTORE,
-  GUI_MENU_MOVE,
-  GUI_MENU_SIZE,
-  GUI_MENU_MINIMIZE,
-  GUI_MENU_MAXIMIZE,
-  GUI_MENU_CLOSE,
-  GUI_LAST_SYS_MENU     = GUI_MENU_CLOSE
-};
+#define IS_CTLEVENT(x)  (x >= GUI_FIRST_USER_EVENT)
+
+#define EV2ID(x)        (x - GUI_FIRST_USER_EVENT)
+#define ID2EV(x)        (x + GUI_FIRST_USER_EVENT)
 
 #endif // _GUIWIND_H_

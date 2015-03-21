@@ -77,7 +77,7 @@ EVENT GUIUserEvents[] = {
 };
 
 static EVENT GUIInternalEvents[] = {
-    GUI_FIRST_SYS_MENU, GUI_LAST_SYS_MENU,
+    EV_SYS_MENU_FIRST, EV_SYS_MENU_LAST,
     EV_NO_EVENT,
     EV_NO_EVENT
 };
@@ -359,12 +359,12 @@ static void ProcessMousePress( EVENT ev, gui_event gui_ev, ORD row, ORD col,
 
 static void ProcessInitPopupEvent( void )
 {
-    MENUITEM menu;
-    unsigned id;
+    MENUITEM    menu;
+    gui_ctl_id  id;
 
     if( uigetcurrentmenu ( &menu ) ) {
-        id = (unsigned) menu.event - GUI_FIRST_USER_EVENT;
-        if ( id ) {
+        id = EV2ID( menu.event );
+        if ( id != 0 ) {
             GUIEVENTWND( GUICurrWnd, GUI_INITMENUPOPUP, &id );
         }
     }
@@ -625,8 +625,7 @@ bool GUIProcessEvent( EVENT ev )
     /* Only deal with press and dclick events for minimized windows.
      * All other non-menu events are ingored.
      */
-    if( ( ev < GUI_FIRST_USER_EVENT ) && ( GUICurrWnd != NULL ) &&
-        GUI_WND_MINIMIZED( GUICurrWnd ) ) {
+    if( !IS_CTLEVENT( ev ) && ( GUICurrWnd != NULL ) && GUI_WND_MINIMIZED( GUICurrWnd ) ) {
         /* ignore event if mouse not in minimized current window */
         if( GUICurrWnd == wnd ) {
             switch( ev ) {
@@ -640,7 +639,7 @@ bool GUIProcessEvent( EVENT ev )
         }
         return( true );
     }
-    if( ( GUICurrWnd != NULL ) && GUIIsOpen( GUICurrWnd ) && ( ev < GUI_FIRST_USER_EVENT ) ) {
+    if( !IS_CTLEVENT( ev ) && ( GUICurrWnd != NULL ) && GUIIsOpen( GUICurrWnd ) ) {
         /* see if any of the controls in the window consume the event */
         ev = GUIProcessControlEvent( GUICurrWnd, ev, row, col );
         /* See if the event is for on of the scroll bars. */
@@ -735,7 +734,7 @@ bool GUIProcessEvent( EVENT ev )
         ProcessInitPopupEvent();
         return( true );
         break;
-    #if 0
+#if 0
     case EV_BACKGROUND_RESIZE :
         {
             gui_window          *root;
@@ -746,13 +745,13 @@ bool GUIProcessEvent( EVENT ev )
         }
         return( true );
         break;
-    #endif
+#endif
     default :
-        if( ev >= GUI_FIRST_USER_EVENT ) {
+        if( IS_CTLEVENT( ev ) ) {
             if( !GUIMDIProcessEvent( ev ) ) {
                 menu_window = GUIGetMenuWindow();
                 if( menu_window != NULL ) {
-                    id = ev - GUI_FIRST_USER_EVENT;
+                    id = EV2ID( ev );
                     GUIEVENTWND( menu_window, GUI_CLICKED, &id );
                 }
             }

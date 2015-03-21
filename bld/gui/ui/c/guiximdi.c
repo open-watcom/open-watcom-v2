@@ -39,15 +39,15 @@ extern void GUIMDIMoreWindows( void );
 static bool ProcessEvent( EVENT ev )
 {
     gui_window  *wnd;
+    gui_ctl_id  id;
 
-    ev -= GUI_FIRST_USER_EVENT;
-    if( ev == GUI_MDI_MORE_WINDOWS ) {
+    id = EV2ID( ev );
+    if( id == GUI_MDI_MORE_WINDOWS ) {
         GUIMDIMoreWindows();
         return( true );
     }
-    if( ( ev >= GUI_MDI_FIRST_WINDOW ) &&
-        ( ev <= ( GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1 ) ) ) {
-        wnd = GUIMDIGetWindow( ev );
+    if( IS_MDIWIN( id ) ) {
+        wnd = GUIMDIGetWindow( id );
         if( wnd != NULL ) {
             if( GUIIsMinimized( wnd ) ) {
                 GUIRestoreWindow( wnd );

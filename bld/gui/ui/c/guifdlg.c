@@ -1149,7 +1149,8 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
         }
         break;
     case GUI_CONTROL_CLICKED:
-        if( !dlg->initted ) break;
+        if( !dlg->initted )
+            break;
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_OK:

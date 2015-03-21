@@ -57,4 +57,4 @@ extern  bool            ControlsScaled;
 extern int  NUM_LIST_BOX_DATA;
 extern void StaticDialogInit( void );
 extern void StaticDialogCreate( gui_window *parent );
-extern bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param );
+extern GUICALLBACK StaticDialogEventWnd;

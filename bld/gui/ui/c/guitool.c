@@ -139,7 +139,7 @@ bool ToolbarCallBack( gui_window *wnd, gui_event gui_ev, void *param )
         break;
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
-        id -= GUI_FIRST_USER_EVENT;
+        id = EV2ID( id );
         GUIEVENTWND( wnd->parent, GUI_CLICKED, &id );
         break;
     case GUI_LBUTTONDBLCLK :
@@ -204,7 +204,7 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     }
     for( i = 0; i < toolbar->num_items; i++ ) {
         Button.text = toolbar->info[i].label;
-        Button.id = toolbar->info[i].id + GUI_FIRST_USER_EVENT;
+        Button.id = toolbar->info[i].id;
         Button.rect.x = loc;
         Button.rect.width = ( strlen( Button.text ) + 4 ) * metrics.avg.x;
         Button.rect.height = metrics.avg.y * 2;
@@ -223,7 +223,7 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
 }
 
 bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                       int num_items, gui_toolbar_struct *toolbar, bool excl,
+                       int num_items, gui_toolbar_struct *toolinfo, bool excl,
                        gui_colour_set *plain, gui_colour_set *standout,
                        gui_rect *float_pos )
 {
@@ -259,7 +259,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
     for( i = 0; i < num_items; i++ ) {
         bool    ok;
 
-        wnd->toolbar->info[i].label = GUIStrDup( toolbar[i].label, &ok );
+        wnd->toolbar->info[i].label = GUIStrDup( toolinfo[i].label, &ok );
         if( !ok ) {
             for( j = 0; j < i; j++ ) {
                 GUIMemFree( wnd->toolbar->info[j].label );
@@ -267,7 +267,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
             GUIMemFree( wnd->toolbar->info );
             GUIMemFree( wnd->toolbar );
         }
-        wnd->toolbar->info[i].id = toolbar[i].id;
+        wnd->toolbar->info[i].id = toolinfo[i].id;
     }
     wnd->toolbar->num_items = num_items;
     wnd->toolbar->floattoolbar = NULL;
@@ -280,12 +280,12 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
 }
 
 bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                int num_items, gui_toolbar_struct *toolbar, bool excl,
+                                int num_items, gui_toolbar_struct *toolinfo, bool excl,
                                 gui_colour_set *plain, gui_colour_set *standout,
                                 gui_rect *float_pos, bool use_tips )
 {
     use_tips = use_tips;
-    return( GUIXCreateToolBar( wnd, fixed, height, num_items, toolbar, excl, plain,
+    return( GUIXCreateToolBar( wnd, fixed, height, num_items, toolinfo, excl, plain,
                                standout, float_pos ) );
 }
 

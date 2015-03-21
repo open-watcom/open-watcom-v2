@@ -462,12 +462,12 @@ WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     }
 }
 
-WPI_MRESULT GUISendDlgItemMessage( HWND parent, int control, WPI_MSG msg,
+WPI_MRESULT GUISendDlgItemMessage( HWND parent, int id, WPI_MSG msg,
                                    WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HWND hwnd;
 
-    hwnd = _wpi_getdlgitem( parent, control );
+    hwnd = _wpi_getdlgitem( parent, id );
     if( hwnd != NULLHANDLE ) {
         return( _wpi_sendmessage( hwnd, msg, wparam, lparam ) );
     } else {

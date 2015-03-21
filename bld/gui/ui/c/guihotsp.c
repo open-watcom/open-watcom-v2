@@ -61,7 +61,7 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
     if( !ok ) {
         return( false );
     }
-    hot_spot->event = ctl_info->id + GUI_FIRST_USER_EVENT;
+    hot_spot->event = ID2EV( ctl_info->id );
     hot_spot->row = field->area.row;
     hot_spot->startcol = field->area.col;
     hot_spot->length = field->area.width;

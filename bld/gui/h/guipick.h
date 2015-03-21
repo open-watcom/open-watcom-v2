@@ -39,4 +39,4 @@ typedef struct {
 #define CTL_PICK_CANCEL         101
 #define CTL_PICK_LIST           102
 
-extern bool GUIPickEvent( gui_window * gui, gui_event event, void * param );
+extern GUICALLBACK GUIPickEvent;

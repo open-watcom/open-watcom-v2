@@ -122,42 +122,42 @@ static gui_window * Status = NULL;
  * GetNewFunction - call back routine for the GetNewVal dialog
  */
 
-static bool GetNewFunction( gui_window * gui, gui_event gui_ev, void * param )
+static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
 {
     unsigned id;
 
     switch( gui_ev ) {
-        case GUI_INIT_DIALOG :
+    case GUI_INIT_DIALOG :
+        ret_val = GUI_RET_CANCEL;
+        break;
+    case GUI_DESTROY :
+        if( Status != NULL ) {
+            GUIDestroyWnd( Status );
+        }
+        break;
+    case GUI_CLICKED :
+        GUI_GETID( param, id );
+        switch( id ) {
+        case ctr_cancelbutton :
+            GUICloseDialog( gui );
             ret_val = GUI_RET_CANCEL;
             break;
-        case GUI_DESTROY :
-            if( Status != NULL ) {
-                GUIDestroyWnd( Status );
-            }
-            break;
-        case GUI_CLICKED :
-            GUI_GETID( param, id );
-            switch( id ) {
-                case ctr_cancelbutton :
+        case ctr_okbutton :
+            text = GUIGetText( gui, ctr_edit );
+            if( Status == NULL ) {
+                Status = GUICreateWindow( &StatusWnd );
+            } else {
+                NumEnters ++;
+                Rect.width = ( NumEnters * Width ) / 4;
+                if( NumEnters > 4 ) {
                     GUICloseDialog( gui );
-                    ret_val = GUI_RET_CANCEL;
-                    break;
-                case ctr_okbutton :
-                    text = GUIGetText( gui, ctr_edit );
-                    if( Status == NULL ) {
-                        Status = GUICreateWindow( &StatusWnd );
-                    } else {
-                        NumEnters ++;
-                        Rect.width = ( NumEnters * Width ) / 4;
-                        if( NumEnters > 4 ) {
-                            GUICloseDialog( gui );
-                        } else {
-                            GUIWndDirty( Status );
-                        }
-                    }
-                    ret_val = GUI_RET_OK;
-                    break;
+                } else {
+                    GUIWndDirty( Status );
+                }
             }
+            ret_val = GUI_RET_OK;
+            break;
+        }
         break;
     }
     return( true );
@@ -176,44 +176,44 @@ static bool StatusFunction( gui_window * gui, gui_event gui_ev, void * param )
     param = param;
 
     switch( gui_ev ) {
-        case GUI_INIT_WINDOW :
-            Row = GUIGetNumRows( gui ) / 2;
-            GUIGetTextMetrics( gui, &metrics );
-            GUIGetClientRect( gui, &Rect );
+    case GUI_INIT_WINDOW :
+        Row = GUIGetNumRows( gui ) / 2;
+        GUIGetTextMetrics( gui, &metrics );
+        GUIGetClientRect( gui, &Rect );
 #if 1
-            Rect.x = 1;
-            Rect.y = 1;
-            Width = Rect.width - 2 * Rect.x;
+        Rect.x = 1;
+        Rect.y = 1;
+        Width = Rect.width - 2 * Rect.x;
 #endif
 #if 0
-            Rect.height -= Rect.y;
-            Rect.x = 0;
-            Rect.y = 0;
+        Rect.height -= Rect.y;
+        Rect.x = 0;
+        Rect.y = 0;
 #endif
-            Rect.width = 0;
-            for( i = 0; i < NUM_TEXT; i++ ) {
-                Strlen[i] *= metrics.max.x;
+        Rect.width = 0;
+        for( i = 0; i < NUM_TEXT; i++ ) {
+            Strlen[i] *= metrics.max.x;
+        }
+        break;
+    case GUI_DESTROY :
+        break;
+    case GUI_PAINT :
+        GUIDrawRect( gui, &Rect, GUI_FIRST_UNUSED );
+        for( i = 0; i < NUM_TEXT; i++ ) {
+            pos = ( i * Width / 4 ) - Strlen[i] + Rect.x;
+            if( pos < (int)Rect.x ) {
+                pos = Rect.x;
             }
-            break;
-        case GUI_DESTROY :
-            break;
-        case GUI_PAINT :
-            GUIDrawRect( gui, &Rect, GUI_FIRST_UNUSED );
-            for( i = 0; i < NUM_TEXT; i++ ) {
-                pos = ( i * Width / 4 ) - Strlen[i] + Rect.x;
-                if( pos < (int)Rect.x ) {
-                    pos = Rect.x;
-                }
-                if( ( i > NumEnters ) ||
-                    ( i == 0 ) && ( NumEnters == 0 ) ) {
-                    GUIDrawText( gui, &Text[i], Strlen[i], Row, pos,
-                                 GUI_TITLE_ACTIVE );
-                } else {
-                    GUIDrawText( gui, &Text[i], Strlen[i], Row, pos,
-                                 GUI_FIRST_UNUSED );
-                }
+            if( ( i > NumEnters ) ||
+                ( i == 0 ) && ( NumEnters == 0 ) ) {
+                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos,
+                             GUI_TITLE_ACTIVE );
+            } else {
+                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos,
+                             GUI_FIRST_UNUSED );
             }
-            break;
+        }
+        break;
     }
     return( true );
 }

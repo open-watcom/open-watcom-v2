@@ -272,7 +272,7 @@ void GUIInitHint( gui_window *wnd, int num_menus, gui_menu_struct *menu, hint_ty
 }
 
 void GUIInitToolbarHint( gui_window *wnd, int num_items,
-                         gui_toolbar_struct *toolbar )
+                         gui_toolbar_struct *toolinfo )
 {
     int                 i;
     int                 size;
@@ -291,8 +291,8 @@ void GUIInitToolbarHint( gui_window *wnd, int num_items,
             hint_struct = (gui_hint_struct *)GUIMemAlloc( size );
             num = num_items;
             for( i = 0; i < num_items; i++ ) {
-                hint_struct[i].id = toolbar[i].id;
-                hint_struct[i].hinttext = toolbar[i].hinttext;
+                hint_struct[i].id = toolinfo[i].id;
+                hint_struct[i].hinttext = toolinfo[i].hinttext;
             }
         }
         SetStructNum( &wnd->hint, TOOL_HINT, hint_struct, num );

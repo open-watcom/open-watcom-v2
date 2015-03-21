@@ -34,7 +34,7 @@
 #include "dlgstat.h"
 #include "dlgdynam.h"
 
-static bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param );
+static GUICALLBACK DynamicDialogEventWnd;
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 

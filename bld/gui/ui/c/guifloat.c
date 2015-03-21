@@ -87,8 +87,8 @@ void GUIProcessMenuCurr( MENUITEM *menu )
         if( menu->flags & ITEM_SEPARATOR ) {
             style = GUI_SEPARATOR;
         } else {
-            if( menu->event >= GUI_FIRST_USER_EVENT ) {
-                id = menu->event - GUI_FIRST_USER_EVENT;
+            if( IS_CTLEVENT( menu->event ) ) {
+                id = EV2ID( menu->event );
                 if( menu->flags & ITEM_GRAYED ) {
                     style = GUI_GRAYED;
                 } else {
@@ -137,7 +137,6 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     ATTR        attr_inactive;
     ATTR        attr_curr_inactive;
     ATTR        attr_menu;
-    int         curr;
     gui_window  *top;
     SAREA       area;
     DESCMENU    desc;
@@ -165,9 +164,9 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     UIData->attrs[ATTR_CURR_INACTIVE] = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
     UIData->attrs[ATTR_MENU] = wnd->colours[GUI_MENU_FRAME];
 
-    curr = 0;
+    ev = 0;
     if( ( curr_item != NULL ) && ( *curr_item != 0 ) ) {
-        curr = *curr_item + GUI_FIRST_USER_EVENT;
+        ev = ID2EV( *curr_item );
     }
     top = GUIGetTopWnd( wnd );
     COPYAREA( top->use, area );
@@ -179,7 +178,7 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
         return( EV_NO_EVENT );
     }
     ev = uicreatepopupinarea( menu, &desc, track & GUI_TRACK_LEFT,
-                              track & GUI_TRACK_RIGHT, curr, &area, false );
+                              track & GUI_TRACK_RIGHT, ev, &area, false );
 
     if( ev == EV_KILL_UI ) {
         uiforceevadd( EV_KILL_UI );
@@ -197,8 +196,8 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     UIData->attrs[ATTR_MENU] = attr_menu;
 
     if( ( ev != EV_MOUSE_DCLICK ) && ( ev != EV_NO_EVENT ) ) {
-        if( ev >= GUI_FIRST_USER_EVENT ) {
-            id = ev - GUI_FIRST_USER_EVENT;
+        if( IS_CTLEVENT( ev ) ) {
+            id = EV2ID( ev );
             GUIEVENTWND( wnd, GUI_CLICKED, &id );
             if( curr_item != NULL ) {
                 *curr_item = id;

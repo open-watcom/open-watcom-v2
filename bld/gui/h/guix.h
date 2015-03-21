@@ -58,6 +58,12 @@
 #define GUI_MDI_MENU_FIRST      GUI_MDI_FIRST_SEPARATOR
 #define GUI_MDI_MENU_LAST       GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1
 
+#define IS_MDIWIN(x)            (x >= GUI_MDI_FIRST_WINDOW && x <= GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1)
+#define IS_MDIMENU(x)           (x >= GUI_MDI_MENU_FIRST && x <= GUI_MDI_MENU_LAST)
+
+#define MDIWIN2ID(x)            (x + GUI_MDI_FIRST_WINDOW)
+#define ID2MDIWIN(x)            (x - GUI_MDI_FIRST_WINDOW)
+
 /* Initialization Functions */
 
 extern bool GUIXWndInit( unsigned );

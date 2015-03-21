@@ -64,7 +64,7 @@ typedef struct message_types {
 
 /* control definition for each control that can be in the dialog */
 typedef struct control_pairs {
-    gui_control_info    control;
+    gui_control_info    ctl_info;
     control_types       type;
 } control_pairs;
 
@@ -125,28 +125,28 @@ static void InitMessageControls( void )
     for( j = 0; j < NUM_CONTROL_TYPES; j++ ) {
         switch( MessageControls[j].type ) {
             case ABORT:
-                MessageControls[j].control.text = LIT( XAbort );
+                MessageControls[j].ctl_info.text = LIT( XAbort );
                 break;
             case CANCEL:
-                MessageControls[j].control.text = LIT( Cancel );
+                MessageControls[j].ctl_info.text = LIT( Cancel );
                 break;
             case IGNORE:
-                MessageControls[j].control.text = LIT( XIgnore );
+                MessageControls[j].ctl_info.text = LIT( XIgnore );
                 break;
             case NO:
-                MessageControls[j].control.text = LIT( XNo );
+                MessageControls[j].ctl_info.text = LIT( XNo );
                 break;
             case OK:
-                MessageControls[j].control.text = LIT( OK );
+                MessageControls[j].ctl_info.text = LIT( OK );
                 break;
             case RETRY:
-                MessageControls[j].control.text = LIT( XRetry );
+                MessageControls[j].ctl_info.text = LIT( XRetry );
                 break;
             case YES:
-                MessageControls[j].control.text = LIT( XYes );
+                MessageControls[j].ctl_info.text = LIT( XYes );
                 break;
             case STOP:
-                MessageControls[j].control.text = LIT( Stop_Bang );
+                MessageControls[j].ctl_info.text = LIT( Stop_Bang );
                 break;
             default :
                 break;
@@ -346,18 +346,15 @@ int AdjustVert( int *cols, control_types controls_to_use,
     for( j = 0; j < NUM_CONTROL_TYPES; j++ ) {
         if( ( i < num_controls ) &&
             ( controls_to_use & MessageControls[j].type ) ) {
-            memcpy( &controls_info[i], &MessageControls[j].control,
-                    sizeof( gui_control_info ) );
+            memcpy( &controls_info[i], &MessageControls[j].ctl_info, sizeof( gui_control_info ) );
             switch( controls_info[i].control_class ) {
             case GUI_PUSH_BUTTON :
             case GUI_DEFPUSH_BUTTON :
                 num_buttons ++;
-                controls_info[i].rect.y = DLG_ROW( BUTTON_ROW +
-                                            num_string_controls  - 1 );
+                controls_info[i].rect.y = DLG_ROW( BUTTON_ROW + num_string_controls  - 1 );
                 break;
             case GUI_STATIC :
-                controls_info[i].rect.y = DLG_ROW( ICON_ROW +
-                                    ( num_string_controls - 1 ) / 2 );
+                controls_info[i].rect.y = DLG_ROW( ICON_ROW + ( num_string_controls - 1 ) / 2 );
                 break;
             default :
                 break;
