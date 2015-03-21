@@ -53,6 +53,7 @@
 #include "diskos.h"
 #include "clcommon.h"
 #include "banner.h"
+
 #include "clibext.h"
 
 #if defined(__UNIX__)
@@ -387,19 +388,21 @@ void addccstring( char *string )
 
 void addcclongopt( char *option, char *tail )
 {
-    char *op;
-    int i;
+    char    *op;
+    size_t  len;
     
-    if( option == NULL || strlen(option) == 0 )
+    if( option == NULL )
         return;
-        
+    len = strlen( option );
+    if( len == 0 )
+        return;
+
     /* Calculate our necessary memory here for readability */
-    i = (strlen(option)+(tail == NULL ? 0 : strlen(tail))+2);
+    len += ( ( tail == NULL ) ? 0 : strlen( tail ) ) + 2;
         
-    op = MemAlloc( i*sizeof(char) );
+    op = MemAlloc( len * sizeof( char ) );
     op[0] = '-';
-    op[1] = '\0';
-    strcat( op, option );
+    strcpy( op + 1, option );
     if( tail != NULL )
         strcat( op, tail );
     
@@ -1309,7 +1312,7 @@ static int tool_exec( tool_type utl, char *fn, char **options )
     }
     fflush( NULL );
     
-    rc = (int)_spawnvp( P_WAIT, tool->path, (char const *const *)pass_argv );
+    rc = (int)spawnvp( P_WAIT, tool->path, (char const *const *)pass_argv );
     
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
