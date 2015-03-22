@@ -288,6 +288,7 @@ sys/ptrace.h    : linux/sys/ptrace.mh ../crwat.sp ../readonly.sp ../owrtlink.sp 
 sys/resource.h  : linux/sys/resource.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/socket.h    : linux/sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
 sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk) ../incdir.sp $(posixext)
+sys/sysinfo.h   : linux/sys/sysinfo.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/sysmips.h   : linux/sys/sysmips.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 sys/time.h      : sys/time.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/times.h     : linux/sys/times.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)

@@ -61,17 +61,22 @@
 
 /* Symbolic constants for sysconf */
 /* caution: the module sysconf.c bound checks _SC_ARG_MAX ... _SC_PAGESIZE */
-#define _SC_ARG_MAX         1
-#define _SC_CHILD_MAX       2
-#define _SC_CLK_TCK         3
-#define _SC_NGROUPS_MAX     4
-#define _SC_OPEN_MAX        5
-#define _SC_JOB_CONTROL     6
-#define _SC_SAVED_IDS       7
-#define _SC_VERSION         8
-#define _SC_STREAM_MAX      9
-#define _SC_TZNAME_MAX      10
-#define _SC_PAGESIZE        11
+#define _SC_ARG_MAX          1
+#define _SC_CHILD_MAX        2
+#define _SC_CLK_TCK          3
+#define _SC_NGROUPS_MAX      4
+#define _SC_OPEN_MAX         5
+#define _SC_JOB_CONTROL      6
+#define _SC_SAVED_IDS        7
+#define _SC_VERSION          8
+#define _SC_STREAM_MAX       9
+#define _SC_TZNAME_MAX       10
+#define _SC_PAGESIZE         11
+#define _SC_NPROCESSORS_CONF 12
+#define _SC_NPROCESSORS_ONLN 13
+#define _SC_PHYS_PAGES       14
+#define _SC_AVPHYS_PAGES     15
+#define _SC_REALTIME_SIGNALS 16
 /* Execution-time Symbolic Constants for Portability Specifications */
 
 #define _POSIX_CHOWN_RESTRICTED 0       /* restricted use of chown() */

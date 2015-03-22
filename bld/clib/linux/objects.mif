@@ -93,6 +93,8 @@
 !inject sys_brk.obj                                                                             l32 lpc lmp
 !inject sys_exit.obj                                                                            l32 lpc lmp
 !inject sys_open.obj                                                                            l32 lpc lmp
+!inject sysconf.obj                                                                             l32 lpc lmp
+!inject sysinfo.obj                                                                             l32 lpc lmp
 !inject sysmips.obj                                                                                     lmp
 !inject time.obj                                                                                l32 lpc lmp
 !inject timer.obj                                                                               l32 lpc lmp

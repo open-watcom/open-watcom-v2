@@ -1,0 +1,42 @@
+/*
+ *  sys/sysinfo.h      System information functions
+ *
+:include crwat.sp
+ */
+#ifndef _SYS_SYSINFO_H_INCLUDED
+#define _SYS_SYSINFO_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:include lnxkpack.sp
+
+:include incdir.sp
+
+
+struct sysinfo {
+    unsigned long uptime;
+    unsigned long loads[3];
+    unsigned long totalram;
+    unsigned long freeram;
+    unsigned long sharedram;
+    unsigned long bufferram;
+    unsigned long totalswap;
+    unsigned long freeswap;
+    unsigned short procs, pad;
+    unsigned long totalhigh;
+    unsigned long freehigh;
+    unsigned mem_unit;
+    char __reserved[256];
+};
+
+_WCRTLINK extern int sysinfo ( struct sysinfo *__info );
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif

@@ -210,6 +210,7 @@
 !inject sys/statfs.h                          hqnx
 !inject sys/sys_msg.h                         hqnx
 !inject sys/sysi86.h                          hqnx
+!inject sys/sysinfo.h                    hlnx
 !inject sys/sysmips.h                    hlnx
 !inject sys/termio.h                          hqnx
 !inject sys/time.h                  hdos hlnx hqnx
