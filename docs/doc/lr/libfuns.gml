@@ -1480,6 +1480,8 @@
 .fnc symlink                    symlink.gml         QXO
 .fnc sync                       sync.gml            QXO
 .fnc sysconf                    sysconf.gml         QXO
+.fnc sysconf                    sysconf.gml     DOS     W WIN32
+.fnc sysinfo                    sysinfo.gml     DOS     W WIN32
 .fnc system                     system.gml      DOS QNX W WIN32
 .fnw _wsystem                   system.gml      DOS       WIN32
 .fnc tan                        tan.gml         DOS QNX W WIN32
