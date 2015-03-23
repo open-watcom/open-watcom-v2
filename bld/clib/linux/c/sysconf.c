@@ -33,6 +33,7 @@
 
 #include <unistd.h>
 #include <limits.h>
+#include <errno.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
 #include "linuxsys.h"
@@ -161,6 +162,10 @@ int ret;
         case _SC_NPROCESSORS_ONLN:
             ret = __sysconf_nprocessors();
             break;
+            
+        default:
+            errno = EINVAL;
     }
+    
     return ret;
 }
