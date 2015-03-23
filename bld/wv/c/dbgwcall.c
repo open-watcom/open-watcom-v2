@@ -76,14 +76,12 @@ enum {
     PIECE_SOURCE,
 };
 
-static WNDNUMROWS CallNumRows;
 static int CallNumRows( a_window *wnd )
 {
     return( WndCall( wnd )->tb.curr->total_depth );
 }
 
-static  WNDMENU CallMenuItem;
-static void     CallMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     CallMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -97,8 +95,8 @@ static void     CallMenuItem( a_window *wnd, unsigned id, int row, int piece )
             WndMenuGrayAll( wnd );
         } else {
             WndMenuEnableAll( wnd );
-            WndMenuEnable( wnd, MENU_CALL_EXECUTE_TO_RETURN, row != 0 );
-            WndMenuEnable( wnd, MENU_CALL_SOURCE, chain->source_line != NULL );
+            WndMenuEnable( wnd, MENU_CALL_EXECUTE_TO_RETURN, ( row != 0 ) );
+            WndMenuEnable( wnd, MENU_CALL_SOURCE, ( chain->source_line != NULL ) );
         }
         break;
     case MENU_CALL_BREAK:
@@ -119,23 +117,22 @@ static void     CallMenuItem( a_window *wnd, unsigned id, int row, int piece )
     }
 }
 
-static WNDGETLINE CallGetLine;
-static  bool    CallGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+static  bool    CallGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
 
     chain = GetCallChain( &call->tb, row );
-    if( chain == NULL ) return( FALSE );
+    if( chain == NULL )
+        return( false );
     line->extent = WND_MAX_EXTEND;
     switch( piece ) {
     case PIECE_SYMBOL:
         StrCopy( ":", StrCopy( chain->symbol, TxtBuff ) );
         line->text = TxtBuff;
-        return( TRUE );
+        return( true );
     case PIECE_SOURCE:
-        line->indent = call->max_sym_len + 3*WndAvgCharX( wnd );
+        line->indent = call->max_sym_len + 3 * WndAvgCharX( wnd );
         line->tabstop = FALSE;
         line->use_prev_attr = TRUE;
         if( chain->source_line == NULL ) {
@@ -144,9 +141,9 @@ static  bool    CallGetLine( a_window *wnd, int row, int piece,
         } else {
             line->text = chain->source_line;
         }
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -193,7 +190,6 @@ static void CallScrollPos( a_window *wnd )
 }
 
 
-static WNDREFRESH CallRefresh;
 static void     CallRefresh( a_window *wnd )
 {
 
@@ -213,7 +209,6 @@ static void CallClose( a_window *wnd )
 }
 
 
-static WNDCALLBACK CallEventProc;
 static bool CallEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     call_window *call = WndCall( wnd );
@@ -226,12 +221,12 @@ static bool CallEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     case GUI_RESIZE:
         CallInit( wnd );
         CallScrollPos( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         CallClose( wnd );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -252,7 +247,6 @@ wnd_info CallInfo = {
     DefPopUp( CallMenu )
 };
 
-extern WNDOPEN WndCallOpen;
 extern a_window *WndCallOpen( void )
 {
     call_window *call;

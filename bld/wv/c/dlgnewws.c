@@ -35,15 +35,15 @@
 #include "guidlg.h"
 #include "dlgnew.h"
 
-extern void             SymComplete( gui_window *gui, int id );
-extern void             ModComplete( gui_window *gui, int id );
+extern void             SymComplete( gui_window *gui, gui_ctl_id id );
+extern void             ModComplete( gui_window *gui, gui_ctl_id id );
 
 typedef enum {
     COMPLETE_SYMBOL,
     COMPLETE_MODULE
 } comp_type;
 
-static  void            (*CompRtn)( gui_window *gui, int id );
+static  void            (*CompRtn)( gui_window *gui, gui_ctl_id id );
 
 enum {
     CTL_NEW_SYMBOL = CTL_NEW__LAST
@@ -65,28 +65,28 @@ enum {
 
 static gui_control_info Controls[] = {
 
-    DLG_EDIT( "", CTL_NEW_EDIT,                 C0, R0, W-1 ),
+    DLG_EDIT( "", CTL_NEW_EDIT,             C0, R0, W-1 ),
 
-    DLG_DEFBUTTON( NULL, CTL_NEW_OK,                    B1, R1, B1+BW ),
-    DLG_BUTTON( NULL, CTL_NEW_SYMBOL,   B2, R1, B2+BW ),
-    DLG_BUTTON( NULL, CTL_NEW_CANCEL,           B3, R1, B3+BW ),
+    DLG_DEFBUTTON( NULL, CTL_NEW_OK,        B1, R1, B1+BW ),
+    DLG_BUTTON( NULL, CTL_NEW_SYMBOL,       B2, R1, B2+BW ),
+    DLG_BUTTON( NULL, CTL_NEW_CANCEL,       B3, R1, B3+BW ),
 };
 
-static GUICALLBACK NewSymEvent;
-static bool NewSymEvent( gui_window * gui, gui_event event, void * param )
+static bool NewSymEvent( gui_window *gui, gui_event event, void *param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
 
-    if( DlgNewEvent( gui, event, param ) ) return( TRUE );
+    if( DlgNewEvent( gui, event, param ) )
+        return( true );
     switch( event ) {
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         if( id == CTL_NEW_SYMBOL ) {
             CompRtn( gui, CTL_NEW_EDIT );
         }
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 

@@ -38,8 +38,8 @@
 #include "dbgerr.h"
 
 
-extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
-extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
+extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
+extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 
 static bool GetDlgStatus( dlg_var_expand *varx, gui_window *gui )
 {
@@ -49,13 +49,13 @@ static bool GetDlgStatus( dlg_var_expand *varx, gui_window *gui )
         DlgGetLong( gui, CTL_VARX_END, &end ) && end >= start ) {
         varx->start = start;
         varx->end = end;
-        return( TRUE );
+        return( true );
     }
     _SwitchOn( SW_ERROR_RETURNS );
     Error( ERR_NONE, LIT_DUI( ERR_BAD_ARRAY_INDEX ) );
     _SwitchOff( SW_ERROR_RETURNS );
     GUISetFocus( gui, CTL_VARX_START );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -66,37 +66,37 @@ static void SetDlgStatus( dlg_var_expand *varx, gui_window *gui )
 }
 
 
-OVL_EXTERN bool VarEvent( gui_window * gui, gui_event gui_ev, void * param )
+OVL_EXTERN bool VarEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id;
-    dlg_var_expand      *varx;
+    gui_ctl_id      id;
+    dlg_var_expand  *varx;
 
     varx = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         SetDlgStatus( varx, gui );
         GUISetFocus( gui, CTL_VARX_START );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_VARX_OK:
             if( GetDlgStatus( varx, gui ) ) {
-                varx->cancel = FALSE;
+                varx->cancel = false;
                 GUICloseDialog( gui );
             }
             break;
         case CTL_VARX_CANCEL:
-            varx->cancel = TRUE;
+            varx->cancel = true;
             GUICloseDialog( gui );
             break;
         case CTL_VARX_DEFAULTS:
             SetDlgStatus( varx, gui );
             break;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -106,10 +106,11 @@ extern  bool    DlgVarExpand( dlg_var_expand *pvarx )
 
     varx.start = pvarx->start;
     varx.end = pvarx->end;
-    varx.cancel = TRUE;
+    varx.cancel = true;
     ResDlgOpen( &VarEvent, &varx, DIALOG_VARX );
-    if( varx.cancel ) return( FALSE );
+    if( varx.cancel )
+        return( false );
     pvarx->start = varx.start;
     pvarx->end = varx.end;
-    return( TRUE );
+    return( true );
 }

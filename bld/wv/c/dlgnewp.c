@@ -50,7 +50,7 @@ static char             args[UTIL_LEN];
 
 OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
 {
-    unsigned            id;
+    gui_ctl_id          id;
     dlg_new_prog        *dlg;
 
     dlg = GUIGetExtra( gui );
@@ -61,32 +61,33 @@ OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
         GUISetText( gui, CTL_NEWP_PROG, dlg->prog );
         GUISetText( gui, CTL_NEWP_ARGS, dlg->args );
         GUISetFocus( gui, CTL_NEWP_PROG );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_NEWP_BROWSE:
             GUIDlgBuffGetText( gui, CTL_NEWP_PROG, TxtBuff, TXT_LEN );
-            if( !ExeBrowse() ) return( TRUE );
+            if( !ExeBrowse() )
+                return( true );
             GUISetText( gui, CTL_NEWP_PROG, TxtBuff );
             GUISetFocus( gui, CTL_NEWP_PROG );
-            return( TRUE );
+            return( true );
         case CTL_NEWP_OK:
             GUIDlgBuffGetText( gui, CTL_NEWP_PROG, prog, sizeof( prog ) );
             GUIDlgBuffGetText( gui, CTL_NEWP_ARGS, args, sizeof( args ) );
             dlg->cancel = FALSE;
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         case CTL_NEWP_CANCEL:
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     case GUI_DESTROY:
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static void DoDlgNewProg( dlg_new_prog  *pdlg )
@@ -105,9 +106,12 @@ extern  void    DlgNewProg( void )
 
     for( ;; ) {
         DoDlgNewProg( &dlg );
-        if( dlg.cancel ) break;
+        if( dlg.cancel )
+            break;
         LoadNewProg( dlg.prog, dlg.args );
-        if( _IsOn( SW_HAVE_TASK ) ) break;
+        if( _IsOn( SW_HAVE_TASK ) ) {
+            break;
+        }
     }
     DoInput();
 }

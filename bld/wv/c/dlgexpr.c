@@ -65,7 +65,7 @@ extern bool DlgScanGivenAddr( const char *str, void *value );
 extern bool DlgScanAny( const char *str, void *value );
 extern bool DlgScanString( const char *str, void *value );
 
-static bool DoDlgGet( gui_window *gui, unsigned id, void *value, bool (*rtn)(const char *,void *) )
+static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, bool (*rtn)(const char *,void *) )
 {
     char        *str;
     bool        ok;
@@ -82,22 +82,22 @@ static bool DoDlgGet( gui_window *gui, unsigned id, void *value, bool (*rtn)(con
 }
 
 
-extern bool DlgGetLong( gui_window *gui, unsigned id, long *value )
+extern bool DlgGetLong( gui_window *gui, gui_ctl_id id, long *value )
 {
     return( DoDlgGet( gui, id, value, DlgScanLong ) );
 }
 
-extern bool DlgGetCodeAddr( gui_window *gui, unsigned id, address *value )
+extern bool DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
     return( DoDlgGet( gui, id, value, DlgScanCodeAddr ) );
 }
 
-extern bool DlgGetDataAddr( gui_window *gui, unsigned id, address *value )
+extern bool DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
     return( DoDlgGet( gui, id, value, DlgScanDataAddr ) );
 }
 
-extern void DlgSetLong( gui_window *gui, unsigned id, long value )
+extern void DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
 {
     CnvLong( value, TxtBuff, TXT_LEN );
     GUISetText( gui, id, TxtBuff );

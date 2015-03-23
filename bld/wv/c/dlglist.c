@@ -45,7 +45,7 @@ static void SelectListLast( gui_window *gui )
 
     size = GUIGetListSize( gui, CTL_LIST_LIST );
     if( size != 0 ) {
-        GUISetCurrSelect( gui, CTL_LIST_LIST, size-1 );
+        GUISetCurrSelect( gui, CTL_LIST_LIST, size - 1 );
     }
 }
 
@@ -54,24 +54,28 @@ static void AddText( gui_window *gui, char *add )
     int         size;
     int         i;
     char        *text;
-    int         dup;
+    bool        dup;
 
     size = GUIGetListSize( gui, CTL_LIST_LIST );
-    dup = FALSE;
+    dup = false;
     for( i = 0; i < size; ++i ) {
         text = GUIGetListItem( gui, CTL_LIST_LIST, i );
         if( text != NULL ) {
-            dup = strcmp( add, text ) == 0;
+            dup = ( strcmp( add, text ) == 0 );
             GUIMemFree( text );
-            if( dup ) break;
+            if( dup ) {
+                break;
+            }
         }
     }
-    if( !dup ) GUIAddText( gui, CTL_LIST_LIST, add );
+    if( !dup ) {
+        GUIAddText( gui, CTL_LIST_LIST, add );
+    }
 }
 
-static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
+static bool SourceEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     void        *curr;
     int         i;
     int         size;
@@ -82,15 +86,15 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
     switch( gui_ev ) {
     case GUI_DESTROY:
         WndFree( dlg->title );
-        return( TRUE );
+        return( true );
     case GUI_INIT_DIALOG:
         GUISetWindowText( gui, dlg->title );
         GUIClearList( gui, CTL_LIST_LIST );
-        for(curr = dlg->next( NULL ); curr != NULL; curr = dlg->next( curr )) {
+        for( curr = dlg->next( NULL ); curr != NULL; curr = dlg->next( curr ) ) {
             AddText( gui, dlg->name( curr ) );
         }
         GUISetFocus( gui, CTL_LIST_EDIT );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
@@ -120,7 +124,8 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
             SelectListLast( gui );
             GUIClearText( gui, CTL_LIST_EDIT );
             GUISetFocus( gui, CTL_LIST_EDIT );
-            if( id == CTL_LIST_ADD ) break;
+            if( id == CTL_LIST_ADD )
+                break;
             dlg->clear();
             size = GUIGetListSize( gui, CTL_LIST_LIST );
             for( i = 0; i < size; ++i ) {
@@ -137,14 +142,14 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
         case CTL_LIST_BROWSE:
             GUIDlgBuffGetText( gui, CTL_LIST_EDIT, TxtBuff, TXT_LEN );
             if( !AllBrowse( TxtBuff ) )
-                return( TRUE );
+                return( true );
             GUISetText( gui, CTL_LIST_EDIT, TxtBuff );
             GUISetFocus( gui, CTL_LIST_EDIT );
-            return( TRUE );
+            return( true );
         }
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 

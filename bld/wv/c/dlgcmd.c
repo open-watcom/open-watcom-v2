@@ -46,15 +46,15 @@ extern bool             TBreak( void );
 extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
 extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
-extern void             SymComplete( gui_window *gui, int id );
+extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 extern void             DoCmd(char*);
 
 
-static bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
+static bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_command *dlg;
     char        *text;
-    unsigned    id;
+    gui_ctl_id  id;
 
     dlg = GUIGetExtra( gui );
     switch( gui_ev ) {
@@ -64,7 +64,7 @@ static bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
 #endif
         DlgSetHistory( gui, CmdHistory, dlg->cmd, CTL_CMD_EDIT, CTL_CMD_LIST );
         GUISetFocus( gui, CTL_CMD_EDIT );
-        return( TRUE );
+        return( true );
     case GUI_KEY_CONTROL:
         return( DlgHistoryKey( gui, param, CTL_CMD_EDIT, CTL_CMD_LIST ) );
     case GUI_CONTROL_DCLICKED:
@@ -74,11 +74,11 @@ static bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
         case CTL_CMD_LIST:
             DlgClickHistory( gui, CTL_CMD_EDIT, CTL_CMD_LIST );
             if( gui_ev == GUI_CONTROL_CLICKED )
-                return( TRUE );
+                return( true );
             /* fall through */
         case CTL_CMD_SYMBOL:
             SymComplete( gui, CTL_CMD_EDIT );
-            return( TRUE );
+            return( true );
         case CTL_CMD_OK:
             text = GUIGetText( gui, CTL_CMD_EDIT );
             if( text != NULL ) {
@@ -90,12 +90,12 @@ static bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
             break;
         }
         GUICloseDialog( gui );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY:
         WndFree( dlg );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 

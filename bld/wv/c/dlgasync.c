@@ -60,9 +60,9 @@ void AsyncNotify( void )
     }
 }
 
-OVL_EXTERN bool AsyncEvent( gui_window * gui, gui_event gui_ev, void * param )
+OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned            id;
+    gui_ctl_id      id;
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:

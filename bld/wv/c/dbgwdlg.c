@@ -161,7 +161,6 @@ bool WndDlgTxt( const char *buff )
 }
 
 
-static  WNDGETLINE DlgGetLine;
 static  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     int         i;

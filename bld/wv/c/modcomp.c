@@ -38,7 +38,7 @@
 #include "strutil.h"
 
 
-extern char     *DlgGetMatchString( gui_window *gui, int id, int *matchoff );
+extern char     *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff );
 extern void     WndMsgBox( const char * );
 
 static const char *ModGetName( const void *data_handle, int item )
@@ -51,13 +51,13 @@ static const char *ModGetName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-extern void ModComplete( gui_window *gui, int id )
+extern void ModComplete( gui_window *gui, gui_ctl_id id )
 {
     char        *match;
     module_list list;
     int         new;
-    int         matchoff;
-    char                *savebuff;
+    size_t      matchoff;
+    char        *savebuff;
 
     match = DlgGetMatchString( gui, id, &matchoff );
     savebuff = DupStr( TxtBuff );
@@ -72,13 +72,12 @@ extern void ModComplete( gui_window *gui, int id )
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT_DUI( Modules ), &list, 0,
-                              ModGetName, ModListNumRows( &list ) );
+        new = DlgPickWithRtn( LIT_DUI( Modules ), &list, 0, ModGetName, ModListNumRows( &list ) );
         break;
     }
     strcpy( TxtBuff, savebuff );
     if( new != -1 ) {
-        ModListName( &list, new, TxtBuff+matchoff );
+        ModListName( &list, new, TxtBuff + matchoff );
         GUISetText( gui, id, TxtBuff );
     }
     GUISetFocus( gui, id );

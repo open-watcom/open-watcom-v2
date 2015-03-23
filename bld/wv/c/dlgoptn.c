@@ -39,8 +39,8 @@
 
 extern bool             SupportsExactBreakpoints;
 
-extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
-extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
+extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
+extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 extern void             LookCaseSet( bool respect );
 extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
 
@@ -91,42 +91,42 @@ static void SetDlgStatus( gui_window *gui )
     GUIEnableControl( gui, CTL_OPT_BR_ON_WRITE, SupportsExactBreakpoints );
     GUISetChecked( gui, CTL_OPT_NOHEX, _IsOn( SW_DONT_EXPAND_HEX ) );
     if( SupportsExactBreakpoints )
-        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, _IsOn ( SW_BREAK_ON_WRITE ) );
+        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, _IsOn( SW_BREAK_ON_WRITE ) );
     else
         GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, FALSE );
 }
 
 
-OVL_EXTERN bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
+OVL_EXTERN bool OptSetEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id;
-    dlg_window_set      *optset;
+    gui_ctl_id      id;
+    dlg_window_set  *optset;
 
     optset = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         SetDlgStatus( gui );
         GUISetFocus( gui, CTL_OPT_RADIX );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_OPT_OK:
-            optset->cancel = FALSE;
+            optset->cancel = false;
             GetDlgStatus( gui );
             GUICloseDialog( gui );
             break;
         case CTL_OPT_CANCEL:
-            optset->cancel = TRUE;
+            optset->cancel = true;
             GUICloseDialog( gui );
             break;
         case CTL_OPT_DEFAULTS:
             SetDlgStatus( gui );
             break;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -134,8 +134,7 @@ extern  bool    DlgOptSet( void )
 {
     dlg_window_set      optset;
 
-    optset.cancel = TRUE;
+    optset.cancel = true;
     ResDlgOpen( &OptSetEvent, &optset, DIALOG_OPTION );
-    if( optset.cancel ) return( FALSE );
-    return( TRUE );
+    return( !optset.cancel );
 }

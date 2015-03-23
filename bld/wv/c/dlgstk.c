@@ -42,16 +42,16 @@ extern void LastStackPos( void );
 extern void LastMachState( void );
 
 
-OVL_EXTERN bool StkOrHistoryEvent( gui_window * gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool StkOrHistoryEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id;
-    int         *resp;
+    gui_ctl_id  id;
+    gui_ctl_id  *resp;
 
     resp = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         GUISetFocus( gui, CTL_STK_YES );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -60,23 +60,23 @@ OVL_EXTERN bool StkOrHistoryEvent( gui_window * gui, gui_event gui_ev, void *par
         case CTL_STK_YES:
             *resp = id;
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
-    return( FALSE );
+    return( false );
 }
 
-static bool DoStackOrHistory( int id )
+static bool DoStackOrHistory( gui_ctl_id id )
 {
-    int         resp;
+    gui_ctl_id  resp;
 
     resp = CTL_STK_CANCEL;
     ResDlgOpen( &StkOrHistoryEvent, &resp, id );
     switch( resp ) {
     case CTL_STK_CANCEL:
         _SwitchOn( SW_EXECUTE_ABORTED );
-        return( FALSE );
+        return( false );
     case CTL_STK_YES:
         if( id == DIALOG_STACK ) {
             LastStackPos();
@@ -85,13 +85,13 @@ static bool DoStackOrHistory( int id )
         }
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 bool DlgUpTheStack( void )
 {
     LastStackPos();
-    return( TRUE );
+    return( true );
 }
 
 bool DlgBackInTime( bool lost_mem_state )
@@ -99,13 +99,11 @@ bool DlgBackInTime( bool lost_mem_state )
     if( lost_mem_state ) {
         return( DoStackOrHistory( DIALOG_HISTORY ) );
     } else {
-        return( WndDisplayMessage( LIT_DUI( WARN_Losing_Redo ), LIT_ENG( Empty ),
-                             GUI_YES_NO ) == GUI_RET_YES );
+        return( WndDisplayMessage( LIT_DUI( WARN_Losing_Redo ), LIT_ENG( Empty ), GUI_YES_NO ) == GUI_RET_YES );
     }
 }
 
 bool DlgIncompleteUndo( void )
 {
-    return( WndDisplayMessage( LIT_DUI( WARN_Incomplete_Undo ), LIT_ENG( Empty ),
-                             GUI_YES_NO ) == GUI_RET_YES );
+    return( WndDisplayMessage( LIT_DUI( WARN_Incomplete_Undo ), LIT_ENG( Empty ), GUI_YES_NO ) == GUI_RET_YES );
 }

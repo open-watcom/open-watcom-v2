@@ -39,10 +39,10 @@
 #include "strutil.h"
 
 
-OVL_EXTERN bool AynEvent( gui_window * gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool AynEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_ayn     *ayn;
-    unsigned    id;
+    gui_ctl_id  id;
 
     ayn = GUIGetExtra( gui );
     switch( gui_ev ) {
@@ -50,20 +50,20 @@ OVL_EXTERN bool AynEvent( gui_window * gui, gui_event gui_ev, void *param )
         Format( TxtBuff, LIT_DUI( WARN_Program_Will_Slow ), ayn->mult );
         GUISetText( gui, CTL_AYN_NO_WAY, TxtBuff );
         GUISetFocus( gui, CTL_AYN_NO );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_AYN_YES:
-            ayn->as_a_fruitcake = TRUE;
+            ayn->as_a_fruitcake = true;
             /* fall through */
         case CTL_AYN_NO:
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -71,7 +71,7 @@ bool DlgAreYouNuts( unsigned long mult )
 {
     dlg_ayn     ayn;
 
-    ayn.as_a_fruitcake = FALSE;
+    ayn.as_a_fruitcake = false;
     ayn.mult = mult;
     ResDlgOpen( &AynEvent, &ayn, DIALOG_AYN );
     return( ayn.as_a_fruitcake );

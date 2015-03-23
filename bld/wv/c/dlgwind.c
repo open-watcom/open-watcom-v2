@@ -38,8 +38,8 @@
 #include "dbgscan.h"
 
 
-extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
-extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
+extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
+extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 extern int              TabIntervalGet( void );
 extern void             TabIntervalSet( int );
 extern void             AsmChangeOptions( void );
@@ -103,36 +103,36 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-OVL_EXTERN bool WndSetEvent( gui_window * gui, gui_event gui_ev, void * param )
+OVL_EXTERN bool WndSetEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id;
-    dlg_window_set      *wndset;
+    gui_ctl_id      id;
+    dlg_window_set  *wndset;
 
     wndset = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         GUISetFocus( gui, CTL_WIND_ASM_SOURCE );
         SetDlgStatus( gui );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_WIND_OK:
-            wndset->cancel = FALSE;
+            wndset->cancel = false;
             GetDlgStatus( gui );
             GUICloseDialog( gui );
             break;
         case CTL_WIND_CANCEL:
-            wndset->cancel = TRUE;
+            wndset->cancel = true;
             GUICloseDialog( gui );
             break;
         case CTL_WIND_DEFAULTS:
             SetDlgStatus( gui );
             break;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -140,8 +140,7 @@ extern  bool    DlgWndSet( void )
 {
     dlg_window_set      wndset;
 
-    wndset.cancel = TRUE;
+    wndset.cancel = true;
     ResDlgOpen( &WndSetEvent, &wndset, DIALOG_WIND );
-    if( wndset.cancel ) return( FALSE );
-    return( TRUE );
+    return( !wndset.cancel );
 }

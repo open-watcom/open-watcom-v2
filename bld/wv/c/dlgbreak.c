@@ -43,15 +43,15 @@
 extern bool             RemovePoint( brkp * );
 extern brkp             *FindBreak( address );
 extern brkp             *AddBreak( address );
-extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
-extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
-extern bool             DlgGetCodeAddr( gui_window *gui, unsigned id, address* );
-extern bool             DlgGetDataAddr( gui_window *gui, unsigned id, address* );
+extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
+extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
+extern bool             DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address* );
+extern bool             DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address* );
 extern void             PrevError( const char * );
 extern void             DbgUpdate( update_list flags );
 extern void             SetPointAddr( brkp *bp, address addr );
 extern void             GetBPText( brkp *bp, char *buff );
-extern void             SymComplete( gui_window *gui, int id );
+extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 extern void             WndMsgBox( const char * );
 extern bool             BrkCheckWatchLimit( address loc, mad_type_handle );
 extern void             RecordNewPoint( brkp *bp );
@@ -74,7 +74,7 @@ static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
         if( new == NULL || strcmp( new, TxtBuff ) != 0 ) {
             ok = DlgGetCodeAddr( gui, CTL_BRK_ADDRESS, &addr );
         } else {
-            ok = TRUE;
+            ok = true;
             addr = dlg->tmpbp.loc.addr;
         }
         GUIMemFree( new );
@@ -99,7 +99,7 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
         PrevError( TxtBuff );
         GUISetFocus( gui, CTL_BRK_COUNTDOWN );
         dlg->last_edit = CTL_BRK_COUNTDOWN;
-        return( FALSE );
+        return( false );
     }
     tmp_bp->initial_countdown = tmp_bp->countdown;
     if( GUIIsChecked( gui, CTL_BRK_EXECUTE ) ) {
@@ -117,14 +117,14 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
         PrevError( TxtBuff );
         GUISetFocus( gui, CTL_BRK_ADDRESS );
         dlg->last_edit = CTL_BRK_ADDRESS;
-        return( FALSE );
+        return( false );
     }
     bp = FindBreak( tmp_bp->loc.addr );
     if( bp != NULL && bp != dlg->bp ) {
         _SwitchOn( SW_ERROR_RETURNS );
         Error( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
         _SwitchOff( SW_ERROR_RETURNS );
-        return( FALSE );
+        return( false );
     }
     GUIDlgBuffGetText( gui, CTL_BRK_CMD_LIST, TxtBuff, TXT_LEN );
     if( tmp_bp->cmds != NULL )
@@ -135,21 +135,21 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
         tmp_bp->cmds = NULL;
     }
     tmp_bp->condition = GUIGetText( gui, CTL_BRK_CONDITION );
-    if( tmp_bp->condition != NULL ) tmp_bp->status.b.use_condition = TRUE;
-    if( tmp_bp->cmds != NULL ) tmp_bp->status.b.use_cmds = TRUE;
-    if( tmp_bp->initial_countdown != 0 ) tmp_bp->status.b.use_countdown = TRUE;
+    if( tmp_bp->condition != NULL ) tmp_bp->status.b.use_condition = true;
+    if( tmp_bp->cmds != NULL ) tmp_bp->status.b.use_cmds = true;
+    if( tmp_bp->initial_countdown != 0 ) tmp_bp->status.b.use_countdown = true;
     tmp_bp->status.b.active = GUIIsChecked( gui, CTL_BRK_ACTIVE );
     tmp_bp->status.b.resume = GUIIsChecked( gui, CTL_BRK_RESUME );
     tmp_bp->status.b.silent = tmp_bp->status.b.resume;
 
-    return( TRUE );
+    return( true );
 }
 
 
 static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
 {
     brkp                *tmp_bp = &dlg->tmpbp;
-    unsigned            id;
+    gui_ctl_id          id;
     mad_type_info       mti;
 
     if( !IS_NIL_ADDR( tmp_bp->loc.addr ) ) {
@@ -199,23 +199,25 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
 }
 
 
-static bool DlgEditField( unsigned id )
+static bool DlgEditField( gui_ctl_id id )
 {
     switch( id ) {
     case CTL_BRK_ADDRESS:
     case CTL_BRK_CONDITION:
     case CTL_BRK_COUNTDOWN:
     case CTL_BRK_CMD_LIST:
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 
-OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
+OVL_EXTERN bool BrkEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id,from,to;
+    gui_ctl_id  id;
+    gui_ctl_id  from;
+    gui_ctl_id  to;
     dlg_brk     *dlg;
     brkp        *bp;
     brkp        saved;
@@ -235,7 +237,7 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
         break;
     case GUI_INIT_DIALOG:
         SetDlgStatus( dlg, gui );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -244,44 +246,44 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
         case CTL_BRK_WORD:
         case CTL_BRK_DWORD:
         case CTL_BRK_QWORD:
-            return( TRUE );
+            return( true );
 #if 0
         case CTL_BRK_GET_TOTAL:
             DlgSetLong( gui, CTL_BRK_COUNTDOWN, dlg->tmpbp.total_hits );
-            return( TRUE );
+            return( true );
 #endif
         case CTL_BRK_RESET:
             dlg->tmpbp.total_hits = 0;
             DlgSetLong( gui, CTL_BRK_TOTAL, dlg->tmpbp.total_hits );
-            return( TRUE );
+            return( true );
         case CTL_BRK_OK:
             if( GetDlgStatus( dlg, gui ) ) {
-                ok = TRUE;
+                ok = true;
                 if( dlg->brand_new ) {
                     if( !BrkCheckWatchLimit( dlg->tmpbp.loc.addr, dlg->tmpbp.th ) ) {
-                        ok = FALSE;
+                        ok = false;
                     }
                 } else {
                     saved = *bp;
                     *bp = dlg->tmpbp;
                     if( !BrkCheckWatchLimit( NilAddr, MAD_NIL_TYPE_HANDLE ) ) {
-                        ok = FALSE;
+                        ok = false;
                     }
                     *bp = saved;
                 }
                 if( ok ) {
-                    dlg->cancel = FALSE;
+                    dlg->cancel = false;
                     GUICloseDialog( gui );
                 }
             }
-            return( TRUE );
+            return( true );
         case CTL_BRK_CLEAR:
             dlg->clear = TRUE;
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         case CTL_BRK_CANCEL:
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         case CTL_BRK_SYMBOL:
             GUIGetFocus( gui, &from );
             if( from != CTL_BRK_SYMBOL ) {
@@ -292,9 +294,9 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
             } else {
                 WndMsgBox( LIT_DUI( No_text_to_complete ) );
             }
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     case GUI_DESTROY:
         if( dlg->brand_new ) {
             if( dlg->cancel || dlg->clear ) {
@@ -305,7 +307,7 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
             }
         } else {
             if( dlg->clear ) {
-                SetRecord( TRUE );
+                SetRecord( true );
                 RemovePoint( bp );
             } else if( !dlg->cancel ) {
                 saved = *bp;
@@ -316,7 +318,7 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
         }
         DbgUpdate( UP_BREAK_CHANGE );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -325,31 +327,31 @@ bool DlgBreak( address addr )
     brkp        *bp;
     dlg_brk     dlg;
 
-    SetRecord( FALSE );
+    SetRecord( false );
     bp = FindBreak( addr );
-    dlg.brand_new = FALSE;
+    dlg.brand_new = false;
     if( bp == NULL ) {
         bp = AddBreak( addr );
-        dlg.brand_new = TRUE;
+        dlg.brand_new = true;
     }
     dlg.bp = bp;
-    dlg.cancel = TRUE;
-    dlg.clear = FALSE;
-    dlg.cmd_error = FALSE;
-    dlg.cond_error = FALSE;
+    dlg.cancel = true;
+    dlg.clear = false;
+    dlg.cmd_error = false;
+    dlg.cond_error = false;
     if( bp->status.b.expr_error ) {
         PrevError( bp->error );
         WndFree( bp->error );
         bp->error = NULL;
-        bp->status.b.expr_error = FALSE;
-        dlg.cond_error = TRUE;
+        bp->status.b.expr_error = false;
+        dlg.cond_error = true;
     } else if( bp->status.b.cmd_error ) {
-        bp->status.b.cmd_error = FALSE;
-        dlg.cmd_error = TRUE;
+        bp->status.b.cmd_error = false;
+        dlg.cmd_error = true;
     }
     dlg.tmpbp = *bp;
     CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
     ResDlgOpen( &BrkEvent, &dlg, DIALOG_BREAK );
-    SetRecord( TRUE );
+    SetRecord( true );
     return( !dlg.cancel );
 }

@@ -47,12 +47,13 @@ static name_list *SortedNames;
 static const char *SymGetName( const void *data_handle, int item )
 {
     item += *(const int *)data_handle;
-    if( item >= NameListNumRows( SortedNames ) ) return( NULL );
+    if( item >= NameListNumRows( SortedNames ) )
+        return( NULL );
     NameListName( SortedNames, item, TxtBuff, SN_QUALIFIED );
     return( TxtBuff );
 }
 
-extern char *DlgGetMatchString( gui_window *gui, int id, int *matchoff )
+extern char *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff )
 {
     char        *p;
     char        *match;
@@ -71,13 +72,13 @@ extern char *DlgGetMatchString( gui_window *gui, int id, int *matchoff )
 }
 
 
-extern void SymComplete( gui_window *gui, int id )
+extern void SymComplete( gui_window *gui, gui_ctl_id id )
 {
     char                *match;
     int                 new;
     unsigned            first,last;
     unsigned            num;
-    int                 matchoff;
+    size_t              matchoff;
     char                *savebuff;
 
     SortedNames = SymCompInit( TRUE, TRUE, FALSE, FALSE, NO_MOD );
@@ -105,7 +106,7 @@ extern void SymComplete( gui_window *gui, int id )
     strcpy( TxtBuff, savebuff );
     if( new != -1 ) {
         new += first;
-        NameListName( SortedNames, new, TxtBuff+matchoff, SN_QUALIFIED );
+        NameListName( SortedNames, new, TxtBuff + matchoff, SN_QUALIFIED );
         GUISetText( gui, id, TxtBuff );
     }
     GUISetFocus( gui, id );

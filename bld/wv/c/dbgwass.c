@@ -81,7 +81,7 @@ extern void             BreakOnSelected( const char *item );
 extern void             GoHome(void);
 extern address          ModFirstAddr( mod_handle mod );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
-                                   gui_menu_struct *old, unsigned num_old, int id );
+                                   gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             DbgUpdate( update_list );
