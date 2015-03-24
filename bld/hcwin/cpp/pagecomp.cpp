@@ -34,6 +34,10 @@
 #include "compress.h"
 #include "hcmem.h"
 
+#ifdef PAGE_SIZE
+#undef PAGE_SIZE
+#endif
+
 #define BLOCK_SIZE      128
 #define PAGE_SIZE       1024
 

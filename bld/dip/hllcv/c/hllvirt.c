@@ -33,10 +33,13 @@
 #include <limits.h>
 #include "bool.h"
 
+#ifdef PAGE_SIZE
+#undef PAGE_SIZE
+#endif
 
 #define PAGE_BITS       12
 #define DIR_BITS        4
-#define PAGE_SIZE       (1U<<PAGE_BITS)
+#define PAGE_SIZE     (1U<<PAGE_BITS)
 #define DIR_SIZE        (1UL<<DIR_BITS)
 
 #define GET_DIR( v )    ((v) >> (DIR_BITS+PAGE_BITS))

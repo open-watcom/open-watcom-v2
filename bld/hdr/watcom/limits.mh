@@ -184,9 +184,11 @@
 :segment LINUX
 /*
  * Page size - fixed for i386 and AMD64
+ * Constant is required by POSIX...
  */
 #ifdef __386__
 #define PAGE_SIZE   4096
+#define PAGESIZE    PAGE_SIZE
 #endif
 :endsegment
 

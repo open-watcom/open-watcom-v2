@@ -51,13 +51,13 @@
 #include "clibext.h"
 
 #if defined( __386__ )
-  #define PAGE_SIZE     (16*1024)
+  #define _PAGE_SIZE     (16*1024)
 #else
-  #define PAGE_SIZE     (1*1024)
+  #define _PAGE_SIZE     (1*1024)
 #endif
-#define _PageNumber( v_ptr ) ((v_ptr) / PAGE_SIZE)
-#define _PageOffset( v_ptr ) (ObjCode + ( (v_ptr) - ( (v_ptr) / PAGE_SIZE ) * PAGE_SIZE ))
-#define _MakeVirtual( page, obj_ptr ) ((page) * PAGE_SIZE + ( (obj_ptr) - ObjCode ))
+#define _PageNumber( v_ptr ) ((v_ptr) / _PAGE_SIZE)
+#define _PageOffset( v_ptr ) (ObjCode + ( (v_ptr) - ( (v_ptr) / _PAGE_SIZE ) * _PAGE_SIZE ))
+#define _MakeVirtual( page, obj_ptr ) ((page) * _PAGE_SIZE + ( (obj_ptr) - ObjCode ))
 
 static  file_attr       PageFileAttrs = { REC_FIXED | SEEK };
 static  char            *PageFileName = { "__wfc__.vm" };
@@ -105,8 +105,8 @@ void    InitObj( void ) {
     int         idx;
 
     ObjCode = NULL; // in case FMemAlloc() fails
-    ObjCode = FMemAlloc( PAGE_SIZE );
-    ObjEnd = ObjCode + PAGE_SIZE;
+    ObjCode = FMemAlloc( _PAGE_SIZE );
+    ObjEnd = ObjCode + _PAGE_SIZE;
     ObjPtr = ObjCode;
     *(unsigned_16 *)ObjPtr = FC_END_OF_SEQUENCE; // in case no source code in file
     PageFile = NULL;
@@ -169,9 +169,9 @@ static  void    DumpCurrPage( void ) {
         if( CurrPage > MaxPage ) {
             MaxPage = CurrPage;
         }
-        SDSeek( PageFile, CurrPage, PAGE_SIZE );
+        SDSeek( PageFile, CurrPage, _PAGE_SIZE );
         ChkIOErr( PageFile, SM_IO_WRITE_ERR );
-        SDWrite( PageFile, ObjCode, PAGE_SIZE );
+        SDWrite( PageFile, ObjCode, _PAGE_SIZE );
         ChkIOErr( PageFile, SM_IO_WRITE_ERR );
         PageFlags &= ~PF_DIRTY;
     }
@@ -184,9 +184,9 @@ static  void    LoadPage( unsigned_16 page ) {
 
     if( page != CurrPage ) {
         DumpCurrPage();
-        SDSeek( PageFile, page, PAGE_SIZE );
+        SDSeek( PageFile, page, _PAGE_SIZE );
         ChkIOErr( PageFile, SM_IO_READ_ERR );
-        SDRead( PageFile, ObjCode, PAGE_SIZE );
+        SDRead( PageFile, ObjCode, _PAGE_SIZE );
         // If we seek to the end of the last page in the disk
         // file (which is the start of a non-existent page file),
         // we will get end-of-file when we do the read.
