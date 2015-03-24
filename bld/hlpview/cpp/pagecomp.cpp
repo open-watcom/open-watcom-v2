@@ -34,12 +34,8 @@
 #include "compress.h"
 #include "hcmem.h"
 
-#ifdef PAGE_SIZE
-#undef PAGE_SIZE
-#endif
-
 #define BLOCK_SIZE      128
-#define PAGE_SIZE       1024
+#define HPAGE_SIZE      1024
 
 struct BlockFile : public File
 {
@@ -92,7 +88,7 @@ int main( int argc, char *argv[] )
         amount_read = input.get_block( block );
         if( amount_read == 0 ) break;
         amount_written += compactor.compress( block, amount_read );
-        if( amount_written > PAGE_SIZE ){
+        if( amount_written > HPAGE_SIZE ){
             pagebreaks[i++] = num_pages;
             compactor.flush();
             amount_written = compactor.compress( block, amount_read );
@@ -112,7 +108,7 @@ int main( int argc, char *argv[] )
     for( int j=0; j < num_pages; j++ ){
         if( j == pagebreaks[i] ){
             compactor.flush();
-            while( amount_written < PAGE_SIZE ){
+            while( amount_written < HPAGE_SIZE ){
                 output.write( (uint_8)0 );
                 amount_written++;
             }
