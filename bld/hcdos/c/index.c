@@ -58,7 +58,7 @@ static unsigned markDataPages( void )
     while( curnode != NULL ) {
         topicCnt++;
         nodesize = sizeof( PageIndexEntry ) + strlen( curnode->name ) + 1;
-        if( nodesize + size > PAGE_SIZE ) {
+        if( nodesize + size > HPAGE_SIZE ) {
             page++;
             size = sizeof( HelpPageHeader );
         }
@@ -118,7 +118,7 @@ unsigned long CalcIndexSize( char **str, bool gen_str )
 
     dataPageCnt = markDataPages();
     indexPageCnt = calcIndexPages( dataPageCnt );
-    ret = ( dataPageCnt + indexPageCnt ) * PAGE_SIZE
+    ret = ( dataPageCnt + indexPageCnt ) * HPAGE_SIZE
             + dataPageCnt * sizeof( uint_16 );
     if( gen_str ) {
         ret += sizeof( HelpHeader ) + calcStringBlockSize( str );
@@ -167,8 +167,8 @@ static int writeOneDataPage( int fout, unsigned pagenum )
     unsigned            len;
     a_helpnode          *curnode;
 
-    page = malloc( PAGE_SIZE );
-    memset( page, 0, PAGE_SIZE );
+    page = malloc( HPAGE_SIZE );
+    memset( page, 0, HPAGE_SIZE );
     pagehdr = (HelpPageHeader *)page;
     index = (PageIndexEntry *)( page + sizeof( HelpPageHeader ) );
     pagehdr->type = PAGE_DATA;
@@ -187,7 +187,7 @@ static int writeOneDataPage( int fout, unsigned pagenum )
         curnode = curnode->next;
         index++;
     }
-    write( fout, page, PAGE_SIZE );
+    write( fout, page, HPAGE_SIZE );
     free( page );
     return( 0 );
 }
@@ -267,8 +267,8 @@ static void generateIndexLevel( void **pages, unsigned curbase,
         base = prevbase;
     }
     for( i = curbase; i < curbase + cur_level; i++ ) {
-        pages[i] = malloc( PAGE_SIZE );
-        memset( pages[i], 0, PAGE_SIZE );
+        pages[i] = malloc( HPAGE_SIZE );
+        memset( pages[i], 0, HPAGE_SIZE );
     }
     /***********************************
      * for each B tree page in a level *
@@ -315,7 +315,7 @@ static int writeIndexPages( int fout )
          prevbase = curbase;
      }
      for( i = 0; i < indexPageCnt; i++ ) {
-         write( fout, pages[i], PAGE_SIZE );
+         write( fout, pages[i], HPAGE_SIZE );
          if( pages[i] != NULL ) free( pages[i] );
      }
      free( pages );
