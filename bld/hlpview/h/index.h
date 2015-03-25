@@ -68,9 +68,9 @@
  */
 
 
-#define PAGE_SIZE                       1024
+#define HLP_PAGE_SIZE                   1024
 #define INDEX_ENTRIES_PER_PAGE          \
-        ( ( PAGE_SIZE - sizeof( HelpPageHeader ) ) / sizeof( HelpIndexEntry ) )
+        ( ( HLP_PAGE_SIZE - sizeof( HelpPageHeader ) ) / sizeof( HelpIndexEntry ) )
 
 #define HELP_SIG_1              0x1359ddcc
 #define HELP_SIG_2              0x95843561

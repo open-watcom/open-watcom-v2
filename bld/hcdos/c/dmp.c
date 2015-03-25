@@ -36,7 +36,7 @@
 #include <string.h>
 #include "index.h"
 
-char    Buffer[ PAGE_SIZE ];
+char    Buffer[HLP_PAGE_SIZE];
 
 
 void PrintHeader( HelpHeader *header )
@@ -164,7 +164,7 @@ void main( int argc, char *argv[] )
     read( fp, Buffer, header.datapagecnt * sizeof( uint_16 ) );
     PrintItemIndex( &header );
     for( i = 0; i < header.indexpagecnt + header.datapagecnt; i++ ) {
-        read( fp, Buffer, PAGE_SIZE );
+        read( fp, Buffer, HLP_PAGE_SIZE );
         PrintPage();
     }
 }

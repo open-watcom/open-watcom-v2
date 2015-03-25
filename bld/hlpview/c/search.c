@@ -43,7 +43,7 @@
 #define DEFAULTTOPIC "TABLE OF CONTENTS"
 
 int                     curFile = -1;
-char                    curPage[PAGE_SIZE];
+char                    curPage[HLP_PAGE_SIZE];
 HelpPageHeader          *pageHeader;
 char                    *stringBlock;
 void                    *pageIndex;
@@ -59,10 +59,10 @@ static void loadPage( HelpHdl hdl, unsigned long pagenum )
     } else {
         tmp = sizeof( HelpHeader );
     }
-    offset = tmp + hdl->header.str_size + pagenum * PAGE_SIZE
+    offset = tmp + hdl->header.str_size + pagenum * HLP_PAGE_SIZE
            + hdl->header.datapagecnt * sizeof( uint_16 );
     HelpSeek( hdl->fp, offset, HELP_SEEK_SET );
-    HelpRead( hdl->fp, curPage, PAGE_SIZE );
+    HelpRead( hdl->fp, curPage, HLP_PAGE_SIZE );
     curFile = hdl->fp;
     pageHeader = (HelpPageHeader *)curPage;
     pageIndex = curPage + sizeof( HelpPageHeader );
