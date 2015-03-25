@@ -34,12 +34,8 @@
 #include "compress.h"
 #include "hcmem.h"
 
-#ifdef PAGE_SIZE
-#undef PAGE_SIZE
-#endif
-
-#define BLOCK_SIZE      128
-#define PAGE_SIZE       1024
+#define FILE_BLOCK_SIZE     128
+#define FILE_PAGE_SIZE      1024
 
 struct BlockFile : public File
 {
@@ -61,7 +57,7 @@ BlockFile::BlockFile( char const fname[] ) : File( fname, File::READ )
 
 size_t BlockFile::get_block( char * dest )
 {
-    return( fread( dest, 1, BLOCK_SIZE, _fp ) );
+    return( fread( dest, 1, FILE_BLOCK_SIZE, _fp ) );
 }
 
 static Memory bogus;
@@ -77,8 +73,8 @@ int main( int argc, char *argv[] )
         HCError( FILE_ERR );
     }
 
-    Buffer<char>        block(BLOCK_SIZE);
-    Buffer<int>         pagebreaks( input.size() / BLOCK_SIZE + 1 );
+    Buffer<char>        block(FILE_BLOCK_SIZE);
+    Buffer<int>         pagebreaks( input.size() / FILE_BLOCK_SIZE + 1 );
 
     size_t      amount_read = 0;
     int         amount_written = 0;
@@ -91,7 +87,7 @@ int main( int argc, char *argv[] )
         if( amount_read == 0 )
             break;
         amount_written += compactor.compress( block, amount_read );
-        if( amount_written > PAGE_SIZE ) {
+        if( amount_written > FILE_PAGE_SIZE ) {
             pagebreaks[i++] = num_pages;
             compactor.flush();
             amount_written = compactor.compress( block, amount_read );
@@ -111,7 +107,7 @@ int main( int argc, char *argv[] )
     for( int j=0; j < num_pages; j++ ) {
         if( j == pagebreaks[i] ) {
             compactor.flush();
-            while( amount_written < PAGE_SIZE ) {
+            while( amount_written < FILE_PAGE_SIZE ) {
                 output.write( (uint_8)0 );
                 amount_written++;
             }
