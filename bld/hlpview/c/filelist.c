@@ -165,32 +165,33 @@ static void scanDirectory( char *buf, FileList *list )
     closedir( dirhdl );
 }
 
-static void doFillFileList( char *cur, FileList *list )
+static void doFillFileList( const char *path, FileList *list )
 {
     char                done;
-    char                *path;
+    char                *path_start;
+    char                *path_end;
     unsigned            len;
-    char                buf[ _MAX_PATH ];
+    char                buf[_MAX_PATH];
 
     done = 0;
-    len = strlen( cur ) + 1;
-    path = HelpMemAlloc( len + 2 );
-    strcpy( path, cur );
-    cur = path;
+    len = strlen( path ) + 1;
+    path_start = HelpMemAlloc( len + 2 );
+    strcpy( path_start, path );
     for( ;; ) {
+        path_end = path_start;
 #ifdef __UNIX__
-        while( *cur != ':' ) {
+        while( *path_end != ':' ) {
 #else
-        while( *cur != ';' ) {
+        while( *path_end != ';' ) {
 #endif
-            if( *cur == '\0' ) {
+            if( *path_end == '\0' ) {
                 done = 1;
                 break;
             }
-            cur++;
+            path_end++;
         }
-        *cur = '\0';
-        strcpy( buf, path );
+        *path_end = '\0';
+        strcpy( buf, path_start );
         len = strlen( buf );
 #ifdef __UNIX__
         if( buf[len] == '/' ) buf[len] = '\0';
@@ -198,20 +199,21 @@ static void doFillFileList( char *cur, FileList *list )
         if( buf[len] == '/' || buf[len] == '\\' ) buf[len] = '\0';
 #endif
         scanDirectory( buf, list );
-        if( done ) break;
-        path = cur + 1;
-        cur = path;
+        if( done )
+            break;
+        path_start = path_end + 1;
     }
 }
 
 static void fillFileList( HelpSrchPathItem *srch, FileList *list )
 {
     unsigned    i;
-    char        *cur;
+    const char  *cur;
     unsigned    done;
 
     done = 0;
     for( i = 0 ;; i++ ) {
+        cur = NULL;
         switch( srch[i].type ) {
 #ifndef __NETWARE_386__
         case SRCHTYPE_ENV:
