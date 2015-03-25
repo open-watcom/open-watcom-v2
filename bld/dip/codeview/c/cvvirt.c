@@ -33,18 +33,14 @@
 #include "cvinfo.h"
 #include <limits.h>
 
-#ifdef PAGE_SIZE
-#undef PAGE_SIZE
-#endif
-
-#define PAGE_BITS       12
+#define VM_PAGE_BITS    12
 #define DIR_BITS        4
-#define PAGE_SIZE     (1U<<PAGE_BITS)
+#define VM_PAGE_SIZE    (1U<<VM_PAGE_BITS)
 #define DIR_SIZE        (1UL<<DIR_BITS)
 
-#define GET_DIR( v )    ((v) >> (DIR_BITS+PAGE_BITS))
-#define GET_PAGE( v )   (((v) >> PAGE_BITS) & (DIR_SIZE-1))
-#define GET_OFFSET( v ) ((v) & (PAGE_SIZE-1))
+#define GET_DIR( v )    ((v) >> (DIR_BITS+VM_PAGE_BITS))
+#define GET_PAGE( v )   (((v) >> VM_PAGE_BITS) & (DIR_SIZE-1))
+#define GET_OFFSET( v ) ((v) & (VM_PAGE_SIZE-1))
 
 typedef struct {
     unsigned_16         time_stamp;
@@ -62,7 +58,7 @@ static unsigned         TimeStamp;
 
 dip_status VMInit( imp_image_handle *ii, unsigned long size )
 {
-    ii->vm_dir_num = BLOCK_FACTOR( size, DIR_SIZE*PAGE_SIZE );
+    ii->vm_dir_num = BLOCK_FACTOR( size, DIR_SIZE * VM_PAGE_SIZE );
     ii->virt = DCAlloc( ii->vm_dir_num * sizeof( ii->virt ) );
     if( ii->virt == NULL ) {
         DCStatus( DS_ERR|DS_NO_MEM );
@@ -102,7 +98,7 @@ static unsigned KillPages( imp_image_handle *ii, unsigned i, unsigned j )
     virt_page           *pg;
 
     pg = ii->virt[i][j];
-    num_pages = pg->block->len / PAGE_SIZE;
+    num_pages = pg->block->len / VM_PAGE_SIZE;
     for( idx = 0; idx < num_pages; ++idx ) {
         if( j >= DIR_SIZE ) {
             ++i;
@@ -112,7 +108,7 @@ static unsigned KillPages( imp_image_handle *ii, unsigned i, unsigned j )
         ++j;
     }
     DCFree( pg );
-    return( num_pages * PAGE_SIZE );
+    return( num_pages * VM_PAGE_SIZE );
 }
 
 static int InitPageDir( imp_image_handle *ii, unsigned dir_idx )
@@ -144,8 +140,8 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
         if( !InitPageDir( ii, dir_idx ) ) return( NULL );
     }
     pg_idx = GET_PAGE( start );
-    len += start % PAGE_SIZE;
-    pg_start = start & ~(virt_mem)(PAGE_SIZE-1);
+    len += start % VM_PAGE_SIZE;
+    pg_start = start & ~(virt_mem)(VM_PAGE_SIZE - 1);
     pg = ii->virt[dir_idx][pg_idx];
     if( pg == NULL || (pg->block->len - pg->offset) < len ) {
         /* unloaded previously loaded block */
@@ -165,8 +161,8 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
             }
             DCFree( pg );
         }
-        num_pages = BLOCK_FACTOR( len, PAGE_SIZE );
-        pg = DCAlloc( num_pages * ( sizeof( *pg ) + PAGE_SIZE ) + sizeof( loaded_block ) - 1 );
+        num_pages = BLOCK_FACTOR( len, VM_PAGE_SIZE );
+        pg = DCAlloc( num_pages * ( sizeof( *pg ) + VM_PAGE_SIZE ) + sizeof( loaded_block ) - 1 );
         if( pg == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( NULL );
@@ -176,7 +172,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
         tmp_idx = dir_idx;
         for( j = pg_idx, i = 0; i < num_pages; ++j, ++i ) {
             pg[i].block = block;
-            pg[i].offset = i * PAGE_SIZE;
+            pg[i].offset = i * VM_PAGE_SIZE;
             if( j >= DIR_SIZE ) {
                 ++tmp_idx;
                 j = 0;
@@ -208,7 +204,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
             ii->virt[tmp_idx][j] = &pg[i];
         }
         /* read in new block */
-        len = num_pages * PAGE_SIZE;
+        len = num_pages * VM_PAGE_SIZE;
         block->len = len;
         pg_start += ii->bias;
         if( DCSeek( ii->sym_file, pg_start, DIG_ORG ) != pg_start ) {
@@ -242,7 +238,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
         ++TimeStamp;
     }
     pg->block->time_stamp = TimeStamp;
-    return( &pg->block->data[ (start & (PAGE_SIZE - 1)) + pg->offset ] );
+    return( &pg->block->data[ (start & (VM_PAGE_SIZE - 1)) + pg->offset ] );
 }
 
 void *VMRecord( imp_image_handle *ii, virt_mem rec )
