@@ -518,7 +518,7 @@ static  void emitProlog( stack_map *map )
             // 'subu sp,sp,at'
             GenRType( 0x00, 0x23, MIPS_STACK_REG, MIPS_STACK_REG, MIPS_GPR_SCRATCH );
         }
-        if( frame_size >= PAGE_SIZE ) {
+        if( frame_size >= _TARGET_PAGE_SIZE ) {
             GenCallLabelReg( RTLabel( RT_STK_CRAWL_SIZE ), RT_RET_REG );
             // Next instruction will be in delay slot!
             if( frame_size <= MIPS_MAX_OFFSET ) {

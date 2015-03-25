@@ -289,7 +289,7 @@ extern instruction *rALLOCA( instruction *ins )
         real_amount = AllocS32Const( value );
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
         PrefixIns( ins, first );
-        if( value <= (PAGE_SIZE - 7) ) {
+        if( value <= ( _TARGET_PAGE_SIZE - 7 ) ) {
             check = FALSE;
         }
     } else {

@@ -93,9 +93,7 @@
     #define SW                  I4
     #define WORD_SIZE           4
     #define REG_SIZE            4
-    #ifndef PAGE_SIZE
-      #define PAGE_SIZE           4096            /* for stack crawling */
-    #endif
+    #define _TARGET_PAGE_SIZE   4096            /* for stack crawling */
     #define TY_WORD             TY_UINT_4
     #define STACK_ALIGNMENT     16
     #define STACK_HEADER_SIZE   24
@@ -108,9 +106,7 @@
     #define SW                  I4
     #define WORD_SIZE           4
     #define REG_SIZE            4
-    #ifndef PAGE_SIZE
-      #define PAGE_SIZE           4096            /* for stack crawling */
-    #endif
+    #define _TARGET_PAGE_SIZE   4096            /* for stack crawling */
     #define TY_WORD             TY_UINT_4
     #define STACK_ALIGNMENT     16
     #define STACK_HEADER_SIZE   24
@@ -123,9 +119,7 @@
     #define SW                  I4
     #define WORD_SIZE           4
     #define REG_SIZE            8
-    #ifndef PAGE_SIZE
-      #define PAGE_SIZE           4096            /* for stack crawling */
-    #endif
+    #define _TARGET_PAGE_SIZE   4096            /* for stack crawling */
     #define TY_WORD             TY_UINT_4
     #define STACK_ALIGNMENT     16
 #else

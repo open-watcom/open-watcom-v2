@@ -497,7 +497,7 @@ static  void    emitProlog( stack_map *map )
             // sub sp,r28 -> sp
             GenOPINS( 0x10, 0x09, AXP_STACK_REG, AXP_GPR_SCRATCH, AXP_STACK_REG );
         }
-        if( frame_size >= PAGE_SIZE ) {
+        if( frame_size >= _TARGET_PAGE_SIZE ) {
             if( frame_size <= AXP_MAX_OFFSET ) {
                 genLea( AXP_ZERO_SINK, frame_size, RT_PARM1 );
             } else {
