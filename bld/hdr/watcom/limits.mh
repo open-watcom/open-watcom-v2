@@ -181,17 +181,6 @@
 #define SSIZE_MAX   _POSIX_SSIZE_MAX
 #define SYMLOOP_MAX 32      /* This is bigger than _POSIX_SYMLOOP_MAX */
 
-:segment LINUX
-/*
- * Page size - fixed for i386 and AMD64
- * Constant is required by POSIX...
- */
-#ifdef __386__
-#define PAGE_SIZE   4096
-#define PAGESIZE    PAGE_SIZE
-#endif
-:endsegment
-
 /*
  *  Posix .2/9 limits.
  */
