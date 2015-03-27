@@ -91,7 +91,8 @@ struct sysinfo info;
 #ifdef PAGE_SIZE
     return (int)(quantity/PAGE_SIZE);
 #else
-    return (int)quantity;
+    errno = EINVAL;
+    return -1;
 #endif
 }
 
@@ -149,6 +150,7 @@ int ret;
 #ifdef PAGE_SIZE
             ret = PAGE_SIZE;
 #else
+            errno = EINVAL;
             ret = -1;
 #endif
             break;
