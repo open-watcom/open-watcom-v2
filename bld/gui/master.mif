@@ -27,7 +27,6 @@ wv_objs = &
        guihint.obj    &
        guihook.obj    &
        guimdi.obj     &
-       guimdime.obj   &
        guiimdi.obj    &
        guiimmdi.obj   &
        guihflt.obj    &

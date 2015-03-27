@@ -30,37 +30,9 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
-#include "guixhook.h"
-#include "guimdi.h"
-#include "guiximdi.h"
+#ifndef _GUIXIMDI_H_
+#define _GUIXIMDI_H_
 
+extern bool XFakeInitMDI( gui_window *wnd );
 
-static bool ProcessEvent( EVENT ev )
-{
-    gui_window  *wnd;
-    gui_ctl_id  id;
-
-    id = EV2ID( ev );
-    if( id == GUI_MDI_MORE_WINDOWS ) {
-        GUIMDIMoreWindows();
-        return( true );
-    }
-    if( IS_MDIWIN( id ) ) {
-        wnd = GUIMDIGetWindow( id );
-        if( wnd != NULL ) {
-            if( GUIIsMinimized( wnd ) ) {
-                GUIRestoreWindow( wnd );
-            }
-            GUIBringToFront( wnd );
-        }
-        return( true );
-    }
-    return( false );
-}
-
-bool XFakeInitMDI( gui_window *wnd )
-{
-    GUISetMDIProcessEvent( &ProcessEvent );
-    return( wnd->parent != NULL );
-}
+#endif // _GUIXIMDI_H_

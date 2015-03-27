@@ -37,26 +37,32 @@
 #include "guistr.h"
 #include "guihook.h"
 #include "guixmdi.h"
+#include "guimdi.h"
+
 #include "clibext.h"
 
 #define MAX_LENGTH      80
 
-extern void GUIAddMDIActions( bool has_items, gui_window *wnd );
+typedef struct {
+    gui_window  *dlg_wnd;
+    unsigned    list_ctrl;
+} dlg_init;
+
+extern  bool            GUIMDI;
+extern  gui_window      *GUICurrWnd;
 
 static gui_menu_struct MDISecondSepMenu[] = {
-{ NULL,         GUI_MDI_SECOND_SEPARATOR, GUI_SEPARATOR,        NULL }
+    { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_SEPARATOR, NULL }
 };
 
 static  char MenuHint[MAX_NUM_MDI_WINDOWS][MAX_LENGTH];
 
 static gui_menu_struct MDIMoreMenu[] = {
-{    NULL, GUI_MDI_MORE_WINDOWS, GUI_ENABLED, NULL    }
+    { NULL, GUI_MDI_MORE_WINDOWS, GUI_ENABLED, NULL }
 };
 
-extern  bool            GUIMDI;
-extern  gui_window      *GUICurrWnd;
-        int             GUIMDIMenuID = -1;
-        gui_window      *Root   = NULL;
+static  int             GUIMDIMenuID = -1;
+static  gui_window      *Root   = NULL;
 static  int             NumMDIWindows   = 0;
 static  int             CurrMDIWindow   = -1;
 static  gui_window      *MDIWindows[MAX_NUM_MDI_WINDOWS];
@@ -64,10 +70,19 @@ static  gui_window      *MDIWindows[MAX_NUM_MDI_WINDOWS];
 static  int             TotalWindows    = 0;
 static  gui_window      **ChildWindows  = NULL;
 
-typedef struct {
-    gui_window  *dlg_wnd;
-    unsigned    list_ctrl;
-} dlg_init;
+static gui_menu_struct MDIMenu[] = {
+    {  NULL,    GUI_MDI_CASCADE,        GUI_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_VERT,      GUI_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_GRAYED,     NULL    },
+};
+#define NUM_MDI_MENUS ( sizeof( MDIMenu ) / sizeof( gui_menu_struct ) )
+
+static gui_menu_struct MDIFirstSepMenu[] = {
+    {  NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_SEPARATOR,    NULL }
+};
+
+static bool MDIMenuStructInitialized = false;
 
 gui_window *GUIGetRoot( void )
 {
@@ -519,5 +534,43 @@ gui_window *GUIMDIGetWindow( int id )
         return( MDIWindows[index] );
     } else {
         return( NULL );
+    }
+}
+
+static void InitMDIMenuStruct( void )
+{
+    MDIMenu[0].label = LIT( XCascade );
+    MDIMenu[0].hinttext = LIT( Cascade_Hint );
+    MDIMenu[1].label = LIT( Tile_XHorz );
+    MDIMenu[1].hinttext = LIT( Tile_Horz_Hint );
+    MDIMenu[2].label = LIT( Tile_XVert );
+    MDIMenu[2].hinttext = LIT( Tile_Vert_Hint );
+    MDIMenu[3].label = LIT( XArrange_Icons );
+    MDIMenu[3].hinttext = LIT( Arrange_Icons_Hint );
+}
+
+void EnableMDIActions( bool enable )
+{
+    GUIEnableMenuItem( Root, GUI_MDI_CASCADE, enable, false );
+    GUIEnableMenuItem( Root, GUI_MDI_TILE_HORZ, enable, false );
+    GUIEnableMenuItem( Root, GUI_MDI_TILE_VERT, enable, false );
+    GUIEnableMenuItem( Root, GUI_MDI_ARRANGE_ICONS, enable, false );
+}
+
+void AddMDIActions( bool has_items, gui_window *wnd )
+{
+    int         i;
+
+    if( !MDIMenuStructInitialized ) {
+        InitMDIMenuStruct();
+        MDIMenuStructInitialized = true;
+    }
+
+    if( has_items ) {
+        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, MDIFirstSepMenu, false );
+    }
+
+    for( i = 0; i < NUM_MDI_MENUS; i++ ) {
+        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIMenu[i], false );
     }
 }

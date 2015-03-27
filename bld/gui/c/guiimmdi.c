@@ -35,19 +35,11 @@
 #include <string.h>
 #include "guistr.h"
 #include "guihook.h"
+#include "guiximdi.h"
 #include "guixmdi.h"
+#include "guimdi.h"
 
 extern  bool            GUIMDI;
-
-bool XFakeInitMDI( gui_window *wnd );
-void InitMDI( gui_window *wnd, gui_create_info *dlg_info );
-void ChangeTitle( gui_window *wnd );
-void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_menus, gui_menu_struct *menu );
-void MDIDelete( gui_window *wnd );
-void BroughtToFront( gui_window *wnd );
-void MDIDeleteMenu( unsigned id );
-void AddMDIActions( bool has_items, gui_window *wnd );
-void EnableMDIActions( bool enable );
 
 void GUIMDIInitMenuOnly( void )
 {

@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "guiwind.h"
 #include "guixhook.h"
-#include <stdlib.h>
+#include "guimdi.h"
+#include "guiximdi.h"
 
-extern gui_window       *GUIMDIGetWindow( int id );
-extern void             GUIMDIMoreWindows(void);
 
 static void BringWindowToFront( gui_window *wnd )
 {
