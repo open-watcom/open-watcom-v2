@@ -81,11 +81,13 @@ static void FreeDialog( a_dialog_header *tmp_dialog)
     GUIMemFree( tmp_dialog->condition );
     GUIMemFree( tmp_dialog->title );
     if( !tmp_dialog->def_dlg ) {            /* free non-default controls */
-        for( i = 0; i < tmp_dialog->num_controls; i++ ){
-            GUIMemFree( (void *)tmp_dialog->controls[i].text );
+        for( i = 0; tmp_dialog->pVariables[i] != NO_VAR; ++i ) {
             if( tmp_dialog->pConditions[i] != NULL ) {
                 GUIMemFree( tmp_dialog->pConditions[i] );
             }
+        }
+        for( i = 0; i < tmp_dialog->num_controls; i++ ){
+            GUIMemFree( (void *)tmp_dialog->controls[i].text );
             if( tmp_dialog->pVisibilityConds[i] != NULL ) {
                 GUIMemFree( tmp_dialog->pVisibilityConds[i] );
             }
@@ -112,6 +114,8 @@ extern a_dialog_header *AddNewDialog( const char *dlg_name )
     new_dialog->defaults_set = false;
     new_dialog->ret_val = DLG_NEXT;
     new_dialog->any_check = NO_VAR;
+    new_dialog->pVariables[0] = NO_VAR;
+    new_dialog->pConditions[0] = NULL;
 
     /* check if old dialog existed */
     tmp_dialog = FindDialogByName( dlg_name );
