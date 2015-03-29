@@ -38,14 +38,14 @@
 #include "guiutil.h"
 #include "hash.h"
 
-static unsigned int     hashKey( unsigned int size, hash_key k );
+static unsigned int     hashKey( size_t size, hash_key k );
 
 hash_table     *HashInit( size_t size, hash_key_cmp func )
 /********************************************************/
 {
     hash_table  *ht;
 
-    assert( size > 0 );
+    assert( size != 0 );
     assert( func );
 
     ht = GUIMemAlloc( sizeof( hash_table ) + (sizeof( hash_element * ) * size) );
@@ -57,21 +57,20 @@ hash_table     *HashInit( size_t size, hash_key_cmp func )
     return( ht );
 }
 
-bool HashInsert( hash_table *ht, hash_key k, hash_data d )
-/********************************************************/
+bool HashInsert( hash_table *ht, hash_key k, vhandle data )
+/*********************************************************/
 {
     unsigned int        i;
     hash_element        *he;
 
     assert( ht );
     assert( k );
-    assert( d >= 0 );
 
     he = GUIMemAlloc( sizeof( hash_element ) );
     if( he == NULL )
         return( false );
     i = hashKey( ht->size, k );
-    he->data = d;
+    he->data = data;
     he->key = GUIStrDup( k, NULL );
     he->next = ht->table[i];
     ht->table[i] = he;
@@ -79,8 +78,8 @@ bool HashInsert( hash_table *ht, hash_key k, hash_data d )
 }
 
 
-hash_data HashFind( hash_table *ht, hash_key k )
-/**********************************************/
+vhandle HashFind( hash_table *ht, hash_key k )
+/********************************************/
 {
     unsigned int        i;
     hash_element        *he;
@@ -126,13 +125,13 @@ void HashFini( hash_table *ht )
 }
 
 
-static unsigned int hashKey( unsigned int size, hash_key k )
+static unsigned int hashKey( size_t size, hash_key k )
 /**********************************************************/
 {
     unsigned long       hash = 0;
 
     assert( k );
-    assert( size > 0 );
+    assert( size != 0 );
 
     while( *k ) {
         hash = (hash << 4) + tolower( *k );
