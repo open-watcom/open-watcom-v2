@@ -38,6 +38,12 @@
 #include <sys/sysinfo.h>
 #include "linuxsys.h"
 
+#ifndef PAGE_SIZE
+  #if defined( _M_IX86 )
+    #define PAGE_SIZE 4096
+  #endif
+#endif
+
 #ifndef SYS_CLK_TCK
 #define SYS_CLK_TCK 100
 #endif
