@@ -464,10 +464,10 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     // Move all the controls below any control in transition
     // either up or down.
 
-        if( curr_dialog->pVisibilityConds[i] != NULL ) {
+        if( curr_dialog->controls_ext[i].pVisibilityConds != NULL ) {
             id_i = curr_dialog->controls[i].id;
             enabled = GUIIsControlEnabled( gui, id_i );
-            if( EvalCondition( curr_dialog->pVisibilityConds[i] ) ) {
+            if( EvalCondition( curr_dialog->controls_ext[i].pVisibilityConds ) ) {
                 if( !enabled ) {
                     GUIEnableControl( gui, id_i, true );
                     sign = 1;
@@ -845,7 +845,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
             break;
 
         case GUI_STATIC:
-            if( control->id != -1 && curr_dialog->pVisibilityConds[i] == NULL &&
+            if( control->id != -1 && curr_dialog->controls_ext[i].pVisibilityConds == NULL &&
                 (i <= 0 || (curr_dialog->controls[i - 1].control_class != GUI_EDIT &&
                 curr_dialog->controls[i - 1].control_class != GUI_PUSH_BUTTON) ||
                 curr_dialog->controls[i - 1].rect.y != curr_dialog->controls[i].rect.y) ) {

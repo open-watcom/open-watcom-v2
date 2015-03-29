@@ -193,9 +193,13 @@ typedef enum {
     DLG_DONE,
 } dlg_state;
 
+typedef struct control_info_ext {
+    char        *pVisibilityConds;
+} control_info_ext;
+
 #define MAX_VARS 75
 typedef struct a_dialog_header {
-    char                        *name;              /* name of dlg */
+    char                        *name;                  /* name of dlg */
     char                        *condition;
     int                         rows;
     int                         cols;
@@ -204,14 +208,14 @@ typedef struct a_dialog_header {
     bool                        def_dlg;
     bool                        defaults_set;
     bool                        adjusted;
-    gui_control_info            *controls;          /* controls associated with dlg */
-    vhandle                     pVariables[MAX_VARS];     /* pointer to variables */
-    char                        *pConditions[MAX_VARS];   /* pointer to initial value */
-    char                        *pVisibilityConds[MAX_VARS]; /* conditions for visibility of controls (dynamic) */
-    gui_rect                    original_rect; /* original window position (used in UpdateControlVisibility() )*/
-    gui_ord                     height_change; /* how much dialog height has changed (used in UpdateControlVisibiliy() ) */
-    struct a_dialog_header      *next;              /* next dialog box */
-    struct a_dialog_header      *prev;              /* prev dialog box */
+    gui_control_info            *controls;              /* controls associated with dlg */
+    control_info_ext            *controls_ext;          /* controls ext.info associated with dlg */
+    vhandle                     pVariables[MAX_VARS];   /* pointer to variables */
+    char                        *pConditions[MAX_VARS]; /* pointer to initial value */
+    gui_rect                    original_rect;          /* original window position (used in UpdateControlVisibility() )*/
+    gui_ord                     height_change;          /* how much dialog height has changed (used in UpdateControlVisibiliy() ) */
+    struct a_dialog_header      *next;                  /* next dialog box */
+    struct a_dialog_header      *prev;                  /* prev dialog box */
     dlg_state                   ret_val;
     char                        *title;
     vhandle                     any_check;

@@ -88,10 +88,11 @@ static void FreeDialog( a_dialog_header *tmp_dialog)
         }
         for( i = 0; i < tmp_dialog->num_controls; i++ ){
             GUIMemFree( (void *)tmp_dialog->controls[i].text );
-            if( tmp_dialog->pVisibilityConds[i] != NULL ) {
-                GUIMemFree( tmp_dialog->pVisibilityConds[i] );
+            if( tmp_dialog->controls_ext[i].pVisibilityConds != NULL ) {
+                GUIMemFree( tmp_dialog->controls_ext[i].pVisibilityConds );
             }
         }
+        GUIMemFree( tmp_dialog->controls_ext );
         GUIMemFree( tmp_dialog->controls );
     }
     GUIMemFree( tmp_dialog );
@@ -107,7 +108,6 @@ extern a_dialog_header *AddNewDialog( const char *dlg_name )
 
     new_dialog = (a_dialog_header *)GUIMemAlloc( sizeof( a_dialog_header ) );
     memset( new_dialog, '\0', sizeof( *new_dialog ) );
-//    new_dialog->controls = GUIMemAlloc( sizeof(gui_control_info) );
     new_dialog->name = GUIStrDup( dlg_name, NULL );
     new_dialog->adjusted = false;
     new_dialog->def_dlg = false;
