@@ -150,7 +150,7 @@ void StatusFini( void )
 }
 
 void StatusLines( int msg0, const char *message1 )
-/******************************************/
+/************************************************/
 {
     if( StatusWnd != NULL ) {
         if( message1 != NULL ) {

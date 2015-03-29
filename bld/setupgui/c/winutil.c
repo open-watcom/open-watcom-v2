@@ -70,7 +70,7 @@ void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
     DWORD               disposition;
     DWORD               type;
     DWORD               old_type;
-    int                 len;
+    size_t              len;
     long                dword_val;
     HKEY                key;
     unsigned char       *bin_buf;
@@ -78,7 +78,7 @@ void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
 
     strcpy( buf, file_name );
     len = strlen( buf );
-    if( buf[len-1] != '\\' ) {
+    if( buf[len - 1] != '\\' ) {
         strcat( buf, "\\" );
     }
     strcat( buf, app_name );
@@ -119,8 +119,7 @@ void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
                     free( bin_buf );
                 }
             } else {
-                rc = RegQueryValueEx( hkey1, key_name, NULL, &old_type,
-                                      NULL, NULL );
+                rc = RegQueryValueEx( hkey1, key_name, NULL, &old_type, NULL, NULL );
                 if( rc == 0 ) {
                     type = old_type;
                 } else {
@@ -269,8 +268,8 @@ bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int p
 {
     FILE        *io;
     char        buff[MAXVALUE];
-    int         app_len;
-    int         old_len;
+    size_t      app_len;
+    size_t      old_len;
     int         num = 0;
     bool        in_sect = false;
 
@@ -283,7 +282,8 @@ bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int p
         return( false );
     while( fgets( buff, sizeof( buff ), io ) ) {
         if( buff[0] == '[' ) {
-            if( in_sect ) break;
+            if( in_sect )
+                break;
             if( strncmp( app_name, buff + 1, app_len ) == 0 && buff[app_len + 1] == ']' ) {
                 in_sect = true;
             }
@@ -291,7 +291,7 @@ bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int p
             if( strncmp( old, buff, old_len ) == 0 && buff[old_len] == '=' ) {
                 if( num++ == pos ) {
                     memcpy( buff, new, old_len );
-                    fseek( io, -(int)(strlen( buff ) + 1), SEEK_CUR );
+                    fseek( io, -(long)(strlen( buff ) + 1), SEEK_CUR );
                     fputs( buff, io );
                     fclose( io );
                     return( true );
@@ -307,9 +307,8 @@ bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int p
 #define DEVICE_STRING "device"
 #define ALT_DEVICE    "ecived"
 
-void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff,
-                bool add )
-/******************************************************************************/
+void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff, bool add )
+/*****************************************************************************************/
 {
     int         i;
     char        old_name[_MAX_FNAME];

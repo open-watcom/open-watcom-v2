@@ -75,7 +75,7 @@ static bool UseDDE( bool uninstall )
     WORD                dir_index, icon_number, version;
     int                 i, num_icons, num_groups;
     int                 num_installed, num_total_install;
-    int                 len;
+    size_t              len;
     DWORD               temp;
     bool                ok;
     char                prog_name[_MAX_PATH], prog_desc[_MAX_PATH];
@@ -198,7 +198,7 @@ static bool UseDDE( bool uninstall )
                 // add parameters to end of prog_name
                 len = strlen( prog_name );
                 prog_name[len] = ' ';
-                ReplaceVars( &prog_name[len + 1], sizeof( prog_name ) - len - 1, t1 );
+                ReplaceVars( prog_name + len + 1, sizeof( prog_name ) - len - 1, t1 );
             }
 
             // Append the subdir where the icon file is and the icon file's name.

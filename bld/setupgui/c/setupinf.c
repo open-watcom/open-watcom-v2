@@ -384,6 +384,8 @@ typedef struct dialog_info {    // structure used when parsing a dialog
 } DIALOG_INFO;
 
 static vhandle GetTokenHandle( const char *p );
+static void ZeroAutoSetValues( void );
+static void InitAutoSetValues( void );
 
 static void InitDlgArrays( DIALOG_INFO *dlg )
 {
@@ -2272,7 +2274,6 @@ static bool ProcLine( char *line, pass_type pass )
 }
 
 
-static void ZeroAutoSetValues();
 static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 /*****************************************************************************/
 {
@@ -2335,9 +2336,8 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     return( found );
 }
 
-static void InitAutoSetValues();
-static bool GetDiskSizes()
-/************************/
+static bool GetDiskSizes( void )
+/******************************/
 {
     int         i, j;
     long        status_amount;
@@ -2640,8 +2640,8 @@ extern long SimInit( char *inf_name )
  * =======================================================================
  */
 
-int SimNumDeletes()
-/*****************/
+int SimNumDeletes( void )
+/***********************/
 {
     return( SetupInfo.delete.num );
 }
@@ -2670,8 +2670,8 @@ bool SimDeleteIsDir( int i )
  * =======================================================================
  */
 
-extern int SimNumTargets()
-/************************/
+int SimNumTargets( void )
+/***********************/
 {
     return( SetupInfo.target.num );
 }
@@ -2731,8 +2731,8 @@ extern char *SimGetTargTempDisk( int parm )
  * =======================================================================
  */
 
-extern int SimGetNumDisks()
-/*************************/
+int SimGetNumDisks( void )
+/************************/
 {
     return( SetupInfo.disks.num );
 }
@@ -2755,8 +2755,8 @@ extern int SimDirParent( int i )
     return( DirInfo[i].parent );
 }
 
-extern int SimNumDirs()
-/*********************/
+int SimNumDirs( void )
+/********************/
 {
     return( SetupInfo.dirs.num );
 }
@@ -2793,8 +2793,8 @@ extern void SimGetDir( int i, char *buff, size_t buff_len )
  * =======================================================================
  */
 
-extern int SimNumFiles()
-/**********************/
+int SimNumFiles( void )
+/*********************/
 {
     return( SetupInfo.files.num );
 }
@@ -2850,8 +2850,8 @@ extern int SimFileDiskNum( int parm )
     return( FileInfo[parm].disk_index );
 }
 
-extern void SimFileDir( int parm, char *buff, size_t buff_len )
-/*************************************************************/
+void SimFileDir( int parm, char *buff, size_t buff_len )
+/******************************************************/
 {
     SimGetDir( FileInfo[parm].dir_index, buff, buff_len );
 }
@@ -2862,8 +2862,8 @@ extern int SimFileDirNum( int parm )
     return( FileInfo[parm].dir_index );
 }
 
-extern bool SimFileOldDir( int parm, char *buff, size_t buff_len )
-/****************************************************************/
+bool SimFileOldDir( int parm, char *buff, size_t buff_len )
+/*********************************************************/
 {
     if( FileInfo[parm].old_dir_index == -1 )
         return( false );
@@ -3191,8 +3191,8 @@ static append_mode SimGetConfigStringsFrom( struct config_info *array, int i,
     return( append );
 }
 
-extern int SimNumAutoExec()
-/*************************/
+int SimNumAutoExec( void )
+/************************/
 {
     return( SetupInfo.autoexec.num );
 }
@@ -3209,8 +3209,8 @@ extern bool SimCheckAutoExecCondition( int parm )
     return( EvalCondition( AutoExecInfo[parm].condition ) );
 }
 
-extern int SimNumConfig()
-/***********************/
+int SimNumConfig( void )
+/**********************/
 {
     return( SetupInfo.config.num );
 }
@@ -3228,8 +3228,8 @@ extern bool SimCheckConfigCondition( int parm )
     return( EvalCondition( ConfigInfo[parm].condition ) );
 }
 
-extern int SimNumEnvironment()
-/****************************/
+int SimNumEnvironment( void )
+/***************************/
 {
     return( SetupInfo.environment.num );
 }
@@ -3253,8 +3253,8 @@ extern bool SimCheckEnvironmentCondition( int parm )
  * =======================================================================
  */
 
-extern int SimNumAssociations()
-/*****************************/
+int SimNumAssociations( void )
+/****************************/
 {
     return( SetupInfo.associations.num );
 }
@@ -3307,8 +3307,8 @@ extern bool SimCheckAssociationCondition( int parm )
  * =======================================================================
  */
 
-extern int SimNumLabels()
-/***********************/
+int SimNumLabels( void )
+/**********************/
 {
     return( SetupInfo.label.num );
 }
@@ -3332,8 +3332,8 @@ extern void SimGetLabelLabel( int parm, char *buff )
  * =======================================================================
  */
 
-extern int SimNumUpgrades()
-/*************************/
+int SimNumUpgrades( void )
+/************************/
 {
     return( SetupInfo.upgrade.num );
 }
@@ -3423,8 +3423,8 @@ extern void CheckDLLCount( char *install_name )
 
 #endif
 
-extern void SimCalcAddRemove()
-/****************************/
+void SimCalcAddRemove( void )
+/***************************/
 {
     int                 i, j, k;
     int                 targ_index = 0;
@@ -4519,8 +4519,8 @@ void SetDefaultAutoSetValue( vhandle var_handle )
     }
 }
 
-static void InitAutoSetValues()
-/*****************************/
+static void InitAutoSetValues( void )
+/***********************************/
 {
     vhandle     var_handle;
 

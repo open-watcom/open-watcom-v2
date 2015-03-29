@@ -192,7 +192,7 @@ static bool CheckWin95Uninstall( int argc, char **argv )
 // there. The version in the Windows directory gets erased by
 // the WININIT program.
 
-    int                 len;
+    size_t              len;
     char                buff[2 * _MAX_PATH];
     char                drive[_MAX_DRIVE];
     char                dir[_MAX_DIR];

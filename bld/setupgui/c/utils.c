@@ -106,7 +106,7 @@ bool            StartupChange;
 void ConcatDirSep( char *dir )
 /****************************/
 {
-    int     len;
+    size_t  len;
     char    c;
 
     if( *dir == '\0' ) {
@@ -956,7 +956,7 @@ void MakeParentDir( const char *dir, char *drive, char *path )
 /************************************************************/
 {
     char                *parent, *end;
-    int                 path_len;
+    size_t              path_len;
 
     _splitpath( dir, drive, path, NULL, NULL );
     if( *path == '\0' )
@@ -1072,7 +1072,8 @@ static void ucatnum( char *buff, unsigned long long num )
 static bool MatchEnd( const char *path, const char *end )
 /*******************************************************/
 {
-    int plen, endlen;
+    size_t  plen;
+    size_t  endlen;
 
     plen = strlen( path );
     endlen = strlen( end );
@@ -1722,7 +1723,7 @@ static bool DoCopyFiles( void )
     vhandle             var_handle;
     gui_message_return  ret = GUI_RET_OK;
     int                 max_files = SimNumFiles();
-    int                 len;
+    size_t              len;
     char                *p;
     char                *p1;
     const char          *cp;
@@ -2663,8 +2664,8 @@ void CheckHeap( void )
 char *stristr( char *str, char *substr )
 /**************************************/
 {
-    int         str_len;
-    int         substr_len;
+    size_t  str_len;
+    size_t  substr_len;
 
     str_len = strlen( str );
     substr_len = strlen( substr );

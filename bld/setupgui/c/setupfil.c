@@ -168,7 +168,7 @@ static void NoDupPaths( char *old_value, char *new_value, char delim )
     char        *semi;
     char        *dup;
     char        *look;
-    int         len;
+    size_t      len;
     char        *new_curr;
 
     new_curr = new_value;
@@ -1044,16 +1044,16 @@ char *ReplaceVars( char *buff, size_t buff_len, const char *src )
     char                *colon;
     char                *newbuff;
     size_t              len;
-    size_t              buff_alloc;
+    bool                buff_allocated;
 
     len = strlen( src );
     if( buff_len == 0 ) {
         buff_len = len;
-        buff_alloc = true;
+        buff_allocated = true;
         buff = GUIMemAlloc( buff_len + 1 );
     } else {
         --buff_len;     // reserve place for NULL character
-        buff_alloc = false;
+        buff_allocated = false;
     }
     memcpy( buff, src, len + 1 );
     p = buff;
@@ -1099,7 +1099,7 @@ char *ReplaceVars( char *buff, size_t buff_len, const char *src )
         --p;
         if( varval != NULL ) {
             len = strlen( varval );
-            if( buff_alloc ) {
+            if( buff_allocated ) {
                 if( len > e - p ) {
                     newbuff = GUIMemRealloc( buff, buff_len + len - (e - p) + 1 );
                     p = newbuff + (p - buff);
@@ -1185,7 +1185,8 @@ static void VersionStr( int fp, char *ver, int verlen, char *verbuf )
 static void CheckVersion( char *path, char *drive, char *dir )
 /************************************************************/
 {
-    int                 fp, len, hours;
+    int                 fp, hours;
+    size_t              len;
     char                am_pm, buf[100];
     int                 check;
     struct stat         statbuf;
@@ -1242,7 +1243,7 @@ extern gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
 /*************************************************************************/
 {
     const char          *dst;
-    unsigned            dst_len;
+    size_t              dst_len;
     char                drive[_MAX_DRIVE];
     char                dir[_MAX_DIR];
     char                fname[_MAX_FNAME];
