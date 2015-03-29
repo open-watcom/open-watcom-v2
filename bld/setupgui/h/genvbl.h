@@ -39,8 +39,8 @@
 extern vhandle      NextGlobalVar( vhandle var_handle );
 extern void         InitGlobalVarList( void );
 extern int          GetVariableByName( const char *vbl_name );
-extern vhandle      GetVariableById( int id );
-extern int          VarGetId( vhandle var_handle );
+extern vhandle      GetVariableById( gui_ctl_id id );
+extern gui_ctl_id   VarGetId( vhandle var_handle );
 extern const char   *VarGetStrVal( vhandle var_handle );
 extern int          VarGetIntVal( vhandle var_handle );
 extern int          GetVariableIntVal( const char *vbl_name );

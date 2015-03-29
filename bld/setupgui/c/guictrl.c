@@ -229,9 +229,9 @@ int set_dlg_push_button( vhandle var_handle, const char *text,
             id = CTL_HELP;
         } else {
             id = VarGetId( var_handle );
-            if( id == 0 ) {
+            if( id == CTL_NULL ) {
                 // dummy_var allows control to have an id - used by dynamic visibility feature
-                id = MakeDummyVar();
+                id = VarGetId( MakeDummyVar() );
             }
         }
         break;

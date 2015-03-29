@@ -55,11 +55,13 @@
 // If too slow make hash size bigger
 #define HASH_SIZE   1021
 
+#define ID2VH(x)    ((vhandle)((x) - FIRST_UNUSED_ID))
+#define VH2ID(x)    ((gui_ctl_id)((x) + FIRST_UNUSED_ID))
+
 typedef struct  a_variable {
     char        *name;
     char        *strval;    /* value */
     char        *autoset;
-    vhandle     id;
     bool        has_value;
     char        restriction;
     void        (*hook)( vhandle );
@@ -148,13 +150,12 @@ vhandle GetVariableByName( const char *vbl_name )
     return( NO_VAR );
 }
 
-vhandle GetVariableById( int id )
-/*******************************/
+vhandle GetVariableById( gui_ctl_id id )
+/**************************************/
 {
-    // id is always the same as var_handle!
-    if( id >= GlobalVarArray.num )
+    if( id < FIRST_UNUSED_ID || ID2VH( id ) >= GlobalVarArray.num )
         return( NO_VAR );
-    return( id );
+    return( ID2VH( id ) );
 }
 
 
@@ -167,12 +168,12 @@ const char *VarGetName( vhandle var_handle )
 }
 
 
-int VarGetId( vhandle var_handle )
-/********************************/
+gui_ctl_id VarGetId( vhandle var_handle )
+/***************************************/
 {
     if( var_handle == NO_VAR )
-        return( 0 );
-    return( GlobalVarList[var_handle].id );
+        return( CTL_NULL );
+    return( VH2ID( var_handle ) );
 }
 
 
@@ -230,7 +231,6 @@ static vhandle NewVariable( const char *vbl_name )
     BumpArray( &GlobalVarArray );
     tmp_variable = &GlobalVarList[var_handle];
     tmp_variable->name = GUIStrDup( vbl_name, NULL );
-    tmp_variable->id = var_handle;
     tmp_variable->has_value = false;
     tmp_variable->autoset = NULL;
     tmp_variable->restriction = 0;
@@ -452,7 +452,7 @@ void SetDefaultGlobalVarList( void )
 void FreeGlobalVarList( bool including_real_globals )
 /***************************************************/
 {
-    int i, j;
+    int i;
 
     if( GlobalVarList == NULL )
         return;
@@ -476,15 +476,13 @@ void FreeGlobalVarList( bool including_real_globals )
                 GUIMemFree( GlobalVarList[i].strval );
                 GUIMemFree( GlobalVarList[i].autoset );
 
-                for( j = i; j < GlobalVarArray.num - 1; j++ ) {
-                    memcpy( &GlobalVarList[j], &GlobalVarList[j + 1],
-                        sizeof( a_variable ) );
-                    GlobalVarList[j].id = j;
+                GlobalVarArray.num -= 1;
+                if( i < GlobalVarArray.num ) {
+                    memcpy( &GlobalVarList[i], &GlobalVarList[i + 1], sizeof( a_variable ) * ( GlobalVarArray.num - i ) );
                     // This destroys the concept that a handle to a variable
                     // will always point to the same variable.  Between
                     // script launches, variable ids will change.
                 }
-                GlobalVarArray.num -= 1;
                 BumpDownArray( &GlobalVarArray );
             } else {
                 i++;

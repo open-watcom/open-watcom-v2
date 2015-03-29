@@ -31,7 +31,8 @@
 
 
 enum {
-    CTL_OK = 1000,      // watch this doesn't bump into vbl names!
+    CTL_NULL = 0,
+    CTL_OK,
     CTL_CANCEL,
     CTL_OPTIONS,
     CTL_PREVIOUS,
@@ -40,7 +41,8 @@ enum {
     CTL_STATLINE1,
     CTL_HELP,
     CTL_SKIP,
-    CTL_DONE
+    CTL_DONE,
+    FIRST_UNUSED_ID
 };
 
 extern int      NominalButtonWidth;

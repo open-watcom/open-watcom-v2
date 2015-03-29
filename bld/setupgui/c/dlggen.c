@@ -362,7 +362,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     int                 i, j, sign;
     unsigned            id_i;
     unsigned            id_j;
-    unsigned            checked_radio_id = 0;
+    unsigned            checked_radio_id;
     unsigned            new_check_candidate;
     unsigned            focus;
     unsigned            new_focus;
@@ -370,7 +370,6 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     bool                control_on_new_line[MAX_VARS];
     bool                visible_checked_radiobutton;
     vhandle             var_handle;
-//    vhandle             *pVariable;
 
     if( gui == NULL )
         return;
@@ -434,19 +433,20 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     // buttons are checked to work.
     // Also, figure out which radio button is currently checked.
 
+    checked_radio_id = 0;
     for( i = 0; i < curr_dialog->num_controls; i++ ) {
         if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON ||
             curr_dialog->controls[i].control_class == GUI_CHECK_BOX ) {
-//            pVariable = curr_dialog->pVariables;
-            var_handle = curr_dialog->controls[i].id;
-            if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON &&
-                GUIIsChecked( gui, VarGetId( var_handle ) ) == GUI_CHECKED ) {
-                checked_radio_id = var_handle;
-            }
-            for( j = 0; curr_dialog->pVariables[j] != NO_VAR; j++ ) {
-                if( curr_dialog->pVariables[j] == var_handle &&
-                    GUIIsChecked( gui, VarGetId( var_handle ) ) == GUI_CHECKED ) {
-                    SetVariableByHandle( var_handle, "1" );
+            id_i = curr_dialog->controls[i].id;
+            if( GUIIsChecked( gui, id_i ) == GUI_CHECKED ) {
+                if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON ) {
+                    checked_radio_id = id_i;
+                }
+                var_handle = GetVariableById( id_i );
+                for( j = 0; curr_dialog->pVariables[j] != NO_VAR; j++ ) {
+                    if( curr_dialog->pVariables[j] == var_handle ) {
+                        SetVariableByHandle( var_handle, "1" );
+                    }
                 }
             }
         }
@@ -482,8 +482,11 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
                 continue;
             }
             if( control_on_new_line[i] ) {
-                for( j = i + 1; j < curr_dialog->num_controls &&
-                                !control_on_new_line[j]; j++ );
+                for( j = i + 1; j < curr_dialog->num_controls; j++ ) {
+                    if( control_on_new_line[j] ) {
+                        break;
+                    }
+                }
                 for( ; j < curr_dialog->num_controls; j++ ) {
                     id_j = curr_dialog->controls[j].id;
                     enabled = GUIIsControlEnabled( gui, id_j );
@@ -505,8 +508,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     VisibilityCondition = 0;
 
     visible_checked_radiobutton = false;
-    new_check_candidate = 0;
-
+    new_check_candidate = CTL_NULL;
     for( i = 0; i < curr_dialog->num_controls; i++ ) {
         id_i = curr_dialog->controls[i].id;
 
@@ -516,7 +518,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
             !visible_checked_radiobutton && GUIIsControlEnabled( gui, id_i ) ) {
             if( GUIIsChecked( gui, id_i ) == GUI_CHECKED ) {
                 visible_checked_radiobutton = true;
-            } else if( new_check_candidate == 0 ) {
+            } else if( new_check_candidate == CTL_NULL ) {
                 new_check_candidate = id_i;
             }
         }
@@ -535,7 +537,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
 
     if( GUIIsControlEnabled( gui, checked_radio_id ) ) {
         GUISetChecked( gui, checked_radio_id, GUI_CHECKED );
-    } else if( !visible_checked_radiobutton && new_check_candidate != 0 ) {
+    } else if( !visible_checked_radiobutton && new_check_candidate != CTL_NULL ) {
         // 'Check' a visible radio button if the currently checked button
         // is invisible.
         GUISetChecked( gui, new_check_candidate, GUI_CHECKED );
@@ -583,8 +585,7 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
             for( i = 0; i < curr_dialog->num_controls; i++ ) {
                 if( curr_dialog->controls[i].control_class == GUI_EDIT_MLE ) {
                     GUILimitEditText( gui, curr_dialog->controls[i].id, -1 );
-                    GUISetText( gui, curr_dialog->controls[i].id,
-                                curr_dialog->controls[i].text );
+                    GUISetText( gui, curr_dialog->controls[i].id, curr_dialog->controls[i].text );
                 }
             }
         }
@@ -772,18 +773,16 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
 
         case GUI_PUSH_BUTTON:
         case GUI_DEFPUSH_BUTTON:
-            j = i;
             num_push_buttons = 1;
-            while( ++j < curr_dialog->num_controls ) {
+            for( j = i + 1; j < curr_dialog->num_controls; ++j ) {
                 next = &curr_dialog->controls[j];
                 if( ( next->control_class != GUI_PUSH_BUTTON &&
                       next->control_class != GUI_DEFPUSH_BUTTON ) ||
                     next->rect.y != control->rect.y ) {
                     break;
-                } else {
-                    ++num_push_buttons;
-                    ++i;
                 }
+                ++num_push_buttons;
+                ++i;
             }
             if( j == curr_dialog->num_controls ) {
                 for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button ) {
