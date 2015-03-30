@@ -74,7 +74,7 @@ static void DoCmd( char *cmd )
 
 extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     char        *text;
     char        *cmd;
     int         i;

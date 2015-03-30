@@ -57,8 +57,7 @@ typedef struct {
     unsigned    align : 1;
 } w1_window;
 
-extern  WNDMENU W1MenuItem;
-extern void     W1MenuItem( a_window *wnd, unsigned id, int row, int piece )
+void W1MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     w1_window   *w1 = WndExtra( wnd );
     char        buff[80];
@@ -95,16 +94,14 @@ extern void     W1MenuItem( a_window *wnd, unsigned id, int row, int piece )
     }
 }
 
-extern WNDNUMROWS W1NumRows;
-extern int W1NumRows( a_window *wnd )
+int W1NumRows( a_window *wnd )
 {
     w1_window   *w1 = WndExtra( wnd );
 
     return( w1->num_rows );
 }
 
-extern  WNDMODIFY W1Modify;
-extern  void    W1Modify( a_window *wnd, int row, int piece )
+void W1Modify( a_window *wnd, int row, int piece )
 {
     w1_window   *w1 = WndExtra( wnd );
 

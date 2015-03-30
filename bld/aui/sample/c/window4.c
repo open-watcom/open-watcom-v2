@@ -109,9 +109,8 @@ static char UiMapChar[] = { 0xC6, 0xEA, 0xC7, 0xD0,
                                         0xCC, 0xBA, 0xCE, 0xCD,
                                         0xDF, 0xDC, 0xFD, 0xF5, 0 };
 #endif
-extern WNDGETLINE W4GetLine;
-extern  bool    W4GetLine( a_window *wnd, wnd_row row, int piece,
-                             wnd_line_piece *line )
+
+bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -172,14 +171,12 @@ extern  bool    W4GetLine( a_window *wnd, wnd_row row, int piece,
 }
 
 
-extern WNDREFRESH W4Refresh;
-void    W4Refresh( a_window *wnd )
+void W4Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
 
-extern  WNDMENU W4MenuItem;
-extern void     W4MenuItem( a_window *wnd, unsigned id, int row, int piece )
+void W4MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
 
     row=row;piece=piece;
@@ -218,12 +215,12 @@ wnd_info W4Info = {
     DefPopUp( W4PopUp )
 };
 
-extern WNDOPEN W4Open;
-extern a_window *W4Open()
+a_window *W4Open( void )
 {
     a_window    *wnd;
 
     wnd = WndCreate( "", &W4Info, 0, NULL );
-    if( wnd ) WndSetKey( wnd, 1 );
+    if( wnd )
+        WndSetKey( wnd, 1 );
     return( wnd );
 }

@@ -51,79 +51,66 @@ wnd_info NoInfo = {
     NULL
 };
 
-extern WNDOPEN WndNoOpen;
-extern  a_window        *WndNoOpen()
+a_window *WndNoOpen( void )
 {
     return( NULL );
 }
 
-extern  WNDGETLINE NoGetLine;
-extern  bool    NoGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+bool NoGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     wnd=wnd;row=row;piece=piece;line=line;
     return( FALSE );
 }
 
-extern  WNDMODIFY NoModify;
-extern  void    NoModify( a_window *wnd, int row, int piece )
+void NoModify( a_window *wnd, int row, int piece )
 {
     wnd=wnd;row=row;piece=piece;
 }
 
-extern  WNDNOTIFY NoNotify;
-extern  void    NoNotify( a_window *wnd, wnd_row row, int piece )
+void NoNotify( a_window *wnd, wnd_row row, int piece )
 {
     wnd=wnd;row=row;piece=piece;
 }
 
-extern  WNDBEGPAINT NoBegPaint;
-extern  void    NoBegPaint( a_window *wnd, wnd_row row, int num )
+void    NoBegPaint( a_window *wnd, wnd_row row, int num )
 {
     wnd=wnd;row=row;num=num;
 }
 
-extern  WNDENDPAINT NoEndPaint;
-extern  void    NoEndPaint( a_window *wnd, wnd_row row, int num )
+void    NoEndPaint( a_window *wnd, wnd_row row, int num )
 {
     wnd=wnd;row=row;num=num;
 }
 
-extern WNDREFRESH NoRefresh;
 void NoRefresh( a_window * wnd )
 {
     WndRepaint( wnd );
 }
 
-extern  WNDMENU NoMenuItem;
-extern  void    NoMenuItem( a_window *wnd, unsigned id, int row, int piece )
+void NoMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     wnd=wnd;id=id;row=row;piece=piece;
 }
 
 
-extern WNDSCROLL NoScroll;
 int NoScroll( a_window * wnd, int lines )
 {
     wnd=wnd;lines=lines;
     return( 0 );
 }
 
-extern WNDNUMROWS NoNumRows;
 int NoNumRows( a_window * wnd )
 {
     wnd=wnd;
     return( -1 );
 }
 
-extern WNDNEXTROW NoNextRow;
 int NoNextRow( a_window * wnd, int row, int inc )
 {
     wnd=wnd;
     return( row + inc );
 }
 
-extern WNDCALLBACK NoEventProc;
 bool NoEventProc( a_window * wnd, gui_event event, void *parm )
 {
     wnd=wnd;parm=parm;
@@ -139,8 +126,7 @@ bool NoEventProc( a_window * wnd, gui_event event, void *parm )
 }
 
 
-extern  WNDMENU WndMenuItem;
-extern  void    WndMenuItem( a_window *wnd, unsigned id, int row, int piece )
+void WndMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     wnd->info->menuitem( wnd, id, WndVirtualRow( wnd, row ), piece );
 }
@@ -255,9 +241,7 @@ bool WndSetCache( a_window *wnd, bool on )
     return( old );
 }
 
-extern  WNDGETLINE WndGetLine;
-extern  bool    WndGetLine( a_window *wnd, int row, int piece,
-                            wnd_line_piece *line )
+bool WndGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     int         virtual_row;
     bool        success;
@@ -305,53 +289,45 @@ extern  bool    WndGetLine( a_window *wnd, int row, int piece,
 }
 
 
-extern  WNDGETLINE WndGetLineAbs;
-extern  bool    WndGetLineAbs( a_window *wnd, int row, int piece,
-                            wnd_line_piece *line )
+bool WndGetLineAbs( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     return( WndGetLine( wnd, WndScreenRow( wnd, row ), piece, line ) );
 }
 
 
-extern  WNDMODIFY WndFirstMenuItem;
-extern  void    WndFirstMenuItem( a_window *wnd, int row, int piece )
+void WndFirstMenuItem( a_window *wnd, int row, int piece )
 {
     WndRowPopUp( wnd, &wnd->popupmenu[ 0 ], row, piece );
 }
 
 
-extern  wnd_row WndNoRow( a_window *wnd )
+wnd_row WndNoRow( a_window *wnd )
 {
     return( WndVirtualRow( wnd, WND_NO_ROW ) );
 }
 
-extern  WNDMODIFY WndModify;
-extern  void    WndModify( a_window *wnd, int row, int piece )
+void    WndModify( a_window *wnd, int row, int piece )
 {
     wnd->info->modify( wnd, WndVirtualRow( wnd, row ), piece );
 }
 
-extern  WNDNOTIFY WndNotify;
-extern  void    WndNotify( a_window *wnd, int row, int piece )
+void    WndNotify( a_window *wnd, int row, int piece )
 {
     wnd->info->notify( wnd, WndVirtualRow( wnd, row ), piece );
 }
 
-extern  WNDBEGPAINT WndBegPaint;
-extern  void    WndBegPaint( a_window *wnd, int row, int num )
+void    WndBegPaint( a_window *wnd, int row, int num )
 {
     wnd->info->begpaint( wnd, WndVirtualRow( wnd, row ), num );
 }
 
 
-extern  WNDENDPAINT WndEndPaint;
-extern  void    WndEndPaint( a_window *wnd, int row, int num )
+void    WndEndPaint( a_window *wnd, int row, int num )
 {
     wnd->info->endpaint( wnd, WndVirtualRow( wnd, row ), num );
 }
 
 
-extern WNDREFRESH WndRefresh;
 void WndRefresh( a_window * wnd )
 {
     wnd->info->refresh( wnd );
@@ -359,21 +335,18 @@ void WndRefresh( a_window * wnd )
 }
 
 
-extern WNDCALLBACK WndEvent;
 bool WndEvent( a_window * wnd, gui_event event, void *parm )
 {
     return( wnd->info->event( wnd, event, parm ) );
 }
 
 
-extern WNDNUMROWS WndNumRows;
 int WndNumRows( a_window * wnd )
 {
     return( wnd->info->numrows( wnd ) + wnd->title_size );
 }
 
 
-extern WNDNEXTROW WndNextRow;
 int WndNextRow( a_window * wnd, int row, int inc )
 {
     return( wnd->info->nextrow( wnd, row, inc ) );

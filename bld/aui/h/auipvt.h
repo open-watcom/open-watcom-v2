@@ -108,8 +108,8 @@ extern void             WndKillCacheEntries( a_window *wnd, int row, int piece )
 extern void             WndCheckCurrentValid( a_window *wnd );
 extern bool             WndSetCache( a_window *wnd, bool on );
 extern void             WndAddPopupMenu( a_window *wnd );
-extern void             WndClick( a_window *wnd, unsigned id );
-extern void             WndSetPopup( unsigned id );
+extern void             WndClick( a_window *wnd, gui_ctl_id id );
+extern void             WndSetPopup( gui_ctl_id id );
 extern bool             WndMouseButtonIsDown( void );
 extern bool             WndValid(a_window*);
 extern void             WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu );

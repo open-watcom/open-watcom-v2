@@ -76,7 +76,7 @@ static  void    SetRXStatus( gui_window *gui )
 
 extern bool RXEvent( gui_window * gui, gui_event event, void * param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
 
     switch( event ) {
     case GUI_INIT_DIALOG:
@@ -162,7 +162,7 @@ static void MoveCursor( gui_window *gui, int edit, int list, int direction )
 
 extern bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     gui_key     key;
 
     GUI_GET_KEY_CONTROL( param, id, key );
@@ -205,7 +205,7 @@ static void     SetDlgStatus( gui_window *gui, dlg_search *dlg )
 
 extern bool SrchEvent( gui_window * gui, gui_event event, void * param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     dlg_search  *dlg;
 
     dlg = GUIGetExtra( gui );

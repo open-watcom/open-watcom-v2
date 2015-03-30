@@ -312,10 +312,9 @@ extern  void    WndMenuRespectAll( a_window *wnd )
 }
 
 
-void DoMenuBitOn( gui_menu_struct *menu, int num_popups,
-                              int id, bool on, int bit )
+void DoMenuBitOn( gui_menu_struct *menu, int num_popups, gui_ctl_id id, bool on, int bit )
 {
-    int                 i;
+    int         i;
 
     for( i = 0; i < num_popups; ++i ) {
         if( menu[i].num_child_menus != 0 ) {
@@ -332,23 +331,23 @@ void DoMenuBitOn( gui_menu_struct *menu, int num_popups,
 }
 
 
-static void MenuBitOn( a_window *wnd, int id, bool on, int bit )
+static void MenuBitOn( a_window *wnd, gui_ctl_id id, bool on, int bit )
 {
     DoMenuBitOn( wnd->popupmenu, wnd->num_popups, id, on, bit );
 }
 
-extern  void    WndMenuCheck( a_window *wnd, int id, bool check )
+extern  void    WndMenuCheck( a_window *wnd, gui_ctl_id id, bool check )
 {
     MenuBitOn( wnd, id, check, GUI_MENU_CHECKED );
 }
 
 
-extern  void    WndMenuEnable( a_window *wnd, int id, bool enable )
+extern  void    WndMenuEnable( a_window *wnd, gui_ctl_id id, bool enable )
 {
     MenuBitOn( wnd, id, !enable, GUI_GRAYED );
 }
 
-extern  void    WndMenuIgnore( a_window *wnd, int id, bool ignore )
+extern  void    WndMenuIgnore( a_window *wnd, gui_ctl_id id, bool ignore )
 {
     MenuBitOn( wnd, id, ignore, GUI_IGNORE );
 }
@@ -356,7 +355,7 @@ extern  void    WndMenuIgnore( a_window *wnd, int id, bool ignore )
 
 void WndCreateFloatingPopup( a_window *wnd, gui_point *point,
                              char num_popups, gui_menu_struct *menu,
-                             int *last_popup )
+                             gui_ctl_id *last_popup )
 {
     gui_point   mouse;
 
@@ -377,7 +376,7 @@ void WndCreateFloatingPopup( a_window *wnd, gui_point *point,
 
 void    WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu )
 {
-    int         dummy;
+    gui_ctl_id  dummy;
 
     if( _Isnt( wnd, WSW_ALLOW_POPUP ) ) return;
     WndMenuItem( wnd, MENU_INITIALIZE, WndMenuRow, WndMenuPiece );
@@ -441,7 +440,7 @@ extern  void    WndSetMainMenu( gui_menu_struct *menu, int num_menus )
     GUIResetMenus( WndMain->gui, WndNumMenus, WndMainMenuPtr );
 }
 
-extern  void    WndClick( a_window *wnd, unsigned id )
+void WndClick( a_window *wnd, gui_ctl_id id )
 {
     if( !WndMainMenuProc( wnd, id ) ) {
         wnd = WndFindActive();
@@ -468,7 +467,7 @@ static void WndSetPopupBits( a_window *wnd, gui_menu_struct *menu )
 }
 
 
-extern void WndSetPopup( unsigned id )
+extern void WndSetPopup( gui_ctl_id id )
 {
     a_window    *wnd;
 
@@ -487,14 +486,14 @@ extern void WndSetPopup( unsigned id )
     WndSetPopupBits( wnd, WndPopupMenuPtr );
 }
 
-extern void WndEnableMainMenu( int id, bool enable )
+extern void WndEnableMainMenu( gui_ctl_id id, bool enable )
 {
     if( WndMain == NULL || WndMainMenuPtr == NULL ) return;
     DoMenuBitOn( WndMainMenuPtr, WndNumMenus, id, !enable, GUI_GRAYED );
     GUIEnableMenuItem( WndMain->gui, id, enable, FALSE );
 }
 
-extern void WndCheckMainMenu( int id, bool check )
+extern void WndCheckMainMenu( gui_ctl_id id, bool check )
 {
     if( WndMain == NULL || WndMainMenuPtr == NULL ) return;
     DoMenuBitOn( WndMainMenuPtr, WndNumMenus, id, check, GUI_MENU_CHECKED );
@@ -503,7 +502,7 @@ extern void WndCheckMainMenu( int id, bool check )
 
 #if 0
 // keep commented out until GUI supports this properly
-extern void WndSetHintText( a_window *wnd, int id, char *text )
+extern void WndSetHintText( a_window *wnd, gui_ctl_id id, char *text )
 {
     GUISetHintText( wnd->gui, id, text );
 }

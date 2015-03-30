@@ -50,8 +50,8 @@ static void SetDlgStatus( gui_window *gui )
 
 bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
 {
-    unsigned    id;
-    dlg_window_set      *optset;
+    gui_ctl_id      id;
+    dlg_window_set  *optset;
 
     optset = GUIGetExtra( gui );
     switch( gui_ev ) {

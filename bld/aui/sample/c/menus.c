@@ -176,7 +176,7 @@ void OpenTools( void )
     WndCreateToolBar( 867, TRUE, ArraySize( ToolBar ), ToolBar );
 }
 
-extern bool     WndMainMenuProc( a_window *wnd, unsigned id )
+extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
 {
     a_window            *new;
     a_window            *active;

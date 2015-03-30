@@ -262,7 +262,7 @@ typedef struct aui_private_window_structure {
     int                     title_size;
     gui_ord                 avg_char_x;
     gui_ord                 mid_char_x;
-    int                     last_popup;
+    gui_ctl_id              last_popup;
     int                     current_col;
     char                    num_popups;
     gui_menu_struct         *popupmenu;
@@ -274,7 +274,7 @@ typedef struct aui_private_window_structure {
 
 typedef bool (WNDCALLBACK)( a_window *, gui_event, void * );
 typedef void (WNDREFRESH)( a_window * );
-typedef void (WNDMENU)( a_window *, unsigned, int, int );
+typedef void (WNDMENU)( a_window *, gui_ctl_id id, int, int );
 typedef void (WNDMODIFY)( a_window *, int, int );
 typedef int (WNDSCROLL)( a_window *, int );
 typedef int (WNDNUMROWS)( a_window * );
@@ -336,7 +336,7 @@ extern void             WndFree( void * );
 extern void             *WndMustAlloc( size_t );
 extern void             *WndMustRealloc( void *, size_t );
 extern void             WndCreateFloatingPopup( a_window *, gui_point *, char,
-                                               gui_menu_struct *, int * );
+                                               gui_menu_struct *, gui_ctl_id *id );
 
 extern void             WndFixedThumb( a_window * );
 extern void             WndSetThumbPos( a_window *, int );
@@ -375,7 +375,7 @@ extern void             WndShrinkToMouse( a_window *wnd, wnd_metrics * );
 extern bool             WndInit( char *title );
 extern bool             WndInitWithMenuRes( char *title, int );
 extern bool             WndFini( void );
-extern bool             WndMainMenuProc( a_window *, unsigned );
+extern bool             WndMainMenuProc( a_window *, gui_ctl_id id );
 extern void             WndSetSrchItem( a_window *wnd, const char *expr );
 extern bool             WndSearch( a_window *, bool, int );
 extern void             WndInitNumRows( a_window * );
@@ -471,11 +471,11 @@ extern void             WndMenuIgnoreAll( a_window *wnd );
 extern void             WndMenuRespectAll( a_window *wnd );
 extern void             WndMenuEnableAll( a_window *wnd );
 extern void             WndMenuGrayAll( a_window *wnd );
-extern void             WndMenuIgnore( a_window *wnd, int id, bool ignore );
-extern void             WndMenuEnable( a_window *wnd, int id, bool enable );
-extern void             WndMenuCheck( a_window *wnd, int id, bool check );
-extern void             WndCheckMainMenu( int id, bool check );
-extern void             WndEnableMainMenu( int id, bool enable );
+extern void             WndMenuIgnore( a_window *wnd, gui_ctl_id id, bool ignore );
+extern void             WndMenuEnable( a_window *wnd, gui_ctl_id id, bool enable );
+extern void             WndMenuCheck( a_window *wnd, gui_ctl_id id, bool check );
+extern void             WndCheckMainMenu( gui_ctl_id id, bool check );
+extern void             WndEnableMainMenu( gui_ctl_id id, bool enable );
 //extern void           WndSetHintText( a_window *wnd, int id, char *text );
 
 extern  void            WndPieceDirty( a_window *wnd, wnd_row row, int piece );
@@ -548,7 +548,7 @@ extern void             WndSaveToHistory( save_area *save, char *cmd );
 extern void             WndSetDClick( int );
 extern int              WndGetDClick( void );
 
-extern char             *WndLoadString( int );
+extern char             *WndLoadString( gui_res_id id );
 extern void             NullPopupMenu( gui_menu_struct *menu );
 
 extern void             WndChangeMenuAll( gui_menu_struct *menu, int num_popups, bool on, int bit );
@@ -556,7 +556,7 @@ extern gui_message_return WndDisplayMessage( const char *msg, const char *cap, g
 
 extern void     WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );
 extern void     WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale );
-typedef bool (WNDCLICKHOOK)( a_window *wnd, unsigned id );
+typedef bool (WNDCLICKHOOK)( a_window *wnd, gui_ctl_id id );
 extern void WndInstallClickHook( WNDCLICKHOOK *rtn );
 
 extern void     WndForceRefresh( void );

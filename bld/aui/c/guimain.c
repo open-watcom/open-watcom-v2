@@ -212,7 +212,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
     bool                ret;
     gui_key             key;
     gui_keystate        state;
-    unsigned            id;
+    gui_ctl_id          id;
     int                 scroll;
     void                *cursor;
 

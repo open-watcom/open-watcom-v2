@@ -67,7 +67,7 @@ typedef struct {
 
 extern bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     dlg_new     *dlgnew;
 
     dlgnew = GUIGetExtra( gui );

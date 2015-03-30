@@ -264,8 +264,7 @@ static char *Stuff[] =
 
 int TheSize = ArraySize( Stuff );
 
-extern  WNDMENU W3MenuItem;
-extern void     W3MenuItem( a_window *wnd, unsigned id, int row, int piece )
+void W3MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     row=row;piece=piece;
     switch( id ) {
@@ -279,22 +278,19 @@ extern void     W3MenuItem( a_window *wnd, unsigned id, int row, int piece )
     }
 }
 
-extern  WNDMODIFY W3Modify;
-extern  void    W3Modify( a_window *wnd, int row, int piece )
+void W3Modify( a_window *wnd, int row, int piece )
 {
     W3MenuItem( wnd, 0, row, piece );
 }
 
 
-extern int W3NumRows( a_window *wnd )
+int W3NumRows( a_window *wnd )
 {
     wnd=wnd;
     return( TheSize );
 }
 
-extern WNDGETLINE W3GetLine;
-extern  bool    W3GetLine( a_window *wnd, wnd_row row, int piece,
-                             wnd_line_piece *line )
+bool W3GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 {
     wnd=wnd;
     if( row >= TheSize ) return( FALSE );
@@ -306,8 +302,7 @@ extern  bool    W3GetLine( a_window *wnd, wnd_row row, int piece,
 }
 
 
-extern WNDREFRESH W3Refresh;
-void    W3Refresh( a_window *wnd )
+void W3Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
@@ -329,8 +324,7 @@ wnd_info W3Info = {
     DefPopUp( W3PopUp )
 };
 
-extern WNDOPEN W3Open;
-extern a_window *W3Open()
+a_window *W3Open()
 {
     a_window    *wnd;
     wnd_create_struct   info;

@@ -120,7 +120,7 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
     case GUI_KEY_x: WndPopUp( wnd, NULL ); break;
     case GUI_KEY_CTRL_X:
     {
-        static int last_menu_pos = 0;
+        static gui_ctl_id last_menu_pos = 0;
         WndCreateFloatingPopup( wnd, NULL, ArraySize( PopTart ), PopTart, &last_menu_pos );
     }
 

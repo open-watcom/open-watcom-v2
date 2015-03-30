@@ -33,7 +33,7 @@
 #include "auipvt.h"
 #include <string.h>
 
-char *WndLoadString( int id )
+char *WndLoadString( gui_res_id id )
 {
     char        buff[256];
     char        *ret;

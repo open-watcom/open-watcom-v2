@@ -37,10 +37,10 @@ static const void   *_data_handle;
 static PICKGETTEXT  *_getstring;
 static int          _items;
 
-static void PickInit( gui_window *gui, unsigned list_ctrl )
+static void PickInit( gui_window *gui, gui_ctl_id list_id )
 {
-    GUIAddTextList( gui, list_ctrl, _items, _data_handle, _getstring );
-    GUISetCurrSelect( gui, list_ctrl, DlgChosen );
+    GUIAddTextList( gui, list_id, _items, _data_handle, _getstring );
+    GUISetCurrSelect( gui, list_id, DlgChosen );
 }
 
 int DlgPickWithRtn2( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER *pick )

@@ -79,8 +79,7 @@ extern void Pos( a_window *wnd, int pos )
 }
 
 
-extern WNDSCROLL W2Scroll;
-extern int W2Scroll( a_window *wnd, int lines )
+int W2Scroll( a_window *wnd, int lines )
 {
     w2_struct   *w2 = WndExtra( wnd );
     int         old_top;
@@ -92,8 +91,7 @@ extern int W2Scroll( a_window *wnd, int lines )
 }
 
 
-extern  WNDMODIFY W2Modify;
-extern  void    W2Modify( a_window *wnd, int row, int piece )
+void W2Modify( a_window *wnd, int row, int piece )
 {
     w2_struct   *w2 = WndExtra( wnd );
 
@@ -109,8 +107,7 @@ extern  void    W2Modify( a_window *wnd, int row, int piece )
 }
 
 
-extern  WNDNEXTROW W2NextRow;
-extern  int     W2NextRow( a_window *wnd, int row, int inc )
+int W2NextRow( a_window *wnd, int row, int inc )
 {
     int         new;
     w2_struct   *w2 = WndExtra( wnd );
@@ -140,8 +137,7 @@ extern  int     W2NextRow( a_window *wnd, int row, int inc )
 }
 
 
-extern  WNDMENU W2MenuItem;
-extern void     W2MenuItem( a_window *wnd, unsigned id, int row, int piece )
+void     W2MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
 
     char        buff[80];
@@ -178,9 +174,7 @@ extern void     W2MenuItem( a_window *wnd, unsigned id, int row, int piece )
     }
 }
 
-extern WNDGETLINE W2GetLine;
-extern  bool    W2GetLine( a_window *wnd, wnd_row row, int piece,
-                             wnd_line_piece *line )
+bool W2GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 {
     w2_struct   *w2 = WndExtra( wnd );
 
@@ -211,8 +205,7 @@ extern  bool    W2GetLine( a_window *wnd, wnd_row row, int piece,
 }
 
 
-extern WNDREFRESH W2Refresh;
-void    W2Refresh( a_window *wnd )
+void W2Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
@@ -222,7 +215,6 @@ static int WordCompare( char **a, char **b )
     return( stricmp( *a, *b ) );
 }
 
-extern WNDCALLBACK W2EventProc;
 bool W2EventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     w2_struct   *w2 = WndExtra( wnd );
@@ -269,8 +261,7 @@ wnd_info W2Info = {
     DefPopUp( W2PopUp )
 };
 
-extern WNDOPEN W2Open;
-extern a_window *W2Open()
+a_window *W2Open( void )
 {
     w2_struct   *w2;
     a_window    *wnd;

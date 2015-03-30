@@ -58,11 +58,11 @@ enum {
 
 typedef struct gui_control_info
 {
-    int type;
-    char *text;
-    int x, y, width, height;
-    int id;
-    char *symbol;
+    int         type;
+    char        *text;
+    int         x, y, width, height;
+    gui_ctl_id  id;
+    char        *symbol;
 } gui_control_info;
 
 #define DLG_RECT( x1, y1, x2, y2 ) \
@@ -137,7 +137,7 @@ typedef struct gui_control_info
 
 #include "toconv.h"
 
-void PrintDlg(char *sym, int id, char*name,gui_control_info*ctl,int num_controls,int rows,int cols)
+void PrintDlg(char *sym, gui_ctl_id id, char*name,gui_control_info*ctl,int num_controls,int rows,int cols)
 {
     int i;
     FILE *hfile, *dlgfile;
