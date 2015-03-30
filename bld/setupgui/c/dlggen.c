@@ -90,8 +90,8 @@ extern void     ResetDriveInfo();
 
 int VisibilityCondition = 0;
 
-static gui_control_class ControlClass( int id, a_dialog_header *curr_dialog )
-/***************************************************************************/
+static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *curr_dialog )
+/**********************************************************************************/
 /* return the control class of a variable based on its id. */
 {
     int                 i;
@@ -142,8 +142,7 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *curr_dialog )
     bool                drive_checked;
 
     drive_checked = false;
-    for( i = 0; curr_dialog->pVariables[i] != NO_VAR; ++i ) {
-        var_handle = curr_dialog->pVariables[i];
+    for( i = 0; (var_handle = curr_dialog->pVariables[i]) != NO_VAR; ++i ) {
         cond = curr_dialog->pConditions[i];
         if( !curr_dialog->defaults_set && cond != NULL && VarGetIntVal( var_handle ) == 0 ) {
             if( isdigit( *cond ) ) {
@@ -221,14 +220,11 @@ static void GetVariableVals( gui_window *gui,
     char                *text;
     int                 i;
     gui_control_class   a_control_class;
-    vhandle             *pVariable;
     vhandle             var_handle;
     bool                drive_checked;
 
     drive_checked = false;
-    pVariable = curr_dialog->pVariables;
-    for( i = 0; pVariable[i] != NO_VAR; i++ ) {
-        var_handle = pVariable[i];
+    for( i = 0; (var_handle = curr_dialog->pVariables[i]) != NO_VAR; i++ ) {
         a_control_class = ControlClass( VarGetId( var_handle ), curr_dialog );
         switch( a_control_class ) {
         case GUI_STATIC:
@@ -278,10 +274,10 @@ static void CheckAnyCheck( gui_window *gui, a_dialog_header *child )
 /* 'anycheck' variable */
 {
     int                 i;
+    vhandle             var_handle;
 
-    for( i = 0; child->pVariables[i] != NO_VAR; i++ ) {
-        if( ControlClass( VarGetId( child->pVariables[i] ), child ) == GUI_CHECK_BOX &&
-            VarGetIntVal( child->pVariables[i] ) ) {
+    for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
+        if( ControlClass( VarGetId( var_handle ), child ) == GUI_CHECK_BOX && VarGetIntVal( var_handle ) != 0 ) {
             SetVariableByHandle( child->any_check, "1" );
             GUISetChecked( gui, VarGetId( child->any_check ), GUI_CHECKED );
             return;
@@ -297,16 +293,16 @@ static void CheckChildChecks( a_dialog_header *child )
 /* If all child checks are off, set them to the defaults */
 {
     int                 i;
+    vhandle             var_handle;
 
-    for( i = 0; child->pVariables[i] != NO_VAR; i++ ) {
-        if( ControlClass( VarGetId( child->pVariables[i] ), child ) == GUI_CHECK_BOX &&
-            VarGetIntVal( child->pVariables[i] ) ) {
+    for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
+        if( ControlClass( VarGetId( var_handle ), child ) == GUI_CHECK_BOX && VarGetIntVal( var_handle ) != 0 ) {
             return;
         }
     }
-    for( i = 0; child->pVariables[i] != NO_VAR; i++ ) {
-        if( ControlClass( VarGetId( child->pVariables[i] ), child ) == GUI_CHECK_BOX ) {
-            SetDefaultAutoSetValue( child->pVariables[i] );
+    for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
+        if( ControlClass( VarGetId( var_handle ), child ) == GUI_CHECK_BOX ) {
+            SetDefaultAutoSetValue( var_handle );
         }
     }
 }
@@ -325,7 +321,8 @@ static void DoBeep( void )
 #endif
 }
 
-dlg_state IdToDlgState( int id )
+dlg_state IdToDlgState( gui_ctl_id id )
+/*************************************/
 {
     switch( id ) {
     case CTL_OK:
@@ -360,12 +357,12 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     gui_rect            parent_rect;
     gui_window          *parent;
     int                 i, j, sign;
-    unsigned            id_i;
-    unsigned            id_j;
-    unsigned            checked_radio_id;
-    unsigned            new_check_candidate;
-    unsigned            focus;
-    unsigned            new_focus;
+    gui_ctl_id          id_i;
+    gui_ctl_id          id_j;
+    gui_ctl_id          checked_radio_id;
+    gui_ctl_id          new_check_candidate;
+    gui_ctl_id          focus_id;
+    gui_ctl_id          new_focus_id;
     bool                enabled;
     bool                control_on_new_line[MAX_VARS];
     bool                visible_checked_radiobutton;
@@ -416,7 +413,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
 
     control_on_new_line[0] = true;
 
-    GUIGetFocus( gui, &focus );
+    GUIGetFocus( gui, &focus_id );
 
     // Figure out which controls are on a separate line from the last control
     for( i = 1; i < curr_dialog->num_controls; i++ ) {
@@ -439,12 +436,13 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
             curr_dialog->controls[i].control_class == GUI_CHECK_BOX ) {
             id_i = curr_dialog->controls[i].id;
             if( GUIIsChecked( gui, id_i ) == GUI_CHECKED ) {
+                vhandle var_handle_j;
                 if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON ) {
                     checked_radio_id = id_i;
                 }
                 var_handle = GetVariableById( id_i );
-                for( j = 0; curr_dialog->pVariables[j] != NO_VAR; j++ ) {
-                    if( curr_dialog->pVariables[j] == var_handle ) {
+                for( j = 0; (var_handle_j = curr_dialog->pVariables[j]) != NO_VAR; j++ ) {
+                    if( var_handle_j == var_handle ) {
                         SetVariableByHandle( var_handle, "1" );
                     }
                 }
@@ -460,9 +458,9 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     VisibilityCondition = 1;
 
     for( i = 0; i < curr_dialog->num_controls; i++ ) {
-    // Figure out which controls to hide and which to show.
-    // Move all the controls below any control in transition
-    // either up or down.
+        // Figure out which controls to hide and which to show.
+        // Move all the controls below any control in transition
+        // either up or down.
 
         if( curr_dialog->controls_ext[i].pVisibilityConds != NULL ) {
             id_i = curr_dialog->controls[i].id;
@@ -476,22 +474,24 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
                 }
             } else if( enabled ) {
                 GUIEnableControl( gui, id_i, false );
-                GUIHideControl( gui, curr_dialog->controls[i].id );
+                GUIHideControl( gui, id_i );
                 sign = -1;
             } else {
                 continue;
             }
             if( control_on_new_line[i] ) {
+                gui_ord height;
                 for( j = i + 1; j < curr_dialog->num_controls; j++ ) {
                     if( control_on_new_line[j] ) {
                         break;
                     }
                 }
+                height = curr_dialog->controls[i].rect.height * sign;
                 for( ; j < curr_dialog->num_controls; j++ ) {
                     id_j = curr_dialog->controls[j].id;
                     enabled = GUIIsControlEnabled( gui, id_j );
                     GUIGetControlRect( gui, curr_dialog->controls[j].id, &control_rect );
-                    control_rect.y += curr_dialog->controls[i].rect.height * sign;
+                    control_rect.y += height;
                     if( enabled ) {
                         GUIHideControl( gui, id_j );
                         // control will be made visible again below
@@ -499,7 +499,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
                     }
                     GUIResizeControl( gui, id_j, &control_rect );
                 }
-                curr_dialog->height_change += curr_dialog->controls[i].rect.height * sign;
+                curr_dialog->height_change += height;
             }
         }
     }
@@ -530,9 +530,9 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     }
 
     // Keep the original focus in case it has changed.
-    GUIGetFocus( gui, &new_focus );
-    if( new_focus != focus && GUIIsControlEnabled( gui, focus ) ) {
-        GUISetFocus( gui, focus );
+    GUIGetFocus( gui, &new_focus_id );
+    if( new_focus_id != focus_id && GUIIsControlEnabled( gui, focus_id ) ) {
+        GUISetFocus( gui, focus_id );
     }
 
     if( GUIIsControlEnabled( gui, checked_radio_id ) ) {
@@ -557,7 +557,7 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
 #if !defined( _UI )
     static bool         first_time = true;
 #endif
-    unsigned            id;
+    gui_ctl_id          id;
     DLG_WINDOW_SET      *result;
     a_dialog_header     *curr_dialog;
     static bool         initializing = false;
@@ -813,7 +813,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 but_pos = WIN_BUTTON_POS( NORMAL_BUTTONS, NORMAL_BUTTONS, width, WIN_BW );
                 control->rect.x = DLG_COL( but_pos );
                 /* The dynamic system does not handle buttons too wide for dialog. */
-                control->rect.width = max_width;
+                control->rect.width = DLG_COL( max_width );
                 /* control->rect.width = DLG_COL( WIN_BW ); */
 #else
                 if( max_width < BW ) {
@@ -821,16 +821,15 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 }
                 but_pos = BUTTON_POS( NORMAL_BUTTONS, MAX_CTRL_PER_LINE, width, BW );
                 control->rect.x = DLG_COL( but_pos );
-                control->rect.width = max_width;
+                control->rect.width = DLG_COL( max_width );
 #endif
             }
             break;
 
         case GUI_EDIT:
             if( i > 0 ) {
-                prev = &curr_dialog->controls[i - 1];
-                if( prev->control_class == GUI_PUSH_BUTTON &&
-                    prev->rect.y == control->rect.y ) {
+                prev = control - 1;
+                if( prev->control_class == GUI_PUSH_BUTTON && prev->rect.y == control->rect.y ) {
                     // dialog_edit_button  (edit control and push button together)
                     control->rect.width = DLG_COL( prev->rect.x - control->rect.x - BUTTON_EXTRA );
                     break;
@@ -844,20 +843,28 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
             break;
 
         case GUI_STATIC:
-            if( control->id != -1 && curr_dialog->controls_ext[i].pVisibilityConds == NULL &&
-                (i <= 0 || (curr_dialog->controls[i - 1].control_class != GUI_EDIT &&
-                curr_dialog->controls[i - 1].control_class != GUI_PUSH_BUTTON) ||
-                curr_dialog->controls[i - 1].rect.y != curr_dialog->controls[i].rect.y) ) {
+            if( i > 0 ) {
+                prev = control - 1;
+                if( prev->control_class == GUI_PUSH_BUTTON || prev->control_class == GUI_EDIT ) {
+                    if( prev->rect.y == control->rect.y ) {
+                        if( control->rect.width > DLG_COL( width ) ) {
+                            control->rect.width = DLG_COL( width );
+                        }
+                        break;
+                    }
+                }
+            }
+            if( control->id == -1 || curr_dialog->controls_ext[i].pVisibilityConds != NULL ) {
+                if( control->rect.width > DLG_COL( width ) ) {
+                    control->rect.width = DLG_COL( width );
+                }
+            } else {
 #if !defined( _UI )
                 /* Align left edge of control with left of leftmost Button */
                 but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
                 control->rect.x = DLG_COL( but_pos );
 #endif
                 control->rect.width = DLG_COL( width - 1 );
-            } else {
-                if( control->rect.width > DLG_COL( width ) ) {
-                    control->rect.width = DLG_COL( width );
-                }
             }
             break;
 

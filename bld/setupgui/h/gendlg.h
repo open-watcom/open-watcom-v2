@@ -47,4 +47,4 @@ extern void             FreeDefaultDialogs  ( void );
 
 
 extern  dlg_state       GenericDialog( gui_window *parent, a_dialog_header * );
-extern  dlg_state       IdToDlgState( int );
+extern  dlg_state       IdToDlgState( gui_ctl_id id );

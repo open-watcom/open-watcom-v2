@@ -426,9 +426,9 @@ static tree_node *BuildExprTree( const char *str )
     if( str == NULL || IS_EMPTY( str ) ) {
         return( TreeNode( OP_TRUE, NULL, NULL ) );
     }
-    str2 = GUIStrDup( str, NULL );
     stack_top = -1;
-    token = strtok( str2, " " ); // copy string so we can use STRTOK
+    str2 = GUIStrDup( str, NULL );  // copy string so we can use STRTOK
+    token = strtok( str2, " " );
     while( token != NULL ) {
         if( token[0] == '|' ) { // or together top 2 values
             --stack_top;
@@ -941,11 +941,8 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         // dummy_var allows control to have an id - used by dynamic visibility feature
         var_handle = MakeDummyVar();
         if( text != NULL ) {
@@ -1119,11 +1116,8 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
         line = next; next = NextToken( line, ',' );
         if( EvalCondition( line ) && text != NULL ) {
             line = next; next = NextToken( line, ',' );
-            if( line != NULL ) {
-                // condition for visibility (dynamic)
-                line = GUIStrDup( line, NULL );
-            }
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+            // condition for visibility (dynamic)
+            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_textwindow( dlg->curr_dialog->controls, dlg->controls.num - 1,
@@ -1166,14 +1160,12 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
             SetVariableByHandle( var_handle, text );
         }
         dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
-        dlg->num_variables += 1;
+        dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
+        dlg->num_variables++;
         len = strlen( text );
         line = next; next = NextToken( line, ',' );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         if( dlg->max_width < len )
             dlg->max_width = len;
         if( dlg->max_width < 60 )
@@ -1195,7 +1187,7 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
 {
     char                *line;
     char                *line_start;
-    int                 id;
+    gui_ctl_id          id;
     bool                def_ret;
     bool                rc = true;
     vhandle             var_handle;
@@ -1218,13 +1210,9 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
         }
         if( dlg->max_width < dlg->num_push_buttons * ( ( 3 * BW ) / 2 ) )
             dlg->max_width = dlg->num_push_buttons * ( ( 3 * BW ) / 2 );
-        line = next;
-        next = NextToken( line, ',' );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        line = next; next = NextToken( line, ',' );
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
     } else {
         rc = false;
     }
@@ -1303,32 +1291,24 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
 
     if( EvalCondition( line ) ) {
         dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
-        dlg->num_variables += 1;
+        dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
+        dlg->num_variables++;
         line = next; next = NextToken( line, ',' );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         var_handle_2 = MakeDummyVar();
         SetVariableByHandle( var_handle_2, dialog_name );
         set_dlg_push_button( var_handle_2, button_text, dlg->curr_dialog->controls,
                              dlg->controls.num - 1, dlg->row_num, 4, 4, W, BW );
         BumpDlgArrays( dlg );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_edit( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
                       VarGetId( var_handle ), C0, dlg->row_num, C0 + BW - 1 );
         if( buff[0] != '\0' ) {
             BumpDlgArrays( dlg );
-            if( line != NULL ) {
-                // condition for visibility (dynamic)
-                line = GUIStrDup( line, NULL );
-            }
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 2].pVisibilityConds = line;
+            // condition for visibility (dynamic)
+            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 2].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
@@ -1369,18 +1349,12 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
         SetVariableByHandle( var_handle, dialog_name );
         set_dlg_push_button( var_handle, button_text, dlg->curr_dialog->controls,
                              dlg->controls.num - 1, dlg->row_num, 4, 4, W, BW );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         if( text != NULL ) {
             BumpDlgArrays( dlg );
-            if( line != NULL ) {
-                // condition for visibility (dynamic)
-                line = GUIStrDup( line, NULL );
-            }
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = line;
+            // condition for visibility (dynamic)
+            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
             dlg->col_num = 1;
             dialog_static( next_copy, dlg );
         }
@@ -1400,21 +1374,23 @@ static vhandle dialog_set_variable( DIALOG_INFO *dlg, const char *vbl_name,
 
     var_handle = AddVariable( vbl_name );
     dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
-    if( *init_cond == '\0' ) {
-        dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
-    } else {
-        dlg->curr_dialog->pConditions[dlg->num_variables] = GUIStrDup( init_cond, NULL );
-        if( SkipDialogs ) {
-            if( stricmp( init_cond, "true" ) == 0 ) {
-                SetVariableByHandle( var_handle, "1" );
-            } else if( stricmp( init_cond, "false" ) == 0 ) {
-                SetVariableByHandle( var_handle, "0" );
-            } else {
-                SetVariableByHandle( var_handle, init_cond );
+    if( init_cond != NULL ) {
+        if( *init_cond == '\0' ) {
+            init_cond = NULL;
+        } else {
+            if( SkipDialogs ) {
+                if( stricmp( init_cond, "true" ) == 0 ) {
+                    SetVariableByHandle( var_handle, "1" );
+                } else if( stricmp( init_cond, "false" ) == 0 ) {
+                    SetVariableByHandle( var_handle, "0" );
+                } else {
+                    SetVariableByHandle( var_handle, init_cond );
+                }
             }
         }
     }
-    dlg->num_variables += 1;
+    dlg->curr_dialog->pConditions[dlg->num_variables] = GUIStrDup( init_cond, NULL );
+    dlg->num_variables++;
     return( var_handle );
 }
 
@@ -1444,11 +1420,8 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
         dlg->num_radio_buttons += 1;
         len = strlen( text ) + 4; // room for button
         line = next; next = NextToken( line, ',' );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_radio( dlg->curr_dialog->controls, dlg->controls.num - 1,
                        dlg->num_radio_buttons, text, VarGetId( var_handle ), C0,
                        dlg->row_num, C0 + len );
@@ -1465,8 +1438,8 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
 }
 
 
-static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
-/*********************************************************/
+static bool dialog_checkbox( char *next, DIALOG_INFO *dlg, bool detail_button )
+/*****************************************************************************/
 {
     int                 len;
     char                *line;
@@ -1475,7 +1448,16 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
     char                *text;
     char                *init_cond;
     bool                rc = true;
+    char                *dialog_name;
+    char                *button_text;
+    vhandle             dlg_var_handle;
 
+    if( detail_button ) {
+        line = next; next = NextToken( line, ',' );
+        dialog_name = line;
+        line = next; next = NextToken( line, ',' );
+        button_text = line;
+    }
     line = next; next = NextToken( line, ',' );
     vbl_name = GUIStrDup( line, NULL );
     line = next; next = NextToken( line, ',' );
@@ -1486,14 +1468,15 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
+        if( detail_button ) {
+            dlg_var_handle = MakeDummyVar();
+            SetVariableByHandle( dlg_var_handle, dialog_name );
+        }
         var_handle = dialog_set_variable( dlg, vbl_name, init_cond );
         len = strlen( text ) + 4; // room for button
         line = next; next = NextToken( line, ',' );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_check( dlg->curr_dialog->controls, dlg->controls.num - 1, text,
                        VarGetId( var_handle ), dlg->col_num, dlg->row_num,
                        dlg->col_num + len );
@@ -1510,6 +1493,12 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
                 dlg->max_width = 2 * len + 1;
             }
         }
+        if( detail_button ) {
+            BumpDlgArrays( dlg );
+            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
+            set_dlg_push_button( dlg_var_handle, button_text, dlg->curr_dialog->controls,
+                                 dlg->controls.num - 1, dlg->row_num, 4, 4, W, BW );
+        }
     } else {
         rc = false;
     }
@@ -1519,41 +1508,6 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
     return( rc );
 }
 
-
-static bool dialog_detail_check( char *next, DIALOG_INFO *dlg )
-/*************************************************************/
-{
-    char        *line;
-    char        *next2_org;
-    char        *next2;
-    vhandle     var_handle;
-    bool        added;
-
-    line = next; next = NextToken( line, ',' );
-    line = TrimQuote( line );
-    var_handle = AddVariable( line );
-    SetVariableByHandle( var_handle, line );
-    line = next; next = NextToken( line, ',' );
-    next2_org = GUIStrDup( next, NULL );
-    next2 = next2_org;
-    added = dialog_checkbox( next, dlg );
-    if( added ) {
-        BumpDlgArrays( dlg );
-        set_dlg_push_button( var_handle, line, dlg->curr_dialog->controls,
-                             dlg->controls.num - 1, dlg->row_num, 4, 4, W, BW );
-    }
-    line = next2; next2 = NextToken( line, ',' );
-    line = next2; next2 = NextToken( line, ',' );
-    line = next2; next2 = NextToken( line, ',' );
-    line = next2; next2 = NextToken( line, ',' );
-    if( next2 != NULL ) {
-        // condition for visibility (dynamic)
-        next2 = GUIStrDup( next2, NULL );
-    }
-    dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = next2;
-    GUIMemFree( next2_org );
-    return( added );
-}
 
 void SimSetNeedGetDiskSizes( void )
 /*********************************/
@@ -1623,22 +1577,17 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
-        dlg->num_variables += 1;
+        dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
+        dlg->num_variables++;
         line = next; next = NextToken( line, ',' );
-        if( line != NULL ) {
-            // condition for visibility (dynamic)
-            line = GUIStrDup( line, NULL );
-        }
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = line;
+        // condition for visibility (dynamic)
+        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_edit( dlg->curr_dialog->controls, dlg->controls.num - 1,
                       buff, VarGetId( var_handle ), C0, dlg->row_num, C0 + W - 1 );
         if( buff[0] != '\0' ) {
             BumpDlgArrays( dlg );
-            if( line != NULL ) {
-                // condition for visibility (dynamic)
-                line = GUIStrDup( line, NULL );
-            }
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = line;
+            // condition for visibility (dynamic)
+            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
@@ -1803,10 +1752,10 @@ static bool ProcLine( char *line, pass_type pass )
                 }
             } else if( stricmp( line, "vis_condition" ) == 0 ) {
                 line = next; next = NextToken( line, ',' );
-                dlg.curr_dialog->controls_ext[dlg.curr_dialog->num_controls - 1].pVisibilityConds = NULL;
-                if( EvalCondition( next ) ) {
-                    dlg.curr_dialog->controls_ext[dlg.curr_dialog->num_controls - 1].pVisibilityConds = GUIStrDup( line, NULL );
+                if( !EvalCondition( next ) ) {
+                    line = NULL;
                 }
+                dlg.curr_dialog->controls_ext[dlg.curr_dialog->num_controls - 1].pVisibilityConds = GUIStrDup( line, NULL );
             } else {
                 // add another control to current dialog
                 if( !BumpDlgArrays( &dlg ) ) {
@@ -1831,13 +1780,13 @@ static bool ProcLine( char *line, pass_type pass )
                     added = dialog_radiobutton( next, &dlg );
                 } else if( stricmp(line, "check_box") == 0 ) {
                     dlg.col_num = C0;
-                    added = dialog_checkbox( next, &dlg );
+                    added = dialog_checkbox( next, &dlg, false );
                 } else if( stricmp(line, "detail_check") == 0 ) {
                     dlg.col_num = C0;
-                    added = dialog_detail_check( next, &dlg );
+                    added = dialog_checkbox( next, &dlg, true );
                 } else if( stricmp(line, "check_box_continue") == 0 ) {
                     dlg.row_num -= 1;
-                    added = dialog_checkbox( next, &dlg );
+                    added = dialog_checkbox( next, &dlg, false );
                 } else if( stricmp(line, "edit_control") == 0 ) {
                     added = dialog_editcontrol( next, &dlg );
                 } else if( stricmp(line, "text_window") == 0 ) {
@@ -2003,59 +1952,37 @@ static bool ProcLine( char *line, pass_type pass )
             line = next; next = NextToken( line, ',' );
             PatchInfo[num].srcfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].destdir = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].destdir = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].destfile = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].destfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].condition = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].condition = GUIStrDup( line, NULL );
         } else if( stricmp( line, "patch" ) == 0 ) {
             PatchInfo[num].command = PATCH_FILE;
             line = next; next = NextToken( line, ',' );
             PatchInfo[num].srcfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].destdir = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].destdir = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].destfile = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].destfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].exetype = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].exetype = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].condition = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].condition = GUIStrDup( line, NULL );
         } else if( stricmp( line, "delete" ) == 0 ) {
             PatchInfo[num].command = PATCH_DELETE_FILE;
             line = next; next = NextToken( line, ',' );
             PatchInfo[num].destfile = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].destdir = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].destdir = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].condition = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].condition = GUIStrDup( line, NULL );
         } else if( stricmp( line, "mkdir" ) == 0 ) {
             PatchInfo[num].command = PATCH_MAKE_DIR;
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].destdir = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].destdir = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            if( line ) {
-                PatchInfo[num].condition = GUIStrDup( line, NULL );
-            }
+            PatchInfo[num].condition = GUIStrDup( line, NULL );
         }
         break;
 #endif
@@ -2155,16 +2082,10 @@ static bool ProcLine( char *line, pass_type pass )
         ProfileInfo[num].key_name = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
         ProfileInfo[num].value = GUIStrDup( line, NULL );
-        if( next == NULL ) {
-            ProfileInfo[num].file_name = NULL;
-        } else {
-            line = next; next = NextToken( line, ',' );
-            ProfileInfo[num].file_name = GUIStrDup( line, NULL );
-            if( next != NULL ) {
-                line = next; next = NextToken( line, ',' );
-            }
-            ProfileInfo[num].hive_name = GUIStrDup( line, NULL );
-        }
+        line = next; next = NextToken( line, ',' );
+        ProfileInfo[num].file_name = GUIStrDup( line, NULL );
+        line = next; next = NextToken( line, ',' );
+        ProfileInfo[num].hive_name = GUIStrDup( line, NULL );
         ProfileInfo[num].condition = CompileCondition( next );
         break;
 
@@ -4545,10 +4466,10 @@ static char *CompileCondition( const char *str )
     if( str == NULL || IS_EMPTY( str ) ) {
         return( NULL );
     }
-    str2 = GUIStrDup( str, NULL );
-    buff[0] = '\0';
-    token = strtok( str2, " " ); // copy string so we can use STRTOK
     var_handle = NO_VAR;
+    buff[0] = '\0';
+    str2 = GUIStrDup( str, NULL );  // copy string so we can use STRTOK
+    token = strtok( str2, " " );
     while( token != NULL ) {
         switch( token[0] ) {
         case '|':

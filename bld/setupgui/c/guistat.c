@@ -267,7 +267,7 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 /**************************************************************************/
 {
     static bool         button_pressed = false;
-    unsigned            id;
+    gui_ctl_id          id;
     gui_key             key;
     gui_keystate        state;
     const char          *msg;

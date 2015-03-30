@@ -42,7 +42,7 @@ enum {
     CTL_HELP,
     CTL_SKIP,
     CTL_DONE,
-    FIRST_UNUSED_ID
+    FIRST_UNUSED_ID = 100
 };
 
 extern int      NominalButtonWidth;
