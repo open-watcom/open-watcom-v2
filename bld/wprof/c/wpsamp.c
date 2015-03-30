@@ -102,7 +102,7 @@ STATIC int              ssrcDetailLine( a_window *, int, bint );
 STATIC int              sasmDetailLine( a_window *, int, bint );
 STATIC int              srtnOpenDetail( sio_data *, bint );
 STATIC void             sampleRefresh( a_window * );
-STATIC void             sampleMenuItem( a_window *, unsigned, int, int );
+STATIC void             sampleMenuItem( a_window *, gui_ctl_id id, int, int );
 STATIC void             sampFixDirtyCurr( a_window * );
 STATIC bint             simageGetLine( a_window *, int );
 STATIC bint             smodGetLine( a_window *, int );
@@ -1414,7 +1414,7 @@ extern void WPDoPopUp( a_window * wnd, gui_menu_struct * gui_menu )
 
 
 
-extern void WPFindDoPopUp( a_window * wnd, int id )
+void WPFindDoPopUp( a_window * wnd, gui_ctl_id id )
 /*************************************************/
 {
     gui_menu_struct *   gui_menu;
@@ -1453,8 +1453,8 @@ STATIC void setDisplay( a_window * wnd, sio_data * curr_sio, bint do_top )
 
 
 
-STATIC void sampleMenuItem( a_window * wnd, unsigned id, int row, int piece )
-/***************************************************************************/
+STATIC void sampleMenuItem( a_window * wnd, gui_ctl_id id, int row, int piece )
+/*****************************************************************************/
 {
     sio_data *      curr_sio;
     int             sort_type;
@@ -1522,8 +1522,8 @@ STATIC void sampleMenuItem( a_window * wnd, unsigned id, int row, int piece )
         break;
     case MENU_SORT_COUNT:
     case MENU_SORT_NAME:
-        WndMenuCheck( wnd, MENU_SORT_COUNT, id==MENU_SORT_COUNT );
-        WndMenuCheck( wnd, MENU_SORT_NAME, id==MENU_SORT_COUNT );
+        WndMenuCheck( wnd, MENU_SORT_COUNT, ( id == MENU_SORT_COUNT ) );
+        WndMenuCheck( wnd, MENU_SORT_NAME, ( id == MENU_SORT_COUNT ) );
         if( id == MENU_SORT_COUNT ) {
             SetCurrentSort( curr_sio, SORT_COUNT );
         } else {

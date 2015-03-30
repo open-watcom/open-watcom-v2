@@ -185,8 +185,8 @@ STATIC void dumpCommaData( char *image, char *module, char *file,
 
 
 
-STATIC void doConvert( a_window *wnd, pointer _dump_rtn, int convert_select )
-/***************************************************************************/
+STATIC void doConvert( a_window *wnd, pointer _dump_rtn, gui_ctl_id id )
+/**********************************************************************/
 {
     DUMPRTNS        *dump_rtn = _dump_rtn;
     sio_data        *curr_sio;
@@ -198,30 +198,30 @@ STATIC void doConvert( a_window *wnd, pointer _dump_rtn, int convert_select )
     if( curr_sio->curr_mod == NULL ) {
         curr_sio->curr_mod = curr_sio->curr_image->module[0];
     }
-    if( convert_select == MENU_CONVERT_ALL ) {
+    if( id == MENU_CONVERT_ALL ) {
         dumpSampleImages( curr_sio, dump_rtn );
-    } else if( convert_select == MENU_CONVERT_IMAGE ) {
+    } else if( id == MENU_CONVERT_IMAGE ) {
         dumpImage( curr_sio->curr_image, dump_rtn );
-    } else if( convert_select == MENU_CONVERT_MODULE ) {
+    } else if( id == MENU_CONVERT_MODULE ) {
         dumpModule( curr_sio->curr_image, curr_sio->curr_mod, dump_rtn );
     }
 }
 
 
 
-extern void WPConvert( a_window * wnd, int convert_select )
-/*********************************************************/
+void WPConvert( a_window * wnd, gui_ctl_id id )
+/*********************************************/
 {
     DlgGetConvert( wnd );
     if( ConvertFile == NULL ) return;
     if( OptDIFFormat ) {
         convertEntryCount = 0;
         memset( convertEntrySize, 0, sizeof( convertEntrySize ) );
-        doConvert( wnd, &countDIFData, convert_select );
+        doConvert( wnd, &countDIFData, id );
         initDIFData();
-        doConvert( wnd, &dumpDIFData, convert_select );
+        doConvert( wnd, &dumpDIFData, id );
     } else {
-        doConvert( wnd, &dumpCommaData, convert_select );
+        doConvert( wnd, &dumpCommaData, id );
     }
     if( OptDIFFormat ) {
         finiDIFData();
