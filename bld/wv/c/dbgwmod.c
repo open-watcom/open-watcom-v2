@@ -122,8 +122,7 @@ static void     ModInit( a_window *wnd )
     ModCalcIndent( wnd );
 }
 
-static  WNDMENU ModMenuItem;
-static void     ModMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     mod_handle  handle;

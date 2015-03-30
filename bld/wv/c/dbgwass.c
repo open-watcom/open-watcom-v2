@@ -424,8 +424,7 @@ bool AsmOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod )
 }
 
 
-static  WNDMENU AsmMenuItem;
-static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     AsmMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     asm_window  *asw = WndAsm( wnd );

@@ -125,6 +125,8 @@ static char **VarNames[] = { LITREF_ENG( Empty ), LITREF_DUI( WindowWatches ), L
 static wnd_class VarClass[] = { WND_VARIABLE, WND_WATCH, WND_LOCALS, WND_FILESCOPE };
 static gui_resource *VarIcons[] = { &VarIcon, &WatIcon, &LocIcon, &VarIcon };
 
+static WNDMENU VarMenuItem;
+
 static void     VarSetWidth( a_window *wnd )
 /*
     Always leave room for a vertical scroll bar. It's most annoying
@@ -165,15 +167,11 @@ extern  bool    WndVarAdd( a_window *wnd, const char *name,
 }
 
 
-static WNDNUMROWS VarNumRows;
 static int VarNumRows( a_window *wnd )
 {
     return( VarRowTotal( WndVarInfo( wnd ) ) );
 }
 
-static void     VarMenuItem( a_window *wnd, unsigned id, int row, int piece );
-
-static  WNDMODIFY VarModify;
 static  void    VarModify( a_window *wnd, int row, int piece )
 {
     var_node            *v;
@@ -386,8 +384,7 @@ static void VarInitPopup( a_window *wnd, var_window *var, var_node *v )
 }
 
 
-static  WNDMENU VarMenuItem;
-static void     VarMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     var_node            *v;
     dlg_var_expand      varx;
@@ -631,9 +628,7 @@ static void FmtName( var_window *var, var_node *v, wnd_line_piece *line,
     var->i.name_end_row = row;
 }
 
-static WNDGETLINE VarGetLine;
-static  bool    VarGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     var_window  *var = WndVar( wnd );
     var_node    *v;
@@ -724,7 +719,6 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static WNDBEGPAINT VarBegPaint;
 static  void    VarBegPaint( a_window *wnd, int row, int num )
 {
     var_window  *var = WndVar( wnd );
@@ -734,7 +728,6 @@ static  void    VarBegPaint( a_window *wnd, int row, int num )
 }
 
 
-static WNDENDPAINT VarEndPaint;
 static  void    VarEndPaint( a_window *wnd, int row, int piece )
 {
     var_window  *var = WndVar( wnd );
@@ -765,14 +758,12 @@ void VarRestoreWndFromScope( void *wnd )
     }
 }
 
-static VARDIRTRTN VarDirtyRow;
 static void VarDirtyRow( void *wnd, int row )
 /*******************************************/
 {
     WndRowDirty( wnd, row );
 }
 
-static WNDREFRESH VarRefresh;
 static  void VarRefresh( a_window *wnd )
 {
     var_window  *var = WndVar( wnd );
@@ -806,7 +797,6 @@ static  void VarRefresh( a_window *wnd )
 }
 
 
-static WNDCALLBACK VarEventProc;
 static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     var_window  *var = WndVar( wnd );
@@ -945,25 +935,21 @@ static  a_window        *DoWndVarOpen( var_type vtype )
     return( wnd );
 }
 
-extern WNDOPEN WndVarOpen;
 extern a_window *WndVarOpen( void )
 {
     return( DoWndVarOpen( VAR_VARIABLE ) );
 }
 
-extern WNDOPEN WndWatOpen;
 extern a_window *WndWatOpen( void )
 {
     return( DoWndVarOpen( VAR_WATCH ) );
 }
 
-extern WNDOPEN WndLclOpen;
 extern a_window *WndLclOpen( void )
 {
     return( DoWndVarOpen( VAR_LOCALS ) );
 }
 
-extern WNDOPEN WndFSVOpen;
 extern a_window *WndFSVOpen( void )
 {
     return( DoWndVarOpen( VAR_FILESCOPE ) );

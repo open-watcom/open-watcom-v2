@@ -76,8 +76,7 @@ static  void    GlobInit( a_window *wnd )
     WndSetKey( wnd, PIECE_NAME );
 }
 
-extern  WNDMENU GlobMenuItem;
-extern void     GlobMenuItem( a_window *wnd, unsigned id, int row, int piece )
+extern void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     glob_window *glob = WndGlob( wnd );
     address     addr;

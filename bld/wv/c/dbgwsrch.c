@@ -232,8 +232,7 @@ static void     SrchInit( a_window *wnd )
 }
 
 
-static  WNDMENU SrchMenuItem;
-static void     SrchMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     srch_window *srch = WndSrch( wnd );
     a_window    *new;

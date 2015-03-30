@@ -47,7 +47,7 @@ extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
 extern wnd_macro        *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds );
 extern char             *GetCmdName( int index );
-extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, unsigned id, char *buff, bool strip_amp );
+extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
 extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
@@ -234,11 +234,10 @@ bool MacKeyHit( a_window *wnd, unsigned key )
     }
 }
 
-static WNDCLICKHOOK MacPopupClicked;
-static bool MacPopupClicked( a_window *wnd, unsigned id )
+static bool MacPopupClicked( a_window *wnd, gui_ctl_id id )
 {
     char                *p;
-    int                 main_id;
+    gui_ctl_id          main_id;
     mac_window          *wndmac;
     cmd_list            *cmds;
 
@@ -276,7 +275,7 @@ static void MacModMenu( a_window *wnd, wnd_row row )
 {
     wnd_info            *info;
     gui_point           point;
-    int                 dummy;
+    gui_ctl_id          dummy;
     mac_window          *wndmac= WndMac( wnd );
     wnd_macro           *mac = MacGetMacro( row );
 
@@ -372,8 +371,8 @@ static void     MacModify( a_window *wnd, int row, int piece )
 
 #define TDDBG "tdkeys.dbg"
 #define WDDBG "wdkeys.dbg"
-static  WNDMENU MacMenuItem;
-static void     MacMenuItem( a_window *wnd, unsigned id, int row, int piece )
+
+static void     MacMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     wnd_macro           *mac;
     mac_window          *wndmac = WndMac( wnd );
@@ -441,14 +440,12 @@ static int MacNumRows( a_window *wnd )
     return( count );
 }
 
-static WNDGETLINE MacGetLine;
-static  bool    MacGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     wnd_macro           *mac;
     cmd_list            *cmds;
     mac_window          *wndmac = WndMac( wnd );
-    int                 main_id;
+    gui_ctl_id          main_id;
     char                *p;
 
     if( wndmac->press_key ) {

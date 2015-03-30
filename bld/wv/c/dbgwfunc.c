@@ -146,8 +146,7 @@ static void FuncNewOptions( a_window *wnd )
     WndZapped( wnd );
 }
 
-static  WNDMENU FuncMenuItem;
-static void     FuncMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );

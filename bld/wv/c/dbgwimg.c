@@ -105,8 +105,7 @@ static void     ImgInit( a_window *wnd )
     WndZapped( wnd );
 }
 
-static  WNDMENU ImgMenuItem;
-static void     ImgMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     image_entry *img;
     char        *new_name;

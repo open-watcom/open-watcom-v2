@@ -58,8 +58,8 @@ void    InitToolBar( void )
     int         i;
 
     for( i = 0; i < ArraySize( ToolBar ); ++i ) {
-        ToolBar[i].hinttext = WndLoadString( (int)(pointer_int)ToolBar[i].hinttext );
-        ToolBar[i].tip = WndLoadString( (int)(pointer_int)ToolBar[i].tip );
+        ToolBar[i].hinttext = WndLoadString( (gui_res_id)(pointer_int)ToolBar[i].hinttext );
+        ToolBar[i].tip = WndLoadString( (gui_res_id)(pointer_int)ToolBar[i].tip );
     }
 }
 

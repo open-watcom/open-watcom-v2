@@ -87,8 +87,7 @@ static int TrdNumRows( a_window *wnd )
     return( num );
 }
 
-static  WNDMENU TrdMenuItem;
-static void     TrdMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     thread_state        *thd = GetThreadRow( row );
 

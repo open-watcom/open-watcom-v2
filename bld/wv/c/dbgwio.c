@@ -103,8 +103,7 @@ static void IOAddNewAddr( a_window *wnd, address *addr, int type )
     curr->value_known = FALSE;
 }
 
-static  WNDMENU IOMenuItem;
-static void     IOMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     io_window   *io = WndIO( wnd );
     address     addr;

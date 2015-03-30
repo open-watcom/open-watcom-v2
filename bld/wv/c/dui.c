@@ -97,7 +97,6 @@ extern void             WndInfoBox( const char *text );
 extern void             WndUser( void );
 extern void             WndDebug( void );
 extern a_window         *WndClassInspect( wnd_class class );
-extern char             *WndLoadString( int i );
 extern void             WndFlushKeys( void );
 extern void             PlayDead( bool );
 extern void             WndSysEnd( bool pause );

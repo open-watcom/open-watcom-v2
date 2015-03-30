@@ -127,8 +127,7 @@ static bool RunTrdEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-static  WNDMENU RunTrdMenuItem;
-static void     RunTrdMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     thread_state        *thd = GetThreadRow( row );
 

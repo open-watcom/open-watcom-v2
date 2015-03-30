@@ -160,8 +160,7 @@ static void RepRefresh( a_window *wnd )
 }
 
 
-static  WNDMENU RepMenuItem;
-static void     RepMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     event_record        *ev;
 

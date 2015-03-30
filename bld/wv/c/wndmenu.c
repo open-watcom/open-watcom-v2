@@ -226,7 +226,7 @@ static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
 
 
 char *GetMenuLabel( unsigned size,
-                    gui_menu_struct *menu, unsigned id, char *buff, bool strip_amp )
+                    gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp )
 {
     char        *p;
 
@@ -379,8 +379,8 @@ static void LoadLabels( gui_menu_struct *menu, int num_menus )
             LoadLabels( menu->child, menu->num_child_menus );
         }
         if( !( menu->style & (GUI_SEPARATOR|WND_MENU_ALLOCATED) ) ) {
-            menu->label = WndLoadString( (int)(pointer_int)menu->label );
-            menu->hinttext = WndLoadString( (int)(pointer_int)menu->hinttext );
+            menu->label = WndLoadString( (gui_res_id)(pointer_int)menu->label );
+            menu->hinttext = WndLoadString( (gui_res_id)(pointer_int)menu->hinttext );
             menu->style |= WND_MENU_ALLOCATED;
         }
         ++menu;
@@ -533,7 +533,7 @@ static  void    GoToPromptedAddr( void )
     }
 }
 
-extern bool     WndMainMenuProc( a_window *wnd, unsigned id )
+bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
 {
     bool        save;
 

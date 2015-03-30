@@ -90,8 +90,7 @@ static brkp     *BrkGetBP( int row )
     return( bp );
 }
 
-static  WNDMENU BrkMenuItem;
-static void     BrkMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     brkp        *bp;
 

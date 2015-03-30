@@ -495,7 +495,7 @@ void InitGadget( void )
     WndGadgetInit();
     MaxGadgetLength = 0;
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        WndGadgetHint[ i ] = WndLoadString( (int)(pointer_int)WndGadgetHint[ i ] );
+        WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_int)WndGadgetHint[ i ] );
     }
     for( i = 1; i <= WndGadgetArraySize - 1; ++i ) {
         if( GUIGetHotSpotSize( i, &size ) && size.x > MaxGadgetLength ) {

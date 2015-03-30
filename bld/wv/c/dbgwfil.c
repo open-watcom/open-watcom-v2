@@ -207,8 +207,7 @@ static void GotoLine( a_window *wnd )
 }
 
 
-static  WNDMENU FileMenuItem;
-static void     FileMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     FileMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     mod_handle  mod;

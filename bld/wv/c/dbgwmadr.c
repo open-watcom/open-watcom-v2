@@ -306,8 +306,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     NewCurrRadix( old );
 }
 
-static  WNDMENU RegMenuItem;
-static void     RegMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     reg_window              *reg = WndReg( wnd );
     int                     i;

@@ -732,8 +732,7 @@ static void MemResize( a_window *wnd )
     MemRefresh( wnd );
 }
 
-static  WNDMENU MemMenuItem;
-static void     MemMenuItem( a_window *wnd, unsigned id, int row, int piece )
+static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     mem_window  *mem = WndMem( wnd );
 
