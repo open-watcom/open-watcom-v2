@@ -41,7 +41,7 @@ WCLASS WPushButton : public WButton {
                              const char *text, WStyle style=0 );
         WEXPORT WPushButton( WWindow* parent, const WRect& r,
                              WStyle style=0 );
-        WEXPORT WPushButton( WStatDialog* parent, unsigned id,
+        WEXPORT WPushButton( WStatDialog* parent, gui_ctl_id id,
                              WStyle style=0 );
         WEXPORT ~WPushButton();
 
@@ -54,7 +54,7 @@ WCLASS WDefPushButton : public WButton {
     public:
         WEXPORT WDefPushButton( WWindow* parent, const WRect& r,
                                 const char * text, WStyle style=0 );
-        WEXPORT WDefPushButton( WStatDialog* parent, unsigned id,
+        WEXPORT WDefPushButton( WStatDialog* parent, gui_ctl_id id,
                                 WStyle style=0 );
         WEXPORT ~WDefPushButton();
 

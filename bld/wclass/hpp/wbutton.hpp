@@ -40,7 +40,7 @@ WCLASS WButton : public WControl
     public:
         WEXPORT WButton( WWindow* parent, gui_control_class control_class,
                          const WRect& r, const char *text, WStyle wstyle );
-        WEXPORT WButton( WStatDialog* parent, unsigned id, WStyle wstyle );
+        WEXPORT WButton( WStatDialog* parent, gui_ctl_id id, WStyle wstyle );
         WEXPORT ~WButton();
         void WEXPORT onClick( WObject* obj, cbw click );
         void WEXPORT onDblClick( WObject* obj, cbw dblClick );

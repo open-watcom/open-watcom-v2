@@ -34,11 +34,10 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "_windows.hpp"
 #include "wresstr.hpp"
 
-WEXPORT WResStr::WResStr( unsigned id ) {
-/***************************************/
+WEXPORT WResStr::WResStr( gui_res_id id ) {
+/*****************************************/
 
     id = id;
     assert( GUILoadString( id, _buffer, BUFFERSIZE ) );
@@ -62,8 +61,8 @@ const char * GetParm( char idxChar, va_list args ) {
     return( ret );
 }
 
-char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, ... ) {
-/*****************************************************************************/
+char * WEXPORT WResStr::formats( char * buf, unsigned len, gui_res_id id, ... ) {
+/*******************************************************************************/
 
     WResStr         format( id );
     const char *    fmts = format;

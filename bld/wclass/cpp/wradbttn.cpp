@@ -41,7 +41,7 @@ WEXPORT WRadioButton::WRadioButton( WWindow* parent, const WRect& r,
 }
 
 
-WEXPORT WRadioButton::WRadioButton( WStatDialog* parent, unsigned id,
+WEXPORT WRadioButton::WRadioButton( WStatDialog* parent, gui_ctl_id id,
                                     WStyle style )
         : WBoolSwitch( parent, id, style ) {
 /******************************************/

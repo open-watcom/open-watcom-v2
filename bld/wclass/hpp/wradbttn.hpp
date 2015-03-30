@@ -47,7 +47,7 @@ WCLASS WRadioButton : public WBoolSwitch {
     public:
         WEXPORT WRadioButton( WWindow* parent, const WRect& r,
                               const char* text=NULL, WStyle s=RB_NORMAL );
-        WEXPORT WRadioButton( WStatDialog* parent, unsigned id,
+        WEXPORT WRadioButton( WStatDialog* parent, gui_ctl_id id,
                               WStyle s=RB_NORMAL );
         WEXPORT ~WRadioButton();
 

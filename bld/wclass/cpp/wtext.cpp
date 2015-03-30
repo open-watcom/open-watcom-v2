@@ -41,7 +41,7 @@ WEXPORT WText::WText( WWindow* parent, const WRect& r, const char *text,
 }
 
 
-WEXPORT WText::WText( WStatDialog* parent, unsigned id,
+WEXPORT WText::WText( WStatDialog* parent, gui_ctl_id id,
                       WStyle style )
         : WControl( parent, id, style ) {
 /***************************************/

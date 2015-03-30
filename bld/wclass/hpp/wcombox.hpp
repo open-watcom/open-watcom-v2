@@ -47,7 +47,7 @@ WCLASS WCombo : public WControl {
         WEXPORT WCombo( WWindow *parent, gui_control_class control_class,
                         const WRect& r, const char *text=NULL,
                         WStyle wstyle=CStyleDefault );
-        WEXPORT WCombo( WStatDialog * parent, unsigned id,
+        WEXPORT WCombo( WStatDialog * parent, gui_ctl_id id,
                         WStyle wstyle=CStyleDefault );
         WEXPORT ~WCombo();
         bool WEXPORT gettingFocus( WWindow * );
@@ -79,7 +79,7 @@ WCLASS WComboBox : public WCombo {
         WEXPORT WComboBox( WWindow *parent, const WRect& r,
                            const char *text=NULL,
                            WStyle wstyle=CStyleDefault );
-        WEXPORT WComboBox( WStatDialog * parent, unsigned id,
+        WEXPORT WComboBox( WStatDialog * parent, gui_ctl_id id,
                            WStyle wstyle=CStyleDefault );
         WEXPORT ~WComboBox();
 
@@ -92,7 +92,7 @@ WCLASS WEditComboBox : public WCombo {
         WEXPORT WEditComboBox( WWindow *parent, const WRect& r,
                                const char *text=NULL,
                                WStyle wstyle=CStyleDefault );
-        WEXPORT WEditComboBox( WStatDialog * parent, unsigned id,
+        WEXPORT WEditComboBox( WStatDialog * parent, gui_ctl_id id,
                                WStyle wstyle=CStyleDefault );
         WEXPORT ~WEditComboBox();
 

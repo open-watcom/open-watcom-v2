@@ -45,7 +45,7 @@ WEXPORT WComboBox::WComboBox( WWindow* parent, const WRect& r,
 }
 
 WEXPORT WComboBox::WComboBox( WStatDialog* parent,
-                              unsigned id, WStyle style )
+                              gui_ctl_id id, WStyle style )
         : WCombo( parent, id, style ) {
 /*************************************/
 
@@ -62,7 +62,7 @@ WEXPORT WEditComboBox::WEditComboBox( WWindow* parent, const WRect& r,
 
 }
 
-WEXPORT WEditComboBox::WEditComboBox( WStatDialog* parent, unsigned id,
+WEXPORT WEditComboBox::WEditComboBox( WStatDialog* parent, gui_ctl_id id,
                                       WStyle style )
         : WCombo( parent, id, style ) {
 /*************************************/
@@ -84,7 +84,7 @@ WEXPORT WCombo::WCombo( WWindow* parent, gui_control_class control_class,
 
 }
 
-WEXPORT WCombo::WCombo( WStatDialog* parent, unsigned id,
+WEXPORT WCombo::WCombo( WStatDialog* parent, gui_ctl_id id,
                         WStyle style )
         : WControl( parent, id, style )
         , _changedClient( NULL )

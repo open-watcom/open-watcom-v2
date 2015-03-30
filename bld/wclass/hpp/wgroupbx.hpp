@@ -41,7 +41,7 @@ WCLASS WGroupBox : public WButton {
     public:
         WEXPORT WGroupBox( WWindow *parent, const WRect& r,
                            const char *text=NULL, WStyle s=GStyleGroupBox );
-        WEXPORT WGroupBox( WStatDialog* parent, unsigned id,
+        WEXPORT WGroupBox( WStatDialog* parent, gui_ctl_id id,
                           WStyle s=GStyleGroupBox );
         WEXPORT ~WGroupBox();
 

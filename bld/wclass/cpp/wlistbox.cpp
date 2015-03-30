@@ -48,7 +48,7 @@ WEXPORT WListBox::WListBox( WWindow* parent, const WRect& r, WStyle wstyle )
 }
 
 
-WEXPORT WListBox::WListBox( WStatDialog* parent, unsigned id, WStyle wstyle )
+WEXPORT WListBox::WListBox( WStatDialog* parent, gui_ctl_id id, WStyle wstyle )
     : WControl( parent, id, wstyle )
     , _changedClient( NULL )
     , _changed( NULL )

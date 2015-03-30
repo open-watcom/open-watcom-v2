@@ -50,7 +50,7 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )
 
 const char REPCHAR = '\t';
 
-WEXPORT WFileDialog::WFileDialog( WWindow* parent, unsigned res_idx )
+WEXPORT WFileDialog::WFileDialog( WWindow* parent, gui_res_id res_idx )
         : _parent( parent ) {
 /***************************/
 

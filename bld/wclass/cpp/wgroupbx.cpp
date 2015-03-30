@@ -40,7 +40,7 @@ WEXPORT WGroupBox::WGroupBox( WWindow* parent, const WRect& r,
 
 }
 
-WEXPORT WGroupBox::WGroupBox( WStatDialog* parent, unsigned id,
+WEXPORT WGroupBox::WGroupBox( WStatDialog* parent, gui_ctl_id id,
                   WStyle s )
         : WButton( parent, id, s ) {
 /*******************************************/

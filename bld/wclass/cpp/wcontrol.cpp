@@ -48,7 +48,7 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
     if( parent == NULL ) return;
     setAutosize( r );
     autoPosition( rr );
-    _control_id = WWindow::_idMaster++;
+    _id = WWindow::_idMaster++;
     control_info.control_class = control_class;
     control_info.text = (char *)text;
     control_info.rect.x = rr.x();
@@ -62,15 +62,15 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
         gui_style |= GUI_TAB_GROUP;
     }
     control_info.style = (gui_control_styles)gui_style;
-    control_info.id = _control_id;
-    WWindow::_idMap.setThis( this, (WHANDLE)(pointer_int)_control_id );
+    control_info.id = _id;
+    WWindow::_idMap.setThis( this, (WHANDLE)(pointer_int)_id );
     parent->addChild( this );
     GUIAddControl( &control_info, NULL, NULL );
 }
 
-WEXPORT WControl::WControl( WStatDialog* parent, unsigned id, WStyle wstyle )
+WEXPORT WControl::WControl( WStatDialog* parent, gui_ctl_id id, WStyle wstyle )
                 : WWindow( parent )
-                , _control_id( id )
+                , _id( id )
                 , _style( wstyle )
 /***********************************/
 {

@@ -49,7 +49,7 @@ WEXPORT WPushButton::WPushButton( WWindow* parent, const WRect& r,
 }
 
 
-WEXPORT WPushButton::WPushButton( WStatDialog* parent, unsigned id,
+WEXPORT WPushButton::WPushButton( WStatDialog* parent, gui_ctl_id id,
                                   WStyle style )
         : WButton( parent, id, style ) {
 /**************************************/
@@ -65,7 +65,7 @@ WEXPORT WDefPushButton::WDefPushButton( WWindow* parent, const WRect& r,
 }
 
 
-WEXPORT WDefPushButton::WDefPushButton( WStatDialog* parent, unsigned id,
+WEXPORT WDefPushButton::WDefPushButton( WStatDialog* parent, gui_ctl_id id,
                                         WStyle style )
         : WButton( parent, id, style ) {
 /**************************************/

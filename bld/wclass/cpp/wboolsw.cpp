@@ -42,7 +42,7 @@ WEXPORT WBoolSwitch::WBoolSwitch( WWindow *parent, gui_control_class control,
 }
 
 
-WEXPORT WBoolSwitch::WBoolSwitch( WStatDialog *parent, unsigned id,
+WEXPORT WBoolSwitch::WBoolSwitch( WStatDialog *parent, gui_ctl_id id,
                                   WStyle style )
         : WButton( parent, id, style ) {
 /****************************************************/

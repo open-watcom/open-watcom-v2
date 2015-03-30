@@ -47,15 +47,15 @@ void WStatDialog::addControl( WControl * control ) {
     _controls.add( control );
 }
 
-WControl * WEXPORT WStatDialog::getControl( unsigned control_id ) {
-/*****************************************************************/
+WControl * WEXPORT WStatDialog::getControl( gui_ctl_id id ) {
+/***********************************************************/
 
     int         i;
     WControl *  test;
 
     for( i = 0; i < _controls.count(); i += 1 ) {
         test = (WControl *)_controls[i];
-        if( test->controlId() == control_id ) {
+        if( test->controlId() == id ) {
             return( test );
         }
     }
@@ -97,24 +97,24 @@ void WStatDialog::doDialog( WWindow *parent ) {
     GUICreateResDialog( &create_info, _dialog_id );
 }
 
-void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
+void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id,
                                        WString & str ) {
 /******************************************************/
 
-    char *text = GUIGetText( handle(), control_id );
+    char *text = GUIGetText( handle(), id );
     WString t( text );
     GUIMemFree( text );
     str = t;
 }
 
-void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
+void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id,
                                        char* buff, size_t len ) {
 /***************************************************************/
 
     char * text;
     size_t text_len;
 
-    text = GUIGetText( handle(), control_id );
+    text = GUIGetText( handle(), id );
     if( text == NULL ) {
         *buff = NULLCHAR;
     } else {
@@ -127,41 +127,41 @@ void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
     }
 }
 
-size_t WEXPORT WStatDialog::getCtrlTextLength( unsigned control_id ) {
-/********************************************************************/
+size_t WEXPORT WStatDialog::getCtrlTextLength( gui_ctl_id id ) {
+/**************************************************************/
 
-    char *text = GUIGetText( handle(), control_id );
+    char *text = GUIGetText( handle(), id );
     if( text == NULL ) return( 0 );
     size_t len = strlen( text );
     GUIMemFree( text );
     return( len );
 }
 
-void WEXPORT WStatDialog::setCtrlText( unsigned control_id,
+void WEXPORT WStatDialog::setCtrlText( gui_ctl_id id,
                                        const char *text ) {
 /*********************************************************/
 
-    GUISetText( handle(), control_id, (char *)text );
+    GUISetText( handle(), id, (char *)text );
 }
 
-bool WEXPORT WStatDialog::isCtrlEnabled( unsigned control_id ) {
-/**************************************************************/
+bool WEXPORT WStatDialog::isCtrlEnabled( gui_ctl_id id ) {
+/********************************************************/
 
-    return( GUIIsControlEnabled( handle(), control_id ) );
+    return( GUIIsControlEnabled( handle(), id ) );
 }
 
-void WEXPORT WStatDialog::enableCtrl( unsigned control_id, bool state ) {
-/***********************************************************************/
+void WEXPORT WStatDialog::enableCtrl( gui_ctl_id id, bool state ) {
+/*****************************************************************/
 
-    GUIEnableControl( handle(), control_id, state );
+    GUIEnableControl( handle(), id, state );
 }
 
-void WEXPORT WStatDialog::getCtrlRect( unsigned control_id, WRect & r ) {
-/***********************************************************************/
+void WEXPORT WStatDialog::getCtrlRect( gui_ctl_id id, WRect & r ) {
+/*****************************************************************/
 
     gui_rect    rr;
 
-    GUIGetControlRect( handle(), control_id, &rr );
+    GUIGetControlRect( handle(), id, &rr );
     r.x( rr.x );
     r.y( rr.y );
     r.w( rr.width );

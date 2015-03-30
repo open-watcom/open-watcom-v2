@@ -101,8 +101,8 @@ MsgRetType WEXPORT WMessageDialog::message( WWindow* parent, MsgLevel level,
 
 MsgRetType WEXPORT WMessageDialog::messager( WWindow* parent, MsgLevel level,
                                              MsgButtons button,
-                                             uint text_id,
-                                             uint caption_id ) {
+                                             gui_res_id text_id,
+                                             gui_res_id caption_id ) {
 /*****************************************************************/
 
     unsigned type;

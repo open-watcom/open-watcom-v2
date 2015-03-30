@@ -43,15 +43,15 @@ WCLASS WStatDialog : public WDialog {
 
         void addControl( WControl * control );
 
-        virtual WControl * WEXPORT getControl( unsigned control_id );
+        virtual WControl * WEXPORT getControl( gui_ctl_id id );
 
-        void WEXPORT getCtrlText( unsigned control_id, WString & str );
-        void WEXPORT getCtrlText( unsigned control_id, char* buff, size_t len );
-        size_t WEXPORT getCtrlTextLength( unsigned control_id );
-        void WEXPORT setCtrlText( unsigned control_id, const char *text );
-        void WEXPORT getCtrlRect( unsigned control_id, WRect & r );
-        bool WEXPORT isCtrlEnabled( unsigned control_id );
-        void WEXPORT enableCtrl( unsigned control_id, bool state );
+        void WEXPORT getCtrlText( gui_ctl_id id, WString & str );
+        void WEXPORT getCtrlText( gui_ctl_id id, char* buff, size_t len );
+        size_t WEXPORT getCtrlTextLength( gui_ctl_id id );
+        void WEXPORT setCtrlText( gui_ctl_id id, const char *text );
+        void WEXPORT getCtrlRect( gui_ctl_id id, WRect & r );
+        bool WEXPORT isCtrlEnabled( gui_ctl_id id );
+        void WEXPORT enableCtrl( gui_ctl_id id, bool state );
 
         virtual void doDialog( WWindow *parent );   // override WDialog
 

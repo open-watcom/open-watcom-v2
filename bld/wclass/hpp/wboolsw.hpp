@@ -40,7 +40,7 @@ WCLASS WBoolSwitch : public WButton {
         WEXPORT WBoolSwitch( WWindow* parent, gui_control_class control,
                              const WRect& r, const char *text,
                              WStyle wstyle );
-        WEXPORT WBoolSwitch( WStatDialog* parent, unsigned id,
+        WEXPORT WBoolSwitch( WStatDialog* parent, gui_ctl_id id,
                              WStyle wstyle );
         WEXPORT ~WBoolSwitch();
 

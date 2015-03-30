@@ -47,7 +47,7 @@
 WObjectMap      WWindow::_idMap;
 WObjectMap      WWindow::_toolBarIdMap;
 WObjectMap      WWindow::_popupIdMap;
-unsigned        WWindow::_idMaster = 1;
+gui_ctl_id      WWindow::_idMaster = 1;
 
 /***************************************************************************/
 
@@ -76,25 +76,25 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
 {
     gui_point           point;
     gui_coord           size;
-    unsigned            control_id;
+    gui_ctl_id          id;
     int                 scroll_position;
 
     switch( msg ) {
     case GUI_CLICKED: {
-        GUI_GETID( parm, control_id );
-        WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)control_id );
+        GUI_GETID( parm, id );
+        WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)id );
         if( menu != NULL ) {
             menu->picked();
             return( true );
         }
         // a popup menu with no menu items will generate GUI_CLICKED
         // - simulate a GUI_INITMENUPOPUP
-        WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)control_id );
+        WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
         if( pop != NULL ) {
             pop->popup();
             return( true );
         }
-        WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)control_id );
+        WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)id );
         if( tool != NULL ) {
             tool->picked();
             return( true );
@@ -102,8 +102,8 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     }
     case GUI_CONTROL_CLICKED:
     case GUI_CONTROL_DCLICKED: {
-        GUI_GETID( parm, control_id );
-        WControl* control = getControl( control_id );
+        GUI_GETID( parm, id );
+        WControl* control = getControl( id );
         if( control != NULL ) {
             return( control->processMsg( msg ) );
         } else {
@@ -127,8 +127,8 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         return( rightBttnUp( point.x, point.y, 0 ) );
     }
     case GUI_CONTROL_RCLICKED: {
-        GUI_GETID( parm, control_id );
-        WControl* control = getControl( control_id );
+        GUI_GETID( parm, id );
+        WControl* control = getControl( id );
         if( control != NULL ) {
             return( control->rightBttnUp( 0, 0, 0 ) );
         } else {
@@ -213,8 +213,8 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         return( ret );
     }
     case GUI_INITMENUPOPUP: {
-        GUI_GETID( parm, control_id );
-        WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)control_id );
+        GUI_GETID( parm, id );
+        WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
         pop->popup();
         return( true );
     }
@@ -292,8 +292,8 @@ extern "C" void EnumChildProc( gui_window *hwin, void * ) {
 }
 
 
-extern "C" void EnumControlProc( gui_window *hwin, unsigned id, void * ) {
-/************************************************************************/
+extern "C" void EnumControlProc( gui_window *hwin, gui_ctl_id id, void * ) {
+/**************************************************************************/
 
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
     WControl* control = win->getControl( id );
@@ -1046,8 +1046,8 @@ bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState ) {
     return( false );
 }
 
-WControl * WWindow::getControl( unsigned id ) {
-/*********************************************/
+WControl * WWindow::getControl( gui_ctl_id id ) {
+/***********************************************/
 
     return( (WControl *)_idMap.findThis( (WHANDLE)(pointer_int)id ) );
 }

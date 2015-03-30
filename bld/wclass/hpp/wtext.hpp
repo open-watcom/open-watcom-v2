@@ -44,7 +44,7 @@ WCLASS WText : public WControl {
     public:
         WEXPORT WText( WWindow* parent, const WRect& r, const char *text=NULL,
                        WStyle style=TextStyleDefault );
-        WEXPORT WText( WStatDialog* parent, unsigned id,
+        WEXPORT WText( WStatDialog* parent, gui_ctl_id id,
                        WStyle style=TextStyleDefault );
         WEXPORT ~WText();
 

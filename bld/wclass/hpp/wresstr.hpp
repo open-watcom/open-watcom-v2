@@ -33,15 +33,16 @@
 #ifndef wresstr_class
 #define wresstr_class
 
+#include "_windows.hpp"
 #include "wobject.hpp"
 
 WCLASS WResStr : public WObject
 {
     public:
-        WEXPORT WResStr( unsigned id );
+        WEXPORT WResStr( gui_res_id id );
         const char * WEXPORT gets() const { return( _buffer ); }
         WEXPORT operator const char*() const { return( gets() ); }
-        static char * WEXPORT formats( char * buf, unsigned len, unsigned id, ... );
+        static char * WEXPORT formats( char * buf, unsigned len, gui_res_id id, ... );
 
     private:
         enum {

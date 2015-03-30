@@ -46,10 +46,10 @@ WCLASS WControl : public WWindow {
     public:
         WEXPORT WControl( WWindow* parent, gui_control_class control_class,
                           const WRect& r, const char *text, WStyle wstyle );
-        WEXPORT WControl( WStatDialog* parent, unsigned id, WStyle wstyle );
+        WEXPORT WControl( WStatDialog* parent, gui_ctl_id id, WStyle wstyle );
         WEXPORT ~WControl();
 
-        unsigned controlId() { return( _control_id ); }
+        gui_ctl_id controlId() { return( _id ); }
         WStyle   style() { return( _style ); }
 
         virtual bool processMsg( gui_event ) { return( false ); }
@@ -87,7 +87,7 @@ WCLASS WControl : public WWindow {
         virtual gui_control_class controlClass() = 0;
 
     private:
-        unsigned            _control_id;
+        gui_ctl_id          _id;
         WStyle              _style;
 };
 
