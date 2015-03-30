@@ -100,16 +100,16 @@ extern void SetCurrentSort( sio_data * curr_sio, int sort_type )
 {
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         curr_sio->sort_type = sort_type;
-        curr_sio->sort_needed = P_TRUE;
+        curr_sio->sort_needed = true;
     } else if( curr_sio->level_open == LEVEL_IMAGE ) {
         curr_sio->curr_image->sort_type = sort_type;
-        curr_sio->curr_image->sort_needed = P_TRUE;
+        curr_sio->curr_image->sort_needed = true;
     } else if( curr_sio->level_open == LEVEL_MODULE ) {
         curr_sio->curr_mod->sort_type = sort_type;
-        curr_sio->curr_mod->sort_needed = P_TRUE;
+        curr_sio->curr_mod->sort_needed = true;
     } else if( curr_sio->level_open == LEVEL_FILE ) {
         curr_sio->curr_file->sort_type = sort_type;
-        curr_sio->curr_file->sort_needed = P_TRUE;
+        curr_sio->curr_file->sort_needed = true;
     }
 }
 

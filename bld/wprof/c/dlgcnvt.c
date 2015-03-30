@@ -56,8 +56,8 @@ static char * cnvtFilterList = {
 
 STATIC char     convertPath[_MAX_PATH];
 
-bint            OptDIFFormat = P_TRUE;
-bint            OptCommaFormat = P_FALSE;
+bool            OptDIFFormat = true;
+bool            OptCommaFormat = false;
 FILE            *ConvertFile;
 
 STATIC bool     progEvent( gui_window *, gui_event, void * );
@@ -113,23 +113,23 @@ STATIC void setDlgValues( gui_window *gui )
 STATIC void setDlgDefaults( gui_window *gui )
 /*******************************************/
 {
-    OptDIFFormat = P_TRUE;
-    OptCommaFormat = P_FALSE;
+    OptDIFFormat = true;
+    OptCommaFormat = false;
     strcpy( convertPath, CurrSIOData->samp_file_name );
     setDlgValues( gui );
 }
 
 
 
-STATIC bint dlgOpenFmtFile( void )
+STATIC bool dlgOpenFmtFile( void )
 /********************************/
 {
     ConvertFile = fopen( convertPath, "w" );
     if( ConvertFile == NULL ) {
         ErrorMsg( "Cannot open the convert file %s", convertPath );
-        return( P_FALSE );
+        return( false );
     }
-    return( P_TRUE );
+    return( true );
 }
 
 
@@ -152,38 +152,38 @@ STATIC void dlgBrowseFmtFile( gui_window *gui )
 
 
 
-STATIC bool progEvent( gui_window * gui, gui_event gui_ev, void * param )
-/***********************************************************************/
+STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
+/*********************************************************************/
 {
-    unsigned            id;
+    gui_ctl_id      id;
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         setDlgValues( gui );
         GUISetFocus( gui, CTL_NAME );
-        return( P_TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_BROWSE:
             dlgBrowseFmtFile( gui );
-            return( P_TRUE );
+            return( true );
         case CTL_OK:
             getDlgValues( gui );
             if( dlgOpenFmtFile() ) {
                 GUICloseDialog( gui );
             }
-            return( P_TRUE );
+            return( true );
         case CTL_DEFAULTS:
             setDlgDefaults( gui );
-            return( P_TRUE );
+            return( true );
         case CTL_CANCEL:
             GUICloseDialog( gui );
-            return( P_TRUE );
+            return( true );
         }
-        return( P_FALSE );
+        return( false );
     case GUI_DESTROY:
-        return( P_TRUE );
+        return( true );
     }
-    return( P_FALSE );
+    return( false );
 }

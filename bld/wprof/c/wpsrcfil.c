@@ -75,17 +75,17 @@ extern char * WPSourceGetLine( a_window * wnd, int line )
                                         wp_src->src_buff_len );
     }
     if( buff_len < 0 ) {
-        wp_src->src_eof = P_TRUE;
+        wp_src->src_eof = true;
         return( NULL );
     }
-    wp_src->src_eof = P_FALSE;
+    wp_src->src_eof = false;
     wp_src->src_buff[buff_len] = NULLCHAR;
     return( wp_src->src_buff );
 }
 
 
 
-extern wp_srcfile * WPSourceOpen( sio_data * curr_sio, bint quiet )
+extern wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
 /*****************************************************************/
 {
     file_info *         curr_file;

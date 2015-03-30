@@ -626,34 +626,35 @@ int EvalCondition( const char *str )
     return( DoEvalCondition( str, false ) );
 }
 
-static void PropagateValue( tree_node *tree, int value )
-/******************************************************/
+static void PropagateValue( tree_node *tree, bool value )
+/*******************************************************/
 {
     vhandle     var_handle;
 
     switch( tree->op ) {
     case OP_AND:
-        if( value == 1 ) {
-            PropagateValue( tree->u.left, 1 );
-            PropagateValue( tree->right, 1 );
+        if( value ) {
+            PropagateValue( tree->u.left, true );
+            PropagateValue( tree->right, true );
         }
         break;
     case OP_OR:
-        if( value == 0 ) {
-            PropagateValue( tree->u.left, 0 );
-            PropagateValue( tree->right, 0 );
+        if( !value ) {
+            PropagateValue( tree->u.left, false );
+            PropagateValue( tree->right, false );
         }
         break;
     case OP_NOT:
         PropagateValue( tree->u.left, !value );
         break;
     case OP_VAR:
-        if( value != 1 ) break;
-        var_handle = (vhandle)(pointer_int)tree->u.left;
-        if( VarGetAutoSetCond( var_handle ) != NULL ) {
-            if( !VarIsRestrictedFalse( var_handle ) ) {
-                SetVariableByHandle( PreviousInstall, "1" );
-                SetVariableByHandle( var_handle, "1" );
+        if( value ) {
+            var_handle = (vhandle)(pointer_int)tree->u.left;
+            if( VarGetAutoSetCond( var_handle ) != NULL ) {
+                if( !VarIsRestrictedFalse( var_handle ) ) {
+                    SetVariableByHandle( PreviousInstall, "1" );
+                    SetVariableByHandle( var_handle, "1" );
+                }
             }
         }
         break;
@@ -1609,7 +1610,7 @@ static char *CompileCondition( const char *str );
 static void GrabConfigInfo( char *line, array_info *info )
 /********************************************************/
 {
-   int                  num;
+   size_t               num;
    char                 *next;
    struct config_info   *array;
 
@@ -2246,7 +2247,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
                 }
                 *pzeroed = true;
             }
-            PropagateValue( FileInfo[i].condition.p->cond, 1 );
+            PropagateValue( FileInfo[i].condition.p->cond, true );
             if( file->in_new_dir &&
                 RoundUp( file->disk_size, 512 ) == file->size &&
                 file->date == file->disk_date ) {
@@ -4278,7 +4279,7 @@ static void FreeProfileInfo( void )
 static void FreeOneConfigInfo( array_info *info, struct config_info *array )
 /**************************************************************************/
 {
-    int         i;
+    size_t      i;
 
     for( i = 0; i < info->num; i++ ) {
         GUIMemFree( array[i].var );

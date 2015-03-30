@@ -109,15 +109,15 @@ void VarSetAutoSetRestriction( vhandle var_handle, const char *cond )
 }
 
 
-int VarIsRestrictedFalse( vhandle var_handle )
-/********************************************/
+bool VarIsRestrictedFalse( vhandle var_handle )
+/*********************************************/
 {
     return( GlobalVarList[var_handle].restriction == 'f' );
 }
 
 
-int VarIsRestrictedTrue( vhandle var_handle )
-/*******************************************/
+bool VarIsRestrictedTrue( vhandle var_handle )
+/********************************************/
 {
     return( GlobalVarList[var_handle].restriction == 't' );
 }
@@ -136,14 +136,14 @@ const char *VarGetAutoSetCond( vhandle var_handle )
 vhandle GetVariableByName( const char *vbl_name )
 /***********************************************/
 {
-    int        i;
+    vhandle     var_handle;
 
-    if( GlobalVarHash ) {
+    if( GlobalVarHash != NULL ) {
         return( HashFind( GlobalVarHash, vbl_name ) );
     } else {
-        for( i = 0; i < GlobalVarArray.num; i++ ) {
-            if( stricmp( GlobalVarList[i].name, vbl_name ) == 0 ) {
-                return( i );
+        for( var_handle = 0; var_handle < GlobalVarArray.num; var_handle++ ) {
+            if( stricmp( GlobalVarList[var_handle].name, vbl_name ) == 0 ) {
+                return( var_handle );
             }
         }
     }
@@ -236,7 +236,7 @@ static vhandle NewVariable( const char *vbl_name )
     tmp_variable->restriction = 0;
     tmp_variable->hook = NULL;
     tmp_variable->strval = NULL;
-    if( GlobalVarHash ) {
+    if( GlobalVarHash != NULL ) {
         HashInsert( GlobalVarHash, vbl_name, var_handle );
     }
     return( var_handle );
@@ -465,7 +465,7 @@ void FreeGlobalVarList( bool including_real_globals )
         }
         GlobalVarArray.num = 0;
         GUIMemFree( GlobalVarList );
-        if( GlobalVarHash ) {
+        if( GlobalVarHash != NULL ) {
             HashFini( GlobalVarHash );
             GlobalVarHash = NULL;
         }
@@ -489,7 +489,7 @@ void FreeGlobalVarList( bool including_real_globals )
             }
         }
         // We have to rebuild the hash table
-        if( GlobalVarHash ) {
+        if( GlobalVarHash != NULL ) {
             HashFini( GlobalVarHash );
             GlobalVarHash = HashInit( HASH_SIZE, &stricmp );
             for( i = 0; i < GlobalVarArray.num; i++ ) {

@@ -45,7 +45,7 @@ extern void WPInitHelp(void);
 extern void WPInit(void);
 extern void AboutOpen(void);
 extern void DlgOpenSample(void);
-extern bint WPSampFound(void);
+extern bool WPSampFound(void);
 extern void OpenSample(void);
 extern void WPFindDoPopUp(a_window *wnd,int id);
 extern void WPDoPopUp(a_window *wnd,gui_menu_struct *gui_menu);
@@ -94,25 +94,25 @@ extern bool WndProcMacro( a_window * wnd, unsigned key )
     switch( key ) {
     case GUI_KEY_F3:
         WPFindDoPopUp( wnd, MENU_SAMP_ZOOM_IN );
-        return( TRUE );
+        return( true );
     case GUI_KEY_F4:
     case GUI_KEY_BACKSPACE:
         WPFindDoPopUp( wnd, MENU_SAMP_BACK_OUT );
-        return( TRUE );
+        return( true );
     case GUI_KEY_PERIOD:
         WPDoPopUp( wnd, NULL );
-        return( TRUE );
+        return( true );
 #ifndef NDEBUG
     case GUI_KEY_CTRL_R:
         ReportSampleInfo();
-        return( TRUE );
+        return( true );
 #endif
     default:
-        return( FALSE );
+        return( false );
     }
     /* for codes not handled by the pop-up */
 #if 0
     WndMainMenuProc( wnd, menu );
-    return( TRUE );
+    return( true );
 #endif
 }

@@ -65,7 +65,7 @@ extern gui_ord WPGetClientWidth( a_window * wnd )
 
 
 
-extern void WPAdjustRowHeight( a_window * wnd, bint initial_set )
+extern void WPAdjustRowHeight( a_window * wnd, bool initial_set )
 /***************************************************************/
 {
     gui_rect    main_rect;
@@ -106,7 +106,7 @@ extern void WPAdjustRowHeight( a_window * wnd, bint initial_set )
 extern void WPSetRowHeight( a_window * wnd )
 /******************************************/
 {
-    WPAdjustRowHeight( wnd, P_TRUE );
+    WPAdjustRowHeight( wnd, true );
 }
 
 

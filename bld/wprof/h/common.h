@@ -45,9 +45,6 @@ typedef int             file_handle;
 
 typedef void *          pointer;
 
-/* use this for boolean parameters and return values */
-typedef enum { P_FALSE = (0==1), P_TRUE = (0==0) } bint;
-
 #if defined(__UNIX__)
 #define ALLFILES        "All Files\0*\0"
 #else

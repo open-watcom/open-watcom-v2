@@ -38,7 +38,7 @@
 
 extern vhandle      NextGlobalVar( vhandle var_handle );
 extern void         InitGlobalVarList( void );
-extern int          GetVariableByName( const char *vbl_name );
+extern vhandle      GetVariableByName( const char *vbl_name );
 extern vhandle      GetVariableById( gui_ctl_id id );
 extern gui_ctl_id   VarGetId( vhandle var_handle );
 extern const char   *VarGetStrVal( vhandle var_handle );
@@ -56,5 +56,5 @@ extern vhandle      AddVariable( const char *name );
 extern void         VarSetAutoSetCond( vhandle var_handle, const char *cond );
 extern const char   *VarGetAutoSetCond( vhandle var_handle );
 extern void         VarSetAutoSetRestriction( vhandle var_handle, const char *val );
-extern int          VarIsRestrictedFalse( vhandle var_handle );
-extern int          VarIsRestrictedTrue( vhandle var_handle );
+extern bool         VarIsRestrictedFalse( vhandle var_handle );
+extern bool         VarIsRestrictedTrue( vhandle var_handle );

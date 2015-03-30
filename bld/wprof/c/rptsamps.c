@@ -48,7 +48,7 @@ STATIC FILE             *df;
 
 
 
-STATIC void dumpSampleImages( bint all_info, sio_data * curr_sio )
+STATIC void dumpSampleImages( bool all_info, sio_data * curr_sio )
 /****************************************************************/
 {
     location_list   ll;
@@ -297,7 +297,7 @@ extern void ReportSampleInfo( void )
             curr_sio = curr_sio->next;
             dumpSampleInfo();
             fprintf( df, "\n" );
-            dumpSampleImages( P_TRUE, curr_sio );
+            dumpSampleImages( true, curr_sio );
             if( curr_sio == SIOData ) break;
         }
         fclose( df );

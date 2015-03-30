@@ -269,7 +269,8 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         return( !queryEndSession() );
     case GUI_ENDSESSION:
         bool ending;
-        GUI_GET_BOOL( parm, ending );
+        bool dummy;
+        GUI_GET_ENDSESSION( parm, ending, dummy );
         endSession( ending );
     case GUI_ACTIVATEAPP:
         bool activated;

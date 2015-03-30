@@ -90,13 +90,13 @@ vhandle HashFind( hash_table *ht, hash_key k )
     i = hashKey( ht->size, k );
     he = ht->table[i];
 
-    while( he ) {
+    while( he != NULL ) {
         if( !ht->cmp_func( k, he->key ) )
             break;
         he = he->next;
     }
 
-    if( he ) {
+    if( he != NULL ) {
         return( he->data );
     } else {
         return( NO_VAR );
@@ -114,7 +114,7 @@ void HashFini( hash_table *ht )
 
     for( i = 0; i < ht->size; i++ ) {
         he = ht->table[i];
-        while( he ) {
+        while( he != NULL ) {
             tmp = he;
             he = he->next;
             GUIMemFree( (void *)tmp->key );

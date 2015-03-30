@@ -54,20 +54,24 @@ static char * sampFilterList = {
 
 
 
-extern bint WPSampFound( void )
+extern bool WPSampFound( void )
 /*****************************/
 {
     struct stat     file_stat;
     char            buffer[_MAX_PATH2];
     char            *ext;
 
-    if( stat( SamplePath, &file_stat ) != -1 ) return( P_TRUE );
-    if( SamplePath[0] == NULLCHAR ) return( P_FALSE );
+    if( stat( SamplePath, &file_stat ) != -1 )
+        return( true );
+    if( SamplePath[0] == NULLCHAR )
+        return( false );
     _splitpath2( SamplePath, buffer, NULL, NULL, NULL, &ext );
-    if( *ext != NULLCHAR ) return( P_FALSE );
+    if( *ext != NULLCHAR )
+        return( false );
     ReplaceExt( SamplePath, ".smp" );
-    if( stat( SamplePath, &file_stat ) != -1 ) return( P_TRUE );
-    return( P_FALSE );
+    if( stat( SamplePath, &file_stat ) != -1 )
+        return( true );
+    return( false );
 }
 
 

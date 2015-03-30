@@ -33,7 +33,7 @@
 
 #include "pt.h"
 
-extern char flags[SIZE+1];
+extern bool flags[SIZE+1];
 extern int count, niter, iter;
 
 
@@ -42,6 +42,6 @@ void set_false( k )
     int f;
 
     for( f=0; f <= (iter % 3); ++f ) {
-        flags[k] = FALSE; /* Cancel its multiples */
+        flags[k] = false; /* Cancel its multiples */
     }
 }

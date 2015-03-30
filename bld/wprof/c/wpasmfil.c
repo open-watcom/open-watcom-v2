@@ -54,7 +54,7 @@ extern file_handle ExeOpen(char *name);
 extern void ExeClose(file_handle fh);
 extern void SetExeOffset( address );
 extern void SetExeImage(image_info *image);
-extern bint SetExeFile(file_handle fh,bint overlay);
+extern bool SetExeFile(file_handle fh,bool overlay);
 extern void SetNumBytes(uint_16 num);
 extern void CodeAdvance( address * );
 extern void GetFullInstruct( address, char *buffer,int max);
@@ -87,7 +87,7 @@ extern wp_asmline * WPGetAsmLoc( wp_asmfile * wpasm_file, int row,
 
 
 
-extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
+extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
 /***************************************************************************/
 {
     wp_asmfile *        wpasm_file;
@@ -128,7 +128,7 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
     wpasm_file->asm_buff = ProfAlloc( MAX_ASM_BUFF_LEN );
     wpasm_file->asm_buff_len = MAX_ASM_BUFF_LEN;
     SetNumBytes( 0 );
-    SetExeFile( fh, P_FALSE );
+    SetExeFile( fh, false );
     wpasm_file->fh = fh;
     addr = ModAddr( curr_mod->mh );
     SetExeOffset( addr );
@@ -150,7 +150,7 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
         }
         asm_line = WPGetAsmLoc( wpasm_file, rows, &asm_group, &asm_row );
         if( cue_find ) {
-            asm_line->source_line = P_TRUE;
+            asm_line->source_line = true;
             asm_line->u.src.line = CueLine( ch );
             asm_line->u.src.src_file = NULL;
             if( !curr_file->unknown_file ) {
@@ -170,7 +170,7 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
             asm_line = WPGetAsmLoc( wpasm_file, rows, &asm_group, &asm_row );
         }
         asm_line = &wpasm_file->asm_data[asm_group].asm_lines[asm_row];
-        asm_line->source_line = P_FALSE;
+        asm_line->source_line = false;
         asm_line->u.asm_line.addr = addr;
         asm_line->u.asm_line.tick_count = 0;
         for( ;; ) {
@@ -275,7 +275,7 @@ extern char * WPAsmGetLine( a_window * wnd, int line )
         }
     } else {
         SetNumBytes( 0 );
-        SetExeFile( wpasm_file->fh, P_FALSE );
+        SetExeFile( wpasm_file->fh, false );
         SetExeImage( curr_sio->curr_image );
         GetFullInstruct( asm_line->u.asm_line.addr, wpasm_file->asm_buff, wpasm_file->asm_buff_len-1 );
     }

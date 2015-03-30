@@ -56,7 +56,7 @@ extern char *           WProfDips;
 extern sio_data         *CurrSIOData;
 
 STATIC char *       errMsgText( dip_status );
-STATIC bint         loadDIP( char *, bint, bint );
+STATIC bool         loadDIP( char *, bool, bool );
 
 STATIC dip_status   DIPStatus;
 
@@ -173,7 +173,7 @@ extern void WPDipInit( void )
         dip_name = WProfDips;
     }
     while( *dip_name != NULLCHAR ) {
-        if( loadDIP( dip_name, P_TRUE, P_TRUE ) ) {
+        if( loadDIP( dip_name, true, true ) ) {
             dip_count++;
         }
         dip_name += strlen( dip_name ) + 1;
@@ -248,23 +248,23 @@ extern void WPDipFini( void )
 
 
 
-STATIC bint loadDIP( char * dip, bint defaults, bint fail_big )
-/*************************************************************/
+STATIC bool loadDIP( char *dip, bool defaults, bool fail_big )
+/************************************************************/
 {
     dip_status  ret;
 
     ret = DIPLoad( dip );
     if( ret != DS_OK ) {
         if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) {
-            return( P_FALSE );
+            return( false );
         }
         if( fail_big ) {
             fatal( LIT( Dip_Load_Failed ), dip, errMsgText( ret ) );
         }
         ErrorMsg( LIT( Dip_Load_Failed ), dip, errMsgText( ret ) );
-        return( P_FALSE );
+        return( false );
     }
-    return( P_TRUE );
+    return( true );
 }
 
 

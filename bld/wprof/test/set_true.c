@@ -34,7 +34,7 @@
 
 #include "pt.h"
 
-extern char flags[SIZE+1];
+extern bool flags[SIZE+1];
 extern int count, niter, iter;
 
 
@@ -44,7 +44,7 @@ void set_true()
 
     for( k = 0; k < (iter%10); ++k ) {
         for( i = 0; i <= SIZE; i++) {          /* set all flags true */
-                flags[i] = TRUE;
+            flags[i] = true;
         }
     }
     delay_me();

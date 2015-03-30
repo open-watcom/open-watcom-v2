@@ -64,7 +64,7 @@ extern void ClearMassaged( sio_data * curr_sio )
         curr_sio->massaged_sample = NULL;
     }
     curr_sio->number_massaged = 0;
-    curr_sio->massaged_mapped = P_FALSE;
+    curr_sio->massaged_mapped = false;
 }
 
 

@@ -44,22 +44,22 @@
 //#include "dlgoptn.def"
 //#include "wpdriver.def"
 //#include "setsamps.def"
-extern void GatherSetAll(sio_data *curr_sio,bint gather_active);
-extern void AbsSetAll(sio_data *curr_sio,bint abs_bar);
-extern void RelSetAll(sio_data *curr_sio,bint rel_bar);
-extern void StretchSetAll(sio_data *curr_sio,bint bar_max);
+extern void GatherSetAll(sio_data *curr_sio,bool gather_active);
+extern void AbsSetAll(sio_data *curr_sio,bool abs_bar);
+extern void RelSetAll(sio_data *curr_sio,bool rel_bar);
+extern void StretchSetAll(sio_data *curr_sio,bool bar_max);
 extern void SortSetAll(sio_data *curr_sio,int sort_type);
 
 
-bint    OptStretchGlobal = P_FALSE;
-bint    OptAbsBarGlobal = P_TRUE;
-bint    OptRelBarGlobal = P_TRUE;
-bint    OptSortCountGlobal = P_TRUE;
-bint    OptSortNameGlobal = P_FALSE;
-bint    OptGatherGlobal = P_FALSE;
+bool    OptStretchGlobal = false;
+bool    OptAbsBarGlobal = true;
+bool    OptRelBarGlobal = true;
+bool    OptSortCountGlobal = true;
+bool    OptSortNameGlobal = false;
+bool    OptGatherGlobal = false;
 int     OptGatherCut = 10;
 
-STATIC bint     getDlgValues( gui_window * );
+STATIC bool     getDlgValues( gui_window * );
 STATIC void     setDlgValues( gui_window * );
 STATIC void     setDlgDefaults( gui_window * );
 STATIC bool     progEvent( gui_window *, gui_event, void * );
@@ -81,7 +81,7 @@ extern void DlgGetOptions( a_window * wnd )
 
 
 
-STATIC bint getDlgValues( gui_window * gui )
+STATIC bool getDlgValues( gui_window * gui )
 /******************************************/
 {
     char *      endptr;
@@ -117,7 +117,7 @@ STATIC bint getDlgValues( gui_window * gui )
         SortSetAll( CurrSIOData, sort_type );
         GatherSetAll( CurrSIOData, OptGatherGlobal );
     }
-    return( P_TRUE );
+    return( true );
 }
 
 
@@ -143,45 +143,45 @@ STATIC void setDlgValues( gui_window * gui )
 STATIC void setDlgDefaults( gui_window * gui )
 /********************************************/
 {
-    OptStretchGlobal = P_FALSE;
-    OptAbsBarGlobal = P_TRUE;
-    OptRelBarGlobal = P_TRUE;
-    OptSortCountGlobal = P_TRUE;
-    OptSortNameGlobal = P_FALSE;
-    OptGatherGlobal = P_FALSE;
+    OptStretchGlobal = false;
+    OptAbsBarGlobal = true;
+    OptRelBarGlobal = true;
+    OptSortCountGlobal = true;
+    OptSortNameGlobal = false;
+    OptGatherGlobal = false;
     OptGatherCut = 1;
     setDlgValues( gui );
 }
 
 
 
-STATIC bool progEvent( gui_window * gui, gui_event gui_ev, void * param )
-/***********************************************************************/
+STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
+/*********************************************************************/
 {
-    unsigned            id;
+    gui_ctl_id      id;
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         setDlgValues( gui );
         GUISetFocus( gui, CTL_GATHER );
-        return( P_TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_OK:
             getDlgValues( gui );
             GUICloseDialog( gui );
-            return( P_TRUE );
+            return( true );
         case CTL_DEFAULTS:
             setDlgDefaults( gui );
-            return( P_TRUE );
+            return( true );
         case CTL_CANCEL:
             GUICloseDialog( gui );
-            return( P_TRUE );
+            return( true );
         }
-        return( P_FALSE );
+        return( false );
     case GUI_DESTROY:
-        return( P_TRUE );
+        return( true );
     }
-    return( P_FALSE );
+    return( false );
 }

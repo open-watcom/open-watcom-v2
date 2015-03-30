@@ -37,7 +37,7 @@
 #define LOCSIZE     1
 
 #ifdef _M_I86
-#define FAR	__far
+#define FAR     __far
 #else
 #define FAR
 #endif
@@ -67,10 +67,10 @@ extern int WalkMem( void )
                 break;
             }
             printf( "%s\n\n", str );
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 

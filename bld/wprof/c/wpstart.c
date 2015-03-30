@@ -49,7 +49,7 @@
 extern void WPFiniHelp(void);
 extern void WPDipInit(void);
 extern void WPDipFini(void);
-extern bint GetSampleInfo(void);
+extern bool GetSampleInfo(void);
 extern void InitPaths(void);
 extern void ErrorMsg(char *msg,... );
 extern void fatal(char *msg,... );
@@ -59,7 +59,7 @@ extern void FiniMADInfo(void);
 extern void ClearAllSamples( void );
 
 
-STATIC bint     procCmd( char * );
+STATIC bool     procCmd( char * );
 STATIC int      minLook( char * * );
 STATIC char *   eatBlanks( char * );
 STATIC char *   eatAlphaNum( char * );
@@ -131,7 +131,7 @@ STATIC char * cmdUsage[] = {
 };
 
 
-bint        WPWndInitDone = P_FALSE;
+bool        WPWndInitDone = false;
 char        SamplePath[ _MAX_PATH ];
 char        *WProfDips = NULL;
 
@@ -143,7 +143,7 @@ extern void WPInit( void )
 /************************/
 {
     char        *rover;
-    bint        do_report;
+    bool        do_report;
     char        buff[256];
 
     WPMemOpen();
@@ -156,7 +156,7 @@ extern void WPInit( void )
     getcmd( buff );
     do_report = procCmd( buff );
     WndInit( "Open Watcom Profiler" );
-    WPWndInitDone = P_TRUE;
+    WPWndInitDone = true;
     InitMADInfo();
     WPDipInit();
     if( do_report ) {
@@ -182,7 +182,7 @@ extern void WPFini( void )
 
 
 
-STATIC bint procCmd( char * cmd )
+STATIC bool procCmd( char * cmd )
 /*******************************/
 {
     char    *rover;
@@ -190,10 +190,10 @@ STATIC bint procCmd( char * cmd )
     int     old_len;
     int     cmd_type;
     int     index;
-    bint    do_report;
-    bint    do_option;
+    bool    do_report;
+    bool    do_option;
 
-    do_report = P_FALSE;
+    do_report = false;
     for( ;; ) {
         cmd = eatBlanks( cmd );
         if( *cmd == NULLCHAR ) break;
@@ -202,14 +202,14 @@ STATIC bint procCmd( char * cmd )
 #else
         if( *cmd == '-' || *cmd == '/' ) {
 #endif
-            do_option = P_TRUE;
+            do_option = true;
             ++cmd;
             cmd_type = minLook( &cmd );
         } else if( *cmd == '?' ) {
-            do_option = P_TRUE;
+            do_option = true;
             cmd_type = HELP_OPT;
         } else {
-            do_option = P_FALSE;
+            do_option = false;
             rover = cmd;
             cmd = eatAllChars( cmd );
             name_len = cmd - rover;
@@ -271,7 +271,7 @@ STATIC bint procCmd( char * cmd )
 #endif
 #ifndef NDEBUG
             case R_OPT:
-                do_report = P_TRUE;
+                do_report = true;
                 break;
 #endif
             }

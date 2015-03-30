@@ -40,10 +40,10 @@
 
 
 
-extern bint GetCurrentAbsBar( sio_data * curr_sio )
+extern bool GetCurrentAbsBar( sio_data * curr_sio )
 /*************************************************/
 {
-    bint        bar;
+    bool        bar;
 
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         bar = curr_sio->abs_bar;
@@ -61,10 +61,10 @@ extern bint GetCurrentAbsBar( sio_data * curr_sio )
 
 
 
-extern bint GetCurrentRelBar( sio_data * curr_sio )
+extern bool GetCurrentRelBar( sio_data * curr_sio )
 /*************************************************/
 {
-    bint        bar;
+    bool        bar;
 
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         bar = curr_sio->rel_bar;
@@ -82,10 +82,10 @@ extern bint GetCurrentRelBar( sio_data * curr_sio )
 
 
 
-extern bint GetCurrentMaxBar( sio_data * curr_sio )
+extern bool GetCurrentMaxBar( sio_data * curr_sio )
 /*************************************************/
 {
-    bint        bar;
+    bool        bar;
 
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         bar = curr_sio->bar_max;

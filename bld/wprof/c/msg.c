@@ -40,7 +40,7 @@
 
 #define MAX_MSG_LEN     200
 
-extern  bint    WPWndInitDone;
+extern  bool    WPWndInitDone;
 
 
 STATIC void doErr( char * msg, va_list args )

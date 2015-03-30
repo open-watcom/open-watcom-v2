@@ -43,7 +43,7 @@ extern void DlgGetConvert(a_window *wnd);
 
 extern sio_data         *SIOData;
 extern FILE             *ConvertFile;
-extern bint             OptDIFFormat;
+extern bool             OptDIFFormat;
 
 typedef void (DUMPRTNS)( char *, char *, char *, char *, int );
 

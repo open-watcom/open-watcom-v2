@@ -46,7 +46,7 @@ STATIC int  AboutNumRows( a_window * );
 STATIC bool aboutGetLine( a_window *, wnd_row, int, wnd_line_piece * );
 
 static a_window     *aboutWindow = NULL;
-static bint         aboutOn = TRUE;
+static bool         aboutOn = true;
 
 
 
@@ -124,20 +124,21 @@ STATIC bool aboutGetLine( a_window * wnd, wnd_row row, int piece,
 //    gui_coord           size;
 
     wnd=wnd;
-    if( piece != 0 || !aboutOn ) return( P_FALSE );
+    if( piece != 0 || !aboutOn )
+        return( false );
     if( row >= AboutSize ) {
 /* the following code fragment was ripped from the debugger */
 /* Something like this can be done for the splash page?? */
-//        if( row > AboutSize || !GUIIsGUI() ) return( P_FALSE );
+//        if( row > AboutSize || !GUIIsGUI() ) return( false );
 //    WndSetGadgetLine( wnd, line, GADGET_SPLASH, MaxGadgetLength );
 //        WndGetGadgetSize( GADGET_SPLASH, &size );
 //        line->indent = ( WndWidth( wnd ) - size.x ) / 2;
-//        return( P_TRUE );
-        return( P_FALSE );
+//        return( true );
+        return( false );
     }
     line->text = AboutMessage[ row ];
     line->indent = ( WndWidth( wnd ) - WndExtentX( wnd, line->text ) ) / 2;
-    return( P_TRUE );
+    return( true );
 }
 
 
@@ -149,12 +150,12 @@ STATIC bool aboutEventProc( a_window * wnd, gui_event gui_ev, void * parm )
     parm=parm;
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         aboutWindow = NULL;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -162,7 +163,7 @@ STATIC bool aboutEventProc( a_window * wnd, gui_event gui_ev, void * parm )
 extern void AboutSetOff( void )
 /*****************************/
 {
-    aboutOn = P_FALSE;
+    aboutOn = false;
     if( aboutWindow != NULL ) {
         WndZapped( aboutWindow );
     }

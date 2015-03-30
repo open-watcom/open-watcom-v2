@@ -51,7 +51,7 @@ extern void DlgOpenSample(void);
 extern void ClearSample(sio_data *curr_sio);
 extern void DlgGetOptions(a_window *wnd);
 extern void WPConvert(a_window *wnd,gui_ctl_id id);
-extern bint GetSampleInfo(void);
+extern bool GetSampleInfo(void);
 extern void WPSampleOpen(void);
 extern void AboutSetOff(void);
 extern void ErrorMsg(char *msg,... );
@@ -190,15 +190,15 @@ bool WndMainMenuProc( a_window * wnd, gui_ctl_id id )
         WPConvert( active, id );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
 
-extern void OpenSample( void )
-/****************************/
+void OpenSample( void )
+/*********************/
 {
     void        *cursor_type;
 
