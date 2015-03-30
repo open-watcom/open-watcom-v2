@@ -45,7 +45,7 @@ static jmp_buf  *ExitSP;
  * Debugger-stepping through the code could not be done with that technique.
  * 
  */
-int Spawn( spawn_func *func )
+int Spawn( wv_spawn_func *func )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -63,7 +63,7 @@ int Spawn( spawn_func *func )
     return( ret );
 }
 
-int SpawnP( spawn_funcP *func, void *parm )
+int SpawnP( wv_spawn_funcP *func, void *parm )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -81,7 +81,7 @@ int SpawnP( spawn_funcP *func, void *parm )
     return( ret );
 }
 
-int SpawnPP( spawn_funcPP *func, void *p1, void *p2 )
+int SpawnPP( wv_spawn_funcPP *func, void *p1, void *p2 )
 {
     jmp_buf env;
     jmp_buf *old;
