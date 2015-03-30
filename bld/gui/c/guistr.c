@@ -39,7 +39,7 @@
 
 static char     GUIStrTextBuffer[BUFFER_SIZE];
 
-static char *GUIGetInternalLiteralString( int id )
+static char *GUIGetInternalLiteralString( gui_res_id id )
 {
     GUIStrTextBuffer[0] = '\0';
     if( GUIIsLoadStrInitialized() ) {
@@ -52,7 +52,7 @@ static char *GUIGetInternalLiteralString( int id )
 
 bool GUIInitInternalStringTable( void )
 {
-    int         i = GUI_LITERAL_BASE;
+    gui_res_id  i = GUI_LITERAL_BASE;
 
 #define pick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( i ); i++;
 #include "gui.msg"

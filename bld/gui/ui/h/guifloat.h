@@ -32,5 +32,5 @@
 
 extern EVENT GUICreateMenuPopup( gui_window *wnd, gui_coord *location,
                                  MENUITEM *menu, gui_mouse_track track,
-                                 int *curr_item );
+                                 gui_ctl_id *curr_item );
 extern void GUIProcessMenuCurr( MENUITEM *menu );

@@ -43,7 +43,7 @@ typedef enum hint_type {
 } hint_type;
 
 typedef struct gui_hint_struct {
-    int         id;
+    gui_ctl_id  id;
     const char  *hinttext;
 } gui_hint_struct;
 
@@ -59,12 +59,12 @@ typedef struct hintinfo {
 } hintinfo;
 
 extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window * wnd,
-                                int id, hint_type type, gui_menu_styles style );
-extern bool GUIHasHintText( gui_window *wnd, int id, hint_type type );
+                                gui_ctl_id id, hint_type type, gui_menu_styles style );
+extern bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern bool GUIHasHintType( gui_window *wnd, hint_type type );
 extern void GUIInitHint( gui_window *wnd, int num_menus, gui_menu_struct *menu, hint_type type );
 extern void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo );
 extern bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type );
-extern bool GUIDeleteHintText( gui_window *wnd, int id );
+extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id );
 extern void GUIFreeHint( gui_window *wnd );
 #endif

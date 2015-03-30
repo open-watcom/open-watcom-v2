@@ -88,7 +88,7 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
  * GUIGetControl -- Get the control on wnd with id
  */
 
-gui_control *GUIGetControl( gui_window *wnd, unsigned id )
+gui_control *GUIGetControl( gui_window *wnd, gui_ctl_id id )
 {
     gui_control *control;
 
@@ -116,7 +116,7 @@ gui_control *GUIGetControlByIndex( gui_window *wnd, int index )
     return( NULL );
 }
 
-static bool DeleteControl( gui_window *wnd, unsigned id )
+static bool DeleteControl( gui_window *wnd, gui_ctl_id id )
 {
     gui_control *control;
     gui_control *prev;
@@ -159,7 +159,7 @@ gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int 
     return( control );
 }
 
-bool GUIDeleteControl( gui_window *wnd, unsigned id )
+bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
 {
     gui_control *control;
     gui_rect    rect;
@@ -204,7 +204,7 @@ void GUIFreeAllControls( gui_window *wnd )
     }
 }
 
-bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
+bool GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len )
 {
     wnd=wnd;
     id=id;
@@ -265,7 +265,7 @@ void GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
     }
 }
 
-bool GUIGetControlClass( gui_window *wnd, unsigned id,
+bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id,
                          gui_control_class *control_class )
 {
     gui_control *control;
@@ -281,7 +281,7 @@ bool GUIGetControlClass( gui_window *wnd, unsigned id,
     return( false );
 }
 
-bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
+bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 {
     VFIELD      *field;
     SAREA       area;
@@ -299,7 +299,7 @@ bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
     return( false );
 }
 
-extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
+extern bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 {
     SAREA       area;
     a_dialog    *ui_dlg_info;
@@ -328,7 +328,7 @@ extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
     return( false );
 }
 
-bool GUIIsControlVisible( gui_window *wnd, unsigned id )
+bool GUIIsControlVisible( gui_window *wnd, gui_ctl_id id )
 {
     gui_control *control;
 

@@ -50,19 +50,19 @@ static void BringWindowToFront( gui_window *wnd )
 static bool FakeMDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                                WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
-    WORD        param;
+    gui_ctl_id  id;
 
     ret=ret;
     if( wnd->root == hwnd ) {
         if( msg == WM_COMMAND ) {
-            param = _wpi_getid( wparam );
+            id = _wpi_getid( wparam );
             if( _wpi_ismenucommand( wparam, lparam ) ) {
-                if( param == GUI_MDI_MORE_WINDOWS ) {
+                if( id == GUI_MDI_MORE_WINDOWS ) {
                     GUIMDIMoreWindows();
                     return( true );
                 }
-                if( IS_MDIWIN( param ) ) {
-                    BringWindowToFront( GUIMDIGetWindow( param ) );
+                if( IS_MDIWIN( id ) ) {
+                    BringWindowToFront( GUIMDIGetWindow( id ) );
                     return( true );
                 }
             }

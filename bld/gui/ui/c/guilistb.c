@@ -324,7 +324,7 @@ bool GUIListBoxTopIndex( a_list *list, int choice, bool set, int *ret )
 
 /* NYI */
 
-bool GUIDropDown( gui_window *wnd, unsigned id, bool drop )
+bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
 {
     wnd = wnd;
     id = id;
@@ -332,7 +332,7 @@ bool GUIDropDown( gui_window *wnd, unsigned id, bool drop )
     return( false );
 }
 
-bool GUISetListItemData( gui_window *wnd, unsigned id, int choice, void *data )
+bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data )
 {
     wnd = wnd;
     id = id;
@@ -341,7 +341,7 @@ bool GUISetListItemData( gui_window *wnd, unsigned id, int choice, void *data )
     return( false );
 }
 
-void *GUIGetListItemData( gui_window *wnd, unsigned id, int choice )
+void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice )
 {
     wnd = wnd;
     id = id;

@@ -462,7 +462,7 @@ WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     }
 }
 
-WPI_MRESULT GUISendDlgItemMessage( HWND parent, int id, WPI_MSG msg,
+WPI_MRESULT GUISendDlgItemMessage( HWND parent, gui_ctl_id id, WPI_MSG msg,
                                    WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HWND hwnd;

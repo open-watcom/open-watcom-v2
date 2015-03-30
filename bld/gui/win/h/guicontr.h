@@ -39,7 +39,7 @@ struct control_item {
 typedef struct control_item {
 #endif
     bool                checked;
-    unsigned            id;
+    gui_ctl_id          id;
     gui_control_class   control_class;
     WPI_PROC            call_back;
     HWND                hwnd;
@@ -55,13 +55,13 @@ typedef struct {
     WPI_MRESULT (CALLBACK * call_back)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 } controls_struct;
 
-extern control_item *GUIGetControlByID( gui_window *parent, unsigned id );
+extern control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id );
 extern control_item *GUIGetControlByHwnd( gui_window *parent, HWND control );
 extern control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class control_class,
                               HWND control, gui_control_info *ctl_info,
                               WPI_PROC call_back );
 extern control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent );
-extern void GUIControlDelete( gui_window *wnd, unsigned id );
+extern void GUIControlDelete( gui_window *wnd, gui_ctl_id id );
 extern void GUIControlDeleteAll( gui_window *wnd );
 extern void GUIChangeHWnd( HWND, HWND );
 extern gui_window *GUIGetParentWnd( HWND );
@@ -70,5 +70,5 @@ extern WPI_PROC GUIDoSubClass( HWND, gui_control_class );
 extern bool GUIInsertCtrlWnd( gui_window *wnd );
 extern gui_window *GUIGetCtrlWnd( HWND hwnd );
 extern LONG GUISetControlStyle( gui_control_info *ctl_info );
-extern bool GUICheckRadioButton( gui_window *wnd, unsigned id );
+extern bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id );
 #endif // _GUICONTR_H_

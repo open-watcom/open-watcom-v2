@@ -55,7 +55,7 @@ enum {
       NULL, \
       GUI_NOSCROLL, \
       GUI_AUTOMATIC, \
-      (unsigned)-1 }
+      (gui_ctl_id)-1 }
 
 #define DLG_DYNSTRING( s, i, x1, y1, x2 ) \
     { GUI_STATIC, s, \
@@ -66,7 +66,7 @@ enum {
       i }
 
 #define DLG_STRING( s, x1, y1, x2 ) \
-    DLG_DYNSTRING( s, (unsigned)-1, x1, y1, x2 )
+    DLG_DYNSTRING( s, (gui_ctl_id)-1, x1, y1, x2 )
 
 #define DLG_DOBUTTON( g, s, i, x1, y1, x2 ) \
     { g, s, \
@@ -146,5 +146,4 @@ extern void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, in
 extern void GUISysModalDlgOpen( const char *title, int rows, int cols,
             gui_control_info *controls_info, int num_controls, GUICALLBACK *rtn, void *extra );
 
-extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
-                             char *buff, unsigned buff_len );
+extern unsigned GUIDlgBuffGetText( gui_window *gui, gui_ctl_id id, char *buff, unsigned buff_len );

@@ -37,7 +37,7 @@
  * GUISetFocus -- set input focus to a control in a dialog box or in a window
  */
 
-bool GUISetFocus( gui_window *wnd, unsigned id )
+bool GUISetFocus( gui_window *wnd, gui_ctl_id id )
 {
     gui_control_class   control_class;
     control_item        *info;
@@ -66,7 +66,7 @@ bool GUISetFocus( gui_window *wnd, unsigned id )
     return( false );
 }
 
-bool GUIGetFocus( gui_window *wnd, unsigned *id )
+bool GUIGetFocus( gui_window *wnd, gui_ctl_id *id )
 {
     control_item        *info;
     HWND                parent;

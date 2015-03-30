@@ -35,14 +35,14 @@
 
 struct gui_control {
     gui_control_class   control_class;
-    unsigned            id;
+    gui_ctl_id          id;
     gui_control         *sibling;
     gui_window          *parent;
     int                 index;
 };
 
 extern EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row, gui_ord col );
-extern gui_control *GUIGetControl( gui_window *wnd, unsigned id );
+extern gui_control *GUIGetControl( gui_window *wnd, gui_ctl_id id );
 extern gui_control *GUIGetControlByIndex( gui_window *wnd, int index );
 extern void GUIFreeAllControls( gui_window *wnd );
 extern gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int index );

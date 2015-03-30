@@ -37,7 +37,7 @@
  * GUIIsChecked -- find out if the given control is checked
  */
 
-unsigned GUIIsChecked( gui_window *wnd, unsigned id )
+unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_radio     *radio;
@@ -69,7 +69,7 @@ unsigned GUIIsChecked( gui_window *wnd, unsigned id )
  * GUISetChecked -- set the given control as checked or not checked
  */
 
-bool GUISetChecked( gui_window * wnd, unsigned id, unsigned checked )
+bool GUISetChecked( gui_window * wnd, gui_ctl_id id, unsigned checked )
 {
     VFIELD      *field;
     a_radio     *radio;

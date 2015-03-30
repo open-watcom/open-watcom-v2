@@ -41,6 +41,6 @@ extern int GUIGetNumIgnore( gui_menu_struct *info, int num_menus );
 extern void GUIFreeVBarMenu( VBARMENU *menu );
 extern bool GUIAllocVBarMenu( VBARMENU **pmenu );
 extern MENUITEM *GUIAllocMenuItems( int num_menus );
-extern bool GUIDeleteToolbarMenuItem( gui_window *wnd, unsigned id );
+extern bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id );
 extern bool GUIAppendToolbarMenu( gui_window *wnd, gui_menu_struct *menu, bool redraw );
 #endif // _GUIMENU_H_

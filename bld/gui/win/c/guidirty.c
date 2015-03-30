@@ -57,7 +57,7 @@ void GUIWndDirty( gui_window *wnd )
     }
 }
 
-void GUIControlDirty( gui_window *wnd, unsigned id )
+void GUIControlDirty( gui_window *wnd, gui_ctl_id id )
 {
     HWND        control;
 

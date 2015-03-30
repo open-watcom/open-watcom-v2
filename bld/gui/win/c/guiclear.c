@@ -33,7 +33,7 @@
 #include "guiwind.h"
 #include "guicontr.h"
 
-bool GUIClearText( gui_window *wnd, unsigned id )
+bool GUIClearText( gui_window *wnd, gui_ctl_id id )
 {
     HWND                control;
 
@@ -44,7 +44,7 @@ bool GUIClearText( gui_window *wnd, unsigned id )
     return( true );
 }
 
-bool GUIEnableControl( gui_window *wnd, unsigned id, bool enable )
+bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
 {
     HWND                control;
 
@@ -56,7 +56,7 @@ bool GUIEnableControl( gui_window *wnd, unsigned id, bool enable )
     return( false );
 }
 
-bool GUIIsControlEnabled( gui_window *wnd, unsigned id )
+bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
 {
     HWND                control;
 

@@ -35,14 +35,14 @@
 #include "guicutil.h"
 #include "guixutil.h"
 
-static HWND GUIGetControlHWND( gui_window *wnd, unsigned id )
+static HWND GUIGetControlHWND( gui_window *wnd, gui_ctl_id id )
 {
     HWND                control;
     control = _wpi_getdlgitem( wnd->hwnd, id );
     return( control );
 }
 
-bool GUIToControl( gui_window *wnd, unsigned id, WPI_MSG msg,
+bool GUIToControl( gui_window *wnd, gui_ctl_id id, WPI_MSG msg,
                    WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
     HWND                control;
@@ -59,14 +59,14 @@ bool GUIToControl( gui_window *wnd, unsigned id, WPI_MSG msg,
     return( false );
 }
 
-static bool GUIToComboListControl( gui_window *wnd, unsigned id, WPI_MSG msg,
+static bool GUIToComboListControl( gui_window *wnd, gui_ctl_id id, WPI_MSG msg,
                             WPI_PARAM1 wparam, WPI_PARAM2 lparam,
                             WPI_MRESULT *ret )
 {
     return( GUIToControl( wnd, id, msg, wparam, lparam, ret ) );
 }
 
-WPI_MRESULT GUIToComboList( gui_window *wnd, unsigned id, WPI_MSG lb_msg,
+WPI_MRESULT GUIToComboList( gui_window *wnd, gui_ctl_id id, WPI_MSG lb_msg,
                             WPI_MSG cb_msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam,
                             WPI_MRESULT ret )
 {
@@ -91,7 +91,7 @@ WPI_MRESULT GUIToComboList( gui_window *wnd, unsigned id, WPI_MSG lb_msg,
     return( my_ret );
 }
 
-bool GUIGetControlClass( gui_window *wnd, unsigned id,
+bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id,
                          gui_control_class *control_class )
 {
     control_item        *item;

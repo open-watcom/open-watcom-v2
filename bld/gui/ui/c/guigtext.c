@@ -38,7 +38,7 @@
 #include "guixutil.h"
 #include "guiutil.h"
 
-static char *GetText( gui_window *wnd, unsigned id, int choice, bool get_curr )
+static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr )
 {
     VFIELD              *field;
     an_edit_control     *edit_control;
@@ -101,12 +101,12 @@ static char *GetText( gui_window *wnd, unsigned id, int choice, bool get_curr )
     return( NULL );
 }
 
-char *GUIGetText( gui_window *wnd, unsigned id )
+char *GUIGetText( gui_window *wnd, gui_ctl_id id )
 {
     return( GetText( wnd, id, 0, true ) );
 }
 
-char *GUIGetListItem( gui_window *wnd, unsigned id, int choice )
+char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     return( GetText( wnd, id, choice, false ) );
 }

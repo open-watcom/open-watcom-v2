@@ -41,7 +41,7 @@ static  void    (*fChangeTitle)(gui_window * )          = NULL;
 static  void    (*fBroughtToFront)(gui_window * )       = NULL;
 static  void    (*fDelete)(gui_window * )               = NULL;
 static  void    (*fReset)( gui_window *, gui_window *, int, gui_menu_struct *) = NULL;
-static  void    (*fDeleteMenuItem)( unsigned )          = NULL;
+static  void    (*fDeleteMenuItem)(gui_ctl_id id)       = NULL;
 static  void    (*fEnableMDIActions)( bool enable )     = NULL;
 static  void    (*fAddMDIActions)( bool has_items, gui_window *wnd )    = NULL;
 
@@ -143,19 +143,19 @@ void GUIMDIResetMenus( gui_window *wnd, gui_window *parent, int num_menus, gui_m
     }
 }
 
-void GUISetMDIDeleteMenuItem( void (*func)( unsigned ) )
+void GUISetMDIDeleteMenuItem( void (*func)(gui_ctl_id id) )
 {
     fDeleteMenuItem = func;
 }
 
-void GUIMDIDeleteMenuItem( unsigned id )
+void GUIMDIDeleteMenuItem( gui_ctl_id id )
 {
     if( fDeleteMenuItem != NULL ) {
         (*fDeleteMenuItem )( id );
     }
 }
 
-void    GUISetEnableMDIActions( void    (*func)( bool enable ) )
+void    GUISetEnableMDIActions( void (*func)(bool enable) )
 {
     fEnableMDIActions = func;
 }

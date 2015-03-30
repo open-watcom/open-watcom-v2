@@ -35,7 +35,7 @@
 #include "guixutil.h"
 #include "guirect.h"
 
-bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
+bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 {
     gui_coord   pos;
     gui_coord   size;
@@ -50,7 +50,7 @@ bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
     return( false );
 }
 
-bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
+bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 {
     HWND        control;
 

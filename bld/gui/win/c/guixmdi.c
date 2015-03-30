@@ -221,7 +221,7 @@ void GUIMDIBringToFront( gui_window *wnd )
 static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                                WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
-    WORD        param;
+    gui_ctl_id  id;
 #ifndef __OS2_PM__
     WINDOWPOS   *pos;
 #endif
@@ -245,9 +245,9 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
                 *ret = 0;
                 return( true );
             }
-            param = _wpi_getid( wparam );
-            if( _wpi_ismenucommand( wparam, lparam ) && IS_MDIMENU( param ) ) {
-                switch( param ) {
+            id = _wpi_getid( wparam );
+            if( _wpi_ismenucommand( wparam, lparam ) && IS_MDIMENU( id ) ) {
+                switch( id ) {
                 case GUI_MDI_CASCADE :
                     MDICascade();
                     break;
@@ -266,9 +266,9 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
                     GUIMDIMoreWindows();
                     break;
                 default :
-                    if( IS_MDIWIN( param ) ) {
+                    if( IS_MDIWIN( id ) ) {
                         /* window selected */
-                        GUIMDIBringToFront( GUIMDIGetWindow( param ) );
+                        GUIMDIBringToFront( GUIMDIGetWindow( id ) );
                     }
                 }
                 return( true );

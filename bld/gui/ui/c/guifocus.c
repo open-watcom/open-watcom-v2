@@ -34,7 +34,7 @@
 #include "guicontr.h"
 #include "guixdlg.h"
 
-bool GUISetFocus( gui_window * wnd, unsigned id )
+bool GUISetFocus( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     dialog_node *dlg_node;

@@ -66,13 +66,13 @@ gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
     return( coord.y );
 }
 
-gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, size_t length )
+gui_ord GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length )
 {
     id=id;
     return( GUIGetExtentX( wnd, text, length ) );
 }
 
-gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, const char * text )
+gui_ord GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text )
 {
     id=id;
     return( GUIGetExtentY( wnd, text ) );

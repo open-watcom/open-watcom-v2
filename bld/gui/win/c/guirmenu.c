@@ -38,7 +38,7 @@ void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num )
     num=num;
 }
 
-bool GUICreateMenuStructFromRes( int id, gui_menu_struct **menu, int *num )
+bool GUICreateMenuStructFromRes( gui_res_id id, gui_menu_struct **menu, int *num )
 {
     id=id;
     menu=menu;

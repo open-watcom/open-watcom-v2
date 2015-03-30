@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-extern WPI_MRESULT GUIToComboList( gui_window * wnd, unsigned id, WPI_MSG lb_msg,
+extern WPI_MRESULT GUIToComboList( gui_window * wnd, gui_ctl_id id, WPI_MSG lb_msg,
                          WPI_MSG cb_msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam,
                          WPI_MRESULT ret );
-extern bool GUIToControl( gui_window *wnd, unsigned id, WPI_MSG msg,
+extern bool GUIToControl( gui_window *wnd, gui_ctl_id id, WPI_MSG msg,
                           WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT *ret );

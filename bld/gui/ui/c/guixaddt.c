@@ -39,10 +39,10 @@
 /*
  * GUIControlSetRedraw -- set the redraw flag for a given window control
  */
-bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw )
+bool GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw )
 {
     wnd     = wnd;
-    control = control;
+    id      = id;
     redraw  = redraw;
     return( true );
 }
@@ -51,7 +51,7 @@ bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw )
  * RefreshListCombo
  */
 
-static bool RefreshListCombobox( VFIELD *field, gui_window *wnd, unsigned id )
+static bool RefreshListCombobox( VFIELD *field, gui_window *wnd, gui_ctl_id id )
 {
     a_dialog    *ui_dlg_info;
 
@@ -71,7 +71,7 @@ static bool RefreshListCombobox( VFIELD *field, gui_window *wnd, unsigned id )
     return( false );
 }
 
-static bool GetList( gui_window *wnd, unsigned id, VFIELD **field, a_list **list )
+static bool GetList( gui_window *wnd, gui_ctl_id id, VFIELD **field, a_list **list )
 {
     *field = GUIGetField( wnd, id );
     if( *field == NULL ) {
@@ -84,7 +84,7 @@ static bool GetList( gui_window *wnd, unsigned id, VFIELD **field, a_list **list
     return( true );
 }
 
-bool GUIAddText( gui_window *wnd, unsigned id, const char *text )
+bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     VFIELD      *field;
     a_list      *list;
@@ -95,7 +95,7 @@ bool GUIAddText( gui_window *wnd, unsigned id, const char *text )
     return( false );
 }
 
-bool GUIAddTextList( gui_window *wnd, unsigned id, int items,
+bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items,
                     const void *data_handle, PICKGETTEXT *getstring )
 {
     VFIELD      *field;
@@ -107,7 +107,7 @@ bool GUIAddTextList( gui_window *wnd, unsigned id, int items,
     return( false );
 }
 
-bool GUIDeleteItem( gui_window *wnd, unsigned id, int choice )
+bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -118,7 +118,7 @@ bool GUIDeleteItem( gui_window *wnd, unsigned id, int choice )
     return( false );
 }
 
-bool GUIClearList( gui_window *wnd, unsigned id )
+bool GUIClearList( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;
@@ -135,7 +135,7 @@ bool GUIClearList( gui_window *wnd, unsigned id )
     return( false );
 }
 
-int GUIGetCurrSelect( gui_window *wnd, unsigned id )
+int GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;
@@ -150,7 +150,7 @@ int GUIGetCurrSelect( gui_window *wnd, unsigned id )
     return( -1 );
 }
 
-bool GUISetCurrSelect( gui_window *wnd, unsigned id, int choice )
+bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -164,7 +164,7 @@ bool GUISetCurrSelect( gui_window *wnd, unsigned id, int choice )
     return( false );
 }
 
-int GUIGetListSize( gui_window *wnd, unsigned id )
+int GUIGetListSize( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;
@@ -175,7 +175,7 @@ int GUIGetListSize( gui_window *wnd, unsigned id )
     return( 0 );
 }
 
-bool GUIInsertText( gui_window *wnd, unsigned id, int choice, const char *text )
+bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text )
 {
     VFIELD      *field;
     a_list      *list;
@@ -186,7 +186,7 @@ bool GUIInsertText( gui_window *wnd, unsigned id, int choice, const char *text )
     return( false );
 }
 
-bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice )
+bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -199,7 +199,7 @@ bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice )
     return( false );
 }
 
-int GUIGetTopIndex( gui_window *wnd, unsigned id )
+int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;

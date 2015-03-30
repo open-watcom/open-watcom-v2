@@ -222,7 +222,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 #else
 
 #if defined(__NT__)
-char *GetStrFromEdit( HWND hDlg, int id )
+char *GetStrFromEdit( HWND hDlg, gui_ctl_id id )
 {
     char    *cp;
     LRESULT text_length;

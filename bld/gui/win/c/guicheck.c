@@ -34,7 +34,7 @@
 #include "guixutil.h"
 #include "guixdlg.h"
 
-unsigned GUIIsChecked( gui_window *wnd, unsigned id )
+unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
 {
     unsigned    ret;
 
@@ -45,7 +45,7 @@ unsigned GUIIsChecked( gui_window *wnd, unsigned id )
     return( ret & 0x3 );
 }
 
-bool GUISetChecked( gui_window *wnd, unsigned id, unsigned check )
+bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check )
 {
     if( ( check == GUI_CHECKED ) && !( wnd->flags & IS_RES_DIALOG ) ) {
         if( GUIIsChecked( wnd, id ) != GUI_CHECKED ) {

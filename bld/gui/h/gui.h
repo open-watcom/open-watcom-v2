@@ -35,7 +35,8 @@
 
 typedef int         gui_ord;
 
-typedef unsigned    gui_ctl_id;
+typedef int         gui_ctl_id;
+typedef int         gui_res_id;
 
 #define GUI_LAST_INTERNAL_MSG 255
 
@@ -128,10 +129,10 @@ typedef enum {
     GUI_GROUPBOX,
     GUI_EDIT_COMBOBOX,
     GUI_EDIT_MLE,
-    GUI_NUM_CONTROL_CLASSES,
-    GUI_FIRST_CONTROL_CLASS = GUI_PUSH_BUTTON,
-    GUI_LAST_CONTROL_CLASS = GUI_EDIT_MLE
+    GUI_NUM_CONTROL_CLASSES
 } gui_control_class;
+#define GUI_FIRST_CONTROL_CLASS GUI_PUSH_BUTTON
+#define GUI_LAST_CONTROL_CLASS  GUI_EDIT_MLE
 
 typedef enum {
     GUI_MENU_PLAIN,
@@ -148,11 +149,11 @@ typedef enum {
     GUI_MENU_GRAYED_ACTIVE,
     GUI_FRAME_RESIZE,
     GUI_CONTROL_BACKGROUND,
-    GUI_FIRST_ATTR = GUI_MENU_PLAIN,
-    GUI_LAST_ATTR  = GUI_CONTROL_BACKGROUND,
-    GUI_FIRST_UNUSED = GUI_LAST_ATTR + 1,
-    GUI_NUM_ATTRS = GUI_LAST_ATTR + 1
+    GUI_FIRST_UNUSED
 } gui_attr;
+#define GUI_FIRST_ATTR  GUI_MENU_PLAIN
+#define GUI_LAST_ATTR   GUI_CONTROL_BACKGROUND
+#define GUI_NUM_ATTRS   GUI_FIRST_UNUSED
 
 typedef enum {
     GUI_DLG_NORMAL,
@@ -193,14 +194,14 @@ typedef long gui_bitmap;
 typedef struct gui_toolbar_struct {
     char                *label;
     gui_bitmap          bitmap;
-    int                 id;
+    gui_ctl_id          id;
     char                *hinttext;
     char                *tip;
 } gui_toolbar_struct;
 
 typedef struct gui_menu_struct {
     char                        *label;
-    int                         id;
+    gui_ctl_id                  id;
     gui_menu_styles             style;
     char                        *hinttext;
     int                         num_child_menus;
@@ -345,13 +346,13 @@ typedef struct gui_control_info {
     gui_window          *parent;
     gui_scroll_styles   scroll;
     gui_control_styles  style;
-    unsigned            id;
+    gui_ctl_id          id;
 } gui_control_info;
 
-typedef bool (GUICALLBACK)( gui_window *, gui_event, void * );
+typedef bool (GUICALLBACK)( gui_window *, gui_event ev, void *param );
 typedef void (ENUMCALLBACK)( gui_window *, void *param );
-typedef void (CONTRENUMCALLBACK)( gui_window *parent, unsigned id, void *param );
-typedef void (PICKCALLBACK)( gui_window *, unsigned id );
+typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param );
+typedef void (PICKCALLBACK)( gui_window *, gui_ctl_id id );
 typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
                              gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *rtn, void *extra );
@@ -591,7 +592,7 @@ typedef struct gui_timer_event {
                                 gui_num =   ((gui_row_num *)param)->num;   \
                                                    }
 
-#define GUI_GETID( param, id ) ( id = (unsigned short)(*(unsigned *)param ) )
+#define GUI_GETID( param, id ) ( id = *(gui_ctl_id *)param )
 
 #define GUI_GET_SIZE( param, size ) { size.x = ((gui_coord *)param)->x; \
                                       size.y = ((gui_coord *)param)->y; }
@@ -647,7 +648,7 @@ extern int GUIGetNumWindowColours( gui_window *wnd );
 extern gui_colour_set *GUIGetWindowColours( gui_window *wnd );
 extern void GUIDestroyWnd( gui_window *wnd );
 extern void GUIWndDirty( gui_window *wnd );
-extern void GUIControlDirty( gui_window *wnd, unsigned id );
+extern void GUIControlDirty( gui_window *wnd, gui_ctl_id id );
 extern void GUIWndDirtyRow( gui_window *wnd, gui_ord row );
 extern void GUIWndDirtyRect( gui_window *wnd, gui_rect *rect );
 extern void GUIRefresh( void );
@@ -663,8 +664,8 @@ extern gui_window *GUIGetRootWindow( void );
 extern gui_window *GUIGetNextWindow( gui_window *wnd );
 extern gui_window *GUIGetFirstSibling( gui_window *wnd );
 extern bool GUIIsValidWindow( gui_window *wnd );
-extern bool GUISetFocus( gui_window *wnd, unsigned id );
-extern bool GUIGetFocus( gui_window *wnd, unsigned *id );
+extern bool GUISetFocus( gui_window *wnd, gui_ctl_id id );
+extern bool GUIGetFocus( gui_window *wnd, gui_ctl_id *id );
 
 extern bool GUIResizeWindow( gui_window *wnd, gui_rect *rect );
 extern bool GUIIsMinimized( gui_window *wnd );
@@ -755,8 +756,8 @@ extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,
                                 const char *string, int mouse_x );
 extern gui_ord GUIGetExtentX( gui_window *wnd, const char * text, size_t length );
 extern gui_ord GUIGetExtentY( gui_window *wnd, const char * text );
-extern gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, size_t length );
-extern gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, const char * text );
+extern gui_ord GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length );
+extern gui_ord GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text );
 extern void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
 extern void GUIGetDlgTextMetrics( gui_text_metrics *metrics );
 extern void GUIGetPoint( gui_window* wnd, gui_ord extent, gui_ord row,
@@ -766,28 +767,28 @@ extern void GUIGetPoint( gui_window* wnd, gui_ord extent, gui_ord row,
 
 extern bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
                                     int num_menu_items, gui_menu_struct *menu,
-                                    gui_mouse_track track, int *curr_item );
+                                    gui_mouse_track track, gui_ctl_id *curr_item );
 extern bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
-                               gui_mouse_track track, int *curr_item );
-extern bool GUIEnableMenuItem( gui_window *wnd, int id, bool enabled, bool floating );
-extern bool GUICheckMenuItem( gui_window *wnd, int id, bool check, bool floating );
-extern bool GUISetMenuText( gui_window *wnd, int id, const char *text, bool floating );
-extern bool GUISetHintText( gui_window *wnd, int id, const char *hinttext );
+                               gui_mouse_track track, gui_ctl_id *curr_item );
+extern bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enabled, bool floating );
+extern bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating );
+extern bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating );
+extern bool GUISetHintText( gui_window *wnd, gui_ctl_id id, const char *hinttext );
 
 extern bool GUIEnableMDIMenus( bool enable );
 extern bool GUIEnableMenus( gui_window *wnd, bool enable ); // NYI
-extern bool GUIDeleteMenuItem( gui_window *wnd, int id, bool floating );
+extern bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating );
 
 extern bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu );
 
-extern int  GUIGetMenuPopupCount( gui_window *wnd, int id );
+extern int  GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
 
 extern bool GUIInsertMenu( gui_window *wnd, int offset, gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuByID( gui_window *wnd, unsigned id, gui_menu_struct *menu );
+extern bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu );
 extern bool GUIAppendMenu( gui_window *wnd, gui_menu_struct *menu, bool floating );
 extern bool GUIAppendMenuByOffset( gui_window *wnd, int offset, gui_menu_struct *menu );
-extern bool GUIAppendMenuToPopup( gui_window *wnd, unsigned id, gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuToPopup( gui_window *wnd, unsigned id, int offset, gui_menu_struct *menu, bool floating );
+extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int offset, gui_menu_struct *menu, bool floating );
 
 /* Toolbar Functions */
 
@@ -894,54 +895,53 @@ extern bool GUICreateSysModalDialog( gui_create_info *dlg_info,
                                      int num_controls,
                                      gui_control_info *controls_info );
 extern bool GUICreateResDialog( gui_create_info *dlg_info, long dlg_id );
-extern bool GUICreateDialogFromRes( int id, gui_window *parent,
-                                    GUICALLBACK cb, void *extra );
+extern bool GUICreateDialogFromRes( gui_res_id id, gui_window *parent, GUICALLBACK cb, void *extra );
 extern void GUICloseDialog( gui_window * wnd );
 
 /* Control Functions */
 
 extern bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
                            gui_colour_set *standout );
-extern bool GUIDeleteControl( gui_window *wnd, unsigned id );
-extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect );
-extern bool GUIEnableControl( gui_window *wnd, unsigned id, bool enable );
-extern bool GUIIsControlEnabled( gui_window *wnd, unsigned id );
-extern bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect );
-extern bool GUIGetControlClass( gui_window *wnd, unsigned id, gui_control_class *control_class );
-extern void GUIHideControl( gui_window *wnd, unsigned id );
-extern void GUIShowControl( gui_window *wnd, unsigned id );
-extern bool GUIIsControlVisible( gui_window *wnd, unsigned id );
+extern bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id );
+extern bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
+extern bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable );
+extern bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id );
+extern bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
+extern bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class );
+extern void GUIHideControl( gui_window *wnd, gui_ctl_id id );
+extern void GUIShowControl( gui_window *wnd, gui_ctl_id id );
+extern bool GUIIsControlVisible( gui_window *wnd, gui_ctl_id id );
 
 /* combo/list box functions */
-extern bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw );
-extern bool GUIAddText( gui_window *wnd, unsigned id, const char *text );
-extern bool GUISetListItemData( gui_window *wnd, unsigned id, int choice, void *data );
-extern void *GUIGetListItemData( gui_window *wnd, unsigned id, int choice );
-extern bool GUIAddTextList( gui_window *wnd, unsigned id, int items,
+extern bool GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw );
+extern bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text );
+extern bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data );
+extern void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice );
+extern bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items,
                             const void *data_handle, PICKGETTEXT *getstring );
-extern bool GUIInsertText( gui_window *wnd, unsigned id, int choice, const char *text );
-extern bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice );
-extern int GUIGetTopIndex( gui_window *wnd, unsigned id );
-extern bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent );
-extern bool GUIClearList( gui_window *wnd, unsigned id );
-extern bool GUIDeleteItem( gui_window *wnd, unsigned id, int choice );
-extern int GUIGetListSize( gui_window *wnd, unsigned id );
-extern int GUIGetCurrSelect( gui_window *wnd, unsigned id );
-extern bool GUISetCurrSelect( gui_window *wnd, unsigned id, int choice );
-extern char *GUIGetListItem( gui_window *wnd, unsigned id, int choice );
+extern bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
+extern bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
+extern int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );
+extern bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent );
+extern bool GUIClearList( gui_window *wnd, gui_ctl_id id );
+extern bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice );
+extern int GUIGetListSize( gui_window *wnd, gui_ctl_id id );
+extern int GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id );
+extern bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice );
+extern char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice );
 
-extern bool GUISetText( gui_window *wnd, unsigned id, const char *text );
-extern bool GUIClearText( gui_window *wnd, unsigned id );
-extern char * GUIGetText( gui_window *wnd, unsigned id );
-extern bool GUISelectAll( gui_window *wnd, unsigned id, bool select );
-extern bool GUISetEditSelect( gui_window *wnd, unsigned id, int start, int end );
-extern bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end );
-extern bool GUILimitEditText( gui_window *wnd, unsigned id, int len );
-extern bool GUIDropDown( gui_window *wnd, unsigned id, bool drop );
-extern void GUIScrollCaret( gui_window *wnd, unsigned id );
+extern bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text );
+extern bool GUIClearText( gui_window *wnd, gui_ctl_id id );
+extern char *GUIGetText( gui_window *wnd, gui_ctl_id id );
+extern bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select );
+extern bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end );
+extern bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end );
+extern bool GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len );
+extern bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop );
+extern void GUIScrollCaret( gui_window *wnd, gui_ctl_id id );
 
-extern unsigned GUIIsChecked( gui_window *wnd, unsigned id );
-extern bool GUISetChecked( gui_window *wnd, unsigned id, unsigned check );
+extern unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id );
+extern bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check );
 
 /* Information Functions */
 
@@ -972,7 +972,7 @@ extern void GUISpawnEnd( void );
 /* Resource String Functions */
 extern bool GUILoadStrInit( const char *fname );
 extern bool GUILoadStrFini( void );
-extern bool GUILoadString( int string_id, char *buffer, int buffer_length );
+extern bool GUILoadString( gui_res_id string_id, char *buffer, int buffer_length );
 extern bool GUIIsLoadStrInitialized( void );
 
 /* Hooking the F1 key */

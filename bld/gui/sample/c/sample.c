@@ -43,7 +43,7 @@ char *program_invocation_name = "sample";
 
 char            *OldValue       = NULL;
 gui_window      *DialogWindow   = NULL;
-int             CurrPopupItem   = MENU_CHANGE;
+gui_ctl_id      CurrPopupItem   = MENU_CHANGE;
 
 static gui_window       *HelpWindow     = NULL;
 static char             *help_file;
@@ -278,7 +278,7 @@ static  gui_rect        ScaleRect       = { 500, 500, WIDTH, HEIGHT };
 static  gui_coord       Scale           = { WIDTH, HEIGHT };
 static  gui_colour_set  StatusColour    = { GUI_BRIGHT_WHITE, GUI_CYAN };
 
-static void HandlePopup( gui_window *gui, gui_rect *rect, unsigned id )
+static void HandlePopup( gui_window *gui, gui_rect *rect, gui_ctl_id id )
 {
     switch( id ) {
     case MENU_CHANGE :
@@ -458,7 +458,7 @@ static change_struct *MakeChangeStruct( char *str, int length,
 bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 {
     bool                ret;
-    unsigned            id;
+    gui_ctl_id          id;
     char                *new;
     int                 numrows;
     gui_text_metrics    text_metrics;
@@ -555,8 +555,8 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         break;
     case GUI_INITMENUPOPUP:
         {
-            char text[100];
-            unsigned id;
+            char        text[100];
+            gui_ctl_id  id;
 
             GUI_GETID( param, id );
             sprintf ( text,"GUI_INITMENUPOPUP: id = %d", id );
@@ -866,7 +866,7 @@ static void DoCancel( gui_window *gui )
 
 bool ControlEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned            id;
+    gui_ctl_id          id;
     change_struct       *change;
 
     switch( gui_ev ) {
@@ -1109,7 +1109,7 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_ord             num;
     gui_point           point;
     gui_key             key;
-    unsigned            id;
+    gui_ctl_id          id;
     gui_char_cursor     cursor;
     char                Buffer[80];
 
@@ -1330,7 +1330,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 #if keys
     gui_key             key;
 #endif
-    unsigned            id;
+    gui_ctl_id          id;
     attr_entry          *new_attr;
     char                Buffer[80];
     int                 i;

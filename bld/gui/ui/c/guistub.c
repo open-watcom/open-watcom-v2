@@ -90,7 +90,7 @@ void GUI3DDialogFini( void )
 {
 }
 
-bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent )
+bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
 {
     wnd = wnd;
     id = id;
@@ -98,7 +98,7 @@ bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent )
     return( false );
 }
 
-bool GUIEnableControl( gui_window *wnd, unsigned id, bool enable )
+bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
 {
     wnd = wnd;
     id = id;
@@ -106,26 +106,26 @@ bool GUIEnableControl( gui_window *wnd, unsigned id, bool enable )
     return( false );
 }
 
-bool GUIIsControlEnabled( gui_window *wnd, unsigned id )
+bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
 {
     wnd = wnd;
     id = id;
     return( false );
 }
 
-void GUIHideControl( gui_window *wnd, unsigned id )
+void GUIHideControl( gui_window *wnd, gui_ctl_id id )
 {
     wnd = wnd;
     id = id;
 }
 
-void GUIShowControl( gui_window *wnd, unsigned id )
+void GUIShowControl( gui_window *wnd, gui_ctl_id id )
 {
     wnd = wnd;
     id = id;
 }
 
-bool GUISetEditSelect( gui_window *wnd, unsigned id, int start, int end )
+bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
 {
     wnd = wnd;
     id = id;
@@ -134,7 +134,7 @@ bool GUISetEditSelect( gui_window *wnd, unsigned id, int start, int end )
     return( false );
 }
 
-bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
+bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
 {
     wnd = wnd;
     id = id;
@@ -143,7 +143,7 @@ bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
     return( false );
 }
 
-void GUIScrollCaret( gui_window *wnd, unsigned id )
+void GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
 {
     wnd = wnd;
     id = id;

@@ -33,7 +33,7 @@
 #include "guiwind.h"
 #include "guicutil.h"
 
-static bool GUISelect( gui_window *wnd, unsigned id, bool set,
+static bool GUISelect( gui_window *wnd, gui_ctl_id id, bool set,
                        WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
     gui_control_class   control_class;
@@ -80,7 +80,7 @@ static bool GUISelect( gui_window *wnd, unsigned id, bool set,
     return( GUIToControl( wnd, id, msg, wparam, lparam, ret ) );
 }
 
-bool GUISelectAll( gui_window *wnd, unsigned id, bool select )
+bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
 {
     WPI_PARAM2          lparam;
 
@@ -100,12 +100,12 @@ bool GUISelectAll( gui_window *wnd, unsigned id, bool select )
     return( GUISelect( wnd, id, true, lparam, NULL ) );
 }
 
-bool GUISetEditSelect( gui_window *wnd, unsigned id, int start, int end )
+bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
 {
     return( GUISelect( wnd, id, true, (WPI_PARAM2)MAKELONG( start, end ), NULL ) );
 }
 
-bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
+bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
 {
     bool        ret;
     WPI_MRESULT result;
@@ -120,7 +120,7 @@ bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
     return( ret );
 }
 
-void GUIScrollCaret( gui_window *wnd, unsigned id )
+void GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
 {
     WPI_MRESULT result;
 #ifdef  __NT__

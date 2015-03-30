@@ -126,10 +126,10 @@ void GUIProcessMenuCurr( MENUITEM *menu )
 
 EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
                           MENUITEM *menu, gui_mouse_track track,
-                          int *curr_item )
+                          gui_ctl_id *curr_item )
 {
     EVENT       ev;
-    unsigned    id;
+    gui_ctl_id  id;
     ATTR        attr_active;
     ATTR        attr_hot;
     ATTR        attr_curr_active;
@@ -215,7 +215,7 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
 }
 
 static void TrackPopup( gui_window *wnd, gui_point *location,
-                        MENUITEM *new_menu, gui_mouse_track track, int *curr_item )
+                        MENUITEM *new_menu, gui_mouse_track track, gui_ctl_id *curr_item )
 {
     MapLocation( wnd, location );
 
@@ -235,7 +235,7 @@ static void TrackPopup( gui_window *wnd, gui_point *location,
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
                              int num_menu_items, gui_menu_struct *menu,
-                             gui_mouse_track track, int *curr_item )
+                             gui_mouse_track track, gui_ctl_id *curr_item )
 {
     MENUITEM    *new_menu;
 
@@ -247,7 +247,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
 }
 
 bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
-                        gui_mouse_track track, int *curr_item )
+                        gui_mouse_track track, gui_ctl_id *curr_item )
 {
     if( GUIPopupMenu != NULL ) {
         TrackPopup( wnd, location, GUIPopupMenu, track, curr_item );

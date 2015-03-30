@@ -60,7 +60,7 @@ static gui_create_info DialogControl = {
 bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 {
     bool        ret;
-    unsigned    id;
+    gui_ctl_id  id;
     char        *new;
     char        *text;
     int         num;

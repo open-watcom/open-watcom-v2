@@ -37,15 +37,13 @@
 #include "guifloat.h"
 #include "guistr.h"
 
-#define  NO_SELECT      -1
-
 extern  HMENU           GUIHFloatingPopup;
-extern  int             CurrItem        = NO_SELECT;
+extern  gui_ctl_id      CurrItem        = NO_SELECT;
 extern  WPI_INST        GUIMainHInst;
 static  bool            InitComplete    = false;
 
 bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
-                            gui_mouse_track track, int *curr_item )
+                            gui_mouse_track track, gui_ctl_id *curr_item )
 {
     WPI_POINT   pt;
     ULONG       flags;
@@ -110,7 +108,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
                              int num, gui_menu_struct *menu,
-                             gui_mouse_track track, int *curr_item )
+                             gui_mouse_track track, gui_ctl_id *curr_item )
 {
     if( GUIHFloatingPopup != NULLHANDLE ) {
         _wpi_destroymenu( GUIHFloatingPopup );
@@ -129,7 +127,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
 void GUIPopupMenuSelect( WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int                 menu_closed;
-    unsigned            id;
+    gui_ctl_id          id;
     int                 is_hilite;
 #ifdef __OS2_PM__
     WPI_MENUSTATE       mstate;

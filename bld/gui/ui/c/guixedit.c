@@ -81,7 +81,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
  * GUISetText - set the text in the given control
  */
 
-bool GUISetText( gui_window *wnd, unsigned id, const char *text )
+bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     VFIELD              *field;
     a_dialog            *ui_dlg_info;
@@ -148,14 +148,14 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
  * GUIClearText - clear the text in the given control
  */
 
-bool GUIClearText( gui_window *wnd, unsigned id )
+bool GUIClearText( gui_window *wnd, gui_ctl_id id )
 {
     return( GUISetText( wnd, id, NULL ) );
 }
 
 /* NYI */
 
-bool GUISelectAll( gui_window *wnd, unsigned id, bool select )
+bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
 {
     wnd = wnd;
     id = id;

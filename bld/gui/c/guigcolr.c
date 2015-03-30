@@ -60,7 +60,7 @@ static void InitColourNames( void )
 
 static gui_colour InitColour;
 
-static void PickColour( gui_window *wnd, unsigned list_ctrl )
+static void PickColour( gui_window *wnd, gui_ctl_id list_id )
 {
     int i;
 
@@ -69,10 +69,10 @@ static void PickColour( gui_window *wnd, unsigned list_ctrl )
     }
 
     for( i = 0; i < GUI_NUM_COLOURS; i++ ) {
-        GUIAddText( wnd, list_ctrl, ColourNames[i] );
+        GUIAddText( wnd, list_id, ColourNames[i] );
     }
     if(( InitColour >= 0 ) && ( InitColour < GUI_NUM_COLOURS )) {
-        GUISetCurrSelect( wnd, list_ctrl, InitColour );
+        GUISetCurrSelect( wnd, list_id, InitColour );
     }
 }
 

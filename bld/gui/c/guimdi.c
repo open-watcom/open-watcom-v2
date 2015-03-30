@@ -45,7 +45,7 @@
 
 typedef struct {
     gui_window  *dlg_wnd;
-    unsigned    list_ctrl;
+    gui_ctl_id  list_id;
 } dlg_init;
 
 extern  bool            GUIMDI;
@@ -61,7 +61,7 @@ static gui_menu_struct MDIMoreMenu[] = {
     { NULL, GUI_MDI_MORE_WINDOWS, GUI_ENABLED, NULL }
 };
 
-static  int             GUIMDIMenuID = -1;
+static  gui_ctl_id      GUIMDIMenuID = -1;
 static  gui_window      *Root   = NULL;
 static  int             NumMDIWindows   = 0;
 static  int             CurrMDIWindow   = -1;
@@ -117,12 +117,13 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, int num_menus,
                      gui_menu_struct *menu )
 {
     int         i;
-    int         has_items;
+    bool        has_items;
     bool        found_flag;
     gui_window  *root;
 
     if( GUIMDI && ( parent == NULL ) ) {
         found_flag = false;
+        has_items = false;
         for( i = 0; i < num_menus; i++ ) {
             if( menu[i].style & GUI_MDIWINDOW ) {
                 GUIMDIMenuID = menu[i].id;
@@ -184,7 +185,7 @@ static void InsertMenuForWindow( gui_window *root, int index, int offset )
     }
 }
 
-void MDIDeleteMenu( unsigned id )
+void MDIDeleteMenu( gui_ctl_id id )
 {
     if( id == GUIMDIMenuID ) {
         GUIMDIMenuID = -1;
@@ -441,12 +442,12 @@ static void DlgInit( gui_window *wnd, void *param )
     TotalWindows++;
     ChildWindows[TotalWindows-1] = wnd;
     if( GUIGetWindowText( wnd, buffer, sizeof( buffer ) ) != 0 ) {
-        GUIAddText( info->dlg_wnd, info->list_ctrl, buffer );
+        GUIAddText( info->dlg_wnd, info->list_id, buffer );
     } else {
-        GUIAddText( info->dlg_wnd, info->list_ctrl, "" );
+        GUIAddText( info->dlg_wnd, info->list_id, "" );
     }
     if( wnd == GUICurrWnd ) {
-        GUISetCurrSelect( info->dlg_wnd, info->list_ctrl, TotalWindows - 1 );
+        GUISetCurrSelect( info->dlg_wnd, info->list_id, TotalWindows - 1 );
     }
 }
 
@@ -492,7 +493,7 @@ int GUIGetNumIconicWindows( void )
  * PickInit -- callback procedure to GUIDlgPick function
  */
 
-static void PickInit( gui_window *wnd, unsigned list_ctrl )
+static void PickInit( gui_window *wnd, gui_ctl_id list_id )
 {
     gui_window  *root;
     int         num_windows;
@@ -502,7 +503,7 @@ static void PickInit( gui_window *wnd, unsigned list_ctrl )
     num_windows = GUIGetNumChildWindows();
     ChildWindows = (gui_window **)GUIMemAlloc( sizeof( gui_window *) * num_windows );
     info.dlg_wnd = wnd;
-    info.list_ctrl = list_ctrl;
+    info.list_id = list_id;
     TotalWindows = 0;
     GUIEnumChildWindows( root, &DlgInit, &info );
 }
@@ -525,7 +526,7 @@ void GUIMDIMoreWindows( void )
     TotalWindows = 0;
 }
 
-gui_window *GUIMDIGetWindow( int id )
+gui_window *GUIMDIGetWindow( gui_ctl_id id )
 {
     int         index;
 

@@ -202,7 +202,7 @@ a_dialog *GUIGetDialog( gui_window *wnd )
     }
 }
 
-VFIELD *GUIGetField( gui_window *wnd, unsigned id )
+VFIELD *GUIGetField( gui_window *wnd, gui_ctl_id id )
 {
     a_dialog    *ui_dlg_info;
     dialog_node *dlg_node;
@@ -272,7 +272,7 @@ bool GUIInsertDialog( gui_window *wnd )
     }
 }
 
-void GUIRefreshControl( gui_window *wnd, unsigned id )
+void GUIRefreshControl( gui_window *wnd, gui_ctl_id id )
 {
     a_dialog    *ui_dlg_info;
     bool        colours_set;
@@ -328,7 +328,7 @@ static void FreeEdit( an_edit_control *edit_control, bool free_edit, bool is_GUI
     }
 }
 
-bool GUIGetFocus( gui_window *wnd, unsigned *id )
+bool GUIGetFocus( gui_window *wnd, gui_ctl_id *id )
 {
     dialog_node *dlg_node;
 
@@ -582,7 +582,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     return( true );
 }
 
-bool GUIDeleteField( gui_window *wnd, unsigned id )
+bool GUIDeleteField( gui_window *wnd, gui_ctl_id id )
 {
     dialog_node *dlg_node;
     a_dialog    *ui_dlg_info;
@@ -703,7 +703,7 @@ bool GUIResizeDialog( gui_window *wnd, SAREA *new_area )
 
 static void CheckNotify( a_dialog *ui_dlg_info, gui_window *wnd )
 {
-    unsigned    id;
+    gui_ctl_id  id;
 
     if( ui_dlg_info->curr != NULL ) {
         id = GUIGetControlId( wnd, ui_dlg_info->curr );
@@ -717,7 +717,7 @@ static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
 {
     gui_event   gui_ev;
     a_list      *list;
-    unsigned    id;
+    gui_ctl_id  id;
 
     if( ui_dlg_info->curr != NULL ) {
         list = GUIGetList( ui_dlg_info->curr );
@@ -743,7 +743,7 @@ static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
 
 void GUIFocusChangeNotify( a_dialog *ui_dlg_info )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     gui_window  *wnd;
     dialog_node *dlg_node;
 
@@ -767,7 +767,7 @@ void GUIFocusChangeNotify( a_dialog *ui_dlg_info )
 
 EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
 {
-    unsigned    id;
+    gui_ctl_id  id;
 
     switch( ev ) {
     case EV_CHECK_BOX_CLICK :

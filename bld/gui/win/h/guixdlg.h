@@ -34,7 +34,7 @@
 #define _GUIXDLG_H_
 extern void GUIInitDialog( void );
 extern void GUIFiniDialog( void );
-extern bool GUIProcessControlNotification( unsigned id, int wNotify, gui_window *wnd );
+extern bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd );
 extern bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, WPI_DLGRESULT *ret );
-extern void GUIInitControl( control_item *item, gui_window *wnd, unsigned *focus_id );
+extern void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id );
 #endif // _GUIXDLG_H_

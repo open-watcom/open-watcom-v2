@@ -130,7 +130,7 @@ static void GUIDeleteCtrlWnd( gui_window *wnd )
  *                     given id
  */
 
-control_item *GUIGetControlByID( gui_window *parent, unsigned id )
+control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id )
 {
     control_item * curr;
 
@@ -223,7 +223,7 @@ control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent )
  *                 associated with the given window handle
  */
 
-void GUIControlDelete( gui_window *wnd, unsigned id )
+void GUIControlDelete( gui_window *wnd, gui_ctl_id id )
 {
     control_item        *curr;
     control_item        *prev;
@@ -697,13 +697,13 @@ void GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
     }
 }
 
-bool GUICheckRadioButton( gui_window *wnd, unsigned id )
+bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id )
 {
     control_item        *curr;
     bool                in_group;
     bool                found_id;
-    unsigned            first;
-    unsigned            last;
+    gui_ctl_id          first;
+    gui_ctl_id          last;
     bool                done;
 
     first = id;
@@ -749,7 +749,7 @@ bool GUICheckRadioButton( gui_window *wnd, unsigned id )
     return( false );
 }
 
-bool GUIDeleteControl( gui_window *wnd, unsigned id )
+bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
 {
     control_item        *control;
 
@@ -762,7 +762,7 @@ bool GUIDeleteControl( gui_window *wnd, unsigned id )
     return( false );
 }
 
-bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
+bool GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len )
 {
     control_item        *control;
     HWND                hwnd;
@@ -783,7 +783,7 @@ bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
     return( false );
 }
 
-static void ShowControl( gui_window *wnd, unsigned id, int show_flag )
+static void ShowControl( gui_window *wnd, gui_ctl_id id, int show_flag )
 {
     control_item        *control;
 
@@ -793,17 +793,17 @@ static void ShowControl( gui_window *wnd, unsigned id, int show_flag )
     }
 }
 
-void GUIHideControl( gui_window *wnd, unsigned id )
+void GUIHideControl( gui_window *wnd, gui_ctl_id id )
 {
     ShowControl( wnd, id, SW_HIDE );
 }
 
-void GUIShowControl( gui_window *wnd, unsigned id )
+void GUIShowControl( gui_window *wnd, gui_ctl_id id )
 {
     ShowControl( wnd, id, SW_SHOW );
 }
 
-bool GUIIsControlVisible( gui_window *wnd, unsigned id )
+bool GUIIsControlVisible( gui_window *wnd, gui_ctl_id id )
 {
     control_item        *control;
 

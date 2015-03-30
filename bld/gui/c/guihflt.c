@@ -34,7 +34,7 @@
 
 extern bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
                              int num_menu_items, gui_menu_struct *menu,
-                             gui_mouse_track track, int *curr_item )
+                             gui_mouse_track track, gui_ctl_id *curr_item )
 {
     bool        ret;
 

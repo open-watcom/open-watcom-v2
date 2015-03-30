@@ -59,7 +59,7 @@ static const char *ListBoxFunc( const void *data_handle, int item )
     return( ((const char **)data_handle)[item] );
 }
 
-static void ContrCallBack( gui_window *gui, unsigned id, void *param )
+static void ContrCallBack( gui_window *gui, gui_ctl_id id, void *param )
 {
     int                 i;
     int                 *num;
@@ -120,7 +120,7 @@ static void InitDialog( gui_window *parent )
 bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 {
     bool        ret;
-    unsigned    id;
+    gui_ctl_id  id;
     char        *new;
     unsigned    i;
     char        *text;

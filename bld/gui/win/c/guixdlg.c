@@ -92,7 +92,7 @@ void GUISetJapanese( void )
  * GUIInitControl
  */
 
-void GUIInitControl( control_item *item, gui_window *wnd, unsigned *focus_id )
+void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id )
 {
     HWND        ctrl;
 
@@ -129,7 +129,7 @@ void GUIInitControl( control_item *item, gui_window *wnd, unsigned *focus_id )
 static bool InitDialog( gui_window *wnd )
 {
     control_item        *item;
-    unsigned            focus_id;
+    gui_ctl_id          focus_id;
 
     focus_id = 0;
     for( item = wnd->controls; item != NULL; item = item->next ) {
@@ -147,7 +147,7 @@ static bool InitDialog( gui_window *wnd )
     return( false );
 }
 
-bool GUIProcessControlNotification( unsigned id, int wNotify, gui_window *wnd )
+bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd )
 {
     unsigned            check;
     control_item        *item;
@@ -245,7 +245,7 @@ bool GUIProcessControlNotification( unsigned id, int wNotify, gui_window *wnd )
 
 bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, WPI_DLGRESULT *ret )
 {
-    unsigned    id;
+    gui_ctl_id  id;
 #ifndef __OS2_PM__
     bool        my_ret;
     int         notify_code;

@@ -1014,7 +1014,7 @@ static process_rc processFileName( gui_window *gui )
 /*
  * ProcessOKorDClick -- user clicked OK or double clicked on a file
  */
-void ProcessOKorDClick( gui_window *gui, unsigned id  )
+void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
 {
     process_rc  prc;
     int         sel;
@@ -1023,7 +1023,7 @@ void ProcessOKorDClick( gui_window *gui, unsigned id  )
     char        *optr;
     char        *ptr;
     int         i;
-    unsigned    focusid;
+    gui_ctl_id  focusid;
     dlg_info    *dlg = GUIGetExtra( gui );
 
     if( id == CTL_OK ) { /* hit enter or clicked ok */
@@ -1103,7 +1103,7 @@ void ProcessOKorDClick( gui_window *gui, unsigned id  )
 
 } /* ProcessOKorDClick */
 
-static void InitTextList( gui_window *gui, unsigned id, const char **text_list )
+static void InitTextList( gui_window *gui, gui_ctl_id id, const char **text_list )
 {
     int         i;
 
@@ -1118,7 +1118,7 @@ static void InitTextList( gui_window *gui, unsigned id, const char **text_list )
  */
 extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     int         sel;
     char        *ptr;
     char        path[_MAX_PATH];

@@ -69,8 +69,7 @@ static gui_create_info DlgControl = {
 
 static bool DlgModal = false;
 
-extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
-                             char *buff, unsigned buff_len )
+extern unsigned GUIDlgBuffGetText( gui_window *gui, gui_ctl_id id, char *buff, unsigned buff_len )
 {
     char        *str;
     unsigned    len;

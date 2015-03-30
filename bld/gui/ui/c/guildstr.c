@@ -109,7 +109,7 @@ bool GUILoadStrFini( void )
     return( true );
 }
 
-bool GUILoadString( int string_id, char *buffer, int buffer_length )
+bool GUILoadString( gui_res_id string_id, char *buffer, int buffer_length )
 {
     if( GUIMsgInitFlag && buffer && buffer_length ) {
         if( LoadString( &hInstance, string_id, (LPSTR)buffer, buffer_length ) == 0 ) {
@@ -122,7 +122,7 @@ bool GUILoadString( int string_id, char *buffer, int buffer_length )
     return( false );
 }
 
-bool GUILoadDialogTemplate( int id, char **template, int *length )
+bool GUILoadDialogTemplate( gui_res_id id, char **template, int *length )
 {
     bool                ok;
 
@@ -136,7 +136,7 @@ bool GUILoadDialogTemplate( int id, char **template, int *length )
     return( ok );
 }
 
-bool GUILoadMenuTemplate( int id, char **template, int *length )
+bool GUILoadMenuTemplate( gui_res_id id, char **template, int *length )
 {
     bool                ok;
 
