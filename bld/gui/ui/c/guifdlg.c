@@ -874,7 +874,7 @@ static bool setDirList( gui_window *gui )
 /*
  * initDialog - initialize all dialog fields
  */
-static bool initDialog( gui_window *gui, const char *ext, char *name )
+static bool initDialog( gui_window *gui, const char *ext, const char *name )
 {
     char        path[_MAX_PATH];
     dlg_info    *dlg = GUIGetExtra( gui );

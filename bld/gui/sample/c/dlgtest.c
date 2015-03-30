@@ -233,22 +233,22 @@ static gui_create_info ResDialog = {
 
 void ResDialogCreate( gui_window *parent )
 {
-    int         i;
+    long        dlg_id;
     char        *text;
     char        *ep;
 
-    i = -1;
-    while( i == -1 ) {
+    dlg_id = -1;
+    while( dlg_id == -1 ) {
         GUIGetNewVal( "Which Dialog?", "200", &text );
         if( text != NULL ) {
-            i = strtoul( text, &ep, 10 );
-            if( *ep ) {
-                i = -1;
+            dlg_id = strtoul( text, &ep, 10 );
+            if( *ep != '\0' ) {
+                dlg_id = -1;
             }
             GUIMemFree( text );
         }
     }
 
     ResDialog.parent = parent;
-    GUICreateResDialog( &ResDialog, i );
+    GUICreateResDialog( &ResDialog, dlg_id );
 }

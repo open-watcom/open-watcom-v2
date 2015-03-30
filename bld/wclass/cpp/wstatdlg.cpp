@@ -34,15 +34,14 @@
 #include "wcontrol.hpp"
 
 WEXPORT WStatDialog::WStatDialog( WWindow * prt, WDialogId dialog_id )
-    : WDialog( prt )
-    , _dialog_id( dialog_id ) {
-/*****************************/
+    : WDialog( prt ), _dialog_id( dialog_id ) {
+/*********************************************/
 
 }
 
 
-void WStatDialog::addControl( WControl * control ) {
-/**************************************************/
+void WStatDialog::addControl( WControl *control ) {
+/*************************************************/
 
     _controls.add( control );
 }
@@ -97,9 +96,8 @@ void WStatDialog::doDialog( WWindow *parent ) {
     GUICreateResDialog( &create_info, _dialog_id );
 }
 
-void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id,
-                                       WString & str ) {
-/******************************************************/
+void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id, WString & str ) {
+/*********************************************************************/
 
     char *text = GUIGetText( handle(), id );
     WString t( text );
@@ -107,9 +105,8 @@ void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id,
     str = t;
 }
 
-void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id,
-                                       char* buff, size_t len ) {
-/***************************************************************/
+void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id, char *buff, size_t len ) {
+/******************************************************************************/
 
     char * text;
     size_t text_len;
@@ -131,17 +128,17 @@ size_t WEXPORT WStatDialog::getCtrlTextLength( gui_ctl_id id ) {
 /**************************************************************/
 
     char *text = GUIGetText( handle(), id );
-    if( text == NULL ) return( 0 );
+    if( text == NULL )
+        return( 0 );
     size_t len = strlen( text );
     GUIMemFree( text );
     return( len );
 }
 
-void WEXPORT WStatDialog::setCtrlText( gui_ctl_id id,
-                                       const char *text ) {
-/*********************************************************/
+void WEXPORT WStatDialog::setCtrlText( gui_ctl_id id, const char *text ) {
+/************************************************************************/
 
-    GUISetText( handle(), id, (char *)text );
+    GUISetText( handle(), id, text );
 }
 
 bool WEXPORT WStatDialog::isCtrlEnabled( gui_ctl_id id ) {

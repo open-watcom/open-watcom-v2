@@ -232,7 +232,9 @@ extern void WndClose( a_window *wnd )
 
 void WndSetMainMenuText( gui_menu_struct *menu )
 {
-    if( WndMain != NULL ) GUISetMenuText( WndMain->gui, menu->id, menu->label, FALSE );
+    if( WndMain != NULL ) {
+        GUISetMenuText( WndMain->gui, menu->id, menu->label, FALSE );
+    }
 }
 
 void WndSetIcon( a_window *wnd, gui_resource *icon )
