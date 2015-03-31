@@ -40,6 +40,8 @@
 #include "loadstr.h"
 #include "wresrtns.h"
 
+#define WRES_IS_INTRESOURCE(x) ((((pointer_int)(x)) >> 16) == 0)
+
 extern WResDir    MainDir;
 
 static int GetResource( WResLangInfo *res, PHANDLE_INFO hInstance, char *res_buffer )
@@ -51,28 +53,24 @@ static int GetResource( WResLangInfo *res, PHANDLE_INFO hInstance, char *res_buf
     return( 0 );
 }
 
-int WResLoadResource2( WResDir dir, PHANDLE_INFO hInstance, UINT idType,
-                       UINT idResource, LPSTR *lpszBuffer, int *bufferSize )
-/**************************************************************************/
+int WResLoadResource2( WResDir dir, PHANDLE_INFO hInstance, WResID *resource_type,
+                       WResID *resource_id, LPSTR *lpszBuffer, int *bufferSize )
+/******************************************************************************/
 {
     int                 retcode;
-    WResID              resource_type;
-    WResID              resource_id;
     WResDirWindow       wind;
     WResLangInfo        *res;
     WResLangType        lang;
     char                *res_buffer;
 
-    if( ( lpszBuffer == NULL ) || ( bufferSize == NULL ) ) {
+    if( ( resource_type == NULL ) || ( resource_id == NULL ) || ( lpszBuffer == NULL ) || ( bufferSize == NULL ) ) {
         return( -1 );
     }
 
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
-    WResInitIDFromNum( idResource, &resource_id );
-    WResInitIDFromNum( (long)idType, &resource_type );
 
-    wind = WResFindResource( &resource_type, &resource_id, dir, &lang );
+    wind = WResFindResource( resource_type, resource_id, dir, &lang );
 
     if( WResIsEmptyWindow( wind ) ) {
         retcode = -1;
@@ -95,8 +93,54 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hInstance, UINT idType,
 }
 
 int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource,
+                                        LPSTR *lpszBuffer, int *bufferSize )
+/**************************************************************************/
+{
+    WResID              resource_type;
+    WResID              resource_id;
+
+    WResInitIDFromNum( idResource, &resource_id );
+    WResInitIDFromNum( idType, &resource_type );
+
+    return( WResLoadResource2( MainDir, hInstance, &resource_type, &resource_id, lpszBuffer, bufferSize ) );
+}
+
+int WResLoadResourceX( PHANDLE_INFO hInstance, LPSTR idType, LPSTR idResource,
                                     LPSTR *lpszBuffer, int *bufferSize )
 /*************************************************************************/
 {
-    return( WResLoadResource2( MainDir, hInstance, idType, idResource, lpszBuffer, bufferSize ) );
+    WResID              *resource_type;
+    WResID              *resource_id;
+    int                 rc;
+
+    if( WRES_IS_INTRESOURCE( idResource ) ) {
+        resource_id = WResIDFromNum( (unsigned short)(pointer_int)idResource );
+    } else {
+#if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
+        char    *str;
+        str = WRESALLOC( _fstrlen( idResource ) + 1 );
+        _fstrcpy( str, idResource );
+        resource_id = WResIDFromStr( str );
+        WRESFREE( str );
+#else
+        resource_id = WResIDFromStr( idResource );
+#endif
+    }
+    if( WRES_IS_INTRESOURCE( idType ) ) {
+        resource_type = WResIDFromNum( (unsigned short)(pointer_int)idType );
+    } else {
+#if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
+        char    *str;
+        str = WRESALLOC( _fstrlen( idType ) + 1 );
+        _fstrcpy( str, idType );
+        resource_type = WResIDFromStr( str );
+        WRESFREE( str );
+#else
+        resource_type = WResIDFromStr( idType );
+#endif
+    }
+    rc = WResLoadResource2( MainDir, hInstance, resource_type, resource_id, lpszBuffer, bufferSize );
+    WResIDFree( resource_type );
+    WResIDFree( resource_id );
+    return( rc );
 }

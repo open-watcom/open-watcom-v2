@@ -59,8 +59,6 @@ DepInfo *WResGetAutoDep( const char *fname )
                     if( WResIsEmptyWindow( window ) ) {
                         WRES_ERROR( WRS_RES_NOT_FOUND );
                     } else {
-                        WResIDFree( name );
-                        WResIDFree( type );
                         info = WResGetLangInfo( window );
                         if( ResSeek( handle, info->Offset, SEEK_SET ) == -1 ) {
                             WRES_ERROR( WRS_SEEK_FAILED );
@@ -77,6 +75,12 @@ DepInfo *WResGetAutoDep( const char *fname )
                             }
                         }
                     }
+                }
+                if( name != NULL ) {
+                    WResIDFree( name );
+                }
+                if( type != NULL ) {
+                    WResIDFree( type );
                 }
             }
             WResFreeDir( dir );

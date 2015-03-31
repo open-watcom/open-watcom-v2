@@ -38,8 +38,8 @@ extern int WResLoadString2( struct WResDirHead *,
                             int nBufferMax );
 extern int WResLoadResource2( struct WResDirHead *,
                               PHANDLE_INFO      hInstance,
-                              UINT              idType,
-                              UINT              idResource,
+                              WResID            *idType,
+                              WResID            *idResource,
                               LPSTR             *lpszBuffer,
                               int               *bufferSize );
 extern bool CloseResFile2( struct WResDirHead *, PHANDLE_INFO hInstance );
