@@ -84,8 +84,7 @@ WEXPORT WCombo::WCombo( WWindow* parent, gui_control_class control_class,
 
 }
 
-WEXPORT WCombo::WCombo( WStatDialog* parent, gui_ctl_id id,
-                        WStyle style )
+WEXPORT WCombo::WCombo( WStatDialog *parent, gui_ctl_id id, WStyle style )
         : WControl( parent, id, style )
         , _changedClient( NULL )
         , _changed( NULL )

@@ -33,8 +33,15 @@
 #include "wstatdlg.hpp"
 #include "wcontrol.hpp"
 
-WEXPORT WStatDialog::WStatDialog( WWindow * prt, WDialogId dialog_id )
-    : WDialog( prt ), _dialog_id( dialog_id ) {
+WEXPORT WStatDialog::WStatDialog( WWindow * prt, WDialogId dialog_name )
+    : WDialog( prt ), _dialog_id( dialog_name ) {
+/*********************************************/
+
+}
+
+
+WEXPORT WStatDialog::WStatDialog( WWindow * prt, int dialog_id )
+    : WDialog( prt ), _dialog_id( GUI_MAKEINTRESOURCE( dialog_id ) ) {
 /*********************************************/
 
 }

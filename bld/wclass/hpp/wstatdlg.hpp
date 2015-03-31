@@ -35,11 +35,12 @@
 
 #include "wdialog.hpp"
 
-typedef unsigned long WDialogId;
+typedef res_name_or_id WDialogId;
 
 WCLASS WStatDialog : public WDialog {
     public:
-        WStatDialog( WWindow * parent, WDialogId dialog_id );
+        WStatDialog( WWindow * parent, WDialogId dialog_name );
+        WStatDialog( WWindow * parent, int dialog_id );
 
         void addControl( WControl * control );
 
