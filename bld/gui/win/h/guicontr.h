@@ -51,7 +51,6 @@ typedef struct control_item {
 typedef struct {
     char                *classname;
     DWORD               style;
-//    BOOL CALLBACK     (*call_back)( HWND, unsigned, UINT, LONG );
     WPI_MRESULT (CALLBACK * call_back)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 } controls_struct;
 

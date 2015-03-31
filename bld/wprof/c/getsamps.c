@@ -480,8 +480,8 @@ STATIC bool readSampleFile( void )
 
 
 
-extern bool GetSampleInfo( void )
-/*******************************/
+bool GetSampleInfo( void )
+/************************/
 {
     if( !initCurrSIO() ) {
         return( false );

@@ -59,6 +59,7 @@ static gui_create_info DialogWnd = {
     NULL,
     &GetNewFunction,
     NULL,
+    NULL,
     0
 };
 
@@ -89,6 +90,7 @@ static gui_create_info StatusWnd = {
     GUI_NUM_ATTRS + 1,
     &StatusColours,
     &StatusFunction,
+    NULL,
     NULL,
     0
 };

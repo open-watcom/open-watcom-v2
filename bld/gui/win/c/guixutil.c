@@ -167,9 +167,8 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
 
     if( ( ( parent == HWND_DESKTOP ) || ( dlg_info->style & GUI_POPUP ) ) &&
         ( menu != NULL ) ) {
-        if( dlg_info->resource_menu ) {
-            *menu =  _wpi_loadmenu( GUIResHInst,
-                                    MAKEINTRESOURCE( dlg_info->resource_menu ) );
+        if( dlg_info->resource_menu != NULL ) {
+            *menu =  _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
         } else {
             return( GUICreateMenus( wnd, dlg_info->num_menus, dlg_info->menu, menu ) );
         }

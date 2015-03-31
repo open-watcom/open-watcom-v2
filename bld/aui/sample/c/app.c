@@ -86,7 +86,7 @@ static gui_menu_struct PopTart[] = {
 
 extern  bool    WndProcMacro( a_window *wnd, unsigned key )
 {
-    int         menu;
+    gui_ctl_id  menu;
     int         i;
 
     WndStatusText( "" );

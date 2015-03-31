@@ -40,10 +40,10 @@
 #include <stdio.h>
 #include "wio.h"
 #include "wresdefn.h"
-#include "clibext.h"
-
 #include "wressetr.h"
 #include "wresset2.h"
+
+#include "clibext.h"
 
 #if defined( __QNX__ ) || defined( __UNIX__ )
     #define _newline "\n"
@@ -109,10 +109,10 @@ bool GUILoadStrFini( void )
     return( true );
 }
 
-bool GUILoadString( gui_res_id string_id, char *buffer, int buffer_length )
+bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
-    if( GUIMsgInitFlag && buffer && buffer_length ) {
-        if( LoadString( &hInstance, string_id, (LPSTR)buffer, buffer_length ) == 0 ) {
+    if( GUIMsgInitFlag && buffer != NULL && buffer_length != 0 ) {
+        if( LoadString( &hInstance, id, (LPSTR)buffer, buffer_length ) == 0 ) {
             return( true );
         } else {
             buffer[0] = '\0';
@@ -122,31 +122,30 @@ bool GUILoadString( gui_res_id string_id, char *buffer, int buffer_length )
     return( false );
 }
 
-bool GUILoadDialogTemplate( gui_res_id id, char **template, int *length )
+bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, int *length )
 {
     bool                ok;
 
-    ok = ( GUIMsgInitFlag && template && length );
+    ok = ( GUIMsgInitFlag && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = ( WResLoadResource( &hInstance, (UINT)RT_DIALOG, id,
+        ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_DIALOG ), dlg_id,
                                  (LPSTR *)template, length ) == 0 );
     }
 
     return( ok );
 }
 
-bool GUILoadMenuTemplate( gui_res_id id, char **template, int *length )
+bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, int *length )
 {
     bool                ok;
 
-    ok = ( GUIMsgInitFlag && template && length );
+    ok = ( GUIMsgInitFlag && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = ( WResLoadResource( &hInstance, (UINT)RT_MENU, id,
+        ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_MENU ), menu_id,
                                  (LPSTR *)template, length ) == 0 );
     }
 
     return( ok );
 }
-

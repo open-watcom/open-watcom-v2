@@ -135,6 +135,6 @@ extern  bool    DlgOptSet( void )
     dlg_window_set      optset;
 
     optset.cancel = true;
-    ResDlgOpen( &OptSetEvent, &optset, DIALOG_OPTION );
+    ResDlgOpen( &OptSetEvent, &optset, GUI_MAKEINTRESOURCE( DIALOG_OPTION ) );
     return( !optset.cancel );
 }

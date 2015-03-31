@@ -76,7 +76,7 @@ typedef struct ret_info {
 
 static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
     ret_info    *info;
 
     info = GUIGetExtra( gui );

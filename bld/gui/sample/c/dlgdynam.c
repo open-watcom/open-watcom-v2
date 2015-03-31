@@ -87,7 +87,7 @@ static void CheckNumControls( gui_window *gui, int act_num )
     int num;
 
     num = 0;
-    GUIEnumControls( gui, &ContrCallBack, &num );
+    GUIEnumControls( gui, ContrCallBack, &num );
     if( num == act_num ) {
 #if 0
         GUIDisplayMessage( gui, "Got Correct Number of Controls",

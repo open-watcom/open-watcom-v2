@@ -54,8 +54,8 @@ static char * sampFilterList = {
 
 
 
-extern bool WPSampFound( void )
-/*****************************/
+bool WPSampFound( void )
+/**********************/
 {
     struct stat     file_stat;
     char            buffer[_MAX_PATH2];

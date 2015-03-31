@@ -50,7 +50,7 @@ extern void DlgAbout(void);
 extern void DlgOpenSample(void);
 extern void ClearSample(sio_data *curr_sio);
 extern void DlgGetOptions(a_window *wnd);
-extern void WPConvert(a_window *wnd,gui_ctl_id id);
+extern void WPConvert(a_window *wnd, gui_ctl_id id);
 extern bool GetSampleInfo(void);
 extern void WPSampleOpen(void);
 extern void AboutSetOff(void);
@@ -123,8 +123,8 @@ int WndNumMenus = { WndMenuSize( WndMainMenu ) };
 
 
 
-bool WndMainMenuProc( a_window * wnd, gui_ctl_id id )
-/***************************************************/
+bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
+/**************************************************/
 {
     a_window *      active;
     sio_data *      curr_sio;

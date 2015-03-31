@@ -556,7 +556,6 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_INITMENUPOPUP:
         {
             char        text[100];
-            gui_ctl_id  id;
 
             GUI_GETID( param, id );
             sprintf ( text,"GUI_INITMENUPOPUP: id = %d", id );
@@ -624,7 +623,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             {
                 gui_menu_struct *menu;
                 int             num;
-                GUICreateMenuStructFromRes( 100, &menu, &num );
+                GUICreateMenuStructFromRes( GUI_MAKEINTRESOURCE( 100 ), &menu, &num );
                 if( menu && num ) {
                     int     i;
                     for( i = 0; i < num; i++ ) {
@@ -1292,7 +1291,7 @@ static bool Enabled = true;
 #endif
 
 static void CreatePopup( gui_window *gui, int num_menus,
-                         gui_menu_struct *menu, unsigned popup_id, bool sub )
+                         gui_menu_struct *menu, gui_ctl_id popup_id, bool sub )
 {
     int                 i;
     gui_menu_struct     *sub_menu;

@@ -139,7 +139,7 @@ extern void ExeClose( file_handle fh )
 
 
 STATIC bool exeSeek( off_t posn )
-/********************************/
+/*******************************/
 {
     if(( posn >= exePosition )&&( posn < ( exePosition + exeAmount ))) {
         exeCurrent = posn - exePosition;
@@ -396,8 +396,8 @@ extern void SetExeImage( image_info *image )
 
 
 
-extern bool SetExeFile( file_handle fh, bool overlay )
-/****************************************************/
+bool SetExeFile( file_handle fh, bool overlay )
+/*********************************************/
 {
     dos_exe_header      head;
     off_t               new_header;
@@ -1103,8 +1103,8 @@ STATIC bool LoadOverlayInfo( void )
 
 
 
-extern bool LoadImageOverlays( void )
-/***********************************/
+bool LoadImageOverlays( void )
+/****************************/
 {
     image_info      *curr_image;
     int             image_index;

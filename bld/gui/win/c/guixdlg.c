@@ -285,7 +285,7 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd
 
 WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    unsigned            id;
+    gui_ctl_id          id;
     bool                escape_pressed;
     gui_window          *wnd;
     bool                msg_processed;
@@ -381,12 +381,11 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         item = NULL;
         if( child ) {
             item = GUIGetControlByHwnd( wnd, child );
-            if( item && item->id ) {
-                msg_processed =
-                    GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
+            if( item != NULL && item->id ) {
+                msg_processed = GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
             }
         }
-        if( !item || !item->id ) {
+        if( item == NULL || item->id == 0 ) {
             msg_processed |= !SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDOWN, false );
         }
         break;
@@ -397,9 +396,8 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
             _wpi_mapwindowpoints( hwnd, HWND_DESKTOP, &pnt, 1 );
             child = _wpi_windowfrompoint( pnt );
             item = GUIGetControlByHwnd( wnd, child );
-            if( item && item->id && ( _wpi_getparent(child) == hwnd ) ) {
-                msg_processed =
-                    GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
+            if( item != NULL && item->id && ( _wpi_getparent(child) == hwnd ) ) {
+                msg_processed = GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
             }
         }
         break;
@@ -596,7 +594,7 @@ void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
 
 bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                        int num_controls, gui_control_info *controls_info,
-                       bool sys, long dlg_id )
+                       bool sys, res_name_or_id dlg_id )
 {
     gui_coord           pos, size;
     gui_coord           parent_pos;
@@ -631,7 +629,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     }
 
     wnd->flags |= HAS_CAPTION;
-    if( dlg_id != -1 ) {
+    if( dlg_id != NULL ) {
         wnd->flags |= IS_RES_DIALOG;
         return( GUIDoCreateResDialog( dlg_id, parent_hwnd, (void *)wnd ) );
     }

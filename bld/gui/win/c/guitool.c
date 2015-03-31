@@ -120,7 +120,7 @@ bool GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
     gui_window              *wnd;
     toolbarinfo             *toolbar;
     HMENU                   hmenu;
-    WORD                    param;
+    gui_ctl_id              id;
 
     wnd = GetToolWnd( hwnd );
     if( wnd == NULL ) {
@@ -157,8 +157,8 @@ bool GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
         GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam );
         return( true );
     case WM_SYSCOMMAND :
-        param = _wpi_getid( wparam );
-        switch( param ) {
+        id = _wpi_getid( wparam );
+        switch( id ) {
         case GUI_FIX_TOOLBAR :
             GUIChangeToolBar( wnd );
         }

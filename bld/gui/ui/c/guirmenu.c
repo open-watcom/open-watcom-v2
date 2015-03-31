@@ -352,7 +352,7 @@ static gui_menu_struct *MakeGUIMenuStruct( GUIRMenuEntry *rmenu )
     return( menu );
 }
 
-bool GUICreateMenuStructFromRes( gui_res_id id, gui_menu_struct **menu, int *num )
+bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu, int *num )
 {
     GUIRMenuEntry       *rmenu;
     uint_8              *data;
@@ -366,7 +366,7 @@ bool GUICreateMenuStructFromRes( gui_res_id id, gui_menu_struct **menu, int *num
     ok = ( menu && num );
 
     if( ok ) {
-        ok = GUILoadMenuTemplate( id, (char **)&data, &size );
+        ok = GUILoadMenuTemplate( menu_id, (char **)&data, &size );
     }
 
     if( ok ) {

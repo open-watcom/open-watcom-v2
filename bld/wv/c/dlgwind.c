@@ -141,6 +141,6 @@ extern  bool    DlgWndSet( void )
     dlg_window_set      wndset;
 
     wndset.cancel = true;
-    ResDlgOpen( &WndSetEvent, &wndset, DIALOG_WIND );
+    ResDlgOpen( &WndSetEvent, &wndset, GUI_MAKEINTRESOURCE( DIALOG_WIND ) );
     return( !wndset.cancel );
 }

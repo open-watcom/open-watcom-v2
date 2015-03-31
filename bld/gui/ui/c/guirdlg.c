@@ -577,7 +577,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     return( dlg_info );
 }
 
-bool GUICreateDialogFromRes( gui_res_id id, gui_window *parent, GUICALLBACK cb, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK cb, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;
@@ -599,7 +599,7 @@ bool GUICreateDialogFromRes( gui_res_id id, gui_window *parent, GUICALLBACK cb, 
     ok = ( cb != NULL );
 
     if( ok ) {
-        ok = GUILoadDialogTemplate( id, (char **)&data, &size );
+        ok = GUILoadDialogTemplate( dlg_id, (char **)&data, &size );
     }
 
     if( ok ) {

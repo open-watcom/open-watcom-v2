@@ -58,7 +58,7 @@ extern bool GUIFiniInternalStringTable( void );
     #ifdef __MEDIUM__
         #define MAKEFAR
     #else
-        #define MAKEFAR far
+        #define MAKEFAR __far
     #endif
 #else
     #define MAKEFAR

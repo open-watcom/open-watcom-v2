@@ -77,7 +77,7 @@ static void Rescale( void )
     WndMax = scale;
 }
 
-static bool WndInitBody( char *title, int resource_menu )
+static bool WndInitBody( char *title, res_name_or_id resource_menu )
 {
     wnd_create_struct   info;
 
@@ -106,10 +106,10 @@ static bool WndInitBody( char *title, int resource_menu )
 
 bool WndInit( char *title )
 {
-    return( WndInitBody( title, 0 ) );
+    return( WndInitBody( title, NULL ) );
 }
 
-bool WndInitWithMenuRes( char *title, int resource_menu )
+bool WndInitWithMenuRes( char *title, res_name_or_id resource_menu )
 {
     return( WndInitBody( title, resource_menu ) );
 }

@@ -119,8 +119,10 @@ dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
     } else if( b.sect_id == 0 ) {
         b.sect_id = a.sect_id;
     }
-    if( a.sect_id != b.sect_id ) return( DS_FAIL );
-    if( a.mach.segment != b.mach.segment ) return( DS_FAIL );
+    if( a.sect_id != b.sect_id )
+        return( DS_FAIL );
+    if( a.mach.segment != b.mach.segment )
+        return( DS_FAIL );
     return( DS_OK );
 }
 

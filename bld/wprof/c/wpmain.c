@@ -47,7 +47,7 @@ extern void AboutOpen(void);
 extern void DlgOpenSample(void);
 extern bool WPSampFound(void);
 extern void OpenSample(void);
-extern void WPFindDoPopUp(a_window *wnd,int id);
+extern void WPFindDoPopUp(a_window *wnd,gui_ctl_id id);
 extern void WPDoPopUp(a_window *wnd,gui_menu_struct *gui_menu);
 extern void ReportSampleInfo(void);
 

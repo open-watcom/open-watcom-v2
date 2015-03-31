@@ -39,7 +39,7 @@
  */
 
 static bool CreateDlg( gui_create_info *dlg_info, int num_controls,
-                       gui_control_info *controls_info, bool sys, long dlg_id )
+                       gui_control_info *controls_info, bool sys, res_name_or_id dlg_id )
 {
     gui_window *wnd;
 
@@ -58,10 +58,10 @@ static bool CreateDlg( gui_create_info *dlg_info, int num_controls,
 bool GUICreateDialog( gui_create_info *dlg_info, int num_controls,
                       gui_control_info *controls_info )
 {
-    return( CreateDlg( dlg_info, num_controls, controls_info, false, -1 ) );
+    return( CreateDlg( dlg_info, num_controls, controls_info, false, NULL ) );
 }
 
-bool GUICreateResDialog( gui_create_info *dlg_info, long dlg_id )
+bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id )
 {
     return( CreateDlg( dlg_info, 0, NULL, false, dlg_id ) );
 }
@@ -69,5 +69,5 @@ bool GUICreateResDialog( gui_create_info *dlg_info, long dlg_id )
 bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls,
                               gui_control_info *controls_info )
 {
-    return( CreateDlg( dlg_info, num_controls, controls_info, true, -1 ) );
+    return( CreateDlg( dlg_info, num_controls, controls_info, true, NULL ) );
 }

@@ -40,8 +40,8 @@
 
 
 
-extern bool GetCurrentAbsBar( sio_data * curr_sio )
-/*************************************************/
+bool GetCurrentAbsBar( sio_data * curr_sio )
+/******************************************/
 {
     bool        bar;
 
@@ -61,8 +61,8 @@ extern bool GetCurrentAbsBar( sio_data * curr_sio )
 
 
 
-extern bool GetCurrentRelBar( sio_data * curr_sio )
-/*************************************************/
+bool GetCurrentRelBar( sio_data * curr_sio )
+/******************************************/
 {
     bool        bar;
 
@@ -82,8 +82,8 @@ extern bool GetCurrentRelBar( sio_data * curr_sio )
 
 
 
-extern bool GetCurrentMaxBar( sio_data * curr_sio )
-/*************************************************/
+bool GetCurrentMaxBar( sio_data * curr_sio )
+/******************************************/
 {
     bool        bar;
 

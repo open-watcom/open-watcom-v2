@@ -60,7 +60,7 @@ bool            OptDIFFormat = true;
 bool            OptCommaFormat = false;
 FILE            *ConvertFile;
 
-STATIC bool     progEvent( gui_window *, gui_event, void * );
+STATIC GUICALLBACK progEvent;
 
 extern sio_data *CurrSIOData;
 
@@ -71,7 +71,8 @@ extern void DlgGetConvert( a_window * wnd )
 {
     ConvertFile = NULL;
     CurrSIOData = WndExtra( wnd );
-    if( CurrSIOData == NULL ) return;
+    if( CurrSIOData == NULL )
+        return;
     strcpy( convertPath, CurrSIOData->samp_file_name );
     DlgOpen( LIT( Convert_Data ), DLG_CNVT_ROWS, DLG_CNVT_COLS,
              &convertControls[0], ArraySize( convertControls ), &progEvent, NULL );
@@ -85,8 +86,8 @@ extern void DlgGetConvert( a_window * wnd )
 STATIC void getDlgValues( gui_window *gui )
 /*****************************************/
 {
-    OptDIFFormat = GUIIsChecked( gui, CTL_DIF_FMT );
-    OptCommaFormat = GUIIsChecked( gui, CTL_COMMA_FMT );
+    OptDIFFormat = ( GUIIsChecked( gui, CTL_DIF_FMT ) == GUI_CHECKED );
+    OptCommaFormat = ( GUIIsChecked( gui, CTL_COMMA_FMT ) == GUI_CHECKED );
     GUIDlgBuffGetText( gui, CTL_NAME, convertPath, sizeof( convertPath ) );
 }
 
@@ -97,8 +98,8 @@ STATIC void setDlgValues( gui_window *gui )
 {
     char        *add_ext;
 
-    GUISetChecked( gui, CTL_DIF_FMT, OptDIFFormat );
-    GUISetChecked( gui, CTL_COMMA_FMT, OptCommaFormat );
+    GUISetChecked( gui, CTL_DIF_FMT, ( OptDIFFormat ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_COMMA_FMT, ( OptCommaFormat ) ? GUI_CHECKED : GUI_NOT_CHECKED );
     if( OptDIFFormat ) {
         add_ext = ".dif";
     } else {

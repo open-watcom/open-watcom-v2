@@ -90,6 +90,6 @@ OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
 
 extern unsigned DlgAsyncRun( void )
 {
-    ResDlgOpen( &AsyncEvent, 0, DIALOG_ASYNC_RUN );
+    ResDlgOpen( &AsyncEvent, 0, GUI_MAKEINTRESOURCE( DIALOG_ASYNC_RUN ) );
     return( dlg.cond ); 
 }

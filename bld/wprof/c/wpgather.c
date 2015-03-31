@@ -49,8 +49,8 @@ extern int      OptGatherCut;
 
 
 
-extern bool GetCurrentGather( sio_data * curr_sio )
-/*************************************************/
+bool GetCurrentGather( sio_data * curr_sio )
+/******************************************/
 {
     bool    gather_active;
 
@@ -109,8 +109,8 @@ extern void GatherCurrent( sio_data * curr_sio )
 
 
 
-extern void GatherImage( sio_data * curr_sio, bool gather_active )
-/****************************************************************/
+void GatherImage( sio_data * curr_sio, bool gather_active )
+/*********************************************************/
 {
     image_info *    curr_image;
     image_info *    gather_image;
@@ -160,8 +160,8 @@ extern void GatherImage( sio_data * curr_sio, bool gather_active )
 
 
 
-extern void GatherMod( sio_data * curr_sio, bool gather_active )
-/**************************************************************/
+void GatherMod( sio_data * curr_sio, bool gather_active )
+/*******************************************************/
 {
     image_info *    curr_image;
     mod_info *      curr_mod;
@@ -213,8 +213,8 @@ extern void GatherMod( sio_data * curr_sio, bool gather_active )
 
 
 
-extern void GatherFile( sio_data * curr_sio, bool gather_active )
-/***************************************************************/
+void GatherFile( sio_data * curr_sio, bool gather_active )
+/********************************************************/
 {
     mod_info *      curr_mod;
     file_info *     curr_file;
@@ -266,8 +266,8 @@ extern void GatherFile( sio_data * curr_sio, bool gather_active )
 
 
 
-extern void GatherRtn( sio_data * curr_sio, bool gather_active )
-/**************************************************************/
+void GatherRtn( sio_data * curr_sio, bool gather_active )
+/*******************************************************/
 {
     file_info *     curr_file;
     rtn_info *      curr_rtn;

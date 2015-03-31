@@ -57,7 +57,9 @@ static gui_create_info FloatingToolbar = {
     0,
     NULL,
     ToolbarCallBack,
-    NULL
+    NULL,
+    NULL,
+    0
 };
 
 static gui_control_info Button = {
@@ -121,7 +123,7 @@ static bool FixToolbar( gui_window *wnd )
 
 bool ToolbarCallBack( gui_window *wnd, gui_event gui_ev, void *param )
 {
-    unsigned    id;
+    gui_ctl_id  id;
 
     switch( gui_ev ) {
     case GUI_INIT_WINDOW :

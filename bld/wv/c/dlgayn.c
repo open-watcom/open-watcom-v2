@@ -73,6 +73,6 @@ bool DlgAreYouNuts( unsigned long mult )
 
     ayn.as_a_fruitcake = false;
     ayn.mult = mult;
-    ResDlgOpen( &AynEvent, &ayn, DIALOG_AYN );
+    ResDlgOpen( &AynEvent, &ayn, GUI_MAKEINTRESOURCE( DIALOG_AYN ) );
     return( ayn.as_a_fruitcake );
 }

@@ -60,7 +60,7 @@ void GUISetKeyState( void )
 EVENT GUIMapKeys( EVENT ev )
 {
     gui_key_state       key_state;
-    EVENT               key;
+    gui_key             key;
 
     KeyState = GUI_KS_NONE;
     switch( ev ) {

@@ -51,18 +51,18 @@ extern void StretchSetAll(sio_data *curr_sio,bool bar_max);
 extern void SortSetAll(sio_data *curr_sio,int sort_type);
 
 
-bool    OptStretchGlobal = false;
-bool    OptAbsBarGlobal = true;
-bool    OptRelBarGlobal = true;
+bool    OptStretchGlobal   = false;
+bool    OptAbsBarGlobal    = true;
+bool    OptRelBarGlobal    = true;
 bool    OptSortCountGlobal = true;
-bool    OptSortNameGlobal = false;
-bool    OptGatherGlobal = false;
-int     OptGatherCut = 10;
+bool    OptSortNameGlobal  = false;
+bool    OptGatherGlobal    = false;
+int     OptGatherCut       = 10;
 
 STATIC bool     getDlgValues( gui_window * );
 STATIC void     setDlgValues( gui_window * );
 STATIC void     setDlgDefaults( gui_window * );
-STATIC bool     progEvent( gui_window *, gui_event, void * );
+STATIC GUICALLBACK progEvent;
 
 extern sio_data *   CurrSIOData;
 
@@ -99,12 +99,12 @@ STATIC bool getDlgValues( gui_window * gui )
         }
         OptGatherCut = fcut * 10;
     }
-    OptStretchGlobal = GUIIsChecked( gui, CTL_STRETCH );
-    OptAbsBarGlobal = GUIIsChecked( gui, CTL_ABS_BAR );
-    OptRelBarGlobal = GUIIsChecked( gui, CTL_REL_BAR );
-    OptSortCountGlobal = GUIIsChecked( gui, CTL_SORT_COUNT );
-    OptSortNameGlobal = GUIIsChecked( gui, CTL_SORT_NAME );
-    OptGatherGlobal = GUIIsChecked( gui, CTL_GATHER );
+    OptStretchGlobal = ( GUIIsChecked( gui, CTL_STRETCH ) == GUI_CHECKED );
+    OptAbsBarGlobal = ( GUIIsChecked( gui, CTL_ABS_BAR ) == GUI_CHECKED );
+    OptRelBarGlobal = ( GUIIsChecked( gui, CTL_REL_BAR ) == GUI_CHECKED );
+    OptSortCountGlobal = ( GUIIsChecked( gui, CTL_SORT_COUNT ) == GUI_CHECKED );
+    OptSortNameGlobal = ( GUIIsChecked( gui, CTL_SORT_NAME ) == GUI_CHECKED );
+    OptGatherGlobal = ( GUIIsChecked( gui, CTL_GATHER ) == GUI_CHECKED );
     if( CurrSIOData != NULL ) {
         StretchSetAll( CurrSIOData, OptStretchGlobal );
         AbsSetAll( CurrSIOData, OptAbsBarGlobal );
@@ -127,14 +127,13 @@ STATIC void setDlgValues( gui_window * gui )
 {
     char        cut_buff[SMALL_CUT_WIDTH+1];
 
-    GUISetChecked( gui, CTL_STRETCH, OptStretchGlobal );
-    GUISetChecked( gui, CTL_ABS_BAR, OptAbsBarGlobal );
-    GUISetChecked( gui, CTL_REL_BAR, OptRelBarGlobal );
-    GUISetChecked( gui, CTL_SORT_COUNT, OptSortCountGlobal );
-    GUISetChecked( gui, CTL_SORT_NAME, OptSortNameGlobal );
-    GUISetChecked( gui, CTL_GATHER, OptGatherGlobal );
-    sprintf( cut_buff, "%d.%d", OptGatherCut/10,
-             OptGatherCut-(OptGatherCut/10)*10 );
+    GUISetChecked( gui, CTL_STRETCH, ( OptStretchGlobal ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_ABS_BAR, ( OptAbsBarGlobal ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_REL_BAR, ( OptRelBarGlobal ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_SORT_COUNT, ( OptSortCountGlobal ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_SORT_NAME, ( OptSortNameGlobal ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_GATHER, ( OptGatherGlobal ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    sprintf( cut_buff, "%d.%d", OptGatherCut / 10, OptGatherCut - ( OptGatherCut / 10 ) * 10 );
     GUISetText( gui, CTL_GATHER_CUT, cut_buff );
 }
 
@@ -143,13 +142,13 @@ STATIC void setDlgValues( gui_window * gui )
 STATIC void setDlgDefaults( gui_window * gui )
 /********************************************/
 {
-    OptStretchGlobal = false;
-    OptAbsBarGlobal = true;
-    OptRelBarGlobal = true;
+    OptStretchGlobal   = false;
+    OptAbsBarGlobal    = true;
+    OptRelBarGlobal    = true;
     OptSortCountGlobal = true;
-    OptSortNameGlobal = false;
-    OptGatherGlobal = false;
-    OptGatherCut = 1;
+    OptSortNameGlobal  = false;
+    OptGatherGlobal    = false;
+    OptGatherCut       = 1;
     setDlgValues( gui );
 }
 

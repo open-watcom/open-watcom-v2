@@ -308,7 +308,7 @@ bool GUIDisplayHelpWin4( gui_window *wnd, char *file, char *topic )
 #endif
 }
 
-bool GUIDisplayHelpId( gui_window *wnd, char *file, int id )
+bool GUIDisplayHelpId( gui_window *wnd, char *file, gui_ctl_id id )
 {
 #ifdef __OS2_PM__
     wnd = wnd;

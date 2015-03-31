@@ -38,8 +38,9 @@
 #include "guistr.h"
 
 extern  HMENU           GUIHFloatingPopup;
-extern  gui_ctl_id      CurrItem        = NO_SELECT;
 extern  WPI_INST        GUIMainHInst;
+
+static  gui_ctl_id      CurrItem        = NO_SELECT;
 static  bool            InitComplete    = false;
 
 bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,

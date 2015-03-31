@@ -32,6 +32,7 @@
 
 #include "guiwind.h"
 #include "guihook.h"
+#include "guimdi.h"
 
 static  void    (*fCleanupHotSpots)(void)               = NULL;
 static  void    (*fXChangeTitle)( gui_window *)         = NULL;

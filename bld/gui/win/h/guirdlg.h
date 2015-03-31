@@ -35,7 +35,7 @@
 
 gui_control_class GUIGetControlClassFromHWND( HWND cntl );
 gui_control_styles GUIGetControlStylesFromHWND( HWND cntl, gui_control_class class );
-bool GUIDoCreateResDialog( long dlg_id, HWND parent, void *data );
+bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data );
 bool GUIInsertResDialogControls( gui_window *wnd );
 
 #endif

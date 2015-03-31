@@ -209,8 +209,8 @@ STATIC void doConvert( a_window *wnd, pointer _dump_rtn, gui_ctl_id id )
 
 
 
-void WPConvert( a_window * wnd, gui_ctl_id id )
-/*********************************************/
+void WPConvert( a_window *wnd, gui_ctl_id id )
+/********************************************/
 {
     DlgGetConvert( wnd );
     if( ConvertFile == NULL ) return;

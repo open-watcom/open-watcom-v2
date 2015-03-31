@@ -30,7 +30,6 @@
 
 
 #include "bool.h"
-
 #include "guimem.h"
 
 typedef int         gui_ord;
@@ -383,7 +382,7 @@ typedef struct gui_create_info {
     GUICALLBACK         *call_back;
     void                *extra;
     gui_resource        *icon;
-    int                 resource_menu;
+    res_name_or_id      resource_menu;
 } gui_create_info;
 
 typedef enum {
@@ -554,7 +553,7 @@ typedef enum {
  * GUI_CONTROL_NOT_ACTIVE :
  * GUI_CLICKED :
  * GUI_CONTROL_CLICKED
- * GUI_CONTROL_DCLICKED : 1 parameter - unsigned : GUI_GETID
+ * GUI_CONTROL_DCLICKED : 1 parameter - gui_ctl_id : GUI_GETID
  **************************************************************
  * GUI_RESIZE : 1 parameter - gui_coord : GUI_GET_SIZE
  **************************************************************
@@ -588,9 +587,9 @@ typedef struct gui_timer_event {
     gui_timer_id    id;
 } gui_timer_event;
 
-#define GUI_GET_TIMER( param, i ) ( i = ((gui_timer_event *)param)->id )
+#define GUI_GET_TIMER( param, i )   ( i = ((gui_timer_event *)param)->id )
 
-#define GUI_GET_BOOL( param, b )  ( b = *(bool *)param )
+#define GUI_GET_BOOL( param, b )    ( b = *(bool *)param )
 
 #define GUI_GET_ENDSESSION( param, b, l ) {                                 \
                                 b = ((gui_end_session *)param)->endsession; \
@@ -906,8 +905,8 @@ extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls,
 extern bool GUICreateSysModalDialog( gui_create_info *dlg_info,
                                      int num_controls,
                                      gui_control_info *controls_info );
-extern bool GUICreateResDialog( gui_create_info *dlg_info, long dlg_id );
-extern bool GUICreateDialogFromRes( gui_res_id id, gui_window *parent, GUICALLBACK cb, void *extra );
+extern bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
+extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK cb, void *extra );
 extern void GUICloseDialog( gui_window * wnd );
 
 /* Control Functions */
@@ -988,8 +987,8 @@ extern bool GUILoadString( gui_res_id string_id, char *buffer, int buffer_length
 extern bool GUIIsLoadStrInitialized( void );
 
 /* Hooking the F1 key */
-void GUIHookF1( void );
-void GUIUnHookF1( void );
+extern void GUIHookF1( void );
+extern void GUIUnHookF1( void );
 
 /* DBCS functions */
 extern int  GUICharLen( int );
@@ -1000,4 +999,3 @@ extern void GUIHookFileDlg( bool hook );
 
 /* include from the app */
 extern void GUITimer( void );
-

@@ -556,16 +556,14 @@ static bool CreateMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu,
         }
         if( num_menus > num_ignore ) {
             if( style & GUI_SYSTEM_MENU ) {
-                if( !InsertMenu( wnd, &GUISeparator, -1, &wnd->menu, true,
-                                 MENU_HINT ) ) {
+                if( !InsertMenu( wnd, &GUISeparator, -1, &wnd->menu, true, MENU_HINT ) ) {
                     return( false );
                 }
             }
             for( i = 0; i < num_menus; i ++ ) {
                 uiyield();
                 if( !( menu[i].style & GUI_IGNORE ) ) {
-                    if( !InsertMenu( wnd, &menu[i], -1, &wnd->menu, true,
-                                     MENU_HINT ) ) {
+                    if( !InsertMenu( wnd, &menu[i], -1, &wnd->menu, true, MENU_HINT ) ) {
                         return( false );
                     }
                 }
@@ -581,7 +579,7 @@ bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
     gui_menu_struct     *menu;
     bool                ret;
 
-    if( dlg_info->resource_menu ) {
+    if( dlg_info->resource_menu != NULL ) {
         num = 0;
         menu = NULL;
         GUICreateMenuStructFromRes( dlg_info->resource_menu, &menu, &num );
@@ -644,8 +642,7 @@ bool GUIAppendMenuByOffset( gui_window *wnd, int offset, gui_menu_struct *menu )
     return( false );
 }
 
-static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, MENUITEM **pmenu,
-                        int index )
+static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, MENUITEM **pmenu, int index )
 {
     int         prev_num;
     MENUITEM    *new_menu;

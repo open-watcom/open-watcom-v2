@@ -837,25 +837,24 @@ static bool AddMenu( HMENU hmenu, gui_window *wnd, gui_menu_struct *menu,
 {
     unsigned    menu_flags;
     unsigned    attr_flags;
-    unsigned    newitem;
+    gui_ctl_id  newitem;
     HMENU       submenu;
 
     submenu = (HMENU)NULL;
-    newitem = (unsigned) menu->id;
+    newitem = menu->id;
     if( hmenu == NULLHANDLE ) {
         return( false );
     }
     if( menu->num_child_menus == 0 ) {
         GUICreateMenuFlags( menu->style, &menu_flags, &attr_flags );
     } else {
-        submenu = GUICreateSubMenu( wnd, menu->num_child_menus, menu->child,
-                                    type );
+        submenu = GUICreateSubMenu( wnd, menu->num_child_menus, menu->child, type );
         if( submenu == NULLHANDLE ) {
             return( false );
         } else {
             GUICreateMenuFlags( menu->style, &menu_flags, &attr_flags );
             menu_flags |= MF_POPUP;
-            InsertPopup( wnd, menu->id, submenu, type );
+            InsertPopup( wnd, newitem, submenu, type );
         }
     }
     if( insert ) {

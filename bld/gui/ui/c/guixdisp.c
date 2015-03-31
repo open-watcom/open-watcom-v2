@@ -161,7 +161,7 @@ static void InitMessageControls( void )
 bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_message_return *ret;
-    unsigned            id;
+    gui_ctl_id          id;
 
     ret = GUIGetExtra( gui );
     switch( gui_ev ) {
@@ -175,7 +175,7 @@ bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
         case GUI_RET_OK :
         case GUI_RET_RETRY :
         case GUI_RET_YES :
-            *ret = id;
+            *ret = (gui_message_return)id;
             GUICloseDialog( gui );
             return( true );
             break;

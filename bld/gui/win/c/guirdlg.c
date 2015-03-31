@@ -200,12 +200,7 @@ bool GUIInsertResDialogControls( gui_window *wnd )
     return( true );
 }
 
-#ifdef __OS2_PM__
-#define DLG_RESOURCE(a) (a)
-#else
-#define DLG_RESOURCE(a) MAKEINTRESOURCE(a)
-#endif
-bool GUIDoCreateResDialog( long dlg_id, HWND parent, void *data )
+bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data )
 {
     WPI_PROC    fp;
 
@@ -213,7 +208,7 @@ bool GUIDoCreateResDialog( long dlg_id, HWND parent, void *data )
     if( !fp ) {
         return( false );
     }
-    if( _wpi_dialogbox( parent, (WPI_DLGPROC)fp, GUIResHInst, DLG_RESOURCE(dlg_id), data ) == -1 ) {
+    if( _wpi_dialogbox( parent, (WPI_DLGPROC)fp, GUIResHInst, dlg_id, data ) == -1 ) {
         _wpi_freeprocinstance( fp );
         return( false );
     }
@@ -222,9 +217,9 @@ bool GUIDoCreateResDialog( long dlg_id, HWND parent, void *data )
     return( true );
 }
 
-bool GUICreateDialogFromRes( gui_res_id id, gui_window *parent, GUICALLBACK cb, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK cb, void *extra )
 {
-    id=id;
+    dlg_id=dlg_id;
     parent=parent;
     cb=cb;
     extra=extra;

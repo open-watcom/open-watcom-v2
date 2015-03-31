@@ -342,7 +342,7 @@ typedef struct {
 } gui_key_state;
 
 typedef struct {
-    unsigned            id;
+    gui_ctl_id          id;
     gui_key_state       key_state;
 } gui_key_control;
 

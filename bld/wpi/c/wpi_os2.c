@@ -321,8 +321,8 @@ void _wpi_deletepres( WPI_PRES pres, HDC hdc )
     DevCloseDC( hdc );
 } /* _wpi_deletepres */
 
-int _wpi_dialogbox( HWND parent, WPI_DLGPROC proc, WPI_INST inst, int res_id, void *data )
-/****************************************************************************************/
+int _wpi_dialogbox( HWND parent, WPI_DLGPROC proc, WPI_INST inst, LPCSTR res_id, void *data )
+/*******************************************************************************************/
 {
     HWND                new_dlg;
     int                 ret;

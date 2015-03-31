@@ -117,8 +117,8 @@ STATIC int AboutNumRows( a_window * wnd )
 
 
 
-STATIC bool aboutGetLine( a_window * wnd, wnd_row row, int piece,
-                                      wnd_line_piece * line )
+STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece,
+                                       wnd_line_piece *line )
 /***********************************************************/
 {
 //    gui_coord           size;
@@ -129,7 +129,8 @@ STATIC bool aboutGetLine( a_window * wnd, wnd_row row, int piece,
     if( row >= AboutSize ) {
 /* the following code fragment was ripped from the debugger */
 /* Something like this can be done for the splash page?? */
-//        if( row > AboutSize || !GUIIsGUI() ) return( false );
+//        if( row > AboutSize || !GUIIsGUI() )
+//            return( false );
 //    WndSetGadgetLine( wnd, line, GADGET_SPLASH, MaxGadgetLength );
 //        WndGetGadgetSize( GADGET_SPLASH, &size );
 //        line->indent = ( WndWidth( wnd ) - size.x ) / 2;
@@ -143,8 +144,8 @@ STATIC bool aboutGetLine( a_window * wnd, wnd_row row, int piece,
 
 
 
-STATIC bool aboutEventProc( a_window * wnd, gui_event gui_ev, void * parm )
-/*************************************************************************/
+STATIC bool aboutEventProc( a_window *wnd, gui_event gui_ev, void *parm )
+/***********************************************************************/
 {
     wnd=wnd;
     parm=parm;

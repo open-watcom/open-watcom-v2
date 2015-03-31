@@ -526,7 +526,7 @@ extern HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x,
 
 extern void _wpi_enddialog( HWND hwnd, ULONG result );
 extern int _wpi_dialogbox( HWND parent, WPI_PROC proc, WPI_INST inst,
-                                                    int res_id, void *data );
+                                                    LPCSTR res_id, void *data );
 extern void _wpi_stretchblt( WPI_PRES dest, int x_dest, int y_dest,
         int cx_dest, int cy_dest, WPI_PRES src, int x_src, int y_src, int cx_src,
         int cy_src, LONG rop );

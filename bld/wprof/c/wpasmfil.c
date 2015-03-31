@@ -54,7 +54,7 @@ extern file_handle ExeOpen(char *name);
 extern void ExeClose(file_handle fh);
 extern void SetExeOffset( address );
 extern void SetExeImage(image_info *image);
-extern bool SetExeFile(file_handle fh,bool overlay);
+extern bool SetExeFile(file_handle fh, bool overlay);
 extern void SetNumBytes(uint_16 num);
 extern void CodeAdvance( address * );
 extern void GetFullInstruct( address, char *buffer,int max);
@@ -87,8 +87,8 @@ extern wp_asmline * WPGetAsmLoc( wp_asmfile * wpasm_file, int row,
 
 
 
-extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
-/***************************************************************************/
+wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
+/*******************************************************************/
 {
     wp_asmfile *        wpasm_file;
     cue_handle *        ch;

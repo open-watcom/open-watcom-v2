@@ -51,7 +51,7 @@ static gui_control_info Controls[] = {
 
 bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
-    unsigned            id;
+    gui_ctl_id          id;
     dlg_pick            *dlg;
 
     dlg = (dlg_pick*)GUIGetExtra( gui );

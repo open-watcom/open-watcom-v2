@@ -169,7 +169,7 @@ static bool GetIndexOfField( a_dialog *ui_dlg_info, VFIELD *field, int num_contr
     return( false );
 }
 
-unsigned GUIGetControlId( gui_window *wnd, VFIELD *field )
+gui_ctl_id GUIGetControlId( gui_window *wnd, VFIELD *field )
 {
     gui_control *control;
     int         index;
@@ -800,7 +800,7 @@ EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd 
 
 bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                        int num_controls, gui_control_info *controls_info,
-                       bool sys, long dlg_id )
+                       bool sys, res_name_or_id dlg_id )
 {
     EVENT       ev;
     int         i;
@@ -812,7 +812,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     bool        colours_set;
     bool        ok;
 
-    if( dlg_id != -1 ) {
+    if( dlg_id != NULL ) {
         if( !GUICreateDialogFromRes( dlg_id, dlg_info->parent,
                                      dlg_info->call_back, dlg_info->extra ) ) {
             return( false );

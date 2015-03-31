@@ -351,7 +351,7 @@ bool DlgBreak( address addr )
     }
     dlg.tmpbp = *bp;
     CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
-    ResDlgOpen( &BrkEvent, &dlg, DIALOG_BREAK );
+    ResDlgOpen( &BrkEvent, &dlg, GUI_MAKEINTRESOURCE( DIALOG_BREAK ) );
     SetRecord( true );
     return( !dlg.cancel );
 }

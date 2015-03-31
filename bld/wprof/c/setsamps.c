@@ -297,8 +297,8 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
 
 
 
-extern int AddrCmp( address *addr1, address *addr2 )
-/**************************************************/
+int AddrCmp( address *addr1, address *addr2 )
+/*******************************************/
 {
     if( addr1->sect_id > addr2->sect_id ) return( +1 );
     if( addr1->sect_id < addr2->sect_id ) return( -1 );
@@ -322,8 +322,8 @@ STATIC int rawSampCmp( const void *_d1, const void *_d2 )
 
 
 
-extern void GatherSetAll( sio_data * curr_sio, bool gather_active )
-/*****************************************************************/
+void GatherSetAll( sio_data * curr_sio, bool gather_active )
+/**********************************************************/
 {
     image_info          *curr_image;
     mod_info            *curr_mod;
@@ -353,8 +353,8 @@ extern void GatherSetAll( sio_data * curr_sio, bool gather_active )
 
 
 
-extern void AbsSetAll( sio_data *curr_sio, bool abs_bar )
-/*******************************************************/
+void AbsSetAll( sio_data *curr_sio, bool abs_bar )
+/************************************************/
 {
     image_info          *curr_image;
     mod_info            *curr_mod;
@@ -393,8 +393,8 @@ extern void AbsSetAll( sio_data *curr_sio, bool abs_bar )
 
 
 
-extern void RelSetAll( sio_data *curr_sio, bool rel_bar )
-/*******************************************************/
+void RelSetAll( sio_data *curr_sio, bool rel_bar )
+/************************************************/
 {
     image_info          *curr_image;
     mod_info            *curr_mod;
@@ -433,8 +433,8 @@ extern void RelSetAll( sio_data *curr_sio, bool rel_bar )
 
 
 
-extern void StretchSetAll( sio_data *curr_sio, bool bar_max )
-/***********************************************************/
+void StretchSetAll( sio_data *curr_sio, bool bar_max )
+/****************************************************/
 {
     image_info          *curr_image;
     mod_info            *curr_mod;
@@ -473,8 +473,8 @@ extern void StretchSetAll( sio_data *curr_sio, bool bar_max )
 
 
 
-extern void SortSetAll( sio_data *curr_sio, int sort_type )
-/*********************************************************/
+void SortSetAll( sio_data *curr_sio, int sort_type )
+/**************************************************/
 {
     image_info          *curr_image;
     mod_info            *curr_mod;
@@ -838,8 +838,8 @@ STATIC void calcAggregates( void )
 
 
 
-extern void SetSampleInfo( sio_data *curr_sio )
-/*********************************************/
+void SetSampleInfo( sio_data *curr_sio )
+/**************************************/
 {
     void            *cursor_type;
 

@@ -364,7 +364,7 @@ static void ProcessInitPopupEvent( void )
 
     if( uigetcurrentmenu ( &menu ) ) {
         id = EV2ID( menu.event );
-        if ( id != 0 ) {
+        if( id != 0 ) {
             GUIEVENTWND( GUICurrWnd, GUI_INITMENUPOPUP, &id );
         }
     }
@@ -572,7 +572,7 @@ bool GUIProcessEvent( EVENT ev )
     gui_window  *wnd;
     int         prev;
     int         diff;
-    unsigned    id;
+    gui_ctl_id  id;
     gui_window  *menu_window;
     bool        new_curr_wnd;
     VSCREEN     *screen;

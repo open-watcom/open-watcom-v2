@@ -783,12 +783,12 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
     //_wpi_updatewindow( hwnd );
 }
 
-static void ProcessMenu( gui_window *wnd, WORD param )
+static void ProcessMenu( gui_window *wnd, gui_ctl_id id )
 {
-    if( param < GUI_LAST_MENU_ID ) {
-        GUIEVENTWND( wnd, GUI_CLICKED, &param );
+    if( id < GUI_LAST_MENU_ID ) {
+        GUIEVENTWND( wnd, GUI_CLICKED, &id );
     } else {
-        switch( param ) {
+        switch( id ) {
         case GUI_CHANGE_FONT :
             GUIChangeFont( wnd );
             break;
@@ -844,7 +844,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 {
     gui_window          *wnd;
     gui_window          *root;
-    WORD                param;
+    gui_ctl_id          id;
     WPI_POINT           currentpoint;
     gui_coord           point;
     gui_coord           size;
@@ -858,7 +858,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
     gui_create_info     *dlg_info;
     bool                use_defproc;
-    unsigned            control_id;
+    gui_ctl_id          control_id;
     HWND                win;
 #ifndef __OS2_PM__
     gui_key_state       key_state;
@@ -1066,7 +1066,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         }
         break;
 #ifndef __OS2_PM__
-    case WM_ACTIVATEAPP : {
+    case WM_ACTIVATEAPP: {
             bool activate = ( wparam != 0 );
             root = GUIGetRootWindow();
             ActivateNC( root, activate );
@@ -1149,7 +1149,6 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         if( !GUIParentHasFlags( wnd, IS_MINIMIZED ) ) {
             GUIEVENTWND( wnd, GUI_MOVE, NULL );
         }
-        use_defproc = true;
         break;
     case WM_SIZE:
         use_defproc = true;
@@ -1245,19 +1244,19 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDBLCLK, true );
         break;
     case WM_SYSCOMMAND:
-        param = _wpi_getid( wparam );
-        switch( param ) {
+        id = _wpi_getid( wparam );
+        switch( id ) {
             case SC_NEXTWINDOW :
                 if( GUIMDI ) {
                     NextWndToFront( hwnd );
                     return( 0L );
                 }
             default :
-                if( ( param & 0xf000 ) == ( SC_NEXTWINDOW & 0xf000 ) ) {
+                if( ( id & 0xf000 ) == ( SC_NEXTWINDOW & 0xf000 ) ) {
                     /* top value same for all SC_* values */
                     return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
                 } else {
-                    ProcessMenu( wnd, param );
+                    ProcessMenu( wnd, id );
                 }
                 break;
         }

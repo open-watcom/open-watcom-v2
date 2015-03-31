@@ -314,7 +314,7 @@ extern int              DlgPickWithRtn2( const char *title, const void *data_han
 extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
 extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
 extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
-extern void             ResDlgOpen( GUICALLBACK *, void *, int );
+extern void             ResDlgOpen( GUICALLBACK *, void *, res_name_or_id dlg_id );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path,
                                        unsigned len, unsigned long flags );
@@ -370,10 +370,10 @@ extern void             WndCurrToGUIPoint( a_window *wnd, gui_point *point );
 extern WNDCREATE        WndCreate;
 extern void             WndInitCreateStruct( wnd_create_struct * );
 extern a_window         *WndCreateWithStruct( wnd_create_struct * );
-extern a_window         *WndCreateWithStructAndMenuRes( wnd_create_struct *, int );
+extern a_window         *WndCreateWithStructAndMenuRes( wnd_create_struct *, res_name_or_id menu_id );
 extern void             WndShrinkToMouse( a_window *wnd, wnd_metrics * );
 extern bool             WndInit( char *title );
-extern bool             WndInitWithMenuRes( char *title, int );
+extern bool             WndInitWithMenuRes( char *title, res_name_or_id menu_id );
 extern bool             WndFini( void );
 extern bool             WndMainMenuProc( a_window *, gui_ctl_id id );
 extern void             WndSetSrchItem( a_window *wnd, const char *expr );
@@ -476,7 +476,7 @@ extern void             WndMenuEnable( a_window *wnd, gui_ctl_id id, bool enable
 extern void             WndMenuCheck( a_window *wnd, gui_ctl_id id, bool check );
 extern void             WndCheckMainMenu( gui_ctl_id id, bool check );
 extern void             WndEnableMainMenu( gui_ctl_id id, bool enable );
-//extern void           WndSetHintText( a_window *wnd, int id, char *text );
+//extern void           WndSetHintText( a_window *wnd, gui_ctl_id id, char *text );
 
 extern  void            WndPieceDirty( a_window *wnd, wnd_row row, int piece );
 extern void             WndRowDirty( a_window *wnd, wnd_row row );

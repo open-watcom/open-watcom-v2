@@ -76,11 +76,12 @@ static void MapLocation( gui_window *wnd, gui_point *point )
 void GUIProcessMenuCurr( MENUITEM *menu )
 {
     gui_window          *top_wnd;
-    int                 id;
+    gui_ctl_id          id;
     gui_window          *menu_wnd;
     gui_menu_styles     style;
     hint_type           type;
 
+    id = 0;
     if( ( menu == NULL ) || ( menu->event == EV_NO_EVENT ) ) {
         style = GUI_IGNORE;
     } else {

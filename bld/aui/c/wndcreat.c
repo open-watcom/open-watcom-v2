@@ -159,15 +159,15 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
     return( wnd );
 }
 
-extern a_window *WndCreateWithStruct( wnd_create_struct *info )
+a_window *WndCreateWithStruct( wnd_create_struct *info )
 {
     gui_create_info init;
     memset( &init, 0, sizeof( init ) );
     return( WndCreateWithStructBody( info, &init ) );
 }
 
-extern a_window *WndCreateWithStructAndMenuRes( wnd_create_struct *info,
-                                                int resource_menu )
+a_window *WndCreateWithStructAndMenuRes( wnd_create_struct *info,
+                                   res_name_or_id resource_menu )
 {
     gui_create_info init;
     memset( &init, 0, sizeof( init ) );

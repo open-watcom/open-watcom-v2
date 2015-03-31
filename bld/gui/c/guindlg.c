@@ -64,7 +64,9 @@ static gui_create_info DlgControl = {
     NULL,
 #endif
     NULL,
-    NULL
+    NULL,
+    NULL,
+    0
 };
 
 static bool DlgModal = false;

@@ -220,7 +220,7 @@ a_window *W4Open( void )
     a_window    *wnd;
 
     wnd = WndCreate( "", &W4Info, 0, NULL );
-    if( wnd )
+    if( wnd != NULL )
         WndSetKey( wnd, 1 );
     return( wnd );
 }
