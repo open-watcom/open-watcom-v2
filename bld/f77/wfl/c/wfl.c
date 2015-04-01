@@ -696,8 +696,8 @@ static int tool_exec( tool_type utl, char *target, char **options )
     }
     fflush( NULL );
 
-    rc = (int)_spawnvp( P_WAIT, tools[utl].path, (char const *const *)pass_argv );
-    
+    rc = (int)spawnvp( P_WAIT, tools[utl].path, (char const *const *)pass_argv );
+
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
             if( utl == TYPE_LINK ) {
