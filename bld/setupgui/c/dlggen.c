@@ -224,7 +224,7 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *curr_dialog, bool
     gui_ctl_id          id;
 
     drive_checked = false;
-    for( i = 0; (var_handle = curr_dialog->pVariable[i]) != NO_VAR; i++ ) {
+    for( i = 0; (var_handle = curr_dialog->pVariables[i]) != NO_VAR; i++ ) {
         id = VarGetId( var_handle );
         switch( ControlClass( id, curr_dialog ) ) {
         case GUI_STATIC:
