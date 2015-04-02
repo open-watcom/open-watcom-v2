@@ -364,7 +364,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     gui_ctl_id          focus_id;
     gui_ctl_id          new_focus_id;
     bool                enabled;
-    bool                control_on_new_line[MAX_VARS];
+    bool                *control_on_new_line;
     bool                visible_checked_radiobutton;
     vhandle             var_handle;
     gui_control_class   control_class;
@@ -412,11 +412,12 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     memcpy( &rect, &curr_dialog->original_rect, sizeof( gui_rect ) );
     last_height = rect.height + curr_dialog->height_change;
 
-    control_on_new_line[0] = true;
-
     GUIGetFocus( gui, &focus_id );
 
+    control_on_new_line = GUIMemAlloc( sizeof( bool ) * curr_dialog->num_controls );
+
     // Figure out which controls are on a separate line from the last control
+    control_on_new_line[0] = true;
     for( i = 1; i < curr_dialog->num_controls; i++ ) {
         control_on_new_line[i] = ( curr_dialog->controls[i].rect.y > curr_dialog->controls[i - 1].rect.y );
     }
@@ -497,6 +498,8 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
             }
         }
     }
+
+    GUIMemFree( control_on_new_line );
 
     // SetVariableByName( "_Visibility_Condition_", "0" );
     VisibilityCondition = 0;
