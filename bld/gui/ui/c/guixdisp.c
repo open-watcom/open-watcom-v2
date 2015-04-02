@@ -268,8 +268,11 @@ static bool getNumStringControls( int *num_controls, const char *old_message, st
                 message = tmp_n + 1;        /* skip over newline */
             }
         } else {                            /* search back for space */
-            for(end_char = message + max_width; ( message < end_char ) && ( *end_char != ' ' ); --end_char )
-                ;
+            for( end_char = message + max_width; end_char > message ; --end_char ) {
+                if( *end_char == ' ' ) {
+                    break;
+                }
+            }
             if( end_char == message ) {
                 start   = message;          /* no spaces found */
                 len     = max_width;
@@ -344,8 +347,7 @@ int AdjustVert( int *cols, control_types controls_to_use,
     i = num_string_controls;
     num_buttons = 0;
     for( j = 0; j < NUM_CONTROL_TYPES; j++ ) {
-        if( ( i < num_controls ) &&
-            ( controls_to_use & MessageControls[j].type ) ) {
+        if( ( i < num_controls ) && ( controls_to_use & MessageControls[j].type ) ) {
             memcpy( &controls_info[i], &MessageControls[j].ctl_info, sizeof( gui_control_info ) );
             switch( controls_info[i].control_class ) {
             case GUI_PUSH_BUTTON :

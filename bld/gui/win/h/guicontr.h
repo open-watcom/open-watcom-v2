@@ -33,11 +33,7 @@
 #ifndef _GUICONTR_H_
 #define _GUICONTR_H_
 
-#if defined( __GNUC__ )
-struct control_item {
-#else
 typedef struct control_item {
-#endif
     bool                checked;
     gui_ctl_id          id;
     gui_control_class   control_class;
@@ -46,7 +42,7 @@ typedef struct control_item {
     const char          *text;
     gui_control_styles  style;
     struct control_item *next;
-};
+} control_item;
 
 typedef struct {
     char                *classname;
