@@ -59,7 +59,7 @@ static gui_create_info FloatingToolbar = {
     ToolbarCallBack,
     NULL,
     NULL,
-    0
+    NULL                                // Menu Resource
 };
 
 static gui_control_info Button = {

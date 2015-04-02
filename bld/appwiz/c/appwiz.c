@@ -138,7 +138,7 @@ extern void GUImain( void )
         &NewProjCallback,
         NULL,
         NULL,
-        0
+        NULL                                // Menu Resource
     };
     
     gui_rect                rect;

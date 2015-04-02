@@ -60,7 +60,7 @@ static gui_create_info DialogWnd = {
     &GetNewFunction,
     NULL,
     NULL,
-    0
+    NULL                                // Menu Resource
 };
 
 static gui_rect Rect;
@@ -92,7 +92,7 @@ static gui_create_info StatusWnd = {
     &StatusFunction,
     NULL,
     NULL,
-    0
+    NULL                                // Menu Resource
 };
 
 enum {

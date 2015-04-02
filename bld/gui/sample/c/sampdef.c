@@ -315,7 +315,7 @@ gui_create_info Parent = {
     &MainEventWnd,
     NULL,
     &MainIcon,
-    0
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child1 = {
@@ -336,7 +336,7 @@ gui_create_info Child1 = {
     &Child1EventWnd,
     &Child1_Out,
     &Win1Icon,
-    0
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child2 = {
@@ -362,7 +362,7 @@ gui_create_info Child2 = {
     &ChildEventWnd,
     &Child2_Out,
     &Win2Icon,
-    0
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child3 = {
@@ -382,7 +382,7 @@ gui_create_info Child3 = {
     Child3EventWnd,
     NULL,
     &Win3Icon,
-    0
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child4 = {
@@ -398,7 +398,7 @@ gui_create_info Child4 = {
     &Child1EventWnd,
     &Child1_Out,
     &Win1Icon,
-    0
+    NULL                                // Menu Resource
 };
 
 gui_control_info ComboBoxControl = {
@@ -469,7 +469,7 @@ gui_create_info DialogWndControl = {
     &ControlEventWnd,
     NULL,
     &DlgIcon,
-    0
+    NULL                                // Menu Resource
 };
 
 gui_control_info okbutton =

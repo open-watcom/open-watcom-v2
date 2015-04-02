@@ -54,7 +54,7 @@ static gui_create_info Parent = {
     &MainEventWnd,
     NULL,
     NULL,
-    0
+    NULL                                // Menu Resource
 };
 
 static gui_create_info Child = {
@@ -69,7 +69,7 @@ static gui_create_info Child = {
     &MainEventWnd,
     NULL,
     NULL,
-    0
+    NULL                                // Menu Resource
 };
 
 void GUImain( void )

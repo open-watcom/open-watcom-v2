@@ -111,7 +111,8 @@ static gui_create_info StatusInfo = {
     StatusColours,                      // Array of color attributes
     &StatusEventProc,                   // Callback function
     NULL,                               // Extra
-    NULL                                // Icon
+    NULL,                               // Icon
+    NULL                                // Menu Resource
 };
 
 static gui_control_info Cancel = {

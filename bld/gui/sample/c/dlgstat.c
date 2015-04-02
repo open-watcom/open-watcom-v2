@@ -58,7 +58,7 @@ gui_create_info DlgWin = {
     &Child1EventWnd,
     &Child1_Out,
     &DlgWinIcon,
-    0
+    NULL                                // Menu Resource
 };
 
 gui_control_info Controls[] = {
@@ -168,7 +168,7 @@ static gui_create_info DialogControl = {
     &StaticDialogEventWnd,              // Callback function
     NULL,                               // Extra
     NULL,                               // Icon
-    0
+    NULL                                // Menu Resource
 };
 
 static const char *ListBoxFunc( const void *data_handle, int item )

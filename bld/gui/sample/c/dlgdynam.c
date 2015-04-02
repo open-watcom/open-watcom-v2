@@ -51,7 +51,7 @@ static gui_create_info DialogControl = {
     &DynamicDialogEventWnd,             // Callback function
     NULL,                               // Extra
     NULL,                               // Icon
-    0
+    NULL                                // Menu Resource
 };
 
 static const char *ListBoxFunc( const void *data_handle, int item )

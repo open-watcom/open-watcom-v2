@@ -50,7 +50,7 @@ static gui_create_info DialogControl = {
     &TestDialogEventWnd,                // Callback function
     NULL,                               // Extra
     NULL,                               // Icon
-    0
+    NULL                                // Menu Resource
 };
 
 /*
@@ -228,7 +228,7 @@ static gui_create_info ResDialog = {
     &DummyEventWnd,                     // Callback function
     NULL,                               // Extra
     NULL,                               // Icon
-    0
+    NULL                                // Menu Resource
 };
 
 void ResDialogCreate( gui_window *parent )

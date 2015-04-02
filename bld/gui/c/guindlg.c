@@ -66,7 +66,7 @@ static gui_create_info DlgControl = {
     NULL,
     NULL,
     NULL,
-    0
+    NULL                                // Menu Resource
 };
 
 static bool DlgModal = false;

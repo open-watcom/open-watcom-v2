@@ -93,7 +93,8 @@ static gui_create_info ResDialog = {
     NULL,                               // Array of color attributes
     DlgEventProc,                       // Callback function
     NULL,                               // Extra
-    NULL                                // Icon
+    NULL,                               // Icon
+    NULL                                // Menu Resource
 };
 
 void ResDlgOpen( GUICALLBACK *rtn, void *extra, res_name_or_id dlg_id )
