@@ -47,7 +47,7 @@
 WObjectMap      WWindow::_idMap;
 WObjectMap      WWindow::_toolBarIdMap;
 WObjectMap      WWindow::_popupIdMap;
-gui_ctl_id      WWindow::_idMaster = 1;
+WControlId      WWindow::_idMaster = 1;
 
 /***************************************************************************/
 
@@ -76,7 +76,7 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
 {
     gui_point           point;
     gui_coord           size;
-    gui_ctl_id          id;
+    WControlId          id;
     int                 scroll_position;
 
     switch( msg ) {
@@ -293,7 +293,7 @@ extern "C" void EnumChildProc( gui_window *hwin, void * ) {
 }
 
 
-extern "C" void EnumControlProc( gui_window *hwin, gui_ctl_id id, void * ) {
+extern "C" void EnumControlProc( gui_window *hwin, WControlId id, void * ) {
 /**************************************************************************/
 
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
@@ -1047,7 +1047,7 @@ bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState ) {
     return( false );
 }
 
-WControl * WWindow::getControl( gui_ctl_id id ) {
+WControl * WWindow::getControl( WControlId id ) {
 /***********************************************/
 
     return( (WControl *)_idMap.findThis( (WHANDLE)(pointer_int)id ) );

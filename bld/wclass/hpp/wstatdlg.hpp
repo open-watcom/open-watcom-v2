@@ -35,30 +35,28 @@
 
 #include "wdialog.hpp"
 
-typedef res_name_or_id WDialogId;
-
 WCLASS WStatDialog : public WDialog {
     public:
-        WStatDialog( WWindow * parent, WDialogId dialog_name );
-        WStatDialog( WWindow * parent, int dialog_id );
+        WStatDialog( WWindow * parent, WResourceNameOrId dialog_name );
+        WStatDialog( WWindow * parent, WResourceId dialog_id );
 
         void addControl( WControl * control );
 
-        virtual WControl * WEXPORT getControl( gui_ctl_id id );
+        virtual WControl * WEXPORT getControl( WControlId id );
 
-        void WEXPORT getCtrlText( gui_ctl_id id, WString & str );
-        void WEXPORT getCtrlText( gui_ctl_id id, char* buff, size_t len );
-        size_t WEXPORT getCtrlTextLength( gui_ctl_id id );
-        void WEXPORT setCtrlText( gui_ctl_id id, const char *text );
-        void WEXPORT getCtrlRect( gui_ctl_id id, WRect & r );
-        bool WEXPORT isCtrlEnabled( gui_ctl_id id );
-        void WEXPORT enableCtrl( gui_ctl_id id, bool state );
+        void WEXPORT getCtrlText( WControlId id, WString & str );
+        void WEXPORT getCtrlText( WControlId id, char* buff, size_t len );
+        size_t WEXPORT getCtrlTextLength( WControlId id );
+        void WEXPORT setCtrlText( WControlId id, const char *text );
+        void WEXPORT getCtrlRect( WControlId id, WRect & r );
+        bool WEXPORT isCtrlEnabled( WControlId id );
+        void WEXPORT enableCtrl( WControlId id, bool state );
 
         virtual void doDialog( WWindow *parent );   // override WDialog
 
     private:
-        WDialogId   _dialog_id;             // resource id of the dialog
-        WVList      _controls;              // registered controls
+        WResourceNameOrId   _dialog_id;     // resource name or id of the dialog
+        WVList              _controls;      // registered controls
 };
 
 #endif // wstatdialog_class

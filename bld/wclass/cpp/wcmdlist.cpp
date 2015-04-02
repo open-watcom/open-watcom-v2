@@ -41,7 +41,7 @@ WCommandList::WCommandList( WWindow* parent, const WRect& r,
 
 }
 
-WCommandList::WCommandList( WStatDialog* parent, gui_ctl_id id )
+WCommandList::WCommandList( WStatDialog* parent, WControlId id )
         : WEditComboBox( parent, id ) {
 /*********************************************/
 

@@ -44,7 +44,7 @@ WCLASS WListBox : public WControl {
     public:
         WEXPORT WListBox( WWindow* parent, const WRect& r,
                           WStyle wstyle=LStyleDefault );
-        WEXPORT WListBox( WStatDialog* parent, gui_ctl_id id,
+        WEXPORT WListBox( WStatDialog* parent, WControlId id,
                           WStyle wstyle=LStyleDefault );
         WEXPORT ~WListBox();
         bool WEXPORT gettingFocus( WWindow* );

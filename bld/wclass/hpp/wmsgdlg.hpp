@@ -72,8 +72,8 @@ WCLASS WMessageDialog : public WDialog {
                                 MsgButtons button, const char *text,
                                 const char *caption = NULL );
         static MsgRetType WEXPORT messager( WWindow* parent, MsgLevel level,
-                                MsgButtons button, gui_res_id text_id,
-                                gui_res_id caption_id );
+                                MsgButtons button, WResourceId text_id,
+                                WResourceId caption_id );
         static void WEXPORT info( WWindow* parent, const char *text, ... );
     private:
         static MsgRetType domessage( WWindow* parent, const char *text,

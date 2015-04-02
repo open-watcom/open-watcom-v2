@@ -62,8 +62,8 @@ WCLASS WMenuObject : public WObject {
         void setCheck( bool check ) { _checked = check; }
         unsigned checked() { return( _checked ); }
 
-        void setMenuId( gui_ctl_id id ) { _id = id; }
-        gui_ctl_id menuId() { return( _id ); }
+        void setMenuId( WControlId id ) { _id = id; }
+        WControlId menuId() { return( _id ); }
 
         void setText( const char *text ) { _text = text; }
         const char *text() { return( _text ); }
@@ -72,7 +72,7 @@ WCLASS WMenuObject : public WObject {
         WWindow *owner( void ) { return( _owner ); }
 
     private:
-        gui_ctl_id      _id;
+        WControlId      _id;
         WWindow         *_owner;
         bool            _enabled;
         bool            _checked;

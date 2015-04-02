@@ -44,7 +44,7 @@ WCLASS WEdit : public WControl {
                        gui_control_class control,
                        const WRect& r,
                        const char *text, WStyle wstyle );
-        WEXPORT WEdit( WStatDialog *parent, gui_ctl_id id, WStyle wstyle );
+        WEXPORT WEdit( WStatDialog *parent, WControlId id, WStyle wstyle );
         WEXPORT ~WEdit();
         void WEXPORT select( int first=0, int last=32767 );
         int WEXPORT getSelectBounds( int *first, int *last );
@@ -58,7 +58,7 @@ WCLASS WEditBox : public WEdit {
         WEXPORT WEditBox( WWindow *parent, const WRect& r,
                           const char *text=NULL,
                           WStyle wstyle=EStyleDefault );
-        WEXPORT WEditBox( WStatDialog *parent, gui_ctl_id id,
+        WEXPORT WEditBox( WStatDialog *parent, WControlId id,
                           WStyle wstyle=EStyleDefault );
         WEXPORT ~WEditBox();
 
@@ -71,7 +71,7 @@ WCLASS WMultiLineEditBox : public WEdit {
         WEXPORT WMultiLineEditBox( WWindow *parent, const WRect& r,
                                    const char *text=NULL,
                                    WStyle wstyle=EStyleDefault );
-        WEXPORT WMultiLineEditBox( WStatDialog *parent, gui_ctl_id id,
+        WEXPORT WMultiLineEditBox( WStatDialog *parent, WControlId id,
                                    WStyle wstyle=EStyleDefault );
         WEXPORT ~WMultiLineEditBox();
 

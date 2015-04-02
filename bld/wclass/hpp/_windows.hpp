@@ -40,6 +40,12 @@ extern "C" {
         #include <gui.h>
         #include <guikey.h>
 }
+
+typedef res_name_or_id  WResourceNameOrId;
+typedef gui_res_id      WResourceId;
+
+typedef gui_ctl_id      WControlId;
+
 /*
 #if defined( __NT__ )
  #if defined( __AXP__ )

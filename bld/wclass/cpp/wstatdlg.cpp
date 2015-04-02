@@ -33,14 +33,14 @@
 #include "wstatdlg.hpp"
 #include "wcontrol.hpp"
 
-WEXPORT WStatDialog::WStatDialog( WWindow * prt, WDialogId dialog_name )
+WEXPORT WStatDialog::WStatDialog( WWindow * prt, WResourceNameOrId dialog_name )
     : WDialog( prt ), _dialog_id( dialog_name ) {
 /*********************************************/
 
 }
 
 
-WEXPORT WStatDialog::WStatDialog( WWindow * prt, int dialog_id )
+WEXPORT WStatDialog::WStatDialog( WWindow * prt, WResourceId dialog_id )
     : WDialog( prt ), _dialog_id( GUI_MAKEINTRESOURCE( dialog_id ) ) {
 /*********************************************/
 
@@ -53,7 +53,7 @@ void WStatDialog::addControl( WControl *control ) {
     _controls.add( control );
 }
 
-WControl * WEXPORT WStatDialog::getControl( gui_ctl_id id ) {
+WControl * WEXPORT WStatDialog::getControl( WControlId id ) {
 /***********************************************************/
 
     int         i;
@@ -103,7 +103,7 @@ void WStatDialog::doDialog( WWindow *parent ) {
     GUICreateResDialog( &create_info, _dialog_id );
 }
 
-void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id, WString & str ) {
+void WEXPORT WStatDialog::getCtrlText( WControlId id, WString & str ) {
 /*********************************************************************/
 
     char *text = GUIGetText( handle(), id );
@@ -112,7 +112,7 @@ void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id, WString & str ) {
     str = t;
 }
 
-void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id, char *buff, size_t len ) {
+void WEXPORT WStatDialog::getCtrlText( WControlId id, char *buff, size_t len ) {
 /******************************************************************************/
 
     char * text;
@@ -131,7 +131,7 @@ void WEXPORT WStatDialog::getCtrlText( gui_ctl_id id, char *buff, size_t len ) {
     }
 }
 
-size_t WEXPORT WStatDialog::getCtrlTextLength( gui_ctl_id id ) {
+size_t WEXPORT WStatDialog::getCtrlTextLength( WControlId id ) {
 /**************************************************************/
 
     char *text = GUIGetText( handle(), id );
@@ -142,25 +142,25 @@ size_t WEXPORT WStatDialog::getCtrlTextLength( gui_ctl_id id ) {
     return( len );
 }
 
-void WEXPORT WStatDialog::setCtrlText( gui_ctl_id id, const char *text ) {
+void WEXPORT WStatDialog::setCtrlText( WControlId id, const char *text ) {
 /************************************************************************/
 
     GUISetText( handle(), id, text );
 }
 
-bool WEXPORT WStatDialog::isCtrlEnabled( gui_ctl_id id ) {
+bool WEXPORT WStatDialog::isCtrlEnabled( WControlId id ) {
 /********************************************************/
 
     return( GUIIsControlEnabled( handle(), id ) );
 }
 
-void WEXPORT WStatDialog::enableCtrl( gui_ctl_id id, bool state ) {
+void WEXPORT WStatDialog::enableCtrl( WControlId id, bool state ) {
 /*****************************************************************/
 
     GUIEnableControl( handle(), id, state );
 }
 
-void WEXPORT WStatDialog::getCtrlRect( gui_ctl_id id, WRect & r ) {
+void WEXPORT WStatDialog::getCtrlRect( WControlId id, WRect & r ) {
 /*****************************************************************/
 
     gui_rect    rr;

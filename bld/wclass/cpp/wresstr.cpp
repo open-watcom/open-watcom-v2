@@ -36,11 +36,11 @@
 
 #include "wresstr.hpp"
 
-WEXPORT WResStr::WResStr( gui_res_id id ) {
-/*****************************************/
+WEXPORT WResStr::WResStr( WResourceId str_id ) {
+/**********************************************/
 
-    id = id;
-    assert( GUILoadString( id, _buffer, BUFFERSIZE ) );
+    str_id = str_id;
+    assert( GUILoadString( str_id, _buffer, BUFFERSIZE ) );
 }
 
 const char * GetParm( char idxChar, va_list args ) {
@@ -61,10 +61,10 @@ const char * GetParm( char idxChar, va_list args ) {
     return( ret );
 }
 
-char * WEXPORT WResStr::formats( char * buf, unsigned len, gui_res_id id, ... ) {
-/*******************************************************************************/
+char * WEXPORT WResStr::formats( char * buf, unsigned len, WResourceId format_id, ... ) {
+/***************************************************************************************/
 
-    WResStr         format( id );
+    WResStr         format( format_id );
     const char *    fmts = format;
     const char *    parm;
     size_t          src = 0;
@@ -83,7 +83,7 @@ char * WEXPORT WResStr::formats( char * buf, unsigned len, gui_res_id id, ... ) 
             } else {
                 va_list     args;
 
-                va_start( args, id );
+                va_start( args, format_id );
                 parm = GetParm( fmts[src], args );
 
                 assert( strlen( parm ) + dest < len );

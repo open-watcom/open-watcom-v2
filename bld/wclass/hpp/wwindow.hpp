@@ -192,7 +192,7 @@ public:
     virtual bool gettingFocus( WWindow * ) { return( false ); }
     virtual bool losingFocus( WWindow * ) { return( false ); }
     virtual bool WEXPORT keyDown( WKeyCode, WKeyState );
-    virtual WControl * WEXPORT getControl( gui_ctl_id id );
+    virtual WControl * WEXPORT getControl( WControlId id );
     virtual bool appActivate( bool ) { return( false ); }
     virtual bool contextHelp( bool ) { return( false ); }
     void hookF1Key( bool );
@@ -277,7 +277,7 @@ public:
     static WObjectMap WEXPORT _idMap;
     static WObjectMap WEXPORT _toolBarIdMap;
     static WObjectMap WEXPORT _popupIdMap;
-    static gui_ctl_id WEXPORT _idMaster;
+    static WControlId WEXPORT _idMaster;
 
     void WEXPORT setIcon( WResource, char *ch_mode=NULL );
     virtual bool WEXPORT setFocus( void );

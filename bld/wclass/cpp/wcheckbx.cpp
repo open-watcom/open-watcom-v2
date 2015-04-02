@@ -48,7 +48,7 @@ WEXPORT WCheckBox::WCheckBox( WWindow* parent, const WRect& r, WStyle style )
 }
 
 
-WEXPORT WCheckBox::WCheckBox( WStatDialog* parent, gui_ctl_id id,
+WEXPORT WCheckBox::WCheckBox( WStatDialog* parent, WControlId id,
                               WStyle style )
         : WBoolSwitch( parent, id, style ) {
 /******************************************/
@@ -62,7 +62,7 @@ WEXPORT WThreeState::WThreeState( WWindow* parent, const WRect& r,
 
 }
 
-WEXPORT WThreeState::WThreeState( WStatDialog* parent, gui_ctl_id id,
+WEXPORT WThreeState::WThreeState( WStatDialog* parent, WControlId id,
                                   WStyle style )
         : WButton( parent, id, style ) {
 /**************************************/

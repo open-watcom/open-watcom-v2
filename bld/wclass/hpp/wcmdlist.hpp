@@ -43,7 +43,7 @@ class WStatDialog;
 WCLASS WCommandList : public WEditComboBox {
     public:
         WEXPORT WCommandList( WWindow* parent, const WRect& r, const char *text );
-        WEXPORT WCommandList( WStatDialog* parent, gui_ctl_id id );
+        WEXPORT WCommandList( WStatDialog* parent, WControlId id );
         WEXPORT ~WCommandList();
         WString& WEXPORT getCommand( WString& str );
 };

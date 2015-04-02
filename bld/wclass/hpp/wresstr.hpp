@@ -39,10 +39,10 @@
 WCLASS WResStr : public WObject
 {
     public:
-        WEXPORT WResStr( gui_res_id id );
+        WEXPORT WResStr( WResourceId str_id );
         const char * WEXPORT gets() const { return( _buffer ); }
         WEXPORT operator const char*() const { return( gets() ); }
-        static char * WEXPORT formats( char * buf, unsigned len, gui_res_id id, ... );
+        static char * WEXPORT formats( char * buf, unsigned len, WResourceId format_id, ... );
 
     private:
         enum {

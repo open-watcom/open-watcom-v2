@@ -214,7 +214,7 @@ int WEXPORT WDialog::process() {
 WWindow *WDialog::switchChild( WWindow *win, bool forward ) {
 /***********************************************************/
 
-    gui_ctl_id  id;
+    WControlId  id;
 
     if( GUIGetFocus( handle(), &id ) ) {
         // control has the focus

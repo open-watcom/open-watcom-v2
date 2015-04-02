@@ -50,12 +50,12 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )
 
 const char REPCHAR = '\t';
 
-WEXPORT WFileDialog::WFileDialog( WWindow* parent, gui_res_id res_idx )
+WEXPORT WFileDialog::WFileDialog( WWindow* parent, WResourceId filter_id )
         : _parent( parent ) {
 /***************************/
 
     static char     buffer[512];
-    WResStr         flt( res_idx );
+    WResStr         flt( filter_id );
     const char *    filter;
     unsigned        i = 0;
 

@@ -44,7 +44,7 @@ WEXPORT WEditBox::WEditBox( WWindow *p, const WRect& r, const char *text,
 
 }
 
-WEXPORT WEditBox::WEditBox( WStatDialog *p, gui_ctl_id id,
+WEXPORT WEditBox::WEditBox( WStatDialog *p, WControlId id,
                             WStyle wstyle )
         : WEdit( p, id, wstyle ) {
 /********************************/
@@ -65,7 +65,7 @@ WEXPORT WMultiLineEditBox::WMultiLineEditBox( WWindow *p, const WRect& r,
 
 }
 
-WEXPORT WMultiLineEditBox::WMultiLineEditBox( WStatDialog *p, gui_ctl_id id,
+WEXPORT WMultiLineEditBox::WMultiLineEditBox( WStatDialog *p, WControlId id,
                                               WStyle wstyle )
         : WEdit( p, id,
                  wstyle | _ControlStyleToWStyle( GUI_CONTROL_WANTRETURN ) ) {
@@ -85,7 +85,7 @@ WEXPORT WEdit::WEdit( WWindow *parent, gui_control_class control_class,
 
 }
 
-WEXPORT WEdit::WEdit( WStatDialog *parent, gui_ctl_id id,
+WEXPORT WEdit::WEdit( WStatDialog *parent, WControlId id,
                       WStyle wstyle )
         : WControl( parent, id, wstyle ) {
 /****************************************/

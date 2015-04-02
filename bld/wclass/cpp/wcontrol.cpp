@@ -69,7 +69,7 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
     GUIAddControl( &control_info, NULL, NULL );
 }
 
-WEXPORT WControl::WControl( WStatDialog* parent, gui_ctl_id id, WStyle wstyle )
+WEXPORT WControl::WControl( WStatDialog* parent, WControlId id, WStyle wstyle )
                 : WWindow( parent )
                 , _id( id )
                 , _style( wstyle )

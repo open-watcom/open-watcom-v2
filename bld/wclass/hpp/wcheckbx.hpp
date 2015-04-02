@@ -42,7 +42,7 @@ WCLASS WCheckBox : public WBoolSwitch {
     public:
         WEXPORT WCheckBox( WWindow* parent, const WRect& r,
                            const char *text, WStyle style=CStyleDefault );
-        WEXPORT WCheckBox( WStatDialog* parent, gui_ctl_id id,
+        WEXPORT WCheckBox( WStatDialog* parent, WControlId id,
                            WStyle style=CStyleDefault );
         WEXPORT WCheckBox( WWindow* parent, const WRect& r,
                            WStyle style=CStyleDefault );
@@ -62,7 +62,7 @@ WCLASS WThreeState : public WButton {
     public:
         WEXPORT WThreeState( WWindow* parent, const WRect& r,
                              const char *text, WStyle style=CStyleThreeState );
-        WEXPORT WThreeState( WStatDialog* parent, gui_ctl_id id,
+        WEXPORT WThreeState( WStatDialog* parent, WControlId id,
                              WStyle style=CStyleThreeState );
         WEXPORT ~WThreeState();
 

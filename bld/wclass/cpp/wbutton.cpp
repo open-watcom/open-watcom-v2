@@ -56,7 +56,7 @@ WEXPORT WButton::WButton( WWindow *parent, gui_control_class control_class,
     }
 }
 
-WEXPORT WButton::WButton( WStatDialog *parent, gui_ctl_id id, WStyle wstyle )
+WEXPORT WButton::WButton( WStatDialog *parent, WControlId id, WStyle wstyle )
         : WControl( parent, id, wstyle )
         , _clickClient( NULL )
         , _click( NULL )

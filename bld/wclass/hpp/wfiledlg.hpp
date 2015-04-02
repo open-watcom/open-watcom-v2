@@ -55,7 +55,7 @@ extern "C" {
 WCLASS WFileDialog  : public WDialog {
     public:
         WEXPORT WFileDialog( WWindow* parent, const char *filter=NULL );
-        WEXPORT WFileDialog( WWindow* parent, gui_res_id res_idx );
+        WEXPORT WFileDialog( WWindow* parent, WResourceId filter_id );
         WEXPORT ~WFileDialog();
         const char * WEXPORT getOpenFileName( const char *fn=NULL,
                                               const char *title=NULL,
