@@ -933,6 +933,7 @@
 .fnc nanosleep                  nanoslep.gml        QXO
 .fnc nearbyint                  nrbyint.gml     DOS QNX W WIN32
 .fnc nextafter                  nxtafter.gml    DOS QNX W WIN32
+.fnc nl_langinfo                langinfo.gml    DOS     W WIN32
 .fnc nosound                    nosound.gml     DOS QNX W
 .fnc nthctype                   nthctype.gml    NEC
 .fnf _fnthctype                 nthctype.gml    NEC
