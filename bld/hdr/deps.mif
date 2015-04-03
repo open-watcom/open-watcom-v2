@@ -188,6 +188,7 @@ istream.h       : $(istream_deps)
 jctype.h        : jctype.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 jstring.h       : jstring.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../null.sp
 jtime.h         : jtime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+langinfo.h      : langinfo.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 libgen.h        : libgen.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 limits.h        : $(limits_deps)
 locale.h        : $(locale_deps)
