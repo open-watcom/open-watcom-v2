@@ -44,7 +44,6 @@ static CHAR_TYPE *ValidLocales[] = {
         NULL            /* INVALID_LOCALE */
 };
 
-
 _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE const *locale )
 {
     register int i;
@@ -58,6 +57,10 @@ _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE co
     } else {
         i = C_LOCALE;
         if( *locale != NULLCHAR ) {
+            /* Special case - "POSIX" was requested - same as "C" per POSIX std */
+            if( __F_NAME(strcmp,wcscmp)( locale, STRING( "POSIX" ) ) == 0 )
+                locale = STRING( "C" );
+            
             for( ; ValidLocales[i]; ++i ) {
                 if( __F_NAME(strcmp,wcscmp)( locale, ValidLocales[i] ) == 0 )  break;
             }
