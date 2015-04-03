@@ -31,7 +31,7 @@
 
 
 typedef struct {
-    PICKCALLBACK        *func;
+    GUIPICKCALLBACK     *func;
     int                 chosen;
 } dlg_pick;
 

@@ -45,7 +45,7 @@ extern void             FreeSymHandle( sym_list * );
 extern int              AddrComp( address a, address b );
 
 
-static int SymPick( const char *text, PICKCALLBACK *PickInit )
+static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
 {
     dlg_pick    dlg;
 

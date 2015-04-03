@@ -122,3 +122,12 @@ extern int RandNum( int );
 
 extern char     *Word[WORD_SIZE];
 extern bool     ChkFlags( wnd_update_list flags );
+
+extern WNDOPEN W1Open;
+extern WNDOPEN W2Open;
+extern WNDOPEN W3Open;
+extern WNDOPEN W4Open;
+extern WNDOPEN W5Open;
+extern WNDOPEN W6Open;
+extern WNDOPEN W7Open;
+extern WNDOPEN W8Open;

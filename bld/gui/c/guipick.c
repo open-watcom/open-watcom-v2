@@ -85,7 +85,7 @@ bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-int GUIDlgPickWithRtn( const char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
+int GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
 {
     dlg_pick    dlg;
 
@@ -104,7 +104,7 @@ int GUIDlgPickWithRtn( const char *title, PICKCALLBACK *pickinit, PICKDLGOPEN *O
 }
 
 
-int GUIDlgPick( const char *title, PICKCALLBACK *pickinit )
+int GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
 {
     return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen ) );
 }

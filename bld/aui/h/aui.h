@@ -112,8 +112,7 @@ typedef enum {
 #define WSW_ACTIVE                      0x40000000L
 #define WSW_MENU_ACCURATE_ROW           0x80000000L
 
-typedef unsigned long wnd_switches;
-
+typedef unsigned long   wnd_switches;
 
 typedef int             wnd_row;
 typedef unsigned char   wnd_class;
@@ -272,21 +271,23 @@ typedef struct aui_private_window_structure {
 
 
 
-typedef bool (WNDCALLBACK)( a_window *, gui_event, void * );
-typedef void (WNDREFRESH)( a_window * );
-typedef void (WNDMENU)( a_window *, gui_ctl_id id, int, int );
-typedef void (WNDMODIFY)( a_window *, int, int );
-typedef int (WNDSCROLL)( a_window *, int );
-typedef int (WNDNUMROWS)( a_window * );
-typedef int (WNDNEXTROW)( a_window *, int, int );
-typedef bool (WNDGETLINE)( a_window *wnd, wnd_row row, int piece, wnd_line_piece * );
-typedef void (WNDNOTIFY)( a_window *wnd, wnd_row row, int piece );
-typedef void (WNDBEGPAINT)( a_window *wnd, wnd_row row, int num );
-typedef void (WNDENDPAINT)( a_window *wnd, wnd_row row, int num );
-typedef bool (WNDCHKFLAGS)( wnd_update_list );
-typedef a_window * (WNDOPEN)( void );
-typedef a_window *(WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
-typedef void (WNDCLOSE)( a_window * );
+typedef bool        (WNDCALLBACK)( a_window *, gui_event, void * );
+typedef void        (WNDREFRESH)( a_window * );
+typedef void        (WNDMENU)( a_window *, gui_ctl_id id, int, int );
+typedef void        (WNDMODIFY)( a_window *, int, int );
+typedef int         (WNDSCROLL)( a_window *, int );
+typedef int         (WNDNUMROWS)( a_window * );
+typedef int         (WNDNEXTROW)( a_window *, int, int );
+typedef bool        (WNDGETLINE)( a_window *wnd, wnd_row row, int piece, wnd_line_piece * );
+typedef void        (WNDNOTIFY)( a_window *wnd, wnd_row row, int piece );
+typedef void        (WNDBEGPAINT)( a_window *wnd, wnd_row row, int num );
+typedef void        (WNDENDPAINT)( a_window *wnd, wnd_row row, int num );
+typedef bool        (WNDCHKFLAGS)( wnd_update_list );
+typedef a_window    *(WNDOPEN)( void );
+typedef a_window    *(WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
+typedef void        (WNDCLOSE)( a_window * );
+typedef int         (WNDPICKER)( const char *, GUIPICKCALLBACK * );
+typedef bool        (WNDCLICKHOOK)( a_window *wnd, gui_ctl_id id );
 
 
 typedef struct wnd_info {
@@ -308,9 +309,8 @@ typedef struct wnd_info {
 } wnd_info;
 
 
-typedef int             GUIPICKER( const char *, PICKCALLBACK * );
-extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items );
-extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
+extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items );
+extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER * );
 extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
 extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
 extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
@@ -554,16 +554,16 @@ extern void             NullPopupMenu( gui_menu_struct *menu );
 extern void             WndChangeMenuAll( gui_menu_struct *menu, int num_popups, bool on, int bit );
 extern gui_message_return WndDisplayMessage( const char *msg, const char *cap, gui_message_type type );
 
-extern void     WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );
-extern void     WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale );
-typedef bool (WNDCLICKHOOK)( a_window *wnd, gui_ctl_id id );
-extern void WndInstallClickHook( WNDCLICKHOOK *rtn );
+extern void             WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );
+extern void             WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale );
+extern void             WndInstallClickHook( WNDCLICKHOOK *rtn );
 
-extern void     WndForceRefresh( void );
-extern void     WndSetWndMainSize( wnd_create_struct *info );
+extern void             WndForceRefresh( void );
+extern void             WndSetWndMainSize( wnd_create_struct *info );
 
-typedef int wnd_gadget_type;
+typedef int             wnd_gadget_type;
 #define WND_GADGET_NONE ((wnd_gadget_type)-1)
+
 extern void             WndGadgetInit( void );
 extern void             WndSetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_type type, unsigned length );
 extern void             WndGetGadgetSize( wnd_gadget_type type, gui_coord * );
@@ -581,7 +581,7 @@ extern wnd_attr         WndSelectedAttr;
 extern wnd_attr         WndCursorAttr;
 extern wnd_attr         WndMapTabAttr( wnd_attr );
 extern int              WndMaxDirtyRects;
-extern gui_window_styles        WndStyle;
+extern gui_window_styles WndStyle;
 extern char             WndBackgroundChar;
 
 #define ArraySize( x ) ( sizeof( x ) / sizeof( (x)[0] ) )

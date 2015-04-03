@@ -33,8 +33,6 @@
 
 #include "app.h"
 
-extern WNDNUMROWS W3NumRows;
-
 static gui_menu_struct W3PopUp[] = {
     { "Default Popup", MENU_W3_POPUP, GUI_ENABLED },
     { "Show Lisa The Bug", MENU_W3_BUG, GUI_ENABLED },
@@ -262,9 +260,9 @@ static char *Stuff[] =
 #endif
 };
 
-int TheSize = ArraySize( Stuff );
+static int TheSize = ArraySize( Stuff );
 
-void W3MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+static void W3MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     row=row;piece=piece;
     switch( id ) {
@@ -278,19 +276,19 @@ void W3MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-void W3Modify( a_window *wnd, int row, int piece )
+static void W3Modify( a_window *wnd, int row, int piece )
 {
     W3MenuItem( wnd, 0, row, piece );
 }
 
 
-int W3NumRows( a_window *wnd )
+static int W3NumRows( a_window *wnd )
 {
     wnd=wnd;
     return( TheSize );
 }
 
-bool W3GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
+static bool W3GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 {
     wnd=wnd;
     if( row >= TheSize ) return( FALSE );
@@ -302,12 +300,12 @@ bool W3GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 }
 
 
-void W3Refresh( a_window *wnd )
+static void W3Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
 
-wnd_info W3Info = {
+static wnd_info W3Info = {
     NoEventProc,
     W3Refresh,
     W3GetLine,

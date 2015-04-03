@@ -138,7 +138,6 @@ static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static  WNDMODIFY       BrkModify;
 static void     BrkModify( a_window *wnd, int row, int piece )
 {
     brkp        *bp;
@@ -168,7 +167,6 @@ static void     BrkModify( a_window *wnd, int row, int piece )
     }
 }
 
-static WNDNUMROWS BrkNumRows;
 static int BrkNumRows( a_window *wnd )
 {
     brkp        *bp;
@@ -182,7 +180,6 @@ static int BrkNumRows( a_window *wnd )
     return( count );
 }
 
-static WNDGETLINE BrkGetLine;
 static  bool    BrkGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
@@ -267,7 +264,6 @@ static void     BrkInit( a_window *wnd )
 }
 
 
-static WNDREFRESH BrkRefresh;
 static void     BrkRefresh( a_window *wnd )
 {
     brkp        *bp;
@@ -303,7 +299,6 @@ static void     BrkRefresh( a_window *wnd )
 }
 
 
-static WNDCALLBACK BrkEventProc;
 static bool BrkEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
@@ -341,7 +336,6 @@ wnd_info BrkInfo = {
     DefPopUp( BrkMenu )
 };
 
-extern WNDOPEN WndBrkOpen;
 extern a_window *WndBrkOpen( void )
 {
     a_window            *wnd;

@@ -40,14 +40,13 @@ static char * Stuff[] = {
         "Line 5",
 };
 
-extern int W6NumRows( a_window *wnd )
+static int W6NumRows( a_window *wnd )
 {
     wnd=wnd;
     return( ArraySize( Stuff ) );
 }
 
-extern WNDGETLINE W6GetLine;
-extern  bool    W6GetLine( a_window *wnd, int row, int piece,
+static bool    W6GetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     wnd=wnd;
@@ -58,15 +57,14 @@ extern  bool    W6GetLine( a_window *wnd, int row, int piece,
 }
 
 
-extern WNDREFRESH W6Refresh;
-void    W6Refresh( a_window *wnd )
+static void    W6Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
 
-wnd_metrics W6Metrics = { 3, 12, 0, 0 };
+static wnd_metrics W6Metrics = { 3, 12, 0, 0 };
 
-wnd_info W6Info = {
+static wnd_info W6Info = {
     NoEventProc,
     W6Refresh,
     W6GetLine,
@@ -83,8 +81,7 @@ wnd_info W6Info = {
     NoPopUp
 };
 
-extern WNDOPEN W6Open;
-extern a_window *W6Open()
+a_window *W6Open( void )
 {
     wnd_create_struct   info;
     a_window            *wnd;

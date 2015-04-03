@@ -33,14 +33,14 @@
 #include "app.h"
 
 #define NUM_ROWS 5000
-extern int W7NumRows( a_window *wnd )
+
+static int W7NumRows( a_window *wnd )
 {
     wnd=wnd;
     return( NUM_ROWS );
 }
 
-extern WNDGETLINE W7GetLine;
-extern  bool    W7GetLine( a_window *wnd, int row, int piece,
+static bool    W7GetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     static char buff[20];
@@ -55,13 +55,12 @@ extern  bool    W7GetLine( a_window *wnd, int row, int piece,
 }
 
 
-extern WNDREFRESH W7Refresh;
-void    W7Refresh( a_window *wnd )
+static void    W7Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
 
-wnd_info W7Info = {
+static wnd_info W7Info = {
     NoEventProc,
     W7Refresh,
     W7GetLine,
@@ -78,8 +77,7 @@ wnd_info W7Info = {
     NoPopUp
 };
 
-extern WNDOPEN W7Open;
-extern a_window *W7Open()
+a_window *W7Open( void )
 {
     wnd_create_struct   info;
 

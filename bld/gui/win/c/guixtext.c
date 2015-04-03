@@ -78,7 +78,7 @@ bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
     return( false );
 }
 
-bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items, const void *data_handle, PICKGETTEXT *getstring )
+bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items, const void *data_handle, GUIPICKGETTEXT *getstring )
 {
     int     item;
 

@@ -363,11 +363,11 @@ typedef struct gui_control_info {
 typedef bool (GUICALLBACK)( gui_window *, gui_event ev, void *param );
 typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param );
-typedef void (PICKCALLBACK)( gui_window *, gui_ctl_id id );
+typedef void (GUIPICKCALLBACK)( gui_window *, gui_ctl_id id );
 typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
                              gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *rtn, void *extra );
-typedef const char *(PICKGETTEXT)( const void *data_handle, int item );
+typedef const char *(GUIPICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
     const char          *title;
@@ -895,8 +895,8 @@ extern gui_ord GUIGetNumRows( gui_window *wnd );
 
 extern gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message, const char *title, gui_message_type type );
 extern gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val );
-extern int GUIDlgPick( const char *title, PICKCALLBACK *pickinit );
-extern int GUIDlgPickWithRtn( const char *title, PICKCALLBACK *pickinit, PICKDLGOPEN * );
+extern int GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit );
+extern int GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN * );
 
 /* Dialog Functions */
 
@@ -929,7 +929,7 @@ extern bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text );
 extern bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data );
 extern void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice );
 extern bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items,
-                            const void *data_handle, PICKGETTEXT *getstring );
+                            const void *data_handle, GUIPICKGETTEXT *getstring );
 extern bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
 extern bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
 extern int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );

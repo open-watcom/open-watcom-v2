@@ -32,17 +32,13 @@
 
 #include "app.h"
 
-extern void W1Open( void );
-
-extern WNDNUMROWS W4NumRows;
-
 static gui_menu_struct W4PopUp[] = {
     { "&Say",       MENU_W2_SAY, GUI_ENABLED },
     { "&Top",       MENU_W2_TOP, GUI_ENABLED },
     { "&Open 1",    MENU_W2_OPEN1, GUI_ENABLED },
 };
 
-char * Stuff[] = {
+static char * Stuff[] = {
         "Aardvark",
         "Aaron",
         "Abacus",
@@ -84,14 +80,13 @@ char * Stuff[] = {
 
 #define SIZE ArraySize( Stuff )
 
-extern int W4NumRows( a_window *wnd )
+static int W4NumRows( a_window *wnd )
 {
     wnd=wnd;
     return( SIZE );
 }
 
-extern  WNDMODIFY W4Modify;
-extern  void    W4Modify( a_window *wnd, int row, int piece )
+static void    W4Modify( a_window *wnd, int row, int piece )
 {
     wnd=wnd;piece=piece;
     if( row < 0 ) {
@@ -110,7 +105,7 @@ static char UiMapChar[] = { 0xC6, 0xEA, 0xC7, 0xD0,
                                         0xDF, 0xDC, 0xFD, 0xF5, 0 };
 #endif
 
-bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
+static bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -171,12 +166,12 @@ bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 }
 
 
-void W4Refresh( a_window *wnd )
+static void W4Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
 
-void W4MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+static void W4MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
 
     row=row;piece=piece;
@@ -198,7 +193,7 @@ void W4MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-wnd_info W4Info = {
+static wnd_info W4Info = {
     NoEventProc,
     W4Refresh,
     W4GetLine,

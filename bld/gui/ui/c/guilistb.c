@@ -252,7 +252,7 @@ bool GUIListBoxAddText( a_list *list, const char *text, int choice )
     return( true );
 }
 
-bool GUIListBoxAddTextList( a_list *list, int items, const void *data_handle, PICKGETTEXT *getstring )
+bool GUIListBoxAddTextList( a_list *list, int items, const void *data_handle, GUIPICKGETTEXT *getstring )
 {
     int         item;
     lb_data     old_data;

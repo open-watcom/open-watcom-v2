@@ -32,10 +32,10 @@
 
 #include "auipvt.h"
 
-static int          DlgChosen;
-static const void   *_data_handle;
-static PICKGETTEXT  *_getstring;
-static int          _items;
+static int              DlgChosen;
+static const void       *_data_handle;
+static GUIPICKGETTEXT   *_getstring;
+static int              _items;
 
 static void PickInit( gui_window *gui, gui_ctl_id list_id )
 {
@@ -43,7 +43,7 @@ static void PickInit( gui_window *gui, gui_ctl_id list_id )
     GUISetCurrSelect( gui, list_id, DlgChosen );
 }
 
-int DlgPickWithRtn2( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER *pick )
+int DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER *pick )
 {
     DlgChosen = def;
     _data_handle = data_handle;
@@ -53,13 +53,13 @@ int DlgPickWithRtn2( const char *title, const void *data_handle, int def, PICKGE
 }
 
 
-static int DoDlgPick( const char *title, PICKCALLBACK *pickinit )
+static int DoDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
 {
     return( GUIDlgPickWithRtn( title, pickinit, DlgOpen ) );
 }
 
 
-int DlgPickWithRtn( const char *title, const void *data_handle, int def, PICKGETTEXT *getstring, int items )
+int DlgPickWithRtn( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items )
 {
     return( DlgPickWithRtn2( title, data_handle, def, getstring, items, DoDlgPick ) );
 }

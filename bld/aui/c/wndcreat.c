@@ -35,17 +35,17 @@
 
 extern int              WndNumMenus;
 extern gui_menu_struct  WndMainMenu[];
-extern  gui_colour_set  WndColours[];
-extern  int             WndNumColours;
+extern gui_colour_set   WndColours[];
+extern int              WndNumColours;
+
+extern GUICALLBACK      WndMainEventProc;
+
+extern char             *StrCopy(char *,char *);
 
 gui_menu_struct *WndMainMenuPtr = WndMainMenu;
 gui_menu_struct *WndPopupMenuPtr;
 
-extern GUICALLBACK      WndMainEventProc;
-extern char             *StrCopy(char *,char *);
-
 static int              NumWindows;
-
 
 extern  void    WndSetTitleSize( a_window *wnd, int size )
 {

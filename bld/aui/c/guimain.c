@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "auipvt.h"
 #include <ctype.h>
+
+extern GUICALLBACK      WndMainEventProc;
 
 gui_coord               WndMax;
 gui_coord               WndScreen;
@@ -200,6 +202,7 @@ typedef struct {
 } spawn_parms;
 
 WNDCLICKHOOK *WndClickHook;
+
 void WndInstallClickHook( WNDCLICKHOOK *rtn )
 {
     WndClickHook = rtn;
@@ -571,7 +574,6 @@ void *WndHourGlass( void *to )
 }
 
 
-extern GUICALLBACK WndMainEventProc;
 bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
 {
     spawn_parms         spawnp;

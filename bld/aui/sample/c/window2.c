@@ -41,8 +41,6 @@
 #include "app.h"
 #include "auipvt.h"
 
-extern void W1Open( void );
-
 typedef struct {
     int         top;
     int         saved_top;
@@ -66,7 +64,7 @@ static gui_menu_struct W2AltPopUp[] = {
     { "&Top",       MENU_W2_TOP, GUI_ENABLED },
 };
 
-extern void Pos( a_window *wnd, int pos )
+static void Pos( a_window *wnd, int pos )
 {
     w2_struct   *w2 = WndExtra( wnd );
     int         last;
@@ -79,7 +77,7 @@ extern void Pos( a_window *wnd, int pos )
 }
 
 
-int W2Scroll( a_window *wnd, int lines )
+static int W2Scroll( a_window *wnd, int lines )
 {
     w2_struct   *w2 = WndExtra( wnd );
     int         old_top;
@@ -91,7 +89,7 @@ int W2Scroll( a_window *wnd, int lines )
 }
 
 
-void W2Modify( a_window *wnd, int row, int piece )
+static void W2Modify( a_window *wnd, int row, int piece )
 {
     w2_struct   *w2 = WndExtra( wnd );
 
@@ -107,7 +105,7 @@ void W2Modify( a_window *wnd, int row, int piece )
 }
 
 
-int W2NextRow( a_window *wnd, int row, int inc )
+static int W2NextRow( a_window *wnd, int row, int inc )
 {
     int         new;
     w2_struct   *w2 = WndExtra( wnd );
@@ -137,7 +135,7 @@ int W2NextRow( a_window *wnd, int row, int inc )
 }
 
 
-void     W2MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+static void     W2MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
 
     char        buff[80];
@@ -174,7 +172,7 @@ void     W2MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-bool W2GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
+static bool W2GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 {
     w2_struct   *w2 = WndExtra( wnd );
 
@@ -205,7 +203,7 @@ bool W2GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 }
 
 
-void W2Refresh( a_window *wnd )
+static void W2Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
@@ -215,7 +213,7 @@ static int WordCompare( char **a, char **b )
     return( stricmp( *a, *b ) );
 }
 
-bool W2EventProc( a_window * wnd, gui_event gui_ev, void *parm )
+static bool W2EventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     w2_struct   *w2 = WndExtra( wnd );
 
@@ -244,7 +242,7 @@ bool W2EventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-wnd_info W2Info = {
+static wnd_info W2Info = {
     W2EventProc,
     W2Refresh,
     W2GetLine,

@@ -34,10 +34,10 @@
 #include "app.h"
 
 #define NUM_ROWS        60
+
 extern WNDNUMROWS W5NumRows;
 
-extern WNDSCROLL W5Scroll;
-extern int W5Scroll( a_window *wnd, int lines )
+static int W5Scroll( a_window *wnd, int lines )
 {
     int         old_top;
     int         new_top;
@@ -53,8 +53,7 @@ extern int W5Scroll( a_window *wnd, int lines )
 }
 
 
-extern WNDGETLINE W5GetLine;
-extern  bool    W5GetLine( a_window *wnd, int row, int piece,
+static bool    W5GetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     static char buff[20];
@@ -74,13 +73,12 @@ extern  bool    W5GetLine( a_window *wnd, int row, int piece,
 }
 
 
-extern WNDREFRESH W5Refresh;
-void    W5Refresh( a_window *wnd )
+static void W5Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
 
-wnd_info W5Info = {
+static wnd_info W5Info = {
     NoEventProc,
     W5Refresh,
     W5GetLine,
@@ -97,8 +95,7 @@ wnd_info W5Info = {
     NoPopUp
 };
 
-extern WNDOPEN W5Open;
-extern a_window *W5Open()
+a_window *W5Open( void )
 {
     a_window    *wnd;
     wnd = WndCreate( "Just some more text", &W5Info, 0, NULL );

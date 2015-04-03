@@ -57,7 +57,7 @@ typedef struct {
     unsigned    align : 1;
 } w1_window;
 
-void W1MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+static void W1MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     w1_window   *w1 = WndExtra( wnd );
     char        buff[80];
@@ -94,14 +94,14 @@ void W1MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-int W1NumRows( a_window *wnd )
+static int W1NumRows( a_window *wnd )
 {
     w1_window   *w1 = WndExtra( wnd );
 
     return( w1->num_rows );
 }
 
-void W1Modify( a_window *wnd, int row, int piece )
+static void W1Modify( a_window *wnd, int row, int piece )
 {
     w1_window   *w1 = WndExtra( wnd );
 
@@ -111,8 +111,7 @@ void W1Modify( a_window *wnd, int row, int piece )
 }
 
 
-extern WNDGETLINE W1GetLine;
-extern  bool    W1GetLine( a_window *wnd, wnd_row row, int piece,
+static bool    W1GetLine( a_window *wnd, wnd_row row, int piece,
                              wnd_line_piece *line )
 {
     w1_window   *w1 = WndExtra( wnd );
@@ -155,8 +154,7 @@ extern  bool    W1GetLine( a_window *wnd, wnd_row row, int piece,
 }
 
 
-extern WNDREFRESH W1Refresh;
-void    W1Refresh( a_window *wnd )
+static void    W1Refresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
@@ -203,8 +201,7 @@ static bool W1Init( a_window *wnd )
     return( TRUE );
 }
 
-extern WNDCALLBACK W1EventProc;
-bool W1EventProc( a_window * wnd, gui_event gui_ev, void *parm )
+static bool W1EventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;
     switch( gui_ev ) {
@@ -222,7 +219,7 @@ bool W1EventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( FALSE );
 }
 
-wnd_info W1Info = {
+static wnd_info W1Info = {
     W1EventProc,
     W1Refresh,
     W1GetLine,
@@ -239,10 +236,9 @@ wnd_info W1Info = {
     (char)DefPopUp( W1PopUp )
 };
 
-gui_resource W1Icon = { ICON_WORDS, "W1" };
+static gui_resource W1Icon = { ICON_WORDS, "W1" };
 
-extern WNDOPEN W1Open;
-extern a_window *W1Open()
+a_window *W1Open( void )
 {
     wnd_create_struct   info;
     a_window    *wnd;

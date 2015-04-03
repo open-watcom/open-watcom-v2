@@ -252,12 +252,12 @@ static int AsmAddrRow( a_window *wnd, address ip )
     return( row );
 }
 
-extern  void    AsmJoinSrc( a_window *wnd, a_window *src )
+void    AsmJoinSrc( a_window *wnd, a_window *src )
 {
     WndAsm( wnd )->src = src;
 }
 
-extern  void    AsmNewSrcNotify( a_window *src, mod_handle mod, bool track )
+void    AsmNewSrcNotify( a_window *src, mod_handle mod, bool track )
 {
     asm_window  *asw;
     a_window    *wnd;
@@ -312,7 +312,7 @@ static void AsmSetDotAddr( a_window *wnd, address addr )
     }
 }
 
-extern  void    AsmMoveDot( a_window *wnd, address addr )
+void    AsmMoveDot( a_window *wnd, address addr )
 {
     int         row;
     asm_window  *asw;
@@ -346,7 +346,7 @@ extern  void    AsmMoveDot( a_window *wnd, address addr )
     AsmSetDotAddr( wnd, addr );
 }
 
-extern a_window *AsmWndFind( a_window *wnd, address addr, bool track )
+a_window *AsmWndFind( a_window *wnd, address addr, bool track )
 {
     a_window    *new;
 
@@ -361,20 +361,19 @@ extern a_window *AsmWndFind( a_window *wnd, address addr, bool track )
 }
 
 
-extern  void    AsmFreeSrc( a_window *wnd )
+void    AsmFreeSrc( a_window *wnd )
 {
     if( wnd == NULL ) return;
     WndAsm( wnd )->src = NULL;
 }
 
 #ifdef DEADCODE
-extern  bool    AsmIsTracking( a_window *wnd )
+bool    AsmIsTracking( a_window *wnd )
 {
     return( WndAsm( wnd )->track );
 }
 #endif
 
-static  WNDMODIFY AsmModify;
 static  void    AsmModify( a_window *wnd, int row, int piece )
 {
     asm_window  *asw = WndAsm( wnd );
@@ -394,7 +393,6 @@ static  void    AsmModify( a_window *wnd, int row, int piece )
 }
 
 
-static WNDNOTIFY        AsmNotify;
 static void AsmNotify( a_window *wnd, wnd_row row, int piece )
 {
     asm_window  *asw = WndAsm( wnd );
@@ -554,7 +552,6 @@ static void     AsmMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  WNDSCROLL       AsmScroll;
 static int AsmScroll( a_window *wnd, int lines )
 {
     address             addr;
@@ -598,7 +595,6 @@ static int AsmScroll( a_window *wnd, int lines )
 }
 
 
-static WNDBEGPAINT AsmBegPaint;
 static  void    AsmBegPaint( a_window *wnd, int row, int num )
 {
     asm_window  *asw = WndAsm( wnd );
@@ -608,7 +604,6 @@ static  void    AsmBegPaint( a_window *wnd, int row, int num )
 }
 
 
-static WNDENDPAINT AsmEndPaint;
 static  void    AsmEndPaint( a_window *wnd, int row, int piece )
 {
     wnd=wnd;row=row;piece=piece;
@@ -641,7 +636,6 @@ static void AsmNewSource( asm_window *asw, cue_handle *ch )
     }
 }
 
-static WNDGETLINE AsmGetLine;
 static  bool    AsmGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
@@ -875,7 +869,6 @@ static  void    AsmNewIP( a_window *wnd )
     }
 }
 
-static WNDREFRESH AsmRefresh;
 static void     AsmRefresh( a_window *wnd )
 {
     asm_window          *asw = WndAsm( wnd );
@@ -968,7 +961,6 @@ static  void    AsmInit( a_window *wnd )
     WndZapped( wnd );
 }
 
-static WNDCALLBACK AsmEventProc;
 static bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     asm_window  *asw = WndAsm( wnd );
@@ -1037,7 +1029,7 @@ wnd_info AsmInfo = {
 };
 
 
-extern a_window *DoWndAsmOpen( address addr, bool track )
+a_window *DoWndAsmOpen( address addr, bool track )
 {
     asm_window  *asw;
     a_window    *wnd;
@@ -1069,8 +1061,7 @@ extern a_window *DoWndAsmOpen( address addr, bool track )
 }
 
 
-extern WNDOPEN WndAsmOpen;
-extern a_window *WndAsmOpen( void )
+a_window *WndAsmOpen( void )
 {
     address     addr;
 

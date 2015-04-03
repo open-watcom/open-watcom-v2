@@ -36,14 +36,6 @@
 extern int DlgSearch( a_window *, void * );
 extern int DlgOptions( void );
 
-extern a_window *W1Open( void );
-extern a_window *W2Open( void );
-extern a_window *W3Open( void );
-extern a_window *W4Open( void );
-extern a_window *W5Open( void );
-extern a_window *W6Open( void );
-extern a_window *W7Open( void );
-extern a_window *W8Open( void );
 extern void DlgCmd( void );
 extern void Password( char *, char *, int );
 extern gui_colour_set WndColours[];
