@@ -1355,7 +1355,7 @@ static char *fixHelpTopic( char *topic )
     return( ret );
 }
 
-int showhelp( char *helptopic, EVENT (*rtn)( EVENT ), HelpLangType lang )
+int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
 {
     bool        first;
     int         err;
@@ -1363,9 +1363,17 @@ int showhelp( char *helptopic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     char        *hfiles[] = { NULL, NULL };
     char        ext[_MAX_EXT];
     char        *buffer;
+    char        *helptopic;
 
     first = TRUE;
     err = FALSE;
+    if( topic != NULL ) {
+        size_t len = strlen( topic ) + 1;
+        helptopic = HelpMemAlloc( len );
+        memcpy( helptopic, topic, len );
+    } else {
+        helptopic = NULL;
+    }
     switch( lang ) {
     case HELPLANG_FRENCH:
         hotSpots[0].str = "F4=Sujet pr‚c‚dent";
@@ -1395,7 +1403,9 @@ int showhelp( char *helptopic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     while( ( helptopic != NULL || first ) ) {
         if( first || help_reinit( hfiles ) ) {
             err = do_showhelp( &helptopic, hfiles[0], rtn, first );
-            if( err == HELP_NO_SUBJECT ) break;
+            if( err == HELP_NO_SUBJECT ) {
+                break;
+            }
         } else {        // cannot open help file for hyperlink
             buffer = HelpMemAlloc( 28 + strlen( hfiles[0] ) );
             sprintf( buffer, "Unable to open helpfile \"%s\".", hfiles[0] );
@@ -1409,6 +1419,7 @@ int showhelp( char *helptopic, EVENT (*rtn)( EVENT ), HelpLangType lang )
         }
         first = FALSE;
     }
+    HelpMemFree( helptopic );
     return( err );
 }
 

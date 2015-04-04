@@ -117,10 +117,10 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     fdlg.fl = FDS_CENTER | FDS_ENABLEFILELB;
     if( ofn->flags & OFN_ISSAVE ) {
         fdlg.fl |= FDS_SAVEAS_DIALOG;
-        fdlg.pszOKButton = LIT( FDlg_Save_Text );
+        fdlg.pszOKButton = (PSZ)LIT( FDlg_Save_Text );
     } else {
         fdlg.fl |= FDS_OPEN_DIALOG;
-        fdlg.pszOKButton = LIT( FDlg_Open_Text );
+        fdlg.pszOKButton = (PSZ)LIT( FDlg_Open_Text );
     }
     if( ofn->flags & OFN_ALLOWMULTISELECT ) {
         fdlg.fl |= FDS_MULTIPLESEL;

@@ -88,7 +88,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
 
     ret_code = GUI_RET_ABORT;
 
-    ret = _wpi_messagebox( hwnd, (LPSTR)message, (LPSTR)title, style );
+    ret = _wpi_messagebox( hwnd, message, title, style );
 
     switch( ret ) {
     case WPI_IDABORT :

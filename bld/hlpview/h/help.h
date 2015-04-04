@@ -95,4 +95,4 @@ void helpfini( void );
 void Free_Stack( void );
 //int showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
 //            HelpLangType lang, bool first );
-int showhelp( char *helptopic, EVENT (*rtn)( EVENT ), HelpLangType lang );
+int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang );

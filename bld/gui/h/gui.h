@@ -38,9 +38,9 @@ typedef int         gui_ctl_id;
 typedef int         gui_res_id;
 
 #if defined( _M_I86 )
-typedef char __far  *res_name_or_id;
+typedef const char __far    *res_name_or_id;
 #else
-typedef char        *res_name_or_id;
+typedef const char          *res_name_or_id;
 #endif
 
 #if defined( _WIN64 )
@@ -203,18 +203,18 @@ typedef enum {
 typedef long gui_bitmap;
 
 typedef struct gui_toolbar_struct {
-    char                *label;
+    const char          *label;
     gui_bitmap          bitmap;
     gui_ctl_id          id;
-    char                *hinttext;
-    char                *tip;
+    const char          *hinttext;
+    const char          *tip;
 } gui_toolbar_struct;
 
 typedef struct gui_menu_struct {
-    char                        *label;
+    const char                  *label;
     gui_ctl_id                  id;
     gui_menu_styles             style;
-    char                        *hinttext;
+    const char                  *hinttext;
     int                         num_child_menus;
     struct gui_menu_struct      *child;
 } gui_menu_struct;
@@ -839,13 +839,13 @@ extern bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
 //                                                           V
 extern gui_help_instance GUIHelpInit( gui_window *wnd, char *file, char *title );
 extern void GUIHelpFini( gui_help_instance inst, gui_window *wnd, char *file );
-extern bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, char *topic );
-extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, char *topic );
+extern bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, const char *topic );
+extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, const char *topic );
 
 // the obsolete, crotchety old guard
 // please use the above functions instead
-extern bool GUIDisplayHelp( gui_window *wnd, char *file, char *topic );
-extern bool GUIDisplayHelpWin4( gui_window *wnd, char *file, char *topic );
+extern bool GUIDisplayHelp( gui_window *wnd, char *file, const char *topic );
+extern bool GUIDisplayHelpWin4( gui_window *wnd, char *file, const char *topic );
 extern bool GUIDisplayHelpId( gui_window *wnd, char *file, int id );
 
 /* Scroll Functions                            */

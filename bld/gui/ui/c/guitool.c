@@ -264,7 +264,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
         wnd->toolbar->info[i].label = GUIStrDup( toolinfo[i].label, &ok );
         if( !ok ) {
             for( j = 0; j < i; j++ ) {
-                GUIMemFree( wnd->toolbar->info[j].label );
+                GUIMemFree( (void *)wnd->toolbar->info[j].label );
             }
             GUIMemFree( wnd->toolbar->info );
             GUIMemFree( wnd->toolbar );
@@ -312,7 +312,7 @@ bool GUIXCloseToolBar( gui_window *wnd )
     if( (wnd->toolbar != NULL ) && ( wnd->toolbar->info != NULL ) &&
         !( wnd->toolbar->switching ) ) {
         for( i = 0; i < wnd->toolbar->num_items; i++ ) {
-            GUIMemFree( wnd->toolbar->info[i].label );
+            GUIMemFree( (void *)wnd->toolbar->info[i].label );
         }
         GUIMemFree( wnd->toolbar->info );
         GUIMemFree( wnd->toolbar );

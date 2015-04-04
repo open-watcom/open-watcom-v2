@@ -37,7 +37,7 @@ extern bool GUISetupStruct( gui_window *wnd, gui_create_info *, gui_coord *,
                              gui_coord *, HWND parent, HMENU * );
 extern void GUICalcLocation( gui_rect *, gui_coord *, gui_coord *,
                              HWND parent );
-extern void GUIError( char * );
+extern void GUIError( const char * );
 extern bool GUIScrollOn( gui_window * wnd, int bar );
 extern void GUISetRowCol( gui_window * wnd, gui_coord * size );
 extern void GUIInvalidateResize( gui_window *wnd );

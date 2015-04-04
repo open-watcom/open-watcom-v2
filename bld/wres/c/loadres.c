@@ -105,7 +105,7 @@ int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource,
     return( WResLoadResource2( MainDir, hInstance, &resource_type, &resource_id, lpszBuffer, bufferSize ) );
 }
 
-int WResLoadResourceX( PHANDLE_INFO hInstance, LPSTR idType, LPSTR idResource,
+int WResLoadResourceX( PHANDLE_INFO hInstance, LPCSTR idType, LPCSTR idResource,
                                     LPSTR *lpszBuffer, int *bufferSize )
 /*************************************************************************/
 {

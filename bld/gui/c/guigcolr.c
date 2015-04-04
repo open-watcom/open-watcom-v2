@@ -34,7 +34,7 @@
 #include <string.h>
 #include "guistr.h"
 
-static char *ColourNames[GUI_NUM_COLOURS];
+static const char *ColourNames[GUI_NUM_COLOURS];
 
 static bool ColourNamesInitialized = false;
 

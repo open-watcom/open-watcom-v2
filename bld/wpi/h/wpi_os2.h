@@ -70,10 +70,10 @@
                                  hwnd, (USHORT) id, (USHORT) action )
 
     #define LoadString( inst, id, value, len ) WinLoadString( \
-                                inst.hab, inst.mod_handle, (ULONG) id, (LONG) len, (PSZ) value )
+                                inst.hab, inst.mod_handle, (ULONG)id, (LONG)len, (PSZ)value )
 
     #define GetClassName( hwnd, buf, size ) WinQueryClassName( \
-                                hwnd, (LONG) size, (PCH) buf )
+                                hwnd, (LONG)size, (PCH)buf )
 
     #define SaveDC( pres ) GpiSavePS( pres )
 
@@ -83,7 +83,7 @@
 
     #define PostAppMessage( hmq, msg, parm1, parm2 ) WinPostMsg( hmq, msg, (WPI_PARAM1) parm1, (WPI_PARAM2) parm2 )
 
-    #define MessageBox( parent, text, title, style ) WinMessageBox( HWND_DESKTOP, parent, text, title, 0, style )
+    #define MessageBox( parent, text, title, style ) WinMessageBox( HWND_DESKTOP, parent, (PSZ)text, (PSZ)title, 0, style )
 
     #define SendMessage( hwnd, msgid, parm1, parm2 ) WinSendMsg( hwnd, \
                 (WPI_MSG) msgid, (WPI_PARAM1) parm1, (WPI_PARAM2) parm2 )
@@ -93,10 +93,10 @@
                                         (WPI_PARAM1)parm1, (WPI_PARAM2)parm2 )
 
     #define SetDlgItemText( hwnd, item, text ) \
-        WinSetDlgItemText( (HWND) hwnd, (ULONG) item, (PSZ) text )
+        WinSetDlgItemText( hwnd, item, (PSZ)text )
 
     #define GetDlgItemText( hwnd, item, text, size ) \
-        WinQueryDlgItemText( (HWND)hwnd, (ULONG)item, (LONG)size, (PSZ)text )
+        WinQueryDlgItemText( hwnd, item, size, (PSZ)text )
 
     #define InvalidateRect( hwnd, rect, erase ) WinInvalidateRect( hwnd, rect, erase )
 
@@ -403,10 +403,10 @@ extern void _wpi_setwpiinst( HINSTANCE hinst, HMODULE module, WPI_INST *inst );
                         MPFROM2SHORT( selection, len ), (DWORD)(LPSTR) text )
 
     #define _wpi_setdlgitemtext( hwnd, item, text ) \
-                                WinSetDlgItemText( hwnd, (ULONG) item, text )
+                                WinSetDlgItemText( hwnd, item, (PSZ)text )
 
     #define _wpi_getdlgitemtext( hwnd, item, text, size ) \
-                        WinQueryDlgItemText( hwnd, (ULONG) item, size, text )
+                        WinQueryDlgItemText( hwnd, item, size, (PSZ)text )
 
 extern short _wpi_getdlgitemshort( HWND hwnd, int item, BOOL *trans, BOOL issigned );
 extern int _wpi_getdlgitemint( HWND hwnd, int item, BOOL *retcode, BOOL issigned );
@@ -583,7 +583,7 @@ extern LONG _wpi_cvts_wanchor( LONG y, LONG window_height );
     #define _wpi_isrightid( hwnd, id ) (id==WinQueryWindowUShort(hwnd, QWS_ID))
 
     #define _wpi_messagebox( parent, text, title, style ) \
-                    WinMessageBox( HWND_DESKTOP, parent, text, title, 0, style )
+                    WinMessageBox( HWND_DESKTOP, parent, (PSZ)text, (PSZ)title, 0, style )
 
 extern BOOL _wpi_ptinrect( WPI_RECT *prect, WPI_POINT pt );
 
@@ -980,8 +980,7 @@ extern void _wpi_freelibrary( WPI_INST inst, HMODULE module );
 extern WPI_PROC _wpi_loadprocedure( WPI_INST inst, HMODULE mod, LPSTR proc );
 
     #define _wpi_loadstring( inst, id, value, len ) \
-        WinLoadString( (inst).hab, (inst).mod_handle, (ULONG)id, (LONG)len, \
-                                                                (PSZ)value )
+        WinLoadString( (inst).hab, (inst).mod_handle, (ULONG)id, (LONG)len, (PSZ)value )
 
     #define _wpi_getclassname( hwnd, buf, size ) \
                             WinQueryClassName( hwnd, (LONG)size, (PCH)buf )

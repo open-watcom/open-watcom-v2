@@ -181,13 +181,13 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
  * GUIError -- display an error message
  */
 
-void GUIError( char *str )
+void GUIError( const char *str )
 {
     HWND focus;
 
     focus = _wpi_getfocus();
     if( focus != NULLHANDLE ) {
-        _wpi_messagebox( focus, (LPSTR) str, NULL, ERROR_STYLE );
+        _wpi_messagebox( focus, str, NULL, ERROR_STYLE );
     }
 }
 

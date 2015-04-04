@@ -54,7 +54,7 @@ void GUIHelpFini( gui_help_instance inst, gui_window *wnd, char *file )
     inst=inst;
 }
 
-bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, char *topic )
+bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, const char *topic )
 {
     bool        ret;
 
@@ -81,13 +81,13 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
 }
 
 bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
-                      char *file, char *topic )
+                      char *file, const char *topic )
 {
     inst=inst;wnd=wnd;act=act;file=file;topic=topic;
     return( false );
 }
 
-bool GUIDisplayHelp( gui_window *wnd, char *file, char *topic )
+bool GUIDisplayHelp( gui_window *wnd, char *file, const char *topic )
 {
     static char *helpfiles[2] = { NULL, NULL };
     helpfiles[0] = file;

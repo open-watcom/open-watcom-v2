@@ -260,7 +260,7 @@ void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num )
                 GUIFreeGUIMenuStruct( entry[i].child, entry[i].num_child_menus );
             }
             if( entry[i].label ) {
-                GUIMemFree( entry[i].label );
+                GUIMemFree( (void *)entry[i].label );
             }
         }
         GUIMemFree( entry );

@@ -54,6 +54,7 @@ typedef struct handle_info {
 typedef PHANDLE_INFO    HINSTANCE;
 typedef unsigned int    UINT;
 typedef char            _WCI86FAR *LPSTR;
+typedef const char      _WCI86FAR *LPCSTR;
 #endif
 
 #if defined( __cplusplus )
@@ -66,7 +67,7 @@ extern unsigned char    FindResources( PHANDLE_INFO hInstance );
 extern unsigned char    InitResources( PHANDLE_INFO hInstance );
 extern int              WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax );
 extern int              WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource, LPSTR *lpszBuffer, int *bufferSize );
-extern int              WResLoadResourceX( PHANDLE_INFO hInstance, LPSTR idType, LPSTR idResource, LPSTR *lpszBuffer, int *bufferSize );
+extern int              WResLoadResourceX( PHANDLE_INFO hInstance, LPCSTR idType, LPCSTR idResource, LPSTR *lpszBuffer, int *bufferSize );
 
 #if defined( __cplusplus )
 }

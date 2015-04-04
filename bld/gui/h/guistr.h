@@ -40,7 +40,7 @@
 
 #define LITSTR( sym, val )
 
-#define pick(c,e,j)     extern char *LIT( c );
+#define pick(c,e,j)     extern const char *LIT( c );
 #include "gui.msg"
 #undef pick
 
@@ -63,7 +63,7 @@ extern bool GUIFiniInternalStringTable( void );
 #else
     #define MAKEFAR
 #endif
-#define LITSTR( sym, val ) extern char MAKEFAR LIT( sym )[sizeof( val )];
+#define LITSTR( sym, val ) extern const char MAKEFAR LIT( sym )[sizeof( val )];
 #endif
 
 #ifdef JAPANESE
