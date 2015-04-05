@@ -87,7 +87,8 @@ typedef struct help_file {
 #include "poppck.h"
 
 #define MAX_HELP_FILES  10
-extern help_file HelpFiles[];
+
+extern help_file HelpFiles[MAX_HELP_FILES + 1];
 
 extern int helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
 extern int help_reinit( const char **helpfilenames );
