@@ -34,8 +34,6 @@
 
 extern char             NullStr[];
 
-static char             Str_Enter_Command[] = { "Enter a command" };
-
 typedef struct pmt_window {
     char        *str;
 } pmt_window;
@@ -53,13 +51,12 @@ enum {
 #define DLG_CMD_COLS    35
 
 static gui_control_info Controls[] = {
+    DLG_EDIT( "",             CTL_CMD_EDIT,     1,  0, 29 ),
+    DLG_LIST_BOX( NULL,       CTL_CMD_HISTORY,  1,  2, 29, 5 ),
 
-    DLG_EDIT( "", CTL_CMD_EDIT,                          1,  0, 29 ),
-    DLG_LIST_BOX( NULL, CTL_CMD_HISTORY,                         1,  2, 29, 5 ),
-
-    DLG_BUTTON( "&OK", CTL_CMD_OK,                       2,  7, 12 ),
-    DLG_DEFBUTTON( "&Cancel", CTL_CMD_CANCEL,                   18,  7, 28 ),
-    DLG_CHECK( "C&heck Me", CTL_CMD_CHECK,                       1,  9, 28 ),
+    DLG_BUTTON( "&OK",        CTL_CMD_OK,       2,  7, 12 ),
+    DLG_DEFBUTTON( "&Cancel", CTL_CMD_CANCEL,   18, 7, 28 ),
+    DLG_CHECK( "C&heck Me",   CTL_CMD_CHECK,    1,  9, 28 ),
 };
 
 #define NUM_CONTROLS ArraySize( Controls )
@@ -129,13 +126,13 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
 
 
 extern void     GUISetModalDlgs(bool);
-extern  void    DlgCmd()
+extern  void    DlgCmd( void )
 {
     char        *cmd;
 
     cmd = WndMustAlloc( 100 );
     GUISetModalDlgs( TRUE );
-    DlgOpen( Str_Enter_Command, DLG_CMD_ROWS, DLG_CMD_COLS,
+    DlgOpen( "Enter a command", DLG_CMD_ROWS, DLG_CMD_COLS,
              Controls, NUM_CONTROLS, &CmdEvent, cmd );
     GUISetModalDlgs( FALSE );
 }

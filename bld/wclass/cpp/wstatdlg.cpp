@@ -115,8 +115,8 @@ void WEXPORT WStatDialog::getCtrlText( WControlId id, WString & str ) {
 void WEXPORT WStatDialog::getCtrlText( WControlId id, char *buff, size_t len ) {
 /******************************************************************************/
 
-    char * text;
-    size_t text_len;
+    char    *text;
+    size_t  text_len;
 
     text = GUIGetText( handle(), id );
     if( text == NULL ) {

@@ -34,7 +34,7 @@
 #include "dlgoptn.h"
 
 typedef struct dlg_window_set {
-    unsigned    cancel : 1;
+    bool        cancel;
 } dlg_window_set;
 
 static void SetDlgStatus( gui_window *gui )
@@ -57,16 +57,16 @@ bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         SetDlgStatus( gui );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_OPT_OK:
-            optset->cancel = FALSE;
+            optset->cancel = false;
             GUICloseDialog( gui );
             break;
         case CTL_OPT_CANCEL:
-            optset->cancel = TRUE;
+            optset->cancel = true;
             GUICloseDialog( gui );
             break;
         case CTL_OPT_DEFAULTS:
@@ -75,20 +75,19 @@ bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
         default :
             break;
         }
-        return( TRUE );
+        return( true );
     default :
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
-extern  bool    DlgOptions()
+bool    DlgOptions( void )
 {
     dlg_window_set      optset;
 
-    optset.cancel = TRUE;
+    optset.cancel = true;
     ResDlgOpen( &OptSetEvent, &optset, GUI_MAKEINTRESOURCE( DLG_OPTIONS ) );
-    if( optset.cancel ) return( FALSE );
-    return( TRUE );
+    return( !optset.cancel );
 }

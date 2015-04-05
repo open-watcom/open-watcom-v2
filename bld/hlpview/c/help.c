@@ -48,18 +48,15 @@
 #include "helpscan.h"
 #include "msgbox.h"
 #include "uigchar.h"
+
 #include "clibext.h"
 
 
 extern  EVENT   uivget( VSCREEN * );
 
-static int CheckHelpBlock( HelpFp help_file, char *topic, char *buffer,
-                           long int start );
-static void replacetopic( char *word );
-static ScanCBfunc scanCallBack;
-
-int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
-                 bool first );
+static int          CheckHelpBlock( HelpFp help_file, char *topic, char *buffer, long int start );
+static void         replacetopic( char *word );
+static ScanCBfunc   scanCallBack;
 
 // In normal QNX text files, the record separator is just a LF.
 // However, with the new help file format containing both binary and
@@ -104,7 +101,7 @@ typedef struct hstackent {
     int                 type;
     char                helpfname[_MAX_PATH];
     char                word[1];        /* dynamic array */
-}a_hstackent;
+} a_hstackent;
 
 typedef struct a_field {
     SAREA               area;
@@ -145,16 +142,16 @@ static a_hot_spot              hotSpots[] = {
     { "&Search",          EV_ALT_S,       -1,       0,     15, 0  },
     { "Cancel",           EV_ESCAPE,      -1,      -2,     15, 0  },
     { NULL,               EV_NO_EVENT }
-    };
+};
 
 #define SEARCH_HOT_SPOT         2
 
-static VFIELD       hotSpotFields[] = {
+static VFIELD hotSpotFields[] = {
     {{0}, FLD_HOT, &hotSpots[0] },
     {{0}, FLD_HOT, &hotSpots[2] },
     {{0}, FLD_HOT, &hotSpots[1] },
     {{0}, FLD_VOID,NULL }
-    };
+};
 
 static EVENT keyShift[] = {
     EV_NO_EVENT,
@@ -195,7 +192,8 @@ static EVENT helpEventList[] = {
     EV_FIELD_CHANGE,
     E_UP,
     E_DOWN,
-    EV_NO_EVENT };           /* end of single event list */
+    EV_NO_EVENT         /* end of single event list */
+};
 
 static a_hstackent      *helpStack;
 static a_field          *helpTab;
@@ -254,7 +252,7 @@ SAREA *hlp_ut_screen_area( SAREA *area, bool all, bool framed )
     area->width = UIData->width - 2*framed;
     area->row = framed;
     area->height = UIData->height - 2*framed;
-    if( !all  &&  uimenuson() ) {
+    if( !all && uimenuson() ) {
         area->row += 1;
         area->height -= 1;
     }
@@ -294,14 +292,13 @@ static char *helpGetString( char *buf, size_t size, HelpFp fp )
 
     pos = HelpTell( fp );
     bytesread = HelpRead( fp, buf, size - 1 );
-    if( bytesread == 0 || bytesread == -1 ) return( NULL );
-    cnt = 0;
-    while( cnt < bytesread ) {
+    if( bytesread == 0 || bytesread == -1 )
+        return( NULL );
+    for( cnt = 0; cnt < bytesread; ++cnt ) {
         if( buf[cnt] == '\n' ) {
             cnt++;
             break;
         }
-        cnt ++;
     }
     HelpSeek( fp, pos + cnt, HELP_SEEK_SET );
     buf[cnt] = '\0';
@@ -318,7 +315,8 @@ static int OpenTopicInFile( help_file *fileinfo, char *topic, char *buffer )
     int                 next_posn;        /* - contains indicator for next pos'n   */
     unsigned long       topic_pos;
 
-    if( fileinfo->f == -1 ) return( 0 );
+    if( fileinfo->f == -1 )
+        return( 0 );
     if( fileinfo->searchhdl != NULL ) {
         /* search by new method */
         topic_pos = HelpFindTopicOffset( fileinfo->searchhdl, topic );
@@ -345,8 +343,7 @@ static int OpenTopicInFile( help_file *fileinfo, char *topic, char *buffer )
                 return( 1 );
             }
         }
-        next_posn = CheckHelpBlock( fileinfo->f, topic, buffer,
-                                    start_offset + size_left );
+        next_posn = CheckHelpBlock( fileinfo->f, topic, buffer, start_offset + size_left );
         if( next_posn > 0 ) {
             start_offset += size_left;
         }
@@ -359,21 +356,26 @@ static char *scanTopic( char *buf, char **theend )
     char        *topic;
     char        *end;
 
-    if( memcmp( buf, "::::", 4 ) != 0 ) return( NULL );
+    if( memcmp( buf, "::::", 4 ) != 0 )
+        return( NULL );
     if( buf[4] == '"' ) {
         topic = buf + 5;
-        end = topic;
-        while( *end != '"' && *end != '\0' ) {
-            if( *end == HELP_ESCAPE ) end++;
-            end++;
+        for( end = topic; *end != '"' && *end != '\0'; ++end ) {
+            if( *end == HELP_ESCAPE ) {
+                end++;
+            }
         }
     } else {
         topic = buf + 5;
-        while( *topic == ' ' ) topic++;
+        while( *topic == ' ' )
+            topic++;
         end = topic;
-        while( *end != ' ' && *end != '\n' && end != '\0' ) end++;
+        while( *end != ' ' && *end != '\n' && end != '\0' ) {
+            end++;
+        }
     }
-    if( theend != NULL ) *theend = end;
+    if( theend != NULL )
+        *theend = end;
     return( topic );
 }
 
@@ -400,7 +402,9 @@ static int CheckHelpBlock( HelpFp help_file, char *topic, char *buffer,
         ftopic = scanTopic( buffer, &end );
         len = end - ftopic;
         retn = strnicmp( topic, ftopic, len );
-        if( !retn && topic[ len ] != '\0' ) retn = 1;
+        if( !retn && topic[len] != '\0' ) {
+            retn = 1;
+        }
     }
     return( retn );
 }
@@ -427,7 +431,7 @@ static help_file *help_open( char *buffer )
     help_file   *h;
     char        *newtopic;
 
-    for( h=HelpFiles; h->name != NULL; ++h ) {
+    for( h = HelpFiles; h->name != NULL; ++h ) {
         if( h->f == 0 ) {
             /* text files screw up ctrl z */
             h->f = HelpOpen( h->name, HELP_OPEN_RDONLY | HELP_OPEN_BINARY );
@@ -441,7 +445,8 @@ static help_file *help_open( char *buffer )
             break;
         }
     }
-    if( h->name == NULL ) return( NULL );
+    if( h->name == NULL )
+        return( NULL );
     return( h );
 }
 
@@ -452,10 +457,10 @@ static void add_field( a_field *ht, bool changecurr )
     int                 count;
 
     count = 0;
-    for( p=&helpTab; ; p = &((*p)->next) ) {
+    for( p = &helpTab; ; p = &((*p)->next) ) {
         if( *p == NULL
-        ||  (*p)->area.row > ht->area.row
-        || ((*p)->area.row == ht->area.row  &&  (*p)->area.col > ht->area.col )
+        || (*p)->area.row > ht->area.row
+        || ((*p)->area.row == ht->area.row && (*p)->area.col > ht->area.col )
         ) {
             ht->next = *p;
             *p = ht;
@@ -473,7 +478,8 @@ static int field_count( a_field *table, a_field *field )
 {
     int                 i;
 
-    if( field == NULL ) return( 0 );
+    if( field == NULL )
+        return( 0 );
     for( i = 0; table != NULL; table = table->next, ++i ) {
         if( table == field ) {
             return( i );
@@ -518,7 +524,7 @@ static void free_fields( a_field **ht )
 
 static a_field *field_find( a_field *table, int count )
 {
-    for( ; count > 0  &&  table != NULL; --count, table = table->next )
+    for( ; count > 0 && table != NULL; --count, table = table->next )
         ;
 
     return( table );
@@ -529,12 +535,13 @@ static void vscroll_fields( a_field **ht, SAREA use, int incr )
     a_field             **p;
     a_field             **next;
 
-    if( incr == 0 ) return;
-    for( p=ht; *p && (*p)->area.row < use.row+use.height ; p = next ) {
+    if( incr == 0 )
+        return;
+    for( p = ht; *p && (*p)->area.row < use.row + use.height ; p = next ) {
         next = &((*p)->next);
         if( (*p)->area.row >= use.row ) {
-            if((incr > 0  &&  (*p)->area.row < use.row + incr )
-            || (incr < 0  &&  (*p)->area.row - incr >= use.row + use.height) ) {
+            if((incr > 0 && (*p)->area.row < use.row + incr )
+            || (incr < 0 && (*p)->area.row - incr >= use.row + use.height) ) {
                 next = p;
                 del_field( *ht, p, TRUE );
             } else {
@@ -628,7 +635,7 @@ static EVENT hlpwait( VTAB *tab )
     unsigned            len2;
 
     helpCur = field_find( helpTab, helpStack->cur );
-    if( helpTab != NULL  &&  helpCur == NULL ) {
+    if( helpTab != NULL && helpCur == NULL ) {
         helpCur = helpTab;
     }
     tab->other = helpCur;
@@ -700,7 +707,7 @@ static EVENT hlpwait( VTAB *tab )
                 helpCur = HelpMemAlloc( sizeof( a_field ) + len1 + len2 );
                 memcpy( helpCur->keyword, helpStack->word, len1 );
                 memcpy( helpCur->keyword + len1, helpStack->helpfname, len2 );
-                helpCur->keyword[ len1 + len2 ] = '\0';
+                helpCur->keyword[len1 + len2] = '\0';
                 helpCur->key1_len = len1;
                 helpCur->key2_len = len2;
                 helpCur->next = NULL;
@@ -727,7 +734,8 @@ static EVENT hlpwait( VTAB *tab )
             helpCur = tab->curr;
             break;
         case EV_MOUSE_RELEASE:
-            if( tab->other == NULL ) break;
+            if( tab->other == NULL )
+                break;
             if( ignoreMouseRelease ) {
                 /* this mouse release is for a mouse press that occured
                  * before this help topic was opened */
@@ -842,9 +850,9 @@ static void scanCallBack( TokenType type, Info *info, void *_myinfo )
         if( info->u.link.hfname_len != 0 ) {
             memcpy( ht->keyword + info->u.link.topic_len, info->u.link.hfname,
                     info->u.link.hfname_len );
-            ht->keyword[ info->u.link.topic_len + info->u.link.hfname_len ] = '\0';
+            ht->keyword[info->u.link.topic_len + info->u.link.hfname_len] = '\0';
         } else {
-            ht->keyword[ info->u.link.topic_len ] = '\0';
+            ht->keyword[info->u.link.topic_len] = '\0';
         }
         ht->key1_len = info->u.link.topic_len;
         ht->key2_len = info->u.link.hfname_len;
@@ -981,8 +989,7 @@ static void putline( char *buffer, int line )
             ++i;
         }
         if( i - start > 0 ) {
-            uivtextput( &helpScreen, line, helpScreen.col, currentAttr,
-                      &buffer[start], i - start );
+            uivtextput( &helpScreen, line, helpScreen.col, currentAttr, &buffer[start], i - start );
         }
         helpScreen.col += i-start;
         if( buffer[i] == HELP_ESCAPE ) {
@@ -1048,7 +1055,8 @@ static void seek_line( int line )
         HelpSeek( helpFileHdl, topPos + helpPos[lastHelpLine], HELP_SEEK_SET );
         for( i = lastHelpLine; ; ++i ) {
             save_line( i, HelpTell( helpFileHdl ) );
-            if( i == line ) break;
+            if( i == line )
+                break;
             if( !mygetline() || strnicmp( helpInBuf, "::::", 4 ) == 0 ) {
                 maxLine = i;
                 break;
@@ -1076,8 +1084,10 @@ static void handleFooter( int *startline, SAREA *use, SAREA *line )
     if( strnicmp( helpInBuf, ":t", 2 ) == 0 ) {
         ++start;        /* leave room for line */
         for( ;; ) {
-            if( !mygetline() ) break;
-            if( strnicmp( helpInBuf, ":et", 3 ) == 0 ) break;
+            if( !mygetline() )
+                break;
+            if( strnicmp( helpInBuf, ":et", 3 ) == 0 )
+                break;
             processLine( helpInBuf, helpOutBuf, start, FALSE );
             putline( helpOutBuf, start );
             ++start;
@@ -1102,9 +1112,12 @@ static void handleHeader( int *start, SAREA *line )
     cur = 0;
     if( strnicmp( helpInBuf, ":h", 2 ) == 0 ) {
         for( ;; ) {
-            if( !mygetline() ) break;
-            if( strnicmp( helpInBuf, ":t", 2 ) == 0 ) break;
-            if( strnicmp( helpInBuf, ":eh", 3 ) == 0 ) break;
+            if( !mygetline() )
+                break;
+            if( strnicmp( helpInBuf, ":t", 2 ) == 0 )
+                break;
+            if( strnicmp( helpInBuf, ":eh", 3 ) == 0 )
+                break;
             processLine( helpInBuf, helpOutBuf, cur, FALSE );
             putline( helpOutBuf, cur );
             cur ++;
@@ -1163,7 +1176,7 @@ static int scrollHelp( SAREA *use, int lastline, bool changecurr )
     seek_line( start );
     for( ;; ++start ) {
         save_line( start, HelpTell( helpFileHdl ) );
-        if( !mygetline()  ||  strncmp( helpInBuf, "::::", 4 ) == 0  ) {
+        if( !mygetline() || strncmp( helpInBuf, "::::", 4 ) == 0  ) {
             maxLine = start;
             break;
         }
@@ -1182,8 +1195,7 @@ static int scrollHelp( SAREA *use, int lastline, bool changecurr )
         end = maxLine;
     }
     display_fields();
-    hotSpots[1].startcol = ( helpScreen.area.width - hotSpots[1].length )
-                           / 2;
+    hotSpots[1].startcol = ( helpScreen.area.width - hotSpots[1].length ) / 2;
     addSearchButton( helpSearchHdl != NULL );
     uiposnhotspots( &helpScreen, hotSpotFields );
     uiprinthotspots( &helpScreen, hotSpotFields );
@@ -1229,7 +1241,7 @@ static int dispHelp( char *str, VTAB *tab )
 
     if( helpLines > 0 ) {
         maxPos = helpLines + 1;
-        helpPos = HelpMemAlloc( maxPos * sizeof(*helpPos) );
+        helpPos = HelpMemAlloc( maxPos * sizeof( *helpPos ) );
     } else {
         maxPos = 0;
         helpPos = NULL;
@@ -1246,7 +1258,7 @@ static int dispHelp( char *str, VTAB *tab )
         currentColour = C_PLAIN;
         currentAttr = AT( ATTR_NORMAL );
         if( lastline != currLine ) {
-            lastline = scrollHelp( &use, lastline, ev != EV_NO_EVENT );
+            lastline = scrollHelp( &use, lastline, ( ev != EV_NO_EVENT ) );
         }
         ev = hlpwait( tab );
         switch( ev ) {
@@ -1261,7 +1273,7 @@ static int dispHelp( char *str, VTAB *tab )
         case EV_CURSOR_DOWN:
         case EV_BOTTOM:
             ++currLine;
-            if( maxLine != 0  &&  currLine+use.height > maxLine ) {
+            if( maxLine != 0 && currLine+use.height > maxLine ) {
                 --currLine;
             }
             break;
@@ -1276,7 +1288,7 @@ static int dispHelp( char *str, VTAB *tab )
             break;
         case EV_PAGE_DOWN:
             currLine += use.height;
-            if( maxLine != 0  &&  currLine >= maxLine ) {
+            if( maxLine != 0 && currLine >= maxLine ) {
                 currLine -= use.height;
             }
             break;
@@ -1329,8 +1341,7 @@ static char *fixHelpTopic( char *topic )
     ptr = topic;
     cnt = 0;
     while( *ptr != '\0' ) {
-        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{'
-            || *ptr == '}' ) {
+        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
             cnt++;
         }
         cnt ++;
@@ -1340,8 +1351,7 @@ static char *fixHelpTopic( char *topic )
     retptr = ret;
     ptr = topic;
     while( *ptr != '\0' ) {
-        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{'
-            || *ptr == '}' ) {
+        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
             *retptr = HELP_ESCAPE;
             retptr ++;
             *retptr = *ptr;
@@ -1355,76 +1365,7 @@ static char *fixHelpTopic( char *topic )
     return( ret );
 }
 
-int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
-{
-    bool        first;
-    int         err;
-    char        filename[_MAX_PATH];
-    char        *hfiles[] = { NULL, NULL };
-    char        ext[_MAX_EXT];
-    char        *buffer;
-    char        *helptopic;
-
-    first = TRUE;
-    err = FALSE;
-    if( topic != NULL ) {
-        size_t len = strlen( topic ) + 1;
-        helptopic = HelpMemAlloc( len );
-        memcpy( helptopic, topic, len );
-    } else {
-        helptopic = NULL;
-    }
-    switch( lang ) {
-    case HELPLANG_FRENCH:
-        hotSpots[0].str = "F4=Sujet pr‚c‚dent";
-        hotSpots[1].str = "Sortir";
-        break;
-    case HELPLANG_ENGLISH:
-        break;
-    }
-    helpStack = NULL;
-    currentColour = C_PLAIN;
-    currentAttr = AT( ATTR_NORMAL );
-    /* initialize the tab filter */
-    tabFilter.tab = (unsigned (*)(void *,void *))help_in_tab;
-    tabFilter.next = (a_tab_field *(*)(void *,void *))help_next_field;
-    tabFilter.parm = helpTab;
-    tabFilter.mousepos = (void *(*)(void *,ORD *, ORD *))uivmousepos;
-    tabFilter.mouseparm = &helpScreen;
-    tabFilter.first = helpTab;
-    tabFilter.wrap = FALSE;
-    tabFilter.enter = FALSE;
-    if( HelpFiles->name == NULL ) {
-        return( HELP_NO_FILE );
-    }
-    _splitpath( HelpFiles->name, NULL, NULL, filename, ext );
-    strcat( filename, ext );
-    hfiles[ 0 ] = filename;
-    while( ( helptopic != NULL || first ) ) {
-        if( first || help_reinit( hfiles ) ) {
-            err = do_showhelp( &helptopic, hfiles[0], rtn, first );
-            if( err == HELP_NO_SUBJECT ) {
-                break;
-            }
-        } else {        // cannot open help file for hyperlink
-            buffer = HelpMemAlloc( 28 + strlen( hfiles[0] ) );
-            sprintf( buffer, "Unable to open helpfile \"%s\".", hfiles[0] );
-            ShowMsgBox( "Error", buffer );
-            HelpMemFree( buffer );
-            HelpMemFree( helptopic );
-            helptopic = HelpMemAlloc( strlen( helpStack->word ) + 1 );
-            strcpy( helptopic, helpStack->word );
-            strcpy( hfiles[0], helpStack->helpfname );
-            prevtopic();
-        }
-        first = FALSE;
-    }
-    HelpMemFree( helptopic );
-    return( err );
-}
-
-int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
-                 bool first )
+static int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ), bool first )
 {
     int         err;
     char        *ptr;
@@ -1461,9 +1402,13 @@ int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
     nexttopic( htopic );
     for( ;; ) {
         err = findhelp( &tabFilter );
-        if( err != HELP_OK ) break;
-        if( curEvent == EV_ESCAPE ) break;
-        if( curEvent == EV_KILL_UI ) break;
+        if( err != HELP_OK )
+            break;
+        if( curEvent == EV_ESCAPE )
+            break;
+        if( curEvent == EV_KILL_UI ) {
+            break;
+        }
     }
     SearchDlgFini();
     help_close();
@@ -1480,10 +1425,10 @@ int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
     if( helpTab != NULL && helpCur->key2_len != 0 ) { // cross file link
         *helptopic = HelpMemAlloc( helpCur->key1_len + 1 );
         strncpy( *helptopic, helpCur->keyword, helpCur->key1_len );
-        (*helptopic)[ helpCur->key1_len ] = '\0';
-        ptr = &( helpCur->keyword[ helpCur->key1_len ] );
+        (*helptopic)[helpCur->key1_len] = '\0';
+        ptr = &( helpCur->keyword[helpCur->key1_len] );
         strncpy( filename, ptr, helpCur->key2_len );
-        filename[ helpCur->key2_len ] = '\0';
+        filename[helpCur->key2_len] = '\0';
         if( helpCur != tabFilter.curr ) { // backwards through cross file link
             prevtopic();
         }
@@ -1491,5 +1436,73 @@ int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
         Free_Stack();
     }
     free_fields( &helpTab );
+    return( err );
+}
+
+int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
+{
+    bool        first;
+    int         err;
+    char        filename[_MAX_PATH];
+    char        *hfiles[] = { NULL, NULL };
+    char        ext[_MAX_EXT];
+    char        *buffer;
+    char        *helptopic;
+
+    if( HelpFiles->name == NULL ) {
+        return( HELP_NO_FILE );
+    }
+    switch( lang ) {
+    case HELPLANG_FRENCH:
+        hotSpots[0].str = "F4=Sujet pr‚c‚dent";
+        hotSpots[1].str = "Sortir";
+        break;
+    case HELPLANG_ENGLISH:
+        break;
+    }
+    helpStack = NULL;
+    currentColour = C_PLAIN;
+    currentAttr = AT( ATTR_NORMAL );
+    /* initialize the tab filter */
+    tabFilter.tab = (unsigned (*)(void *,void *))help_in_tab;
+    tabFilter.next = (a_tab_field *(*)(void *,void *))help_next_field;
+    tabFilter.parm = helpTab;
+    tabFilter.mousepos = (void *(*)(void *,ORD *, ORD *))uivmousepos;
+    tabFilter.mouseparm = &helpScreen;
+    tabFilter.first = helpTab;
+    tabFilter.wrap = FALSE;
+    tabFilter.enter = FALSE;
+    _splitpath( HelpFiles->name, NULL, NULL, filename, ext );
+    strcat( filename, ext );
+    hfiles[0] = filename;
+    if( topic != NULL ) {
+        size_t len = strlen( topic ) + 1;
+        helptopic = HelpMemAlloc( len );
+        memcpy( helptopic, topic, len );
+    } else {
+        helptopic = NULL;
+    }
+    err = FALSE;
+    first = TRUE;
+    while( helptopic != NULL || first ) {
+        if( first || help_reinit( hfiles ) ) {
+            err = do_showhelp( &helptopic, hfiles[0], rtn, first );
+            if( err == HELP_NO_SUBJECT ) {
+                break;
+            }
+        } else {        // cannot open help file for hyperlink
+            buffer = HelpMemAlloc( 28 + strlen( hfiles[0] ) );
+            sprintf( buffer, "Unable to open helpfile \"%s\".", hfiles[0] );
+            ShowMsgBox( "Error", buffer );
+            HelpMemFree( buffer );
+            HelpMemFree( helptopic );
+            helptopic = HelpMemAlloc( strlen( helpStack->word ) + 1 );
+            strcpy( helptopic, helpStack->word );
+            strcpy( hfiles[0], helpStack->helpfname );
+            prevtopic();
+        }
+        first = FALSE;
+    }
+    HelpMemFree( helptopic );
     return( err );
 }

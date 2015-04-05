@@ -169,6 +169,7 @@ bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
 
     found = false;
     if( GUIHasHintType( wnd, MENU_HINT ) ) {
+        index = 0;
         for( i = 0; (i < wnd->hint.num_menu) && !found; i++ ) {
             if( wnd->hint.menu[i].id == id ) {
                 found = true;

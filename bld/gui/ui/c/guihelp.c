@@ -103,7 +103,7 @@ bool GUIDisplayHelp( gui_window *wnd, char *file, const char *topic )
     return( true );
 }
 
-bool GUIDisplayHelpId( gui_window *wnd, char *file, gui_ctl_id id )
+bool GUIDisplayHelpId( gui_window *wnd, char *file, gui_hlp_id id )
 {
     wnd=wnd;file=file;id=id;
     return( false );

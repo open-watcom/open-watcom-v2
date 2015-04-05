@@ -381,7 +381,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         item = NULL;
         if( child ) {
             item = GUIGetControlByHwnd( wnd, child );
-            if( item != NULL && item->id ) {
+            if( item != NULL && item->id != 0 ) {
                 msg_processed = GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
             }
         }
@@ -396,7 +396,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
             _wpi_mapwindowpoints( hwnd, HWND_DESKTOP, &pnt, 1 );
             child = _wpi_windowfrompoint( pnt );
             item = GUIGetControlByHwnd( wnd, child );
-            if( item != NULL && item->id && ( _wpi_getparent(child) == hwnd ) ) {
+            if( item != NULL && item->id != 0 && ( _wpi_getparent( child ) == hwnd ) ) {
                 msg_processed = GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
             }
         }

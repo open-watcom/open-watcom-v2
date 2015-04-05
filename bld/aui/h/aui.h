@@ -434,8 +434,11 @@ extern void             WndZapped( a_window * );
 extern a_window         *WndFindClass( a_window *, wnd_class );
 extern void             WndForAllClass( wnd_class class, void (*rtn)( a_window * ) );
 
-extern int              SpawnP( void (*func)( void * ), void *parm );
-extern int              Spawn( void (*func)( void ) );
+typedef void aui_spawn_funcP( void * );
+typedef void aui_spawn_func( void );
+
+extern int              SpawnP( aui_spawn_funcP *, void *parm );
+extern int              Spawn( aui_spawn_func * );
 extern void             Suicide( void );
 
 #define WND_ALNUM_CHAR  '@'

@@ -47,7 +47,7 @@ WCLASS WSystemHelp : public WObject {
         bool WEXPORT sysHelpOnHelp( void );
         bool WEXPORT sysHelpSearch( const char *topic );
         bool WEXPORT sysHelpTopic( const char *topic );
-        bool WEXPORT sysHelpId( int help_id );
+        bool WEXPORT sysHelpId( gui_hlp_id help_id );
         const char * WEXPORT getHelpFile( void );
         const char * WEXPORT getHelpTitle( void ) { return( _title ); };
         int WEXPORT getHelpOffset( void ) { return( _offset ); };

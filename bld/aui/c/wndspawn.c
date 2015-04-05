@@ -39,7 +39,7 @@ static jmp_buf          *ExitSP;
  * Spawn - mark a level to pop back to on an error
  */
 
-int Spawn( void (*func)(void) )
+int Spawn( aui_spawn_func *func )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -58,7 +58,7 @@ int Spawn( void (*func)(void) )
 }
 
 
-int SpawnP( void (*func)(void*), void *parm )
+int SpawnP( aui_spawn_funcP *func, void *parm )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -77,7 +77,7 @@ int SpawnP( void (*func)(void*), void *parm )
 }
 
 
-void Suicide()
+void Suicide( void )
 {
     longjmp( *ExitSP, 1 );
 }

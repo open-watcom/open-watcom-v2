@@ -681,7 +681,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             break;
         case MENU_FIXED_TOOLBAR :
         case MENU_FLOATING_TOOLBAR :
-            if( GUICreateToolBar( gui, id == MENU_FIXED_TOOLBAR, 0,
+            if( GUICreateToolBar( gui, ( id == MENU_FIXED_TOOLBAR ), 0,
                                   NUM_TOOLBAR_BUTTONS, ToolBar, true,
                                   &ToolPlain, &ToolStandout ) ) {
                 SetFixedFloat( gui );
@@ -1310,8 +1310,7 @@ static void CreatePopup( gui_window *gui, int num_menus,
             menu[i].child = sub_menu;
         }
         if( menu[i].child != NULL ) {
-            CreatePopup( gui, menu[i].num_child_menus, menu[i].child,
-                         menu[i].id, true );
+            CreatePopup( gui, menu[i].num_child_menus, menu[i].child, menu[i].id, true );
         }
     }
 }

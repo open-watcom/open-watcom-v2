@@ -46,11 +46,9 @@
 
 
 static gui_control_info Controls[] = {
-
-    DLG_INVISIBLE_EDIT( "", CTL_NEW_EDIT,               C0, R0, W-1 ),
-
-    DLG_DEFBUTTON( "OK", CTL_NEW_OK,                    B1, R1, B1+BW ),
-    DLG_BUTTON( "Cancel", CTL_NEW_CANCEL,               B2, R1, B2+BW ),
+    DLG_INVISIBLE_EDIT( "", CTL_NEW_EDIT,               C0, R0, W - 1 ),
+    DLG_DEFBUTTON( "OK",    CTL_NEW_OK,                 B1, R1, B1 + BW ),
+    DLG_BUTTON( "Cancel",   CTL_NEW_CANCEL,             B2, R1, B2 + BW ),
 };
 
 void    Password( const char *title, char *buff, unsigned buff_len )

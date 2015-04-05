@@ -839,8 +839,7 @@ static WPI_POINT prevpoint = { -1, -1 };
 
 /*  Procedure to control windows */
 
-WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                                    WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_window          *wnd;
     gui_window          *root;
@@ -858,7 +857,6 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
     gui_create_info     *dlg_info;
     bool                use_defproc;
-    gui_ctl_id          control_id;
     HWND                win;
 #ifndef __OS2_PM__
     gui_key_state       key_state;
@@ -1209,9 +1207,9 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         WPI_MAKEPOINT( wparam, lparam, currentpoint );
         win = PM1632WinWindowFromPoint( hwnd, &currentpoint, false );
         if( ( win != (HWND)NULL) && ( win != hwnd ) ) {
-            control_id = _wpi_getdlgctrlid( win );
-            if( control_id != 0 ) {
-                GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &control_id );
+            id = _wpi_getdlgctrlid( win );
+            if( id != 0 ) {
+                GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &id );
             }
         } else {
             _wpi_setcapture( hwnd );
@@ -1246,19 +1244,19 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     case WM_SYSCOMMAND:
         id = _wpi_getid( wparam );
         switch( id ) {
-            case SC_NEXTWINDOW :
-                if( GUIMDI ) {
-                    NextWndToFront( hwnd );
-                    return( 0L );
-                }
-            default :
-                if( ( id & 0xf000 ) == ( SC_NEXTWINDOW & 0xf000 ) ) {
-                    /* top value same for all SC_* values */
-                    return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-                } else {
-                    ProcessMenu( wnd, id );
-                }
-                break;
+        case SC_NEXTWINDOW :
+            if( GUIMDI ) {
+                NextWndToFront( hwnd );
+                return( 0L );
+            }
+        default :
+            if( ( id & 0xf000 ) == ( SC_NEXTWINDOW & 0xf000 ) ) {
+                /* top value same for all SC_* values */
+                return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+            } else {
+                ProcessMenu( wnd, id );
+            }
+            break;
         }
         break;
 #ifdef __OS2_PM__
@@ -1279,10 +1277,10 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             WPI_MAKEPOINT( wparam, lparam, currentpoint );
             MapWindowPoints( hwnd, (HWND)NULL, &currentpoint, 1 );
             win = _wpi_windowfrompoint( currentpoint );
-            control_id = _wpi_getdlgctrlid( win );
-            if( control_id != 0 ) {
-                if( _wpi_getparent(win) == hwnd ) {
-                    GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &control_id );
+            id = _wpi_getdlgctrlid( win );
+            if( id != 0 ) {
+                if( _wpi_getparent( win ) == hwnd ) {
+                    GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &id );
                 }
             }
         }
@@ -1341,7 +1339,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         if( wnd->flags & DOING_CLOSE ) {
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
         } else if( wnd->style & GUI_CLOSEABLE ) {
-            
+
             if( GUIEVENTWND( wnd, GUI_CLOSE, NULL ) ) {
                 wnd->flags |= DOING_CLOSE;
                 if( wnd->flags & IS_ROOT ) {
@@ -1367,7 +1365,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             GUIDestroyAllPopupsWithNoParent();
         }
         GUIFreeWindowMemory( wnd, false, false );
-        
+
         if( NumWindows == 0 ) {
             _wpi_postquitmessage( 0 );
             Posted = true;

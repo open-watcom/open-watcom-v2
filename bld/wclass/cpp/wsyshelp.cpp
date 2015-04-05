@@ -136,8 +136,8 @@ bool WEXPORT WSystemHelp::sysHelpTopic( const char *topic )
 }
 
 
-bool WEXPORT WSystemHelp::sysHelpId( int help_id )
-/************************************************/
+bool WEXPORT WSystemHelp::sysHelpId( gui_hlp_id help_id )
+/*******************************************************/
 {
     if( !_helpInstance ) {
         return( false );

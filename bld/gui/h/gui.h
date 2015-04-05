@@ -36,6 +36,7 @@ typedef int         gui_ord;
 
 typedef int         gui_ctl_id;
 typedef int         gui_res_id;
+typedef unsigned    gui_hlp_id;
 
 #if defined( _M_I86 )
 typedef const char __far    *res_name_or_id;
@@ -846,7 +847,7 @@ extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_a
 // please use the above functions instead
 extern bool GUIDisplayHelp( gui_window *wnd, char *file, const char *topic );
 extern bool GUIDisplayHelpWin4( gui_window *wnd, char *file, const char *topic );
-extern bool GUIDisplayHelpId( gui_window *wnd, char *file, int id );
+extern bool GUIDisplayHelpId( gui_window *wnd, char *file, gui_hlp_id id );
 
 /* Scroll Functions                            */
 /* Init - set value, don't draw anything       */

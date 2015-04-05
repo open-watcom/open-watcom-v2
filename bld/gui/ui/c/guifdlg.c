@@ -115,8 +115,7 @@ typedef enum {
 } process_rc;
 
 enum {
-    CTL_FIRST = 0,
-    CTL_CANCEL,
+    CTL_CANCEL = 1,
     CTL_OK,
     CTL_FILE_LIST,
     CTL_DIR_LIST,
@@ -402,7 +401,7 @@ static bool addToList( const char ***list, int num, const char *data, size_t len
 {
     char    *str;
 
-    *list = GUIMemRealloc( *list, ( num + 2 ) * sizeof( char * ) );
+    *list = (const char **)GUIMemRealloc( (void *)*list, ( num + 2 ) * sizeof( char * ) );
     if( *list == NULL ) {
         return( false );
     }
@@ -433,7 +432,7 @@ static void freeStringList( const char ***list )
         GUIMemFree( (void *)(*list)[cnt] );
         cnt++;
     }
-    GUIMemFree( *list );
+    GUIMemFree( (void *)*list );
     *list = NULL;
 
 } /* freeStringList */
@@ -738,7 +737,7 @@ static bool setFileList( gui_window *gui, const char *ext )
     }
     GUIClearList( gui, CTL_FILE_LIST );
     if( cnt > 0 ) {
-        qsort( list, cnt, sizeof( char * ), Compare );
+        qsort( (void *)list, cnt, sizeof( char * ), Compare );
         for( i = 0; i < cnt; i++ ) {
             GUIAddText( gui, CTL_FILE_LIST, list[i] );
         }
@@ -860,7 +859,7 @@ static bool setDirList( gui_window *gui )
     }
     closedir( directory );
 
-    qsort( list, cnt, sizeof( char * ), Compare );
+    qsort( (void *)list, cnt, sizeof( char * ), Compare );
     for( i = 0; i < cnt; i++ ) {
         GUIAddText( gui, CTL_DIR_LIST, list[i] );
     }

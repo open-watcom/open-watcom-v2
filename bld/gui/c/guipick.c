@@ -88,8 +88,9 @@ bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
 int GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
 {
     dlg_pick    dlg;
+    size_t      len;
 
-    int len = strlen( title );
+    len = strlen( title );
     if( len < DLG_PICK_COLS )
         len = DLG_PICK_COLS;
     if( len > DLG_MAX_COLS )

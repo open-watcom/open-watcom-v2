@@ -378,8 +378,7 @@ void WndCreateFloatingPopup( a_window *wnd, gui_point *point,
         }
         point = &mouse;
     }
-    GUICreateFloatingPopup( wnd->gui, point, num_popups,
-                            menu, GUI_TRACK_BOTH, last_popup );
+    GUICreateFloatingPopup( wnd->gui, point, num_popups, menu, GUI_TRACK_BOTH, last_popup );
 }
 
 
@@ -397,8 +396,7 @@ void    WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu )
         }
     } else if( wnd->num_popups != 0 ) {
         if( menu == NULL ) {
-            WndCreateFloatingPopup( wnd, point, wnd->num_popups,
-                                    wnd->popupmenu, &wnd->last_popup );
+            WndCreateFloatingPopup( wnd, point, wnd->num_popups, wnd->popupmenu, &wnd->last_popup );
         } else if( menu->style & GUI_GRAYED ) {
             Ring();
         } else if( menu->child == NULL ) {

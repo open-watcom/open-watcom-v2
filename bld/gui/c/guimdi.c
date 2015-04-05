@@ -156,7 +156,7 @@ static void MakeLabel( int index, char *name, char *label )
 
 static void MakeHintText( int index, char *name )
 {
-    int length;
+    size_t  length;
 
     length = strlen( LIT( Window_Name_Hint ) );
     strncpy( MenuHint[index], LIT( Window_Name_Hint ), length );

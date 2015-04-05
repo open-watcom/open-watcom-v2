@@ -609,7 +609,7 @@ HMENU GUICreateSubMenu( gui_window *wnd, int num, gui_menu_struct *menu,
             InsertPopup( wnd, menu[i].id, submenu, type );
         } else {
             _wpi_appendmenu( hmenu, menu_flags, attr_flags,
-                             (unsigned)menu[i].id, (HMENU)NULL, menu[i].label );
+                             menu[i].id, (HMENU)NULL, menu[i].label );
         }
     }
     return( hmenu );
