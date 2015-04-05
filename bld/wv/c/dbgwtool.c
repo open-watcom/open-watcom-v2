@@ -68,7 +68,7 @@ void    FiniToolBar( void )
     int         i;
 
     for( i = 0; i < ArraySize( ToolBar ); ++i ) {
-        WndFree( ToolBar[i].hinttext );
+        WndFree( (void *)ToolBar[i].hinttext );
     }
 }
 

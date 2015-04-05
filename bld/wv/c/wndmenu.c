@@ -229,13 +229,14 @@ char *GetMenuLabel( unsigned size,
                     gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp )
 {
     char        *p;
+    const char  *cp;
 
     while( size != 0 ) {
         if( menu->id == id ) {
-            for( p = menu->label; *p != '\0'; ++p ) {
-                if( *p == '&' && strip_amp ) continue;
-                if( *p == '\t' ) break;
-                *buff++ = *p;
+            for( cp = menu->label; *cp != '\0'; ++cp ) {
+                if( *cp == '&' && strip_amp ) continue;
+                if( *cp == '\t' ) break;
+                *buff++ = *cp;
             }
             *buff = '\0';
             return( buff );
@@ -364,8 +365,8 @@ static void FreeLabels( gui_menu_struct *menu, int num_menus )
         }
         if( menu->style & WND_MENU_ALLOCATED ) {
             menu->style &= ~WND_MENU_ALLOCATED;
-            WndFree( menu->label );
-            WndFree( menu->hinttext );
+            WndFree( (void *)menu->label );
+            WndFree( (void *)menu->hinttext );
         }
         ++menu;
     }
@@ -459,19 +460,23 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
 {
     char                *p;
     char                *new;
+    const char          *cp;
+    size_t              len;
 
     if( menu == NULL ) return;
-    for( p = menu->label; *p != '\0'; ++p ) {
-        if( *p == '\t' ) {
-            *p = '\0';
+    for( cp = menu->label; *cp != '\0'; ++cp ) {
+        if( *cp == '\t' ) {
             break;
         }
     }
-    new = WndAlloc( p - menu->label + 1 + strlen( key ) + 1 );
-    p = StrCopy( menu->label, new );
+    len = p - menu->label;
+    new = WndAlloc( len + 1 + strlen( key ) + 1 );
+    memcpy( new, menu->label, len );
+    p = new + len;
     *p++ = '\t';
     StrCopy( key, p );
-    if( menu->style & WND_MENU_ALLOCATED ) WndFree( menu->label );
+    if( menu->style & WND_MENU_ALLOCATED )
+        WndFree( (void *)menu->label );
     menu->style |= WND_MENU_ALLOCATED;
     menu->label = new;
     if( is_main ) {

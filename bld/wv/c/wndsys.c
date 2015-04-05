@@ -378,11 +378,12 @@ static void ProcessMacro( wnd_macro *mac )
 }
 
 
-static bool AmpEqual( char *label, char ch )
+static bool AmpEqual( const char *label, char ch )
 {
     ch = tolower( ch );
     while( label[0] != '\0' ) {
-        if( label[0] == '&' && ch == tolower( label[1] ) ) return( TRUE );
+        if( label[0] == '&' && ch == tolower( label[1] ) )
+            return( TRUE );
         ++label;
     }
     return( FALSE );

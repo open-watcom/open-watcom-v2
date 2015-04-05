@@ -79,7 +79,7 @@ void WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_to
     NullPopupMenu( popup );
     menu = popup + num_old;
     for( i = 0; i < num_toggles; ++i ) {
-        WndFree( menu->label );
+        WndFree( (void *)menu->label );
         ++menu;
     }
     WndFree( popup );
