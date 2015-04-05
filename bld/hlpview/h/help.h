@@ -89,10 +89,8 @@ typedef struct help_file {
 #define MAX_HELP_FILES  10
 extern help_file HelpFiles[];
 
-int helpinit( char **helpfilenames, HelpSrchPathItem *srchlist );
-int help_reinit( char **helpfilenames );
-void helpfini( void );
-void Free_Stack( void );
-//int showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
-//            HelpLangType lang, bool first );
-int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang );
+extern int helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
+extern int help_reinit( const char **helpfilenames );
+extern void helpfini( void );
+extern void Free_Stack( void );
+extern int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang );

@@ -838,16 +838,16 @@ extern bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
 //                                             required for pm only
 //                                                           |
 //                                                           V
-extern gui_help_instance GUIHelpInit( gui_window *wnd, char *file, char *title );
-extern void GUIHelpFini( gui_help_instance inst, gui_window *wnd, char *file );
-extern bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, const char *topic );
-extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, const char *topic );
+extern gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, char *title );
+extern void GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file );
+extern bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );
+extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );
 
 // the obsolete, crotchety old guard
 // please use the above functions instead
-extern bool GUIDisplayHelp( gui_window *wnd, char *file, const char *topic );
-extern bool GUIDisplayHelpWin4( gui_window *wnd, char *file, const char *topic );
-extern bool GUIDisplayHelpId( gui_window *wnd, char *file, gui_hlp_id id );
+extern bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic );
+extern bool GUIDisplayHelpWin4( gui_window *wnd, const char *file, const char *topic );
+extern bool GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id );
 
 /* Scroll Functions                            */
 /* Init - set value, don't draw anything       */

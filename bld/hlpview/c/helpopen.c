@@ -65,8 +65,8 @@ static void freeSearchList( void )
     }
 }
 
-static bool search_for_file( char *fullpath, char *fname, HelpSrchPathItem *where )
-/*********************************************************************************/
+static bool search_for_file( char *fullpath, const char *fname, HelpSrchPathItem *where )
+/***************************************************************************************/
 {
     unsigned    i;
 
@@ -110,38 +110,45 @@ static bool search_for_file( char *fullpath, char *fname, HelpSrchPathItem *wher
     }
 }
 
-int do_init(                        /* INITIALIZATION FOR THE HELP PROCESS     */
-    char **helpfilenames,           /* - list of help file names               */
+static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     */
+    const char **helpfilenames,     /* - list of help file names               */
     HelpSrchPathItem *srchlist )    /* - list of places to look for help files */
 {
-    int                 count;
-    char                **fname;
-    char                fullpath[_MAX_PATH];
+    int         count;
+    char        fullpath[_MAX_PATH];
+    char        drive[_MAX_DRIVE];
+    char        dir[_MAX_DIR];
+    char        fname[_MAX_FNAME];
+    char        ext[_MAX_EXT];
+    char        *fext;
+    char        filename[_MAX_PATH];
 
-    count = 0;
-    while( HelpFiles[count].name != NULL && count < MAX_HELP_FILES - 1 ) {
+    for( count = 0; count < MAX_HELP_FILES - 1; ++count ) {
+        if( HelpFiles[count].name == NULL )
+            break;
         HelpMemFree( HelpFiles[count].name );
         HelpFiles[count].name = NULL;
-        count += 1;
     }
-    fname = helpfilenames;
-    count = 0;
-    while( *fname != NULL  &&  count < MAX_HELP_FILES-1 ) {
-        if( search_for_file( fullpath, *fname, srchlist ) ) {
+    for( count = 0; count < MAX_HELP_FILES - 1 && *helpfilenames != NULL; ++helpfilenames ) {
+        _splitpath( *helpfilenames, drive, dir, fname, ext );
+        if( *ext == '\0' ) {
+            fext = ".ihp";
+        } else {
+            fext = ext;
+        }
+        _makepath( filename, drive, dir, fname, fext );
+        if( search_for_file( fullpath, filename, srchlist ) ) {
             HelpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
             strcpy( HelpFiles[count].name, fullpath );
             HelpFiles[count].f = 0;
-            count += 1;
+            ++count;
         }
-        ++fname;
     }
-    HelpFiles[count].name = NULL;
-    HelpFiles[count].f = 0;
     return( count );
 }
 
 int helpinit(                       /* INITIALIZATION FOR THE HELP PROCESS     */
-    char **helpfilenames,           /* - list of help file names               */
+    const char **helpfilenames,     /* - list of help file names               */
     HelpSrchPathItem *srchlist )    /* - list of places to look for help files */
 {
     unsigned    i;
@@ -149,7 +156,8 @@ int helpinit(                       /* INITIALIZATION FOR THE HELP PROCESS     *
 
     if( srchlist != NULL ) {
         cnt = 0;
-        while( srchlist[cnt].type != SRCHTYPE_EOL ) cnt++;
+        while( srchlist[cnt].type != SRCHTYPE_EOL )
+            cnt++;
         cnt++;
         srch_List = HelpMemAlloc( cnt * sizeof( HelpSrchPathItem ) );
         for( i = 0; i < cnt ; ++i ) {
@@ -170,29 +178,18 @@ int helpinit(                       /* INITIALIZATION FOR THE HELP PROCESS     *
 }
 
 int help_reinit(                    /* RE-INITIALIZE AFTER CROSS FILE LINK */
-    char **helpfilenames )
+    const char **helpfilenames )
 {
-    int         cnt;
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
-
-
-    _splitpath( helpfilenames[0], drive, dir, fname, ext );
-    if( *ext == '\0' ) {
-        _makepath( helpfilenames[0], drive, dir, fname, ".ihp" );
-    }
-    cnt = do_init( helpfilenames, srch_List );
-    return( cnt );
+    return( do_init( helpfilenames, srch_List ) );
 }
 
 void helpfini( void )
 {
     int         count;
 
-    for( count=0; count < MAX_HELP_FILES - 1; ++count ) {
-        if( HelpFiles[count].name == NULL ) break;
+    for( count = 0; count < MAX_HELP_FILES - 1; ++count ) {
+        if( HelpFiles[count].name == NULL )
+            break;
         HelpMemFree( HelpFiles[count].name );
         HelpFiles[count].name = NULL;
     }

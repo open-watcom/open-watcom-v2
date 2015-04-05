@@ -104,7 +104,7 @@ static void freeSrchList( void )
 
 int main( int argc, char *argv[] )
 {
-    char                *helpfiles[] = { NULL, NULL };
+    const char          *helpfiles[] = { NULL, NULL };
     char                *topic;
     char                filename[ _MAX_PATH ];
     HelpSrchPathItem    *srchlist;

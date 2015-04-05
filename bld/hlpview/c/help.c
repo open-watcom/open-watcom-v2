@@ -1444,7 +1444,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     bool        first;
     int         err;
     char        filename[_MAX_PATH];
-    char        *hfiles[] = { NULL, NULL };
+    const char  *hfiles[] = { NULL, NULL };
     char        ext[_MAX_EXT];
     char        *buffer;
     char        *helptopic;
@@ -1486,19 +1486,19 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     first = TRUE;
     while( helptopic != NULL || first ) {
         if( first || help_reinit( hfiles ) ) {
-            err = do_showhelp( &helptopic, hfiles[0], rtn, first );
+            err = do_showhelp( &helptopic, filename, rtn, first );
             if( err == HELP_NO_SUBJECT ) {
                 break;
             }
         } else {        // cannot open help file for hyperlink
-            buffer = HelpMemAlloc( 28 + strlen( hfiles[0] ) );
-            sprintf( buffer, "Unable to open helpfile \"%s\".", hfiles[0] );
+            buffer = HelpMemAlloc( 28 + strlen( filename ) );
+            sprintf( buffer, "Unable to open helpfile \"%s\".", filename );
             ShowMsgBox( "Error", buffer );
             HelpMemFree( buffer );
             HelpMemFree( helptopic );
             helptopic = HelpMemAlloc( strlen( helpStack->word ) + 1 );
             strcpy( helptopic, helpStack->word );
-            strcpy( hfiles[0], helpStack->helpfname );
+            strcpy( filename, helpStack->helpfname );
             prevtopic();
         }
         first = FALSE;
