@@ -60,7 +60,7 @@ HELPIO int HelpRead( HelpFp fp, void *buf, int len )
     return( read( (int)fp, buf, len ) );
 }
 
-HELPIO int HelpWrite( HelpFp fp, char *buf, int len )
+HELPIO int HelpWrite( HelpFp fp, const char *buf, int len )
 {
     return( write( (int)fp, buf, len ) );
 }
@@ -75,7 +75,7 @@ HELPIO long int HelpTell( HelpFp fp )
     return( tell( (int)fp ) );
 }
 
-HELPIO HelpFp HelpOpen( char *path, unsigned long mode )
+HELPIO HelpFp HelpOpen( const char *path, unsigned long mode )
 {
     int         access;
 
@@ -118,7 +118,7 @@ HELPIO int HelpClose( HelpFp fp )
     return( close( (int)fp ) );
 }
 
-HELPIO int HelpAccess( char *path, int mode )
+HELPIO int HelpAccess( const char *path, int mode )
 {
     int         mode2;
 
@@ -137,7 +137,7 @@ HELPIO char *HelpGetCWD( char *buf, int size )
 }
 
 #ifndef __NETWARE_386__     // no environment vars in NetWare
-HELPIO void HelpSearchEnv( char *name, char *env_var, char *buf )
+HELPIO void HelpSearchEnv( const char *name, const char *env_var, char *buf )
 {
     _searchenv( name, env_var, buf );
 }

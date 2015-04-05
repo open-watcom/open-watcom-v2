@@ -56,16 +56,17 @@ typedef enum {
 #define HELP_ACCESS_EXIST       0x0008
 
 HELPIO int HelpRead( HelpFp fp, void *buf, int len );
+HELPIO int HelpWrite( HelpFp fp, const char *buf, int len );
 HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where );
 HELPIO long int HelpTell( HelpFp fp );
-HELPIO HelpFp HelpOpen( char *path, unsigned long mode );
+HELPIO HelpFp HelpOpen( const char *path, unsigned long mode );
 HELPIO int HelpClose( HelpFp fp );
 HELPIO long int HelpFileLen( HelpFp fp );
 #ifndef __NLM__
-HELPIO void HelpSearchEnv( char *name, char *env_var, char *buf );
+HELPIO void HelpSearchEnv( const char *name, const char *env_var, char *buf );
 #endif
 HELPIO char *HelpGetCWD( char *buf, int size );
-HELPIO int HelpAccess( char *path, int mode );
+HELPIO int HelpAccess( const char *path, int mode );
 
 #define HELPIO_H_INCLUDED
 #endif

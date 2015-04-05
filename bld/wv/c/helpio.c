@@ -67,7 +67,7 @@ HELPIO long int HelpTell( HelpFp fp )
     return( SeekStream( (handle)fp, 0, DIO_SEEK_CUR ) );
 }
 
-HELPIO HelpFp HelpOpen( char *path, unsigned long mode )
+HELPIO HelpFp HelpOpen( const char *path, unsigned long mode )
 {
     if( mode != (HELP_OPEN_RDONLY | HELP_OPEN_BINARY) ) {
         return( -1 );
@@ -81,7 +81,7 @@ HELPIO int HelpClose( HelpFp fp )
     return( 0 );
 }
 
-HELPIO int HelpAccess( char *path, int mode )
+HELPIO int HelpAccess( const char *path, int mode )
 {
     handle      fp;
     int         rc;
@@ -103,7 +103,7 @@ HELPIO char *HelpGetCWD( char *buf, int size )
     return( buf );
 }
 
-HELPIO void HelpSearchEnv( char *name, char *env_var, char *buf )
+HELPIO void HelpSearchEnv( const char *name, const char *env_var, char *buf )
 {
     name=name;env_var=env_var;
     buf[0] = '\0';
