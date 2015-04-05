@@ -36,7 +36,7 @@
 /* For simplicity and compatibility, we'll state that
  * we support UTF-8 everywhere.
  */
-#define BASE_CODESET    "UTF-8"
+#define BASE_CODESET    "US-ASCII"
 
 #define CURRENCY_OFFSET 0x900
 static char *__li_currency[] = {"", NULL};
