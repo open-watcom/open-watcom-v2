@@ -582,7 +582,7 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
     spawnp.event = event;
     spawnp.parm = parm;
     wndProcNesting++;
-    SpawnP( ( void (*) (void *) )DoMainEventProc, &spawnp );
+    SpawnP( (aui_spawn_funcP *)DoMainEventProc, &spawnp );
     wndProcNesting--;
     return( spawnp.ret );
 }

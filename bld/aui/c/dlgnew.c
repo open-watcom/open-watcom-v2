@@ -51,11 +51,9 @@
 
 
 static gui_control_info Controls[] = {
-
-    DLG_EDIT( "", CTL_NEW_EDIT,                 C0, R0, W-1 ),
-
-    DLG_DEFBUTTON( "", CTL_NEW_OK,                      B1, R1, B1+BW ),
-    DLG_BUTTON( "", CTL_NEW_CANCEL,             B2, R1, B2+BW ),
+    DLG_EDIT( "",      CTL_NEW_EDIT,    C0, R0, W - 1 ),
+    DLG_DEFBUTTON( "", CTL_NEW_OK,      B1, R1, B1 + BW ),
+    DLG_BUTTON( "",    CTL_NEW_CANCEL,  B2, R1, B2 + BW ),
 };
 
 
@@ -65,7 +63,7 @@ typedef struct {
     bool        cancel;
 } dlg_new;
 
-extern bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
+bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
 {
     gui_ctl_id  id;
     dlg_new     *dlgnew;
@@ -113,7 +111,7 @@ bool    DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
         len = max_cols;
     dlgnew.buff = buff;
     dlgnew.buff_len = buff_len;
-    dlgnew.cancel = TRUE;
+    dlgnew.cancel = true;
 
     DlgOpen( title, rows, len, controls, num_controls, callback, &dlgnew );
     return( !dlgnew.cancel );
