@@ -37,7 +37,6 @@ static gui_window       *Parents[MAX_DLG_NESTS];
 static GUICALLBACK      *Routines[MAX_DLG_NESTS];
 static int              Nested = -1;
 
-static GUICALLBACK DlgEventProc;
 static bool DlgEventProc( gui_window * gui, gui_event event, void *parm )
 {
     bool        rc;

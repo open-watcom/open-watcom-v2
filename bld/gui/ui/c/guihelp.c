@@ -62,19 +62,19 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
     ret = false;
 
     switch( act ) {
-        case GUI_HELP_CONTENTS:
-        case GUI_HELP_ON_HELP:
-        case GUI_HELP_SEARCH:
-            ret = GUIDisplayHelp( wnd, file, LIT( Table_of_Contents ) );
-            break;
-        case GUI_HELP_CONTEXT:
-            break;
-        case GUI_HELP_KEY:
-            if( topic == NULL ) {
-                topic = "";
-            }
-            ret = GUIDisplayHelp( wnd, file, topic );
-            break;
+    case GUI_HELP_CONTENTS:
+    case GUI_HELP_ON_HELP:
+    case GUI_HELP_SEARCH:
+        ret = GUIDisplayHelp( wnd, file, LIT( Table_of_Contents ) );
+        break;
+    case GUI_HELP_CONTEXT:
+        break;
+    case GUI_HELP_KEY:
+        if( topic == NULL ) {
+            topic = "";
+        }
+        ret = GUIDisplayHelp( wnd, file, topic );
+        break;
     }
 
     return( ret );

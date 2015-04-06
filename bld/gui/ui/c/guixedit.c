@@ -107,13 +107,14 @@ bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
             char    **fldtext;
             char    *new_str;
 
-            switch( field->typ ) {
-            case FLD_CHECK: fldtext = &field->u.check->str; break;
-            case FLD_RADIO: fldtext = &field->u.radio->str; break;
-            case FLD_TEXT: fldtext = &field->u.str; break;
-            }
             new_str = GUIStrDup( text, &ret );
             if( ret ) {
+                fldtext = NULL;
+                switch( field->typ ) {
+                case FLD_CHECK: fldtext = &field->u.check->str; break;
+                case FLD_RADIO: fldtext = &field->u.radio->str; break;
+                case FLD_TEXT: fldtext = &field->u.str; break;
+                }
                 GUIMemFree( *fldtext );
                 *fldtext = new_str;
             }

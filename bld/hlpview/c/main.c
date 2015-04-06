@@ -56,7 +56,7 @@ static HelpSrchPathItem searchList[] = {
     SRCHTYPE_EOL,       NULL
 };
 
-static void showHelp( char *name )
+static void showCmdlHelp( char *name )
 {
     char        fname[_MAX_FNAME];
 
@@ -105,8 +105,8 @@ static void freeSrchList( void )
 int main( int argc, char *argv[] )
 {
     const char          *helpfiles[] = { NULL, NULL };
-    char                *topic;
-    char                filename[ _MAX_PATH ];
+    const char          *topic;
+    char                filename[_MAX_PATH];
     HelpSrchPathItem    *srchlist;
     int                 rc;
     bool                err;
@@ -115,7 +115,7 @@ int main( int argc, char *argv[] )
     err = FALSE;
     if( argc < 2 || !strcmp( argv[1], "?" ) || !strcmp( argv[1], "-?" )
         || !strcmp( argv[1], "/?" ) ) {
-        showHelp( argv[0] );
+        showCmdlHelp( argv[0] );
         return( EXIT_SUCCESS );
     }
     if( argc > 3 ) {
@@ -125,10 +125,9 @@ int main( int argc, char *argv[] )
     }
     srchlist = checkFileName( argv[1], filename );
     strlwr( filename );
-    helpfiles[ 0 ] = filename;
+    helpfiles[0] = filename;
     if( argc == 3 ) {
-        topic = HelpMemAlloc( strlen( argv[2] ) + 1);
-        strcpy( topic, argv[2] );
+        topic = argv[2];
     } else {
         topic = NULL;
     }
@@ -149,13 +148,9 @@ int main( int argc, char *argv[] )
                 uirestorebackground();
                 printf( "Unable to find the topic \"%s\" in the help file \"%s\".\n",
                         topic, filename );
-                HelpMemFree( topic );
-                topic = NULL;
             }
         } else {
             err = TRUE;
-            HelpMemFree( topic );
-            topic = NULL;
             uirestorebackground();
             printf( "Unable to open the help file \"%s\".\n", filename );
 //          printf( "Please check that you have specified the correct help file\n" );

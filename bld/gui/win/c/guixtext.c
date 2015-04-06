@@ -312,7 +312,7 @@ char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
 #endif
         if( text != NULL ) {
             GUIToComboList( wnd, id, LB_GETTEXT , CB_GETLBTEXT,
-                            p1, (WPI_PARAM2)text, (WPI_MRESULT)NULL );
+                            p1, (WPI_PARAM2)(LPSTR)text, (WPI_MRESULT)NULL );
         }
     } else {
         text = NULL;

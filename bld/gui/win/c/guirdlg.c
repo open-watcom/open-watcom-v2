@@ -217,7 +217,7 @@ bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data )
     return( true );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK cb, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *cb, void *extra )
 {
     dlg_id=dlg_id;
     parent=parent;
