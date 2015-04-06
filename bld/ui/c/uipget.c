@@ -33,13 +33,8 @@
 #include "uidef.h"
 #include "uidebug.h"
 
-#if defined( __GNUC__ ) && defined( __APPLE__ )
-// Workaround for buggy GCC on OS X - if initializer isn't present, variable won't be defined!
-EVENT               Event = 0;
-#else
-EVENT               Event;
-#endif
 
+EVENT           Event = EV_NO_EVENT;
 
 EVENT intern saveevent( void )
 /****************************/

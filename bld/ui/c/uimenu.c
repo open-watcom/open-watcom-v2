@@ -625,8 +625,8 @@ EVENT uigeteventfrompos( ORD row, ORD col )
     return( EV_NO_EVENT );
 }
 
-void intern menuevent( VSCREEN *vptr )
-/************************************/
+EVENT intern menuevent( VSCREEN *vptr )
+/*************************************/
 {
     register    EVENT                   newevent;
     register    EVENT                   ev;
@@ -676,7 +676,7 @@ void intern menuevent( VSCREEN *vptr )
         }
     }
 
-    Event = newevent;
+    return( newevent );
 }
 
 

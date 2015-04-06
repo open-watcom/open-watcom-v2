@@ -36,12 +36,11 @@
 #include "uidef.h"
 #include "uiforce.h"
 
-extern EVENT    Event;
 extern void intern waitforevent( void );
 
 void UIAPI uiflush( void )
 {
-    Event = EV_NO_EVENT;
+    uiflushevent();
     flushkey();
 }
 
@@ -52,7 +51,7 @@ unsigned long UIAPI uiclock( void )
 
 extern EVENT intern getanyevent( void );
 
-EVENT UIAPI uieventsource( int update )
+EVENT UIAPI uieventsource( bool update )
 {
     EVENT                   ev;
     static      int                     ReturnIdle = 1;
@@ -61,14 +60,17 @@ EVENT UIAPI uieventsource( int update )
     start = uiclock();
     for( ; ; ) {
         ev = forcedevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         ev = getanyevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         if( ReturnIdle ) {
             ReturnIdle--;
             return( EV_IDLE );
         } else {
-            if( update ) uirefresh();
+            if( update )
+                uirefresh();
             if( uiclock() - start >= UIData->tick_delay ) {
                 return( EV_CLOCK_TICK );
             } else if( UIData->busy_wait ) {
@@ -84,5 +86,5 @@ EVENT UIAPI uieventsource( int update )
 
 EVENT UIAPI uiget( void )
 {
-    return( uieventsource( 1 ) );
+    return( uieventsource( true ) );
 }

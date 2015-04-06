@@ -46,9 +46,9 @@
 
 #include <wwindows.h>
 
-extern void ToCharacter();
-extern void ToGraphical();
-extern EVENT keyboardevent();
+extern void ToCharacter( void );
+extern void ToGraphical( void );
+extern EVENT keyboardevent( void );
 
 #define Normal          UIData->attrs[ ATTR_NORMAL ]
 

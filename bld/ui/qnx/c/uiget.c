@@ -38,7 +38,6 @@
 #include "uivirt.h"
 #include "qnxuiext.h"
 
-extern EVENT        Event;
 extern bool         UserForcedTermRefresh;
 
 extern EVENT        uieventsourcehook( EVENT );
@@ -49,12 +48,12 @@ extern void intern  stopkeyboard( void );
 void UIAPI uiflush( void )
 /*************************/
 {
-    Event = EV_NO_EVENT;
+    uiflushevent();
     flushkey();
 }
 
-static EVENT doget( int update )
-/******************************/
+static EVENT doget( bool update )
+/*******************************/
 {
     register    EVENT                   ev;
     static      short                   ReturnIdle = 1;
@@ -62,14 +61,17 @@ static EVENT doget( int update )
 
     for( ;; ) {
         ev = forcedevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         ev = _uievent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         if( ReturnIdle ) {
             --ReturnIdle;
             return( EV_IDLE );
         } else {
-            if( update ) uirefresh();
+            if( update )
+                uirefresh();
             if( UIData->busy_wait ) {
                 return( EV_SINK );
             }
@@ -95,13 +97,14 @@ static EVENT doget( int update )
     case EV_MOUSE_REPEAT:
     case EV_MOUSE_REPEAT_R:
     case EV_MOUSE_REPEAT_M:
-        if( update ) uirefresh();
+        if( update )
+            uirefresh();
         break;
     }
     return( ev );
 }
 
-EVENT UIAPI uieventsource( int update )
+EVENT UIAPI uieventsource( bool update )
 /**************************************/
 {
     EVENT   ev;
@@ -116,5 +119,5 @@ EVENT UIAPI uieventsource( int update )
 EVENT UIAPI uiget( void )
 /************************/
 {
-    return( uieventsource( 1 ) );
+    return( uieventsource( true ) );
 }

@@ -35,15 +35,13 @@
 #include "biosui.h"
 #include "uiforce.h"
 
-extern EVENT Event;
-
 extern EVENT uieventsourcehook( EVENT );
 
 
 void UIAPI uiflush( void )
 /*************************/
 {
-    Event = EV_NO_EVENT;
+    uiflushevent();
     flushkey();
 }
 
@@ -52,7 +50,7 @@ unsigned long uiclock( void )
     return( *(unsigned long __far *)firstmeg( BIOS_PAGE, SYSTEM_CLOCK ) );
 }
 
-EVENT UIAPI uieventsource( int update )
+EVENT UIAPI uieventsource( bool update )
 /**************************************/
 {
     register    EVENT                   ev;
@@ -62,7 +60,8 @@ EVENT UIAPI uieventsource( int update )
     start = uiclock();
     for( ; ; ) {
         ev = forcedevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         ev = mouseevent();
         if( ev > EV_NO_EVENT ) {
             break;
@@ -77,8 +76,10 @@ EVENT UIAPI uieventsource( int update )
             ev = EV_IDLE;
             goto done;
         } else {
-            if( !UIData->no_idle_int ) IdleInterrupt();
-            if( update  &&  !UIData->no_refresh ) uirefresh();
+            if( !UIData->no_idle_int )
+                IdleInterrupt();
+            if( update && !UIData->no_refresh )
+                uirefresh();
             if( uiclock() - start >= UIData->tick_delay ) {
                 ev = EV_CLOCK_TICK;
                 goto done;
@@ -97,5 +98,5 @@ done:
 EVENT UIAPI uiget( void )
 /************************/
 {
-    return( uieventsource( 1 ) );
+    return( uieventsource( true ) );
 }

@@ -35,12 +35,11 @@
 #include "uidef.h"
 #include "uiforce.h"
 
-extern EVENT Event;
 
 void UIAPI uiflush( void )
 /*************************/
 {
-    Event = EV_NO_EVENT;
+    uiflushevent();
     flushkey();
 }
 
@@ -56,7 +55,7 @@ unsigned long uiclock( void )
     return( *clock );
 }
 
-EVENT UIAPI uieventsource( int update )
+EVENT UIAPI uieventsource( bool update )
 /**************************************/
 {
     register    EVENT                   ev;
@@ -66,9 +65,11 @@ EVENT UIAPI uieventsource( int update )
     start = uiclock();
     for( ; ; ) {
         ev = forcedevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         ev = mouseevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         ev = keyboardevent();
         if( ev > EV_NO_EVENT ) {
             uihidemouse();
@@ -78,7 +79,8 @@ EVENT UIAPI uieventsource( int update )
             ReturnIdle--;
             return( EV_IDLE );
         } else {
-            if( update ) uirefresh();
+            if( update )
+                uirefresh();
             if( uiclock() - start >= UIData->tick_delay ) {
                 return( EV_CLOCK_TICK );
             } else if( UIData->busy_wait ) {
@@ -91,7 +93,7 @@ EVENT UIAPI uieventsource( int update )
 }
 
 EVENT UIAPI uiget( void )
-/************************/
+/***********************/
 {
-    return( uieventsource( 1 ) );
+    return( uieventsource( true ) );
 }

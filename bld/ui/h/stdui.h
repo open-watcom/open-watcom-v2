@@ -620,7 +620,7 @@ extern          void            uicursor( VSCREEN _FARD *, ORD, ORD, int );
 extern          int             uidialogevent( VSCREEN _FARD * );
 extern          void            uidirty( SAREA );
 extern          void            uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );
-extern          EVENT           uieventsource( int );
+extern          EVENT           uieventsource( bool );
 extern          LP_VOID         uifaralloc( size_t );
 extern          void            uifarfree( LP_VOID );
 extern          void            uifini( void );

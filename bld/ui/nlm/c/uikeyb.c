@@ -60,8 +60,8 @@ static struct {
     BYTE    scanCode;
 } SavedKey = { FALSE };
 
-unsigned char UIAPI uicheckshift()
-/*******************************/
+unsigned char UIAPI uicheckshift( void )
+/**************************************/
 {
     return( ShftState );
 }
@@ -88,27 +88,27 @@ BYTE * scanCode;
     }
 }
 
-void intern flushkey()
-/********************/
+void intern flushkey( void )
+/**************************/
 {
     BYTE dummy;
 
     while( netwaregetkey( &dummy, &dummy, &dummy, &dummy ) );
 }
 
-void intern kbdspawnstart()
-/*************************/
+void intern kbdspawnstart( void )
+/*******************************/
 {
 }
 
-void intern kbdspawnend()
-/***********************/
+void intern kbdspawnend( void )
+/*****************************/
 {
 }
 
 
-EVENT intern keyboardevent()
-/**************************/
+EVENT intern keyboardevent( void )
+/********************************/
 {
     BYTE        scan;
     BYTE        ascii;
@@ -242,15 +242,15 @@ EVENT intern keyboardevent()
 
 }
 
-bool intern initkeyboard()
-/************************/
+bool intern initkeyboard( void )
+/******************************/
 {
     ScreenPointer = (struct ScreenStruct *)__GetScreenID( ScreenHandle );
     return( TRUE );
 }
 
-void intern finikeyboard()
-/************************/
+void intern finikeyboard( void )
+/******************************/
 {
     ScreenPointer = NULL;
 }

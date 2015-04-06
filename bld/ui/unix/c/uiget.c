@@ -34,7 +34,6 @@
 #include "uiforce.h"
 #include <sys/types.h>
 #include "uivirt.h"
-extern EVENT Event;
 
 extern EVENT uieventsourcehook( EVENT );
 extern int   kb_wait( int secs, int usecs );
@@ -42,27 +41,30 @@ extern int   kb_wait( int secs, int usecs );
 void UIAPI uiflush( void )
 /*************************/
 {
-    Event = EV_NO_EVENT;
+    uiflushevent();
     flushkey();
 }
 
 
-static EVENT doget( int update )
-/******************************/
+static EVENT doget( bool update )
+/*******************************/
 {
     register    EVENT                   ev;
     static      short                   ReturnIdle = 1;
 
     for( ;; ) {
         ev = forcedevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         ev = _uievent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
         if( ReturnIdle ) {
             --ReturnIdle;
             return( EV_IDLE );
         } else {
-            if( update ) uirefresh();
+            if( update )
+                uirefresh();
             if( UIData->busy_wait ) {
                 return( EV_SINK );
             }
@@ -84,7 +86,7 @@ static EVENT doget( int update )
     return( ev );
 }
 
-EVENT UIAPI uieventsource( int update )
+EVENT UIAPI uieventsource( bool update )
 /**************************************/
 {
     extern void intern  stopmouse(void);
@@ -99,7 +101,7 @@ EVENT UIAPI uieventsource( int update )
 
 
 EVENT UIAPI uiget( void )
-/************************/
+/***********************/
 {
-    return( uieventsource( 1 ) );
+    return( uieventsource( true ) );
 }

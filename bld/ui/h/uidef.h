@@ -130,7 +130,7 @@ bool            intern          issnow( BUFFER * );
 void            intern          kbdspawnstart( void );
 void            intern          kbdspawnend( void );
 EVENT           intern          keyboardevent( void );
-void            intern          menuevent( VSCREEN * );
+EVENT           intern          menuevent( VSCREEN * );
 EVENT           intern          mouseevent( void );
 void            intern          mouseon( void );
 void            intern          mouseoff( void );
@@ -157,8 +157,8 @@ void            intern          setupmouse( void );
 void            intern          setvideomode( unsigned );
 int             intern          videopage( void );
 void            intern          vertretrace( void );
-void            UIAPI          uistartevent( void );
-void            UIAPI          uidoneevent( void );
+void            UIAPI           uistartevent( void );
+void            UIAPI           uidoneevent( void );
 
 #ifdef __cplusplus
 }

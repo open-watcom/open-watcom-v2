@@ -38,11 +38,8 @@ extern          EVENT                   Event;
 EVENT UIAPI uivget( VSCREEN *vptr )
 /**********************************/
 {
-    register    EVENT                   ev;
-
-    menuevent( vptr );
-    ev = saveevent();
-    return( ev );
+    Event = menuevent( vptr );
+    return( saveevent() );
 }
 
 
@@ -73,5 +70,4 @@ void UIAPI uiflushevent( void )
 /******************************/
 {
     Event = EV_NO_EVENT;
-    uiflush();
 }

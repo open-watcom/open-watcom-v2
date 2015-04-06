@@ -36,7 +36,6 @@
 #include "uidef.h"
 #include "uiforce.h"
 
-extern EVENT    Event;
 extern int      WaitHandle;
 
 static void     ( *Callback )() = 0;
@@ -50,7 +49,7 @@ void UIAPI uitimer( void ( *proc )(), int ms )
 
 void UIAPI uiflush( void )
 {
-    Event = EV_NO_EVENT;
+    uiflushevent();
     flushkey();
 }
 
@@ -63,7 +62,7 @@ unsigned long UIAPI uiclock( void )
     return( lsb );
 }
 
-EVENT UIAPI uieventsource( int update )
+EVENT UIAPI uieventsource( bool update )
 {
     EVENT                   ev;
     static      int         ReturnIdle = 1;
@@ -73,7 +72,8 @@ EVENT UIAPI uieventsource( int update )
     start = uiclock();
     for( ; ; ) {
         ev = forcedevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
 
         if( Callback && TimerPeriodMs ) {
             proc = RdosWaitTimeout( WaitHandle, TimerPeriodMs );
@@ -81,20 +81,25 @@ EVENT UIAPI uieventsource( int update )
                 (*Callback)();
             } else {
                 ev = (*proc)();
-                if( ev > EV_NO_EVENT ) break;
+                if( ev > EV_NO_EVENT ) {
+                    break;
+                }
             }
         } else {
             proc = RdosWaitTimeout( WaitHandle, 25 );
             if( proc != 0) {
                 ev = (*proc)();
-                if( ev > EV_NO_EVENT ) break;
+                if( ev > EV_NO_EVENT ) {
+                    break;
+                }
             }
         
             if( ReturnIdle ) {
                 ReturnIdle--;
                 return( EV_IDLE );
             } else {
-                if( update ) uirefresh();
+                if( update )
+                    uirefresh();
                 if( uiclock() - start >= UIData->tick_delay ) {
                     return( EV_CLOCK_TICK );
                 } else if( UIData->busy_wait ) {
@@ -105,7 +110,9 @@ EVENT UIAPI uieventsource( int update )
             proc = RdosWaitTimeout( WaitHandle, 250 );
             if( proc != 0) {
                 ev = (*proc)();
-                if( ev > EV_NO_EVENT ) break;
+                if( ev > EV_NO_EVENT ) {
+                    break;
+                }
             }
         }
     }
@@ -116,5 +123,5 @@ EVENT UIAPI uieventsource( int update )
 
 EVENT UIAPI uiget( void )
 {
-    return( uieventsource( 1 ) );
+    return( uieventsource( true ) );
 }

@@ -37,15 +37,13 @@
 #include "uiforce.h"
 #include "uinlm.h"
 
-extern EVENT    Event;
-
 // be very careful about setting this true
 static bool EnterForever = FALSE;
 
 void UIAPI uiflush()
 /*******************/
 {
-    Event = EV_NO_EVENT;
+    uiflushevent();
     flushkey();
 }
 
@@ -77,7 +75,7 @@ static void foreverloop( void )
     }
 }
 
-EVENT UIAPI uieventsource( int update )
+EVENT UIAPI uieventsource( bool update )
 /**************************************/
 {
     register    EVENT                   ev;
@@ -87,14 +85,17 @@ EVENT UIAPI uieventsource( int update )
     start = uiclock();
     for( ; ; ) {
         ThreadSwitch();
-        if( EnterForever ) foreverloop();
+        if( EnterForever )
+            foreverloop();
 
         ev = forcedevent();
-        if( ev > EV_NO_EVENT ) break;
+        if( ev > EV_NO_EVENT )
+            break;
 
         /* There is no mouse support in NetWare. */
         //ev = mouseevent();
-        //if( ev > EV_NO_EVENT ) break;
+        //if( ev > EV_NO_EVENT )
+        //    break;
 
         ev = keyboardevent();
         if( ev > EV_NO_EVENT ) {
@@ -105,7 +106,8 @@ EVENT UIAPI uieventsource( int update )
             ReturnIdle--;
             return( EV_IDLE );
         } else {
-            if( update ) uirefresh();
+            if( update )
+                uirefresh();
             if( uiclock() - start >= UIData->tick_delay ) {
                 return( EV_CLOCK_TICK );
             } else if( UIData->busy_wait ) {
@@ -119,9 +121,8 @@ EVENT UIAPI uieventsource( int update )
 }
 
 
-EVENT UIAPI uiget()
-/******************/
+EVENT UIAPI uiget( void )
+/***********************/
 {
-    return( uieventsource( TRUE ) );
+    return( uieventsource( true ) );
 }
-
