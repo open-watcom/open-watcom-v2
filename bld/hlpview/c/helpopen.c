@@ -170,7 +170,7 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
 
     freeHelpFiles();
     for( count = 0; *helpfilenames != NULL && count < MAX_HELP_FILES; ++helpfilenames ) {
-        SetHelpFileDefExt( *helpfiles, filename );
+        SetHelpFileDefExt( *helpfilenames, filename );
         if( search_for_file( fullpath, filename, srchlist ) ) {
             HelpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
             strcpy( HelpFiles[count].name, fullpath );

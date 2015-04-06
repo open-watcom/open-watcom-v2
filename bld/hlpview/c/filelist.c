@@ -75,7 +75,7 @@ static void printDescrip( FileInfo *info)
 {
     char        *buf;
     HelpFp      fp;
-    char        tmpf[_MAX_PATH];
+    char        tmp[_MAX_PATH];
     HelpHdl     hdl;
 
     strcpy( tmp, info->fpath );
