@@ -57,7 +57,7 @@ void ShowMsgBox( char *caption, char *msg )
         EV_LIST_BOX_DCLICK,
         EV_NO_EVENT
     };
-    done = FALSE;
+    done = false;
 
     uipushlist( NULL );     /* modal barrier */
     uipushlist( events );
@@ -67,7 +67,7 @@ void ShowMsgBox( char *caption, char *msg )
         event = uidialog( msgbox );
         switch( event ) {
         case EV_ENTER:
-            done = TRUE;
+            done = true;
             break;
         }
     }

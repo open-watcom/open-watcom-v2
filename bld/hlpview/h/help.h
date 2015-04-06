@@ -34,17 +34,19 @@
 #include "search.h"
 #include "helpchar.h"
 
-#define HELP_NO_MEM      (-4)
-#define HELP_ERROR       (-3)
-#define HELP_NO_VOPEN    (-2)
-#define HELP_NO_FILE     (-1)
-#define HELP_OK          (0)
-#define HELP_NO_SUBJECT  (1)
+#define DEF_EXT         ".ihp"
 
-#define H_MAX_CHARS  35
-#define H_MAX_WORDS  80
+#define HELP_NO_MEM     (-4)
+#define HELP_ERROR      (-3)
+#define HELP_NO_VOPEN   (-2)
+#define HELP_NO_FILE    (-1)
+#define HELP_OK         (0)
+#define HELP_NO_SUBJECT (1)
 
-#define ishelpchr( ch )         (isalnum(ch) || ch=='-')
+#define H_MAX_CHARS     35
+#define H_MAX_WORDS     80
+
+#define ishelpchr(ch)   (isalnum(ch) || ch=='-')
 
 #define EV_HELP EV_FUNC( 1 )
 
@@ -72,26 +74,25 @@ typedef struct {
 } ScanInfo;
 
 #include "pushpck1.h"
-
 typedef struct helpsrch {
     HelpSrchItemType    type;
     char                *info;
-}HelpSrchPathItem;
+} HelpSrchPathItem;
 
 typedef struct help_file {
     char                *name;
     HelpFp              f;
     HelpHdl             searchhdl;
-}help_file;
-
+} help_file;
 #include "poppck.h"
 
 #define MAX_HELP_FILES  10
 
 extern help_file HelpFiles[MAX_HELP_FILES + 1];
 
-extern int helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
-extern int help_reinit( const char **helpfilenames );
+extern int  helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
+extern int  help_reinit( const char **helpfilenames );
 extern void helpfini( void );
 extern void Free_Stack( void );
-extern int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang );
+extern int  showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang );
+extern void SetHelpFileDefExt( const char *name, char *buff );

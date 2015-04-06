@@ -89,7 +89,8 @@ static bool GetLBItemLiteral( void *info, unsigned line, char *buf,
     } else {
         height = listBox.box->area.height - 1;
     }
-    if( line >= *itemcnt + height ) return( FALSE );
+    if( line >= *itemcnt + height )
+        return( false );
     if( buf != NULL ) {
         if( line >= *itemcnt ) {
             buf[0] = '\0';
@@ -99,9 +100,9 @@ static bool GetLBItemLiteral( void *info, unsigned line, char *buf,
             buf[buflen-1] = '\0';
         }
     } else {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, unsigned buflen )
@@ -120,7 +121,7 @@ bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, unsigned
         height = listBox.box->area.height - 1;
     }
     if( item >= *itemcnt + height )
-        return( FALSE );
+        return( false );
     if( buf != NULL ) {
         if( item >= *itemcnt ) {
             name = "";
@@ -143,10 +144,10 @@ bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, unsigned
             }
             *buf = '\0';
         } else {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static void fillListBox( char *name )
@@ -182,10 +183,11 @@ void HelpDialogCallBack( a_dialog *info )
     char                buf[_MAX_PATH];
     unsigned            len;
 
-    if( info != curHelpDialog ) return;
+    if( info != curHelpDialog )
+        return;
     if( info->curr == editVField ) {
         if( info->edit_data->edit_eline.dirty ) {
-            curHelpDialog->edit_data->edit_eline.dirty = FALSE;
+            curHelpDialog->edit_data->edit_eline.dirty = false;
             len = editCtl.length;
             if( len > sizeof( buf ) )
                 len = sizeof( buf );

@@ -77,8 +77,8 @@ static unsigned scanHyperLink( char *line, TokenType *type,
     block->next = NULL;
     cur = line;
     cnt = 0;
-    chktopic = FALSE;
-    chkhfname = FALSE;
+    chktopic = false;
+    chkhfname = false;
     if( *(unsigned char *)cur == GOOFY_HYPERLINK ) {
         *type = TK_GOOFY_LINK;
         endchar = GOOFY_HYPERLINK;
@@ -132,10 +132,10 @@ static unsigned scanHyperLink( char *line, TokenType *type,
             cur++;
             if( !chktopic ) {
                 topic = cur;
-                chktopic = TRUE;
+                chktopic = true;
             } else {
                 hfname = cur;
-                chkhfname = TRUE;
+                chkhfname = true;
             }
             while( (*(unsigned char *)cur != endchar)
               && (*(unsigned char *)cur != HYPER_TOPIC) ) {
@@ -179,7 +179,7 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
     bool                newfile;
 
     cur = line;
-    newfile = FALSE;
+    newfile = false;
     for( ;; ) {
         switch( *(unsigned char *)cur ) {
         case HELP_ESCAPE:
@@ -221,7 +221,7 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
         case GOOFY_HYPERLINK:
             cur += scanHyperLink( cur, &type, &tinfo.u.link );
             if( tinfo.u.link.hfname_len != 0 ) {
-                newfile = TRUE;
+                newfile = true;
             }
             cb( type, &tinfo, info );
             if( tinfo.u.link.block1.next != NULL ) {

@@ -76,10 +76,6 @@ static ScanCBfunc   scanCallBack;
 #define AT(x) UIData->attrs[x]
 #define AT_BLINK  0x80
 
-#define TRUE  1
-#define FALSE 0
-
-
 #define C_PLAIN         0
 #define C_ULINE         1
 #define C_BOLD          2
@@ -134,7 +130,8 @@ static a_gadget         vGadget = {
     0,                          /* total size */
     0,                          /* page size */
     0,                          /* current position */
-    FALSE                       /* lockable */
+    GADGET_NONE,                /* flags */
+    0                           /* linear */
 };
 
 static a_hot_spot              hotSpots[] = {
@@ -261,7 +258,7 @@ SAREA *hlp_ut_screen_area( SAREA *area, bool all, bool framed )
 
 void hlp_ut_position( SAREA *a, ORD h, ORD w, int rpos, int cpos, bool overmenus )
 {
-    hlp_ut_screen_area( a, overmenus, TRUE );
+    hlp_ut_screen_area( a, overmenus, true );
     if( h > 0 ) {
         window_pos( &a->row, &a->height, a->height - h, rpos );
     }
@@ -518,7 +515,7 @@ static void display_fields( void )
 static void free_fields( a_field **ht )
 {
     while( *ht != NULL ) {
-        del_field( *ht, ht, FALSE );
+        del_field( *ht, ht, false );
     }
 }
 
@@ -543,7 +540,7 @@ static void vscroll_fields( a_field **ht, SAREA use, int incr )
             if((incr > 0 && (*p)->area.row < use.row + incr )
             || (incr < 0 && (*p)->area.row - incr >= use.row + use.height) ) {
                 next = p;
-                del_field( *ht, p, TRUE );
+                del_field( *ht, p, true );
             } else {
                 (*p)->area.row -= incr;
             }
@@ -623,12 +620,12 @@ unsigned help_in_tab( a_field *fld, void *dummy )
 {
     _unused( fld );
     _unused( dummy );
-    return( TRUE );
+    return( true );
 }
 
 static EVENT hlpwait( VTAB *tab )
 {
-    int                 done;
+    bool                done;
     static EVENT        bumpev = EV_NO_EVENT;
     char                *next_name;
     unsigned            len1;
@@ -649,7 +646,7 @@ static EVENT hlpwait( VTAB *tab )
         helpCur = tab->curr;
         bumpev = EV_NO_EVENT;
     }
-    done = FALSE;
+    done = false;
     while( !done ) {
         if( helpTab != NULL ) {
             uivattribute( &helpScreen, helpCur->area, AT( ATTR_CURR_EDIT ) );
@@ -658,7 +655,7 @@ static EVENT hlpwait( VTAB *tab )
             uipushlist( keyShift );
             curEvent = uivget( &helpScreen );
             if( curEvent == EV_MOUSE_PRESS ) {
-                ignoreMouseRelease = FALSE;
+                ignoreMouseRelease = false;
             }
             uipoplist();
             curEvent = uigadgetfilter( curEvent, &vGadget );
@@ -674,7 +671,7 @@ static EVENT hlpwait( VTAB *tab )
         switch( curEvent ) {
         case EV_HELP:
             nexttopic( helpWord );
-            done = TRUE;
+            done = true;
             break;
         case EV_BOTTOM:
         case E_UP:
@@ -691,7 +688,7 @@ static EVENT hlpwait( VTAB *tab )
                 bumpev = EV_CURSOR_UP;
             }
             helpStack->cur = field_count( helpTab, helpCur );
-            done = TRUE;
+            done = true;
             break;
         case '-':
         case EV_MOUSE_RELEASE_R:
@@ -714,7 +711,7 @@ static EVENT hlpwait( VTAB *tab )
 //              prevtopic();
                 helpTab = helpCur;
             }
-            done = TRUE;
+            done = true;
             break;
         case EV_ALT_S:
         case 'S':
@@ -725,7 +722,7 @@ static EVENT hlpwait( VTAB *tab )
                 if( next_name != NULL ) {
                     nexttopic( next_name );
                     HelpMemFree( next_name );
-                    done = 1;
+                    done = true;
                 }
                 uipushlist( helpEventList );
             }
@@ -739,7 +736,7 @@ static EVENT hlpwait( VTAB *tab )
             if( ignoreMouseRelease ) {
                 /* this mouse release is for a mouse press that occured
                  * before this help topic was opened */
-                 ignoreMouseRelease = FALSE;
+                 ignoreMouseRelease = false;
                  break;
             }
             tab->other = tab->curr;
@@ -753,14 +750,14 @@ static EVENT hlpwait( VTAB *tab )
                 if( helpCur->key2_len == 0 ) {
                     nexttopic( helpCur->keyword );
                 }
-                done = TRUE;
+                done = true;
             }
             break;
         case EV_KILL_UI:
             uiforceevadd( EV_KILL_UI );
             /* fall through */
         case EV_ESCAPE:
-            done = TRUE;
+            done = true;
             break;
         }
     }
@@ -768,18 +765,18 @@ static EVENT hlpwait( VTAB *tab )
     return( curEvent );
 }
 
-static int mygetline( void )
+static bool mygetline( void )
 {
     int                 l;
 
     if( helpGetString( helpInBuf, BUF_LEN, helpFileHdl ) == NULL ) {
-        return( FALSE );
+        return( false );
     }
     l = strlen( helpInBuf );
     if( l >= RSEP_LEN ) {
         helpInBuf[l - RSEP_LEN] = '\0'; /* ignore record sep */
     }
-    return( TRUE );
+    return( true );
 }
 
 static void clearline( void )
@@ -796,7 +793,7 @@ static void scanCallBack( TokenType type, Info *info, void *_myinfo )
     a_field             *ht;
     ScanInfo            *myinfo = _myinfo;
 
-    goofy = TRUE;
+    goofy = true;
     switch( type ) {
     case TK_TEXT:
         switch( info->u.text.type ) {
@@ -835,7 +832,7 @@ static void scanCallBack( TokenType type, Info *info, void *_myinfo )
         myinfo->buf[0] = '<';
         myinfo->buf ++;
         myinfo->pos ++;
-        goofy = FALSE;
+        goofy = false;
         /* fall through */
     case TK_GOOFY_LINK:
         block = &( info->u.link.block1 );
@@ -894,7 +891,7 @@ static void scanCallBack( TokenType type, Info *info, void *_myinfo )
 /*
  * processLine
  */
-static int processLine( char *bufin, char *bufout, int line, bool changecurr )
+static bool processLine( char *bufin, char *bufout, int line, bool changecurr )
 {
     ScanInfo    info;
 
@@ -903,7 +900,7 @@ static int processLine( char *bufin, char *bufout, int line, bool changecurr )
     info.changecurr = changecurr;
     info.pos = 0;
     ScanLine( bufin, scanCallBack, &info );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -969,7 +966,7 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
     }
     helpScreen.title = helpname;
     hlp_ut_position( &helpScreen.area, helpScreen.area.height, helpScreen.area.width,
-                     nums[2], nums[3], TRUE );
+                     nums[2], nums[3], true );
 }
 
 
@@ -1088,7 +1085,7 @@ static void handleFooter( int *startline, SAREA *use, SAREA *line )
                 break;
             if( strnicmp( helpInBuf, ":et", 3 ) == 0 )
                 break;
-            processLine( helpInBuf, helpOutBuf, start, FALSE );
+            processLine( helpInBuf, helpOutBuf, start, false );
             putline( helpOutBuf, start );
             ++start;
         }
@@ -1118,7 +1115,7 @@ static void handleHeader( int *start, SAREA *line )
                 break;
             if( strnicmp( helpInBuf, ":eh", 3 ) == 0 )
                 break;
-            processLine( helpInBuf, helpOutBuf, cur, FALSE );
+            processLine( helpInBuf, helpOutBuf, cur, false );
             putline( helpOutBuf, cur );
             cur ++;
         }
@@ -1217,7 +1214,7 @@ static int dispHelp( char *str, VTAB *tab )
     SAREA               line;
     char                helpname[81];
 
-    ignoreMouseRelease = TRUE;
+    ignoreMouseRelease = true;
     helpSet( str, helpname, sizeof( helpname ) );
     if( uivopen( &helpScreen ) == NULL )
         return( HELP_NO_VOPEN );
@@ -1252,7 +1249,7 @@ static int dispHelp( char *str, VTAB *tab )
     currLine = helpStack->line;
     seek_line( currLine );
     lastline = currLine + use.height;
-    done = FALSE;
+    done = false;
     ev = EV_NO_EVENT;
     while( !done ) {
         currentColour = C_PLAIN;
@@ -1293,7 +1290,7 @@ static int dispHelp( char *str, VTAB *tab )
             }
             break;
         default:
-            done = TRUE;
+            done = true;
             break;
         }
     }
@@ -1473,8 +1470,8 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     tabFilter.mousepos = (void *(*)(void *,ORD *, ORD *))uivmousepos;
     tabFilter.mouseparm = &helpScreen;
     tabFilter.first = helpTab;
-    tabFilter.wrap = FALSE;
-    tabFilter.enter = FALSE;
+    tabFilter.wrap = false;
+    tabFilter.enter = false;
     _splitpath( HelpFiles[0].name, NULL, NULL, filename, ext );
     strcat( filename, ext );
     hfiles[0] = filename;
@@ -1486,7 +1483,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
         helptopic = NULL;
     }
     err = HELP_OK;
-    first = TRUE;
+    first = true;
     while( helptopic != NULL || first ) {
         if( first || help_reinit( hfiles ) ) {
             err = do_showhelp( &helptopic, filename, rtn, first );
@@ -1504,7 +1501,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
             strcpy( filename, helpStack->helpfname );
             prevtopic();
         }
-        first = FALSE;
+        first = false;
     }
     if( helptopic != NULL )
         HelpMemFree( helptopic );

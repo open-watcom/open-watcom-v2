@@ -50,6 +50,20 @@ help_file HelpFiles[MAX_HELP_FILES + 1] = {
 
 static HelpSrchPathItem         *srch_List;
 
+void SetHelpFileDefExt( const char *name, char *buff )
+{
+    char        drive[_MAX_DRIVE];
+    char        dir[_MAX_DIR];
+    char        fname[_MAX_FNAME];
+    char        ext[_MAX_EXT];
+
+    _splitpath( name, drive, dir, fname, ext );
+    if( *ext == '\0' ) {
+        strcpy( ext, DEF_EXT );
+    }
+    _makepath( buff, drive, dir, fname, ext );
+}
+
 static void freeSearchList( void )
 {
     unsigned    i;
@@ -84,9 +98,9 @@ static bool search_for_file( char *fullpath, const char *fname, HelpSrchPathItem
     if( where == NULL ) {
         if( !HelpAccess( fname, HELP_ACCESS_EXIST ) ) {
             strcpy( fullpath, fname );
-            return( TRUE );
+            return( true );
         } else {
-            return( FALSE );
+            return( false );
         }
     }
     /* check the current working directory */
@@ -97,26 +111,26 @@ static bool search_for_file( char *fullpath, const char *fname, HelpSrchPathItem
             *fullpath++ = DIR_SEP;
         }
         strcpy( fullpath, fname );
-        return( TRUE );
+        return( true );
     }
     for( i = 0; ; i++ ) {
         switch( where[i].type ) {
 #ifndef __NETWARE_386__
         case SRCHTYPE_ENV:
             HelpSearchEnv( fname, where[i].info, fullpath );
-            if( fullpath[0] != '\0' ) return( TRUE );
+            if( fullpath[0] != '\0' )
+                return( true );
             break;
 #endif
         case SRCHTYPE_PATH:
             strcpy( fullpath, where[i].info );
             strcat( fullpath, fname );
             if( !HelpAccess( fullpath, HELP_ACCESS_EXIST ) ) {
-                return( TRUE );
+                return( true );
             }
             break;
         case SRCHTYPE_EOL:
-            return( FALSE );
-            break;
+            return( false );
         }
     }
 }
@@ -152,22 +166,11 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
 {
     int         count;
     char        fullpath[_MAX_PATH];
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
-    char        *fext;
     char        filename[_MAX_PATH];
 
     freeHelpFiles();
     for( count = 0; *helpfilenames != NULL && count < MAX_HELP_FILES; ++helpfilenames ) {
-        _splitpath( *helpfilenames, drive, dir, fname, ext );
-        if( *ext == '\0' ) {
-            fext = ".ihp";
-        } else {
-            fext = ext;
-        }
-        _makepath( filename, drive, dir, fname, fext );
+        SetHelpFileDefExt( *helpfiles, filename );
         if( search_for_file( fullpath, filename, srchlist ) ) {
             HelpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
             strcpy( HelpFiles[count].name, fullpath );

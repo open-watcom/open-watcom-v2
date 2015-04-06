@@ -45,8 +45,11 @@
 #include "filelist.h"
 #include "clibext.h"
 
-#define DEF_EXTENSION   ".ihp"
+#ifdef __UNIX__
 #define FIRST_SRCH_PATH "./"
+#else
+#define FIRST_SRCH_PATH ".\\"
+#endif
 
 static HelpSrchPathItem searchList[] = {
     SRCHTYPE_PATH,      FIRST_SRCH_PATH,// this may be changed when a cross
@@ -65,7 +68,7 @@ static void showCmdlHelp( char *name )
     printf( "\n" );
     printf( "               %s help_file [topic_name]\n", fname );
     printf( "\n" );
-    printf( "- if help_file is specified without an extension \"%s\" is assumed\n", DEF_EXTENSION );
+    printf( "- if help_file is specified without an extension \"%s\" is assumed\n", DEF_EXT );
     printf( "- the topic_name parameter is optional\n" );
     printf( "- if topic_name is not specifed the default topic used.\n" );
     printf( "- if topic_name contains spaces then it must be enclosed in quotes\n" );
@@ -74,7 +77,7 @@ static void showCmdlHelp( char *name )
     PrintHelpFiles( searchList );
 }
 
-static HelpSrchPathItem *checkFileName( char *name, char *buf )
+static HelpSrchPathItem *checkFileName( const char *name, char *buf )
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
@@ -84,7 +87,7 @@ static HelpSrchPathItem *checkFileName( char *name, char *buf )
 
     _splitpath( name, drive, dir, fname, ext );
     if( *ext == '\0' ) {
-        strcpy( ext, DEF_EXTENSION );
+        strcpy( ext, DEF_EXT );
     }
     _makepath( buf, NULL, NULL, fname, ext );
     if( *drive != '\0' || *dir != '\0' ) {
@@ -112,7 +115,7 @@ int main( int argc, char *argv[] )
     bool                err;
 
     HelpMemInit();
-    err = FALSE;
+    err = false;
     if( argc < 2 || !strcmp( argv[1], "?" ) || !strcmp( argv[1], "-?" )
         || !strcmp( argv[1], "/?" ) ) {
         showCmdlHelp( argv[0] );
@@ -144,13 +147,13 @@ int main( int argc, char *argv[] )
         if( helpinit( helpfiles, srchlist ) ) {
             rc = showhelp( topic, NULL, HELPLANG_ENGLISH );
             if( rc == HELP_NO_SUBJECT ) {
-                err = TRUE;
+                err = true;
                 uirestorebackground();
                 printf( "Unable to find the topic \"%s\" in the help file \"%s\".\n",
                         topic, filename );
             }
         } else {
-            err = TRUE;
+            err = true;
             uirestorebackground();
             printf( "Unable to open the help file \"%s\".\n", filename );
 //          printf( "Please check that you have specified the correct help file\n" );
