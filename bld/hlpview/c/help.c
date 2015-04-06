@@ -1373,7 +1373,6 @@ static int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
     char        *htopic;
 
     eventMapFn = rtn;
-    err = TRUE;
     helpTab = NULL;
     helpCur = helpTab;
     strcpy( curFile, filename );
@@ -1415,20 +1414,24 @@ static int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
     // This is Not Nice - we're freeing memory that
     // someone else allocated! Just don't do it.
     if( err != HELP_NO_SUBJECT ) {
-//        HelpMemFree( *helptopic );
-        *helptopic = NULL;
+        if( *helptopic != NULL ) {
+            HelpMemFree( *helptopic );
+            *helptopic = NULL;
+        }
         *filename = '\0';
     }
     HelpMemFree( helpInBuf );
     HelpMemFree( helpOutBuf );
     HelpMemFree( htopic );
     if( helpTab != NULL && helpCur->key2_len != 0 ) { // cross file link
-        *helptopic = HelpMemAlloc( helpCur->key1_len + 1 );
-        strncpy( *helptopic, helpCur->keyword, helpCur->key1_len );
-        (*helptopic)[helpCur->key1_len] = '\0';
-        ptr = &( helpCur->keyword[helpCur->key1_len] );
-        strncpy( filename, ptr, helpCur->key2_len );
-        filename[helpCur->key2_len] = '\0';
+        len = helpCur->key1_len;
+        *helptopic = ptr = HelpMemAlloc( len + 1 );
+        strncpy( ptr, helpCur->keyword, len );
+        ptr[len] = '\0';
+        ptr = helpCur->keyword + len;
+        len = helpCur->key2_len;
+        strncpy( filename, ptr, len );
+        filename[len] = '\0';
         if( helpCur != tabFilter.curr ) { // backwards through cross file link
             prevtopic();
         }
@@ -1449,7 +1452,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     char        *buffer;
     char        *helptopic;
 
-    if( HelpFiles->name == NULL ) {
+    if( HelpFiles[0].name == NULL ) {
         return( HELP_NO_FILE );
     }
     switch( lang ) {
@@ -1472,7 +1475,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     tabFilter.first = helpTab;
     tabFilter.wrap = FALSE;
     tabFilter.enter = FALSE;
-    _splitpath( HelpFiles->name, NULL, NULL, filename, ext );
+    _splitpath( HelpFiles[0].name, NULL, NULL, filename, ext );
     strcat( filename, ext );
     hfiles[0] = filename;
     if( topic != NULL ) {
@@ -1482,7 +1485,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     } else {
         helptopic = NULL;
     }
-    err = FALSE;
+    err = HELP_OK;
     first = TRUE;
     while( helptopic != NULL || first ) {
         if( first || help_reinit( hfiles ) ) {
@@ -1503,6 +1506,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
         }
         first = FALSE;
     }
-    HelpMemFree( helptopic );
+    if( helptopic != NULL )
+        HelpMemFree( helptopic );
     return( err );
 }
