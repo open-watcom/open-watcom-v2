@@ -1,7 +1,0 @@
-atomic
-execute \eO\e
-assign %a = 1
-while %a <= 5
-  execute \eA///////////////\e
-  expr %a = %a + 1
-endloop
