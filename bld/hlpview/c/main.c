@@ -43,6 +43,7 @@
 #include "help.h"
 #include "helpmem.h"
 #include "filelist.h"
+
 #include "clibext.h"
 
 #ifdef __UNIX__

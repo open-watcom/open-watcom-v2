@@ -73,17 +73,17 @@ static ScanCBfunc   scanCallBack;
     #define EV_MARK_RELEASE     EV_SHIFT_RELEASE
 #endif
 
-#define AT(x) UIData->attrs[x]
-#define AT_BLINK  0x80
+#define AT(x)                   UIData->attrs[x]
+#define AT_BLINK                0x80
 
-#define C_PLAIN         0
-#define C_ULINE         1
-#define C_BOLD          2
-#define C_ULBOLD        3
+#define C_PLAIN                 0
+#define C_ULINE                 1
+#define C_BOLD                  2
+#define C_ULBOLD                3
 
 #define HELP_MIN_WIDTH          63
 
-#define BUF_LEN 400
+#define BUF_LEN                 400
 
 enum {
     HSTCK_NAME,
@@ -134,7 +134,7 @@ static a_gadget         vGadget = {
     0                           /* linear */
 };
 
-static a_hot_spot              hotSpots[] = {
+static a_hot_spot       hotSpots[] = {
     { "&Back",            EV_FUNC(4),     -1,       1,     15, 0  },
     { "&Search",          EV_ALT_S,       -1,       0,     15, 0  },
     { "Cancel",           EV_ESCAPE,      -1,      -2,     15, 0  },
@@ -1454,7 +1454,7 @@ int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
     }
     switch( lang ) {
     case HELPLANG_FRENCH:
-        hotSpots[0].str = "F4=Sujet pr‚c‚dent";
+        hotSpots[0].str = "F4=Sujet prï¿½cï¿½dent";
         hotSpots[1].str = "Sortir";
         break;
     case HELPLANG_ENGLISH:

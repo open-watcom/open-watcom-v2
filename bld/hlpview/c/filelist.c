@@ -44,6 +44,7 @@
 #include "helpio.h"
 #include "index.h"
 #include "search.h"
+
 #include "clibext.h"
 
 #define MAX_HELPFILES   100
