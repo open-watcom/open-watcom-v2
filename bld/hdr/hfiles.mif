@@ -90,6 +90,7 @@
 !inject jctype.h                    hdos hlnx hqnx
 !inject jstring.h                   hdos hlnx hqnx
 !inject jtime.h                     hdos hlnx hqnx
+!inject langinfo.h                       hlnx
 !inject libc.h                                hqnx
 !inject libgen.h                    hdos hlnx hqnx
 !inject limits           noext hcpp

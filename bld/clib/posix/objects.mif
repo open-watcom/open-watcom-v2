@@ -16,6 +16,7 @@
 !inject htons.obj                                                                       l32 lpc lmp
 !inject inetaddr.obj                                                                    l32 lpc lmp
 !inject inetntoa.obj                                                                    l32 lpc lmp
+!inject langinfo.obj                                                                    l32 lpc lmp
 !inject listen.obj                                                                      l32 lpc lmp
 !inject ntohl.obj                                                                       l32 lpc lmp
 !inject ntohs.obj                                                                       l32 lpc lmp
