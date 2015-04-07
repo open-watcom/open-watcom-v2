@@ -53,7 +53,7 @@ extern void uieditpoplist(void);
 /* temp kludge - modify client source to use uiledit() instead */
 #undef uiedit
 #define uiedit(a)       uiledit(a)
-extern int uiledit( int );
+extern EVENT uiledit( EVENT );
 extern void uieditinsert( char *, unsigned );
 extern unsigned int uiendedit( void );
 extern bool uieditisdirty( void );

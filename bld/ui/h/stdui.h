@@ -617,7 +617,7 @@ extern          void            uiclose( VSCREEN _FARD * );
 extern          void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned int, const char * );
 extern          bool            uiconfig( char *, char ** );
 extern          void            uicursor( VSCREEN _FARD *, ORD, ORD, int );
-extern          int             uidialogevent( VSCREEN _FARD * );
+extern          EVENT           uidialogevent( VSCREEN _FARD * );
 extern          void            uidirty( SAREA );
 extern          void            uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );
 extern          EVENT           uieventsource( bool );
