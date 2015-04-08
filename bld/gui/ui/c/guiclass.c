@@ -30,9 +30,11 @@
 ****************************************************************************/
 
 
-#ifndef _GUIDEATH_H_
-#define _GUIDEATH_H_
+#include "guiwind.h"
 
-extern bool GUIDeath ( void );
 
-#endif
+char *GUIGetWindowClassName( void )
+{
+    return( NULL );
+}
+

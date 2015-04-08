@@ -85,7 +85,6 @@ sysobjs = guixscal.obj &
           guildstr.obj &
           guirdlg.obj  &
           guirmenu.obj &
-          guiclass.obj &
           guif1hk.obj  &
           guiclen.obj
 

@@ -901,14 +901,12 @@ extern int GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICK
 
 /* Dialog Functions */
 
-extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls,
-                             gui_control_info *controls_info );
-extern bool GUICreateSysModalDialog( gui_create_info *dlg_info,
-                                     int num_controls,
-                                     gui_control_info *controls_info );
+extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
+extern bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
 extern bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
 extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *cb, void *extra );
 extern void GUICloseDialog( gui_window * wnd );
+extern void GUISetModalDlgs( bool );
 
 /* Control Functions */
 
@@ -993,6 +991,8 @@ extern void GUIUnHookF1( void );
 
 /* DBCS functions */
 extern int  GUICharLen( int );
+extern bool GUIIsDBCS( void );
+extern void GUISetJapanese( void );
 
 extern bool GUIIsFirstInstance( void );
 
@@ -1000,3 +1000,8 @@ extern void GUIHookFileDlg( bool hook );
 
 /* include from the app */
 extern void GUITimer( void );
+extern void GUImain( void );
+extern bool GUIDead( void );
+extern bool GUIDeath( void );
+extern bool GUIFirstCrack( void );
+extern char *GUIGetWindowClassName( void );

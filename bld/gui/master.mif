@@ -57,6 +57,7 @@ wv_objs = &
        guisdef.obj    &
        guiextnm.obj   &
        guifcrck.obj   &
+       guiclass.obj
 
 mem_objs = &
        guimem.obj     &

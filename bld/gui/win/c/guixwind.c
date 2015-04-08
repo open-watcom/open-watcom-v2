@@ -55,8 +55,6 @@
 #include "guicontr.h"
 #include "guixdlg.h"
 #include "guistyle.h"
-#include "guideath.h"
-#include "guidead.h"
 #include "guifront.h"
 #include "guiwinlp.h"
 
@@ -88,10 +86,6 @@ typedef struct wmcreate_info {
 
 WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
-/* include from the app */
-extern void GUImain( void );
-extern bool GUIFirstCrack( void );
-
 /* Changes added to enable use of the system tray */
 // Mmessage sent when system tray is accessed
 #define WM_TRAYCALLBACK WM_USER + 666
@@ -115,7 +109,6 @@ extern WPI_INST GUIResHInst;
 char GUIClass[GUI_CLASSNAME_MAX];
 char GUIDialogClass[GUI_CLASSNAME_MAX] = "GUIDialogClass";
 char GUIDefaultClassName[] = "GUIClass";
-extern char *GUIGetWindowClassName( void );
 
 #define BACKGROUND_STYLES       WS_CHILD | WS_VISIBLE
 #define GUI_DIALOG_STYLE        DS_MODALFRAME

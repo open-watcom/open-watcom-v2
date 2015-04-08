@@ -58,28 +58,36 @@ int GUIInitMouse( int param )
     int init;
 
     Param = param;
-    if( GraphicsMouse ) {
 #ifdef __DOS__
+    if( GraphicsMouse ) {
         init = uiinitgmouse( param );
-        if( GraphicsDlg ) FlipCharacterMap();
-#endif
+        if( GraphicsDlg ) {
+            FlipCharacterMap();
+        }
     } else {
         init = initmouse( param );
     }
+#else
+    init = initmouse( param );
+#endif
     GMouseOn = true;
     return( init );
 }
 
 void GUIFiniMouse( void )
 {
-    if( GraphicsMouse ) {
 #ifdef __DOS__
-        if( GraphicsDlg ) FlipCharacterMap();
+    if( GraphicsMouse ) {
+        if( GraphicsDlg ) {
+            FlipCharacterMap();
+        }
         uifinigmouse();
-#endif
     } else {
         finimouse();
     }
+#else
+    finimouse();
+#endif
     GMouseOn = false;
 }
 

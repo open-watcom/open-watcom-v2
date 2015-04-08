@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#ifndef _GUIDEAD_H_
-#define _GUIDEAD_H_
-
-extern int GUIDead ( void );
-
+extern HWND GUIGetSysHandle( gui_window *wnd );
+#ifdef __OS2__
+extern HAB GUIGetHAB( void );
 #endif

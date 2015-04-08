@@ -31,9 +31,11 @@
 
 
 #ifndef _GUIGMOUS_H_
-#define _GMOUSAPH_H_
-extern int GUIInitMouse( int param );
+#define _GUIGMOUS_H_
+
+extern int  GUIInitMouse( int param );
 extern void GUIFiniMouse( void );
 extern void GUIInitGraphicsMouse( gui_window_styles );
 extern bool GUIHasCharRemap( void );
-#endif // GMOUSAPH_H_
+
+#endif

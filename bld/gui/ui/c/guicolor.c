@@ -35,7 +35,6 @@
 #include "guiwhole.h"
 #include "guicolor.h"
 #include "guiwnclr.h"
-#include "guigmous.h"
 #include "guixdlg.h"
 #include <string.h>
 

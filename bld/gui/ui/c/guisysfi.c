@@ -38,7 +38,7 @@ void GUISysFini( void  )
 {
     GUIFiniMouse();
     uistop();
-    #ifdef __WINDOWS__
-        FiniSwapper();
-    #endif
+#ifdef __WINDOWS__
+    FiniSwapper();
+#endif
 }

@@ -31,9 +31,8 @@
 
 
 #include "guiwind.h"
-#include "guidead.h"
 
-int GUIDead ( void )
+bool GUIDead( void )
 {
     return ( true );
 }

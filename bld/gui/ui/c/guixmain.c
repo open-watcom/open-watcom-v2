@@ -44,8 +44,6 @@
 #include "guiutil.h"
 #include "guigadgt.h"
 #include "guizlist.h"
-#include "guideath.h"
-#include "guidead.h"
 #ifdef __UNIX__
     #include <termios.h>
 #endif

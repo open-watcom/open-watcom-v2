@@ -44,8 +44,6 @@
 #include "guiutil.h"
 #include "guigadgt.h"
 #include "guizlist.h"
-#include "guideath.h"
-#include "guidead.h"
 #include "guistr.h"
 #include "guiextnm.h"
 #include <string.h>
@@ -55,8 +53,6 @@
 #include <stdlib.h>
 #include "clibext.h"
 
-extern bool GUIFirstCrack( void );
-
 extern bool GUIMainTouched;
 
 extern EVENT GUIUIProcessEvent( EVENT );
@@ -65,9 +61,6 @@ extern void GUIDoneEventProcessing( void );
 extern void GUIStartEventProcessing( void );
 
 gui_window      *GUICurrWnd     =       NULL;
-
-/* include from the app */
-extern  void GUImain( void );
 
 EVENT GUIAllEvents[] = {
     EV_FIRST_EVENT, LAST_EVENT,

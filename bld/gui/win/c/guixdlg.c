@@ -65,7 +65,6 @@ static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog       
 
 extern  WPI_INST        GUIMainHInst;
 extern  controls_struct GUIControls[];
-extern  bool            GUIIsDBCS( void );
 
 void GUISetJapanese( void )
 {

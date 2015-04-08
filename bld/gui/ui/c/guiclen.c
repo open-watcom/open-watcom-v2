@@ -37,7 +37,7 @@ int GUICharLen( int ch )
     return( uicharlen( ch ) ); // returns 2 if dbcs lead byte
 }
 
-int GUIIsDBCS()
+bool GUIIsDBCS( void )
 {
     return( uiisdbcs() );
 }

@@ -32,6 +32,7 @@
 
 #include "guiwind.h"
 #include "guixutil.h"
+#include "guiwin.h"
 
 extern  WPI_INST        GUIMainHInst;
 
@@ -40,12 +41,14 @@ HWND GUIGetSysHandle( gui_window *wnd )
     return( GUIGetTopParentHWND( wnd->hwnd ) );
 }
 
+#if 0
 WPI_INST GUIGetHInst( void )
 {
     return( GUIMainHInst );
 }
+#endif
 
-#ifdef __OS2_PM__
+#ifdef __OS2__
 HAB GUIGetHAB( void )
 {
     return( GUIMainHInst.hab );
