@@ -31,6 +31,7 @@
 
 #include "uidef.h"
 #include "uidialog.h"
+#include "msgbox.h"
 
 static a_hot_spot okButton[] = {
     {"OK",          EV_ENTER,       3,      20,     11,     HOT_DEFAULT},

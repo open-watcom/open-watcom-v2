@@ -160,7 +160,7 @@ static unsigned scanHyperLink( char *line, TokenType *type,
     }
 }
 
-void freeHyperlinkInfo( TextInfoBlock *cur )
+static void freeHyperlinkInfo( TextInfoBlock *cur )
 {
     TextInfoBlock       *tmp;
 

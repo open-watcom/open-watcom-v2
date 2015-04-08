@@ -30,6 +30,7 @@
 
 
 #include "stdui.h"
+#include "hlpuicvr.h"
 
 
 void vvscroll( VSCREEN *win, SAREA use, int scroll )

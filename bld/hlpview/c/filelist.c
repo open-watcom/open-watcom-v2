@@ -44,6 +44,7 @@
 #include "helpio.h"
 #include "index.h"
 #include "search.h"
+#include "filelist.h"
 
 #include "clibext.h"
 
