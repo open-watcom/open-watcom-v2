@@ -121,6 +121,12 @@ _WCRTLINK extern void   _WCNEAR *sbrk(int incr);
 _WCRTLINK extern pid_t  clone( int __flags, void *__child_stack );
 _WCRTLINK extern int    close( int __fildes );
 _WCRTLINK extern int    dup( int __fildes );
+:include ext.sp
+_WCRTLINK extern long   _get_osfhandle( int __posixhandle );
+_WCRTLINK extern int    _hdopen(int __handle,int __mode);
+_WCRTLINK extern int    _open_osfhandle( long __osfhandle, int __flags );
+_WCRTLINK extern int    _os_handle(int __handle);
+:include extepi.sp
 _WCRTLINK extern int    isatty( int __fildes );
 _WCRTLINK extern off_t  lseek( int __fildes, off_t __offset, int __whence );
 _WCRTLINK extern ssize_t read( int __fildes, void *__buffer, size_t __len );
