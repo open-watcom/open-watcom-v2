@@ -32,7 +32,7 @@
 #include <term.h>
 #include "ctkeyb.h"
 
-unsigned short   ShftState;
+unsigned short   ct_shift_state;
 
 enum {
     EV_STICKY_FUNC      = 0xff0,
@@ -242,11 +242,10 @@ static const event_shift_map ShiftMap[] = {
     FUNC_MAP( 12 ),
 };
 
-extern void    tm_saveevent( void );
 
 void intern clear_shift( void )
 {
-    ShftState = 0;
+    ct_shift_state = 0;
 }
 
 void intern ck_arm( void )
@@ -294,7 +293,7 @@ void nextc_unget( char *str, int n )
 }
 
 
-int find_entry( const void *pkey, const void *pbase )
+static int find_entry( const void *pkey, const void *pbase )
 {
     const EVENT                 *evp = pkey;
     const event_shift_map       *entry = pbase;
@@ -313,9 +312,9 @@ EVENT ck_keyboardevent( void )
 
     ev = TrieRead();
     ck_shift_state();
-    if( ShftState != ( real_shift | sticky ) ) {
+    if( ct_shift_state != ( real_shift | sticky ) ) {
         /* did it change? */
-        real_shift = ShftState;
+        real_shift = ct_shift_state;
     }
     switch( ev ) {
     case EV_STICKY_FUNC:
@@ -388,17 +387,17 @@ EVENT ck_keyboardevent( void )
                 break;
             }
         }
-        ShftState = sticky | real_shift;
+        ct_shift_state = sticky | real_shift;
         sticky = 0;
         #define S_MASK  (S_SHIFT|S_CTRL|S_ALT)
-        if( ShftState & S_MASK ) {
+        if( ct_shift_state & S_MASK ) {
             search_ev = tolower( ev );
             entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ),
                                 sizeof( ShiftMap[0] ), find_entry );
             if( entry != NULL ) {
-                if( ShftState & S_SHIFT ) {
+                if( ct_shift_state & S_SHIFT ) {
                     ev = entry->shift;
-                } else if( ShftState & S_CTRL ) {
+                } else if( ct_shift_state & S_CTRL ) {
                     ev = entry->ctrl;
                 } else { /* must be ALT */
                     ev = entry->alt;
@@ -410,7 +409,7 @@ EVENT ck_keyboardevent( void )
         }
         return( ev );
     }
-    ShftState = real_shift;
+    ct_shift_state = real_shift;
     if( ev ) {
         UIDebugPrintf1( "UI: Something read: %4.4X", ev );
     }

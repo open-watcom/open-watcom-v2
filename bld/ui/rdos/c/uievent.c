@@ -38,7 +38,6 @@
 #include "uishift.h"
 #include "uimouse.h"
 
-unsigned long UIAPI uiclock( void );
 
 #define KEY_NUM_ACTIVE          0x200
 #define KEY_CAPS_ACTIVE         0x100

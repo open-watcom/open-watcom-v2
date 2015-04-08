@@ -44,6 +44,10 @@
                         non-zero value will allow UI library initialization
                         to succeed (assuming nothing else goes wrong).
 */
+
+#include <stdio.h>
+#include "tixparse.h"
+
 char ui_tix_path[] = "/usr/watcom/tix";
 
 int ui_tix_missing( const char *name )

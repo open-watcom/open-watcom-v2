@@ -40,10 +40,6 @@
 
 extern bool         UserForcedTermRefresh;
 
-extern EVENT        uieventsourcehook( EVENT );
-extern void intern  stopmouse( void );
-extern void intern  stopkeyboard( void );
-
 
 void UIAPI uiflush( void )
 /*************************/

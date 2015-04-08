@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "uidef.h"
+#include "uiedit.h"
 
 #define         PAD_CHAR                0x20
 

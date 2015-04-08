@@ -35,8 +35,6 @@
 #include "biosui.h"
 #include "uiforce.h"
 
-extern EVENT uieventsourcehook( EVENT );
-
 
 void UIAPI uiflush( void )
 /*************************/

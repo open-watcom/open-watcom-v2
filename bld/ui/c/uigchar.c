@@ -33,6 +33,7 @@
 #include "uibox.h"
 #include "uichars.h"
 #include "uidef.h"
+#include "uigchar.h"
 
 #ifdef __LINUX__
 

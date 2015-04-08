@@ -36,12 +36,13 @@
 #include "uidef.h"
 #include "uiforce.h"
 
+
 extern int      WaitHandle;
 
-static void     ( *Callback )() = 0;
-static int      TimerPeriodMs = 0;
+static uitimer_callback *Callback = NULL;
+static int              TimerPeriodMs = 0;
 
-void UIAPI uitimer( void ( *proc )(), int ms )
+void UIAPI uitimer( uitimer_callback *proc, int ms )
 {
     Callback = proc;
     TimerPeriodMs = ms;

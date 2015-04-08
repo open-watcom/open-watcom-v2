@@ -69,7 +69,7 @@ static FILE     *in_file= NULL;
 char            ti_char_map[256];
 unsigned char   _ti_alt_map[32];
 
-void tix_error( char *str )
+static void tix_error( const char *str )
 {
     static char header[]= "\nError in ";
 
@@ -85,7 +85,7 @@ void tix_error( char *str )
 #define TIX_PATH_NAME   "/usr/watcom/tix/"
 #define TIX_PATH_LEN    ( sizeof( TIX_PATH_NAME ) )
 
-static FILE *ti_fopen( char *fnam )
+static FILE *ti_fopen( const char *fnam )
 {
     FILE        *res;
     char        *fpath;
@@ -93,22 +93,26 @@ static FILE *ti_fopen( char *fnam )
     unsigned    size;
     unsigned    len;
 
-    if( fnam==NULL || fnam[0]=='\0' ) {
+    if( fnam == NULL || fnam[0] == '\0' ) {
         return( NULL );
     }
 
     // first look in current directory
     res= fopen( fnam, "r" );
-    if( res != NULL ) return( res );
+    if( res != NULL )
+        return( res );
 
     // if it's not there, look in the user's home directory
     homeDir= getenv( "HOME" );
-    if( homeDir == NULL ) homeDir = "";
+    if( homeDir == NULL )
+        homeDir = "";
     size = strlen( homeDir ) + 1;
     len = strlen( ui_tix_path );
-    if( len > size ) size = len;
+    if( len > size )
+        size = len;
     fpath = alloca( size + strlen( fnam ) + 1 );
-    if( fpath==NULL ) return( NULL );
+    if( fpath == NULL )
+        return( NULL );
 
     if( homeDir[0] != '\0' ) {
         strcpy( fpath, homeDir );
@@ -116,7 +120,9 @@ static FILE *ti_fopen( char *fnam )
         strcat( fpath, fnam );
 
         res= fopen( fpath, "r" );
-        if( res!=NULL ) return( res );
+        if( res!=NULL ) {
+            return( res );
+        }
     }
 
     // finally, look in /usr/watcom/tix/<name>
@@ -126,7 +132,7 @@ static FILE *ti_fopen( char *fnam )
     return( res );
 }
 
-static tix_status init_tix_scanner( char *name, int use_default )
+static tix_status init_tix_scanner( const char *name, bool use_default )
 {
     char        tix_name[19];
 
@@ -147,7 +153,7 @@ static tix_status init_tix_scanner( char *name, int use_default )
     return( TIX_NOFILE );
 }
 
-void close_tix_scanner( void )
+static void close_tix_scanner( void )
 {
     if( in_file != NULL ) {
         fclose( in_file );
@@ -345,7 +351,7 @@ static tix_status do_parse( void )
     return( TIX_OK );
 }
 
-tix_status ti_read_tix( int use_default )
+tix_status ti_read_tix( bool use_default )
 /***************************************/
 {
     int         i;

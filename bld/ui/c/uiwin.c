@@ -52,8 +52,8 @@ static bool covered( SAREA area, UI_WINDOW *wptr )
     return( flag );
 }
 
-UI_WINDOW ** intern findspot( int priority, UI_WINDOW **prev )
-/******************************************************/
+static UI_WINDOW ** intern findspot( int priority, UI_WINDOW **prev )
+/*******************************************************************/
 /* find the ptr to ptr of the right spot in the UI window list
    for this window */
 {

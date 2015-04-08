@@ -29,9 +29,6 @@
 ****************************************************************************/
 
 
-#define TRUE    1
-#define FALSE   0
-
 #ifdef __UNIX__
 #include <stdlib.h>
 #endif
@@ -40,12 +37,11 @@
 #ifndef __UNIX__
 #include <process.h>
 #endif
-#include "stdui.h"
+#include "uidef.h"
 #include "uimenu.h"
 #include "uivedit.h"
 #include "uigchar.h"
 #ifdef __UNIX__
-#include "uidef.h"
 #include "uivirt.h"
 #endif
 

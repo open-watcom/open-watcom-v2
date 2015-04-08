@@ -118,4 +118,18 @@ extern VirtDisplay      UIVirt;
 #define _stopmouse            (*UIVirt.mouse->stop)
 #define _uimousespeed         (*UIVirt.mouse->set_speed)
 
+/*-
+ The modules for each type....
+*/
+
+extern bool             TInfCheck( void );
+extern Display          TInfDisplay;
+extern Keyboard         ConsKeyboard;
+extern Mouse            TermMouse;
+
+extern void     stopmouse(void);
+extern void     stopkeyboard( void );
+extern void     savekeyb(void);
+extern void     restorekeyb(void);
+
 #endif

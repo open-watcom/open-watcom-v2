@@ -46,7 +46,7 @@ static FILE     *in_file= NULL;
 static FILE     *out_file= NULL;
 
 
-void tix_error( char *str )
+static void tix_error( const char *str )
 {
     fprintf( stderr, "\nError: %s\n", str );
 }

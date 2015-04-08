@@ -50,7 +50,7 @@ extern int ScreenHandle;        // from uibios.c
 /* It points into the OS data area and dereferencing could interfere with the */
 /* Novell Labs Certification. */
 static struct ScreenStruct * ScreenPointer = NULL;
-static unsigned         ShftState = 0;
+static unsigned         shift_state = 0;
 static bool BlockedOnKeyboard = FALSE;
 static struct {
     bool    inUse;
@@ -63,7 +63,7 @@ static struct {
 unsigned char UIAPI uicheckshift( void )
 /**************************************/
 {
-    return( ShftState );
+    return( shift_state );
 }
 
 static bool netwaregetkey( keyType, keyValue, keyStatus, scanCode )

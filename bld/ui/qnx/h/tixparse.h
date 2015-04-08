@@ -47,4 +47,5 @@ typedef enum {
     TIX_OK
 } tix_status;
 
-extern tix_status ti_read_tix( int );
+extern tix_status   ti_read_tix( bool );
+extern int          ui_tix_missing( const char *name );

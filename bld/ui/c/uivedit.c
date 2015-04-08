@@ -54,7 +54,7 @@ static int isdelim( char ch )
 }
 
 
-int intern secondbyte( char *buff, char *which )
+static int intern secondbyte( char *buff, char *which )
 {
     while( buff < which ) {
         buff += uicharlen( *buff );

@@ -33,10 +33,11 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <dos.h>
+#include <windows.h>
 #include "uidos.h"
 #include "uidef.h"
 #include "uishift.h"
-#include <windows.h>
+#include "biosui.h"
 
 
 typedef struct {
@@ -65,8 +66,6 @@ static volatile bool    HaveKey;
 
 #pragma aux set_carry = 0xf9;
 extern void set_carry( void );
-
-extern void WindowsMouseEvent( unsigned, unsigned );
 
 #pragma aux HookRtn far parm [ax] [cx] modify exact [];
 
@@ -113,7 +112,7 @@ static int CheckState( unsigned info, unsigned down )
     return( TRUE );
 }
 
-unsigned PickOne( unsigned alt, unsigned ctrl, unsigned shift, unsigned plain )
+static unsigned PickOne( unsigned alt, unsigned ctrl, unsigned shift, unsigned plain )
 {
     unsigned    info;
 
@@ -269,7 +268,7 @@ static void MyHookRtn( unsigned event, unsigned info )
  *
  * Note - this keyboard input method looks like a really ugly hack.
  */ 
-void __far __loadds HookRtn( unsigned event, unsigned info )
+static void __far __loadds HookRtn( unsigned event, unsigned info )
 {
     MyHookRtn( event, info );
     set_carry();
@@ -432,6 +431,8 @@ unsigned char UIAPI uicheckshift( void )
 {
     return( ShiftState );
 }
+
+#if 0
 #define FORCE_WINDOWS_MESSAGE_LOOP
 #if defined( FORCE_WINDOWS_MESSAGE_LOOP )
 void WindowsMessageLoop( int yield )
@@ -446,4 +447,5 @@ MSG msg;
         if( yield ) Yield();
 
 } /* WindowsMessageLoop */
+#endif
 #endif

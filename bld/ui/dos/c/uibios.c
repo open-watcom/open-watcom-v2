@@ -38,6 +38,7 @@
 #include "uidos.h"
 #include "biosui.h"
 #include "dpmi.h"
+#include "uigchar.h"
 
 typedef struct {
     unsigned short  int_num;
@@ -48,8 +49,6 @@ typedef struct {
     long            real_eax;
     long            real_edx;
 } PHARLAP_block;
-
-void intern DBCSCharacterMap( void );
 
 static          MONITOR                 ui_data         =       {
                 25,
@@ -142,8 +141,8 @@ extern unsigned char DOS_int( unsigned short, unsigned short, unsigned short );
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-LP_VOID UIAPI video_buffer( LP_VOID vbuff )
-/***********************************************/
+static LP_VOID UIAPI video_buffer( LP_VOID vbuff )
+/************************************************/
 {
 #ifdef __386__
     union REGPACK       regs;
@@ -206,7 +205,7 @@ extern dbcs_pair __far *dos_dbcs_vector_table( void );
         value           [di si] \
         modify          [ax];
 
-dbcs_pair __far *intern dbcs_vector_table( void )
+static dbcs_pair __far *intern dbcs_vector_table( void )
 /***************************************************/
 {
     static dbcs_pair    dbcs_dummy = { 0, 0 };
@@ -219,7 +218,7 @@ dbcs_pair __far *intern dbcs_vector_table( void )
 
 #else
 
-dbcs_pair __far *intern dbcs_vector_table( void )
+static dbcs_pair __far *intern dbcs_vector_table( void )
 /***************************************************/
 {
     union       REGPACK                 regs;
@@ -260,7 +259,7 @@ dbcs_pair __far *intern dbcs_vector_table( void )
 static dbcs_pair        Pairs[5];       // safe enough for now
 static int              Init;
 
-void intern initdbcs( void )
+static void intern initdbcs( void )
 {
     dbcs_pair           *p;
     dbcs_pair           __far *s;
@@ -280,7 +279,8 @@ void intern initdbcs( void )
 
 int UIAPI uiisdbcs( void )
 {
-    if( !Init ) initdbcs();
+    if( !Init )
+        initdbcs();
     return( Pairs[0].start_range != 0 );
 }
 
@@ -289,9 +289,12 @@ int UIAPI uicharlen( int ch )
     dbcs_pair           *p;
 
 
-    if( !Init ) initdbcs();
+    if( !Init )
+        initdbcs();
     for( p = Pairs; p->start_range != 0; ++p ) {
-        if( ch >= p->start_range && ch <= p->end_range ) return( 2 );
+        if( ch >= p->start_range && ch <= p->end_range ) {
+            return( 2 );
+        }
     }
     return( 1 );
 }
@@ -326,7 +329,7 @@ int UIAPI uicharlen( int ch )
 #define DELL_43X132    84           // Text Mode
 #define DELL_25X132    85           // Text Mode
 
-int IsTextMode( void )
+static int IsTextMode( void )
 {
     unsigned char       mode;
     unsigned char       page;

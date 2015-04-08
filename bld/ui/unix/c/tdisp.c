@@ -79,6 +79,7 @@
 
 #include "uivirt.h"
 #include "qnxuiext.h"
+#include "ctkeyb.h"
 
 #include "tixparse.h"
 #include "walloca.h"
@@ -114,9 +115,6 @@
 #define __putp( str )   {tputs( str, 1, _con_putchar );}
 #endif
 #define __putc( c )     {fputc( c, UIConFile );}
-
-extern char     *GetTermType( void );
-extern EVENT    tk_keyboardevent( void );
 
 bool    UserForcedTermRefresh= FALSE;
 
@@ -436,7 +434,7 @@ int             OldCol= -1,
             }
 
 // move in the optimal way from (OldCol,OldRow) to (c,r)
-void TI_CURSOR_MOVE( register int c, register int r )
+static void TI_CURSOR_MOVE( register int c, register int r )
 /**********************************************************/
 {
     unsigned            newLen;
@@ -670,22 +668,21 @@ static void TI_SETCOLOUR( register int f, register int b )
 }
 
 
-extern FILE *ti_fopen( char *fnam );
-
-static int TI_PUT_FILE( char *fnam )
-/**********************************/
+static int TI_PUT_FILE( const char *fnam )
+/****************************************/
 {
     char        c;
     FILE        *fil;
 
-    if( fnam != NULL && fnam[0]!='\0' ){
+    if( fnam != NULL && fnam[0] != '\0' ){
         // open file
-        fil= ti_fopen( fnam );
-        if( fil==NULL ) return( FALSE );
+        fil = ti_fopen( fnam );
+        if( fil == NULL )
+            return( FALSE );
 
         // output file to terminal
         while( feof( fil ) == 0 ){
-            c= fgetc( fil );
+            c = fgetc( fil );
             putchar( c );
         }
         fclose( fil );
@@ -1085,8 +1082,8 @@ static int ti_hwcursor( void )
 #define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol );\
                         rcount= 0;}
 
-void update_shadow(void)
-/**********************/
+static void update_shadow( void )
+/*******************************/
 {
     LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
     int         incr= UIData->screen.increment;
@@ -1403,7 +1400,6 @@ static int td_getcur( ORD *row, ORD *col, int *type, int *attr )
 static int td_setcur( ORD row, ORD col, int typ, int attr )
 /*********************************************************/
 {
-    extern void newcursor(void);
     attr = attr;
 
     if( ( typ != UIData->cursor_type ) ||

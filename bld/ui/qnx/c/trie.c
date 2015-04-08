@@ -55,9 +55,8 @@
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "trie.h"
+#include "ctkeyb.h"
 
-extern int      nextc( int n );
-extern void     nextc_unget( char *, int );
 
 /* The following types are for use with the keymap-trie. The keymap trie
  * is used to store all of the terminfo keypresses. The trie is fairly

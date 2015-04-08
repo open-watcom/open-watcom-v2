@@ -35,10 +35,10 @@
 #include "biosui.h"
 #include "charmap.h"
 
-extern void     (intern *DrawCursor)( void );
-extern int      uimousealign( void );
 
-unsigned short  Points;                 /* Number of lines / char  */
+extern void         (*DrawCursor)( void );
+
+unsigned short      Points;                 /* Number of lines / char  */
 
 struct mouse_data {
     unsigned short    bx,cx,dx;
@@ -68,8 +68,6 @@ extern void MouseState( unsigned, md_stk_ptr );
 extern void MouseState( unsigned short, md_stk_ptr );
 
 #endif
-
-extern unsigned long uiclock( void );
 
 #define         MOUSE_SCALE             8
 

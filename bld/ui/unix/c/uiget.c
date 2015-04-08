@@ -35,7 +35,6 @@
 #include <sys/types.h>
 #include "uivirt.h"
 
-extern EVENT uieventsourcehook( EVENT );
 extern int   kb_wait( int secs, int usecs );
 
 void UIAPI uiflush( void )
@@ -89,8 +88,6 @@ static EVENT doget( bool update )
 EVENT UIAPI uieventsource( bool update )
 /**************************************/
 {
-    extern void intern  stopmouse(void);
-    extern void intern  stopkeyboard(void);
     EVENT   ev;
 
     ev = doget( update );

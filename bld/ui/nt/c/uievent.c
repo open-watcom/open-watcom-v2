@@ -38,9 +38,7 @@
 #include "uishift.h"
 #include "uimouse.h"
 
-unsigned long UIAPI uiclock( void );
-
-static unsigned char ShftState;
+static unsigned char shift_state;
 
 typedef struct {
     WORD vk;
@@ -118,19 +116,19 @@ static ORD      currMouseStatus;
 
 static void setshiftstate( BOOL has_shift, BOOL has_ctrl, BOOL has_alt )
 {
-    ShftState = 0;
+    shift_state = 0;
     if( has_shift ) {
-        ShftState |= S_SHIFT;
+        shift_state |= S_SHIFT;
     }
     if( has_ctrl ) {
-        ShftState |= S_CTRL;
+        shift_state |= S_CTRL;
     }
     if( has_alt ) {
-        ShftState |= S_ALT;
+        shift_state |= S_ALT;
     }
 }
 
-int CompareEvents( const void *p1, const void *p2 )
+static int CompareEvents( const void *p1, const void *p2 )
 {
     return( ((map*)p1)->vk - ((map*)p2)->vk );
 }
@@ -342,5 +340,5 @@ void intern waitforevent( void )
 unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
-    return( ShftState );
+    return( shift_state );
 }

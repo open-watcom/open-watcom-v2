@@ -33,9 +33,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
+#include "stdui.h"
 
 #ifdef TRMEM
 #include "trmem.h"
+
 #include "clibext.h"
 
 _trmem_hdl  UIMemHandle;
@@ -46,6 +48,7 @@ static int  UIMemOpened = 0;
 
 #endif
 
+#if 0
 void UIMemRedirect( int handle )
 {
     handle=handle;
@@ -55,6 +58,7 @@ void UIMemRedirect( int handle )
     handle = handle;
 #endif
 }
+#endif
 
 extern void UIMemOpen( void )
 {
@@ -96,12 +100,14 @@ void UIMemClose( void )
 #endif
 }
 
+#if 0
 void UIMemPrtUsage( void )
 {
 #ifdef TRMEM
     _trmem_prt_usage( UIMemHandle );
 #endif
 }
+#endif
 
 
 void *uicalloc( size_t n, size_t size )
@@ -144,6 +150,7 @@ void *uirealloc( void *old, size_t size )
 #endif
 }
 
+#ifdef TRMEM
 /* extern to avoid problems with taking address and overlays */
 void UIMemPrintLine( void *handle, const char *buff, size_t len )
 {
@@ -153,3 +160,4 @@ void UIMemPrintLine( void *handle, const char *buff, size_t len )
     handle = handle, buff = buff, len = len;
 #endif
 }
+#endif

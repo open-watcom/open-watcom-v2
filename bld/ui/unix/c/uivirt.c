@@ -34,15 +34,6 @@
 #include "uishift.h"
 #include "uivirt.h"
 
-/*-
- The modules for each type....
-*/
-
-extern bool             TInfCheck( void );
-extern Display          TInfDisplay;
-extern Keyboard         ConsKeyboard;
-extern Mouse            TermMouse;
-
 /*
         Order of array is important! Don't futz around with it.
 */

@@ -52,6 +52,7 @@
 
 #include "uivirt.h"
 #include "qnxuiext.h"
+#include "ctkeyb.h"
 
 static          MONITOR                 ui_data         =       {
                 25,
@@ -66,10 +67,6 @@ static          MONITOR                 ui_data         =       {
 };
 
 struct _console_ctrl *UIConCtrl = NULL;
-
-extern  char            *GetTermType( void );
-extern  void intern     clear_shift( void );
-extern  EVENT           ck_keyboardevent( void );
 
 bool ConsCheck( void )
 {
@@ -325,7 +322,6 @@ static int cd_getcur( ORD *row, ORD *col, int *type, int *attr )
 static int cd_setcur( ORD row, ORD col, int typ, int attr )
 /*********************************************************/
 {
-    extern void newcursor(void);
     attr = attr;
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
@@ -362,8 +358,6 @@ Display ConsDisplay = {
         cd_setcur,
         cd_event,
 };
-
-extern EVENT    td_event( void );
 
 Display QnxWDisplay = {
         cd_init,

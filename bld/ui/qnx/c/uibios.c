@@ -54,6 +54,7 @@
 #include "qnxuiext.h"
 #include "qdebug.h"
 #include "uiproxy.h"
+#include "ctkeyb.h"
 
 extern PossibleDisplay DisplayList[];
 extern struct _console_ctrl *UIConCtrl;
@@ -61,7 +62,7 @@ extern struct _console_ctrl *UIConCtrl;
 char    *UITermType;    /* global so that the debugger can get at it */
 
 
-bool UIAPI uiset80col()
+bool UIAPI uiset80col( void )
 {
     return( TRUE );
 }
@@ -73,7 +74,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
     return( milli );
 }
 
-char *GetTermType()
+char *GetTermType( void )
 {
     if( UITermType == NULL ) {
         UITermType = getenv( "TERM" );
@@ -86,7 +87,7 @@ char *GetTermType()
     return( UITermType );
 }
 
-int intern initbios()
+int intern initbios( void )
 {
     PossibleDisplay             *curr;
     struct _dev_info_entry      dev;
@@ -129,7 +130,7 @@ int intern initbios()
     return( _uibiosinit() );
 }
 
-void intern finibios()
+void intern finibios( void )
 {
     _uibiosfini();
     __del_curterm( __cur_term );

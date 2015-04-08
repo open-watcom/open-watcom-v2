@@ -394,8 +394,8 @@ static EVENT createpopup( DESCMENU *desc, EVENT *newevent )
 }
 
 
-EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
-/*******************************************************/
+static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
+/**************************************************************/
 {
     register    int                     index;
     register    int                     oldmenu = 0;
@@ -606,6 +606,7 @@ EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
     return( newevent );
 }
 
+#if 0
 EVENT uigeteventfrompos( ORD row, ORD col )
 /*****************************************/
 {
@@ -624,6 +625,7 @@ EVENT uigeteventfrompos( ORD row, ORD col )
     }
     return( EV_NO_EVENT );
 }
+#endif
 
 EVENT intern menuevent( VSCREEN *vptr )
 /*************************************/

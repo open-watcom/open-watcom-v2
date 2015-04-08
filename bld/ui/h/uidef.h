@@ -147,6 +147,7 @@ void            intern          physupdate( SAREA * );
 #if defined( __UNIX__ )
 void            intern          forbid_refresh( void );
 void            intern          permit_refresh( void );
+void            intern          newcursor( void );
 #else
     #define                     forbid_refresh()
     #define                     permit_refresh()
@@ -157,8 +158,8 @@ void            intern          setupmouse( void );
 void            intern          setvideomode( unsigned );
 int             intern          videopage( void );
 void            intern          vertretrace( void );
-void            UIAPI           uistartevent( void );
-void            UIAPI           uidoneevent( void );
+EVENT           intern          getanyevent( void );
+void            intern          waitforevent( void );
 
 #ifdef __cplusplus
 }

@@ -166,4 +166,4 @@ extern struct cursor_pos    BIOSGetCurPos(unsigned);
 extern void        BIOSSetCurPos(unsigned char, unsigned char, unsigned);
 extern unsigned    BIOSGetCurTyp(unsigned);
 extern void        BIOSSetCurTyp(unsigned char, unsigned char);
-
+extern void        WindowsMouseEvent( unsigned event, unsigned info );

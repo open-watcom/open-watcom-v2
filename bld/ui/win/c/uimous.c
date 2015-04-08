@@ -30,11 +30,12 @@
 
 
 #include <dos.h>
+#include <windows.h>
 #include "uidos.h"
 #include "uidef.h"
 #include "uimouse.h"
 #include "biosui.h"
-#include <windows.h>
+
 
 static int MouseX,MouseY,MouseStatusBits;
 static int ScreenXFudge,ScreenYFudge;
@@ -64,8 +65,6 @@ extern void MouseState( unsigned, md_stk_ptr );
     "mov ss:[si+2],cx"      \
     "mov ss:[si+4],dx"      \
     parm [ax] [si] modify [bx cx dx];
-
-extern unsigned long uiclock( void );
 
 #define         MOUSE_SCALE             8
 

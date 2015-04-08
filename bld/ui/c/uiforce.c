@@ -31,6 +31,7 @@
 
 
 #include "uidef.h"
+#include "uiforce.h"
 
 #define FORCED_Q_SIZE 5
 

@@ -35,9 +35,8 @@
 #include "uivirt.h"
 #endif
 #include "uiforce.h"
-#include "stdui.h"
+#include "uigchar.h"
 
-void intern DBCSCharacterMap( void );
 
 bool UIAPI uistart( void )
 /*************************/

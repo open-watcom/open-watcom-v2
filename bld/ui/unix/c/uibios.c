@@ -41,6 +41,7 @@
 #include "uidef.h"
 #include "uivirt.h"
 #include "qnxuiext.h"
+#include "ctkeyb.h"
 #include "qdebug.h"
 
 extern PossibleDisplay DisplayList[];

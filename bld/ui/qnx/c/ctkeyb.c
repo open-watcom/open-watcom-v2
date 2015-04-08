@@ -56,6 +56,7 @@
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "qdebug.h"
+#include "ctkeyb.h"
 
 #include "trie.h"
 #include "tixparse.h"
@@ -75,16 +76,12 @@ enum {
 extern struct _console_ctrl *UIConCtrl;
 extern unsigned             UIDisableShiftChanges;
 
-extern void             tm_saveevent( void );
-extern void             restorekeyb( void );
-extern void             savekeyb( void );
-
 static struct termios   SaveTermSet;
 static int              SaveProtocol;
 static int              SaveCtrl;
 static pid_t            SavePGroup;
 
-static unsigned short   ShftState;
+static unsigned short   ck_shift_state;
 static unsigned short   sticky;
 static unsigned short   real_shift;
 
@@ -275,7 +272,7 @@ static const event_shift_map ShiftMap[] = {
 
 void intern clear_shift( void )
 {
-    ShftState = 0;
+    ck_shift_state = 0;
     real_shift = 0;
 }
 
@@ -337,7 +334,7 @@ void nextc_unget( char *str, int n )
 }
 
 
-int find_entry( const void *pkey, const void *pbase )
+static int find_entry( const void *pkey, const void *pbase )
 {
     const EVENT                 *evp = pkey;
     const event_shift_map       *entry = pbase;
@@ -447,17 +444,17 @@ EVENT ck_keyboardevent( void )
                 break;
             }
         }
-        ShftState = sticky | real_shift;
+        ck_shift_state = sticky | real_shift;
         sticky = 0;
         #define S_MASK  (S_SHIFT|S_CTRL|S_ALT)
-        if( ShftState & S_MASK ) {
+        if( ck_shift_state & S_MASK ) {
             search_ev = tolower( ev );
             entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ),
                                 sizeof( ShiftMap[0] ), find_entry );
             if( entry != NULL ) {
-                if( ShftState & S_SHIFT ) {
+                if( ck_shift_state & S_SHIFT ) {
                     ev = entry->shift;
-                } else if( ShftState & S_CTRL ) {
+                } else if( ck_shift_state & S_CTRL ) {
                     ev = entry->ctrl;
                 } else { /* must be ALT */
                     ev = entry->alt;
@@ -467,7 +464,7 @@ EVENT ck_keyboardevent( void )
         QNXDebugPrintf1( "UI: Something read: %4.4X", ev );
         return( ev );
     }
-    ShftState = real_shift;
+    ck_shift_state = real_shift;
     QNXDebugPrintf1( "UI: Something read: %4.4X", ev );
     return( ev );
 }
@@ -502,7 +499,7 @@ static int ck_flush( void )
 static int ck_shift_state( void )
 /*******************************/
 {
-    return( ShftState );
+    return( ck_shift_state );
 }
 
 static int ck_restore( void )

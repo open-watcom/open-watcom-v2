@@ -32,7 +32,6 @@
 
 #include "stdui.h"
 
-extern  EVENT   uivget( VSCREEN * );
 
 EVENT   uidialogevent( VSCREEN *vs )
 {

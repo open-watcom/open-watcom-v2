@@ -37,8 +37,9 @@
 // compiled in.
 #define UIDEBUG 0
 
+extern void intern uicheckuidata( void );
+
 #if UIDEBUG
-    extern void intern uicheckuidata( void );
     #define _uicheckuidata() uicheckuidata()
 #else
     #define _uicheckuidata()

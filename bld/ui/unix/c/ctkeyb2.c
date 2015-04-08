@@ -34,8 +34,6 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 
-extern void restorekeyb( void );
-extern void savekeyb( void );
 
 static struct termios   SaveTermSet;
 static pid_t            SavePGroup;
@@ -53,13 +51,13 @@ int ck_unevent( EVENT ev )
     #if 0 //Don't think this does anything under QNX
     switch( ev ) {
     case EV_SHIFT_RELEASE:
-        ShftState &= ~S_SHIFT;
+        ct_shift_state &= ~S_SHIFT;
         break;
     case EV_CTRL_RELEASE:
-        ShftState &= ~S_CTRL;
+        ct_shift_state &= ~S_CTRL;
         break;
     case EV_ALT_RELEASE:
-        ShftState &= ~S_ALT;
+        ct_shift_state &= ~S_ALT;
         break;
     }
     #endif
@@ -89,16 +87,16 @@ int ck_shift_state( void )
     char shift_state = 6;
     if( ioctl( 0, TIOCLINUX, &shift_state ) >= 0 ) {
         /* Linux console modifiers */
-        ShftState &= ~(S_SHIFT|S_CTRL|S_ALT);
+        ct_shift_state &= ~(S_SHIFT|S_CTRL|S_ALT);
         if( shift_state & 1 )
-            ShftState |= S_SHIFT;
+            ct_shift_state |= S_SHIFT;
         if( shift_state & ( 2 | 8 ) )
-            ShftState |= S_ALT;
+            ct_shift_state |= S_ALT;
         if( shift_state & 4 )
-            ShftState |= S_CTRL;
+            ct_shift_state |= S_CTRL;
     }
 #endif
-    return( ShftState );
+    return( ct_shift_state );
 }
 
 int ck_restore( void )

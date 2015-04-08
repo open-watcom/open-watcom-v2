@@ -51,18 +51,26 @@
 #include "trie.h"
 #include "tixparse.h"
 
-extern unsigned short   ShftState;
-extern char *GetTermType( void );
+extern unsigned short   ct_shift_state;
 
-int             ck_init( void );
-int             ck_fini( void );
-void intern     ck_arm( void );
-int             ck_save( void );
-int             ck_restore( void );
-int             ck_flush( void );
-int             ck_stop( void );
-int             ck_shift_state( void );
-int             ck_unevent( EVENT ev );
-bool            init_interminfo( void );
-int             init_trie( void );
-int             kb_wait( int secs, int usecs );
+extern char     *GetTermType( void );
+extern void     clear_shift( void );
+extern int      nextc( int n );
+extern void     nextc_unget( char *, int );
+extern EVENT    ck_keyboardevent( void );
+extern EVENT    tk_keyboardevent( void );
+extern EVENT    td_event( void );
+extern void     tm_saveevent( void );
+
+extern int      ck_init( void );
+extern int      ck_fini( void );
+extern void     ck_arm( void );
+extern int      ck_save( void );
+extern int      ck_restore( void );
+extern int      ck_flush( void );
+extern int      ck_stop( void );
+extern int      ck_shift_state( void );
+extern int      ck_unevent( EVENT ev );
+extern bool     init_interminfo( void );
+extern int      init_trie( void );
+extern int      kb_wait( int secs, int usecs );

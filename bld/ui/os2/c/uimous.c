@@ -37,6 +37,7 @@
 #include "uidef.h"
 #include "uimouse.h"
 
+
 /* Local Information Segment */
 
 typedef struct __LINFOSEG {      /* lis */
@@ -84,8 +85,6 @@ extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
                         0x36 0x89 0x54 0x04 \
                         parm [ax] [si] modify [bx cx dx];
 extern void MouseState( unsigned, struct mouse_data __near * );
-
-extern unsigned long uiclock( void );
 
 #define         MOUSE_SCALE             8
 

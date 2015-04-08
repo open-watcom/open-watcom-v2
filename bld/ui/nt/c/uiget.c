@@ -36,7 +36,6 @@
 #include "uidef.h"
 #include "uiforce.h"
 
-extern void intern waitforevent( void );
 
 void UIAPI uiflush( void )
 {
@@ -48,8 +47,6 @@ unsigned long UIAPI uiclock( void )
 {
     return( GetTickCount() );
 }
-
-extern EVENT intern getanyevent( void );
 
 EVENT UIAPI uieventsource( bool update )
 {

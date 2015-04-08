@@ -38,6 +38,5 @@ extern void     UIAPI uiwakethread( void );
 extern void     UIAPI uiforceinfloop( void );
 
 extern bool     kbdisblocked( void );
-extern void     waitforevent( void );
 
 #endif

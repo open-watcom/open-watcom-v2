@@ -123,7 +123,7 @@ static bool selectoutofrange( a_list_info *box )
     return( box->row < box->line || box->row >= box->line + box->area.height );
 }
 
-bool checkitem( a_list *list, char typed, int index )
+static bool checkitem( a_list *list, char typed, int index )
 {
     char        first;
 
@@ -298,7 +298,7 @@ static int getmouseregion( a_list *list, int *row, int *col )
 }
 
 
-EVENT charselect( EVENT ev, a_list *list )
+static EVENT charselect( EVENT ev, a_list *list )
 {
     int         num;
     int         i;

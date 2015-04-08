@@ -39,4 +39,6 @@ extern char             ti_char_map[256][4];
 #define ti_alt_map( x ) ( _ti_alt_map[( x )/8]&&( _ti_alt_map[( x )/8]>>( ( x )%8 ) )&1 )
 #define ti_alt_map_set( x )     ( _ti_alt_map[( x )/8]|= ( 1<<( ( x )%8 ) ) )
 
-extern int ti_read_tix( char *termname );
+extern int      ti_read_tix( const char *termname );
+extern FILE     *ti_fopen( const char *fnam );
+extern int      ui_tix_missing( const char *name );

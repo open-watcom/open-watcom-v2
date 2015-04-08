@@ -32,6 +32,7 @@
 
 #ifndef _UIGCHAR_H_
 #define _UIGCHAR_H_
+
 enum    MappedChars {
     UI_RADIO_LEFT,
     UI_RADIO_RIGHT,
@@ -78,5 +79,7 @@ enum    MappedChars {
     UI_LAST_CHAR
 };
 
-extern unsigned char UiGChar[];
+extern unsigned char    UiGChar[];
+extern void             DBCSCharacterMap( void );
+
 #endif

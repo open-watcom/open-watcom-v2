@@ -35,10 +35,8 @@
 #include "uidef.h"
 #include "uivirt.h"
 
-extern bool MouseInstalled;
 
-extern void intern savekeyb(void);
-extern void intern restorekeyb(void);
+extern bool MouseInstalled;
 
 void UIAPI uispawnstart()
 /************************/

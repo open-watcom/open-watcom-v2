@@ -62,6 +62,7 @@
 
 #include "uivirt.h"
 #include "qnxuiext.h"
+#include "ctkeyb.h"
 
 #include "tixparse.h"
 
@@ -72,10 +73,7 @@
 extern  unsigned    UIDisableShiftChanges;
 extern  unsigned    UIDisableShiftChanges;
 
-extern  char        *GetTermType( void );
 extern  LP_PIXEL    asmNonBlankEnd( LP_PIXEL, int, PIXEL );
-extern  void        newcursor( void );
-extern  EVENT       tk_keyboardevent( void );
 
 // this is handy for those functions that do *almost* the same thing
 // for the two terminal types
@@ -1192,8 +1190,8 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 #endif
 
 
-void update_shadow( void )
-/************************/
+static void update_shadow( void )
+/*******************************/
 {
     LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
     int         incr= UIData->screen.increment;

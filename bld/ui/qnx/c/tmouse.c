@@ -46,10 +46,7 @@
 
 #include "uivirt.h"
 #include "qnxuiext.h"
-
-extern void     stopmouse(void);
-extern int      nextc(int);
-extern char     *GetTermType(void);
+#include "ctkeyb.h"
 
 
 #define         MOUSE_SCALE             8

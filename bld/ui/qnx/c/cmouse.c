@@ -160,7 +160,6 @@ static int cm_init( bool install )
     struct _osinfo      osinfo;
     MOUSEORD            row;
     MOUSEORD            col;
-    extern void stopmouse(void);
 
     MouseInstalled = FALSE;
     if( !install ) return( FALSE );

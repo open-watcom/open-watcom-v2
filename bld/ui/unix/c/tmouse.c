@@ -50,15 +50,13 @@
 
 #include "uivirt.h"
 #include "qnxuiext.h"
+#include "ctkeyb.h"
 #include <time.h>
 #ifdef __LINUX__
 #include <sys/socket.h>
 #include <sys/un.h>
 #endif
 
-extern          void                    stopmouse(void);
-extern          int                     nextc(int);
-extern          char                    *GetTermType(void);
 
 #ifdef __LINUX__
 static          void                    GPM_parse( void );

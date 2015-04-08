@@ -58,12 +58,12 @@ static          EVENT                   EventsRelease[] = {
                 EV_CAPS_RELEASE,
 };
 
-static unsigned         ShftState;
+static unsigned         shift_state;
 
 unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
-    return( ShftState );
+    return( shift_state );
 }
 
 static bool os2getkey( struct _KBDKEYINFO *keyInfo )
@@ -114,7 +114,7 @@ EVENT intern keyboardevent( void )
     if( KbdGetStatus( &shiftInfo, 0 ) != 0 || shiftInfo.fsMask == 0 ) {
         return( EV_NO_EVENT );
     }
-    ShftState = shiftInfo.fsState;
+    shift_state = shiftInfo.fsState;
     newshift = uicheckshift();
 
     /* os2getkey must take precedence over shift change so that  *

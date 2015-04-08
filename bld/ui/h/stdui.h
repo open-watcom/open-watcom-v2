@@ -621,6 +621,7 @@ extern          EVENT           uidialogevent( VSCREEN _FARD * );
 extern          void            uidirty( SAREA );
 extern          void            uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );
 extern          EVENT           uieventsource( bool );
+extern          EVENT           uieventsourcehook( EVENT );
 extern          LP_VOID         uifaralloc( size_t );
 extern          void            uifarfree( LP_VOID );
 extern          void            uifini( void );
@@ -629,6 +630,7 @@ extern          void            uifinigmouse( void );
 extern          void            uiflush( void );
 extern          void            uiflushevent( void );
 extern          void            uifree( void * );
+extern          unsigned long   uiclock( void );
 extern          EVENT           uiget( void );
 extern          void            uigetcursor( ORD _FARD*, ORD _FARD*, int _FARD*, int _FARD* );
 extern          EVENTLIST _FARD *uigetlist( void );
@@ -682,6 +684,7 @@ extern          void            uivattribute( VSCREEN _FARD*, SAREA, ATTR );
 extern          void            uivclose( VSCREEN _FARD* );
 extern          void            uivdirty( VSCREEN _FARD*, SAREA );
 extern          void            uivfill( VSCREEN _FARD*, SAREA, ATTR, char );
+extern          EVENT           uivget( VSCREEN  _FARD* );
 extern          EVENT           uivgetevent( VSCREEN _FARD* );
 extern          EVENT           uivgetprime( VSCREEN _FARD* );
 extern          EVENT           uivgetprimevent( VSCREEN _FARD* );
@@ -715,6 +718,17 @@ extern          int             uionnec( void );  // bool
 extern          int             uicharlen( int ); // returns 2 if dbcs lead byte
 extern          void            UIMemOpen( void );
 extern          void            UIMemClose( void );
+
+extern          int             uimousealign( void );
+
+typedef         void (uitimer_callback)( void );
+extern          void            uitimer( uitimer_callback *proc, int ms );
+
+extern          void            win_uisetmono( void );
+extern          void            win_uisetcolor( int clr );
+
+extern          void            uistartevent( void );
+extern          void            uidoneevent( void );
 
 #ifdef __cplusplus
 }

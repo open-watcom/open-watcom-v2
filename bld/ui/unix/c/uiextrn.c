@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include <sys/types.h>
-#include "stdui.h"
 #include "uidef.h"
 #include "qnxuiext.h"
 #include "uivirt.h"

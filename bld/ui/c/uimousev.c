@@ -270,7 +270,7 @@ void UIAPI uiswapmouse( void )
     }
 }
 
-
+#if 0
 MOUSEORD UIAPI uigetmrow( void )
 /*******************************/
 {
@@ -283,7 +283,7 @@ MOUSEORD UIAPI uigetmcol( void )
 {
     return( MouseCol );
 }
-
+#endif
 
 void UIAPI uigetmouse( ORD *row, ORD *col, int *status )
 /*******************************************************/

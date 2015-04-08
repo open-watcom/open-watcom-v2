@@ -633,7 +633,7 @@ static  void setcombobuffer( a_dialog *ui_dlg_info, VFIELD *fld )
     }
 }
 
-EVENT   pulldownfilter( EVENT ev, a_dialog *ui_dlg_info )
+static EVENT   pulldownfilter( EVENT ev, a_dialog *ui_dlg_info )
 {
     a_list          *list = NULL;
     a_combo_box     *combo;

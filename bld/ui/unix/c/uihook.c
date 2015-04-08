@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "stdui.h"
 #include "uidef.h"
 
 EVENT UIAPI uieventsourcehook( EVENT ev )

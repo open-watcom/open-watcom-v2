@@ -75,7 +75,7 @@ static FILE     *in_file= NULL;
 char            ti_char_map[256][4];
 unsigned char   _ti_alt_map[32];
 
-void tix_error( char *str )
+static void tix_error( const char *str )
 /*************************/
 {
     static char header[]= "\nError in ";
@@ -90,14 +90,14 @@ void tix_error( char *str )
     uiwrite( "\n" );
 }
 
-FILE *ti_fopen( char *fnam )
-/**************************/
+FILE *ti_fopen( const char *fnam )
+/********************************/
 {
     FILE        *res;
     char        *homeDir;
     char        fpath[FILENAME_MAX+1];
 
-    if( fnam==NULL || fnam[0]=='\0' ) {
+    if( fnam == NULL || fnam[0] == '\0' ) {
         return( NULL );
     }
 
@@ -128,8 +128,8 @@ FILE *ti_fopen( char *fnam )
     return( res );
 }
 
-int init_tix_scanner( char *name )
-/********************************/
+static int init_tix_scanner( const char *name )
+/*********************************************/
 {
     char        tix_name[19];
 
@@ -158,7 +158,7 @@ int init_tix_scanner( char *name )
     return( in_file != NULL );
 }
 
-void close_tix_scanner( void )
+static void close_tix_scanner( void )
 /****************************/
 {
     if( in_file!=NULL ){
@@ -466,8 +466,8 @@ static int do_default( void )
 }
 
 
-int ti_read_tix( char *termname )
-/*******************************/
+int ti_read_tix( const char *termname )
+/*************************************/
 {
     int         i;
     int         ret;
