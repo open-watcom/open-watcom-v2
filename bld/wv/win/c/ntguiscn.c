@@ -37,12 +37,12 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgscrn.h"
+#include "guiwin.h"
 
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
 extern void     SaveMainScreen(char*);
 extern void     RestoreMainScreen(char*);
-extern HWND     GUIGetSysHandle( gui_window *wnd );
 extern void     DebugExit( void );
 extern void     TellHWND( HWND );
 

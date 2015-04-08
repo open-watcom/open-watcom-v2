@@ -47,6 +47,7 @@
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "strutil.h"
+#include "guiwin.h"
 
 #include "clibint.h"
 
@@ -55,7 +56,6 @@ extern void     DebugFini( void );
 extern void     HookInQueue( void );
 extern void     HookOutQueue( void );
 static BOOL     PASCAL GetCommandData( HWND );
-extern HWND     GUIGetSysHandle(gui_window*);
 extern void     InitHookFunc(void);
 extern void     FiniHookFunc(void);
 #ifndef __NT__

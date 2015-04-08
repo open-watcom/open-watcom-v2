@@ -194,7 +194,6 @@ extern void WndDlgFini( void )
     }
 }
 
-static WNDCALLBACK DlgEventProc;
 static bool DlgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;

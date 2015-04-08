@@ -81,7 +81,6 @@ extern void             SetTargMenuItems( void );
 extern void             SetBrkMenuItems( void );
 extern void             SetIOMenuItems( void );
 extern void             DoInput( void );
-extern bool             GUIIsDBCS( void );
 extern unsigned         EnvLkup( const char *name, char *buff, unsigned buff_len );
 extern void             PopErrBox( const char *buff );
 extern void             KillDebugger( int ret_code );

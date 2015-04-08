@@ -56,10 +56,10 @@
 #include "../unix/h/ctkeyb.h"
 #include "dbgscrn.h"
 #include "strutil.h"
+#include "gui.h"
+#include "guigmous.h"
 
 extern void     StartupErr( const char * );
-extern int      GUIInitMouse( int );
-extern void     GUIFiniMouse( void );
 extern void     ReleaseProgOvlay( bool );
 extern void     KillDebugger( int );
 extern unsigned Lookup( const char *, const char *, unsigned );

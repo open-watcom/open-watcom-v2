@@ -42,13 +42,12 @@
 #include "swap.h"
 #include "dbgscrn.h"
 #include "uidbg.h"
+#include "guigmous.h"
 
 extern void __far HookRtn( unsigned event, unsigned info );
 extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
 
 extern unsigned     Lookup(const char *,const char *, unsigned);
-extern int          GUIInitMouse( int );
-extern void         GUIFiniMouse( void );
 extern bool         HasEquals( void );
 extern unsigned     GetValue( void );
 

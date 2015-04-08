@@ -762,7 +762,6 @@ static void FileRefresh( a_window *wnd )
 }
 
 
-static WNDCALLBACK FileEventProc;
 static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     file_window *file = WndFile( wnd );

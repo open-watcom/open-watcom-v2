@@ -37,11 +37,11 @@
 #include "dbglit.h"
 #include "stdui.h"
 #include "dbgscrn.h"
+#include "gui.h"
+#include "guigmous.h"
 
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
-extern int      GUIInitMouse( int );
-extern void     GUIFiniMouse( void );
 
 static unsigned ScrnLines=50;
 static unsigned ScrnColumns=80;

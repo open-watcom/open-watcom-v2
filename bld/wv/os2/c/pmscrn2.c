@@ -44,6 +44,8 @@
 #include "trptypes.h"
 #include "trapaccs.h"
 #include "dbgscrn.h"
+#include "guigmous.h"
+#include "guiwin.h"
 
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
 
@@ -51,11 +53,7 @@ extern HMQ      GUIPMmq;
 
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
-extern int      GUIInitMouse( int );
-extern void     GUIFiniMouse( void );
 extern void     TellHandles( HAB hab, HWND hwnd );
-extern HAB      GUIGetHAB( void );
-extern HWND     GUIGetSysHandle( gui_window * );
 extern void     SaveMainScreen( char * );
 extern void     RestoreMainScreen( char * );
 extern bool     IsTrapFilePumpingMessageQueue( void );

@@ -42,6 +42,7 @@
 #include "dpmi.h"
 #include "dbgscrn.h"
 #include "uidbg.h"
+#include "guigmous.h"
 
 
 #define _64K                    (64UL*1024)
@@ -141,9 +142,6 @@ extern unsigned                 GetValue( void );
 extern unsigned                 Lookup( const char *, const char *, unsigned );
 
 extern void                     StartupErr( const char * );
-extern int                      GUIInitMouse( int );
-extern void                     GUIFiniMouse( void );
-extern void                     GUIInitGraphicsMouse( gui_window_styles );
 extern bool                     UserScreen( void );
 
 extern void                     __far *video_buffer( void __far * );

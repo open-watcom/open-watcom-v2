@@ -38,12 +38,12 @@
 #include "dbgio.h"
 #include "stdui.h"
 #include "dbgscrn.h"
+#include "gui.h"
+#include "guigmous.h"
 
 
 extern void     __FAR *ExtraAlloc( size_t );
 extern void     ExtraFree( void __FAR * );
-extern int      GUIInitMouse( int );
-extern void     GUIFiniMouse( void );
 
 unsigned            NumLines;
 unsigned            NumColumns;

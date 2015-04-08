@@ -52,10 +52,9 @@
 #include "stdui.h"
 #include "dbgscrn.h"
 #include "strutil.h"
+#include "guigmous.h"
 
 extern void         StartupErr( const char * );
-extern int          GUIInitMouse( int );
-extern void         GUIFiniMouse( void );
 extern void         ReleaseProgOvlay( bool );
 extern void         KillDebugger( int );
 extern unsigned     GetValue( void );

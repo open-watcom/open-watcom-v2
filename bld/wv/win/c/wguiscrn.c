@@ -37,11 +37,10 @@
 #include "dbgwind.h"
 #include "dosscrn.h"
 #include "dbgscrn.h"
+#include "guiwin.h"
 
 extern void         *ExtraAlloc( size_t );
 extern void         ExtraFree( void * );
-extern HWND         GUIGetSysHandle( gui_window * );
-extern void         GUISetModalDlgs( bool modal );
 extern void         SaveMainScreen( char * );
 extern void         RestoreMainScreen( char * );
 extern unsigned     Lookup(const char *,const char *, unsigned);
