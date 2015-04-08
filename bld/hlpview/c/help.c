@@ -243,7 +243,7 @@ static void window_pos( ORD *start, ORD *size, int slack, int pos )
 }
 
 
-SAREA *hlp_ut_screen_area( SAREA *area, bool all, bool framed )
+static SAREA *hlp_ut_screen_area( SAREA *area, bool all, bool framed )
 {
     area->col = framed;
     area->width = UIData->width - 2*framed;
@@ -548,7 +548,7 @@ static void vscroll_fields( a_field **ht, SAREA use, int incr )
     }
 }
 
-a_tab_field *help_next_field( a_field *fld, a_field *table )
+static a_tab_field *help_next_field( a_field *fld, a_field *table )
 {
     _unused( table );
     if( fld != NULL ) {
@@ -616,7 +616,7 @@ void Free_Stack( void )
     HelpMemFree( helpStack );
 }
 
-unsigned help_in_tab( a_field *fld, void *dummy )
+static unsigned help_in_tab( a_field *fld, void *dummy )
 {
     _unused( fld );
     _unused( dummy );
