@@ -30,6 +30,7 @@
 
 
 #include "precomp.h"
+#include "ctl3d32.h"
 
 #ifdef __WINDOWS_386__
 

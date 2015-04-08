@@ -24,52 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  Create DIB palette (HPALETTE) from a bitmap (BITMAPINFO).
+* Description:  3D dialogs setup.
 *
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <stdlib.h>
-#include "mem.h"
-#include "palette.h"
-
-/*
- * CreateDIBPalette - create a palette for a bitmap
- */
-HPALETTE CreateDIBPalette( BITMAPINFO *info )
-{
-    DWORD               num_colours;
-    DWORD               i;
-    LOGPALETTE          *palette;
-    HPALETTE            palette_handle;
-    RGBQUAD             *quads;
-
-    num_colours = info->bmiHeader.biClrUsed;
-    if( num_colours == 0 && info->bmiHeader.biBitCount != 24 ) {
-        num_colours = 1 << info->bmiHeader.biBitCount;
-    }
-
-    palette_handle = (HPALETTE)0;
-
-    if( num_colours != 0 ) {
-        palette = MemAlloc( sizeof( LOGPALETTE ) + num_colours * sizeof( PALETTEENTRY ) );
-        if( palette == NULL ) {
-            return( (HPALETTE)0 );
-        }
-        palette->palNumEntries = (WORD)num_colours;
-        palette->palVersion = 0x300;
-
-        quads = &info->bmiColors[0];
-        for( i = 0; i < num_colours; i++ ) {
-            palette->palPalEntry[i].peRed = quads[i].rgbRed;
-            palette->palPalEntry[i].peGreen = quads[i].rgbGreen;
-            palette->palPalEntry[i].peBlue = quads[i].rgbBlue;
-            palette->palPalEntry[i].peFlags = 0;
-        }
-        palette_handle = CreatePalette( palette );
-        MemFree( palette );
-    }
-    return( palette_handle );
-
-} /* CreateDIBPalette */
+extern BOOL Init32Ctl3d( void );
+extern void Fini32Ctl3d( void );

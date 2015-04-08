@@ -37,6 +37,7 @@
 #include <dos.h>
 #include "bool.h"
 #include "font.h"
+#include "dlgmod.h"
 
 /*
  * SetDWORDStaticField - set a dialog item DWORD

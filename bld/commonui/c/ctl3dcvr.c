@@ -33,6 +33,7 @@
 #include "bool.h"
 #include "watcom.h"
 #include "ctl3dcvr.h"
+#include "ctl3d32.h"
 
 #if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
 
@@ -103,13 +104,24 @@ HBRUSH _DLLFAR _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
 
  #endif
 
+#if defined( __WINDOWS_386__ )
+static bool                 dll32Ctl3dOpen = false;
+#else
 static HINSTANCE            ctlDLLLib = NULL;
+#endif
 
 /*
  * CvrCtl3DDLLFini
  */
 static void CvrCtl3DDLLFini( void )
 {
+ #if defined( __WINDOWS_386__ )
+    cvrCtl3dUnregister      = NULL;
+    cvrCtl3dSubclassDlg     = NULL;
+    cvrCtl3dSubclassCtl     = NULL;
+    cvrCtl3dColorChange     = NULL;
+    cvrCtl3dCtlColorEx      = NULL;
+ #else
     cvrCtl3dSubclassDlg     = NULL;
     cvrCtl3dSubclassDlgEx   = NULL;
     cvrCtl3dGetVer          = NULL;
@@ -126,6 +138,7 @@ static void CvrCtl3DDLLFini( void )
     if( ctlDLLLib != (HINSTANCE)NULL ) {
         FreeLibrary( ctlDLLLib );
     }
+ #endif
 
 } /* CvrCtl3DDLLFini */
 
@@ -370,8 +383,6 @@ void C3D_EXPORT CvrCtl3dWinIniChange( void )
 int C3D_EXPORT CvrCtl3DInit( HINSTANCE inst )
 {
  #if defined( __WINDOWS_386__ )
-    static bool dll32Ctl3dOpen = false;
-
     if( !dll32Ctl3dOpen ) {
         if( Init32Ctl3d() ) {
             dll32Ctl3dOpen = true;
@@ -402,6 +413,12 @@ void C3D_EXPORT CvrCtl3DFini( HINSTANCE inst )
 {
     inst = inst;
     CvrCtl3DDLLFini();
+ #if defined( __WINDOWS_386__ )
+    if( dll32Ctl3dOpen ) {
+        Fini32Ctl3d();
+        dll32Ctl3dOpen = false;
+    }
+ #endif
 
 } /* CvrCtl3DFini */
 

@@ -38,6 +38,7 @@
     typedef HRESULT (WINAPI *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
 #endif
 #include "watcom.h"
+#include "inipath.h"
 
 #define CONFIG_DIR "Open Watcom"
 
