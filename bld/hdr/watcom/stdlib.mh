@@ -337,10 +337,6 @@ _WCRTLINK extern int      _wsetenv( const wchar_t *__name,
                                       const wchar_t *__newvalue,
                                       int __overwrite );
 _WCRTLINK extern int      _wputenv( const wchar_t *__env_string );
-:segment DOS
-_WCRTLINK extern void     _wsearchenv( const wchar_t *__name,
-                                         const wchar_t *__env_var,
-                                         wchar_t *__buf );
 _WCRTLINK extern void     _wsplitpath2( const wchar_t *__inp,
                                           wchar_t *__outp, wchar_t **__drive,
                                           wchar_t **__dir, wchar_t **__fn,
@@ -348,6 +344,10 @@ _WCRTLINK extern void     _wsplitpath2( const wchar_t *__inp,
 _WCRTLINK extern void     _wsplitpath( const wchar_t *__path,
                                          wchar_t *__drive, wchar_t *__dir,
                                          wchar_t *__fname, wchar_t *__ext );
+:segment DOS
+_WCRTLINK extern void     _wsearchenv( const wchar_t *__name,
+                                         const wchar_t *__env_var,
+                                         wchar_t *__buf );
 _WCRTLINK extern int      _wsystem( const wchar_t *__cmd );
 :endsegment
 :endsegment
@@ -412,6 +412,10 @@ _WCRTLINK extern errno_t mbstowcs_s( size_t * __restrict __retval, wchar_t * __r
 _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t * __restrict __src, rsize_t __len );
 
 :include ext.sp
+ _WCRTLINK extern errno_t _fwctomb_s( int _WCFAR * __restrict __status, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc );
+ _WCRTLINK extern errno_t _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );
+ _WCRTLINK extern errno_t _fwcstombs_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __dst, rsize_t __dstmax, const wchar_t _WCFAR * __restrict __src, rsize_t __len );
+
  _WCRTLINK errno_t   _get_pgmptr( char ** __p );
 :segment !NO_WIDECHAR
 :segment DOS
@@ -423,6 +427,14 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 :include extepi.sp
 
 :include saferepi.sp
+
+:include ext.sp
+ _WCRTLINK extern int     _fwctomb( char _WCFAR *__s, wchar_t __wchar );
+ _WCRTLINK extern size_t  _fmbstowcs( wchar_t _WCFAR *__pwcs, const char _WCFAR *__s, size_t __n );
+ _WCRTLINK extern size_t  _fwcstombs( char _WCFAR *__s, const wchar_t _WCFAR *__pwcs, size_t __n );
+ _WCRTLINK extern int     _fmblen( const char _WCFAR *__s, size_t __n );
+ _WCRTLINK extern int     _fmbtowc( wchar_t _WCFAR *__pwc, const char _WCFAR *__s, size_t __n );
+:include extepi.sp
 
 :endsegment
 /* min and max macros */
