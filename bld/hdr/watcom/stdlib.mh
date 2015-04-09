@@ -429,11 +429,11 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 :include saferepi.sp
 
 :include ext.sp
- _WCRTLINK extern int     _fwctomb( char _WCFAR *__s, wchar_t __wchar );
- _WCRTLINK extern size_t  _fmbstowcs( wchar_t _WCFAR *__pwcs, const char _WCFAR *__s, size_t __n );
- _WCRTLINK extern size_t  _fwcstombs( char _WCFAR *__s, const wchar_t _WCFAR *__pwcs, size_t __n );
- _WCRTLINK extern int     _fmblen( const char _WCFAR *__s, size_t __n );
- _WCRTLINK extern int     _fmbtowc( wchar_t _WCFAR *__pwc, const char _WCFAR *__s, size_t __n );
+ _WCRTLINK extern int     _fwctomb( char _WCFAR * __s, wchar_t __wchar );
+ _WCRTLINK extern size_t  _fmbstowcs( wchar_t _WCFAR * __pwcs, const char _WCFAR * __s, size_t __n );
+ _WCRTLINK extern size_t  _fwcstombs( char _WCFAR * __s, const wchar_t _WCFAR * __pwcs, size_t __n );
+ _WCRTLINK extern int     _fmblen( const char _WCFAR * __s, size_t __n );
+ _WCRTLINK extern int     _fmbtowc( wchar_t _WCFAR * __pwc, const char _WCFAR * __s, size_t __n );
 :include extepi.sp
 
 :endsegment
