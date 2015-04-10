@@ -141,8 +141,8 @@ extern unsigned char DOS_int( unsigned short, unsigned short, unsigned short );
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-static LP_VOID UIAPI video_buffer( LP_VOID vbuff )
-/************************************************/
+LP_VOID UIAPI dos_uivideobuffer( LP_VOID vbuff )
+/**********************************************/
 {
 #ifdef __386__
     union REGPACK       regs;
@@ -437,12 +437,12 @@ int intern initbios( void )
         }
         if( UIData->desqview ) {
             UIData->screen.origin =
-             (LP_PIXEL)video_buffer( UIData->screen.origin );
+             (LP_PIXEL)dos_uivideobuffer( UIData->screen.origin );
         }
         if( uiisdbcs() ) {
             old_origin = UIData->screen.origin;
             UIData->screen.origin =
-             (LP_PIXEL)video_buffer( UIData->screen.origin );
+             (LP_PIXEL)dos_uivideobuffer( UIData->screen.origin );
             if( old_origin != UIData->screen.origin ) {
                 UIData->desqview = TRUE;
             }

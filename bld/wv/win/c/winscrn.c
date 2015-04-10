@@ -44,7 +44,6 @@
 #include "uidbg.h"
 #include "guigmous.h"
 
-extern void __far HookRtn( unsigned event, unsigned info );
 extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
 
 extern unsigned     Lookup(const char *,const char *, unsigned);
@@ -78,7 +77,7 @@ static display_configuration    HWDisplay;
 
 void InitHookFunc( void )
 {
-    HookFunc( HookRtn );
+    HookFunc( win_uihookrtn );
 }
 
 void FiniHookFunc( void )

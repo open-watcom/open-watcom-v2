@@ -144,8 +144,6 @@ extern unsigned                 Lookup( const char *, const char *, unsigned );
 extern void                     StartupErr( const char * );
 extern bool                     UserScreen( void );
 
-extern void                     __far *video_buffer( void __far * );
-
 extern flip_types               FlipMech = 0;
 extern mode_types               ScrnMode = 0;
 extern gui_window_styles        WndStyle;
@@ -725,7 +723,7 @@ unsigned ConfigScreen( void )
         break;
     }
     if( uiisdbcs() ) {
-        VirtScreen = video_buffer( COLOUR_VIDEO_BUFF );
+        VirtScreen = dos_uivideobuffer( COLOUR_VIDEO_BUFF );
         if( VirtScreen == COLOUR_VIDEO_BUFF ) {
             VirtScreen = NULL;
         } else if( FlipMech == FLIP_PAGE ) {

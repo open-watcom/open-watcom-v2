@@ -724,11 +724,22 @@ extern          int             uimousealign( void );
 typedef         void (uitimer_callback)( void );
 extern          void            uitimer( uitimer_callback *proc, int ms );
 
+extern          void            uistartevent( void );
+extern          void            uidoneevent( void );
+
+#if defined( __DOS__ )
+
+extern          LP_VOID         dos_uivideobuffer( LP_VOID vbuff );
+
+#elif defined( __WINDOWS__ )
+
 extern          void            win_uisetmono( void );
 extern          void            win_uisetcolor( int clr );
 
-extern          void            uistartevent( void );
-extern          void            uidoneevent( void );
+#pragma aux win_uihookrtn far parm [ax] [cx] modify exact [];
+extern          void __far __loadds win_uihookrtn( unsigned event, unsigned info );
+
+#endif
 
 #ifdef __cplusplus
 }

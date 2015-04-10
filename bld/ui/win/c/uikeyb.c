@@ -67,8 +67,6 @@ static volatile bool    HaveKey;
 #pragma aux set_carry = 0xf9;
 extern void set_carry( void );
 
-#pragma aux HookRtn far parm [ax] [cx] modify exact [];
-
 static int CheckState( unsigned info, unsigned down )
 {
     unsigned bit;
@@ -268,7 +266,7 @@ static void MyHookRtn( unsigned event, unsigned info )
  *
  * Note - this keyboard input method looks like a really ugly hack.
  */ 
-static void __far __loadds HookRtn( unsigned event, unsigned info )
+void __far __loadds win_uihookrtn( unsigned event, unsigned info )
 {
     MyHookRtn( event, info );
     set_carry();
@@ -353,7 +351,7 @@ extern void __far __pascal SetEventHook( LPVOID );
 bool intern initkeyboard( void )
 /******************************/
 {
-    SetEventHook( &HookRtn );
+    SetEventHook( &win_uihookrtn );
     return( FALSE );
 }
 
