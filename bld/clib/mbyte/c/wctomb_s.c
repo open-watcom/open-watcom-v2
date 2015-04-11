@@ -45,8 +45,8 @@
 ***** Convert a wide character to a multibyte character.
 ****/
 
-_WCRTLINK errno_t _NEARFAR(wctomb_s,_fwctomb_s)( int * __restrict status,
-                                                 char _FFAR  * __restrict s,
+_WCRTLINK errno_t _NEARFAR(wctomb_s,_fwctomb_s)( int _FFAR * __restrict status,
+                                                 char _FFAR * __restrict s,
                                                  rsize_t smax, wchar_t wc)
 /**************************************************************************/
 {

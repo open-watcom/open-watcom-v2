@@ -40,7 +40,7 @@
 ***** Convert a multibyte character string to a wide character string.
 ****/
 
-_WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t * __restrict retval,
+_WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict retval,
                                                      wchar_t _FFAR * __restrict dst,
                                                      rsize_t dstmax,
                                                      const char _FFAR * __restrict src,

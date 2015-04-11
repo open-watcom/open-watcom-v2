@@ -41,7 +41,7 @@
 ***** Convert a wide character string to a multibyte character string.
 ****/
 
-_WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t * __restrict retval,
+_WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict retval,
                                                      char _FFAR * __restrict dst,
                                                      rsize_t dstmax,
                                                      const wchar_t _FFAR * __restrict src,
