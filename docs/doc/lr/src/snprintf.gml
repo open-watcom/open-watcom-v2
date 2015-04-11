@@ -1,4 +1,6 @@
-.func snprintf snwprintf
+.func begin snprintf
+.func2 snwprintf WATCOM
+.func end
 .synop begin
 #include <stdio.h>
 int snprintf( char *buf,
