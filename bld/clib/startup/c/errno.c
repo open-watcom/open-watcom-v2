@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "rtdata.h"
+#include "stdlib.h"
 
 #if defined(__QNX__)
 

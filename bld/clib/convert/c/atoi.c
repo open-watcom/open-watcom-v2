@@ -32,6 +32,7 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdio.h>
+#include <stdlib.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else

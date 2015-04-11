@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdlib.h>
+#include <netdb.h>
 
 _WCRTLINK struct hostent *gethostbyname( const char *name )
 {

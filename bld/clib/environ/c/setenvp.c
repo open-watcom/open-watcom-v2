@@ -53,10 +53,12 @@
 #include "liballoc.h"
 #include "filestr.h"
 #include "rtdata.h"
+#include "_environ.h"
+
+
 #if defined(__WINDOWS__)
     extern char _WCI86FAR * _WCI86FAR __pascal GetDOSEnvironment( void );
 #endif
-
 
 #if !defined(__NETWARE__) && !defined(__LINUX__)
 static char *_free_ep;

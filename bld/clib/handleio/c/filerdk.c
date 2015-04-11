@@ -42,12 +42,17 @@
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/locking.h>
 #include <share.h>
 #include <time.h>
 #include "liballoc.h"
 #include "rtdata.h"
 #include "rtinit.h"
 #include "openmode.h"
+#include "iomode.h"
+#include "_rdos.h"
+#include "qread.h"
+#include "qwrite.h"
 
 _WCRTLINK int unlink( const CHAR_TYPE *filename ) 
 {

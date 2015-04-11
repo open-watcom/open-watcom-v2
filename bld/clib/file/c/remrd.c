@@ -35,6 +35,7 @@
 #include <io.h>
 #include <direct.h>
 #include <errno.h>
+#include <stdio.h>
 #include <rdos.h>
 #include "seterrno.h"
 

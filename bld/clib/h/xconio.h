@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef _CONIO_H_INCLUDED
-#define _CONIO_H_INCLUDED
+#ifndef _XCONIO_H_INCLUDED
+#define _XCONIO_H_INCLUDED
 
 #include <conio.h>
 
@@ -40,14 +40,14 @@ extern "C" {
 #endif
 
 #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
- extern unsigned _inline_inp(unsigned __port);
- extern unsigned _inline_inpw(unsigned __port);
- extern unsigned _inline_outp(unsigned __port, unsigned __value);
- extern unsigned _inline_outpw(unsigned __port,unsigned __value);
-#ifdef __386__
- extern unsigned _inline_inpd(unsigned __port);
- extern unsigned _inline_outpd(unsigned __port,unsigned __value);
-#endif
+  extern unsigned _inline_inp(unsigned __port);
+  extern unsigned _inline_inpw(unsigned __port);
+  extern unsigned _inline_outp(unsigned __port, unsigned __value);
+  extern unsigned _inline_outpw(unsigned __port,unsigned __value);
+ #ifdef __386__
+  extern unsigned _inline_inpd(unsigned __port);
+  extern unsigned _inline_outpd(unsigned __port,unsigned __value);
+ #endif
 #endif
 
 #ifdef __cplusplus

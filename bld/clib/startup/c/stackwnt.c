@@ -33,6 +33,7 @@
 #include "rtdata.h"
 #include "stacklow.h"
 #include "exitwmsg.h"
+#include <alloca.h>
 
 #if defined(__AXP__) || defined(__PPC__)
 void _init_stk( void )
@@ -55,7 +56,7 @@ _WCRTLINK void __STKOVERFLOW( void )
 }
 #endif
 
-_WCRTLINK unsigned stackavail()
+_WCRTLINK unsigned stackavail( void )
 {
 #if defined(__AXP__) || defined(__PPC__)
     unsigned    _SP;

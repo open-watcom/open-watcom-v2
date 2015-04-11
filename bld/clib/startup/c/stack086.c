@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "stacklow.h"
+#include <alloca.h>
 
 _WCRTLINK unsigned stackavail( void )
 {

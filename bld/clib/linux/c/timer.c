@@ -38,6 +38,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <time.h>
 #include "linuxsys.h"
 
 /* Incomplete kernel sigevent type that provides "just enough"

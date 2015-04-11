@@ -33,12 +33,11 @@
 #include <stdlib.h>
 #include "rtdata.h"
 #include "rtinit.h"
+#include "_environ.h"
 
 _WCRTDATA char ** _WCDATA environ;      /* pointer to environment table */
 _WCRTDATA wchar_t ** _WCDATA _wenviron; /* pointer to wide char environment */
 char * _WCNEAR __env_mask;              /* ptr to char array of flags */
-
-extern void __setenvp( void );
 
 AXI( __setenvp, INIT_PRIORITY_LIBRARY )
 
@@ -46,6 +45,5 @@ AXI( __setenvp, INIT_PRIORITY_LIBRARY )
 /* Environment needs to be freed after files are shut down; __MkTmpFile()
  * is used to delete temp files and needs access to environment.
  */
-extern void __freeenvp( void );
 AYI( __freeenvp, INIT_PRIORITY_LIBRARY - 1 )
 #endif

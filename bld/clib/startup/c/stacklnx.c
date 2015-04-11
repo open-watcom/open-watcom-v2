@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "rtdata.h"
+#include <alloca.h>
 
 _WCRTLINK unsigned stackavail( void )
 {

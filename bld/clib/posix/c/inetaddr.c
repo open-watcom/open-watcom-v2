@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 
 _WCRTLINK uint32_t inet_addr(const char *cp)

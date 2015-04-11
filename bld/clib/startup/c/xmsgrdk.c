@@ -33,6 +33,7 @@
 #include <rdos.h>
 #include <io.h>
 #include "iomode.h"
+#include "exitwmsg.h"
 #include "rtdata.h"
 
 _WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )

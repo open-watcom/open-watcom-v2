@@ -31,6 +31,7 @@
 
 extern FILE *__allocfp( int handle );
 extern void __freefp( FILE * );
+extern void __purgefp( void );
 extern void __chktty( FILE *fp );
 extern void __ioalloc( FILE * );
 extern int  __doclose( FILE *fp, int close_handle );

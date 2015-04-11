@@ -30,8 +30,8 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
 #ifdef __NT__
-    #include <stdlib.h>
     #include <windows.h>
     #include <winnls.h>
     #include "mbchar.h"

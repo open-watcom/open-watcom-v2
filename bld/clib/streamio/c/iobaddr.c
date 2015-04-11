@@ -30,10 +30,22 @@
 
 
 #include "variety.h"
-#include <stdio.h>
 #include "clibsupp.h"
 #include "rtdata.h"
-
+#if defined( __NETWARE__ )
+  #if !defined( _THIN_LIB ) || defined( _NETWARE_CLIB )
+    extern FILE   **__get_stdin ( void );
+    extern FILE   **__get_stdout( void );
+    extern FILE   **__get_stderr( void );
+  #endif
+  #if defined( _THIN_LIB ) && defined( _NETWARE_LIBC )
+    extern FILE   **___stdin ( void );
+    extern FILE   **___stdout( void );
+    extern FILE   **___stderr( void );
+    extern FILE   **___cin   ( void );
+    extern FILE   **___cout  ( void );
+  #endif
+#endif
 
 #if !defined( __NETWARE__ ) || !defined( _THIN_LIB )
 
@@ -61,12 +73,6 @@ _WCRTLINK FILE *__get_std_file( unsigned handle )
 #include <io.h>
 
 #if defined( _NETWARE_LIBC )
-    extern FILE   **___stdin ( void );
-    extern FILE   **___stdout( void );
-    extern FILE   **___stderr( void );
-    extern FILE   **___cin   ( void );
-    extern FILE   **___cout  ( void );
-
     _WCRTLINK FILE *__get_std_stream( unsigned handle )
     {
         FILE    *pFile = NULL;
@@ -87,10 +93,6 @@ _WCRTLINK FILE *__get_std_file( unsigned handle )
         return( pFile );
     }
 #elif defined( _NETWARE_CLIB )
-    extern FILE   **__get_stdin ( void );
-    extern FILE   **__get_stdout( void );
-    extern FILE   **__get_stderr( void );
-
     _WCRTLINK FILE *__get_std_stream( unsigned handle )
     {
         FILE    *pFile = NULL;

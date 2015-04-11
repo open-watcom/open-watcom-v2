@@ -33,6 +33,7 @@
 #include <limits.h>
 #include <ctype.h>
 #include <string.h>
+#include <process.h>
 #include <rdos.h>
 
 _WCRTLINK int _bgetcmd( char *buffer, int len )
