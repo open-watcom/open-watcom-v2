@@ -228,6 +228,12 @@ _WCRTLINK extern FILE       *__get_iob_ptr( void );
  #define __iob          __iob_br
 #endif
 
+:segment CNAME
+_WCRTLINK extern std::FILE *__get_std_file(unsigned handle);
+:elsesegment
+_WCRTLINK extern FILE *__get_std_file(unsigned handle);
+:endsegment
+
 #if !defined(__OBSCURE_STREAM_INTERNALS)
 :segment CNAME
 _WCRTDATA extern std::FILE  _WCDATA __iob[];
@@ -265,12 +271,6 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 :endsegment
 
 #else /* __OBSCURE_STREAM_INTERNALS is defined */
-
-:segment CNAME
-_WCRTLINK extern std::FILE *__get_std_file(unsigned handle);
-:elsesegment
-_WCRTLINK extern FILE *__get_std_file(unsigned handle);
-:endsegment
 
 #define stdin   (__get_std_file(0))     /* standard input file  */
 #define stdout  (__get_std_file(1))     /* standard output file */
@@ -506,9 +506,11 @@ _WCRTLINK extern std::wint_t   _fgetwchar( void );
 _WCRTLINK extern std::wint_t   _fputwchar( std::wint_t );
 _WCRTLINK extern int           _putws( const wchar_t * );
 _WCRTLINK extern int           _snwprintf( wchar_t *, std::size_t, const wchar_t *, ... );
+_WCRTLINK extern int           snwprintf( wchar_t *, std::size_t, const wchar_t *, ... );
 _WCRTLINK extern int           _swprintf( wchar_t *, const wchar_t *, ... );
 _WCRTLINK extern int           _vbwprintf( wchar_t *, std::size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int           _vsnwprintf( wchar_t *, std::size_t, const wchar_t *, __va_list );
+_WCRTLINK extern int           vsnwprintf( wchar_t *, std::size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int           _vswprintf( wchar_t *, const wchar_t *, __va_list );
 _WCRTLINK extern std::FILE     *_wfdopen( int, const wchar_t * );
 _WCRTLINK extern std::FILE     *_wfopen( const wchar_t *, const wchar_t * );
@@ -564,6 +566,7 @@ _WCRTLINK extern wint_t   _fputwchar( wint_t );
 _WCRTLINK extern wchar_t  *_getws( wchar_t * );
 _WCRTLINK extern int      _putws( const wchar_t * );
 _WCRTLINK extern int      _snwprintf( wchar_t *, size_t, const wchar_t *, ... );
+_WCRTLINK extern int      snwprintf( wchar_t *, size_t, const wchar_t *, ... );
 _WCRTLINK extern int      _swprintf( wchar_t *, const wchar_t *, ... );
 _WCRTLINK extern FILE     *_wfdopen( int, const wchar_t * );
 _WCRTLINK extern FILE     *_wfopen( const wchar_t *, const wchar_t * );
@@ -577,6 +580,7 @@ _WCRTLINK extern wchar_t  *_wtempnam( wchar_t *__dir, wchar_t *__prefix );
 _WCRTLINK extern wchar_t  *_wtmpnam( wchar_t * );
 _WCRTLINK extern int      _vbwprintf( wchar_t *, size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int      _vsnwprintf( wchar_t *, size_t, const wchar_t *, __va_list );
+_WCRTLINK extern int      vsnwprintf( wchar_t *, size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int      _vswprintf( wchar_t *, const wchar_t *, __va_list );
 _WCRTLINK extern wint_t   fgetwchar( void );
 _WCRTLINK extern wint_t   fputwchar( wint_t );
