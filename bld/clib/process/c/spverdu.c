@@ -85,9 +85,9 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *dir;
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
-    
+
     if( mode == OLD_P_OVERLAY ) {
-        rc = __F_NAME(execve,_wexecve)(path, argv, envp);
+        rc = __F_NAME(execve,_wexecve)( path, argv, envp );
         return( rc );
     }
 
@@ -101,7 +101,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
     if( np == NULL ) {
-        p = (CHAR_TYPE SPVE_NEAR *)alloca( len*sizeof(CHAR_TYPE) );
+        p = (CHAR_TYPE SPVE_NEAR *)alloca( len * sizeof( CHAR_TYPE ) );
         if( p == NULL ) {
             lib_free( envmem );
             return( -1 );
@@ -109,63 +109,70 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     } else {
         p = np;
     }
-    __F_NAME(_splitpath2,_wsplitpath2)( path, p + (len-_MAX_PATH2),
+    __F_NAME(_splitpath2,_wsplitpath2)( path, p + ( len - _MAX_PATH2 ),
                                         &drive, &dir, &fname, &ext );
 
     /* allocate the cmdline buffer */
     cmdline_mem = LIB_ALLOC( cmdline_len * sizeof( CHAR_TYPE ) );
     if( cmdline_mem == NULL ) {
-        cmdline = (CHAR_TYPE SPVE_NEAR *)alloca( cmdline_len*sizeof(CHAR_TYPE) );
+        cmdline = (CHAR_TYPE SPVE_NEAR *)alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
             __set_errno( E2BIG );
-            goto cleanup;
         }
     } else {
         cmdline = cmdline_mem;
     }
-    
-    __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
-    __set_errno( ENOENT );
-    if( ext[0] != '\0' ) {
-        if( __F_NAME(stricmp,wcscmp)( ext, __F_NAME(".bat",L".bat") ) == 0 )
-        {
-            retval = -1; /* assume file doesn't exist */
-            if( file_exists( p ) ) goto spawn_command_com;
+
+    if( cmdline != NULL ) {
+        __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
+        __set_errno( ENOENT );
+        if( ext[0] != '\0' ) {
+            if( __F_NAME(stricmp,wcscmp)( ext, STRING( ".bat" ) ) == 0 )
+            {
+                retval = -1; /* assume file doesn't exist */
+                if( file_exists( p ) ) {
+                    /* the environment will have to be reconstructed */
+                    lib_free( envmem );
+                    envmem = NULL;
+                    __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
+                    retval = spawnl( mode, getenv( STRING( "COMSPEC" ) ),
+                        STRING( "COMMAND" ),
+                        STRING( "/c " ),
+                        p, cmdline, NULL );
+                }
+            } else {
+                __set_errno( 0 );
+                /* user specified an extension, so try it */
+                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
+            }
         } else {
+            end_of_p = p + __F_NAME(strlen,wcslen)( p );
+            __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
             __set_errno( 0 );
-            /* user specified an extension, so try it */
-            retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
-        }
-    }
-    else {
-        end_of_p = p + __F_NAME(strlen,wcslen)( p );
-        __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".com",L".com") );
-        __set_errno( 0 );
-        retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
-        if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-            __set_errno( 0 );
-            __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".exe",L".exe") );
             retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
             if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-                /* try for a .BAT file */
                 __set_errno( 0 );
-                __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".bat",L".bat") );
-                if( file_exists( p ) ) {
-spawn_command_com:
-                /* the environment will have to be reconstructed */
-                lib_free( envmem );
-                envmem = NULL;
-                __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
-                retval = spawnl( mode, getenv("COMSPEC"),
-                    "COMMAND",
-                    "/c ",
-                    p, cmdline, NULL );
+                __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
+                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
+                if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+                    /* try for a .BAT file */
+                    __set_errno( 0 );
+                    __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );
+                    if( file_exists( p ) ) {
+                        /* the environment will have to be reconstructed */
+                        lib_free( envmem );
+                        envmem = NULL;
+                        __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
+                        retval = spawnl( mode, getenv( STRING( "COMSPEC" ) ),
+                            STRING( "COMMAND" ),
+                            STRING( "/c " ),
+                            p, cmdline, NULL );
+                    }
                 }
             }
         }
     }
-cleanup:
     LIB_FREE( cmdline_mem );
     LIB_FREE( np );
     lib_free( envmem );

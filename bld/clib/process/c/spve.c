@@ -90,7 +90,7 @@ static int file_exists( const CHAR_TYPE *filename )                     /* 05-ap
 #else
     /* should use _dos_findfirst to avoid DOS APPEND bug */
     struct find_t  find_buf;
-    
+
     if( _dos_findfirst( filename,
             _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM, &find_buf ) == 0 )
         return( 1 );
@@ -135,7 +135,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     CHAR_TYPE SPVE_NEAR     *cmdline_mem;
     CHAR_TYPE SPVE_NEAR     *cmdline;
     CHAR_TYPE               switch_c[4];
-    CHAR_TYPE               prot_mode286;
+    unsigned char           prot_mode286;
 #if defined( __DOS__ )
     auto _87state           _87save;
 #endif
@@ -144,19 +144,19 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
     int                     rc;
-    
+
 #if defined( __DOS__ ) && defined( _M_I86 )
  #define        ENVPARM envseg
 #else
  #define        ENVPARM envmem
 #endif
-    
+
 #ifdef __USE_POSIX_HANDLE_STRINGS
     CHAR_TYPE               **newEnvp;
     int                     count;
     CHAR_TYPE               *fileinfo;
     int                     doFreeFlag = 0;
-    
+
     if( _fileinfo != 0 ) {
         fileinfo = __F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)();
         if( fileinfo != NULL ) {
@@ -184,18 +184,17 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         }
     }
 #endif
-    
+
 #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
     prot_mode286 = FALSE;
-    
+
  #if defined(__OS2__) || defined(__NT__)
     if( mode == OLD_P_OVERLAY ) {
         rc = __F_NAME(execve,_wexecve)(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }
- #endif
- #if defined( __DOS__ )
+ #else      // __DOS__
     if( mode >= OLD_P_OVERLAY ) {
         __set_errno( EINVAL );
         rc = -1;
@@ -205,7 +204,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
  #endif
 #else
  #if defined( __OS2__ )
-    prot_mode286 = _RWD_osmode;
+    prot_mode286 = ( _RWD_osmode != DOS_MODE );
     if( mode == OLD_P_OVERLAY ) {
         rc = execve(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
@@ -255,7 +254,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 #if defined( __DOS__ ) && defined( _M_I86 )
     if( _osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
         unsigned    segment;
-        
+
         if( _dos_allocmem( num_of_paras, &segment ) != 0 ) {
             lib_nfree( np );
             lib_free( envmem );
@@ -269,98 +268,102 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     /* allocate the cmdline buffer */
     cmdline_mem = LIB_ALLOC( cmdline_len * sizeof( CHAR_TYPE ) );
     if( cmdline_mem == NULL ) {
-        cmdline = (CHAR_TYPE SPVE_NEAR *)alloca( cmdline_len*sizeof(CHAR_TYPE) );
+        cmdline = (CHAR_TYPE SPVE_NEAR *)alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
             __set_errno( E2BIG );
             __set_doserrno( E_badenv );
-            goto cleanup;
         }
     } else {
         cmdline = cmdline_mem;
     }
-    
-#if !defined( __OS2__ ) && !defined(__NT__)
-    if( _RWD_osmajor >= 3 ) {   /* 17-oct-88, check version #
-                                 * 'append' program in DOS has a bug, so we avoid it by putting '.\'
-                                 * on the front of a filename that doesn't have a path or drive
-                                 */
-        if( drive[0] == 0 && dir[0] == 0 ) {
-            dir = ".\\";
+    if( cmdline != NULL ) {
+#if defined( __DOS__ )
+        /* 17-oct-88, check version #
+         * 'append' program in DOS has a bug, so we avoid it by putting '.\'
+         * on the front of a filename that doesn't have a path or drive
+         */
+        if( _RWD_osmajor >= 3 ) {
+            if( drive[0] == 0 && dir[0] == 0 ) {
+                dir = ".\\";
+            }
         }
-    }
 #endif
-    __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
-    __set_errno( ENOENT );
-    if( ext[0] != '\0' ) {
+        __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
+        __set_errno( ENOENT );
+        if( ext[0] != '\0' ) {
 #if defined( __OS2__ )
-        if( stricmp( ext, ".cmd" ) == 0 || stricmp( ext, ".bat" ) == 0 )
+            if( stricmp( ext, ".cmd" ) == 0 || stricmp( ext, ".bat" ) == 0 ) {
 #else
-        if( __F_NAME(stricmp,wcscmp)( ext, __F_NAME(".bat",L".bat") ) == 0 )
+            if( __F_NAME(stricmp,wcscmp)( ext, STRING( ".bat" ) ) == 0 ) {
 #endif
-        {
-            retval = -1; /* assume file doesn't exist */
-            if( file_exists( p ) ) goto spawn_command_com;
-        } else {
-            __set_errno( 0 );
-            /* user specified an extension, so try it */
-            retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
-        }
-    }
-#if defined( __OS2__ ) || defined( __NT__ )
-    /*
-     * consider the following valid executable filenames:
-     *      a.b.exe  a.cmd.exe  a.exe.cmd  a.cmd
-     * we must always try to add .exe, etc.
-     */
-    if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-#else
-    else {
-#endif
-        end_of_p = p + __F_NAME(strlen,wcslen)( p );
-        if( prot_mode286 ) {
-            __set_errno( ENOENT );
-        } else {
-            __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".com",L".com") );
-            __set_errno( 0 );
-            retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
-        }
-        if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-            __set_errno( 0 );
-            __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".exe",L".exe") );
-            retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
-            if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-                /* try for a .BAT file */
-                __set_errno( 0 );
-#if defined( __OS2__ )
-                strcpy( end_of_p, ".cmd" );
-                if( !file_exists( p ) )
-                    strcpy( end_of_p, ".bat" );
-#else
-                __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".bat",L".bat") );
-#endif
+                retval = -1; /* assume file doesn't exist */
                 if( file_exists( p ) ) {
-spawn_command_com:
-                /* the environment will have to be reconstructed */
-                lib_free( envmem );
-                envmem = NULL;
-                __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
-#ifdef __WIDECHAR__
-                retval = _wspawnl( mode, _wgetenv(L"COMSPEC"),
-                    prot_mode286 ? L"CMD" : L"COMMAND",
-                    __wSlash_C( switch_c, prot_mode286 ),
-                    p, cmdline, NULL );
-#else
-                retval = spawnl( mode, getenv("COMSPEC"),
-                    prot_mode286 ? "CMD" : "COMMAND",
-                    __Slash_C( switch_c, prot_mode286 ),
-                    p, cmdline, NULL );
+#if defined( __DOS__ )
+                    /* the environment will have to be reconstructed */
+                    lib_free( envmem );
+                    envmem = NULL;
 #endif
+                    __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
+                    retval = __F_NAME(spawnl,_wspawnl)( mode,
+                        __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) ),
+                        prot_mode286 ? STRING( "CMD" ) : STRING( "COMMAND" ),
+                        __F_NAME(__Slash_C,__wSlash_C)( switch_c, prot_mode286 ),
+                        p, cmdline, NULL );
+                }
+            } else {
+                __set_errno( 0 );
+                /* user specified an extension, so try it */
+                retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
+            }
+#if defined( __OS2__ ) || defined( __NT__ )
+        }
+        /*
+         * consider the following valid executable filenames:
+         *      a.b.exe  a.cmd.exe  a.exe.cmd  a.cmd
+         * we must always try to add .exe, etc.
+         */
+        if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+#else
+        } else {
+#endif
+            end_of_p = p + __F_NAME(strlen,wcslen)( p );
+            if( prot_mode286 ) {
+                __set_errno( ENOENT );
+            } else {
+                __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
+                __set_errno( 0 );
+                retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
+            }
+            if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+                __set_errno( 0 );
+                __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
+                retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
+                if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+                    /* try for a .BAT file */
+                    __set_errno( 0 );
+#if defined( __OS2__ )
+                    strcpy( end_of_p, ".cmd" );
+                    if( !file_exists( p ) )
+                        strcpy( end_of_p, ".bat" );
+#else
+                    __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );
+#endif
+                    if( file_exists( p ) ) {
+                        /* the environment will have to be reconstructed */
+                        lib_free( envmem );
+                        envmem = NULL;
+                        __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
+                        retval = __F_NAME(spawnl,_wspawnl)( mode,
+                            __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) ),
+                            prot_mode286 ? STRING( "CMD" ) : STRING( "COMMAND" ),
+                            __F_NAME(__Slash_C,__wSlash_C)( switch_c, prot_mode286 ),
+                            p, cmdline, NULL );
+                    }
                 }
             }
         }
     }
-cleanup:
     _POSIX_HANDLE_CLEANUP;
     LIB_FREE( cmdline_mem );
     LIB_FREE( np );
