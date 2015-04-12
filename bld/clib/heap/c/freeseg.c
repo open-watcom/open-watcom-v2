@@ -116,7 +116,7 @@ extern int tricky_free_seg( int, int );
 #endif
 
 #pragma aux __DoFreeSeg modify [MODIFIES]
-int __DoFreeSeg(__segment first)
+static int __DoFreeSeg(__segment first)
 {
         __segment     last;
         long          segments;
