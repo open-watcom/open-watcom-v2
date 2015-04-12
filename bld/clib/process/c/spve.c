@@ -184,26 +184,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     }
 #endif
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-    prot_mode286 = FALSE;
-
- #if defined(__OS2__) || defined(__NT__)
-    use_cmd = 1;
-    if( mode == OLD_P_OVERLAY ) {
-        rc = __F_NAME(execve,_wexecve)(path, argv, envp);
-        _POSIX_HANDLE_CLEANUP;
-        return( rc );
-    }
- #else      // __DOS__
-    use_cmd = 0;
-    if( mode >= OLD_P_OVERLAY ) {
-        __set_errno( EINVAL );
-        rc = -1;
-        _POSIX_HANDLE_CLEANUP;
-        return( rc );
-    }
- #endif
-#else
+#if defined( _M_I86 )
  #if defined( __OS2__ )
     prot_mode286 = ( _RWD_osmode != DOS_MODE );
     if( mode == OLD_P_OVERLAY ) {
@@ -227,6 +208,25 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     }
  #endif
     use_cmd = prot_mode286;
+#else   // 32-bit
+    prot_mode286 = FALSE;
+
+ #if defined(__OS2__) || defined(__NT__)
+    use_cmd = 1;
+    if( mode == OLD_P_OVERLAY ) {
+        rc = __F_NAME(execve,_wexecve)(path, argv, envp);
+        _POSIX_HANDLE_CLEANUP;
+        return( rc );
+    }
+ #else      // __DOS__
+    use_cmd = 0;
+    if( mode >= OLD_P_OVERLAY ) {
+        __set_errno( EINVAL );
+        rc = -1;
+        _POSIX_HANDLE_CLEANUP;
+        return( rc );
+    }
+ #endif
 #endif
     retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &envmem,
         &envstrings, &envseg, &cmdline_len, FALSE );

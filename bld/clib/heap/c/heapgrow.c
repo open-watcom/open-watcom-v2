@@ -76,7 +76,7 @@ _WCRTLINK void _heapgrow( void )
 
 _WCRTLINK void _nheapgrow( void )
     {
-#if defined(__WINDOWS_286__) || defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+#if defined( __WINDOWS_286__ ) || !defined( _M_I86 )
         _nfree( _nmalloc( 1 ) );        /* get something into the heap */
 #else
         unsigned max_paras;

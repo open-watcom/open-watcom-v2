@@ -34,12 +34,7 @@
 #define _HEAPACC_H_INCLUDED
 /* macros for serialization of accesses to the heap */
 #if defined(__SW_BM)
-    #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-        extern void (*_AccessFHeap)( void );
-        extern void (*_ReleaseFHeap)( void );
-        extern void (*_AccessNHeap)( void );
-        extern void (*_ReleaseNHeap)( void );
-    #else
+    #if defined( _M_I86 )
         extern void __AccessFHeap( void );
         extern void __ReleaseFHeap( void );
         extern void __AccessNHeap( void );
@@ -48,6 +43,11 @@
         #define _ReleaseFHeap() __ReleaseFHeap()
         #define _AccessNHeap()  __AccessNHeap()
         #define _ReleaseNHeap() __ReleaseNHeap()
+    #else
+        extern void (*_AccessFHeap)( void );
+        extern void (*_ReleaseFHeap)( void );
+        extern void (*_AccessNHeap)( void );
+        extern void (*_ReleaseNHeap)( void );
     #endif
 #else
     #define _AccessFHeap()

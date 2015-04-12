@@ -40,10 +40,10 @@ CHAR_TYPE** __F_NAME(_argv,_wargv);
 int         __F_NAME(__argc,__wargc);
 CHAR_TYPE** __F_NAME(__argv,__wargv);
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-AXI( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_RUNTIME )
-AYI( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_LIBRARY )
-#else
+#if defined( _M_I86 )
 AXI( __F_NAME(__Init_Argv,__wInit_Argv), 1 )
 AYI( __F_NAME(__Fini_Argv,__wFini_Argv), 1 )
+#else
+AXI( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_RUNTIME )
+AYI( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_LIBRARY )
 #endif

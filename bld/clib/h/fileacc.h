@@ -38,28 +38,28 @@
     #define _AccessFile( fp )       _AccessFileH( (fp)->_handle )
     #define _ReleaseFile( fp )      _ReleaseFileH( (fp)->_handle )
 
-    #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-        extern void (*_AccessFileH)( int );
-        extern void (*_ReleaseFileH)( int );
-        extern void (*_AccessIOB)( void );
-        extern void (*_ReleaseIOB)( void );
-    #else
-        // 16bit OS/2 multi-thread is different
-        extern void __AccessFileH( int );
-        extern void __ReleaseFileH( int );
-        extern void __AccessIOB( void );
-        extern void __ReleaseIOB( void );
+  #if defined( _M_I86 )
+    // 16bit OS/2 multi-thread is different
+    extern void __AccessFileH( int );
+    extern void __ReleaseFileH( int );
+    extern void __AccessIOB( void );
+    extern void __ReleaseIOB( void );
 
-        // define macros to call the access routines directly for OS/2 1.x
-        #define _AccessFileH( hdl )     __AccessFileH( hdl )
-        #define _ReleaseFileH( hdl )    __ReleaseFileH( hdl )
-        #define _AccessIOB()            __AccessIOB()
-        #define _ReleaseIOB()           __ReleaseIOB()
-    #endif
-    #if defined(__NT__)
-        extern void (*_AccessFList)( void );
-        extern void (*_ReleaseFList)( void );
-    #endif
+    // define macros to call the access routines directly for OS/2 1.x
+    #define _AccessFileH( hdl )     __AccessFileH( hdl )
+    #define _ReleaseFileH( hdl )    __ReleaseFileH( hdl )
+    #define _AccessIOB()            __AccessIOB()
+    #define _ReleaseIOB()           __ReleaseIOB()
+  #else
+    extern void (*_AccessFileH)( int );
+    extern void (*_ReleaseFileH)( int );
+    extern void (*_AccessIOB)( void );
+    extern void (*_ReleaseIOB)( void );
+  #endif
+  #if defined(__NT__)
+    extern void (*_AccessFList)( void );
+    extern void (*_ReleaseFList)( void );
+  #endif
 
 #else
     /* these are for multi thread support */
@@ -74,8 +74,8 @@
     #define _AccessIOB()                /* gain access to array of __iob's */
     #define _ReleaseIOB()               /* release access */
 
-    #if defined(__NT__)
-        #define _AccessFList()
-        #define _ReleaseFList()
-    #endif
+  #if defined(__NT__)
+    #define _AccessFList()
+    #define _ReleaseFList()
+  #endif
 #endif

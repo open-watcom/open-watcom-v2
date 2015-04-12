@@ -40,12 +40,12 @@
 void                    **__ThreadIDs;
 #endif
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-    #if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
-        thread_data_vector      *__ThreadData;
-    #endif
-#else
+#if defined( _M_I86 )
     thread_data         **__ThreadData;
+#else
+  #if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+    thread_data_vector  *__ThreadData;
+  #endif
 #endif
 
 
@@ -106,15 +106,15 @@ void __FiniThreadProcessing( void )
                 lib_free( __ThreadData[ 0 ].data ); /* for Netware, this is always allocated */
             #endif
             for( i = 1 ; i <= __MaxThreads; i++ ) {
-                #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-                    tdata = __ThreadData[i].data;
-                    if( tdata != NULL ) {
-                        if( __ThreadData[i].allocated_entry ) lib_free( tdata );
-                    }
-                #else
+                #if defined( _M_I86 )
                     tdata = __ThreadData[i];
                     if( tdata != NULL ) {
                         if( tdata->__allocated ) lib_free( tdata );
+                    }
+                #else
+                    tdata = __ThreadData[i].data;
+                    if( tdata != NULL ) {
+                        if( __ThreadData[i].allocated_entry ) lib_free( tdata );
                     }
                 #endif
             }
@@ -122,7 +122,7 @@ void __FiniThreadProcessing( void )
         }
     #endif
 
-    #if !defined(_NETWARE_CLIB) && !defined(__RDOSDEV__) && (defined(__386__) || defined(__AXP__) || defined(__PPC__) )
+    #if !defined(_NETWARE_CLIB) && !defined(__RDOSDEV__) && !defined( _M_I86 )
         __FreeThreadDataList();
     #endif
 }

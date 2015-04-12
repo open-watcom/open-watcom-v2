@@ -30,7 +30,8 @@
 
 
 #if defined(__NT__) || defined(__OS2__)
-    #if defined( __SW_BM ) && (defined(__386__) || defined(__AXP__) || defined(__PPC__))
+    
+    #if defined( __SW_BM ) && !defined( _M_I86 )
         #include "osthread.h"
         #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
         #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)

@@ -543,10 +543,10 @@ void _SaveAllLines( LPWDATA w )
     }
     ld = w->LineHead;
     while( ld != NULL ) {
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-        fprintf( f,"%s\n", ld->data );
-#else
+#if defined( _M_I86 )
         fprintf( f,"%Fs\n", ld->data );
+#else
+        fprintf( f,"%s\n", ld->data );
 #endif
         ld = ld->next;
     }
