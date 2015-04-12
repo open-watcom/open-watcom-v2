@@ -46,6 +46,7 @@
 #include "liballoc.h"
 #include "rtdata.h"
 #include "rtinit.h"
+#include "iomode.h"
 #include "openmode.h"
 
 #define CONSOLE "CON"
@@ -680,7 +681,7 @@ _WCRTLINK long filelength( int handle )
     }
 }
 
-void GrowRdosFile( int rdos_handle, long diff )
+static void GrowRdosFile( int rdos_handle, long diff )
 {
     char *buf;
     int wr_size;

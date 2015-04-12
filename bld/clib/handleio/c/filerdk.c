@@ -50,7 +50,6 @@
 #include "rtinit.h"
 #include "openmode.h"
 #include "iomode.h"
-#include "_rdos.h"
 #include "qread.h"
 #include "qwrite.h"
 
@@ -188,7 +187,7 @@ _WCRTLINK long filelength( int handle )
     return( RdosGetFileSize( handle ) );
 }
 
-void GrowRdosFile( int rdos_handle, long diff )
+static void GrowRdosFile( int rdos_handle, long diff )
 {
     char *buf;
     int wr_size;
