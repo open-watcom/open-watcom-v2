@@ -55,11 +55,12 @@ static int only_one_bit( size_t x )
 _WCRTLINK void _WCHUGE * (halloc)( long n, size_t size )
 {
     short seg;
+    unsigned long len;
 
-    n *= size;
-    if( n == 0 ) return( 0 );
-    if( n > 65536 && ! only_one_bit( size ) ) return( 0 );
-    seg = qnx_segment_huge( n );
+    len = (unsigned long)n * size;
+    if( len == 0 ) return( 0 );
+    if( len > 65536 && ! only_one_bit( size ) ) return( 0 );
+    seg = qnx_segment_huge( len );
     if( seg == -1 ) seg = 0;
     return( (void _WCHUGE *)MK_FP( seg , 0 ) );
 }

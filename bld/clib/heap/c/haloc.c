@@ -36,6 +36,7 @@
 #if defined(__WINDOWS__)
   #include <windows.h>
 #endif
+#include <malloc.h>
 #include "heap.h"
 
 extern  long _dosalloc(unsigned);
@@ -64,38 +65,38 @@ static int only_one_bit( size_t x )
     return 1;
 }
 
-_WCRTLINK void _WCHUGE * halloc( unsigned long n, unsigned size )
+_WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
     {
+        unsigned long len;
 #if defined(__WINDOWS__)
         HANDLE hmem;
         LPSTR p;
 
-        n *= size;
-        if( n == 0 ) return( HUGE_NULL );
-        if( n > 65536 && ! only_one_bit( size ) ) return( HUGE_NULL );
-        hmem = GlobalAlloc( GMEM_MOVEABLE|GMEM_ZEROINIT, n );
+        len = (unsigned long)n * size;
+        if( len == 0 ) return( HUGE_NULL );
+        if( len > 65536 && ! only_one_bit( size ) ) return( HUGE_NULL );
+        hmem = GlobalAlloc( GMEM_MOVEABLE|GMEM_ZEROINIT, len );
         if( hmem == NULL ) return( HUGE_NULL );
         p = GlobalLock( hmem );
         return( p );
 #else
         long seg;
         unsigned int paras;
-        unsigned int len;
         char _WCHUGE *hp;
 
-        n *= size;
-        if( n == 0  || n >= 0x100000 ) return( HUGE_NULL );
-        if( n > 65536 && ! only_one_bit( size ) ) return( HUGE_NULL );
-        paras = (n + 15) >> 4;
+        len = (unsigned long)n * size;
+        if( len == 0  || len >= 0x100000 ) return( HUGE_NULL );
+        if( len > 65536 && ! only_one_bit( size ) ) return( HUGE_NULL );
+        paras = (len + 15) >> 4;
         seg = _dosalloc( paras );
         if( seg < 0 ) return( HUGE_NULL );  /* allocation failed */
         hp = (char _WCHUGE *)MK_FP( (unsigned short)seg, 0 );
         for(;;) {
-            len = 0x8000;
-            if( paras < 0x0800 )  len = paras << 4;
-            _fmemset( hp, 0, len );
+            size = 0x8000;
+            if( paras < 0x0800 )  size = paras << 4;
+            _fmemset( hp, 0, size );
             if( paras < 0x0800 )  break;
-            hp = hp + len;
+            hp = hp + size;
             paras -= 0x0800;
         }
         return( (void _WCHUGE *)MK_FP( (unsigned short)seg, 0 ) );

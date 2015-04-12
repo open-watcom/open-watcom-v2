@@ -36,6 +36,7 @@
 #define INCL_DOSMEMMGR
 #include <wos2.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include "heap.h"
 
 
@@ -63,7 +64,7 @@ static int only_one_bit( size_t x )
     return 1;
 }
 
-_WCRTLINK void _WCHUGE * halloc( unsigned long n, unsigned size )
+_WCRTLINK void _WCHUGE * halloc( long n, unsigned size )
 {
     unsigned long len;
     USHORT      error, tseg;
@@ -71,9 +72,9 @@ _WCRTLINK void _WCHUGE * halloc( unsigned long n, unsigned size )
     USHORT      number_segments, remaining_bytes;
     USHORT      increment;
 
-    len = n * size;
+    len = (unsigned long)n * size;
     if( len == 0 ) return( (void _WCHUGE *)0 );
-    if( n > 65536 && ! only_one_bit( size ) ) return( (void _WCHUGE *)0 );
+    if( (unsigned long)n > 65536 && ! only_one_bit( size ) ) return( (void _WCHUGE *)0 );
     error = DosGetHugeShift( &increment );
     if( error ) {
         __set_errno_dos( error );
