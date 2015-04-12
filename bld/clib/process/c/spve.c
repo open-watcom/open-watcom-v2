@@ -80,8 +80,6 @@
 
 #define FALSE   0
 
-extern CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *, CHAR_TYPE );
-
 static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
 {
 #if defined(__OS2__) || defined( __NT__ )
@@ -136,6 +134,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     CHAR_TYPE SPVE_NEAR     *cmdline;
     CHAR_TYPE               switch_c[4];
     unsigned char           prot_mode286;
+    unsigned char           use_cmd;
 #if defined( __DOS__ )
     auto _87state           _87save;
 #endif
@@ -189,12 +188,14 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     prot_mode286 = FALSE;
 
  #if defined(__OS2__) || defined(__NT__)
+    use_cmd = 1;
     if( mode == OLD_P_OVERLAY ) {
         rc = __F_NAME(execve,_wexecve)(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }
  #else      // __DOS__
+    use_cmd = 0;
     if( mode >= OLD_P_OVERLAY ) {
         __set_errno( EINVAL );
         rc = -1;
@@ -225,10 +226,10 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         return( -1 );
     }
  #endif
+    use_cmd = prot_mode286;
 #endif
     retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &envmem,
-        &envstrings, &envseg,
-        &cmdline_len, FALSE );
+        &envstrings, &envseg, &cmdline_len, FALSE );
     if( retval == -1 ) {
         _POSIX_HANDLE_CLEANUP;
         return( -1 );
@@ -237,7 +238,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
     if( np == NULL ) {
-        p = (CHAR_TYPE SPVE_NEAR *)alloca( len*sizeof(CHAR_TYPE) );
+        p = (CHAR_TYPE SPVE_NEAR *)alloca( len * sizeof( CHAR_TYPE ) );
         if( p == NULL ) {
             lib_free( envmem );
             _POSIX_HANDLE_CLEANUP;
@@ -246,7 +247,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     } else {
         p = np;
     }
-    __F_NAME(_splitpath2,_wsplitpath2)( path, p + (len-_MAX_PATH2),
+    __F_NAME(_splitpath2,_wsplitpath2)( path, p + ( len - _MAX_PATH2 ),
                                         &drive, &dir, &fname, &ext );
 #if defined( __DOS__ )
     _RWD_Save8087( &_87save );
@@ -307,8 +308,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                     __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
                     retval = __F_NAME(spawnl,_wspawnl)( mode,
                         __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) ),
-                        prot_mode286 ? STRING( "CMD" ) : STRING( "COMMAND" ),
-                        __F_NAME(__Slash_C,__wSlash_C)( switch_c, prot_mode286 ),
+                        use_cmd ? STRING( "CMD" ) : STRING( "COMMAND" ),
+                        __F_NAME(__Slash_C,__wSlash_C)( switch_c, use_cmd ),
                         p, cmdline, NULL );
                 }
             } else {
@@ -356,8 +357,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                         __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
                         retval = __F_NAME(spawnl,_wspawnl)( mode,
                             __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) ),
-                            prot_mode286 ? STRING( "CMD" ) : STRING( "COMMAND" ),
-                            __F_NAME(__Slash_C,__wSlash_C)( switch_c, prot_mode286 ),
+                            use_cmd ? STRING( "CMD" ) : STRING( "COMMAND" ),
+                            __F_NAME(__Slash_C,__wSlash_C)( switch_c, use_cmd ),
                             p, cmdline, NULL );
                     }
                 }

@@ -137,7 +137,7 @@ static drive_type doGetDriveType( int drv )
     int         rc;
 
 #ifdef _M_I86
-    if( _osmode == 0 ) {
+    if( _osmode == DOS_MODE ) {
         return( dosDoGetDriveType( drv ) );
     } else {
 #endif

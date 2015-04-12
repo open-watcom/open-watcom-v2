@@ -98,7 +98,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
     }
     rwmode = mode & OPENMODE_ACCESS_MASK;
 #ifdef _M_I86
-    if( rwmode == OPENMODE_ACCESS_WRONLY && !_RWD_osmode ) {
+    if( rwmode == OPENMODE_ACCESS_WRONLY && _RWD_osmode == DOS_MODE ) {
         /* Can't open WRONLY file in bound application under DOS */
         rwmode = OPENMODE_ACCESS_RDWR;
     }

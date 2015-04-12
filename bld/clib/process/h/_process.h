@@ -38,10 +38,12 @@ extern execveaddr_type __execaddr( void );
 #ifdef __WIDECHAR__
 extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, int );
 extern void __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
+extern wchar_t *__wSlash_C( wchar_t *switch_c, unsigned char use_slash );
 extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * const * );
 #else
 extern int  __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, int );
 extern void __ccmdline( char *, const char * const *, char *, int );
+extern char *__Slash_C( char *switch_c, unsigned char use_slash );
 #if defined( _M_I86 ) && defined( __DOS__ )
 extern int  _dospawn(int,char _WCI86NEAR *,char _WCI86NEAR *,unsigned, const char * const *);
 #else

@@ -41,74 +41,74 @@
     #define INCL_DOSMISC
     #include <wos2.h>
 #endif
+#include "_process.h"
 #include "rtdata.h"
 #include "seterrno.h"
 
-extern CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *, CHAR_TYPE );
 
 _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
 {
-    #if defined(__WINDOWS__)
-        if( cmd == NULL ) {
-            return( 0 );
-        } else {
-            __set_errno( ENOENT );
-            return( -1 );
-        }
-    #else
-        register CHAR_TYPE *name;
-        auto CHAR_TYPE switch_c[4];
-        char prot_mode286;
-        int ret_code;
-        #if defined( __NT__ )
-            int tmp_fileinfo;
-        #endif
+#if defined(__WINDOWS__)
+    if( cmd == NULL ) {
+        return( 0 );
+    } else {
+        __set_errno( ENOENT );
+        return( -1 );
+    }
+#else
+    register CHAR_TYPE *name;
+    auto CHAR_TYPE switch_c[4];
+    unsigned char use_cmd;
+    int ret_code;
+  #if defined( __NT__ )
+    int tmp_fileinfo;
+  #endif
 
-        #if defined( __NT__ )
-            name = __F_NAME(getenv,_wgetenv)( STRING( "ComSpec" ) );
-        #else
-            name = __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) );
-        #endif
-        if( cmd == NULL ) {
-            #if 1
+  #if defined( __NT__ )
+    name = __F_NAME(getenv,_wgetenv)( STRING( "ComSpec" ) );
+  #else
+    name = __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) );
+  #endif
+    if( cmd == NULL ) {
+  #if 1
+        return( 1 );    /* COMMAND.COM is available */
+  #else
+        if( name != NULL ) {
+            if( __F_NAME(access,_waccess)( name, 0 ) == 0 ) {
                 return( 1 );    /* COMMAND.COM is available */
-            #else
-                if( name != NULL ) {
-                    if( __F_NAME(access,_waccess)( name, 0 ) == 0 ) {
-                        return( 1 );    /* COMMAND.COM is available */
-                    }
-                }
-                __set_errno( ENOENT );
-                return( 0 );    /* indicate no COMMAND.COM available */
-            #endif
+            }
         }
-        #if defined( __NT__ )
-            prot_mode286 = 1;
-        #elif defined( __WARP__ )
-            prot_mode286 = 1;
-        #elif defined( __OS2_286__ )
-            prot_mode286 = _RWD_osmode;
-        #else
-            prot_mode286 = 0;
-        #endif
-        if( name == NULL ) {
-            name = prot_mode286 ? STRING( "CMD.EXE" ) : STRING( "COMMAND.COM" );
-        }
+        __set_errno( ENOENT );
+        return( 0 );    /* indicate no COMMAND.COM available */
+  #endif
+    }
+  #if defined( __NT__ )
+    use_cmd = 1;
+  #elif defined( __WARP__ )
+    use_cmd = 1;
+  #elif defined( __OS2_286__ )
+    use_cmd = ( _RWD_osmode != DOS_MODE );
+  #else
+    use_cmd = 0;
+  #endif
+    if( name == NULL ) {
+        name = use_cmd ? STRING( "CMD.EXE" ) : STRING( "COMMAND.COM" );
+    }
 
-        #if defined( __NT__ )
-            /* disable file handle inheritance for a system call */
-            tmp_fileinfo = _fileinfo;
-            _fileinfo = 0;
-        #endif
+   #if defined( __NT__ )
+    /* disable file handle inheritance for a system call */
+    tmp_fileinfo = _fileinfo;
+    _fileinfo = 0;
+  #endif
 
-        ret_code = __F_NAME(spawnlp,_wspawnlp)( 0, name, prot_mode286 ? STRING( "CMD" ) : STRING( "COMMAND" ),
-                            __F_NAME(__Slash_C,__wSlash_C)(switch_c, prot_mode286), cmd, NULL );
+    ret_code = __F_NAME(spawnlp,_wspawnlp)( 0, name, use_cmd ? STRING( "CMD" ) : STRING( "COMMAND" ),
+                        __F_NAME(__Slash_C,__wSlash_C)(switch_c, use_cmd), cmd, NULL );
 
-        #if defined( __NT__ )
-            /* set file handle inheritance to what it was */
-            _fileinfo = tmp_fileinfo;
-        #endif
+  #if defined( __NT__ )
+    /* set file handle inheritance to what it was */
+    _fileinfo = tmp_fileinfo;
+  #endif
 
-        return( ret_code );
-    #endif
+    return( ret_code );
+#endif
 }

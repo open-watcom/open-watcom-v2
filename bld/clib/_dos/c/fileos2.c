@@ -57,12 +57,12 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
 
     while( *name == ' ' ) ++name;
     rwmode = mode & OPENMODE_ACCESS_MASK;
-    if( rwmode == OPENMODE_ACCESS_WRONLY
+    /* Can't open WRONLY file in bound application under DOS */
 #if defined(__OS2_286__)
-        && !_RWD_osmode
-        /* Can't open WRONLY file in bound application under DOS */
+    if( rwmode == OPENMODE_ACCESS_WRONLY && _RWD_osmode == DOS_MODE ) {
+#else
+    if( rwmode == OPENMODE_ACCESS_WRONLY ) {
 #endif
-        ) {
         rwmode = OPENMODE_ACCESS_RDWR;
     }
     share = mode & OPENMODE_SHARE_MASK;

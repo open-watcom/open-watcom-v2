@@ -33,6 +33,7 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
+#include "_process.h"
 
 #if defined(_M_IX86)
 extern  int     _DOS_Switch_Char( void );
@@ -47,18 +48,17 @@ extern  int     _DOS_Switch_Char( void );
 #endif
 
 
-CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *switch_c, CHAR_TYPE prot_mode286 )
+CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *switch_c, unsigned char use_slash )
 {
-#if defined( __WARP__ ) || defined( __NT__ )
-    prot_mode286 = prot_mode286;
-    switch_c[0] = '/';
-#else
-    if( prot_mode286 ) {
+    if( use_slash ) {
         switch_c[0] = '/';
     } else {
+#if defined( _M_I86 ) || defined( __DOS__ )
         switch_c[0] = _DOS_Switch_Char();
-    }
+#else
+        switch_c[0] = '/';
 #endif
+    }
     switch_c[1] = 'c';
     switch_c[2] = '\0';
     return( switch_c );
