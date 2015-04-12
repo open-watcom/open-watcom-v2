@@ -107,17 +107,17 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object * );
 _WCRTLINK void __CloseSemaphore( semaphore_object * );
 
 // the following is for the C++ library
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+#if defined( _M_I86 )
+    #define _AccessSemaphore( sema ) __AccessSemaphore( sema )
+    #define _ReleaseSemaphore( sema ) __ReleaseSemaphore( sema )
+    #define _CloseSemaphore( sema ) __CloseSemaphore( sema )
+#else
     _WCRTLINK extern void (*__AccessSema4)( semaphore_object *);
     _WCRTLINK extern void (*__ReleaseSema4)( semaphore_object *);
     _WCRTLINK extern void (*__CloseSema4)( semaphore_object *);
     #define _AccessSemaphore( sema ) __AccessSema4( sema )
     #define _ReleaseSemaphore( sema ) __ReleaseSema4( sema )
     #define _CloseSemaphore( sema ) __CloseSema4( sema )
-#else
-    #define _AccessSemaphore( sema ) __AccessSemaphore( sema )
-    #define _ReleaseSemaphore( sema ) __ReleaseSemaphore( sema )
-    #define _CloseSemaphore( sema ) __CloseSemaphore( sema )
 #endif
 
 #if defined(__OS2_286__)
@@ -144,77 +144,69 @@ struct wcpp_thread_ctl {
 /* stack checking routine assumes "__stklowP" is first field */
 typedef struct thread_data {
     unsigned                    __stklowP;
-    #if !defined(__QNX__) && !defined(__LINUX__) && !defined(__RDOSDEV__)
-        int                     __errnoP;
-        int                     __doserrnoP;
-    #endif
-    #if defined(__OS2_286__)
-        struct wcpp_thread_ctl  _wint_thread_data;
-    #endif
+#if !defined(__QNX__) && !defined(__LINUX__) && !defined(__RDOSDEV__)
+    int                     __errnoP;
+    int                     __doserrnoP;
+#endif
+#if defined(__OS2_286__)
+    struct wcpp_thread_ctl  _wint_thread_data;
+#endif
     unsigned long int           __randnext;
     char                        *__nexttokP;
     struct tm                   __The_timeP;
     char                        __asctimeP[26];
     char                        __allocated;    // vs auto
     char                        __resize;       // storage has realloc pending
-    #if !defined(__QNX__) && !defined(__LINUX__) && !defined(__RDOSDEV__)
-        __EXCEPTION_RECORD      *xcpt_handler;
-        sigtab                  signal_table[__SIGLAST+1];
-    #endif
+#if !defined(__QNX__) && !defined(__LINUX__) && !defined(__RDOSDEV__)
+    __EXCEPTION_RECORD      *xcpt_handler;
+    sigtab                  signal_table[__SIGLAST+1];
+#endif
     char _WCFAR                 *__nextftokP;
     MAX_CHAR_TYPE               __cvt_buffer[ __FPCVT_BUFFERLEN + 1 ];
-    #if defined(__NT__) || defined(_NETWARE_LIBC)
-        unsigned long           thread_id;
-    #elif defined(__UNIX__)
-        pid_t                   thread_id;
-    #elif defined(__RDOS__)
-        int                     thread_id;
-        char                    thread_name[256];
-    #endif
-    #if defined(__NT__)
-        void                    *thread_handle;
-    #endif
-    #if defined(__NETWARE__)
-        MAX_CHAR_TYPE           __tmpnambuf[ L_tmpnam ];
-        unsigned long int       __randnextinit;
-    #endif
-    #if defined(__NT__) || defined(__OS2__)
-        char *                  __nextmbtokP;
-        char _WCFAR *           __nextmbftokP;
-        wchar_t *               __nextwtokP;
-    #endif
+#if defined(__NT__) || defined(_NETWARE_LIBC)
+    unsigned long           thread_id;
+#elif defined(__UNIX__)
+    pid_t                   thread_id;
+#elif defined(__RDOS__)
+    int                     thread_id;
+    char                    thread_name[256];
+#endif
+#if defined(__NT__)
+    void                    *thread_handle;
+#endif
+#if defined(__NETWARE__)
+    MAX_CHAR_TYPE           __tmpnambuf[ L_tmpnam ];
+    unsigned long int       __randnextinit;
+#endif
+#if defined(__NT__) || defined(__OS2__)
+    char *                  __nextmbtokP;
+    char _WCFAR *           __nextmbftokP;
+    wchar_t *               __nextwtokP;
+#endif
     unsigned                    __data_size;
 } thread_data;
 
 extern thread_data *__MultipleThread( void );
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-
-
+#if defined( _M_I86 )
+    extern thread_data **__ThreadData;
+    #define __THREADDATAPTR     (__MultipleThread())
+#else
     // prototype for thread data init function
     int __initthread( void *p );
 
     #define __THREADDATAPTR     ((*__GetThreadPtr)())
-    #if defined(__OS2__) || defined(_NETWARE_CLIB)
-        typedef struct thread_data_vector {
-            thread_data *data;
-            int         allocated_entry;
-        } thread_data_vector;
-        extern thread_data_vector *__ThreadData;
+  #if defined(__OS2__) || defined(_NETWARE_CLIB)
+    typedef struct thread_data_vector {
+        thread_data *data;
+        int         allocated_entry;
+    } thread_data_vector;
+    extern thread_data_vector *__ThreadData;
 
-    #endif
-    #if defined(__NT__) || defined(_NETWARE_LIBC) || defined(__RDOS__)
-        #define NO_INDEX        0xffffffffL
-    #endif
-
-
-#else
-
-
-    extern thread_data **__ThreadData;
-    #define __THREADDATAPTR     (__MultipleThread())
-
-
+  #endif
+  #if defined(__NT__) || defined(_NETWARE_LIBC) || defined(__RDOS__)
+    #define NO_INDEX        0xffffffffL
+  #endif
 #endif
 
 
@@ -229,4 +221,3 @@ extern  unsigned        __MaxThreads;
 
 #pragma pack(__pop);
 #endif
-

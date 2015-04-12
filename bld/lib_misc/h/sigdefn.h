@@ -41,16 +41,7 @@
 #define __SIGLAST       _SIGMAX
 
 // note that __NT__ and __NETWARE__ are always 32bit
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-    #if defined(__NETWARE__)
-        typedef __sig_func sigtab;
-    #else
-        typedef struct sigtab {
-            __sig_func  func;           /* user signal handler */
-            int         os_sig_code;    /* OS signal code */
-        } sigtab;
-    #endif
-#else
+#if defined( _M_I86 )
     // 16 bit OS/2 1.x
     #define INCL_DOSEXCEPTIONS
     #include <wos2.h>
@@ -61,5 +52,14 @@
         USHORT  prev_action;      /* previous action */
         int     os_sig_code;      /* OS/2 1.x signal code */
     } sigtab;
+#else
+    #if defined(__NETWARE__)
+        typedef __sig_func sigtab;
+    #else
+        typedef struct sigtab {
+            __sig_func  func;           /* user signal handler */
+            int         os_sig_code;    /* OS signal code */
+        } sigtab;
+    #endif
 #endif
 #endif

@@ -39,7 +39,7 @@ typedef void _WCI86FAR thread_fn( void _WCI86FAR * );
     #pragma aux (__outside_CLIB) thread_fn;
 #endif
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+#if !defined( _M_I86 )
     #if defined(__RDOS__)
         typedef int     beginner( thread_fn *start_addr, int prio, const char *thread_name,
                                   unsigned stack_size, void *arglist );
