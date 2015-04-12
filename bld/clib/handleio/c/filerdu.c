@@ -48,6 +48,7 @@
 #include "rtinit.h"
 #include "iomode.h"
 #include "openmode.h"
+#include "_rdos.h"
 
 #define CONSOLE "CON"
 #define FILE_INHERIT "[FILE]"
@@ -368,7 +369,7 @@ static char *AddInherit( char *ptr, int handle, rdos_handle_type *obj, int *rema
     return( ptr );    
 }                
 
-_WCRTLINK char * __CreateInheritString( void ) 
+char * __CreateInheritString( void ) 
 {
     char               *str;
     char               *ptr;

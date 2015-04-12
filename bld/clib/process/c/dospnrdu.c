@@ -45,8 +45,8 @@
 #include "rtdata.h"
 #include "seterrno.h"
 #include "_process.h"
+#include "_rdos.h"
 
-extern char * __CreateInheritString( void );
 
 int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                                   CHAR_TYPE *envpar, 
