@@ -51,15 +51,15 @@ extern  int     _DOS_Switch_Char( void );
 CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *switch_c, unsigned char use_slash )
 {
     if( use_slash ) {
-        switch_c[0] = '/';
+        switch_c[0] = STRING( '/' );
     } else {
 #if defined( _M_I86 ) || defined( __DOS__ )
         switch_c[0] = _DOS_Switch_Char();
 #else
-        switch_c[0] = '/';
+        switch_c[0] = STRING( '/' );
 #endif
     }
-    switch_c[1] = 'c';
+    switch_c[1] = STRING( 'c' );
     switch_c[2] = '\0';
     return( switch_c );
 }
