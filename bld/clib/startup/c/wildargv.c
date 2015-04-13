@@ -81,14 +81,13 @@ static void *_allocate( unsigned amount )
 #if defined( _M_I86 )
   #if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
     void __near *np;
-  #endif
 
-    p = _nmalloc( amount );
-  #if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
     p = np = _nmalloc( amount );
     if( np == NULL ) {
         p = malloc( amount );
     }
+  #else
+    p = malloc( amount );
   #endif
 #else
     p = malloc( amount );
