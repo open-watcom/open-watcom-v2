@@ -33,6 +33,8 @@
 #include "rtdata.h"
 #include "stdlib.h"
 
+#undef errno
+
 #if defined(__QNX__)
 
 #include <sys/magic.h>
