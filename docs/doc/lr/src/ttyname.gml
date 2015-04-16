@@ -8,7 +8,7 @@ int ttyname_r( int fd, char *buf, int buflen );
 .synop end
 .desc begin
 The POSIX-compliant
-.id &func
+.id &funcb.
 function retrieves the name of a TTY as specified by the
 .arg fd
 file descriptor, returning a static pointer to the name.
@@ -19,7 +19,7 @@ pointed to by the original call to
 be freed.
 .np
 The 
-.id &func2.
+.kw ttyname_r
 function performs the same function as
 .id &funcb.
 , but the name of the TTY is returned in the
@@ -29,8 +29,9 @@ argument.  The argument
 should specify the size of the
 .arg buf
 argument.  The
-.id &func2.
-function is a Open Watcom extension.
+.kw ttyname_r
+function is an Open Watcom extension commonly implemented in other 
+standard libraries.
 .desc end
 .return begin
 Upon success, the 
@@ -43,11 +44,11 @@ and
 will be set appropriately.
 .np
 Upon success, the
-.id &func2.
+.kw ttyname_r
 function will return zero, and the
 .arg buf
 argument will contain the name of the TTY.   Upon failure, the
-.id &func2.
+.kw ttyname_r
 function will return the error code and set
 .kw errno
 as well.
