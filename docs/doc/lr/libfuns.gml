@@ -1588,7 +1588,8 @@
 .fnc Trace6                     trace.gml           QXO
 .fnc Trigger                    trigger.gml         QXO
 .fnc trunc                      trunc.gml       DOS QNX W WIN32
-.fnc ttyname                    ttyname.gml         QXO
+.fnc ttyname                    ttyname.gml     DOS QNX W WIN32
+.fnc ttyname_r                  ttyname.gml     DOS QNX W WIN32
 .fnc tzset                      tzset.gml       DOS QNX W WIN32
 .fnc ulltoa                     ulltoa.gml      DOS QNX W WIN32
 .fnc _ulltoa                    ulltoa.gml      DOS QNX W WIN32
