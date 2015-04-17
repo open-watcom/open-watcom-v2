@@ -477,7 +477,7 @@ static void dump_state( line_state_info *state )
     }
 }
 
-uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
+static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
 {
     uint_32     result;
     uint        shift;
@@ -495,7 +495,7 @@ uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
     return( (uint_8 *)input );
 }
 
-uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
+static uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
 {
     int_32      result;
     uint        shift;

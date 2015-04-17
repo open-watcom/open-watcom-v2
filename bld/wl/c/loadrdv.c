@@ -280,7 +280,7 @@ static void WriteMbootHeader( void )
     WriteLoad( &mb_head, sizeof( struct mb_header ) );
 }
 
-void FiniRdosLoadFile16( void )
+static void FiniRdosLoadFile16( void )
 /* terminate writing of load file */
 {
     if( Extension == E_RDV ) {
@@ -307,7 +307,7 @@ void FiniRdosLoadFile16( void )
     }
 }
 
-void FiniRdosLoadFile32( void )
+static void FiniRdosLoadFile32( void )
 /* terminate writing of load file */
 {
     if( Extension == E_RDV ) {

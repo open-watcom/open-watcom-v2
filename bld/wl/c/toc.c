@@ -255,7 +255,7 @@ static offset OffFromToc( offset off )
     return( toff );
 }
 
-offset FindEntryPosInToc( TocEntryId *e )
+static offset FindEntryPosInToc( TocEntryId *e )
 /*************************************************/
 {
     TocEntry    searchEntry;

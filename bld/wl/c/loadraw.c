@@ -256,7 +256,7 @@ static bool DoHexDupLeader( void *seg, void *addr )
     return( FALSE );
 }
 
-void WriteStart( void )
+static void WriteStart( void )
 /*********************/
 {
     char    str_buf[22];
@@ -392,7 +392,7 @@ void HexOutput( void )
     DBIWrite();
 }
 
-unsigned long WriteGroupLoadHex( group_entry *group )
+static unsigned long WriteGroupLoadHex( group_entry *group )
 {
     grpwriteinfo    info;
     class_entry     *class;

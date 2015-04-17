@@ -840,7 +840,7 @@ static unsigned_16 WriteSegValues( void )
     }
 }
 
-void WriteDBISecs( section *sec )
+static void WriteDBISecs( section *sec )
 /**************************************/
 {
     debug_info      *dptr;

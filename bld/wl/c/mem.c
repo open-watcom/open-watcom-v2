@@ -68,7 +68,7 @@ static bool         CacheRelease( void );
 
 #ifdef TRMEM
 
-void PrintLine( void *bogus, const char *buff, unsigned len )
+static void PrintLine( void *bogus, const char *buff, unsigned len )
 {
     bogus = bogus;      /* to avoid a warning */
     len = len;
@@ -110,7 +110,7 @@ void LnkMemFini( void )
 }
 
 #ifdef TRMEM
-void *DoLAlloc( size_t size, void (*ra)( void ) )
+static void *DoLAlloc( size_t size, void (*ra)( void ) )
 #else
 void *LAlloc( size_t size )
 #endif

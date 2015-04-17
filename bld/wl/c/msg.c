@@ -40,7 +40,9 @@
 #include "mapio.h"
 #include "loadfile.h"
 #include "demangle.h"
+#include "errors.h"
 #include "msg.h"
+
 #include "clibext.h"
 
 char *MsgStrings[] = {
@@ -381,7 +383,7 @@ unsigned CalcMsgNum( unsigned num )
     return class * 1000 + (num & NUM_MSK);
 }
 
-unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
+static unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
 /*****************************************************************/
 {
     unsigned    prefixlen;

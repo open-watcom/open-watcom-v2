@@ -1138,7 +1138,7 @@ outfilelist *NewOutFile( char *filename )
     return( fnode );
 }
 
-int stricmp_wrapper( const void *s1, const void *s2 )
+static int stricmp_wrapper( const void *s1, const void *s2 )
 {
     return( stricmp( s1, s2 ) );
 }

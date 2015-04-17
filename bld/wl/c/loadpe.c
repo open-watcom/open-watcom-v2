@@ -67,6 +67,7 @@
 #include "pass2.h"
 #include "param.h"
 #include "sharedio.h"
+#include "exeutil.h"
 
 
 #define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
@@ -802,7 +803,7 @@ WResFileOffset RcTell( WResFileID hdl )
     return( PosLoad() );
 }
 
-int RcPadFile( int handle, long pad )
+bool RcPadFile( int handle, long pad )
 {
     DbgAssert( handle == Root->outfile->handle );
 
