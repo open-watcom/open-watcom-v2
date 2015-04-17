@@ -33,11 +33,8 @@
 #include <dos.h>
 #include <stddef.h>
 #include "ovlstd.h"
+#include "ovlldr.h"
 
-extern void __near      NAME( OVLLDR )( void );
-extern void __near      NAME( OVLMUNGE )( void * );
-extern void __near      NAME( CHPOVLLDR )( void );
-#define LOADOVERLAY     NAME( LoadOverlay )
 
 static void MungeVectors( unsigned ovl_num )
 //==========================================
@@ -130,7 +127,7 @@ static void ClearInMemFlags( ovltab_entry_ptr loaded_ovl )
     }
 }
 
-int __near LOADOVERLAY( unsigned ovl_num )
+int __near NAME( LoadOverlay )( unsigned ovl_num )
 //======================================
 // Load specified overlay.
 {
@@ -174,7 +171,7 @@ void __near NAME( OVLLOAD )( unsigned ovl_num )
 //===========================================
 // Load overlay.
 {
-    if( LOADOVERLAY( ovl_num ) ) {
+    if( NAME( LoadOverlay )( ovl_num ) ) {
         NAME( DBG_HOOK )( ovl_num, __OVLISRET__, __OVLCAUSE__ );
     }
 }
@@ -193,7 +190,7 @@ dos_addr __near NAME( OVLTINIT )( void )
     WALK_ALL_OVL( ovl ) {
         ovl->code_handle = ovl->start_para + __OVLTAB__.prolog.delta;
         if( ovl->flags_anc & OVE_FLAG_PRELOAD ) {
-            LOADOVERLAY( OVLNUM( ovl ) );
+            NAME( LoadOverlay )( OVLNUM( ovl ) );
         }
     }
     return( __OVLTAB__.prolog.start );
