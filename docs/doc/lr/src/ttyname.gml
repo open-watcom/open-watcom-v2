@@ -4,7 +4,7 @@
 .synop begin
 #include <unistd.h>
 char *ttyname( int fd );
-int ttyname_r( int fd, char *buf, int buflen );
+int ttyname_r( int fd, char *buf, size_t buflen );
 .synop end
 .desc begin
 The POSIX-compliant
@@ -77,5 +77,5 @@ is not large enough to hold the result, or the file descriptor name exceeds
 .see begin
 .seelist isatty
 .see end
-.class POSIX 1003.1, WATCOM
+.class POSIX 1003.1
 .system
