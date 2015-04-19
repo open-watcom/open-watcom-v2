@@ -32,12 +32,12 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
+#include "rtdata.h"
 #include "xfflags.h"
 #include "errcod.h"
 #include "trcback.h"
 #include "fapptype.h"
 #include "rtinit.h"
-#include "rtdata.h"
 #include "errrtns.h"
 #include "_defwin.h"    /* for _WindowsStdout() declaration */
 

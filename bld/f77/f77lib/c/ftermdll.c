@@ -31,9 +31,9 @@
 
 #include "ftnstd.h"
 #include "ftextfun.h"
-#include "fthread.h"
 #include "rmemmgr.h"
 #include "rtdata.h"
+#include "fthread.h"
 
 void            __FTermDLL( void ) {
 //==================================

@@ -35,9 +35,8 @@
 //
 
 #include "ftnstd.h"
-#include "fthread.h"
-#include "thread.h"
 #include "rtdata.h"
+#include "fthread.h"
 
 #include <stdlib.h>
 

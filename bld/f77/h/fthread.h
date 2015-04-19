@@ -33,8 +33,7 @@
 #ifndef _FTHREAD_H_INCLUDED
 #define _FTHREAD_H_INCLUDED
 
-struct thread_data;
-#include "thrdreg.h"
+#include "thread.h"
 
 // Thread-specific data:
 // =====================
