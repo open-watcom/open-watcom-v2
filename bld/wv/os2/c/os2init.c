@@ -184,10 +184,6 @@ bool TBreak( void )
     return( ret );
 }
 
-int _set_errno( int a )
-{
-    return( a );
-}
 void SysSetMemLimit( void )
 {
 }
