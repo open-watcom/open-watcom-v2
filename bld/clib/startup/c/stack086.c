@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include <alloca.h>
 
