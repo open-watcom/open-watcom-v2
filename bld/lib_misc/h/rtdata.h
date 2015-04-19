@@ -33,6 +33,9 @@
 #define _RTDATA_H_INCLUDED
 
 #include <stdio.h>
+#if defined( __SW_BM ) || defined( __MT__ )
+#include "thread.h"
+#endif
 #include "errorno.h"
 
 /* DOS based platforms have stdaux/stdprn in addition to stdin/out/err */
@@ -62,13 +65,13 @@ typedef struct __stream_link {
 #endif
 } __stream_link;
 
-#if defined(_M_IX86)
+#if defined( _M_IX86 ) && !defined( __UNIX__ )
 typedef struct _87state {
-#if defined( __386__ )
-    char data[108];         /* 32-bit save area size */
-#else
+  #if defined( _M_I86 )
     char data[94];          /* 16-bit save area size */
-#endif
+  #else
+    char data[108];         /* 32-bit save area size */
+  #endif
 } _87state;
 #endif
 
@@ -96,21 +99,19 @@ extern      void            (*__FPE_handler_exit)( void );
     extern  int             __umaskval;
     extern  unsigned        _curbrk;
     extern  int             _commode;
-#if defined(_M_IX86) && defined(__WATCOMC__)
+#if defined(__WATCOMC__) && defined(_M_IX86)
     #pragma aux             _child "_*";
 #endif
 #endif
-#if !defined(__SW_BM) && !defined( __MT__ )
-    extern  unsigned        _STACKLOW;
-#endif
+extern  unsigned            _STACKLOW;
 #if !defined (_NETWARE_LIBC)
-extern      unsigned        _STACKTOP;
+extern  unsigned            _STACKTOP;
 #endif
 /* alternate stack for F77 compiler */
 #if !defined( _M_I86 )
 extern  unsigned            __ASTACKSIZ;
 extern  char                *__ASTACKPTR;
-#if defined( _M_IX86 ) && defined(__WATCOMC__)
+#if defined(__WATCOMC__) && defined( _M_IX86 )
  #pragma aux                __ASTACKPTR "*"
  #pragma aux                __ASTACKSIZ "*"
 #endif
@@ -125,21 +126,21 @@ extern char     *_Envptr;
 #endif
 #endif
 
-#if !defined(__QNX__) && !defined(__LINUX__) && defined(_M_IX86)
-    extern void         (*__Save8087)(_87state *);/* Ptr to FP state save rtn (spawn) */
-    extern void         (*__Rest8087)(_87state *);/* Ptr to FP state restore rtn (spawn) */
+#if defined( _M_IX86 ) && !defined( __UNIX__ )
+    extern void                 (*__Save8087)(_87state *);/* Ptr to FP state save rtn (spawn) */
+    extern void                 (*__Rest8087)(_87state *);/* Ptr to FP state restore rtn (spawn) */
 #endif
-extern unsigned short       _8087cw;    /* control word initializer */
-extern unsigned char        _no87;      /* NO87 environment var defined */
-extern unsigned char        _8087;      /* type of 8087/emulator present */
-extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
-#if defined(_M_IX86) && defined(__WATCOMC__)
-    #pragma aux             _8087cw "_*";
-    #pragma aux             _no87 "_*";
-    #pragma aux             _8087 "_*";
-    #pragma aux             _real87 "_*";
+extern unsigned short           _8087cw;    /* control word initializer */
+extern unsigned char            _no87;      /* NO87 environment var defined */
+extern unsigned char            _8087;      /* type of 8087/emulator present */
+extern unsigned char            _real87;    /* 8087 coprocessor hardware present */
+#if defined(__WATCOMC__) && defined(_M_IX86)
+    #pragma aux                 _8087cw "_*";
+    #pragma aux                 _no87 "_*";
+    #pragma aux                 _8087 "_*";
+    #pragma aux                 _real87 "_*";
 #endif
-extern unsigned char        __uselfn;   /* LFN support available flag */
+extern unsigned char            __uselfn;   /* LFN support available flag */
 
 #define _RWD_ostream            __OpenStreams
 #define _RWD_cstream            __ClosedStreams
@@ -166,13 +167,15 @@ extern unsigned char        __uselfn;   /* LFN support available flag */
     #define _RWD_amblksiz       _amblksiz
     #define _RWD_curbrk         _curbrk
     #define _RWD_dynend         _dynend
+#endif
+#if defined( _M_I86 ) && !defined( __QNX__ ) || defined( __DOS__ ) || defined( __OSI__ )
     #define _RWD_psp            _psp
 #endif
 #define _RWD_stacklow           _STACKLOW
 #if !defined (_NETWARE_LIBC)
 #define _RWD_stacktop           _STACKTOP
 #endif
-#if !defined(__QNX__) && !defined(__LINUX__)
+#if defined( _M_IX86 ) && !defined( __UNIX__ )
     #define _RWD_Save8087       __Save8087
     #define _RWD_Rest8087       __Rest8087
 #endif
@@ -180,11 +183,13 @@ extern unsigned char        __uselfn;   /* LFN support available flag */
 #define _RWD_no87               _no87
 #define _RWD_8087               _8087
 #define _RWD_real87             _real87
-#if !defined(__NETWARE__)
+#if defined( _M_I86 )
     #define _RWD_HShift         _HShift
+    #define _RWD_osmode         _osmode
+#endif
+#if !defined(__NETWARE__)
     #define _RWD_osmajor        _osmajor
     #define _RWD_osminor        _osminor
-    #define _RWD_osmode         _osmode
     #if defined(__NT__)
         #define _RWD_osbuild    _osbuild
         #define _RWD_osver      _osver
@@ -192,12 +197,12 @@ extern unsigned char        __uselfn;   /* LFN support available flag */
         #define _RWD_winminor   _winminor
         #define _RWD_winver     _winver
     #endif
+#endif
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     #define _RWD_doserrno       _DOSERRNO
 #endif
+#define _RWD_errno              _ERRNO
 #define _RWD_tmpfnext           __tmpfnext
-#if !defined(_RWD_errno)
-    #define _RWD_errno          _ERRNO
-#endif
 #define _RWD_nexttok            _NEXTTOK
 #define _RWD_nextftok           _NEXTFTOK
 #define _RWD_nextmbtok          _NEXTMBTOK
@@ -210,19 +215,11 @@ extern unsigned char        __uselfn;   /* LFN support available flag */
 #define _RWD_start_dst          __start_dst
 #define _RWD_end_dst            __end_dst
 #define _RWD_asctime            _RESULT
-#if defined( __SW_BM ) || defined( __MT__ )
-    #define _RWD_cvtbuf         __THREADDATAPTR->__cvt_buffer
-#else
-    #define _RWD_cvtbuf         cvt_buffer
-#endif
+#define _RWD_cvtbuf             _CVTBUF
 #if defined(__NETWARE__)
     #define _RWD_ioexit         __ioexit
-    #define _RWD_tmpnambuf      (__THREADDATAPTR->__tmpnambuf)
-    #define _RWD_randnextinit   (__THREADDATAPTR->__randnextinit)
-#else
-    #define _RWD_tmpnambuf      _tmpname
-    #define _RWD_randnextinit   THREAD_PTR.__randnextinit
 #endif
+#define _RWD_tmpnambuf          _TMPNAMBUF
 #define _RWD_randnext           _RANDNEXT
 #define _RWD_ThreadData         _ThreadData
 #define _RWD_StaticInitSema     _StaticInitSema
@@ -237,7 +234,7 @@ extern unsigned char        __uselfn;   /* LFN support available flag */
     that the __exit... routines never return.
 */
 _WCRTLINK   extern  void    __exit( unsigned );
-#if defined(_M_IX86) && defined(__WATCOMC__)
+#if defined(__WATCOMC__) && defined(_M_IX86)
     #pragma aux     __exit aborts;
 #endif
 

@@ -30,34 +30,21 @@
 ****************************************************************************/
 
 
-#if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
-    #if defined( __SW_BM ) || defined( __MT__ )
-
-        #include "thread.h"
-
-        #define _ERRNO  (__THREADDATAPTR->__errnoP)
-        #define _DOSERRNO       (__THREADDATAPTR->__doserrnoP)
-
-    #else
-
-        #define _ERRNO  errno
-        #define _DOSERRNO       _doserrno
-
-    #endif
-#elif defined(__RDOSDEV__)
-    #define _ERRNO  errno
-    #define _DOSERRNO       _doserrno    
-#else
+#if defined(__QNX__) || defined( __LINUX__ )
     // QNX errno is magically multithread aware
-    // What does NETWARE do?
-    #if !defined (_NETWARE_LIBC)
     #define _ERRNO              errno
+#elif defined(__NETWARE__)
+    // What does NETWARE do?
+    #if defined (_NETWARE_LIBC)
+        extern int              *___errno( void );
+        #define _ERRNO          (*___errno())       /* get LibC errno */
     #else
-    extern int * ___errno(void);
-    #define _ERRNO              *___errno()     /* get LibC errno */
+        #define _ERRNO          errno
     #endif
-
-    #ifndef __NETWARE__
-        #define _DOSERRNO               _doserrno
-    #endif
+#elif ( defined(__SW_BM) || defined(__MT__) ) && !defined( __RDOSDEV__ )
+    #define _ERRNO          (__THREADDATAPTR->__errnoP)
+    #define _DOSERRNO       (__THREADDATAPTR->__doserrnoP)
+#else
+    #define _ERRNO          errno
+    #define _DOSERRNO       _doserrno
 #endif

@@ -70,7 +70,6 @@ extern "C" {
                                                  initializer **init );
 
     _WCRTLINK extern unsigned   __RegisterThreadDataSize( unsigned size );
-    _WCRTDATA extern struct thread_data *(*__GetThreadPtr)( void );
     _WCRTDATA extern unsigned   __ThreadDataSize;
 
 #ifdef __cplusplus
