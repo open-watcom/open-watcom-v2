@@ -100,7 +100,7 @@ extern      void            (*__FPE_handler_exit)( void );
     #pragma aux             _child "_*";
 #endif
 #endif
-#if !defined(__SW_BM)
+#if !defined(__SW_BM) && !defined( __MT__ )
     extern  unsigned        _STACKLOW;
 #endif
 #if !defined (_NETWARE_LIBC)
@@ -210,7 +210,7 @@ extern unsigned char        __uselfn;   /* LFN support available flag */
 #define _RWD_start_dst          __start_dst
 #define _RWD_end_dst            __end_dst
 #define _RWD_asctime            _RESULT
-#ifdef __SW_BM
+#if defined( __SW_BM ) || defined( __MT__ )
     #define _RWD_cvtbuf         __THREADDATAPTR->__cvt_buffer
 #else
     #define _RWD_cvtbuf         cvt_buffer

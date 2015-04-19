@@ -31,7 +31,7 @@
 
 
 #if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
-    #if defined(__SW_BM)
+    #if defined( __SW_BM ) || defined( __MT__ )
 
         #include "thread.h"
 
