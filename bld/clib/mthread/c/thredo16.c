@@ -38,10 +38,10 @@
 #include <process.h>
 #include <string.h>
 #include "exitwmsg.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
 #include "thread.h"
-#include "rtdata.h"
 #include "extfunc.h"
 
 typedef void (_WCFAR thread_fn)(void _WCFAR *);

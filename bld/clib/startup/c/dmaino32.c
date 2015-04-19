@@ -45,9 +45,9 @@
 #include "liballoc.h"
 #include "initfini.h"
 #include "osthread.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "initarg.h"
-#include "rtdata.h"
 
 extern  unsigned            __hmodule;
 

@@ -36,10 +36,10 @@
 #include <malloc.h>
 #include <i86.h>
 #include "liballoc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
 #include "thread.h"
-#include "rtdata.h"
 #include "exitwmsg.h"
 #include "cthread.h"
 

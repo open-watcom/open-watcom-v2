@@ -34,14 +34,14 @@
 
 
 #include "variety.h"
-#include "stacklow.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "liballoc.h"
+#include "rtdata.h"
+#include "stacklow.h"
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "rtdata.h"
 #include "rtinit.h"
 #include "exitwmsg.h"
 

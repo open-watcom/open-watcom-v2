@@ -49,11 +49,7 @@
 #endif
 
 #if defined(__SW_BM)
-    #include "thread.h"
     #define _STACKLOW   (__THREADDATAPTR->__stklowP)
-#else
-    extern  unsigned        _STACKLOW;
 #endif
 
 #endif
-

@@ -38,8 +38,8 @@ extern unsigned _STACKLOW;
 struct thread_data *__FirstThreadData = (struct thread_data *)&_STACKLOW;
 
 #include "osthread.h"
-#include "stacklow.h"
 #include "rtdata.h"
+#include "stacklow.h"
 #include "initfini.h"
 #include "linuxsys.h"
 

@@ -44,9 +44,9 @@
 #include <string.h>
 
 #include "osthread.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "rtdata.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "rtinit.h"

@@ -40,8 +40,8 @@
 
 #include "liballoc.h"
 #include "osthread.h"
-#include "stacklow.h"
 #include "rtdata.h"
+#include "stacklow.h"
 #include "mthread.h"
 #include "seterrno.h"
 #include "semaqnx.h"

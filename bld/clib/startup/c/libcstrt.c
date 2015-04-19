@@ -38,8 +38,8 @@
 #include <process.h>
 #include <io.h>
 #include "liballoc.h"
-#include "stacklow.h"
 #include "rtdata.h"
+#include "stacklow.h"
 #include "exitwmsg.h"
 #include "fileacc.h"
 #include "initfini.h"
