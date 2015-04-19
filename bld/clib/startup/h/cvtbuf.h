@@ -24,22 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  __CVTBuffer() implementation.
+* Description:  cvt_buffer declaration.
 *
 ****************************************************************************/
 
 
-#include "widechar.h"
-#include "variety.h"
-#include <stdlib.h>
-#include "liballoc.h"
-#include "rtdata.h"
-#include "exitwmsg.h"
-#include "xfloat.h"
-#include "cvtbuf.h"
+#if defined(__SW_BM)
+    #define _CVTBUF         __THREADDATAPTR->__cvt_buffer
+#else
+    #include "maxchtyp.h"
+    static MAX_CHAR_TYPE    cvt_buffer[__FPCVT_BUFFERLEN + 1];
 
-
-_WCRTLINK CHAR_TYPE *__CVTBuffer( void )
-{
-    return( (CHAR_TYPE *)_RWD_cvtbuf );
-}
+    #define _CVTBUF         cvt_buffer
+#endif
