@@ -34,6 +34,7 @@
 #include "rtdata.h"
 #include "stacklow.h"
 #include "thread.h"
+#include "mthread.h"
 
 thread_data *__AllocInitThreadData( thread_data *tdata )
 /******************************************************/

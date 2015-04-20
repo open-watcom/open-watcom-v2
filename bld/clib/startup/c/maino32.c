@@ -52,23 +52,17 @@
 #include "rtinit.h"
 #include "liballoc.h"
 #include "initarg.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
 extern unsigned         __hmodule;
 unsigned short          __saved_CS;
-
-thread_data             *__FirstThreadData = NULL;
-
-static struct thread_data *__SingleThread()
-{
-    return( __FirstThreadData );
-}
 
 static void __NullAccessRtn( int hdl ) { hdl = hdl; }
 static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
 
-_WCRTDATA struct thread_data *(*__GetThreadPtr)() = &__SingleThread;
 void    (*_AccessFileH)(int)     = &__NullAccessRtn;
 void    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
 void    (*_AccessIOB)(void)      = &__NullAccIOBRtn;
@@ -204,15 +198,6 @@ void __OS2Fini( void )
 }
 
 _WCRTLINK void (*__process_fini)(unsigned,unsigned) = 0;
-
-void __shutdown_stack_checking( void ) {
-    static thread_data dummy_stacklow;
-
-    // make sure we are using the single thread data area
-    // this is incase there is a DosExitList active
-    __GetThreadPtr = &__SingleThread;
-    __FirstThreadData = &dummy_stacklow;
-}
 
 _WCRTLINK void __exit( unsigned ret_code )
 {

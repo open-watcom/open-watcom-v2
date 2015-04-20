@@ -24,47 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  RDOS executable entry point.
+* Description:  Initialize single-threaded mode function declaration.
 *
 ****************************************************************************/
 
 
-#include "widechar.h"
-#include "variety.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
-#include <rdos.h>
-#include "sigtab.h"
-#include "initfini.h"
-#include "initarg.h"
-#include "rdosex.h"
-#include "mthread.h"
-
-extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );
-
-extern void __CMain( void );
-#pragma aux __CMain  "*"
-#pragma aux __RdosMain  "*"
-
-void __RdosMain()
-{
-    thread_data             *tdata;
-    REGISTRATION_RECORD     rr;
- 
-    __InitRtns( INIT_PRIORITY_THREAD );
-    tdata = ( thread_data* )RdosAllocateMem( __ThreadDataSize );
-    memset( tdata, 0, __ThreadDataSize );
-    tdata->__data_size = __ThreadDataSize;
-
-    __InitThreadData( tdata );
-
-    _LpPgmName = (char *)RdosGetExeName();
-    __RdosInit( 0, tdata, RdosGetModuleHandle() );
-    __NewExceptionFilter( &rr );
-    __InitRtns( INIT_PRIORITY_LIBRARY+1 );
-    __sig_init_rtn();
-    __InitRtns( 255 );
-    __CMain();
-}
+#if defined( __NETWARE__ )
+extern void __RestoreSingleThreading( void );
+#elif defined( __OS2__ )
+extern void __shutdown_stack_checking( void );
+#endif

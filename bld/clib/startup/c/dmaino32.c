@@ -48,6 +48,8 @@
 #include "rtdata.h"
 #include "stacklow.h"
 #include "initarg.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
 extern  unsigned            __hmodule;
 
@@ -64,13 +66,6 @@ extern  int                 __disallow_single_dgroup( unsigned );
 
     extern      void        __OS2Init( int, void * );
     extern      void        __OS2Fini( void );
-    extern      int         __OS2AddThread( int, void * );
-    extern      void        __shutdown_stack_checking( void );
-    extern      void        *__InitThreadProcessing( void );
-    extern      void        __InitMultipleThread( void );
-    extern      thread_data *__AllocInitThreadData( thread_data *tdata );
-    extern      void        __FreeInitThreadData( thread_data * );
-    extern      thread_data *__FirstThreadData;
 #endif
 
 #ifdef __386__

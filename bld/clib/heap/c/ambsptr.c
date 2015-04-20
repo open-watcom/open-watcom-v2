@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned *__get_amblksiz_ptr( void ) {
-    return &_amblksiz;
+_WCRTLINK unsigned *__get_amblksiz_ptr( void )
+{
+    return( &_RWD_amblksiz );
 }

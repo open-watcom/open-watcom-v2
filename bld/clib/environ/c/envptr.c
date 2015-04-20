@@ -35,5 +35,5 @@
 
 _WCRTLINK char ***__get_environ_ptr( void )
 {
-    return( &environ );
+    return( &_RWD_environ );
 }

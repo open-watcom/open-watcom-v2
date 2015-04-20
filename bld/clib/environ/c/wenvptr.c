@@ -35,5 +35,5 @@
 
 _WCRTLINK wchar_t ***__get_wenviron_ptr( void )
 {
-    return( &_wenviron );
+    return( &_RWD_wenviron );
 }

@@ -39,7 +39,6 @@
 #include <wos2.h>
 #include "osthread.h"
 #include "rtdata.h"
-#include "errorno.h"
 #include "sigtab.h"
 #include "sigfunc.h"
 #include "fpusig.h"

@@ -31,28 +31,18 @@
 
 #include "variety.h"
 
-// these appear ahead of the include files to avoid collisions
-// between the _STACKLOW variable and the _STACKLOW macro
-
-extern unsigned _STACKLOW;
-struct thread_data *__FirstThreadData = (struct thread_data *)&_STACKLOW;
-
 #include "osthread.h"
 #include "rtdata.h"
 #include "stacklow.h"
 #include "initfini.h"
 #include "linuxsys.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
-extern void __InitThreadData( thread_data * );
 
 int *__threadid( void )
 {
     return( (int *)&(__THREADDATAPTR->thread_id) );
-}
-
-static struct thread_data *__SingleThread( void )
-{
-    return( __FirstThreadData );
 }
 
 static void __NullAccessRtn( int hdl ) { hdl = hdl; }
@@ -60,7 +50,6 @@ static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
 
-_WCRTDATA struct thread_data *(*__GetThreadPtr)( void ) = &__SingleThread;
 void                    (*_AccessFileH)(int)     = &__NullAccessRtn;
 void                    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
 void                    (*_AccessIOB)(void)      = &__NullAccIOBRtn;

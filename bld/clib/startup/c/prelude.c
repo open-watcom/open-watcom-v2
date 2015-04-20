@@ -45,6 +45,7 @@
 #if !defined(_THIN_LIB)
 #include "initarg.h"
 #endif
+#include "mthread.h"
 
 #define MAX_CMDLINE     500
 
@@ -60,8 +61,6 @@
         );
 #endif
 
-extern void                 *__InitThreadProcessing( void );
-extern void                 __InitMultipleThread( void );
 extern int                  main( int argc, char **argv );
 
 extern void                 ExitThread( int,int );

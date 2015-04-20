@@ -39,8 +39,6 @@
 #include "mthread.h"
 #include "exitwmsg.h"
 
-extern void     (*_AccessTDList)(void);
-extern void     (*_ReleaseTDList)(void);
 
 typedef struct thread_data_list {
     struct thread_data_list *next;

@@ -55,7 +55,6 @@
 #pragma aux __threadstksize "*"
 extern  unsigned        __threadstksize;
 
-extern  void            __InitMultipleThread( void );
 extern  unsigned        __threadstack( void );
 
 typedef struct thread_args {

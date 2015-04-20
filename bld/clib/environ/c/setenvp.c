@@ -70,7 +70,7 @@ static void *(_WCI86NEAR allocate)( size_t amt )
     void _WCI86NEAR     *nptr;
 
   #if defined(__OS2_286__)
-    if( _osmode == DOS_MODE ) {
+    if( _RWD_osmode == DOS_MODE ) {
         ptr = nptr = lib_nmalloc( amt );
         if( nptr == NULL ) {
             ptr = lib_malloc( amt );

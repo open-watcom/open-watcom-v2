@@ -31,28 +31,10 @@
 
 
 #define _INITRANDNEXT(p)
-#if defined(__OS2__) || defined(__NT__) || defined(__NETWARE__)
-    // OS/2, NT and NETWARE versions are identical
-    // note that NETWARE is always multi-threaded
-    #if defined(__SW_BM)
-
-        #include "thread.h"
-        #if 0
-            // who ever allocates the thread_data should initialize __randnext
-            if( __THREADDATAPTR->__randnextinit == 0 ) { \
-                __THREADDATAPTR->__randnextinit = 1; \
-                __THREADDATAPTR->__randnext = 1; \
-            }
-        #endif
-        #define _RANDNEXT       (__THREADDATAPTR->__randnext)
-
-    #else
-
-        static  unsigned long int next = 1;
-        #define _RANDNEXT       next
-
-    #endif
+#if defined(__SW_BM) && ( defined(__OS2__) || defined(__NT__) || defined(__NETWARE__) )
+    #define _RANDNEXT           (__THREADDATAPTR->__randnext)
 #else
-    static  unsigned long int next = 1;
-    #define _RANDNEXT next
+    static unsigned long int    next = 1;
+
+    #define _RANDNEXT           next
 #endif

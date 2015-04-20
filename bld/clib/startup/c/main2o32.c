@@ -42,6 +42,7 @@
 #include "initfini.h"
 #include "thread.h"
 #include "initarg.h"
+#include "mthread.h"
 
 #ifdef __SW_BR
     _WCRTDATA extern    unsigned    __hmodule;
@@ -65,8 +66,6 @@
         #pragma aux __CMain   "*"
     #endif
   #endif
-    extern      unsigned        __ThreadDataSize;
-    extern      void            __InitThreadData( thread_data *tdata );
 #endif
 
 #if defined(_M_IX86)

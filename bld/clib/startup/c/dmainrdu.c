@@ -40,18 +40,11 @@
 #include "initfini.h"
 #include "initarg.h"
 #include "rdosex.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
-extern      thread_data *__FirstThreadData;
-
-extern void __InitThreadData( thread_data * );
 extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );
 extern int __RdosFini();
-extern int __RdosAddThread( thread_data * );
-extern int __RdosRemoveThread();
-extern void __FreeInitThreadData( thread_data * );
-
-extern void __InitMultipleThread( void );
-extern unsigned __RdosThreadInit( void );
 
 extern int __stdcall LibMain( int, int, void * );
 extern void __CommonInit( void );
@@ -93,7 +86,7 @@ int __LibMain( int hdll, int reason, void *reserved )
         __CommonInit();
         __sig_init_rtn();
 
-        if( __RdosThreadInit() == 0 ) return( -1 );
+        if( !__RdosThreadInit() ) return( -1 );
         __InitMultipleThread();
 
         rc = LibMain( hdll, reason, reserved );

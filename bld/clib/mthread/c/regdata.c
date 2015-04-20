@@ -33,11 +33,8 @@
 #include "variety.h"
 #include "thread.h"
 #include "trdlist.h"
+#include "mthread.h"
 
-extern void     (*_AccessTDList)(void);
-extern void     (*_ReleaseTDList)(void);
-
-_WCRTDATA extern unsigned   __ThreadDataSize;
 
 _WCRTLINK unsigned __RegisterThreadDataSize( unsigned size )
 /**********************************************************/

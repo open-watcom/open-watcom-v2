@@ -54,6 +54,7 @@
 #include "rtinit.h"
 #include "seterrno.h"
 #include "handleio.h"
+#include "rtdata.h"
 
 #undef __getOSHandle
 
@@ -235,7 +236,7 @@ _WCRTLINK int _grow_handles( int num )
         #if defined(__DOS__)
             /* increase the number of file handles beyond 20 */
 
-            if( _osmajor > 3 || ( _osmajor == 3 && _osminor >= 30 ) ) {
+            if( _RWD_osmajor > 3 || ( _RWD_osmajor == 3 && _RWD_osminor >= 30 ) ) {
                 tiny_ret_t  rc;
 
                 /* may allocate a segment of memory! */
@@ -259,14 +260,14 @@ _WCRTLINK int _grow_handles( int num )
                 } else {
                     _fmemset( new_handles, 0xff, num );
 
-                    psp_num_handles = MK_FP( _psp, 0x32 );
-                    psp_handles = MK_FP( _psp, 0x34 );
+                    psp_num_handles = MK_FP( _RWD_psp, 0x32 );
+                    psp_handles = MK_FP( _RWD_psp, 0x34 );
                     _fmemcpy( new_handles, *psp_handles, *psp_num_handles );
 
                     _disable();
-                    psp_handles = MK_FP( _psp, 0x34 );
+                    psp_handles = MK_FP( _RWD_psp, 0x34 );
                     *psp_handles = new_handles;
-                    psp_num_handles = MK_FP( _psp, 0x32 );
+                    psp_num_handles = MK_FP( _RWD_psp, 0x32 );
                     *psp_num_handles = num;
                     _enable();
                 }

@@ -265,7 +265,6 @@ void _CMain( free, n, cmd, stk_bot, pid )
 }
 #else
 
-extern  unsigned        __ThreadDataSize;
 extern  void            __QNXInit( void * );
 
 #pragma aux _s_EFG_printf __far parm [eax] [edx] [ebx]

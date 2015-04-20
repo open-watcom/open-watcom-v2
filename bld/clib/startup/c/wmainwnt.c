@@ -39,17 +39,15 @@
 #include <windows.h>
 #include "ntex.h"
 #include "initfini.h"
-#include "thread.h"
 #include "initarg.h"
 #include "rtdata.h"
+#include "mthread.h"
 
-extern void __InitThreadData( thread_data * );
 
 #ifdef __SW_BR
     _WCRTLINK extern    void    (*__process_fini)(unsigned,unsigned);
 #else
     extern void __NTMainInit( void *, void * );
-    extern      unsigned        __ThreadDataSize;
 #endif
 
 extern void __CommonInit( void );

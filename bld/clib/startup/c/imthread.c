@@ -30,26 +30,19 @@
 
 
 #include "variety.h"
-#include "rtinit.h"
-
-#if defined(__NT__)
-  extern unsigned __NTThreadInit( void );
-#elif defined (_NETWARE_LIBC)
-  extern unsigned __LibCThreadInit( void );
-#elif defined(__QNX__)
-#elif defined(__LINUX__)
-#elif defined(__WARP__)
-  extern void *__InitThreadProcessing( void );
-#elif defined(__RDOS__)
-  extern unsigned __RdosThreadInit( void );
+#if defined( __OS2__ )
+#include <wos2.h>
 #endif
+#include "rtinit.h"
+#include "thread.h"
+#include "rtdata.h"
+#include "mthread.h"
+
 #if defined(__OS2_286__) || defined(__NETWARE__)
     #if defined(__SW_BM)
         int __imthread;
     #endif
 #else
-    extern void __InitMultipleThread( void );
-
     static void __imthread_fn( void ) {
         #if defined(__NT__)
             if( !__NTThreadInit() ) return;

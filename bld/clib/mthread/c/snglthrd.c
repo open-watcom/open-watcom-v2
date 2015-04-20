@@ -24,47 +24,55 @@
 *
 *  ========================================================================
 *
-* Description:  RDOS executable entry point.
+* Description:  Initialize single-threaded mode.
 *
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
-#include <rdos.h>
-#include "sigtab.h"
-#include "initfini.h"
-#include "initarg.h"
-#include "rdosex.h"
+#if defined( __NT__ )
+#include <windows.h>
+#elif defined( __OS2__ )
+#include <wos2.h>
+#endif
+#include "rtdata.h"
+#include "thread.h"
+#include "snglthrd.h"
 #include "mthread.h"
 
-extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );
 
-extern void __CMain( void );
-#pragma aux __CMain  "*"
-#pragma aux __RdosMain  "*"
+#if defined( __UNIX__ )
+thread_data     *__FirstThreadData = (struct thread_data *)&_STACKLOW;
+#elif defined( __NETWARE__ )
+thread_data     *__FirstThreadData;
+#else
+thread_data     *__FirstThreadData = NULL;
+#endif
 
-void __RdosMain()
+static thread_data *__SingleThread( void )
 {
-    thread_data             *tdata;
-    REGISTRATION_RECORD     rr;
- 
-    __InitRtns( INIT_PRIORITY_THREAD );
-    tdata = ( thread_data* )RdosAllocateMem( __ThreadDataSize );
-    memset( tdata, 0, __ThreadDataSize );
-    tdata->__data_size = __ThreadDataSize;
-
-    __InitThreadData( tdata );
-
-    _LpPgmName = (char *)RdosGetExeName();
-    __RdosInit( 0, tdata, RdosGetModuleHandle() );
-    __NewExceptionFilter( &rr );
-    __InitRtns( INIT_PRIORITY_LIBRARY+1 );
-    __sig_init_rtn();
-    __InitRtns( 255 );
-    __CMain();
+    return( __FirstThreadData );
 }
+
+_WCRTDATA thread_data *(*__GetThreadPtr)( void ) = __SingleThread;
+
+#if defined( __NETWARE__ )
+
+void __RestoreSingleThreading( void )
+{
+    __GetThreadPtr = &__SingleThread;
+}
+
+#elif defined( __OS2__ )
+
+static thread_data  dummy_stacklow;
+
+void __shutdown_stack_checking( void ) {
+
+    // make sure we are using the single thread data area
+    // this is incase there is a DosExitList active
+    __GetThreadPtr = &__SingleThread;
+    __FirstThreadData = &dummy_stacklow;
+}
+
+#endif

@@ -46,6 +46,8 @@
 
 #include "trdlist.h"
 #include "nw_libc.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
 /*****************************************************************************
 //  TLS slot key
@@ -56,8 +58,6 @@ NXKey_t     __NXSlotID;
 extern "C" {
 #endif
     extern int      __CreateFirstThreadData( void );
-    extern void     __InitMultipleThread( void );
-    extern void     __RestoreSingleThreading( void );
     /*
     //  Called from LibC startup / termination code in libcpre.obj
     */

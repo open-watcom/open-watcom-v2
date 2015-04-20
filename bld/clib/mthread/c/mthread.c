@@ -50,17 +50,13 @@
 #if defined( __QNX__ )
   #include "semaqnx.h"
   #include <sys/magic.h>
-  extern thread_data *__QNXAddThread( thread_data *tdata );
 #endif
 
-extern  void            __FiniThreadProcessing( void );
 #if !defined( _M_I86 )
     extern void         (*_AccessFileH)( int );
     extern void         (*_ReleaseFileH)( int );
     extern void         (*_AccessIOB)( void );
     extern void         (*_ReleaseIOB)( void );
-    extern void         (*_AccessTDList)( void );
-    extern void         (*_ReleaseTDList)( void );
   #if !defined( __NETWARE__ )
     extern void         (*_AccessNHeap)( void );
     extern void         (*_AccessFHeap)( void );
@@ -70,7 +66,6 @@ extern  void            __FiniThreadProcessing( void );
   #if defined( __NT__ )
     extern void         (*_AccessFList)( void );
     extern void         (*_ReleaseFList)( void );
-    extern void         (*_ThreadExitRtn)( void );
     static semaphore_object FListSemaphore;
   #endif
     void static nullSema4Rtn( semaphore_object *p ) { p = p; }
@@ -87,7 +82,6 @@ extern  int             __Sema4Fini;            // in finalizer segment
 #pragma aux             __Sema4Fini "_*";
 #endif
 extern  unsigned        __MaxThreads;
-extern  thread_data     *__FirstThreadData;
 extern  void            **__ThreadIDs;
 
 #define MAX_SEMAPHORE   16
@@ -498,8 +492,8 @@ void __FreeInitThreadData( thread_data *tdata )
 
   #if defined( __NT__ )
 
-BOOL __NTThreadInit( void )
-/*************************/
+int __NTThreadInit( void )
+/************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         __TlsIndex = TlsAlloc();
@@ -527,8 +521,8 @@ static void __NTThreadFini( void )
 }
 
 
-BOOL __NTAddThread( thread_data *tdata )
-/**************************************/
+int __NTAddThread( thread_data *tdata )
+/*************************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         return( FALSE );
@@ -671,7 +665,7 @@ void __LinuxRemoveThread( void )
   #elif defined( __RDOS__ )
 
 int __RdosThreadInit( void )
-/*************************/
+/**************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         __TlsIndex = __tls_alloc();
@@ -697,7 +691,7 @@ static void __RdosThreadFini( void )
     #endif
 
 int __RdosAddThread( thread_data *tdata )
-/**************************************/
+/***************************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         return( 0 );

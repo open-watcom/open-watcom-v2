@@ -34,11 +34,13 @@
 
     extern void         *__InitThreadProcessing( void );
     extern void         __FiniThreadProcessing( void );
-#if defined( __OS2_286__ )
+#if defined( _M_I86 )
+  #if defined( __OS2__ )
     extern void         __SetupThreadProcessing( int );
-#endif
+  #endif
+#else
+    extern thread_data  *__FirstThreadData;
 
-#if !defined( _M_I86 )
     extern thread_data  *__AllocInitThreadData( thread_data *tdata );
     extern void         __FreeInitThreadData( thread_data *tdata );
     extern thread_data  *__AllocThreadData( void );
@@ -49,14 +51,14 @@
     extern void         __AccessTDList( void );
     extern void         __ReleaseTDList( void );
   #if defined( __NT__ )
-    extern BOOL         __NTThreadInit( void );
-    extern BOOL         __NTAddThread( thread_data * );
+    extern int          __NTThreadInit( void );
+    extern int          __NTAddThread( thread_data * );
     extern void         __NTRemoveThread( int );
   #elif defined( _NETWARE_LIBC )
     #include "nw_libc.h"
-    extern BOOL         __LibCThreadInit( void );
+    extern int          __LibCThreadInit( void );
     extern void         __LibCThreadFini( void );
-    extern BOOL         __LibCAddThread( thread_data * );
+    extern int          __LibCAddThread( thread_data * );
     extern void         __LibCRemoveThread( int );
   #elif defined( __OS2__ )
     extern int          __OS2AddThread( TID, thread_data * );
@@ -73,18 +75,9 @@
     extern void         __RdosRemoveThread( void );
   #endif
 
-    extern thread_data  *__FirstThreadData;
-
-  #if 1 //defined( __SW_BM )
     extern void         (*_AccessTDList)( void );
     extern void         (*_ReleaseTDList)( void );
     extern void         (*_ThreadExitRtn)( void );
-  #else
-    #define _AccessTDList()
-    #define _ReleaseTDList()
-    #define _ThreadExitRtn()
-  #endif
-
 #endif
 
 #endif

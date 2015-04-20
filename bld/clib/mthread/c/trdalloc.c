@@ -35,6 +35,7 @@
 #include "thread.h"
 #include "trdlist.h"
 #include "liballoc.h"
+#include "mthread.h"
 
 #ifdef _NETWARE_CLIB
 void                    **__ThreadIDs;

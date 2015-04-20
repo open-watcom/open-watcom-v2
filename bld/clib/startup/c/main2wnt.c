@@ -40,8 +40,8 @@
 #include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"
+#include "mthread.h"
 
-extern void __InitThreadData( thread_data * );
 
 #ifdef __SW_BR
     _WCRTLINK extern    void    (*__process_fini)( unsigned, unsigned );
@@ -61,7 +61,6 @@ extern void __InitThreadData( thread_data * );
         #pragma aux __CMain  "*"
     #endif
   #endif
-    extern      unsigned        __ThreadDataSize;
 #endif
 
 #ifdef __WIDECHAR__
