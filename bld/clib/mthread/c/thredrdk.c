@@ -43,7 +43,6 @@
 #include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "seterrno.h"

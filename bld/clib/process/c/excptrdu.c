@@ -41,7 +41,6 @@
 #include "fpusig.h"
 #include "clearfpe.h"
 #include "excptrdu.h"
-#include "thread.h"
 #include "rdosex.h"
 
 __sig_func  (*__oscode_check_func)( int, long ) = NULL;

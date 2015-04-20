@@ -48,7 +48,6 @@
 #include "initfini.h"
 #include "rtinit.h"
 #include "initarg.h"
-#include "thread.h"
 #include "mthread.h"
 
 extern void __CMain( void );
