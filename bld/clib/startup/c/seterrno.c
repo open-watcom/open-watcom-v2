@@ -38,29 +38,29 @@
 #include "rtdata.h"
 #include "seterrno.h"
 
-_WCRTLINK void __set_errno( unsigned int err )
+void __set_errno( unsigned int err )
 {
     _RWD_errno = err;
 }
 
-_WCRTLINK void __set_EDOM( void )
+void __set_EDOM( void )
 {
     __set_errno( EDOM );
 }
 
-_WCRTLINK void __set_ERANGE( void )
+void __set_ERANGE( void )
 {
     __set_errno( ERANGE );
 }
 
-_WCRTLINK int __set_EINVAL( void )
+int __set_EINVAL( void )
 {
     __set_errno( EINVAL );
     return( -1 );
 }
 
 #if !defined(__UNIX__) && !defined(__NETWARE__)
-_WCRTLINK void __set_doserrno( unsigned int err )
+void __set_doserrno( unsigned int err )
 {
     _RWD_doserrno = err;
 }
