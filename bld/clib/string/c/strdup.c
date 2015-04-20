@@ -42,7 +42,7 @@ extern size_t wcslen( const CHAR_TYPE * );
 #endif
 
 
-_WCRTLINK CHAR_TYPE *__F_NAME(__clib_strdup,__clib_wcsdup) ( const CHAR_TYPE *str )
+CHAR_TYPE *__F_NAME(__clib_strdup,__clib_wcsdup)( const CHAR_TYPE *str )
 {
     CHAR_TYPE   *mem;
     int         len;
@@ -53,4 +53,9 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__clib_strdup,__clib_wcsdup) ( const CHAR_TYPE *st
         (memcpy)( mem, str, len * CHARSIZE );
     }
     return( mem );
+}
+
+_WCRTLINK CHAR_TYPE *__F_NAME(strdup,_wcsdup)( const CHAR_TYPE *str )
+{
+    return( __F_NAME(__clib_strdup,__clib_wcsdup)( str ) );
 }
