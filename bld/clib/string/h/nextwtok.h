@@ -31,17 +31,10 @@
 
 
 #define _INITNEXTTOK
-#if defined(__OS2__) || defined(__NT__) || defined(__NETWARE__)
-    // the OS/2, NT and NETWARE files are identical
-    // note that NETWARE is always multi-thread
-    #if defined(__SW_BM)
-        #include "thread.h"
-        #define _NEXTWTOK       (__THREADDATAPTR->__nextwtokP)
-    #else
-        static wchar_t *nextwtok = NULL;
-        #define _NEXTWTOK nextwtok
-    #endif
+#if defined(__SW_BM) && ( defined(__OS2__) || defined(__NT__) || defined(__NETWARE__) )
+    #define _NEXTWTOK       (__THREADDATAPTR->__nextwtokP)
 #else
-    static wchar_t *nextwtok = NULL;
-    #define _NEXTWTOK nextwtok
+    static wchar_t          *nextwtok = NULL;
+
+    #define _NEXTWTOK       nextwtok
 #endif

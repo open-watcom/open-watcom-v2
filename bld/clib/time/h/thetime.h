@@ -30,29 +30,11 @@
 ****************************************************************************/
 
 
-#if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
-    // the OS/2 and NT files are identical
-    #if defined(__SW_BM)
-
-        #include "thread.h"
-
-        #define _INITTHETIME
-        #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
-
-    #else
-
-        static  struct  tm      The_time;
-        #define _INITTHETIME
-        #define _THE_TIME       The_time
-
-    #endif
+#define _INITTHETIME
+#if defined(__SW_BM) && ( defined(__OS2__) || defined(__NT__) || defined(__NETWARE__) || defined(__RDOS__) )
+    #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
 #else
-    #ifdef __NETWARE__
-        #define _INITTHETIME
-        #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
-    #else
-        #define _INITTHETIME
-        static  struct  tm        The_time;
-        #define _THE_TIME         The_time
-    #endif
+    static  struct  tm      The_time;
+
+    #define _THE_TIME       The_time
 #endif

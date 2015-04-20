@@ -31,10 +31,10 @@
 
 
 #define _INITNEXTMBFTOK
-#if (defined(__OS2__) || defined(__NT__)) && defined(__SW_BM)
-    #include "thread.h"
+#if defined(__SW_BM) && ( defined(__OS2__) || defined(__NT__) )
     #define _NEXTMBFTOK         (__THREADDATAPTR->__nextmbftokP)
 #else
     static char _WCFAR *        nextmbftok = NULL;
+
     #define _NEXTMBFTOK         nextmbftok
 #endif
