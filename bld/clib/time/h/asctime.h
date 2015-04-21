@@ -30,11 +30,15 @@
 ****************************************************************************/
 
 
-#define _INITRESULT
-#if defined(__SW_BM) && ( defined(__OS2__) || defined(__NT__) || defined(__NETWARE__) || defined(__RDOS__) )
-    #define _RESULT (__THREADDATAPTR->__asctimeP)
-#else
-    static CHAR_TYPE result[26];
+#ifndef __NETWARE__
 
-    #define _RESULT result
+#define _INITRESULT
+#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) )
+    #define _RESULT     (__THREADDATAPTR->__asctimeP)
+#else
+    static CHAR_TYPE    result[26];
+
+    #define _RESULT     result
+#endif
+
 #endif

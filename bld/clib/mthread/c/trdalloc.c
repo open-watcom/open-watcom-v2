@@ -43,14 +43,12 @@ void                    **__ThreadIDs;
 
 #if defined( _M_I86 )
     thread_data         **__ThreadData;
-#else
-  #if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+#elif defined( __OS2__ ) || ( defined( __NETWARE__ ) && !defined( _NETWARE_LIBC ) )
     thread_data_vector  *__ThreadData;
-  #endif
 #endif
 
 
-#if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+#if defined( __OS2__ ) || ( defined( __NETWARE__ ) && !defined( _NETWARE_LIBC ) )
 void *__InitThreadProcessing( void )
 /**********************************/
 {
@@ -62,15 +60,15 @@ void *__InitThreadProcessing( void )
 
     __MaxThreads = __GetMaxThreads();
     __ThreadData = lib_calloc( (__MaxThreads + 1), sizeof( *__ThreadData ) );
-    #ifdef __NETWARE__
-        if( __ThreadData != NULL ) {
-            __ThreadIDs = lib_calloc( __MaxThreads + 1, sizeof( int ) );
-            if( __ThreadIDs == NULL ) {
-                lib_free( __ThreadData );
-            }
-            return( __ThreadIDs );
+  #ifdef __NETWARE__
+    if( __ThreadData != NULL ) {
+        __ThreadIDs = lib_calloc( __MaxThreads + 1, sizeof( int ) );
+        if( __ThreadIDs == NULL ) {
+            lib_free( __ThreadData );
         }
-    #endif
+        return( __ThreadIDs );
+    }
+  #endif
     return( __ThreadData );
 }
 #endif
@@ -94,36 +92,36 @@ void __FiniThreadProcessing( void )
 /*********************************/
 {
 
-    #ifdef _NETWARE_CLIB
-        if( __ThreadIDs != NULL ) {
-            lib_free( __ThreadIDs );
-        }
+#ifdef _NETWARE_CLIB
+    if( __ThreadIDs != NULL ) {
+        lib_free( __ThreadIDs );
+    }
+#endif
+#if defined( __OS2__ ) || defined( __NETWARE__ ) && !defined( _NETWARE_LIBC )
+    if( __ThreadData != NULL ) {
+        unsigned    i;
+        thread_data *tdata;
+    #ifdef __NETWARE__
+        lib_free( __ThreadData[ 0 ].data ); /* for Netware, this is always allocated */
     #endif
-    #if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
-        if( __ThreadData != NULL ) {
-            unsigned    i;
-            thread_data *tdata;
-            #ifdef __NETWARE__
-                lib_free( __ThreadData[ 0 ].data ); /* for Netware, this is always allocated */
-            #endif
-            for( i = 1 ; i <= __MaxThreads; i++ ) {
-                #if defined( _M_I86 )
-                    tdata = __ThreadData[i];
-                    if( tdata != NULL ) {
-                        if( tdata->__allocated ) lib_free( tdata );
-                    }
-                #else
-                    tdata = __ThreadData[i].data;
-                    if( tdata != NULL ) {
-                        if( __ThreadData[i].allocated_entry ) lib_free( tdata );
-                    }
-                #endif
+        for( i = 1 ; i <= __MaxThreads; i++ ) {
+    #if defined( _M_I86 )
+            tdata = __ThreadData[i];
+            if( tdata != NULL ) {
+                if( tdata->__allocated ) lib_free( tdata );
             }
-            lib_free( __ThreadData );
+    #else
+            tdata = __ThreadData[i].data;
+            if( tdata != NULL ) {
+                if( __ThreadData[i].allocated_entry ) lib_free( tdata );
+            }
+    #endif
         }
-    #endif
+        lib_free( __ThreadData );
+    }
+#endif
 
-    #if !defined(_NETWARE_CLIB) && !defined(__RDOSDEV__) && !defined( _M_I86 )
-        __FreeThreadDataList();
-    #endif
+#if !defined(_NETWARE_CLIB) && !defined(__RDOSDEV__) && !defined( _M_I86 )
+    __FreeThreadDataList();
+#endif
 }

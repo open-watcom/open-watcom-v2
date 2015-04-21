@@ -39,6 +39,7 @@
 
 #include "liballoc.h"
 #include "osthread.h"
+//#include "thread.h"
 #include "rtdata.h"
 #include "stacklow.h"
 #include "extfunc.h"
@@ -51,23 +52,23 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
                     unsigned stack_size, void *arglist )
 /******************************************************/
 {
-        pid_t pid;
+    pid_t pid;
 
-        if( start_addr == NULL || stack_bottom == NULL || stack_size == 0 ) {
-                return( -1L );
-        }
+    if( start_addr == NULL || stack_bottom == NULL || stack_size == 0 ) {
+        return( -1L );
+    }
     pid = clone( CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, (void*)((int)stack_bottom + stack_size) );
-        if( pid ) {
-            return( (int)pid );
-        } else {
-                start_addr(arglist);
-                _endthread();
-                return 0;
-        }
+    if( pid ) {
+        return( (int)pid );
+    } else {
+        start_addr(arglist);
+        _endthread();
+        return 0;
+    }
 }
 
 void __CEndThread( void )
 /***********************/
 {
-        sys_exit(0);
+    sys_exit(0);
 }

@@ -50,7 +50,7 @@ void __DetOSInfo( void )
     qnx_osinfo( 0, &osdata );
     _osmajor = osdata.version / 100;
     _osminor = osdata.version % 100;
-#if !defined(__386__)
+#if defined( _M_I86 )
     if( (osdata.sflags & _PSF_PROTECTED) != 0 ) {
         _HShift = 3;
     } else {

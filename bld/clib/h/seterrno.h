@@ -34,7 +34,7 @@
 // defined in _dos\c\dosret.c
 extern int __set_errno_dos( unsigned int );
 extern int __set_errno_dos_reterr( unsigned int );
-#if defined(__NT__)
+#if defined( __NT__ )
     extern int __set_errno_nt( void );
     extern int __set_errno_nt_reterr( void );
 #endif
@@ -44,7 +44,7 @@ extern void __set_errno( unsigned int );
 extern int  __set_EINVAL( void );
 extern void __set_EDOM( void );
 extern void __set_ERANGE( void );
-#if !defined(__UNIX__) && !defined(__NETWARE__)
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     extern void __set_doserrno( unsigned int );
 #endif
 

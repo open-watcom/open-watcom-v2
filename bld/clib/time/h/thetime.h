@@ -31,10 +31,10 @@
 
 
 #define _INITTHETIME
-#if defined(__SW_BM) && ( defined(__OS2__) || defined(__NT__) || defined(__NETWARE__) || defined(__RDOS__) )
+#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) )
     #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
 #else
-    static  struct  tm      The_time;
+    static struct tm        The_time;
 
     #define _THE_TIME       The_time
 #endif
