@@ -49,7 +49,11 @@
 #endif
 
 #if defined(__SW_BM)
+  #if defined(__OS2_286__)
+    #define _STACKLOW   (*(unsigned *)(__MultipleThread()))
+  #else
     #define _STACKLOW   (__THREADDATAPTR->__stklowP)
+  #endif
 #endif
 
 #endif
