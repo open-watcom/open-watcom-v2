@@ -53,7 +53,7 @@ _WCRTLINK int _islfn( const char *path )
     return( 0 );
 }
 
-_WCRTLINK char *_lfntosfn( char *orgname, char *shortname )
+_WCRTLINK char *_lfntosfn( const char *orgname, char *shortname )
 {
 #ifdef __WATCOM_LFN__
     union  REGS     r;

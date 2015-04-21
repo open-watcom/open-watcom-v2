@@ -106,7 +106,7 @@ struct _wfind_t {
 :include dskfreet.sp
 
 _WCRTLINK extern int      _islfn( const char *__path );
-_WCRTLINK extern char     *_lfntosfn( char *__orgname, char *__shortname );
+_WCRTLINK extern char     *_lfntosfn( const char *__orgname, char *__shortname );
 _WCRTLINK extern int      bdos( int __dosfn, unsigned int __dx,
                                 unsigned int __al);
 _WCRTLINK extern void     _chain_intr( void
