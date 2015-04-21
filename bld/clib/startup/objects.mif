@@ -73,7 +73,6 @@
 !inject getdsint.obj                     nt                             o32
 !inject histsplt.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject hookfpe.obj                                                 o16
-!inject hpgrw086.obj d16
 !inject imthread.obj                     nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk
 !inject inirmsel.obj     d32                                                            w32
 !inject initrtns.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
