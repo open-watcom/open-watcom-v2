@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned char *__get_osmajor_ptr( void )
 {
-    return( &_osmajor );
+    return( &_RWD_osmajor );
 }

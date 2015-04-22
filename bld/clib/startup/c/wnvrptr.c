@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned int *__get_winver_ptr( void )
 {
-    return( &_winver );
+    return( &_RWD_winver );
 }

@@ -49,8 +49,8 @@
 #endif
 #include "heapacc.h"
 #include "heap.h"
+#include "rtdata.h"
 
-extern  unsigned                _STACKTOP;
 
 #if !defined(__OS2__) && !defined(__QNX__)
 
@@ -126,9 +126,9 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
 #elif defined(__QNX__)
         if( qnx_segment_realloc( segment,((unsigned long)seg_size) << 4) == -1){
 #else
-        if( _osmode == DOS_MODE ) {                     /* 24-apr-91 */
-            seg_size += SS_Reg() - _psp;/* add in code size (in paragraphs) */
-            segment = _psp;
+        if( _RWD_osmode == DOS_MODE ) {                     /* 24-apr-91 */
+            seg_size += SS_Reg() - _RWD_psp;/* add in code size (in paragraphs) */
+            segment = _RWD_psp;
         }
         if( SetBlock( segment, seg_size ) != 0 ) {
 #endif

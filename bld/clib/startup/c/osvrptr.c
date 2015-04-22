@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned int *__get_osver_ptr( void )
 {
-    return( &_osver );
+    return( &_RWD_osver );
 }

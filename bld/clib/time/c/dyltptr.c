@@ -31,8 +31,9 @@
 
 #include "variety.h"
 #include <time.h>
+#include "rtdata.h"
 
 _WCRTLINK int( *__get_daylight_ptr( void ) )
 {
-    return( &daylight );
+    return( &_RWD_daylight );
 }

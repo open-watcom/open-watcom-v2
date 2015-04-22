@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include "rtdata.h"
 
 
 _WCRTLINK char **__get_pgmptr_ptr( void )

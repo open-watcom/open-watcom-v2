@@ -36,5 +36,5 @@
 
 _WCRTLINK FILE (*__get_iob_ptr( void ))[]
 {
-    return( &__iob );
+    return( &_RWD_iob );
 }

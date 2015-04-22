@@ -176,15 +176,12 @@ void __OS2Init( int is_dll, thread_data *tdata )
 
     DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR,
                      &_sysinfo, sizeof( sys_info )  );
-    _osmajor = _sysinfo.version_major;
-    _osminor = _sysinfo.version_minor;
+    _RWD_osmajor = _sysinfo.version_major;
+    _RWD_osminor = _sysinfo.version_minor;
     __saved_CS = GetCS();
 #ifndef __SW_BM
-    {
-        #undef _STACKLOW
-        extern  unsigned        _STACKLOW;
-        _STACKLOW = (unsigned)&_end;            // cortns in F77
-    }
+    #undef _STACKLOW
+    _STACKLOW = (unsigned)&_end;            // cortns in F77
 #endif
 }
 

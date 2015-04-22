@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned char *__get_osminor_ptr( void )
 {
-    return &_osminor;
+    return( &_RWD_osminor );
 }

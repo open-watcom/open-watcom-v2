@@ -36,6 +36,7 @@
 #include <windows.h>
 #include "libwin32.h"
 #include "osver.h"
+#include "rtdata.h"
 
 /*
  * Apparently GetFileAttributes 3.51 sometimes gets confused when the
@@ -61,7 +62,7 @@
     HANDLE              handle;
     WIN32_FIND_DATA     finddata;
 
-    if( WIN32_IS_NT && _osmajor >= 4 ) {
+    if( WIN32_IS_NT && _RWD_osmajor >= 4 ) {
         return( GetFileAttributes( lpFileName ) );
     }
     /*** Fail if the filename contains a wildcard ***/

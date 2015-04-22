@@ -100,8 +100,8 @@ void __check_tzfile( time_t t, struct tm *timep )
         _RWD_dst_adjust = 0;
     }
     _RWD_timezone = -pntohl( &tzp[stdzon] );
-    strcpy( tzname[0], &tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
-    strcpy( tzname[1], dstname );
+    strcpy( _RWD_tzname[0], &tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
+    strcpy( _RWD_tzname[1], dstname );
 #if 0
     tzp += tzh_timecnt;
     tzp += tzh_typecnt * 6;
