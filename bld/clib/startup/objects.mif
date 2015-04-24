@@ -62,7 +62,7 @@
 !inject dstrtwna.obj                        nta ntp
 !inject enterdb.obj  d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject errno.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-!inject errnovar.obj                                                            q32             l32             rdk
+!inject errnovar.obj                                                            q32
 !inject _exit.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32     w32 osi l32 lpc lmp rdu rdk
 !inject exit.obj     d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject fltused.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
