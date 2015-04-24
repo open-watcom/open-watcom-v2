@@ -548,8 +548,10 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :include errno.sp
 
 :segment DOS
-_WCRTLINK extern int    *__get_doserrno_ptr( void );
-#define _doserrno       (*__get_doserrno_ptr())     /* DOS system error code value */
+#if !defined(__NETWARE__)
+ _WCRTLINK extern int    *__get_doserrno_ptr( void );
+ #define _doserrno       (*__get_doserrno_ptr())     /* DOS system error code value */
+#endif
 
 _WCRTLINK unsigned           *__get_psp_ptr( void );
 _WCRTLINK unsigned char      *__get_osmode_ptr( void );
