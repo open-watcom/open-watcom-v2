@@ -45,7 +45,7 @@
     #define WIN32_LEAN_AND_MEAN
   #endif
   #include <windows.h>
-  #include "ntex.h"
+  #include "ntext.h"
   extern DWORD          __TlsIndex;
   #define TID                   DWORD
 #elif defined( __QNX__ )

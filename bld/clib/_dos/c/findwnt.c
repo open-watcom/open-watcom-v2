@@ -38,7 +38,7 @@
 #include <dos.h>
 #include <windows.h>
 #include "rtdata.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "_dtaxxx.h"
 #include "seterrno.h"
 

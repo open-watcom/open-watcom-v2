@@ -37,7 +37,7 @@
 #include <malloc.h>
 #include <process.h>
 #include <windows.h>
-#include "ntex.h"
+#include "ntext.h"
 #include "initfini.h"
 #include "initarg.h"
 #include "rtdata.h"

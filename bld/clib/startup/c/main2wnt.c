@@ -36,7 +36,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <windows.h>
-#include "ntex.h"
+#include "ntext.h"
 #include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"

@@ -37,7 +37,7 @@
 #include <direct.h>
 #include <windows.h>
 #include "libwin32.h"
-#include "ntex.h"
+#include "ntext.h"
 
 void __GetNTDirInfo(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
 {

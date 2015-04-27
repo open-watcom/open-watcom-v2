@@ -48,7 +48,7 @@
 #include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "initfini.h"
 #include "rtinit.h"
 #include "initarg.h"

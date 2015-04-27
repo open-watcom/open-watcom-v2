@@ -33,7 +33,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <unistd.h>
-#include "ntex.h"
+#include "ntext.h"
 #include "fileacc.h"
 #include "defwin.h"
 #include "qread.h"

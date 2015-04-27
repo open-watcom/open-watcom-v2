@@ -37,7 +37,7 @@
 // TODO: Include Linux specific thread header files
 #elif defined(__NT__)
   #include <windows.h>
-  #include <ntex.h>
+  #include <ntext.h>
 #elif defined(__OS2__)
   #ifndef OS2_INCLUDED
     #define INCL_DOSEXCEPTIONS

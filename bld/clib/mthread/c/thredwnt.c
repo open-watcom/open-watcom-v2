@@ -39,7 +39,7 @@
 #include <malloc.h>
 #include <errno.h>
 #include "liballoc.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"

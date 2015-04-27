@@ -38,7 +38,7 @@
 #ifdef __NT__
     #include <windows.h>
     #include "libwin32.h"
-    #include "ntex.h"
+    #include "ntext.h"
 #elif defined( __OS2__ )
     #define INCL_LONGLONG
     #include <wos2.h>

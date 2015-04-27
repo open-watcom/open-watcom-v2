@@ -38,7 +38,7 @@
 #include "fileacc.h"
 #include "openmode.h"
 #include <windows.h>
-#include "ntex.h"
+#include "ntext.h"
 
 
 void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr )

@@ -32,7 +32,7 @@
 
 #include "variety.h"
 #include <windows.h>
-#include "ntex.h"
+#include "ntext.h"
 
 void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
 {

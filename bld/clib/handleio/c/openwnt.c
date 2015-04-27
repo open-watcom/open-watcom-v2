@@ -43,7 +43,7 @@
 #include <windows.h>
 #include "iomode.h"
 #include "fileacc.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "openmode.h"
 #include "rtdata.h"
 #include "libwin32.h"

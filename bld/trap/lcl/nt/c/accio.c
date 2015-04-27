@@ -36,7 +36,7 @@
 #if defined( __WATCOMC__ )
 #include "variety.h"
 #include <windows.h>
-#include "ntex.h"
+#include "ntext.h"
 #endif
 #include "stdnt.h"
 
