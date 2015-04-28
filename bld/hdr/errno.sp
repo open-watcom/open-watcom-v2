@@ -1,8 +1,8 @@
 :: need idempotency lock as this bit might be included multiple times
 #ifndef _ERRNO_DEFINED
 #define _ERRNO_DEFINED
+ _WCRTLINK extern int *__get_errno_ptr( void );
  #ifndef errno
-  _WCRTLINK extern int *__get_errno_ptr( void );
   #define errno (*__get_errno_ptr())
  #else
 ::  cannot be made volatile because users are allowed to
