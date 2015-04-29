@@ -33,13 +33,17 @@
 #ifndef _TRDLIST_H_INCLUDED
 #define _TRDLIST_H_INCLUDED
 
-#if defined( _NETWARE_CLIB )
+#if defined( __NETWARE__ )
+  extern int            *__threadid( void );
+ #if defined( _NETWARE_CLIB )
   #define TID                   int
+  #define _threadid             (__threadid())
   #define GetCurrentThreadId()  (*__threadid())
   extern void           ThreadSwitch( void );
   extern void           *GetThreadID( void );
-#elif defined (_NETWARE_LIBC)
+ #elif defined (_NETWARE_LIBC)
   #include "nw_libc.h"
+ #endif
 #elif defined( __NT__ )
   #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN
@@ -88,8 +92,9 @@
   #include <wos2.h>
   #if defined( __WARP__ )
     extern int          *__threadid(void);      // OS/2 2.0
-    extern unsigned     __threadstack(void);
+   #define _threadid             (__threadid())
     #define GetCurrentThreadId() (*__threadid())
+    extern unsigned     __threadstack(void);
   #else
     extern int _WCFAR    *_threadid;            // OS/2 1.x
     #define GetCurrentThreadId() (*_threadid)
