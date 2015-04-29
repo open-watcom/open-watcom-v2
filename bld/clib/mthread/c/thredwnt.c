@@ -40,6 +40,7 @@
 #include <errno.h>
 #include "liballoc.h"
 #include "ntext.h"
+#include "ntexc.h"
 #include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"

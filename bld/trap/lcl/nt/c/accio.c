@@ -33,11 +33,8 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#if defined( __WATCOMC__ )
-#include "variety.h"
 #include <windows.h>
 #include "ntext.h"
-#endif
 #include "stdnt.h"
 
 trap_retval ReqFile_get_config( void )

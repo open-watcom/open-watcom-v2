@@ -24,34 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CLIB internal NT extension function prototypes.
 *
 ****************************************************************************/
 
 
-#ifndef __NTEX_INCLUDED__
-#define __NTEX_INCLUDED__
-
-typedef struct _REGISTRATION_RECORD {
-    struct _REGISTRATION_RECORD *RegistrationRecordPrev;
-    void                        *RegistrationRecordFilter;
-} REGISTRATION_RECORD;
-
-#define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
-
-_WCRTLINK extern void __DefaultExceptionHandler( void );
-_WCRTLINK extern void __NewExceptionFilter( REGISTRATION_RECORD * );
-_WCRTLINK extern void __DoneExceptionFilter( void );
+#ifndef __NTEXT_INCLUDED__
+#define __NTEXT_INCLUDED__
 
 extern void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr );
 extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr );
 extern void __GetNTShareAttr( int share, LPDWORD share_mode );
 extern void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
 extern void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );
-extern int __NTRealKey( INPUT_RECORD * );
-extern HANDLE __NTConsoleInput( void );
-extern HANDLE __NTConsoleOutput( void );
 
 extern void __GetNTDirInfoA( struct dirent *dirp, LPWIN32_FIND_DATAA ffb );
 extern void __GetNTDirInfoW( struct _wdirent *dirp, LPWIN32_FIND_DATAW ffb );

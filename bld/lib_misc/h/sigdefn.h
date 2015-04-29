@@ -32,9 +32,13 @@
 #ifndef _SIGDEFN_H_INCLUDED
 #define _SIGDEFN_H_INCLUDED
 
-#if !defined(__NT__) && !defined(__OS2__) && !defined(__NETWARE__) && !defined(__GENERIC__) && !defined(__RDOS__)
-#error Must be bt=NT or bt=OS2 or bt=NETWARE or bt=GENERIC or bt=RDOS
-#endif
+#if defined(__QNX__)
+#elif defined(__LINUX__)
+// TODO: Linux thread signal stuff goes here!
+#elif defined(__RDOSDEV__)
+#elif defined(__DOS__)
+#elif defined(__WINDOWS__)
+#else   /* __NT__ || __OS2__ || __NETWARE__ || __GENERIC__ || __RDOS__ */
 
 #include <signal.h>
 
@@ -43,23 +47,21 @@
 // note that __NT__ and __NETWARE__ are always 32bit
 #if defined( _M_I86 )
     // 16 bit OS/2 1.x
-    #define INCL_DOSEXCEPTIONS
-    #include <wos2.h>
-
     typedef struct      sigtab {
         __sig_func      func;     /* user signal handler */
         VOID (_WCI86FAR PASCAL *os_func)(USHORT, USHORT);
         USHORT  prev_action;      /* previous action */
         int     os_sig_code;      /* OS/2 1.x signal code */
     } sigtab;
+#elif defined(__NETWARE__)
+    typedef __sig_func sigtab;
 #else
-    #if defined(__NETWARE__)
-        typedef __sig_func sigtab;
-    #else
-        typedef struct sigtab {
-            __sig_func  func;           /* user signal handler */
-            int         os_sig_code;    /* OS signal code */
-        } sigtab;
-    #endif
+    typedef struct sigtab {
+        __sig_func  func;           /* user signal handler */
+        int         os_sig_code;    /* OS signal code */
+    } sigtab;
 #endif
+
+#endif
+
 #endif

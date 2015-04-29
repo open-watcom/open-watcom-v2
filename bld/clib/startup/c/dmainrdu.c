@@ -39,7 +39,7 @@
 #include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"
-#include "rdosex.h"
+#include "rdosexc.h"
 #include "snglthrd.h"
 #include "mthread.h"
 

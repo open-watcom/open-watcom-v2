@@ -24,32 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Includes Operating System specific header files required
-*               for threads
+* Description:  NT exception structures and function
 *
 ****************************************************************************/
 
-#ifndef _OSTHREAD_H_INCLUDED
-#define _OSTHREAD_H_INCLUDED
 
-#if defined(__QNX__)
-#elif defined(__LINUX__)
-// TODO: Include Linux specific thread header files
-#elif defined(__NT__)
-  #include <ntexc.h>
-#elif defined(__OS2__)
- #if defined( _M_I86 )
-  #define __EXCEPTION_RECORD  int
- #else
-  #define __EXCEPTION_RECORD EXCEPTIONREGISTRATIONRECORD
- #endif
-#elif defined(__NETWARE__)
-  #define __EXCEPTION_RECORD  int
-#elif defined(__RDOS__)
-  #include <rdosexc.h>
-#else
-  #define __EXCEPTION_RECORD  int
-#endif
-#include <thread.h>
+#ifndef __NTEXC_INCLUDED__
+#define __NTEXC_INCLUDED__
+
+typedef struct _REGISTRATION_RECORD {
+    struct _REGISTRATION_RECORD *RegistrationRecordPrev;
+    void                        *RegistrationRecordFilter;
+} REGISTRATION_RECORD;
+
+#define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
+
+_WCRTLINK extern void __DefaultExceptionHandler( void );
+_WCRTLINK extern void __NewExceptionFilter( REGISTRATION_RECORD * );
+_WCRTLINK extern void __DoneExceptionFilter( void );
+
+extern int __NTRealKey( INPUT_RECORD * );
+extern HANDLE __NTConsoleInput( void );
+extern HANDLE __NTConsoleOutput( void );
 
 #endif

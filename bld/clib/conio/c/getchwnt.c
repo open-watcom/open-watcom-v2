@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <windows.h>
 #include <conio.h>
-#include "ntext.h"
+#include "ntexc.h"
 #include "rtdata.h"
 #include "fileacc.h"
 #include "defwin.h"

@@ -47,7 +47,7 @@
 #include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"
-#include "rdosex.h"
+#include "rdosexc.h"
 
 
 extern  int             __TlsIndex;

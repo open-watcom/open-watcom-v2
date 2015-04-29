@@ -49,7 +49,7 @@
 #include "rtinit.h"
 #include "initarg.h"
 #include "mthread.h"
-#include "rdosex.h"
+#include "rdosexc.h"
 #include "snglthrd.h"
 
 static char    DllName[_MAX_PATH];
