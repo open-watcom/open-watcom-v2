@@ -24,18 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  __CVTBuffer internal clib function declaration
+* Description:  Accessors to _doserrno variable.
 *
 ****************************************************************************/
 
 
-// floating point conversion buffer length definition
-// used by various floating point conversion routines
-// used in clib/startup/c/cvtbuf.c, lib_misc/h/thread.h
-// and mathlib/c/efcvt.c
-// it must be equal maximum FP precision ( LDBL_DIG )
-// hold it in sync with LDBL_DIG in watcom/h/xfloat.h
+#include "variety.h"
+#include <stdlib.h>
+#include "rtdata.h"
 
-#define __FPCVT_BUFFERLEN  19
+#if !defined(__UNIX__) && !defined( __NETWARE__ )
 
-_WCRTLINK extern void *__CVTBuffer( void );
+#if !defined( __SW_BM ) || defined( __RDOSDEV__ )
+    int               _doserrno;
+#endif
+
+_WCRTLINK int *__get_doserrno_ptr( void )
+{
+    return( &_RWD_doserrno );
+}
+
+#endif

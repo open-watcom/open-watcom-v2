@@ -57,6 +57,7 @@
 !inject emainrdu.obj                                                                                        rdu
 !inject dpmihost.obj     d32
 !inject dllmncwd.obj     d32
+!inject doserrno.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject dstrt386.obj                     nt                             o32                                 rdu
 !inject dstrtaxp.obj                        nta
 !inject dstrtwna.obj                        nta ntp

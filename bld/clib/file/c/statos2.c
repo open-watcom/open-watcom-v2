@@ -165,7 +165,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 #else
             } else if( __F_NAME(fstat,_wfstat)( handle, buf ) == -1 ) {
 #endif
-                rc = errno;
+                rc = _RWD_errno;
             }
             close( handle );
             __set_errno( rc );
