@@ -594,11 +594,12 @@ extern  int     __FLDC( ld_arg, ld_arg );
 #endif
 
 // floating point conversion buffer length definition
+// is defined in lib_misc/h/cvtbuf.h
 // used by various floating point conversion routines
-// used in clib/startup/c/cvtbuf.c and lib_misc/h/thread.h
+// used in clib/startup/c/cvtbuf.c, lib_misc/h/thread.h
+// and mathlib/c/efcvt.c
 // it must be equal maximum FP precision ( LDBL_DIG )
-
-#define __FPCVT_BUFFERLEN  19
+// hold lib_misc/h/cvtbuf.h in sync with LDBL_DIG
 
 #ifdef __cplusplus
 };
