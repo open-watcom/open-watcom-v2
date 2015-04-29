@@ -43,8 +43,4 @@ _WCRTLINK extern void __DefaultExceptionHandler( void );
 _WCRTLINK extern void __NewExceptionFilter( REGISTRATION_RECORD * );
 _WCRTLINK extern void __DoneExceptionFilter( void );
 
-extern int __NTRealKey( INPUT_RECORD * );
-extern HANDLE __NTConsoleInput( void );
-extern HANDLE __NTConsoleOutput( void );
-
 #endif

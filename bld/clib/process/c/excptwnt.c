@@ -42,6 +42,7 @@
 #include "fpusig.h"
 #include "excptwnt.h"
 #include "clearfpe.h"
+#include "ntconio.h"
 #include "ntexc.h"
 
 __sig_func  (*__oscode_check_func)( int, long ) = NULL;

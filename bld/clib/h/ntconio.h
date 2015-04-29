@@ -24,45 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 kbhit() implementation.
+* Description:  NT console I/O functions
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stdio.h>
-#include <dos.h>
-#include <windows.h>
-#include "ntconio.h"
-#include "rtdata.h"
-#include "fileacc.h"
-#include "defwin.h"
-#include <unistd.h>
-#include <conio.h>
+#ifndef __NTCONIO_INCLUDED__
+#define __NTCONIO_INCLUDED__
 
-_WCRTLINK int kbhit( void )
-{
-    DWORD n;
-    HANDLE h;
-    INPUT_RECORD r;
+extern int    __NTRealKey( INPUT_RECORD * );
+extern HANDLE __NTConsoleInput( void );
+extern HANDLE __NTConsoleOutput( void );
 
-#ifdef DEFAULT_WINDOWING
-    if( _WindowsKbhit != 0 ) {
-        LPWDATA res;
-        res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
-        return( _WindowsKbhit( res ) );
-    }
 #endif
-    _AccessFileH( STDIN_FILENO );
-    h = __NTConsoleInput();
-    for(;;) {
-        PeekConsoleInput( h, &r, 1, &n );
-        if( n == 0 ) break;
-        if( __NTRealKey( &r ) ) break;
-        // flush out mouse, window, and key up events
-        ReadConsoleInput( h, &r, 1, &n );
-    }
-    // n != 0 if there is a key waiting
-    _ReleaseFileH( STDIN_FILENO );
-    return( n != 0 );
-}
