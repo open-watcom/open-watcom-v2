@@ -39,9 +39,9 @@
 #include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"
-#include "rdosex.h"
+#include "rdosexc.h"
+#include "mthread.h"
 
-extern void __InitThreadData( thread_data * );
 extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );
 
 extern void __CMain( void );

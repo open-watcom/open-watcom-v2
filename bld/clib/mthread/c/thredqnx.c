@@ -40,14 +40,13 @@
 
 #include "liballoc.h"
 #include "osthread.h"
-#include "stacklow.h"
 #include "rtdata.h"
+#include "stacklow.h"
 #include "mthread.h"
 #include "seterrno.h"
 #include "semaqnx.h"
 #include "cthread.h"
 
-extern  void            __InitMultipleThread(void);
 extern  void            __qnx_exit( int __status );
 
 typedef struct thread_args {

@@ -44,31 +44,25 @@
 #include <string.h>
 
 #include "osthread.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "rtdata.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "rtinit.h"
 #include "liballoc.h"
 #include "initarg.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
 extern unsigned         __hmodule;
 unsigned short          __saved_CS;
-
-thread_data             *__FirstThreadData = NULL;
-
-static struct thread_data *__SingleThread()
-{
-    return( __FirstThreadData );
-}
 
 static void __NullAccessRtn( int hdl ) { hdl = hdl; }
 static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
 
-_WCRTDATA struct thread_data *(*__GetThreadPtr)() = &__SingleThread;
 void    (*_AccessFileH)(int)     = &__NullAccessRtn;
 void    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
 void    (*_AccessIOB)(void)      = &__NullAccIOBRtn;
@@ -182,15 +176,12 @@ void __OS2Init( int is_dll, thread_data *tdata )
 
     DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR,
                      &_sysinfo, sizeof( sys_info )  );
-    _osmajor = _sysinfo.version_major;
-    _osminor = _sysinfo.version_minor;
+    _RWD_osmajor = _sysinfo.version_major;
+    _RWD_osminor = _sysinfo.version_minor;
     __saved_CS = GetCS();
 #ifndef __SW_BM
-    {
-        #undef _STACKLOW
-        extern  unsigned        _STACKLOW;
-        _STACKLOW = (unsigned)&_end;            // cortns in F77
-    }
+    #undef _STACKLOW
+    _STACKLOW = (unsigned)&_end;            // cortns in F77
 #endif
 }
 
@@ -204,15 +195,6 @@ void __OS2Fini( void )
 }
 
 _WCRTLINK void (*__process_fini)(unsigned,unsigned) = 0;
-
-void __shutdown_stack_checking( void ) {
-    static thread_data dummy_stacklow;
-
-    // make sure we are using the single thread data area
-    // this is incase there is a DosExitList active
-    __GetThreadPtr = &__SingleThread;
-    __FirstThreadData = &dummy_stacklow;
-}
 
 _WCRTLINK void __exit( unsigned ret_code )
 {

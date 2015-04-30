@@ -116,7 +116,7 @@ static unsigned __dos_open_lfn( const char *path, unsigned mode, int *handle )
     char        short_name[128];
 
     // try to open with SFN
-    if( _lfntosfn( ( char * )path, short_name ) != NULL ) {
+    if( _lfntosfn( path, short_name ) != NULL ) {
         if( short_name[0] != '\0' ) {
             if( __dos_open_sfn_chk( short_name, mode, handle ) == 0 ) {
                 return( 0 );

@@ -39,18 +39,17 @@
 #include <malloc.h>
 #include <errno.h>
 #include "liballoc.h"
-#include "ntex.h"
+#include "ntext.h"
+#include "ntexc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"
 
-extern  void            __InitMultipleThread( void );
 
 extern  DWORD           __TlsIndex;
 
@@ -123,7 +122,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     stack_bottom = stack_bottom;    /* parameter not used for NT version */
 
     if( __TlsIndex == NO_INDEX ) {
-        if( __NTThreadInit() == FALSE ) return( -1L );
+        if( !__NTThreadInit() ) return( -1L );
         __InitMultipleThread();
     }
 

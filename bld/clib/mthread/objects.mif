@@ -10,6 +10,7 @@
 !inject register.obj                     nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk
 !inject registrx.obj                     nt nta ntp
 !inject semaqnx.obj                                                             q32
+!inject snglthrd.obj                     nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk
 !inject tdhdlwnt.obj                     nt nta ntp
 !inject thrdmax.obj                                 nvc ncl nvl     o16 o32     q32             l32 lpc lmp rdu rdk
 !inject thrednov.obj                                nvc ncl

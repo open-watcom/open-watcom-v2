@@ -35,5 +35,5 @@
 
 _WCRTLINK int (*__get_fmode_ptr( void ))
 {
-    return( &_fmode );
+    return( &_RWD_fmode );
 }

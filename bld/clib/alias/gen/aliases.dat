@@ -35,10 +35,8 @@ chmod_        chmod             _chmod            d16 d32 nt  nta ntp         o1
 chsize        chsize            _chsize           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
 close_        close             _close            d16 d32 nt  nta ntp         o16 o32         w16 w32                 rdu rdk
 creat_        creat             _creat            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
-cstrdu        __clib_strdup     strdup            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 ctim_r        _ctime            ctime_r                                                                   l32 lpc lmp
 cwait_        cwait             _cwait                    nt  nta ntp         o16 o32
-cwcsdu        __clib_wcsdup     _wcsdup           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
 dopen_        _hdopen           _dopen            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         rdu rdk
 dup2__        dup2              _dup2             d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
 dup___        dup               _dup              d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
@@ -118,7 +116,7 @@ stkavl        stackavail        _stackavail       d16 d32 nt  nta ntp         o1
 stnico        strnicmp          _strnicoll        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
 strcc_        stricmp           strcasecmp        d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 strcmp        stricmp           strcmpi           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-strdup        __clib_strdup     _strdup           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
+strdup        strdup            _strdup           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
 stricm        stricmp           _stricmp          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
 strico        stricmp           _stricoll         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
 strlwr        strlwr            _strlwr           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk

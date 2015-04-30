@@ -30,24 +30,11 @@
 ****************************************************************************/
 
 
-#if defined(__OS2__) || defined(__NT__) || defined(__NETWARE__)
-    #if defined(__SW_BM)
-
-        #include "thread.h"
-
-        #define _INITNEXTFTOK
-        #define _NEXTFTOK       (__THREADDATAPTR->__nextftokP)
-
-    #else
-
-        static char _WCFAR *nextftok = NULL;
-
-        #define _INITNEXTFTOK
-        #define _NEXTFTOK nextftok
-
-    #endif
+#define _INITNEXTFTOK
+#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) )
+    #define _NEXTFTOK       (__THREADDATAPTR->__nextftokP)
 #else
-    #define _INITNEXTFTOK
-    static char _WCFAR *nextftok = NULL;
-    #define _NEXTFTOK nextftok
+    static char _WCFAR      *nextftok = NULL;
+
+    #define _NEXTFTOK       nextftok
 #endif

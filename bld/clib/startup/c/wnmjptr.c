@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned int *__get_winmajor_ptr( void )
 {
-    return( &_winmajor );
+    return( &_RWD_winmajor );
 }

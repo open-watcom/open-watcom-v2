@@ -33,7 +33,7 @@
 #include <dos.h>
 #include <windows.h>
 #include "iomode.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "seterrno.h"
 
 

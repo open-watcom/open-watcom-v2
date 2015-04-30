@@ -30,28 +30,26 @@
 ****************************************************************************/
 
 #ifndef _OSTHREAD_H_INCLUDED
+#define _OSTHREAD_H_INCLUDED
 
 #if defined(__QNX__)
-  #include <semaphor.h>
 #elif defined(__LINUX__)
 // TODO: Include Linux specific thread header files
 #elif defined(__NT__)
-  #include <windows.h>
-  #include <ntex.h>
+  #include <ntexc.h>
 #elif defined(__OS2__)
-  #ifndef OS2_INCLUDED
-    #define INCL_DOSEXCEPTIONS
-    #include <wos2.h>
-  #endif
-  #ifdef OS2_INCLUDED
-    #if defined(__386__) || defined(__PPC__)
-      #undef  __EXCEPTION_RECORD
-      #define __EXCEPTION_RECORD EXCEPTIONREGISTRATIONRECORD
-    #endif
-  #endif
+ #if defined( _M_I86 )
+  #define __EXCEPTION_RECORD  int
+ #else
+  #define __EXCEPTION_RECORD EXCEPTIONREGISTRATIONRECORD
+ #endif
+#elif defined(__NETWARE__)
+  #define __EXCEPTION_RECORD  int
+#elif defined(__RDOS__)
+  #include <rdosexc.h>
+#else
+  #define __EXCEPTION_RECORD  int
 #endif
 #include <thread.h>
 
-#define _OSTHREAD_H_INCLUDED
 #endif
-

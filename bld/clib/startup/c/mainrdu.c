@@ -42,19 +42,17 @@
 #include "iomode.h"
 #include "strdup.h"
 #include "liballoc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "rtdata.h"
 #include "initfini.h"
 #include "rtinit.h"
 #include "initarg.h"
-#include "thread.h"
 #include "mthread.h"
-#include "rdosex.h"
+#include "rdosexc.h"
+#include "snglthrd.h"
 
 static char    DllName[_MAX_PATH];
-
-extern void __InitThreadData( thread_data *p );
 
 int __TlsIndex = NO_INDEX;
 char *_LpDllName = 0;
@@ -62,13 +60,6 @@ char *_LpDllName = 0;
 _WCRTLINK int *__threadid( void )
 {
     return( (int *) &(__THREADDATAPTR->thread_id) );
-}
-
-thread_data             *__FirstThreadData = NULL;
-
-static struct thread_data *__SingleThread()
-{
-    return( __FirstThreadData );
 }
 
 static void __NullAccessRtn( int handle )
@@ -80,7 +71,6 @@ static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
 
-_WCRTDATA struct thread_data    *(*__GetThreadPtr)() = &__SingleThread;
 void    (*_AccessFileH)(int)     = &__NullAccessRtn;
 void    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
 void    (*_AccessIOB)(void)      = &__NullAccIOBRtn;

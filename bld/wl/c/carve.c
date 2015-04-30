@@ -248,7 +248,7 @@ void *CarveZeroAlloc( carve_t cv )
 
 
 #ifndef NDEBUG
-void CarveDebugFree( carve_t cv, void *elm )
+static void CarveDebugFree( carve_t cv, void *elm )
 {
     free_t *check;
     blk_t *block;

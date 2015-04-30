@@ -134,8 +134,13 @@ release_heap:
     return( MK_FP( seg, offset ) );
 }
 
-#if defined(__DOS_086__) && defined(__BIG_DATA__)
-// defined in cmain086.c
-extern void __CMain_nheapgrow( void );
-AXI( __CMain_nheapgrow, INIT_PRIORITY_PROGRAM - 8 )
+#if defined(_M_I86) && defined(__DOS__) && defined(__BIG_DATA__)
+static void ___nheapgrow( void )
+{
+    /* near heap growing routine in large data models. */
+    /* grow near heap to 64K */
+    _nheapgrow();
+}
+
+AXI( ___nheapgrow, INIT_PRIORITY_PROGRAM - 8 )
 #endif

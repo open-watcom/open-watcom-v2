@@ -30,6 +30,7 @@
 
 
 #include "novlldr.h"
+#include "ovlldr.h"
 
 /*
  * Here's a nice fast inline memcpy that is used if a 386 or better is

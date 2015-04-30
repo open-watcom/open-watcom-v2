@@ -35,5 +35,5 @@
 
 _WCRTLINK char * (*__get_tzname_ptr( void ))[]
 {
-    return( &tzname );
+    return( &_RWD_tzname );
 }

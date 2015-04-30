@@ -88,7 +88,7 @@ typedef struct arguments {
 // the header) to ostream. while doing so, apply any relocations, relying on
 // the fact that the relocation items are sorted in ascending order.
 
-int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
+static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
                   unsigned_32 num_skip, reloc_table *reltab )
 {
 
@@ -178,7 +178,7 @@ int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
 
 // display the passed exe-header to stdout
 
-void disp_header( dos_exe_header *header )
+static void disp_header( dos_exe_header *header )
 {
     printf( "Signature                      %04X\n",   header->signature    );
     printf( "Size mod 512       (bytes)     %04X\n",   header->mod_size     );
@@ -199,7 +199,7 @@ void disp_header( dos_exe_header *header )
 
 // display the passed relocation-table to stdout
 
-void disp_reltab( reloc_table *reltab )
+static void disp_reltab( reloc_table *reltab )
 {
     int i;
 
@@ -220,7 +220,7 @@ void disp_reltab( reloc_table *reltab )
 // allocate an exe-header for stream and convert the header-entries to match
 // the local endianess. the caller owns the returned memory.
 
-dos_exe_header *get_header( FILE *stream )
+static dos_exe_header *get_header( FILE *stream )
 {
     unsigned_16     *hdr_val;
     dos_exe_header  *header;
@@ -251,7 +251,7 @@ dos_exe_header *get_header( FILE *stream )
 // passed header. populate the table using the local endianess. the caller
 // owns the returned memory.
 
-reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
+static reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
 {
     unsigned_16     rel_num;
     reloc_offset    rel_off;
@@ -285,7 +285,7 @@ reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
 
 // sort the relocation items for display as well as application.
 
-int compare_u32( const void *arg1, const void *arg2 )
+static int compare_u32( const void *arg1, const void *arg2 )
 {
     unsigned_32 val1 = *((unsigned_32 *)arg1);
     unsigned_32 val2 = *((unsigned_32 *)arg2);
@@ -293,7 +293,7 @@ int compare_u32( const void *arg1, const void *arg2 )
     return( val1 < val2 ? -1 : (val1 > val2) ? 1 : 0 );
 }
 
-void sort_reltab( reloc_table *reltab )
+static void sort_reltab( reloc_table *reltab )
 {
     qsort( reltab->reloc, reltab->num, sizeof( unsigned_32 ), compare_u32 );
     return;
@@ -302,7 +302,7 @@ void sort_reltab( reloc_table *reltab )
 
 // parse the command-line and initialize/populate the argument-structure arg.
 
-int parse_cmdline( arguments *arg, int argc, char *argv[] )
+static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 {
     char    tmp_path[ _MAX_PATH2 ];
     char    *drive;

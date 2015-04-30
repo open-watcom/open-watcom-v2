@@ -39,18 +39,16 @@
 #include <malloc.h>
 #include <errno.h>
 #include "liballoc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"
-#include "rdosex.h"
+#include "rdosexc.h"
 
-extern  void            __InitMultipleThread( void );
 
 extern  int             __TlsIndex;
 
@@ -117,7 +115,7 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
     int         wait_handle;
 
     if( __TlsIndex == NO_INDEX ) {
-        if( __RdosThreadInit() == 0 ) return( -1L );
+        if( !__RdosThreadInit() ) return( -1L );
         __InitMultipleThread();
     }
 

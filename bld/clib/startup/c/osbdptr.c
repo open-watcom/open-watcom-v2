@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned short *__get_osbuild_ptr( void )
 {
-    return( &_osbuild );
+    return( &_RWD_osbuild );
 }

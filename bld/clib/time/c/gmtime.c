@@ -30,6 +30,7 @@
 
 #include "variety.h"
 #include <time.h>
+#include "rtdata.h"
 #include "thetime.h"
 #include "timedata.h"
 

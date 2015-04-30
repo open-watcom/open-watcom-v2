@@ -39,6 +39,8 @@
 #include "osthread.h"
 #include "initarg.h"
 #include "sigtab.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
 extern int APIENTRY LibMain( HANDLE, DWORD, LPVOID );
 extern void __CommonInit( void );
@@ -47,17 +49,7 @@ extern BOOL __disallow_single_dgroup( HANDLE );
 #ifndef __SW_BR
     extern int  __NTInit( int, void *, HANDLE );
     extern void __NTFini( void );
-    extern BOOL __NTThreadInit( void );
-    extern void __InitMultipleThread( void );
-    extern BOOL __NTAddThread(void *);
-    extern void __NTRemoveThread( int );
-
-    extern thread_data * __AllocInitThreadData( thread_data * );
-    extern void __FreeInitThreadData( thread_data * );
-
-    extern thread_data * __FirstThreadData;
 #endif
-
 
 int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
 {

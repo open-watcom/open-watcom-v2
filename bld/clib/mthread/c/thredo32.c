@@ -44,9 +44,9 @@
 #include <float.h>
 #include "liballoc.h"
 #include "osthread.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "rtdata.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "initarg.h"
@@ -55,7 +55,6 @@
 #pragma aux __threadstksize "*"
 extern  unsigned        __threadstksize;
 
-extern  void            __InitMultipleThread( void );
 extern  unsigned        __threadstack( void );
 
 typedef struct thread_args {

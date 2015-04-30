@@ -42,6 +42,7 @@
 #include <io.h>
 #include "liballoc.h"
 #include "initarg.h"
+#include "rtdata.h"
 
 extern  int         __historical_splitparms;
 extern  void        _Not_Enough_Memory( void );             /* 25-jul-89 */
@@ -89,7 +90,7 @@ _WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
 
     #if defined(__REAL_MODE__) && defined(__BIG_DATA__)
         #if defined(__OS2_286__)
-            if( _osmode == DOS_MODE ) {
+            if( _RWD_osmode == DOS_MODE ) {
                 cmdline = ncmd = lib_nmalloc( size );
                 if( ncmd == NULL ) {
                     cmdline = lib_malloc( size );

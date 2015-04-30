@@ -31,14 +31,10 @@
 
 #include "variety.h"
 #include "rtdata.h"
-#include "stdlib.h"
-
-#undef errno
 
 #if defined(__QNX__)
 
 #include <sys/magic.h>
-#include <errno.h>
 
 _WCRTLINK int *__get_errno_ptr( void )
 {
@@ -52,36 +48,17 @@ _WCRTLINK int *__get_errno_ptr( void )
 #endif
 }
 
-#elif defined(__LINUX__)
-
-#include "errorno.h"
-
-#if !defined( __SW_BM )
-    _WCRTDATA int               errno;
-#endif
-
-_WCRTLINK int *__get_errno_ptr( void )
-{
-    return( &_RWD_errno );
-}
-
 #else
 
-#include "errorno.h"
-
 #if !defined( __SW_BM ) || defined( __RDOSDEV__ )
-    _WCRTDATA int               errno;
-    _WCRTDATA int               _doserrno;
+
+_WCRTDATA int       errno;
+
 #endif
 
 _WCRTLINK int *__get_errno_ptr( void )
 {
     return( &_RWD_errno );
-}
-
-_WCRTLINK int *__get_doserrno_ptr( void )
-{
-    return( &_RWD_doserrno );
 }
 
 #endif

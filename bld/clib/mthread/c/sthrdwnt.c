@@ -30,9 +30,11 @@
 
 
 #include "variety.h"
-#include "stacklow.h"
 #include "liballoc.h"
+#include "rtdata.h"
+#include "stacklow.h"
 #include "thread.h"
+#include "mthread.h"
 
 thread_data *__AllocInitThreadData( thread_data *tdata )
 /******************************************************/

@@ -50,6 +50,7 @@
 #include "initfini.h"
 #include "crwd.h"
 #include "thread.h"
+#include "mthread.h"
 
 #if defined(__SW_BM)
 
@@ -58,9 +59,6 @@
 ULONG                   __iosemaphore[_NFILES];
 int                     __iosemcount[_NFILES];
 TID                     __iothreadid[_NFILES];
-
-extern  void            *__InitThreadProcessing( void );
-extern  void            __SetupThreadProcessing( int );
 
 extern  unsigned        __MaxThreads;
 

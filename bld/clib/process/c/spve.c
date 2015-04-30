@@ -253,7 +253,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     _RWD_Save8087( &_87save );
 #endif
 #if defined( __DOS__ ) && defined( _M_I86 )
-    if( _osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
+    if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
         unsigned    segment;
 
         if( _dos_allocmem( num_of_paras, &segment ) != 0 ) {
@@ -370,7 +370,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     LIB_FREE( np );
     lib_free( envmem );
 #if !defined(__OS2__) && defined( _M_I86 )
-    if( _osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
+    if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
         _dos_freemem( envseg );
     }
 #endif

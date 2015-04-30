@@ -36,16 +36,15 @@
 #include <malloc.h>
 #include <i86.h>
 #include "liballoc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "thread.h"
-#include "rtdata.h"
 #include "exitwmsg.h"
 #include "cthread.h"
+#include "snglthrd.h"
 
 #define EXIT_THREAD     0
 
-static thread_data      *__SingleThread( void );
 extern void             *GetThreadID( void );
 extern long             OpenLocalSemaphore( long );
 extern int              CloseLocalSemaphore( long );
@@ -58,16 +57,7 @@ extern int              BeginThread( void (*)( void * ), void *, unsigned,
 
 extern  void            **__ThreadIDs;
 
-_WCRTDATA thread_data   *(*__GetThreadPtr)( void ) = &__SingleThread;
-thread_data             *__FirstThreadData;
-
-
 static  int             CurrThrdID = 1;
-
-static thread_data *__SingleThread( void )
-{
-    return( __FirstThreadData );
-}
 
 static int gettid( void *netid )
 {

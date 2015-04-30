@@ -369,7 +369,7 @@ int _dosret0( int ax, int carry )
     return( __set_errno_dos( ax ) );
 }
 
-_WCRTLINK int __set_errno_dos( unsigned int err )
+int __set_errno_dos( unsigned int err )
 {
 #if defined(__NT__) || defined(__OS2__)
     __set_doserrno( err );
@@ -402,7 +402,7 @@ _WCRTLINK int __set_errno_dos( unsigned int err )
     return( -1 );
 }
 
-_WCRTLINK int __set_errno_dos_reterr( unsigned int err )
+int __set_errno_dos_reterr( unsigned int err )
 {
     __set_errno_dos( err );
     return( err );
@@ -410,12 +410,12 @@ _WCRTLINK int __set_errno_dos_reterr( unsigned int err )
 
 
 #ifdef __NT__
-_WCRTLINK int __set_errno_nt( void )
+int __set_errno_nt( void )
 {
     return( __set_errno_dos( GetLastError() ) );
 }
 
-_WCRTLINK int __set_errno_nt_reterr( void )
+int __set_errno_nt_reterr( void )
 {
     return( __set_errno_dos_reterr( GetLastError() ) );
 }

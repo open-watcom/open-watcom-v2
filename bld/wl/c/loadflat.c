@@ -390,7 +390,7 @@ static unsigned WriteDataPages( unsigned long loc )
     return( last_page );
 }
 
-void SetHeaderVxDInfo(os2_flat_header *exe_head)
+static void SetHeaderVxDInfo(os2_flat_header *exe_head)
 /**********************************************/
 /* setup VxD specific info in the header */
 {

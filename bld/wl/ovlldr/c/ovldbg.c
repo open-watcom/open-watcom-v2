@@ -38,6 +38,7 @@
 #else
 #include "ovlstd.h"
 #endif
+#include "ovlldr.h"
 
 #include "trpovl.h"
 
@@ -47,13 +48,6 @@
 #endif
 
 typedef unsigned char byte;
-
-#if defined( OVL_WHOOSH )
-extern int  __near __LoadNewOverlay__( unsigned );
-extern int  __near __LoadSectionCode__( ovltab_entry_ptr );
-#else
-extern int  __near NAME( LoadOverlay )( unsigned );
-#endif
 
 #ifdef OVL_WHOOSH
 typedef struct {

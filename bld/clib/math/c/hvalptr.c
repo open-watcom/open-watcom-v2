@@ -34,6 +34,7 @@
 #include <math.h>
 #include "rtdata.h"
 
-_WCRTLINK const double *__get_HugeValue_ptr( void ) {
+_WCRTLINK const double *__get_HugeValue_ptr( void )
+{
     return( &_HugeValue );
 }

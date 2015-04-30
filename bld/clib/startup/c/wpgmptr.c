@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include "rtdata.h"
 
 
 _WCRTLINK wchar_t **__get_wpgmptr_ptr( void )

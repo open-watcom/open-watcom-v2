@@ -1939,6 +1939,7 @@ objs_lr2 = &
 ../doc/lr/src/tolower.gml &
 ../doc/lr/src/toupper.gml &
 ../doc/lr/src/towctrns.gml &
+../doc/lr/src/ttyname.gml &
 ../doc/lr/src/trunc.gml &
 ../doc/lr/src/tzos2.gml &
 ../doc/lr/src/tzref.gml &

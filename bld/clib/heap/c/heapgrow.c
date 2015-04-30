@@ -46,6 +46,7 @@
 #endif
 #include "heap.h"
 #include "heapacc.h"
+#include "rtdata.h"
 
 #if defined( _M_I86 )
 
@@ -105,12 +106,12 @@ _WCRTLINK void _nheapgrow( void )
         }
         max_paras = PARAS_IN_64K;
 #else
-        if( _osmode != DOS_MODE ) {                     /* 23-apr-91 */
+        if( _RWD_osmode != DOS_MODE ) {                     /* 23-apr-91 */
             max_paras = PARAS_IN_64K;
         } else {
-            max_paras = TinyMaxSet( _psp );
+            max_paras = TinyMaxSet( _RWD_psp );
             /* subtract off code size */
-            max_paras -= _DGroup() - _psp;
+            max_paras -= _DGroup() - _RWD_psp;
             if( max_paras > PARAS_IN_64K ) {
                 max_paras = PARAS_IN_64K;
             }

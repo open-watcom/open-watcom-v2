@@ -102,10 +102,6 @@ typedef int rboolean;
 #define RT_EXC_ENABLED
 #endif
 
-#if defined(__MT__)
-#include <lock.h>
-#endif
-
 extern "C" {
 
 #include "wcpp.h"
@@ -119,11 +115,7 @@ extern "C" {
 #pragma warning 594 1
 
 #if defined(__MT__)
-    #pragma warning 604 9
-    #pragma warning 594 9
-    #include "thread.h"
-    #pragma warning 604 1
-    #pragma warning 594 1
+#include <lock.h>
 #endif
 
 #if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )

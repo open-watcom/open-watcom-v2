@@ -42,13 +42,12 @@
 #include "iomode.h"
 #include "strdup.h"
 #include "liballoc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "rtdata.h"
 #include "initfini.h"
 #include "rtinit.h"
 #include "initarg.h"
-#include "thread.h"
 #include "mthread.h"
 
 extern void __CMain( void );

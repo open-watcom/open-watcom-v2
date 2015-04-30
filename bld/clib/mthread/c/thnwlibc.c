@@ -36,36 +36,18 @@
 #include <malloc.h>
 #include <i86.h>
 #include "liballoc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "thread.h"
-#include "rtdata.h"
 #include "exitwmsg.h"
-
 #include "trdlist.h"
 #include "mthread.h"
 #include "cthread.h"
+#include "snglthrd.h"
 
 #if !defined (_NETWARE_LIBC)
 #error This file is for the NetWare LibC based library only
 #endif
-
-extern  void            __InitMultipleThread( void );
-
-static thread_data      *__SingleThread( void );
-_WCRTDATA thread_data   *(*__GetThreadPtr)( void ) = &__SingleThread;
-thread_data             *__FirstThreadData;
-
-
-static thread_data *__SingleThread( void )
-{
-    return( __FirstThreadData );
-}
-
-void __RestoreSingleThreading(void)
-{
-    __GetThreadPtr = &__SingleThread;
-}
 
 extern void BreakPointInt3(void);
 #pragma aux BreakPointInt3 = 0xCC;
@@ -82,8 +64,8 @@ static void __LibCKeyValueDestructor(void * pPerThreadData)
     }
 }
 
-BOOL __LibCThreadInit( void )
-/*************************/
+int __LibCThreadInit( void )
+/**************************/
 {
     int err = 0;
     if( __NXSlotID == NO_INDEX )
@@ -107,8 +89,8 @@ extern void __LibCThreadFini( void )
     }
 }
 
-BOOL __LibCAddThread( thread_data *tdata )
-/**************************************/
+int __LibCAddThread( thread_data *tdata )
+/***************************************/
 {
     if( __NXSlotID == NO_INDEX )
     {

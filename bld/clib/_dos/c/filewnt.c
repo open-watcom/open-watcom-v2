@@ -41,7 +41,7 @@
 #include <dos.h>
 #include "iomode.h"
 #include "fileacc.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "openmode.h"
 #include "rtdata.h"
 #include "rtcheck.h"

@@ -53,6 +53,7 @@
     #include "tinyio.h"
 #endif
 #include "heap.h"
+#include "rtdata.h"
 
 unsigned __GrowSeg( unsigned short seg, unsigned int amount )
     {
@@ -85,7 +86,7 @@ unsigned __GrowSeg( unsigned short seg, unsigned int amount )
             if( n > PARAS_IN_64K ) return( 0 );
 #elif defined(__OS2__) || defined(__WINDOWS_286__)
             if( n > PARAS_IN_64K ) {
-                if( _osmode != DOS_MODE ) {
+                if( _RWD_osmode != DOS_MODE ) {
                     /* protected-mode */
                     return( 0 );
                 } else {

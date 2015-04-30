@@ -33,11 +33,7 @@
 #ifndef _LOCK_H_INCLUDED
 #ifdef __MT__
 
-#pragma warning 604 9
-#pragma warning 594 9
-#include "osthread.h"
-#pragma warning 604 1
-#pragma warning 594 1
+#include "sema4.h"
 
 //#include <stddef.h>
 #define  __lock_first( __a, __b )  ((__a) < (__b) ? (__a) : (__b))

@@ -41,6 +41,7 @@
 #include "exitwmsg.h"
 #include "liballoc.h"
 #include "seterrno.h"
+#include "tmpnm.h"
 
 /*
     U's     are unique filename letters for the process
@@ -57,12 +58,7 @@
         _PPPPPPP.UUU
 */
 
-#if !defined(__NETWARE__)
-  static CHAR_TYPE _tmpname[L_tmpnam];
-#endif
-
 #if defined(__NETWARE__)
- #include "thread.h"
  #define getpid()       GetThreadID()
  extern int             GetThreadID( void );
 #elif defined(__UNIX__)
@@ -88,15 +84,15 @@ static size_t init_name( void )
     CHAR_TYPE   *p;
 
     p = (CHAR_TYPE *)_RWD_tmpnambuf;
-    #if defined(__UNIX__)
-        p = __tmpdir( p );
-    #endif
+#if defined(__UNIX__)
+    p = __tmpdir( p );
+#endif
     *p++ = '_';
     p = __F_NAME(putbits,_wputbits)( p, getpid() );
-    #if defined(__QNX__)
-        *p++ = '.';
-        p = __F_NAME(putbits,_wputbits)( p, (unsigned short)getnid() );
-    #endif
+#if defined(__QNX__)
+    *p++ = '.';
+    p = __F_NAME(putbits,_wputbits)( p, (unsigned short)getnid() );
+#endif
     *p++ = '.';
     *p++ = 'A';
     *p++ = 'A';
@@ -134,22 +130,27 @@ _WCRTLINK CHAR_TYPE *__F_NAME(tmpnam,_wtmpnam)( CHAR_TYPE *buf )
                 iter++;
             }
             // if current extension char is not 'Z' then we can exit loop and increment
-            if( tmpnmb[i] != 'Z' ) break;
+            if( tmpnmb[i] != 'Z' )
+                break;
             // ?.ABZ -> ?.ABA (which will become ?.ACA)
             tmpnmb[i] = 'A';
         }
         tmpnmb[i]++;    // next name, e.g., ?.AAA -> ?.AAB
-        if( __F_NAME(access,_waccess)( (CHAR_TYPE *)tmpnmb, 0 ) != 0 ) break;
+        if( __F_NAME(access,_waccess)( (CHAR_TYPE *)tmpnmb, 0 ) != 0 ) {
+            break;
+        }
     }
     // if iter is 2 then we failed to find a useable name
-    if( iter == 2 ) tmpnmb[0] = NULLCHAR;
+    if( iter == 2 )
+        tmpnmb[0] = NULLCHAR;
     if( buf != NULL ) {
         __F_NAME(strcpy,wcscpy)( buf, (CHAR_TYPE *)tmpnmb );
     } else {
         buf = (CHAR_TYPE *)tmpnmb;
     }
     _ReleaseIOB();          // if it's been copied, we are thread-safe
-    if( iter == 2 ) buf = NULL;
+    if( iter == 2 )
+        buf = NULL;
     __set_errno( err );
     return( buf );
 }

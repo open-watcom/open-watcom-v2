@@ -33,6 +33,7 @@
 #define WOS2_H_INCLUDED
 
 #define INCL_BASE
+#define INCL_DOSEXCEPTIONS
 #include <os2.h>
 
 #ifdef _M_I86

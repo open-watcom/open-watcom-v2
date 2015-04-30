@@ -24,17 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Wrapper for near heap growing routine in large data models.
+* Description:  Initialize single-threaded mode function declaration.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <malloc.h>
-
-#if defined(__BIG_DATA__)
-void __CMain_nheapgrow( void )
-{
-    _nheapgrow();           /* grow near heap to 64K */
-}
+#if defined( __NETWARE__ )
+extern void __RestoreSingleThreading( void );
+#elif defined( __OS2__ )
+extern void __shutdown_stack_checking( void );
 #endif

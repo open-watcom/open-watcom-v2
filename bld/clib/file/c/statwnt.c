@@ -50,7 +50,7 @@
 #include "int64.h"
 #include "libwin32.h"
 #include "rtdata.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "osver.h"
 #include "seterrno.h"
 #include "d2ttime.h"

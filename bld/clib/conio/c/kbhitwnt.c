@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <dos.h>
 #include <windows.h>
-#include "ntex.h"
+#include "ntconio.h"
 #include "rtdata.h"
 #include "fileacc.h"
 #include "defwin.h"

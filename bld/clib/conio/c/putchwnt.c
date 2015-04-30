@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <conio.h>
 #include <windows.h>
-#include "ntex.h"
+#include "ntconio.h"
 #include "fileacc.h"
 #include "defwin.h"
 

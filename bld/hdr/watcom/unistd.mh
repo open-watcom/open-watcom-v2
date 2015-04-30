@@ -182,6 +182,7 @@ _WCRTLINK extern long   sysconf( int __name );
 _WCRTLINK extern pid_t  tcgetpgrp( int __fildes );
 _WCRTLINK extern int    tcsetpgrp( int __fildes, pid_t __pgrp_id );
 _WCRTLINK extern char   *ttyname( int __fildes );
+_WCRTLINK extern int    ttyname_r( int __fildes, char *__buf, size_t __buflen );
 :segment QNX
 _WCRTLINK extern int    mkdir( const char *__path, mode_t __mode );
 _WCRTLINK extern int    mknod( const char *__path, mode_t __mode, int __dev );

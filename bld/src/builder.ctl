@@ -28,7 +28,6 @@ set PROJNAME=src
     <CPCMD> <OWSRCDIR>/clib/startup/a/dstrt386.asm        <OWRELROOT>/src/startup/386/dstrt386.asm
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain086.c          <OWRELROOT>/src/startup/dos/cmain086.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain086.c          <OWRELROOT>/src/startup/os2/cmain086.c
-    <CPCMD> <OWSRCDIR>/clib/startup/c/hpgrw086.c          <OWRELROOT>/src/startup/dos/hpgrw086.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/dmaino16.c          <OWRELROOT>/src/startup/os2/dmaino16.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/libmno16.c          <OWRELROOT>/src/startup/os2/libmno16.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/maino16.c           <OWRELROOT>/src/startup/os2/maino16.c

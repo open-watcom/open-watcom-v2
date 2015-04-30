@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned *__get_psp_ptr( void )
 {
-    return( &_psp );
+    return( &_RWD_psp );
 }

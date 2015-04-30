@@ -31,20 +31,12 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include <stdlib.h>
-#include "liballoc.h"
 #include "rtdata.h"
-#include "exitwmsg.h"
-#include "xfloat.h"
+#include "cvtbuf.h"
+#include "_cvtbuf.h"
 
-#if defined(__SW_BM)
-    #include "thread.h"
-#else
-    #include "maxchtyp.h"
-    static MAX_CHAR_TYPE    cvt_buffer[ __FPCVT_BUFFERLEN + 1 ];
-#endif
 
-_WCRTLINK CHAR_TYPE *__CVTBuffer( void )
+_WCRTLINK void *__CVTBuffer( void )
 {
-    return( (CHAR_TYPE *)_RWD_cvtbuf );
+    return( (void *)_RWD_cvtbuf );
 }

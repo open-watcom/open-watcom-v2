@@ -36,9 +36,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
-#include "xfloat.h"
+#include "cvtbuf.h"
 
-extern  CHAR_TYPE *__CVTBuffer( void );
 extern  char *__cvt( double, int, int *, int *, int, char * );
 
 #define MAX_PRECISION __FPCVT_BUFFERLEN
@@ -64,19 +63,19 @@ static char *fixup( char *p, int n )
 _WMRTLINK CHAR_TYPE *__F_NAME(ecvt,_wecvt)( double value,int ndigits, int *dec, int *sign )
 {
     /* ndigits represents the number of significant digits */
-    CHAR_TYPE   *buf;
+    char    *buf;
 
     buf = __CVTBuffer();
-    buf = (CHAR_TYPE *)__cvt( value, ndigits, dec, sign, 'G', (char *)buf );
-    return( _AToUni( buf, fixup( (char *)buf, ndigits ) ) );
+    buf = __cvt( value, ndigits, dec, sign, 'G', buf );
+    return( _AToUni( (CHAR_TYPE *)buf, fixup( buf, ndigits ) ) );
 }
 
 _WMRTLINK CHAR_TYPE *__F_NAME(fcvt,_wfcvt)( double value,int ndigits, int *dec, int *sign )
 {
     /* ndigits represents the number of decimal places */
-    CHAR_TYPE   *buf;
+    char    *buf;
 
     buf = __CVTBuffer();
-    buf = (CHAR_TYPE *)__cvt( value, ndigits, dec, sign, 'F', (char *)buf );
-    return( _AToUni( buf, fixup( (char *)buf, ndigits+(*dec) ) ) );
+    buf = __cvt( value, ndigits, dec, sign, 'F', buf );
+    return( _AToUni( (CHAR_TYPE *)buf, fixup( buf, ndigits+(*dec) ) ) );
 }

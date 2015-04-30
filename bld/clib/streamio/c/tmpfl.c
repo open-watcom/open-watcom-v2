@@ -133,7 +133,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
                 }
                 // We couldn't open it, probably because we have run out of handles.
                 // Remove the renamed file.
-                our_errno = errno;
+                our_errno = _RWD_errno;
                 remove( name2 );
                 __set_errno( our_errno );
                 return( NULL );

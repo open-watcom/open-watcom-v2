@@ -42,7 +42,7 @@
 #include "defwin.h"
 #include "iomode.h"
 #include "fileacc.h"
-#include "ntex.h"
+#include "ntext.h"
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "d2ttime.h"

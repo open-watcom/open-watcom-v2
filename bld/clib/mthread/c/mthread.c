@@ -30,16 +30,15 @@
 
 
 #include "variety.h"
-#include "stacklow.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "liballoc.h"
-
+#include "rtdata.h"
+#include "stacklow.h"
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "rtdata.h"
 #include "rtinit.h"
 #include "exitwmsg.h"
 #include "osver.h"
@@ -51,17 +50,13 @@
 #if defined( __QNX__ )
   #include "semaqnx.h"
   #include <sys/magic.h>
-  extern thread_data *__QNXAddThread( thread_data *tdata );
 #endif
 
-extern  void            __FiniThreadProcessing( void );
 #if !defined( _M_I86 )
     extern void         (*_AccessFileH)( int );
     extern void         (*_ReleaseFileH)( int );
     extern void         (*_AccessIOB)( void );
     extern void         (*_ReleaseIOB)( void );
-    extern void         (*_AccessTDList)( void );
-    extern void         (*_ReleaseTDList)( void );
   #if !defined( __NETWARE__ )
     extern void         (*_AccessNHeap)( void );
     extern void         (*_AccessFHeap)( void );
@@ -71,7 +66,6 @@ extern  void            __FiniThreadProcessing( void );
   #if defined( __NT__ )
     extern void         (*_AccessFList)( void );
     extern void         (*_ReleaseFList)( void );
-    extern void         (*_ThreadExitRtn)( void );
     static semaphore_object FListSemaphore;
   #endif
     void static nullSema4Rtn( semaphore_object *p ) { p = p; }
@@ -88,7 +82,6 @@ extern  int             __Sema4Fini;            // in finalizer segment
 #pragma aux             __Sema4Fini "_*";
 #endif
 extern  unsigned        __MaxThreads;
-extern  thread_data     *__FirstThreadData;
 extern  void            **__ThreadIDs;
 
 #define MAX_SEMAPHORE   16
@@ -393,7 +386,7 @@ void    __ReleaseFList( void )
 
 #endif
 
-struct thread_data *__MultipleThread( void )
+thread_data *__MultipleThread( void )
 {
 #if defined( __NT__ )
     /*
@@ -424,12 +417,9 @@ struct thread_data *__MultipleThread( void )
     if(0 != (ccode = NXKeyGetValue(__NXSlotID, (void **) &tdata)))
         tdata = NULL;
 
-    if( tdata == NULL )
-    {
+    if( tdata == NULL ) {
         tdata = __GetThreadData();
-    }
-    else if( tdata->__resize )
-    {
+    } else if( tdata->__resize ) {
         tdata = __ReallocThreadData();
     }
     SetLastError(old);
@@ -494,15 +484,16 @@ void __FreeInitThreadData( thread_data *tdata )
 /******************************************************/
 {
     if( tdata != NULL ) {
-        if( tdata->__allocated == 1 )
+        if( tdata->__allocated == 1 ) {
             lib_free( tdata );
+        }
     }
 }
 
   #if defined( __NT__ )
 
-BOOL __NTThreadInit( void )
-/*************************/
+int __NTThreadInit( void )
+/************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         __TlsIndex = TlsAlloc();
@@ -530,8 +521,8 @@ static void __NTThreadFini( void )
 }
 
 
-BOOL __NTAddThread( thread_data *tdata )
-/**************************************/
+int __NTAddThread( thread_data *tdata )
+/*************************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         return( FALSE );
@@ -674,7 +665,7 @@ void __LinuxRemoveThread( void )
   #elif defined( __RDOS__ )
 
 int __RdosThreadInit( void )
-/*************************/
+/**************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         __TlsIndex = __tls_alloc();
@@ -700,7 +691,7 @@ static void __RdosThreadFini( void )
     #endif
 
 int __RdosAddThread( thread_data *tdata )
-/**************************************/
+/***************************************/
 {
     if( __TlsIndex == NO_INDEX ) {
         return( 0 );
@@ -739,7 +730,7 @@ void __RdosRemoveThread( void )
 void __InitMultipleThread( void )
 /*******************************/
 {
-    if( __GetThreadPtr != &__MultipleThread ) {
+    if( __GetThreadPtr != __MultipleThread ) {
   #if defined( _NETWARE_CLIB )
         {
         /* __ThreadData[ 0 ] is used whenever GetThreadID() returns a pointer
@@ -779,7 +770,7 @@ void __InitMultipleThread( void )
                     "Unable to initialize thread-specific data", 1 );
             }
         }
-  #elif defined (_NETWARE_LIBC)
+  #elif defined( _NETWARE_LIBC )
         InitSemaphore.semaphore     = 0;    /* sema4 is mutex in this case */
         InitSemaphore.initialized   = 1;
         //_ThreadExitRtn = &__ThreadExit;   - might need this at some point??
@@ -813,11 +804,13 @@ void __InitMultipleThread( void )
   #elif defined( __RDOSDEV__ )
         RdosInitKernelSection( &InitSemaphore.semaphore );
         InitSemaphore.initialized = 1;
-  #else
+  #elif defined( __OS2__ )
         DosCreateMutexSem( NULL, &InitSemaphore.semaphore, 0, FALSE );
         InitSemaphore.initialized = 1;
         __ThreadData[1].data = __FirstThreadData;
         __ThreadData[1].allocated_entry = __FirstThreadData->__allocated;
+  #else
+    #error Multiple thread support is not defined for this platform
   #endif
 
         // Set these up after we have created the InitSemaphore
@@ -842,7 +835,7 @@ void __InitMultipleThread( void )
         _AccessFList  = &__AccessFList;
         _ReleaseFList = &__ReleaseFList;
   #endif
-        __GetThreadPtr  = &__MultipleThread;
+        __GetThreadPtr  = __MultipleThread;
     }
 }
 #endif

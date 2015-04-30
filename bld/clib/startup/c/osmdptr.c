@@ -35,5 +35,5 @@
 
 _WCRTLINK unsigned char *__get_osmode_ptr( void )
 {
-    return( &_osmode );
+    return( &_RWD_osmode );
 }

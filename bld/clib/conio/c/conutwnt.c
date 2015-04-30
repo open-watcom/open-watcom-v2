@@ -33,7 +33,7 @@
 #include "variety.h"
 #include <io.h>
 #include <windows.h>
-#include "ntex.h"
+#include "ntconio.h"
 #include "rtdata.h"
 #include "fileacc.h"
 

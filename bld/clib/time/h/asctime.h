@@ -30,29 +30,15 @@
 ****************************************************************************/
 
 
-#if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
-    // the OS/2 and NT files are identical
-    #if defined(__SW_BM)
+#ifndef __NETWARE__
 
-        #include "thread.h"
-
-        #define _INITRESULT
-        #define _RESULT (__THREADDATAPTR->__asctimeP)
-
-    #else
-
-        static char result[26];
-        #define _INITRESULT
-        #define _RESULT result
-
-    #endif
+#define _INITRESULT
+#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) )
+    #define _RESULT     (__THREADDATAPTR->__asctimeP)
 #else
-    #if defined(__NETWARE__)
-        #define _RESULT __THREADDATAPTR->__asctimeP
-        #define _INITRESULT
-    #else
-        static CHAR_TYPE result[26];
-        #define _RESULT result
-        #define _INITRESULT
-    #endif
+    static CHAR_TYPE    result[26];
+
+    #define _RESULT     result
+#endif
+
 #endif

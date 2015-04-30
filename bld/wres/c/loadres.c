@@ -39,6 +39,7 @@
 #include "wresset2.h"
 #include "loadstr.h"
 #include "wresrtns.h"
+#include "layer2.h"
 
 #define WRES_IS_INTRESOURCE(x) ((((pointer_int)(x)) >> 16) == 0)
 

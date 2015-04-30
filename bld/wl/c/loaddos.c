@@ -161,51 +161,51 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
  * code from loadfile to allow the front chunk of a group to be split off
 */
 
-static unsigned long COMAmountWritten;
+static soffset      COMAmountWritten;
 
 static bool WriteSegData( void *_sdata, void *_start )
 /****************************************************/
 {
     segdata         *sdata = _sdata;
-    unsigned long   *start = _start;
-    unsigned long   newpos;
-    unsigned long   pad;
+    soffset         *start = _start;
+    soffset         newpos;
+    soffset         pad;
 
     if( !sdata->isuninit && !sdata->isdead ) {
         newpos = *start + sdata->a.delta;
-        if( newpos + (unsigned long)sdata->length < newpos )
-            return( FALSE );
-        if( newpos > COMAmountWritten ) {
-            pad = newpos - COMAmountWritten;
-            PadLoad( pad );
-            WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
-            COMAmountWritten += sdata->length + pad;
-        } else {
-            pad = COMAmountWritten - newpos;
-            WriteInfoLoad( sdata->u1.vm_ptr + pad, sdata->length - pad );
-            COMAmountWritten += sdata->length - pad;
+        if( newpos + (soffset)sdata->length > 0 ) {
+            if( newpos > COMAmountWritten ) {
+                pad = newpos - COMAmountWritten;
+                PadLoad( pad );
+                WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
+                COMAmountWritten += sdata->length + pad;
+            } else {
+                pad = COMAmountWritten - newpos;
+                WriteInfoLoad( sdata->u1.vm_ptr + pad, sdata->length - pad );
+                COMAmountWritten += sdata->length - pad;
+            }
         }
     }
     return( FALSE );
 }
 
 static bool DoCOMGroup( void *_seg, void *chop )
-/**********************************************************/
+/**********************************************/
 {
-    seg_leader *seg = _seg;
-    unsigned long  newstart;
+    seg_leader  *seg = _seg;
+    soffset     newstart;
 
-    newstart = *(unsigned long *)chop + GetLeaderDelta( seg );
+    newstart = *(soffset *)chop + GetLeaderDelta( seg );
     RingLookup( seg->pieces, WriteSegData, &newstart );
     return( FALSE );
 }
 
-static bool WriteCOMGroup( group_entry *group, unsigned long chop )
-/*************************************************************/
+static bool WriteCOMGroup( group_entry *group, soffset chop )
+/***********************************************************/
 /* write the data for group to the loadfile */
 /* returns TRUE if the file should be repositioned */
 {
-    unsigned long           loc;
+    unsigned long       loc;
     section             *sect;
     bool                repos;
     outfilelist         *finfo;
@@ -217,7 +217,7 @@ static bool WriteCOMGroup( group_entry *group, unsigned long chop )
     loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
     if( loc > finfo->file_loc ) {
         PadLoad( loc - finfo->file_loc );
-    } else if( loc != finfo->file_loc ) {
+    } else if( loc < finfo->file_loc ) {
         SeekLoad( loc );
         repos = TRUE;
     }
@@ -239,7 +239,7 @@ static void WriteCOMFile( void )
     outfilelist         *fnode;
     group_entry         *group;
     bool                repos;
-    unsigned long       chop;
+    soffset             chop;
 
     if( StartInfo.addr.seg != 0 ) {
         LnkMsg( ERR+MSG_INV_COM_START_ADDR, NULL );
@@ -260,7 +260,7 @@ static void WriteCOMFile( void )
         if( chop > 0 ) {
             chop = 0;
         }
-        if( (unsigned long)group->size + chop > 0 ) {
+        if( (soffset)group->size + chop > 0 ) {
             repos = WriteCOMGroup( group, chop );
             if( repos ) {
                 SeekLoad( fnode->file_loc );

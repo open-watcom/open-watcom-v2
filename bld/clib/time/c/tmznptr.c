@@ -35,5 +35,5 @@
 
 _WCRTLINK long *__get_timezone_ptr( void )
 {
-    return( &timezone );
+    return( &_RWD_timezone );
 }

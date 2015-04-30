@@ -45,26 +45,21 @@
 #include "strdup.h"
 #include "liballoc.h"
 #include "libwin32.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "ntex.h"
-#include "rtdata.h"
+#include "ntext.h"
 #include "initfini.h"
 #include "rtinit.h"
 #include "initarg.h"
+#include "snglthrd.h"
+#include "mthread.h"
 
 DWORD __TlsIndex = NO_INDEX;
 
 _WCRTLINK int *__threadid( void )
 {
     return( (int *) &(__THREADDATAPTR->thread_id) );
-}
-
-thread_data             *__FirstThreadData = NULL;
-
-static struct thread_data *__SingleThread()
-{
-    return( __FirstThreadData );
 }
 
 static void __NullAccessRtn( int handle )
@@ -78,7 +73,6 @@ static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
 
-_WCRTDATA struct thread_data    *(*__GetThreadPtr)() = &__SingleThread;
 void    (*_AccessFileH)(int)     = &__NullAccessRtn;
 void    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
 void    (*_AccessIOB)(void)      = &__NullAccIOBRtn;

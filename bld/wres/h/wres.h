@@ -116,6 +116,7 @@ extern void             WResSetEmptyWindow( WResDirWindow *wind );
 extern void             WResMakeWindow( WResDirWindow *wind, WResTypeNode *type, WResResNode *res, WResLangNode *lang );
 extern WResDirWindow    WResNextResource( WResDirWindow, WResDir );
 extern bool             WResIsLastResource( WResDirWindow, WResDir );
+extern bool             WResIsLastLangRes( WResDirWindow currwind, WResDir currdir );
 extern WResResInfo      *WResGetResInfo( WResDirWindow );
 extern WResTypeInfo     *WResGetTypeInfo( WResDirWindow );
 extern WResLangInfo     *WResGetLangInfo( WResDirWindow );

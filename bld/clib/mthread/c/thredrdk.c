@@ -40,12 +40,11 @@
 #include <malloc.h>
 #include <errno.h>
 #include "liballoc.h"
+#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
-#include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"

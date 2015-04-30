@@ -57,12 +57,13 @@
 !inject emainrdu.obj                                                                                        rdu
 !inject dpmihost.obj     d32
 !inject dllmncwd.obj     d32
+!inject doserrno.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject dstrt386.obj                     nt                             o32                                 rdu
 !inject dstrtaxp.obj                        nta
 !inject dstrtwna.obj                        nta ntp
 !inject enterdb.obj  d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject errno.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-!inject errnovar.obj                                                            q32             l32             rdk
+!inject errnovar.obj                                                            q32
 !inject _exit.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32     w32 osi l32 lpc lmp rdu rdk
 !inject exit.obj     d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject fltused.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
@@ -73,7 +74,6 @@
 !inject getdsint.obj                     nt                             o32
 !inject histsplt.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject hookfpe.obj                                                 o16
-!inject hpgrw086.obj d16
 !inject imthread.obj                     nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk
 !inject inirmsel.obj     d32                                                            w32
 !inject initrtns.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
@@ -251,6 +251,7 @@ cmain086_opts =$($(processor)_sub_opts)
 cmain386_opts =$($(processor)_sub_opts)
 cmainosi_opts =$($(processor)_sub_opts)
 cmainqnx_opts =$($(processor)_sub_opts)
+imthread_opts =-I"$(clib_dir)/mthread/h"
 initargv_opts =$($(processor)_sub_opts)
 initrtns_opts =$($(processor)_ac_opts)
 libcstrt_opts =-I"$(clib_dir)/mthread/h"
