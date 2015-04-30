@@ -1,30 +1,9 @@
 
-Open Watcom v2 Unofficial Fork
-==============================
+Open Watcom v2 Fork
+===================
 
-This document gives an overview of this project and a quick description of
-the source tree layout. For build instructions see the file `BUILD.md`.
-
-Overview
---------
-
-This project is a friendly fork of [Open
-Watcom](http://www.openwatcom.org/). The primary purpose of this fork is
-to forward development on 64 bit support in the Open Watcom tools. We are
-interested in both creating tools that are themselves 64 bit executables
-and also that can generate and manipulate 64 bit code. However, all
-reasonable contributions intended to improve or extend Open Watcom are
-also welcome.
-
-We owe a debt of thanks for all the work done on Open Watcom over the
-years by contributors too numerous to name here. Without their efforts
-Open Watcom would not be where it is today. We hope to continue developing
-and improving Open Watcom in the same tradition.
-
-[Binary installers](http://sourceforge.net/projects/openwatcom/) of this
-version of Open Watcom can be downloaded from SourceForge. The binaries
-are refreshed on an irregular schedule. Bug reports, enhancement requests,
-and related discussion should be done on the GitHub site issues list.
+This document gives a quick description of the source tree layout. For more
+information about the project and build instructions see the GitHub wiki.
 
 Source Tree Layout
 ------------------
