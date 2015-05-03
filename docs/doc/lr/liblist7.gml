@@ -1255,10 +1255,13 @@
 .sys scalbn MATH
 .sys scanf DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys scanf_s DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
-.sys sched_getparam QNX16 QNX32
-.sys sched_getscheduler QNX16 QNX32
-.sys sched_setparam QNX16 QNX32
-.sys sched_setscheduler QNX16 QNX32
+.sys sched_get_priority_max LNX32
+.sys sched_get_priority_min LNX32
+.sys sched_getparam QNX16 QNX32 LNX32
+.sys sched_getscheduler QNX16 QNX32 LNX32
+.sys sched_rr_get_interval LNX32
+.sys sched_setparam QNX16 QNX32 LNX32
+.sys sched_setscheduler QNX16 QNX32 LNX32
 .sys sched_yield QNX16 QNX32 LNX32
 .sys _scrolltextwindow DOS16 DOS32 QNX16 QNX32
 .sys _searchenv DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS

@@ -12,7 +12,29 @@
 
 :include cpluspro.sp
 
+#include <time.h>
+#include <sys/types.h>
+
+struct sched_param {
+    int sched_priority;
+};
+
 _WCRTLINK extern int    sched_yield( void );
+
+_WCRTLINK extern int    sched_get_priority_max( int __policy );
+_WCRTLINK extern int    sched_get_priority_min( int __policy );
+
+_WCRTLINK extern int    sched_getscheduler( pid_t __pid );
+_WCRTLINK extern int    sched_setscheduler( pid_t __pid, int __policy, 
+                                            const struct sched_param *__sp );
+
+_WCRTLINK extern int    sched_getparam( pid_t __pid, 
+                                        struct sched_param *__sp );
+_WCRTLINK extern int    sched_setparam( pid_t __pid, 
+                                        const struct sched_param *__sp );
+
+_WCRTLINK extern int    sched_rr_get_interval( pid_t __pid, 
+                                               struct timespec *__ts);
 
 :include cplusepi.sp
 

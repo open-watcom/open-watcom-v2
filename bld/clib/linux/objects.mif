@@ -64,6 +64,10 @@
 !inject readlink.obj                                                                            l32 lpc lmp
 !inject rename.obj                                                                              l32 lpc lmp
 !inject rmdir.obj                                                                               l32 lpc lmp
+!inject schgetpr.obj                                                                            l32 lpc lmp
+!inject schgs.obj                                                                               l32 lpc lmp
+!inject schparam.obj                                                                            l32 lpc lmp
+!inject schrrint.obj                                                                            l32 lpc lmp
 !inject schyield.obj                                                                            l32 lpc lmp
 !inject select.obj                                                                              l32 lpc lmp
 !inject setegid.obj                                                                             l32 lpc lmp

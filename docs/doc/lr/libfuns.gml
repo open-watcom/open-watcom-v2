@@ -1132,12 +1132,20 @@
 .fnc scanf_s                    scanf_s.gml     DOS QNX W WIN32
 .fnw wscanf_s                   scanf_s.gml     DOS QNX W WIN32
 .fnc sched_getparam             scgetpa.gml         QXO
+.fnw sched_getparam             schgprm.gml     DOS     W WIN32
 .fnc sched_get_priority_max     scgetmax.gml        QXO
 .fnc sched_get_priority_min     scgetmin.gml        QXO
+.fnc sched_get_priority_max     schprmax.gml    DOS     W WIN32
+.fnc sched_get_priority_min     schprmin.gml    DOS     W WIN32
 .fnc sched_getscheduler         scgetsc.gml         QXO
+.fnc sched_getscheduler         schgsch.gml     DOS     W WIN32
+.fnc sched_rr_get_interval      schrrint.gml    DOS     W WIN32
 .fnc sched_setparam             scsetpa.gml         QXO
+.fnw sched_setparam             schsprm.gml     DOS     W WIN32
 .fnc sched_setscheduler         scsetsc.gml         QXO
+.fnc sched_setscheduler         schssch.gml     DOS     W WIN32
 .fnc sched_yield                scyield.gml         QXO
+.fnc sched_yield                schyield.gml    DOS     W WIN32
 .fnc _scrolltextwindow          gr_scrtw.gml    DOS QNX W GRAPH
 .fnc _searchenv                 _searche.gml    DOS QNX W WIN32
 .fnw _wsearchenv                _searche.gml    DOS       WIN32
