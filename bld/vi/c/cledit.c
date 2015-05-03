@@ -38,6 +38,17 @@
 #endif
 #include "clibext.h"
 
+#if defined( __WIN__ ) && defined( __NT__ )
+
+/* on NT, we have \0 instead of spaces to delimit single file names and \0\0 to end the string */
+#define NextWord1FN     NextWordNT
+
+#else
+
+#define NextWord1FN     NextWord1
+
+#endif
+
 #ifdef __WIN__
 #ifndef __NT__
 bool isMultipleFiles( char *altname )
@@ -103,9 +114,6 @@ static int NextWordNT( char *buff, char *res )
     }
 
 } /* NextWordNT */
-
-/* on NT, we have \0 instead of spaces to delimit single file names and \0\0 to end the string */
-#define NextWord1( a, b )   NextWordNT( a, b )
 #endif
 #endif
 
@@ -140,7 +148,7 @@ vi_rc EditFile( char *name, bool dammit )
         usedir = true;
     }
     fn[0] = 0;
-//    if( NextWord1( name, fn ) <= 0 )
+//    if( NextWord1FN( name, fn ) <= 0 )
     if( GetStringWithPossibleQuote2( name, fn, false ) != ERR_NO_ERR ) {
         usedir = true;
         mask[0] = '*';
@@ -175,9 +183,9 @@ vi_rc EditFile( char *name, bool dammit )
             if( name[0] == '\0' ) {
                 altname = MemAlloc( 1000 );
                 rc = SelectFileOpen( CurrentDirectory, &altname, mask, true );
-                NextWord1( altname, fn );  // if multiple, kill path
+                NextWord1FN( altname, fn );  // if multiple, kill path
                 if( isMultipleFiles( altname ) ) {
-                    NextWord1( altname, fn ); // get 1st name
+                    NextWord1FN( altname, fn ); // get 1st name
                 }
             } else {
                 rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
@@ -335,7 +343,7 @@ vi_rc EditFile( char *name, bool dammit )
             break;
         }
 
-    } while( NextWord1( name, fn ) > 0 );
+    } while( NextWord1FN( name, fn ) > 0 );
 
     if( altname ) {
         MemFree( altname );
@@ -352,10 +360,6 @@ vi_rc EditFile( char *name, bool dammit )
     return( rc );
 
 } /* EditFile */
-
-#if defined( __WIN__ ) && defined( __NT__ )
-    #undef NextWord1
-#endif
 
 #ifndef __WIN__
 static char _NEAR *_NEAR fileOpts[] =  {

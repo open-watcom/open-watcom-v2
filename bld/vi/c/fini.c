@@ -54,10 +54,11 @@
 
 char * UsageMsg[] = {
 #ifdef __WIN__
-    "viw [-?-dinqrvz] +<n> -k\"keys\" [-s<scr> [-p\"prm\"]] [-t<tag>]",
-    "    [-c<cfg>] files",
+    "viw [-?-dinqrvzI] +<n> -k\"keys\" [-s<scr> [-p\"prm\"]] [-t<tag>]",
+    "    [-c<cfg>] [-P<x y w h>] files",
 #else
-    "Usage: vi [-?-dinqrvz] +<n> -k\"keys\" [-s<scr> [-p\"prm\"]] [-t<tag>]\n          [-c<cfg>] files",
+    "Usage: vi [-?-dinqrvz] +<n> -k\"keys\" [-s<scr> [-p\"prm\"]] [-t<tag>]",
+    "          [-c<cfg>] files",
 #endif
     T1 "files             : files to edit (may contain wild cards)",
     T1 "Options: -?       : print this list",
@@ -69,12 +70,18 @@ char * UsageMsg[] = {
     T2 " -r       : recover lost files",
     T2 " -v       : set view-only mode",
     T2 " -z       : do not terminate file read when finding a ctrl-z",
+#ifdef __WIN__
+    T2 " -I       : prompt the user for an initial file",
+#endif
     T2 " +<n>     : go to line number <n> in first file loaded",
     T2 " -k \"keys\": keystrokes to execute after the editor has started",
     T2 " -s <scr> : execute source script <scr> after editing files",
     T2 " -p \"prm\" : parameters associated with source script",
     T2 " -t <tag> : edit file with specified <tag>",
-    T2 " -c <cfg> : use <cfg> as the configuration file"
+    T2 " -c <cfg> : use <cfg> as the configuration file",
+#ifdef __WIN__
+    T2 " -P <x y w h> : set initial window position and size"
+#endif
 };
 
 char *OptEnvVar = "VI";
@@ -203,7 +210,7 @@ void ExitEditor( int rc )
     StaticFini();
     VarFini();
     AutoSaveFini();
-    FiniCFName();
+    FiniConfigFileName();
     miscGlobalsFini();
     ChangeDirectory( HomeDirectory );
 #if defined( __NT__ ) && !defined( __WIN__ )

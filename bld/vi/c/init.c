@@ -54,7 +54,7 @@
 #include "clibint.h"
 
 static char     nullFN[] = "no_name";
-static char     *cFN;
+static char     *cFN = NULL;
 static char     *cfgFN = NULL;
 static char     *cTag = NULL;
 static char     *keysToPush = NULL;
@@ -85,7 +85,7 @@ char *GetConfigFileName( void )
 } /* GetConfigFileName */
 #endif
 
-void FiniCFName( void )
+void FiniConfigFileName( void )
 {
     MemFree( cfgFN );
 
@@ -102,26 +102,25 @@ static void checkFlags( int *argc, char *argv[], char *start[],
     int         len;
 #endif
 
-    cFN = NULL;
     for( ;; ) {
-#ifndef __WIN__
-        ch = GetOpt( argc, argv, "#-ndvqzirc:k:p:s:t:", NULL );
-#else
+#ifdef __WIN__
         ch = GetOpt( argc, argv, "#-ndvqzirIP:c:k:p:s:t:", NULL );
+#else
+        ch = GetOpt( argc, argv, "#-ndvqzirc:k:p:s:t:", NULL );
 #endif
         if( ch == -1 ) {
             break;
         }
         switch( ch ) {
         case '#':
-#ifndef __WIN__
+#ifdef __WIN__
+            lineToGoTo = atoi( OptArg );
+#else
             strncpy( goCmd, OptArg, sizeof( goCmd ) -2 );
             goCmd[sizeof( goCmd ) - 2] = 0;
             len = strlen( goCmd );
             goCmd[len] = 'G';
             goCmd[len + 1] = 0;
-#else
-            lineToGoTo = atoi( OptArg );
 #endif
             break;
 #ifdef __WIN__
@@ -377,20 +376,13 @@ static void doInitializeEditor( int argc, char *argv[] )
         FatalError( rc1 );
     }
     EditFlags.DisplayHold = false;
-    MaxMemFreeAfterInit = MemSize();
 
-    /*
-     * start specified file(s)
-     */
-    arg = argc - 1;
-    k = 1;
-    cmd[0] = 'e';
-    cmd[1] = 0;
-    EditFlags.WatchForBreak = true;
+    MaxMemFreeAfterInit = MemSize();
 
     /*
      * look for a tag: if there is one, set it up as the file to start
      */
+    EditFlags.WatchForBreak = true;
     if( cTag != NULL && !EditFlags.NoInitialFileLoad ) {
 #if defined( __NT__ ) && !defined( __WIN__ )
         {
@@ -410,6 +402,14 @@ static void doInitializeEditor( int argc, char *argv[] )
         }
     }
 
+    /*
+     * start specified file(s)
+     */
+    cmd[0] = 'e';
+    cmd[1] = 0;
+
+    arg = argc - 1;
+    k = 1;
     while( !EditFlags.NoInitialFileLoad ) {
 
         if( cFN == nullFN && !EditFlags.UseNoName ) {
@@ -418,37 +418,53 @@ static void doInitializeEditor( int argc, char *argv[] )
 
 #ifdef __NT__
         {
-            int     k2 = k;
-            int     arg2 = arg;
+            int     k2;
+            int     arg2;
             char    path[_MAX_PATH];
-            int     found = 0;
+            int     found;
             int     fd;
+            size_t  len;
+            size_t  len1;
+            char    *p;
 
             /*
              * check for the existence of a file name containing spaces, and open it if
              * there is one
              */
-            memset( path, 0, _MAX_PATH );
-            while( argv[k2] != NULL && strlen( path ) +
-                                       strlen( argv[k2] ) < _MAX_PATH ) {
-                strcat( path, argv[k2] );
+            len = _MAX_PATH - 1;
+            found = 0;
+            p = path;
+            arg2 = arg;
+            for( k2 = k; argv[k2] != NULL; ) {
+                len1 = strlen( argv[k2] );
+                if( len1 > len )
+                    break;
+                memcpy( p, argv[k2], len1 );
+                p += len1;
+                *p = '\0';
+                len -= len1;
+                --arg2;
+                ++k2;
                 fd = open( path, O_RDONLY );
                 if( fd != -1 ) {
                     close( fd );
+                    k = k2;
+                    arg = arg2;
                     found = 1;
                     break;
                 }
-                k2++;
-                arg2--;
-                strcat( path, " " );
+                *p++ = ' ';
             }
             if( found ) {
+#ifndef __UNIX__
+                len1 = strlen( path );
+                if( path[len1 - 1] == '.' )
+                    path[len1 - 1] = '\0';
+#endif
                 rc1 = NewFile( path, false );
                 if( rc1 != ERR_NO_ERR ) {
                     FatalError( rc1 );
                 }
-                k = k2 + 1;
-                arg = arg2 - 1;
                 cFN = argv[k];
                 if( arg < 1 ) {
                     break;
@@ -461,14 +477,13 @@ static void doInitializeEditor( int argc, char *argv[] )
         strcat( cmd, SingleBlank );
         strcat( cmd, cFN );
         ocnt = cnt = ExpandFileNames( cFN, &list );
-        if( !cnt ) {
+        if( cnt == 0 ) {
             cnt = 1;
         } else {
             cFN = list[0];
         }
 
         for( j = 0; j < cnt; j++ ) {
-
             rc1 = NewFile( cFN, false );
             if( rc1 != ERR_NO_ERR && rc1 != NEW_FILE ) {
                 FatalError( rc1 );

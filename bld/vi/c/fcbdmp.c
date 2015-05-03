@@ -31,10 +31,14 @@
 
 #include "vi.h"
 #include "win.h"
-
-#ifndef NDEBUG
 #include <malloc.h>
+
+#if !defined( NDEBUG ) && !defined( __WIN__ )
+
+void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
+
 static type_style errStyle = { 7, 0, 0 };
+
 #endif
 
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
@@ -97,7 +101,7 @@ vi_rc HeapCheck( void )
 
 vi_rc FcbDump( void )
 {
-#ifndef NDEBUG
+#if !defined( NDEBUG ) && !defined( __WIN__ )
     int         lc, fcbcnt = 0;
     window_id   fw;
     fcb         *cfcb;
@@ -141,7 +145,7 @@ vi_rc FcbDump( void )
 
 vi_rc FcbThreadDump( void )
 {
-#ifndef NDEBUG
+#if !defined( NDEBUG ) && !defined( __WIN__ )
     int         lc, fcbcnt = 0;
     window_id   fw;
     char        msg[80];
@@ -187,7 +191,7 @@ vi_rc FcbThreadDump( void )
 
 vi_rc SanityCheck( void )
 {
-#ifndef NDEBUG
+#if !defined( NDEBUG ) && !defined( __WIN__ )
     int         lc, tfcbcnt = 0, fcbcnt, sum;
     window_id   fw;
     fcb         *cfcb;
@@ -266,7 +270,7 @@ vi_rc SanityCheck( void )
 
 vi_rc LineInfo( void )
 {
-#ifndef NDEBUG
+#if !defined( NDEBUG ) && !defined( __WIN__ )
     fcb         *cfcb;
     int         fcbcnt = 1;
     int         bcnt;
@@ -289,7 +293,7 @@ vi_rc LineInfo( void )
  */
 vi_rc WalkUndo( void )
 {
-#ifndef NDEBUG
+#if !defined( NDEBUG ) && !defined( __WIN__ )
     int         ln = 1, i, col, fcbcnt, depth = 0;
     window_id   fw;
     linenum     lne, lcnt;
@@ -358,7 +362,7 @@ vi_rc WalkUndo( void )
 
 } /* WalkUndo */
 
-#ifndef NDEBUG
+#if !defined( NDEBUG ) && !defined( __WIN__ )
 void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
 {
     line        *cline;

@@ -455,7 +455,7 @@ void    IDEGetKeys( void );
 void    InitializeEditor( void );
 void    SetConfigFileName( char *fn );
 char    *GetConfigFileName( void );
-void    FiniCFName( void );
+void    FiniConfigFileName( void );
 
 /* io.c */
 vi_rc   FileExists( char * );

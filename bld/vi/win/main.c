@@ -32,6 +32,7 @@
 #include "vi.h"
 #ifdef __WATCOMC__
 #include <process.h>
+#include <malloc.h>
 #endif
 // #include "ole2def.h"
 #include "font.h"
@@ -89,7 +90,7 @@ void FiniInstance( void )
 }
 
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
-void *HeapWalker( void )
+void _WCFAR *HeapWalker( void )
 {
     struct _heapinfo    info;
     int                 status;

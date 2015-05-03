@@ -232,9 +232,9 @@ static void getConfigFilePaths( void )
 } /* getConfigFilePaths */
 
 /*
- * readConfigFileName - get the name of the config file that we are to read
+ * readConfigFile - get the name of the config file that we are to read
  */
-static void readConfigFileName( void )
+static void readConfigFile( void )
 {
     char        cname[FILENAME_MAX];
     //char      str[MAX_STR]; // not used if not prompting for new cfg files
@@ -276,7 +276,7 @@ static void readConfigFileName( void )
     }
     saveConfig = getProfileLong( keySaveConfig );
 
-} /* readConfigFileName */
+} /* readConfigFile */
 
 /*
  * writeConfigFile - write the current config file name
@@ -314,7 +314,7 @@ void ReadProfile( void )
     getConfigFilePaths();   /* get paths to ini files */
     readToolBarSize();
     readInitialPosition();
-    readConfigFileName();
+    readConfigFile();
 
 } /* ReadProfile */
 
