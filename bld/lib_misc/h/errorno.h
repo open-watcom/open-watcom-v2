@@ -33,7 +33,7 @@
 #include <errno.h>
 #undef errno
 
-#if defined(__QNX__) || defined( __LINUX__ )
+#if defined(__QNX__)
     // QNX errno is magically multithread aware
     _WCRTDATA extern int    errno;
     #define _ERRNO          errno
@@ -46,7 +46,7 @@
     _WCRTDATA extern int    errno;
     #define _ERRNO          errno
   #endif
-#elif ( defined(__SW_BM) || defined(__MT__) ) && !defined( __RDOSDEV__ )
+#elif ( defined(__SW_BM) || defined(__MT__) ) && !defined( __RDOSDEV__ ) && !defined( __LINUX__ )
     #define _ERRNO          (__THREADDATAPTR->__errnoP)
 #else
     _WCRTDATA extern int    errno;
