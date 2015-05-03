@@ -35,7 +35,7 @@
 
 #if !defined(__UNIX__) && !defined( __NETWARE__ )
 
-#if !defined( __SW_BM ) || defined( __RDOSDEV__ )
+#if !defined( __MT__ ) || defined( __RDOSDEV__ )
     int               _doserrno;
 #endif
 

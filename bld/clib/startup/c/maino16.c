@@ -52,7 +52,7 @@
 #include "thread.h"
 #include "mthread.h"
 
-#if defined(__SW_BM)
+#if defined( __MT__ )
 
 /* semaphore control for file handles */
 
@@ -90,7 +90,7 @@ unsigned char   _WCDATA _osmode;
 jmp_buf         JmpBuff;
 int             RetCode;
 #endif
-#if !defined(__SW_BM)
+#if !defined( __MT__ )
 int             _nothread;
 #endif
 
@@ -160,7 +160,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
     }
 #endif
 
-#if defined(__SW_BM)
+#if defined( __MT__ )
     {
         SEL             globalseg;
         SEL             localseg;

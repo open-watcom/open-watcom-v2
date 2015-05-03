@@ -48,7 +48,7 @@
     extern void         __init_stack_limits( unsigned *stacklow, unsigned *stacktop );
 #endif
 
-#if defined(__SW_BM)
+#if defined( __MT__ )
   #if defined(__OS2_286__)
     #define _STACKLOW   (*(unsigned *)(__MultipleThread()))
   #else

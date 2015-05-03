@@ -79,7 +79,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_mktemp,_wmktemp)( CHAR_TYPE *template )
 
     /*** Get the process/thread ID ***/
 #ifdef __NT__
-  #ifdef __SW_BM
+  #ifdef __MT__
     pid = GetCurrentThreadId();     /* thread ID for multi-thread */
   #else
     pid = GetCurrentProcessId();    /* process ID for single-thread */

@@ -33,19 +33,19 @@
 #define _RTDATA_H_INCLUDED
 
 #include <stdio.h>
-#if defined( __SW_BM ) || defined( __MT__ )
+#if defined( __MT__ )
 #include "thread.h"
 #endif
 #include "errorno.h"
 
 /* DOS based platforms have stdaux/stdprn in addition to stdin/out/err */
-#if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
     #define NUM_STD_STREAMS 5
 #else
     #define NUM_STD_STREAMS 3
 #endif
 
-#if defined(__NT__) || defined(__OS2__) || defined(__UNIX__)
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __UNIX__ )
     struct __pipe_info {
         int                 isPipe;     /* non-zero if it's a pipe */
         int                 pid;        /* PID of spawned process */
@@ -60,7 +60,7 @@ typedef struct __stream_link {
     int                     _extflags;      /* extended flags */
     unsigned char           _tmpfchar;      /* tmpfile number */
     unsigned char           _filler[sizeof(int)-1];/* explicit padding */
-#if defined(__NT__) || defined(__OS2__) || defined(__UNIX__)
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __UNIX__ )
     struct __pipe_info      pipeInfo;       /* pipe-related fields */
 #endif
 } __stream_link;
@@ -92,26 +92,26 @@ extern __stream_link        *__ClosedStreams;
 extern      char            * _WCNEAR __env_mask;  /* ptr to char array of flags */
 extern      FPEhandler      *__FPE_handler;
 extern      void            (*__FPE_handler_exit)( void );
-#if !defined(__NETWARE__)
+#if !defined( __NETWARE__ )
     extern  int             _cbyte;
     extern  int             _cbyte2;
     extern  int             _child;
     extern  int             __umaskval;
     extern  unsigned        _curbrk;
     extern  int             _commode;
-#if defined(__WATCOMC__) && defined(_M_IX86)
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
     #pragma aux             _child "_*";
 #endif
 #endif
 extern  unsigned            _STACKLOW;
-#if !defined (_NETWARE_LIBC)
+#if !defined ( _NETWARE_LIBC )
 extern  unsigned            _STACKTOP;
 #endif
 /* alternate stack for F77 compiler */
 #if !defined( _M_I86 )
 extern  unsigned            __ASTACKSIZ;
 extern  char                *__ASTACKPTR;
-#if defined(__WATCOMC__) && defined( _M_IX86 )
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
  #pragma aux                __ASTACKPTR "*"
  #pragma aux                __ASTACKSIZ "*"
 #endif
@@ -134,7 +134,7 @@ extern unsigned short           _8087cw;    /* control word initializer */
 extern unsigned char            _no87;      /* NO87 environment var defined */
 extern unsigned char            _8087;      /* type of 8087/emulator present */
 extern unsigned char            _real87;    /* 8087 coprocessor hardware present */
-#if defined(__WATCOMC__) && defined(_M_IX86)
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
     #pragma aux                 _8087cw "_*";
     #pragma aux                 _no87 "_*";
     #pragma aux                 _8087 "_*";
@@ -145,7 +145,7 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #define _RWD_ostream            __OpenStreams
 #define _RWD_cstream            __ClosedStreams
 #define _RWD_iob                __iob
-#if !defined(__NETWARE__)
+#if !defined( __NETWARE__ )
     #define _RWD_threadid       _threadid
 #endif
 #if !defined( _M_I86 )
@@ -159,7 +159,7 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #define _RWD_FPE_handler_exit   __FPE_handler_exit
 #define _RWD_FPE_handler        __FPE_handler
 #define _RWD_fmode              _fmode
-#if !defined(__NETWARE__)
+#if !defined( __NETWARE__ )
     #define _RWD_umaskval       __umaskval
     #define _RWD_cbyte          _cbyte
     #define _RWD_cbyte2         _cbyte2
@@ -172,7 +172,7 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
     #define _RWD_psp            _psp
 #endif
 #define _RWD_stacklow           _STACKLOW
-#if !defined (_NETWARE_LIBC)
+#if !defined ( _NETWARE_LIBC)
 #define _RWD_stacktop           _STACKTOP
 #endif
 #if defined( _M_IX86 ) && !defined( __UNIX__ )
@@ -187,10 +187,10 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
     #define _RWD_HShift         _HShift
     #define _RWD_osmode         _osmode
 #endif
-#if !defined(__NETWARE__)
+#if !defined( __NETWARE__ )
     #define _RWD_osmajor        _osmajor
     #define _RWD_osminor        _osminor
-    #if defined(__NT__)
+    #if defined( __NT__ )
         #define _RWD_osbuild    _osbuild
         #define _RWD_osver      _osver
         #define _RWD_winmajor   _winmajor
@@ -216,7 +216,7 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #define _RWD_end_dst            __end_dst
 #define _RWD_asctime            _RESULT
 #define _RWD_cvtbuf             _CVTBUF
-#if defined(__NETWARE__)
+#if defined( __NETWARE__ )
     #define _RWD_ioexit         __ioexit
 #endif
 #define _RWD_tmpnambuf          _TMPNAMBUF
@@ -234,7 +234,7 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
     that the __exit... routines never return.
 */
 _WCRTLINK   extern  void    __exit( unsigned );
-#if defined(__WATCOMC__) && defined(_M_IX86)
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
     #pragma aux     __exit aborts;
 #endif
 

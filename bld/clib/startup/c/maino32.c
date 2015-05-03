@@ -158,7 +158,7 @@ void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
     __InitRtns( INIT_PRIORITY_LIBRARY );
     __XCPTHANDLER = xcpt;
     __sig_init_rtn();
-#ifndef __SW_BM
+#ifndef __MT__
     _STACKLOW = (unsigned)&_end;
 #endif
     __InitRtns( 255 );
@@ -179,7 +179,7 @@ void __OS2Init( int is_dll, thread_data *tdata )
     _RWD_osmajor = _sysinfo.version_major;
     _RWD_osminor = _sysinfo.version_minor;
     __saved_CS = GetCS();
-#ifndef __SW_BM
+#ifndef __MT__
     #undef _STACKLOW
     _STACKLOW = (unsigned)&_end;            // cortns in F77
 #endif

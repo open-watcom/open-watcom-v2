@@ -117,23 +117,23 @@ sw_c_generic_386  = -oaxt
 sw_c_msdos_086    = -oax
 sw_c_msdos_286    = -oax
 sw_c_msdos_386    = -oaxt
-sw_c_rdos_386     = -oaxt-bm
-sw_c_rdosdev_386  = -oaxt-bm-zu-zdp-zff-zgf
-sw_c_nw_clib_386  = -oaxt-bm -D__far= -D__near= -D_NETWARE_CLIB
-sw_c_nw_clibl_386 = -oaxt-bm -D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
-sw_c_nw_libc_386  = -oaxt-bm -D__far= -D__near= -D_NETWARE_LIBC
-sw_c_nw_libcl_386 = -oaxt-bm -D__far= -D__near= -D_NETWARE_LIBC -D_THIN_LIB
+sw_c_rdos_386     = -oaxt-bm-D__MT__
+sw_c_rdosdev_386  = -oaxt-bm-D__MT__ -zu-zdp-zff-zgf
+sw_c_nw_clib_386  = -oaxt-bm-D__MT__ -D__far= -D__near= -D_NETWARE_CLIB
+sw_c_nw_clibl_386 = -oaxt-bm-D__MT__ -D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
+sw_c_nw_libc_386  = -oaxt-bm-D__MT__ -D__far= -D__near= -D_NETWARE_LIBC
+sw_c_nw_libcl_386 = -oaxt-bm-D__MT__ -D__far= -D__near= -D_NETWARE_LIBC -D_THIN_LIB
 sw_c_os2_286      = -oax $(def_windowing)
-sw_c_os2_386      = -oaxt-bm $(def_windowing)
-sw_c_os2_ppc      = -oaxt-bm $(def_windowing)
+sw_c_os2_386      = -oaxt-bm-D__MT__ $(def_windowing)
+sw_c_os2_ppc      = -oaxt-bm-D__MT__ $(def_windowing)
 sw_c_osi_386      = -oaxt -D__CALL21__
 sw_c_qnx_286      = -oax
-sw_c_qnx_386      = -oaxt-bm
+sw_c_qnx_386      = -oaxt-bm-D__MT__
 sw_c_windows_086  = -oax $(def_windowing)
 sw_c_windows_386  = -oaxt -D__CALL21__ $(def_windowing)
-sw_c_winnt_386    = -oaxt-bm $(def_windowing)
-sw_c_winnt_axp    = -oaxt-bm -DWIN32 -D_WIN32 $(def_windowing)
-sw_c_winnt_ppc    = -oaxt-bm -DWIN32 -D_WIN32 $(def_windowing)
+sw_c_winnt_386    = -oaxt-bm-D__MT__ $(def_windowing)
+sw_c_winnt_axp    = -oaxt-bm-D__MT__ -DWIN32 -D_WIN32 $(def_windowing)
+sw_c_winnt_ppc    = -oaxt-bm-D__MT__ -DWIN32 -D_WIN32 $(def_windowing)
 sw_c_linux_386    = -oaxt
 sw_c_linux_ppc    = -oaxt
 sw_c_linux_mps    = -oaxt -eoe
@@ -186,7 +186,7 @@ a_flags += $(extra_a_flags)
 c_flags += -of
 !endif
 !ifdef dll16
-c_flags += -bd-bm
+c_flags += -bd-bm-D__MT__
 a_flags += -D__MT__
 !endif
 !ifdef share
@@ -196,7 +196,7 @@ c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 c_flags += -en
 !endif
 !ifdef threading16
-c_flags += -bm
+c_flags += -bm-D__MT__
 a_flags += -D__MT__
 !endif
 

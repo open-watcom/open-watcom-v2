@@ -205,7 +205,7 @@ void    __SigInit( void )
 /***********************/
 {
 
-#if defined( __SW_BM )
+#if defined( __MT__ )
     int         i;
 
     for( i = 1; i <= __SIGLAST; ++i ) {
@@ -220,7 +220,7 @@ void    __SigInit( void )
 void    __SigFini( void ) {
 /**************************/
 
-#if defined( __SW_BM )
+#if defined( __MT__ )
     ULONG               nesting;
     APIRET              rc;
     __EXCEPTION_RECORD  *rr;

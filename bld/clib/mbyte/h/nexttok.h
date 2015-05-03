@@ -31,7 +31,7 @@
 
 
 #define _INITNEXTMBTOK
-#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) )
+#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) )
     #define _NEXTMBTOK          (__THREADDATAPTR->__nextmbtokP)
 #else
     static char                 *nextmbtok = NULL;

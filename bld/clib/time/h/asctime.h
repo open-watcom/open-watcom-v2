@@ -33,7 +33,7 @@
 #ifndef __NETWARE__
 
 #define _INITRESULT
-#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) )
+#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) )
     #define _RESULT     (__THREADDATAPTR->__asctimeP)
 #else
     static CHAR_TYPE    result[26];

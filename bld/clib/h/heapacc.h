@@ -33,7 +33,7 @@
 #ifndef _HEAPACC_H_INCLUDED
 #define _HEAPACC_H_INCLUDED
 /* macros for serialization of accesses to the heap */
-#if defined(__SW_BM)
+#if defined( __MT__ )
     #if defined( _M_I86 )
         extern void __AccessFHeap( void );
         extern void __ReleaseFHeap( void );
