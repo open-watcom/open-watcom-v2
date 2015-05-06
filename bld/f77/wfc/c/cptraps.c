@@ -40,7 +40,7 @@
 
 
 #if !defined( __QNX__ )
-static void _FPEHandler( int fpe_type ) {
+static void _WFC_FPEHandler( int fpe_type ) {
 //=======================================
 
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
@@ -63,13 +63,13 @@ extern void (*__FPE_handler)(int);
 
 #else
 
-static  void    FPEHandler( int sig_num, int fpe_type ) {
+static  void    WFC_FPEHandler( int sig_num, int fpe_type ) {
 //=======================================================
 
     // reset the signal so we can get subsequent signals
-    signal( SIGFPE, (void (*)(int))&FPEHandler );
+    signal( SIGFPE, (void (*)(int))&WFC_FPEHandler );
     sig_num = sig_num;
-    _FPEHandler( fpe_type );
+    _WFC_FPEHandler( fpe_type );
 }
 
 #endif
@@ -81,9 +81,9 @@ void    TrapInit( void ) {
     __XcptFlags = 0;
 #if defined( __QNX__ )
 #elif defined( __OSI__ )
-    __FPE_handler = &_FPEHandler;
+    __FPE_handler = &_WFC_FPEHandler;
 #else
-    signal( SIGFPE, (void (*)(int))&FPEHandler );
+    signal( SIGFPE, (void (*)(int))&WFC_FPEHandler );
 #endif
 }
 
