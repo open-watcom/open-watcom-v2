@@ -69,7 +69,7 @@
   #elif defined( __LINUX__ )
     extern thread_data  *__LinuxAddThread( thread_data *tdata );
     extern void         __LinuxRemoveThread( void );
-  #elif defined( __RDOS__ )
+  #elif defined( __RDOS__ ) /* || defined( __RDOSDEV__ ) */
     extern int          __RdosThreadInit( void );
     extern int          __RdosAddThread( thread_data * );
     extern void         __RdosRemoveThread( void );

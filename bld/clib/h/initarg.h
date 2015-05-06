@@ -45,14 +45,19 @@ _WCRTDATA extern char   *_LpCmdLine;    /* pointer to command line */
 _WCRTDATA extern char   *_LpPgmName;    /* pointer to program name */
           extern char   *_LpDllName;    /* pointer to dll name */
 
+#if !defined( __NETWARE__ )
+
 _WCRTDATA extern wchar_t *_LpwCmdLine;  /* pointer to wide command line */
 _WCRTDATA extern wchar_t *_LpwPgmName;  /* pointer to wide program name */
           extern wchar_t *_LpwDllName;  /* pointer to wide dll name */
 
+#endif
+
 #if defined(__WINDOWS_386__)
-extern char     __Is_DLL;
+extern char         __Is_DLL;
+extern char _WCFAR  *_wincmdptr;
 #else
-extern int      __Is_DLL;
+extern int          __Is_DLL;
 #endif
 
 #endif

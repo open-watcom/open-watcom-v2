@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include <limits.h>
 #include <ctype.h>
@@ -39,10 +40,8 @@
     #define INCL_DOSMISC
     #include <wos2.h>
 #endif
-
-#if !defined( __NETWARE__ ) || defined( _NETWARE_LIBC )
-    #include <process.h>
-#endif
+#include <process.h>
+#include "initarg.h"
 
 #ifdef __NT__
 
@@ -66,7 +65,6 @@
 
 #elif defined(_NETWARE_CLIB) || defined(__OSI__)
 
-    extern char *_LpCmdLine;
     #define OS_GET_CMD_LINE()    _LpCmdLine
 
 #elif defined(_NETWARE_LIBC)
@@ -75,7 +73,6 @@
 
 #elif defined(__WIN386__)
 
-    extern char _WCFAR  *_wincmdptr;
     #define OS_GET_CMD_LINE()    _wincmdptr
 
 #elif defined(__OS2_286__)

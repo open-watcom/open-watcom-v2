@@ -91,11 +91,13 @@ _WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
         seg = _dosalloc( paras );
         if( seg < 0 ) return( HUGE_NULL );  /* allocation failed */
         hp = (char _WCHUGE *)MK_FP( (unsigned short)seg, 0 );
-        for(;;) {
+        for( ;; ) {
             size = 0x8000;
-            if( paras < 0x0800 )  size = paras << 4;
+            if( paras < 0x0800 )
+                size = paras << 4;
             _fmemset( hp, 0, size );
-            if( paras < 0x0800 )  break;
+            if( paras < 0x0800 )
+                break;
             hp = hp + size;
             paras -= 0x0800;
         }
