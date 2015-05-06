@@ -75,7 +75,7 @@ static  void    WFC_FPEHandler( int sig_num, int fpe_type ) {
 #endif
 
 
-void    TrapInit( void ) {
+void    FTrapInit( void ) {
 //==================
 
     __XcptFlags = 0;
@@ -88,7 +88,7 @@ void    TrapInit( void ) {
 }
 
 
-void    TrapFini( void ) {
+void    FTrapFini( void ) {
 //==================
 
 }

@@ -46,8 +46,8 @@ extern  void    BIEnd( void );
 extern  void    BIStartSubProg( void );
 extern  void    BIResolveUndefTypes( void );
 extern  void    BIEndSubProg( void );
-extern  void    TrapInit( void );
-extern  void    TrapFini( void );
+extern  void    FTrapInit( void );
+extern  void    FTrapFini( void );
 extern  void    CompStatement( void );
 extern  void    InitCSList( void );
 extern  bool    CheckCSList( byte );
@@ -137,11 +137,11 @@ static void InitProgram( void )
 {
     ExtnSw = 0;
     OpenSymTab();
-    // VAX/VMS version of TrapInit() goes back 2 stack frames to set
+    // VAX/VMS version of FTrapInit() goes back 2 stack frames to set
     // exception bits for the whole compile.
-    // If the sequence of calls "CompProg()/InitProgram()/TrapInit()"
-    // changes, TrapInit() will have to be modified.
-    TrapInit();
+    // If the sequence of calls "CompProg()/InitProgram()/FTrapInit()"
+    // changes, FTrapInit() will have to be modified.
+    FTrapInit();
     ISNNumber = 0;
     ITHead = NULL;
     InitCSList();
@@ -153,7 +153,7 @@ static void InitProgram( void )
 
 static void FiniProgram( void )
 {
-    TrapFini();
+    FTrapFini();
     Options = NewOptions;
     TDProgFini();
     CSPurge();
