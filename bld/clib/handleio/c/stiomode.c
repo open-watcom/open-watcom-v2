@@ -42,6 +42,7 @@
 #include "liballoc.h"
 #include "fileacc.h"
 #include "rtinit.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "iomode.h"
 #include "handleio.h"

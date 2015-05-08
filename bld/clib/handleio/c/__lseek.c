@@ -45,9 +45,11 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
 #include "handleio.h"
+#include "thread.h"
 
 #ifndef INVALID_SET_FILE_POINTER
     #define INVALID_SET_FILE_POINTER 0xFFFFFFFF

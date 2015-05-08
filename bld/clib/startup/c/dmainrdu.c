@@ -41,6 +41,7 @@
 #include "initarg.h"
 #include "rdosexc.h"
 #include "snglthrd.h"
+#include "thread.h"
 #include "mthread.h"
 
 extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );

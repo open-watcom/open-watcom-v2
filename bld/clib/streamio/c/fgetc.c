@@ -47,6 +47,7 @@
 #include "orient.h"
 #include "flush.h"
 #include "streamio.h"
+#include "errorno.h"
 
 #define DOS_EOF_CHAR        0x1a
 

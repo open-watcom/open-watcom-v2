@@ -35,8 +35,10 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "close.h"
+#include "thread.h"
 
 _WCRTLINK int close( int handle )
 {

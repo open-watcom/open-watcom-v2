@@ -33,6 +33,7 @@
 #include "rtdata.h"
 #include "thetime.h"
 #include "timedata.h"
+#include "thread.h"
 
 // #define DAYS_IN_4_YRS   ( 365 + 365 + 365 + 366 )
 // #define DAYS_IN_400_YRS ( ( 100 * DAYS_IN_4_YRS ) - 3 )

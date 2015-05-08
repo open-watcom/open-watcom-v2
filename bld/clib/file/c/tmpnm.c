@@ -39,8 +39,10 @@
 #include "fileacc.h"
 #include "exitwmsg.h"
 #include "liballoc.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "tmpnm.h"
+#include "thread.h"
 
 /*
     U's     are unique filename letters for the process

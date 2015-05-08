@@ -34,6 +34,7 @@
 #include <sys/ioctl.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int ioctl( int __fd, unsigned long int __request, ... )
 {

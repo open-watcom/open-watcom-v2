@@ -44,6 +44,7 @@
 #include "iomode.h"
 #include "seterrno.h"
 #include "streamio.h"
+#include "errorno.h"
 
 
 extern int      __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *, int * );

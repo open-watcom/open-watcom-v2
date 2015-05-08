@@ -35,6 +35,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "rtdata.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "liballoc.h"
 #include "linuxsys.h"

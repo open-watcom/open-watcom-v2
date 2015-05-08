@@ -40,6 +40,7 @@
     #include "nexttok.h"
 #endif
 #include "setbits.h"
+#include "thread.h"
 
 
 #ifdef __WIDECHAR__

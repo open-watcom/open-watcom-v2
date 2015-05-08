@@ -34,6 +34,7 @@
 #include <process.h>
 #include "rtdata.h"
 #include "seterrno.h"
+#include "errorno.h"
 
 _WCRTLINK int wait( int *status )
 {

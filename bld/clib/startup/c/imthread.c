@@ -34,8 +34,8 @@
 #include <wos2.h>
 #endif
 #include "rtinit.h"
-#include "thread.h"
 #include "rtdata.h"
+#include "thread.h"
 #include "mthread.h"
 
 #if defined(__OS2_286__) || defined(__NETWARE__)

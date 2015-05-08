@@ -51,10 +51,12 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "i64.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "find.h"
 #include "d2ttime.h"
 #include "os2fil64.h"
+#include "thread.h"
 
 
 static unsigned short at2mode( OS_UINT attr, char *fname ) {

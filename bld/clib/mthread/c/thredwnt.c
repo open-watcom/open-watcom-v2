@@ -43,11 +43,13 @@
 #include "ntexc.h"
 #include "stacklow.h"
 #include "sigtab.h"
+#include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"
+#include "errorno.h"
 
 
 extern  DWORD           __TlsIndex;

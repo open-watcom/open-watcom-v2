@@ -43,11 +43,12 @@
 #include "exitwmsg.h"
 #include "fileacc.h"
 #include "initfini.h"
-
+#include "thread.h"
 #include "trdlist.h"
 #include "nw_libc.h"
 #include "snglthrd.h"
 #include "mthread.h"
+#include "errorno.h"
 
 /*****************************************************************************
 //  TLS slot key

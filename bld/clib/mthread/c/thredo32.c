@@ -44,6 +44,7 @@
 #include <float.h>
 #include "liballoc.h"
 #include "osthread.h"
+#include "thread.h"
 #include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"

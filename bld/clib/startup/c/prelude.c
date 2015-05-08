@@ -45,6 +45,7 @@
 #if !defined(_THIN_LIB)
 #include "initarg.h"
 #endif
+#include "thread.h"
 #include "mthread.h"
 
 #define MAX_CMDLINE     500

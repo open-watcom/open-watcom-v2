@@ -42,6 +42,7 @@
 #include "stacklow.h"
 #include "sigtab.h"
 #include "extfunc.h"
+#include "thread.h"
 
 typedef void (_WCFAR thread_fn)(void _WCFAR *);
 #if defined(_M_IX86)

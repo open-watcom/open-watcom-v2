@@ -34,6 +34,7 @@
 #include <sys/resource.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int setrlimit( int resource, const struct rlimit *rlim )
 {

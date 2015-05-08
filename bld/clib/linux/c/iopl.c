@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int iopl( int __level )
 {

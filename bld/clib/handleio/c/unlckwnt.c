@@ -38,6 +38,8 @@
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 /*
     BOOL UnlockFile(

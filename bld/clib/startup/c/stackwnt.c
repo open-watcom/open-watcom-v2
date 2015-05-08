@@ -34,6 +34,7 @@
 #include "stacklow.h"
 #include "exitwmsg.h"
 #include <alloca.h>
+#include "thread.h"
 
 #if defined(__AXP__) || defined(__PPC__)
 void _init_stk( void )

@@ -40,6 +40,8 @@
 #include "rtdata.h"
 #include "msdos.h"
 #include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 #pragma on(check_stack);
 

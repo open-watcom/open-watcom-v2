@@ -45,6 +45,7 @@
 #include "seterrno.h"
 #include "defwin.h"
 #include "streamio.h"
+#include "errorno.h"
 
 #ifdef __UNIX__
     #define PMODE   (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)

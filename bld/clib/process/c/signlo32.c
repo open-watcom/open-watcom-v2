@@ -44,6 +44,8 @@
 #include "seterrno.h"
 #include "rtinit.h"
 #include "_int23.h"
+#include "errorno.h"
+#include "thread.h"
 
 unsigned        char    __ExceptionHandled;
 

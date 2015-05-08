@@ -42,6 +42,7 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "openmode.h"
+#include "errorno.h"
 #include "seterrno.h"
 
 

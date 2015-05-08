@@ -46,6 +46,8 @@
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "d2ttime.h"
+#include "errorno.h"
+#include "thread.h"
 
 
 /*

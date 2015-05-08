@@ -48,6 +48,7 @@
     #include "libwin32.h"
 #endif
 #include "liballoc.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "_environ.h"
 

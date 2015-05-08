@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int access( const char *filename, int mode )
 {

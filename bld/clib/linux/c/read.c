@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK ssize_t read( int __fildes, void *__buf, size_t __len )
 {

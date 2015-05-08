@@ -34,6 +34,7 @@
 #include <dos.h>
 #include <wos2.h>
 #include "rtdata.h"
+#include "errorno.h"
 #include "seterrno.h"
 
 #define FF_LEVEL        0

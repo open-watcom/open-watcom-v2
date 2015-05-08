@@ -35,6 +35,7 @@
 #include <time.h>
 #include "rtdata.h"
 #include "asctime.h"
+#include "thread.h"
 
 static void convDec( int num, int off, CHAR_TYPE *buf )
 {

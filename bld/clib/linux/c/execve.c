@@ -33,6 +33,7 @@
 #include <process.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int execve( const char *__path, const char *const __argv[],
                       const char *const __envp[] )

@@ -43,8 +43,10 @@
 #endif
 #include <string.h>
 #include "rtdata.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "_environ.h"
+#include "thread.h"
 
 #if defined(__UNIX__)
     #define PATH_SEPARATOR STRING('/')

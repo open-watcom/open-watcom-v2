@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int sched_getparam( pid_t pid, struct sched_param *sp )
 {

@@ -43,9 +43,11 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "qread.h"
+#include "thread.h"
 
 #ifdef __WINDOWS_386__
 

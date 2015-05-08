@@ -43,6 +43,7 @@
 #include "rtdata.h"
 #include "fileacc.h"
 #include "iomode.h"
+#include "errorno.h"
 #include "seterrno.h"
 
 

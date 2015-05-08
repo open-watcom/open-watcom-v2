@@ -40,6 +40,7 @@
 #include <time.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 /* Incomplete kernel sigevent type that provides "just enough"
  * to properly create a timer

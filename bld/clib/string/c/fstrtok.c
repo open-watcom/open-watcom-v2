@@ -35,6 +35,7 @@
 #include "rtdata.h"
 #include "nextftok.h"
 #include "setbits.h"
+#include "thread.h"
 
 
 _WCRTLINK char _WCFAR *_fstrtok( char _WCFAR *str, const char _WCFAR *charset )

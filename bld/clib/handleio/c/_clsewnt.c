@@ -40,6 +40,8 @@
 #include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
+#include "errorno.h"
+#include "thread.h"
 
 int __close( int hid )
 {

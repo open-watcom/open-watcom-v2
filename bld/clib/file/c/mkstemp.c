@@ -41,6 +41,8 @@
     #include <process.h>
 #endif
 #include "rtdata.h"
+#include "errorno.h"
+#include "thread.h"
 
 /* Note: This code is similar to _mktemp() but intended for POSIX usage */
 

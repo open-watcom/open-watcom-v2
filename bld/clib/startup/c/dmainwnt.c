@@ -40,6 +40,7 @@
 #include "initarg.h"
 #include "sigtab.h"
 #include "snglthrd.h"
+#include "thread.h"
 #include "mthread.h"
 
 extern int APIENTRY LibMain( HANDLE, DWORD, LPVOID );

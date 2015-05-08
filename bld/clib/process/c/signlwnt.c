@@ -40,6 +40,8 @@
 #include "seterrno.h"
 #include "signlwnt.h"
 #include "rtinit.h"
+#include "errorno.h"
+#include "thread.h"
 
 sigtab  _SignalTable[] = {
     { SIG_IGN, -1 },                                /* unused  */

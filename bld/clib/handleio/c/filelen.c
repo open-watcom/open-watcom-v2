@@ -36,8 +36,10 @@
 #include "rtdata.h"
 #include "fileacc.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
+#include "thread.h"
 
 
 #if defined(__INT64__)

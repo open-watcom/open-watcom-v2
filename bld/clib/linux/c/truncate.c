@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int truncate( const char *__path, off_t __length )
 {

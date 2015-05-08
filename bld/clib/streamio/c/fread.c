@@ -38,6 +38,7 @@
 #include "seterrno.h"
 #include "qread.h"
 #include "streamio.h"
+#include "errorno.h"
 
 
 #define DOS_EOF_CHAR    0x1a

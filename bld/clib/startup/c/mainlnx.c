@@ -37,6 +37,7 @@
 #include "initfini.h"
 #include "linuxsys.h"
 #include "snglthrd.h"
+#include "thread.h"
 #include "mthread.h"
 
 

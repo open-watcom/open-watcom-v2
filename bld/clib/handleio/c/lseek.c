@@ -35,8 +35,10 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
+#include "thread.h"
 
 
 #ifdef __INT64__

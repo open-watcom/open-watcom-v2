@@ -36,6 +36,7 @@
 #include <windows.h>
 #include "rtdata.h"
 #include "seterrno.h"
+#include "errorno.h"
 
 _WCRTLINK int cwait(int *status, int process_id, int action)
 /***********************************************************/

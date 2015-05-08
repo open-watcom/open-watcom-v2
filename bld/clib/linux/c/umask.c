@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 
 _WCRTLINK mode_t umask( mode_t __cmask )

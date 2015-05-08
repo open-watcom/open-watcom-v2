@@ -33,6 +33,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "rtdata.h"
+#include "errorno.h"
 
 extern char **_argv;    /* argument vector */
 

@@ -33,6 +33,7 @@
 #include "rtdata.h"
 #include "thetime.h"
 #include "timedata.h"
+#include "thread.h"
 
 _WCRTLINK struct tm *_localtime( const time_t *timer, struct tm *t )
 {

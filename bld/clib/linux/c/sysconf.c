@@ -37,6 +37,7 @@
 #include <sys/sysinfo.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 #ifndef PAGE_SIZE
   #if defined( _M_IX86 )
@@ -48,7 +49,7 @@
 #define SYS_CLK_TCK 100
 #endif
 
-static int __sysconf_nprocessors()
+static int __sysconf_nprocessors( void )
 {
 long ures;
 unsigned char mask[128];

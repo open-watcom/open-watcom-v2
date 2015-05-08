@@ -36,6 +36,8 @@
 #include <stdio.h>
 #include "rtdata.h"
 #include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 /**
 *

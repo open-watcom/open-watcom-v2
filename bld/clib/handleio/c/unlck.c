@@ -40,7 +40,9 @@
 #endif
 #include "rtdata.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )
@@ -61,7 +63,7 @@ _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )
 #elif defined(__OS2_286__)
         APIRET  rc;
 /* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
-#ifdef INCL_16	
+#ifdef INCL_16  
         FILELOCK        flock;
 
         __handle_check( handle, -1 );
@@ -75,7 +77,7 @@ _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )
         unlock_block[0] = offset;
         unlock_block[1] = nbytes;
         rc = DosFileLocks( handle, unlock_block, NULL );
-#endif	
+#endif  
         if( rc != 0 ) {
             return( __set_errno_dos( rc ) );
         }

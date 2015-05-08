@@ -34,6 +34,7 @@
 #include <sys/ptrace.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK long ptrace( int request, int pid, void *addr, void *data )
 {

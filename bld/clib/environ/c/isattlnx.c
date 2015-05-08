@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include "rtdata.h"
+#include "errorno.h"
 
 _WCRTLINK int isatty( int __fildes )
 {

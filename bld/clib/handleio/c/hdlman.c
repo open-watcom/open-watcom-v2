@@ -55,6 +55,8 @@
 #include "rtinit.h"
 #include "seterrno.h"
 #include "handleio.h"
+#include "errorno.h"
+#include "thread.h"
 
 #undef __getOSHandle
 

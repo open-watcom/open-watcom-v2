@@ -44,6 +44,8 @@
 #include "tmpfname.h"
 #include "seterrno.h"
 #include "openmode.h"
+#include "errorno.h"
+#include "thread.h"
 
 #define OPEN_MODE   (O_RDWR | O_CREAT | O_BINARY)
 #define PMODE       (S_IREAD | S_IWRITE)

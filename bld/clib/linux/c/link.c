@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int link( const char *__path1, const char *__path2 )
 {

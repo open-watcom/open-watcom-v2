@@ -39,6 +39,8 @@
 #include "qwrite.h"
 #include "flush.h"
 #include "streamio.h"
+#include "errorno.h"
+#include "thread.h"
 
 
 _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )

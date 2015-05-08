@@ -38,7 +38,9 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 // Note: there are no OS handles under anything other than Win32
 

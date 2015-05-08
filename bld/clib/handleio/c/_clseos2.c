@@ -37,9 +37,11 @@
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
+#include "thread.h"
 
 
 int __close( int handle )

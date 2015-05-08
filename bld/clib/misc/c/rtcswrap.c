@@ -33,6 +33,7 @@
 #include "saferlib.h"
 #include <string.h>
 #include "rtdata.h"
+#include "errorno.h"
 
 void __rtct_fail( const char *fn, const char *reason, void *reserved )
 /********************************************************************/

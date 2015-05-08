@@ -33,6 +33,7 @@
 #include <sys/times.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK clock_t times( struct tms *__buf )
 {

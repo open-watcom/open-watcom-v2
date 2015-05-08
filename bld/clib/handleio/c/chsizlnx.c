@@ -37,6 +37,7 @@
 #include <string.h>
 #include "rtdata.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 
 _WCRTLINK int chsize( int handle, long size )

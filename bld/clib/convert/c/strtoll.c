@@ -41,6 +41,7 @@
 #endif
 #include <limits.h>
 #include "rtdata.h"
+#include "errorno.h"
 #include "seterrno.h"
 
 /* This is heavily based on strtol() implementation; however this code needs

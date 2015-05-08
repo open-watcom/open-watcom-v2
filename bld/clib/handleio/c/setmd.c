@@ -43,7 +43,9 @@
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 _WCRTLINK int setmode( int handle, int mode )
 {

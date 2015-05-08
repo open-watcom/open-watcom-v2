@@ -38,6 +38,7 @@
 #include "rtdata.h"
 #include "tinyio.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
 #include "msdos.h"

@@ -39,6 +39,8 @@
 #include "seterrno.h"
 #include "_process.h"
 #include "_int23.h"
+#include "errorno.h"
+#include "thread.h"
 
 _WCRTLINK int __F_NAME(execve,_wexecve)( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
 {

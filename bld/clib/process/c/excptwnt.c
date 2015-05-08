@@ -44,6 +44,7 @@
 #include "clearfpe.h"
 #include "ntconio.h"
 #include "ntexc.h"
+#include "thread.h"
 
 __sig_func  (*__oscode_check_func)( int, long ) = NULL;
 int         (*__raise_func)( int )              = NULL;

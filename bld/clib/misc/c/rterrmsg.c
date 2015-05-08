@@ -50,6 +50,8 @@
 #endif
 #include "rtdata.h"
 #include "rterrmsg.h"
+#include "errorno.h"
+#include "thread.h"
 
 #define STR_SIZE        256
 

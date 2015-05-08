@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int fchmod( int __fd, mode_t __mode )
 {

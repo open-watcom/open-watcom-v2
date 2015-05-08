@@ -36,6 +36,7 @@
 #include "fileacc.h"
 #include "seterrno.h"
 #include "flush.h"
+#include "errorno.h"
 
 
 #ifdef __INT64__

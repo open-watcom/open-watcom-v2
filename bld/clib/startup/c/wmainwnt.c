@@ -41,6 +41,7 @@
 #include "initfini.h"
 #include "initarg.h"
 #include "rtdata.h"
+#include "thread.h"
 #include "mthread.h"
 
 

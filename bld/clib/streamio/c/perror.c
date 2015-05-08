@@ -36,6 +36,8 @@
 #include <string.h>
 #include "rtdata.h"
 #include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 
 _WCRTLINK void __F_NAME(perror,_wperror)( const CHAR_TYPE *s )

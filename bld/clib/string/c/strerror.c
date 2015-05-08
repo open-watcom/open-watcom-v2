@@ -38,6 +38,8 @@
 #endif
 #include "rtdata.h"
 #include "errstr.h"
+#include "errorno.h"
+#include "thread.h"
 
 #ifdef __WIDECHAR__
 #define ERROR_MSG   Wide_Error_String

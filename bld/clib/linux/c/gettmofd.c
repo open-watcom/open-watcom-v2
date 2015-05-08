@@ -34,6 +34,7 @@
 #include <sys/time.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int gettimeofday( struct timeval *__tv, struct timezone *__tz )
 {

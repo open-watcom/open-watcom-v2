@@ -47,9 +47,11 @@
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "qwrite.h"
+#include "thread.h"
 
 /*
     Use caution when setting the file pointer in a multithreaded

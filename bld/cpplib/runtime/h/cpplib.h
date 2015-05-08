@@ -115,7 +115,8 @@ extern "C" {
 #pragma warning 594 1
 
 #if defined(__MT__)
-#include <lock.h>
+    #include "thread.h"
+    #include <lock.h>
 #endif
 
 #if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )

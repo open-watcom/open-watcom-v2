@@ -50,6 +50,5 @@
 #else
   #define __EXCEPTION_RECORD  int
 #endif
-#include <thread.h>
 
 #endif

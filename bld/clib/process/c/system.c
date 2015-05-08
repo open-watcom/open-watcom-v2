@@ -43,6 +43,7 @@
 #include "rtdata.h"
 #include "_process.h"
 #include "seterrno.h"
+#include "errorno.h"
 
 
 _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )

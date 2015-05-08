@@ -45,6 +45,8 @@
   #include "tinyio.h"
  #endif
 #endif
+#include "errorno.h"
+#include "thread.h"
 
 extern  unsigned                _curbrk;
 extern  unsigned                _STACKTOP;

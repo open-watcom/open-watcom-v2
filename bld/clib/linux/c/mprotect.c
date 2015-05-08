@@ -33,6 +33,7 @@
 #include <sys/mman.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int mprotect( void *addr, size_t len, int prot )
 {

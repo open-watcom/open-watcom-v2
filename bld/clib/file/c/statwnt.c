@@ -51,6 +51,7 @@
 #include "libwin32.h"
 #include "ntext.h"
 #include "osver.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "d2ttime.h"
 

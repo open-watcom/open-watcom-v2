@@ -40,6 +40,7 @@
 #include "stacklow.h"
 #include "sigtab.h"
 #include "exitwmsg.h"
+#include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "cthread.h"

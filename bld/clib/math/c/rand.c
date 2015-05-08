@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include "randnext.h"
 #include "rtdata.h"
+#include "thread.h"
 
 
 static unsigned long *initrandnext( void )

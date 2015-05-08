@@ -39,6 +39,8 @@
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 _WCRTLINK int dup2( int hid1, int hid2 )
 {

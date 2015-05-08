@@ -40,6 +40,7 @@
 #else
     #include "nexttok.h"
 #endif
+#include "thread.h"
 
 
 

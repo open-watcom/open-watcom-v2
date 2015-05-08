@@ -40,6 +40,7 @@
 #include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"
+#include "thread.h"
 #include "mthread.h"
 
 

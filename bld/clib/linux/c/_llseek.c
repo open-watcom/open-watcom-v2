@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int _llseek( unsigned int __fildes, unsigned long __hi, unsigned long __lo, loff_t *__res, unsigned int __whence)
 {

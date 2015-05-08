@@ -44,6 +44,7 @@
 #include "seterrno.h"
 #include "orient.h"
 #include "streamio.h"
+#include "errorno.h"
 
 
 _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )

@@ -48,6 +48,7 @@
 #include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "os2fil64.h"

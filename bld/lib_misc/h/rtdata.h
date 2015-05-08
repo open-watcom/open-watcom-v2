@@ -33,10 +33,6 @@
 #define _RTDATA_H_INCLUDED
 
 #include <stdio.h>
-#include "errorno.h"
-#if defined( __MT__ )
-#include "thread.h"
-#endif
 
 /* DOS based platforms have stdaux/stdprn in addition to stdin/out/err */
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )

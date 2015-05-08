@@ -37,6 +37,7 @@
 #include <string.h>
 #include <process.h>
 #include "rtdata.h"
+#include "errorno.h"
 
 /*
  * if program name empty then quit

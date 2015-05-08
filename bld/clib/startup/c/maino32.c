@@ -53,6 +53,7 @@
 #include "liballoc.h"
 #include "initarg.h"
 #include "snglthrd.h"
+#include "thread.h"
 #include "mthread.h"
 
 extern unsigned         __hmodule;

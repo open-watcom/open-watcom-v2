@@ -31,6 +31,8 @@
 
 #include "variety.h"
 #include "rtdata.h"
+#include "errorno.h"
+#include "thread.h"
 
 #if defined(__QNX__)
 

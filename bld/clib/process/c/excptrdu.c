@@ -42,6 +42,7 @@
 #include "clearfpe.h"
 #include "excptrdu.h"
 #include "rdosexc.h"
+#include "thread.h"
 
 __sig_func  (*__oscode_check_func)( int, long ) = NULL;
 int         (*__raise_func)( int )              = NULL;

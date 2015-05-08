@@ -33,6 +33,7 @@
 #include "rtdata.h"
 #include "stacklow.h"
 #include <alloca.h>
+#include "thread.h"
 
 #if defined(__OS2__)
 extern  unsigned GetThreadStack( void );

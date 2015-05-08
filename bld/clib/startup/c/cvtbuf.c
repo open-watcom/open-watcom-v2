@@ -34,6 +34,7 @@
 #include "rtdata.h"
 #include "cvtbuf.h"
 #include "_cvtbuf.h"
+#include "thread.h"
 
 
 _WCRTLINK void *__CVTBuffer( void )

@@ -39,6 +39,8 @@
 #include "seterrno.h"
 #include "_process.h"
 #include "_int23.h"
+#include "errorno.h"
+#include "thread.h"
 
 int __p_overlay = 2;
 

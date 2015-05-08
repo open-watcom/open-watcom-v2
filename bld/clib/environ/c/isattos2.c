@@ -35,7 +35,9 @@
 #include "rtdata.h"
 #include "defwin.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int isatty( int handle )

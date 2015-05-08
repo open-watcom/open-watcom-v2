@@ -39,6 +39,7 @@
 #include "rtdata.h"
 #include "rtinit.h"
 #include "timedata.h"
+#include "errorno.h"
 
 #ifdef __LINUX__
 

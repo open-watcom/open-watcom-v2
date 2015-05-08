@@ -36,6 +36,7 @@
 #include "sigtab.h"
 #include "sigfunc.h"
 #include "seterrno.h"
+#include "errorno.h"
 
 #ifndef __WINDOWS_386__
 extern      void    __grab_int23( void );

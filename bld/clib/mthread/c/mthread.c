@@ -42,6 +42,7 @@
 #include "rtinit.h"
 #include "exitwmsg.h"
 #include "osver.h"
+#include "errorno.h"
 
 #if defined (_NETWARE_LIBC)
 #include "nw_libc.h"

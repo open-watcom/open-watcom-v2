@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <signal.h>
 #include "rtdata.h"
+#include "errorno.h"
 
 _WCRTLINK int sigdelset( sigset_t *__set, int signum )
 /****************************************************/

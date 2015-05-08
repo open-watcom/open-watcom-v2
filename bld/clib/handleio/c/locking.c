@@ -42,8 +42,10 @@
 #include <sys/locking.h>
 #include "rtdata.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
+#include "thread.h"
 
 #ifdef __UNIX__
 _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )

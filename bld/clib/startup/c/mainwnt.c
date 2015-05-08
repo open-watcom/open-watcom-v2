@@ -53,6 +53,7 @@
 #include "rtinit.h"
 #include "initarg.h"
 #include "snglthrd.h"
+#include "thread.h"
 #include "mthread.h"
 
 DWORD __TlsIndex = NO_INDEX;

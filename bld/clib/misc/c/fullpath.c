@@ -70,7 +70,9 @@
     #include "_doslfn.h"
 #endif
 #include "liballoc.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
                             _RWD_errno = ERANGE;        \

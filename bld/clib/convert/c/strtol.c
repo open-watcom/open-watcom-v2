@@ -40,6 +40,7 @@
 #endif
 #include <limits.h>
 #include "rtdata.h"
+#include "errorno.h"
 #include "seterrno.h"
 
 /*

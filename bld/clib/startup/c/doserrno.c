@@ -32,6 +32,8 @@
 #include "variety.h"
 #include <stdlib.h>
 #include "rtdata.h"
+#include "errorno.h"
+#include "thread.h"
 
 #if !defined(__UNIX__) && !defined( __NETWARE__ )
 

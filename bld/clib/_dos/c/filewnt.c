@@ -37,15 +37,17 @@
 #include <sys/stat.h>
 #include <share.h>
 #include <direct.h>
-#include <windows.h>
 #include <dos.h>
+#include <windows.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "ntext.h"
 #include "openmode.h"
-#include "rtdata.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle )
 {

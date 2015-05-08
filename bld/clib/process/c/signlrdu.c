@@ -40,6 +40,7 @@
 #include "seterrno.h"
 #include "signlrdu.h"
 #include "rtinit.h"
+#include "thread.h"
 
 #define FALSE 0
 #define TRUE !FALSE

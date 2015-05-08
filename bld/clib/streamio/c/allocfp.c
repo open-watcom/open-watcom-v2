@@ -37,6 +37,7 @@
 #include "fileacc.h"
 #include "seterrno.h"
 #include "streamio.h"
+#include "errorno.h"
 
 
 #define KEEP_FLAGS (_READ | _WRITE | _DYNAMIC)

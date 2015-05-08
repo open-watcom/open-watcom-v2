@@ -41,6 +41,7 @@
 #include <windows.h>
 #include "rtdata.h"
 #include "libwin32.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "liballoc.h"
 

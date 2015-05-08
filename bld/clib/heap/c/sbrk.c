@@ -49,6 +49,8 @@
 #include "rtdata.h"
 #include "heapacc.h"
 #include "heap.h"
+#include "errorno.h"
+#include "thread.h"
 
 
 #if !defined(__OS2__) && !defined(__QNX__)

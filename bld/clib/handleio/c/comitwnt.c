@@ -35,6 +35,8 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 _WCRTLINK int _commit( int handle )
 {

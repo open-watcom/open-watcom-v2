@@ -36,6 +36,8 @@
 #include <dos.h>
 #include <windows.h>
 #include "rtdata.h"
+#include "errorno.h"
+#include "thread.h"
 
 extern  unsigned                _curbrk;
 extern  unsigned                _STACKTOP;

@@ -39,6 +39,7 @@
 #include <wos2.h>
 #endif
 #include "rtdata.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "dosret.h"
 

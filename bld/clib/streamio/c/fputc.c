@@ -42,6 +42,7 @@
 #include "orient.h"
 #include "flush.h"
 #include "streamio.h"
+#include "errorno.h"
 
 
 #ifndef __WIDECHAR__

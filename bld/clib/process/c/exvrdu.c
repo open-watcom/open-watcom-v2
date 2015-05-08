@@ -43,6 +43,8 @@
 #include "filestr.h"
 #include "seterrno.h"
 #include "_process.h"
+#include "errorno.h"
+#include "thread.h"
 
 #define SPVE_NEAR _WCI86NEAR
 #define LIB_ALLOC   lib_nmalloc

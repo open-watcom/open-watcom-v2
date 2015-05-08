@@ -38,8 +38,10 @@
 #include "fileacc.h"
 #include "osver.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
+#include "thread.h"
 
 // pad with zero bytes
 void static __padfile( int hid, long offset, long diff ) {

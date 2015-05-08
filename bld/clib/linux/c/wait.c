@@ -33,6 +33,7 @@
 #include <sys/wait.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK pid_t wait( __WAIT_STATUS __stat_loc )
 {

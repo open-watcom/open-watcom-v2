@@ -34,7 +34,9 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int eof( int handle )         /* determine if at EOF */

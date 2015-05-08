@@ -34,6 +34,7 @@
 #include <fcntl.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int fcntl( int __fildes, int __cmd, ... )
 {

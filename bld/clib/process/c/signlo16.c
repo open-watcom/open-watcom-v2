@@ -41,6 +41,7 @@
 #include "sigfunc.h"
 #include "seterrno.h"
 #include "_int23.h"
+#include "errorno.h"
 
 
 static struct sigtab _SignalTable[] = {

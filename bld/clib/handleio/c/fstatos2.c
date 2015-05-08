@@ -42,9 +42,11 @@
 #include "i64.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "os2fil64.h"
+#include "thread.h"
 
 #if defined( _M_I86 )
     #define FF_LEVEL        1

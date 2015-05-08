@@ -36,6 +36,8 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include "rtdata.h"
+#include "errorno.h"
+#include "thread.h"
 
 #ifndef SIZE_MAX
 #define SIZE_MAX ((size_t)-1)

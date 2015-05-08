@@ -44,6 +44,7 @@
 #include "rtdata.h"
 #include "tinyio.h"
 #include "iomode.h"
+#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "extender.h"

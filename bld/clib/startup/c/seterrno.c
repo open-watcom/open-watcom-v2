@@ -34,6 +34,8 @@
 #include "rtdata.h"
 #include "clibsupp.h"
 #include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 void __set_errno( unsigned int err )
 {

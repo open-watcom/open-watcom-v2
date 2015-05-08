@@ -35,6 +35,7 @@
 #include <time.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int clock_nanosleep( clockid_t __clk, int __flags, 
                                const struct timespec *__req, 

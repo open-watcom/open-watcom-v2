@@ -32,6 +32,8 @@
 #ifndef _THREAD_H_INCLUDED
 #define _THREAD_H_INCLUDED
 
+#if !defined( __DOS__ ) && !defined( __WINDOWS__ )
+
 #include <time.h>
 #if defined( __NT__ )
   #include <windows.h>
@@ -168,6 +170,8 @@ extern  unsigned        __MaxThreads;
 
 #ifdef __cplusplus
 }   /* extern "C" */
+#endif
+
 #endif
 
 #pragma pack(__pop);

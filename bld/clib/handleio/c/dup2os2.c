@@ -38,7 +38,9 @@
 #include "fileacc.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int dup2( int handle1, int handle2 )

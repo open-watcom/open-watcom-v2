@@ -33,6 +33,7 @@
 #include <time.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK time_t time( time_t *t )
 {

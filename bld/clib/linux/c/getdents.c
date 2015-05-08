@@ -34,6 +34,7 @@
 #include <dirent.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 int sys_getdents( u_int fd, struct dirent *dirp, u_int count )
 {

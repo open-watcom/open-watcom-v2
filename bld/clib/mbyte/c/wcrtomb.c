@@ -37,6 +37,7 @@
 #include "rtdata.h"
 #include "farfunc.h"
 #include "seterrno.h"
+#include "errorno.h"
 
 
 _WCRTLINK int _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate_t _FFAR *ps )

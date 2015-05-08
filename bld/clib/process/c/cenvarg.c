@@ -42,6 +42,7 @@
 #include "msdos.h"
 #include "seterrno.h"
 #include "_process.h"
+#include "errorno.h"
 
 #ifdef __WIDECHAR__
 extern _WCRTLINK void   __create_wide_environment( void );

@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 #include "rtdata.h"
 #include "linuxsys.h"
+#include "errorno.h"
 
 _WCRTLINK int stat64( const char *filename, struct stat64 * __buf )
 {

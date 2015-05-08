@@ -40,6 +40,7 @@
 #include <fcntl.h>
 #include "rtdata.h"
 #include "_process.h"
+#include "errorno.h"
 
 #define SPAWN   0
 #define EXEC    1
