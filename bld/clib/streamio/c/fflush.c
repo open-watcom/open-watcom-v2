@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
 #include <fcntl.h>
 #include "rtdata.h"
 #include "fileacc.h"

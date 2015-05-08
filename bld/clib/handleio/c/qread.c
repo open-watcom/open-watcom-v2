@@ -40,6 +40,7 @@
 #else
     #include "tinyio.h"
 #endif
+#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

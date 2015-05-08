@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <errno.h>
 #if defined(__OS2__)
  #define INCL_DOSFILEMGR
  #include <wos2.h>

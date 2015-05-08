@@ -36,7 +36,6 @@
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <wos2.h>
-#include <errno.h>
 #include "rtdata.h"
 #include "seterrno.h"
 

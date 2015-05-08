@@ -34,13 +34,11 @@
 #include <signal.h>
 #include <float.h>
 #include <unistd.h>
-#include <errno.h>
 #include <process.h>
-
+#include "rtdata.h"
 #include "liballoc.h"
 #include "osthread.h"
 //#include "thread.h"
-#include "rtdata.h"
 #include "stacklow.h"
 #include "extfunc.h"
 #include "mthread.h"

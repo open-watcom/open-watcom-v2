@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <direct.h>
 #include <dos.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "seterrno.h"
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer, size_t maxlen )

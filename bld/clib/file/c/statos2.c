@@ -32,28 +32,26 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include "i64.h"
 #undef __INLINE_FUNCTIONS__
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <io.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <string.h>
 #include <direct.h>
-
-#define INCL_LONGLONG
-#include <wos2.h>
 #include <dos.h>
 #include <mbstring.h>
-#include "rtdata.h"
-#include "seterrno.h"
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
     #include <ctype.h>
 #endif
+#define INCL_LONGLONG
+#include <wos2.h>
+#include "rtdata.h"
+#include "i64.h"
+#include "seterrno.h"
 #include "find.h"
 #include "d2ttime.h"
 #include "os2fil64.h"

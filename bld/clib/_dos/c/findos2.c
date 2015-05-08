@@ -31,15 +31,14 @@
 
 
 #include "variety.h"
-#include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <direct.h>
 #include <dos.h>
 #define INCL_ERRORS
 #include <wos2.h>
-#include "tinyio.h"
 #include "rtdata.h"
+#include "tinyio.h"
 #include "seterrno.h"
 #include "_dtaxxx.h"
 

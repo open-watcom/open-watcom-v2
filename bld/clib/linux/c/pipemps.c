@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 /* The MIPS version is a little unusual - the two descriptors are returned
@@ -52,7 +52,7 @@ _WCRTLINK int pipe( int __fildes[2] )
 {
     int res = sys_pipe( SYS_pipe, (u_long)__fildes );
     if( get_a3() ) {
-        errno = res;
+        _RWD_errno = res;
         res = -1;
     } else {
         res = 0;

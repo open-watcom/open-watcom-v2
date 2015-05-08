@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK ssize_t write( int __fildes, const void *__buf, size_t __len )

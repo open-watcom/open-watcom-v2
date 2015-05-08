@@ -31,8 +31,8 @@
 
 #include "variety.h"
 //#include <unistd.h>
-#include <errno.h>
 #include <sys/resource.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int setrlimit( int resource, const struct rlimit *rlim )

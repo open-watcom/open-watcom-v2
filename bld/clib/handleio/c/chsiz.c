@@ -34,11 +34,10 @@
 #include <stdio.h>
 #include <io.h>
 #include <stdlib.h>
-#include "tinyio.h"
-#include <errno.h>
 #include <string.h>
-#include "rtcheck.h"
 #include "rtdata.h"
+#include "tinyio.h"
+#include "rtcheck.h"
 #include "seterrno.h"
 #include "lseek.h"
 #include "msdos.h"

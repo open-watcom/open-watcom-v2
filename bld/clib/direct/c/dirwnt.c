@@ -31,7 +31,6 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,9 +39,9 @@
 #include <direct.h>
 #include <dos.h>
 #include <windows.h>
+#include "rtdata.h"
 #include "strdup.h"
 #include "libwin32.h"
-#include "rtdata.h"
 #include "ntext.h"
 #include "seterrno.h"
 #include "_direct.h"

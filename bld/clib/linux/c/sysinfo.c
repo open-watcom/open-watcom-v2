@@ -30,8 +30,9 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+#include "variety.h"
 #include <sys/sysinfo.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int sysinfo ( struct sysinfo *__info )
@@ -39,7 +40,7 @@ _WCRTLINK int sysinfo ( struct sysinfo *__info )
 u_long ures;
     
     if( __info == 0 ) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return -1;
     }
     

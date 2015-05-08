@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
-#include <errno.h>
 #include <unistd.h>
 #if defined(__NT__)
     #include <windows.h>
 #endif
+#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <sched.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int sched_get_priority_max( int policy )

@@ -34,10 +34,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "rtdata.h"
 #include "_direct.h"
 
 static char *try_one( char *p, char *buff )

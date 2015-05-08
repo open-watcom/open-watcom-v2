@@ -31,9 +31,9 @@
 
 #include "variety.h"
 #include <io.h>
-#include <errno.h>
-#include <wos2.h>
 #include <dos.h>
+#include <wos2.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "seterrno.h"
 

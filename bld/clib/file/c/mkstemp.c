@@ -37,10 +37,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
 #ifndef __UNIX__
     #include <process.h>
 #endif
+#include "rtdata.h"
 
 /* Note: This code is similar to _mktemp() but intended for POSIX usage */
 
@@ -95,7 +95,7 @@ _WCRTLINK int mkstemp( char *template )
              * the creation failed for some other reason, it will almost
              * certainly fail again no matter how many times we try. So don't.
              */
-            if( errno != EEXIST ) {
+            if( _RWD_errno != EEXIST ) {
                 return( -1 );
             }
         }

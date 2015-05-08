@@ -34,9 +34,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 #include <process.h>
+#include "rtdata.h"
 
 /*
  * if program name empty then quit
@@ -60,7 +60,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
 
     __last_path = "";
     if( *path == '\0' ) {
-        errno = ENOENT;
+        _RWD_errno = ENOENT;
         return( -1 );
     }
     p = (char *)getenv( "PATH" );
@@ -70,7 +70,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
     }
     if( p == NULL || *p2 == '/' )
         return( spawnve( mode, path, argv, envp ) );
-    err = errno;
+    err = _RWD_errno;
     for( retval = -1; ; ) {
         if( *p == '\0' )
             break;
@@ -82,7 +82,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
         retval = spawnve( mode, buffer, argv, envp );
         if( retval != -1 )
             break;
-        if( !(errno == ENOENT || errno == EACCES || errno == ENOTDIR) )
+        if( !(_RWD_errno == ENOENT || _RWD_errno == EACCES || _RWD_errno == ENOTDIR) )
             break;
         if( *p == '\0' )
             break;
@@ -95,7 +95,7 @@ _WCRTLINK int (spawnvpe)( int mode, const char *path, const char *const argv[], 
             --p;
             trailer++;
         }
-        errno = err;
+        _RWD_errno = err;
     }
     return( retval );
 }

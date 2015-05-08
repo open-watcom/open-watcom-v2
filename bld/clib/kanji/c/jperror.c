@@ -34,7 +34,6 @@
 #include <jstring.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <errno.h>
 #include "rtdata.h"
 #include "seterrno.h"
 

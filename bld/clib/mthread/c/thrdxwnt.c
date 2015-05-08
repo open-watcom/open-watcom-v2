@@ -32,15 +32,14 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include <windows.h>
 #include <process.h>
 #include <string.h>
 #include <dos.h>
 #include <malloc.h>
-#include <errno.h>
+#include <windows.h>
+#include "rtdata.h"
 #include "liballoc.h"
 #include "ntext.h"
-#include "rtdata.h"
 #include "stacklow.h"
 #include "sigtab.h"
 #include "trdlist.h"

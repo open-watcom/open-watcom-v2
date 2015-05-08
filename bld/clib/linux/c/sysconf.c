@@ -33,9 +33,9 @@
 
 #include <unistd.h>
 #include <limits.h>
-#include <errno.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 #ifndef PAGE_SIZE
@@ -97,7 +97,7 @@ struct sysinfo info;
 #ifdef PAGE_SIZE
     return (int)(quantity/PAGE_SIZE);
 #else
-    errno = EINVAL;
+    _RWD_errno = EINVAL;
     return -1;
 #endif
 }
@@ -156,7 +156,7 @@ int ret;
 #ifdef PAGE_SIZE
             ret = PAGE_SIZE;
 #else
-            errno = EINVAL;
+            _RWD_errno = EINVAL;
             ret = -1;
 #endif
             break;
@@ -172,7 +172,7 @@ int ret;
             break;
             
         default:
-            errno = EINVAL;
+            _RWD_errno = EINVAL;
     }
     
     return ret;

@@ -36,7 +36,7 @@
 #include <process.h>
 #include <malloc.h>
 #include <memory.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "seterrno.h"
 
 

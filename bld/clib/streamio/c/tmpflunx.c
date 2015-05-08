@@ -37,7 +37,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <errno.h>
 #include "rtdata.h"
 #include "tmpfname.h"
 
@@ -60,7 +59,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
         ptr[_TMPFCHAR] = tmpfnext;
         fd = open( name, O_RDWR | O_CREAT | O_EXCL | O_TEMP, 0666 );
         if( fd != -1 ) break;
-        if( errno != EEXIST ) return( NULL );
+        if( _RWD_errno != EEXIST ) return( NULL );
         if( tmpfnext == 'z' ) tmpfnext = 'A' - 1;
         if( tmpfnext == 'Z' ) return( NULL );
     }

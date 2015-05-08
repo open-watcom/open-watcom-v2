@@ -32,7 +32,6 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
 #include <sys/dev_msg.h>
 #include <sys/kernel.h>
 #include <termios.h>

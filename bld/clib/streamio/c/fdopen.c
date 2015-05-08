@@ -36,13 +36,12 @@
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif
-#include <errno.h>
 #include <fcntl.h>
 #ifdef __NT__
     #include <windows.h>
 #endif
-#include "iomode.h"
 #include "rtdata.h"
+#include "iomode.h"
 #include "seterrno.h"
 #include "streamio.h"
 

@@ -33,9 +33,9 @@
 #include "variety.h"
 #include <stddef.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <dos.h>
 #include <windows.h>
+#include "rtdata.h"
 
 extern  unsigned                _curbrk;
 extern  unsigned                _STACKTOP;
@@ -50,9 +50,9 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
             p = VirtualAlloc(NULL, increment, MEM_COMMIT,
                              PAGE_EXECUTE_READWRITE);
             if( p != NULL ) return( p );
-            errno = ENOMEM;
+            _RWD_errno = ENOMEM;
         } else {
-            errno = EINVAL;
+            _RWD_errno = EINVAL;
         }
         return( (void *) -1 );
     }

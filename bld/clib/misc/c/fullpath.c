@@ -36,41 +36,44 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <errno.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
     #include <ctype.h>
+#endif
+#if defined(__WIDECHAR__) || defined(__WARP__)
+    #include <mbstring.h>
 #endif
 #if defined(__UNIX__)
     #include <dirent.h>
     #include <unistd.h>
     #include <sys/stat.h>
     #include <fcntl.h>
-#if defined(__QNX__)
+  #if defined(__QNX__)
     #include <sys/io_msg.h>
-#endif
+  #endif
 #else
     #include <direct.h>
-    #if defined(__OS2__)
-        #include <wos2.h>
-    #elif defined(__NT__)
-        #include <windows.h>
-        #include "libwin32.h"
-    #elif !defined(__NETWARE__)
-        #include "_direct.h"
-        #include "_doslfn.h"
-    #endif
+  #if defined(__OS2__)
+    #include <wos2.h>
+  #elif defined(__NT__)
+    #include <windows.h>
+  #endif
+#endif
+#include "rtdata.h"
+#if defined(__UNIX__)
+#elif defined(__OS2__)
+#elif defined(__NT__)
+    #include "libwin32.h"
+#elif !defined(__NETWARE__)
+    #include "_direct.h"
+    #include "_doslfn.h"
 #endif
 #include "liballoc.h"
-#include "rtdata.h"
 #include "seterrno.h"
-#if defined(__WIDECHAR__) || defined(__WARP__)
-    #include <mbstring.h>
-#endif
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
-                            __set_errno( ERANGE );      \
+                            _RWD_errno = ERANGE;        \
                             return( NULL );             \
                         }                               \
                         size -= (c);
@@ -104,7 +107,7 @@ static char *__qnx_fullpath( char *fullpath, const char *path )
     fd = __resolve_net( _IO_HANDLE, 1, &msg._io_open, path, 0, fullpath );
     if( fd != -1 ) {
         close( fd );
-    } else if( errno != ENOENT ) {
+    } else if( _RWD_errno != ENOENT ) {
         return( NULL );
     } else {
         __resolve_net( 0, 0, &msg._io_open, path, 0, fullpath );
@@ -215,7 +218,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
   #endif
     len = strlen( temp_dir );
     if( len >= size ) {
-        __set_errno( ERANGE );
+        _RWD_errno = ERANGE;
         return( NULL );
     }
     return( strcpy( buff, temp_dir ) );
@@ -229,7 +232,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
     q = buff;
     if( ! _IS_SLASH( p[ 0 ] ) ) {
         if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( NULL );
         }
         len = strlen( curr_dir );
@@ -309,7 +312,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
         OS_UINT os2_drive;
 
         if( DosQCurDisk( &os2_drive, &drive_map ) ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( NULL );
         }
         path_drive_idx = os2_drive;
@@ -325,12 +328,12 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
         OS_UINT dir_len = sizeof( curr_dir );
 
         if( DosQCurDir( path_drive_idx, curr_dir, &dir_len ) ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( NULL );
         }
   #else
         if( __getdcwd( curr_dir, path_drive_idx ) ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( NULL );
         }
   #endif
@@ -426,7 +429,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_fullpath,_wfullpath)
         size = _MAX_PATH;
         ptr = lib_malloc( size * CHARSIZE );
         if( ptr == NULL )
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
         buff = ptr;
     }
     if( buff != NULL ) {

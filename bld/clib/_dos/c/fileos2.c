@@ -32,18 +32,17 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <share.h>
 #include <direct.h>
-#include "fileacc.h"
-#include <wos2.h>
 #include <dos.h>
+#include <wos2.h>
+#include "rtdata.h"
+#include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
-#include "rtdata.h"
 #include "seterrno.h"
 
 

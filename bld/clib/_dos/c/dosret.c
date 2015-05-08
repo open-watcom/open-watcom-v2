@@ -31,18 +31,16 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
 #if   defined(__NT__)
 #include <windows.h>
 #elif defined(__OS2__)
 #define INCL_DOSERRORS
 #include <wos2.h>
 #endif
-
-#include <errno.h>
-#include <stdlib.h>
+#include "rtdata.h"
 #include "seterrno.h"
 #include "dosret.h"
-#include "rtdata.h"
 
 #if defined(__NT__) || defined(__OS2__)
 /*

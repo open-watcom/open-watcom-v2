@@ -31,8 +31,8 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
 #include <sys/stat.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int chmod( const char *__path, mode_t __mode )

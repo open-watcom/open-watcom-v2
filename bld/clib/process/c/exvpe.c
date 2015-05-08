@@ -35,11 +35,10 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
 #include <string.h>
 #include <process.h>
-#include "msdos.h"
 #include "rtdata.h"
+#include "msdos.h"
 #include "seterrno.h"
 #include "_process.h"
 

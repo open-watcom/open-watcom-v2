@@ -32,12 +32,11 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
-#include "liballoc.h"
 #include <string.h>
+#include "rtdata.h"
+#include "liballoc.h"
 #include "fileacc.h"
 #include "tmpfname.h"
-#include "rtdata.h"
 #include "lseek.h"
 #include "streamio.h"
 #include "close.h"

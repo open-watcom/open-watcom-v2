@@ -31,8 +31,8 @@
 
 #include "variety.h"
 #include <io.h>
-#include <errno.h>
 #include <dos.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "seterrno.h"
 

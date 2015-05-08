@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include <termios.h>
-#include <errno.h>
+#include "rtdata.h"
 
 _WCRTLINK int isatty( int __fildes )
 {
@@ -43,8 +43,8 @@ _WCRTLINK int isatty( int __fildes )
     /*
      * preserve errno across the call
      */
-    errno_save = errno;
+    errno_save = _RWD_errno;
     status = tcgetattr( __fildes, &term );
-    errno = errno_save;
+    _RWD_errno = errno_save;
     return( status == 0 );
 }

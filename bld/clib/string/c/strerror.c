@@ -33,11 +33,10 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include "rtdata.h"
 #if defined(__NT__)
     #include <windows.h>
 #endif
+#include "rtdata.h"
 #include "errstr.h"
 
 #ifdef __WIDECHAR__

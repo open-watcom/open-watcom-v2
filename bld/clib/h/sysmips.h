@@ -54,7 +54,7 @@ u_long get_a3( void );
                                                         \
         is_error = get_a3();                            \
         if( is_error ) {                                \
-            errno = res;                                \
+            _RWD_errno = res;                           \
             res = (u_long)-1;                           \
         }                                               \
     }                                                   \
@@ -66,7 +66,7 @@ u_long get_a3( void );
                                                         \
         is_error = get_a3();                            \
         if( is_error ) {                                \
-            errno = res;                                \
+            _RWD_errno = res;                           \
             res = (u_long)-1;                           \
         }                                               \
     }                                                   \

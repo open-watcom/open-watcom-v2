@@ -30,7 +30,6 @@
 
 
 #include "variety.h"
-#include "rtinit.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -40,8 +39,8 @@
 #include <process.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include "rtdata.h"
+#include "rtinit.h"
 #include "tmpfname.h"
 #include "seterrno.h"
 #include "openmode.h"

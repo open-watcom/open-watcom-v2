@@ -32,10 +32,9 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
 #include <string.h>
-#include "fileacc.h"
 #include "rtdata.h"
+#include "fileacc.h"
 #include "seterrno.h"
 #include "qwrite.h"
 #include "flush.h"

@@ -31,7 +31,6 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include <errno.h>
 #include <process.h>
 #include <stdio.h>
 #include <string.h>

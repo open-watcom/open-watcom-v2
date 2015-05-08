@@ -32,7 +32,7 @@
 #include "variety.h"
 #include "saferlib.h"
 #include <string.h>
-#include <errno.h>
+#include "rtdata.h"
 
 void __rtct_fail( const char *fn, const char *reason, void *reserved )
 /********************************************************************/

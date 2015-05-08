@@ -31,10 +31,9 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "tinyio.h"
 #include "rtcheck.h"
-#include "rtdata.h"
 #include "iomode.h"
 #include "seterrno.h"
 #include "defwin.h"

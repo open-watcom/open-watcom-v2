@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include <wos2.h>
+#include "rtdata.h"
 #include "defwin.h"
 #include "rtcheck.h"
 #include "seterrno.h"

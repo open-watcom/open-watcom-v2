@@ -35,12 +35,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <errno.h>
 #if defined(__OS2__)
     #include <dos.h>
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-    #include "tinyos2.h"
 #elif defined(__QNX__)
     #include <sys/types.h>
     #include <sys/seginfo.h>
@@ -50,10 +48,16 @@
     #include <windows.h>
 #else
     #include <dos.h>
+#endif
+#include "rtdata.h"
+#if defined(__OS2__)
+    #include "tinyos2.h"
+#elif defined(__QNX__)
+#elif defined(__WINDOWS__) && defined( _M_I86 )
+#else
     #include "tinyio.h"
 #endif
 #include "heap.h"
-#include "rtdata.h"
 
 unsigned __GrowSeg( unsigned short seg, unsigned int amount )
     {

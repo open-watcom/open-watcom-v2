@@ -35,11 +35,10 @@
 #include <sys/types.h>
 #include <time.h>
 #include <dos.h>
-#include <rdos.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <direct.h>
 #include <sys/utime.h>
+#include <rdos.h>
 #include "rtdata.h"
 #include "seterrno.h"
 

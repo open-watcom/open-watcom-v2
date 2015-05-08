@@ -34,15 +34,14 @@
 #include <string.h>
 #include <ctype.h>
 #include <mbstring.h>
-#include <errno.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif
 #if defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
 #endif
-#include "liballoc.h"
 #include "rtdata.h"
+#include "liballoc.h"
 #include "seterrno.h"
 #include "_environ.h"
 

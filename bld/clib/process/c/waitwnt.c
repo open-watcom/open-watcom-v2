@@ -32,7 +32,7 @@
 
 #include "variety.h"
 #include <process.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "seterrno.h"
 
 _WCRTLINK int wait( int *status )

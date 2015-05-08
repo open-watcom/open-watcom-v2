@@ -32,9 +32,9 @@
 #include "variety.h"
 #include <sys/time.h>
 #include <unistd.h>
-#include <errno.h>
 #include <termios.h>
 #include <conio.h>
+#include "rtdata.h"
 
 _WCRTLINK int (kbhit)( void )
 {

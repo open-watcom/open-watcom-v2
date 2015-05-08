@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <windows.h>
 #include <unistd.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "osver.h"

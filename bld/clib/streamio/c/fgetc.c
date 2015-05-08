@@ -36,14 +36,13 @@
 #ifndef __UNIX__
     #include <conio.h>
 #endif
-#include "fileacc.h"
-#include <errno.h>
-#include "rtdata.h"
-#include "seterrno.h"
 #ifdef __WIDECHAR__
     #include <mbstring.h>
     #include <wchar.h>
 #endif
+#include "rtdata.h"
+#include "fileacc.h"
+#include "seterrno.h"
 #include "qread.h"
 #include "orient.h"
 #include "flush.h"

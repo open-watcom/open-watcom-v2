@@ -31,21 +31,21 @@
 
 #include "variety.h"
 #include <termios.h>
-#include <errno.h>
 #include <sys/ioctl.h>
+#include "rtdata.h"
 
 _WCRTLINK int tcsetattr( int __fd, int __optional_actions, const struct termios *__termios_p )
 {
     switch(__optional_actions) {
-        case TCSANOW:
-            return ioctl(__fd, TCSETS, __termios_p);
-        case TCSADRAIN:
-            return ioctl(__fd, TCSETSW, __termios_p);
-        case TCSAFLUSH:
-            return ioctl(__fd, TCSETSF, __termios_p);
-        default:
-        errno = EINVAL;
-            return -1;
+    case TCSANOW:
+        return ioctl(__fd, TCSETS, __termios_p);
+    case TCSADRAIN:
+        return ioctl(__fd, TCSETSW, __termios_p);
+    case TCSAFLUSH:
+        return ioctl(__fd, TCSETSF, __termios_p);
+    default:
+        _RWD_errno = EINVAL;
+        return -1;
     }
 }
 

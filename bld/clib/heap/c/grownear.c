@@ -34,25 +34,25 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
+#if defined(__WINDOWS_286__) || defined(__NT__)
+  #include <windows.h>
+#elif defined(__OS2__)
+  #include <wos2.h>
+#elif defined(__RDOS__)
+  #include <rdos.h>
+#endif
+#include "rtdata.h"
+#if defined(__WARP__)
+  #include "rtinit.h"
+#endif
 #include "heapacc.h"
 #include "heap.h"
-#include <errno.h>
 #if defined(__DOS_EXT__)
   #include "extender.h"
   #include "tinyio.h"
 #endif
 #if defined(__CALL21__)
   #include "tinyio.h"
-#endif
-#if defined(__WINDOWS_286__) || defined(__NT__)
-  #include <windows.h>
-#elif defined(__OS2__)
-  #include <wos2.h>
- #if defined(__WARP__)
-  #include "rtinit.h"
- #endif
-#elif defined(__RDOS__)
-  #include <rdos.h>
 #endif
 
 #if defined(__WARP__)

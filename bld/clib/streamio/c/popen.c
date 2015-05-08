@@ -46,9 +46,9 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
+#include "rtdata.h"
 #include "liballoc.h"
 #include "osver.h"
-#include "rtdata.h"
 
 
 #ifdef __OS2__

@@ -32,10 +32,9 @@
 #include "variety.h"
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "liballoc.h"
 #include "fileacc.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "streamio.h"
 

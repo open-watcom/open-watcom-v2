@@ -31,13 +31,11 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include <windows.h>
 #undef __INLINE_FUNCTIONS__
 /* most includes should go after this line */
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <string.h>
 #include <direct.h>
 #ifdef __WIDECHAR__
@@ -47,9 +45,10 @@
 #endif
 #include <dos.h>
 #include <mbstring.h>
+#include <windows.h>
+#include "rtdata.h"
 #include "int64.h"
 #include "libwin32.h"
-#include "rtdata.h"
 #include "ntext.h"
 #include "osver.h"
 #include "seterrno.h"

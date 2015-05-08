@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <time.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK time_t time( time_t *t )

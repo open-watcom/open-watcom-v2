@@ -35,18 +35,19 @@
 #include <string.h>
 #include <ctype.h>
 #include <mbstring.h>
-#include <errno.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif
 #ifdef __NT__
     #include <windows.h>
-    #include "libwin32.h"
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
 #endif
-#include "liballoc.h"
 #include "rtdata.h"
+#ifdef __NT__
+    #include "libwin32.h"
+#endif
+#include "liballoc.h"
 #include "seterrno.h"
 #include "_environ.h"
 

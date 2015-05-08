@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
@@ -49,7 +48,7 @@ _WCRTLINK FILE* popen(const char *command, const char *mode)
         /* Note: by checking mode[1], we are basically ruling out
          * glibc's extra designators, as we should.
          */
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return NULL;
     }
     

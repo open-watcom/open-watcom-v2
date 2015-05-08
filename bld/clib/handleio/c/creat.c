@@ -32,11 +32,11 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "rtdata.h"
 #include "seterrno.h"
 
 

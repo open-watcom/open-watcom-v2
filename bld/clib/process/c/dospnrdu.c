@@ -32,7 +32,6 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include <errno.h>
 #include <stdio.h>
 #include <conio.h>
 #include <dos.h>
@@ -41,8 +40,8 @@
 #include <malloc.h>
 #include <process.h>
 #include <rdos.h>
-#include "liballoc.h"
 #include "rtdata.h"
+#include "liballoc.h"
 #include "seterrno.h"
 #include "_process.h"
 #include "_rdos.h"

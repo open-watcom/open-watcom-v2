@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <signal.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int sigtimedwait( const sigset_t *__set, siginfo_t *__info,
@@ -40,7 +40,7 @@ _WCRTLINK int sigtimedwait( const sigset_t *__set, siginfo_t *__info,
 {
     u_long  res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, (u_long)__info, (u_long)__timeout, sizeof( sigset_t ) );
     if( res >= -125 ) {
-        errno = -res;
+        _RWD_errno = -res;
         res = -1;
     }
     /* glibc does this, but no other libc */

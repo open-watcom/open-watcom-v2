@@ -38,14 +38,14 @@
 
 #define __syscall_return( type, res )                   \
     if( (u_long)(res) >= (u_long)(-125) ) {             \
-        errno = -(res);                                 \
+        _RWD_errno = -(res);                            \
         res = (u_long)-1;                               \
     }                                                   \
     return( (type)(res) );
 
 #define __syscall_return_pointer( type, res )           \
     if( (u_long)(res) >= (u_long)(-125) ) {             \
-        errno = -(res);                                 \
+        _RWD_errno = -(res);                            \
         res = (u_long)0;                                \
     }                                                   \
     return( (type)(res) );

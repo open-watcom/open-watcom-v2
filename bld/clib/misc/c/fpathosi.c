@@ -35,13 +35,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <errno.h>
 #include <ctype.h>
 #include <direct.h>
+#include "rtdata.h"
 #include "tinyio.h"
 #include "ostype.h"
 #include "liballoc.h"
-#include "rtdata.h"
 #include "seterrno.h"
 
 extern void __GetFullPathName( char *buff, const char *path, size_t size );

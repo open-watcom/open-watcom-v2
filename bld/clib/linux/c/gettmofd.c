@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <time.h>
 #include <sys/time.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int gettimeofday( struct timeval *__tv, struct timezone *__tz )

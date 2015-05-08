@@ -30,16 +30,16 @@
 
 
 #include "variety.h"
-#include "i64.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <direct.h>
 #define INCL_LONGLONG
 #include <wos2.h>
+#include "rtdata.h"
+#include "i64.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

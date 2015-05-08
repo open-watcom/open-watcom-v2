@@ -32,11 +32,14 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
 #if defined(__NT__)
     #include <windows.h>
 #elif defined(__OS2__)
     #include <wos2.h>
+#endif
+#include "rtdata.h"
+#if defined(__NT__)
+#elif defined(__OS2__)
     #include "tinyos2.h"
 #else
     #include "tinyio.h"
@@ -44,7 +47,6 @@
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "qwrite.h"

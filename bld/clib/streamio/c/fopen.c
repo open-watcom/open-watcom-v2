@@ -37,12 +37,11 @@
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif
-#include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include "rtdata.h"
 #include "fileacc.h"
 #include "openmode.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "streamio.h"

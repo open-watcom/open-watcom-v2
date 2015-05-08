@@ -32,15 +32,16 @@
 #include "variety.h"
 #include <stddef.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <dos.h>
+#if defined(__OS2__)
+  #include <wos2.h>
+#endif
+#include "rtdata.h"
 #ifdef __WINDOWS_386__
  #include "tinyio.h"
 #else
  #include "extender.h"
- #if defined(__OS2__)
-  #include <wos2.h>
- #else
+ #if !defined(__OS2__)
   #include "tinyio.h"
  #endif
 #endif
@@ -103,9 +104,9 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
         if( !DosAllocMem( (PPVOID)&p, increment, PAG_COMMIT|PAG_READ|PAG_WRITE ) ) {
             return( p );
         }
-        errno = ENOMEM;
+        _RWD_errno = ENOMEM;
     } else {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
     }
     return( (void _WCNEAR *) -1 );
 #elif defined(__WINDOWS_386__)                          /* 26-may-93 */
@@ -126,11 +127,11 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
                 p = TinyCBAlloc( increment );
             }
             if( p == NULL ) {
-                errno = ENOMEM;
+                _RWD_errno = ENOMEM;
                 p = (void _WCNEAR *) -1;
             }
         } else {
-            errno = EINVAL;
+            _RWD_errno = EINVAL;
             p = (void _WCNEAR *) -1;
         }
         return( p );
@@ -152,7 +153,7 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
 #endif
 
     if( brk_value < _STACKTOP ) {
-        errno = ENOMEM;
+        _RWD_errno = ENOMEM;
         return( (void _WCNEAR *) -1 );
     }
 #if !defined(__CALL21__)
@@ -162,12 +163,12 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
         parent = SegInfo( GetDS() );
         if( parent < 0 ) {
             if( SetBlock( parent & 0xffff, seg ) < 0 ) {
-                errno = ENOMEM;
+                _RWD_errno = ENOMEM;
                 return( (void _WCNEAR *) -1 );
             }
         }
         if( SetBlock( GetDS(), seg ) < 0 ) {
-            errno = ENOMEM;
+            _RWD_errno = ENOMEM;
             return( (void _WCNEAR *) -1 );
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
@@ -178,7 +179,7 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
             seg = seg * 256U;
         }
         if( SetBlock( GetDS(), seg ) < 0 ) {
-            errno = ENOMEM;
+            _RWD_errno = ENOMEM;
             return( (void _WCNEAR *) -1 );
         }
     }

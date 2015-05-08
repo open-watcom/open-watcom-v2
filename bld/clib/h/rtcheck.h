@@ -32,8 +32,6 @@
 #ifndef _RTCHECK_H_INCLUDED
 #define _RTCHECK_H_INCLUDED
 
-#include <errno.h>
-
 
 #if ( defined(__NT__) || defined(__RUNTIME_HANDLE_CHECKS__) )   \
     && ( !defined(__NETWARE__) && !defined(__UNIX__)            \
@@ -43,7 +41,7 @@
 
     #define __handle_check( __h, __r )                          \
                     if( (__h) < 0  ||  (__h) >= __NFiles ) {     \
-                        __set_errno( EBADF );                   \
+                        _RWD_errno = EBADF;                   \
                         return( __r );                          \
                     }
 

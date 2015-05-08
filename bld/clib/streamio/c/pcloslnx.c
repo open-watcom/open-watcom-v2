@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
 #include <sys/wait.h>
 #include "rtdata.h"
 #include "linuxsys.h"
@@ -53,13 +52,13 @@ _WCRTLINK int pclose( FILE *fp )
     /* close stream and wait for process termination */
     do {
         pret = waitpid(_FP_PIPEDATA(fp).pid, &status, 0);
-    } while (pret == -1 && errno == EINTR);
+    } while (pret == -1 && _RWD_errno == EINTR);
 
 
     if (WIFEXITED(status)) {
         return WEXITSTATUS(status);
     }
     
-    errno = ECHILD;
+    _RWD_errno = ECHILD;
     return -1;
 }

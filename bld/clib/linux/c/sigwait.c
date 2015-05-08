@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <signal.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int sigwait( const sigset_t *__set, int *__sig )
@@ -41,7 +41,7 @@ _WCRTLINK int sigwait( const sigset_t *__set, int *__sig )
     while( 1 ) {
         res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, 0, 0, sizeof( sigset_t ) );
         if( res >= -125 ) {
-            errno = -res;
+            _RWD_errno = -res;
             res = -1;
         }
         if( res != -1 ) {
@@ -49,8 +49,8 @@ _WCRTLINK int sigwait( const sigset_t *__set, int *__sig )
             res = 0;
             break;
         }
-        if( (errno != EAGAIN) && (errno != EINTR) ) {
-            res = errno;
+        if( (_RWD_errno != EAGAIN) && (_RWD_errno != EINTR) ) {
+            res = _RWD_errno;
             break;
         }
         /* System call was interrupted, so loop around and try again */

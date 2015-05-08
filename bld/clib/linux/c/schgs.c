@@ -31,7 +31,7 @@
 #include "variety.h"
 #include <sched.h>
 #include <sys/types.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int sched_getscheduler( pid_t pid )

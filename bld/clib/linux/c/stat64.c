@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <sys/stat.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int stat64( const char *filename, struct stat64 * __buf )

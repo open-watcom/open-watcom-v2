@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,8 +37,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <utime.h>
-#include <errno.h>
 #include <time.h>
+#include "rtdata.h"
 
 #define NUM_FILES       50
 #ifdef __SW_BW

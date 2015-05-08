@@ -34,9 +34,9 @@
 #include "variety.h"
 #include <io.h>
 #include <direct.h>
-#include <errno.h>
 #include <stdio.h>
 #include <rdos.h>
+#include "rtdata.h"
 #include "seterrno.h"
 
 

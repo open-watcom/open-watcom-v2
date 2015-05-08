@@ -29,7 +29,8 @@
 ****************************************************************************/
 
 
-#include <errno.h>
+#include "variety.h"
+#include "rtdata.h"
 #include "linuxsys.h"
 
 long sys_open( const char * filename, int flags, int mode )

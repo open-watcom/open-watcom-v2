@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <sys/sysmips.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int sysmips( const int cmd, const int arg1, const int arg2, const int arg3 )

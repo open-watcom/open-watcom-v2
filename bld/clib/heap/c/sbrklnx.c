@@ -33,9 +33,9 @@
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include <stdlib.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 #include "heapacc.h"
 #include "heap.h"
@@ -58,7 +58,7 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
 
     sys_brk_value = sys_brk( brk_value );
     if( sys_brk_value == -1 ) {
-        errno = ENOMEM;
+        _RWD_errno = ENOMEM;
         _ReleaseNHeap();
         return( (void _WCNEAR *) -1 );
     }

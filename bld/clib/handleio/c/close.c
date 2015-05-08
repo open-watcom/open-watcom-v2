@@ -32,11 +32,10 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
+#include <unistd.h>
 #include "rtdata.h"
 #include "rtcheck.h"
 #include "seterrno.h"
-#include <unistd.h>
 #include "close.h"
 
 _WCRTLINK int close( int handle )

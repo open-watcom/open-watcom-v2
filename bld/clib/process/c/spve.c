@@ -37,13 +37,12 @@
 #include <io.h>
 #include <string.h>
 #include <process.h>
-#include <errno.h>
-#include "liballoc.h"
 #ifdef __DOS__
     #include <dos.h>
 #endif
-#include "filestr.h"
 #include "rtdata.h"
+#include "liballoc.h"
+#include "filestr.h"
 #include "msdos.h"
 #include "seterrno.h"
 #include "_process.h"

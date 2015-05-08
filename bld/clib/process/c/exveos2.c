@@ -32,10 +32,9 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include <process.h>
 #define INCL_DOSPROCESS
 #include <wos2.h>
-#include <process.h>
-#include <errno.h>
 #include "rtdata.h"
 #include "seterrno.h"
 #include "_process.h"

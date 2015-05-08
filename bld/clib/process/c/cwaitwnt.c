@@ -31,10 +31,9 @@
 
 
 #include "variety.h"
-#include <windows.h>
 #include <stddef.h>
 #include <process.h>
-#include <errno.h>
+#include <windows.h>
 #include "rtdata.h"
 #include "seterrno.h"
 

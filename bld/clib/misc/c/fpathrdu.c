@@ -34,12 +34,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <errno.h>
 #include <ctype.h>
 #include <direct.h>
 #include <rdos.h>
-#include "liballoc.h"
 #include "rtdata.h"
+#include "liballoc.h"
 #include "seterrno.h"
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \

@@ -31,11 +31,11 @@
 
 
 #include "variety.h"
-#include <errno.h>
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
 #include <wos2.h>
+#include "rtdata.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "seterrno.h"

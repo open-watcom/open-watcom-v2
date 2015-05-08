@@ -33,11 +33,11 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <stdio.h>
-#include <errno.h>
 #include <signal.h>
 #include <sys/kernel.h>
 #include <sys/proc_msg.h>
 #include <i86.h>
+#include "rtdata.h"
 
 extern  void    (*__abort)( void );
 extern  void    __sigabort( void );
@@ -114,7 +114,7 @@ register struct sigaction *oact;
     }
 
     if( (sig < _SIGMIN)  ||  (sig > _SIGMAX) ) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return( -1 );
     }
 
@@ -140,7 +140,7 @@ register struct sigaction *oact;
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
 
         if( msg.r.status != EOK ) {
-            errno = msg.r.status;
+            _RWD_errno = msg.r.status;
             return( -1 );
         }
     }

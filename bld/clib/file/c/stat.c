@@ -41,23 +41,22 @@
 #include <sys/stat.h>
 #include <io.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <string.h>
 #include <direct.h>
-
 #include <dosfunc.h>
 #include <mbstring.h>
+#ifdef __WIDECHAR__
+    #include <wctype.h>
+#else
+    #include <ctype.h>
+#endif
+#include "rtdata.h"
 #include "_doslfn.h"
 #ifndef __OSI__
 #include "_dtaxxx.h"
 #endif
 #include "dosdir.h"
 #include "seterrno.h"
-#ifdef __WIDECHAR__
-    #include <wctype.h>
-#else
-    #include <ctype.h>
-#endif
 #include "d2ttime.h"
 #ifdef __INT64__
 #include "int64.h"

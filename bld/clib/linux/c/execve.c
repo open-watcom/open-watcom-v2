@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <process.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int execve( const char *__path, const char *const __argv[],

@@ -33,10 +33,10 @@
 #define _RTDATA_H_INCLUDED
 
 #include <stdio.h>
+#include "errorno.h"
 #if defined( __MT__ )
 #include "thread.h"
 #endif
-#include "errorno.h"
 
 /* DOS based platforms have stdaux/stdprn in addition to stdin/out/err */
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
@@ -221,13 +221,15 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #endif
 #define _RWD_tmpnambuf          _TMPNAMBUF
 #define _RWD_randnext           _RANDNEXT
+
+#define _RWD_uselfn             __uselfn
+
+/* C++ run-time data */
 #define _RWD_ThreadData         _ThreadData
 #define _RWD_StaticInitSema     _StaticInitSema
 #define _RWD_PureErrorFlag      _PureErrorFlag
 #define _RWD_UndefVfunFlag      _UndefVfunFlag
 #define _RWD_ModuleInit         _ModuleInit
-
-#define _RWD_uselfn             __uselfn
 
 /*
     For the sake of efficiency, tell the compiler

@@ -29,15 +29,10 @@
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
-    #include "variety.h"
-#else
-    #define _WCRTLINK
-#endif
+#include "variety.h"
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
-#include <limits.h>
+#include "rtdata.h"
 
 extern char **_argv;    /* argument vector */
 
@@ -61,13 +56,13 @@ _WCRTLINK char *_cmdname( char *name )
 
 _WCRTLINK char *_cmdname( char *name )
 {
-    int save_errno = errno;
+    int save_errno = _RWD_errno;
     int result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
         /* try another way for BSD */
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
     }
-    errno = save_errno;
+    _RWD_errno = save_errno;
 
     /* fall back to argv[0] if readlink doesn't work */
     if( result == -1 || result == PATH_MAX )

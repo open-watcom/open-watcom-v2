@@ -31,9 +31,9 @@
 
 #include "variety.h"
 #include <stdio.h>
+#include "rtdata.h"
 #include "liballoc.h"
 #include "fileacc.h"
-#include "rtdata.h"
 #include "streamio.h"
 
 /*

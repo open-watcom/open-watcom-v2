@@ -32,13 +32,13 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <sys/types.h>
-#include <errno.h>
 #include <process.h>
 #include <sys/wait.h>
 #include <stddef.h>
 #include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "rtdata.h"
 #include "_process.h"
 
 #define SPAWN   0
@@ -86,25 +86,25 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
     if( pid == 0 ) {
         close( status_pipe[0] );
         execve( path, argv, envp );
-        write( status_pipe[1], &errno, sizeof errno );
+        write( status_pipe[1], &_RWD_errno, sizeof( _RWD_errno ) );
         _exit( 127 );
     }
     close( status_pipe[1] );
     /* EXEC's don't return, only SPAWN does */
     if( err != -1 )
-        err = read( status_pipe[0], &errno, sizeof( errno ) );
+        err = read( status_pipe[0], &_RWD_errno, sizeof( _RWD_errno ) );
     if( err != -1 ) {
         if( err > 0 ) {
-            err = errno;
+            err = _RWD_errno;
             waitpid( pid, NULL, 0 );
-            errno = err;
+            _RWD_errno = err;
             err = -1;
         } else if ( mode == P_WAIT ) {
            /* if P_WAIT return invoked task's status otherwise P_NOWAIT so
               return pid and let user do the wait */
             do {
                 err = waitpid( pid, &status, 0 );
-            } while( err == -1 && errno == EINTR );
+            } while( err == -1 && _RWD_errno == EINTR );
             if( err == pid )
                 err = WEXITSTATUS( status );
         }

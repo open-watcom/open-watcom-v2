@@ -30,9 +30,9 @@
 
 #include "variety.h"
 #include <sched.h>
-#include <errno.h>
 #include <time.h>
 #include <sys/types.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int sched_rr_get_interval( pid_t pid, struct timespec *ts )

@@ -37,11 +37,10 @@
 #include <io.h>
 #include <string.h>
 #include <process.h>
-#include <errno.h>
 #include <rdos.h>
+#include "rtdata.h"
 #include "liballoc.h"
 #include "filestr.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "_process.h"
 

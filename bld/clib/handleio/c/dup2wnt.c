@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <windows.h>
+#include "rtdata.h"
 #include "fileacc.h"
 #include "iomode.h"
 #include "rtcheck.h"

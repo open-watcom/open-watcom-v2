@@ -31,9 +31,9 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
-#include "linuxsys.h"
 #include <sys/utsname.h>
+#include "rtdata.h"
+#include "linuxsys.h"
 
 _WCRTLINK int uname( struct utsname *__name )
 {

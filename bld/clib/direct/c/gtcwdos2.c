@@ -35,16 +35,15 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-#include <errno.h>
 #include <stdio.h>
 #include <dos.h>
-#include <wos2.h>
-#include "rtdata.h"
-#include "seterrno.h"
 #include <direct.h>
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif
+#include <wos2.h>
+#include "rtdata.h"
+#include "seterrno.h"
 
 
 #pragma on(stack_check);

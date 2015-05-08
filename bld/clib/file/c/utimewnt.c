@@ -35,18 +35,17 @@
 #include <sys/types.h>
 #include <time.h>
 #include <dos.h>
-#include <windows.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <direct.h>
 #include <sys/utime.h>
-#include "libwin32.h"
-#include "openmode.h"
-#include "rtdata.h"
-#include "seterrno.h"
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif
+#include <windows.h>
+#include "rtdata.h"
+#include "libwin32.h"
+#include "openmode.h"
+#include "seterrno.h"
 
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const *times )
 /**********************************************************************************/

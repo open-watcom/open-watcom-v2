@@ -34,16 +34,18 @@
 #include <io.h>
 #include <fcntl.h>
 #include <malloc.h>
-#include <errno.h>
 #include <stddef.h>
 #include <string.h>
-#if defined(__NT__)
+#if defined(__NT__) || defined(__WINDOWS__)
     #include <windows.h>
-#elif defined(__WINDOWS__)
-    #include <windows.h>
-    #include "tinyio.h"
 #elif defined(__OS2__)
     #include <wos2.h>
+#endif
+#include "rtdata.h"
+#if defined(__NT__)
+#elif defined(__WINDOWS__)
+    #include "tinyio.h"
+#elif defined(__OS2__)
     #include "tinyos2.h"
 #else
     #include "tinyio.h"
@@ -51,7 +53,6 @@
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "lseek.h"

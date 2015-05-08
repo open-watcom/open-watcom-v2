@@ -33,12 +33,12 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <sys/types.h>
-#include <errno.h>
 #include <process.h>
 #include <sys/qnx_glob.h>
 #include <sys/wait.h>
 #include <stddef.h>
 #include <signal.h>
+#include "rtdata.h"
 
 #define SPAWN   0
 #define EXEC    1

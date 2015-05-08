@@ -33,8 +33,8 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
 #include <windows.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

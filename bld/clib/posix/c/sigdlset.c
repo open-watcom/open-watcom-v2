@@ -31,13 +31,13 @@
 
 #include "variety.h"
 #include <signal.h>
-#include <errno.h>
+#include "rtdata.h"
 
 _WCRTLINK int sigdelset( sigset_t *__set, int signum )
 /****************************************************/
 {
     if( signum < 1 || signum > _NSIG ) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return( -1 );
     }
     --signum;

@@ -33,14 +33,14 @@
 #include "variety.h"
 #include <string.h>
 #include <pwd.h>
-#include <errno.h>
+#include "rtdata.h"
 
 _WCRTLINK struct passwd *getpwnam(const char *name)
 {
     struct passwd *res = NULL;
     
     if(name == NULL) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return NULL;
     }
     

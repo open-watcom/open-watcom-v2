@@ -29,13 +29,10 @@
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
-
 #include "variety.h"
 #include <stdlib.h>
-#include <errno.h>
-#include "clibsupp.h"
 #include "rtdata.h"
+#include "clibsupp.h"
 #include "seterrno.h"
 
 void __set_errno( unsigned int err )
@@ -45,17 +42,17 @@ void __set_errno( unsigned int err )
 
 void __set_EDOM( void )
 {
-    __set_errno( EDOM );
+    _RWD_errno = EDOM;
 }
 
 void __set_ERANGE( void )
 {
-    __set_errno( ERANGE );
+    _RWD_errno = ERANGE;
 }
 
 int __set_EINVAL( void )
 {
-    __set_errno( EINVAL );
+    _RWD_errno = EINVAL;
     return( -1 );
 }
 
@@ -64,14 +61,4 @@ void __set_doserrno( unsigned int err )
 {
     _RWD_doserrno = err;
 }
-#endif
-
-#else
-
-#include <errno.h>
-void __set_errno( unsigned int err )
-{
-    errno = err;
-}
-
 #endif

@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int access( const char *filename, int mode )

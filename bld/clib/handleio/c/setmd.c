@@ -32,17 +32,16 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
-#if defined(__NT__)
-    #include <windows.h>
-#endif
 #include <unistd.h>
 #include <fcntl.h>
 #include <dos.h>
 #include <dosfunc.h>
+#if defined(__NT__)
+    #include <windows.h>
+#endif
+#include "rtdata.h"
 #include "fileacc.h"
 #include "rtcheck.h"
-#include "rtdata.h"
 #include "iomode.h"
 #include "seterrno.h"
 

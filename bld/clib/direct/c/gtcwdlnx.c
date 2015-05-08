@@ -33,8 +33,8 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 #include <unistd.h>
+#include "rtdata.h"
 #include "seterrno.h"
 #include "liballoc.h"
 #include "linuxsys.h"

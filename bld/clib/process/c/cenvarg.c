@@ -36,11 +36,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include "liballoc.h"
 #include <dos.h>
-#include "msdos.h"
 #include "rtdata.h"
+#include "liballoc.h"
+#include "msdos.h"
 #include "seterrno.h"
 #include "_process.h"
 

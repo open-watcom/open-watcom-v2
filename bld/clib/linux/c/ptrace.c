@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include <sys/ptrace.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK long ptrace( int request, int pid, void *addr, void *data )

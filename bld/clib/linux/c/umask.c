@@ -31,9 +31,10 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
-#include "linuxsys.h"
 #include <sys/stat.h>
+#include "rtdata.h"
+#include "linuxsys.h"
+
 
 _WCRTLINK mode_t umask( mode_t __cmask )
 {

@@ -36,13 +36,13 @@
 #include <sys/stat.h>
 #include <io.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <string.h>
 #include <direct.h>
 #include <rdos.h>
 #include <mbstring.h>
 #include <ctype.h>
 #include <time.h>
+#include "rtdata.h"
 
 static unsigned short at2mode();
 

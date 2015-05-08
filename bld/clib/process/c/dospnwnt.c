@@ -33,7 +33,6 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include <errno.h>
 #include <stdio.h>
 #include <conio.h>
 #include <dos.h>
@@ -42,9 +41,9 @@
 #include <malloc.h>
 #include <process.h>
 #include <windows.h>
+#include "rtdata.h"
 #include "libwin32.h"
 #include "osver.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "_process.h"
 

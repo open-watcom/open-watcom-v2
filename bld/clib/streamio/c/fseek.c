@@ -31,10 +31,9 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
 #include <unistd.h>
-#include "fileacc.h"
 #include "rtdata.h"
+#include "fileacc.h"
 #include "seterrno.h"
 #include "flush.h"
 

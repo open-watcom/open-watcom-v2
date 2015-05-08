@@ -33,14 +33,14 @@
 #include "variety.h"
 #include <stddef.h>
 #include <io.h>
-#include "rtcheck.h"
-#include "seterrno.h"
-
 #ifdef __OS2__
 #include <wos2.h>
 #else
 #include "tinyio.h"
 #endif
+#include "rtdata.h"
+#include "rtcheck.h"
+#include "seterrno.h"
 
 
 _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )

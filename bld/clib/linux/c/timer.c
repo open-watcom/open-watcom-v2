@@ -35,10 +35,10 @@
 #include "variety.h"
 #include <string.h>
 #include <signal.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 /* Incomplete kernel sigevent type that provides "just enough"
@@ -59,7 +59,7 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
     int id;
 
     if( __tmr == NULL ) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return -1;
     }
     
@@ -83,7 +83,7 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
     res = (long)ures;
     
     if( res < 0 ) {
-        errno = res;
+        _RWD_errno = res;
         return -1;
     }
     
@@ -101,7 +101,7 @@ _WCRTLINK int timer_delete( timer_t __tmr )
     res = (long)ures;
     
     if( res < 0 ) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return -1;
     }
     
@@ -116,7 +116,7 @@ _WCRTLINK int timer_getoverrun( timer_t __tmr )
     res = (long)ures;
     
     if( res < 0 ) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return -1;
     }
     
@@ -131,7 +131,7 @@ _WCRTLINK int timer_gettime( timer_t __tmr, struct itimerspec *__v )
     res = (long)ures;
     
     if( res < 0 ) {
-        errno = -(res);
+        _RWD_errno = -(res);
         return -1;
     }
     
@@ -146,7 +146,7 @@ _WCRTLINK int timer_settime( timer_t __tmr, int flags, struct itimerspec *__new,
     res = (long)ures;
     
     if( res < 0 ) {
-        errno = -(res);
+        _RWD_errno = -(res);
         return -1;
     }
     

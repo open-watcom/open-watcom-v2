@@ -29,7 +29,8 @@
 ****************************************************************************/
 
 
-#include <errno.h>
+#include "variety.h"
+#include "rtdata.h"
 #include "linuxsys.h"
 
 long __socketcall( int call, u_long *args )

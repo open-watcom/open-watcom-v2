@@ -31,10 +31,10 @@
 
 
 #include "variety.h"
-#include <errno.h>
 #include <mbstring.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include "rtdata.h"
 #include "farfunc.h"
 #include "seterrno.h"
 

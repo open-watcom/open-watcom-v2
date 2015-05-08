@@ -33,10 +33,10 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include <errno.h>
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include "rtdata.h"
 
 #define MAX_TTY_NAME    PATH_MAX   
 #define BASE_LINK       "/proc/self/fd/"
@@ -46,13 +46,13 @@ _WCRTLINK int ttyname_r(int fd, char *buf, size_t buflen)
 char linkpath[MAX_TTY_NAME];
 
     if(isatty(fd) == 0) {
-        errno = ENOTTY;
-        return errno;
+        _RWD_errno = ENOTTY;
+        return( _RWD_errno );
     }
     
     snprintf(linkpath, MAX_TTY_NAME, "%s%d", BASE_LINK, fd);
     if(readlink(linkpath, buf, buflen) < 0) {
-        return errno;
+        return( _RWD_errno );
     }
     
     return 0;

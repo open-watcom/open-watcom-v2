@@ -33,7 +33,7 @@
 
 #include "variety.h"
 #include <time.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int clock_nanosleep( clockid_t __clk, int __flags, 
@@ -50,7 +50,7 @@ _WCRTLINK int clock_nanosleep( clockid_t __clk, int __flags,
     
     res = (long)(-ures);
     if(res != 0) {
-        errno = res;
+        _RWD_errno = res;
     }
     
     __syscall_return( int, ures );

@@ -38,8 +38,8 @@
 #else
     #include <ctype.h>
 #endif
-#include <errno.h>
 #include <limits.h>
+#include "rtdata.h"
 #include "seterrno.h"
 
 /*

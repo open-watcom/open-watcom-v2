@@ -36,13 +36,12 @@
 #include <sys/types.h>
 #include <time.h>
 #include <dos.h>
-#include <wos2.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <direct.h>
 #include <sys/utime.h>
-#include "openmode.h"
+#include <wos2.h>
 #include "rtdata.h"
+#include "openmode.h"
 #include "seterrno.h"
 
 

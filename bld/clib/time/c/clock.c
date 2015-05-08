@@ -35,8 +35,8 @@
 #include <sys/timers.h>
 #elif defined( __LINUX__ )
 #include <sys/times.h>
-#include <errno.h>
 #endif
+#include "rtdata.h"
 #include "rtinit.h"
 #include "timedata.h"
 
@@ -53,11 +53,11 @@ _WCRTLINK clock_t clock( void )
 {
     struct tms  buf;
     clock_t     clk;
-    int         save_errno = errno;
+    int         save_errno = _RWD_errno;
     
     times( &buf );
     clk = (buf.tms_utime + buf.tms_stime) * (CLOCKS_PER_SEC / SYS_CLK_TCK);
-    errno = save_errno;
+    _RWD_errno = save_errno;
     return clk;
 }
 

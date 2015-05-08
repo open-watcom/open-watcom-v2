@@ -32,9 +32,8 @@
 #undef __INLINE_FUNCTIONS__
 #include "widechar.h"
 #include "variety.h"
-#include <rdos.h>
 #include <process.h>
-#include <errno.h>
+#include <rdos.h>
 #include "rtdata.h"
 #include "seterrno.h"
 #include "_process.h"

@@ -39,10 +39,9 @@
 #include <dos.h>
 #endif
 #include <time.h>
-#include <errno.h>
 #include <sys/locking.h>
-#include "rtcheck.h"
 #include "rtdata.h"
+#include "rtcheck.h"
 #include "seterrno.h"
 #include "lseek.h"
 
@@ -83,19 +82,19 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         flock_buff.l_type = F_RDLCK;
         break;
     default:
-        errno = ENOSYS;
+        _RWD_errno = ENOSYS;
         return( -1 );
     }
     tries = 10;
     for( ;; ) {
         ret = fcntl( handle, cmd, &flock_buff );
         if( ret != -1 ) break;
-        if( errno != EAGAIN ) break;
+        if( _RWD_errno != EAGAIN ) break;
         if( mode != LK_LOCK ) break;
         if( --tries == 0 ) break;
         sleep( 1 );
     }
-    if( errno == EAGAIN ) errno = EDEADLK;
+    if( _RWD_errno == EAGAIN ) _RWD_errno = EDEADLK;
     return( ret );
 }
 
@@ -120,7 +119,7 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         sleep( 1 );                             /* wait 1 second */
     }
     __set_doserrno( rc );
-    __set_errno( EDEADLOCK );
+    _RWD_errno = EDEADLOCK;
     return( -1 );
 }
 #endif

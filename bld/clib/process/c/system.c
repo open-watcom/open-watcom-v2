@@ -36,13 +36,12 @@
 #include <stdio.h>
 #include <io.h>
 #include <process.h>
-#include <errno.h>
 #if defined(__OS2__)
     #define INCL_DOSMISC
     #include <wos2.h>
 #endif
-#include "_process.h"
 #include "rtdata.h"
+#include "_process.h"
 #include "seterrno.h"
 
 

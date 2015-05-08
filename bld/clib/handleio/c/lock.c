@@ -39,6 +39,7 @@
 #else
 #include "tinyio.h"
 #endif
+#include "rtdata.h"
 #include "rtcheck.h"
 #include "seterrno.h"
 

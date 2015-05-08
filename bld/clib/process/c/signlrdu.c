@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <signal.h>
-#include <errno.h>
 #include <float.h>
 #include <rdos.h>
 #include <excpt.h>

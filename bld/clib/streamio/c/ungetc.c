@@ -31,19 +31,18 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include <errno.h>
 #include <stdio.h>
+#ifdef __WIDECHAR__
+    #include <mbstring.h>
+    #include <string.h>
+    #include <wchar.h>
+#endif
 #include "rtdata.h"
 #include "fileacc.h"
 #include "exitwmsg.h"
 #include "liballoc.h"
 #include "seterrno.h"
 #include "orient.h"
-#ifdef __WIDECHAR__
-    #include <mbstring.h>
-    #include <string.h>
-    #include <wchar.h>
-#endif
 #include "streamio.h"
 
 

@@ -35,15 +35,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <errno.h>
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <share.h>
 #include <dos.h>
 #include <dosfunc.h>
-#include "tinyio.h"
 #include "rtdata.h"
+#include "tinyio.h"
 #include "iomode.h"
 #include "seterrno.h"
 #include "defwin.h"

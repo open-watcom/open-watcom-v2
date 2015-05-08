@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <errno.h>
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -42,13 +41,13 @@
 #include <dos.h>
 #include <dosfunc.h>
 #include <direct.h>
-#include "fileacc.h"
+#include <string.h>
 #define INCL_LONGLONG
 #include <wos2.h>
-#include <string.h>
+#include "rtdata.h"
+#include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "os2fil64.h"

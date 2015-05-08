@@ -34,12 +34,11 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 #include <dos.h>
 #include <process.h>
-#include "msdos.h"
 #include "rtdata.h"
+#include "msdos.h"
 #include "seterrno.h"
 
 #pragma on(check_stack);

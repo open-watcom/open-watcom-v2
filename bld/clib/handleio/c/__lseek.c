@@ -42,6 +42,7 @@
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
+#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
-#include <errno.h>
+#include "rtdata.h"
 
 #ifndef SIZE_MAX
 #define SIZE_MAX ((size_t)-1)
@@ -52,7 +52,7 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
     char    *buff;
 
     if( n == NULL || s == NULL ) {
-        errno = EINVAL;
+        _RWD_errno = EINVAL;
         return( -1 );
     }
 
@@ -67,7 +67,7 @@ _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
             size = linelength * 2 | 0x7F;
             buff = realloc( buff, size );
             if( buff == NULL ) {
-                errno = ENOMEM;
+                _RWD_errno = ENOMEM;
                 return( -1 );
             }
             *s = buff;

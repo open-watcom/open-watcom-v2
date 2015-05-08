@@ -33,7 +33,6 @@
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include <stdlib.h>
-#include <errno.h>
 #if defined(__OS2__)
     #define INCL_DOSMEMMGR
     #include <wos2.h>
@@ -47,9 +46,9 @@
 #elif defined(__WINDOWS__)
     #include <windows.h>
 #endif
+#include "rtdata.h"
 #include "heapacc.h"
 #include "heap.h"
-#include "rtdata.h"
 
 
 #if !defined(__OS2__) && !defined(__QNX__)

@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

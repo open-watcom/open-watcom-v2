@@ -31,19 +31,19 @@
 
 
 #include "variety.h"
-#include <errno.h>
+#include <unistd.h>
 #if defined(__DOS__) || defined(__WINDOWS__)
     #include <dos.h>
 #elif defined(__NT__)
     #include <windows.h>
 #elif defined(__OS2__)
-    #include <os2.h>
+    #include <wos2.h>
 #elif defined(__NETWARE__)
     #if defined (_NETWARE_CLIB)
         #include <owfileng.h>
     #endif
 #endif
-#include <unistd.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

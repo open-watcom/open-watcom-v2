@@ -30,15 +30,15 @@
 
 
 #include "variety.h"
-#include "int64.h"
-#include <windows.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <direct.h>
+#include <windows.h>
+#include "rtdata.h"
+#include "int64.h"
 #include "defwin.h"
 #include "iomode.h"
 #include "fileacc.h"

@@ -32,15 +32,14 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdio.h>
-#include <errno.h>
-#include "fileacc.h"
-#include "rtdata.h"
-#include "seterrno.h"
-#include "orient.h"
 #ifdef __WIDECHAR__
     #include <mbstring.h>
     #include <wchar.h>
 #endif
+#include "rtdata.h"
+#include "fileacc.h"
+#include "seterrno.h"
+#include "orient.h"
 #include "flush.h"
 #include "streamio.h"
 

@@ -33,7 +33,7 @@
 #include "variety.h"
 #include <stdio.h>
 #include <rdos.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "liballoc.h"
 #include "seterrno.h"
 

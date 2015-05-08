@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <signal.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK __sig_func signal( int signum, __sig_func sighandler )

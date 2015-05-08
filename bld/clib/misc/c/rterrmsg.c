@@ -35,11 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rterrmsg.h"
-#if defined(__WINDOWS__) || defined(__WINDOWS_386__)
-    #include <windows.h>
-#elif defined(__NT__)
-    #include <errno.h>
+#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ ) || defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ ) && defined( __386__ )
     #define INCL_DOSPROCESS
@@ -47,11 +43,13 @@
     #define INCL_DOSERRORS
     #define INCL_DOSMODULEMGR
     #define INCL_ORDINALS
-    #include <os2.h>
+    #include <wos2.h>
     #ifdef DEFAULT_WINDOWING
         extern unsigned (*_WindowsStdout)();
     #endif
 #endif
+#include "rtdata.h"
+#include "rterrmsg.h"
 
 #define STR_SIZE        256
 
@@ -82,7 +80,7 @@ void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *
     rc = __F_NAME(fputs,fputws)( hdr, stderr );
     rc = __F_NAME(fputs,fputws)( STRING( ": " ), stderr );
     rc = __F_NAME(fputs,fputws)( msg, stderr );
-    if( (rc == EOF) && (errno == EBADF) ) {
+    if( (rc == EOF) && (_RWD_errno == EBADF) ) {
         MessageBox( NULL, msg, hdr, MB_OK | MB_TASKMODAL );
     }
 #elif defined( __OS2__ ) && defined( __386__ )

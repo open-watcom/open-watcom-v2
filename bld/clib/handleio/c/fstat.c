@@ -36,7 +36,7 @@
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

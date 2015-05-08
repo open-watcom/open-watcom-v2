@@ -32,7 +32,6 @@
 #undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <string.h>
-#include <errno.h>
 #include <stdio.h>
 #include <conio.h>
 #include <io.h>
@@ -40,11 +39,11 @@
 #include <dos.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include "rtdata.h"
 #include "psp.h"
 #include "msdos.h"
 #include "exe.h"
 #include "tinyio.h"
-#include "rtdata.h"
 #include "seterrno.h"
 #include "lseek.h"
 #include "_process.h"

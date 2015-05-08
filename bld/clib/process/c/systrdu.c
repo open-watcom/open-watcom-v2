@@ -36,7 +36,6 @@
 #include <stdio.h>
 #include <io.h>
 #include <process.h>
-#include <errno.h>
 #include "rtdata.h"
 #include "seterrno.h"
 

@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <signal.h>
 #include <dos.h>
-#include <errno.h>
 #include <float.h>
 #define INCL_DOSEXCEPTIONS
 #include <wos2.h>

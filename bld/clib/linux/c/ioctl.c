@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <stdarg.h>
 #include <sys/ioctl.h>
-#include <errno.h>
+#include "rtdata.h"
 #include "linuxsys.h"
 
 _WCRTLINK int ioctl( int __fd, unsigned long int __request, ... )

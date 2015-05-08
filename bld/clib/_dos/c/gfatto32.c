@@ -30,9 +30,8 @@
 
 
 #include "variety.h"
-#include <errno.h>
-#include <wos2.h>
 #include <dos.h>
+#include <wos2.h>
 #include "rtdata.h"
 #include "seterrno.h"
 
