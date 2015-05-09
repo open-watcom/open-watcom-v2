@@ -2010,7 +2010,9 @@ void VpeMain::executeBrowse( const WString& cmd )
             }
         }
         exists = comp->tryBrowse();
-        if( exists ) comp->makeMakeFile();
+        if( exists ) {
+            comp->makeMakeFile( false );
+        }
     }
 
     if( !browseable ) {

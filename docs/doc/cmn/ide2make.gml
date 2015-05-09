@@ -44,6 +44,8 @@ loads cfgfile instead of ide.cfg
 directory to search configuration files
 .note d
 generate makefiles using development switch set
+.note l
+generate makefiles with long lines (no length limit)
 .note r
 generate makefiles using release switch set
 .note h <number>

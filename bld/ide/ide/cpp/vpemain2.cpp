@@ -579,7 +579,7 @@ bool VpeMain::makeMake()
         if( checkProject() ) {
             executeEditor( editcmd );
             setStatus( "Creating MAKE file(s)..." );
-            if( _project->makeMakeFile() ) {
+            if( _project->makeMakeFile( false ) ) {
                 return( true );
             }
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,

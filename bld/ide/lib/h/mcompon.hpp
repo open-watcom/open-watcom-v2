@@ -78,7 +78,7 @@ WCLASS MComponent : public WObject, public WModel
                 void getTargetCommand( WString& cmd );
                 void getItemCommand( MItem* item, WString& cmd );
                 void addMakeFile( ContFile& pmak );
-                bool makeMakeFile();
+                bool makeMakeFile( bool long_lines );
                 void touchItem( MItem* item );
                 void touchTarget( bool all );
                 void resetRuleRefs();

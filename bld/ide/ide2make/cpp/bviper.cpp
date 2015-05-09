@@ -79,6 +79,7 @@ static const char *usage[] = {
     "  -c cfgfile       - loads cfgfile instead of ide.cfg.",
     "  -i incdir        - directory to search configuration files.",
     "  -d               - generate makefiles using development switch set.",
+    "  -l               - generate makefiles with long lines (no length limit).",
     "  -r               - generate makefiles using release switch set.",
     "  -h host type     - generate makefiles for selected host.",
     "                     (default is current host)",
@@ -117,6 +118,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
     WStringList parms;
     char sMode = 0;
     bool debug = false;
+    bool long_lines = false;
     HostType host = HOST_UNDEFINED;
     int  i;
     char *incdir = NULL;
@@ -139,6 +141,8 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
                 i++;
                 incdir = argv[i];
             }
+        } else if( streq( argv[i], "-l" ) ) {
+            long_lines = true;
         } else if( streq( argv[i], "-r" ) ) {
             sMode = 'r';
         } else if( streq( argv[i], "-x" ) ) {
@@ -190,7 +194,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
                     comp->setMode( mode );
                 }
             }
-            _project->makeMakeFile();
+            _project->makeMakeFile( long_lines );
         }
     }
 }

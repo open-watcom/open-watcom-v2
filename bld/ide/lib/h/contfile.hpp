@@ -39,6 +39,7 @@ class ContFile : public WFile {
     public:
         WEXPORT ContFile( char contChar='&', int maxLine=75 );
         WEXPORT ~ContFile();
+        void long_lines(){ _maxLine=0; }
     protected:
         virtual char getByte();
         virtual bool putByte( char ch );

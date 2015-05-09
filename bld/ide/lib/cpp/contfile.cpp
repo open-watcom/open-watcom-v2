@@ -48,7 +48,7 @@ bool ContFile::putByte( char ch )
 {
     if( ch == '\n' ) {
         _count = 0;
-    } else if( _count++ > _maxLine ) {
+    } else if( _maxLine != 0 && _count++ > _maxLine ) {
         _count = 1;
         if( !WFile::putByte( _contChar ) ) {
             return( false );

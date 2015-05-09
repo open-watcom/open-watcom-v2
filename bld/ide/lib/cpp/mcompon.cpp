@@ -535,7 +535,7 @@ void MComponent::addMakeFile( ContFile& pmak )
     pmak.printf( "!include %s\n", (const char*)mk );
 }
 
-bool MComponent::makeMakeFile()
+bool MComponent::makeMakeFile( bool long_lines )
 {
     bool ok = true;
     WFileName mk( _filename );
@@ -545,6 +545,8 @@ bool MComponent::makeMakeFile()
 
     if( needsMake() || !mk.attribs() ) {
         ContFile        tmak;
+        if( long_lines )
+            tmak.long_lines();
         if( !tmak.open( mk, OStyleWrite ) ) {
             ok = false;
         } else {

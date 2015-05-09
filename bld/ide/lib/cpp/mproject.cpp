@@ -310,12 +310,14 @@ void MProject::expand( ContFile& pmak, const MCommand& cmd, const char* head )
     }
 }
 
-bool MProject::makeMakeFile()
+bool MProject::makeMakeFile( bool long_lines )
 {
     bool ok = true;
     if( needsMake() || !_makefile.attribs() ) {
         _filename.setCWD();
         ContFile        pmak;
+        if( long_lines )
+            pmak.long_lines();
         if( !pmak.open( _makefile, OStyleWrite ) ) {
             ok = false;
         } else {
@@ -355,7 +357,7 @@ bool MProject::makeMakeFile()
         for( int i=0; i<icount; i++ ) {
             MComponent* comp = (MComponent*)_components[i];
             if( comp->rule()->ismakeable() ) {
-                ok = ok & comp->makeMakeFile();
+                ok = ok & comp->makeMakeFile( long_lines );
             }
         }
     }

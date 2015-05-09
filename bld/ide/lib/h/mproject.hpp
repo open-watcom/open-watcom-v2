@@ -65,7 +65,7 @@ WCLASS MProject : public WObject, public WModel
                 void setBefore( const MCommand& before );
                 const MCommand& after() const { return( _after ); }
                 void setAfter( const MCommand& after );
-                bool makeMakeFile();
+                bool makeMakeFile( bool long_lines );
                 void setDirty( bool dirty=true );
                 bool isDirty() { return( _dirty ); }
                 void setNeedsMake( bool needs=true ) { _needsMake = needs; }
