@@ -71,13 +71,13 @@ where can not be run some DOS emulator is necessary.
 Under Linux, DOSEMU and FREEDOS need to be installed.
 Under 64-bit Windows, DOSBOX need to be installed.
 
-Build process consists from two phases.
-First one creates minimal set of OW tools which are sufficient to build full OW.
-Second one build full OW by minimal set of pre-build OW tools from phase 1.
+A full build is done in two phases.  The first phase creates a minimal set of
+OW tools sufficient for building the full OW.  The second phase uses the tools
+built in phase one to build the remainder of OW.
 
-Overall build process are handled by two scipts.
+The overall build process is handled by two scripts.
 
-buil.bat/build.cmd/build.sh 
+build.bat/build.cmd/build.sh 
         Build all software. It builds minimal set of tools necessary for 
         building system (wmake, builder and rm tools). 
         Next run first and second build phase.
@@ -86,7 +86,7 @@ clean.bat/clean.cmd/clean.sh
         Erase all object files, exe's, etc. created by any part of build 
         process so you can build everything from scratch
 
-Bellow is list of supported compilers.
+Supported compilers:
 
                         OW for 16/32-bit hosts  OW for 64-bit hosts
 build OS                supported compilers     supported compilers
