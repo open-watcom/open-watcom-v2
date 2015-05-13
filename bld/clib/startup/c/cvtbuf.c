@@ -31,6 +31,9 @@
 
 #include "widechar.h"
 #include "variety.h"
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "cvtbuf.h"
 #include "_cvtbuf.h"

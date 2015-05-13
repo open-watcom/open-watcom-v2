@@ -41,7 +41,6 @@
 #include "osthread.h"
 #include "stacklow.h"
 #include "mthread.h"
-#include "seterrno.h"
 #include "semaqnx.h"
 #include "cthread.h"
 
@@ -95,7 +94,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
         }
         stack_bottom = lib_calloc( stack_size, 1 );
         if( stack_bottom == NULL ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( -1 );
         }
     }

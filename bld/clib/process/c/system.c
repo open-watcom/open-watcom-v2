@@ -42,7 +42,6 @@
 #endif
 #include "rtdata.h"
 #include "_process.h"
-#include "seterrno.h"
 #include "errorno.h"
 
 
@@ -52,7 +51,7 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
     if( cmd == NULL ) {
         return( 0 );
     } else {
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         return( -1 );
     }
 #else
@@ -78,7 +77,7 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
                 return( 1 );    /* COMMAND.COM is available */
             }
         }
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         return( 0 );    /* indicate no COMMAND.COM available */
   #endif
     }

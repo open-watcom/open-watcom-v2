@@ -30,6 +30,9 @@
 
 #include "variety.h"
 #include <time.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "thetime.h"
 #include "timedata.h"

@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <windows.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "iomode.h"

@@ -46,7 +46,6 @@
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"
 #include "errorno.h"
@@ -129,7 +128,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
-        __set_errno( ENOMEM );
+        _RWD_errno = ENOMEM;
         return( -1L );
     }
 

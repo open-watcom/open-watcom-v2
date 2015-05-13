@@ -40,10 +40,12 @@
 #endif
 #include <time.h>
 #include <sys/locking.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "rtcheck.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "lseek.h"
 #include "thread.h"
 
@@ -120,7 +122,7 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         }
         sleep( 1 );                             /* wait 1 second */
     }
-    __set_doserrno( rc );
+    _RWD_doserrno = rc;
     _RWD_errno = EDEADLOCK;
     return( -1 );
 }

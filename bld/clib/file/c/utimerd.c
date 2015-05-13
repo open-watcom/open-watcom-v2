@@ -40,7 +40,6 @@
 #include <sys/utime.h>
 #include <rdos.h>
 #include "rtdata.h"
-#include "seterrno.h"
 
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const *times )
 /**********************************************************************************/

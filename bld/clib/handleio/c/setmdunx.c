@@ -37,8 +37,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "rtdata.h"
 #include "rtcheck.h"
-#include "seterrno.h"
+#include "errorno.h"
 
 _WCRTLINK int (setmode)( int handle, int mode )
 {

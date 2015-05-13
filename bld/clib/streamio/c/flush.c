@@ -33,13 +33,16 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "fileacc.h"
-#include "seterrno.h"
 #include "qwrite.h"
 #include "lseek.h"
 #include "flush.h"
 #include "errorno.h"
+#include "thread.h"
 
 #if defined( __NETWARE__ ) && defined( _THIN_LIB )
 
@@ -74,7 +77,7 @@ _WCRTLINK int __flush( FILE *fp )
                 }
 #ifndef __UNIX__
                 else if( len == 0 ) {
-                    __set_errno( ENOSPC );                      /* 12-nov-88 */
+                    _RWD_errno = ENOSPC;
                     fp->_flag |= _SFERR;
                     ret = EOF;
                 }

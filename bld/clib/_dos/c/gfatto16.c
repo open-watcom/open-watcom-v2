@@ -35,7 +35,7 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "errorno.h"
-#include "seterrno.h"
+#include "thread.h"
 
 #define FF_LEVEL        0
 #define FF_BUFFER       FILEFINDBUF
@@ -57,7 +57,7 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute ) {
     if( rc == 0 && searchcount == 1 ) {
         *attribute = dir_buff.attrFile;
     } else {
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
     }
     return( rc );
 }

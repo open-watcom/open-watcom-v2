@@ -259,7 +259,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 #endif
     if( *amt != len ) {
         rc = ENOSPC;
-        __set_errno( rc );
+        _RWD_errno = rc;
     }
     return( rc );
 }
@@ -292,12 +292,12 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
         // How can we write to the handle if we never opened it? JBS
         return( _lwrite( handle, buffer, len ) );
 #else
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         return( -1 );
 #endif
     }
     if( !(iomode_flags & _WRITE) ) {
-        __set_errno( EACCES );     /* changed from EBADF to EACCES 23-feb-89 */
+        _RWD_errno = EACCES;     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
 

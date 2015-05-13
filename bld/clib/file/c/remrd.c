@@ -37,7 +37,8 @@
 #include <stdio.h>
 #include <rdos.h>
 #include "rtdata.h"
-#include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 
 _WCRTLINK int remove( CHAR_TYPE const *filename )
@@ -47,7 +48,7 @@ _WCRTLINK int remove( CHAR_TYPE const *filename )
     if( RdosDeleteFile( filename ) )
         return( 0 );
     else {
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         return( -1 );  
     }
 }

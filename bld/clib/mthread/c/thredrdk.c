@@ -45,7 +45,6 @@
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"
 

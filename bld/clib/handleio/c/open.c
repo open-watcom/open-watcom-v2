@@ -84,7 +84,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode,
     if( _dos_open( __F_NAME(name,mbName), rwmode | shflag, &handle ) == 0 ) {
         if( handle >= __NFiles ) {
             TinyClose( handle );
-            __set_errno( EMFILE );
+            _RWD_errno = EMFILE;
             return( -1 );
         }
     }
@@ -110,7 +110,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode,
                 if( (mode & O_EXCL) && (mode & O_CREAT) ) {
 #endif
                     TinyClose( handle );
-                    __set_errno( EEXIST );
+                    _RWD_errno = EEXIST;
                     return( -1 );
                 } else if( mode & O_TRUNC ) {   /* truncate file */
                     rc = TinyWrite( handle, &dummy, 0 );
@@ -165,7 +165,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode,
             }
             if( handle >= __NFiles ) {
                 TinyClose( handle );
-                __set_errno( EMFILE );
+                _RWD_errno = EMFILE;
                 return( -1 );
             }
 

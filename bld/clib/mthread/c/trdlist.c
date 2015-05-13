@@ -32,9 +32,13 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
-#include "thread.h"
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
+#include "rtdata.h"
 #include "thrdreg.h"
 #include "liballoc.h"
+#include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "exitwmsg.h"

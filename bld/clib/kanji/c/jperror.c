@@ -34,25 +34,27 @@
 #include <jstring.h>
 #include <stddef.h>
 #include <stdio.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "errorno.h"
 #include "thread.h"
 
 /**
 *
-*  Name:        jperror -- ƒGƒ‰[ƒƒbƒZ[ƒW‚Ì•\¦
+*  Name:        jperror -- ?G?‰?[???b?Z?[?W‚Ì•\¦
 *
 *  Synopsis:    void jperror( msg );
 *
-*               unsigned char *msg;     ƒ†[ƒU[ƒƒbƒZ[ƒW‚Ì•¶š—ñ
+*               unsigned char *msg;     ?†?[?U?[???b?Z?[?W‚Ì•¶š—ñ
 *
-*  Description: ‚±‚ÌŠÖ”‚Í•Ï” errno ‚É‚ ‚éƒGƒ‰[ƒR[ƒh‚É‘Î‰‚·‚éƒGƒ‰[
-*               ƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚·Bˆø” msg ‚Å—^‚¦‚ç‚ê‚é•¶š—ñ‚ª
-*               ‚Ü‚¸An‚ß‚É•\¦‚³‚ê‚Ü‚·B‚»‚ê‚É‚Â‚Ã‚¢‚ÄƒRƒƒ“iFj‚ÆA
-*               ƒGƒ‰[ƒƒbƒZ[ƒW‚ª•\¦‚³‚ê‚Ü‚·B‚à‚µƒGƒ‰[”Ô†‚ª•s“KŠi
-*               ‚È”Ô†‚Å‚ ‚é‚ ‚é‚É‚ÍAƒGƒ‰[ƒR[ƒh‚O‚ÌƒƒbƒZ[ƒW‚ª
-*               •\¦‚³‚ê‚Ü‚·B
+*  Description: ‚±‚ÌŠÖ?”‚Í•Ï?” errno ‚É‚ ‚é?G?‰?[?R?[?h‚É‘Î‰‚·‚é?G?‰?[
+*               ???b?Z?[?W‚ğ•\¦‚µ‚Ü‚·?B?ø?” msg ‚Å—^‚¦‚ç‚ê‚é•¶š—ñ‚ª
+*               ‚Ü‚¸?An‚ß‚É•\¦‚³‚ê‚Ü‚·?B‚»‚ê‚É‚Â‚Ã‚¢‚Ä?R??“?i?F?j‚Æ?A
+*               ?G?‰?[???b?Z?[?W‚ª•\¦‚³‚ê‚Ü‚·?B‚à‚µ?G?‰?[”Ô†‚ª•s“KŠi
+*               ‚È”Ô†‚Å‚ ‚é‚ ‚é‚É‚Í?A?G?‰?[?R?[?h‚O‚Ì???b?Z?[?W‚ª
+*               •\¦‚³‚ê‚Ü‚·?B
 *
 *
 *  Name:        jperror -- print error message

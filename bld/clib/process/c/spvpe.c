@@ -37,9 +37,11 @@
 #include <string.h>
 #include <dos.h>
 #include <process.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "msdos.h"
-#include "seterrno.h"
 #include "errorno.h"
 #include "thread.h"
 
@@ -71,8 +73,8 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
             end = p + __F_NAME(strlen,wcslen)( p ); /* find null-terminator */
         }
         if( end - p > _MAX_PATH - file_len ) {
-            __set_errno( E2BIG );
-            __set_doserrno( E_badenv );
+            _RWD_errno = E2BIG;
+            _RWD_doserrno = E_badenv;
             return( -1 );
         }
         memcpy( buffer, p, (end - p) * sizeof( CHAR_TYPE ) );

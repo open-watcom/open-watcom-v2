@@ -39,10 +39,12 @@
 #include <process.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "rtinit.h"
 #include "tmpfname.h"
-#include "seterrno.h"
 #include "openmode.h"
 #include "errorno.h"
 #include "thread.h"
@@ -91,7 +93,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
 
                 // if we created it then continue with part II
                 if( hdl != -1 ) break;
-                __set_errno( EAGAIN );
+                _RWD_errno = EAGAIN;
             }
             suffix1++;
             // give up after _TMP_INIT_CHAR tries  JBS 99/10/26
@@ -129,14 +131,14 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
                 if( fp != NULL ) {
                     fp->_flag |= _TMPFIL;
                     _FP_TMPFCHAR(fp) = suffix2;
-                    __set_errno( old_errno );
+                    _RWD_errno = old_errno;
                     return( fp );
                 }
                 // We couldn't open it, probably because we have run out of handles.
                 // Remove the renamed file.
                 our_errno = _RWD_errno;
                 remove( name2 );
-                __set_errno( our_errno );
+                _RWD_errno = our_errno;
                 return( NULL );
             }
             // The rename didn't work or we couldn't open the renamed file.

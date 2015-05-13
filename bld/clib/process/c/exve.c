@@ -44,10 +44,10 @@
 #include "msdos.h"
 #include "exe.h"
 #include "tinyio.h"
-#include "seterrno.h"
 #include "lseek.h"
 #include "_process.h"
 #include "_int23.h"
+#include "errorno.h"
 
 extern execveaddr_type  __Exec_addr;
 extern void _WCFAR __cdecl _doexec(char _WCI86NEAR *,char _WCI86NEAR *,int,unsigned,unsigned,unsigned,unsigned );
@@ -244,7 +244,7 @@ _WCRTLINK int execve( path, argv, envp )
     name = strrchr( buffer, '\\' );
     if( strchr( name == NULL ? buffer : name, '.' ) ) {
         file = open( buffer, O_BINARY|O_RDONLY, 0 );
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         if( file == -1 ) {
             goto error;
         }
@@ -254,7 +254,7 @@ _WCRTLINK int execve( path, argv, envp )
         if( file == -1 ) {
             strcpy( strrchr( buffer, '.' ), ".exe" );
             file = open( buffer, O_BINARY|O_RDONLY, 0 );
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             if( file == -1 ) {
                 goto error;
             }
@@ -263,8 +263,8 @@ _WCRTLINK int execve( path, argv, envp )
 
     if( read( file, (char *)&exe, sizeof( exe ) ) == -1 ) {
         close( file );
-        __set_errno( ENOEXEC );
-        __set_doserrno( E_badfmt );
+        _RWD_errno = ENOEXEC;
+        _RWD_doserrno = E_badfmt;
         goto error;
     }
     isexe = exe.id == EXE_ID || exe.id == _swap( EXE_ID );

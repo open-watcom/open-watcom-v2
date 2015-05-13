@@ -36,7 +36,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <direct.h>
-#include <windows.h>
 #include "rtdata.h"
 #include "int64.h"
 #include "defwin.h"

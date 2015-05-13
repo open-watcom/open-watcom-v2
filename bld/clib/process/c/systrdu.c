@@ -37,7 +37,6 @@
 #include <io.h>
 #include <process.h>
 #include "rtdata.h"
-#include "seterrno.h"
 
 _WCRTLINK int system( const CHAR_TYPE *cmd )
 {

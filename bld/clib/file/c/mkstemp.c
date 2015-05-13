@@ -40,6 +40,9 @@
 #ifndef __UNIX__
     #include <process.h>
 #endif
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "errorno.h"
 #include "thread.h"

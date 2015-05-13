@@ -33,8 +33,8 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rmemmgr.h"
-#include "rtdata.h"
 #include "fthread.h"
+#include "rtdata.h"
 
 static void NullTrapRtn( void ) {
 //=========================

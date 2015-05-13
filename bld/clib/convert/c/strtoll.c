@@ -40,9 +40,12 @@
     #include <ctype.h>
 #endif
 #include <limits.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "errorno.h"
-#include "seterrno.h"
+#include "thread.h"
 
 /* This is heavily based on strtol() implementation; however this code needs
  * to use 64-bit arithmetic and there is little need to drag in all the
@@ -106,7 +109,7 @@ static unsigned long long int _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr,
             base = 10;
     }
     if( base < 2  ||  base > 36 ) {
-        __set_errno( EDOM );
+        _RWD_errno = EDOM;
         return( 0 );
     }
     if( base == 16 ) {
@@ -142,7 +145,7 @@ static unsigned long long int _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr,
         }
     }
     if( overflow ) {
-        __set_errno( ERANGE );
+        _RWD_errno = ERANGE;
         if( who == 0 )
             return( ULLONG_MAX );
         if( sign == '-' )

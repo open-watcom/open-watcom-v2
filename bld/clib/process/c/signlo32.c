@@ -41,7 +41,6 @@
 #include "sigtab.h"
 #include "sigfunc.h"
 #include "fpusig.h"
-#include "seterrno.h"
 #include "rtinit.h"
 #include "_int23.h"
 #include "errorno.h"
@@ -260,7 +259,7 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func ) {
     ULONG       nesting;
 
     if(( sig < 1 ) || ( sig > __SIGLAST )) {
-        __set_errno( EINVAL );
+        _RWD_errno = EINVAL;
         return( SIG_ERR );
     }
     _RWD_abort = __sigabort;            /* change the abort rtn address */

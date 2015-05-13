@@ -33,8 +33,8 @@
 #include "variety.h"
 #include <unistd.h>
 #include <fcntl.h>
+#include "rtdata.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 
 _WCRTLINK int (unlock)( handle, offset, nbytes )
 int     handle;

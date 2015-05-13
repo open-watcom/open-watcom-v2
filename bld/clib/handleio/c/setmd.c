@@ -38,13 +38,14 @@
 #include <dosfunc.h>
 #if defined(__NT__)
     #include <windows.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "thread.h"
 
 _WCRTLINK int setmode( int handle, int mode )
@@ -58,7 +59,7 @@ _WCRTLINK int setmode( int handle, int mode )
 
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         return( -1 );
     }
     old_mode = (iomode_flags & _BINARY) ? O_BINARY : O_TEXT;
@@ -84,7 +85,7 @@ _WCRTLINK int setmode( int handle, int mode )
             }
             _ReleaseFileH( handle );
         } else {
-            __set_errno( EINVAL );
+            _RWD_errno = EINVAL;
             old_mode = -1;
         }
     }

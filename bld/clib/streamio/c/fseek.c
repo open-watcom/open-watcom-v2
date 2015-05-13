@@ -32,11 +32,14 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "fileacc.h"
-#include "seterrno.h"
 #include "flush.h"
 #include "errorno.h"
+#include "thread.h"
 
 
 #ifdef __INT64__
@@ -98,7 +101,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
                 // assume __flush set the errno value
                 // if erroneous input, override errno value
                 if( origin == SEEK_SET && offset < 0 ) {
-                    __set_errno( EINVAL );
+                    _RWD_errno = EINVAL;
                 }
                 _ReleaseFile( fp );
                 return( -1 );
@@ -175,7 +178,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
             }
             break;
         default:
-            __set_errno( EINVAL );
+            _RWD_errno = EINVAL;
             _ReleaseFile( fp );
             return( -1 );
         }

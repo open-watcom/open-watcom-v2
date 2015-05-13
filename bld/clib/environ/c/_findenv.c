@@ -42,7 +42,6 @@
 #endif
 #include "rtdata.h"
 #include "liballoc.h"
-#include "seterrno.h"
 #include "_environ.h"
 
 #define _ISNAMEEND(p)   (_TCSNEXTC(p)==STRING('=')||_TCSTERM(p))

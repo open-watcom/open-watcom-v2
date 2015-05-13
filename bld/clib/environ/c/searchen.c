@@ -42,9 +42,11 @@
     #include <direct.h>
 #endif
 #include <string.h>
+#ifdef __OS2__
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "_environ.h"
 #include "thread.h"
 
@@ -129,7 +131,7 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
                     __F_NAME(strcat,wcscat)( p2, name );
                     /* check to see if file exists */
                     if( __F_NAME(access,_waccess)( buffer, 0 ) == 0 ) {
-                        __set_errno( prev_errno );
+                        _RWD_errno = prev_errno;
                         return;
                     }
                 }

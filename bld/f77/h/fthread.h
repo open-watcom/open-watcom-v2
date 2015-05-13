@@ -33,6 +33,10 @@
 #ifndef _FTHREAD_H_INCLUDED
 #define _FTHREAD_H_INCLUDED
 
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
+
 #include "thread.h"
 
 // Thread-specific data:

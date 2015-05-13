@@ -37,7 +37,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "rtdata.h"
-#include "seterrno.h"
 
 
 /* file attributes */

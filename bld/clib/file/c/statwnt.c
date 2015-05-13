@@ -54,6 +54,7 @@
 #include "errorno.h"
 #include "seterrno.h"
 #include "d2ttime.h"
+#include "thread.h"
 
 static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {
@@ -158,7 +159,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 
     /* reject null string and names that has wildcard */
     if( *path == NULLCHAR || __F_NAME(_mbspbrk,wcspbrk)( path, STRING( "*?" ) ) != NULL ) {
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         return( -1 );
     }
 
@@ -180,7 +181,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* check validity of specified root */
         if( __lib_GetDriveType( fullpath ) == DRIVE_UNKNOWN ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( -1 );
         }
 

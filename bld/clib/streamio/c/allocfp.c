@@ -32,12 +32,15 @@
 #include "variety.h"
 #include <stdio.h>
 #include <string.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "liballoc.h"
 #include "fileacc.h"
-#include "seterrno.h"
 #include "streamio.h"
 #include "errorno.h"
+#include "thread.h"
 
 
 #define KEEP_FLAGS (_READ | _WRITE | _DYNAMIC)
@@ -86,7 +89,7 @@ got_one:
     _ReleaseIOB();
     return( fp );
 no_mem:
-    __set_errno( ENOMEM );
+    _RWD_errno = ENOMEM;
     _ReleaseIOB();
     return( NULL );     /* no free slots */
 }

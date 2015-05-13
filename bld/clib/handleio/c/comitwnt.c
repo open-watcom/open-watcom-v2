@@ -44,7 +44,7 @@ _WCRTLINK int _commit( int handle )
 
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         return( 0 );
     }
     if( !FlushFileBuffers( __getOSHandle( handle ) ) ) {

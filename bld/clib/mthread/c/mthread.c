@@ -33,6 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "liballoc.h"
 #include "rtdata.h"
 #include "stacklow.h"

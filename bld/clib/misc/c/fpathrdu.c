@@ -39,10 +39,11 @@
 #include <rdos.h>
 #include "rtdata.h"
 #include "liballoc.h"
-#include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
-                            __set_errno( ERANGE );      \
+                            _RWD_errno = ERANGE;        \
                             return( NULL );             \
                         }                               \
                         size -= (c);
@@ -62,7 +63,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
         size = _MAX_PATH;
         buff = lib_malloc( size );
         if( buff == NULL ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( NULL );
         }
     }
@@ -86,7 +87,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
     q += 2;
     if( ! _IS_SLASH( p[0] ) ) {
         if( !RdosGetCurDir( path_drive_idx, curr_dir ) ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( NULL );
         }
         len = strlen( curr_dir );

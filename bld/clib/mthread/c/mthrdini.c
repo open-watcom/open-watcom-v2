@@ -36,8 +36,11 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "liballoc.h"
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
+#include "liballoc.h"
 #include "stacklow.h"
 #include "thread.h"
 #include "trdlist.h"

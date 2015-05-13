@@ -37,8 +37,8 @@
 #define INCL_DOSERRORS
 #include <wos2.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "errorno.h"
+#include "thread.h"
 
 _WCRTLINK int cwait( int *status, int process_id, int action )
     {
@@ -56,7 +56,7 @@ _WCRTLINK int cwait( int *status, int process_id, int action )
 
         retcode = DosCwait( action, 0, &rc, &pid, process_id );
         if( retcode != 0 ) {
-            __set_errno( retcode == ERROR_WAIT_NO_CHILDREN ? ECHILD : EINVAL );
+            _RWD_errno = ( retcode == ERROR_WAIT_NO_CHILDREN ) ? ECHILD : EINVAL;
             return( -1 );
         } else {
             u.stat = retcode;
@@ -64,7 +64,7 @@ _WCRTLINK int cwait( int *status, int process_id, int action )
             if( u.s.al == 0 )  u.s.ah = rc.codeResult;
             if( status != NULL )  *status = u.stat;
             if( u.s.al != 0 ) {
-                __set_errno( EINTR );
+                _RWD_errno = EINTR;
                 return( -1 );
             }
         }

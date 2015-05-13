@@ -31,11 +31,12 @@
 
 
 #include "variety.h"
-#if defined(__NT__)
-    #include <windows.h>
-#elif defined(__OS2__)
+#if defined(__OS2__)
     #define INCL_DOSMEMMGR
     #include <wos2.h>
+#endif
+#include "rtdata.h"
+#if defined(__OS2__)
     #include "tinyos2.h"
 #else
     #include "tinyio.h"

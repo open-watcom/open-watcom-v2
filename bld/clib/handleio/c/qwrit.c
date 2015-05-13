@@ -180,7 +180,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     }
 #endif
     if( len_written != len ) {
-        __set_errno( ENOSPC );
+        _RWD_errno = ENOSPC;
     }
     if( atomic == 1 ) {
         _ReleaseFileH( handle );

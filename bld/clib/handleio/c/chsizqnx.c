@@ -37,7 +37,6 @@
 #include <string.h>
 #include "rtdata.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 
 _WCRTLINK int chsize( int handle, long size )
 {
@@ -65,7 +64,7 @@ _WCRTLINK int chsize( int handle, long size )
                 case -1:
                     return( -1 );
                 case 0:
-                    __set_errno( ENOSPC );
+                    _RWD_errno = ENOSPC;
                     return( -1 );
                 }
                 diff -= amount;

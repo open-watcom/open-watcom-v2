@@ -45,8 +45,8 @@
 #include "iomode.h"
 #include "rtcheck.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "fileacc.h"
+#include "thread.h"
 
 
 #if !defined(__NETWARE__)
@@ -111,7 +111,7 @@ static int check_mode( int handle, int mode ) {
         // was opened.
     #endif
     if( __errno == EACCES ) {
-        __set_errno( __errno );
+        _RWD_errno = __errno;
         return( -1 );
     }
     return(0);

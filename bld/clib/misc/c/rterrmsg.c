@@ -37,7 +37,10 @@
 #include <string.h>
 #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ ) || defined( __NT__ )
     #include <windows.h>
-#elif defined( __OS2__ ) && defined( __386__ )
+#elif defined( __OS2__ )
+  #if defined( _M_I86 )
+    #include <wos2.h>
+  #elif defined( __386__ )
     #define INCL_DOSPROCESS
     #define INCL_WINDIALOGS
     #define INCL_DOSERRORS
@@ -47,6 +50,7 @@
     #ifdef DEFAULT_WINDOWING
         extern unsigned (*_WindowsStdout)();
     #endif
+  #endif
 #endif
 #include "rtdata.h"
 #include "rterrmsg.h"

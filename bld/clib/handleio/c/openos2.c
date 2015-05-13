@@ -52,6 +52,7 @@
 #include "seterrno.h"
 #include "defwin.h"
 #include "os2fil64.h"
+#include "thread.h"
 
 extern unsigned __NFiles;
 
@@ -133,7 +134,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
 
     if( handle >= __NFiles ) {
         DosClose( handle );
-        __set_errno(ENOMEM);
+        _RWD_errno = ENOMEM;
         return( -1 );
     }
 

@@ -42,7 +42,6 @@
 #include "stacklow.h"
 #include "extfunc.h"
 #include "mthread.h"
-#include "seterrno.h"
 #include "cthread.h"
 #include "linuxsys.h"
 

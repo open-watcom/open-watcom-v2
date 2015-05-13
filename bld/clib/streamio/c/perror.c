@@ -34,8 +34,10 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
-#include "seterrno.h"
 #include "errorno.h"
 #include "thread.h"
 

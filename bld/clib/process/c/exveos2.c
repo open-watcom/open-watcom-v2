@@ -36,7 +36,6 @@
 #define INCL_DOSPROCESS
 #include <wos2.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "_process.h"
 #include "_int23.h"
 #include "errorno.h"

@@ -45,6 +45,7 @@
 #include "iomode.h"
 #include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
@@ -87,7 +88,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
             rc = DosMakePipe( &hRead, &hWrite, psize );
         #endif
         if( rc != NO_ERROR ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( -1 );
         }
     #endif

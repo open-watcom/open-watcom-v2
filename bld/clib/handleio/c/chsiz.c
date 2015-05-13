@@ -68,7 +68,7 @@ _WCRTLINK int chsize( int handle, long size )
             ret_code = write( handle, buff, amount );
             if( ret_code != amount ) {              /* 09-nov-92 */
                 if( _RWD_doserrno == E_access )
-                    __set_errno( ENOSPC );
+                    _RWD_errno = ENOSPC;
                 ret_code = -1;
                 break;
             }

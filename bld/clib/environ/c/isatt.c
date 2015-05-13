@@ -31,10 +31,10 @@
 
 #include "variety.h"
 #include <unistd.h>
+#include "rtdata.h"
 #include "tinyio.h"
 #include "defwin.h"
 #include "rtcheck.h"
-#include "seterrno.h"
 
 /* determine if file is a terminal */
 

@@ -115,6 +115,9 @@ extern "C" {
 #pragma warning 594 1
 
 #if defined(__MT__)
+  #if defined( __OS2__ )
+    #include <wos2.h>
+  #endif
     #include "thread.h"
     #include <lock.h>
 #endif

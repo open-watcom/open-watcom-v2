@@ -94,12 +94,12 @@
 #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
         return( _lread( handle, buffer, len ) );
 #else
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         return( -1 );
 #endif
     }
     if( !(iomode_flags & _READ) ) {
-        __set_errno( EACCES );     /* changed from EBADF to EACCES 23-feb-89 */
+        _RWD_errno = EACCES;     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
 #ifdef __NT__

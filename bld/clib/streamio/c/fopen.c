@@ -39,13 +39,16 @@
 #endif
 #include <fcntl.h>
 #include <sys/stat.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "fileacc.h"
 #include "openmode.h"
-#include "seterrno.h"
 #include "defwin.h"
 #include "streamio.h"
 #include "errorno.h"
+#include "thread.h"
 
 #ifdef __UNIX__
     #define PMODE   (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
@@ -91,7 +94,7 @@ int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflag
         flags |= _WRITE | _APPEND;
         break;
     default:
-        __set_errno( EINVAL );
+        _RWD_errno = EINVAL;
         return( 0 );
     }
     modestr++;
@@ -318,7 +321,7 @@ static FILE *close_file( FILE *fp )
         owner = &link->next;
     }
     /* We ain't seen that file pointer ever. Leave things be. */
-    __set_errno( EBADF );
+    _RWD_errno = EBADF;
     _ReleaseIOB();
     return( NULL );
 }

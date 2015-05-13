@@ -41,7 +41,6 @@
 #include "rtdata.h"
 #include "liballoc.h"
 #include "filestr.h"
-#include "seterrno.h"
 #include "_process.h"
 #include "errorno.h"
 #include "thread.h"
@@ -113,7 +112,7 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
         cmdline = (CHAR_TYPE SPVE_NEAR *)alloca( cmdline_len*sizeof(CHAR_TYPE) );
         if( cmdline == NULL ) {
             retval = -1;
-            __set_errno( E2BIG );
+            _RWD_errno = E2BIG;
             goto cleanup;
         }
     } else {
@@ -121,14 +120,14 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
     }
     
     __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
-    __set_errno( ENOENT );
+    _RWD_errno = ENOENT;
     if( ext[0] != '\0' ) {
         if( __F_NAME(stricmp,wcscmp)( ext, __F_NAME(".bat",L".bat") ) == 0 )
         {
             retval = -1; /* assume file doesn't exist */
             if( file_exists( p ) ) goto spawn_command_com;
         } else {
-            __set_errno( 0 );
+            _RWD_errno = 0;
             /* user specified an extension, so try it */
             retval = _doexec( p, cmdline, argv );
         }
@@ -136,15 +135,15 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
     else {
         end_of_p = p + __F_NAME(strlen,wcslen)( p );
         __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".com",L".com") );
-        __set_errno( 0 );
+        _RWD_errno = 0;
         retval = _doexec( p, cmdline, argv );
         if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-            __set_errno( 0 );
+            _RWD_errno = 0;
             __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".exe",L".exe") );
             retval = _doexec( p, cmdline, argv );
             if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                 /* try for a .BAT file */
-                __set_errno( 0 );
+                _RWD_errno = 0;
                 __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".bat",L".bat") );
                 if( file_exists( p ) ) {
 spawn_command_com:

@@ -33,7 +33,6 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <windows.h>
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"

@@ -35,7 +35,6 @@
 #include <process.h>
 #include <rdos.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "_process.h"
 
 _WCRTLINK int execve( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )

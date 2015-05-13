@@ -45,7 +45,6 @@
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "seterrno.h"
 #include "initarg.h"
 #include "cthread.h"
 #include "errorno.h"
@@ -109,7 +108,7 @@ unsigned long __CBeginThreadEx(
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
-        __set_errno( ENOMEM );
+        _RWD_errno = ENOMEM;
         return( 0 );
     }
 

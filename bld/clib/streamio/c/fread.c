@@ -33,12 +33,15 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "fileacc.h"
-#include "seterrno.h"
 #include "qread.h"
 #include "streamio.h"
 #include "errorno.h"
+#include "thread.h"
 
 
 #define DOS_EOF_CHAR    0x1a
@@ -54,7 +57,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
     _ValidFile( fp, 0 );
     _AccessFile( fp );
     if( (fp->_flag & _READ) == 0 ) {
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
         return( 0 );

@@ -31,9 +31,8 @@
 
 #include "variety.h"
 #include <dos.h>
-#include "tinyio.h"
 #include "rtdata.h"
-#include "seterrno.h"
+#include "tinyio.h"
 
 #ifdef _M_I86
     #define AUX_INFO    \

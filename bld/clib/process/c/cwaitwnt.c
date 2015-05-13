@@ -35,8 +35,8 @@
 #include <process.h>
 #include <windows.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "errorno.h"
+#include "thread.h"
 
 _WCRTLINK int cwait(int *status, int process_id, int action)
 /***********************************************************/
@@ -45,7 +45,7 @@ _WCRTLINK int cwait(int *status, int process_id, int action)
     HANDLE p = (HANDLE)process_id;
 
     if (action != WAIT_CHILD) {
-        __set_errno(EINVAL);
+        _RWD_errno = EINVAL;
         return -1;
     }
 
@@ -53,7 +53,7 @@ _WCRTLINK int cwait(int *status, int process_id, int action)
 
     if (rc == WAIT_FAILED) {
         rc = GetLastError();
-        __set_errno(EINVAL);
+        _RWD_errno = EINVAL;
         return -1;
     } else if (rc == WAIT_OBJECT_0) {
         GetExitCodeProcess(p, &rc);
@@ -62,7 +62,7 @@ _WCRTLINK int cwait(int *status, int process_id, int action)
         return process_id;
     } else {
         CloseHandle(p);
-        __set_errno(EINVAL);
+        _RWD_errno = EINVAL;
         return -1;
     }
 }

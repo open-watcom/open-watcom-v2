@@ -35,13 +35,11 @@
 #include <string.h>
 #if defined(__OS2__)
  #define INCL_DOSFILEMGR
- #include <wos2.h>
 #endif
 #include "rtdata.h"
 #include "liballoc.h"
 #include "fileacc.h"
 #include "rtinit.h"
-#include "seterrno.h"
 #include "iomode.h"
 
 unsigned __NFiles   = _NFILES;          /* maximum # of files we can open */

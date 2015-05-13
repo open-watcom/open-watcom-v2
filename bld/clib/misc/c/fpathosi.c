@@ -41,7 +41,6 @@
 #include "tinyio.h"
 #include "ostype.h"
 #include "liballoc.h"
-#include "seterrno.h"
 
 extern void __GetFullPathName( char *buff, const char *path, size_t size );
 #pragma aux __GetFullPathName = \
@@ -50,7 +49,7 @@ extern void __GetFullPathName( char *buff, const char *path, size_t size );
         parm [ebx] [edx] [ecx];
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
-                            __set_errno( ERANGE );      \
+                            _RWD_errno = ERANGE;        \
                             return( NULL );             \
                         }                               \
                         size -= (c);
@@ -71,7 +70,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
         size = _MAX_PATH;
         buff = lib_malloc( size );
         if( buff == NULL ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( NULL );
         }
     }
@@ -98,7 +97,7 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
         if( ! _IS_SLASH( p[0] ) ) {
             rc = TinyGetCWDir( curr_dir, path_drive_idx );
             if( TINY_ERROR( rc ) ) {
-                __set_errno( ENOENT );
+                _RWD_errno = ENOENT;
                 return( NULL );
             }
             len = strlen( curr_dir );

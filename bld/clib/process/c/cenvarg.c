@@ -37,12 +37,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "liballoc.h"
 #include "msdos.h"
-#include "seterrno.h"
 #include "_process.h"
 #include "errorno.h"
+#include "thread.h"
 
 #ifdef __WIDECHAR__
 extern _WCRTLINK void   __create_wide_environment( void );
@@ -105,8 +108,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     if( np == NULL ){   /* 03-aug-88 */
         p = lib_malloc( length*sizeof(CHAR_TYPE) );
         if( p == NULL ){
-            __set_errno( ENOMEM );
-            __set_doserrno( E_nomem );
+            _RWD_errno = ENOMEM;
+            _RWD_doserrno = E_nomem;
             _RWD_amblksiz = oamblksiz;
             return( -1 );
         }
@@ -155,8 +158,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     len += _MAX_PATH2 + 1;
 #else
     if( len > 126 ) {
-        __set_errno( E2BIG );
-        __set_doserrno( E_badenv );
+        _RWD_errno = E2BIG;
+        _RWD_doserrno = E_badenv;
         lib_free( *envptr );
         return( -1 );
     }

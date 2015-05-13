@@ -35,9 +35,10 @@
 #include "tinyio.h"
 #include "rtcheck.h"
 #include "iomode.h"
-#include "seterrno.h"
+#include "errorno.h"
 #include "defwin.h"
 #include "close.h"
+#include "thread.h"
 
 int __close( int handle )
 {
@@ -61,7 +62,7 @@ int __close( int handle )
         }
 #endif
     } else {
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         rv = -1;
     }
     __SetIOMode_nogrow( handle, 0 );

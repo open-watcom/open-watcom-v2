@@ -31,6 +31,9 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "randnext.h"
 #include "rtdata.h"
 #include "thread.h"

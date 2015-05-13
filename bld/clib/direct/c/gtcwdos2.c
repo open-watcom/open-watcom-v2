@@ -44,6 +44,7 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "errorno.h"
+#include "thread.h"
 #include "seterrno.h"
 
 
@@ -72,7 +73,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     path[ 2 ] = '\\';
     if( buf == NULL ) {
         if( (buf = malloc( max(size,pathlen+4)*CHARSIZE )) == NULL ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( NULL );
         }
         size = pathlen + 3;

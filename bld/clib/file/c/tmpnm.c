@@ -35,12 +35,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "fileacc.h"
 #include "exitwmsg.h"
 #include "liballoc.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "tmpnm.h"
 #include "thread.h"
 
@@ -152,6 +154,6 @@ _WCRTLINK CHAR_TYPE *__F_NAME(tmpnam,_wtmpnam)( CHAR_TYPE *buf )
     _ReleaseIOB();          // if it's been copied, we are thread-safe
     if( iter == 2 )
         buf = NULL;
-    __set_errno( err );
+    _RWD_errno = err;
     return( buf );
 }

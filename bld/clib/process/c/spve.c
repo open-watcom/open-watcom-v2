@@ -40,11 +40,13 @@
 #ifdef __DOS__
     #include <dos.h>
 #endif
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "liballoc.h"
 #include "filestr.h"
 #include "msdos.h"
-#include "seterrno.h"
 #include "_process.h"
 #include "errorno.h"
 #include "thread.h"
@@ -203,7 +205,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
             _POSIX_HANDLE_CLEANUP;
             return( rc );
         }
-        __set_errno( EINVAL );
+        _RWD_errno = EINVAL;
         _POSIX_HANDLE_CLEANUP;
         return( -1 );
     }
@@ -222,7 +224,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
  #else      // __DOS__
     use_cmd = 0;
     if( mode >= OLD_P_OVERLAY ) {
-        __set_errno( EINVAL );
+        _RWD_errno = EINVAL;
         rc = -1;
         _POSIX_HANDLE_CLEANUP;
         return( rc );
@@ -273,8 +275,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         cmdline = (CHAR_TYPE SPVE_NEAR *)alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
-            __set_errno( E2BIG );
-            __set_doserrno( E_badenv );
+            _RWD_errno = E2BIG;
+            _RWD_doserrno = E_badenv;
         }
     } else {
         cmdline = cmdline_mem;
@@ -292,7 +294,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         }
 #endif
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         if( ext[0] != '\0' ) {
 #if defined( __OS2__ )
             if( stricmp( ext, ".cmd" ) == 0 || stricmp( ext, ".bat" ) == 0 ) {
@@ -314,7 +316,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                         p, cmdline, NULL );
                 }
             } else {
-                __set_errno( 0 );
+                _RWD_errno = 0;
                 /* user specified an extension, so try it */
                 retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
             }
@@ -331,19 +333,19 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 #endif
             end_of_p = p + __F_NAME(strlen,wcslen)( p );
             if( prot_mode286 ) {
-                __set_errno( ENOENT );
+                _RWD_errno = ENOENT;
             } else {
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
-                __set_errno( 0 );
+                _RWD_errno = 0;
                 retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
             }
             if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-                __set_errno( 0 );
+                _RWD_errno = 0;
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
                 retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
                 if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                     /* try for a .BAT file */
-                    __set_errno( 0 );
+                    _RWD_errno = 0;
 #if defined( __OS2__ )
                     strcpy( end_of_p, ".cmd" );
                     if( !file_exists( p ) )

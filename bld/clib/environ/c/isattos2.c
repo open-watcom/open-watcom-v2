@@ -36,7 +36,6 @@
 #include "defwin.h"
 #include "rtcheck.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "thread.h"
 
 

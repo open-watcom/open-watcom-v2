@@ -39,9 +39,12 @@
     #include <ctype.h>
 #endif
 #include <limits.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "errorno.h"
-#include "seterrno.h"
+#include "thread.h"
 
 /*
  * this table is the largest value that can safely be multiplied
@@ -105,7 +108,7 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
             base = 10;
     }
     if( base < 2  ||  base > 36 ) {
-        __set_errno( EDOM );
+        _RWD_errno = EDOM;
         return( 0 );
     }
     if( base == 16 ) {
@@ -141,7 +144,7 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
         }
     }
     if( overflow ) {
-        __set_errno( ERANGE );
+        _RWD_errno = ERANGE;
         if( who == 0 )     return( ULONG_MAX );
         if( sign == '-' )  return( LONG_MIN );
         return( LONG_MAX );

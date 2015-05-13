@@ -38,17 +38,18 @@
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif
-#ifdef __NT__
+#if defined( __NT__ )
     #include <windows.h>
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #ifdef __NT__
     #include "libwin32.h"
 #endif
 #include "liballoc.h"
-#include "seterrno.h"
 #include "_environ.h"
 
 

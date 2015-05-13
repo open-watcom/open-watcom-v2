@@ -35,7 +35,6 @@
 #include <mbstring.h>
 #include <wchar.h>
 #include "farfunc.h"
-#include "seterrno.h"
 
 
 _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict retval,

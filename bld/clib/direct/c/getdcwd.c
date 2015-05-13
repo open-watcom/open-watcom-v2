@@ -35,9 +35,12 @@
 #include <stdlib.h>
 #include <direct.h>
 #include <dos.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "errorno.h"
-#include "seterrno.h"
+#include "thread.h"
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer, size_t maxlen )
 {
@@ -49,7 +52,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer,
         _dos_setdrive( drive, &tmpdrive );
         _dos_getdrive( &tmpdrive );
         if( drive != tmpdrive ) {
-            __set_errno( ENODEV );
+            _RWD_errno = ENODEV;
             return( NULL );
         }
     }

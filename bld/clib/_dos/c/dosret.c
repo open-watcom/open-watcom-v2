@@ -32,7 +32,7 @@
 
 #include "variety.h"
 #include <stdlib.h>
-#if   defined(__NT__)
+#if defined(__NT__)
 #include <windows.h>
 #elif defined(__OS2__)
 #define INCL_DOSERRORS
@@ -42,14 +42,15 @@
 #include "errorno.h"
 #include "seterrno.h"
 #include "dosret.h"
+#include "thread.h"
 
 #if defined(__NT__) || defined(__OS2__)
 /*
-  * Translation table of Win32 and OS/2 error numbers to errno codes.
-  * OS/2 and NT employ much the same error codes. Those entries marked
-  * "OS/2" are not used by Win32 and appear to be no longer used in OS/2.
-  * Only the first 255 messages are translated. The range of message
-  * numbers appears to be from 0 to 65535 but it is a disjoint set.
+ * Translation table of Win32 and OS/2 error numbers to errno codes.
+ * OS/2 and NT employ much the same error codes. Those entries marked
+ * "OS/2" are not used by Win32 and appear to be no longer used in OS/2.
+ * Only the first 255 messages are translated. The range of message
+ * numbers appears to be from 0 to 65535 but it is a disjoint set.
  */
 
 static signed char xlat[] = {
@@ -371,16 +372,16 @@ int _dosret0( int ax, int carry )
 int __set_errno_dos( unsigned int err )
 {
 #if defined(__NT__) || defined(__OS2__)
-    __set_doserrno( err );
+    _RWD_doserrno = err;
     // if we  can't map the Error code, use default EIO entry
     if( err > E_MAXERR )
         err = E_MAXERR;
-    __set_errno( xlat[ err ] );
+    _RWD_errno = xlat[err];
 #else
     register unsigned char index;
 
     index = err & 0xff;
-    __set_doserrno( index );
+    _RWD_doserrno = index;
     if( err < 0x100 ) {
         if( _RWD_osmajor >= 3 ) {
             if( index == DOS_EXIST ) {
@@ -393,9 +394,9 @@ int __set_errno_dos( unsigned int err )
         }
         if( index > E_MAXERR )
             index = E_MAXERR;
-        __set_errno( xlat[ index ] );
+        _RWD_errno = xlat[index];
     } else {
-        __set_errno( (err >> 8) & 0xff );
+        _RWD_errno = (err >> 8) & 0xff;
     }
 #endif
     return( -1 );

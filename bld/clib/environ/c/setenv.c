@@ -42,6 +42,8 @@
     #include <windows.h>
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #ifdef __NT__
@@ -49,8 +51,8 @@
 #endif
 #include "liballoc.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "_environ.h"
+#include "thread.h"
 
 
 // _wsetenv and setenv are implemented this way so that each can call the
@@ -136,7 +138,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     otherNameLen = __F_NAME(_mbslen,wcslen)( name ) + 1;
     otherName = lib_malloc( otherNameLen * charsize );
     if( otherName == NULL ) {
-        __set_errno( ENOMEM );
+        _RWD_errno = ENOMEM;
         return( -1 );
     }
     if( newvalue != NULL ) {
@@ -144,7 +146,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
         otherNewval = lib_malloc( otherNewvalLen * charsize );
         if( otherNewval == NULL ) {
             lib_free( otherName );
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( -1 );
         }
     } else {

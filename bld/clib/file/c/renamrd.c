@@ -35,7 +35,8 @@
 #include <rdos.h>
 #include "rtdata.h"
 #include "liballoc.h"
-#include "seterrno.h"
+#include "errorno.h"
+#include "thread.h"
 
 _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
 {
@@ -51,7 +52,7 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
 
     dst = RdosOpenFile( new, 0 );
     if ( dst ) {
-        __set_errno( EEXIST );
+        _RWD_errno = EEXIST;
         RdosCloseFile( dst );
         return( -1 );
     }
@@ -93,6 +94,6 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
             return( 0 );
     }
 
-    __set_errno( ENOENT );
+    _RWD_errno = ENOENT;
     return( -1 );
 }

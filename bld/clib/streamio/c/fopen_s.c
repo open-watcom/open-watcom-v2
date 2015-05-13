@@ -43,8 +43,6 @@
 #include "rtdata.h"
 #include "fileacc.h"
 #include "openmode.h"
-// #include "seterrno.h"
-// #include "defwin.h"
 
 
 _WCRTLINK errno_t __F_NAME(fopen_s,_wfopen_s)( FILE * __restrict * __restrict streamptr,

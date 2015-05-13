@@ -43,9 +43,9 @@
 #include "fileacc.h"
 #include "rtinit.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "iomode.h"
 #include "handleio.h"
+#include "thread.h"
 
 #if defined(__NETWARE__)
 #error NO IO MODE MANAGER UNDER NETWARE
@@ -75,7 +75,7 @@ void __grow_iomode( int num )
         #endif
     }
     if( new == NULL ) {
-        __set_errno( ENOMEM );
+        _RWD_errno = ENOMEM;
     } else {
         memset( &new[__NFiles], 0, (num-__NFiles)*sizeof(unsigned) );
         __io_mode = new;

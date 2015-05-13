@@ -34,10 +34,13 @@
 #include <mbstring.h>
 #include <stdlib.h>
 #include <wchar.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "farfunc.h"
-#include "seterrno.h"
 #include "errorno.h"
+#include "thread.h"
 
 
 _WCRTLINK int _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR *s, size_t n, mbstate_t _FFAR *ps )
@@ -55,7 +58,7 @@ _WCRTLINK int _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR 
     } else if( n < MB_LEN_MAX  &&  _ismbblead( *s ) ) {
         return( -2 );                       /* incomplete, possibly valid */
     } else {
-        __set_errno( EILSEQ );              /* encoding error */
+        _RWD_errno = EILSEQ;                /* encoding error */
         return( -1 );
     }
 }

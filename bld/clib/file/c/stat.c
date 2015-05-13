@@ -56,11 +56,12 @@
 #include "_dtaxxx.h"
 #endif
 #include "dosdir.h"
-#include "seterrno.h"
 #include "d2ttime.h"
 #ifdef __INT64__
 #include "int64.h"
 #endif
+#include "errorno.h"
+#include "thread.h"
 
 #define HAS_DRIVE(x)    (__F_NAME(isalpha,iswalpha)(x[0]) && x[1]==STRING(':'))
 #define ALL_ATTRIB      (_A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH)
@@ -139,7 +140,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
 
     /* reject null string and names that has wildcard */
     if( *path == NULLCHAR || __F_NAME(_mbspbrk,wcspbrk)( path, STRING( "*?" ) ) != NULL ) {
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         return( -1 );
     }
 
@@ -215,10 +216,10 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
             }
             close( handle );
             if( !canread && !canwrite ) {
-                __set_errno( ENOENT );
+                _RWD_errno = ENOENT;
                 return( -1 );
             }
-            __set_errno( rc );
+            _RWD_errno = rc;
             if( rc != 0 ) {
                 return( -1 );
             }

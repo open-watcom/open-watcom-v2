@@ -79,7 +79,7 @@ _WCRTLINK int chsize( int handle, long size )
             }
             retCode = write( handle, buf, amount );
             if( retCode != amount ) {
-                __set_errno( ENOSPC );
+                _RWD_errno = ENOSPC;
                 retCode = -1;
                 break;
             }

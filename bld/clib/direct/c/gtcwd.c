@@ -37,8 +37,9 @@
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif
+#include "rtdata.h"
 #include "liballoc.h"
-#include "seterrno.h"
+#include "errorno.h"
 #include "_direct.h"
 #include "_doslfn.h"
 
@@ -55,7 +56,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 
     __null_check( buf, 1 );
     if( __getdcwd( &cwd[3], 0 ) ) {
-        __set_errno( ENOENT );      /* noent? */
+        _RWD_errno = ENOENT;      /* noent? */
         return( NULL );
     }
 
@@ -66,7 +67,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     len = __F_NAME(strlen,_mbslen)( cwd ) + 1;
     if( buf == NULL ) {
         if( (buf = lib_malloc( max( size, len ) * CHARSIZE )) == NULL ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( NULL );
         }
         size = len;

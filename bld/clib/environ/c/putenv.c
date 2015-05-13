@@ -42,6 +42,8 @@
     #include <windows.h>
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #ifdef __NT__
@@ -49,8 +51,8 @@
 #endif
 #include "liballoc.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "_environ.h"
+#include "thread.h"
 
 
 // _wpetenv and putenv are implemented this way so that each can call the
@@ -161,12 +163,12 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
     otherStrLen = _TCSLEN( env_string ) + 1;
     otherStr = lib_malloc( otherStrLen * charsize );
     if( otherStr == NULL ) {
-        __set_errno( ENOMEM );
+        _RWD_errno = ENOMEM;
         return( -1 );
     }
     if( __F_NAME(mbstowcs,wcstombs)( otherStr, env_string, otherStrLen * fact ) == -1 ) {
         lib_free( otherStr );
-        __set_errno( ERANGE );
+        _RWD_errno = ERANGE;
         return( -1 );
     }
     return( __F_NAME(__wputenv,__putenv)( otherStr ) );

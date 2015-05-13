@@ -43,8 +43,9 @@
     #include <windows.h>
 #endif
 #include "rtdata.h"
-#include "seterrno.h"
+#include "errorno.h"
 #include "_doslfn.h"
+#include "seterrno.h"
 
 #define CVT_TM2DOS_TIME(t)  ((t)->tm_hour*2048+(t)->tm_min*32+(t)->tm_sec/2)
 #define CVT_TM2DOS_DATE(t)  (((t)->tm_year-80)*512+((t)->tm_mon+1)*32+(t)->tm_mday)
@@ -172,13 +173,13 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
     if( reg_set.x.cflag != 0 ) {
         switch( reg_set.w.ax ) {
         case 2:
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             break;
         case 4:
-            __set_errno( EMFILE );
+            _RWD_errno = EMFILE;
             break;
         case 5:
-            __set_errno( EACCES );
+            _RWD_errno = EACCES;
             break;
         }
         return( -1 );
@@ -191,14 +192,14 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
     reg_set.h.al = 1;           /* set date & time */
     intdos( &reg_set, &reg_set );
     if( reg_set.x.cflag != 0 ) {
-        __set_errno( EACCES );
+        _RWD_errno = EACCES;
         return( -1 );
     }
     reg_set.w.bx = handle;
     reg_set.h.ah = DOS_CLOSE;
     intdos( &reg_set, &reg_set );
     if( reg_set.x.cflag != 0 ) {
-        __set_errno( EACCES );
+        _RWD_errno = EACCES;
         return( -1 );
     }
     return( 0 );
@@ -223,7 +224,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
     _dos_tms    dostms;
 
     if( _get_dos_tms( times, &dostms ) ) {
-        __set_errno( EINVAL );
+        _RWD_errno = EINVAL;
         return( -1 );
     }
   #ifdef __WATCOM_LFN__

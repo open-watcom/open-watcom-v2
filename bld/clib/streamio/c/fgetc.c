@@ -40,14 +40,17 @@
     #include <mbstring.h>
     #include <wchar.h>
 #endif
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "fileacc.h"
-#include "seterrno.h"
 #include "qread.h"
 #include "orient.h"
 #include "flush.h"
 #include "streamio.h"
 #include "errorno.h"
+#include "thread.h"
 
 #define DOS_EOF_CHAR        0x1a
 
@@ -118,7 +121,7 @@ _WCRTLINK int fgetc( FILE *fp )
     ORIENT_STREAM(fp,EOF);
 
     if( (fp->_flag & _READ) == 0 ) {
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         fp->_flag |= _SFERR;
         c = EOF;
     } else {
@@ -183,7 +186,7 @@ static int __read_wide_char( FILE *fp, wchar_t *wc )
             *wc = wcTemp;
             return( 1 );
         } else {
-            __set_errno( EILSEQ );
+            _RWD_errno = EILSEQ;
             return( 0 );
         }
     }

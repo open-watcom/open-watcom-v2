@@ -37,6 +37,7 @@
 #include "iomode.h"
 #include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 _WCRTLINK int _commit( int handle )
 {
@@ -45,7 +46,7 @@ _WCRTLINK int _commit( int handle )
 
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-        __set_errno( EBADF );
+        _RWD_errno = EBADF;
         return( 0 );
     }
     rc = DosBufReset( handle );

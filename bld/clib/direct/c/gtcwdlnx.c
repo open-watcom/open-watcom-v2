@@ -36,7 +36,6 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "liballoc.h"
 #include "linuxsys.h"
 
@@ -51,18 +50,18 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     realsize = sys_call2( SYS_getcwd, (u_long)path, _MAX_PATH );
 
     if( realsize < 0 ) {
-        __set_errno( - realsize );
+        _RWD_errno = - realsize;
         return( NULL );
     }
     if( buf == NULL ) {
         buf = lib_malloc( max( size, realsize ) * CHARSIZE );
         if( buf == NULL ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( NULL );
         }
     } else {
         if( realsize > size ) {
-            __set_errno( ERANGE );
+            _RWD_errno = ERANGE;
             return( NULL );
         }
     }

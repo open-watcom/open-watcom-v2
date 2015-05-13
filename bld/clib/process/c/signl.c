@@ -35,7 +35,6 @@
 #include "rtdata.h"
 #include "sigtab.h"
 #include "sigfunc.h"
-#include "seterrno.h"
 #include "errorno.h"
 
 #ifndef __WINDOWS_386__
@@ -60,7 +59,7 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
     __sig_func  prev_func;
     
     if(( sig < 1 ) || ( sig > __SIGLAST )) {
-        __set_errno( EINVAL );
+        _RWD_errno = EINVAL;
         return( SIG_ERR );
     }
     _RWD_abort = __sigabort;           /* change the abort rtn address */

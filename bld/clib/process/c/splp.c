@@ -37,7 +37,6 @@
 #include <malloc.h>
 #include <memory.h>
 #include "rtdata.h"
-#include "seterrno.h"
 
 
 _WCRTLINK int __F_NAME(spawnlp,_wspawnlp)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
@@ -62,7 +61,7 @@ _WCRTLINK int __F_NAME(spawnlp,_wspawnlp)( int mode, const CHAR_TYPE *path, cons
 
     a = (const CHAR_TYPE **)alloca( num * sizeof( CHAR_TYPE * ) );
     if( !a ) {
-        __set_errno( ENOMEM );
+        _RWD_errno = ENOMEM;
         return( -1 );
     }
 

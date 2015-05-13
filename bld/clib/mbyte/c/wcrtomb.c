@@ -34,10 +34,13 @@
 #include <mbstring.h>
 #include <stdlib.h>
 #include <wchar.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "farfunc.h"
-#include "seterrno.h"
 #include "errorno.h"
+#include "thread.h"
 
 
 _WCRTLINK int _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate_t _FFAR *ps )
@@ -56,7 +59,7 @@ _WCRTLINK int _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate_t 
             return( 1 );
         }
     } else {
-        __set_errno( EILSEQ );
+        _RWD_errno = EILSEQ;
         return( -1 );
     }
 }

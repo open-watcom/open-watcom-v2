@@ -42,7 +42,6 @@
 #include <rdos.h>
 #include "rtdata.h"
 #include "liballoc.h"
-#include "seterrno.h"
 #include "_process.h"
 #include "_rdos.h"
 

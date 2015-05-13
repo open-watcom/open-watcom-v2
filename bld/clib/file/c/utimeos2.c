@@ -44,6 +44,7 @@
 #include "openmode.h"
 #include "errorno.h"
 #include "seterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const *times )
@@ -72,7 +73,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     }
     if( DosQFileInfo( handle, 1, (PBYTE)&stat, sizeof( FILESTATUS ) ) != 0 ) {
         DosClose( handle );
-        __set_errno( EACCES );
+        _RWD_errno = EACCES;
         return( -1 );
     }
     if( times == NULL ) {
@@ -106,11 +107,11 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
 
     if( DosSetFileInfo( handle, 1, (PBYTE)&stat, sizeof( FILESTATUS ) ) != 0 ) {
         DosClose( handle );
-        __set_errno( EACCES );
+        _RWD_errno = EACCES;
         return( -1 );
     }
     if( DosClose( handle ) != 0 ) {
-        __set_errno( EACCES );
+        _RWD_errno = EACCES;
         return( -1 );
     }
     return( 0 );

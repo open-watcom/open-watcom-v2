@@ -52,7 +52,6 @@
 #include "rtdata.h"
 #include "i64.h"
 #include "errorno.h"
-#include "seterrno.h"
 #include "find.h"
 #include "d2ttime.h"
 #include "os2fil64.h"
@@ -100,7 +99,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
     /* reject null string and names that has wildcard */
     if( *path == NULLCHAR || __F_NAME(_mbspbrk,wcspbrk)( path, STRING( "*?" ) ) != NULL ) {
-        __set_errno( ENOENT );
+        _RWD_errno = ENOENT;
         return( -1 );
     }
 
@@ -124,7 +123,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
         drv = __F_NAME(tolower,towlower)( *fullpath ) - STRING( 'a' );
         DosQCurDisk( &drive, &drvmap );
         if( ( drvmap & ( 1UL << drv ) ) == 0 ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( -1 );
         }
         /* set attributes */
@@ -158,7 +157,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
             rc = 0;
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle < 0 ) {
-                __set_errno( ENOENT );
+                _RWD_errno = ENOENT;
                 return( -1 );
 #ifdef __INT64__
             } else if( __F_NAME(_fstati64,_wfstati64)( handle, buf ) == -1 ) {
@@ -168,7 +167,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
                 rc = _RWD_errno;
             }
             close( handle );
-            __set_errno( rc );
+            _RWD_errno = rc;
             if( rc != 0 ) {
                 return( -1 );
             }
@@ -178,7 +177,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
             DosFindClose( handle );
         }
         if( rc != 0 || searchcount != 1 ) {
-            __set_errno( ENOENT );
+            _RWD_errno = ENOENT;
             return( -1 );
         }
         /* set timestamps */

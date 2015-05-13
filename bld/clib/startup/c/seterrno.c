@@ -31,6 +31,9 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "clibsupp.h"
 #include "seterrno.h"
@@ -57,10 +60,3 @@ int __set_EINVAL( void )
     _RWD_errno = EINVAL;
     return( -1 );
 }
-
-#if !defined(__UNIX__) && !defined(__NETWARE__)
-void __set_doserrno( unsigned int err )
-{
-    _RWD_doserrno = err;
-}
-#endif

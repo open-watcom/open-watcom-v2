@@ -44,8 +44,5 @@ extern void __set_errno( unsigned int );
 extern int  __set_EINVAL( void );
 extern void __set_EDOM( void );
 extern void __set_ERANGE( void );
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-    extern void __set_doserrno( unsigned int );
-#endif
 
 #endif

@@ -33,11 +33,11 @@
 #include "variety.h"
 #include <process.h>
 #include "rtdata.h"
-#include "seterrno.h"
 #include "errorno.h"
+#include "thread.h"
 
 _WCRTLINK int wait( int *status )
 {
-    __set_errno(ECHILD);
+    _RWD_errno = ECHILD;
     return( -1 );
 }

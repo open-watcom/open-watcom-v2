@@ -44,6 +44,7 @@
 #include "errorno.h"
 #include "seterrno.h"
 #include "liballoc.h"
+#include "thread.h"
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 {
@@ -60,12 +61,12 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     if( buf == NULL ) {
         buf = lib_malloc( max( size, realsize + 1 ) * CHARSIZE );
         if( buf == NULL ) {
-            __set_errno( ENOMEM );
+            _RWD_errno = ENOMEM;
             return( NULL );
         }
     } else {
         if( realsize + 1 > size ) {
-            __set_errno( ERANGE );
+            _RWD_errno = ERANGE;
             return( NULL );
         }
     }

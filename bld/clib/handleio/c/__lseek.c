@@ -33,11 +33,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
-#if defined( __NT__ )
-    #include <windows.h>
-#elif defined( __OS2__ )
+#if defined( __OS2__ )
     #define INCL_LONGLONG
     #include <wos2.h>
+#endif
+#include "rtdata.h"
+#if defined( __OS2__ )
     #include "os2fil64.h"
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
@@ -85,7 +86,7 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
         } else {
     #endif
             if( offset > LONG_MAX || offset < LONG_MIN ) {
-                __set_errno( EINVAL );
+                _RWD_errno = EINVAL;
                 return( -1LL );
             }
             pos = (unsigned long)__lseek( handle, offset, origin );
@@ -122,7 +123,7 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
     long            pos;
 
     if( offset > LONG_MAX || offset < LONG_MIN ) {
-        __set_errno( EINVAL );
+        _RWD_errno = EINVAL;
         return( -1LL );
     }
     pos = __lseek( handle, offset, origin );

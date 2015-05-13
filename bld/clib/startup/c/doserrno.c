@@ -31,6 +31,9 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "errorno.h"
 #include "thread.h"
@@ -38,7 +41,9 @@
 #if !defined(__UNIX__) && !defined( __NETWARE__ )
 
 #if !defined( __MT__ ) || defined( __RDOSDEV__ )
-    int               _doserrno;
+
+int         _doserrno;
+
 #endif
 
 _WCRTLINK int *__get_doserrno_ptr( void )
