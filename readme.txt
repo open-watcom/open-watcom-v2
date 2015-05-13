@@ -75,9 +75,9 @@ Build process consists from two phases.
 First one creates minimal set of OW tools which are sufficient to build full OW.
 Second one build full OW by minimal set of pre-build OW tools from phase 1.
 
-The overall build process is handled by two scripts.
+Overall build process are handled by two scipts.
 
-build.bat/build.cmd/build.sh 
+buil.bat/build.cmd/build.sh 
         Build all software. It builds minimal set of tools necessary for 
         building system (wmake, builder and rm tools). 
         Next run first and second build phase.
@@ -86,7 +86,7 @@ clean.bat/clean.cmd/clean.sh
         Erase all object files, exe's, etc. created by any part of build 
         process so you can build everything from scratch
 
-Supported compilers:
+Bellow is list of supported compilers.
 
                         OW for 16/32-bit hosts  OW for 64-bit hosts
 build OS                supported compilers     supported compilers
