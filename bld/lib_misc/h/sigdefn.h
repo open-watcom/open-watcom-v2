@@ -45,7 +45,7 @@
 #define __SIGLAST       _SIGMAX
 
 // note that __NT__ and __NETWARE__ are always 32bit
-#if defined( _M_I86 )
+#if defined( __OS2__ ) && defined( _M_I86 )
     // 16 bit OS/2 1.x
     typedef struct      sigtab {
         __sig_func      func;     /* user signal handler */
