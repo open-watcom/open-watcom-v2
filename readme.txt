@@ -71,7 +71,7 @@ where can not be run some DOS emulator is necessary.
 Under Linux, DOSEMU and FREEDOS need to be installed.
 Under 64-bit Windows, DOSBOX need to be installed.
 
-A full build is done in two phases.  The first phase creates minimal set of
+A full build is done in two phases.  The first phase creates a minimal set of
 OW tools sufficient for building the full OW.  The second phase uses the tools
 built in phase one to build the remainder of OW.
 
