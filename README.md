@@ -11,8 +11,8 @@ Source Tree Layout
 Open Watcom allows you to place the source tree almost anywhere (although
 we recommend avoiding paths containing spaces). The root of the source
 tree should be specified by the `OWROOT` environment variable in `setvars`
-(as described on `Wiki` https://github.com/open-watcom/open-watcom-v2/wiki/Build). All relative paths in this document are
-taken relative to that location. Also this document uses the backslash
+(as described in [Build](https://github.com/open-watcom/open-watcom-v2/wiki/Build) document). All relative paths in this document are
+taken relative to `OWROOT` location. Also this document uses the backslash
 character as a path separator as is normal for DOS, Windows, and OS/2. Of
 course on Linux systems a slash character should be used instead.
 
