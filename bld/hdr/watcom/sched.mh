@@ -19,6 +19,19 @@ struct sched_param {
     int sched_priority;
 };
 
+/* Scheduling policies per the Linux kernel */
+#define SCHED_NORMAL            0
+#define SCHED_FIFO              1
+#define SCHED_RR                2
+#define SCHED_BATCH             3
+#define SCHED_IDLE              5
+#define SCHED_DEADLINE	        6
+
+/* For GNU compatibility, define SCHED_OTHER to be
+ * simply SCHED_NORMAL
+ */
+#define SCHED_OTHER     SCHED_NORMAL
+
 _WCRTLINK extern int    sched_yield( void );
 
 _WCRTLINK extern int    sched_get_priority_max( int __policy );
