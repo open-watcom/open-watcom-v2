@@ -48,20 +48,20 @@
 
     #define lib_malloc( x )         _NW_malloc( x )
     #define lib_free( x )           _NW_free( x )
-    #if defined (_NETWARE_CLIB)
-        #define lib_realloc( x, y, z)  _NW_realloc( x, y, z )
-    #else
-        #define lib_realloc( x, y)  _NW_realloc( x, y)
-    #endif
+  #if defined (_NETWARE_CLIB)
+    #define lib_realloc( x, y, z)   _NW_realloc( x, y, z )
+  #else
+    #define lib_realloc( x, y)      _NW_realloc( x, y)
+  #endif
     #define lib_calloc( x, y )      _NW_calloc( x, y )
 
     extern void *_NW_calloc( size_t __n,size_t __size );
     extern void *_NW_malloc( size_t );
-    #if defined (_NETWARE_CLIB)
+  #if defined (_NETWARE_CLIB)
     extern void *_NW_realloc( void *ptr,size_t size,size_t old);
-    #else
+  #else
     extern void *_NW_realloc( void *ptr,size_t size);
-    #endif
+  #endif
     extern void _NW_free( void *ptr );
 #elif defined(__RDOSDEV__)
     #define lib_malloc( x ) malloc( x )
