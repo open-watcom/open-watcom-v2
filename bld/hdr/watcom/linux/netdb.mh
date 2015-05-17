@@ -43,6 +43,14 @@ struct hostent {
 
 _WCRTDATA extern int h_errno;
 
+#define HOST_NOT_FOUND 1
+#define TRY_AGAIN      2
+#define NO_RECOVERY    3
+#define NO_DATA        4
+
+/* GNU libc compatibility */
+#define NO_ADDRESS     NO_DATA
+
 _WCRTLINK extern struct protoent *getprotoent( void );
 _WCRTLINK extern struct protoent *getprotobyname( const char *__name );
 _WCRTLINK extern struct protoent *getprotobynumber( int __proto );
