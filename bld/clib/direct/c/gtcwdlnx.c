@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "rterrno.h"
 #include "liballoc.h"
 #include "linuxsys.h"
 

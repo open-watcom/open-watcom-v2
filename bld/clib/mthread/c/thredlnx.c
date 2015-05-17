@@ -39,7 +39,6 @@
 #include "liballoc.h"
 #include "osthread.h"
 #include "thread.h"
-//#include "stacklow.h"
 #include "extfunc.h"
 #include "mthread.h"
 #include "cthread.h"

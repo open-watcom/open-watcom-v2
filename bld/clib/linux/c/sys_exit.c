@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "linuxsys.h"
 
 long sys_exit( int error_code )

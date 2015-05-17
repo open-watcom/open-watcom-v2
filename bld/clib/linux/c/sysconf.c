@@ -31,6 +31,7 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+#include "variety.h"
 #include <unistd.h>
 #include <limits.h>
 #include <sys/resource.h>
