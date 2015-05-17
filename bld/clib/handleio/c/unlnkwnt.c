@@ -32,10 +32,10 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <unistd.h>
 #include <windows.h>
 #include "libwin32.h"
 #include "seterrno.h"
-#include <unistd.h>
 
 _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
 {

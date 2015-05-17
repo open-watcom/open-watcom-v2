@@ -34,16 +34,14 @@
 #include <signal.h>
 #include <dos.h>
 #include <float.h>
-#define INCL_DOSEXCEPTIONS
-#include <wos2.h>
-#include "osthread.h"
 #include "rtdata.h"
+#include "rterrno.h"
+#include "osthread.h"
 #include "sigtab.h"
 #include "sigfunc.h"
 #include "fpusig.h"
 #include "rtinit.h"
 #include "_int23.h"
-#include "errorno.h"
 #include "thread.h"
 
 unsigned        char    __ExceptionHandled;

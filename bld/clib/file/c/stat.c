@@ -50,7 +50,7 @@
 #else
     #include <ctype.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "_doslfn.h"
 #ifndef __OSI__
 #include "_dtaxxx.h"
@@ -60,7 +60,6 @@
 #ifdef __INT64__
 #include "int64.h"
 #endif
-#include "errorno.h"
 #include "thread.h"
 
 #define HAS_DRIVE(x)    (__F_NAME(isalpha,iswalpha)(x[0]) && x[1]==STRING(':'))

@@ -29,13 +29,12 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include <stdlib.h>
+#include "xfflags.h"
 #include "ftextfun.h"
 #include "rtenv.h"
 #include "rundat.h"
-#include "xfflags.h"
 #include "errcod.h"
-
-#include <stdlib.h>
 
 // FORTRAN 77 run-time system must be initialized before we call
 // user's program. Part of the run-time initialization includes

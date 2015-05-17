@@ -56,12 +56,11 @@
 
 #if defined( __MT__ )
 
-    #include "fthread.h"
-
-    #define     __XcptFlags     (__FTHREADDATAPTR->__XceptionFlags)
+    #define _XCPTFLAGS          (__FTHREADDATAPTR->__XceptionFlags)
 
 #else
 
-    extern      volatile unsigned short __XcptFlags;
+    extern volatile unsigned short  __XcptFlags;
+    #define _XCPTFLAGS              __XcptFlags
 
 #endif

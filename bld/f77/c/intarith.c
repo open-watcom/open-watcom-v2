@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "xfflags.h"
 
 #if defined( _M_I86 )  // 16-bit
  extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
@@ -153,10 +152,10 @@ bool    AddIOFlo( intstar4 *arg1, intstar4 *arg2 ) {
 
 // Add two integers and check for overflow.
 #if 0
-    __XcptFlags &= ~XF_IOVERFLOW;
+    _RWD_XcptFlags &= ~XF_IOVERFLOW;
     *arg1 += *arg2;
     ChkOverFlow();
-    return( ( __XcptFlags & XF_IOVERFLOW ) != 0 );
+    return( ( _RWD_XcptFlags & XF_IOVERFLOW ) != 0 );
 #else
     return( __Add( arg1, arg2 ) );
 #endif
@@ -168,10 +167,10 @@ bool    SubIOFlo( intstar4 *arg1, intstar4 *arg2 ) {
 
 // Subtract two integers and check for overflow.
 #if 0
-    __XcptFlags &= ~XF_IOVERFLOW;
+    _RWD_XcptFlags &= ~XF_IOVERFLOW;
     *arg1 -= *arg2;
     ChkOverFlow();
-    return( ( __XcptFlags & XF_IOVERFLOW ) != 0 );
+    return( ( _RWD_XcptFlags & XF_IOVERFLOW ) != 0 );
 #else
     return( __Sub( arg1, arg2 ) );
 #endif
@@ -183,14 +182,14 @@ bool    MulIOFlo( intstar4 *arg1, intstar4 *arg2 ) {
 
 // Multiply two integers and check for overflow.
 #if 0
-    __XcptFlags &= ~XF_IOVERFLOW;
+    _RWD_XcptFlags &= ~XF_IOVERFLOW;
   #ifdef _M_I86
     *arg1 = ChkI4Mul( *arg1, *arg2 );
   #else
     *arg1 *= *arg2;
     ChkOverFlow();
   #endif
-    return( ( __XcptFlags & XF_IOVERFLOW ) != 0 );
+    return( ( _RWD_XcptFlags & XF_IOVERFLOW ) != 0 );
 #else
   #ifdef _M_I86
     return( ChkI4Mul( arg1, *arg2 ) );

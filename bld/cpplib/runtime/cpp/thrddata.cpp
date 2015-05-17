@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined(__MT__) && defined(__386__)
+#if defined( __MT__ ) && !defined( _M_I86 )
 #include "cpplib.h"
 #include "rtinit.h"
 
@@ -40,8 +40,7 @@ extern "C"
 void CPPLIB(multi_thread_init)( // MULTI-THREAD INITIALIZATION
     void )
 {
-    _wint_thread_data_offset =
-        __RegisterThreadDataSize( sizeof( THREAD_CTL ) );
+    _wint_thread_data_offset = __RegisterThreadDataSize( sizeof( THREAD_CTL ) );
 }
 
 #endif

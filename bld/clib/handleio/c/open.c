@@ -42,9 +42,10 @@
 #include <dos.h>
 #include <dosfunc.h>
 #include "rtdata.h"
+#include "rterrno.h"
+#include "seterrno.h"
 #include "tinyio.h"
 #include "iomode.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "extender.h"

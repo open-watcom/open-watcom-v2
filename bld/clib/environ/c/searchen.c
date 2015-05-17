@@ -42,11 +42,8 @@
     #include <direct.h>
 #endif
 #include <string.h>
-#ifdef __OS2__
-    #include <wos2.h>
-#endif
 #include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "_environ.h"
 #include "thread.h"
 

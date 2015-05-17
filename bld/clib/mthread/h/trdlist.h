@@ -89,7 +89,7 @@
   #define INCL_DOSSEMAPHORES
   #define INCL_DOSPROCESS
   #define INCL_DOSEXCEPTIONS
-  #include <wos2.h>
+//  #include <wos2.h>
   #if defined( __WARP__ )
     extern int          *__threadid(void);      // OS/2 2.0
    #define _threadid             (__threadid())

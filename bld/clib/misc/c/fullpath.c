@@ -54,13 +54,12 @@
   #endif
 #else
     #include <direct.h>
-  #if defined(__OS2__)
-    #include <wos2.h>
-  #elif defined(__NT__)
+  #if defined(__NT__)
     #include <windows.h>
   #endif
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
+#include "seterrno.h"
 #if defined(__UNIX__)
 #elif defined(__OS2__)
 #elif defined(__NT__)
@@ -70,8 +69,6 @@
     #include "_doslfn.h"
 #endif
 #include "liballoc.h"
-#include "errorno.h"
-#include "seterrno.h"
 #include "thread.h"
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \

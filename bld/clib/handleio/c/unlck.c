@@ -33,15 +33,11 @@
 #include "variety.h"
 #include <stddef.h>
 #include <io.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
-#include "rtdata.h"
+#include "rterrno.h"
 #ifndef __OS2__
-#include "tinyio.h"
+    #include "tinyio.h"
 #endif
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "thread.h"
 

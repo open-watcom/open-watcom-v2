@@ -34,6 +34,8 @@
  * everything else is a valid return value.
  */
 
+#include "rterrno.h"
+
 /* user-visible error numbers are in the range -1 - -124 */
 
 #define __syscall_return( type, res )                   \

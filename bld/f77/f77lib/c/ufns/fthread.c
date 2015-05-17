@@ -30,14 +30,16 @@
 
 
 #include "ftnstd.h"
-#include "rundat.h"
-#include "xfflags.h"
-#include "fthread.h"
-#include "rmemmgr.h"
-
 #include <process.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
+#include "rundat.h"
+#include "rmemmgr.h"
+#include "thread.h"
+
 
 extern  int             Spawn(void (*)(void));
 extern  void            Suicide(void);

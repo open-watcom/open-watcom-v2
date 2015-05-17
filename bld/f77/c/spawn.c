@@ -28,14 +28,20 @@
 *
 ****************************************************************************/
 
-#if defined( __WINDOWS__ ) && !defined( __386__ )
-#include <windows.h>
-#else
-#include <setjmp.h>
-#endif
-#include <stdlib.h>
 
-#if defined( __WINDOWS__ ) && !defined( __386__ )
+#include "ftnstd.h"
+#include <stdlib.h>
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+  #include <windows.h>
+#else
+  #include <setjmp.h>
+#endif
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "thread.h"
+
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
   #define __setjmp      Catch
   #define __longjmp     Throw
   #define __jmp_buf     CATCHBUF
@@ -46,8 +52,6 @@
 #endif
 
 #if defined( __MT__ )
-
-#include "fthread.h"
 
 #define __SpawnStack    (*(__jmp_buf **)&(__FTHREADDATAPTR->__SpawnStack))
 

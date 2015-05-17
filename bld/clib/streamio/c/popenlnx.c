@@ -34,7 +34,6 @@
 #include <unistd.h>
 #include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 #define _PIPE_READ_END      0
 #define _PIPE_WRITE_END     1

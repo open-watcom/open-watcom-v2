@@ -31,9 +31,7 @@
 
 #include "variety.h"
 #include <signal.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int sigwaitinfo( const sigset_t *__set, siginfo_t *__info )
 {

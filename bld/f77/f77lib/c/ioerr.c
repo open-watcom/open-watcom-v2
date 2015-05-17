@@ -29,12 +29,11 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include <stdarg.h>
+#include "xfflags.h"
 #include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
-#include "xfflags.h"
-
-#include <stdarg.h>
 
 extern  void            Suicide(void);
 extern  void            ErrHandler(int,va_list);

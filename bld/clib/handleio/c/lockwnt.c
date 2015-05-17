@@ -33,11 +33,10 @@
 #include "variety.h"
 #include <stddef.h>
 #include <io.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
-#include "errorno.h"
 #include "thread.h"
 
 _WCRTLINK int lock( int hid, unsigned long offset, unsigned long nbytes )

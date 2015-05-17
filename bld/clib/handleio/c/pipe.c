@@ -37,13 +37,10 @@
 #include <stdlib.h>
 #if defined(__NT__)
     #include <windows.h>
-#elif defined(__OS2__)
-    #include <wos2.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "thread.h"
 

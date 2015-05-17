@@ -39,10 +39,8 @@
 #include <sys/stat.h>
 #include <direct.h>
 #include <sys/utime.h>
-#include <wos2.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "openmode.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "thread.h"
 

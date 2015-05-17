@@ -35,11 +35,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "rtdata.h"
 #include "linuxsys.h"
 #include "heapacc.h"
 #include "heap.h"
-#include "errorno.h"
 
 _WCRTLINK void _WCNEAR *sbrk( int increment ) {
     return( __brk( _curbrk + increment ) );

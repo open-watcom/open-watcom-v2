@@ -30,16 +30,14 @@
 
 
 #include "variety.h"
-#define INCL_DOSSEMAPHORES
-#define INCL_DOSPROCESS
-#include <wos2.h>
-
 #include <dos.h>
 #include <process.h>
 #include <string.h>
-#include "exitwmsg.h"
-#include "rtdata.h"
+#define INCL_DOSSEMAPHORES
+#define INCL_DOSPROCESS
+#include "rtstack.h"
 #include "stacklow.h"
+#include "exitwmsg.h"
 #include "sigtab.h"
 #include "extfunc.h"
 #include "thread.h"

@@ -31,10 +31,8 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include "rtdata.h"
 #include "linuxsys.h"
 #include "lseek.h"
-#include "errorno.h"
 
 off_t __lseek( int __fildes, off_t __offset, int __whence )
 {

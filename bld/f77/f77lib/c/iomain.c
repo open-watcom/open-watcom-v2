@@ -29,11 +29,15 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
 #include "ftextfun.h"
 #include "rundat.h"
-#include "xfflags.h"
 #include "iotype.h"
 #include "errcod.h"
+#include "thread.h"
 
 void            __ReleaseIOSys( void ) {
 //================================
@@ -66,10 +70,10 @@ int     IOMain( void (*io_rtn)( void ) ) {
             DiscoFile( IOCB->fileinfo );
         }
     }
-    if( __XcptFlags & XF_IO_INTERRUPTED ) {
+    if( _RWD_XcptFlags & XF_IO_INTERRUPTED ) {
         RTErr( KO_INTERRUPT );
     }
-    if( __XcptFlags & XF_FATAL_ERROR ) {
+    if( _RWD_XcptFlags & XF_FATAL_ERROR ) {
         __ReleaseIOSys(); // so other threads can continue
         Suicide();
     }
@@ -105,6 +109,6 @@ int     IOMain( void (*io_rtn)( void ) ) {
     if( (io_stmt != IO_READ) && (io_stmt != IO_WRITE) )
 #endif
         __ReleaseIOSys();
-    __XcptFlags &= ~XF_IO_INTERRUPTABLE;
+    _RWD_XcptFlags &= ~XF_IO_INTERRUPTABLE;
     return( io_stat );
 }

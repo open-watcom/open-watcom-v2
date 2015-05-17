@@ -43,16 +43,15 @@
 #include <direct.h>
 #include <string.h>
 #define INCL_LONGLONG
-#include <wos2.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
-#include "os2fil64.h"
 #include "thread.h"
+#include "os2fil64.h"
 
 extern unsigned __NFiles;
 

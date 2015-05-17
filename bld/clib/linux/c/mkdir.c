@@ -32,9 +32,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include <sys/stat.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int mkdir( const char *__path, mode_t __mode )
 {

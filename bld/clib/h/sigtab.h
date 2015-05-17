@@ -30,8 +30,10 @@
 
 
 #if defined(__NT__) || defined(__OS2__)
-    
-    #if defined( __MT__ ) && !defined( _M_I86 )
+    #if defined( __OS2_286__ )
+        #include "sigdefn.h"
+        #define __SIGNALTABLE   _SignalTable
+    #elif defined( __MT__ )
         #include "osthread.h"
         #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
         #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
@@ -47,8 +49,8 @@
     #define __SIGNALTABLE       (__THREADDATAPTR->signal_table)
 #elif defined(__RDOS__)
     #include "osthread.h"
-    #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
-    #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
+    #define __SIGNALTABLE       (__THREADDATAPTR->signal_table)
+    #define __XCPTHANDLER       (__THREADDATAPTR->xcpt_handler)
     _WCRTLINK extern void       (*__sig_init_rtn)( void );
     _WCRTLINK extern void       (*__sig_fini_rtn)( void );
 #else

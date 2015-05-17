@@ -36,13 +36,11 @@
 #include <string.h>
 #if defined(__OS2__)
  #define INCL_DOSFILEMGR
- #include <wos2.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
 #include "fileacc.h"
 #include "rtinit.h"
-#include "errorno.h"
 #include "iomode.h"
 #include "handleio.h"
 #include "thread.h"

@@ -34,11 +34,7 @@
 #include <jstring.h>
 #include <stddef.h>
 #include <stdio.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 
 /**

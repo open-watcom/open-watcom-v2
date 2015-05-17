@@ -34,7 +34,6 @@
 #include <sys/wait.h>
 #include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int pclose( FILE *fp )
 {

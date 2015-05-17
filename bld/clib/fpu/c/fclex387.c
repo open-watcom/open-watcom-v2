@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "rtdata.h"
 #include "variety.h"
+#include "rtdata.h"
 #include "clearfpe.h"
 
 extern void __ClearFPE( void );

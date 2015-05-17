@@ -24,33 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of __set_errno().
+* Description:  Implementation of set errno routines called from assembled modules.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <stdlib.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "clibsupp.h"
 #include "seterrno.h"
-#include "errorno.h"
 #include "thread.h"
 
-void __set_errno( unsigned int err )
-{
-    _RWD_errno = err;
-}
-
-void __set_EDOM( void )
+_WCRTLINK void __set_EDOM( void )
 {
     _RWD_errno = EDOM;
 }
 
-void __set_ERANGE( void )
+_WCRTLINK void __set_ERANGE( void )
 {
     _RWD_errno = ERANGE;
 }

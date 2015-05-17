@@ -30,11 +30,8 @@
 
 
 #include "variety.h"
-//#include <unistd.h>
 #include <sys/resource.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int getrlimit( int resource, struct rlimit *rlim )
 {

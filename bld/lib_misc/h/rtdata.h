@@ -32,8 +32,6 @@
 #ifndef _RTDATA_H_INCLUDED
 #define _RTDATA_H_INCLUDED
 
-#include <stdio.h>
-
 /* DOS based platforms have stdaux/stdprn in addition to stdin/out/err */
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
     #define NUM_STD_STREAMS 5
@@ -95,23 +93,11 @@ extern      void            (*__FPE_handler_exit)( void );
     extern  int             __umaskval;
     extern  unsigned        _curbrk;
     extern  int             _commode;
-#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+  #if defined( __WATCOMC__ ) && defined( _M_IX86 )
     #pragma aux             _child "_*";
+  #endif
 #endif
-#endif
-extern  unsigned            _STACKLOW;
-#if !defined ( _NETWARE_LIBC )
-extern  unsigned            _STACKTOP;
-#endif
-/* alternate stack for F77 compiler */
-#if !defined( _M_I86 )
-extern  unsigned            __ASTACKSIZ;
-extern  char                *__ASTACKPTR;
-#if defined( __WATCOMC__ ) && defined( _M_IX86 )
- #pragma aux                __ASTACKPTR "*"
- #pragma aux                __ASTACKSIZ "*"
-#endif
-#endif
+
 #if !defined( _M_I86 )
 #if defined( __DOS__ )
 extern char     _WCFAR *_Envptr;
@@ -164,12 +150,8 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
     #define _RWD_curbrk         _curbrk
     #define _RWD_dynend         _dynend
 #endif
-#if defined( _M_I86 ) && !defined( __QNX__ ) || defined( __DOS__ ) || defined( __OSI__ )
+#if defined( __DOS__ ) || defined( __OSI__ ) || defined( _M_I86 ) && !defined( __QNX__ )
     #define _RWD_psp            _psp
-#endif
-#define _RWD_stacklow           _STACKLOW
-#if !defined ( _NETWARE_LIBC)
-#define _RWD_stacktop           _STACKTOP
 #endif
 #if defined( _M_IX86 ) && !defined( __UNIX__ )
     #define _RWD_Save8087       __Save8087
@@ -194,10 +176,6 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
         #define _RWD_winver     _winver
     #endif
 #endif
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-    #define _RWD_doserrno       _DOSERRNO
-#endif
-#define _RWD_errno              _ERRNO
 #define _RWD_tmpfnext           __tmpfnext
 #define _RWD_nexttok            _NEXTTOK
 #define _RWD_nextftok           _NEXTFTOK
@@ -219,13 +197,6 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #define _RWD_randnext           _RANDNEXT
 
 #define _RWD_uselfn             __uselfn
-
-/* C++ run-time data */
-#define _RWD_ThreadData         _ThreadData
-#define _RWD_StaticInitSema     _StaticInitSema
-#define _RWD_PureErrorFlag      _PureErrorFlag
-#define _RWD_UndefVfunFlag      _UndefVfunFlag
-#define _RWD_ModuleInit         _ModuleInit
 
 /*
     For the sake of efficiency, tell the compiler

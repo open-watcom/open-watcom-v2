@@ -34,6 +34,7 @@
 #include <string.h>
 #include <dos.h>
 #include "rtdata.h"
+#include "rtstack.h"
 #include "stacklow.h"
 #include "sigfunc.h"
 #include "_int23.h"

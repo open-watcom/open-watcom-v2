@@ -35,9 +35,7 @@
 #include <process.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
-#include <wos2.h>
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 
 _WCRTLINK int cwait( int *status, int process_id, int action )

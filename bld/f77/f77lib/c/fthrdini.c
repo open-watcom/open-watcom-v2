@@ -30,16 +30,20 @@
 
 
 #include "ftnstd.h"
+#if defined( __OS2__ )
+  #define INCL_DOSPROCESS
+  #define INCL_DOSSEMAPHORES
+  #include <wos2.h>
+#elif defined( __NT__ )
+  #include <windows.h>
+#endif
+#include "trcback.h"
+#include "fthread.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
-#include "fthread.h"
 #include "errcod.h"
 
 #if defined( __OS2__ )
-
-#define INCL_DOSPROCESS
-#define INCL_DOSSEMAPHORES
-#include <os2.h>
 
 ULONG                   __fio_sem;
 
@@ -50,8 +54,6 @@ extern long             OpenLocalSemaphore( long );
 extern int              CloseLocalSemaphore( long );
 
 #elif defined( __NT__ )
-
-#include <windows.h>
 
 HANDLE                  __fio_sem;
 

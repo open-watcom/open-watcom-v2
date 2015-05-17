@@ -29,16 +29,20 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include <stdarg.h>
+#include <string.h>
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
-#include "xfflags.h"
 #include "rtenv.h"
+#include "thread.h"
 
-#include <stdarg.h>
-#include <string.h>
 
 #define ERR_PREF_SIZE   5
 #define ERR_CODE_SIZE   6
@@ -105,8 +109,8 @@ void    ErrHandler( int errcode, va_list args ) {
 // Print a run-time error message and halt exection.
 
     WriteErr( errcode, args );
-    __XcptFlags |= XF_FATAL_ERROR;
-    if( !(__XcptFlags & XF_IO_INTERRUPTED) ) {
+    _RWD_XcptFlags |= XF_FATAL_ERROR;
+    if( !(_RWD_XcptFlags & XF_IO_INTERRUPTED) ) {
         Suicide();
     }
 }

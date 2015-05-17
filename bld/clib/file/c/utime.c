@@ -42,8 +42,7 @@
 #ifdef __WINDOWS_386__
     #include <windows.h>
 #endif
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "_doslfn.h"
 #include "seterrno.h"
 

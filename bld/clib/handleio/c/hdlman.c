@@ -39,13 +39,13 @@
 #include <unistd.h>
 #if defined(__OS2__)
  #define INCL_DOSFILEMGR
- #include <wos2.h>
 #elif defined(__WINDOWS__) || defined(__NT__)
  #include <windows.h>
 #elif defined(__UNIX__)
  #include <sys/resource.h>
 #endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
 #if defined(__DOS__)
  #include "tinyio.h"
@@ -55,7 +55,6 @@
 #include "rtinit.h"
 #include "seterrno.h"
 #include "handleio.h"
-#include "errorno.h"
 #include "thread.h"
 
 #undef __getOSHandle

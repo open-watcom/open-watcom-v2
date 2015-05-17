@@ -35,14 +35,15 @@
 #include <string.h>
 #include <malloc.h>
 #include <i86.h>
+#include "rtstack.h"
+//#include "stacklow.h"
 #include "liballoc.h"
-#include "rtdata.h"
-#include "stacklow.h"
 #include "sigtab.h"
 #include "exitwmsg.h"
 #include "thread.h"
 #include "cthread.h"
 #include "snglthrd.h"
+#include "maxthrds.h"
 
 #define EXIT_THREAD     0
 

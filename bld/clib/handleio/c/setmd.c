@@ -38,14 +38,12 @@
 #include <dosfunc.h>
 #if defined(__NT__)
     #include <windows.h>
-#elif defined( __OS2__ )
-    #include <wos2.h>
 #endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
-#include "errorno.h"
 #include "thread.h"
 
 _WCRTLINK int setmode( int handle, int mode )

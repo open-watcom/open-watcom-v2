@@ -31,9 +31,7 @@
 
 #include "variety.h"
 #include <signal.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 /* NOTE: this only supports the first 32 signals in the mask */
 

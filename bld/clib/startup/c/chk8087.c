@@ -32,16 +32,16 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <float.h>
-#if defined( __OS2__ )
+#if defined( __WINDOWS__ )
+  #include <i86.h>
+#endif
+#if defined( __WINDOWS__ )
+  #include <windows.h>
+#elif defined( __OS2__ )
   #define INCL_DOSEXCEPTIONS
   #define INCL_DOSDEVICES
   #include <wos2.h>
 #endif
-#if defined( __WINDOWS__ )
-  #include <i86.h>
-  #include <windows.h>
-#endif
-
 #include "rtdata.h"
 #include "exitwmsg.h"
 

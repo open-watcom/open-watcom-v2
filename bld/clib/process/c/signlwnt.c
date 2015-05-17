@@ -35,11 +35,11 @@
 #include <windows.h>
 #include <excpt.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "sigtab.h"
 #include "sigfunc.h"
 #include "signlwnt.h"
 #include "rtinit.h"
-#include "errorno.h"
 #include "thread.h"
 
 sigtab  _SignalTable[] = {

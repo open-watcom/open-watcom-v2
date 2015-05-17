@@ -29,19 +29,23 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
 #include "ftextfun.h"
 #include "rundat.h"
 #include "units.h"
 #include "errcod.h"
 #include "rtenv.h"
-#include "xfflags.h"
+#include "thread.h"
 
 void SetIOCB( void ) {
 //=========================
 
     RTSysInit();
     _AccessFIO();
-    __XcptFlags |= XF_IO_INTERRUPTABLE;
+    _RWD_XcptFlags |= XF_IO_INTERRUPTABLE;
     IOSysInit();
     if( IOCB->flags & IOF_SETIOCB ) {
         _PartialReleaseFIO();

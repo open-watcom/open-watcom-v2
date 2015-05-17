@@ -42,6 +42,7 @@
 #include <sys/proc_msg.h>
 #include <sys/kernel.h>
 #include <sys/utsname.h>
+#include "rtstack.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "thread.h"

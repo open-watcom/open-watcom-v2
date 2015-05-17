@@ -39,13 +39,11 @@
 #include <fcntl.h>
 #ifdef __NT__
     #include <windows.h>
-#elif defined( __OS2__ )
-    #include <wos2.h>
 #endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "iomode.h"
 #include "streamio.h"
-#include "errorno.h"
 #include "thread.h"
 
 
@@ -108,7 +106,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
 
     if( handle == -1 ) {
         _RWD_errno = EBADF;
-        return( NULL );                 /* 19-apr-90 */
+        return( NULL );
     }
     flags = __F_NAME(__open_flags,__wopen_flags)( access_mode, &extflags );
     if( flags == 0 ) return( NULL );

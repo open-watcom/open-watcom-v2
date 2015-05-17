@@ -32,9 +32,6 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
 #include "rtdata.h"
 #include "thrdreg.h"
 #include "liballoc.h"
@@ -42,6 +39,7 @@
 #include "trdlist.h"
 #include "mthread.h"
 #include "exitwmsg.h"
+#include "maxthrds.h"
 
 
 typedef struct thread_data_list {

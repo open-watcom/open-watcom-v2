@@ -38,13 +38,10 @@
     #if defined (_NETWARE_CLIB)
         #include <owfileng.h>
     #endif
-#elif defined( __OS2__ )
-    #include <wos2.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "thread.h"
 

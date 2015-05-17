@@ -34,21 +34,16 @@
 
 #if defined(__QNX__)
 #elif defined(__LINUX__)
-// TODO: Include Linux specific thread header files
+  // TODO: Include Linux specific thread header files
 #elif defined(__NT__)
-  #include <ntexc.h>
-#elif defined(__OS2__)
- #if defined( _M_I86 )
-  #define __EXCEPTION_RECORD  int
- #else
-  #define __EXCEPTION_RECORD EXCEPTIONREGISTRATIONRECORD
- #endif
+  #include "ntexc.h"
 #elif defined(__NETWARE__)
-  #define __EXCEPTION_RECORD  int
+#elif defined(__OS2__)
+  #include "os2exc.h"
 #elif defined(__RDOS__)
-  #include <rdosexc.h>
+  #include "rdosexc.h"
 #else
-  #define __EXCEPTION_RECORD  int
+  #define __EXCEPTION_RECORD  unsigned
 #endif
 
 #endif

@@ -36,7 +36,7 @@
 #if defined( __OS2__ )
 
   #define INCL_DOSSEMAPHORES
-  #include <os2.h>
+  #include <wos2.h>
 
   #define       _FSEM           ULONG
   #define       _FTID           TID

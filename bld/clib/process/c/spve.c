@@ -40,15 +40,12 @@
 #ifdef __DOS__
     #include <dos.h>
 #endif
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
 #include "filestr.h"
 #include "msdos.h"
 #include "_process.h"
-#include "errorno.h"
 #include "thread.h"
 
 #ifdef __USE_POSIX_HANDLE_STRINGS

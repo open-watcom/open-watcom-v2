@@ -32,9 +32,8 @@
 
 #include "variety.h"
 #include <dos.h>
-#include <wos2.h>
 #include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 
 #define FF_LEVEL        0

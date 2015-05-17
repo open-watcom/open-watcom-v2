@@ -31,9 +31,7 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int ftruncate( int __fd, off_t __length )
 {

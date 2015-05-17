@@ -33,8 +33,7 @@
 #include "variety.h"
 #include <string.h>
 #include <pwd.h>
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 
 _WCRTLINK struct passwd *getpwnam(const char *name)
 {

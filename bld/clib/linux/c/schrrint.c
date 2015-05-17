@@ -32,9 +32,7 @@
 #include <sched.h>
 #include <time.h>
 #include <sys/types.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int sched_rr_get_interval( pid_t pid, struct timespec *ts )
 {

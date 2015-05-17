@@ -31,9 +31,7 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK pid_t clone( int __flags, void *__child_stack )
 {

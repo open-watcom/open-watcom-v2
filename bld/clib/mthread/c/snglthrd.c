@@ -32,10 +32,8 @@
 #include "variety.h"
 #if defined( __NT__ )
 #include <windows.h>
-#elif defined( __OS2__ )
-#include <wos2.h>
 #endif
-#include "rtdata.h"
+#include "rtstack.h"
 #include "thread.h"
 #include "snglthrd.h"
 #include "mthread.h"

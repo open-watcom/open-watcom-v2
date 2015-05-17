@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "initarg.h"
-#include "rtdata.h"
+#include "rtstack.h"
 
 extern  void    __CommonInit( void );
 

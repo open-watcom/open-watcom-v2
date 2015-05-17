@@ -38,8 +38,8 @@
     #include <mbstring.h>
 #endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
-#include "errorno.h"
 #include "_direct.h"
 #include "_doslfn.h"
 

@@ -32,14 +32,12 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
 #include "rtdata.h"
 #include "thread.h"
 #include "trdlist.h"
 #include "liballoc.h"
 #include "mthread.h"
+#include "maxthrds.h"
 
 #ifdef _NETWARE_CLIB
 void                    **__ThreadIDs;
@@ -62,7 +60,7 @@ void *__InitThreadProcessing( void )
     // allocate 1 more than we have to since thread 1 will
     // actually access 2nd element of __ThreadData
 
-    __MaxThreads = __GetMaxThreads();
+    __MaxThreads = __GETMAXTHREADS();
     __ThreadData = lib_calloc( (__MaxThreads + 1), sizeof( *__ThreadData ) );
   #ifdef __NETWARE__
     if( __ThreadData != NULL ) {

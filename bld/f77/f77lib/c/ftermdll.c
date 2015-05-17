@@ -30,10 +30,11 @@
 
 
 #include "ftnstd.h"
+#include "rtstack.h"
+#include "trcback.h"
+#include "fthread.h"
 #include "ftextfun.h"
 #include "rmemmgr.h"
-#include "fthread.h"
-#include "rtdata.h"
 
 void            __FTermDLL( void ) {
 //==================================

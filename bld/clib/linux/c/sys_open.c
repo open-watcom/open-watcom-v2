@@ -30,9 +30,7 @@
 
 
 #include "variety.h"
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 long sys_open( const char * filename, int flags, int mode )
 {

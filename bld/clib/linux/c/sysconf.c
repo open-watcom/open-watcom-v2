@@ -35,9 +35,7 @@
 #include <limits.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 #ifndef PAGE_SIZE
   #if defined( _M_IX86 )

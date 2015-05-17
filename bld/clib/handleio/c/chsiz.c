@@ -35,10 +35,9 @@
 #include <io.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "tinyio.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
 #include "msdos.h"

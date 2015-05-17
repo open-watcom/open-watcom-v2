@@ -36,7 +36,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <direct.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "int64.h"
 #include "defwin.h"
 #include "iomode.h"
@@ -45,7 +45,6 @@
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "d2ttime.h"
-#include "errorno.h"
 #include "thread.h"
 
 

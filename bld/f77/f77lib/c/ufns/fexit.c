@@ -35,10 +35,9 @@
 //
 
 #include "ftnstd.h"
-#include "rundat.h"
-#include "xfflags.h"
-
 #include <stdlib.h>
+#include "xfflags.h"
+#include "rundat.h"
 
 
 void    __fortran FEXIT( intstar4 *rc ) {

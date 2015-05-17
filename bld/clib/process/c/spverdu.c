@@ -38,11 +38,10 @@
 #include <string.h>
 #include <process.h>
 #include <rdos.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
 #include "filestr.h"
 #include "_process.h"
-#include "errorno.h"
 #include "thread.h"
 
 #define SPVE_NEAR _WCI86NEAR

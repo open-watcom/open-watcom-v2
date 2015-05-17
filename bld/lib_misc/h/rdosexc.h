@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#ifndef __RDOSEX_INCLUDED__
-#define __RDOSEX_INCLUDED__
+#ifndef __RDOSEXC_INCLUDED__
+#define __RDOSEXC_INCLUDED__
 
 typedef struct _REGISTRATION_RECORD {
     struct _REGISTRATION_RECORD *RegistrationRecordPrev;
@@ -39,7 +39,6 @@ typedef struct _REGISTRATION_RECORD {
 
 #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
 
-_WCRTLINK void __DefaultExceptionHandler( void );
 _WCRTLINK void __NewExceptionFilter( REGISTRATION_RECORD * );
 _WCRTLINK void __DoneExceptionFilter( void );
 

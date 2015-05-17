@@ -48,14 +48,12 @@
     #include <ctype.h>
 #endif
 #define INCL_LONGLONG
-#include <wos2.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "i64.h"
-#include "errorno.h"
-#include "find.h"
 #include "d2ttime.h"
-#include "os2fil64.h"
 #include "thread.h"
+#include "os2fil64.h"
+#include "find.h"
 
 
 static unsigned short at2mode( OS_UINT attr, char *fname ) {

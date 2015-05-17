@@ -30,10 +30,10 @@
 
 
 #include "variety.h"
-#include "rtdata.h"
+#include <alloca.h>
+#include "rtstack.h"
 #include "stacklow.h"
 #include "exitwmsg.h"
-#include <alloca.h>
 #include "thread.h"
 
 #if defined(__AXP__) || defined(__PPC__)

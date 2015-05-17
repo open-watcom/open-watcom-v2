@@ -32,13 +32,6 @@
 #pragma library (os2);
 
 #include "variety.h"
-#define INCL_DOSDEVICES
-#define INCL_SUB
-#define INCL_DOSSEMAPHORES
-#define INCL_DOSINFOSEG
-#define INCL_DOSMISC
-#define INCL_DOSMEMMGR
-#include <wos2.h>
 #include <string.h>
 #include <dos.h>
 #include <stdio.h>
@@ -46,6 +39,14 @@
 #include <malloc.h>
 #include <stddef.h>
 #include <process.h>
+#define INCL_DOSDEVICES
+#define INCL_SUB
+#define INCL_DOSSEMAPHORES
+#define INCL_DOSINFOSEG
+#define INCL_DOSMISC
+#define INCL_DOSMEMMGR
+#include "rtstack.h"
+#include "stacklow.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "crwd.h"
@@ -63,7 +64,6 @@ TID                     __iothreadid[_NFILES];
 extern  unsigned        __MaxThreads;
 
 extern  struct thread_data *    __MultipleThread();
-#define _STACKLOW       (*(unsigned *)(__MultipleThread()))
 
 #else
 

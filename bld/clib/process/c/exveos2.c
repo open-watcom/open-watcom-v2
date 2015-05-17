@@ -34,11 +34,9 @@
 #include "variety.h"
 #include <process.h>
 #define INCL_DOSPROCESS
-#include <wos2.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "_process.h"
 #include "_int23.h"
-#include "errorno.h"
 #include "thread.h"
 
 int __p_overlay = 2;

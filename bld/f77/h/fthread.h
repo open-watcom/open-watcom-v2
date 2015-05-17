@@ -33,32 +33,29 @@
 #ifndef _FTHREAD_H_INCLUDED
 #define _FTHREAD_H_INCLUDED
 
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
+#ifdef __MT__
 
-#include "thread.h"
+#include <stddef.h>
 
 // Thread-specific data:
 // =====================
 
 typedef struct fthread_data {
     void                *__SpawnStack;
-    void                *__ExCurr;
+    traceback           *__ExCurr;
     volatile unsigned short __XceptionFlags;
     void                (*__rtn)(void *);
     void                *__arglist;
 } fthread_data;
 
-#include <stddef.h>
-
 extern  unsigned        __FThreadDataOffset;
 
-#define __FTHREADDATAPTR ((fthread_data *)(((char *)(*__GetThreadPtr)()) + \
-                          __FThreadDataOffset))
+#define __FTHREADDATAPTR ((fthread_data *)(((char *)__THREADDATAPTR) + __FThreadDataOffset))
 
 extern  void            __FiniFThreadProcessing( void );
 extern  int             __InitFThreadProcessing( void );
 extern  void            __InitFThreadData( fthread_data * );
+
+#endif
 
 #endif

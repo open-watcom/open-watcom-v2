@@ -36,15 +36,12 @@
     #include <mbstring.h>
     #include <wchar.h>
 #endif
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "orient.h"
 #include "flush.h"
 #include "streamio.h"
-#include "errorno.h"
 #include "thread.h"
 
 

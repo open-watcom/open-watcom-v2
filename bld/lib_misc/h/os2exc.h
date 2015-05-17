@@ -24,42 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Exception handling for OS2.
 *
 ****************************************************************************/
 
 
-#include <errno.h>
-#undef errno
+#ifndef __OS2EXC_INCLUDED__
+#define __OS2EXC_INCLUDED__
 
-#if defined( __QNX__ )
-    // QNX errno is magically multithread aware
-    _WCRTDATA extern int    errno;
-    #define _ERRNO          errno
-#elif defined( __NETWARE__ )
-    // What does NETWARE do?
-  #if defined( _NETWARE_LIBC )
-    extern int              *___errno( void );
-    #define _ERRNO          (*___errno())       /* get LibC errno */
-  #else
-    _WCRTDATA extern int    errno;
-    #define _ERRNO          errno
-  #endif
-#elif defined( __MT__ ) && !defined( __RDOSDEV__ ) && !defined( __LINUX__ )
-    #define _ERRNO          (__THREADDATAPTR->__errnoP)
-#else
-    _WCRTDATA extern int    errno;
-    #define _ERRNO          errno
+#if !defined( _M_I86 )
+    #include <wos2.h>
+
+    #define __EXCEPTION_RECORD EXCEPTIONREGISTRATIONRECORD
 #endif
 
-#undef _doserrno
-
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-  #if defined( __MT__ ) && !defined( __RDOSDEV__ )
-    #define _DOSERRNO       (__THREADDATAPTR->__doserrnoP)
-  #else
-    extern int              _doserrno;
-    #define _DOSERRNO       _doserrno
-  #endif
 #endif
+

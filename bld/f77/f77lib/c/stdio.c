@@ -38,7 +38,7 @@
 
 #if defined( __OS2__ ) && defined( __386__ )
   #define INCL_WINDIALOGS
-  #include <os2.h>
+  #include <wos2.h>
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
   #include <windows.h>
 #endif

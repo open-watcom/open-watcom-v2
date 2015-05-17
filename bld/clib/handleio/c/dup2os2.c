@@ -33,12 +33,10 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <wos2.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "thread.h"
 

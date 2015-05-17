@@ -32,19 +32,18 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #if defined(__OS2__)
     #define INCL_DOS
-    #include <wos2.h>
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "openmode.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "fileacc.h"
 #include "thread.h"
 

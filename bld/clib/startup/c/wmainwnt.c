@@ -37,10 +37,10 @@
 #include <malloc.h>
 #include <process.h>
 #include <windows.h>
+#include "rtstack.h"
 #include "ntext.h"
 #include "initfini.h"
 #include "initarg.h"
-#include "rtdata.h"
 #include "thread.h"
 #include "mthread.h"
 

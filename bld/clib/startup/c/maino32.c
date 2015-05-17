@@ -31,21 +31,19 @@
 
 #include "widechar.h"
 #include "variety.h"
-#define INCL_DOSMISC
-#define INCL_DOSSEMAPHORES
-#define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
-#include <wos2.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
 #include <i86.h>
 #include <string.h>
-
-#include "osthread.h"
+#define INCL_DOSMISC
+#define INCL_DOSSEMAPHORES
+#define INCL_DOSPROCESS
+#define INCL_DOSEXCEPTIONS
 #include "rtdata.h"
+#include "rtstack.h"
 #include "stacklow.h"
+#include "osthread.h"
 #include "sigtab.h"
 #include "exitwmsg.h"
 #include "initfini.h"

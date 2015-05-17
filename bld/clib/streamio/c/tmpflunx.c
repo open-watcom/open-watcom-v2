@@ -38,8 +38,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "tmpfname.h"
-#include "errorno.h"
 
 char    *__tmpdir( char * );
 

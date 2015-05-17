@@ -30,9 +30,6 @@
 
 
 #include "variety.h"
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
 #include "rtinit.h"
 #include "rtdata.h"
 #include "thread.h"

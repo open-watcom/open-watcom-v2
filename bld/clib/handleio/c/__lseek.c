@@ -29,28 +29,26 @@
 
 
 #include "variety.h"
-#include "i64.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
 #if defined( __OS2__ )
     #define INCL_LONGLONG
-    #include <wos2.h>
 #endif
-#include "rtdata.h"
-#if defined( __OS2__ )
-    #include "os2fil64.h"
-#elif defined( __DOS__ ) || defined( __WINDOWS__ )
+#include "rterrno.h"
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
-#include "rtdata.h"
+#include "i64.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "lseek.h"
 #include "handleio.h"
 #include "thread.h"
+#if defined( __OS2__ )
+    #include "os2fil64.h"
+#endif
 
 #ifndef INVALID_SET_FILE_POINTER
     #define INVALID_SET_FILE_POINTER 0xFFFFFFFF

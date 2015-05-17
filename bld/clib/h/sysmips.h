@@ -36,6 +36,8 @@
  * number. Don't look at me, I didn't invent this.
  */
 
+#include "rterrno.h"
+
 // FIXME: This works fine as long as __syscall_return is called right
 // after the actual syscall. It might be safer to return long long (or
 // perhaps a struct, except struct returns are screwy on MIPS) from the

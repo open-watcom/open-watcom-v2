@@ -33,9 +33,9 @@
 #include <signal.h>
 #include <float.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "sigtab.h"
 #include "sigfunc.h"
-#include "errorno.h"
 
 #ifndef __WINDOWS_386__
 extern      void    __grab_int23( void );

@@ -33,10 +33,11 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
+#include "rtdata.h"
+#include "rtstack.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "thread.h"
-#include "rtdata.h"
 #include "linuxsys.h"
 #include "initarg.h"
 

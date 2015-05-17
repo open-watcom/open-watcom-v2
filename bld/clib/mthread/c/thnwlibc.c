@@ -36,7 +36,7 @@
 #include <malloc.h>
 #include <i86.h>
 #include "liballoc.h"
-#include "rtdata.h"
+#include "rtstack.h"
 #include "stacklow.h"
 #include "sigtab.h"
 #include "exitwmsg.h"

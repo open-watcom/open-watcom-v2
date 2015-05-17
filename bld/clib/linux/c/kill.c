@@ -31,9 +31,7 @@
 
 #include "variety.h"
 #include <signal.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int kill( pid_t __pid, int __sig )
 {

@@ -38,9 +38,9 @@
 #include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "_process.h"
-#include "errorno.h"
+//#include "thread.h"
 
 #define SPAWN   0
 #define EXEC    1

@@ -37,9 +37,8 @@
 #include <string.h>
 #include <process.h>
 #include <io.h>
+#include "rterrno.h"
 #include "liballoc.h"
-#include "rtdata.h"
-#include "stacklow.h"
 #include "exitwmsg.h"
 #include "fileacc.h"
 #include "initfini.h"
@@ -48,7 +47,6 @@
 #include "nw_libc.h"
 #include "snglthrd.h"
 #include "mthread.h"
-#include "errorno.h"
 
 /*****************************************************************************
 //  TLS slot key

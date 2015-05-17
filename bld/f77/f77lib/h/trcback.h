@@ -33,9 +33,9 @@
 // traceback is a load 'n go traceback
 
 typedef struct traceback {
-    void PGM            *link;          // pointer to previous traceback
-    uint                line;           // current line
-    char                *name;          // current module
+    struct traceback PGM    *link;          // pointer to previous traceback
+    uint                    line;           // current line
+    char                    *name;          // current module
 } traceback;
 
 #define TB_LG           (~(uint)0)
@@ -43,12 +43,11 @@ typedef struct traceback {
 
 #if defined( __MT__ )
 
-    #include "fthread.h"
-
-    #define ExCurr      (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
+    #define _EXCURR         (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
 
 #else
 
-    extern traceback PGM *ExCurr;        // head of traceback list
+    extern traceback PGM    *ExCurr;        // head of traceback list
+    #define _EXCURR         (ExCurr)
 
 #endif

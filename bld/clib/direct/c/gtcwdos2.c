@@ -41,9 +41,7 @@
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif
-#include <wos2.h>
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 #include "seterrno.h"
 

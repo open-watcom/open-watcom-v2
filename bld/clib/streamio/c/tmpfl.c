@@ -39,14 +39,11 @@
 #include <process.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "rtinit.h"
 #include "tmpfname.h"
 #include "openmode.h"
-#include "errorno.h"
 #include "thread.h"
 
 #define OPEN_MODE   (O_RDWR | O_CREAT | O_BINARY)

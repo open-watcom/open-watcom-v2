@@ -29,24 +29,24 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "rtenv.h"
-#include "rundat.h"
-#include "xfflags.h"
-#include "errcod.h"
-
 #include <stdlib.h>
-
 #ifdef __WINDOWS__
   #include <win386.h>
 #elif defined( __NT__ )
   // The mechanism used for mangling the runtime library conflicts with the
   // NT header files on one definition.  This should be avoided.
+  #include <windows.h>
   #ifdef SetForm
     #undef SetForm
   #endif
-  #include <windows.h>
 #endif
+#include "xfflags.h"
+#include "ftextfun.h"
+#include "rtenv.h"
+#include "rundat.h"
+#include "errcod.h"
+
+
 // Leave this forward declaration to avoid polluting "ftextfun.h"
 // with Windows headers just for one function
 

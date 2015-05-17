@@ -37,7 +37,6 @@
 #include <malloc.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSEXCEPTIONS
-#include <wos2.h>
 #include "sigtab.h"
 #include "initfini.h"
 #include "thread.h"

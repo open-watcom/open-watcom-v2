@@ -35,12 +35,10 @@
 #include <stdlib.h>
 #include <dos.h>
 #include <windows.h>
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 
 extern  unsigned                _curbrk;
-extern  unsigned                _STACKTOP;
 
 _WCRTLINK void _WCNEAR *sbrk( int increment )
     {
@@ -49,12 +47,12 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
 
             increment = ( increment + 0x0fff ) & ~0x0fff;
             //p = LocalAlloc( LMEM_FIXED, increment );
-            p = VirtualAlloc(NULL, increment, MEM_COMMIT,
-                             PAGE_EXECUTE_READWRITE);
-            if( p != NULL ) return( p );
+            p = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
+            if( p != NULL )
+                return( p );
             _RWD_errno = ENOMEM;
         } else {
             _RWD_errno = EINVAL;
         }
-        return( (void *) -1 );
+        return( (void *)-1 );
     }

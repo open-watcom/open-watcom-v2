@@ -32,26 +32,32 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include "i64.h"
 #include <io.h>
 #include <string.h>
+#if defined( __OS2__ )
+    #include <mbstring.h>
+#endif
 #ifdef __NT__
     #include <windows.h>
-    #include "libwin32.h"
-    #include "ntext.h"
 #elif defined( __OS2__ )
     #define INCL_LONGLONG
     #include <wos2.h>
-    #include <mbstring.h>
-    #include "os2fil64.h"
 #elif defined( __RDOS__ )
     #include <rdos.h>
+#endif
+#ifdef __NT__
+    #include "libwin32.h"
+    #include "ntext.h"
+#elif defined( __OS2__ )
+    #include "os2fil64.h"
+#elif defined( __RDOS__ )
     #include "liballoc.h"
 #else
     #include "liballoc.h"
     #include "_doslfn.h"
     #include "_dtaxxx.h"
 #endif
+#include "i64.h"
 #include "d2ttime.h"
 #include "find.h"
 #include "seterrno.h"

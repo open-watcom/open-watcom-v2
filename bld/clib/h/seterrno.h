@@ -40,9 +40,6 @@ extern int __set_errno_dos_reterr( unsigned int );
 #endif
 
 // defined in startup\c\seterrno.c
-extern void __set_errno( unsigned int );
 extern int  __set_EINVAL( void );
-extern void __set_EDOM( void );
-extern void __set_ERANGE( void );
 
 #endif

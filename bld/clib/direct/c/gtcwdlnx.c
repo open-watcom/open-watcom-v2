@@ -34,8 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "liballoc.h"
 #include "linuxsys.h"
 
@@ -50,7 +49,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     realsize = sys_call2( SYS_getcwd, (u_long)path, _MAX_PATH );
 
     if( realsize < 0 ) {
-        _RWD_errno = - realsize;
+        _RWD_errno = -realsize;
         return( NULL );
     }
     if( buf == NULL ) {

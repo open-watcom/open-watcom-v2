@@ -37,7 +37,7 @@
 #include <limits.h>
 #include <ctype.h>
 #include <direct.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "tinyio.h"
 #include "ostype.h"
 #include "liballoc.h"

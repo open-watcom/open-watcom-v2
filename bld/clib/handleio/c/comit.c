@@ -32,9 +32,8 @@
 #include "variety.h"
 #include <io.h>
 #include <dos.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "iomode.h"
-#include "errorno.h"
 
 _WCRTLINK int _commit( int handle )
 {

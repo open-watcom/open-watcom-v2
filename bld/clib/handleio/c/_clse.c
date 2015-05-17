@@ -32,10 +32,10 @@
 #include "variety.h"
 #include <stdio.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "tinyio.h"
 #include "rtcheck.h"
 #include "iomode.h"
-#include "errorno.h"
 #include "defwin.h"
 #include "close.h"
 #include "thread.h"

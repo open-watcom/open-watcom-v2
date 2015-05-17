@@ -35,9 +35,9 @@
 #include <rdos.h>
 #include <excpt.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "sigtab.h"
 #include "sigfunc.h"
-#include "errorno.h"
 #include "signlrdu.h"
 #include "rtinit.h"
 #include "thread.h"

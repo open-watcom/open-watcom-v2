@@ -38,9 +38,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 /* Incomplete kernel sigevent type that provides "just enough"
  * to properly create a timer
@@ -49,7 +47,7 @@ typedef struct ksigevent {
         union sigval sigev_value;
         int sigev_signo;
         int sigev_notify;
-    	int sigev_tid;
+        int sigev_tid;
 };
 
 _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *__tmr )

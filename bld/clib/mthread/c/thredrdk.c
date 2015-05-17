@@ -40,7 +40,7 @@
 #include <rdosdev.h>
 #include "rtdata.h"
 #include "liballoc.h"
-#include "stacklow.h"
+//#include "stacklow.h"
 #include "sigtab.h"
 #include "thread.h"
 #include "trdlist.h"

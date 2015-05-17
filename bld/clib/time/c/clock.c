@@ -31,15 +31,15 @@
 #include "variety.h"
 #include <time.h>
 #if defined( __QNX__ )
-#include <sys/types.h>
-#include <sys/timers.h>
+    #include <sys/types.h>
+    #include <sys/timers.h>
 #elif defined( __LINUX__ )
-#include <sys/times.h>
+    #include <sys/times.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "rtinit.h"
 #include "timedata.h"
-#include "errorno.h"
+#include "thread.h"
 
 #ifdef __LINUX__
 

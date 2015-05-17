@@ -35,12 +35,11 @@
 #include <dos.h>
 #include <float.h>
 #define INCL_DOSSIGNALS
-#include <wos2.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "sigtab.h"
 #include "sigfunc.h"
 #include "_int23.h"
-#include "errorno.h"
 #include "thread.h"
 
 

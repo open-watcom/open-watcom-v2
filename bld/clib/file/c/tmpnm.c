@@ -35,14 +35,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "exitwmsg.h"
 #include "liballoc.h"
-#include "errorno.h"
 #include "tmpnm.h"
 #include "thread.h"
 

@@ -37,17 +37,16 @@
 #include <dos.h>
 #include <malloc.h>
 #include <windows.h>
-#include "rtdata.h"
+#include "rterrno.h"
+#include "stacklow.h"
 #include "liballoc.h"
 #include "ntext.h"
-#include "stacklow.h"
 #include "sigtab.h"
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "initarg.h"
 #include "cthread.h"
-#include "errorno.h"
 
 
 extern  DWORD           __TlsIndex;

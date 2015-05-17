@@ -33,9 +33,7 @@
 
 #include "variety.h"
 #include <time.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int clock_settime( clockid_t __clk, const struct timespec *__ts)
 {

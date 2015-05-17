@@ -36,10 +36,9 @@
 #include <windows.h>
 #elif defined(__OS2__)
 #define INCL_DOSERRORS
-#include <wos2.h>
 #endif
 #include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "seterrno.h"
 #include "dosret.h"
 #include "thread.h"

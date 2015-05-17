@@ -30,32 +30,35 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "errcod.h"
-#include "xfflags.h"
-#include "rundat.h"
-
 #include <signal.h>
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
   #include <dos.h>
-  #include "extender.h"
 #elif defined( _M_IX86 )
   #include <i86.h>
 #endif
-
 #if defined( __OS2__ )
-  #if defined( __386__ )
-    #define __OS2_386__
-  #else
     #define INCL_DOSMISC
-    #include <os2.h>
+  #if defined( _M_I86 )
     #define __OS2_286__
+  #else
+    #define __OS2_386__
   #endif
 #endif
-
+#include "rtstack.h"
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+  #include "extender.h"
+#endif
+#include "ftextfun.h"
+#include "errcod.h"
+#include "rundat.h"
 #if defined( __NT__ )
   #include "enterdb.h"
 #endif
+#include "thread.h"
 
 #if defined( __OS2_286__ )
   #define       _handler        __interrupt __pascal __far
@@ -93,8 +96,6 @@ typedef void            (*fsig_func)( intstar4 );
 #endif
 
 #if (defined( __DOS__ ) || defined( __WINDOWS__ )) && defined( __386__ )
-  extern unsigned_32    _STACKLOW;
-
   void _movestack( unsigned_32 );
   #pragma aux _movestack = \
         "push ds"            \
@@ -115,10 +116,10 @@ typedef void            (*fsig_func)( intstar4 );
 static  void    ProcessBreak( void ) {
 //==============================
 
-    __XcptFlags &= ~XF_ERR_MASK;
-    __XcptFlags |= XF_LIMIT_ERR | XF_KO_INTERRUPT;
-    if( __XcptFlags & XF_IO_INTERRUPTABLE ) {
-        __XcptFlags |= XF_IO_INTERRUPTED;
+    _RWD_XcptFlags &= ~XF_ERR_MASK;
+    _RWD_XcptFlags |= XF_LIMIT_ERR | XF_KO_INTERRUPT;
+    if( _RWD_XcptFlags & XF_IO_INTERRUPTABLE ) {
+        _RWD_XcptFlags |= XF_IO_INTERRUPTED;
  #if defined( __OS2_386__ ) || defined( __NT__ )
     } else {
         __ExceptionHandled = 0;
@@ -171,7 +172,7 @@ static  void    ProcessIOvFl( void ) {
 
     // Set flag so that we report an overflow when we read an integer
     // regardless of whether user wants integer overflows reported
-    __XcptFlags |= XF_IOVERFLOW;
+    _RWD_XcptFlags |= XF_IOVERFLOW;
 }
 #endif
 

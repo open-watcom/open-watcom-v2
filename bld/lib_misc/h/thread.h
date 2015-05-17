@@ -35,24 +35,14 @@
 #if !defined( __DOS__ ) && !defined( __WINDOWS__ )
 
 #include <time.h>
-#if defined( __NT__ )
-  #include <windows.h>
-#elif defined( __OS2__ )
-  #include <wos2.h>
-#elif defined(__NETWARE__)
+#if defined(__NETWARE__)
   #include <stdio.h>
 #endif
 
-#if defined(_M_IX86)
-  #pragma pack(__push,1);
-#else
-  #pragma pack(__push,8);
-#endif
-
-/* Per thread global items */
-
 #include "cvtbuf.h"
 #include "maxchtyp.h"
+
+/* Per thread global items */
 
 #include "osthread.h"
 
@@ -62,6 +52,12 @@
 #include "thrdreg.h"
 
 #include "sema4.h"
+
+#if defined(_M_IX86)
+  #pragma pack(__push,1);
+#else
+  #pragma pack(__push,8);
+#endif
 
 /* Make sure these are in C linkage */
 #ifdef __cplusplus
@@ -105,12 +101,14 @@ typedef struct thread_data {
     char                        __asctimeP[26];
     char                        __allocated;    // vs auto
     char                        __resize;       // storage has realloc pending
-#if !defined(__QNX__) && !defined(__LINUX__) && !defined(__RDOSDEV__)
+#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 )
     __EXCEPTION_RECORD          *xcpt_handler;
-    sigtab                      signal_table[__SIGLAST+1];
+#endif
+#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 ) || defined( __NETWARE__ )
+    sigtab                      signal_table[__SIGLAST + 1];
 #endif
     char _WCFAR                 *__nextftokP;
-    MAX_CHAR_TYPE               __cvt_buffer[ __FPCVT_BUFFERLEN + 1 ];
+    MAX_CHAR_TYPE               __cvt_buffer[__FPCVT_BUFFERLEN + 1];
 #if defined(__NT__) || defined(_NETWARE_LIBC)
     unsigned long               thread_id;
 #elif defined(__UNIX__)
@@ -133,9 +131,13 @@ typedef struct thread_data {
     unsigned                    __data_size;
 } thread_data;
 
-_WCRTDATA extern thread_data    *(*__GetThreadPtr)( void );
-
-extern thread_data *__MultipleThread( void );
+#if defined( _M_I86 )
+    _WCRTDATA extern thread_data    *__MultipleThread( void );
+    #define __THREADDATAPTR         (__MultipleThread())
+#else
+    _WCRTDATA extern thread_data    *(*__GetThreadPtr)( void );
+    #define __THREADDATAPTR         ((*__GetThreadPtr)())
+#endif
 
 #if defined( _M_I86 )
     extern thread_data          **__ThreadData;
@@ -147,12 +149,6 @@ extern thread_data *__MultipleThread( void );
     extern thread_data_vector   *__ThreadData;
 #endif
 
-#if defined( _M_I86 )
-    #define __THREADDATAPTR     (__MultipleThread())
-#else
-    #define __THREADDATAPTR     ((*__GetThreadPtr)())
-#endif
-
 #if !defined( _M_I86 )
     // prototype for thread data init function
     int __initthread( void *p );
@@ -162,17 +158,11 @@ extern thread_data *__MultipleThread( void );
   #endif
 #endif
 
-
-extern  unsigned        __GetMaxThreads(void);
-#pragma aux __GetMaxThreads "^"
-
-extern  unsigned        __MaxThreads;
-
 #ifdef __cplusplus
 }   /* extern "C" */
 #endif
 
+#pragma pack(__pop);
 #endif
 
-#pragma pack(__pop);
 #endif

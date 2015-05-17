@@ -33,14 +33,13 @@
 #include "variety.h"
 #include <stdio.h>
 #include <windows.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "iomode.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "close.h"
-#include "errorno.h"
 #include "thread.h"
 
 int __close( int hid )

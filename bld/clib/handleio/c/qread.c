@@ -33,18 +33,15 @@
 #include "variety.h"
 #if defined(__OS2__)
     #define INCL_DOSMEMMGR
-    #include <wos2.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #if defined(__OS2__)
     #include "tinyos2.h"
 #else
     #include "tinyio.h"
 #endif
-#include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "qread.h"

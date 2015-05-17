@@ -65,10 +65,7 @@ typedef void _WCI86FAR thread_fn( void _WCI86FAR * );
 extern "C" {
 #endif
 
-    _WCRTLINK extern  void      __RegisterThreadData( beginner **begin,
-                                                 ender **end,
-                                                 initializer **init );
-
+    _WCRTLINK extern void       __RegisterThreadData( beginner **begin, ender **end, initializer **init );
     _WCRTLINK extern unsigned   __RegisterThreadDataSize( unsigned size );
     _WCRTDATA extern unsigned   __ThreadDataSize;
 

@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #if defined(__OS2__)
     #define INCL_DOSMEMMGR
-    #include <wos2.h>
 #elif defined(__QNX__)
     #include <sys/types.h>
     #include <sys/seginfo.h>
@@ -46,10 +45,11 @@
 #elif defined(__WINDOWS__)
     #include <windows.h>
 #endif
+#include "rtstack.h"
+#include "rterrno.h"
 #include "rtdata.h"
 #include "heapacc.h"
 #include "heap.h"
-#include "errorno.h"
 #include "thread.h"
 
 

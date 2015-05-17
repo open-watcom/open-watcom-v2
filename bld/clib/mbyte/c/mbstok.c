@@ -33,9 +33,6 @@
 #include "variety.h"
 #include <mbstring.h>
 #include <stdio.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
 #include "farfunc.h"
 #include "rtdata.h"
 #ifdef __FARFUNC__

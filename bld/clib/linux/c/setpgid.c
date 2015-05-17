@@ -31,9 +31,7 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include "rtdata.h"
 #include "linuxsys.h"
-#include "errorno.h"
 
 _WCRTLINK int setpgid( pid_t __pid, pid_t __pgroupid )
 {

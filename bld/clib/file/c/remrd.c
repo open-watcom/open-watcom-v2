@@ -36,8 +36,7 @@
 #include <direct.h>
 #include <stdio.h>
 #include <rdos.h>
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 
 

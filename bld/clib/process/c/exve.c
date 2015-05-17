@@ -47,7 +47,7 @@
 #include "lseek.h"
 #include "_process.h"
 #include "_int23.h"
-#include "errorno.h"
+#include "rterrno.h"
 
 extern execveaddr_type  __Exec_addr;
 extern void _WCFAR __cdecl _doexec(char _WCI86NEAR *,char _WCI86NEAR *,int,unsigned,unsigned,unsigned,unsigned );

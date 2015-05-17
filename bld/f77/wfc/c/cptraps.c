@@ -30,16 +30,18 @@
 
 
 #include "ftnstd.h"
-#include "errcod.h"
-#include "xfflags.h"
-#include "ferror.h"
-
 #include <stddef.h>
 #include <signal.h>
 #include <float.h>
+#include "rtdata.h"
+#include "frtdata.h"
+#include "xfflags.h"
+#include "errcod.h"
+#include "ferror.h"
 
 
-#if !defined( __QNX__ )
+#if defined( __QNX__ )
+#else
 static void _WFC_FPEHandler( int fpe_type ) {
 //=======================================
 
@@ -58,16 +60,13 @@ static void _WFC_FPEHandler( int fpe_type ) {
 
 #if defined( __QNX__ )
 #elif defined( __OSI__ )
-
-extern void (*__FPE_handler)(int);
-
 #else
 
 static  void    WFC_FPEHandler( int sig_num, int fpe_type ) {
 //=======================================================
 
     // reset the signal so we can get subsequent signals
-    signal( SIGFPE, (void (*)(int))&WFC_FPEHandler );
+    signal( SIGFPE, (FPEhandler *)WFC_FPEHandler );
     sig_num = sig_num;
     _WFC_FPEHandler( fpe_type );
 }
@@ -78,12 +77,12 @@ static  void    WFC_FPEHandler( int sig_num, int fpe_type ) {
 void    FTrapInit( void ) {
 //==================
 
-    __XcptFlags = 0;
+    _RWD_XcptFlags = 0;
 #if defined( __QNX__ )
 #elif defined( __OSI__ )
-    __FPE_handler = &_WFC_FPEHandler;
+    _RWD_FPE_handler = _WFC_FPEHandler;
 #else
-    signal( SIGFPE, (void (*)(int))&WFC_FPEHandler );
+    signal( SIGFPE, (FPEhandler *)WFC_FPEHandler );
 #endif
 }
 

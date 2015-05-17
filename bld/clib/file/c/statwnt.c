@@ -46,12 +46,11 @@
 #include <dos.h>
 #include <mbstring.h>
 #include <windows.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "int64.h"
 #include "libwin32.h"
 #include "ntext.h"
 #include "osver.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "thread.h"

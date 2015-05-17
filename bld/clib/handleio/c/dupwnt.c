@@ -33,11 +33,10 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
-#include "errorno.h"
 #include "thread.h"
 
 _WCRTLINK int dup( int old_hid )

@@ -34,12 +34,8 @@
 #include <mbstring.h>
 #include <stdlib.h>
 #include <wchar.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "farfunc.h"
-#include "errorno.h"
 #include "thread.h"
 
 

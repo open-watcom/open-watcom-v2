@@ -40,12 +40,8 @@
 #endif
 #include <time.h>
 #include <sys/locking.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "lseek.h"
 #include "thread.h"
 

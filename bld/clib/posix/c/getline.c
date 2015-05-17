@@ -35,11 +35,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 
 #ifndef SIZE_MAX

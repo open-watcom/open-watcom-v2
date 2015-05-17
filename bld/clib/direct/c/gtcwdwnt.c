@@ -39,10 +39,9 @@
 #include <dos.h>
 #include <direct.h>
 #include <windows.h>
-#include "rtdata.h"
-#include "libwin32.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "seterrno.h"
+#include "libwin32.h"
 #include "liballoc.h"
 #include "thread.h"
 

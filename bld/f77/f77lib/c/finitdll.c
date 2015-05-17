@@ -30,11 +30,12 @@
 
 
 #include "ftnstd.h"
+#include "rtstack.h"
+#include "trcback.h"
+#include "fthread.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rmemmgr.h"
-#include "fthread.h"
-#include "rtdata.h"
 
 static void NullTrapRtn( void ) {
 //=========================

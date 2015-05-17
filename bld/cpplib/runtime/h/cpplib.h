@@ -106,18 +106,9 @@ extern "C" {
 
 #include "wcpp.h"
 
-#pragma warning 604 9
-#pragma warning 594 9
-
-#include "rtdata.h"
-
-#pragma warning 604 1
-#pragma warning 594 1
+#include "prtdata.h"
 
 #if defined(__MT__)
-  #if defined( __OS2__ )
-    #include <wos2.h>
-  #endif
     #include "thread.h"
     #include <lock.h>
 #endif
@@ -125,7 +116,6 @@ extern "C" {
 #if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )
     #include "fsreg.h"
 #endif
-
 
 #if defined( _M_I86 )
     // pad to 2-byte boundary
@@ -261,7 +251,8 @@ struct THREAD_CTL               // THREAD_CTL -- control execution thread
 //************************************************************************
 #if !defined(__MT__)
 _WPRTLINK extern THREAD_CTL _wint_thread_data;
-#elif !defined( _M_I86 )
+#elif defined( _M_I86 )
+#else
 _WPRTLINK extern unsigned   _wint_thread_data_offset;
 #endif
 
@@ -271,10 +262,10 @@ _WPRTLINK extern unsigned   _wint_thread_data_offset;
 //************************************************************************
 #if !defined(__MT__)
   #define _ThreadData       _wint_thread_data
-#elif !defined( _M_I86 )
-  #define _ThreadData (*((THREAD_CTL*)(((char *)__THREADDATAPTR)+_wint_thread_data_offset)))
-#else
+#elif defined( _M_I86 )
   #define _ThreadData (*((THREAD_CTL*)&(__THREADDATAPTR->_wint_thread_data)))
+#else
+  #define _ThreadData (*((THREAD_CTL*)(((char *)__THREADDATAPTR)+_wint_thread_data_offset)))
 #endif
 
 //************************************************************************

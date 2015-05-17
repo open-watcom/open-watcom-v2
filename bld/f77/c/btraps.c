@@ -29,9 +29,10 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include "xfflags.h"
 
 #if !defined( __MT__ )
-unsigned short          __XcptFlags;
+volatile unsigned short __XcptFlags;
 #endif
 byte                    IntOverFlow = { 0x04 };
 byte                    BreakVector = { 0x1b };

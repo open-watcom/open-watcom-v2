@@ -37,9 +37,8 @@
 #include <ctype.h>
 #include <direct.h>
 #include <rdos.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
-#include "errorno.h"
 #include "thread.h"
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \

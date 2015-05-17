@@ -38,10 +38,8 @@
 #include <string.h>
 #if defined(__NT__) || defined(__WINDOWS__)
     #include <windows.h>
-#elif defined(__OS2__)
-    #include <wos2.h>
 #endif
-#include "rtdata.h"
+#include "rterrno.h"
 #if defined(__NT__)
 #elif defined(__WINDOWS__)
     #include "tinyio.h"
@@ -53,7 +51,6 @@
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "defwin.h"
 #include "lseek.h"

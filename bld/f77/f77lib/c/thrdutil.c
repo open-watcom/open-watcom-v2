@@ -35,10 +35,12 @@
 //
 
 #include "ftnstd.h"
-#include "fthread.h"
-#include "rtdata.h"
-
 #include <stdlib.h>
+#include "rtstack.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "thread.h"
+
 
 #pragma off (check_stack)
 

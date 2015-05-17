@@ -43,7 +43,7 @@
 #include "strdup.h"
 #include "liballoc.h"
 #include "rtdata.h"
-#include "stacklow.h"
+//#include "stacklow.h"
 #include "sigtab.h"
 #include "initfini.h"
 #include "rtinit.h"

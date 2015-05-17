@@ -29,15 +29,12 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
+#include <wchar.h>
 #include "rtdata.h"
+#include "thread.h"
 #include "cvtbuf.h"
 #include "_cvtbuf.h"
-#include "thread.h"
 
 
 _WCRTLINK void *__CVTBuffer( void )

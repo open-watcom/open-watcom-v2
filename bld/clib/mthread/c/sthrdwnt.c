@@ -32,7 +32,7 @@
 #include "variety.h"
 #include "liballoc.h"
 #include "rtdata.h"
-#include "stacklow.h"
+//#include "stacklow.h"
 #include "thread.h"
 #include "mthread.h"
 

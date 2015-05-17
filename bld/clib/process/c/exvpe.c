@@ -37,13 +37,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <process.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
-#include "rtdata.h"
+#include "rterrno.h"
 #include "msdos.h"
 #include "_process.h"
-#include "errorno.h"
 #include "thread.h"
 
 

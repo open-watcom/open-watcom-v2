@@ -29,23 +29,26 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include <string.h>
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "rtenv.h"
-#include "trcback.h"
 #include "errcod.h"
+#include "thread.h"
 
-#include <string.h>
 
 static  void    TraceInfo( char *buff ) {
 //=======================================
 
     traceback   *tb;
 
-    MsgBuffer( MS_TRACE_INFO, buff, ExCurr->line, ExCurr->name );
+    MsgBuffer( MS_TRACE_INFO, buff, _RWD_ExCurr->line, _RWD_ExCurr->name );
     StdWriteNL( buff, strlen( buff ) );
-    for( tb = ExCurr->link; tb != NULL; tb = tb->link ) {
+    for( tb = _RWD_ExCurr->link; tb != NULL; tb = tb->link ) {
         MsgBuffer( MS_CALLED_FROM, buff, tb->line, tb->name );
         StdWriteNL( buff, strlen( buff ) );
     }
@@ -56,7 +59,7 @@ void            SetLine( uint src_line ) {
 //========================================
 
     RTSysInit();
-    ExCurr->line = src_line;
+    _RWD_ExCurr->line = src_line;
 }
 
 
@@ -70,10 +73,10 @@ void            SetModule( traceback *tb ) {
     if( TraceRoutine == NULL ) {
         TraceRoutine = &TraceInfo;
     }
-    if( ExCurr == tb ) {        // delete entry from traceback chain
-        ExCurr = ExCurr->link;
+    if( _RWD_ExCurr == tb ) {        // delete entry from traceback chain
+        _RWD_ExCurr = _RWD_ExCurr->link;
     } else {                    // add entry to traceback chain
-        tb->link = ExCurr;
-        ExCurr = tb;
+        tb->link = _RWD_ExCurr;
+        _RWD_ExCurr = tb;
     }
 }

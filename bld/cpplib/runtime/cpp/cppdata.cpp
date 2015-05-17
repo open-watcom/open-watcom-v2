@@ -41,7 +41,8 @@
 //************************************************************************
 #if !defined( __MT__ )
 _WPRTLINK THREAD_CTL    _wint_thread_data;
-#elif !defined( _M_I86 )
+#elif defined( _M_I86 )
+#else
 _WPRTLINK unsigned      _wint_thread_data_offset;
 #endif
 

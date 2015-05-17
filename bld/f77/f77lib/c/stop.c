@@ -35,11 +35,14 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
 #include "rtenv.h"
 #include "rundat.h"
-#include "xfflags.h"
-
-#include <string.h>
+#include "thread.h"
 
 extern  void            Suicide(void);
 extern  void            StdWriteNL(char *,int);
@@ -77,7 +80,7 @@ void    Stop( string PGM *ptr ) {
         StdFlush();
         _ReleaseFIO();
     }
-    __XcptFlags |= XF_FATAL_ERROR;
+    _RWD_XcptFlags |= XF_FATAL_ERROR;
     STOP_HOOK();
     Suicide();
 }

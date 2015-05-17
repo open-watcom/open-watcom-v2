@@ -36,13 +36,14 @@
 #include <float.h>
 #include <unistd.h>
 #include <process.h>
-#include "rtdata.h"
+#include "rtstack.h"
+#include "stacklow.h"
 #include "liballoc.h"
 #include "osthread.h"
-#include "stacklow.h"
 #include "mthread.h"
 #include "semaqnx.h"
 #include "cthread.h"
+#include "rterrno.h"
 
 extern  void            __qnx_exit( int __status );
 

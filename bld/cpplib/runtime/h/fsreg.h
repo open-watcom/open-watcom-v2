@@ -117,8 +117,7 @@ struct FsExcRec;
     extern "C" {
   #endif
 
-    #define INCL_DOSEXCEPTIONS
-    #include <os2.h>
+    #include <wos2.h>
 
     #define EXC_TYPE_UNWIND_EXIT   EH_EXIT_UNWIND
     #define EXC_TYPE_UNWIND_NORMAL EH_UNWINDING

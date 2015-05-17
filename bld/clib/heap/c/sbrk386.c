@@ -36,7 +36,8 @@
 #if defined(__OS2__)
   #include <wos2.h>
 #endif
-#include "rtdata.h"
+#include "rtstack.h"
+#include "rterrno.h"
 #ifdef __WINDOWS_386__
  #include "tinyio.h"
 #else
@@ -45,7 +46,6 @@
   #include "tinyio.h"
  #endif
 #endif
-#include "errorno.h"
 #include "thread.h"
 
 extern  unsigned                _curbrk;

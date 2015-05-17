@@ -33,14 +33,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "fileacc.h"
 #include "qread.h"
 #include "streamio.h"
-#include "errorno.h"
 #include "thread.h"
 
 

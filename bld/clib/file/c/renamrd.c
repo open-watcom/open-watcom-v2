@@ -33,9 +33,8 @@
 #include "variety.h"
 #include <stdio.h>
 #include <rdos.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
-#include "errorno.h"
 #include "thread.h"
 
 _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )

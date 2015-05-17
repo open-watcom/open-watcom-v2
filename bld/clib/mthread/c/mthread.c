@@ -33,19 +33,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
+#include "rterrno.h"
 #include "liballoc.h"
-#include "rtdata.h"
-#include "stacklow.h"
+//#include "stacklow.h"
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "rtinit.h"
 #include "exitwmsg.h"
 #include "osver.h"
-#include "errorno.h"
 
 #if defined (_NETWARE_LIBC)
 #include "nw_libc.h"

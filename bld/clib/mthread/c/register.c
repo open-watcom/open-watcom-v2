@@ -33,9 +33,6 @@
 
 #include "variety.h"
 #include <process.h>
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
 #include "rtdata.h"
 #include "thread.h"
 #include "cthread.h"

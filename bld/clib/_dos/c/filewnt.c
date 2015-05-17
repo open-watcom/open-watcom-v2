@@ -40,12 +40,12 @@
 #include <dos.h>
 #include <windows.h>
 #include "rtdata.h"
+#include "rterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "ntext.h"
 #include "openmode.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "seterrno.h"
 #include "thread.h"
 

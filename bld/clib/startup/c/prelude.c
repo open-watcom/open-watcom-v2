@@ -36,9 +36,9 @@
 #include <string.h>
 #include <process.h>
 #include <io.h>
-#include "liballoc.h"
-#include "rtdata.h"
+#include "rtstack.h"
 #include "stacklow.h"
+#include "liballoc.h"
 #include "exitwmsg.h"
 #include "fileacc.h"
 #include "initfini.h"

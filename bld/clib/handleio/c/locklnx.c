@@ -33,9 +33,8 @@
 #include "variety.h"
 #include <unistd.h>
 #include <fcntl.h>
-#include "rtdata.h"
+#include "rterrno.h"
 #include "rtcheck.h"
-#include "errorno.h"
 #include "thread.h"
 
 // TODO: Need Linux POSIX library!

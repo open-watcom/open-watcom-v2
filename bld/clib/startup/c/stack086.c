@@ -30,13 +30,11 @@
 
 
 #include "variety.h"
-#if defined( __OS2__ )
-#include <wos2.h>
-#endif
-#include "rtdata.h"
-#include "stacklow.h"
 #include <alloca.h>
+#include "rtstack.h"
+#include "stacklow.h"
 #include "thread.h"
+
 
 _WCRTLINK unsigned stackavail( void )
 {

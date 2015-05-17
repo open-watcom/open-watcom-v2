@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stdio.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "liballoc.h"

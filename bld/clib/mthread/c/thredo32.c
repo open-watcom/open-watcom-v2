@@ -32,21 +32,19 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#define INCL_DOSSEMAPHORES
-#define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
-#include <wos2.h>
-
 #include <process.h>
 #include <stddef.h>
 #include <string.h>
 #include <dos.h>
 #include <float.h>
+#define INCL_DOSSEMAPHORES
+#define INCL_DOSPROCESS
+#define INCL_DOSEXCEPTIONS
+#include "rtdata.h"
 #include "liballoc.h"
 #include "osthread.h"
 #include "thread.h"
-#include "rtdata.h"
-#include "stacklow.h"
+//#include "stacklow.h"
 #include "sigtab.h"
 #include "trdlist.h"
 #include "mthread.h"

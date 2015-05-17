@@ -29,19 +29,23 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include <stdlib.h>
+#if defined( __OS2__ ) && defined( __386__ )
+  #define INCL_DOSPROCESS
+#endif
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
-#include "rtdata.h"
-#include "xfflags.h"
 #include "errcod.h"
-#include "trcback.h"
 #include "fapptype.h"
 #include "rtinit.h"
 #include "errrtns.h"
 #include "_defwin.h"    /* for _WindowsStdout() declaration */
-
-#include <stdlib.h>
+#include "thread.h"
 
 #if defined( __WINDOWS__ )
   #if defined( __386__ )
@@ -87,8 +91,8 @@ static  void    __InitRTData( void ) {
 
 // Must match __InitFThreadData().
 
-    ExCurr = NULL;
-    __XcptFlags = 0;
+    _RWD_ExCurr = NULL;
+    _RWD_XcptFlags = 0;
 }
 
 
@@ -106,9 +110,6 @@ unsigned        RTSysInit( void ) {
     if( RTSysInitialized ) return( 0 );
 #if defined( __OS2__ ) && defined( __386__ )
     {
-        #define INCL_DOSPROCESS
-        #include <os2.h>
-
         TIB     *ptib;
         PIB     *ppib;
 

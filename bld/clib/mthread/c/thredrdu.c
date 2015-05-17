@@ -37,14 +37,13 @@
 #include <dos.h>
 #include <malloc.h>
 #include <rdos.h>
-#include "rtdata.h"
-#include "liballoc.h"
+#include "rterrno.h"
 #include "stacklow.h"
+#include "liballoc.h"
 #include "sigtab.h"
 #include "thread.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "errorno.h"
 #include "initarg.h"
 #include "cthread.h"
 #include "rdosexc.h"

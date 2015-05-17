@@ -41,12 +41,12 @@
 #define INCL_DOSPROCESS
 #define INCL_DOSEXCEPTIONS
 #define INCL_DOSMODULEMGR
-#include <wos2.h>
+#include "rtdata.h"
+#include "rtstack.h"
+#include "stacklow.h"
 #include "liballoc.h"
 #include "initfini.h"
 #include "osthread.h"
-#include "rtdata.h"
-#include "stacklow.h"
 #include "initarg.h"
 #include "snglthrd.h"
 #include "thread.h"

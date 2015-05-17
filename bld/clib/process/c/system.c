@@ -41,8 +41,8 @@
     #include <wos2.h>
 #endif
 #include "rtdata.h"
+#include "rterrno.h"
 #include "_process.h"
-#include "errorno.h"
 
 
 _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )

@@ -35,11 +35,7 @@
 #include <stdlib.h>
 #include <direct.h>
 #include <dos.h>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#endif
-#include "rtdata.h"
-#include "errorno.h"
+#include "rterrno.h"
 #include "thread.h"
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer, size_t maxlen )

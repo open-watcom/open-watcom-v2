@@ -533,3 +533,9 @@ ufns += &
 !include ../../objlist.mif
 
 files = $(rt) $(both) $(dep_rt) $(dep_both) $(ifns) $(xfns) $(math) $(ufns) $(objs)
+
+!ifeq system linux
+# this is temporary hack for Linux untill multi-threaded support will be implemented
+thrdutil_opts =-D__MT__
+fthread_opts  =-D__MT__
+!endif

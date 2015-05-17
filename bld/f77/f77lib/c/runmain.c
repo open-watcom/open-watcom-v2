@@ -29,10 +29,14 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include "frtdata.h"
+#include "trcback.h"
+#include "fthread.h"
+#include "xfflags.h"
 #include "ftextfun.h"
 #include "rundat.h"
-#include "xfflags.h"
 #include "rmemmgr.h"
+#include "thread.h"
 
 static  bool    __IsUnit6CC = { FALSE };
 static  bool    __AllowCommaSeparator = { FALSE };
@@ -116,7 +120,7 @@ bool    RunEntry( void ) {
 
     IOTypeRtn = &IOType;
     Spawn( (void(*)( void ))_InitIO );
-    return( ( __XcptFlags & XF_FATAL_ERROR ) == 0 );
+    return( (_RWD_XcptFlags & XF_FATAL_ERROR) == 0 );
 }
 
 void    RunExit( void ) {

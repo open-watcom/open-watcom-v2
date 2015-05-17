@@ -40,13 +40,13 @@
 #ifdef _M_IX86
  #include <i86.h>
 #endif
-
+#include "rtdata.h"
+#include "rtstack.h"
+#include "stacklow.h"
 #include "iomode.h"
 #include "strdup.h"
 #include "liballoc.h"
 #include "libwin32.h"
-#include "rtdata.h"
-#include "stacklow.h"
 #include "sigtab.h"
 #include "ntext.h"
 #include "initfini.h"
