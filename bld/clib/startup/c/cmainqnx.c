@@ -43,6 +43,7 @@
 #include <sys/kernel.h>
 #include <sys/utsname.h>
 #include "rtstack.h"
+#include "rtfpehdl.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "thread.h"
@@ -63,11 +64,6 @@ char    *__near __env_mask;
 char    **environ;              /* pointer to environment variables */
 int     _argc;                  /* argument count  */
 char    **_argv;                /* argument vector */
-
-/* address of FP exception handler */
-extern  void    (__FAR *__FPE_handler)(int);
-
-
 
 #if !defined(__386__)
 extern  unsigned short _STACKLOW;       /* set stack low */
@@ -240,7 +236,7 @@ void _CMain( free, n, cmd, stk_bot, pid )
     _curbrk = free;             /* current end of dynamic memory        */
                                 /* pointer to top of memory owned by
                                    process                              */
-    __FPE_handler = &__null_FPE_rtn;
+    _RWD_FPE_handler = &__null_FPE_rtn;
     _endheap = (char __near *)free + n;
     if( _endheap < free ) _endheap = (char __near *)~0xfU;
     setup_slib();
@@ -301,7 +297,7 @@ _CMain(int argc, char **argv, char **arge)
     __setmagicvar( &tmp.f, _m_efgfmt_off );
     tmp.s               = _cs();
     __setmagicvar( &tmp.s, _m_efgfmt_cs );
-    __FPE_handler =     &__null_FPE_rtn;
+    _RWD_FPE_handler    = &__null_FPE_rtn;
     __InitRtns( INIT_PRIORITY_THREAD );
     tdata = __alloca( __ThreadDataSize );
     memset( tdata, 0, __ThreadDataSize );

@@ -35,6 +35,7 @@
 #include <dos.h>
 #include <float.h>
 #include "rtdata.h"
+#include "rtfpehdl.h"
 #include "rterrno.h"
 #include "osthread.h"
 #include "sigtab.h"

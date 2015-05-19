@@ -69,8 +69,6 @@ typedef struct _87state {
 } _87state;
 #endif
 
-typedef void _WCI86FAR      FPEhandler( int );
-
 #define _FP_BASE(__fp)          ((__fp)->_link->_base)
 #ifndef __NETWARE__
     #define _FP_ORIENTATION(__fp)   ((__fp)->_link->_orientation)
@@ -84,7 +82,6 @@ typedef void _WCI86FAR      FPEhandler( int );
 extern __stream_link        *__OpenStreams;
 extern __stream_link        *__ClosedStreams;
 extern      char            * _WCNEAR __env_mask;  /* ptr to char array of flags */
-extern      FPEhandler      *__FPE_handler;
 extern      void            (*__FPE_handler_exit)( void );
 #if !defined( __NETWARE__ )
     extern  int             _cbyte;
@@ -139,7 +136,6 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #define _RWD_abort              __abort
 #define _RWD_sigtab             __SIGNALTABLE
 #define _RWD_FPE_handler_exit   __FPE_handler_exit
-#define _RWD_FPE_handler        __FPE_handler
 #define _RWD_fmode              _fmode
 #if !defined( __NETWARE__ )
     #define _RWD_umaskval       __umaskval

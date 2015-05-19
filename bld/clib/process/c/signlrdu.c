@@ -35,6 +35,7 @@
 #include <rdos.h>
 #include <excpt.h>
 #include "rtdata.h"
+#include "rtfpehdl.h"
 #include "rterrno.h"
 #include "sigtab.h"
 #include "sigfunc.h"

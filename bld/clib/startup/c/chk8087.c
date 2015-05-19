@@ -43,6 +43,7 @@
   #include <wos2.h>
 #endif
 #include "rtdata.h"
+#include "rtfpehdl.h"
 #include "exitwmsg.h"
 
 #if defined( __WINDOWS_386__ )

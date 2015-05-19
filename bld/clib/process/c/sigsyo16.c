@@ -36,7 +36,7 @@
 #include <dos.h>
 #define INCL_DOSSIGNALS
 #include <wos2.h>
-#include "rtdata.h"
+#include "rtfpehdl.h"
 #include "sigfunc.h"
 #include "_int23.h"
 
@@ -75,14 +75,14 @@ void __restore_FPE_handler( void )
     if( __old_FPE_handler == NULL ) {
         return;
     }
-    __FPE_handler = __old_FPE_handler;
+    _RWD_FPE_handler = __old_FPE_handler;
     __old_FPE_handler = NULL;
 }
 
 void __grab_FPE_handler( void )
 {
     if( __old_FPE_handler == NULL ) {
-        __old_FPE_handler = __FPE_handler;
-        __FPE_handler = __sigfpe_handler;
+        __old_FPE_handler = _RWD_FPE_handler;
+        _RWD_FPE_handler = __sigfpe_handler;
     }
 }

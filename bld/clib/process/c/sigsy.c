@@ -34,6 +34,7 @@
 #include <string.h>
 #include <dos.h>
 #include "rtdata.h"
+#include "rtfpehdl.h"
 #include "rtstack.h"
 #include "stacklow.h"
 #include "sigfunc.h"
@@ -329,15 +330,15 @@ void __restore_FPE_handler( void )
     if( __old_FPE_handler == NULL ) {
         return;
     }
-    __FPE_handler = __old_FPE_handler;
+    _RWD_FPE_handler = __old_FPE_handler;
     __old_FPE_handler = NULL;
 }
 
 void __grab_FPE_handler( void )
 {
     if( __old_FPE_handler == NULL ) {
-        __old_FPE_handler = __FPE_handler;
-        __FPE_handler = __sigfpe_handler;
+        __old_FPE_handler = _RWD_FPE_handler;
+        _RWD_FPE_handler = __sigfpe_handler;
     }
 }
 #endif

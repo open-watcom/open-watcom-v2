@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#include "rtdata.h"
+#include "rtfpehdl.h"
 
 /*
     __FPE_exception is called from machine language with parm in EAX/AX

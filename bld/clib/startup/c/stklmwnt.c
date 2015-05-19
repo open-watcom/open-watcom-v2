@@ -33,7 +33,6 @@
 #include "osver.h"
 #include <stdlib.h>
 #include <windows.h>
-//#include "rtdata.h"
 #include "stacklow.h"
 
 void __init_stack_limits( unsigned *stacklow, unsigned *stacktop )
