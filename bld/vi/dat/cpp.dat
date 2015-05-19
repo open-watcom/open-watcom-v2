@@ -1,4 +1,4 @@
-107
+117
 _Packed
 _Seg16
 __asm
@@ -32,6 +32,8 @@ __syscall
 __typeof
 __unaligned
 __watcall
+alignas
+alignof
 and
 and_eq
 asm
@@ -43,11 +45,15 @@ break
 case
 catch
 char
+char16_t
+char32_t
 class
 compl
 const
+constexpr
 const_cast
 continue
+decltype
 default
 delete
 do
@@ -70,8 +76,10 @@ long
 mutable
 namespace
 new
+noexcept
 not
 not_eq
+nullptr
 operator
 or
 or_eq
@@ -85,11 +93,13 @@ short
 signed
 sizeof
 static
+static_assert
 static_cast
 struct
 switch
 template
 this
+thread_local
 throw
 true
 try
