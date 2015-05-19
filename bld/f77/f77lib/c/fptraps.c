@@ -30,11 +30,10 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "errcod.h"
-
 #include <signal.h>
 #include <float.h>
+#include "ftextfun.h"
+#include "errcod.h"
 
 #if (defined( __386__ ) && defined( __OS2__ )) || defined( __NT__ )
   extern        byte    __ExceptionHandled;
@@ -42,7 +41,7 @@
 
 #ifndef __NETWARE__
 
-static void     FPEHandler( int sig_num, int xcpt ) {
+static void     FLIB_FPEHandler( int sig_num, int xcpt ) {
 //===========================================================
 
     sig_num = sig_num;
@@ -89,7 +88,7 @@ void    FPTrapInit( void ) {
 
 #ifndef __NETWARE__     /* FP Exceptions can't be trapped under Netware */
     if( __EnableF77RTExceptionHandling() ) {
-        signal( SIGFPE, (void (*)(int))&FPEHandler );
+        signal( SIGFPE, (__sig_func)FLIB_FPEHandler );
 #if defined( _M_IX86 )
     } else {
         // we still want to enable the floating point exceptions (just like

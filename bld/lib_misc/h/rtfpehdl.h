@@ -24,76 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  compile-time exception handling
+* Description:  C run-time library internal FPE handler declaration.
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include <stddef.h>
-#include <signal.h>
-#include <float.h>
-#include "frtdata.h"
-#include "xfflags.h"
-#include "errcod.h"
-#include "ferror.h"
-#if defined( __OSI__ )
-#include "rtfpehdl.h"
-#endif
+typedef void _WCI86FAR      FPEhandler( int );
 
-
-#if defined( __WATCOMC__ )
-
-#if defined( __QNX__ )
-#else
-static void _WFC_FPEHandler( int fpe_type ) {
-//=======================================
-
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-    if( fpe_type == FPE_OVERFLOW ) {
-        Warning( KO_FOVERFLOW );
-    } else if( fpe_type == FPE_UNDERFLOW ) {
-        Warning( KO_FUNDERFLOW );
-    } else if( fpe_type == FPE_ZERODIVIDE ) {
-        Warning( KO_FDIV_ZERO );
-    }
-#endif
-}
-#endif
-
-
-#if defined( __QNX__ )
-#elif defined( __OSI__ )
-#else
-
-static  void    WFC_FPEHandler( int sig_num, int fpe_type ) {
-//=======================================================
-
-    // reset the signal so we can get subsequent signals
-    signal( SIGFPE, (__sig_func)WFC_FPEHandler );
-    sig_num = sig_num;
-    _WFC_FPEHandler( fpe_type );
-}
-
-#endif
-
-#endif
-
-void    FTrapInit( void ) {
-//==================
-
-    _RWD_XcptFlags = 0;
-#if !defined( __WATCOMC__ )
-#elif defined( __QNX__ )
-#elif defined( __OSI__ )
-    _RWD_FPE_handler = (FPEhandler *)_WFC_FPEHandler;
-#else
-    signal( SIGFPE, (__sig_func)WFC_FPEHandler );
-#endif
-}
-
-
-void    FTrapFini( void ) {
-//==================
-
-}
+extern FPEhandler           *__FPE_handler;
+#define _RWD_FPE_handler    __FPE_handler
