@@ -12,7 +12,9 @@
 !inject algorith         noext hcpp
 !inject alloca.h                    hdos hlnx hqnx
 !inject arpa/inet.h                      hlnx
+!inject array            noext hcpp
 !inject assert.h                    hdos hlnx hqnx
+!inject atomic           noext hcpp
 !inject bios.h                      hdos
 !inject bios98.h                    hdos
 !inject bitset           noext hcpp
@@ -21,14 +23,17 @@
 !inject cdrom.h                               hqnx
 !inject cerrno           noext hcpp
 !inject cfloat           noext hcpp
+!inject chrono           noext hcpp
 !inject cinttype         noext hcpp
 !inject ciso646          noext hcpp
 !inject climits          noext hcpp
 !inject clocale          noext hcpp
 !inject cmath            noext hcpp
+!inject codecvt          noext hcpp
 !inject common.cnv                  hdos
 !inject complex          noext hcpp
 !inject complex.h              hcpp
+!inject conditio         noext hcpp
 !inject conio.h                     hdos hlnx hqnx
 !inject crtdbg.h                    hdos hlnx hqnx
 !inject csetjmp          noext hcpp
@@ -68,11 +73,13 @@
 !inject fstream.h              hcpp
 !inject ftw.h                                 hqnx
 !inject function         noext hcpp
+!inject future           noext hcpp
 !inject generic.h              hcpp
 !inject graph.h                     hdos      hqnx
 !inject graph2.h                    hdos      hqnx
 !inject grp.h                            hlnx hqnx
 !inject i86.h                       hdos hlnx hqnx
+!inject initiali         noext hcpp
 !inject inttypes.h                  hdos hlnx hqnx
 !inject io.h                        hdos
 !inject iomanip          noext hcpp
@@ -109,6 +116,7 @@
 !inject mig.h                                 hqnx
 !inject mmintrin.h                  hdos hlnx hqnx
 !inject mqueue.h                              hqnx
+!inject mutex            noext hcpp
 !inject netdb.h                          hlnx
 !inject netinet/in.h                     hlnx
 !inject netinet/tcp.h                    hlnx
@@ -123,6 +131,8 @@
 !inject queue            noext hcpp
 !inject queue.h                               hqnx
 !inject random           noext hcpp
+!inject ratio            noext hcpp
+!inject regex            noext hcpp
 !inject regex.h                               hqnx
 !inject sched.h                          hlnx
 !inject search.h                    hdos hlnx hqnx
@@ -229,18 +239,23 @@
 !inject sys/vc.h                              hqnx
 !inject sys/wait.h                       hlnx hqnx
 !inject syslog.h                              hqnx
+!inject system_e         noext hcpp
 !inject tar.h                                 hqnx
+!inject tchar.h                     hdos hlnx hqnx
 !inject term.h                                hqnx
 !inject termcap.h                             hqnx
 !inject termios.h                        hlnx hqnx
-!inject tchar.h                     hdos hlnx hqnx
+!inject thread           noext hcpp
 !inject time.h                      hdos hlnx hqnx
+!inject tuple            noext hcpp
 !inject type_tra         noext hcpp
+!inject typeinde         noext hcpp
 !inject typeinfo         noext hcpp
 !inject typeinfo.h             hcpp
 !inject unistd.h                    hdos hlnx hqnx
 !inject unix.h                                hqnx
-!inject unordere         noext hcpp
+!inject unorderm         noext hcpp
+!inject unorders         noext hcpp
 !inject ustat.h                               hqnx
 !inject utility          noext hcpp
 !inject utime.h                     hdos hlnx hqnx

@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: tuple
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _TUPLE_INCLUDED
+#define _TUPLE_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    // TODO: Implement me!
+    
+}
+
+#endif

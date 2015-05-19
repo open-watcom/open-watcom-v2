@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: unorderm
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _UNORDERED_MAP_INCLUDED
+#define _UNORDERED_MAP_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    // TODO: Implement me!
+    
+}
+
+#endif

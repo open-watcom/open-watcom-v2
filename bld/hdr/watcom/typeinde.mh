@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: typeinde
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _TYPEINDEX_INCLUDED
+#define _TYPEINDEX_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    // TODO: Implement me!
+    
+}
+
+#endif

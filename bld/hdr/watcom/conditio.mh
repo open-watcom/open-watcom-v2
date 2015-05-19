@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: conditio
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _CONDITION_VARIABLE_INCLUDED
+#define _CONDITION_VARIABLE_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    // TODO: Implement me!
+    
+}
+
+#endif

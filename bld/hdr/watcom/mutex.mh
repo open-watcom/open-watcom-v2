@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: mutex
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _MUTEX_INCLUDED
+#define _MUTEX_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    // TODO: Implement me!
+    
+}
+
+#endif

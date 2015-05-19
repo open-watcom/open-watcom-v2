@@ -18,17 +18,22 @@ set PROJNAME=Standard header files
     <CPCMD> dos/*.cnv          <OWRELROOT>/h/
     <CPCMD> dos/sys/*          <OWRELROOT>/h/sys/
     <CPCMD> dos/algorith       <OWRELROOT>/h/
+    <CPCMD> dos/array          <OWRELROOT>/h/
+    <CPCMD> dos/atomic         <OWRELROOT>/h/
     <CPCMD> dos/bitset         <OWRELROOT>/h/
     <CPCMD> dos/cassert        <OWRELROOT>/h/
     <CPCMD> dos/cctype         <OWRELROOT>/h/
     <CPCMD> dos/cerrno         <OWRELROOT>/h/
     <CPCMD> dos/cfloat         <OWRELROOT>/h/
+    <CPCMD> dos/chrono         <OWRELROOT>/h/
     <CPCMD> dos/cinttype       <OWRELROOT>/h/
     <CPCMD> dos/ciso646        <OWRELROOT>/h/
     <CPCMD> dos/climits        <OWRELROOT>/h/
     <CPCMD> dos/clocale        <OWRELROOT>/h/
     <CPCMD> dos/cmath          <OWRELROOT>/h/
+    <CPCMD> dos/codecvt        <OWRELROOT>/h/
     <CPCMD> dos/complex        <OWRELROOT>/h/
+    <CPCMD> dos/conditio       <OWRELROOT>/h/
     <CPCMD> dos/csetjmp        <OWRELROOT>/h/
     <CPCMD> dos/csignal        <OWRELROOT>/h/
     <CPCMD> dos/cstdarg        <OWRELROOT>/h/
@@ -46,6 +51,8 @@ set PROJNAME=Standard header files
     <CPCMD> dos/forward_       <OWRELROOT>/h/
     <CPCMD> dos/fstream        <OWRELROOT>/h/
     <CPCMD> dos/function       <OWRELROOT>/h/
+    <CPCMD> dos/future         <OWRELROOT>/h/
+    <CPCMD> dos/initiali       <OWRELROOT>/h/
     <CPCMD> dos/iomanip        <OWRELROOT>/h/
     <CPCMD> dos/ios            <OWRELROOT>/h/
     <CPCMD> dos/iosfwd         <OWRELROOT>/h/
@@ -57,11 +64,14 @@ set PROJNAME=Standard header files
     <CPCMD> dos/locale         <OWRELROOT>/h/
     <CPCMD> dos/map            <OWRELROOT>/h/
     <CPCMD> dos/memory         <OWRELROOT>/h/
+    <CPCMD> dos/mutex          <OWRELROOT>/h/
     <CPCMD> dos/new            <OWRELROOT>/h/
     <CPCMD> dos/numeric        <OWRELROOT>/h/
     <CPCMD> dos/ostream        <OWRELROOT>/h/
     <CPCMD> dos/queue          <OWRELROOT>/h/
     <CPCMD> dos/random         <OWRELROOT>/h/
+    <CPCMD> dos/ratio          <OWRELROOT>/h/
+    <CPCMD> dos/regex          <OWRELROOT>/h/
     <CPCMD> dos/set            <OWRELROOT>/h/
     <CPCMD> dos/sstream        <OWRELROOT>/h/
     <CPCMD> dos/stack          <OWRELROOT>/h/
@@ -69,9 +79,14 @@ set PROJNAME=Standard header files
     <CPCMD> dos/streambu       <OWRELROOT>/h/
     <CPCMD> dos/string         <OWRELROOT>/h/
     <CPCMD> dos/strstrea       <OWRELROOT>/h/
+    <CPCMD> dos/system_e       <OWRELROOT>/h/
+    <CPCMD> dos/thread         <OWRELROOT>/h/
+    <CPCMD> dos/tuple          <OWRELROOT>/h/
+    <CPCMD> dos/typeinde       <OWRELROOT>/h/
     <CPCMD> dos/typeinfo       <OWRELROOT>/h/
     <CPCMD> dos/type_tra       <OWRELROOT>/h/
-    <CPCMD> dos/unordere       <OWRELROOT>/h/
+    <CPCMD> dos/unorderm       <OWRELROOT>/h/
+    <CPCMD> dos/unorders       <OWRELROOT>/h/
     <CPCMD> dos/utility        <OWRELROOT>/h/
     <CPCMD> dos/valarray       <OWRELROOT>/h/
     <CPCMD> dos/vector         <OWRELROOT>/h/
@@ -81,17 +96,22 @@ set PROJNAME=Standard header files
     <CPCMD> linux/sys/*        <OWRELROOT>/lh/sys/
     <CPCMD> linux/netinet/*    <OWRELROOT>/lh/netinet/
     <CPCMD> linux/algorith     <OWRELROOT>/lh/
+    <CPCMD> linux/array        <OWRELROOT>/lh/
+    <CPCMD> linux/atomic       <OWRELROOT>/lh/
     <CPCMD> linux/bitset       <OWRELROOT>/lh/
     <CPCMD> linux/cassert      <OWRELROOT>/lh/
     <CPCMD> linux/cctype       <OWRELROOT>/lh/
     <CPCMD> linux/cerrno       <OWRELROOT>/lh/
     <CPCMD> linux/cfloat       <OWRELROOT>/lh/
+    <CPCMD> linux/chrono       <OWRELROOT>/lh/
     <CPCMD> linux/cinttype     <OWRELROOT>/lh/
     <CPCMD> linux/ciso646      <OWRELROOT>/lh/
     <CPCMD> linux/climits      <OWRELROOT>/lh/
     <CPCMD> linux/clocale      <OWRELROOT>/lh/
     <CPCMD> linux/cmath        <OWRELROOT>/lh/
+    <CPCMD> linux/codecvt      <OWRELROOT>/lh/
     <CPCMD> linux/complex      <OWRELROOT>/lh/
+    <CPCMD> linux/conditio     <OWRELROOT>/lh/
     <CPCMD> linux/csetjmp      <OWRELROOT>/lh/
     <CPCMD> linux/csignal      <OWRELROOT>/lh/
     <CPCMD> linux/cstdarg      <OWRELROOT>/lh/
@@ -109,6 +129,8 @@ set PROJNAME=Standard header files
     <CPCMD> linux/forward_     <OWRELROOT>/lh/
     <CPCMD> linux/fstream      <OWRELROOT>/lh/
     <CPCMD> linux/function     <OWRELROOT>/lh/
+    <CPCMD> linux/future       <OWRELROOT>/lh/
+    <CPCMD> linux/initiali     <OWRELROOT>/lh/
     <CPCMD> linux/iomanip      <OWRELROOT>/lh/
     <CPCMD> linux/ios          <OWRELROOT>/lh/
     <CPCMD> linux/iosfwd       <OWRELROOT>/lh/
@@ -120,11 +142,14 @@ set PROJNAME=Standard header files
     <CPCMD> linux/locale       <OWRELROOT>/lh/
     <CPCMD> linux/map          <OWRELROOT>/lh/
     <CPCMD> linux/memory       <OWRELROOT>/lh/
+    <CPCMD> linux/mutex        <OWRELROOT>/lh/
     <CPCMD> linux/new          <OWRELROOT>/lh/
     <CPCMD> linux/numeric      <OWRELROOT>/lh/
     <CPCMD> linux/ostream      <OWRELROOT>/lh/
     <CPCMD> linux/queue        <OWRELROOT>/lh/
     <CPCMD> linux/random       <OWRELROOT>/lh/
+    <CPCMD> linux/ratio        <OWRELROOT>/lh/
+    <CPCMD> linux/regex        <OWRELROOT>/lh/
     <CPCMD> linux/set          <OWRELROOT>/lh/
     <CPCMD> linux/sstream      <OWRELROOT>/lh/
     <CPCMD> linux/stack        <OWRELROOT>/lh/
@@ -132,9 +157,14 @@ set PROJNAME=Standard header files
     <CPCMD> linux/streambu     <OWRELROOT>/lh/
     <CPCMD> linux/string       <OWRELROOT>/lh/
     <CPCMD> linux/strstrea     <OWRELROOT>/lh/
+    <CPCMD> linux/system_e     <OWRELROOT>/lh/
+    <CPCMD> linux/thread       <OWRELROOT>/lh/
+    <CPCMD> linux/tuple        <OWRELROOT>/lh/
+    <CPCMD> linux/typeinde     <OWRELROOT>/lh/
     <CPCMD> linux/typeinfo     <OWRELROOT>/lh/
     <CPCMD> linux/type_tra     <OWRELROOT>/lh/
-    <CPCMD> linux/unordere     <OWRELROOT>/lh/
+    <CPCMD> linux/unorderm     <OWRELROOT>/lh/
+    <CPCMD> linux/unorders     <OWRELROOT>/lh/
     <CPCMD> linux/utility      <OWRELROOT>/lh/
     <CPCMD> linux/valarray     <OWRELROOT>/lh/
     <CPCMD> linux/vector       <OWRELROOT>/lh/

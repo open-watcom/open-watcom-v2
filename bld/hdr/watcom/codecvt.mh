@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: codecvt
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _CODECVT_INCLUDED
+#define _CODECVT_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    // TODO: Implement me!
+    
+}
+
+#endif

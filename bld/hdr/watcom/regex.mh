@@ -1,0 +1,22 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: regex
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _REGEX_INCLUDED
+#define _REGEX_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    // TODO: Implement me!
+    
+}
+
+#endif
