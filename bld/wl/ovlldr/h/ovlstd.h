@@ -39,10 +39,6 @@
 
 #define CALL_INSTRUCTION 0xe8
 
-/* this definition used in the old overlay loader only */
-
-#define SUB_ADDR(l,r) (((long)(int)(FP_SEG(l)-FP_SEG(r))<<FmtData.SegShift)+(FP_OFF(l)-FP_OFF(r)))
-
 #define OVLNUM(x) ((x-__OVLTAB__.entries)+1)
 
 #define OVLTAB_OK(x) (FP_OFF(x)<FP_OFF(__OVLTABEND__))
