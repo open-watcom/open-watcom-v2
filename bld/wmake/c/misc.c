@@ -177,8 +177,8 @@ char *FixName( char *name )
         }
         if( hold == '/' ) {
             *ptr = '\\';
-        } else if( ( hold -= 'A' ) < 26 ) {     /* SIDE EFFECT!!! */
-            *ptr = hold + 'a';
+        } else if( isalpha( hold ) && hold < 'a') {
+            *ptr = hold - 'A' + 'a';
         }
         hold = *++ptr;
         if( hold == NULLCHAR ) {
@@ -186,8 +186,8 @@ char *FixName( char *name )
         }
         if( hold == '/' ) {
             *ptr = '\\';
-        } else if( ( hold -= 'A' ) < 26 ) {     /* SIDE EFFECT!!! */
-            *ptr = hold + 'a';
+        } else if( isalpha( hold ) && hold < 'a') {
+            *ptr = hold - 'A' + 'a';
         }
         hold = *++ptr;
     }
