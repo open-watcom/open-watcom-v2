@@ -168,15 +168,15 @@ namespace std {
         return( answer );
     }
 
-    // find_first_of( Forward1, Forward1, Forward2, Forward2 )
-    // *******************************************************
-    template< class ForwardIterator1, class ForwardIterator2 >
-    ForwardIterator1 find_first_of( ForwardIterator1 first1,
-                                    ForwardIterator1 last1,
-                                    ForwardIterator2 first2,
-                                    ForwardIterator2 last2 )
+    // find_first_of( Input, Input, Forward, Forward )
+    // ***********************************************
+    template< class InputIterator, class ForwardIterator >
+    InputIterator find_first_of( InputIterator first1,
+                                 InputIterator last1,
+                                 ForwardIterator first2,
+                                 ForwardIterator last2 )
     {
-        ForwardIterator2 i;
+        ForwardIterator i;
         while( first1 != last1 ) {
             for( i = first2; i != last2; ++i ){
                 if( *first1 == *i ) return( first1 );
@@ -186,18 +186,18 @@ namespace std {
         return( last1 );
     }
 
-    // find_first_of( Forward1, Forward1, Forward2, Forward2, BinaryPredicate )
-    // ************************************************************************
-    template< class ForwardIterator1,
-              class ForwardIterator2, 
+    // find_first_of( Input, Input, Forward, Forward, BinaryPredicate )
+    // ****************************************************************
+    template< class InputIterator,
+              class ForwardIterator, 
               class BinaryPredictate >
-    ForwardIterator1 find_first_of( ForwardIterator1 first1,
-                                    ForwardIterator1 last1,
-                                    ForwardIterator2 first2,
-                                    ForwardIterator2 last2,
-                                    BinaryPredictate pred )
+    InputIterator find_first_of( InputIterator first1,
+                                 InputIterator last1,
+                                 ForwardIterator first2,
+                                 ForwardIterator last2,
+                                 BinaryPredictate pred )
     {
-        ForwardIterator2 i;
+        ForwardIterator i;
         while( first1 != last1 ) {
             for( i = first2; i != last2; ++i ){
                 if( pred( *first1, *i ) ) return first1;

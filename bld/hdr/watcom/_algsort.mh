@@ -31,6 +31,153 @@ namespace std {
 
     namespace _ow {
 
+        // Used for small subsequences when doing a QuickSort.
+        template< class Bidirectional, class Compare>
+        void insertion_sort( Bidirectional first, Bidirectional last, Compare comp)
+        {
+            if( first == last ) return;
+
+            Bidirectional current = first;
+            ++current;
+            while( current != last ) {
+                typename std::iterator_traits< Bidirectional >::value_type temp = *current;
+                Bidirectional p1 = current;
+                Bidirectional p2 = current;
+                --p2;
+
+                while( comp( temp, *p2 ) ) {
+                    *p1 = *p2;
+                    if( p2 == first ) {
+                        --p1;
+                        break;
+                    }
+                    --p1; --p2;
+                }
+                *p1 = temp;
+                ++current;
+            }
+        }
+
+        template< class RandomAccess, class Compare >
+        RandomAccess med3( RandomAccess seq,
+                           typename std::iterator_traits< RandomAccess >::difference_type left,
+                           typename std::iterator_traits< RandomAccess >::difference_type right,
+                           Compare comp)
+        {
+            using std::swap;
+            typename std::iterator_traits< RandomAccess >::difference_type middle;
+
+            middle = (left + right) / 2;
+            if( comp( seq[middle], seq[left] ) ) swap( seq[left], seq[middle] );
+            if( comp( seq[right], seq[left] ) ) swap( seq[left], seq[right] );
+            if( comp( seq[right], seq[middle] ) ) swap( seq[middle], seq[right] );
+
+            swap( seq[middle], seq[right - 1] );
+            return seq + (right - 1);
+        }
+
+        // Based on the QuickSort algorithm in Mark Allen Weiss's "Data Structures and Algorithm
+        // Analysis in C++" third edition; Addison Wesley; ISBN=0-321-44146-X.
+        //
+        template< class RandomAccess, class Compare >
+        void quick_sort( RandomAccess seq,
+                         typename std::iterator_traits< RandomAccess >::difference_type left,
+                         typename std::iterator_traits< RandomAccess >::difference_type right,
+                         Compare comp)
+        {
+            using std::swap;
+            typedef typename std::iterator_traits< RandomAccess >::difference_type
+                difference_type; 
+
+            // If the '10' is changed here, be sure to update the regression tests.
+            if( right - left < 10 )
+                insertion_sort( seq + left, seq + right + 1, comp );
+            else {
+                typename std::iterator_traits< RandomAccess >::value_type
+                    pivot = *med3( seq, left, right, comp );
+
+                difference_type i = left;
+                difference_type j = right - 1;
+                for( ; ; ) {
+                    while( comp( seq[++i], pivot ) ) ;
+                    while( comp( pivot, seq[--j] ) ) ;
+                    if( i >= j ) break;
+                    swap( seq[i], seq[j] );
+                }
+
+                swap( seq[i], seq[right-1] );
+                quick_sort( seq, left, i - 1, comp );
+                quick_sort( seq, i + 1, right, comp );
+            }
+        }
+
+    } // namespace _ow
+
+
+    // sort( RandomAccess, RandomAccess )
+    // **********************************
+    template< class RandomAccess >
+    inline void sort( RandomAccess first, RandomAccess last )
+    {
+        if( first == last ) return;
+        _ow::quick_sort(first, 0, (last - first) - 1,
+                        std::less< typename iterator_traits< RandomAccess >::value_type >( ) );
+    }
+
+    // sort( RandomAccess, RandomAccess, Compare )
+    // *******************************************
+    template< class RandomAccess, class Compare >
+    inline void sort( RandomAccess first, RandomAccess last, Compare comp )
+    {
+        if( first == last ) return;
+        _ow::quick_sort( first, 0, (last - first) - 1, comp );
+    }
+
+    // binary_search( ForwardIterator, ForwardIterator, const Type &, Compare )
+    // ************************************************************************
+    template< class ForwardIterator, class Type, class Compare >
+    inline bool binary_search( ForwardIterator first,
+                               ForwardIterator last,
+                               const Type &value,
+                               Compare comp )
+    {
+        typedef typename iterator_traits< ForwardIterator >::difference_type length_type;
+        
+        ForwardIterator p1( first );
+        length_type len = last - first;   // This should really use distance( ).
+        length_type mid = len/2;
+        ForwardIterator p2( p1 );
+        advance( p2, mid );
+
+        while( len > 0 ) {
+            if( comp( value, *p2 ) ) {
+                len = mid;
+                mid = len/2;
+                p2  = p1;
+                advance( p2, mid );
+            } else if( comp( *p2, value ) ) {
+                len = mid + ((len % 2) == 0 ? 0 : 1 ) - 1;
+                mid = len/2;
+                p1  = ++p2;
+                advance( p2, mid );
+            } else {
+                return( true );
+            }
+        }
+        return( false );
+    }
+
+    // binary_search( ForwardIterator, ForwardIterator, const Type & )
+    // ***************************************************************
+    template< class ForwardIterator, class Type >
+    inline bool binary_search( ForwardIterator first, ForwardIterator last, const Type &value )
+    {
+        return( binary_search( first, last, value,
+                    std::less< typename iterator_traits< ForwardIterator >::value_type >( ) ) );
+    }
+
+    namespace _ow {
+
         template< class Int >
         inline Int heap_parent( Int index )
             { return ( ( index - 1 )/2 ); }
@@ -173,153 +320,6 @@ namespace std {
     {
         sort_heap( first, last,
                    less< typename iterator_traits< RandomAccess >::value_type >( ) );
-    }
-
-    namespace _ow {
-
-        // Used for small subsequences when doing a QuickSort.
-        template< class Bidirectional, class Compare>
-        void insertion_sort( Bidirectional first, Bidirectional last, Compare comp)
-        {
-            if( first == last ) return;
-
-            Bidirectional current = first;
-            ++current;
-            while( current != last ) {
-                typename std::iterator_traits< Bidirectional >::value_type temp = *current;
-                Bidirectional p1 = current;
-                Bidirectional p2 = current;
-                --p2;
-
-                while( comp( temp, *p2 ) ) {
-                    *p1 = *p2;
-                    if( p2 == first ) {
-                        --p1;
-                        break;
-                    }
-                    --p1; --p2;
-                }
-                *p1 = temp;
-                ++current;
-            }
-        }
-
-        template< class RandomAccess, class Compare >
-        RandomAccess med3( RandomAccess seq,
-                           typename std::iterator_traits< RandomAccess >::difference_type left,
-                           typename std::iterator_traits< RandomAccess >::difference_type right,
-                           Compare comp)
-        {
-            using std::swap;
-            typename std::iterator_traits< RandomAccess >::difference_type middle;
-
-            middle = (left + right) / 2;
-            if( comp( seq[middle], seq[left] ) ) swap( seq[left], seq[middle] );
-            if( comp( seq[right], seq[left] ) ) swap( seq[left], seq[right] );
-            if( comp( seq[right], seq[middle] ) ) swap( seq[middle], seq[right] );
-
-            swap( seq[middle], seq[right - 1] );
-            return seq + (right - 1);
-        }
-
-        // Based on the QuickSort algorithm in Mark Allen Weiss's "Data Structures and Algorithm
-        // Analysis in C++" third edition; Addison Wesley; ISBN=0-321-44146-X.
-        //
-        template< class RandomAccess, class Compare >
-        void quick_sort( RandomAccess seq,
-                         typename std::iterator_traits< RandomAccess >::difference_type left,
-                         typename std::iterator_traits< RandomAccess >::difference_type right,
-                         Compare comp)
-        {
-            using std::swap;
-            typedef typename std::iterator_traits< RandomAccess >::difference_type
-                difference_type; 
-
-            // If the '10' is changed here, be sure to update the regression tests.
-            if( right - left < 10 )
-                insertion_sort( seq + left, seq + right + 1, comp );
-            else {
-                typename std::iterator_traits< RandomAccess >::value_type
-                    pivot = *med3( seq, left, right, comp );
-
-                difference_type i = left;
-                difference_type j = right - 1;
-                for( ; ; ) {
-                    while( comp( seq[++i], pivot ) ) ;
-                    while( comp( pivot, seq[--j] ) ) ;
-                    if( i >= j ) break;
-                    swap( seq[i], seq[j] );
-                }
-
-                swap( seq[i], seq[right-1] );
-                quick_sort( seq, left, i - 1, comp );
-                quick_sort( seq, i + 1, right, comp );
-            }
-        }
-
-    } // namespace _ow
-
-
-    // sort( RandomAccess, RandomAccess, Compare )
-    // *******************************************
-    template< class RandomAccess, class Compare >
-    inline void sort( RandomAccess first, RandomAccess last, Compare comp )
-    {
-        if( first == last ) return;
-        _ow::quick_sort( first, 0, (last - first) - 1, comp );
-    }
-
-    // sort( RandomAccess, RandomAccess )
-    // **********************************
-    template< class RandomAccess >
-    inline void sort( RandomAccess first, RandomAccess last )
-    {
-        if( first == last ) return;
-        _ow::quick_sort(first, 0, (last - first) - 1,
-                        std::less< typename iterator_traits< RandomAccess >::value_type >( ) );
-    }
-
-    // binary_search( ForwardIterator, ForwardIterator, const Type &, Compare )
-    // ************************************************************************
-    template< class ForwardIterator, class Type, class Compare >
-    inline bool binary_search( ForwardIterator first,
-                               ForwardIterator last,
-                               const Type &value,
-                               Compare comp )
-    {
-        typedef typename iterator_traits< ForwardIterator >::difference_type length_type;
-        
-        ForwardIterator p1( first );
-        length_type len = last - first;   // This should really use distance( ).
-        length_type mid = len/2;
-        ForwardIterator p2( p1 );
-        advance( p2, mid );
-
-        while( len > 0 ) {
-            if( comp( value, *p2 ) ) {
-                len = mid;
-                mid = len/2;
-                p2  = p1;
-                advance( p2, mid );
-            } else if( comp( *p2, value ) ) {
-                len = mid + ((len % 2) == 0 ? 0 : 1 ) - 1;
-                mid = len/2;
-                p1  = ++p2;
-                advance( p2, mid );
-            } else {
-                return( true );
-            }
-        }
-        return( false );
-    }
-
-    // binary_search( ForwardIterator, ForwardIterator, const Type & )
-    // ***************************************************************
-    template< class ForwardIterator, class Type >
-    inline bool binary_search( ForwardIterator first, ForwardIterator last, const Type &value )
-    {
-        return( binary_search( first, last, value,
-                    std::less< typename iterator_traits< ForwardIterator >::value_type >( ) ) );
     }
 
     // min( const Type &, const Type & )

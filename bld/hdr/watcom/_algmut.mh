@@ -232,46 +232,6 @@ namespace std {
         }
     }
 
-    // remove_copy( InputIterator, InputIterator, OutputIterator, Type const & )
-    // *************************************************************************
-    template< class InputIterator, class OutputIterator, class Type >
-    OutputIterator remove_copy( InputIterator  first,
-                                InputIterator  last,
-                                OutputIterator out,
-                                Type const & value )
-    {
-        while( first != last) {
-            if( *first == value ) {
-                ++first;
-            } else {
-                *out = *first;
-                ++first;
-                ++out;
-            }
-        }
-        return( out );
-    }
-
-    // remove_copy_if( InputIterator, InputIterator, OutputIterator, Predictate )
-    // **************************************************************************
-    template< class InputIterator, class OutputIterator, class Predictate >
-    OutputIterator remove_copy_if( InputIterator  first,
-                                   InputIterator  last,
-                                   OutputIterator out,
-                                   Predictate     pred )
-    {
-        while( first != last) {
-            if( pred( *first ) != false ) {
-                ++first;
-            } else {
-                *out = *first;
-                ++first;
-                ++out;
-            }
-        }
-        return( out );
-    }
-
     // remove( ForwardIterator, ForwardIterator, Type const & )
     // ********************************************************
     template< class ForwardIterator, class Type >
@@ -313,6 +273,46 @@ namespace std {
                     // Avoid unecessary copies.
                     *out = *first;
                 }
+                ++first;
+                ++out;
+            }
+        }
+        return( out );
+    }
+
+    // remove_copy( InputIterator, InputIterator, OutputIterator, Type const & )
+    // *************************************************************************
+    template< class InputIterator, class OutputIterator, class Type >
+    OutputIterator remove_copy( InputIterator  first,
+                                InputIterator  last,
+                                OutputIterator out,
+                                Type const & value )
+    {
+        while( first != last) {
+            if( *first == value ) {
+                ++first;
+            } else {
+                *out = *first;
+                ++first;
+                ++out;
+            }
+        }
+        return( out );
+    }
+
+    // remove_copy_if( InputIterator, InputIterator, OutputIterator, Predictate )
+    // **************************************************************************
+    template< class InputIterator, class OutputIterator, class Predictate >
+    OutputIterator remove_copy_if( InputIterator  first,
+                                   InputIterator  last,
+                                   OutputIterator out,
+                                   Predictate     pred )
+    {
+        while( first != last) {
+            if( pred( *first ) != false ) {
+                ++first;
+            } else {
+                *out = *first;
                 ++first;
                 ++out;
             }
