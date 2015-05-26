@@ -35,7 +35,7 @@
 
 #if !defined( NDEBUG ) && !defined( __WIN__ )
 
-void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
+void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt );
 
 static type_style errStyle = { 7, 0, 0 };
 
@@ -369,7 +369,7 @@ void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
 
     *bcnt = 0;
     *lnecnt = 0;
-    for( cline = cfcb->line_head; cline != NULL; cline = cline->next ) {
+    for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
         *bcnt += cline->len + 1;
         *lnecnt += 1;
     }
