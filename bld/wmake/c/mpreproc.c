@@ -58,14 +58,14 @@
 typedef enum {                  // must be kept in sync with directives
     D_BLANK = -1,               // a blank line
     #define pick(text,enum) enum,
-    #include "mdirectiv.h"
+    #include "mdirectv.h"
     #undef pick
     D_MAX
 } directiveTok;
 
 STATIC const char * const directives[] = {   // table must be lexically sorted.
     #define pick(text,enum) text,
-    #include "mdirectiv.h"
+    #include "mdirectv.h"
     #undef pick
 };
 #define NUM_DIRECT      D_MAX
