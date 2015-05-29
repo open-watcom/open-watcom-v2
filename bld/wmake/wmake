@@ -33,10 +33,10 @@ $(%OWBINDIR)/wmake$(exe): wmk.exe
         *wcc386 -zq -bt=$(bld_os) -DBOOTSTRAP -I. -I"../h" -I"../../watcom/h" -I"../../lib_misc/h" -fo=$@ $<
 
 ./wsplice.exe : wsplice.obj
-        wlink name $@ op q sys $(link_sys) file {$<}
+        *wlink name $@ op q sys $(link_sys) file {$<}
 
 ./cretype.exe : cretype.obj
-        wlink name $@ op q sys $(link_sys) file {$<}
+        *wlink name $@ op q sys $(link_sys) file {$<}
 
 # Use inline files for wsplice as a way to sidestep the metacharacter hell.
 usage.gh : ../h/usage.sp ./wsplice.exe
@@ -53,7 +53,7 @@ isarray.gh : ./cretype.exe
         $]@ > $@
 
 wmk.exe: usageend.gh isarray.gh $(objs)
-        wlink name $@ op q sys $(link_sys) file {$(objs)}
+        *wlink name $@ op q sys $(link_sys) file {$(objs)}
 
 clean:  .symbolic
         rm -f *.obj *.gh *.exe *.err
