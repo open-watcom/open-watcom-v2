@@ -460,17 +460,15 @@ STATIC void parseExtensions( void )
         }
         if( t == TOK_SUF ) {
             if( !SufExists( CurAttr.u.ptr ) ) {
-                AddSuffix( CurAttr.u.ptr );   /* we lose CurAttr.u.ptr */
+                AddSuffix( CurAttr.u.ptr );
             /*
-             * if microsoft option is set we put it in anyway don't
+             * if microsoft or unix option is set we put it in anyway don't
              * care whether or not it exists
              */
-            } else if( Glob.compat_nmake || Glob.compat_unix ) {
-                FreeSafe( CurAttr.u.ptr );
-            } else {
+            } else if( !Glob.compat_nmake && !Glob.compat_unix ) {
                 PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.u.ptr );
-                FreeSafe( CurAttr.u.ptr );
             }
+            FreeSafe( CurAttr.u.ptr );
             any = TRUE;
         } else {
             ignoring( t, TRUE );

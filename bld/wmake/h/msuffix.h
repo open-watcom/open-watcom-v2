@@ -75,7 +75,7 @@ extern void     SuffixFini( void );
 extern void     ClearSuffixes( void );
 extern BOOLEAN  SufExists( const char *suf );
 extern BOOLEAN  SufBothExist( const char *sufsuf );
-extern void     AddSuffix( char *name );
+extern void     AddSuffix( const char *name );
 extern void     SetSufPath( const char *name, const char *path );
 extern char     *AddCreator( const char *sufsuf );
 extern void     PrintSuffixes( void );

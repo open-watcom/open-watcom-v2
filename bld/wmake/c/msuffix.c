@@ -221,29 +221,20 @@ BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
 }
 
 
-void AddSuffix( char *name )
-/**********************************
+void AddSuffix( const char *name )
+/*********************************
  * pass name with leading .; adds name to suffix table and assigns id
  * retains use of name after call
  */
 {
     SUFFIX  *new;
-    char    *d;
-    char    *s;
 
     assert( ( name != NULL && name[0] == DOT && !SufExists( name ) ) ||
             ( name != NULL && name[0] == DOT && SufExists( name ) &&
             Glob.compat_nmake ) );
 
-    d = name;                   /* shift left by 1 place */
-    s = name + 1;
-    while( *s != NULLCHAR ) {
-        *d++ = *s++;
-    }
-    *d = NULLCHAR;
-
     new = CallocSafe( sizeof( *new ) );
-    new->node.name = FixName( name );
+    new->node.name = FixName( StrDupSafe( name + 1 ) ); /* skip leading dot */
     new->id = nextId;
     ++nextId;
 
