@@ -265,9 +265,8 @@ STATIC char *findEqual( char *inString )
 }
 
 
-STATIC RET_T getOldNewString( char *inString, char **oldString,
-    char **newString )
-/*************************************************************/
+STATIC RET_T getOldNewString( char *inString, const char **oldString, const char **newString )
+/********************************************************************************************/
 {
     char    *equal;
 
@@ -284,9 +283,8 @@ STATIC RET_T getOldNewString( char *inString, char **oldString,
 }
 
 
-STATIC char *doStringSubstitute( const char *name, const char *oldString,
-    const char *newString )
-/************************************************************************
+STATIC char *doStringSubstitute( const char *name, const char *oldString, const char *newString )
+/************************************************************************************************
  *   $(macroname:oldstr=newstr)
  *   substitute any occurence of oldstr with new str
  */
@@ -412,8 +410,8 @@ char *GetMacroValue( const char *name )
     const char  *beforeSub;
     char        *afterSub;
     char        *current;
-    char        *new;
-    char        *old;
+    const char  *new;
+    const char  *old;
     char        *line;
 
     InName = StrDupSafe( name );
@@ -611,18 +609,18 @@ char *WrnGetMacroValue( const char *name )
 }
 
 
-char *DeMacroSpecial( char *InString)
+char *DeMacroSpecial( const char *InString )
 /*******************************************
  * This function is to specially handle the special macros
  * in the dependencies
  */
 {
-    char    *old;
-    char    *current;
-    VECSTR  outString;
-    char    *tempString;
-    char    buffer[6];
-    int     pos;
+    const char  *old;
+    const char  *current;
+    VECSTR      outString;
+    char        *tempString;
+    char        buffer[6];
+    int         pos;
 
     assert( InString != NULL );
     old     = InString;

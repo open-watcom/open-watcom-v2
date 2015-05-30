@@ -235,9 +235,10 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
 
     Glob.macreadonly = TRUE;
 
-    while( *++argv != NULL ) {
-        checkCtrl( p = *argv );
-        select = p[0], option = (char) tolower( p[1] );
+    while( (p = *++argv) != NULL ) {
+        checkCtrl( p );
+        select = p[0];
+        option = (char)tolower( p[1] );
         if( select == '-' || select == Glob.swchar ) {
             if( option != NULLCHAR && p[2] == NULLCHAR ) {
                 switch( option ) {
@@ -270,7 +271,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     /* these options require a filename */
                 case 'f':
                 case 'l':
-                    if( ( p = *++argv ) == NULL ) {
+                    if( (p = *++argv) == NULL ) {
                         PrtMsg( ERR | INVALID_FILE_OPTION, select, option );
                         Usage();
                     }

@@ -53,6 +53,6 @@ extern BOOLEAN      IsMacroName( const char *name );
 extern void         PrintMacros( void );
 extern char         *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForceDeMacro );
 extern const char   *procPath( const char *fullpath );
-extern char         *DeMacroSpecial( char *InString );
+extern char         *DeMacroSpecial( const char *InString );
 
 #endif  /* !_MACROS_H */

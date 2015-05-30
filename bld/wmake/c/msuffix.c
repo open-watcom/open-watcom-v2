@@ -549,9 +549,8 @@ STATIC RET_T tryPathRing( PATHRING **pring, char *buffer,
 }
 
 
-RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg,
-    BOOLEAN tryenv )
-/*****************************************************************************
+RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN tryenv )
+/***************************************************************************************
  * it is NOT necessary that filename != buffer
  * the contents of buffer may be destroyed even if RET_ERROR is returned
  * first checks current directory, then any in suffix path
