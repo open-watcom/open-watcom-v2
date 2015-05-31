@@ -74,6 +74,6 @@ $(name).exe: $(objs) $(posix_lib:$(to_os_path))
 !endif
 !else ifeq host_os dos
 !ifeq host_cpu 386
-        $(posix_dir)\misc\pharlap\bind386 $(posix_dir)\misc\pharlap\run386b $(name).exp
+        $(posix_dir:$(to_os_path))\misc\pharlap\bind386 $(posix_dir:$(to_os_path))\misc\pharlap\run386b $(name).exp
 !endif
 !endif

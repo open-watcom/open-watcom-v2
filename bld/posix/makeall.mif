@@ -24,6 +24,7 @@ curr_dir_all=$+ $(%CWD) $-
     @cd $(libdir)
     !@wmake -h release=$(release) bootstrap=$(bootstrap) $(mkfile)
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
+    @cd $(curr_dir_all)
     @if not exist $(altlibdir) @mkdir $(altlibdir)
     @cd $(altlibdir)
     !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
