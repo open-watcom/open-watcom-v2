@@ -40,8 +40,6 @@ extra_c_flags_genmsomf = -DMSG_WOMP_BASE=200
 extra_c_flags_fixup = -DMSG_WOMP_BASE=200
 extra_c_flags_asmalloc = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
-extra_c_flags_asmfixup = -I"$(cg_dir)/intel/h"
-extra_c_flags_asmmatch = -I"$(cg_dir)/intel/h"
 
 #lflags stuff
 #########
