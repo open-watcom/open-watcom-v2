@@ -28,6 +28,9 @@ struct sockaddr_in {
     char           __pad[ 16 - sizeof( sa_family_t ) - sizeof( uint16_t ) - sizeof( struct in_addr ) ];
 };
 
+typedef uint32_t in_addr_t;
+typedef uint16_t in_port_t;
+
 #define IPPROTO_IP              0
 #define IPPROTO_ICMP            1
 #define IPPROTO_IGMP            2

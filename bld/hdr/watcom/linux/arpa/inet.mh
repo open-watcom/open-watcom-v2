@@ -16,13 +16,15 @@
 
 :include lnxkpack.sp
 
+#include <netinet/in.h>
+
 _WCRTLINK int               inet_aton( const char *cp, struct in_addr *__inp );
-_WCRTLINK uint32_t          inet_addr( const char *__cp );
-_WCRTLINK uint32_t          inet_network( const char *__cp );
+_WCRTLINK in_addr_t         inet_addr( const char *__cp );
+_WCRTLINK in_addr_t         inet_network( const char *__cp );
 _WCRTLINK char              *inet_ntoa( struct in_addr in );
 _WCRTLINK struct in_addr    inet_makeaddr( int net, int __host );
-_WCRTLINK uint32_t          inet_lnaof( struct in_addr __in );
-_WCRTLINK uint32_t          inet_netof( struct in_addr __in );
+_WCRTLINK in_addr_t         inet_lnaof( struct in_addr __in );
+_WCRTLINK in_addr_t         inet_netof( struct in_addr __in );
 
 :include poppack.sp
 
