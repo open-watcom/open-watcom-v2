@@ -1,0 +1,20 @@
+#!ifndef bootstrap
+!ifdef %WMAKEFLAG1
+bootstrap = $(%WMAKEFLAG1)
+!endif
+#!endif
+#!ifndef release
+!ifdef %WMAKEFLAG2
+release = $(%WMAKEFLAG2)
+!endif
+#!endif
+#!ifndef host_os
+!ifdef %WMAKEFLAG3
+host_os = $(%WMAKEFLAG3)
+!endif
+#!endif
+#!ifndef host_cpu
+!ifdef %WMAKEFLAG4
+host_cpu = $(%WMAKEFLAG4)
+!endif
+#!endif

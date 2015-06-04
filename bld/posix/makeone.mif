@@ -10,6 +10,7 @@
 #       name            the name of the command to be built
 #
 
+!include $(posix_dir)/getvars.mif
 !include $(posix_dir)/common.mif
 !include deftarg.mif
 

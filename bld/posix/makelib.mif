@@ -2,6 +2,7 @@
 #       This is the common makefile for each library.
 #
 
+!include $(posix_dir)/getvars.mif
 !include $(posix_dir)/common.mif
 !include deftarg.mif
 

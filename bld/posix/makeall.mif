@@ -15,6 +15,9 @@ mkfile = -f $(libmakepath)/makefile
 altmkfile = -f $(altlibmakepath)/makefile
 !endif
 
+.before
+!include $(posix_dir)/setvars.mif
+
 all : lib $(commands) .symbolic
     @%null
 
@@ -22,17 +25,17 @@ lib : .symbolic $(__MAKEFILES__)
 curr_dir_all=$+ $(%CWD) $-
     @if not exist $(libdir) @mkdir $(libdir)
     @cd $(libdir)
-    !@wmake -h release=$(release) bootstrap=$(bootstrap) $(mkfile)
+    !@wmake -h $(mkfile)
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
     @cd $(curr_dir_all)
     @if not exist $(altlibdir) @mkdir $(altlibdir)
     @cd $(altlibdir)
-    !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
+    !@wmake -h $(altmkfile)
 !endif
     @cd $(curr_dir_all)
 
 $(commands) : .symbolic $(__MAKEFILES__)
-    !@wmake -h host_os=$(host_os) host_cpu=$(host_cpu) release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
+    !@wmake -h -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
 curr_dir_all=$+ $(%CWD) $-
