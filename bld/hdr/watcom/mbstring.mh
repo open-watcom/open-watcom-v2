@@ -81,7 +81,7 @@ _WCRTLINK extern unsigned int _mbsnextc( const unsigned char *__s );
 ::
 :: Begin of extension section
 ::
-_WCRTLINK extern unsigned char *_mbstok( unsigned char *__s, const unsigned char *__delim, unsigned char _WCFAR *__p );
+_WCRTLINK extern unsigned char *_mbstok_r( unsigned char *__s, const unsigned char *__delim, unsigned char _WCFAR **__p );
 
 /* Far versions */
 
@@ -98,7 +98,7 @@ _WCRTLINK extern unsigned char _WCFAR *_fmbsrchr( const unsigned char _WCFAR *__
 _WCRTLINK extern unsigned char _WCFAR *_fmbsstr( const unsigned char _WCFAR *__s1, const unsigned char _WCFAR *__s2 );
 _WCRTLINK extern unsigned char _WCFAR *_fmbspbrk( const unsigned char _WCFAR *__s, const unsigned char _WCFAR *__charset );
 _WCRTLINK extern unsigned char _WCFAR *_fmbstok( unsigned char _WCFAR *__s, const unsigned char _WCFAR *__delim );
-_WCRTLINK extern unsigned char _WCFAR *_fmbstok_r( unsigned char _WCFAR *__s, const unsigned char _WCFAR *__delim, unsigned char _WCFAR *__p );
+_WCRTLINK extern unsigned char _WCFAR *_fmbstok_r( unsigned char _WCFAR *__s, const unsigned char _WCFAR *__delim, unsigned char _WCFAR **__p );
 
 _WCRTLINK extern size_t _fmbsspn( const unsigned char _WCFAR *__s, const unsigned char _WCFAR *__charset );
 _WCRTLINK extern size_t _fmbscspn( const unsigned char _WCFAR *__s, const unsigned char _WCFAR *__charset );
