@@ -7,6 +7,7 @@
 !inject connect.obj                                                                     l32 lpc lmp
 !inject fnmatch.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject getline.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject gthstent.obj                                                                    l32 lpc lmp
 !inject gthstnam.obj                                                                    l32 lpc lmp
 !inject gtpronam.obj                                                                    l32 lpc lmp
 !inject gtscknam.obj                                                                    l32 lpc lmp

@@ -240,6 +240,7 @@
 .fnc _ellipse_w                 gr_ellip.gml    DOS QNX W GRAPH
 .fnc _ellipse_wxy               gr_ellip.gml    DOS QNX W GRAPH
 .fnc _enable                    _enable.gml     DOS QNX W WIN32
+.fnc endhostent                 endhsten.gml    DOS     W WIN32
 .fnc endpwent                   endpwent.gml    DOS QNX W WIN32
 .fnc _endthread                 _ethread.gml    DOS QXO   WIN32
 .fnc _endthreadex               _ethread.gml    DOS       WIN32
@@ -447,6 +448,7 @@
 .fnc getgroups                  getgrps.gml         QXO
 .fnc _getgtextextent            gr_getge.gml    DOS QNX W GRAPH
 .fnc _getgtextvector            gr_gettv.gml    DOS QNX W GRAPH
+.fnc gethostent                 gthstent.gml    DOS     W WIN32
 .fnc _getimage                  gr_getim.gml    DOS QNX W GRAPH
 .fnc _getimage_w                gr_getim.gml    DOS QNX W GRAPH
 .fnc _getimage_wxy              gr_getim.gml    DOS QNX W GRAPH
@@ -1181,6 +1183,7 @@
 .fnc _setfont                   gr_setf.gml     DOS QNX W GRAPH
 .fnc setgid                     setgid.gml          QXO
 .fnc _setgtextvector            gr_settv.gml    DOS QNX W GRAPH
+.fnc sethostent                 sthstent.gml    DOS     W WIN32
 .fnc setjmp                     setjmp.gml      DOS QNX W WIN32
 .fnc _setlinestyle              gr_setls.gml    DOS QNX W GRAPH
 .fnc setlocale                  setlocal.gml    DOS QNX W WIN32

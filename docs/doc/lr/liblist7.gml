@@ -235,6 +235,7 @@
 .sys _ellipse_w_87 DOS16 DOS32 QNX16 QNX32
 .sys _ellipse_wxy DOS16 DOS32 QNX16 QNX32
 .sys _enable DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
+.sys endhostent LNX32
 .sys endgrent QNX16 QNX32
 .sys endpwent QNX16 QNX32 LNX32
 .sys _endthread WIN32 QNX32 OS216MT OS216DL OS232 LNX32 RDOS NET32
@@ -548,6 +549,7 @@
 .sys geteuid QNX16 QNX32 LNX32
 .sys _getfillmask DOS16 DOS32 QNX16 QNX32
 .sys _getfontinfo DOS16 DOS32 QNX16 QNX32
+.sys gethostent LNX32
 .sys getgid QNX16 QNX32 LNX32
 .sys getgrent QNX16 QNX32
 .sys getgrgid QNX16 QNX32
@@ -1312,6 +1314,7 @@
 .sys setgid QNX16 QNX32 LNX32
 .sys setgrent QNX16 QNX32
 .sys _setgtextvector DOS16 DOS32 QNX16 QNX32
+.sys sethostent LNX32
 .sys _setjmp DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys setjmp MACRO
 .sys _setlinestyle DOS16 DOS32 QNX16 QNX32
