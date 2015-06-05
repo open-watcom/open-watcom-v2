@@ -81,7 +81,7 @@ _WCRTLINK extern unsigned int _mbsnextc( const unsigned char *__s );
 ::
 :: Begin of extension section
 ::
-_WCRTLINK extern unsigned char *_mbstok_r( unsigned char *__s, const unsigned char *__delim, unsigned char _WCFAR **__p );
+_WCRTLINK extern unsigned char *_mbstok_r( unsigned char *__s, const unsigned char *__delim, unsigned char **__p );
 
 /* Far versions */
 
