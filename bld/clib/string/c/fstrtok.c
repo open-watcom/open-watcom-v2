@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
+*    Portions Copyright (c) 2015 Open Watcom contributors.
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,15 +40,15 @@
 #include "thread.h"
 
 
-_WCRTLINK char _WCFAR *_fstrtok( char _WCFAR *str, const char _WCFAR *charset )
+_WCRTLINK char _WCFAR *_fstrtok_r( char _WCFAR *str, const char _WCFAR *charset, char _WCFAR **ptr )
 {
     char            tc;
     unsigned char   vector[ CHARVECTOR_SIZE ];
     char _WCFAR     *p1;
 
-    _INITNEXTFTOK
+    
     if( str == NULL ) {
-        str = _RWD_nextftok;            /* use previous value   */
+        str = *ptr;            /* use previous value   */
         if( str == NULL ) return( NULL );
     }
     __fsetbits( vector, charset );
@@ -63,10 +65,16 @@ _WCRTLINK char _WCFAR *_fstrtok( char _WCFAR *str, const char _WCFAR *charset )
         if( GETCHARBIT( vector, tc ) != 0 ) {
             *p1 = '\0';             /* terminate the token  */
             p1++;                   /* start of next token  */
-            _RWD_nextftok = p1;
+            *ptr = p1;
             return( str );
         }
     }
-    _RWD_nextftok = NULL;
+    *ptr = NULL;
     return( str );
+}
+
+_WCRTLINK char _WCFAR *_fstrtok( char _WCFAR *str, const char _WCFAR *charset )
+{
+    _INITNEXTFTOK
+    return _fstrtok_r(str, charset, &_RWD_nextftok);
 }

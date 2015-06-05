@@ -1,16 +1,22 @@
-.func begin strtok _fstrtok
+.func begin strtok strtok_r _fstrtok _fstrtok_r
 .func2 wcstok ISO C95
-.func2 _mbstok
-.func2 _fmbstok
+.func2 _mbstok 
+.func2 _mbstok_r
+.func2 _fmbstok 
+.func2 _fmbstok_r
 .func end
 .synop begin
 #include <string.h>
 char *strtok( char *s1, const char *s2 );
+char *strtok_r( char *s1, const char *s2, char **p1 );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Search' &funcb
 .if &farfnc eq 1 .do begin
 char __far *_fstrtok( char __far *s1,
                       const char __far *s2 );
+char __far *_fstrtok_r( char __far *s1,
+                        const char __far *s2,
+                        char __far **p1 );
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Search' &ffunc
 .do end
@@ -26,6 +32,9 @@ wchar_t *wcstok( wchar_t *s1, const wchar_t *s2,
 #include <mbstring.h>
 unsigned char *_mbstok( unsigned char *s1,
                   const unsigned char *s2 );
+unsigned char *_mbstok_r( unsigned char *s1,
+                  const unsigned char *s2,
+                  unsigned char **p1 );
 .ixfunc2 '&String' &mfunc
 .ixfunc2 '&Search' &mfunc
 .ixfunc2 '&Wide' &mfunc
@@ -33,6 +42,9 @@ unsigned char *_mbstok( unsigned char *s1,
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbstok( unsigned char __far *s1,
                          const unsigned char __far *s2 );
+unsigned char __far *_fmbstok_r( unsigned char __far *s1,
+                         const unsigned char __far *s2,
+                         unsigned char __far **p1 );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Wide' &fmfunc
@@ -98,6 +110,13 @@ Because
 .id &funcb.
 may modify the original string, that string should be
 duplicated if the string is to be re-used.
+.np
+The reentrant form of this function,
+.kw strtok_r
+, also requires a pointer to a string pointer to be passed.
+This pointer is used internally by the function for subsequent
+calls to perform tokenizing without relying on internal state
+within the function.
 .im farfunc
 .im widefun1
 .if &'length(&wfunc.) ne 0 .do begin

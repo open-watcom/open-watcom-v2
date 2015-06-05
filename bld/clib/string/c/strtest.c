@@ -56,6 +56,7 @@ void TestMove( void );
 void TestSearch( void );
 void TestSubstring( void );
 void TestToken( void );
+void TestTokenR( void );
 void TestLocale( void );
 void TestError( void );
 void TestFormatted( void );
@@ -72,7 +73,7 @@ void TestCaseF( void );
 void TestMoveF( void );
 void TestSearchF( void );
 void TestSubstringF( void );
-void TestTokenF( void );
+void TestTokenRF( void );
 #endif
 
 
@@ -544,6 +545,28 @@ void TestToken( void )
     VERIFY( ptr == NULL );
 }
 
+void TestTokenR( void )
+{
+    char            buf[] = "Find!all;the.tokens,";
+    char            *ptr;
+    char            *place;
+
+    ptr = strtok_r( buf, " ;.,!", &place );     /* find a token */
+    VERIFY( !strcmp(ptr,"Find") );
+
+    ptr = strtok_r( NULL, " ;.,!", &place );    /* find a token */
+    VERIFY( !strcmp(ptr,"all") );
+
+    ptr = strtok_r( NULL, " ;.,!", &place );    /* find a token */
+    VERIFY( !strcmp(ptr,"the") );
+
+    ptr = strtok_r( NULL, " ;.,!", &place );    /* find a token */
+    VERIFY( !strcmp(ptr,"tokens") );
+
+    ptr = strtok_r( NULL, " '.,!", &place );    /* try to find another */
+    VERIFY( ptr == NULL );
+}
+
 
 #ifdef _M_IX86
 void TestTokenF( void )
@@ -564,6 +587,28 @@ void TestTokenF( void )
     VERIFY( !_fstrcmp(ptr,"tokens") );
 
     ptr = _fstrtok( NULL, " '.,!" );            /* try to find another */
+    VERIFY( ptr == NULL );
+}
+
+void TestTokenRF( void )
+{
+    char            buf[] = "Find!all;the.tokens,";
+    char __far      *ptr;
+    char __far      *place;
+
+    ptr = _fstrtok_r( buf, " ;.,!", &place );   /* find a token */
+    VERIFY( !_fstrcmp(ptr,"Find") );
+
+    ptr = _fstrtok_r( NULL, " ;.,!", &place );  /* find a token */
+    VERIFY( !_fstrcmp(ptr,"all") );
+
+    ptr = _fstrtok_r( NULL, " ;.,!", &place );  /* find a token */
+    VERIFY( !_fstrcmp(ptr,"the") );
+
+    ptr = _fstrtok_r( NULL, " ;.,!", &place );  /* find a token */
+    VERIFY( !_fstrcmp(ptr,"tokens") );
+
+    ptr = _fstrtok_r( NULL, " '.,!", &place );  /* try to find another */
     VERIFY( ptr == NULL );
 }
 #endif
@@ -730,6 +775,7 @@ int main( int argc, char *argv[] )
     TestSearch();                               /* searching stuff */
     TestSubstring();                            /* substring stuff */
     TestToken();                                /* tokenizing stuff */
+    TestTokenR();                               /* reentrant tokenizing stuff */
     TestLocale();                               /* locale stuff */
     TestError();                                /* error string stuff */
     TestFormatted();                            /* formatted I/O stuff */
@@ -741,6 +787,7 @@ int main( int argc, char *argv[] )
     TestSearchF();
     TestSubstringF();
     TestTokenF();
+    TestTokenRF();
 #endif
 
     /*** Print a pass/fail message and quit ***/

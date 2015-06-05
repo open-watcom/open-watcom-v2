@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
+*    Portions Copyright (c) 2015 Open Watcom contributors.
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -48,7 +50,7 @@
 ***** Tokenize a string.  Equivalent to strtok().
 ****/
 
-_WCRTLINK unsigned char _FFAR *_NEARFAR(_mbstok,_fmbstok)( unsigned char _FFAR *str, const unsigned char _FFAR *delim )
+_WCRTLINK unsigned char _FFAR *_NEARFAR(_mbstok_r,_fmbstok_r)( unsigned char _FFAR *str, const unsigned char _FFAR *delim, unsigned char _FFAR **ptr )
 {
     unsigned char _FFAR *   string_start;
     int                     count;
@@ -56,14 +58,8 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbstok,_fmbstok)( unsigned char _FFAR *
 
 //    if( !__IsDBCS )  return( strtok( str, delim ) );
 
-    /*** Initialize ***/
-    #ifdef __FARFUNC__
-        _INITNEXTMBFTOK
-    #else
-        _INITNEXTMBTOK
-    #endif
     if( str == NULL ) {
-        str = _NEARFAR(_RWD_nextmbtok,_RWD_nextmbftok);
+        str = *ptr;
         if( str == NULL )
             return( NULL );
     }
@@ -94,10 +90,22 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbstok,_fmbstok)( unsigned char _FFAR *
         for( count=0; count<char_len; count++ )
             str[count] = '\0';                  /* replace delim with NULL */
         str += char_len;                        /* start of next token */
-        _NEARFAR(_RWD_nextmbtok,_RWD_nextmbftok) = str; /* save next start */
+        *ptr = str; /* save next start */
         return( string_start );                 /* return next token start */
     } else {
-        _NEARFAR(_RWD_nextmbtok,_RWD_nextmbftok) = NULL;/* no more tokens */
+        *ptr = NULL;/* no more tokens */
         return( string_start );                 /* return same token */
     }
 }
+
+_WCRTLINK unsigned char _FFAR *_NEARFAR(_mbstok,_fmbstok)( unsigned char _FFAR *str, const unsigned char _FFAR *delim )
+{
+    #ifdef __FARFUNC__
+        _INITNEXTMBFTOK
+        return _fmbstok_r( str, delim, &_RWD_nextmbftok);
+    #else
+        _INITNEXTMBTOK
+        return _mbstok_r( str, delim, &_RWD_nextmbtok);
+    #endif
+}
+

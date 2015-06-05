@@ -198,6 +198,7 @@ _WCRTLINK extern char  *_strupr( char *__string );
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
 _WCRTLINK  extern char   *strspnp( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char   *strtok_r( char *__s1, const char *__s2, char **__p1 );
 
 :segment DOS
 #if !defined(_fmemccpy) || !defined(_INC_WINDOWSX)
@@ -343,6 +344,11 @@ _WCRTLINK extern char _WCFAR *_fstrstr( const char _WCFAR *__s1, const char _WCF
 #if !defined(_fstrtok) || !defined(_INC_WINDOWSX)
 :endsegment
 _WCRTLINK extern char _WCFAR *_fstrtok( char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
+#endif
+#if !defined(_fstrtok_r) || !defined(_INC_WINDOWSX)
+:endsegment
+_WCRTLINK char _WCFAR *_fstrtok_r( char _WCFAR *str, const char _WCFAR *charset, char _WCFAR **ptr );
 :segment DOS
 #endif
 #if !defined(_fstrupr) || !defined(_INC_WINDOWSX)

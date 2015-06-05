@@ -1462,8 +1462,12 @@
 .fnf _fstrtok                   strtok.gml      DOS QNX W WIN32
 .fnw wcstok                     strtok.gml      DOS QNX W WIN32
 .fnm _mbstok                    strtok.gml      DOS       WIN32
+.fnm _mbstok_r                  strtok.gml      DOS       WIN32
 .fnn _fmbstok                   strtok.gml      DOS       WIN32
+.fnn _fmbstok_r                 strtok.gml      DOS       WIN32
+.fnc strtok_r                   strtok.gml      DOS       WIN32
 .fnc strtok_s                   strtok_s.gml    DOS       WIN32
+.fnf _fstrtok_r                 strtok.gml      DOS       WIN32
 .fnw wcstok_s                   strtok_s.gml    DOS       WIN32
 .fnc strtol                     strtol.gml      DOS QNX W WIN32
 .fnw wcstol                     strtol.gml      DOS QNX W WIN32

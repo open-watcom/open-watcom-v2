@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
+*    Portions Copyright (c) 2015 Open Watcom contributors.
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,7 +26,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strtok() and wcstok().
+* Description:  Implementation of strtok(), strtok_r(), and wcstok().
 *
 ****************************************************************************/
 
@@ -48,27 +50,14 @@ _WCRTLINK wchar_t *_ustrtok( wchar_t *str, const wchar_t *charset )
 {
     return( wcstok( str, charset, NULL ) );
 }
-#endif
 
-
-#ifdef __WIDECHAR__
- _WCRTLINK wchar_t *wcstok( wchar_t *str, const wchar_t *charset, wchar_t **ptr )
-#else
- _WCRTLINK char *strtok( char *str, const char *charset )
-#endif
+_WCRTLINK wchar_t *wcstok( wchar_t *str, const wchar_t *charset, wchar_t **ptr )    
 {
-#if defined(__WIDECHAR__)
     CHAR_TYPE           *p1;
     const CHAR_TYPE     *p2;
     CHAR_TYPE           tc1;
     CHAR_TYPE           tc2;
-#else
-    char            tc;
-    unsigned char   vector[ CHARVECTOR_SIZE ];
-    char            *p1;
-#endif
 
-#if defined(__WIDECHAR__)
     /* if necessary, continue from where we left off */
     if( str == NULL ) {
         if( ptr == NULL ) {
@@ -113,11 +102,21 @@ _WCRTLINK wchar_t *_ustrtok( wchar_t *str, const wchar_t *charset )
     } else {
         *ptr = NULL;
     }
+    
+    return( str );
+}
+
 #else
+
+_WCRTLINK char *strtok_r( char *str, const char *charset, char **ptr )
+{
+    char            tc;
+    unsigned char   vector[ CHARVECTOR_SIZE ];
+    char            *p1;
+
     /* if necessary, continue from where we left off */
-    _INITNEXTTOK
     if( str == NULL ) {
-        str = _RWD_nexttok; /* use previous value */
+        str = *ptr;            /* use previous value */
         if( str == NULL )
             return( NULL );
     }
@@ -136,12 +135,21 @@ _WCRTLINK wchar_t *_ustrtok( wchar_t *str, const wchar_t *charset )
         if( GETCHARBIT( vector, tc ) != 0 ) {
             *p1 = '\0';             /* terminate the token  */
             p1++;                   /* start of next token  */
-            _RWD_nexttok = p1;
+            *ptr = p1;
             return( str );
         }
     }
-    _RWD_nexttok = NULL;
-#endif
+    *ptr = NULL;
 
     return( str );
 }
+
+_WCRTLINK char *strtok( char *str, const char *charset )
+{
+    _INITNEXTTOK
+    return strtok_r( str, charset, &(_RWD_nexttok));
+}
+
+#endif
+
+
