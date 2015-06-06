@@ -1,4 +1,4 @@
-    @set WMAKEFLAG1=$(bootstrap)
-    @set WMAKEFLAG2=$(release)
-    @set WMAKEFLAG3=$(host_os)
-    @set WMAKEFLAG4=$(host_cpu)
+    @set OWWMAKEVAR1=$(bootstrap)
+    @set OWWMAKEVAR2=$(release)
+    @set OWWMAKEVAR3=$(host_os)
+    @set OWWMAKEVAR4=$(host_cpu)

@@ -1,20 +1,12 @@
-#!ifndef bootstrap
-!ifdef %WMAKEFLAG1
-bootstrap = $(%WMAKEFLAG1)
+!ifdef %OWWMAKEVAR1
+bootstrap = $(%OWWMAKEVAR1)
 !endif
-#!endif
-#!ifndef release
-!ifdef %WMAKEFLAG2
-release = $(%WMAKEFLAG2)
+!ifdef %OWWMAKEVAR2
+release = $(%OWWMAKEVAR2)
 !endif
-#!endif
-#!ifndef host_os
-!ifdef %WMAKEFLAG3
-host_os = $(%WMAKEFLAG3)
+!ifdef %OWWMAKEVAR3
+host_os = $(%OWWMAKEVAR3)
 !endif
-#!endif
-#!ifndef host_cpu
-!ifdef %WMAKEFLAG4
-host_cpu = $(%WMAKEFLAG4)
+!ifdef %OWWMAKEVAR4
+host_cpu = $(%OWWMAKEVAR4)
 !endif
-#!endif
