@@ -679,8 +679,8 @@ linker          = $(linker_$(host_cpu))
 librarian       = $(librarian_$(host_cpu))
 as              = $(as_$(host_cpu))
 
-rc              = bwrc
-rcaui           = bwrc
+rc              = *bwrc
+rcaui           = *bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
 rc_aui          = $(rcaui) -x -xb -r -bt=windows $(rc_aui_flags)
@@ -701,7 +701,7 @@ lflags  = $(lflags_gen)
 !endif
 
 # simple C preprocessing
-cpp             = wcpp
+cpp             = *wcpp
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -zk0
