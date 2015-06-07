@@ -6,14 +6,14 @@
 #       modify it as necessary for your own use!!
 
 # Change this to point your Open Watcom source tree
-export OWROOT=/home/ow/ow
+#export OWROOT=/home/ow/ow
 
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 
 # Set this entry to identify your toolchain used by build process
 # supported values are WATCOM GCC CLANG
-export OWTOOLS=WATCOM
+#export OWTOOLS=WATCOM
 
 # Documentation related variables
 
@@ -45,6 +45,11 @@ export OWDOCBUILD=0
 # Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator executable
 
 # export OWDOSBOX=dosbox
+
+# AUTOFILL: If OWROOT not set, assume current working directory
+if [ -z "$OWROOT" ]; then export OWROOT=`pwd`; fi
+# AUTOFILL: Assuming Linux, use GCC
+if [ -z "$OWTOOLS" ]; then export OWTOOLS=GCC; fi
 
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh
