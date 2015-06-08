@@ -529,6 +529,7 @@ void PP_Identifier( PREPROC_VALUE *val )
     char        *ptr;
     MACRO_ENTRY *me;
     char        c;
+    char        white_space;
 
     val->type = 0;
     value = 0;
@@ -537,14 +538,14 @@ void PP_Identifier( PREPROC_VALUE *val )
     *ptr = '\0';
     if( strcmp( PPTokenPtr, "defined" ) == 0 ) {
         *ptr = c;
-        PPTokenPtr = PP_SkipWhiteSpace( ptr, &c );
+        PPTokenPtr = PP_SkipWhiteSpace( ptr, &white_space );
         if( PPTokenPtr[0] == '(' ) {
             ++PPTokenPtr;
             ptr = PPCharPtr;
             value = PP_ScanMacroLookup( PPTokenPtr ) != NULL;
             PPTokenPtr = PPCharPtr;                     /* 23-sep-94 */
             PPCharPtr = ptr;
-            PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &c );
+            PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
             if( PPTokenPtr[0] == ')' ) {
                 ++PPTokenPtr;
             } else {
