@@ -22,6 +22,12 @@ skip_build: .SYMBOLIC
 !else ifndef bld64host_$(host_os)
 skip_build: .SYMBOLIC
 !endif
+# use native tools for arm cpu
+# skip build for unsupported platforms
+!else ifeq host_cpu arm
+!ifneq bld_cpu arm
+skip_build: .SYMBOLIC
+!endif
 !endif
 
 # enable to switch to causeway extender
@@ -66,7 +72,7 @@ cxx_386     += $(bld_incs)
 ##############################################################################
 !ifdef __LINUX__
 
-!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
+!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm"
 
 # common settings
 ############################
@@ -76,6 +82,7 @@ common_cppflags_386   = -D_M_IX86 -D__386__ -D__LINUX_386__
 common_cppflags_x64   = -D_M_X64 -D__LINUX_X64__
 common_cppflags_ppc   = -D__PPC__
 common_cppflags_mips  = -D__MIPS__ -Umips
+common_cppflags_arm   = -D_M_ARM -D__LINUX_ARM__
 
 # common release/debug flags
 common_flags_rel = -O -g
@@ -176,6 +183,7 @@ cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_mips  = $(common_cppflags_mips)
 cppflags_x64   = $(common_cppflags_x64)
+cppflags_arm   = $(common_cppflags_arm)
 
 cxxflags = -std=c++11
 
