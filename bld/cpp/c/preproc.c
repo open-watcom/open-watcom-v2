@@ -517,7 +517,7 @@ size_t PP_ReadLine( char *line_generated )
 
 #define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
 
-int PP_Hash( char *name )
+int PP_Hash( const char *name )
 {
     unsigned    hash;
 
@@ -619,7 +619,7 @@ void PP_RCInclude( char *ptr )
     }
 }
 
-MACRO_ENTRY *PP_AddMacro( char *macro_name )
+MACRO_ENTRY *PP_AddMacro( const char *macro_name )
 {
     MACRO_ENTRY     *me;
     unsigned int    hash;
@@ -629,8 +629,8 @@ MACRO_ENTRY *PP_AddMacro( char *macro_name )
     me = (MACRO_ENTRY *)PP_Malloc( size );
     if( me != NULL ) {
         hash = PP_Hash( macro_name );
-        me->next = PPHashTable[ hash ];
-        PPHashTable[ hash ] = me;
+        me->next = PPHashTable[hash];
+        PPHashTable[hash] = me;
         strcpy( me->name, macro_name );
         me->parmcount = PP_SPECIAL_MACRO;
         me->replacement_list = NULL;
@@ -772,7 +772,7 @@ void PP_Define( char *ptr )
     }
 }
 
-MACRO_ENTRY *PP_MacroLookup( char *macro_name )
+MACRO_ENTRY *PP_MacroLookup( const char *macro_name )
 {
     MACRO_ENTRY *me;
     int         hash;
