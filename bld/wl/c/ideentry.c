@@ -56,7 +56,7 @@ static IDECBHdl         IdeHdl;
 static IDEInitInfo      InitInfo;
 static IDECallBacks     *IdeCB;
 
-#if defined( __OS2__ )
+#if 0 && defined( __OS2__ )
 //extern int InitMsg( void );
 //extern int FiniMsg( void );
 
@@ -226,7 +226,7 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
     IdeHdl = hdl;
     IdeCB = cb;
     InitSubSystems();
-#if defined( __OS2__ )
+#if 0 && defined( __OS2__ )
     RunOnce = FALSE;
 #endif
     return FALSE;
@@ -243,14 +243,14 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatale
 /**********************************************************************************/
 {
     hdl = hdl;
-#if defined( __OS2__ )
+#if 0 && defined( __OS2__ )
     if( RunOnce ) {
         InitMsg();
     }
     RunOnce = TRUE;
 #endif
     LinkMainLine( (char *) opts );
-#if defined( __OS2__ )
+#if 0 && defined( __OS2__ )
     FiniMsg();
 #endif
     *fatalerr = (LinkState & LINK_ERROR) != 0;
