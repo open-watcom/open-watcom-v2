@@ -67,8 +67,8 @@ extern unsigned __mkdir_sfn( const char *path );
         AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
-static unsigned _mkdir_lfn( const char *path )
-/********************************************/
+static tiny_ret_t _mkdir_lfn( const char *path )
+/**********************************************/
 {
 #ifdef _M_I86
     return( __mkdir_lfn( path ) );
@@ -85,7 +85,7 @@ static unsigned _mkdir_lfn( const char *path )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     return( 0 );
 #endif
@@ -107,13 +107,13 @@ _WCRTLINK int __F_NAME(mkdir,_wmkdir)( const CHAR_TYPE *path )
     return( mkdir( mbcsPath ) );
 #else
   #ifdef __WATCOM_LFN__
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = _mkdir_lfn( path )) == 0 ) {
+    if( _RWD_uselfn && TINY_OK( rc = _mkdir_lfn( path ) ) ) {
         return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( -1 );
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
     if( __mkdir_sfn( path ) ) {

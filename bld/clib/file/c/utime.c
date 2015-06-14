@@ -109,16 +109,16 @@ static tiny_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     return( 0 );
   #endif
 }
 
-static unsigned _utime_lfn( const char *path, _dos_tms *dostms )
-/**************************************************************/
+static tiny_ret_t _utime_lfn( const char *path, _dos_tms *dostms )
+/****************************************************************/
 {
-    unsigned    rc;
+    tiny_ret_t  rc;
 
   #ifndef _M_I86
     strcpy( RM_TB_PARM1_LINEAR, path );
@@ -218,7 +218,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
     return( utime( mbPath, times ) );
 #else
   #ifdef __WATCOM_LFN__
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
   #endif
     _dos_tms    dostms;
 
@@ -227,11 +227,11 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
         return( -1 );
     }
   #ifdef __WATCOM_LFN__
-    if( _RWD_uselfn && (rc = _utime_lfn( fname, &dostms )) == 0 ) {
+    if( _RWD_uselfn && TINY_OK( rc = _utime_lfn( fname, &dostms ) ) ) {
         return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( -1 );
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
     if( _utime_sfn( fname, &dostms ) ) {

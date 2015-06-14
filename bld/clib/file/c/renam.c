@@ -66,8 +66,8 @@ extern unsigned __rename_sfn( const char *old, const char *new );
         AUX_INFO
 
 #if !defined( __WIDECHAR__ ) && defined( __WATCOM_LFN__ )
-static unsigned _rename_lfn( const char *old, const char *new )
-/*************************************************************/
+static tiny_ret_t _rename_lfn( const char *old, const char *new )
+/***************************************************************/
 {
 #ifdef _M_I86
     return( __rename_lfn( old, new ) );
@@ -87,7 +87,7 @@ static unsigned _rename_lfn( const char *old, const char *new )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     return( 0 );
 #endif
@@ -110,13 +110,13 @@ _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *
     return( rename( mbOld, mbNew ) );
 #else
   #if defined( __WATCOM_LFN__ )
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = _rename_lfn( old, new )) == 0 ) {
+    if( _RWD_uselfn && TINY_OK( rc = _rename_lfn( old, new ) ) ) {
         return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( -1 );
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
     if( __rename_sfn( old, new ) ) {

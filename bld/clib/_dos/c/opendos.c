@@ -82,11 +82,11 @@ extern unsigned __dos_open_sfn_err( const char *name, unsigned mode, int *handle
         AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static unsigned _dos_open_ex_lfn( const char *name, unsigned mode, int *handle )
-/******************************************************************************/
+static tiny_ret_t _dos_open_ex_lfn( const char *name, unsigned mode )
+/*******************************************************************/
 {
 #ifdef _M_I86
-    return( __dos_create_ex_lfn( name, mode, 0, EX_LFN_OPEN, handle ) );
+    return( __dos_create_ex_lfn( name, mode, 0, EX_LFN_OPEN ) );
 #else
     call_struct     dpmi_rm;
 
@@ -103,27 +103,27 @@ static unsigned _dos_open_ex_lfn( const char *name, unsigned mode, int *handle )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
-    *handle = dpmi_rm.eax;
-    return( 0 );
+    return( dpmi_rm.ax );
 #endif
 }
 
-static unsigned __dos_open_lfn( const char *path, unsigned mode, int *handle )
-/****************************************************************************/
+static tiny_ret_t __dos_open_lfn( const char *path, unsigned mode )
+/*****************************************************************/
 {
     char        short_name[128];
+    int         handle;
 
     // try to open with SFN
     if( _lfntosfn( path, short_name ) != NULL ) {
         if( short_name[0] != '\0' ) {
-            if( __dos_open_sfn_chk( short_name, mode, handle ) == 0 ) {
-                return( 0 );
+            if( __dos_open_sfn_chk( short_name, mode, &handle ) == 0 ) {
+                return( (unsigned)handle );
             }
         }
     }
-    return( _dos_open_ex_lfn( path, mode, handle ) );
+    return( _dos_open_ex_lfn( path, mode ) );
 }
 #endif
 
@@ -131,13 +131,14 @@ _WCRTLINK unsigned _dos_open( const char *path, unsigned mode, int *handle )
 /**************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = __dos_open_lfn( path, mode, handle )) == 0 ) {
-        return( rc );
+    if( _RWD_uselfn && TINY_OK( rc = __dos_open_lfn( path, mode ) ) ) {
+        *handle = TINY_INFO( rc );
+        return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( rc );
+        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
     return( __dos_open_sfn_err( path, mode, handle ) );

@@ -61,7 +61,7 @@ extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
         AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static unsigned _dos_setfileattr_lfn( const char *path, unsigned attrib )
+static tiny_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )
 /***********************************************************************/
 {
   #ifdef _M_I86
@@ -81,7 +81,7 @@ static unsigned _dos_setfileattr_lfn( const char *path, unsigned attrib )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     return( 0 );
   #endif
@@ -92,13 +92,13 @@ _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned attrib )
 /**********************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = _dos_setfileattr_lfn( path, attrib )) == 0 ) {
-        return( rc );
+    if( _RWD_uselfn && TINY_OK( rc = _dos_setfileattr_lfn( path, attrib ) ) ) {
+        return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( rc );
+        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
     return( __dos_setfileattr_sfn( path, attrib ) );

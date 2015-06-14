@@ -56,12 +56,12 @@ extern long __getfilestamp_sfn( int handle );
 "L1:     mov  ax,cx"    \
         parm caller     [bx] \
         value           [dx ax] \
-        modify exact    [ax cx dx];
+        modify exact    [cx];
 #else
 #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
         _INT_21         \
-        "jnc short L1"   \
+        "jnc short L1"  \
         "call __doserror_" \
         "mov  cx,-1"    \
         "mov  dx,cx"    \
@@ -69,7 +69,7 @@ extern long __getfilestamp_sfn( int handle );
         "mov  dx,cx"    \
         parm caller     [ebx] \
         value           [edx] \
-        modify exact    [eax ecx edx];
+        modify exact    [eax ecx];
 #endif
 
 
@@ -112,16 +112,10 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 #else
 
 #ifdef __WATCOM_LFN__
-static time_t _cvt_stamp2ttime_lfn( long long *timestamp )
+static long _cvt_stamp2dos_lfn( long long *timestamp )
 {
 #ifdef _M_I86
-    long            rc;
-
-    rc = __cvt_stamp2dos_lfn( timestamp );
-    if( rc == -1 ) {
-        return( 0 );
-    }
-    return( _d2ttime( (unsigned long)rc >> 16, rc ) );
+    return( __cvt_stamp2dos_lfn( timestamp ) );
 #else
     call_struct     dpmi_rm;
 
@@ -133,17 +127,27 @@ static time_t _cvt_stamp2ttime_lfn( long long *timestamp )
     dpmi_rm.eax = 0x71A7;
     dpmi_rm.flags = 1;
     if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( 0 );
+        return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        __set_errno_dos( (unsigned short)dpmi_rm.eax );
-        return( 0 );
+        return( __set_errno_dos( dpmi_rm.ax ) );
     }
-    return( _d2ttime( dpmi_rm.edx, dpmi_rm.ecx ) );
+    return( dpmi_rm.dx << 16 | dpmi_rm.cx );
 #endif
 }
 
-static unsigned _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
+static time_t _cvt_stamp2ttime_lfn( long long *timestamp )
+{
+    long            rc;
+
+    rc = _cvt_stamp2dos_lfn( timestamp );
+    if( rc == -1 ) {
+        return( _d2ttime( 0, 0 ) );
+    }
+    return( _d2ttime( rc >> 16, rc ) );
+}
+
+static tiny_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
 {
 #ifdef _M_I86
     return( __getfileinfo_lfn( handle, lfninfo ) );
@@ -160,7 +164,7 @@ static unsigned _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     memcpy( lfninfo, RM_TB_PARM1_LINEAR, sizeof( *lfninfo ) );
     return( 0 );
@@ -176,11 +180,11 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
     __handle_check( handle, -1 );
 
     rc = TinyGetDeviceInfo( handle );
-    if( TINY_ERROR(rc) ) {
-        return( __set_errno_dos( TINY_INFO(rc) ) );
+    if( TINY_ERROR( rc ) ) {
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
     /* isolate drive number */
-    buf->st_dev = TINY_INFO(rc) & TIO_CTL_DISK_DRIVE_MASK;
+    buf->st_dev = TINY_INFO( rc ) & TIO_CTL_DISK_DRIVE_MASK;
     buf->st_rdev = buf->st_dev;
 
     buf->st_nlink = 1;
@@ -194,16 +198,16 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
     if( iomode_flags & _WRITE ) {
         buf->st_mode |= S_IWUSR | S_IWGRP | S_IWOTH;
     }
-    if( TINY_INFO(rc) & TIO_CTL_DEVICE ) {
+    if( TINY_INFO( rc ) & TIO_CTL_DEVICE ) {
         buf->st_size = 0;
         buf->st_atime = buf->st_ctime = buf->st_mtime = 0;
         buf->st_mode |= S_IFCHR;
     } else {                /* file */
 #ifdef __WATCOM_LFN__
         lfninfo_t       lfni;
-        unsigned        rc1 = 0;
 
-        if( _RWD_uselfn && (rc1 = _getfileinfo_lfn( handle, &lfni )) == 0 ) {
+        rc = 0;
+        if( _RWD_uselfn && TINY_OK( rc = _getfileinfo_lfn( handle, &lfni ) ) ) {
             buf->st_mtime = _cvt_stamp2ttime_lfn( &lfni.writetimestamp );
             if( lfni.creattimestamp ) {
                 buf->st_ctime = _cvt_stamp2ttime_lfn( &lfni.creattimestamp );
@@ -217,17 +221,17 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
             }
             buf->st_size = lfni.lfilesize;
             buf->st_attr = lfni.attributes;
-        } else if( IS_LFN_ERROR( rc1 ) ) {
-            return( -1 );
+        } else if( IS_LFN_ERROR( rc ) ) {
+            return( __set_errno_dos( TINY_INFO( rc ) ) );
         } else {
 #endif
-            long    rc;
+            long    rc1;
 
-            rc = __getfilestamp_sfn( handle );
-            if( rc == -1 ) {
-                return( rc );
+            rc1 = __getfilestamp_sfn( handle );
+            if( rc1 == -1 ) {
+                return( -1 );
             }
-            buf->st_mtime = _d2ttime( (unsigned long)rc >> 16, rc );
+            buf->st_mtime = _d2ttime( rc1 >> 16, rc1 );
             buf->st_atime = buf->st_mtime;
             buf->st_ctime = buf->st_mtime;
             buf->st_size = filelength( handle );
@@ -246,4 +250,3 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
 }
 
 #endif
-
