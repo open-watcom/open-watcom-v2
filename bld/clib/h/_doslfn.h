@@ -105,6 +105,9 @@ typedef struct {
 extern unsigned __doserror_( unsigned );
 #pragma aux __doserror_ "*" parm caller;
 
+extern unsigned __doserror1_( unsigned );
+#pragma aux __doserror1_ "*" parm caller;
+
 #ifdef _M_I86
 
 extern tiny_ret_t __dos_create_ex_lfn( const char *name, unsigned mode, unsigned attrib, unsigned action );

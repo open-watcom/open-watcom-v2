@@ -60,7 +60,7 @@ extern unsigned __unlink_sfn( const char *filename );
         _MOV_AH DOS_UNLINK \
         _INT_21         \
         _RST_DS         \
-        "call __doserror_" \
+        "call __doserror1_" \
         AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
@@ -111,9 +111,6 @@ _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
         return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
-    if( __unlink_sfn( filename ) ) {
-        return( -1 );
-    }
-    return( 0 );
+    return( __unlink_sfn( filename ) );
 #endif
 }

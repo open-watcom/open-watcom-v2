@@ -60,7 +60,6 @@ extern unsigned __dos_commit( unsigned handle );
         "clc"           \
         _INT_21         \
         "call __doserror_" \
-        "nop"           \
         AUX_INFO
 
 _WCRTLINK unsigned _dos_close( int handle )

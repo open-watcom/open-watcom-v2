@@ -40,10 +40,9 @@ include struct.inc
 
         xdefp   __doserror_
 ;
-;
         defp    __doserror_
         _if     c               ; if error
-          and   EAX,0000FFFFh   ; - get rid of any garbage bits 28-aug-91
+          and   EAX,0000FFFFh   ; - get rid of any garbage bits
           push  EAX             ; - save return code
           call  __set_errno_dos ; - set errno
           pop   EAX             ; - restore return code
@@ -52,6 +51,18 @@ include struct.inc
         _endif                  ; endif
         ret                     ; return to caller
         endproc __doserror_
+
+        xdefp   __doserror1_
+;
+        defp    __doserror1_
+        _if     c               ; if error
+          and   EAX,0000FFFFh   ; - get rid of any garbage bits
+          call  __set_errno_dos ; - set errno, return -1
+        _else                   ; else
+          sub   EAX,EAX         ; - return 0
+        _endif                  ; endif
+        ret                     ; return to caller
+        endproc __doserror1_
 
         endmod
         end

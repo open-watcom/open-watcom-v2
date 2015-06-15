@@ -234,10 +234,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
         return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
-    if( _utime_sfn( fname, &dostms ) ) {
-        return( -1 );
-    }
-    return( 0 );
+    return( _utime_sfn( fname, &dostms ) );
 #endif
 }
 

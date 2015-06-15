@@ -63,7 +63,7 @@ extern unsigned __mkdir_sfn( const char *path );
         _MOV_AH DOS_MKDIR \
         _INT_21         \
         _RST_DS         \
-        "call __doserror_" \
+        "call __doserror1_" \
         AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
@@ -116,9 +116,6 @@ _WCRTLINK int __F_NAME(mkdir,_wmkdir)( const CHAR_TYPE *path )
         return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
-    if( __mkdir_sfn( path ) ) {
-        return( -1 );
-    }
-    return( 0 );
+    return( __mkdir_sfn( path ) );
 #endif
 }

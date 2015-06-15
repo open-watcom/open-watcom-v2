@@ -62,7 +62,7 @@ extern unsigned __rename_sfn( const char *old, const char *new );
         _INT_21         \
         _RST_DS         \
         _RST_ES         \
-        "call __doserror_" \
+        "call __doserror1_" \
         AUX_INFO
 
 #if !defined( __WIDECHAR__ ) && defined( __WATCOM_LFN__ )
@@ -119,10 +119,7 @@ _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *
         return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
-    if( __rename_sfn( old, new ) ) {
-        return( -1 );
-    }
-    return( 0 );
+    return( __rename_sfn( old, new ) );
 #endif
 }
 

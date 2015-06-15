@@ -40,7 +40,6 @@ include struct.inc
 
         xdefp   __doserror_
 ;
-;
         defp    __doserror_
         _if     c               ; if error
           push  AX              ; - save return code
@@ -51,6 +50,17 @@ include struct.inc
         _endif                  ; endif
         ret                     ; return to caller
         endproc __doserror_
+
+        xdefp   __doserror1_
+;
+        defp    __doserror1_
+        _if     c               ; if error
+          call  __set_errno_dos ; - set errno, return -1
+        _else                   ; else
+          sub   AX,AX           ; - return 0
+        _endif                  ; endif
+        ret                     ; return to caller
+        endproc __doserror1_
 
         endmod
         end
