@@ -151,12 +151,10 @@ static bool doScanParams( int argc, char *argv[] )
     int     switchchar;
     bool    contok;         /* continue with main execution */
     int     currarg;
-    int     fnarg;
 
     contok = true;
     switchchar = _dos_switch_char();
-    fnarg = 1;
-    for( currarg = 1; currarg < argc && contok; currarg++ ) {
+    for( currarg = 0; currarg < argc && contok; currarg++ ) {
         arg = argv[currarg];
         if( *arg == switchchar || *arg == '-' ) {
             contok = ScanOptionsArg( arg + 1 ) && contok;
@@ -189,22 +187,22 @@ static int ParseEnvVar( const char *env, char **argv, char *buf )
     int         argc;
     char        *bufend;
     bool        got_quote;
+    bool        output_data;
 
     switchchar = _dos_switch_char();
+    output_data = ( buf != NULL ) && ( argv != NULL );
     bufend = buf;
-    argc = 1;
-    if( argv != NULL )
-        argv[0] = ""; //fill in the program name
+    argc = 0;
     for( ;; ) {
         got_quote = false;
         while( isspace( *env ) && *env != '\0' )
             env++;
         start = env;
-        if( buf != NULL ) {
+        if( output_data ) {
             argv[argc] = bufend;
         }
         if( *env == switchchar || *env == '-' ) {
-            if( buf != NULL ) {
+            if( output_data ) {
                 *bufend = *env;
                 bufend++;
             }
@@ -214,7 +212,7 @@ static int ParseEnvVar( const char *env, char **argv, char *buf )
             if( *env == '\"' ) {
                 got_quote = !got_quote;
             }
-            if( buf != NULL ) {
+            if( output_data ) {
                 *bufend = *env;
                 bufend++;
             }
@@ -222,7 +220,7 @@ static int ParseEnvVar( const char *env, char **argv, char *buf )
         }
         if( start != env ) {
             argc++;
-            if( buf != NULL ) {
+            if( output_data ) {
                 *bufend = '\0';
                 bufend++;
             }
@@ -280,7 +278,7 @@ static bool scanEnvVar( const char *varname )
     }
     argc = ParseEnvVar( env, NULL, NULL );  // count parameters.
     argbufsize = strlen( env ) + 1 + argc;  // inter-parameter spaces map to 0
-    argvsize = ( argc + 1 ) * sizeof( char * ); // sizeof argv[argc+1]
+    argvsize = argc * sizeof( char * );     // sizeof argv[argc+1]
     varlen = strlen( varname ) + 1;         // Copy taken to detect recursion.
     info = malloc( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
@@ -289,8 +287,6 @@ static bool scanEnvVar( const char *varname )
     ParseEnvVar( env, info->argv, info->buf + argvsize );
     info->varname = info->buf + argvsize + argbufsize;
     strcpy( info->varname, varname );
-    info->argv[argc] = NULL;    //there must be a NULL element on the end
-                                // of the list
     result = doScanParams( argc, info->argv );
 
     stack = info->next;                     // pop stack
@@ -304,6 +300,7 @@ int main( int argc, char *argv[] )
     int         ch;
     int         i;
     int         j;
+    int         rc;
 
     if( argc < 2 ) {
         Quit( usageMsg, "No filename specified\n" );
@@ -315,38 +312,36 @@ int main( int argc, char *argv[] )
 
     PP_IncludePathInit();
 
-    if( !doScanParams( argc, argv ) ) {
-        free( (void *)filenames );
-        free( (void *)defines );
-        return( EXIT_FAILURE );
-    }
-    if( nofilenames == 0 ) {
-        free( (void *)filenames );
-        free( (void *)defines );
-        Quit( usageMsg, "No filename specified\n" );
-    }
-
-    for( i = 0; i < nofilenames; ++i ) {
-        if( PP_Init( filenames[i], flags, NULL ) != 0 ) {
-            fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
-            free( (void *)filenames );
-            free( (void *)defines );
-            return( EXIT_FAILURE );
-        }
-        for( j = 0; j < numdefs; j++ ) {
-            PP_Define( (void *)defines[j] );
-        }
-        for( ;; ) {
-            ch = PP_Char();
-            if( ch == EOF )
+    rc = EXIT_FAILURE;
+    if( doScanParams( argc - 1, argv + 1 ) && nofilenames != 0 ) {
+        rc = EXIT_SUCCESS;
+        for( i = 0; i < nofilenames; ++i ) {
+            if( PP_Init( filenames[i], flags, NULL ) != 0 ) {
+                fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
+                rc = EXIT_FAILURE;
                 break;
-            putchar( ch );
+            }
+            for( j = 0; j < numdefs; j++ ) {
+                PP_Define( (void *)defines[j] );
+            }
+            for( ;; ) {
+                ch = PP_Char();
+                if( ch == EOF )
+                    break;
+                putchar( ch );
+            }
+            PP_Fini();
         }
-        PP_Fini();
     }
-    PP_IncludePathFini();
 
     free( (void *)filenames );
     free( (void *)defines );
-    return( EXIT_SUCCESS );
+
+    PP_IncludePathFini();
+
+    if( rc == EXIT_FAILURE && nofilenames == 0 ) {
+        Quit( usageMsg, "No filename specified\n" );
+    }
+
+    return( rc );
 }
