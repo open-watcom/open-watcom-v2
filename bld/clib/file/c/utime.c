@@ -123,8 +123,7 @@ static tiny_ret_t _utime_lfn( const char *path, _dos_tms *dostms )
   #ifndef _M_I86
     strcpy( RM_TB_PARM1_LINEAR, path );
   #endif
-    rc = _dos_utime_lfn( path, dostms->wr_time, dostms->wr_date, 3 );
-    if( rc == 0 ) {
+    if( TINY_OK( rc = _dos_utime_lfn( path, dostms->wr_time, dostms->wr_date, 3 ) ) ) {
         rc = _dos_utime_lfn( path, dostms->ac_time, dostms->ac_date, 5 );
     }
     return( rc );
@@ -237,4 +236,3 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
     return( _utime_sfn( fname, &dostms ) );
 #endif
 }
-

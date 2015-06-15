@@ -62,12 +62,10 @@ _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *path, int pmode )
     attr = fs.attrFile;
 #endif
     if( rc ) {
-        __set_errno_dos( rc );
-        return( -1 );
+        return( __set_errno_dos( rc ) );
     }
     if( (pmode & ACCESS_WR) && (attr & _A_RDONLY) ) {
-        __set_errno_dos( ERROR_ACCESS_DENIED ); /* invalid access mode */
-        return( -1 );
+        return( __set_errno_dos( ERROR_ACCESS_DENIED ) );   /* invalid access mode */
     }
     return( 0 );
 }

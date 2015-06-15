@@ -62,7 +62,7 @@ extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
 
 #ifdef __WATCOM_LFN__
 static tiny_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )
-/***********************************************************************/
+/*************************************************************************/
 {
   #ifdef _M_I86
     return( __dos_setfileattr_lfn( path, attrib ) );

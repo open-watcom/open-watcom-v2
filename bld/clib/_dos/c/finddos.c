@@ -248,8 +248,8 @@ static tiny_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
 #endif
 }
 
-static unsigned _dos_find_close_lfn( unsigned handle )
-/****************************************************/
+static tiny_ret_t _dos_find_close_lfn( unsigned handle )
+/******************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_close_lfn( handle ) );

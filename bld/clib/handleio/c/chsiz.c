@@ -81,9 +81,8 @@ _WCRTLINK int chsize( int handle, long size )
             tiny_ret_t rc;
             
             rc = TinyWrite( handle, buff, 0 );
-            if( TINY_ERROR(rc) ) {
-                __set_errno_dos( TINY_INFO(rc) );
-                ret_code = -1;
+            if( TINY_ERROR( rc ) ) {
+                ret_code = __set_errno_dos( TINY_INFO( rc ) );
             }
         } else {
             ret_code = -1;

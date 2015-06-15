@@ -83,20 +83,24 @@ _WCRTLINK int chsize( int handle, long size )
             }
             diff -= amount;
         } while( diff != 0 );
-        if( retCode != -1 ) retCode = 0;
+        if( retCode != -1 ) {
+            retCode = 0;
+        }
     } else {
         /*** Shrink file ***/
         retCode = DosNewSize( handle, size );
         if( retCode != 0 ) {
-            __set_errno_dos( retCode );
-            retCode = -1;
+            retCode = __set_errno_dos( retCode );
         }
-        if( curOffset > size ) curOffset = size;
+        if( curOffset > size ) {
+            curOffset = size;
+        }
     }
 
     /*** Clean up and go home ***/
     curOffset = __lseek( handle, curOffset, SEEK_SET );
-    if( curOffset == -1 ) retCode = -1;
+    if( curOffset == -1 )
+        retCode = -1;
     _ReleaseFileH( handle );
     return( retCode );
 }
