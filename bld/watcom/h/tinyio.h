@@ -298,10 +298,22 @@ typedef struct {
     uint_32     esi;
     uint_32     ebp;
     uint_32     reserved;
-    uint_32     ebx;
-    uint_32     edx;
-    uint_32     ecx;
-    uint_32     eax;
+    union {
+        uint_32 ebx;
+        uint_16 bx;
+    };
+    union {
+        uint_32 edx;
+        uint_16 dx;
+    };
+    union {
+        uint_32 ecx;
+        uint_16 cx;
+    };
+    union {
+        uint_32 eax;
+        uint_16 ax;
+    };
     uint_16     flags;
     uint_16     es;
     uint_16     ds;
