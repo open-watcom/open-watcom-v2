@@ -44,10 +44,17 @@
         #define _AccessNHeap()  __AccessNHeap()
         #define _ReleaseNHeap() __ReleaseNHeap()
     #else
+      #if !defined( __NETWARE__ )
         extern void (*_AccessFHeap)( void );
         extern void (*_ReleaseFHeap)( void );
         extern void (*_AccessNHeap)( void );
         extern void (*_ReleaseNHeap)( void );
+      #else
+        #define _AccessFHeap()
+        #define _ReleaseFHeap()
+        #define _AccessNHeap()
+        #define _ReleaseNHeap()
+      #endif
     #endif
 #else
     #define _AccessFHeap()
