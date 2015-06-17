@@ -193,4 +193,5 @@ extern void OWLENTRY OWLDebugFuncFile( owl_func_handle func, char const *name  )
 extern void OWLENTRY OWLDebugFuncEnd( owl_func_handle, owl_line_num, owl_offset );
 
 extern void OWLENTRY OWLLogEnable( owl_file_handle file, owl_client_file client_file );
+extern void OWLENTRY OWLLog( owl_file_handle file, char *fmt, ... );
 #endif
