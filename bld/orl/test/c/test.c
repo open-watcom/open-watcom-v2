@@ -79,7 +79,7 @@ static char *machType[] = {
     "SPARC V8+"
 };
 
-orl_return PrintSymbolInfo( orl_symbol_handle symbol )
+static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
 /****************************************************/
 {
     orl_symbol_type                     type;
@@ -194,7 +194,7 @@ static char *relocTypes[] = {
     "REL32SEG",         // relative reference 16:32 segment:offset
 };
 
-orl_return PrintRelocInfo( orl_reloc *reloc )
+static orl_return PrintRelocInfo( orl_reloc *reloc )
 /*******************************************/
 {
     printf( " tag=%8.8x ", reloc->offset );
@@ -212,7 +212,7 @@ orl_return PrintRelocInfo( orl_reloc *reloc )
     return( ORL_OKAY );
 }
 
-orl_return PrintSecInfo( orl_sec_handle o_shnd )
+static orl_return PrintSecInfo( orl_sec_handle o_shnd )
 /**********************************************/
 {
     char                        *buf;
@@ -404,7 +404,7 @@ orl_return PrintSecInfo( orl_sec_handle o_shnd )
     return( ORL_OKAY );
 }
 
-orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
+static orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
 /****************************************************/
 {
     if( dump.symbols ) {
@@ -436,7 +436,7 @@ static long objSeek( void *hdl, long pos, int where )
     return( lseek( (int)hdl, pos, where ) );
 }
 
-void freeBuffList( void )
+static void freeBuffList( void )
 /***********************/
 {
     buff_list   next;

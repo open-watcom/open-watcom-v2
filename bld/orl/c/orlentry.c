@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "orl.h"
 #include "orllevel.h"
 #include "orlentry.h"
 #include "orlflhnd.h"
