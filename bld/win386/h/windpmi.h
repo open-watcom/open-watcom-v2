@@ -24,25 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 386 Supervisor LibMain startup code (16-bit).
+* Description:  DPMI function wrappers for Win386.
 *
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <windows.h>
-#include "winext.h"
-#include "wininit.h"
-
-extern DWORD ReturnCode;
-extern int PASCAL StartDLL32( void );
-
-#pragma off(unreferenced);
-int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
-#pragma on(unreferenced);
-{
-
-    if( !Init32BitTask( hmod, NULL, cmdline, 0 ) ) return( 0 );
-    StartDLL32();
-    return( (int) ReturnCode );
-}
+#pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
+extern WORD     DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt);
+extern void     DPMIFreeAlias( WORD sel );
+extern WORD     DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
+extern void     DPMIFreeHugeAlias( DWORD desc, DWORD size );
+extern WORD     PASCAL FAR __DPMIGetAlias( DWORD offset, DWORD __far *res );
+extern void     PASCAL FAR __DPMIFreeAlias( DWORD desc );
+extern WORD     PASCAL FAR __DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
+extern void     PASCAL FAR __DPMIFreeHugeAlias( DWORD desc, DWORD size );
+extern void     setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type );
+extern WORD     DPMIGet32( DWORD _FAR *addr_data, DWORD len );
+extern WORD     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
+extern void     DPMIFree32( DWORD handle );
+extern DWORD    PASCAL FAR __DPMIAlloc( DWORD size );
+extern WORD     PASCAL FAR __DPMIFree( DWORD addr );
+extern void     FreeDPMIMemBlocks( void );
+extern void     GetDataSelectorInfo( void );
+extern int      InitSelectorCache( void );
+extern void     FiniSelectorCache( void );
+extern void     FiniSelList( void );

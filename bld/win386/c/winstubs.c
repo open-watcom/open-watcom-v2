@@ -34,7 +34,9 @@
 #include <string.h>
 #include <dos.h>
 #include <windows.h>
-#include "stubs.h"
+#include "winext.h"
+#include "windpmi.h"
+#include "winstubs.h"
 
 /*
  * GetAlias - get a 16 bit alias to 32 bit memory

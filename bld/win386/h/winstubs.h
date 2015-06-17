@@ -24,25 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 386 Supervisor LibMain startup code (16-bit).
+* Description:  Covers for several base Windows API functions.
 *
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <windows.h>
-#include "winext.h"
-#include "wininit.h"
+#ifdef DLL32
+typedef LPVOID __far *LPLPVOID;
+#else
+typedef LPVOID *LPLPVOID;
+#endif
 
-extern DWORD ReturnCode;
-extern int PASCAL StartDLL32( void );
-
-#pragma off(unreferenced);
-int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
-#pragma on(unreferenced);
-{
-
-    if( !Init32BitTask( hmod, NULL, cmdline, 0 ) ) return( 0 );
-    StartDLL32();
-    return( (int) ReturnCode );
-}
+extern void     GetAlias( LPLPVOID name );
+extern void     ReleaseAlias( LPVOID orig, LPVOID ptr );
+extern BOOL     FAR PASCAL __GetMessage( LPMSG msg, HWND a, WORD b, WORD c );
+extern BOOL     FAR PASCAL __PeekMessage( LPMSG msg, HWND a, WORD b, WORD c, WORD d );
+#if 0
+extern BOOL     FAR PASCAL __RegisterClass(LPWNDCLASS wc);
+#endif
+extern BOOL     FAR PASCAL __ModifyMenu(HMENU a, WORD b, WORD fl, WORD d, LPSTR z);
+extern BOOL     FAR PASCAL __InsertMenu(HMENU a, WORD b, WORD fl, WORD d, LPSTR z);
+extern BOOL     FAR PASCAL __AppendMenu(HMENU a, WORD fl, WORD c, LPSTR z);
+extern int      FAR PASCAL __Escape(HDC a, int b, int c, LPSTR d, LPSTR e);
+extern int      FAR PASCAL __GetInstanceData( HANDLE a, DWORD offset, int len );
+extern LPSTR    FAR PASCAL __AnsiPrev(LPSTR a, LPSTR b);
+extern LPSTR    FAR PASCAL __AnsiNext(LPSTR a);
+extern int      FAR PASCAL __StartDoc( HDC hdc, DOCINFO FAR *di);
+extern BOOL     FAR PASCAL __WinHelp( HWND hwnd, LPCSTR hfile, UINT cmd, DWORD data );

@@ -33,6 +33,7 @@
 #include "watcom.h"
 #include "tinyio.h"
 #include "dpmi.h"
+#include "windpmi.h"
 
 /*
  * different pragma for fortran than in stddef.h to allow structures

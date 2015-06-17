@@ -29,15 +29,17 @@
 ****************************************************************************/
 
 
+#define INCLUDE_MMSYSTEM_H
 #include <windows.h>
-#include <mmsystem.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
 #include <dos.h>
 #include "winext.h"
-#include "stubs.h"
+#include "windpmi.h"
+#include "winstubs.h"
+#include "_mmsyste.h"
 
 #pragma aux BackPatch_mmsystem parm [ax];
 extern LPVOID FAR BackPatch_mmsystem( char *str );
@@ -78,13 +80,13 @@ static LPMMINFOLIST     mminfoListTail;
 /*
  * GetMIDIHDRAlias - alias members of MIDIHDR struct
  */
-static void GetMIDIHDRAlias( LPSTR _FAR *orig, LPMIDIHDR ptr )
+void GetMIDIHDRAlias( LPSTR _FAR *orig, LPMIDIHDR ptr )
 {
     LPSTR       new;
 
     *orig = ptr->lpData;
     new = ptr->lpData;
-    GetAlias( &new );
+    GetAlias( (LPVOID *)&new );
     ptr->lpData = new;
 
 } /* GetMIDIHDRAlias */
@@ -103,13 +105,13 @@ void ReleaseMIDIHDRAlias( LPSTR orig, LPMIDIHDR ptr )
 /*
  * GetWAVEHDRAlias - alias members of WAVEHDR struct
  */
-static void GetWAVEHDRAlias( LPSTR _FAR *orig, LPWAVEHDR ptr )
+void GetWAVEHDRAlias( LPSTR _FAR *orig, LPWAVEHDR ptr )
 {
     LPSTR       new;
 
     *orig = ptr->lpData;
     new = ptr->lpData;
-    GetAlias( &new );
+    GetAlias( (LPVOID *)&new );
     ptr->lpData = new;
 
 } /* GetWAVEHDRAlias */

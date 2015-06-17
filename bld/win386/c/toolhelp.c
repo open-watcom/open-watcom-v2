@@ -34,7 +34,9 @@
 #include <string.h>
 #include <windows.h>
 #include <toolhelp.h>
-#include "stubs.h"
+#include "winext.h"
+#include "windpmi.h"
+#include "_toolhlp.h"
 
 #pragma aux BackPatch_toolhelp parm [ax]
 extern LPVOID FAR BackPatch_toolhelp( char *strx );

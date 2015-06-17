@@ -32,6 +32,7 @@
 #include <stddef.h>
 #include <windows.h>
 #include "winext.h"
+#include "wininit.h"
 
 extern DWORD ReturnCode;
 

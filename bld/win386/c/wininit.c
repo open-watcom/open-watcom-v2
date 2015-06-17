@@ -55,6 +55,8 @@ typedef char __far *va_list[1];
 #include "tinyio.h"
 #include "wdebug.h"
 #include "dpmi.h"
+#include "windpmi.h"
+#include "wininit.h"
 
 // define FLAT to 1 to get flat address space for entire memory
 #define FLAT    1

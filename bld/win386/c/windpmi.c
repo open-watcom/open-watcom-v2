@@ -33,6 +33,7 @@
 #include <windows.h>
 #include "winext.h"
 #include "dpmi.h"
+#include "windpmi.h"
 
 #define MAX_CACHE       48
 #define MAX_SELECTORS   8192

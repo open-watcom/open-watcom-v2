@@ -24,25 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 386 Supervisor LibMain startup code (16-bit).
+* Description:  Win386 Supervisor 32-bit DPMI mode startup code (16-bit).
 *
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <windows.h>
-#include "winext.h"
-#include "wininit.h"
-
-extern DWORD ReturnCode;
-extern int PASCAL StartDLL32( void );
-
-#pragma off(unreferenced);
-int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
-#pragma on(unreferenced);
-{
-
-    if( !Init32BitTask( hmod, NULL, cmdline, 0 ) ) return( 0 );
-    StartDLL32();
-    return( (int) ReturnCode );
-}
+extern int  Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow );
+extern void CodeRelocate( DWORD __far *reloc, WORD cnt );
+extern void Cleanup( void );
+extern int  Fini( int strcnt, ... );

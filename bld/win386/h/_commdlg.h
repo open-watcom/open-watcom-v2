@@ -24,26 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Covers for commdlg.dll functions.
 *
 ****************************************************************************/
 
 
-#ifdef DLL32
-typedef LPVOID __far *LPLPVOID;
-#else
-typedef LPVOID *LPLPVOID;
-#endif
-
-void DPMIFreeAlias( WORD seg );
-#pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
-WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt );
-extern WORD DPMIGetHugeAlias( DWORD, DWORD __far *, DWORD );
-extern void DPMIFreeHugeAlias( DWORD , DWORD );
-extern WORD DataSelector;
-extern WORD MyDataSelector;
-extern DWORD DataSelectorSize;
-extern WORD Has87;
-extern void ReleaseAlias( LPVOID orig, LPVOID ptr );
-extern void GetAlias( LPLPVOID name );
+extern BOOL FAR PASCAL __ChooseColor( LPCHOOSECOLOR pcc );
+extern HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr );
+extern HWND FAR PASCAL __FindText( LPFINDREPLACE pfr );
+extern BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf );
+extern BOOL FAR PASCAL __GetOpenFileName( LPOPENFILENAME pofn );
+extern BOOL FAR PASCAL __GetSaveFileName( LPOPENFILENAME pofn );
+extern BOOL FAR PASCAL __PrintDlg( LPPRINTDLG ppd );

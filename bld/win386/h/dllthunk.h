@@ -24,25 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 386 Supervisor LibMain startup code (16-bit).
+* Description:  Prototype for DLLLoadFail internal routine.
 *
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <windows.h>
-#include "winext.h"
-#include "wininit.h"
-
-extern DWORD ReturnCode;
-extern int PASCAL StartDLL32( void );
-
-#pragma off(unreferenced);
-int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
-#pragma on(unreferenced);
-{
-
-    if( !Init32BitTask( hmod, NULL, cmdline, 0 ) ) return( 0 );
-    StartDLL32();
-    return( (int) ReturnCode );
-}
+extern void DLLLoadFail( char *str );
