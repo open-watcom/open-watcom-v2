@@ -69,3 +69,5 @@ typedef struct w32_hdr {
 } w32_hdr;
 
 #pragma pack()
+
+extern  void    PrintMsg( char *fmt,... );

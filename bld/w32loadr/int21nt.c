@@ -42,6 +42,10 @@
 #include <string.h>
 #include "tinyio.h"
 
+typedef unsigned short  WORD;
+typedef unsigned long   DWORD;
+#include "loader.h"
+
 #include <windows.h>
 
 #define CARRY_CLEAR     0
@@ -50,23 +54,23 @@
 #define MAX_HANDLES     64              /* maximum number of file handles */
 HANDLE  __FileHandleIDs[ MAX_HANDLES ];
 
-int     MaxHandle = 20;
-int     ErrorCode;
+extern unsigned __Int21C( union REGS *r );
+extern void     __InitInt21( void );
+
+static int              MaxHandle = 20;
+static int              ErrorCode;
 #define E_NOHANDLES     4
 
-static unsigned long __DTA;
+static unsigned long    __DTA;
 #define HANDLE_OF(dirp) ( *( HANDLE * )( &(((char *)(dirp))[0]) ) )
 #define ATTR_OF(dirp)   ( *( DWORD * )( &(((char *)(dirp))[4]) ) )
-extern  void    __GetNTDirInfo( struct find_t *dirp, LPWIN32_FIND_DATA ffb );
-extern  BOOL    __NTFindNextFileWithAttr( HANDLE h, DWORD attr,
-                                          LPWIN32_FIND_DATA ffb );
-extern  void    PrintMsg( char *fmt,... );
-
-void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
-void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );
+static void     __GetNTDirInfo( struct find_t *dirp, LPWIN32_FIND_DATA ffb );
+static BOOL     __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb );
+static void     __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
+static void     __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );
 
 
-BOOL __open_file( union REGS *r,
+static BOOL __open_file( union REGS *r,
                   DWORD access,
                   DWORD share,
                   DWORD create_disp,
@@ -92,7 +96,7 @@ BOOL __open_file( union REGS *r,
     return( TRUE );
 }
 
-BOOL __create( union REGS *r )
+static BOOL __create( union REGS *r )
 {
     DWORD       desired_access;
     DWORD       attr;
@@ -113,7 +117,7 @@ BOOL __create( union REGS *r )
     return( __open_file( r, desired_access, 0, CREATE_ALWAYS, attr ) );
 }
 
-BOOL __open( union REGS *r )
+static BOOL __open( union REGS *r )
 {
     DWORD       desired_access;
     DWORD       share_mode;
@@ -150,7 +154,7 @@ BOOL __open( union REGS *r )
     return __open_file( r, desired_access, share_mode, create_disp, attr );
 }
 
-BOOL __getch( union REGS *r )
+static BOOL __getch( union REGS *r )
 {
     DWORD       read;
     HANDLE      h;
@@ -165,7 +169,7 @@ BOOL __getch( union REGS *r )
     return( rc );
 }
 
-BOOL __filedate( union REGS *r )
+static BOOL __filedate( union REGS *r )
 {
     BOOL        rc;
     HANDLE      h;
@@ -191,7 +195,7 @@ BOOL __filedate( union REGS *r )
     return( rc );
 }
 
-BOOL __fullpath( union REGS *r )
+static BOOL __fullpath( union REGS *r )
 {
     BOOL        rc;
     LPTSTR      fp;
@@ -204,7 +208,7 @@ BOOL __fullpath( union REGS *r )
     return( rc );
 }
 
-void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
+static void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
 {
     FILETIME local_ft;
 
@@ -212,7 +216,7 @@ void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
     FileTimeToDosDateTime( &local_ft, d, t );
 }
 
-void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
+static void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
 {
     FILETIME local_ft;
 
@@ -249,7 +253,7 @@ BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, WIN32_FIND_DATA *ffd )
     }
 }
 
-BOOL __findfirst( union REGS *r )
+static BOOL __findfirst( union REGS *r )
 {
     BOOL                rc = FALSE;
     HANDLE              handle;
@@ -286,7 +290,7 @@ BOOL __findfirst( union REGS *r )
     return( rc );
 }
 
-BOOL __findnext( union REGS *r )
+static BOOL __findnext( union REGS *r )
 {
     BOOL                rc = FALSE;
     HANDLE              handle;
@@ -310,7 +314,7 @@ BOOL __findnext( union REGS *r )
     return( rc );
 }
 
-BOOL __chmod( union REGS *r )
+static BOOL __chmod( union REGS *r )
 {
     BOOL        rc = FALSE;
     LONG        attr;
@@ -441,7 +445,8 @@ unsigned __Int21C( union REGS *r )
         break;
     case DOS_ALLOC_SEG:
         r->x.eax = (DWORD)LocalAlloc( LMEM_FIXED, r->x.ebx );
-        if( r->x.eax == 0 )  return( CARRY_SET );
+        if( r->x.eax == 0 )
+            return( CARRY_SET );
         return( CARRY_CLEAR );
     case DOS_FILE_DATE:
         rc = __filedate( r );
@@ -466,7 +471,8 @@ unsigned __Int21C( union REGS *r )
         PrintMsg( "Unsupported int 21h function AH=%h\r\n", r->h.ah );
         return( CARRY_SET );
     }
-    if( rc != FALSE )  return( CARRY_CLEAR );
+    if( rc != FALSE )
+        return( CARRY_CLEAR );
     if( ErrorCode != 0 ) {
         r->x.eax = ErrorCode;
     } else {
@@ -475,7 +481,7 @@ unsigned __Int21C( union REGS *r )
     return( CARRY_SET );
 }
 
-void __InitInt21()
+void __InitInt21( void )
 {
     __FileHandleIDs[ 0 ] = GetStdHandle( STD_INPUT_HANDLE );
     __FileHandleIDs[ 1 ] = GetStdHandle( STD_OUTPUT_HANDLE );

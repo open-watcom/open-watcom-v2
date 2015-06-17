@@ -62,25 +62,25 @@ typedef unsigned long   DWORD;
 #define READSIZE        (0x8000)
 #define RELOC_NUM       1024
 
-DWORD   BaseAddr;
-DWORD   CodeLoadAddr;
-DWORD   CodeEntryPoint;
-char    BreakFlag;
-
-int     __IsDBCS = 0;
-int     MsgFileHandle   = 1;
-#if defined(__OS2) || defined(__NT)
-char    *ProgramName    = "";
-char    *ProgramArgs    = "";
-#endif
-char    *ProgramEnv     = "\0";
-
-#define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
-
 #pragma aux _end "*"
-extern  char            _end;
+extern  char    _end;
 
 extern  int     __fInt21( void );
+
+static DWORD   BaseAddr;
+static DWORD   CodeLoadAddr;
+static DWORD   CodeEntryPoint;
+static char    BreakFlag;
+
+static int     __IsDBCS = 0;
+static int     MsgFileHandle   = 1;
+#if defined(__OS2) || defined(__NT)
+static char    *ProgramName    = "";
+static char    *ProgramArgs    = "";
+#endif
+static char    *ProgramEnv     = "\0";
+
+#define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
 
 struct  pgmparms {
         char    *pgmname;       // program name (argv[0])
@@ -118,13 +118,13 @@ enum {
 #define pick(name,msg)  msg
 #define E(msg) msg
 #define J(msg)
-char *EnglishMsgs[] = {
+static char *EnglishMsgs[] = {
  #include "ldrmsg.h"
 };
 #define pick(name,msg)  msg
 #define E(msg)
 #define J(msg) msg
-char *JapaneseMsgs[] = {
+static char *JapaneseMsgs[] = {
  #include "ldrmsg.h"
 };
 
@@ -135,24 +135,28 @@ char *getenv( const char *var )
 
     p = ProgramEnv;
     for( ;; ) {
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         v = var;
         for( ;; ) {
             if( *v == '\0' ) {
-                if( *p == '=' )  return( p + 1 );
+                if( *p == '=' )
+                    return( p + 1 );
                 break;
             }
-            if( (*p | ' ') != (*v | ' ') ) break;
+            if( (*p | ' ') != (*v | ' ') )
+                break;
             ++p;
             ++v;
         }
-        while( *p != '\0' ) ++p;
+        while( *p != '\0' )
+            ++p;
         ++p;
     }
     return( NULL );
 }
 
-char *PickMsg( int num )
+static char *PickMsg( int num )
 {
     char        *msg;
 
@@ -181,20 +185,24 @@ void PrintMsg( char *fmt, ... )
     len = 0;
     for( ;; ) {
         c = *fmt++;
-        if( c == '\0' ) break;
+        if( c == '\0' )
+            break;
         if( c == '%' ) {
             c = *fmt++;
             if( c == 's' ) {
                 p = va_arg( args, char * );
                 for( ;; ) {
                     c = *p++;
-                    if( c == '\0' ) break;
+                    if( c == '\0' )
+                        break;
                     buf[len++] = c;
                 }
             } else if( c == 'd' ) {
                 i = va_arg( args, int );
                 itoa( i, &buf[len], 10 );
-                while( buf[len] != '\0' ) ++len;
+                while( buf[len] != '\0' ) {
+                    ++len;
+                }
             } else {
                 value = va_arg( args, unsigned );
                 i = 8;
@@ -215,7 +223,9 @@ void PrintMsg( char *fmt, ... )
                     }
                     buf[len++] = c;
                     --i;
-                    if( i == 0 ) break;
+                    if( i == 0 ) {
+                        break;
+                    }
                 }
             }
         } else {
@@ -226,7 +236,7 @@ void PrintMsg( char *fmt, ... )
 }
 
 
-void DoRelocations( unsigned short *rel )
+static void DoRelocations( unsigned short *rel )
 {
     unsigned short      count;
     unsigned long       addr;
@@ -235,14 +245,16 @@ void DoRelocations( unsigned short *rel )
     base_addr = CodeLoadAddr;
     for( ;; ) {
         count = *rel++;
-        if( count == 0 ) break;
+        if( count == 0 )
+            break;
         addr = *rel++ << 16;
         addr |= *rel++;
         addr += base_addr;
         for( ;; ) {
             *(unsigned long *)addr += base_addr;
             --count;
-            if( count == 0 ) break;
+            if( count == 0 )
+                break;
             addr += *rel++;
         }
     }
@@ -280,7 +292,8 @@ void BPE_Expand( char *dst, char *src, char *srcend )
                 c += count - 127;
                 count = 0;
             }
-            if( c == 256 ) break;
+            if( c == 256 )
+                break;
 
             /* Read pairs, skip right if literal */
             for( i = 0; i <= count; i++, c++ ) {
@@ -289,7 +302,8 @@ void BPE_Expand( char *dst, char *src, char *srcend )
                     right[c] = *src++;
                 }
             }
-            if( c == 256 )  break;
+            if( c == 256 )
+                break;
             count = *src++;
         }
 
@@ -308,7 +322,8 @@ void BPE_Expand( char *dst, char *src, char *srcend )
                     c = left[c];
                 }
                 *dst++ = c;
-                if( i == 0 ) break;
+                if( i == 0 )
+                    break;
                 c = stack[--i];
             }
         }
@@ -318,7 +333,7 @@ void BPE_Expand( char *dst, char *src, char *srcend )
 /*
  * Init32BitTask - load and initialize the 32-bit application
  */
-int Init32BitTask( char *file )
+static int Init32BitTask( char *file )
 {
     int         handle;
     tiny_ret_t  rc;
@@ -410,16 +425,18 @@ int Init32BitTask( char *file )
 } /* Init32BitTask */
 
 #if defined(__OS2) || defined(__NT)
-void DumpEnvironment( void )
+static void DumpEnvironment( void )
 {
     char        *p;
 
     PrintMsg( "Environment Variables:\r\n" );
     p = ProgramEnv;
     for( ;; ) {
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         PrintMsg( "%s\r\n", p );
-        while( *p != '\0' ) ++p;
+        while( *p != '\0' )
+            ++p;
         ++p;
     }
 }
@@ -428,7 +445,9 @@ void DumpEnvironment( void )
 #if defined(__OS2)
 
 #pragma aux __OS2Main "*" parm caller []
-char volatile NestedException = 0;
+extern int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
+
+static char volatile NestedException = 0;
 
 typedef struct SysERegRec {
     PEXCEPTIONREGISTRATIONRECORD pLink;
@@ -438,7 +457,7 @@ typedef struct SysERegRec {
                            PVOID);
 } SYSEREGREC;
 
-void DumpContext( char *what, PCONTEXTRECORD p )
+static void DumpContext( char *what, PCONTEXTRECORD p )
 {
     int                 i;
     unsigned __far      *stk;
@@ -468,7 +487,7 @@ void DumpContext( char *what, PCONTEXTRECORD p )
     PrintMsg( "\r\n" );
 }
 
-void Fatal( char *what, PCONTEXTRECORD p )
+static void Fatal( char *what, PCONTEXTRECORD p )
 {
     tiny_ret_t  rc;
 
@@ -486,7 +505,7 @@ void Fatal( char *what, PCONTEXTRECORD p )
     DosExit( EXIT_PROCESS, 8 );
 }
 
-ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
+static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
                             PEXCEPTIONREGISTRATIONRECORD regrecord,
                             PCONTEXTRECORD context,
                             PVOID other )
@@ -525,7 +544,7 @@ ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
     return( XCPT_CONTINUE_EXECUTION );
 }
 
-int __checkIsDBCS( void )
+static int __checkIsDBCS( void )
 {
     COUNTRYCODE         countryInfo;
     CHAR                leadBytes[12];
@@ -608,7 +627,7 @@ typedef struct _REGISTRATION_RECORD {
     void                        *RegistrationRecordFilter;
 } REGISTRATION_RECORD;
 
-void DumpContext( char *what, PCONTEXT p )
+static void DumpContext( char *what, PCONTEXT p )
 {
     int                 i;
     unsigned __far      *stk;
@@ -638,7 +657,7 @@ void DumpContext( char *what, PCONTEXT p )
     PrintMsg( "\r\n" );
 }
 
-void Fatal( char *what, PCONTEXT p )
+static void Fatal( char *what, PCONTEXT p )
 {
     tiny_ret_t  rc;
 
@@ -656,7 +675,7 @@ void Fatal( char *what, PCONTEXT p )
     ExitProcess( 8 );
 }
 
-int __stdcall __ExceptionFilter( LPEXCEPTION_RECORD ex,
+static int __stdcall __ExceptionFilter( LPEXCEPTION_RECORD ex,
         LPVOID establisher_frame, LPCONTEXT context, LPVOID dispatch_context )
 {
     if( ex->ExceptionFlags & EXCEPTION_NONCONTINUABLE ) {
@@ -699,19 +718,19 @@ int __stdcall __ExceptionFilter( LPEXCEPTION_RECORD ex,
 
 } /* __ExceptionFilter */
 
-void __NewExceptionHandler( REGISTRATION_RECORD *rr )
+static void __NewExceptionHandler( REGISTRATION_RECORD *rr )
 {
     rr->RegistrationRecordPrev = (LPVOID) GetFromFS( 0 );
     rr->RegistrationRecordFilter = __ExceptionFilter;
     PutToFS( (DWORD) rr, 0 );
 }
 
-void __DoneExceptionHandler( REGISTRATION_RECORD *rr )
+static void __DoneExceptionHandler( REGISTRATION_RECORD *rr )
 {
     PutToFS( (DWORD) rr->RegistrationRecordPrev, 0 );
 }
 
-BOOL WINAPI CtrlCHandler( ULONG ctrl_type )
+static BOOL WINAPI CtrlCHandler( ULONG ctrl_type )
 {
     DWORD       n;
     HANDLE      h;
@@ -729,26 +748,34 @@ BOOL WINAPI CtrlCHandler( ULONG ctrl_type )
         h = __FileHandleIDs[ 0 ];
         for( ;; ) {
             n = 0;
-            if( PeekConsoleInput( h, &r, 1, &n ) == 0 ) break;
-            if( n == 0 ) break;
+            if( PeekConsoleInput( h, &r, 1, &n ) == 0 )
+                break;
+            if( n == 0 )
+                break;
             // flush out mouse, window, and key up events
-            if( ReadConsoleInput( h, &r, 1, &n ) == 0 ) break;
+            if( ReadConsoleInput( h, &r, 1, &n ) == 0 ) {
+                break;
+            }
         }
     }
     return( TRUE );
 }
 
-int __checkIsDBCS( void )
+static int __checkIsDBCS( void )
 {
     CPINFO              cpInfo;
 
     if( GetCPInfo( CP_OEMCP, &cpInfo ) != FALSE ) {
-        if( cpInfo.LeadByte[0] || cpInfo.LeadByte[1] )  return( 1 );
+        if( cpInfo.LeadByte[0] || cpInfo.LeadByte[1] ) {
+            return( 1 );
+        }
     }
     return( 0 );
 }
 
 #ifdef W32RUN
+extern void __NTMain( void );
+
 /*
  * This routine is used for BINNT\W32RUN.EXE
  */
@@ -769,10 +796,14 @@ void __NTMain( void )
     ProgramEnv = cmd;
     pgm = NULL;
     for( ;; ) {
-        if( *cmd == '$'  &&  cmd[1] == '=' )  pgm = cmd + 2;
-        while( *cmd )  ++cmd;
+        if( *cmd == '$'  &&  cmd[1] == '=' )
+            pgm = cmd + 2;
+        while( *cmd )
+            ++cmd;
         ++cmd;
-        if( *cmd == '\0' )  break;
+        if( *cmd == '\0' ) {
+            break;
+        }
     }
     parms.pgmname = pgm;
     if( pgm == NULL ) {
@@ -820,7 +851,8 @@ void __ChgBINNT( char *fn )
             if( *p == '\\' ) break;
             ++p;
         }
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         ++p;
         if( (p[0] | ' ') == 'b'  &&
             (p[1] | ' ') == 'i'  &&
@@ -830,7 +862,8 @@ void __ChgBINNT( char *fn )
             p[5] == '\\' ) {
             p[3] = p[3] + ('w' - 'n');  // change path from binnt to binw
             p += 4;
-            while( p[0] = p[1] ) p++;
+            while( p[0] = p[1] )
+                p++;
             break;
         }
     }
@@ -851,7 +884,8 @@ void __NTMain( void )
     cmd = GetCommandLine();
     // cmd should look like:
     // PROGRAM command line arguments
-    while( *cmd == ' '  ||  *cmd == '\t' )  ++cmd;
+    while( *cmd == ' '  ||  *cmd == '\t' )
+        ++cmd;
     for( ;; ) {                         // skip over program name
         if( *cmd == '\0' ) break;
         if( *cmd == ' '  ) break;
@@ -919,7 +953,7 @@ typedef struct {
 extern unsigned short __get_ds( void );
 #pragma aux __get_ds = "mov ax,ds" value [ax];
 
-int __checkIsDBCS( void )
+static int __checkIsDBCS( void )
 {
 #if defined(__TNT)
     unsigned short __far    *leadBytes;
@@ -938,7 +972,9 @@ int __checkIsDBCS( void )
         if( (pblock.real_ds | regs.w.si) != 0 ) {
             leadBytes = MK_FP( 0x34 | (__get_ds() & 0x03),
                            (((unsigned)pblock.real_ds)<<4) + regs.w.si );
-            if( leadBytes[0] || leadBytes[1] )  return( 1 );
+            if( leadBytes[0] || leadBytes[1] ) {
+                return( 1 );
+            }
         }
     }
 #elif defined(__DOS4G) || defined(__CAUSEWAY)
@@ -952,7 +988,9 @@ int __checkIsDBCS( void )
         if( (dblock.ds | dblock.esi) != 0 ) {
             leadBytes = (unsigned short *)
                           ((((unsigned)dblock.ds)<<4) + (dblock.esi&0xFFFF));
-            if( leadBytes[0] || leadBytes[1] )  return( 1 );
+            if( leadBytes[0] || leadBytes[1] ) {
+                return( 1 );
+            }
         }
     }
 #elif defined(__X32)
@@ -994,7 +1032,9 @@ int __checkIsDBCS( void )
     if( (parm_struct.selector_ds | esi) != 0 ) {
         leadBytes = MK_FP( __x386_zero_base_selector,
                         (parm_struct.selector_ds << 4) + (esi & 0xFFFF) );
-        if( leadBytes[0] || leadBytes[1] )  return( 1 );
+        if( leadBytes[0] || leadBytes[1] ) {
+            return( 1 );
+        }
     }
 #endif
     return( 0 );
@@ -1017,10 +1057,14 @@ int main( void )
     cmd = _Envptr;
     pgm = NULL;
     for( ;; ) {
-        if( *cmd == '$'  &&  cmd[1] == '=' )  pgm = cmd + 2;
-        while( *cmd )  ++cmd;
+        if( *cmd == '$'  &&  cmd[1] == '=' )
+            pgm = cmd + 2;
+        while( *cmd )
+            ++cmd;
         ++cmd;
-        if( *cmd == '\0' )  break;
+        if( *cmd == '\0' ) {
+            break;
+        }
     }
     parms.pgmname = pgm;
     if( pgm == NULL ) {
