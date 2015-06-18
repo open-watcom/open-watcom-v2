@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "yydriver.h"
 #include "yydrivrw.h"
 #include "errors.h"
 #include "depend.h"

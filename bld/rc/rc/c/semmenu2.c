@@ -61,7 +61,7 @@ struct MenuItem {
 #include "rccore.h"
 
 
-bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
+static bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
 /*********************************************************************/
 {
     if( RCWRITE( handle, currhead, sizeof( MenuHeaderOS2 ) ) != sizeof( MenuHeaderOS2 ) ) {
@@ -72,7 +72,7 @@ bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
     }
 }
 
-bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID handle )
+static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID handle )
 /*****************************************************************************/
 {
     bool        error;

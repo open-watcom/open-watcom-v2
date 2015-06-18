@@ -33,6 +33,7 @@
 #include "errors.h"
 #include "layer0.h"
 #include "rcrtns.h"
+#include "preproc.h"
 
 void *PP_Malloc( unsigned size )
 /******************************/

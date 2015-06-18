@@ -39,7 +39,7 @@
 #include "rccore.h"
 
 
-bool ResOS2WriteHelpEntry( HelpTableEntryOS2 *currentry, WResFileID handle )
+static bool ResOS2WriteHelpEntry( HelpTableEntryOS2 *currentry, WResFileID handle )
 /**************************************************************************/
 {
     if( RCWRITE( handle, currentry, sizeof( HelpTableEntryOS2 ) ) != sizeof( HelpTableEntryOS2 ) ) {

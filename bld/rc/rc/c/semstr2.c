@@ -39,7 +39,7 @@
 #include "rccore.h"
 
 
-bool ResOS2WriteStringTableBlock( StringTableBlock *currblock,
+static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock,
                                         WResFileID handle, uint_32 codepage )
 /***************************************************************************/
 {
@@ -96,7 +96,7 @@ FullStringTable *SemOS2NewStringTable( void )
     return( newtable );
 } /* SemOS2NewStringTable */
 
-void SemOS2FreeStringTable( FullStringTable *oldtable )
+static void SemOS2FreeStringTable( FullStringTable *oldtable )
 /*****************************************************/
 {
     FullStringTableBlock        *currblock;

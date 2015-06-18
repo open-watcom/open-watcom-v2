@@ -39,7 +39,7 @@
 #include "rccore.h"
 
 
-bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID handle )
+static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID handle )
 /****************************************************************************/
 {
     if( RCWRITE( handle, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {

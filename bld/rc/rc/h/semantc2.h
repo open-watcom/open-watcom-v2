@@ -32,6 +32,7 @@
 #ifndef SEMANTC2_H_INCLUDED
 #define SEMANTC2_H_INCLUDED
 
+#include "yydriver.h"
 #include "yydrivr2.h"
 
 #include "semmenu2.h"

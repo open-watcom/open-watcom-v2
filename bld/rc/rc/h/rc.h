@@ -24,32 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  Semantic actions interface for WIN grammar (used by yydriver).
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef SEMANTCW_H_INCLUDED
-#define SEMANTCW_H_INCLUDED
-
-#include "yydriver.h"
-#include "yydrivrw.h"
-
-#include "semmenuw.h"
-#include "semdiagw.h"
-#include "semtbarw.h"
-#include "semverw.h"
-#include "semsnglw.h"
-#include "semresfl.h"
-
-extern FullMemFlags     SemWINAddFirstMemOption( YYTOKENTYPE token );
-extern FullMemFlags     SemWINAddMemOption( FullMemFlags, YYTOKENTYPE token );
-extern char             *SemWINTokenToString( YYTOKENTYPE token );
-extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
-extern void             SemWINSetResourceLanguage( const WResLangType *newlang, bool from_parser );
-extern void             SemWINUnsupported( YYTOKENTYPE token );
-extern void             SemWINCheckMemFlags( FullMemFlags * currflags,
-                                ResMemFlags loadopts, ResMemFlags memopts,
-                                ResMemFlags pureopts );
-
-#endif
+extern void InitGlobs( void );
+extern void FiniGlobs( void );
+extern void RCmain( void );
