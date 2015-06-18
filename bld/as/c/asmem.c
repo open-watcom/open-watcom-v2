@@ -35,8 +35,7 @@
 #include "trmem.h"
 #include "trmemcvr.h"
 #else
-extern void *AsmAlloc( size_t amount );
-extern void AsmFree( void *ptr );
+#include "asalloc.h"
 #endif
 
 #ifdef _STANDALONE_

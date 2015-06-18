@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 2015 Open Watcom Contributors.
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,36 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Assembler memory allocation/deallocation routines.
 *
 ****************************************************************************/
 
 
-#ifndef _ASMSTMT_H
-#define _ASMSTMT_H
+#include <stddef.h>
 
-#include "vbuf.h"
-#if _INTEL_CPU
-  #include "asminlin.h"
-#else
-  #include "asinline.h"
-#endif
-
-#define MAX_INSTR_SIZE  64
-
-extern PTREE        AsmStmt( void );
-
-// from CPRAGxxx
-
-extern bool         AsmSysInsertFixups( VBUF *code );
-extern AUX_INFO     *AsmSysCreateAux( const char * );
-extern void         AsmSysUsesAuto( void );
-extern void         AsmSysInit( void );
-extern void         AsmSysFini( void );
-extern void         AsmSysDone( void );
-extern char const   *AsmSysDefineByte( void );
-extern void         AsmSysCopyCode( void );
-extern void         AsmSysLine( const char * );
-
-#endif
+extern void *AsmAlloc( size_t amount );
+extern void AsmFree( void *ptr );

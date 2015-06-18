@@ -24,7 +24,7 @@ wasm_trmem = 1
 
 fpu_flags = -fpc
 
-inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h"
+inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h" -I"$(fe_misc_dir)/h"
 
 libs = $(wres_lib)
 

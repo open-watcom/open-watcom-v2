@@ -156,7 +156,7 @@ splice_opts     = $(splice_opts_$(target_cpu))
 
 .c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(cpp_inc_dirs) -I"$(trmem_dir)"
+inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(cpp_inc_dirs) -I"$(fe_misc_dir)/h" -I"$(trmem_dir)"
 
 # explicit rules
 #################
