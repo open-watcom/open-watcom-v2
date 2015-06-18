@@ -101,7 +101,7 @@ static char *doStrDup( const char *str )
     return( ptr );
 }
 
-FILE *PP_Open( const char *filename )
+static FILE *PP_Open( const char *filename )
 {
     FILE        *handle;
     FILELIST    *prev_file;
@@ -265,7 +265,7 @@ int PP_FindInclude( const char *filename, char *fullfilename, int incl_type )
 }
 
 
-FILE *PP_OpenInclude( const char *filename, int incl_type )
+static FILE *PP_OpenInclude( const char *filename, int incl_type )
 {
     char        fullfilename[_MAX_PATH];
     int         rc;
@@ -440,7 +440,7 @@ void PP_Fini( void )
     PP_Free( IncludePath2 );
 }
 
-size_t PP_ReadBuf( void )
+static size_t PP_ReadBuf( void )
 {
     size_t      len;
     FILELIST    *this_file;
@@ -452,7 +452,7 @@ size_t PP_ReadBuf( void )
     return( len );
 }
 
-size_t PP_ReadLine( char *line_generated )
+static size_t PP_ReadLine( char *line_generated )
 {
     FILELIST            *this_file;
     size_t              len;
@@ -517,7 +517,7 @@ size_t PP_ReadLine( char *line_generated )
 
 #define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
 
-int PP_Hash( const char *name )
+static int PP_Hash( const char *name )
 {
     unsigned    hash;
 
@@ -548,7 +548,7 @@ char *PP_ScanName( char *ptr )
     return( ptr );
 }
 
-void PP_Include( char *ptr )
+static void PP_Include( char *ptr )
 {
     char        *filename;
     char        delim;
@@ -580,7 +580,7 @@ void PP_Include( char *ptr )
     }
 }
 
-void PP_RCInclude( char *ptr )
+static void PP_RCInclude( char *ptr )
 {
     char        *filename;
     int         quoted = 0;
@@ -638,7 +638,7 @@ MACRO_ENTRY *PP_AddMacro( const char *macro_name )
     return( me );
 }
 
-char *PP_SkipSpace( char *p, char *white_space )
+static char *PP_SkipSpace( char *p, char *white_space )
 {
     char        *p2;
 
@@ -651,7 +651,7 @@ char *PP_SkipSpace( char *p, char *white_space )
     return( p );
 }
 
-char *PP_SkipComment( char *p, char *comment )
+static char *PP_SkipComment( char *p, char *comment )
 {
     *comment = 0;               // assume no comment
     if( *p == '/'  && (p[1] == '/'  ||  p[1] == '*') ) {
@@ -821,7 +821,7 @@ static void IncLevel( int value )
     ++NestLevel;
 }
 
-void PP_Undef( char *ptr )
+static void PP_Undef( char *ptr )
 {
     MACRO_ENTRY *me;
 
@@ -831,7 +831,7 @@ void PP_Undef( char *ptr )
     }
 }
 
-void PP_Ifdef( char *ptr )
+static void PP_Ifdef( char *ptr )
 {
     MACRO_ENTRY *me;
 
@@ -839,7 +839,7 @@ void PP_Ifdef( char *ptr )
     IncLevel( me != NULL );
 }
 
-void PP_Ifndef( char *ptr )
+static void PP_Ifndef( char *ptr )
 {
     MACRO_ENTRY *me;
 
@@ -847,7 +847,7 @@ void PP_Ifndef( char *ptr )
     IncLevel( me == NULL );
 }
 
-int PPConstExpr( char *ptr )
+static int PPConstExpr( char *ptr )
 {
     PREPROC_VALUE   value;
 
@@ -858,7 +858,7 @@ int PPConstExpr( char *ptr )
     return( value.val.ivalue != 0 );
 }
 
-void PP_If( char *ptr )
+static void PP_If( char *ptr )
 {
     int         value;
 
@@ -871,7 +871,7 @@ void PP_If( char *ptr )
     }
 }
 
-void PP_Elif( char *ptr )
+static void PP_Elif( char *ptr )
 {
     int         value;
 
@@ -897,7 +897,7 @@ void PP_Elif( char *ptr )
     }
 }
 
-void PP_Else( void )
+static void PP_Else( void )
 {
     if( PPStack != NULL ) {
         if( PPStack->cpp_type == PP_ELSE ) {
@@ -918,7 +918,7 @@ void PP_Else( void )
     }
 }
 
-void PP_Endif( void )
+static void PP_Endif( void )
 {
     CPP_INFO    *cpp;
 
@@ -933,7 +933,7 @@ void PP_Endif( void )
     }
 }
 
-int PP_Sharp( char *ptr )
+static int PP_Sharp( char *ptr )
 {
     char        *token;
     char        c;
@@ -1009,7 +1009,7 @@ static void RCInclude( char *ptr )
 }
 
 
-int PP_Read( void )
+static int PP_Read( void )
 {
     char        *p;
     char        line_generated;
@@ -1039,7 +1039,7 @@ int PP_Read( void )
     return( 1 );
 }
 
-char *PPScanLiteral( char *p )
+static char *PPScanLiteral( char *p )
 {
     char        quote_char;
     int         i;
@@ -1065,13 +1065,13 @@ char *PPScanLiteral( char *p )
     return( p );
 }
 
-char *PPScanDigits( char *p )
+static char *PPScanDigits( char *p )
 {
     while( *p >= '0'  &&  *p <= '9' ) ++p;
     return( p );
 }
 
-char *PPScanSuffix( char *p )
+static char *PPScanSuffix( char *p )
 {
     while( *p == 'u'  ||  *p == 'U'  ||  *p == 'l'  ||  *p == 'L' ) {
         p++;
@@ -1079,7 +1079,7 @@ char *PPScanSuffix( char *p )
     return( p );
 }
 
-char *PPScanHexNumber( char *p )
+static char *PPScanHexNumber( char *p )
 {
     char        c;
 
@@ -1094,7 +1094,7 @@ char *PPScanHexNumber( char *p )
     return( p );
 }
 
-char *PPScanNumber( char *p )
+static char *PPScanNumber( char *p )
 {
     p = PPScanDigits( p );
     if( *p == '.' ) {
@@ -1111,7 +1111,7 @@ char *PPScanNumber( char *p )
     return( p );
 }
 
-char *PPScanOther( char *p )
+static char *PPScanOther( char *p )
 {
     for( ;; ) {
         if( *p == '\0' ) break;

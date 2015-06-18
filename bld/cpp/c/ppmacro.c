@@ -33,10 +33,6 @@
 
 #define PPT_UNEXPANDABLE_ID     PPT_LAST_TOKEN
 
-extern  char    PP__DATE__[14];
-extern  char    PP__TIME__[11];
-
-
 typedef struct macro_arg {
     char            *name;
     MACRO_TOKEN     *arg;
@@ -50,12 +46,18 @@ typedef struct nested_macros {
     bool    substituting_parms;
 } NESTED_MACRO;
 
+extern  char    PP__DATE__[14];
+extern  char    PP__TIME__[11];
+
+extern void DumpMTokens( MACRO_TOKEN *mtok );
+extern void DumpNestedMacros( void );
+
 NESTED_MACRO *NestedMacros;
 int           MacroDepth;
 MACRO_TOKEN  *MacroExpansion( MACRO_ENTRY *, bool );
 MACRO_TOKEN  *NestedMacroExpansion( MACRO_ENTRY * );
 
-void FreeTokenList( MACRO_TOKEN *head )
+static void FreeTokenList( MACRO_TOKEN *head )
 {
     MACRO_TOKEN *mtok;
 
@@ -143,7 +145,7 @@ MACRO_TOKEN *NextMToken( void )
     return( mtok );
 }
 
-MACRO_TOKEN *PPTrimWhiteSpace( MACRO_TOKEN *head )
+static MACRO_TOKEN *PPTrimWhiteSpace( MACRO_TOKEN *head )
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *prev;
@@ -164,7 +166,7 @@ MACRO_TOKEN *PPTrimWhiteSpace( MACRO_TOKEN *head )
     return( head );
 }
 
-MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
+static MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
 {
     int         bracket;
     MACRO_TOKEN *mtok;
@@ -258,6 +260,7 @@ void DumpMTokens( MACRO_TOKEN *mtok )
     }
     fflush( stdout );
 }
+
 void DumpNestedMacros( void )
 {
     NESTED_MACRO *nested;
@@ -271,7 +274,7 @@ void DumpNestedMacros( void )
 }
 
 
-int TokLength( char *p )
+static int TokLength( char *p )
 {
     int len;
 
@@ -280,7 +283,7 @@ int TokLength( char *p )
     return( len );
 }
 
-MACRO_TOKEN *BuildAToken( char *p )
+static MACRO_TOKEN *BuildAToken( char *p )
 {
     int         len;
     MACRO_TOKEN *mtok;
@@ -298,7 +301,7 @@ MACRO_TOKEN *BuildAToken( char *p )
     return( mtok );
 }
 
-MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, char token, char *data )
+static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, char token, char *data )
 {
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
@@ -315,7 +318,7 @@ MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, char token, char *data )
     return( head );
 }
 
-bool MacroBeingExpanded( MACRO_ENTRY *fmentry )
+static bool MacroBeingExpanded( MACRO_ENTRY *fmentry )
 {
     NESTED_MACRO *nested;
 
@@ -328,7 +331,7 @@ bool MacroBeingExpanded( MACRO_ENTRY *fmentry )
     return( FALSE );
 }
 
-int Expandable( MACRO_ENTRY *me, MACRO_TOKEN *mtok, bool macro_parm )
+static int Expandable( MACRO_ENTRY *me, MACRO_TOKEN *mtok, bool macro_parm )
 {
     int         lparen;
     char        token;
@@ -376,7 +379,7 @@ int Expandable( MACRO_ENTRY *me, MACRO_TOKEN *mtok, bool macro_parm )
     return( 0 );
 }
 
-MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
+static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *toklist;
@@ -500,7 +503,7 @@ MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
     return( head );
 }
 
-MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
+static MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
 {
     MACRO_TOKEN *mtok;
     size_t      len;
@@ -520,7 +523,7 @@ MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
     return( mtok );
 }
 
-MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
+static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *prev;
@@ -569,7 +572,7 @@ MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
 }
 
 
-MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
+static MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
 {
     MACRO_TOKEN     *mtok;
     MACRO_TOKEN     *head;
@@ -631,7 +634,7 @@ MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
     return( head );
 }
 
-MACRO_TOKEN *DuplicateList( MACRO_TOKEN *list )
+static MACRO_TOKEN *DuplicateList( MACRO_TOKEN *list )
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *head;
@@ -651,7 +654,7 @@ MACRO_TOKEN *DuplicateList( MACRO_TOKEN *list )
     return( head );
 }
 
-unsigned MakeString( MACRO_TOKEN *list, char *p )
+static unsigned MakeString( MACRO_TOKEN *list, char *p )
 {
     unsigned    len;
     char        *p2;
@@ -688,7 +691,7 @@ unsigned MakeString( MACRO_TOKEN *list, char *p )
     return( len );
 }
 
-MACRO_TOKEN *BuildString( MACRO_TOKEN *list )
+static MACRO_TOKEN *BuildString( MACRO_TOKEN *list )
 {
     MACRO_TOKEN *mtok;
     unsigned    len;
@@ -712,7 +715,7 @@ static bool SharpSharp( MACRO_TOKEN *mtok )
     return( FALSE );
 }
 
-MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
+static MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *mtok2;
@@ -782,7 +785,7 @@ MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
     return( head );
 }
 
-MACRO_TOKEN *BuildSpecialToken( MACRO_ENTRY *me )
+static MACRO_TOKEN *BuildSpecialToken( MACRO_ENTRY *me )
 {
     MACRO_TOKEN *head;
     char        *p;

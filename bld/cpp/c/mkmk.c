@@ -33,7 +33,7 @@
 
 extern char PreProcChar;
 
-void MkMkDependency( const char *filename, const char *fullname, int incl_type )
+static void MkMkDependency( const char *filename, const char *fullname, int incl_type )
 {
     char    *fmt;
 

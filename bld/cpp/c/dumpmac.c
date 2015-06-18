@@ -32,7 +32,7 @@
 #include "preproc.h"
 
 
-void dumpheap( void )
+static void dumpheap( void )
 {
 #if 0
     struct _heapinfo h;
@@ -67,7 +67,7 @@ void dumpheap( void )
 #endif
 }
 
-void PP_Dump_Macros( void )
+static void PP_Dump_Macros( void )
 {
     int             hash;
     char            *endptr;
