@@ -46,6 +46,8 @@
 #include "autodept.h"
 #include "mrcmsg.h"
 #include "msg.h"
+#include "mcache.h"
+
 #include "clibext.h"
 #include "pathgrp.h"
 
