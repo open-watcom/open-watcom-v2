@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2015 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,36 +31,5 @@
 ****************************************************************************/
 
 
-#include "gdefn.h"
-#include "visit.h"
-
-
-// Visit code is used to get around a bug in the floodfill algorithm.
-// If filling with a non-solid pattern, it is not always possible to
-// tell if an area has already been filled, leading to infinite loops.
-// For WPAINT, (which uses worldm.lib or worldl.lib) the visit routines
-// keep track of what points we have visited.
-
-
-short _flood_is_visited( short x, short y )
-//=========================================
-
-// Stub version of _flood_is_visited
-
-{
-    x = x;
-    y = y;
-    return( FALSE );
-}
-
-
-void _flood_visit( short x, short y, short len )
-//==============================================
-
-// Stub version of _flood_visit
-
-{
-    x = x;
-    y = y;
-    len = len;
-}
+extern short _flood_is_visited( short x, short y );
+extern void _flood_visit( short x, short y, short len );

@@ -38,9 +38,6 @@
 #endif
 
 
-extern void             _EGASet( void );
-extern void             _EGAReset( void );
-
 extern unsigned short   cs( void );
 #pragma aux cs = "mov ax,cs" value [ax] modify []
 

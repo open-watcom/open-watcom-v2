@@ -34,11 +34,6 @@
 #include "rotate.h"
 
 
-extern void             _EGASet( void );
-extern void             _EGAReset( void );
-extern void             _EGASetup80( short, short, grcolor );
-
-
 static short _VGAInit( short mode )
 //=================================
 

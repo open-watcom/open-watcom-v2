@@ -36,8 +36,8 @@
 #include "pgvars.h"
 
 
-float _Zero( axistype _WCI86FAR *axis )
-//===============================
+static float _Zero( axistype _WCI86FAR *axis )
+//============================================
 
 /*  Initializes "zline" to the line closest to zero on the graph.
     Modifies the "zvalue", the value closest to zero on the graph. */

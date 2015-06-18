@@ -34,8 +34,8 @@
 #include "pgvars.h"
 
 
-short _analyze_pie( chartenv _WCI86FAR *env )
-//======================================
+static short _analyze_pie( chartenv _WCI86FAR *env )
+//==================================================
 
 {
     short               error;
