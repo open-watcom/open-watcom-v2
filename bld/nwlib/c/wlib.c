@@ -32,6 +32,7 @@
 
 #include "wlib.h"
 #include "ar.h"
+#include "main.h"
 
 jmp_buf Env;
 

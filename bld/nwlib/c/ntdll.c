@@ -32,7 +32,7 @@
 
 #include <windows.h>
 #include "clibint.h"
-#include "main.h"
+#include "wlibdll.h"
 
 BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr )
 {

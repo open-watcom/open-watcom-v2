@@ -46,3 +46,4 @@ extern char *FormSym(char*);
 extern char *WlibGetEnv( char *name);
 extern void Banner( void );
 extern char *LibFormat( void );
+extern char *MakeTmpName( char *buffer );

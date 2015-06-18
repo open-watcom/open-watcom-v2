@@ -32,6 +32,8 @@
 
 #include "wlib.h"
 #include "wio.h"
+#include "wlibutil.h"
+
 #include "clibext.h"
 
 libfile ExportListFile;

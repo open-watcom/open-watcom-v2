@@ -24,51 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Master include for librarian.
+* Description:  Prototypes for DLL initialization functions.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <limits.h>
-#include "bool.h"
-#include "orl.h"
-#include "lib.h"
-#include "demangle.h"
-
-#include "wlibio.h"
-#include "types.h"
-#include "optdef.h"
-#include "ops.h"
-#include "memfuncs.h"
-#include "objfile.h"
-#include "inlib.h"
-
-#include "exeelf.h"
-#include "wlibutil.h"
-#include "libwalk.h"
-#include "liblist.h"
-#include "cmdline.h"
-#include "orlrtns.h"
-#include "error.h"
-#include "errnum.h"
-#include "ext.h"
-#include "proclib.h"
-#include "filetab.h"
-#include "implib.h"
-#include "symlist.h"
-#include "writelib.h"
-#include "pcobj.h"
-#include "omfutil.h"
-#include "omfproc.h"
-#include "exedos.h"
-#include "exeos2.h"
-#include "exeflat.h"
-#include "exepe.h"
-#include "exenov.h"
+#if defined( __NT__ )
+extern BOOL         WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr );
+#elif defined( __OS2__ )
+extern unsigned     __dll_initialize( void );
+extern unsigned     __dll_terminate( void );
+#endif

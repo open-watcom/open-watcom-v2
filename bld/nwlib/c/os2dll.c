@@ -32,7 +32,7 @@
 
 #include <os2.h>
 #include "clibint.h"
-#include "main.h"
+#include "wlibdll.h"
 
 unsigned __dll_initialize()
 {
