@@ -30,14 +30,15 @@
 ****************************************************************************/
 
 
+#include "cvars.h"
 #include "sjis2unc.h"
 
-unsigned int JIS2Unicode( unsigned short dbc )
+unsigned JIS2Unicode( unsigned dbc )
 {
     unsigned short hibyte;
     unsigned short lobyte;
 
-    hibyte = dbc >> 8;
+    hibyte = ( dbc >> 8 ) & 0x00FF;
     lobyte = dbc & 0x00FF;
     if( dbc >= 0x8140 && dbc <= 0x84be ) {
         // use table 81_84

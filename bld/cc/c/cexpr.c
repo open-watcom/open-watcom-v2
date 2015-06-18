@@ -88,7 +88,7 @@ void ExprInit( void )
 }
 
 //-----------------------------CNODE-----------------------------------
-TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result_type )
+static TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result_type )
 {
     TREEPTR     tree;
     TYPEPTR     typ;
@@ -104,7 +104,7 @@ TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result_type )
     return( tree );
 }
 
-TYPEPTR Far16Type( TYPEPTR typ )
+static TYPEPTR Far16Type( TYPEPTR typ )
 { // TODO all this stuff should be part of the func defn.
   // not some hack on for later
     TYPEPTR     typ2;
@@ -127,7 +127,7 @@ TYPEPTR Far16Type( TYPEPTR typ )
     return( typ );
 }
 
-TREEPTR FarPtr16Cvt( TREEPTR newparm  )
+static TREEPTR FarPtr16Cvt( TREEPTR newparm  )
 {
     TYPEPTR         parmtyp;
     pointer_class   op1_class;
@@ -146,7 +146,7 @@ TREEPTR FarPtr16Cvt( TREEPTR newparm  )
     return( newparm );
 }
 
-TREEPTR ParmNode( TREEPTR parmlist, TREEPTR newparm, bool far16_func )
+static TREEPTR ParmNode( TREEPTR parmlist, TREEPTR newparm, bool far16_func )
 {
     TREEPTR     tree;
     TYPEPTR     parmtyp;
@@ -207,7 +207,7 @@ type_modifiers FlagOps( op_flags ops )
     return( flags );
 }
 
-TREEPTR ConstLeaf( void )
+static TREEPTR ConstLeaf( void )
 {
     TREEPTR     leaf;
     FLOATVAL    *flt;
@@ -348,7 +348,7 @@ TREEPTR VarLeaf( SYMPTR sym, SYM_HANDLE sym_handle )
 }
 
 
-TREEPTR SymLeaf( void )
+static TREEPTR SymLeaf( void )
 {
     SYM_HANDLE      sym_handle;
     SYM_HANDLE      sym0_handle;
@@ -645,7 +645,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
 }
 
 
-TREEPTR VoidRValue( TREEPTR tree )
+static TREEPTR VoidRValue( TREEPTR tree )
 {
     tree = TakeRValue( tree, 1 );
     return( tree );
@@ -888,7 +888,7 @@ static TREEPTR CheckBasedPtr( TREEPTR tree, TYPEPTR typ, type_modifiers *p_flags
 }
 
 
-TREEPTR PtrOp( TREEPTR tree )
+static TREEPTR PtrOp( TREEPTR tree )
 {
     TYPEPTR         ptrtyp;
     TYPEPTR         typ;
@@ -967,7 +967,7 @@ static TYPEPTR Ptr2Struct( TYPEPTR typ )
 }
 
 
-TREEPTR DotOp( TREEPTR tree )
+static TREEPTR DotOp( TREEPTR tree )
 {
     TYPEPTR             typ;
     TYPEPTR             get_typ;
@@ -1019,7 +1019,7 @@ TREEPTR DotOp( TREEPTR tree )
 }
 
 
-TREEPTR ArrowOp( TREEPTR tree )
+static TREEPTR ArrowOp( TREEPTR tree )
 {
     TYPEPTR             typ;
     TYPEPTR             get_typ;
@@ -1064,7 +1064,7 @@ TREEPTR ArrowOp( TREEPTR tree )
     return( tree );
 }
 
-TREEPTR IncDec( TREEPTR tree, TOKEN opr )
+static TREEPTR IncDec( TREEPTR tree, TOKEN opr )
 {
     op_flags    volatile_flag;
 

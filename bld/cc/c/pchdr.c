@@ -574,7 +574,7 @@ static void OutPutTags( void )
     WalkTagList( OutPutATag );
 }
 
-void SetTypeIndex( TYPEPTR typ )
+static void SetTypeIndex( TYPEPTR typ )
 {
     ++PH_TypeCount;
     typ->u1.type_index = PH_TypeCount;
@@ -942,7 +942,7 @@ static void OutPutSymbols( void )
     }
 }
 
-void OutPutEverything( void )
+static void OutPutEverything( void )
 {
     PH_SymHashCount = 0;
     PH_FileCount = 0;
@@ -1637,7 +1637,7 @@ static char *FixupMsgFlags( char *p, unsigned len )
     return( p );
 }
 
-void FixupFNames( void )
+static void FixupFNames( void )
 {
     FNAMEPTR    *lnk;
     FNAMEPTR    flist;
@@ -1653,7 +1653,7 @@ void FixupFNames( void )
     }
 }
 
-bool ValidHeader( pheader *pch )
+static bool ValidHeader( pheader *pch )
 {
     if( (pch->signature == PCH_SIGNATURE)
       && (pch->version == PCH_VERSION_HOST)
@@ -1667,7 +1667,7 @@ bool ValidHeader( pheader *pch )
     return( FALSE );                // indicate unusable pre-compiled header
 }
 
-int LoadPreCompiledHeader( char *p, pheader *pch )
+static int LoadPreCompiledHeader( char *p, pheader *pch )
 {
     int         rc;
 
@@ -1677,8 +1677,6 @@ int LoadPreCompiledHeader( char *p, pheader *pch )
     CMemFree( PCHMacroHash );
     return( rc );
 }
-
-extern void SetNextSymHandle( unsigned val );
 
 static int FixupDataStructures( char *p, pheader *pch )
 {
@@ -1722,7 +1720,7 @@ void FreePreCompiledHeader( void )
     FEfree( PCH_SymArray );
 }
 
-void AbortPreCompiledHeader( void )
+static void AbortPreCompiledHeader( void )
 {
     FreePreCompiledHeader();
     CMemFree( TagArray );
@@ -1837,12 +1835,12 @@ int UsePreCompiledHeader( const char *filename )
     return( 0 );
 }
 
-void SetDebugType( TYPEPTR typ )
+static void SetDebugType( TYPEPTR typ )
 {
     typ->u1.debug_type = DBG_NIL_TYPE;
 }
 
-void SetFuncDebugType( TYPEPTR typ, int index )
+static void SetFuncDebugType( TYPEPTR typ, int index )
 {
     index = index;  /* unused */
     typ->u1.debug_type = DBG_NIL_TYPE;

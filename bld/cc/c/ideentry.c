@@ -359,6 +359,7 @@ void IDEAPI IDEStopRunning( void )
     CauseTBreak();
 }
 
+#if 0
 // HELP Interface
 
 IDEBool IDEAPI IDEProvideHelp   // PROVIDE HELP INFORMATION
@@ -369,6 +370,7 @@ IDEBool IDEAPI IDEProvideHelp   // PROVIDE HELP INFORMATION
     msg = msg;
     return( TRUE );
 }
+#endif
 
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {

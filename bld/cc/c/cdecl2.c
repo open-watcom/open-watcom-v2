@@ -186,6 +186,9 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
             CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
             SetDiagPop();
         }
+        if( stg_class != SC_STATIC && stg_class != SC_EXTERN && (sym->mods & FLAG_INLINE) == 0 && CurToken == T_LEFT_BRACE && !CheckFuncMain( sym->name ) ) {
+            CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym->name );
+        }
         sym_handle = SymAddL0( sym->info.hash, sym );
     } else {
         SymGet( &old_sym, old_sym_handle );

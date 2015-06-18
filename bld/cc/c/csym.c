@@ -36,8 +36,6 @@
 
 #define CURR_SYM_HANDLE() ((SYM_HANDLE)(pointer_int)NextSymHandle)
 
-extern  void    CSegFree( SEGADDR_T );
-
 unsigned    SymTypedef;
 
 static  void    NewSym( void );
@@ -279,7 +277,7 @@ void SymCreate( SYMPTR sym, const char *id )
 }
 
 
-void SymAccess( unsigned sym_num )
+static void SymAccess( unsigned sym_num )
 {
     unsigned    buf_num;
     unsigned    seg_num;
@@ -366,7 +364,7 @@ void SymReplace( SYMPTR sym, SYM_HANDLE sym_handle )
 }
 
 
-SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
+static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     SYM_HASHPTR     hsym;
     TYPEPTR         typ;
@@ -446,7 +444,7 @@ SYM_HANDLE SymAddL0( id_hash_idx h, SYMPTR new_sym )
 }
 
 
-SYM_HANDLE GetNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
+static SYM_HANDLE GetNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
 {
     char            name[3];
     SYM_HANDLE      sym_handle;
@@ -898,7 +896,7 @@ static SYM_HASHPTR FreeSym( void )
 }
 
 
-void AsgnSegs( SYM_HANDLE sym_handle )
+static void AsgnSegs( SYM_HANDLE sym_handle )
 {
     SYM_ENTRY   sym;
 

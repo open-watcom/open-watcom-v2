@@ -379,7 +379,7 @@ static  char    Operator[] = {
     #undef OPERATORS_ONLY
 };
 
-opr_code TokenToOperator( TOKEN token )
+static opr_code TokenToOperator( TOKEN token )
 {
     return( Operator[token] );
 }
@@ -437,7 +437,7 @@ DATA_TYPE DataTypeOf( TYPEPTR typ )
 // 8 - far16 func
 // 9 - interrupt func
 
-pointer_class PointerClass( TYPEPTR typ )
+static pointer_class PointerClass( TYPEPTR typ )
 {
     type_modifiers    flags;
     pointer_class     class;
@@ -630,7 +630,7 @@ static int CommRelOp( int opr )
 }
 
 
-bool IsZero( TREEPTR tree )
+static bool IsZero( TREEPTR tree )
 {
     bool    ret;
 
@@ -646,7 +646,7 @@ bool IsZero( TREEPTR tree )
 }
 
 
-TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
+static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
 {
     TYPEPTR         typ2;
     type_modifiers  typ1_flags, typ2_flags;
@@ -686,7 +686,7 @@ TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
 
 
 /* Convert a scalar to boolean */
-TREEPTR BoolConv( TYPEPTR typ, TREEPTR tree )
+static TREEPTR BoolConv( TYPEPTR typ, TREEPTR tree )
 {
     if( tree->op.opr == OPR_ERROR ) {
         return( ErrorNode( tree ) );

@@ -164,11 +164,22 @@ static struct {
     #undef pick
 };
 
+static enum main_names checkMain( const char *name )
+{
+    enum main_names     main_entry;
+
+    for( main_entry = MAIN_WMAIN; main_entry < MAIN_NUM; ++main_entry ) {
+       if( memcmp( name, MainNames[main_entry].name, MainNames[main_entry].len ) == 0 ) {
+           break;
+       }
+    }
+    return( main_entry );
+}
+
 static void BeginFunc( void )
 {
     char                *name;
     char                *segname;
-    enum main_names     main_entry;
 
     if( CurFunc->seginfo == NULL ) {
         CurFunc->seginfo = DefCodeSegment;
@@ -185,14 +196,7 @@ static void BeginFunc( void )
             }
         }
     }
-    name = CurFunc->name;
-    for( main_entry = MAIN_WMAIN; main_entry < MAIN_NUM; ++main_entry ) {
-       if( memcmp( name, MainNames[main_entry].name, MainNames[main_entry].len ) == 0 ) {
-           break;
-       }
-    }
-
-    switch( main_entry ) {
+    switch( checkMain( CurFunc->name ) ) {
     case MAIN_WMAIN:
         CompFlags.has_wchar_entry =1;
         // fall through!
@@ -230,6 +234,23 @@ static void BeginFunc( void )
     }
 }
 
+bool CheckFuncMain( const char *name )
+{
+    switch( checkMain( name ) ) {
+    case MAIN_MAIN:
+        return( true );
+    case MAIN_WMAIN:
+    case MAIN_WWINMAIN:
+    case MAIN_WINMAIN:
+    case MAIN_WLIBMAIN:
+    case MAIN_WDLLMAIN:
+    case MAIN_LIBMAIN:
+    case MAIN_DLLMAIN:
+    case MAIN_NUM:
+    default:
+        return( false );
+    }
+}
 
 static void  ArgPromotion( SYMPTR sym )
 {

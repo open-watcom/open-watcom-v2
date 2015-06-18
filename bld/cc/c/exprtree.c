@@ -40,7 +40,7 @@ void InitExprTree( void )
     ExprNodeList = NULL;
 }
 
-void AllocMoreExprNodes( void )
+static void AllocMoreExprNodes( void )
 {
     TREEPTR     node;
     int         i;

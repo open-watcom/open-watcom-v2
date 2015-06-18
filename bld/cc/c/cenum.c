@@ -135,7 +135,7 @@ struct { DATA_TYPE decl_type; target_size size; } ItypeTable[ENUM_SIZE] =
     { TYPE_ULONG64, TARGET_LONG64 },//U64
 };
 
-void get_msg_range( char *buff, enum enum_rng index )
+static void get_msg_range( char *buff, enum enum_rng index )
 {
     if( index & 1 ) {
         sprintf( buff, "%llu to %llu", RangeTable[index][LOW].u._64[0], RangeTable[index][HIGH].u._64[0] );

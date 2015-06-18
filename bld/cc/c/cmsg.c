@@ -31,9 +31,9 @@
 
 
 #include <stddef.h>
+#include "cvars.h"
 #include "target.h"
 #include "intlload.h"
-#include "cerrs.h"
 
 static IntlData *internationalData; // translated messages
 
