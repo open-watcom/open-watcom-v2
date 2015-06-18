@@ -196,7 +196,7 @@ static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage lin
     labelList = new_label;
 }
 
-void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_linkage linkage ) {
+static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_linkage linkage ) {
 //****************************************************************************************
 
     label_list          new_label;

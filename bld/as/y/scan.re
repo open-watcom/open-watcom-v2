@@ -1,6 +1,8 @@
 #include "as.h"
 #include "lexyacc.h"
 #include "ytab.h"
+#include "tokens.h"
+#include "asparser.h"
 #ifdef _STANDALONE_
 #include "preproc.h"
 #endif
@@ -11,11 +13,6 @@
 #define YYLIMIT         limit
 #define YYMARKER        marker
 #define YYFILL( n )     {fill();}
-
-extern YYSTYPE yylval;
-#ifndef _STANDALONE_
-extern const char *AsmInStr;    // The input string.
-#endif
 
 #ifdef _STANDALONE_
 int CurrLineno = 1;             // This pair is used by the parser and the
@@ -37,7 +34,7 @@ static char *cursor, *limit, *marker, *tok, *eofPtr;
 static const char *cursor, *limit, *marker, *tok, *eofPtr;
 #endif
 static char *_yytext;
-static int  maxyytextlen = 1, yytextlen;
+static size_t maxyytextlen = 1, yytextlen;
 static char *dirOpStr = NULL;   // used to keep directive string data
 static char *cStr = NULL;       // used to keep scanned C-style string data
 
@@ -49,9 +46,12 @@ static size_t ppRead( char *buffer, size_t numchar ) {
     int     c = 0;
 
     while( c != EOF && count < numchar ) {
-        buffer[count++] = c = PP_Char();
+        c = PP_Char();
+        buffer[count++] = (char)c;
     }
-    if( c == EOF ) count--;
+    if( c == EOF ) {
+        count--;
+    }
   #ifdef AS_DEBUG_DUMP
     if( _IsOption( DUMP_LEXER_BUFFER ) ) {
 
@@ -136,8 +136,8 @@ static char *stripBackQuotes( char *str ) {
     return( str + 1 );
 }
 
-extern void AsLexerFini( void ) {
-//*******************************
+void AsLexerFini( void ) {
+//************************
 // Cleanup and reset states for next file (if any)
 
 #ifdef _STANDALONE_
@@ -188,7 +188,7 @@ static void fill( void ) {
 //************************
 #ifdef _STANDALONE_
 
-    unsigned int cnt;
+    size_t cnt;
 
     if(!eofPtr) {
         cnt = tok - bot;
@@ -222,7 +222,7 @@ static void fill( void ) {
     }
 #else
 
-    int len;
+    size_t len;
 
     if( !eofPtr ) {
         len = strlen( AsmInStr );
@@ -259,8 +259,8 @@ ppchar  = "#";          /* preprocessor character */
 empstr  = "";           /* empty string */
 */
 
-extern int yylex( void ) {
-//**************************
+int yylex( void ) {
+//*****************
 
         if( DirGetNextScanState() == TRUE ) goto getdirop;
 std:    tok = cursor;
