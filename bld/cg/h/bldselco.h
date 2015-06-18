@@ -24,33 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Build code for a selection (switch) statement.
 *
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "coderep.h"
-#include "indvars.h"
-#include "model.h"
-#include "inssched.h"
+typedef signed_32   cost_val;
 
-enum {
-    F_NONE      = 0x0000,
-    F_ALU       = 0x0001,
-    F_FOP       = 0x0004,
-    F_LDSTR     = 0x0008,
-};
-
-static const FU_entry FUnits[] = {
-    /* units                    unit_stall  opnd_stall */
-    F_NONE,                     0,          0,      /* NO */
-    F_ALU,                      1,          1,      /* ALU */
-    F_ALU,                      1,          1,      /* LDSTR */
-};
-
-const FU_entry *FUEntry( instruction *ins )
-{
-    return( &FUnits[ ins->u.gen_table->func_unit ] );
-}
+extern  cost_val        IfCost(sel_handle,int);
+extern  name            *ScanCall(tbl_control*,name*,type_class_def);
+extern  cost_val        JumpCost(sel_handle);
+extern  cost_val        ScanCost(sel_handle);
+extern  tbl_control     *MakeScanTab(select_list *,signed_32,label_handle,cg_type,cg_type);
+extern  tbl_control     *MakeJmpTab(select_list *,signed_32,signed_32,label_handle);
+extern  name            *SelIdx(tbl_control *,an);
+extern  type_def        *SelNodeType(an,bool);
+extern  void            MkSelOp( name *idx, type_class_def class );

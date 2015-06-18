@@ -34,10 +34,10 @@
 #include "score.h"
 #include "zerobits.h"
 #include "makeins.h"
+#include "blips.h"
 
 extern  bool            UnChangeable(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            SCBlip(void);
 extern  bool            SideEffect(instruction*);
 extern  bool            DoesSomething(instruction*);
 extern  void            DoNothing(instruction*);

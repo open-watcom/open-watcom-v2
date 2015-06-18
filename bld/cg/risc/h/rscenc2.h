@@ -30,27 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "coderep.h"
-#include "indvars.h"
-#include "model.h"
-#include "inssched.h"
-
-enum {
-    F_NONE      = 0x0000,
-    F_ALU       = 0x0001,
-    F_FOP       = 0x0004,
-    F_LDSTR     = 0x0008,
-};
-
-static const FU_entry FUnits[] = {
-    /* units                    unit_stall  opnd_stall */
-    F_NONE,                     0,          0,      /* NO */
-    F_ALU,                      1,          1,      /* ALU */
-    F_ALU,                      1,          1,      /* LDSTR */
-};
-
-const FU_entry *FUEntry( instruction *ins )
-{
-    return( &FUnits[ ins->u.gen_table->func_unit ] );
-}
+extern  void    EncodeRet( oc_ret * );
+extern  void    EncodeCall( oc_handle * );
+extern  void    EncodeJump( oc_handle * );
+extern  void    EncodeCond( oc_jcond * );

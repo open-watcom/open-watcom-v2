@@ -31,15 +31,11 @@
 
 
 #undef FAR
-#include "cgstd.h"
-#include "cgdefs.h"
-#if 0
-#include "cgblip.h"
-#endif
 #include "zoiks.h"
-#include "cgaux.h"
-#include "cg.h"
+#include "cgdefs.h"
 #include "coderep.h"
+#include "onexit.h"
+#include "blips.h"
 #include "feprotos.h"
 
 #if 0
@@ -59,11 +55,9 @@ static    bool          Zoiks2;
 
 
 bool                    BlipsOn;
-// static HANDLE                blipHandle;
+// static HANDLE        blipHandle;
 // static file_mapping  *fileMapping;
 
-extern  void            FatalError( const char * );
-extern  bool            TBreak();
 
 void    InitBlip() {
 /******************/
@@ -108,9 +102,9 @@ bool    WantZoiks2() {
 }
 
 
-void    LNBlip( unsigned num ) {
-/******************************/
-
+void    LNBlip( source_line_number num )
+/**************************************/
+{
     num = num;
 }
 

@@ -43,6 +43,11 @@
 #include "objout.h"
 #include "makeaddr.h"
 #include "objio.h"
+#include "dominate.h"
+#include "inssched.h"
+#include "peepopt.h"
+#include "memlimit.h"
+#include "blips.h"
 #include "feprotos.h"
 
 
@@ -63,7 +68,6 @@ extern  bool            LoopEnregister( void );
 extern  bool            CommonInvariant( void );
 extern  bool            TransLoops( bool );
 extern  bool            IndVars( void );
-extern  void            BlowAwayFreeLists( void );
 extern  bool            BlkTooBig( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
@@ -101,7 +105,6 @@ extern  void            MergeIndex( void );
 extern  void            ScoreInit( void );
 extern  void            ScoreFini( void );
 extern  type_class_def  TypeClass( type_def * );
-extern  void            FlushOpt( void );
 extern  hw_reg_set      AllCacheRegs( void );
 extern  void            AllocALocal( name * );
 extern  void            ParmPropagate( void );
@@ -124,9 +127,7 @@ extern  void            FixBreak( void );
 extern  void            RemoveBreak( void );
 extern  instruction     *NeedIndex( instruction * );
 extern  void            DeadInstructions( void );
-extern  void            Schedule( void );
 extern  bool            CharsAndShortsToInts( void );
-extern  void            LNBlip( source_line_number );
 extern  void            SetInOut( block * );
 extern  bool            LdStAlloc( void );
 extern  void            LdStCompress( void );
@@ -136,11 +137,9 @@ extern  bool            BGInInline( void );
 extern  void            AddCacheRegs( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
-extern  bool            PeepOpt( block *, block *(*)(block *,void *), block *, bool );
 extern  void            PropNullInfo( void );
 extern  void            ReConstFold( void );
 extern  void            FlushQueue( void );
-extern  bool            CalcDominatorInfo( void );
 
 static  bool            abortCG;
 

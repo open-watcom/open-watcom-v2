@@ -37,16 +37,16 @@
 #include "cgmisc.h"
 #include "coderep.h"
 #include "objio.h"
+#include "onexit.h"
+#include "qtimer.h"
 #include "feprotos.h"
 
-extern void             GrabTimer( void );
-extern void             ReleTimer( void );
 
 static  bool volatile   BrkFlag;
 static  bool            OnExitFlag = TRUE;
 
 
-void SigIntFunc( int sig_num )
+static void SigIntFunc( int sig_num )
 /****************************/
 {
     sig_num = sig_num;
@@ -54,20 +54,20 @@ void SigIntFunc( int sig_num )
 }
 
 
-void BrkInit( void )
+static void BrkInit( void )
 /******************/
 {
     signal( SIGINT, SigIntFunc );
 }
 
 
-void BrkFini( void )
+static void BrkFini( void )
 /******************/
 {
 }
 
 
-void InitOnExit( void )
+static void InitOnExit( void )
 /*********************/
 {
     if( OnExitFlag ) {

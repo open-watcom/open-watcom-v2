@@ -30,11 +30,19 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
+#include "hwreg.h"
+#include "bitset.h"
+#include "typclass.h"
+#include "opcodes.h"
+#include "inslist.h"
+#include "blips.h"
+
 void BlipInit()
 {
 }
 
-void Blip( int location, char ch )
+void Blip( unsigned short location, char ch )
 {
     location = location;
     ch = ch;

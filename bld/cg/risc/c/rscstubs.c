@@ -37,6 +37,7 @@
 #include "regset.h"
 #include "zoiks.h"
 #include "x87.h"
+#include "objout.h"
 
 
 /* KLUDGEY crud for segment register */

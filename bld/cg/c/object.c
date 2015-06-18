@@ -36,6 +36,7 @@
 #include "zoiks.h"
 #include "data.h"
 #include "objout.h"
+#include "objprof.h"
 #include "feprotos.h"
 
 extern  void            CodeLabel(label_handle,unsigned);
@@ -56,8 +57,6 @@ extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
 extern  bool_maybe      ReDefinedBy( instruction *, name * );
-extern  void            StartBlockProfiling( block *blk );
-extern  void            EndBlockProfiling( void );
 
 extern  void            *EdgeStackInit( void );
 extern  void            EdgeStackFini( void * );

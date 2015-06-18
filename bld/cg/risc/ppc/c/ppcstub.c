@@ -35,21 +35,23 @@
 #include "addrname.h"
 #include "rttable.h"
 #include "zoiks.h"
+#include "objprof.h"
 
-void StartBlockProfiling( block *blk ) {
-/**************************************/
 
+void StartBlockProfiling( block *blk )
+/************************************/
+{
     blk = blk;
 }
 
-void EndBlockProfiling() {
-/************************/
-
+void EndBlockProfiling( void )
+/****************************/
+{
 }
 
-segment_id GenP5ProfileData( char *fe_name, label_handle *data ) {
-/****************************************************************/
-    fe_name = fe_name;
-    data = data;
+segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
+/***********************************************************************************/
+{
+    fe_name = fe_name; data = data; stack = stack;
     return( 0 );
 }

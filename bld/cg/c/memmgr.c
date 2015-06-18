@@ -77,6 +77,7 @@ essentially no worst case performance scenario.
     #include <sys/seginfo.h>
 #endif
 #include "utils.h"
+#include "onexit.h"
 #include "feprotos.h"
 
 #ifdef __DOS__
@@ -122,7 +123,6 @@ extern      short   __psp;
 typedef pointer_int     tag;
 
 extern bool     GetEnvVar( char *, char *, int );
-extern void     FatalError( const char * );
 
 
 #define _1K             1024L

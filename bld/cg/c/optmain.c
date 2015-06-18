@@ -33,18 +33,18 @@
 #include "freelist.h"
 #include "typedef.h"
 #include "objout.h"
+#include "inslist.h"
+#include "blips.h"
 
 extern  void            FreePendingDeletes( void );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  void            OutputOC( any_oc *, any_oc * );
 extern  void            OptPull( void );
-extern  void            PLBlip( void );
 extern  void            OptPush( void );
 extern  void            AddInstr( ins_entry *, ins_entry * );
 extern  ins_entry       *NewInstr( any_oc * );
 extern  oc_class        PrevClass( ins_entry * );
 extern  void            TryScrapLabel( label_handle );
-extern  void            PSBlip( void );
 extern  void            FreeInstr( ins_entry * );
 extern  pointer_int     MemInUse( void );
 extern  ins_entry       *NextIns( ins_entry * );

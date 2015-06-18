@@ -31,7 +31,16 @@
 
 
 #include "cgstd.h"
-void Blip(unsigned_16 loc,char ch )
+#include "hwreg.h"
+#include "bitset.h"
+#include "typclass.h"
+#include "opcodes.h"
+#include "inslist.h"
+#include "qtimer.h"
+#include "blips.h"
+
+
+void Blip( unsigned short loc, char ch )
 {
     loc = loc;
     ch = ch;
@@ -39,13 +48,13 @@ void Blip(unsigned_16 loc,char ch )
 void BlipInit( void )
 {
 }
-uint GetTickCnt()
+uint GetTickCnt( void )
 {
     return( 0 );
 }
-void GrabTimer()
+void GrabTimer( void )
 {
 }
-void ReleTimer()
+void ReleTimer( void )
 {
 }

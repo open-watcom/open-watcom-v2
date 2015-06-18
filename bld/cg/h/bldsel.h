@@ -24,33 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Build code for a selection (switch) statement.
 *
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "coderep.h"
-#include "indvars.h"
-#include "model.h"
-#include "inssched.h"
-
-enum {
-    F_NONE      = 0x0000,
-    F_ALU       = 0x0001,
-    F_FOP       = 0x0004,
-    F_LDSTR     = 0x0008,
-};
-
-static const FU_entry FUnits[] = {
-    /* units                    unit_stall  opnd_stall */
-    F_NONE,                     0,          0,      /* NO */
-    F_ALU,                      1,          1,      /* ALU */
-    F_ALU,                      1,          1,      /* LDSTR */
-};
-
-const FU_entry *FUEntry( instruction *ins )
-{
-    return( &FUnits[ ins->u.gen_table->func_unit ] );
-}
+extern sel_handle   BGSelInit( void );
+extern void         BGSelCase( sel_handle s_node, label_handle label, signed_32 value );
+extern void         BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );
+extern void         BGSelOther( sel_handle s_node, label_handle other );
+extern int          SelCompare( signed_32 lo1, signed_32 lo2 );
+extern cg_type      SelType( unsigned_32 value_range );
+extern signed_32    NumValues( select_list *list, signed_32 hi );
+extern void         FreeTable( tbl_control *table );
+extern void         BGSelect( sel_handle s_node, an node, cg_switch_type allowed );

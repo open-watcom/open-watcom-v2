@@ -35,8 +35,8 @@
 #include "zoiks.h"
 #include "data.h"
 #include "namelist.h"
+#include "blips.h"
 
-extern  void            EXBlip(void);
 extern  instruction     *Reduce(instruction*);
 extern  int             NumOperands(instruction*);
 extern  instruction     *NeedIndex(instruction*);

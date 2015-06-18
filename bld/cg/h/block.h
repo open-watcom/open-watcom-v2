@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "dominate.h"
+#include "dominati.h"
 #include "blocknum.h"
 
 /* aligned */

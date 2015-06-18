@@ -24,23 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Abnormal termination processing.
 *
 ****************************************************************************/
 
 
-//
-// MEMWRAP     : C library memory manager wrappers
-//
-// Modified     By:             Reason:
-// --------     ---             -------
-// 89/08/15     G. Coschi       initial implementation
-// 12-mar-92    Craig Eisler    modified for NT
-// 15-jan-93    B.J. Stecher    added SAVE stuff so that things work with the
-//                              "/r" compiled library when this file is not
-//                              is not compiled "/r"
-// 26-may-95    M.J. Carmody    get rid off malloc,free
-#include <string.h>
-#include <stdlib.h>
-void stbubg( void ){}
+extern bool TBreak( void );
+extern void CauseTBreak( void );
+extern void FatalError( const char *str );

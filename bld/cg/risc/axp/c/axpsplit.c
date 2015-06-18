@@ -37,6 +37,7 @@
 #include "makeins.h"
 #include "rtrtn.h"
 #include "namelist.h"
+#include "rscconst.h"
 
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  name            *AllocRegName(hw_reg_set);

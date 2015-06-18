@@ -35,8 +35,9 @@
 #include "zoiks.h"
 #include "cgdefs.h"
 #include "data.h"
+#include "peepopt.h"
+#include "propind.h"
 
-extern bool         PeepOptBlock(block *, bool);
 extern void         SuffixIns(instruction *,instruction *);
 extern bool         SameThing(name *,name *);
 extern name         *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );

@@ -37,6 +37,7 @@
 #include "seldef.h"
 #include "types.h"
 #include "makeins.h"
+#include "bldselco.h"
 
 extern  void            AddIns( instruction * );
 
@@ -44,26 +45,26 @@ extern  type_length     TypeClassLength[];
 
 #define MAX_COST        0x7FFF
 
-int     ScanCost( sel_handle s_node )
-/***********************************/
+cost_val ScanCost( sel_handle s_node )
+/************************************/
 {
     s_node = s_node;
     return( MAX_COST );
 }
 
 
-int     JumpCost( sel_handle s_node )
-/***********************************/
+cost_val JumpCost( sel_handle s_node )
+/************************************/
 {
     s_node = s_node;
     return( MAX_COST );
 }
 
 
-int     IfCost( sel_handle s_node )
-/*********************************/
+cost_val IfCost( sel_handle s_node, int entries )
+/***********************************************/
 {
-    s_node = s_node;
+    s_node = s_node; entries = entries;
     return( 0 );
 }
 
@@ -80,8 +81,8 @@ tbl_control *MakeScanTab( select_list *list, signed_32 hi, label_handle other, c
 }
 
 
-tbl_control     *MakeJmpTab( select_list *list, signed_32 lo, signed_32 hi, label_handle other )
-/**********************************************************************************************/
+tbl_control *MakeJmpTab( select_list *list, signed_32 lo, signed_32 hi, label_handle other )
+/******************************************************************************************/
 {
     list = list;
     lo = lo;

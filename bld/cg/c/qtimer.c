@@ -30,15 +30,18 @@
 ****************************************************************************/
 
 
-void GrabTimer()
+#include "qtimer.h"
+
+
+void GrabTimer( void )
 {
 }
 
-void ReleTimer()
+void ReleTimer( void )
 {
 }
 
-unsigned GetTickCnt()
+unsigned GetTickCnt( void )
 {
     return( 0 );
 }

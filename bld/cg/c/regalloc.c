@@ -37,6 +37,7 @@
 #include "foldins.h"
 #include "namelist.h"
 #include "dbsyms.h"
+#include "blips.h"
 
 enum allocation_state {
     ALLOC_DONE,
@@ -48,7 +49,6 @@ extern  bool            SideEffect(instruction *);
 extern  void            NowDead(name *,conflict_node *,name_set *,block *);
 extern  void            PrefixIns(instruction *,instruction *);
 extern  void            BurnRegTree(reg_tree *);
-extern  void            IMBlip(void);
 extern  conflict_node   *NameConflict(instruction *,name *);
 extern  void            BuildNameTree(conflict_node *);
 extern  void            AxeDeadCode(void);
@@ -82,7 +82,6 @@ extern  bool            PropRegsOne(void);
 extern  conflict_node   *FindConflictNode(name *,block *,instruction *);
 extern  hw_reg_set      HighOffsetReg(hw_reg_set);
 extern  void            DeadInstructions(void);
-extern  void            GRBlip(void);
 extern  bool            IsSegReg(hw_reg_set);
 extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 extern  bool            MoreConflicts(void);

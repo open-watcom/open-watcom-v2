@@ -33,6 +33,8 @@
 #include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
+#include "onexit.h"
+#include "blips.h"
 #include "feprotos.h"
 
 

@@ -30,27 +30,21 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "coderep.h"
-#include "indvars.h"
-#include "model.h"
-#include "inssched.h"
+/* include dump routines */
 
-enum {
-    F_NONE      = 0x0000,
-    F_ALU       = 0x0001,
-    F_FOP       = 0x0004,
-    F_LDSTR     = 0x0008,
-};
-
-static const FU_entry FUnits[] = {
-    /* units                    unit_stall  opnd_stall */
-    F_NONE,                     0,          0,      /* NO */
-    F_ALU,                      1,          1,      /* ALU */
-    F_ALU,                      1,          1,      /* LDSTR */
-};
-
-const FU_entry *FUEntry( instruction *ins )
-{
-    return( &FUnits[ ins->u.gen_table->func_unit ] );
-}
+extern void DumpFPUIns();
+extern void Dumpan();
+extern void DumpBlk();
+extern void DumpConflicts();
+extern void DumpCurrLoop();
+extern void DumpIns();
+extern void DumpOpcodeName();
+extern void DumpRegTree();
+extern void DumpSc();
+extern void DumpGen();
+extern void DumpTree();
+extern void DumpCurrLoop();
+extern void DumpIVList();
+extern void DumpInvariants();
+extern void DumpOpt();
+extern void DumpDataDag();

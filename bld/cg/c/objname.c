@@ -153,7 +153,7 @@ static int copyBaseName( char fce, char *dst, int dst_len, const char *src, int 
     }
 }
 
-char *xtoa( char *p, unsigned x )
+static char *xtoa( char *p, unsigned x )
 /*******************************/
 {
     if( x > 10 ) {

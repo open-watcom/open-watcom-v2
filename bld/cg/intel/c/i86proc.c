@@ -43,6 +43,7 @@
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "flowsave.h"
 #include "feprotos.h"
 
 extern  void        OutDLLExport(uint,cg_sym_handle);
@@ -90,8 +91,6 @@ extern  label_handle GenFar16Thunk( label_handle, unsigned_16, bool );
 extern  void        GenP5ProfilingProlog( label_handle );
 extern  void        GenP5ProfilingEpilog( label_handle );
 extern  bool        SymIsExported( cg_sym_handle );
-extern  void        FlowSave( hw_reg_set * );
-extern  void        FlowRestore( hw_reg_set * );
 
 /* forward declarations */
 static  void        MoveParms( void );

@@ -44,6 +44,7 @@
 #include "banner.h"
 #include "utils.h"
 #include "objio.h"
+#include "onexit.h"
 #include "feprotos.h"
 
 
@@ -68,7 +69,6 @@ typedef struct buf {
     uint        bytes_written;  // number of bytes written to buffer
 } buf;
 
-extern  void            FatalError( const char * );
 
 static  objoffset       ObjOffset;
 static  handle          ObjFile;

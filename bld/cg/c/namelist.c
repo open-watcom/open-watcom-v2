@@ -37,8 +37,9 @@
 #include "zoiks.h"
 #include "namelist.h"
 #include "data.h"
+#include "seldef.h"
+#include "bldsel.h"
 
-extern  void            FreeTable(cg_sym_handle);
 extern  type_class_def  RegClass(hw_reg_set);
 extern  type_def        *ClassType(type_class_def);
 extern  pointer         LkAddBack(cg_sym_handle,pointer);

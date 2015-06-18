@@ -41,6 +41,8 @@
 #include "foldins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "peepopt.h"
+#include "blips.h"
 #include "feprotos.h"
 
 
@@ -64,7 +66,6 @@ extern int              NumOperands(instruction*);
 extern bool             InsDead(void);
 extern bool             LoadAToMove(instruction*);
 extern bool             Hoistable(instruction*,block*);
-extern void             SXBlip(void);
 extern  bool            DeadBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  bool            DivIsADog(type_class_def);
@@ -74,7 +75,6 @@ extern  bool            Inducable(block*,instruction*);
 extern  void            MoveHead(block*,block*);
 extern  void            MakeFlowGraph(void);
 extern  bool            BlockTrim(void);
-extern  bool            PeepOpt(block*,block *(*)(block *,block *),block *,bool);
 extern  int             GetLog2(unsigned_32);
 extern  bool            IsSegReg(hw_reg_set);
 extern  void            FindReferences(void);
@@ -1050,10 +1050,11 @@ static  bool    FixStructRet( block *root )
     return( change );
 }
 
-static  block   *NextBlock( block *blk, block *parm )
+static  block   *NextBlock( block *blk, void *parm )
 /***************************************************/
 {
-    if( blk->u.partition == parm ) return( NULL );
+    if( blk->u.partition == (block *)parm )
+        return( NULL );
     return( blk->u.partition );
 }
 

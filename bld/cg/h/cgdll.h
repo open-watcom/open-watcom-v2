@@ -34,3 +34,5 @@
 
 extern struct cg_interface * _CGDLLEXPORT BEDLLInit( struct fe_interface * );
 extern void                  _CGDLLEXPORT BEDLLFini( struct cg_interface * );
+
+extern int __stdcall LibMain( unsigned_32 hdll, unsigned_32 reason, void *reserved );

@@ -39,6 +39,8 @@
 #include "cgmem.h"
 #include "optmac.h"
 #include "dumpio.h"
+#include "memlimit.h"
+#include "onexit.h"
 
 /*  memory tracking levels */
 #define   _NO_TRACKING     0
@@ -51,8 +53,6 @@
     #define _MEMORY_TRACKING _CHUNK_TRACKING
 #endif
 
-extern  void            CalcMemLimit( void );
-extern  void            FatalError(const char *);
 extern  bool            GetEnvVar(char *,char *,int);
 
 

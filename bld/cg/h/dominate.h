@@ -33,12 +33,6 @@
 #ifndef _DOMINATE_H_INCLUDED
 #define _DOMINATE_H_INCLUDED
 
-#include "dbit.gh"
-
-typedef struct dominator_info {
-    dom_bit_set         id;
-    dom_bit_set         post_dominator;
-    dom_bit_set         dominator;
-} dominator_info;
+extern bool CalcDominatorInfo( void );
 
 #endif

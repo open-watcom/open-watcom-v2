@@ -38,6 +38,7 @@
 #include "cgmem.h"
 #include "memout.h"
 #include "cypfunc.h"
+#include "onexit.h"
 
 extern char __near      *bp( void );
 #pragma aux bp = 0x89 0xe8 value [ eax ];
@@ -52,7 +53,6 @@ extern void             setbp( void __near * );
 #pragma aux setbp = 0x89 0xc5 parm [ eax ];
 
 extern  mem_out_action  SetMemOut(mem_out_action);
-extern  void            FatalError(const char *);
 
 void    *SafeRecurseCG( func_sr rtn, void *arg )
 /**********************************************/

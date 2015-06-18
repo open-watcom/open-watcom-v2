@@ -35,6 +35,9 @@
 #include "coderep.h"
 #include "cg.h"
 #include "objio.h"
+#include "onexit.h"
+#include "qtimer.h"
+#include "blips.h"
 #include "feprotos.h"
 
 extern  char            *_BreakFlagPtr;

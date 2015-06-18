@@ -35,10 +35,11 @@
 #include "addrname.h"
 #include "rttable.h"
 #include "zoiks.h"
+#include "objprof.h"
 
 
-extern label_handle GetWeirdPPCDotDotLabel( label_handle lbl )
-/******************************************************/
+label_handle GetWeirdPPCDotDotLabel( label_handle lbl )
+/*****************************************************/
 {
     return( lbl );
 }
@@ -57,10 +58,9 @@ void EndBlockProfiling( void )
 }
 
 
-segment_id GenP5ProfileData( char *fe_name, label_handle *data )
-/**************************************************************/
+segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
+/*********************************************************************************/
 {
-    fe_name = fe_name;
-    data = data;
+    fe_name = fe_name; data = data; stack = stack;
     return( 0 );
 }
