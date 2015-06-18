@@ -55,7 +55,7 @@ char *VerStringTypes[] = {
 
 int NumVerStrings = sizeof( VerStringTypes ) / sizeof( char * );
 
-void FormatFixedInfo( HWND lb, VS_FIXEDFILEINFO far *info )
+static void FormatFixedInfo( HWND lb, VS_FIXEDFILEINFO far *info )
 {
     LBPrintf( lb, "FIXED INFO" );
     LBPrintf( lb, "    signature                 %08lX", info->dwSignature );
@@ -73,7 +73,7 @@ void FormatFixedInfo( HWND lb, VS_FIXEDFILEINFO far *info )
     LBPrintf( lb, "    FileDateLS                %08lX", info->dwFileDateLS );
 }
 
-void FormatTranslationInfo( HWND lb, WORD far *info, UINT infosize )
+static void FormatTranslationInfo( HWND lb, WORD far *info, UINT infosize )
 {
     LBPrintf( lb, "" );
     LBPrintf( lb, "Translation INFO" );
@@ -87,7 +87,7 @@ void FormatTranslationInfo( HWND lb, WORD far *info, UINT infosize )
     }
 }
 
-void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize )
+static void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize )
 {
     char        namebuf[100];
     WORD        i;

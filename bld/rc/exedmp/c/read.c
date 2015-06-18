@@ -41,8 +41,8 @@ TableOrData tableOrData( ResDirEntry *dir )
     else                                            return( DATA );
 }
 
-NameOrID nameOrID( ResDirEntry *dir )
-/************************************/
+static NameOrID nameOrID( ResDirEntry *dir )
+/******************************************/
 {
     if( dir->dir.id_name & PE_RESOURCE_MASK_ON ) return( NAME );
     else                                         return( ID );
@@ -343,8 +343,8 @@ bool loadAllResources( ExeFile *exeFile )
 
 void freeTableContents( ResTableEntry *table );
 
-void freeDirContents( ResDirEntry *dir )
-/***************************************/
+static void freeDirContents( ResDirEntry *dir )
+/*********************************************/
 {
     if( dir == NULL ) {
         return;
