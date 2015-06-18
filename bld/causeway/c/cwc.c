@@ -96,7 +96,7 @@ static unsigned_8 decomp_stub[] = {
 
 static char padding[ 16 ] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
-bool InitOutFileBuffer( FILE *fo )
+static bool InitOutFileBuffer( FILE *fo )
 /********************************/
 {
     fo = fo;
@@ -113,7 +113,7 @@ bool InitOutFileBuffer( FILE *fo )
     return( TRUE );
 }
 
-void FiniOutFileBuffer( FILE *fo )
+static void FiniOutFileBuffer( FILE *fo )
 /********************************/
 {
     if( OutBuffer != NULL ) {
@@ -128,7 +128,7 @@ void FiniOutFileBuffer( FILE *fo )
     }
 }
 
-void WriteBit( FILE *fo, int b )
+static void WriteBit( FILE *fo, int b )
 /******************************/
 {
     // Write a bit to output.
@@ -149,14 +149,14 @@ void WriteBit( FILE *fo, int b )
     }
 }
 
-void WriteByte( unsigned char c )
+static void WriteByte( unsigned char c )
 /*******************************/
 {
     OutBuffer[ OutPos++ ] = c;
     SigOutCount++;
 }
 
-void WriteTerminateCmd( FILE *fo )
+static void WriteTerminateCmd( FILE *fo )
 /********************************/
 {
     WriteBit( fo, 0 );
@@ -167,7 +167,7 @@ void WriteTerminateCmd( FILE *fo )
     WriteByte( 0 );
 }
 
-void WriteFlushInpBufCmd( FILE *fo )
+static void WriteFlushInpBufCmd( FILE *fo )
 /**********************************/
 {
     WriteBit( fo, 0 );
@@ -178,7 +178,7 @@ void WriteFlushInpBufCmd( FILE *fo )
     WriteByte( 0 );
 }
 
-void WriteFlushOutBufCmd( FILE *fo )
+static void WriteFlushOutBufCmd( FILE *fo )
 /**********************************/
 {
     WriteBit( fo, 0 );
@@ -190,7 +190,7 @@ void WriteFlushOutBufCmd( FILE *fo )
 }
 
 
-void WriteStringCmd( FILE *fo )
+static void WriteStringCmd( FILE *fo )
 /*****************************/
 {
     WriteBit( fo, 0 );
@@ -201,7 +201,7 @@ void WriteStringCmd( FILE *fo )
     WriteByte( 0 );
 }
 
-int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
+static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
 /*****************************************************************/
 {
     unsigned_32 len;
@@ -500,7 +500,7 @@ int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
     return( OutTotal );
 }
 
-int ProcessEXE( char *fname, char *oname )
+static int ProcessEXE( char *fname, char *oname )
 /****************************************/
 {
     FILE            *f;
@@ -597,7 +597,7 @@ int ProcessEXE( char *fname, char *oname )
     return( 0 );
 }
 
-int usage( void )
+static int usage( void )
 /***************/
 {
     printf( "Causeway Executable Compressor\n" );
