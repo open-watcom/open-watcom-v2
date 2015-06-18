@@ -358,7 +358,7 @@ coverup:
 /* INT 21 exit function 4c: catch and back ip up 2, set int_id = -3 */
 /* NOTE: this handler may be called with SS != DS */
 
-unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hNext, TSF32 FarPtr client )
+static unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hNext, TSF32 FarPtr client )
 {
     int     eip_mod = 0;
     char    in_debuggee;
@@ -569,10 +569,12 @@ void D32UnHookTimer( void )
     outp( TIMER0, 0 );
 }
 
+#if 0
 char Timer_Mod( void )
 {
     return( timer_mod );
 }
+#endif
 #endif
 
 
