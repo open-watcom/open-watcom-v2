@@ -53,6 +53,8 @@ extra_c_flags_os2 = -zl -zls
 extra_c_flags_win = -zl -zls
 extra_c_flags_qnx = -oais -i"$(new_qnx_h)"
 
+extra_c_flags_hook8087  = -i"../h"
+
 objs_dos = initemu.obj emu8087.obj dosinit.obj
 objs_os2 = initemu2.obj emu8087.obj hook8087.obj
 objs_win = initemuw.obj
