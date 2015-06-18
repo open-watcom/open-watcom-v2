@@ -99,6 +99,7 @@ A destructor will return 'this' as its return value.
 #include "datadtor.h"
 #include "rtti.h"
 #include "calldiag.h"
+#include "cgback.h"
 
 typedef enum {
     CI_EXACT    = 0x01,         // - constructing an exact copy of a class
@@ -1560,7 +1561,7 @@ SYMBOL DtorFindLocn(            // FIND DTOR, CHECK ACCESS, WITH ERR LOC'N
     return dtor;
 }
 
-SYMBOL RoDtorFindTypeLocn       // FIND DTOR FOR USE WITH R/O BLOCKS
+static SYMBOL RoDtorFindTypeLocn       // FIND DTOR FOR USE WITH R/O BLOCKS
     ( TYPE type                 // - type for DTOR
     , TOKEN_LOCN *err_locn )    // - location for errors
 {

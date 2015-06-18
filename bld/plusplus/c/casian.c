@@ -37,6 +37,8 @@
 #endif
 
 #include "scan.h"
+#include "macro.h"
+#include "cmdline.h"
 
 #define LEAD_BYTE_INIT  ( C_DB | C_EX )
 

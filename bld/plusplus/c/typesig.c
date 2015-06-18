@@ -44,7 +44,7 @@
 
 //************* temporary ****************
 
-SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
+static SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
     TYPE type,                  // - class type
     TOKEN_LOCN* err_locn,       // - error location
     bool optional )             // - TRUE ==> is optional

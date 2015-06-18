@@ -42,6 +42,6 @@ bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
 SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
     RTF code )                  // - code for call
 ;
-char *RunTimeCodeString(        // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
+const char *RunTimeCodeString(        // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
     RTF code )                  // - code for function
 ;

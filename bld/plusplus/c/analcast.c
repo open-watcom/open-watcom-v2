@@ -40,6 +40,7 @@
 #include "defarg.h"
 #include "objmodel.h"
 #include "calldiag.h"
+#include "cast.h"
 
 static CNV_DIAG diagExplicit =  // DIAGNOSIS FOR EXPLICIT CAST
 {   ERR_CAST_ILLEGAL            // - impossible
@@ -1567,7 +1568,7 @@ static CNV_RETN doMPtrCast( CONVCTL *ctl )
     return( MembPtrConvert( &ctl->expr->u.subtree[1], ctl->tgt.orig, CNV_CAST ) );
 }
 
-msg_status_t errorStatus( CONVCTL *ctl, MSG_NUM msg )
+static msg_status_t errorStatus( CONVCTL *ctl, MSG_NUM msg )
 {
     msg_status_t status;        // - message status
 
@@ -2938,7 +2939,7 @@ static CNV_DIAG diagImpossible  // DIAGNOSIS FOR IMPOSSIBLE CONVERT FAILURE
     };
 
 
-void ConvCtlInitCommon          // INITIALIZE CONVCTL FOR COMMON-TYPE'ING
+static void ConvCtlInitCommon   // INITIALIZE CONVCTL FOR COMMON-TYPE'ING
     ( CONVCTL* ctl              // - control info.
     , PTREE expr                // - expression
     , CNV_DIAG* diag )          // - diagnosis

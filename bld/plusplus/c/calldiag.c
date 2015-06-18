@@ -34,6 +34,7 @@
 #include "cgfront.h"
 #include "fnovload.h"
 #include "ring.h"
+#include "calldiag.h"
 
 typedef struct {                // DIAG_INFO -- diagnostic information
     TOKEN_LOCN location;        // - error location

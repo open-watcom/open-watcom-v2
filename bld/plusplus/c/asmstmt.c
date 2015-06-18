@@ -144,7 +144,7 @@ static void getAsmLine( VBUF *buff )
     }
 }
 
-TOKEN NextTokenSkipEOL( void )
+static TOKEN NextTokenSkipEOL( void )
 /****************************/
 {
     PPCTL_DISABLE_EOL();

@@ -49,6 +49,8 @@
 #include "initdefs.h"
 #include "asmstmt.h"
 #include "ialias.h"
+#include "cgfront.h"
+
 #include "clibext.h"
 
 // from \watcom\h
@@ -1289,8 +1291,8 @@ static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
     return( found );
 }
 
-bool PragmaName( void *pragma, char **id )
-/****************************************/
+bool PragmaName( AUX_INFO *pragma, char **id )
+/********************************************/
 {
     *id = NULL;
     if( pragma == &DefaultInfo ) {

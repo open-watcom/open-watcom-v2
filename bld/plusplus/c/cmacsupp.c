@@ -31,6 +31,7 @@
 
 #include "plusplus.h"
 #include "preproc.h"
+#include "cmacsupp.h"
 
 
 

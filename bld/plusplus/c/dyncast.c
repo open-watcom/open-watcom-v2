@@ -37,7 +37,7 @@
 #include "analtyid.h"
 #include "rtti.h"
 
-PTREE DynamicCastVoid           // DYNAMIC CAST CODE: VOID *
+static PTREE DynamicCastVoid           // DYNAMIC CAST CODE: VOID *
     ( CONVCTL* ctl )            // - conversion information
 {
     PTREE expr;                 // - cast expression

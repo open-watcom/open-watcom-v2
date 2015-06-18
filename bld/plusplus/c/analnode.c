@@ -1924,7 +1924,7 @@ PTREE* NodeReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
 }
 
 
-PTREE* getTempSrc(              // GET ADDR OF SOURCE OPERAND FOR TEMPORARY
+static PTREE* getTempSrc(       // GET ADDR OF SOURCE OPERAND FOR TEMPORARY
     PTREE* src,                 // - addr[ operand ]
     PTREE* dtor )               // - addr[ addr[ CO_DTOR operand ] ]
 {

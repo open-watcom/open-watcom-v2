@@ -34,6 +34,7 @@
 #define _ASMSTMT_H
 
 #include "vbuf.h"
+#include "asalloc.h"
 #if _INTEL_CPU
   #include "asminlin.h"
 #else

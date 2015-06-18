@@ -1406,7 +1406,7 @@ static CGOP commRelOp( CGOP cgop ) {
     return cgop;
 }
 
-void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
+static void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
 {
     TYPE            op1_type, op2_type, result_type;
     signed_64       val, low, high;

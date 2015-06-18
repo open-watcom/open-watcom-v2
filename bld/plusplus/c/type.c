@@ -454,7 +454,7 @@ TYPE MakeFlagModifier( type_flag flag )
     return( makeFullModifier( flag, NULL, NULL ) );
 }
 
-TYPE MakeVolatileModifier( void )
+static TYPE MakeVolatileModifier( void )
 /*******************************/
 {
     return( MakeFlagModifier( TF1_VOLATILE ) );

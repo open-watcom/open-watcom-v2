@@ -206,6 +206,7 @@ int FETrue(                     // RETURN TRUE
     return( 1 );
 }
 
+#if 0
 int FESymIndex(                 // STUB EXCEPT FOR JAVA
     SYMBOL sym )
 {
@@ -220,6 +221,7 @@ int FECodeBytes(                // STUB EXCEPT FOR JAVA
     buffer = buffer; len = len;
     return( FALSE );
 }
+#endif
 
 static fe_attr basic_attributes(// GET BASIC ATTRIBUTES
     SYMBOL sym )                // - symbol
@@ -1330,7 +1332,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case IMPORT_NAME:
         DbgNotSym();
         DbgNotRetn();
-        retn = CgInfoImportName( sym );
+        retn = (void *)CgInfoImportName( sym );
         break;
     case IMPORT_NAME_S:
         DbgNotSym();

@@ -40,11 +40,12 @@
 #include "cgdata.h"
 #include "iopath.h"
 //#include "hfile.h"
+#include "autodep.h"
 
 static FILE *AutoDepFile;
 
 
-char *DoForceSlash( char *name, char slash )
+static char *DoForceSlash( char *name, char slash )
 {
     char *save = name;
     if( !slash || !save )
