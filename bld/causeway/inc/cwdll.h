@@ -1,6 +1,10 @@
 #pragma library (cwdll)
 
-#define _CWCAPI     __declspec(__cdecl)
+#ifdef __cplusplus
+ #define _CWCAPI     extern "C" __declspec(__cdecl)
+#else
+ #define _CWCAPI     __declspec(__cdecl)
+#endif
 
 /****************************************************************************
 ;Load a module by file name. If the module already exists in memory a new
