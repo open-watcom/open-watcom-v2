@@ -31,11 +31,8 @@
 
 
 #include "variety.h"
-#include <windows.h>
+#include "win.h"
 
-extern int PASCAL DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
-                                            LPSTR cmd, int show,
-                                            int (*pmain)( int, char ** ) );
 extern int main( int, char ** );
 
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
