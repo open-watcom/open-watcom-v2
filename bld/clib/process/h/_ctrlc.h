@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,11 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Break ínterrupt Ctrl+C handling save/restore
 *
 ****************************************************************************/
 
 
-extern  void    (*__int23_exit)( void );
-extern  void    __null_int23_exit( void );
+#ifndef __WINDOWS_386__
+extern      void    __grab_int_ctrl_break( void );
+extern      void    __restore_int_ctrl_break( void );
+#endif
+
