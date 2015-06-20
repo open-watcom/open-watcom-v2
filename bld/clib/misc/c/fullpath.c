@@ -116,7 +116,7 @@ static char *__qnx_fullpath( char *fullpath, const char *path )
 
 #endif
 
-_WCRTLINK CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
+static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
                 ( CHAR_TYPE *buff, const CHAR_TYPE *path, size_t size )
 /*********************************************************************/
 {

@@ -32,6 +32,7 @@
 #include "variety.h"
 #include "extender.h"
 #include "dpmi.h"
+#include "dpmihost.h"
 
 int __DPMI_hosted( void )
 {

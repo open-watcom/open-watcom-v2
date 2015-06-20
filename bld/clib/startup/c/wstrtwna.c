@@ -29,10 +29,15 @@
 ****************************************************************************/
 
 
-extern void __WinMain( void );
-void WinMainCRTStartup( void ) {
+#include "variety.h"
+#include "winmain.h"
+
+
+void WinMainCRTStartup( void )
+{
     __WinMain();
 }
+
 const char _wstart_CopyRight[] =
         "Open Watcom C/C++ Alpha Run-Time system. "
         "Portions Copyright (c) Sybase, Inc. 1988-2002.";

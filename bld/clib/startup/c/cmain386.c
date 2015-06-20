@@ -36,14 +36,13 @@
 #include <malloc.h>
 #include "initarg.h"
 #include "rtstack.h"
+#include "cmain.h"
+#include "cominit.h"
 
-extern  void    __CommonInit( void );
 
 #ifdef __WIDECHAR__
     extern      int     wmain( int, wchar_t ** );
-    #if defined(_M_IX86)
-        #pragma aux     __wCMain  "*";
-    #endif
+
     void __wCMain( void )
     {
         #if !defined(__OSI__)
@@ -55,9 +54,7 @@ extern  void    __CommonInit( void );
     }
 #else
     extern      int     main( int, char ** );
-    #if defined(_M_IX86)
-        #pragma aux     __CMain  "*";
-    #endif
+
     void __CMain( void )
     {
         #if !defined(__OSI__)

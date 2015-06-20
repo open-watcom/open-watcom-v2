@@ -42,6 +42,7 @@
 #include "rtinit.h"
 #include "defwin.h"
 #include "initarg.h"
+#include "_int23.h"
 
 /*
   __int23_exit is used by OS/2 as a general termination routine which unhooks
@@ -61,11 +62,11 @@ _WCRTLINK extern void (*__process_fini)( unsigned, unsigned );
 #endif
 
 
-#if !defined(__UNIX__) && !defined(__WINDOWS_386__) && !defined(__RDOS__) && !defined(__RDOSDEV__)
-void    __null_int23_exit( void ) {}              /* SIGNAL needs it */
-void    (*__int23_exit)( void ) = __null_int23_exit;
-static void _null_exit_rtn( void ) {}
-void    (*__FPE_handler_exit)( void ) = _null_exit_rtn;
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
+void __null_int23_exit( void ) {}              /* SIGNAL needs it */
+void        (*__int23_exit)( void ) = __null_int23_exit;
+void _null_exit_rtn( void ) {}
+void        (*__FPE_handler_exit)( void ) = _null_exit_rtn;
 #endif
 
 _WCRTLINK void exit( int status )
@@ -75,26 +76,22 @@ _WCRTLINK void exit( int status )
         _WindowsExitRtn();
     }
 #endif
-#if !defined(__UNIX__) && !defined(__WINDOWS_386__) && !defined(__RDOS__) && !defined(__RDOSDEV__)
-    (*__int23_exit)();
-#endif
-#if defined(__UNIX__)
-    __FiniRtns( 0, 255 );
-#elif defined(__WINDOWS_386__)
-    if( !__Is_DLL ) {
-        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+#if defined(__WINDOWS_386__)
+    if( __Is_DLL ) {
+        _exit( status );
     }
 #elif defined(__NT__) || defined(__WARP__)
+    (*__int23_exit)();
     if( __Is_DLL ) {
         if( __process_fini != 0 ) {
             (*__process_fini)( FINI_PRIORITY_EXIT, 255 );
         }
-    } else {
-        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+        _exit( status );
     }
-#else
-    __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+#elif defined(__DOS__) || defined(__OS2__) || defined(__WINDOWS__) && defined(_M_I86)
+    (*__int23_exit)();
 #endif
+    __FiniRtns( FINI_PRIORITY_EXIT, 255 );
     _exit( status );
 }
 
@@ -115,7 +112,7 @@ _WCRTLINK void _UnloadCLib( void )
 
 _WCRTLINK void _exit( int status )
 {
-#if !defined(__UNIX__) && !defined(__WINDOWS_386__) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
     (*__int23_exit)();
     (*__FPE_handler_exit)();
 #endif

@@ -24,43 +24,42 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  macros/functions for serialization of access to the heap.
 *
 ****************************************************************************/
 
 
 #ifndef _HEAPACC_H_INCLUDED
 #define _HEAPACC_H_INCLUDED
-/* macros for serialization of accesses to the heap */
+
 #if defined( __MT__ )
-    #if defined( _M_I86 )
-        extern void __AccessFHeap( void );
-        extern void __ReleaseFHeap( void );
-        extern void __AccessNHeap( void );
-        extern void __ReleaseNHeap( void );
-        #define _AccessFHeap()  __AccessFHeap()
-        #define _ReleaseFHeap() __ReleaseFHeap()
-        #define _AccessNHeap()  __AccessNHeap()
-        #define _ReleaseNHeap() __ReleaseNHeap()
-    #else
-      #if !defined( __NETWARE__ )
+  #if defined( _M_I86 )
+    extern void __AccessFHeap( void );
+    extern void __ReleaseFHeap( void );
+    extern void __AccessNHeap( void );
+    extern void __ReleaseNHeap( void );
+    #define _AccessFHeap()  __AccessFHeap()
+    #define _ReleaseFHeap() __ReleaseFHeap()
+    #define _AccessNHeap()  __AccessNHeap()
+    #define _ReleaseNHeap() __ReleaseNHeap()
+  #else
+    #if !defined( __NETWARE__ )
         extern void (*_AccessFHeap)( void );
         extern void (*_ReleaseFHeap)( void );
         extern void (*_AccessNHeap)( void );
         extern void (*_ReleaseNHeap)( void );
-      #else
+    #else
         #define _AccessFHeap()
         #define _ReleaseFHeap()
         #define _AccessNHeap()
         #define _ReleaseNHeap()
-      #endif
     #endif
+  #endif
 #else
     #define _AccessFHeap()
     #define _ReleaseFHeap()
     #define _AccessNHeap()
     #define _ReleaseNHeap()
 #endif
-#endif
 
+#endif

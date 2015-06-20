@@ -31,8 +31,8 @@
 
 #if defined( __MT__ ) && ( defined( __OS2__ ) || defined( _NETWARE_CLIB ) )
 
-extern  unsigned            __GETMAXTHREADS( void );
-#pragma aux __GETMAXTHREADS "*"
+_WCRTLINK extern unsigned   __GetMaxThreads( void );
+#pragma aux __GetMaxThreads "^"
 
 _WCRTDATA extern unsigned   __MaxThreads;
 

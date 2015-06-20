@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  ....Main OS specific function delcarations.
+* Description:  ....Main OS specific function declarations.
 *
 ****************************************************************************/
 

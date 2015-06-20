@@ -50,10 +50,12 @@
 #include "initarg.h"
 #include "thread.h"
 #include "mthread.h"
+#include "fileacc.h"
+#include "heapacc.h"
+#include "trdlstac.h"
+#include "osmain.h"
+#include "cmain.h"
 
-extern void __CMain( void );
-#pragma aux __CMain  "*"
-#pragma aux __RdosMain  "*"
 
 extern void _cexit_( unsigned ret_code );
 #pragma aux _cexit_  "*" parm routine [eax]
@@ -88,7 +90,7 @@ extern  char            _end;
 static char             *_cmd_ptr;
 static wchar_t          *_wcmd_ptr;
 
-void __RdosMain()
+void __RdosMain( void )
 {
     int major, minor, release;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,18 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Default DllMain() for CauseWay DLLs.
+* Description:  __disallow_single_dgroup function declarations.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "dllmain.h"
-
-/* The DllMain signature is compatible with main(). */
-int DllMain( int termination, void *reserved )
-{
-    termination = termination;
-    reserved = reserved;
-    return( 0 );    /* Indicate success. */
-}
+#if defined( __OS2__ )
+extern int  __disallow_single_dgroup( unsigned );
+#elif defined( __NT__ )
+extern BOOL __disallow_single_dgroup( HANDLE );
+#endif

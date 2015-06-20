@@ -31,7 +31,6 @@
 
 #if defined( __OS2__ )
 
-    extern void __shutdown_stack_checking( void );
     extern void __OS2Init( int, thread_data * );
     extern void __OS2Fini( void );
 

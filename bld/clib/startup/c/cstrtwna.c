@@ -29,7 +29,9 @@
 ****************************************************************************/
 
 
-extern void __NTMain( void );
+#include "variety.h"
+#include "osmain.h"
+
 
 void mainCRTStartup( void )
 {

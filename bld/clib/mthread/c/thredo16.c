@@ -33,6 +33,7 @@
 #include <dos.h>
 #include <process.h>
 #include <string.h>
+#include <stddef.h>
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
 #include "rtstack.h"
@@ -41,14 +42,12 @@
 #include "sigtab.h"
 #include "extfunc.h"
 #include "thread.h"
+#include "maxthrds.h"
 
 typedef void (_WCFAR thread_fn)(void _WCFAR *);
 #if defined(_M_IX86)
     #pragma aux (__outside_CLIB) thread_fn;
 #endif
-
-extern  unsigned        __MaxThreads;
-extern  int             _WCFAR *_threadid;              // OS/2 1.x
 
 static  HSEM            data_sem = 0;
 

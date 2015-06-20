@@ -44,6 +44,12 @@
 #include "rdosexc.h"
 #include "thread.h"
 
+int __ReportException( EXCEPTION_POINTERS *rec );
+int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
+                               void *establisher_frame,
+                               CONTEXT *context,
+                               void *dispatch_context );
+
 __sig_func  (*__oscode_check_func)( int, long ) = NULL;
 int         (*__raise_func)( int )              = NULL;
 unsigned char   __ExceptionHandled;

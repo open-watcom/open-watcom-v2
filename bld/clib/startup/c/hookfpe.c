@@ -37,6 +37,7 @@
 #define INCL_DOSMISC
 #include <wos2.h>
 #include <stdlib.h>
+#include "grabfp87.h"
 
 void __interrupt __FPEHandler();
 #pragma aux __FPEHandler "*";

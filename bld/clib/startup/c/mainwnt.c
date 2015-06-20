@@ -55,12 +55,16 @@
 #include "snglthrd.h"
 #include "thread.h"
 #include "mthread.h"
+#include "fileacc.h"
+#include "heapacc.h"
+#include "trdlstac.h"
+#include "cinit.h"
 
 DWORD __TlsIndex = NO_INDEX;
 
 _WCRTLINK int *__threadid( void )
 {
-    return( (int *) &(__THREADDATAPTR->thread_id) );
+    return( (int *)&(__THREADDATAPTR->thread_id) );
 }
 
 static void __NullAccessRtn( int handle )

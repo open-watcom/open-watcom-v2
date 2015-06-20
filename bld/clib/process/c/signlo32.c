@@ -200,8 +200,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
 }
 
 
-void    __SigInit( void )
-/***********************/
+static void __SigInit( void )
+/***************************/
 {
 
 #if defined( __MT__ )
@@ -216,9 +216,9 @@ void    __SigInit( void )
 }
 
 
-void    __SigFini( void ) {
-/**************************/
-
+static void __SigFini( void )
+/***************************/
+{
 #if defined( __MT__ )
     ULONG               nesting;
     APIRET              rc;

@@ -47,14 +47,16 @@
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "thread.h"
+#include "cmain.h"
+#include "cinit.h"
 
 extern int main( int, char **, char ** );
-#if defined( __386__ )
-#pragma aux main modify [esp];
-#define __FAR
-#else
+#if defined( _M_I86 )
 #pragma aux main modify [sp];
 #define __FAR __far
+#else
+#pragma aux main modify [esp];
+#define __FAR
 #endif
 
 extern  void    __qnx_exit( int __status );
@@ -65,7 +67,7 @@ char    **environ;              /* pointer to environment variables */
 int     _argc;                  /* argument count  */
 char    **_argv;                /* argument vector */
 
-#if !defined(__386__)
+#if defined( _M_I86 )
 extern  unsigned short _STACKLOW;       /* set stack low */
 extern  unsigned short _STACKTOP;       /* top of stack pointer */
 extern  void    __near *_curbrk;        /* top of memory owned by process */
@@ -78,16 +80,17 @@ extern  void __user_init( void );
 #define __user_init() ((int(__far *) ()) __f[1])()
 #endif
 
-static void __FAR __null_FPE_rtn()
+_WCRTLINK void _WCI86FAR __null_FPE_rtn( int fpe_type )
 {
+    fpe_type = fpe_type;
 }
 
-void _Not_Enough_Memory()
+void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
 }
 
-#if !defined(__386__)
+#if defined( _M_I86 )
 static void SetupArgs( struct _proc_spawn *cmd )
 {
     register char *cp, **cpp, *mp, **argv;
@@ -127,32 +130,32 @@ static void SetupArgs( struct _proc_spawn *cmd )
         ;
     }
     --cpp;                                      /* Back up to the __CWD     */
-    if ( !strncmp( "__CWD=", *cpp, 6 ) ) {      /* Did spawn pass __CWD ?   */
+    if( !strncmp( "__CWD=", *cpp, 6 ) ) {       /* Did spawn pass __CWD ?   */
         /*
         Copy the cwd passed in an envar into magic and remove it from the
         environment. For old programs, also check the Q_CWD envar.
         The +6 skips over the __CWD=
         */
-        if ( (__MAGIC.sptrs[3] = (char __FAR *) strdup( *cpp+6) ) == NULL )
+        if ( (__MAGIC.sptrs[3] = (char __FAR *) strdup( *cpp+6) ) == NULL ) {
             _Not_Enough_Memory();
         }
-    else {
+    } else {
         ++cpp;      /* __CWD not passed, point to normal end of environment */
-        }
+    }
     *cpp = NULL;    /* Null terminate the environment                       */
 
     --cpp;                                      /* Back up to the __PFX     */
-    if ( !strncmp( "__PFX=", *cpp, 6 ) ) {      /* Did spawn pass __PFX ?   */
+    if( !strncmp( "__PFX=", *cpp, 6 ) ) {       /* Did spawn pass __PFX ?   */
         /*
         Copy the pfx passed in an envar into magic and remove it from the
         environment. The +6 skips over the __PFX=
         */
-        if ( (__MAGIC.sptrs[4] = (char __FAR *) strdup( *cpp+6) ) == NULL )
+        if ( (__MAGIC.sptrs[4] = (char __FAR *) strdup( *cpp+6) ) == NULL ) {
             _Not_Enough_Memory();
         }
-    else {
+    } else {
         ++cpp;      /* __PFX not passed, point to normal end of environment */
-        }
+    }
     *cpp = NULL;    /* Null terminate the environment                       */
     _argc = argc - 1;
     _argv = &argv[1];
@@ -219,9 +222,6 @@ static void setup_slib()
     __MAGIC.dgroup = FP_SEG( &_STACKLOW );
 }
 
-#pragma aux _CMain "_*" parm [bx] [cx] [di] [dx] [ax]; /* left to right.*/
-                        /* ( free, n,  cmd, stk_bot, pid  ) */
-
 void _CMain( free, n, cmd, stk_bot, pid )
     void     __near *free;      /* start of free space                  */
     short unsigned   n;         /* number of bytes                      */
@@ -236,7 +236,7 @@ void _CMain( free, n, cmd, stk_bot, pid )
     _curbrk = free;             /* current end of dynamic memory        */
                                 /* pointer to top of memory owned by
                                    process                              */
-    _RWD_FPE_handler = &__null_FPE_rtn;
+    _RWD_FPE_handler = __null_FPE_rtn;
     _endheap = (char __near *)free + n;
     if( _endheap < free ) _endheap = (char __near *)~0xfU;
     setup_slib();
@@ -262,8 +262,6 @@ void _CMain( free, n, cmd, stk_bot, pid )
 }
 #else
 
-extern  void            __QNXInit( void * );
-
 #pragma aux _s_EFG_printf __far parm [eax] [edx] [ebx]
 static char *_s_EFG_printf(char *buffer, char **args, void *specs)
 {
@@ -277,8 +275,7 @@ extern unsigned short   _cs(void);
 extern void setup_es(void);
 #pragma aux setup_es = "push ds" "pop es" modify exact nomemory [es];
 
-#pragma aux _CMain "_*" parm [eax] [edx] [ebx];
-_CMain(int argc, char **argv, char **arge)
+void _CMain( int argc, char **argv, char **arge )
 {
     union {
         void            *p;
@@ -297,7 +294,7 @@ _CMain(int argc, char **argv, char **arge)
     __setmagicvar( &tmp.f, _m_efgfmt_off );
     tmp.s               = _cs();
     __setmagicvar( &tmp.s, _m_efgfmt_cs );
-    _RWD_FPE_handler    = &__null_FPE_rtn;
+    _RWD_FPE_handler    = __null_FPE_rtn;
     __InitRtns( INIT_PRIORITY_THREAD );
     tdata = __alloca( __ThreadDataSize );
     memset( tdata, 0, __ThreadDataSize );

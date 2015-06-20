@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#include <wctype.h>
+#include <wchar.h>
 
 _WCRTDATA unsigned int      _dynend;        // top of dynamic data area
 _WCRTDATA unsigned int      _curbrk;        // top of usable memory

@@ -36,9 +36,13 @@
 #include "snglthrd.h"
 #include "thread.h"
 #include "mthread.h"
+#include "fileacc.h"
+#include "heapacc.h"
+#include "trdlstac.h"
+#include "cinit.h"
 
 
-int *__threadid( void )
+_WCRTLINK int *__threadid( void )
 {
     return( (int *) &(__THREADDATAPTR->thread_id) );
 }

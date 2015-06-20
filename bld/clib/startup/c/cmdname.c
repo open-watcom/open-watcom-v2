@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <string.h>
 #include <unistd.h>
+#include <process.h>
 #include "rterrno.h"
 
 extern char **_argv;    /* argument vector */

@@ -47,6 +47,7 @@
 #endif
 #include "thread.h"
 #include "mthread.h"
+#include "trdlstac.h"
 
 #define MAX_CMDLINE     500
 

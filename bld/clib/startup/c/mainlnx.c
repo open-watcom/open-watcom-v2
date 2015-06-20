@@ -38,9 +38,14 @@
 #include "snglthrd.h"
 #include "thread.h"
 #include "mthread.h"
+#include "fileacc.h"
+#include "heapacc.h"
+#include "trdlstac.h"
+#include "cinit.h"
+#include "_exit.h"
 
-
-int *__threadid( void )
+#if defined( __MT__ )
+_WCRTLINK int *__threadid( void )
 {
     return( (int *)&(__THREADDATAPTR->thread_id) );
 }
@@ -60,14 +65,17 @@ void                    (*_ReleaseNHeap)(void)   = &__NullAccHeapRtn;
 void                    (*_ReleaseFHeap)(void)   = &__NullAccHeapRtn;
 void                    (*_AccessTDList)(void)   = &__NullAccTDListRtn;
 void                    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
+#endif
 
-void __LinuxInit( void *ptr )
-/***************************/
+void __LinuxInit( struct thread_data *ptr )
+/*****************************************/
 {
     unsigned    *tmp;
 
+#if defined( __MT__ )
     __InitThreadData( ptr );
     __FirstThreadData = ptr;
+#endif
 
     // following is very tricky _STACKLOW intialization
     tmp = &_STACKLOW;

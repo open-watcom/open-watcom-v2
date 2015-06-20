@@ -51,30 +51,21 @@
 #include "snglthrd.h"
 #include "thread.h"
 #include "mthread.h"
+#include "cominit.h"
+#include "libmain.h"
+#include "cinit.h"
+#include "maxthrds.h"
+#include "ddgrp.h"
 
-extern  unsigned            __hmodule;
-
-extern  unsigned APIENTRY   LibMain( unsigned, unsigned );
-extern  void                __CommonInit( void );
-extern  int                 __disallow_single_dgroup( unsigned );
 
 #ifdef __SW_BR
     int                     __Is_DLL;           /* TRUE => DLL, else not a DLL */
     char                    *_LpDllName;        /* pointer to dll name */
     wchar_t                 *_LpwDllName;       /* pointer to dll name */
-#else
-    extern      unsigned    __MaxThreads;
-
-    extern      void        __OS2Init( int, void * );
-    extern      void        __OS2Fini( void );
 #endif
 
-#ifdef __386__
-    #pragma aux __LibMain "*" parm caller []
-#endif
-
-unsigned __LibMain( unsigned hmod, unsigned termination )
-/*******************************************************/
+unsigned _LibMain( unsigned hmod, unsigned termination )
+/******************************************************/
 {
     static int  processes;
     unsigned    rc;

@@ -43,6 +43,8 @@
 #include "initarg.h"
 #include "thread.h"
 #include "mthread.h"
+#include "cominit.h"
+#include "winmain.h"
 
 
 #ifdef __SW_BR
@@ -51,21 +53,19 @@
     extern void __NTMainInit( void *, void * );
 #endif
 
-extern void __CommonInit( void );
-extern int APIENTRY __F_NAME(WinMain,wWinMain)( HINSTANCE, HINSTANCE, CHAR_TYPE*, int );
 
 void __F_NAME(__WinMain,__wWinMain)( void )
 {
-    #ifdef __SW_BR
+#ifdef __SW_BR
     {
-        #ifdef _M_IX86
-            REGISTRATION_RECORD rr;
-            __NewExceptionFilter( &rr );
-        #endif
+    #ifdef _M_IX86
+        REGISTRATION_RECORD rr;
+        __NewExceptionFilter( &rr );
+    #endif
         __process_fini = &__FiniRtns;
         __InitRtns( 255 );
     }
-    #else
+#else
     {
         REGISTRATION_RECORD     rr;
         thread_data             *tdata;
@@ -79,7 +79,7 @@ void __F_NAME(__WinMain,__wWinMain)( void )
         /* allocate alternate stack for F77 */
         __ASTACKPTR = (char *)alloca( __ASTACKSIZ ) + __ASTACKSIZ;
     }
-    #endif
+#endif
     __CommonInit();
     exit( __F_NAME(WinMain,wWinMain)(
                 GetModuleHandle( NULL ),
@@ -87,10 +87,3 @@ void __F_NAME(__WinMain,__wWinMain)( void )
                 __F_NAME(_LpCmdLine,_LpwCmdLine),
                 SW_SHOWDEFAULT ) );
 }
-#ifdef _M_IX86
-    #ifdef __WIDECHAR__
-        #pragma aux __wWinMain "*";
-    #else
-        #pragma aux __WinMain "*";
-    #endif
-#endif

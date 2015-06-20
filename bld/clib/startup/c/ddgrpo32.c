@@ -44,6 +44,7 @@
 #include <os2.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ddgrp.h"
 
 #define message \
     "The DLL is already in use.\n\n" \

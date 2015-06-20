@@ -47,6 +47,7 @@
 #include "nw_libc.h"
 #include "snglthrd.h"
 #include "mthread.h"
+#include "trdlstac.h"
 
 /*****************************************************************************
 //  TLS slot key

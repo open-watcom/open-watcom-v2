@@ -36,13 +36,9 @@
 #include "rterrno.h"
 #include "sigtab.h"
 #include "sigfunc.h"
+#include "_int23.h"
+#include "_ctrlc.h"
 
-#ifndef __WINDOWS_386__
-extern      void    __grab_int23( void );
-extern      void    __restore_int23( void );
-extern      void    __grab_int_ctrl_break( void );
-extern      void    __restore_int_ctrl_break( void );
-#endif
 
 #define __SIGLAST       SIGIOVFL
 

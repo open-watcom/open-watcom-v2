@@ -45,12 +45,12 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "exitwmsg.h"
+#include "grabfp87.h"
+#include "init8087.h"
 
 #if defined( __WINDOWS_386__ )
 extern void __pascal _FloatingPoint( void );
 #endif
-
-extern void __GrabFP87( void );
 
 extern unsigned short __8087cw;
 #pragma aux __8087cw "*";
@@ -187,7 +187,7 @@ extern unsigned char _bin_to_ascii_offs( unsigned char c );
     "L1:" \
     parm routine [al] value [al];
 
-void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
+_WCRTLINK void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
 {
     char    msg[] = "Floating point exception (00)";
 

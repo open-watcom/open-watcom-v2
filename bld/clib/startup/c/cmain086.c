@@ -35,8 +35,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "initarg.h"
-
-#pragma aux     _CMain  "_*";
+#include "cmain.h"
 
 /*
         ___Argc, ___Argv will be filled in by an initializer routine
@@ -45,6 +44,7 @@
 
 #if defined(__SW_BD)
 extern unsigned __dll_initialize( void );
+
 int _CMain( void )
 {
     _amblksiz = 8 * 1024;   /* set minimum memory block allocation */
@@ -52,6 +52,7 @@ int _CMain( void )
 }
 #else
 extern int     main( int, char ** );
+
 void _CMain( void )
 {
     _amblksiz = 8 * 1024;   /* set minimum memory block allocation */

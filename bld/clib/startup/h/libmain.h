@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  LibMain and _LibMain function delcarations.
+* Description:  LibMain and _LibMain function declarations.
 *
 ****************************************************************************/
 

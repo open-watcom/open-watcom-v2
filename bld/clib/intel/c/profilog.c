@@ -41,6 +41,7 @@
  #include <windows.h>
 #endif
 #include "initarg.h"
+#include "_prof.h"
 
 #define info new_P5_timing_info
 
@@ -78,8 +79,8 @@ static void profilog_fini( void )
     }
 #endif
 }
-XI( __new_p5_profilog_init, profilog_init, INIT_PRIORITY_LIBRARY-1 )
-YI( __new_p5_profilog_fini, profilog_fini, INIT_PRIORITY_LIBRARY-1 )
+XI( __new_p5_profilog_init, profilog_init, INIT_PRIORITY_LIBRARY - 1 )
+YI( __new_p5_profilog_fini, profilog_fini, INIT_PRIORITY_LIBRARY - 1 )
 #endif
 
 #ifdef __NT__

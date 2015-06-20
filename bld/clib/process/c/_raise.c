@@ -31,14 +31,8 @@
 
 #include "variety.h"
 #include <signal.h>
+#include "_raise.h"
 
-#if defined(_M_IX86)
-    #if defined(__386__)
-        #pragma aux     _raise  "_*" parm caller [eax];
-    #else
-        #pragma aux     _raise  "_*" parm caller [ax];
-    #endif
-#endif
 
 int _raise( int sig )
 {

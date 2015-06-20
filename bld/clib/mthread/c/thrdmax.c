@@ -30,10 +30,7 @@
 
 
 #include "variety.h"
-
-extern  unsigned        __MaxThreads;
-
-#pragma aux __GetMaxThreads "^"
+#include "maxthrds.h"
 
 
 _WCRTLINK unsigned __GetMaxThreads( void )

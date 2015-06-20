@@ -39,12 +39,6 @@ extern __sig_func _HUGEDATA _SignalTable[];
 
 #if defined( __WINDOWS__ )
 
-// called from emulator callback
-void _WCI86NEAR __raise_fpe( void ) 
-{
-    __sigfpe_handler( FPE_EXPLICITGEN );
-}
-
 extern void __far _fpmath( void );
 #pragma aux _fpmath "__fpmath";
 

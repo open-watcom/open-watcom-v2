@@ -52,6 +52,10 @@
 #include "mthread.h"
 #include "rdosexc.h"
 #include "snglthrd.h"
+#include "fileacc.h"
+#include "heapacc.h"
+#include "trdlstac.h"
+#include "cinit.h"
 
 static char    DllName[_MAX_PATH];
 

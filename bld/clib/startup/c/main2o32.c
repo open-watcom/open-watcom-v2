@@ -42,37 +42,19 @@
 #include "thread.h"
 #include "initarg.h"
 #include "mthread.h"
+#include "osmain.h"
+#include "cmain.h"
+#include "cominit.h"
 
 #ifdef __SW_BR
-    _WCRTDATA extern    unsigned    __hmodule;
     _WCRTLINK extern    void        (*__process_fini)( unsigned, unsigned );
 
-    extern      void    __CommonInit( void );
     extern      int     main( int, char ** );
     extern      int     wmain( int, wchar_t ** );
 #else
     extern      void    __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *,
                                        void *, unsigned, char *,
                                        char * );
-  #ifdef __WIDECHAR__
-    extern  void    __wCMain( void );
-    #if defined(_M_IX86)
-        #pragma aux __wCMain   "*"
-    #endif
-  #else
-    extern  void    __CMain( void );
-    #if defined(_M_IX86)
-        #pragma aux __CMain   "*"
-    #endif
-  #endif
-#endif
-
-#if defined(_M_IX86)
-  #ifdef __WIDECHAR__
-    #pragma aux __wOS2Main "*" parm caller []
-  #else
-    #pragma aux __OS2Main "*" parm caller []
-  #endif
 #endif
 
 void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,

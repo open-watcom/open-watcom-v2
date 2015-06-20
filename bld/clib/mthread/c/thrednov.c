@@ -74,7 +74,7 @@ static int gettid( void *netid )
                       whenever we can't find a match */
 }
 
-extern int *__threadid( void )
+_WCRTLINK int *__threadid( void )
 {
     void *netid;
     int   id;

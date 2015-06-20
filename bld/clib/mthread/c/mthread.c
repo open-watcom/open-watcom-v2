@@ -33,6 +33,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
+#if defined( __QNX__ )
+  #include <sys/magic.h>
+#endif
+#if defined (_NETWARE_LIBC)
+  #include "nw_libc.h"
+#elif defined( __QNX__ )
+  #include "semaqnx.h"
+#endif
 #include "rterrno.h"
 #include "liballoc.h"
 //#include "stacklow.h"
@@ -44,29 +53,11 @@
 #include "osver.h"
 #include "heapacc.h"
 #include "fileacc.h"
-#if defined (_NETWARE_LIBC)
-  #include "nw_libc.h"
-#elif defined( __QNX__ )
-  #include "semaqnx.h"
-  #include <sys/magic.h>
-#endif
+#include "trdlstac.h"
+#include "maxthrds.h"
 
 #if !defined( _M_I86 )
-  #if !defined (_THIN_LIB)
-    extern void         (*_AccessFileH)( int );
-    extern void         (*_ReleaseFileH)( int );
-    extern void         (*_AccessIOB)( void );
-    extern void         (*_ReleaseIOB)( void );
-  #endif
-  #if !defined( __NETWARE__ )
-    extern void         (*_AccessNHeap)( void );
-    extern void         (*_AccessFHeap)( void );
-    extern void         (*_ReleaseNHeap)( void );
-    extern void         (*_ReleaseFHeap)( void );
-  #endif
   #if defined( __NT__ )
-    extern void         (*_AccessFList)( void );
-    extern void         (*_ReleaseFList)( void );
     static semaphore_object FListSemaphore;
   #endif
     void static nullSema4Rtn( semaphore_object *p ) { p = p; }
@@ -82,7 +73,6 @@ extern  int             __Sema4Fini;            // in finalizer segment
 #ifdef _M_IX86
 #pragma aux             __Sema4Fini "_*";
 #endif
-extern  unsigned        __MaxThreads;
 extern  void            **__ThreadIDs;
 
 #define MAX_SEMAPHORE   16

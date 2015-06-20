@@ -32,8 +32,8 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "rtdata.h"
+#include "chipbug.h"
 
-extern unsigned _WCNEAR __chipbug;
 
 enum {
     PROB_P5_DIV = 0x0001

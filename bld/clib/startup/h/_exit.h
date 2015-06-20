@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  CRTL internal ..exit routines delcarations.
+* Description:  CRTL internal ..exit routines declarations.
 *
 ****************************************************************************/
 

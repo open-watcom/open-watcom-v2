@@ -34,14 +34,13 @@
 #include <i86.h>
 #include "initfini.h"
 #include "rtdata.h"
+#include "cominit.h"
+#include "libmain.h"
+#include "dllmain.h"
+#include "_int23.h"
 
-extern  int     DllMain( int termination, void *reserved );
-extern  void    __CommonInit( void );
 
-/* Perhaps this should be abstracted out of exit.c? */
-extern  void    (*__int23_exit)( void );
-
-void __CommonTerm( void )
+static void __CommonTerm( void )
 {
     struct _heapinfo    hinfo;
     void _WCNEAR        *moffs;
@@ -65,13 +64,8 @@ void __CommonTerm( void )
     _heapshrink();
 }
 
-/* So that assembly caller doesn't depend on stack/register convention. */
-#ifdef __386__
-    #pragma aux __LibMain "*" parm caller []
-#endif
-
-unsigned __LibMain( int termination )
-/***********************************/
+unsigned _LibMain( int termination )
+/**********************************/
 {
     unsigned    rc;
 

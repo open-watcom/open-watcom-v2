@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <wos2.h>
+#include "dllmain.h"
 
 extern  unsigned        __dll_initialize(void);
 extern  unsigned        __dll_terminate(void);

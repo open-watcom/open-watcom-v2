@@ -32,6 +32,7 @@
 #ifndef _MTHREAD_H_INCLUDED
 #define _MTHREAD_H_INCLUDED
 
+#if defined( __MT__ )
     extern void         *__InitThreadProcessing( void );
     extern void         __FiniThreadProcessing( void );
 #if defined( _M_I86 )
@@ -44,16 +45,15 @@
     extern thread_data  *__AllocInitThreadData( thread_data *tdata );
     extern void         __FreeInitThreadData( thread_data *tdata );
     extern thread_data  *__AllocThreadData( void );
-    extern void         __InitThreadData( thread_data * );
 
+    extern void         __InitThreadData( thread_data * );
     extern void         __InitMultipleThread( void );
 
-    extern void         __AccessTDList( void );
-    extern void         __ReleaseTDList( void );
   #if defined( __NT__ )
     extern int          __NTThreadInit( void );
     extern int          __NTAddThread( thread_data * );
     extern void         __NTRemoveThread( int );
+    extern void         (*_ThreadExitRtn)( void );
   #elif defined( _NETWARE_LIBC )
     #include "nw_libc.h"
     extern int          __LibCThreadInit( void );
@@ -74,10 +74,9 @@
     extern int          __RdosAddThread( thread_data * );
     extern void         __RdosRemoveThread( void );
   #endif
-
-    extern void         (*_AccessTDList)( void );
-    extern void         (*_ReleaseTDList)( void );
-    extern void         (*_ThreadExitRtn)( void );
+    extern void         __AccessTDList( void );
+    extern void         __ReleaseTDList( void );
+#endif
 #endif
 
 #endif

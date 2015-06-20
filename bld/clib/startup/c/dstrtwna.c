@@ -29,22 +29,26 @@
 ****************************************************************************/
 
 
-extern int _LibMain( void );
+#include "variety.h"
+#include <windows.h>
+#include "libmain.h"
 
-int DllMainCRTStartup( void )
+
+int DllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved )
 {
-    return( _LibMain() );
+    return( _LibMain( hdll, reason, reserved ) );
 }
 
-int _DllMainCRTStartup( void )
+int _DllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved )
 {
-    return( _LibMain() );
+    return( _LibMain( hdll, reason, reserved ) );
 }
 
-int wDllMainCRTStartup( void )
+int wDllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved )
 {
-    return( _LibMain() );
+    return( _LibMain( hdll, reason, reserved ) );
 }
+
 const char  _DLLstart_CopyRight[] =
         "Open Watcom C/C++ Alpha Run-Time system. "
         "Portions Copyright (c) Sybase, Inc. 1995-2002.";
