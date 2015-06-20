@@ -131,12 +131,12 @@ typedef struct thread_data {
     unsigned                    __data_size;
 } thread_data;
 
+_WCRTDATA extern thread_data    *__MultipleThread( void );
+_WCRTDATA extern thread_data    *(*__GetThreadPtr)( void );
 #if defined( _M_I86 )
-    _WCRTDATA extern thread_data    *__MultipleThread( void );
-    #define __THREADDATAPTR         (__MultipleThread())
+    #define __THREADDATAPTR     (__MultipleThread())
 #else
-    _WCRTDATA extern thread_data    *(*__GetThreadPtr)( void );
-    #define __THREADDATAPTR         ((*__GetThreadPtr)())
+    #define __THREADDATAPTR     ((*__GetThreadPtr)())
 #endif
 
 #if defined( _M_I86 )
