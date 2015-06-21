@@ -49,6 +49,7 @@
 #include "thread.h"
 #include "cmain.h"
 #include "cinit.h"
+#include "rtdata.h"
 
 extern int main( int, char **, char ** );
 #if defined( _M_I86 )
@@ -68,8 +69,6 @@ int     _argc;                  /* argument count  */
 char    **_argv;                /* argument vector */
 
 #if defined( _M_I86 )
-extern  unsigned short _STACKLOW;       /* set stack low */
-extern  unsigned short _STACKTOP;       /* top of stack pointer */
 extern  void    __near *_curbrk;        /* top of memory owned by process */
 
 pid_t                   _my_pid;        /* some sort of POSIX dodad */

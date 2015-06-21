@@ -29,30 +29,9 @@
 ****************************************************************************/
 
 
-#if defined(__NT__) || defined(__OS2__)
-    #if defined( __OS2_286__ )
-        #include "sigdefn.h"
-        #define __SIGNALTABLE   _SignalTable
-    #elif defined( __MT__ )
-        #include "osthread.h"
-        #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
-        #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
-    #else
-        #include "sigdefn.h"
-        extern struct _EXCEPTIONREGISTRATIONRECORD *__XcptHandler;
-        #define __SIGNALTABLE   _SignalTable
-        #define __XCPTHANDLER   __XcptHandler
-    #endif
-    _WCRTLINK extern void       (*__sig_init_rtn)( void );
-    _WCRTLINK extern void       (*__sig_fini_rtn)( void );
-#elif defined(__NETWARE__)
-    #define __SIGNALTABLE       (__THREADDATAPTR->signal_table)
-#elif defined(__RDOS__)
-    #include "osthread.h"
-    #define __SIGNALTABLE       (__THREADDATAPTR->signal_table)
-    #define __XCPTHANDLER       (__THREADDATAPTR->xcpt_handler)
-    _WCRTLINK extern void       (*__sig_init_rtn)( void );
-    _WCRTLINK extern void       (*__sig_fini_rtn)( void );
+#if !defined( __OS2_286__ ) && defined( __MT__ )
+    #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
 #else
-    #define __SIGNALTABLE       _SignalTable
+    #include "sigdefn.h"
+    #define __SIGNALTABLE   _SignalTable
 #endif

@@ -43,10 +43,7 @@
 #include "msdos.h"
 #include "_process.h"
 #include "thread.h"
-
-#ifdef __WIDECHAR__
-extern _WCRTLINK void   __create_wide_environment( void );
-#endif
+#include "_environ.h"
 
 
 static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )

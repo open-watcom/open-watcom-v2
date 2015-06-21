@@ -86,7 +86,7 @@ extern void __init_80x87( void );
 extern unsigned char _WCI86NEAR __x87id( void );
 #pragma aux __x87id "*";
 
-#if !defined( __UNIX__ ) && !defined( __OS2_386__ )
+#if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_386__ )
 
 extern void __fsave( _87state * );
 extern void __frstor( _87state * );
@@ -156,7 +156,8 @@ static void __rest_8087( _87state * __fs )
 {
     __frstor( __fs );
 }
-#endif  /* !__UNIX__ && && !__OS2__ */
+
+#endif  /* _M_IX86 && !__UNIX__ && !__OS2_386__ */
 
 _WCRTLINK void _fpreset( void )
 {
@@ -167,7 +168,7 @@ _WCRTLINK void _fpreset( void )
 
 void __init_8087( void )
 {
-#if !defined( __UNIX__ ) && !defined( __OS2_386__ )
+#if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_386__ )
     if( _RWD_real87 != 0 ) {            /* if our emulator, don't worry */
         _RWD_Save8087 = __save_8087;    /* point to real save 8087 routine */
         _RWD_Rest8087 = __rest_8087;    /* point to real restore 8087 routine */
@@ -204,15 +205,7 @@ void __chk8087( void )
 {
     char    devinfo;
 
-#if defined( __386__ )
-    DosDevConfig( &devinfo, DEVINFO_COPROCESSOR );
-    if( devinfo == 0 ) {
-        _RWD_real87 = 0;
-    } else {
-        _RWD_real87 = __x87id();
-    }
-    _RWD_8087 = _RWD_real87;
-#else
+#if defined( _M_I86 )
     if( _RWD_8087 == 0 ) {
         DosDevConfig( &devinfo, 3, 0 );
         if( devinfo == 0 ) {
@@ -228,6 +221,14 @@ void __chk8087( void )
     if( _RWD_8087 ) {
         _RWD_FPE_handler = __default_sigfpe_handler;
     }
+#else
+    DosDevConfig( &devinfo, DEVINFO_COPROCESSOR );
+    if( devinfo == 0 ) {
+        _RWD_real87 = 0;
+    } else {
+        _RWD_real87 = __x87id();
+    }
+    _RWD_8087 = _RWD_real87;
 #endif
     _fpreset();
 }
@@ -307,18 +308,18 @@ void __chk8087( void )
 /********************/
 {
     if( _RWD_8087 != 0 ) {          /* if we already know we have an 80x87 */
-#if !defined( __386__ )
+  #if defined( _M_I86 )
         if( __dos87real )
             __GrabFP87();
-#endif
+  #endif
         _RWD_FPE_handler = __default_sigfpe_handler;
         return;                    /* this prevents real87 from being set */
     }                               /* when we have an emulator */
     _RWD_real87 = __x87id();        /* if a coprocessor is present then we */
     _RWD_8087 = _RWD_real87;        /* initialize even when NO87 is defined */
-#if !defined( __386__ )
+  #if defined( _M_I86 )
     __dos87real = _RWD_real87;
-#endif
+  #endif
     __init_8087();                  /* this handles the fpi87 and NO87 case */
     if( _RWD_no87 != 0 ) {          /* if NO87 environment var is defined */
         _RWD_8087 = 0;              /* then we want to pretend that the */
@@ -341,14 +342,14 @@ void __chk8087( void )
         return;                      /* this prevents real87 from being set */
                                      /* when we have an emulator */
     if( GetWinFlags() & WF_80x87 ) { /* if a coprocessor is present then we */
-  #if defined( __386__ )
+  #if defined( __WINDOWS_386__ )
         _FloatingPoint();
   #endif
         _RWD_real87 = __x87id();     /* initialize even when NO87 is defined */
         _RWD_8087 = _RWD_real87;     /* this handles the fpi87 and NO87 case */
         __init_8087();
     } else {
-  #if defined( __386__ )
+  #if defined( __WINDOWS_386__ )
         // check to see if emulator is loaded
         union REGS regs;
         regs.w.ax = 0xfa00;

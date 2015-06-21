@@ -45,13 +45,8 @@
 #include "mthread.h"
 #include "cominit.h"
 #include "winmain.h"
-
-
-#ifdef __SW_BR
-    _WCRTLINK extern    void    (*__process_fini)(unsigned,unsigned);
-#else
-    extern void __NTMainInit( void *, void * );
-#endif
+#include "osmainin.h"
+#include "procfini.h"
 
 
 void __F_NAME(__WinMain,__wWinMain)( void )
@@ -62,7 +57,7 @@ void __F_NAME(__WinMain,__wWinMain)( void )
         REGISTRATION_RECORD rr;
         __NewExceptionFilter( &rr );
     #endif
-        __process_fini = &__FiniRtns;
+        __process_fini = __FiniRtns;
         __InitRtns( 255 );
     }
 #else

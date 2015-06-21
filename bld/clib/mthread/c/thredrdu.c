@@ -40,13 +40,12 @@
 #include "rterrno.h"
 #include "stacklow.h"
 #include "liballoc.h"
-#include "sigtab.h"
 #include "thread.h"
+#include "initsig.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "initarg.h"
 #include "cthread.h"
-#include "rdosexc.h"
 
 
 extern  int             __TlsIndex;

@@ -43,6 +43,8 @@
 #include "defwin.h"
 #include "initarg.h"
 #include "_int23.h"
+#include "procfini.h"
+#include "_exit.h"
 
 /*
   __int23_exit is used by OS/2 as a general termination routine which unhooks
@@ -53,20 +55,11 @@
   example, DOS version would call __int23_exit and __FPE_handler_exit)
 */
 
-#ifdef __NETWARE__
-extern  void            _exit( int );
-#endif
-
-#if defined(__NT__) || defined(__WARP__)
-_WCRTLINK extern void (*__process_fini)( unsigned, unsigned );
-#endif
-
-
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
-void __null_int23_exit( void ) {}              /* SIGNAL needs it */
-void        (*__int23_exit)( void ) = __null_int23_exit;
-void _null_exit_rtn( void ) {}
-void        (*__FPE_handler_exit)( void ) = _null_exit_rtn;
+void    __null_int23_exit( void ) {}              /* SIGNAL needs it */
+void    (*__int23_exit)( void ) = __null_int23_exit;
+void    _null_exit_rtn( void ) {}
+void    (*__FPE_handler_exit)( void ) = _null_exit_rtn;
 #endif
 
 _WCRTLINK void exit( int status )
@@ -83,7 +76,7 @@ _WCRTLINK void exit( int status )
 #elif defined(__NT__) || defined(__WARP__)
     (*__int23_exit)();
     if( __Is_DLL ) {
-        if( __process_fini != 0 ) {
+        if( __process_fini != NULL ) {
             (*__process_fini)( FINI_PRIORITY_EXIT, 255 );
         }
         _exit( status );

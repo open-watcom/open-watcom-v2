@@ -36,11 +36,10 @@
 #include <process.h>
 #include "initfini.h"
 #include "libwin32.h"
-#include "osthread.h"
 #include "initarg.h"
-#include "sigtab.h"
 #include "snglthrd.h"
 #include "thread.h"
+#include "initsig.h"
 #include "mthread.h"
 #include "cominit.h"
 #include "libmain.h"

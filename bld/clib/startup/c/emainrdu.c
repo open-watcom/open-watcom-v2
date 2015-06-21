@@ -36,11 +36,10 @@
 #include <string.h>
 #include <malloc.h>
 #include <rdos.h>
-#include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"
-#include "rdosexc.h"
 #include "thread.h"
+#include "initsig.h"
 #include "mthread.h"
 #include "osmain.h"
 #include "cmain.h"

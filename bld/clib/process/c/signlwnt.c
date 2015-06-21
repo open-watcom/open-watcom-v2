@@ -37,11 +37,12 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rterrno.h"
-#include "sigtab.h"
 #include "sigfunc.h"
 #include "signlwnt.h"
 #include "rtinit.h"
 #include "thread.h"
+#include "sigtab.h"
+#include "initsig.h"
 
 sigtab  _SignalTable[] = {
     { SIG_IGN, -1 },                                /* unused  */

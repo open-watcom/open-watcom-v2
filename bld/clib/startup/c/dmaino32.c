@@ -46,7 +46,6 @@
 #include "stacklow.h"
 #include "liballoc.h"
 #include "initfini.h"
-#include "osthread.h"
 #include "initarg.h"
 #include "snglthrd.h"
 #include "thread.h"

@@ -36,6 +36,7 @@
 #include "rtdata.h"
 #include "rtinit.h"
 #include "tmpfname.h"
+#include "ioctrl.h"
 
 
 _WCRTDATA FILE _WCDATA __iob[_NFILES] = {
@@ -50,9 +51,6 @@ _WCRTDATA FILE _WCDATA __iob[_NFILES] = {
 
 __stream_link *__ClosedStreams;
 __stream_link *__OpenStreams;
-
-extern void __InitFiles( void );
-extern void __full_io_exit( void );
 
 AXI(__InitFiles,INIT_PRIORITY_LIBRARY);
 AYI(__full_io_exit,INIT_PRIORITY_LIBRARY);

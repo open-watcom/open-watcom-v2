@@ -32,18 +32,25 @@
 #ifndef _OSTHREAD_H_INCLUDED
 #define _OSTHREAD_H_INCLUDED
 
-#if defined(__QNX__)
-#elif defined(__LINUX__)
-  // TODO: Include Linux specific thread header files
-#elif defined(__NT__)
-  #include "ntexc.h"
-#elif defined(__NETWARE__)
-#elif defined(__OS2__)
-  #include "os2exc.h"
-#elif defined(__RDOS__)
-  #include "rdosexc.h"
-#else
-  #define __EXCEPTION_RECORD  unsigned
+#if !defined( _M_I86 )
+  #if defined(__QNX__)
+  #elif defined(__LINUX__)
+  #elif defined(__NETWARE__)
+  #elif defined(__NT__) || defined(__OS2__) || defined(__RDOS__)
+    #if defined( __MT__ )
+      #if defined(__NT__)
+        #include "ntexc.h"
+      #elif defined(__OS2__)
+        #include "os2exc.h"
+      #elif defined(__RDOS__)
+        #include "rdosexc.h"
+      #endif
+      #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
+    #else
+      extern struct _EXCEPTIONREGISTRATIONRECORD *__XcptHandler;
+      #define __XCPTHANDLER   __XcptHandler
+    #endif
+  #endif
 #endif
 
 #endif

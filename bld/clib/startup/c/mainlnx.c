@@ -32,7 +32,6 @@
 #include "variety.h"
 #include "rtstack.h"
 #include "stacklow.h"
-#include "osthread.h"
 #include "initfini.h"
 #include "linuxsys.h"
 #include "snglthrd.h"

@@ -36,13 +36,12 @@
 #include <signal.h>
 #include <unistd.h>
 #include "rtdata.h"
-#include "sigtab.h"
 #include "sigfunc.h"
 #include "fpusig.h"
 #include "clearfpe.h"
 #include "excptrdu.h"
-#include "rdosexc.h"
 #include "thread.h"
+#include "initsig.h"
 
 int __ReportException( EXCEPTION_POINTERS *rec );
 int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,

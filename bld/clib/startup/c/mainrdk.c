@@ -43,8 +43,6 @@
 #include "strdup.h"
 #include "liballoc.h"
 #include "rtdata.h"
-//#include "stacklow.h"
-#include "sigtab.h"
 #include "initfini.h"
 #include "rtinit.h"
 #include "initarg.h"
@@ -55,6 +53,7 @@
 #include "trdlstac.h"
 #include "osmain.h"
 #include "cmain.h"
+#include "_exit.h"
 
 
 extern void _cexit_( unsigned ret_code );

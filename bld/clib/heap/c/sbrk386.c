@@ -49,7 +49,6 @@
 #include "thread.h"
 
 extern  unsigned                _curbrk;
-extern  unsigned                _STACKTOP;
 
 #ifdef __WINDOWS_386__
  extern void * __pascal DPMIAlloc( unsigned long );

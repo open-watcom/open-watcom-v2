@@ -45,6 +45,7 @@
 #define INCL_DOSINFOSEG
 #define INCL_DOSMISC
 #define INCL_DOSMEMMGR
+#include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtstack.h"
 #include "stacklow.h"
@@ -56,6 +57,7 @@
 #include "osmain.h"
 #include "cmain.h"
 #include "maxthrds.h"
+#include "_exit.h"
 
 #if defined( __MT__ )
 
@@ -130,8 +132,8 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
         unsigned short      version;
     
         DosGetVersion( (PUSHORT)&version );
-        _osmajor = version >> 8;
-        _osminor = version & 0xff;
+        _RWD_osmajor = version >> 8;
+        _RWD_osminor = version & 0xff;
     }
 
 #if defined(__SW_BD)
@@ -194,7 +196,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
 //      // this needs to be done before the InitRtns
 //      extern  void    __grow_iomode(int);
 
-//      if( _osmode == OS2_MODE ) {
+//      if( _RWD_osmode == OS2_MODE ) {
 //          __grow_iomode( 100 );
 //      }
 //  }
@@ -204,7 +206,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
         int status;
         status = setjmp( JmpBuff );
         if( status == 0 )
-                return( _CMain() );
+            return( _CMain() );
         return( RetCode );
     }
 #else

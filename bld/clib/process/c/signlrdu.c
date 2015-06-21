@@ -37,11 +37,12 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rterrno.h"
-#include "sigtab.h"
 #include "sigfunc.h"
 #include "signlrdu.h"
 #include "rtinit.h"
 #include "thread.h"
+#include "sigtab.h"
+#include "initsig.h"
 
 #define FALSE 0
 #define TRUE !FALSE

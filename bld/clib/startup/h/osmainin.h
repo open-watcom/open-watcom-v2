@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,46 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Linux multi-threading functions
+* Description:  ....Main OS specific function declarations.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <string.h>
-#include <signal.h>
-#include <float.h>
-#include <unistd.h>
-#include <process.h>
-#include "rtdata.h"
-#include "liballoc.h"
-#include "thread.h"
-#include "extfunc.h"
-#include "mthread.h"
-#include "cthread.h"
-#include "linuxsys.h"
+#if defined( __OS2__ )
 
-int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
-                    unsigned stack_size, void *arglist )
-/******************************************************/
-{
-    pid_t pid;
+    extern void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
+                    unsigned hmod, char *env, char *cmd );
 
-    if( start_addr == NULL || stack_bottom == NULL || stack_size == 0 ) {
-        return( -1L );
-    }
-    pid = clone( CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, (void*)((int)stack_bottom + stack_size) );
-    if( pid ) {
-        return( (int)pid );
-    } else {
-        start_addr(arglist);
-        _endthread();
-        return 0;
-    }
-}
+#elif defined( __NT__ )
 
-void __CEndThread( void )
-/***********************/
-{
-    sys_exit(0);
-}
+    extern void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata );
+
+#endif

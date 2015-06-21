@@ -39,7 +39,7 @@
 #include "rtstack.h"
 #include "stacklow.h"
 #include "liballoc.h"
-#include "osthread.h"
+#include "thread.h"
 #include "mthread.h"
 #include "semaqnx.h"
 #include "cthread.h"

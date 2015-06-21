@@ -100,7 +100,7 @@ void __FiniThreadProcessing( void )
         lib_free( __ThreadIDs );
     }
 #endif
-#if defined( __OS2__ ) || defined( __NETWARE__ ) && !defined( _NETWARE_LIBC )
+#if defined( __OS2__ ) || defined( _NETWARE_CLIB )
     if( __ThreadData != NULL ) {
         unsigned    i;
         thread_data *tdata;

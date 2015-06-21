@@ -32,9 +32,8 @@
 #include "variety.h"
 #include <wos2.h>
 #include "dllmain.h"
+#include "initdll.h"
 
-extern  unsigned        __dll_initialize(void);
-extern  unsigned        __dll_terminate(void);
 
 unsigned APIENTRY DllMain( unsigned hmod, unsigned termination )
 {

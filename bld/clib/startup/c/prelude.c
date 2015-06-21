@@ -48,6 +48,7 @@
 #include "thread.h"
 #include "mthread.h"
 #include "trdlstac.h"
+#include "_exit.h"
 
 #define MAX_CMDLINE     500
 
@@ -290,8 +291,6 @@ extern int _cstart_( void )
 static void InitStackLow( void )
 {
     #undef _STACKLOW
-    extern unsigned _STACKLOW;
-
     _STACKLOW = (unsigned)&_end;
 }
 

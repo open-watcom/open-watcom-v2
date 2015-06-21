@@ -43,8 +43,6 @@
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
-#include "osthread.h"
-#include "sigtab.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "rtinit.h"
@@ -57,6 +55,9 @@
 #include "heapacc.h"
 #include "trdlstac.h"
 #include "cinit.h"
+#include "osmainin.h"
+#include "procfini.h"
+#include "_exit.h"
 
 extern unsigned         __hmodule;
 unsigned short          __saved_CS;
@@ -102,11 +103,10 @@ _WCRTLINK int *__threadid( void )
     return( GetTIDp() );
 }
 
-static  void    NullSigInit( void ) {}
-static  void    NullSigFini( void ) {}
+static  void    NullSigRtn( void ) {}
 
-_WCRTLINK void  (*__sig_init_rtn)(void) = { &NullSigInit };
-_WCRTLINK void  (*__sig_fini_rtn)(void) = { &NullSigFini };
+_WCRTDATA void  (*__sig_init_rtn)(void) = { NullSigRtn };
+_WCRTDATA void  (*__sig_fini_rtn)(void) = { NullSigRtn };
 
 extern  char            _end;
 #if defined(_M_IX86)
@@ -196,13 +196,13 @@ void __OS2Fini( void )
     __FirstThreadData = NULL;
 }
 
-_WCRTLINK void (*__process_fini)(unsigned,unsigned) = 0;
+_WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
 _WCRTLINK void __exit( unsigned ret_code )
 {
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
-        if( __process_fini != 0 ) {
+        if( __process_fini != NULL ) {
             (*__process_fini)( 0, FINI_PRIORITY_EXIT - 1 );
         }
     } else {

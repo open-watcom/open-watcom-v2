@@ -38,7 +38,6 @@
 #include "liballoc.h"
 #include "rtstack.h"
 #include "stacklow.h"
-#include "sigtab.h"
 #include "exitwmsg.h"
 #include "thread.h"
 #include "trdlist.h"

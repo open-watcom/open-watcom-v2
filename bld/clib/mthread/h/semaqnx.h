@@ -33,8 +33,6 @@
 #ifndef _SEMAQNX_H_INCLUDED
 #define _SEMAQNX_H_INCLUDED
 
-#include "thread.h"
-
 extern int __qsem_destroy( sem_t *p );
 extern int __qsem_init( sem_t *p, int i, unsigned j );
 extern int __qsem_wait( sem_t *p );

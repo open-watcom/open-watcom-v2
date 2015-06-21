@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "initdll.h"
 
 unsigned __dll_initialize( void )
 {

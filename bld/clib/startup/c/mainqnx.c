@@ -32,7 +32,6 @@
 #include "variety.h"
 #include "rtstack.h"
 #include "stacklow.h"
-#include "osthread.h"
 #include "snglthrd.h"
 #include "thread.h"
 #include "mthread.h"

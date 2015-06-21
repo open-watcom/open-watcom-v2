@@ -39,7 +39,6 @@
 #include "rtstack.h"
 #include "stacklow.h"
 #include "exitwmsg.h"
-#include "sigtab.h"
 #include "extfunc.h"
 #include "thread.h"
 #include "maxthrds.h"

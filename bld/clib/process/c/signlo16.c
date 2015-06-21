@@ -37,10 +37,10 @@
 #define INCL_DOSSIGNALS
 #include "rtdata.h"
 #include "rterrno.h"
-#include "sigtab.h"
 #include "sigfunc.h"
 #include "_int23.h"
 #include "thread.h"
+#include "sigtab.h"
 
 
 static struct sigtab _SignalTable[] = {

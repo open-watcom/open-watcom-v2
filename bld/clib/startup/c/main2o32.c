@@ -37,24 +37,20 @@
 #include <malloc.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSEXCEPTIONS
-#include "sigtab.h"
 #include "initfini.h"
 #include "thread.h"
+#include "initsig.h"
 #include "initarg.h"
 #include "mthread.h"
 #include "osmain.h"
+#include "osmainin.h"
 #include "cmain.h"
 #include "cominit.h"
+#include "procfini.h"
 
 #ifdef __SW_BR
-    _WCRTLINK extern    void        (*__process_fini)( unsigned, unsigned );
-
     extern      int     main( int, char ** );
     extern      int     wmain( int, wchar_t ** );
-#else
-    extern      void    __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *,
-                                       void *, unsigned, char *,
-                                       char * );
 #endif
 
 void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
@@ -71,7 +67,7 @@ void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
     // in the runtime DLL, it must be registered from here since
     // the registration record needs to live on stack
     __XCPTHANDLER = &xcpt;
-    __process_fini = &__FiniRtns;
+    __process_fini = __FiniRtns;
     __InitRtns( 255 );
     __sig_init_rtn();
     __CommonInit();

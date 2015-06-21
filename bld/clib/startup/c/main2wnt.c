@@ -37,22 +37,20 @@
 #include <malloc.h>
 #include <windows.h>
 #include "ntext.h"
-#include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"
 #include "thread.h"
 #include "mthread.h"
 #include "osmain.h"
+#include "osmainin.h"
 #include "cmain.h"
 #include "cominit.h"
+#include "procfini.h"
 
 
 #ifdef __SW_BR
-    _WCRTLINK extern    void    (*__process_fini)( unsigned, unsigned );
     extern      int     wmain( int, wchar_t ** );
     extern      int     main( int, char ** );
-#else
-    extern      void            __NTMainInit( void *, void * );
 #endif
 
 void __F_NAME(__NTMain,__wNTMain)( void )
@@ -64,7 +62,7 @@ void __F_NAME(__NTMain,__wNTMain)( void )
 
     __NewExceptionFilter( &rr );
   #endif
-    __process_fini = &__FiniRtns;
+    __process_fini = __FiniRtns;
     __InitRtns( 255 );
     __CommonInit();
     exit( __F_NAME(main( ___Argc, ___Argv ),wmain( ___wArgc, ___wArgv )) );

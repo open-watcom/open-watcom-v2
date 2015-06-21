@@ -24,61 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  I/O streams shutdown.
+* Description:  Signal handling init/fini routine pointers declaration.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stdio.h>
-#include "rtdata.h"
-#include "ioctrl.h"
-#include "streamio.h"
-
-
-static int docloseall( unsigned dont_close )
-{
-    FILE            *fp;
-    int             number_of_files_closed;
-    __stream_link   *link;
-    __stream_link   *next;
-    FILE            *bottom;
-    FILE            *standards;
-    int             close_handle;
-
-    bottom = &_RWD_iob[dont_close];
-    standards = &_RWD_iob[NUM_STD_STREAMS];
-    number_of_files_closed = 0;
-    for( link = _RWD_ostream; link != NULL; link = next ) {
-        next = link->next;
-        fp = link->stream;
-        close_handle = 1;
-        if ((fp->_flag & _DYNAMIC) || (fp->_flag & _TMPFIL))
-        {
-            __shutdown_stream( fp, close_handle );
-            ++number_of_files_closed;
-        }
-        else if( fp >= bottom ) {
-#ifndef __NETWARE__
-            /* close the file, but leave the handle open */
-            if( fp < standards ) {
-                close_handle = 0;
-            }
+#if defined(__NT__) || defined(__OS2__) || defined(__RDOS__)
+    _WCRTDATA extern void       (*__sig_init_rtn)( void );
+    _WCRTDATA extern void       (*__sig_fini_rtn)( void );
 #endif
-            __shutdown_stream( fp, close_handle );
-            ++number_of_files_closed;
-        }
-    }
-    return( number_of_files_closed );
-}
-
-_WCRTLINK int fcloseall( void )
-{
-    return( docloseall( NUM_STD_STREAMS ) );
-}
-
-void __full_io_exit( void )
-{
-    docloseall( 0 );
-    __purgefp();
-}

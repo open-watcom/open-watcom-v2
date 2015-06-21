@@ -47,7 +47,6 @@
 #include "strdup.h"
 #include "liballoc.h"
 #include "libwin32.h"
-#include "sigtab.h"
 #include "ntext.h"
 #include "initfini.h"
 #include "rtinit.h"
@@ -59,6 +58,9 @@
 #include "heapacc.h"
 #include "trdlstac.h"
 #include "cinit.h"
+#include "osmainin.h"
+#include "procfini.h"
+#include "_exit.h"
 
 DWORD __TlsIndex = NO_INDEX;
 
@@ -92,9 +94,10 @@ void    (*_AccessFList)(void)    = &__NullAccIOBRtn;
 void    (*_ReleaseFList)(void)   = &__NullAccIOBRtn;
 void    (*_ThreadExitRtn)(void)  = &__NullExitRtn;
 
-void __sig_null_rtn(void) {}
-_WCRTLINK void  (*__sig_init_rtn)(void) = __sig_null_rtn;
-_WCRTLINK void  (*__sig_fini_rtn)(void) = __sig_null_rtn;
+static void __sig_null_rtn(void) {}
+
+_WCRTDATA void  (*__sig_init_rtn)(void) = __sig_null_rtn;
+_WCRTDATA void  (*__sig_fini_rtn)(void) = __sig_null_rtn;
 
 #ifdef _M_IX86
  #pragma aux _end "*"
@@ -288,13 +291,13 @@ void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
     __InitRtns( 255 );
 }
 
-_WCRTLINK void (*__process_fini)(unsigned,unsigned) = 0;
+_WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
 _WCRTLINK void __exit( unsigned ret_code )
 {
     __NTFini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
-        if( __process_fini != 0 ) {
+        if( __process_fini != NULL ) {
             (*__process_fini)( 0, FINI_PRIORITY_EXIT-1 );
         }
     } else {
