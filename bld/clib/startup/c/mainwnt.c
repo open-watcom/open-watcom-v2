@@ -32,14 +32,15 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include <windows.h>
 #include <stdio.h>
+#include <stddef.h>
 #include <io.h>
 #include <ctype.h>
 #include <string.h>
 #ifdef _M_IX86
  #include <i86.h>
 #endif
+#include <windows.h>
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"

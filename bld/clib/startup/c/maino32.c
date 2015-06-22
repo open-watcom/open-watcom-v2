@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stddef.h>
 #include <io.h>
 #include <i86.h>
 #include <string.h>

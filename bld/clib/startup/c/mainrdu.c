@@ -32,13 +32,12 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include <rdos.h>
-
 #include <stdio.h>
+#include <stddef.h>
 #include <io.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <rdos.h>
 #include "iomode.h"
 #include "strdup.h"
 #include "liballoc.h"

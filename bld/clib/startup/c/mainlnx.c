@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include "rtstack.h"
 #include "stacklow.h"
 #include "initfini.h"
