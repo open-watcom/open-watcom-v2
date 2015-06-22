@@ -36,7 +36,6 @@
 #include <string.h>
 #include <malloc.h>
 #define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
 #include "initfini.h"
 #include "thread.h"
 #include "initsig.h"

@@ -40,7 +40,6 @@
 #define INCL_DOSMISC
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"

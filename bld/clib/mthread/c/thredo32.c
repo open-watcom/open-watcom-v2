@@ -39,7 +39,6 @@
 #include <float.h>
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
 #include "rtdata.h"
 #include "liballoc.h"
 #include "thread.h"

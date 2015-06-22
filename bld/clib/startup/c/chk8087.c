@@ -38,7 +38,6 @@
 #if defined( __WINDOWS__ )
   #include <windows.h>
 #elif defined( __OS2__ )
-  #define INCL_DOSEXCEPTIONS
   #define INCL_DOSDEVICES
   #include <wos2.h>
 #endif

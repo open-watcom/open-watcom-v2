@@ -39,7 +39,6 @@
 #define INCL_DOSMISC
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
 #define INCL_DOSMODULEMGR
 #include "rtdata.h"
 #include "rtstack.h"
