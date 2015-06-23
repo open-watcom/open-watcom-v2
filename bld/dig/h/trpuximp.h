@@ -24,72 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  QNX Neutrino trap file startup code.
+* Description:  QNX and Linux specific trap implementation stuff
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include "trpimp.h"
-#include "trpuximp.h"
-#include "ntostrt.h"
+typedef struct {
+    trap_init_func      *init_func;
+    trap_req_func       *req_func;
+    trap_fini_func      *fini_func;
+} trap_requests;
 
+typedef struct {
+    unsigned long       len;
+    char                ***environ;
+    void                **_slib_func;
+    void                *(*malloc)( size_t );
+    void                *(*realloc)( void *, size_t );
+    void                (*free)( void * );
+    char                *(*getenv)( const char * );
+    void                (*(*signal)( int __sig, void (*__func)(int) ))(int);
+} trap_callbacks;
 
-char                            **dbg_environ;  /* pointer to parent's environment table */
-const trap_callbacks            *Client;
-extern const trap_requests      ImpInterface;
-
-const trap_requests *TrapLoad( trap_callbacks *client )
-{
-    Client = client;
-    if( Client->len <= offsetof(trap_callbacks,signal) ) {
-        return( NULL );
-    }
-    dbg_environ = *Client->environ;
-    return( &ImpInterface );
-}
-
-const trap_requests ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
-
-#if !defined( BUILTIN_TRAP_FILE )
-
-void *_nmalloc( unsigned size )
-{
-    return( malloc( size ) );
-}
-
-void *malloc( unsigned size )
-{
-    return( Client->malloc( size ) );
-}
-
-void *_nrealloc( void *ptr, unsigned size )
-{
-    return( realloc( ptr, size ) );
-}
-
-void *realloc( void *ptr, unsigned size )
-{
-    return( Client->realloc( ptr, size ) );
-}
-
-void _nfree( void *ptr )
-{
-    free( ptr );
-}
-
-void free( void *ptr )
-{
-    Client->free( ptr );
-}
-
-char *getenv( const char *name )
-{
-    return( Client->getenv( name ) );
-}
-
-void (*signal( int __sig, void (*__func)( int ) ))( int )
-{
-    return( Client->signal( __sig, __func ) );
-}
+#if defined( BUILTIN_TRAP_FILE )
+extern const trap_requests *TrapLoad( const trap_callbacks *client );
 #endif

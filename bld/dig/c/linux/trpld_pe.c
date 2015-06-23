@@ -35,7 +35,7 @@
 #include "trpimp.h"
 #include "tcerr.h"
 #include "peloader.h"
-#include "trpqimp.h"
+#include "trpuximp.h"
 #include "trpld.h"
 #include "digio.h"
 

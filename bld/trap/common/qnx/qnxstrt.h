@@ -24,24 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  QNX and Linux specific trap implementation stuff
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-typedef struct {
-    trap_init_func      *init_func;
-    trap_req_func       *req_func;
-    trap_fini_func      *fini_func;
-} trap_requests;
-
-typedef struct {
-    unsigned long       len;
-    char                ***environ;
-    void                **_slib_func;
-    void                *(*malloc)( size_t );
-    void                *(*realloc)( void *, size_t );
-    void                (*free)( void * );
-    char                *(*getenv)( const char * );
-    void                (*(*signal)( int __sig, void (*__func)(int) ))(int);
-} trap_callbacks;

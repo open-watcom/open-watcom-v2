@@ -35,7 +35,7 @@
 #include <dlfcn.h>
 #include "trpimp.h"
 #include "tcerr.h"
-#include "trpqimp.h"
+#include "trpuximp.h"
 #include "trpld.h"
 #include "digio.h"
 #include "clibext.h"
