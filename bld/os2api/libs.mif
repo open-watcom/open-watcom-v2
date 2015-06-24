@@ -7,7 +7,7 @@ os2api_distrib_lib = 1
 !include cproj.mif
 !include defrule.mif
 
-splice = wsplice -i"$(hdr_dir)" $[@ $^@
+splice = *wsplice -i"$(hdr_dir)" $[@ $^@
 
 .EXTENSIONS : .lbc .def
 

@@ -122,4 +122,4 @@ wprofui.res : ../res/wprofui.rc .AUTODEPEND
     $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $[@ -fo=$^@
 
 usage.u : ../h/usage.sp
-    wsplice -u $< $@
+    *wsplice -u $< $@

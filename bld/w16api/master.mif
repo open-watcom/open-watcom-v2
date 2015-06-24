@@ -6,7 +6,7 @@ w16api_distrib_lib = 1
 !include cproj.mif
 !include defrule.mif
 
-splice = wsplice -i".." -i"$(hdr_dir)" -i"../include" $[@ $^@
+splice = *wsplice -i".." -i"$(hdr_dir)" -i"../include" $[@ $^@
 
 .EXTENSIONS : .lbc .def .mh
 

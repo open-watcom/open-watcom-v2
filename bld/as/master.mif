@@ -210,11 +210,11 @@ asi_msg.gh : $(as_dir)/h/as.msg
 
 $(yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
         @if not exist $(stand_subdir) mkdir $(stand_subdir)
-        wsplice $(splice_opts) -k_STANDALONE_ $[@ $(yacc_in).tmp
+        *wsplice $(splice_opts) -k_STANDALONE_ $[@ $(yacc_in).tmp
         sed -e "s/ytab.h/asytab.h/g" $(yacc_in).tmp > $^@
 
 $(asi_yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
-        wsplice $(splice_opts) $[@ $(asi_yacc_in).tmp
+        *wsplice $(splice_opts) $[@ $(asi_yacc_in).tmp
         sed -e "s/ytab.h/asiytab.h/g" $(asi_yacc_in).tmp > $^@
 
 $(yacc_out).c : $(yacc_in).y $(as_dir)/y/yydriver.c
@@ -225,11 +225,11 @@ $(asi_yacc_out).c : $(asi_yacc_in).y $(as_dir)/y/yydriver.c
 
 $(lex_in).re : $(as_dir)/y/$(lex_src)
         @if not exist $(stand_subdir) mkdir $(stand_subdir)
-        wsplice $(splice_opts) -k_STANDALONE_ $[@ $(lex_in).tmp
+        *wsplice $(splice_opts) -k_STANDALONE_ $[@ $(lex_in).tmp
         sed -e "s/ytab.h/asytab.h/g" $(lex_in).tmp > $@
 
 $(asi_lex_in).re : $(as_dir)/y/$(lex_src)
-        wsplice $(splice_opts) $[@ $(asi_lex_in).tmp
+        *wsplice $(splice_opts) $[@ $(asi_lex_in).tmp
         sed -e "s/ytab.h/asiytab.h/g" $(asi_lex_in).tmp > $@
 
 .ERASE

@@ -256,4 +256,4 @@ rc_inc_dirs = -I"$(trap_dir)/common"
         $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
 usage.u : ../$(srv).sp
-        wsplice -u $< $@
+        *wsplice -u $< $@

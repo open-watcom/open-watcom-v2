@@ -8,9 +8,9 @@ w32api_distrib_lib  = 1
 !include cproj.mif
 !include defrule.mif
 
-splice    = -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
-rsplice   = -kRESOURCE -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
-ws2splice = -kWINSOCK2 -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
+splice    = *wsplice -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
+rsplice   = *wsplice -kRESOURCE -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
+ws2splice = *wsplice -kWINSOCK2 -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
 
 dirs = ddk directx GL
 
@@ -438,46 +438,25 @@ all : $(dirs) $(headers) .SYMBOLIC
 .mh: $(w32api_dir)/include
 
 .mh.h:
-    @echo wsplice $@ $(splice)
-    wsplice @<<splice.tmp
     $(splice)
-<<
 
 {ddk}.mh{ddk}.h:
-    @echo wsplice $@
-    @wsplice @<<splice.tmp
     $(splice)
-<<
 
 {directx}.mh{directx}.h:
-    @echo wsplice $@
-    @wsplice @<<splice.tmp
     $(splice)
-<<
 
 {GL}.mh{GL}.h:
-    @echo wsplice $@
-    @wsplice @<<splice.tmp
     $(splice)
-<<
 
 .mh.rh:
-    @echo wsplice $@
-    @wsplice @<<rsplice.tmp
     $(rsplice)
-<<
 
 winsock2.h: winsock.mh
-    @echo wsplice $@
-    @wsplice @<<ws2splice.tmp
     $(ws2splice)
-<<
 
 winresrc.h: winresrc.mh
-    @echo wsplice $@
-    @wsplice @<<rsplice.tmp
     $(rsplice)
-<<
 
 $(dirs):
     @if not exist $@ mkdir $@

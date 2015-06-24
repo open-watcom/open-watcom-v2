@@ -14,41 +14,41 @@ inc_dirs = -I. -I"$(womp_dir)/h"
 
 .c: ../c;$(trmem_dir)
 
-objs =                  &
-        array.obj       &
-        can2ms0.obj     &
-        can2ms1.obj     &
-        can2ms2.obj     &
-        can2td0.obj     &
-        can2td1.obj     &
-        can2td2.obj     &
-        can2txt.obj     &
-        canaddr.obj     &
-        canmisc.obj     &
-        cansymb.obj     &
-        cantype.obj     &
-        carve.obj       &
-        cmdline.obj     &
-        deflib.obj      &
-        fixup.obj       &
-        genmscmt.obj    &
-        genmsomf.obj    &
-        genphar.obj     &
-        genutil.obj     &
-        lifix.obj       &
-        main.obj        &
-        memutil.obj     &
-        namemgr.obj     &
-        objio.obj       &
-        objprs.obj      &
-        reglist.obj     &
-        objrec.obj      &
-        pubdef.obj      &
-        queue.obj       &
-        segment.obj     &
-        wat2can0.obj    &
-        wat2can1.obj    &
-        wpmsg.obj
+objs =              &
+    array.obj       &
+    can2ms0.obj     &
+    can2ms1.obj     &
+    can2ms2.obj     &
+    can2td0.obj     &
+    can2td1.obj     &
+    can2td2.obj     &
+    can2txt.obj     &
+    canaddr.obj     &
+    canmisc.obj     &
+    cansymb.obj     &
+    cantype.obj     &
+    carve.obj       &
+    cmdline.obj     &
+    deflib.obj      &
+    fixup.obj       &
+    genmscmt.obj    &
+    genmsomf.obj    &
+    genphar.obj     &
+    genutil.obj     &
+    lifix.obj       &
+    main.obj        &
+    memutil.obj     &
+    namemgr.obj     &
+    objio.obj       &
+    objprs.obj      &
+    reglist.obj     &
+    objrec.obj      &
+    pubdef.obj      &
+    queue.obj       &
+    segment.obj     &
+    wat2can0.obj    &
+    wat2can1.obj    &
+    wpmsg.obj
 
 !ifeq release 0
 !ifndef wmake_trmem
@@ -62,19 +62,17 @@ extra_c_flags_memory += -dTRACK -of+
 !endif
 
 $(proj_name).exe : wmpmsg.gh $(proj_name).res $(objs)
-        $(linker) name $^@ $(lflags) file { $(objs) } lib $(wres_lib)
-        $(wstrip) -q -a -r $@ . $(proj_name).res
+    $(linker) name $^@ $(lflags) file { $(objs) } lib $(wres_lib)
+    $(wstrip) -q -a -r $@ . $(proj_name).res
 
 wmpmsg.gh : $(womp_dir)/womp.msg
-        awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+    awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 $(proj_name).res :  usage.grc ../h/$(proj_name).rc
-        $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$^@
+    $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$^@
 
 usage.grc : ../usage.sp
-    @%write usage.tmp -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
-    wsplice @usage.tmp
+    *wsplice -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
 
 usagej.grc : ../usage.sp
-    @%write usage.tmp -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
-    wsplice @usage.tmp
+    *wsplice -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@

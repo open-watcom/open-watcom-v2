@@ -63,9 +63,7 @@ wic.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     $(rc_aui) $[@ -fo=$^@
 
 usagee.gh:  ../res/usage.sp
-    @%write usagee.tmp -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
-    wsplice @usagee.tmp
+    *wsplice -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
 
 usagej.gh:  ../res/usage.sp
-    @%write usagej.tmp -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
-    wsplice @usagej.tmp
+    *wsplice -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@

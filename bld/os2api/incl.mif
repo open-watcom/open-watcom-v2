@@ -13,7 +13,7 @@ hdr_cpu = $(host_cpu)
 !include cproj.mif
 !include defrule.mif
 
-splice = wsplice -i"$(hdr_dir)" $[@ $^@
+splice = *wsplice -i"$(hdr_dir)" $[@ $^@
 
 .EXTENSIONS : .mh
 

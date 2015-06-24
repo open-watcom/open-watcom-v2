@@ -166,4 +166,4 @@ wrcmsg.gh : $(wrc_dir)/h/rc.msg
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
 usage.u : ../h/usage.sp
-    wsplice -u $< $@
+    *wsplice -u $< $@

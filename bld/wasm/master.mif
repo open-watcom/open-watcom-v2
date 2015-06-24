@@ -136,15 +136,11 @@ wmpmsg.gh : ../h/womp.msg
 
 usage.gh : ../h/options.gml
         optencod -q $(optencod_opt_$(host_os)) $]@ . . $^&.tmp any
-        wsplice -t8 @<<usagex.tmp $@
--f "pick((MSG_USAGE_BASE+%#%+), %s, \"\")" $^&.tmp -o "pick((MSG_USAGE_BASE+%#%+), \".\", \"\")%n"
-<<
+        *wsplice -t8  -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" -o "pick((MSG_USAGE_BASE+%$#%+), \".\", \"\")%n" $^&.tmp $@
 
 usagej.gh : ../h/options.gml
         optencod -l 1 -q $]@ . . $^&.tmp any
-        wsplice -t8 @<<usagejx.tmp $@
--f "pick((MSG_USAGE_BASE+%#%+), \"\", %s)" $^&.tmp -o "pick((MSG_USAGE_BASE+%#%+), \"\", \".\")%n"
-<<
+        *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" -o "pick((MSG_USAGE_BASE+%$#%+), \"\", \".\")%n" $^&.tmp $@
 
 usage.u : ../h/options.gml
         optencod -q -u $@ $]@ . . . any

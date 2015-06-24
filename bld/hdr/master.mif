@@ -6,10 +6,14 @@ dos_options   = -kDOS -kUNICODE
 linux_options = -kLINUX -u
 qnx_options   = -kQNX -t8 -u
 
-splice = -i.. $($(system)_options) ../common.sp $[@ $^@
-psplice = -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
-csplice = -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
+splice = *wsplice -i.. $($(system)_options) ../common.sp $[@ $^@
+psplice = *wsplice -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
+csplice = *wsplice -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
 
+# order of directories is important for DOS
+# multi level tree must be created from top to bottom
+# DOS can create only simple sub-directory in existing directory
+# you must create parent before child directory
 dos_dirs   = sys
 linux_dirs = sys netinet arpa arch arch/i386 arch/i386/sys arch/mips arch/mips/sys
 qnx_dirs   = sys
@@ -28,97 +32,52 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
 .mhp: $($(system)_path);../watcom
 
 .mhp.hpp:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 .mh.h:
-        @echo wsplice $@
-        @wsplice @<<csplice.tmp
         $(csplice)
-<<
 
 {dos}.mh.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux}.mh.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {sys}.mh{sys}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {dos/sys}.mh{sys}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux/sys}.mh{sys}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux/arpa}.mh{arpa}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux/netinet}.mh{netinet}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux/arch/i386}.mh{arch/i386}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux/arch/i386/sys}.mh{arch/i386/sys}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux/arch/mips}.mh{arch/mips}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 {linux/arch/mips/sys}.mh{arch/mips/sys}.h:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 .mh.cnv:
-        @echo wsplice $@
-        @wsplice @<<splice.tmp
         $(splice)
-<<
 
 #
 # Handle C++ and cname style headers (files without extension)
 #
 .mh.:
-        @echo wsplice $@
-        @wsplice @<<psplice.tmp
         $(psplice)
-<<
 
 #
 # Special case for cname style headers

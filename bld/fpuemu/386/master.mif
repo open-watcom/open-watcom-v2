@@ -39,7 +39,7 @@ emu387: usage.u qnxemu87.obj emu387.obj fpeqnx.obj
     $(linker) name $^@ $(lflags) opt priv=0,map,long,quiet,res=usage.u file {$<}
 
 usage.u : ../../usage.sp
-    wsplice -u $< $@
+    *wsplice -u $< $@
 
 !else ifeq host_os win
 

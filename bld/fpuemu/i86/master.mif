@@ -72,7 +72,7 @@ emu86_$(cpu_size): usage.u qnxemu87.obj emu8087.obj fpeqnx.obj
     $(linker) name $^@ $(lflags) opt priv=0,long,res=usage.u file {$<}
 
 usage.u : ../../usage.sp
-    wsplice -u $< $@
+    *wsplice -u $< $@
 
 !else ifeq host_os stub
 

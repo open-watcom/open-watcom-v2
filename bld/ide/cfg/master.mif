@@ -37,7 +37,7 @@ wsplice_opts_win   = -k FOR_WIN
 wsplice_opts_axp   = -k FOR_AXP
 
 .sp.cfg:
-    wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
+    *wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
 
 clean : .symbolic
     rm -f *.cfg
