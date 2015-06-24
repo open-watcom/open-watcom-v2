@@ -88,23 +88,11 @@ static char *Months[] = {
 
 static char MBCharLen[256];         // multi-byte character len table
 
-static char *doStrDup( const char *str )
-{
-    char        *ptr;
-    size_t      len;
-
-    len = strlen( str ) + 1;
-    ptr = PP_Malloc( len );
-    if( ptr != NULL ) {
-        memcpy( ptr, str, len );
-    }
-    return( ptr );
-}
-
 static FILE *PP_Open( const char *filename )
 {
     FILE        *handle;
     FILELIST    *prev_file;
+    size_t      len;
 
     handle = fopen( filename, "rb" );
     if( handle != NULL ) {
@@ -119,7 +107,9 @@ static FILE *PP_Open( const char *filename )
             PP_File->prev_file = prev_file;
             PP_File->handle    = handle;
             PP_File->prev_bufptr  = PPBufPtr;
-            PP_File->filename  = doStrDup( filename );
+            len = strlen( filename ) + 1;
+            PP_File->filename  = PP_Malloc( len );
+            memcpy( PP_File->filename, filename, len );
             PP_File->linenum   = 1;
             PPBufPtr = PP_File->buffer;
             *PPBufPtr = '\0';                   // indicate buffer empty
@@ -571,10 +561,8 @@ static void PP_Include( char *ptr )
         ++ptr;
     *ptr = '\0';
     if( PP_OpenInclude( filename, incl_type ) == NULL ) {
-        filename = doStrDup( filename );        // want to reuse buffer
         PPCharPtr = &PPLineBuf[1];
         sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
-        PP_Free( filename );
     } else {
         PP_GenLine();
     }
@@ -610,10 +598,8 @@ static void PP_RCInclude( char *ptr )
     }
     *ptr = '\0';
     if( PP_OpenInclude( filename, PPINCLUDE_USR ) == NULL ) {
-        filename = doStrDup( filename );        // want to reuse buffer
         PPCharPtr = &PPLineBuf[1];
         sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
-        PP_Free( filename );
     } else {
         PP_GenLine();
     }

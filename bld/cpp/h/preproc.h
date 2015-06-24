@@ -145,7 +145,7 @@ extern  void        *PP_Malloc( size_t __size );
 extern  void        PP_Free( void *__ptr );
 extern  void        PP_OutOfMemory(void);
 
-extern  char        *PP_GetEnv( const char *__name );
+extern  const char  *PP_GetEnv( const char *__name );
 
 extern  void        PreprocVarInit( void );
 extern  void        PPMacroVarInit( void );

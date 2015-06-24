@@ -257,7 +257,7 @@ static bool scanEnvVar( const char *varname )
     static EnvVarInfo   *stack = 0; // Needed to detect recursion.
     size_t              argvsize;
     size_t              argbufsize;
-    char                *env;
+    const char          *env;
     size_t              varlen;     // size to hold varname copy.
     bool                result;     // doScanParams Result.
 
