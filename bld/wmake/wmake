@@ -40,14 +40,12 @@ $(%OWBINDIR)/wmake$(exe): wmk.exe
 
 # Use inline files for wsplice as a way to sidestep the metacharacter hell.
 usage.gh : ../h/usage.sp ./wsplice.exe
-        $]@ -kIS_RC -kENGLISH @<<usage.tmp $@
--f "{MSG_USAGE_BASE+%#%+, \"%s\"}," $[@ -o "%n%n%n%n"
-<<
+        %write usage.tmp -kIS_RC -kENGLISH -f "{MSG_USAGE_BASE+%$#%+, \"%s\"}," -o "%n%n%n%n" $[@ $@
+        $]@ @usage.tmp
 
 usageend.gh: usage.gh ./wsplice.exe
-        $]@ @<<usageend.tmp $@
--f "%+" $[@ -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n"
-<<
+        %write usageend.tmp -f "%+" -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)%n" $[@ $@
+        $]@ @usageend.tmp
 
 isarray.gh : ./cretype.exe
         $]@ > $@
