@@ -723,16 +723,27 @@ static void AddIncludePathList( char *path )
     IPATHLST    *lptr;          // - point to new path entry
     IPATHLST    *p;             // - point to list
     size_t      size;           // - size of path
+#ifndef __UNIX__
+    char        *ptr;
+    char        c;
+#endif
 
     size = strlen( path );
     lptr = GetMem( sizeof( IPATHLST ) + size + 1 );
     if( lptr == NULL ) {
         Error( "Unable to allocate %d bytes for path list entry: %s", size, path );
     } else {
-        memcpy( lptr->path, path, size + 1 );
 #ifdef __UNIX__
+        memcpy( lptr->path, path, size + 1 );
         lptr->path[size] = '/';
 #else
+        ptr = lptr->path;
+        while( (c = *path++) != '\0' ) {
+            if( c == '/' )
+                c = '\\';
+            *ptr++ = c;
+        }
+        *ptr = '\0';
         lptr->path[size] = '\\';
 #endif
         lptr->path[size + 1] = 0;
