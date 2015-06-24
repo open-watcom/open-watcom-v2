@@ -237,10 +237,8 @@ int main(               // MAIN-LINE
     int argc,           // - # arguments
     char *argv[] )      // - arguments list
 {
-#define src_file param[ count ]         // - name of source file
-#define tgt_file param[ arg_count-1 ]   // - name of modifications file
-    int                 count;              // - current source file #
-    char                *p;                // - generic pointer
+    int                 count;          // - current source file #
+    char                *p;             // - generic pointer
     SEGMENT             *seg;           // - segment structure
     struct utimbuf      dest_time;
     struct stat         src_time;
@@ -248,26 +246,33 @@ int main(               // MAIN-LINE
     char                *tgt = NULL;
     char                *param[32];
     int                 arg_count = 0;
+    char                *arg;
 
-    for( count = 0; count < argc; count++ ) {
-        if( argv[count][0] != '@' ) {
-            param[arg_count] = malloc( strlen( argv[count] ) + 1 );
-            strcpy( param[arg_count++], argv[count] );
+    for( count = 1; count < argc; count++ ) {
+        arg = argv[count];
+        if( *arg != '@' ) {
+            param[arg_count] = malloc( strlen( arg ) + 1 );
+            strcpy( param[arg_count++], arg );
         } else {
             FILE        *f;
             char        st[512], separator;
             int         i, j, k;
             size_t      len;
+            const char  *env;
 
-            f = fopen( argv[count] + 1, "r" );
-            if( f == NULL ) {
-                Error( "Unable to open indirect argument file" );
-                continue;
+            env = getenv( arg + 1 );
+            if( env != NULL ) {
+                strcpy( st, env );
+            } else {
+                f = fopen( arg + 1, "r" );
+                if( f == NULL ) {
+                    Error( "Unable to open indirect argument file" );
+                    continue;
+                }
+    
+                fgets( st, 512, f );
+                fclose( f );
             }
-
-            fgets( st, 512, f );
-            fclose( f );
-
             len = strlen( st );
             if( st[len - 1] == '\n' ) {
                 --len;
@@ -303,8 +308,9 @@ int main(               // MAIN-LINE
                 arg_count++;
 
                 i = j;
-                if( st[i] == '"' )
+                if( st[i] == '"' ) {
                     i++;
+                }
             }
         }
     }
@@ -322,20 +328,24 @@ int main(               // MAIN-LINE
         puts( "    -u\t\t\tUse Unix style newlines for output file" );
         puts( "    -p\t\t\tpreserve same time stamp as src-file on tgt-file" );
     } else {
+#define src_file arg                    // - name of source file
+#define tgt_file param[arg_count - 1]   // - name of modifications file
+#define get_value() ( (arg[2]=='\0') ? (param[++count]) : arg + 2)
+
         if( 0 == stricmp( tgt_file, "-" ) ) {
             OutputFile = stdout;
         } else {
-            OutputFile = fopen( tgt_file, "wb" );
             tgt = tgt_file;
+            OutputFile = fopen( tgt, "wb" );
         }
         if( OutputFile == NULL ) {
             Error( "Unable to open output file" );
         } else {
-#define get_value() ( (src_file[2]=='\0') ? (++count,src_file) : &src_file[2])
             OutBufferLen = 0;
-            for( count = 1; count < arg_count - 1; ++count ) {
-                if( src_file[0] == '-' ) {
-                    switch( src_file[1] ) {
+            for( count = 0; count < arg_count - 1; ++count ) {
+                arg = param[count];
+                if( arg[0] == '-' ) {
+                    switch( arg[1] ) {
                     case 'i':
                         p = get_value();
                         AddIncludePathList( p );
@@ -374,19 +384,21 @@ int main(               // MAIN-LINE
                         RestoreTime = TRUE;
                         break;
                     default:
-                        Error( "Unknown option '%c'", src_file[1] );
+                        Error( "Unknown option '%c'", arg[1] );
                         break;
                     }
-                } 
-                else {
+                } else {
                     src = src_file;
-                    ProcessSource( src_file );
+                    ProcessSource( src );
                 }
             }
             if( OutBufferLen > 0 )
                 fwrite( OutBuffer, OutBufferLen, 1, OutputFile );
             fclose( OutputFile );
         }
+#undef src_file
+#undef tgt_file
+#undef get_value
     }
     if( RestoreTime ) {
         if( stat( src, &src_time ) == 0 ) {
@@ -398,8 +410,6 @@ int main(               // MAIN-LINE
 
     return( ErrCount );
 
-#undef src_file
-#undef tgt_file
 }
 
 // PROCESS SOURCE FILE
@@ -725,28 +735,30 @@ static void AddIncludePathList( char *path )
     size_t      size;           // - size of path
 #ifndef __UNIX__
     char        *ptr;
-    char        c;
 #endif
 
     size = strlen( path );
+    if( size != 0 && path[0] == '"' && path[size - 1] == '"' ) {
+        size -= 2;
+        ++path;
+    }
     lptr = GetMem( sizeof( IPATHLST ) + size + 1 );
     if( lptr == NULL ) {
         Error( "Unable to allocate %d bytes for path list entry: %s", size, path );
     } else {
+        memcpy( lptr->path, path, size );
+        lptr->path[size + 1] = 0;
 #ifdef __UNIX__
-        memcpy( lptr->path, path, size + 1 );
         lptr->path[size] = '/';
 #else
-        ptr = lptr->path;
-        while( (c = *path++) != '\0' ) {
-            if( c == '/' )
-                c = '\\';
-            *ptr++ = c;
-        }
-        *ptr = '\0';
         lptr->path[size] = '\\';
+        ptr = lptr->path;
+        while( *ptr != '\0' ) {
+            if( *ptr == '/' )
+                *ptr = '\\';
+            ++ptr;
+        }
 #endif
-        lptr->path[size + 1] = 0;
         lptr->next = NULL;
         p = IncPathList;
         if( p == NULL ) {
