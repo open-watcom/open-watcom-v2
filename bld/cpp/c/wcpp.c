@@ -84,11 +84,21 @@ void Quit( const char *usage_msg[], const char *str, ... )
     exit( EXIT_FAILURE );
 }
 
-static int          flags = 0;
-static const char   **defines = NULL;
-static int          numdefs = 0;
-static const char   **filenames = NULL;
-static int          nofilenames = 0;
+static char *my_strdup( const char *str )
+{
+    size_t     len;
+    char       *ptr;
+
+    len = strlen( str ) + 1;
+    ptr = malloc( len );
+    return( memcpy( ptr, str, len ) );
+}
+
+static int      flags = 0;
+static char     **defines = NULL;
+static int      numdefs = 0;
+static char     **filenames = NULL;
+static int      nofilenames = 0;
 
 static bool ScanOptionsArg( const char * arg )
 /********************************************/
@@ -104,7 +114,7 @@ static bool ScanOptionsArg( const char * arg )
     case 'd':
         ++arg;
         defines = realloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
-        defines[numdefs++] = arg;
+        defines[numdefs++] = my_strdup( arg );
         break;
     case 'h':
         Quit( usageMsg, NULL );
@@ -165,7 +175,7 @@ static bool doScanParams( int argc, char *argv[] )
 //            contok = false;
         } else {
             filenames = realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
-            filenames[nofilenames++] = arg;
+            filenames[nofilenames++] = my_strdup( arg );
         }
     }
     return( contok );
@@ -322,7 +332,7 @@ int main( int argc, char *argv[] )
                 break;
             }
             for( j = 0; j < numdefs; j++ ) {
-                PP_Define( (void *)defines[j] );
+                PP_Define( defines[j] );
             }
             for( ;; ) {
                 ch = PP_Char();
@@ -334,7 +344,13 @@ int main( int argc, char *argv[] )
         }
     }
 
+    for( i = 0; i < nofilenames; ++i ) {
+        free( filenames[i] );
+    }
     free( (void *)filenames );
+    for( i = 0; i < numdefs; i++ ) {
+        free( defines[i] );
+    }
     free( (void *)defines );
 
     PP_IncludePathFini();
