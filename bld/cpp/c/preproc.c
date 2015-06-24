@@ -351,18 +351,6 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
     NestLevel = 0;
     SkipLevel = 0;
     PPFlags = flags;
-    IncludePath2 = PP_Malloc( 1 );
-    *IncludePath2 = '\0';
-    IncludePath2 = AddIncludePath( IncludePath2, include_path );
-    if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
-        IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
-    }
-    PP_AddMacro( "__LINE__" );
-    PP_AddMacro( "__FILE__" );
-    PP_AddMacro( "__DATE__" );
-    PP_AddMacro( "__TIME__" );
-    PP_AddMacro( "__STDC__" );
-    PP_TimeInit();
     memset( MBCharLen, 0, 256 );
     if( leadbytes != NULL ) {
         PP_SetLeadBytes( leadbytes );
@@ -380,6 +368,19 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
         SetRange( 0xf8, 0xfb, 4 );
         SetRange( 0xfc, 0xfd, 5 );
     }
+    IncludePath2 = PP_Malloc( 1 );
+    *IncludePath2 = '\0';
+    IncludePath2 = AddIncludePath( IncludePath2, include_path );
+    if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
+        IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
+    }
+    PP_AddMacro( "__LINE__" );
+    PP_AddMacro( "__FILE__" );
+    PP_AddMacro( "__DATE__" );
+    PP_AddMacro( "__TIME__" );
+    PP_AddMacro( "__STDC__" );
+    PP_TimeInit();
+
     handle = PP_Open( filename );
     if( handle == NULL )
         return( -1 );

@@ -35,21 +35,20 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include "getopt.h"
 #include "misc.h"
 #include "iopath.h"
 #include "swchar.h"
 
 
-char *OptEnvVar = "";
-
 static const char *usageMsg[] = {
-    "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-zk0] [-zk1] [-zk2] [-zku8] [input files]\n",
+    "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-o<file>] [-zk0] [-zk1] [-zk2]\n"
+    "\t\t[-zku8] [input files]\n",
     "input files\t\tlist of input source file names\n",
     "-c\t\tpreserve comments\n",
     "-d<macro>\t\tdefine macro\n",
     "-i<path>\t\tinclude path\n",
     "-l\t\tgenerate #line directives\n",
+    "-o<file>\t\toutput file\n",
     "-zk{0,1,2,u8}\t\tsource file character encoding\n",
     "-zk0\t\tJapanese (Kanji, CP 932) double-byte encoding\n",
     "-zk1\t\tChinese (Traditional, CP 950) double-byte encoding\n",
@@ -99,6 +98,7 @@ static char     **defines = NULL;
 static int      numdefs = 0;
 static char     **filenames = NULL;
 static int      nofilenames = 0;
+static char     *out_filename = NULL;
 
 static bool ScanOptionsArg( const char * arg )
 /********************************************/
@@ -126,6 +126,13 @@ static bool ScanOptionsArg( const char * arg )
     case 'l':
         flags |= PPFLAG_EMIT_LINE;
         break;
+    case 'o':
+        ++arg;
+        if( out_filename != NULL ) {
+            free( out_filename );
+        }
+        out_filename = my_strdup( arg );
+        break;
     case 'z':
         ++arg;
         if( tolower( arg[0] ) == 'k' ) {
@@ -145,10 +152,9 @@ static bool ScanOptionsArg( const char * arg )
                 }
             }
         }
+        // fall down
+    default:
         Quit( usageMsg, "Incorrect option\n" );
-        break;
-    default:            /* option that could have others with it */
-//        contok = ScanMultiOptArg( arg ) && contok;
         break;
     }
     return( contok );
@@ -157,10 +163,10 @@ static bool ScanOptionsArg( const char * arg )
 static bool doScanParams( int argc, char *argv[] )
 /************************************************/
 {
-    const char *arg;
-    int     switchchar;
-    bool    contok;         /* continue with main execution */
-    int     currarg;
+    const char  *arg;
+    int         switchchar;
+    bool        contok;         /* continue with main execution */
+    int         currarg;
 
     contok = true;
     switchchar = _dos_switch_char();
@@ -264,7 +270,7 @@ static bool scanEnvVar( const char *varname )
 
     int                 argc;
     EnvVarInfo          *info;
-    static EnvVarInfo   *stack = 0; // Needed to detect recursion.
+    static EnvVarInfo   *stack = NULL; // Needed to detect recursion.
     size_t              argvsize;
     size_t              argbufsize;
     const char          *env;
@@ -311,6 +317,7 @@ int main( int argc, char *argv[] )
     int         i;
     int         j;
     int         rc;
+    FILE        *fo;
 
     if( argc < 2 ) {
         Quit( usageMsg, "No filename specified\n" );
@@ -324,6 +331,10 @@ int main( int argc, char *argv[] )
 
     rc = EXIT_FAILURE;
     if( doScanParams( argc - 1, argv + 1 ) && nofilenames != 0 ) {
+        fo = stdout;
+        if( out_filename != NULL ) {
+            fo = fopen( out_filename, "wb" );
+        }
         rc = EXIT_SUCCESS;
         for( i = 0; i < nofilenames; ++i ) {
             if( PP_Init( filenames[i], flags, NULL ) != 0 ) {
@@ -338,12 +349,20 @@ int main( int argc, char *argv[] )
                 ch = PP_Char();
                 if( ch == EOF )
                     break;
-                putchar( ch );
+                fputc( ch, fo );
             }
             PP_Fini();
         }
+        if( fo == stdout ) {
+            fflush( fo );
+        } else if( fo != NULL ) {
+            fclose( fo );
+        }
     }
 
+    if( out_filename != NULL ) {
+        free( out_filename );
+    }
     for( i = 0; i < nofilenames; ++i ) {
         free( filenames[i] );
     }
