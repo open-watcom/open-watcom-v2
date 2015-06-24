@@ -8,7 +8,7 @@ w32api_distrib_lib  = 1
 !include cproj.mif
 !include defrule.mif
 
-inc_dirs = -I"$(w32api_dir)/nt/ddk" -I"$(w32api_dir)/nt/directx"
+inc_dirs = -I"../nt/ddk" -I"../nt/directx"
 
 dirs = ddk directx
 
@@ -155,12 +155,12 @@ vfw32_lbcs =         &
 all : $(dirs) $(libs) .SYMBOLIC
     @%null
 
-.def: $(w32api_dir)/lib
+.def: ../lib
 
-.c: $(w32api_dir)/lib
+.c: ../lib
 
 .def.lbc:
-    awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
 
 .lbc.lib:
     $(librarian) $(libflags) @$<
@@ -169,7 +169,7 @@ all : $(dirs) $(libs) .SYMBOLIC
     $(librarian) $(libflags) $<
 
 {ddk}.def{ddk}.lbc:
-    awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
 
 {ddk}.lbc{ddk}.lib:
     $(librarian) $(libflags) @$<
@@ -186,7 +186,7 @@ all : $(dirs) $(libs) .SYMBOLIC
 !endif
 
 {directx}.def{directx}.lbc:
-    awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
 
 {directx}.lbc{directx}.lib:
     $(librarian) $(libflags) @$<
@@ -200,15 +200,15 @@ vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @%append $@ +vfwuuid.obj
 
 ws2_32.lbc: ws2_32.def ws2_cons.obj
-    awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
     @%append $@ +ws2_cons.obj
 
 directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
-    awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
     @%append $@ +directx/dinpstat.obj
 
 directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
-    awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
     @%append $@ +directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c
