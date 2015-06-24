@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "rterrno.h"
+#include "iomode.h"
 #include "rtcheck.h"
 #include "thread.h"
 

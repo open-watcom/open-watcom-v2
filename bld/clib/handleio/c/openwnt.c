@@ -49,8 +49,6 @@
 #include "seterrno.h"
 #include "defwin.h"
 
-extern unsigned __NFiles;
-
 
 static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share, va_list args )
 {

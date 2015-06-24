@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include "rterrno.h"
 #include "seterrno.h"
+#include "iomode.h"
 #include "rtcheck.h"
 #include "close.h"
 #include "thread.h"

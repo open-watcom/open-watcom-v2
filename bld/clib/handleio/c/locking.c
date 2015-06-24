@@ -41,6 +41,7 @@
 #include <time.h>
 #include <sys/locking.h>
 #include "rterrno.h"
+#include "iomode.h"
 #include "rtcheck.h"
 #include "lseek.h"
 #include "thread.h"

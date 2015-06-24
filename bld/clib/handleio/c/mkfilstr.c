@@ -60,7 +60,6 @@
 _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void )
 /*******************************************************************************/
 {
-    extern unsigned     __NFiles;
     CHAR_TYPE *         p;
     int                 posixHandle, osHandle, mode;
     CHAR_TYPE           curElem[MAX_ELEM_SIZE+1];

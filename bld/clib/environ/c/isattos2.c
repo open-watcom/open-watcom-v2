@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "rterrno.h"
 #include "defwin.h"
+#include "iomode.h"
 #include "rtcheck.h"
 #include "thread.h"
 

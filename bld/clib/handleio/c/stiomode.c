@@ -50,7 +50,6 @@
 #endif
 
 extern  unsigned _HUGEDATA __init_mode[_NFILES];
-extern  unsigned __NFiles;              /* maximum # of files we can open */
 
 static  unsigned _init_NFiles;          // original __NFiles value;
 
@@ -98,8 +97,6 @@ AYI(__shrink_iomode,INIT_PRIORITY_IOSTREAM);
 
 
 #if defined(__WARP__)
-
-extern  unsigned    __NHandles;
 
 static void __preinit_iomode_os2(void)
 {

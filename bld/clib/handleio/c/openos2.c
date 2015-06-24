@@ -53,8 +53,6 @@
 #include "thread.h"
 #include "os2fil64.h"
 
-extern unsigned __NFiles;
-
 
 static int _set_binary( int handle )
 {

@@ -36,6 +36,7 @@
 #include <string.h>
 #include "rterrno.h"
 #include "fileacc.h"
+#include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "lseek.h"
