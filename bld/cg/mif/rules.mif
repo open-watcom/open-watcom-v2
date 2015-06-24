@@ -30,7 +30,7 @@ dbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(dbit_size) _DBit dom_bit_set $@
 
 cgprotos.gh : $(cg_dir)/h/cgapicvr.h $(cg_dir)/h/cgfuntab.h
-    $(cpp) -I"$(cg_dir)/h" $[@ >$@
+    $(cpp) -I"$(cg_dir)/h" -o$@ $[@
 
 feprotos.gh : $(cg_dir)/h/cgfecvr.h $(cg_dir)/h/cgfertns.h
-    $(cpp) -I"$(cg_dir)/h" $[@ >$@
+    $(cpp) -I"$(cg_dir)/h" -o$@ $[@

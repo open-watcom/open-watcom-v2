@@ -100,7 +100,7 @@ rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles)
-        $(cpp) $(rc_aui_flags) $[@ >$^@
+        $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 !ifeq host_os win
 !ifeq host_cpu i86

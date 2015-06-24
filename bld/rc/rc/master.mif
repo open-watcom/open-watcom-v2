@@ -264,10 +264,10 @@ keyword2.gh : ../hash/rcos2.key
         findhash -q -s 2 -m $<
 
 incltext.gh : ../h/incltext.h ../h/rc.msg
-        $(cpp) $(rc_aui_flags) -I.. $(rc_defines) $[@ >$^@
+        $(cpp) $(rc_aui_flags) -I.. $(rc_defines) -o$^@ $[@
 
 msg.gh : ../h/rc.msg
-        $(cpp) $(rc_aui_flags) $(rc_defines) $[@ >$@
+        $(cpp) $(rc_aui_flags) $(rc_defines) -o$@ $[@
 
 rcmsg.gh : msg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@

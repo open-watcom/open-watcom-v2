@@ -86,4 +86,4 @@ rcstr.gh: rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh: ../res/$(name).msg
-        $(cpp) $(rc_aui_flags) -I"../../res" $[@ >$^@
+        $(cpp) $(rc_aui_flags) -I"../../res" -o$^@ $[@

@@ -116,4 +116,4 @@ rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
-        $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) $[@ >$^@
+        $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$^@ $[@

@@ -163,7 +163,7 @@ rcmsg.gh : wrcmsg.gh
     awk -v rcbase=800 -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg
-    $(cpp) $(rc_aui_flags) $[@ >$@
+    $(cpp) $(rc_aui_flags) -o$@ $[@
 
 usage.u : ../h/usage.sp
     wsplice -u $< $@

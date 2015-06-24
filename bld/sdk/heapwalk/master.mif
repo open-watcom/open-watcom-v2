@@ -45,7 +45,7 @@ $(name).exe : rcstr.gh $(dis_prereq) $(objs) $(dis_objs) $(xlibs) $(name).res
         $(rc) -k $(name).res $^@
 
 rcstrmsg.gh : ../res/heapwalk.msg
-        $(cpp) $(rc_aui_flags) $[@ >$^@
+        $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@

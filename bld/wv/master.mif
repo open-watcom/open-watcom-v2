@@ -463,13 +463,13 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
 .str: h;$(rdir)/strings
 
 litdefm.tmp : menu.str
-        $(cpp) $(rc_aui_flags) $< >$@
+        $(cpp) $(rc_aui_flags) -o$@ $<
 
 litdefs1.tmp : wdeng.str
-        $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
+        $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $<
 
 litdefs2.tmp : wddui.str
-        $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
+        $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $<
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp
         awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg.awk litdefs1.tmp > $^@

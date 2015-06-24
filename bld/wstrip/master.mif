@@ -56,10 +56,10 @@ msg.gh : wstrip.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 incltext.gh : ../incltext.h ../wstrip.msg
-        $(cpp) $(rc_aui_flags) -I.. $[@ >$^@
+        $(cpp) $(rc_aui_flags) -I.. -o$^@ $[@
 
 wstrip.gh : ../wstrip.msg
-        $(cpp) $(rc_aui_flags) $[@ >$@
+        $(cpp) $(rc_aui_flags) -o$@ $[@
 
 wstrip.res : ../wstrip.rc msg.gh
         $(rc_aui) -ad $(inc_dirs) $[@ -fo=$^@
