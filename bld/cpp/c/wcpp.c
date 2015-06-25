@@ -100,10 +100,32 @@ static char     **filenames = NULL;
 static int      nofilenames = 0;
 static char     *out_filename = NULL;
 
+static bool scanString( char *buf, const char *str, unsigned len )
+/*****************************************************************/
+{
+    bool        have_quote;
+    char        c;
+
+    have_quote = false;
+    while( isspace( *str ) )
+        ++str;
+    while( (c = *str++) != '\0' && len > 0 ) {
+        if( c == '\"' ) {
+            have_quote = !have_quote;
+        } else {
+            *buf++ = c;
+            len--;
+        }
+    }
+    *buf = '\0';
+    return( have_quote );
+}
+
 static bool ScanOptionsArg( const char * arg )
 /********************************************/
 {
     bool        contok;
+    size_t      len;
 
     contok = true;
 
@@ -120,8 +142,16 @@ static bool ScanOptionsArg( const char * arg )
         Quit( usageMsg, NULL );
         break;
     case 'i':
-        ++arg;
-        PP_AddIncludePath( arg );
+        {
+            char    *p;
+
+            ++arg;
+            len = strlen( arg );
+            p = malloc( len + 1 );
+            scanString( p, arg, len );
+            PP_AddIncludePath( p );
+            free( p );
+        }
         break;
     case 'l':
         flags |= PPFLAG_EMIT_LINE;
@@ -131,7 +161,9 @@ static bool ScanOptionsArg( const char * arg )
         if( out_filename != NULL ) {
             free( out_filename );
         }
-        out_filename = my_strdup( arg );
+        len = strlen( arg );
+        out_filename = malloc( len + 1 );
+        scanString( out_filename, arg, len );
         break;
     case 'z':
         ++arg;
@@ -349,6 +381,10 @@ int main( int argc, char *argv[] )
                 ch = PP_Char();
                 if( ch == EOF )
                     break;
+#ifndef __UNIX__
+                if( ch == '\n' )
+                    fputc( '\r', fo );
+#endif
                 fputc( ch, fo );
             }
             PP_Fini();

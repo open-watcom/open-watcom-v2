@@ -545,8 +545,9 @@ static void PP_Include( char *ptr )
     char        delim;
     int         incl_type;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
-    filename = ptr+1;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
+    filename = ptr + 1;
     if( *ptr == '<' ) {
         delim = '>';
         incl_type = PPINCLUDE_SYS;
@@ -558,7 +559,7 @@ static void PP_Include( char *ptr )
         return;
     }
     ++ptr;
-    while( *ptr != delim  &&  *ptr != '\0' )
+    while( *ptr != delim && *ptr != '\0' )
         ++ptr;
     *ptr = '\0';
     if( PP_OpenInclude( filename, incl_type ) == NULL ) {
@@ -574,7 +575,8 @@ static void PP_RCInclude( char *ptr )
     char        *filename;
     int         quoted = 0;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     if( *ptr == '\"' ) {
         ptr++;
         quoted = 1;
