@@ -204,7 +204,7 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
 
     have_ext = 0;
     have_path = 0;
-    for( p3 = pgm, p2 = buffer; *p2 = *p3; ++p3, ++p2 ) {
+    for( p3 = pgm, p2 = buffer; (*p2 = *p3) != '\0'; ++p3, ++p2 ) {
         switch( *p3 ) {
         case '\\':
         case '/':
