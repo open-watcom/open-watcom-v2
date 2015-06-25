@@ -36,9 +36,8 @@
 #endif
 #include "xconio.h"
 
-#undef  inpw
 
-_WCRTLINK unsigned (inpw)( unsigned port )
+_WCRTLINK unsigned inpw( unsigned port )
 {
     return( _inline_inpw( port ) );
 }

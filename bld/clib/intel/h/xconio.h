@@ -35,6 +35,13 @@
 
 #include <conio.h>
 
+#undef  inp
+#undef  inpd
+#undef  inpw
+#undef  outp
+#undef  outpd
+#undef  outpw
+
 #ifdef __cplusplus
 extern "C" {
 #endif
