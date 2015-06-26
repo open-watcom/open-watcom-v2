@@ -39,7 +39,7 @@
 #include <conio.h>
 #include <process.h>
 #undef ConsolePrintf
-#include "nw3to4.h"
+#include "nw3to5.h"
 
 struct ResourceTagStructure             *SocketTag;
 struct ResourceTagStructure             *TimerTag;

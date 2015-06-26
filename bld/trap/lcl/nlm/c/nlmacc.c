@@ -56,7 +56,7 @@
 #include "madregs.h"
 
 #include "nlmport.h"
-#include "nw3to4.h"
+#include "nw3to5.h"
 
 #include "x86cpu.h"
 #include "miscx87.h"

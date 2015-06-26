@@ -47,7 +47,7 @@
 #include "packet.h"
 
 #include "nlmport.h"
-#include "nw3to4.h"
+#include "nw3to5.h"
 
 /* from NLMIO.C */
 extern int IOCreat( char *name );
