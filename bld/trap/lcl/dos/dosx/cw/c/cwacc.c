@@ -1024,13 +1024,13 @@ trap_retval ReqMachine_data( void )
     return( sizeof( *ret ) + len );
 }
 
-trap_version TRAPENTRY TrapInit( const char *trapparms, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 /**************************************************************************/
 {
     trap_version    ver;
     char            ver_msg[] = "CauseWay API version = 0.00\r\n$";
 
-    trapparms=trapparms;remote=remote;
+    parms=parms;remote=remote;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

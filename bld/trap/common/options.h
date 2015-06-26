@@ -32,6 +32,6 @@
 
 #define PARMS_MAXLEN    256
 
-extern char TrapParm[PARMS_MAXLEN];
+extern char ServParms[PARMS_MAXLEN];
 
 WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

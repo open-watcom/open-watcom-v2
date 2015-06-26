@@ -978,7 +978,7 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_version TRAPENTRY TrapInit( const char *trapparms, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
@@ -986,9 +986,9 @@ out( "in TrapInit\r\n" );
 out( "    checking environment:\r\n" );
     CPUType = X86CPUType();
     Flags.Is386 = ( CPUType >= X86_386 );
-    if( *trapparms == 'D' || *trapparms == 'd' ) {
+    if( *parms == 'D' || *parms == 'd' ) {
         Flags.DRsOn = FALSE;
-        ++trapparms;
+        ++parms;
     } else if( out0( "    CPU type\r\n" ) || ( Flags.Is386 == 0 ) ) {
         Flags.DRsOn = FALSE;
     } else if( out0( "    WinEnh\r\n" ) || ( EnhancedWinCheck() & 0x7f ) ) {
@@ -1000,7 +1000,7 @@ out( "    checking environment:\r\n" );
     } else {
         Flags.DRsOn = TRUE;
     }
-    if( *trapparms == 'O' || *trapparms == 'o' ) {
+    if( *parms == 'O' || *parms == 'o' ) {
         Flags.NoOvlMgr = TRUE;
     }
 out( "    done checking environment\r\n" );

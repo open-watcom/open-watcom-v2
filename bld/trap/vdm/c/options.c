@@ -41,14 +41,14 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
     switch( msg ) {
     case WM_INITDIALOG:
-        SetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, TrapParm );
+        SetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, ServParms );
         SendDlgItemMessage( hwnd, IDDI_SOCKET_NUMBER, EM_SETSEL, 0, -1 );
         return( TRUE );
 
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            GetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, TrapParm, PARMS_MAXLEN );
+            GetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, ServParms, PARMS_MAXLEN );
         case IDCANCEL:
             EndDialog( hwnd, TRUE );
             return( TRUE );

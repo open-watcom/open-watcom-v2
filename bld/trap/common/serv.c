@@ -70,14 +70,19 @@ void Initialize( void )
 {
 
     const char  *err;
-    char        trap[ 128 ];
+    char        trapparms[ 128 ];
     char        cmdline[ 256 ];
 
+#define servparms RWBuff
+
     getcmd( cmdline );
-    ParseCommandLine( cmdline, trap, RWBuff, &OneShot );
-    err = RemoteLink( RWBuff, TRUE );
+    ParseCommandLine( cmdline, trapparms, servparms, &OneShot );
+    err = RemoteLink( servparms, TRUE );
+
+#undef servparms
+
     if( err == NULL ) {
-        err = LoadTrap( trap, RWBuff, &TrapVersion );
+        err = LoadTrap( trapparms, RWBuff, &TrapVersion );
     }
     if( err != NULL ) {
         StartupErr( err );
