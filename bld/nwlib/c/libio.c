@@ -64,6 +64,14 @@ libfile LibOpen( char *name, bool write_to )
     } else {
         io = fopen( name, "rb" );
     }
+    if( io == NULL && errno == EMFILE ) {
+        CloseOneInputLib();
+        if( write_to ) {
+            io = fopen( name, "wb" );
+        } else {
+            io = fopen( name, "rb" );
+        }
+    }
     if( io == NULL ) {
         FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
     }
