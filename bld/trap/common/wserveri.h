@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#define PARMS_MAXLEN    256
-
-extern char TrapParm[PARMS_MAXLEN];
-
-WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#define MENU_ABOUT              1
+#define MENU_EXIT               2
+#define MENU_CONNECT            3
+#define MENU_DISCONNECT         4
+#define MENU_OPTIONS            5
+#define MENU_BREAK              6
+#define MENU_STOP               7

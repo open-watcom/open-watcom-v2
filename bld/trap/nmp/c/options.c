@@ -34,7 +34,6 @@
 #include "wserver.h"
 #include "options.h"
 
-extern char TrapParm[];
 
 WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
@@ -49,7 +48,7 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            GetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, TrapParm, 256 );
+            GetDlgItemText( hwnd, IDDI_SOCKET_NUMBER, TrapParm, PARMS_MAXLEN );
         case IDCANCEL:
             EndDialog( hwnd, TRUE );
             return( TRUE );

@@ -35,10 +35,8 @@
 #include "wserver.h"
 #include "options.h"
 
-extern char TrapParm[];
 extern int              NumPrinters(void);
 extern unsigned         PrnAddress(int);
-extern
 
 WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
@@ -77,7 +75,7 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
         case 'p':
         case 'P':
             SendDlgItemMessage( hwnd, IDDI_PORT, BM_SETCHECK, 1, 0 );
-            SetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm+1 );
+            SetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm + 1 );
             EnableWindow( edit, TRUE );
         }
         if( num < 3 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT3 ), FALSE );
@@ -97,7 +95,7 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
                 TrapParm[0] = '3';
             } else if( SendDlgItemMessage( hwnd, IDDI_PORT, BM_GETCHECK, 0, 0 ) ) {
                 TrapParm[0] = 'p';
-                GetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm+1, 256 );
+                GetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm + 1, PARMS_MAXLEN - 1 );
             } else {
                 TrapParm[0] = '1';
             }
@@ -117,7 +115,7 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
             EnableWindow( edit, FALSE );
             break;
         case IDDI_PORT:
-            SetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm[0] == '\0' ? "" : TrapParm+1 );
+            SetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm[0] == '\0' ? "" : TrapParm + 1 );
             EnableWindow( edit, TRUE );
             break;
         }

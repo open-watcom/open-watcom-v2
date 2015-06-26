@@ -34,6 +34,7 @@
 #include <process.h>
 #include <wwindows.h>
 #include "wserver.h"
+#include "wserveri.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
@@ -48,10 +49,8 @@ extern trap_version TrapVersion;
 extern void         TellHWND( HWND );
 #endif
 
-WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
-char  TrapFile[ 0x400 ];
-char  TrapParm[ 0x400 ];
+char  TrapFile[PARMS_MAXLEN];
+char  TrapParm[PARMS_MAXLEN];
 
 HANDLE          Instance;
 
