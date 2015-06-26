@@ -70,8 +70,8 @@ void Initialize( void )
 {
 
     const char  *err;
-    char        trapparms[ 128 ];
-    char        cmdline[ 256 ];
+    char        trapparms[PARMS_MAXLEN];
+    char        cmdline[PARMS_MAXLEN];
 
 #define servparms RWBuff
 

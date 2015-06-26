@@ -105,16 +105,16 @@ static const char *CollectTrapParm( const char *ptr, char *buff )
     #define IS_OPTION( c )      ((c) == '-' || (c) == '/')
 #endif
 
-bool ParseCommandLine( const char *cmdline, char *trap, char *parm, bool *oneshot )
-/*********************************************************************************/
+bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bool *oneshot )
+/*******************************************************************************************/
 {
     const char  *start;
     const char  *ptr;
     char        *buff;
 
     *oneshot = FALSE;
-    *trap = '\0';
-    *parm = '\0';
+    *trapparms = '\0';
+    *servparms = '\0';
 #if defined(__AXP__) && defined(__NT__)
     //NYI: temp until we can get all the unaligned stuff straightened out.
     SetErrorMode( SEM_NOALIGNMENTFAULTEXCEPT );
@@ -139,13 +139,13 @@ bool ParseCommandLine( const char *cmdline, char *trap, char *parm, bool *onesho
                 StartupErr( TRP_ERR_expect_equal );
                 return( FALSE );
             }
-            ptr = SkipSpaces( GetFilename( ptr + 1, trap ) );
+            ptr = SkipSpaces( GetFilename( ptr + 1, trapparms ) );
             if( *ptr == TRAP_PARM_SEPARATOR ) {
-                buff = trap + strlen( trap );
+                buff = trapparms + strlen( trapparms );
                 *buff++ = TRAP_PARM_SEPARATOR;
                 ptr = CollectTrapParm( SkipSpaces( ptr + 1 ), buff );
             } else if( *ptr == '{'/*}*/ ) {
-                buff = trap + strlen( trap );
+                buff = trapparms + strlen( trapparms );
                 *buff++ = TRAP_PARM_SEPARATOR;
                 ptr = CollectTrapParm( ptr, buff );
             }
@@ -154,7 +154,7 @@ bool ParseCommandLine( const char *cmdline, char *trap, char *parm, bool *onesho
         }
         ptr = SkipSpaces( ptr );
     }
-    CollectTrapParm( ptr, parm );
+    CollectTrapParm( ptr, servparms );
     TrapVersion.remote = TRUE;
     return( TRUE );
 }

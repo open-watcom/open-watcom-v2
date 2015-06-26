@@ -32,6 +32,7 @@
 
 #include <wwindows.h>
 #include <stdlib.h>
+#include "servio.h"
 #include "options.h"
 #include "optionsi.h"
 

@@ -528,33 +528,27 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
     return( callstruct->retlen );
 }
 
-char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                *err;
-    const char          *parm;
     const char          *end;
     dig_fhandle         dh;
     trap_file_header    __far *head;
 
 
-    if( trap_parms == NULL || *trap_parms == '\0' ) {
-        trap_parms = DEFAULT_TRP_NAME;
+    if( parms == NULL || *parms == '\0' ) {
+        parms = DEFAULT_TRP_NAME;
     }
-    end = strchr( trap_parms, TRAP_PARM_SEPARATOR );
-    if( end == NULL ) {
-        end = &trap_parms[strlen( trap_parms )];
-        parm = end;
-    } else {
-        parm = end + 1;
-    }
-    dh = DIGPathOpen( trap_parms, end - trap_parms, DEFAULT_TRP_EXT, NULL, 0 );
+    for( end = parms; *end != '\0' && *end != TRAP_PARM_SEPARATOR; ++end )
+        ;
+    dh = DIGPathOpen( parms, end - parms, DEFAULT_TRP_EXT, NULL, 0 );
     if( dh == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
     err = ReadInTrap( DIGGetSystemHandle( dh ) );
     DIGPathClose( dh );
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
+    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
     if( err == NULL ) {
         if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {
             strcpy( buff, err );
@@ -568,7 +562,10 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
                 PMData->initfunc.s.segment = TrapMem.segm.rm;
                 PMData->reqfunc.s.segment  = TrapMem.segm.rm;
                 PMData->finifunc.s.segment = TrapMem.segm.rm;
-                if( CallTrapInit( parm, buff, trap_ver ) ) {
+                parms = end;
+                if( *parms != '\0' )
+                    ++parms;
+                if( CallTrapInit( parms, buff, trap_ver ) ) {
                     if( TrapVersionOK( *trap_ver ) ) {
                         TrapVer = *trap_ver;
                         ReqFunc = DoTrapAccess;

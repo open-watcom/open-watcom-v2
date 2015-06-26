@@ -82,24 +82,22 @@ void KillTrap( void )
 #endif
 }
 
-char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle         filehndl;
     const char          *ptr;
-    const char          *parm;
     const trap_requests *(*ld_func)( const trap_callbacks * );
     char                trap_name[_MAX_PATH];
     const trap_requests *trap_funcs;
 
-    if( trap_parms == NULL || *trap_parms == '\0' )
-        trap_parms = "std";
-    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+    if( parms == NULL || *parms == '\0' )
+        parms = "std";
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
 #if !defined( BUILTIN_TRAP_FILE )
-    filehndl = DIGPathOpen( trap_parms, ptr - trap_parms, "so", trap_name, sizeof( trap_name ) );
+    filehndl = DIGPathOpen( parms, ptr - parms, "so", trap_name, sizeof( trap_name ) );
     if( filehndl == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
     TrapFile = dlopen( trap_name, RTLD_NOW );
@@ -116,12 +114,12 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     ld_func = TrapLoad;
 #endif
-
-        parm = (*ptr != '\0') ? ptr + 1 : ptr;
-
         trap_funcs = ld_func( &TrapCallbacks );
         if( trap_funcs != NULL ) {
-            *trap_ver = trap_funcs->init_func( parm, buff, trap_ver->remote );
+            parms = ptr;
+            if( *parms != '\0' )
+                ++parms;
+            *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
             FiniFunc = trap_funcs->fini_func;
             if( buff[0] == '\0' ) {
                 if( TrapVersionOK( *trap_ver ) ) {

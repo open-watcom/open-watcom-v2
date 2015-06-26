@@ -40,16 +40,18 @@ void KillTrap( void )
     TrapFini();
 }
 
-char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     const char  *ptr;
 
-    if( trap_parms == NULL || *trap_parms == '\0' )
-        trap_parms = "std";
-    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+    if( parms == NULL || *parms == '\0' )
+        parms = "std";
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
-    ptr = (*ptr != '\0') ? ptr + 1 : ptr;
-    *trap_ver = TrapInit( ptr, buff, trap_ver->remote );
+    parms =ptr;
+    if( *parms != '\0' )
+        ++parms;
+    *trap_ver = TrapInit( parms, buff, trap_ver->remote );
     if( buff[0] == '\0' ) {
         if( TrapVersionOK( *trap_ver ) ) {
             TrapVer = *trap_ver;

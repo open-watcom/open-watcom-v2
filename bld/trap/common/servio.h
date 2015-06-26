@@ -31,6 +31,8 @@
 
 #include "bool.h"
 
+#define PARMS_MAXLEN    256
+
 extern char     ServUsage[];
 extern char     RWBuff[0x400];
 
@@ -42,5 +44,5 @@ extern void     Output( const char *str );
 extern void     SayGNiteGracey( int return_code );
 extern int      KeyPress( void );
 extern int      KeyGet( void );
-extern bool     ParseCommandLine( const char *cmdline, char *trap, char *parm, bool *oneshot );
+extern bool     ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bool *oneshot );
 extern bool     Session( void );

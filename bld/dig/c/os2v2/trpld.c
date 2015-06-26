@@ -82,24 +82,22 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                trpfile[CCHMAXPATH];
     unsigned            len;
     const char          *ptr;
-    const char          *parm;
     APIRET              rc;
     char                trpname[CCHMAXPATH] = "";
     char                trppath[CCHMAXPATH] = "";
     trap_init_func      *init_func;
 
-    if( trap_parms == NULL || *trap_parms == '\0' )
-        trap_parms = "std";
-    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+    if( parms == NULL || *parms == '\0' )
+        parms = "std";
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    len = ptr - trap_parms;
-    memcpy( trpfile, trap_parms, len );
+    len = ptr - parms;
+    memcpy( trpfile, parms, len );
     trpfile[len] = '\0';
 
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
@@ -127,7 +125,10 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
         if( DosQueryProcAddr( TrapFile, 5, NULL, (PFN*)&HardFunc ) != 0 ) {
             HardFunc = NULL;
         }
-        *trap_ver = init_func( parm, buff, trap_ver->remote );
+        parms = ptr;
+        if( *parms != '\0' )
+            ++parms;
+        *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;

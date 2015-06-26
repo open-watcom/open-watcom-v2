@@ -107,9 +107,8 @@ void Initialize( void )
 {
     const char  *err;
 
-    RWBuff[0] = '\0';
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLink( RWBuff, 1 );
+    err = RemoteLink( "", 1 );
     _DBG(( "Back from PM remote link\n" ));
     if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));

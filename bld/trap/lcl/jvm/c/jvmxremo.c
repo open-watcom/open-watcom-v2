@@ -38,7 +38,7 @@
 #include "jvmerr.h"
 #include "madregs.h"
 
-static char             LinkParm[256];
+static char             LinkParms[256];
 bool                    TaskLoaded;
 HANDLE                  FakeHandle;
 HWND                    DebuggerHwnd;
@@ -297,14 +297,14 @@ trap_retval ReqProg_load( void )
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
     strcpy( buffer, src );
-    endparm = LinkParm;
+    endparm = LinkParms;
     while( *endparm++ != '\0' ) ;
     strcpy( endparm, buffer );
     if( *name == '\0' ) {
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
     }
-    err = RemoteLink( LinkParm, FALSE );
+    err = RemoteLink( LinkParms, FALSE );
     if( err != NULL ) {
         loaderr = err;
         strcpy( SavedError, err );
@@ -550,7 +550,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     ver.minor = TRAP_MINOR_VERSION;
     FakeHandle = GetStdHandle( STD_INPUT_HANDLE );
     error[0] = '\0';
-    strcpy( LinkParm, parms );
+    strcpy( LinkParms, parms );
     TaskLoaded = FALSE;
     return( ver );
 }

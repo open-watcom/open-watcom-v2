@@ -50,7 +50,7 @@ extern void             SaveVectors(unsigned long *);
 extern void             RestoreVectors(unsigned long *);
 extern void             InitPSP( void );
 
-static char             LinkParm[256];
+static char             LinkParms[256];
 static char             FailMsg[128];
 static const char       *LoadError;
 static bool             TaskLoaded;
@@ -306,12 +306,12 @@ trap_retval ReqProg_load( void )
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
     rc = FindFilePath( src, buffer, DosExtList );
-    endparm = LinkParm;
+    endparm = LinkParms;
     while( *endparm++ != '\0' ) {}      // skip trap parameters
     strcpy( endparm, buffer );          // add command line
     // result is as follow
     // "trap parameters string"+"\0"+"command line string"+"\0"
-    err = RemoteLinkX( LinkParm, FALSE );
+    err = RemoteLinkX( LinkParms, FALSE );
     if( err != NULL ) {
         _DBG_Writeln( "Can't RemoteLink" );
         TinyWrite( TINY_ERR, err, strlen( err ) );
@@ -471,7 +471,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     InitPSP();
     LoadError = NULL;
     error[0] = '\0';
-    strcpy( LinkParm, parms );      // save trap parameters
+    strcpy( LinkParms, parms );      // save trap parameters
     TaskLoaded = FALSE;
     _DBG_ExitFunc( "TrapInit()" );
     return( ver );
