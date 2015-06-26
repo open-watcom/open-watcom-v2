@@ -51,6 +51,10 @@
 #include "dosredir.h"
 #include "doscomm.h"
 #include "cpuglob.h"
+#include "dosextx.h"
+#include "dosovl.h"
+#include "dosfile.h"
+
 
 typedef enum {
     EXE_UNKNOWN,
@@ -142,8 +146,6 @@ extern void             Read87EmuState( void __far * );
 extern void             Write87EmuState( void __far * );
 extern unsigned         StringToFullPath( char * );
 extern int              __far NoOvlsHdlr( int, void * );
-extern bool             CheckOvl( addr32_ptr );
-extern int              NullOvlHdlr(void);
 
 extern word             __based(__segname("_CODE")) SegmentChain;
 
@@ -518,7 +520,6 @@ static EXE_TYPE CheckEXEType( char *name )
     }
 }
 
-static char DosExtList[] = { ".com\0.exe\0" };
 
 trap_retval ReqProg_load( void )
 {
@@ -977,12 +978,7 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-char *GetExeExtensions( void )
-{
-    return( DosExtList );
-}
-
-trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *trapparms, char *err, bool remote )
 {
     trap_version ver;
 
@@ -990,9 +986,9 @@ out( "in TrapInit\r\n" );
 out( "    checking environment:\r\n" );
     CPUType = X86CPUType();
     Flags.Is386 = ( CPUType >= X86_386 );
-    if( *parms == 'D' || *parms == 'd' ) {
+    if( *trapparms == 'D' || *trapparms == 'd' ) {
         Flags.DRsOn = FALSE;
-        ++parms;
+        ++trapparms;
     } else if( out0( "    CPU type\r\n" ) || ( Flags.Is386 == 0 ) ) {
         Flags.DRsOn = FALSE;
     } else if( out0( "    WinEnh\r\n" ) || ( EnhancedWinCheck() & 0x7f ) ) {
@@ -1004,7 +1000,7 @@ out( "    checking environment:\r\n" );
     } else {
         Flags.DRsOn = TRUE;
     }
-    if( *parms == 'O' || *parms == 'o' ) {
+    if( *trapparms == 'O' || *trapparms == 'o' ) {
         Flags.NoOvlMgr = TRUE;
     }
 out( "    done checking environment\r\n" );

@@ -940,13 +940,13 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *trapparms, char *err, bool remote )
 {
     trap_version        ver;
     int                 error_num;
 
     _DBG_Writeln( "TrapInit" );
-    remote = remote; parms = parms;
+    remote = remote; trapparms = trapparms;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

@@ -1002,13 +1002,13 @@ trap_retval ReqGet_lib_name( void )
 }
 
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *trapparms, char *err, bool remote )
 {
     trap_version        ver;
     int                 error_num;
 
     _DBG(( "in TrapInit\r\n" ));
-    remote = remote; parms = parms;
+    remote = remote; trapparms = trapparms;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

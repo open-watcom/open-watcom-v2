@@ -127,7 +127,8 @@ int _cnt;
 static int _line=0;
 
 extern void InitMeg1();
-char __far *GetScreenPointer( void )
+
+static char __far *GetScreenPointer( void )
 {
     extern      short           Meg1;
     InitMeg1();

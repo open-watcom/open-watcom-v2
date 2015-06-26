@@ -32,6 +32,7 @@
 #include <i86.h>
 #include "tinyio.h"
 #include "trpimp.h"
+#include "doschk.h"
 
 typedef _Packed struct {
     char        chain;  /* 'M' memory block, 'Z' is last in chain */

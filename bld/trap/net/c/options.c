@@ -31,8 +31,8 @@
 
 
 #include <wwindows.h>
-#include "wserver.h"
 #include "options.h"
+#include "optionsi.h"
 
 
 WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )

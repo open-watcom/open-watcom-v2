@@ -91,7 +91,7 @@ extern uint_8 _DBG_HexChar( uint_8 digit );
     "L3:"                                                               \
     parm [ al ];
 
-extern void _DBG_DumpStr( char *str, uint_32 len, uint_32 fhandle );
+extern void _DBG_DumpStr( const char *str, uint_32 len, uint_32 fhandle );
 #pragma aux _DBG_DumpStr =                                              \
     "mov    eax,4"                                                      \
     "int    0x80"                                                       \
@@ -158,7 +158,7 @@ extern uint_8 _DBG_HexChar( uint_8 digit );
     parm [ al ]                                                         \
     modify exact [ al ];
 
-extern void _DBG_DumpStr( char __far *str, uint_16 len, uint_16 fhandle );
+extern void _DBG_DumpStr( const char __far *str, uint_16 len, uint_16 fhandle );
 #pragma aux _DBG_DumpStr =                                              \
     "push       ds      ",      /* don't modify ds */                   \
     "xchg       ax, dx  ",      /* now ax=seg str, dx=off str */        \

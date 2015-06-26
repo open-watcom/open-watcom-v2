@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2013 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,11 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CauseWay trap file protected mode request handling.
 *
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+extern void SetHBRK( void );
+extern void ResetHBRK( void );
+extern int IsHardBreak( void );
+extern int CheckWatchPoints( void );
+extern int CheckTerminate( void );

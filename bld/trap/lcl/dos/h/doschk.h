@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Check DOS memory blocks for consistency.
 *
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+extern bool CheckPointMem( unsigned max, char *f_buff );
+extern void CheckPointRestore( void );

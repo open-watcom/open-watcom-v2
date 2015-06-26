@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low-level trap file I/O for DOS.
 *
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+
+extern long     FindFilePath( const char *pgm, char *buffer, const char *ext_list );

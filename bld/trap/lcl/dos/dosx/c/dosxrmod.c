@@ -30,11 +30,39 @@
 
 
 #if defined( DOS4G )
-
 //#define DEBUG_TRAP  1
-#include "trapdbg.h"
-#include <stdio.h>
-#include "rsi1632.h"
+  #include "trapdbg.h"
+  #include <stdio.h>
+  #include "rsi1632.h"
+#elif defined( CAUSEWAY )
+  #include "dpmi.h"
+#else
+#endif
+#include "dosxrmod.h"
+
+#if defined( DOS4G )
+#elif defined( CAUSEWAY )
+
+extern int _CallRealMode( rm_call_struct __far *regs );
+#pragma aux _CallRealMode = \
+        "mov    ax,0ff02h" \
+        "int    0x31" \
+        "sbb    eax,eax" \
+        parm [ es edi ] value [ eax ];
+
+#else
+
+extern int _CallRealMode( unsigned long dos_addr );
+#pragma aux _CallRealMode = \
+        "xor    ecx,ecx" \
+        "mov    ax,0250eh" \
+        "int    0x21" \
+        "sbb    eax,eax" \
+        parm [ ebx ] modify [ecx] value [ eax ];
+
+#endif
+
+#if defined( DOS4G )
 
 typedef struct {
     short   real;
@@ -55,12 +83,12 @@ static int  Loser = 0;
 static long dummy = 0;
 
 void __far *RMLinToPM( unsigned long linear_addr, int pool )
-/********************************************************/
+/**********************************************************/
 {
     int         i;
     short       real;
     short       offset;
-	SELECTOR    pm_sel;
+        SELECTOR    pm_sel;
 
     real = ( linear_addr >> 4 ) & 0xF000;
     offset = linear_addr;
@@ -109,15 +137,6 @@ void CallRealMode( unsigned long dos_addr )
 
 #elif defined( CAUSEWAY )
 
-#include "dpmi.h"
-
-extern int _CallRealMode( rm_call_struct __far *regs );
-#pragma aux _CallRealMode = \
-        "mov    ax,0ff02h" \
-        "int    0x31" \
-        "sbb    eax,eax" \
-        parm [ es edi ] value [ eax ];
-
 void CallRealMode( unsigned long dos_addr )
 {
     rm_call_struct  regs;
@@ -131,18 +150,9 @@ void CallRealMode( unsigned long dos_addr )
 
 #else
 
-extern int _CallRealMode( unsigned long dos_addr );
-#pragma aux _CallRealMode = \
-        "xor    ecx,ecx" \
-        "mov    ax,0250eh" \
-        "int    0x21" \
-        "sbb    eax,eax" \
-        parm [ ebx ] modify [ecx] value [ eax ];
-
 void CallRealMode( unsigned long dos_addr )
 {
     _CallRealMode( dos_addr );
 }
 
 #endif
-

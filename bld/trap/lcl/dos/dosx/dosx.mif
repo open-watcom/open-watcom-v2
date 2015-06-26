@@ -6,6 +6,8 @@ extra_cpp_flags += -DDOSXTRAP
 extra_objs      += $(dosx_trap_objs)
 !endif
 
+inc_dirs += -I"$(trap_dir)/lcl/dos/dosx/h"
+
 !include $(trap_dir)/lcl/dos/dos.mif
 
 dosx_serv_objs_i86 = misc7086.obj

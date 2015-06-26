@@ -35,12 +35,15 @@
 #include "dosver.h"
 #include "trpimp.h"
 #include "doscomm.h"
+#include "dosenv.h"
+#include "doschk.h"
+#include "dosextx.h"
+#include "dosfile.h"
 
-extern bool             CheckPointMem( unsigned, char * );
-extern void             CheckPointRestore( void );
+
+const char DosExtList[] = DOSEXTLIST;
+
 extern tiny_ret_t       Fork(char *, unsigned);
-extern const char       __far *DOSEnvFind( char * );
-extern char             *GetExeExtensions(void);
 
 trap_retval ReqFile_get_config( void )
 {
@@ -170,7 +173,7 @@ trap_retval ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-static tiny_ret_t TryPath( char *name, char *end, char *ext_list )
+static tiny_ret_t TryPath( char *name, char *end, const char *ext_list )
 {
     tiny_ret_t  rc;
     char        *p;
@@ -193,11 +196,11 @@ static tiny_ret_t TryPath( char *name, char *end, char *ext_list )
     return( rc );
 }
 
-long FindFilePath( char *pgm, char *buffer, char *ext_list )
+long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
     const char  __far *path;
     char        *p2;
-    char        *p3;
+    const char  *p3;
     tiny_ret_t  rc;
     int         have_ext;
     int         have_path;
@@ -254,7 +257,7 @@ trap_retval ReqFile_string_to_fullpath( void )
 {
     char                        *name;
     char                        *fullname;
-    char                        *ext_list;
+    const char                  *ext_list;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
     tiny_ret_t                  rc;
@@ -264,7 +267,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
     if( acc->file_type == TF_TYPE_EXE ) {
-        ext_list = GetExeExtensions();
+        ext_list = DosExtList;
     } else {
         ext_list = "";
     }

@@ -46,11 +46,12 @@
 #include "ioports.h"
 #include "dosredir.h"
 #include "doscomm.h"
-
 #include "tinyio.h"
 #include "exeos2.h"
 #include "exeflat.h"
 #include "cpuglob.h"
+#include "cwacc.h"
+
 
 #define MAX_WATCHES         256
 
@@ -1023,13 +1024,13 @@ trap_retval ReqMachine_data( void )
     return( sizeof( *ret ) + len );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
+trap_version TRAPENTRY TrapInit( const char *trapparms, char *err, bool remote )
 /**************************************************************************/
 {
     trap_version    ver;
     char            ver_msg[] = "CauseWay API version = 0.00\r\n$";
 
-    parms=parms;remote=remote;
+    trapparms=trapparms;remote=remote;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

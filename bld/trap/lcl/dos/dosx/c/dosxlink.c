@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#define DEBUG_TRAP
+
 #include <setjmp.h>
 #include <stdio.h>
 #include <malloc.h>
@@ -38,7 +40,10 @@
 #include "trptypes.h"
 #include "packet.h"
 #include "trperr.h"
+#include "dosxlink.h"
+#include "dosenv.h"
 #ifdef SERVER
+  #include "dosxrmod.h"
   #ifdef PHARLAP
     #include "pharlap.h"
     #include "dxproto.h"
@@ -91,17 +96,9 @@ typedef struct RMBuff {
     #define _DBG( s )
     #define _DBG_ExitFunc( s )
 
-  #if defined(DOS4G)
-    extern void             __far *RMLinToPM( unsigned long linear_addr, int pool );
-  #else
+  #if !defined(DOS4G)
     static unsigned short   Meg1;
-    #define RMLinToPM(x,y)  MK_FP(Meg1,x)
   #endif
-    #define GetDosByte(x)   (*(byte __far *)RMLinToPM(x,1))
-    #define GetDosLong(x)   (*(unsigned long __far *)RMLinToPM(x,1))
-    #define PutDosByte(x,d) (*(byte __far *)RMLinToPM(x,1)=d)
-    #define PutDosLong(x,d) (*(unsigned long __far *)RMLinToPM(x,1)=d)
-    extern void             CallRealMode( unsigned long dos_addr );
 
     static unsigned long    RMProcAddr;
     static RMBuff           __far *RMBuffPtr;
@@ -121,8 +118,6 @@ typedef struct RMBuff {
   #endif
 
 #else
-
-    static void BackToProtMode( void );
 
     #define MK_LINEAR( p )    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )
 
@@ -144,8 +139,6 @@ typedef struct RMBuff {
         "sub  sp,50h" \
         "int  21h" \
         parm caller [ ax ] modify [ sp cx dx ];
-
-    extern const char   __far *DOSEnvFind( char * );
 
 #endif
 
@@ -212,6 +205,7 @@ trap_retval RemotePut( void *data, trap_elen len )
 
 #ifdef SERVER
 
+#if 0
 char __far *GetScreenPointer( void )
 {
 #if defined( ACAD )
@@ -224,6 +218,7 @@ char __far *GetScreenPointer( void )
     return( MK_FP( 0x50, 0 ) );
 #endif
 }
+#endif
 
 #else
 
@@ -395,7 +390,7 @@ exp:
 #endif
 #endif
 
-const char *RemoteLink( const char *parms, bool server )
+const char *RemoteLinkX( const char *parms, bool server )
 {
 #ifdef SERVER
     unsigned long       link;
@@ -535,7 +530,7 @@ const char *RemoteLink( const char *parms, bool server )
     return( NULL );
 }
 
-void RemoteUnLink( void )
+void RemoteUnLinkX( void )
 {
 #ifdef SERVER
     CallRealMode( RMProcAddr );

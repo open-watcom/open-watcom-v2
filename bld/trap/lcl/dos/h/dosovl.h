@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Interface with Overlay Manager
 *
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+extern void NullOvlHdlr( void );
+extern bool CheckOvl( addr32_ptr start );

@@ -41,6 +41,10 @@
 #include "winchk.h"
 #include "madregs.h"
 #include "doscomm.h"
+#include "dosxlink.h"
+#include "dosextx.h"
+#include "dosfile.h"
+
 
 extern void             SaveVectors(unsigned long *);
 extern void             RestoreVectors(unsigned long *);
@@ -285,20 +289,6 @@ trap_retval ReqWrite_mem( void )
     return( DoAccess() );
 }
 
-static char DosXExtList[] = {
-/* Don't put any commas in this list. It's supposed to be all one string. */
-#ifndef DOS4G
-    ".exp\0"
-    ".rex\0"
-#endif
-    ".exe\0"
-};
-
-char *GetExeExtensions( void )
-{
-    return( DosXExtList );
-}
-
 trap_retval ReqProg_load( void )
 {
     char                buffer[160];
@@ -315,13 +305,13 @@ trap_retval ReqProg_load( void )
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindFilePath( src, buffer, DosXExtList );
+    rc = FindFilePath( src, buffer, DosExtList );
     endparm = LinkParm;
     while( *endparm++ != '\0' ) {}      // skip trap parameters
     strcpy( endparm, buffer );          // add command line
     // result is as follow
     // "trap parameters string"+"\0"+"command line string"+"\0"
-    err = RemoteLink( LinkParm, FALSE );
+    err = RemoteLinkX( LinkParm, FALSE );
     if( err != NULL ) {
         _DBG_Writeln( "Can't RemoteLink" );
         TinyWrite( TINY_ERR, err, strlen( err ) );
@@ -388,7 +378,7 @@ trap_retval ReqProg_load( void )
             _DBG_Writeln( "GetPacket" );
             GetPacket();
             //RemovePacket( &erracc, msg_len );
-            RemoteUnLink();
+            RemoteUnLinkX();
 
             TaskLoaded = FALSE;
         }
@@ -414,7 +404,7 @@ trap_retval ReqProg_kill( void )
         return( sizeof( *ret ) );
     }
     len = DoAccess();
-    RemoteUnLink();
+    RemoteUnLinkX();
     TaskLoaded = FALSE;
     RestoreVectors( OrigVectors );
     return( len );
@@ -465,7 +455,7 @@ trap_retval ReqProg_step( void )
     return( ReqProg_go() );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
+trap_version TRAPENTRY TrapInit( const char *trapparms, char *error, bool remote )
 {
     trap_version    ver;
 
@@ -481,7 +471,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     InitPSP();
     LoadError = NULL;
     error[0] = '\0';
-    strcpy( LinkParm, parms );      // save trap parameters
+    strcpy( LinkParm, trapparms );      // save trap parameters
     TaskLoaded = FALSE;
     _DBG_ExitFunc( "TrapInit()" );
     return( ver );

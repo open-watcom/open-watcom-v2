@@ -34,7 +34,6 @@
 #include <process.h>
 #include <wwindows.h>
 #include "wserver.h"
-#include "wserveri.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
@@ -42,6 +41,7 @@
 #include "servio.h"
 #include "tcerr.h"
 #include "nothing.h"
+#include "options.h"
 
 extern trap_version TrapVersion;
 
@@ -66,9 +66,6 @@ static BOOL     AnyInstance( HINSTANCE, int, LPSTR );
 
 #define MENU_ON     (MF_ENABLED+MF_BYCOMMAND)
 #define MENU_OFF    (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
-
-WINEXPORT LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
-
 
 /*
  * WinMain - initialization, message loop

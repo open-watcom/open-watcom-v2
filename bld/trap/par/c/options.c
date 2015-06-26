@@ -32,8 +32,8 @@
 
 #include <wwindows.h>
 #include <stdlib.h>
-#include "wserver.h"
 #include "options.h"
+#include "optionsi.h"
 
 extern int              NumPrinters(void);
 extern unsigned         PrnAddress(int);

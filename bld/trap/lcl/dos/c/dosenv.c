@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <i86.h>
+#include "dosenv.h"
 
 extern unsigned       DbgPSP(void);
 

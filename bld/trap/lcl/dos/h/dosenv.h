@@ -30,5 +30,4 @@
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+extern const char __far *DOSEnvFind( char *src );

@@ -30,13 +30,16 @@
 ****************************************************************************/
 
 
+#if defined( SERVER )
+extern trap_retval  PutBuffPacket( void *, trap_elen );
+extern void         *GetPacketBuffPtr( void );
+#else
 extern void         StartPacket( void );
 extern trap_retval  PutPacket( void );
-extern trap_retval  PutBuffPacket( void *, trap_elen );
 extern void         AddPacket( const void *, trap_elen );
-extern trap_retval  GetPacket( void );
 extern void         RemovePacket( void *, trap_elen );
-extern void         *GetPacketBuffPtr( void );
+#endif
+extern trap_retval  GetPacket( void );
 extern trap_elen    MaxPacketSize( void );
 
 extern const char   *RemoteLink( const char *, bool );

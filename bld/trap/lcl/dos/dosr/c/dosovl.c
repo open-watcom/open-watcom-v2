@@ -34,6 +34,7 @@
 #include "trpimp.h"
 #include "ovldbg.h"
 #include "doscomm.h"
+#include "dosovl.h"
 
 extern unsigned_8           RunProg( trap_cpu_regs *, trap_cpu_regs * );
 extern ovl_dbg_hook_func    OvlTrap;

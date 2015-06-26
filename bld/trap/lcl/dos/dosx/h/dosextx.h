@@ -24,11 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS executable file extension declarations.
 *
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+#ifdef DOS4G
+#define DOSEXTLIST ".exe\0"
+#else
+#define DOSEXTLIST ".exp\0.rex\0.exe\0"
+#endif
+
+extern const char DosExtList[];

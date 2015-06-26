@@ -24,11 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS protected mode "remote link" to real mode.
 *
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+extern trap_retval  RemoteGetX( void *data, trap_elen len );
+extern trap_retval  RemotePutX( void *data, trap_elen len );
+extern const char   *RemoteLinkX( const char *parms, bool server );
+extern void         RemoteUnLinkX( void );
+extern bool         RemoteConnectX( void );
+extern void         RemoteDiscoX( void );
+
+#ifndef SERVER
+extern void         BackToProtMode( void );
+extern void         __far BackFromProtMode( void );
+#endif

@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#define PARMS_MAXLEN    256
+#include "wserveri.h"
 
-extern char TrapParm[PARMS_MAXLEN];
-
-WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT extern BOOL CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT extern LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );

@@ -30,5 +30,8 @@
 ****************************************************************************/
 
 
-extern void     SetDbgTask( void );
-extern int      SetUsrTask( void );
+#define PARMS_MAXLEN    256
+
+extern char TrapParm[PARMS_MAXLEN];
+
+WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
