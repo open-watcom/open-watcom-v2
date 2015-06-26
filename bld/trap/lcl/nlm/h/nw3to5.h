@@ -29,11 +29,14 @@
 *
 ****************************************************************************/
 
+
 #if defined ( __NW50__ )
     #include "mmu.h"
     #include "process.h"
 
-    #define RunningProcess                  GetRunningProcess()
+    #define T_ProcessID                     void
+
+    #define _RunningProcess                 (T_ProcessID *)GetRunningProcess()
     #define FileServerMajorVersionNumber    GetFileServerMajorVersionNumber()
     #define FileServerMinorVersionNumber    GetFileServerMinorVersionNumber()
     #define LoadedListHandle                LONG
@@ -53,8 +56,11 @@
 
     #include "mmu.h"
     #include "process.h"
-    #define ddRTag DDSResourceTag
-    #define RunningProcess             GetRunningProcess()
+
+    #define T_ProcessID                T_PCBStruct
+    #define ddRTag                     DDSResourceTag
+
+    #define _RunningProcess            (T_ProcessID *)GetRunningProcess()
 //    extern void *CurrentDebuggerDomain;
     extern LONG CValidateMappedAddress( void *, void *, LONG );
     #define CValidatePointer(x) \
@@ -70,7 +76,9 @@
     #define FileServerMinorVersionNumber GetFileServerMinorVersionNumber()
 
 #elif defined ( __NW30__ )
+    #define T_ProcessID                 T_ThreadControlStruct
 
+    #define _RunningProcess             (T_ProcessID *)RunningProcess
     extern void                         *CValidatePointer(void *);
     #define GetNextLoadedListEntry( x ) \
     (LoadedListHandle)( ((x)==0) ?LoadedList:((struct LoadDefinitionStructure*)x)->LDLink)

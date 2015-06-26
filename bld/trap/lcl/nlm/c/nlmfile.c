@@ -48,16 +48,8 @@
 
 #include "nlmport.h"
 #include "nw3to5.h"
+#include "nlmio.h"
 
-/* from NLMIO.C */
-extern int IOCreat( char *name );
-extern int IOOpen( char *openname, int openmode );
-extern int IOClose( int closehandle );
-extern int IOWrite( int writehandle, char *buff, int buff_len );
-extern int IOWriteConsole( char *buff, int buff_len );
-extern int IOSeek( int seekhandle, int seekmode, long seekpos );
-extern int IORead( int readhandle, char *buff, int len );
-extern void StringToNLMPath( char *name, char *res );
 
 trap_retval ReqFile_get_config( void )
 {

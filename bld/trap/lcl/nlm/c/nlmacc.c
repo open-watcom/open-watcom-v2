@@ -55,8 +55,10 @@
 #include "exenov.h"
 #include "madregs.h"
 
-#include "nlmport.h"
 #include "nw3to5.h"
+#include "nlmport.h"
+#include "nlmclib.h"
+#include "nlmio.h"
 
 #include "x86cpu.h"
 #include "miscx87.h"
@@ -65,8 +67,6 @@
 #define NUM_DREG    4
 
 #define FLG_T           0x0100UL
-
-typedef LONG pPID;
 
 #if defined ( _USE_NEW_KERNEL )
 void *          kSemaphoreAlloc( const char *, long );
@@ -98,7 +98,7 @@ struct      {
 typedef struct msb {
         struct msb                      *next;
         struct LoadDefinitionStructure  *load;
-        pPID                             os_id;
+        T_ProcessID                     *os_id;
         dword                           dbg_id;
         dword                           xnum;
         dword                           errnum;
@@ -170,33 +170,12 @@ extern struct ResourceTagStructure      *SemaphoreTag;
 extern struct ResourceTagStructure      *ProcessTag;
 
 
-/* from NLMIO.C */
-extern int IOCreat( char *name );
-extern int IOOpen( char *openname, int openmode );
-extern int IOClose( int closehandle );
-extern int IOWrite( int writehandle, char *buff, int buff_len );
-extern int IOWriteConsole( char *buff, int buff_len );
-extern int IOSeek( int seekhandle, int seekmode, long seekpos );
-extern int IORead( int readhandle, char *buff, int len );
-extern void StringToNLMPath( char *name, char *res );
-
 /* from NLMINTR.ASM */
 extern void                     DoALongJumpTo( unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32 );
 dword                           ReturnESP;
 extern void                     Return( void );
 extern int                      AdjustStack( dword old_esp, dword adjust );
 
-/* from NLMCLIB.C */
-
-extern struct LoadDefinitionStructure *GetNLMFromPID(pPID);
-extern void                     BoobyTrapPID(pPID);
-extern void                     UnBoobyTrapPID(pPID);
-extern char                     *GetPIDName(pPID);
-extern int                      ValidatePID(pPID);
-extern void                     SetupPIDForACleanExit(pPID);
-#if defined ( __NW40__ )
-extern int                      ImportCLIBSymbols( void );
-#endif
 
 /* Must be CLIB! */
 void  _exit( int __status );
@@ -250,7 +229,7 @@ int KernelSemaphoreReleaseAll( void * sp )
 
 #endif
 
-void NewNLMListEntry( struct LoadDefinitionStructure *ld )
+static void NewNLMListEntry( struct LoadDefinitionStructure *ld )
 {
     nlm_entry   *new;
 
@@ -262,7 +241,7 @@ void NewNLMListEntry( struct LoadDefinitionStructure *ld )
 //  _DBG_EVENT(( "NewNLMListEntry: %8x %s\r\n", ld, &(ld->LDFileName[1]) ));
 }
 
-void DeadNLMListEntry( struct LoadDefinitionStructure *ld )
+static void DeadNLMListEntry( struct LoadDefinitionStructure *ld )
 {
     nlm_entry   *curr;
 
@@ -277,7 +256,7 @@ void DeadNLMListEntry( struct LoadDefinitionStructure *ld )
     }
 }
 
-void FreeAnNLMListEntry( void )
+static void FreeAnNLMListEntry( void )
 {
     nlm_entry   *junk;
 
@@ -286,7 +265,7 @@ void FreeAnNLMListEntry( void )
     Free( junk );
 }
 
-msb *LocateThread( pPID pid )
+static msb *LocateThread( T_ProcessID *pid )
 {
     msb         *m;
 
@@ -327,7 +306,7 @@ msb *LocateThread( pPID pid )
     return( m );
 }
 
-void FreeThread( msb *m )
+static void FreeThread( msb *m )
 {
     msb **owner;
     msb *curr;
@@ -359,7 +338,7 @@ void FreeThread( msb *m )
 }
 
 
-void FreeInvalidThreads( void )
+static void FreeInvalidThreads( void )
 {
     msb **owner;
     msb *curr;
@@ -390,21 +369,21 @@ void FreeInvalidThreads( void )
 }
 
 
-void Suicide( void )
+static void Suicide( void )
 {
     CDestroyProcess( CGetMyProcessID() );
 }
 
-
+#if 0
 void TheBigSleep( void )
 {
     while( TRUE ) {
         CSleepUntilInterrupt();
     }
 }
+#endif
 
-
-void WakeDebugger( void )
+static void WakeDebugger( void )
 {
     if( !DebuggerRunning ) {
         ClearDebugRegs();
@@ -418,7 +397,7 @@ void WakeDebugger( void )
 }
 
 
-void SleepDebugger( void )
+static void SleepDebugger( void )
 {
     DebuggerRunning = FALSE;
 #if defined ( _USE_NEW_KERNEL )
@@ -465,7 +444,7 @@ bool CheckIfBreakOKInOS( LONG eip )
 #endif
 
 
-unsigned_8 NPX( void )
+static unsigned_8 NPX( void )
 {
     if( HAVE_EMU == 0 )
         return( RealNPXType );
@@ -540,7 +519,7 @@ static LONG DebugEntry( StackFrame *frame )
     description = FieldExceptionDescription( frame );
     error_code = FieldErrorCode( frame );
     _DBG_EVENT(( "*DebugEntry: Event %d (%s): RunningProcess=%8.8x\r\n",
-                exception_number, description, RunningProcess ));
+                exception_number, description, _RunningProcess ));
     if( !ExpectingEvent ) {
         _DBG_EVENT(( "  Not expecting event\r\n" ));
         return( RETURN_TO_NEXT_DEBUGGER );
@@ -575,7 +554,7 @@ static LONG DebugEntry( StackFrame *frame )
                         load, &(load->LDFileName[1]),
                         DebuggerLoadedNLM, NLMState ));
         if( NLMState == NLM_LOADED ) {
-            m = LocateThread( RunningProcess );
+            m = LocateThread( _RunningProcess );
             m->load = load;
             NewNLMListEntry( load );
             _DBG_EVENT(( "MSB=%x NLMState = NLM_LOADED\r\n", m ));
@@ -584,7 +563,7 @@ static LONG DebugEntry( StackFrame *frame )
                 && !DebuggerLoadedNLM
                 && memcmp( load->LDFileName, NLMName, NLMName[0] + 1 )
                       == 0  ) {
-            m = LocateThread( RunningProcess );
+            m = LocateThread( _RunningProcess );
             m->description = NULL;
             m->load = load;
             m->in_start_proc = TRUE;
@@ -611,10 +590,10 @@ static LONG DebugEntry( StackFrame *frame )
         }
         return( RETURN_TO_PROGRAM );
     case START_THREAD_EVENT:
-        load = GetNLMFromPID( RunningProcess );
+        load = GetNLMFromPID( _RunningProcess );
         _DBG_EVENT(( "  START_THREAD_EVENT: LDS=%x (%s) D_LDS=%x\r\n",
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
-        m = LocateThread( RunningProcess );
+        m = LocateThread( _RunningProcess );
         m->load = load;
         if( load == DebuggerLoadedNLM ) {
             m->clib_created = TRUE;
@@ -623,10 +602,10 @@ static LONG DebugEntry( StackFrame *frame )
         return( RETURN_TO_PROGRAM );
     case TERMINATE_THREAD_EVENT:
         /* The thread is terminating. Free it's control block and let it die */
-        load = GetNLMFromPID( RunningProcess ); // returns NULL
+        load = GetNLMFromPID( _RunningProcess ); // returns NULL
         _DBG_EVENT(( "  TERMINATE_THREAD_EVENT: LDS=%x (%s) D_LDS=%x,\r\n",
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
-        m = LocateThread( RunningProcess );
+        m = LocateThread( _RunningProcess );
         _DBG_EVENT(( "MSB=%x, NLM=%x\r\n", m, m->load ));
         FreeThread( m );
         return( RETURN_TO_PROGRAM );
@@ -642,12 +621,12 @@ static LONG DebugEntry( StackFrame *frame )
     case INVALID_INTERRUPT_ABEND:
     case ASSEMBLY_ABEND:
     case BREAKPOINT_FUNCTION_EVENT:
-        m = LocateThread( RunningProcess );
+        m = LocateThread( _RunningProcess );
         break;
     case NLM_FAILED_INIT_EVENT:
         _DBG_EVENT(( "  NLM_FAILED_INIT_EVENT:\r\n" ));
         if( NLMState != NLM_FORCED_INIT_FAILURE ) {
-            m = LocateThread( RunningProcess );
+            m = LocateThread( _RunningProcess );
             DebuggerLoadedNLM = NULL;
             ExpectingEvent = FALSE;
             MSB = NULL;
@@ -656,7 +635,7 @@ static LONG DebugEntry( StackFrame *frame )
         return( RETURN_TO_PROGRAM );
         break;
     case 3:
-        m = LocateThread( RunningProcess );
+        m = LocateThread( _RunningProcess );
         if( NLMState == NLM_LOADING && m->in_start_proc ) {
             _DBG_EVENT(( "  3: Helper thread hits initial break\r\n" ));
             /* the helper thread hits a break point we set at start procedure */
@@ -679,7 +658,7 @@ static LONG DebugEntry( StackFrame *frame )
         if( exception_number > 31 ) {
             return( RETURN_TO_NEXT_DEBUGGER );
         }
-        m = LocateThread( RunningProcess );
+        m = LocateThread( _RunningProcess );
 #if 0
         if( !CheckIfBreakOKInOS( FieldEIP( frame ) ) ) {
             return( RETURN_TO_NEXT_DEBUGGER );
@@ -708,7 +687,7 @@ static LONG DebugEntry( StackFrame *frame )
     return( RETURN_TO_PROGRAM );
 }
 
-void JumpTo( msb *m )
+static void JumpTo( msb *m )
 {
     long        ax,bx,cx,dx,si,di,bp,sp,fl,ip;
 
@@ -771,7 +750,7 @@ void BigKludge( msb *m )
     }
     ActivateDebugRegs();
     UnBoobyTrapPID( m->os_id );
-    //_DBG_THREAD(( "Rolling. EIP=%8x, ESP=%8x, Process=%8x\r\n", m->cpu.EIP, m->cpu.ESP, RunningProcess ));
+    //_DBG_THREAD(( "Rolling. EIP=%8x, ESP=%8x, Process=%8x\r\n", m->cpu.EIP, m->cpu.ESP, _RunningProcess ));
     if( m->to_be_killed ) {
         if( m->in_start_proc ) {
             int         newESP;
@@ -1168,7 +1147,7 @@ static void LoadHelper( void )
             WakeDebugger();
         }
     }
-    FreeThread( LocateThread( RunningProcess ) );
+    FreeThread( LocateThread( _RunningProcess ) );
 
     if( NLMState != NLM_NONE) {
         NLMState = NLM_LOADED;
@@ -1251,7 +1230,7 @@ static void LoadHelper( void )
             WakeDebugger();
         }
     }
-    FreeThread( LocateThread( RunningProcess ) );
+    FreeThread( LocateThread( _RunningProcess ) );
     NLMState = NLM_LOADED;
     _DBG_EVENT(( "LoadHelper: NLMState = NLM_LOADED\r\n" ));
     CPSemaphore( HelperSem );
@@ -1349,7 +1328,7 @@ trap_retval ReqProg_kill( void )
 }
 
 
-unsigned Execute( msb *which )
+static unsigned Execute( msb *which )
 {
     msb         *m;
 
@@ -1974,4 +1953,3 @@ void TRAPENTRY TrapFini( void )
     }
     LastNLMListEntry = NULL;
 }
-

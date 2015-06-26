@@ -32,6 +32,8 @@
 
 #include "clib.h"
 #include "debugme.h"
+#include "nw3to5.h"
+#include "nlmclib.h"
 
 #if defined ( __NW50__ )
 
@@ -40,8 +42,6 @@
     */
     extern void *getnlmhandle( void );
     extern void *ImportPublicObject( void *NLMHandle, const char *name );
-
-    #define T_ProcessID void
 
     /*
     //  These are statically linked against rather than dynamically imported
@@ -55,7 +55,6 @@
 
 #elif defined ( __NW40__ )
     #define PCBProcessName ProcessName
-    #define T_ProcessID T_PCBStruct
     #define T_ThreadControlStruct T_ThreadStruct
     #define T_ThreadGroupControlStruct T_ThreadGroupStruct
     #define T_NLMControlStruct T_NLMStruct
@@ -81,7 +80,6 @@
     static int SymbolsImported = FALSE;
 
 #elif defined ( __NW30__ )
-    #define T_ProcessID T_ThreadControlStruct
 #else
     #error No Netware Version defined.
 #endif
