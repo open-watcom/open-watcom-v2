@@ -22,7 +22,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-const char	*version = "version 20110810";
+const char  *version = "version 20110810";
 
 #define DEBUG
 #include <stdio.h>
@@ -49,15 +49,84 @@ int         compile_time = 2;   /* for error printing: */
 #define MAX_PFILE       20      /* max number of -f's */
 
 char    *pfile[MAX_PFILE];      /* program filenames from -f's */
-int     npfile = 0;     /* number of filenames */
-int     curpfile = 0;   /* current filename */
+int     npfile = 0;             /* number of filenames */
+int     curpfile = 0;           /* current filename */
 
-int     safe    = 0;    /* 1 => "safe" mode */
+int     safe    = 0;            /* 1 => "safe" mode */
+
+static int ParseEnvVar( const char *env, char **argv, char *buf )
+/***************************************************************/
+{
+    /*
+     * Returns a count of the "command line" parameters in *env.
+     * Unless argv is NULL, both argv and buf are completed.
+     */
+
+    const char  *start;
+    int         argc;
+    char        *bufend;
+    int         got_quote;
+    int         output_data;
+
+    output_data = ( buf != NULL ) && ( argv != NULL );
+    bufend = buf;
+    argc = 1;
+    for( ;; ) {
+        got_quote = 0;
+        while( isspace( *env ) && *env != '\0' )
+            env++;
+        start = env;
+        if( output_data ) {
+            argv[argc] = bufend;
+        }
+        if( *env == '-' ) {
+            if( output_data ) {
+                *bufend = *env;
+                bufend++;
+            }
+            env ++;
+        }
+        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
+            if( *env == '\"' ) {
+                got_quote = !got_quote;
+            }
+            if( output_data ) {
+                *bufend = *env;
+                bufend++;
+            }
+            env++;
+        }
+        if( start != env ) {
+            argc++;
+            if( output_data ) {
+                *bufend = '\0';
+                bufend++;
+            }
+        }
+        if( *env == '\0' ) {
+            break;
+        }
+    }
+    return( argc );
+}
+
+static char *unquote( char *str )
+{
+    size_t  len;
+
+    len = strlen( str );
+    if( len > 1 && str[0] == '"' && str[len - 1] == '"' ) {
+        str[len - 1] = '\0';
+        ++str;
+    }
+    return( str );
+}
 
 int main( int argc, char *argv[] )
 {
-    const char *fs = NULL;
-    const char *arg;
+    const char  *fs = NULL;
+    char        **eargv = NULL;
+    int         eargc;
 
     setlocale( LC_CTYPE, "" );
     setlocale( LC_NUMERIC, "C" ); /* for parsing cmdline & prog */
@@ -75,6 +144,18 @@ int main( int argc, char *argv[] )
 
     yyin = NULL;
     symtab = makesymtab( NSYMTAB/NSYMTAB );
+    if( argc == 2 && argv[1][0] == '@' && argv[1][1] != '\0' ) {
+        const char  *env;
+
+        env = getenv( &argv[1][1] );
+        if( env != NULL ) {
+            eargc = ParseEnvVar( env, NULL, NULL );  // count parameters.
+            eargv = malloc( eargc * sizeof( char * ) + strlen( env ) + 1 + eargc );
+            ParseEnvVar( env, eargv, (char *)( eargv + eargc ) );
+            argc = eargc;
+            argv = eargv;
+        }
+    }
     while( argc > 1 && argv[1][0] == '-' && argv[1][1] != '\0' ) {
         if( strcmp( argv[1], "-version" ) == 0 || strcmp( argv[1], "--version" ) == 0 ) {
             printf( "awk %s\n", version );
@@ -93,16 +174,19 @@ int main( int argc, char *argv[] )
             break;
         case 'f':       /* next argument is program filename */
             if( argv[1][2] != 0 ) {  /* arg is -fsomething */
-                if( npfile >= MAX_PFILE - 1 )
-                    FATAL( "too many -f options" ); 
-                pfile[npfile++] = &argv[1][2];
+                if( npfile >= MAX_PFILE - 1 ) {
+                    FATAL( "too many -f options" );
+                }
+                pfile[npfile++] = unquote( &argv[1][2] );
             } else {        /* arg is -f something */
                 argc--; argv++;
-                if( argc <= 1 )
+                if( argc <= 1 ) {
                     FATAL( "no program filename" );
-                if( npfile >= MAX_PFILE - 1 )
-                    FATAL( "too many -f options" ); 
-                pfile[npfile++] = argv[1];
+                }
+                if( npfile >= MAX_PFILE - 1 ) {
+                    FATAL( "too many -f options" );
+                }
+                pfile[npfile++] = unquote( argv[1] );
             }
             break;
         case 'F':       /* set field separator */
@@ -125,19 +209,26 @@ int main( int argc, char *argv[] )
             break;
         case 'v':       /* -v a=1 to be done NOW.  one -v for each */
             if( argv[1][2] != 0 ) {  /* arg is -vsomething */
-                if( isclvar( &argv[1][2] ) ) {
-                    setclvar( &argv[1][2] );
+                char *p;
+
+                p = unquote( &argv[1][2] );
+                if( isclvar( p ) ) {
+                    setclvar( p );
                 } else {
-                    FATAL( "invalid -v option argument: %s", &argv[1][2] );
+                    FATAL( "invalid -v option argument: %s", p );
                 }
             } else {        /* arg is -v something */
+                char *p;
+
                 argc--; argv++;
-                if( argc <= 1 )
+                if( argc <= 1 ) {
                     FATAL( "no variable name" );
-                if( isclvar( argv[1] ) ) {
-                    setclvar( argv[1] );
+                }
+                p = unquote( argv[1] );
+                if( isclvar( p ) ) {
+                    setclvar( p );
                 } else {
-                    FATAL( "invalid -v option argument: %s", argv[1] );
+                    FATAL( "invalid -v option argument: %s", p );
                 }
             }
             break;
@@ -156,16 +247,21 @@ int main( int argc, char *argv[] )
     }
     /* argv[1] is now the first argument */
     if( npfile == 0 ) {      /* no -f; first argument is program */
+        char *p;
+
         if( argc <= 1 ) {
             if( dbg )
                 exit( 0 );
             FATAL( "no program given" );
         }
-        arg = argv[1];
-        dprintf( ( "program = |%s|\n", arg ) );
-        lexprog = arg;
+        p = unquote( argv[1] );
+        dprintf( ( "program = |%s|\n", p ) );
+        lexprog = p;
         argc--;
         argv++;
+    }
+    for( eargc = 1; eargc < argc; ++eargc ) {
+        argv[eargc] = unquote( argv[eargc] );
     }
     recinit( recsize );
     syminit();
