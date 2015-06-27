@@ -316,7 +316,7 @@ int main(               // MAIN-LINE
     }
 
     ErrCount = 0;
-    if( arg_count < 3 ) {
+    if( arg_count < 2 ) {
         puts( "Usage: wsplice {src-file|option} tgt-file\n" );
         puts( "options are:" );
         puts( "    -i path\t\tcheck <path> for included files" );
