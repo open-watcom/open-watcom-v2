@@ -83,7 +83,7 @@ $(name).res: ../res/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 rcstr.gh: rcstrmsg.gh
-        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^@ $[@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh: ../res/$(name).msg
         $(cpp) $(rc_aui_flags) -I"../../res" -o$^@ $[@

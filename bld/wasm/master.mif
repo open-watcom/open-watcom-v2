@@ -126,13 +126,13 @@ $(name).res : ../h/$(proj_name).rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.g
         $(rc_aui) -D_STANDALONE_ $[@ -fo=$@
 
 msg.gh : ../h/asmshare.msg
-        *awk -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ $[@
+        *awk -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 wasmmsg.gh : ../h/wasm.msg
-        *awk -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ $[@
+        *awk -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 wmpmsg.gh : ../h/womp.msg
-        *awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ $[@
+        *awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 usage.gh : ../h/options.gml
         optencod -q $(optencod_opt_$(host_os)) $]@ . . $^&.tmp any

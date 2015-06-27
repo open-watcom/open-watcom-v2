@@ -111,4 +111,4 @@ rcstrmsg.gh : ../res/wimgedit.msg
         $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 rcstr.gh : rcstrmsg.gh
-        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^@ $[@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@

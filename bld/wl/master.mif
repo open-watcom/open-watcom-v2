@@ -160,7 +160,7 @@ wlink.res : rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerro
     $(rc_aui) -I"$(wrc_dir)/h" $]@ -fo=$^@
 
 rcmsg.gh : wrcmsg.gh
-    *awk -v rcbase=800 -f $(build_dir)/msgtoh.awk -v OUTFILE=$^@ $[@
+    *awk -v rcbase=800 -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg
     $(cpp) $(rc_aui_flags) -o$@ $[@

@@ -202,11 +202,11 @@ asinline.lib : asi_msg.gh $(asi_objs)
 
 msg.gh : $(as_dir)/h/as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
-        *awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ msg.tmp
+        *awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.gh : $(as_dir)/h/as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) -oasi_msg.tmp $[@
-        *awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ asi_msg.tmp
+        *awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 
 $(yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
         @if not exist $(stand_subdir) mkdir $(stand_subdir)

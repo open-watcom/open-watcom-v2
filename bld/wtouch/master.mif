@@ -45,4 +45,4 @@ usagej.gh : usage.sp
         *wsplice -kIS_RC -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@
 
 msg.gh : $(proj_name).msg
-        *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ $[@
+        *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

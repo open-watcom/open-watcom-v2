@@ -94,4 +94,4 @@ asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
 
 msg.gh : $(wasm_dir)/h/asmshare.msg
-    *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ $[@
+    *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

@@ -93,7 +93,7 @@ $(dllname).dll : $(dll_objs)
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^@ $[@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/spy.msg
         $(cpp) $(rc_aui_flags) -o$^@ $[@
