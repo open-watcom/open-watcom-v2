@@ -20,4 +20,10 @@ dllname_wrtlib_386 =wrt
 dllname_wrtlib_387 =wr7
 dllname_wrtlib_axp =wrt
 dllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))$(dllname_version)$(dllname_profile)
-libdllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))dll$(dllname_profile)
+libdllname_profile =dll
+!ifdef profile
+!ifeq component cpplib
+libdllname_profile =dl
+!endif
+!endif
+libdllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))$(libdllname_profile)$(dllname_profile)
