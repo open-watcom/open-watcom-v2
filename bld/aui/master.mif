@@ -128,4 +128,4 @@ japsrcha.gdl : ../res/dlgs/japsrcha.dlg
     $(dlgj_command)
 
 auistr.gh : ../res/aui.msg
-    awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+    *awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^@ $[@

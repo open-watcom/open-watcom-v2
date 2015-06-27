@@ -4,13 +4,17 @@
 
 BEGIN {
     # Basic sanity check on input
+    if( OUTFILE == "" ) {
+        printf( "OUTFILE variable must be set!\n" ) > "/dev/stderr"
+        exit 1
+    }
     if( LSTFILE == "" ) {
         printf( "LSTFILE variable must be set!\n" ) > "/dev/stderr"
-        exit 1
+        exit 2
     }
     if( OS == "" ) {
         printf( "OS variable must be set!\n" ) > "/dev/stderr"
-        exit 2
+        exit 3
     }
     # Read a list of functions that need _br treatment
     while( ( getline < LSTFILE ) > 0 ) {
@@ -32,7 +36,7 @@ $1 ~ /\+\+/ {
         $4 = mod[1]
     }
     if( BR && $2 in br_funcs )
-        printf( "++'%s_br'.'%s'..'%s'\n", $2, $4, $2 )
+        printf( "++'%s_br'.'%s'..'%s'\n", $2, $4, $2 ) > OUTFILE
     else
-        printf( "++'%s'.'%s'\n", $2, $4 )
+        printf( "++'%s'.'%s'\n", $2, $4 ) > OUTFILE
 }

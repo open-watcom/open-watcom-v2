@@ -80,7 +80,7 @@ $(target_lib) : $(dllname).lbc
     $(librarian) $(libflags) @$(dllname).lbc
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
-    awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v LSTFILE="$(rtdll_dir:\=/)/brfunc.dat" $(dllname).ilb > $@
+    *awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^@ $(dllname).ilb
     @for %i in ($(static_objs)) do @%append $@ +%i
 
 !ifeq system winnt

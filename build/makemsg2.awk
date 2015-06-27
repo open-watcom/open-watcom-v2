@@ -13,7 +13,7 @@ BEGIN {
 /^[\t ]*pick/ {
     for( i = 2; i <= NF; ++i ) {
         split( $i, f, "[\t ,]+" )
-        printf( "#define %s%s (%s + %d)\n", prefix, f[2], base, num ) > OUTFILE
+        printf( "#define %s%s (%s + %d)\n", prefix, f[2], base, num ) >> OUTFILE
         num = num + 1   # Increment counter
     }
 }

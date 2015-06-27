@@ -97,7 +97,7 @@ $(name).res : $(vi_dir)/res/viw.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 rcstr.gh : rcstrmsg.gh
-        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^@ $[@
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles)
         $(cpp) $(rc_aui_flags) -o$^@ $[@

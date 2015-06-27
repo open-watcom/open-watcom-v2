@@ -314,7 +314,7 @@ all : $($(what_to_build)) .SYMBOLIC
 
 afx.h: afx.mh
     *wsplice -i"$(hdr_dir)" $[@ tmp.h
-    awk -f ../dobldver.awk -v bld_ver=$(bld_ver) tmp.h > afx.h
+    *awk -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
     @rm tmp.h
 
 $(libname).lib: $(objs) $(static_objs)

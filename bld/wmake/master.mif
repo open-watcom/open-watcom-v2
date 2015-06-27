@@ -150,7 +150,7 @@ mglob.obj : isarray.gh .AUTODEPEND
 # print a list of unreferenced messages
 chkmsg :
     sed -f ../msgdef.sed ../h/msg.h | sort -u >chkmsg.1
-    awk -f ../msgref.awk chkmsg.1 >chkmsg.2
+    *awk -f ../msgref.awk -v OUTFILE=chkmsg.2 chkmsg.1
     sed -f chkmsg.2 ../c/*.c | sort -u >chkmsg.3
     comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
     rm chkmsg.?

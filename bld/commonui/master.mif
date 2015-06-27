@@ -95,7 +95,7 @@ $(name).lib : uistr.gh $(objs) $(libs)
     $(librarian) $(libflags) $(objs) $(libs)
 
 uistr.gh : uistrmsg.gh
-    awk -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE $[@ > $^@
+    *awk -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE -v OUTFILE=$^@ $[@
 
 uistrmsg.gh : ../res/commonui.msg
     $(cpp) $(rc_aui_flags) -I"../h" -o$^@ $[@

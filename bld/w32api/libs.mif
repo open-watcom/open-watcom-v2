@@ -160,7 +160,7 @@ all : $(dirs) $(libs) .SYMBOLIC
 .c: ../lib
 
 .def.lbc:
-    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
+    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$@ $[@
 
 .lbc.lib:
     $(librarian) $(libflags) @$<
@@ -169,7 +169,7 @@ all : $(dirs) $(libs) .SYMBOLIC
     $(librarian) $(libflags) $<
 
 {ddk}.def{ddk}.lbc:
-    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
+    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$@ $[@
 
 {ddk}.lbc{ddk}.lib:
     $(librarian) $(libflags) @$<
@@ -186,7 +186,7 @@ all : $(dirs) $(libs) .SYMBOLIC
 !endif
 
 {directx}.def{directx}.lbc:
-    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
+    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$@ $[@
 
 {directx}.lbc{directx}.lib:
     $(librarian) $(libflags) @$<
@@ -200,15 +200,15 @@ vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @%append $@ +vfwuuid.obj
 
 ws2_32.lbc: ws2_32.def ws2_cons.obj
-    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
+    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^@ $[@
     @%append $@ +ws2_cons.obj
 
 directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
-    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
+    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$@ $[@
     @%append $@ +directx/dinpstat.obj
 
 directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
-    awk -v cpu=$(host_cpu) -f ../def2lbc.awk $[@ > $@
+    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$@ $[@
     @%append $@ +directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c

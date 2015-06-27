@@ -53,7 +53,7 @@ $(name).res : wgmlmsgs.gh ../h/wgml.msg ../h/wgmlmsg.h ../h/wgmlerr.msg ../h/wgm
         $(rc_aui) $]@ -fo=$@
 
 wgmlmsgs.gh : ../h/wgmlerr.msg ../h/wgml.msg
-        awk -v base=000 -f ../makemdef.awk $< > $^@
+        *awk -v base=000 -f ../makemdef.awk -v OUTFILE=$^@ $<
 
 wgmlmsge.gh : ../h/wgmlerr.msg ../h/wgml.msg
-        awk -v base=000 -f ../msgtoenm.awk $< > $^@
+        *awk -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^@ $<

@@ -48,7 +48,7 @@ rcstrmsg.gh : ../res/heapwalk.msg
         $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 rcstr.gh : rcstrmsg.gh
-        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^@ $[@
 
 $(name).res: ../res/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@

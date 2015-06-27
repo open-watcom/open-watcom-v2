@@ -1,3 +1,10 @@
+BEGIN {
+    # Basic sanity check on input
+    if( OUTFILE == "" ) {
+        printf( "OUTFILE variable must be set!\n" ) > "/dev/stderr"
+        exit 1
+    }
+}
 # get uppercased module name
 /^[ \t]*LIBRARY/ { ModuleName = toupper( $2 ); next }
 
@@ -11,9 +18,9 @@
 /^[ \t]*@[A-Za-z0-9_]+@[0-9]+/ {
   split( $1, parts, "@" ) # split the import name on the at signs
   if( cpu == "386" )
-    printf( "++'%s'.'%s'..'%s'\n", $1, ModuleName, parts[2] )
+    printf( "++'%s'.'%s'..'%s'\n", $1, ModuleName, parts[2] ) > OUTFILE
   else
-    printf( "++'%s'.'%s'\n", parts[2], ModuleName )
+    printf( "++'%s'.'%s'\n", parts[2], ModuleName ) > OUTFILE
   next
 }
 
@@ -21,9 +28,9 @@
 /^[ \t]*[A-Za-z0-9_]+@[0-9]+/ {
   split( $1, parts, "@" ) # split the import name on the at sign
   if( cpu == "386" )
-    printf( "++'_%s'.'%s'..'%s'\n", $1, ModuleName, parts[1] )
+    printf( "++'_%s'.'%s'..'%s'\n", $1, ModuleName, parts[1] ) > OUTFILE
   else
-    printf( "++'%s'.'%s'\n", parts[1], ModuleName )
+    printf( "++'%s'.'%s'\n", parts[1], ModuleName ) > OUTFILE
   next
 }
 
@@ -31,8 +38,8 @@
 /^[ \t]*[A-Za-z0-9_]+/ {
   split( $1, parts, "@" ) # split the import name on the at sign
   if( cpu == "386" )
-    printf( "++'_%s'.'%s'..'%s'\n", $1, ModuleName, $1 )
+    printf( "++'_%s'.'%s'..'%s'\n", $1, ModuleName, $1 ) > OUTFILE
   else
-    printf( "++'%s'.'%s'\n", parts[1], ModuleName )
+    printf( "++'%s'.'%s'\n", parts[1], ModuleName ) > OUTFILE
   next
 }

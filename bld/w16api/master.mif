@@ -83,7 +83,7 @@ all : $(headers) $(libs) .SYMBOLIC
 .mh: ../include
 
 .def.lbc:
-    awk -f ../def16lbc.awk $[@ > $@
+    *awk -f ../def16lbc.awk -v OUTFILE=$@ $[@
 
 .lbc.lib:
     $(librarian) $(libflags) @$<

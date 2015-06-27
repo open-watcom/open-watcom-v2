@@ -104,7 +104,7 @@ test.exe: $(name).lib $(TESTLNK) test.obj
         $(linker) name $^@ $(test_lflags) file {test.obj} library {$(name).lib}
 
 rcmsg.gh: wrmsg.gh
-        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^@ $[@
 
 wrmsg.gh: ../res/master.msg $(msgfiles)
         $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
