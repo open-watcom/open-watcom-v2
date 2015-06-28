@@ -139,12 +139,13 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
 # Start with DOS4GW DOS extender stub.
 [ INCLUDE <OWSRCDIR>/wstuba/builder.ctl ]
 # Continue with Causeway DOS extender.
 [ INCLUDE <OWSRCDIR>/causeway/builder.ctl ]
-# Continue with DOS extenders stubs.
+# Continue with WIN386 extender.
+[ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
+# Continue with OSI extenders stubs.
 [ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
 # Now we have enough to start cross building everything else
 
