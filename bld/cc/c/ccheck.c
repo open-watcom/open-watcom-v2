@@ -217,16 +217,22 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
                     }
                     rc = TCE_TYPE_MISMATCH;
                 }
+                if( (*plist1)->decl_type == TYPE_DOT_DOT_DOT ) {
+                    break;
+                }
             }
         } else {
             for( parmno = 1; *plist1 != NULL && *plist2 != NULL; ++plist1, ++plist2, ++parmno ) {
-                if( ! IdenticalType( *plist1, *plist2 ) ) {
+                if( !IdenticalType( *plist1, *plist2 ) ) {
                     if( topLevelCheck ) {
                         SetDiagType2( *plist1, *plist2 );
                         CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
                         SetDiagPop();
                     }
                     rc = TCE_TYPE_MISMATCH;
+                }
+                if( (*plist1)->decl_type == TYPE_DOT_DOT_DOT || (*plist2)->decl_type == TYPE_DOT_DOT_DOT ) {
+                    break;
                 }
             }
             if( *plist1 != NULL || *plist2 != NULL ) {
