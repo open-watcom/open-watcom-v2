@@ -198,6 +198,8 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
 {
     TYPEPTR         *plist1;
     TYPEPTR         *plist2;
+    TYPEPTR         p1;
+    TYPEPTR         p2;
     int             parmno;
     typecheck_err   rc;
 
@@ -210,32 +212,38 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, boo
             plist2 = NULL;
         }
         if( plist2 == NULL ) {
-            for( parmno = 1; *plist1 != NULL; ++plist1, ++parmno ) {
-                if( !ChkParmPromotion( *plist1 ) ) {
+            for( parmno = 1; (p1 = *plist1++) != NULL; ++parmno ) {
+                if( p1->decl_type == TYPE_DOT_DOT_DOT ) {
+                    break;
+                }
+                if( !ChkParmPromotion( p1 ) ) {
                     if( topLevelCheck ) {
                         CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
                     }
                     rc = TCE_TYPE_MISMATCH;
                 }
-                if( (*plist1)->decl_type == TYPE_DOT_DOT_DOT ) {
-                    break;
-                }
             }
         } else {
-            for( parmno = 1; *plist1 != NULL && *plist2 != NULL; ++plist1, ++plist2, ++parmno ) {
-                if( !IdenticalType( *plist1, *plist2 ) ) {
+            p1 = *plist1++; p2 = *plist2++;
+            for( parmno = 1; p1 != NULL && p2 != NULL; ++parmno ) {
+                if( p1->decl_type == TYPE_DOT_DOT_DOT || p2->decl_type == TYPE_DOT_DOT_DOT ) {
+                    break;
+                }
+                if( !IdenticalType( p1, p2 ) ) {
                     if( topLevelCheck ) {
-                        SetDiagType2( *plist1, *plist2 );
+                        SetDiagType2( p1, p2 );
                         CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
                         SetDiagPop();
                     }
                     rc = TCE_TYPE_MISMATCH;
                 }
-                if( (*plist1)->decl_type == TYPE_DOT_DOT_DOT || (*plist2)->decl_type == TYPE_DOT_DOT_DOT ) {
-                    break;
-                }
+                p1 = *plist1++; p2 = *plist2++;
             }
-            if( *plist1 != NULL || *plist2 != NULL ) {
+            if( p1 != NULL && p1->decl_type == TYPE_DOT_DOT_DOT || p2 != NULL && p2->decl_type == TYPE_DOT_DOT_DOT ) {
+                p1 = NULL;
+                p2 = NULL;
+            }
+            if( p1 != NULL || p2 != NULL ) {
                 if( topLevelCheck ) {
                     CErr1( ERR_PARM_COUNT_MISMATCH );
                 }
