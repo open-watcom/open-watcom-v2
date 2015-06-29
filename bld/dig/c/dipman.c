@@ -140,7 +140,7 @@ imp_sym_handle *DCSymCreate( imp_image_handle *iih, void *d )
     return( IMP_HDL( sh, sym ) );
 }
 
-imp_sym_handle * DIGCLIENT XDIPCliSymCreate( imp_image_handle *iih, void *d )
+static imp_sym_handle * DIGCLIENT DIPCliSymCreate2( imp_image_handle *iih, void *d )
 {
     return( DCSymCreate( iih, d ) );
 }
@@ -153,7 +153,7 @@ dip_client_routines DIPClientInterface = {
     DIGCliRealloc,
     DIGCliFree,
     DIPCliMapAddr,
-    XDIPCliSymCreate,
+    DIPCliSymCreate2,
     DIPCliItemLocation,
     DIPCliAssignLocation,
     DIPCliSameAddrSpace,
