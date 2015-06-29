@@ -638,16 +638,6 @@ STATIC void bangDefine( void )
 }
 
 
-static char *skipWhileWS( char *p )
-/*********************************/
-{
-    while( isws( *p ) ) {
-        ++p;
-    }
-    return( p );
-}
-
-
 static char *skipUntilWS( char *p )
 /*********************************/
 {
@@ -675,7 +665,7 @@ STATIC void bangInject( void )
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
     (void)eatToEOL();
-    contents = skipWhileWS( text );
+    contents = SkipWS( text );
     if( *contents == '\0' ) {
         FreeSafe( text );
         return;
@@ -688,7 +678,7 @@ STATIC void bangInject( void )
     *end_contents = '\0';
     curr = end_contents + 1;
     for( ;; ) {
-        curr = skipWhileWS( curr );
+        curr = SkipWS( curr );
         if( *curr == '\0' ) break;
         mac_name = curr;
         curr = skipUntilWS( curr );
@@ -730,7 +720,7 @@ STATIC void bangLoadDLL( void )
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
     (void)eatToEOL();
-    cmd_name = skipWhileWS( text );
+    cmd_name = SkipWS( text );
     if( *cmd_name == '\0' ) {
         FreeSafe( text );
         return;
@@ -741,7 +731,7 @@ STATIC void bangLoadDLL( void )
         return;
     }
     *end_cmd_name = '\0';
-    dll_name = skipWhileWS( end_cmd_name + 1 );
+    dll_name = SkipWS( end_cmd_name + 1 );
     if( *dll_name == '\0' ) {
         FreeSafe( text );
         return;
@@ -753,7 +743,7 @@ STATIC void bangLoadDLL( void )
         return;
     }
     *end_dll_name = '\0';
-    ent_name = skipWhileWS( end_dll_name + 1 );
+    ent_name = SkipWS( end_dll_name + 1 );
     if( *ent_name == '\0' ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
@@ -1220,12 +1210,12 @@ STATIC void makeToken( TOKEN_O type, TOKEN_TYPE *current, int *index )
 }
 
 
-STATIC INT32 makeHexNumber( char *inString, int *stringLength )
-/*************************************************************/
+STATIC INT32 makeHexNumber( const char *inString, int *stringLength )
+/*******************************************************************/
 {
-    INT32   value;
-    char    c;
-    char    *currentChar;
+    INT32       value;
+    char        c;
+    const char  *currentChar;
 
     value = 0;
     currentChar = inString;
@@ -1248,13 +1238,13 @@ STATIC INT32 makeHexNumber( char *inString, int *stringLength )
 }
 
 
-STATIC void makeNumberToken( char *inString, TOKEN_TYPE *current, int *index )
-/****************************************************************************/
+STATIC void makeNumberToken( const char *inString, TOKEN_TYPE *current, int *index )
+/**********************************************************************************/
 {
-    INT32   value;
-    char    *currentChar;
-    char    c;
-    int     hexLength;
+    INT32       value;
+    const char  *currentChar;
+    char        c;
+    int         hexLength;
 
     currentChar = inString;
     value       = 0;
@@ -1288,8 +1278,8 @@ STATIC void makeNumberToken( char *inString, TOKEN_TYPE *current, int *index )
 }
 
 
-STATIC void makeStringToken( char *inString, TOKEN_TYPE *current, int *index )
-/****************************************************************************/
+STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, int *index )
+/**********************************************************************************/
 {
     int inIndex;
     int currentIndex;
@@ -1329,8 +1319,8 @@ STATIC void makeStringToken( char *inString, TOKEN_TYPE *current, int *index )
     *index = inIndex;
 }
 
-STATIC void makeAlphaToken( char *inString, TOKEN_TYPE *current, int *index )
-/***************************************************************************/
+STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, int *index )
+/*********************************************************************************/
 {
     char const  *r;
     char        *pwrite;
@@ -1356,18 +1346,6 @@ STATIC void makeAlphaToken( char *inString, TOKEN_TYPE *current, int *index )
     *index = (int)( r - inString );
 }
 
-
-
-STATIC char *probeToken( char *probe )
-/*************************************
- * Taking a peek at the next "token"
- */
-{
-    while( isws( *probe ) ) {
-        ++probe;
-    }
-    return( probe );
-}
 
 
 STATIC BOOLEAN IsMacro( char const *name )
@@ -1400,8 +1378,8 @@ STATIC BOOLEAN name2function( TOKEN_TYPE const *current, char const *criterion,
     return( TRUE );
 }
 
-STATIC void makeFuncToken( char *inString, TOKEN_TYPE *current, int *index )
-/***************************************************************************
+STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, int *index )
+/********************************************************************************
  * parses only to get alphanumeric characters for special functions
  * ie. EXIST, defined.  if special characters are needed enclose in quotes
  */
@@ -1410,16 +1388,15 @@ STATIC void makeFuncToken( char *inString, TOKEN_TYPE *current, int *index )
 
     makeAlphaToken( inString, current, index );
     // check that the next token is a '(', swallow it, and check we have more.
-    probe = probeToken( currentPtr + *index );
-    if( *probe != PAREN_LEFT
-    || (probe = probeToken( probe + 1), *probe == NULLCHAR) ) {
+    probe = SkipWS( inString + *index );
+    if( *probe != PAREN_LEFT || (probe = SkipWS( probe + 1), *probe == NULLCHAR) ) {
         current->type = OP_ERROR;
     } else {
         BOOLEAN (*is)( const char * );
 
         if( name2function( current, DEFINED, IsMacro,   &is )
-        ||  name2function( current, EXIST,   existFile, &is )
-        ||  name2function( current, EXISTS,  existFile, &is ) ) {
+          || name2function( current, EXIST,  existFile, &is )
+          || name2function( current, EXISTS, existFile, &is ) ) {
             if( *probe == DOUBLEQUOTE ) {   // Get macro or file name
                 makeStringToken( probe, current, index );
             } else {
@@ -1427,24 +1404,27 @@ STATIC void makeFuncToken( char *inString, TOKEN_TYPE *current, int *index )
             }
             probe += *index;
             if( current->type == OP_STRING ) {
-                probe = probeToken( probe );
+                probe = SkipWS( probe );
                 if( *probe != PAREN_RIGHT ) {
                     current->type = OP_ERROR;
                 } else {
+    	            if( is == existFile ) {
+        	            FixName( current->data.string );
+                    }
                     current->type          = OP_INTEGER;
                     current->data.number   = is( current->data.string );
                     ++probe;    // Swallow OP_PAREN_RIGHT
-                    *index = (int)( probe - currentPtr );
                 }
             }
+            *index = (int)( probe - inString );
         } else {
             current->type = OP_ERROR;
         }
     }
 }
 
-STATIC void makeCmdToken( char *inString, TOKEN_TYPE *current, int *index )
-/**************************************************************************
+STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, int *index )
+/*******************************************************************************
  * get a command token enclosed in square brackets; very basic - a right
  * square bracket terminates command regardless of quoting
  */
@@ -1487,11 +1467,11 @@ STATIC void makeCmdToken( char *inString, TOKEN_TYPE *current, int *index )
     *index = inIndex;
 }
 
-STATIC void ScanToken( char *inString, TOKEN_TYPE *current, int *tokenLength )
-/****************************************************************************/
+STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLength )
+/**********************************************************************************/
 {
-    char    *currentString;
-    int     index = 0;
+    const char  *currentString;
+    int         index = 0;
 
     currentString = SkipWS( inString );
 
