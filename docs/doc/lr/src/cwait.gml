@@ -69,7 +69,7 @@ The child process terminated abnormally.
 .endterm
 .return end
 .see begin
-.seelist cwait exit _exit spawn&grpsfx wait
+.seelist cwait exit _Exit _exit spawn&grpsfx wait
 .see end
 .exmp begin
 #include <stdio.h>

@@ -267,7 +267,7 @@ Not enough memory is available to execute the child process.
 .error end
 .*==========================================
 .see begin
-.seelist abort atexit exit _exit
+.seelist abort atexit exit _Exit _exit
 .seelist getcmd getenv main putenv qnx_spawn qnx_spawn_options
 .seelist spawn&grpsfx
 .seelist system

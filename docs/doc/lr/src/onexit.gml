@@ -39,7 +39,7 @@ if the registration succeeds,
 NULL if it fails.
 .return end
 .see begin
-.seelist onexit abort atexit exit _exit
+.seelist onexit abort atexit exit _Exit _exit
 .see end
 .exmp begin
 #include <stdio.h>

@@ -33,7 +33,7 @@ The
 function does not return to its caller.
 .return end
 .see begin
-.seelist exit abort atexit _exit onexit
+.seelist exit abort atexit _Exit _exit onexit
 .see end
 .exmp begin
 #include <stdio.h>
