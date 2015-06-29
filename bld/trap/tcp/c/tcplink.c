@@ -330,7 +330,7 @@ bool RemoteConnect( void )
   #else
     data_socket = socket( AF_INET, SOCK_STREAM, 0 );
     if( !IS_INVALID_SOCKET( data_socket ) ) {
-        if( connect( data_socket, (struct sockaddr TRAPFAR *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
+        if( connect( data_socket, (struct sockaddr DIGFAR *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
             nodelay();
             return( TRUE );
         }
@@ -416,12 +416,12 @@ const char *RemoteLink( const char *parms, bool server )
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
     socket_address.sin_port = port;
-    if( bind( control_socket, (struct sockaddr TRAPFAR *)&socket_address, sizeof( socket_address ) ) ) {
+    if( bind( control_socket, (struct sockaddr DIGFAR *)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
     }
     /* Find out assigned port number and print it out */
     length = sizeof( socket_address );
-    if( getsockname( control_socket, (struct sockaddr TRAPFAR *)&socket_address, &length ) ) {
+    if( getsockname( control_socket, (struct sockaddr DIGFAR *)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
     sprintf( buff, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );

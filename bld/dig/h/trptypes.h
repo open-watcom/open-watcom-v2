@@ -36,18 +36,12 @@
 #include "digpck.h"
 
 
-#if defined( __WATCOMC__ ) && defined( _M_I86 )
-    #define     TRAPFAR     __far
-#else
-    #define     TRAPFAR
-#endif
-
 #if defined( __WATCOMC__ ) && defined( __WINDOWS__ )
-    #define     TRAPENTRY   TRAPFAR __pascal
+    #define     TRAPENTRY   DIGFAR __pascal
 #elif defined( __WATCOMC__ ) && ( defined( _M_I86 ) || defined( __DOS__ ) || defined( __DSX__ ) )
-    #define     TRAPENTRY   TRAPFAR __saveregs
+    #define     TRAPENTRY   DIGFAR __saveregs
 #else
-    #define     TRAPENTRY   TRAPFAR
+    #define     TRAPENTRY   DIGFAR
 #endif
 
 #define TRAP_MAJOR_VERSION      17
@@ -104,8 +98,8 @@ typedef struct {
     trap_elen   len;
 } in_mx_entry;
 
-typedef mx_entry        TRAPFAR *mx_entry_p;
-typedef in_mx_entry     TRAPFAR *in_mx_entry_p;
+typedef mx_entry        DIGFAR *mx_entry_p;
+typedef in_mx_entry     DIGFAR *in_mx_entry_p;
 
 typedef const void      *in_data_p;
 typedef void            *out_data_p;
