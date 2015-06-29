@@ -57,6 +57,8 @@
     #define TrapVersionOK( ver )  ((ver).major == TRAP_MAJOR_VERSION)
 #endif
 
+#define TRP_REQUEST(x)  *((access_req *)(x)[0].ptr)
+
 typedef struct {
     unsigned_8      major;
     unsigned_8      minor;
