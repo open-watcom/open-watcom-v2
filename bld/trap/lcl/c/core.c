@@ -133,7 +133,7 @@ trap_retval TRAPENTRY TrapRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, tra
     DisableHookEvents();
 #endif
     /* The first item must be the request! */
-    result = CoreRequests[ *(access_req *)mx_in[0].ptr ]();
+    result = CoreRequests[TRP_REQUEST( mx_in )]();
 #if defined(WIN16)
     EnableHookEvents();
 #endif

@@ -113,8 +113,8 @@ bool Session( void )
         Out_Mx_Ptr = &Out[0];
         In_Mx_Num = 1;
         Out_Mx_Num = 1;
-        req = *(access_req *)In[0].ptr;
-        *(access_req *)In[0].ptr &= ~0x80;
+        req = TRP_REQUEST( In );
+        TRP_REQUEST( In ) &= ~0x80;
         if( req & 0x80 ) {
             req &= ~0x80;
             want_return = FALSE;

@@ -520,7 +520,7 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
     } else {
         callstruct->retlen = 0;
     }
-    if( *(access_req *)mx_in->ptr == REQ_CONNECT ) {
+    if( TRP_REQUEST( mx_in ) == REQ_CONNECT ) {
         if( ( (connect_ret *)mx_out->ptr )->max_msg_size > MAX_MSG_SIZE ) {
             ( (connect_ret *)mx_out->ptr )->max_msg_size = MAX_MSG_SIZE;
         }

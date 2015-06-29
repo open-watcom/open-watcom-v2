@@ -86,8 +86,8 @@ bool Session( void )
         In[0].len = GetPacket();
         In[0].ptr = GetPacketBuffPtr();
         _DBG(("Session got request "));
-        req = *(access_req *)In[0].ptr;
-        *(access_req *)In[0].ptr &= ~0x80;
+        req = TRP_REQUEST( In );
+        TRP_REQUEST( In ) &= ~0x80;
         if( req & 0x80 ) {
             req &= ~0x80;
             want_return = FALSE;
