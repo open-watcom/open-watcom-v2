@@ -59,7 +59,7 @@ static const char *usageMsg[] = {
 };
 
 /* forward declaration */
-static bool scanEnvVar( const char *varname );
+static bool doScanParams( int argc, char *argv[] );
 
 void Quit( const char *usage_msg[], const char *str, ... )
 {
@@ -192,6 +192,133 @@ static bool ScanOptionsArg( const char * arg )
     return( contok );
 } /* ScanOptionsArg */
 
+static int ParseVariable( const char *env, char **argv, char *buf )
+/*****************************************************************/
+{
+    /*
+     * Returns a count of the "command line" parameters in *env.
+     * Unless argv is NULL, both argv and buf are completed.
+     *
+     * This function ought to be fairly similar to clib(initargv@_SplitParms).
+     * Parameterisation does the same as _SplitParms with historical = 0.
+     */
+
+    const char  *start;
+    int         switchchar;
+    int         argc;
+    char        *bufend;
+    char        *bufstart;
+    bool        got_quote;
+    bool        output_data;
+
+    switchchar = _dos_switch_char();
+    output_data = ( buf != NULL ) && ( argv != NULL );
+    bufend = buf;
+    argc = 0;
+    for( ;; ) {
+        got_quote = false;
+        while( isspace( *env ) && *env != '\0' )
+            env++;
+        start = env;
+        if( output_data ) {
+            bufstart = bufend;
+        }
+        if( *env == switchchar || *env == '-' ) {
+            if( output_data ) {
+                *bufend++ = *env;
+            }
+            env ++;
+        }
+        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
+            if( *env == '\"' ) {
+                got_quote = !got_quote;
+            }
+            if( output_data ) {
+                *bufend++ = *env;
+            }
+            env++;
+        }
+        if( start != env ) {
+            if( output_data ) {
+                *bufend++ = '\0';
+                argv[argc] = bufstart;
+            }
+            argc++;
+        }
+        if( *env == '\0' ) {
+            break;
+        }
+    }
+    return( argc );
+}
+
+static bool scanEnvVarOrFile( const char *name )
+/**********************************************/
+{
+    /*
+     * Pass nofilenames and analysis of getenv(name) into argc and argv
+     * to doScanParams. Return view on usability of data. (true is usable.)
+     *
+     * Recursion is supported but circularity is rejected.
+     */
+    typedef struct EnvVarInfo {
+        struct EnvVarInfo       *next;
+        char                    *name;
+        char                    **argv; /* points into buf */
+        char                    buf[1]; /* dynamic array */
+    } EnvVarInfo;
+
+    int                 argc;
+    EnvVarInfo          *info;
+    static EnvVarInfo   *stack = NULL;  // Needed to detect recursion.
+    size_t              argvsize;
+    size_t              argbufsize;
+    const char          *optstring;
+    size_t              varlen;         // size to hold name copy.
+    bool                result;         // doScanParams Result.
+    char                fbuf[512];
+
+    optstring = PP_GetEnv( name );
+    if( optstring == NULL ) {
+        FILE *fh;
+
+        fh = fopen( name, "rt" );
+        if( fh == NULL ) {
+//            RcWarning( ERR_ENV_VAR_NOT_FOUND, name );
+            return( true );
+        }
+        fgets( fbuf, sizeof( fbuf ), fh );
+        fclose( fh );
+        optstring = fbuf;
+    }
+    // This used to cause stack overflow: set foo=@foo && wrc @foo.
+    for( info = stack; info != NULL; info = info->next ) {
+#if defined( __UNIX__ )
+        if( strcmp( name, info->name ) == 0 ) {     // Case-sensitive
+#else
+        if( stricmp( name, info->name ) == 0 ) {    // Case-insensitive
+#endif
+//            RcFatalError( ERR_RCVARIABLE_RECURSIVE, name );
+        }
+    }
+    argc = ParseVariable( optstring, NULL, NULL );  // count parameters.
+    argbufsize = strlen( optstring ) + 1 + argc;    // inter-parameter spaces map to 0
+    argvsize = argc * sizeof( char * );             // sizeof argv[argc+1]
+    varlen = strlen( name ) + 1;                    // Copy taken to detect recursion.
+    info = malloc( sizeof( *info ) + argbufsize + argvsize + varlen );
+    info->next = stack;
+    stack = info;                                   // push info on stack
+    info->argv = (char **)info->buf;
+    ParseVariable( optstring, info->argv, info->buf + argvsize );
+    info->name = info->buf + argvsize + argbufsize;
+    strcpy( info->name, name );
+    result = doScanParams( argc, info->argv );
+
+    stack = info->next;                             // pop stack
+    free( info );
+    return( result );
+}
+
 static bool doScanParams( int argc, char *argv[] )
 /************************************************/
 {
@@ -207,7 +334,7 @@ static bool doScanParams( int argc, char *argv[] )
         if( *arg == switchchar || *arg == '-' ) {
             contok = ScanOptionsArg( arg + 1 ) && contok;
         } else if( *arg == '@' ) {
-            contok = scanEnvVar( arg + 1 ) && contok;
+            contok = scanEnvVarOrFile( arg + 1 ) && contok;
         } else if( *arg == '?' ) {
             Quit( usageMsg, NULL );
 //            contok = false;
@@ -218,130 +345,6 @@ static bool doScanParams( int argc, char *argv[] )
     }
     return( contok );
 }
-
-static int ParseEnvVar( const char *env, char **argv, char *buf )
-/***************************************************************/
-{
-    /*
-     * Returns a count of the "command line" parameters in *env.
-     * Unless argv is NULL, both argv and buf are completed.
-     *
-     * This function ought to be fairly similar to clib(initargv@_SplitParms).
-     * Parameterisation does the same as _SplitParms with historical = 0.
-     */
-
-    const char  *start;
-    int         switchchar;
-    int         argc;
-    char        *bufend;
-    bool        got_quote;
-    bool        output_data;
-
-    switchchar = _dos_switch_char();
-    output_data = ( buf != NULL ) && ( argv != NULL );
-    bufend = buf;
-    argc = 0;
-    for( ;; ) {
-        got_quote = false;
-        while( isspace( *env ) && *env != '\0' )
-            env++;
-        start = env;
-        if( output_data ) {
-            argv[argc] = bufend;
-        }
-        if( *env == switchchar || *env == '-' ) {
-            if( output_data ) {
-                *bufend = *env;
-                bufend++;
-            }
-            env ++;
-        }
-        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
-            if( *env == '\"' ) {
-                got_quote = !got_quote;
-            }
-            if( output_data ) {
-                *bufend = *env;
-                bufend++;
-            }
-            env++;
-        }
-        if( start != env ) {
-            argc++;
-            if( output_data ) {
-                *bufend = '\0';
-                bufend++;
-            }
-        }
-        if( *env == '\0' ) {
-            break;
-        }
-    }
-    return( argc );
-}
-
-static bool scanEnvVar( const char *varname )
-/*******************************************/
-{
-    /*
-     * Pass nofilenames and analysis of getenv(varname) into argc and argv
-     * to doScanParams. Return view on usability of data. (true is usable.)
-     *
-     * Recursion is supported but circularity is rejected.
-     *
-     * The analysis is fairly similar to that done in clib(initargv@_getargv).
-     * It is possible to use that function but it is not generally exported and
-     * ParseEnvVar() above is called from other places.
-     */
-    typedef struct EnvVarInfo {
-        struct EnvVarInfo       *next;
-        char                    *varname;
-        char                    **argv; /* points into buf */
-        char                    buf[1]; /* dynamic array */
-    } EnvVarInfo;
-
-    int                 argc;
-    EnvVarInfo          *info;
-    static EnvVarInfo   *stack = NULL; // Needed to detect recursion.
-    size_t              argvsize;
-    size_t              argbufsize;
-    const char          *env;
-    size_t              varlen;     // size to hold varname copy.
-    bool                result;     // doScanParams Result.
-
-    env = PP_GetEnv( varname );
-    if( env == NULL ) {
-//        RcWarning( ERR_ENV_VAR_NOT_FOUND, varname );
-        return( true );
-    }
-    // This used to cause stack overflow: set foo=@foo && wrc @foo.
-    for( info = stack; info != NULL; info = info->next ) {
-#if !defined( __UNIX__ )
-        if( stricmp( varname, info->varname ) == 0 ) {  // Case-insensitive
-#else
-        if( strcmp( varname, info->varname ) == 0 ) {   // Case-sensitive
-#endif
-//            RcFatalError( ERR_RCVARIABLE_RECURSIVE, varname );
-        }
-    }
-    argc = ParseEnvVar( env, NULL, NULL );  // count parameters.
-    argbufsize = strlen( env ) + 1 + argc;  // inter-parameter spaces map to 0
-    argvsize = argc * sizeof( char * );     // sizeof argv[argc+1]
-    varlen = strlen( varname ) + 1;         // Copy taken to detect recursion.
-    info = malloc( sizeof( *info ) + argbufsize + argvsize + varlen );
-    info->next = stack;
-    stack = info;                           // push info on stack
-    info->argv = (char **)info->buf;
-    ParseEnvVar( env, info->argv, info->buf + argvsize );
-    info->varname = info->buf + argvsize + argbufsize;
-    strcpy( info->varname, varname );
-    result = doScanParams( argc, info->argv );
-
-    stack = info->next;                     // pop stack
-    free( info );
-    return( result );
-}
-
 
 int main( int argc, char *argv[] )
 {
