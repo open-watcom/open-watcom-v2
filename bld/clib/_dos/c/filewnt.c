@@ -52,8 +52,9 @@
 _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle )
 {
     HANDLE      handle;
-    DWORD       rwmode,share_mode;
-    DWORD       desired_access,attr;
+    unsigned    rwmode;
+    DWORD       share_mode;
+    DWORD       desired_access, os_attr;
     unsigned    iomode_flags;
     int         hid;
 
@@ -66,11 +67,11 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
 
-    __GetNTAccessAttr( rwmode, &desired_access, &attr );
+    __GetNTAccessAttr( rwmode, &desired_access, &os_attr );
     __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK|OPENMODE_ACCESS_MASK),
                       &share_mode );
     handle = CreateFile( (LPTSTR) name, desired_access, share_mode, 0,
-                        OPEN_EXISTING, attr, NULL );
+                        OPEN_EXISTING, os_attr, NULL );
     if( handle == (HANDLE)-1 ) {
         __freePOSIXHandle( hid );
         return( __set_errno_nt_reterr() );

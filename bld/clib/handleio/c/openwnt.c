@@ -50,14 +50,16 @@
 #include "defwin.h"
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share, va_list args )
+static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned share, va_list args )
 {
     DWORD               create_disp, exists_disp;
-    DWORD               perm, fileattr;
+    int                 perm;
+    DWORD               os_attr, fileattr;
     DWORD               desired_access, share_mode;
     SECURITY_ATTRIBUTES security;
     HANDLE              handle;
-    int                 hid, rwmode;
+    int                 hid;
+    unsigned            rwmode;
     unsigned            iomode_flags;
 
     // First try to get the required slot.
@@ -68,7 +70,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
     }
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
-    __GetNTAccessAttr( rwmode, &desired_access, &perm );
+    __GetNTAccessAttr( rwmode, &desired_access, &os_attr );
     __GetNTShareAttr( share|rwmode, &share_mode );
     fileattr = FILE_ATTRIBUTE_NORMAL;
 

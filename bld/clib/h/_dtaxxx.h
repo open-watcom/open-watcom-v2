@@ -63,7 +63,7 @@ typedef struct __doslfn_dta {
 
 typedef struct __nt_dta {
     HANDLE      hndl;
-    DWORD       attr;
+    unsigned    attr;
 } __nt_dta;
 
 #define DIR_HANDLE_OF(__dirp)   (((__nt_dta *)(__dirp)->d_dta)->hndl)

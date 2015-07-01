@@ -55,12 +55,12 @@
 
 #define _A_RDONLY       0x01
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode,
-                                       int shflag, va_list args )
+static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
+                                       unsigned shflag, va_list args )
 {
-    int         rwmode;
+    unsigned    rwmode;
     int         handle;
-    int         attr;
+    unsigned    attr;
     int         permission;
     unsigned    iomode_flags;
     tiny_ret_t  rc;

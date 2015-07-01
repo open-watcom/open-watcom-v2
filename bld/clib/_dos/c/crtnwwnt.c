@@ -42,11 +42,11 @@
 #include "openmode.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_creatnew( const char *name, unsigned mode, int *posix_handle )
+_WCRTLINK unsigned _dos_creatnew( const char *name, unsigned attr, int *posix_handle )
 {
     HANDLE      handle;
     DWORD       desired_access;
-    DWORD       attr;
+    DWORD       os_attr;
     int         hid;
     unsigned    iomode_flags;
 
@@ -57,9 +57,9 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned mode, int *posix_ha
         return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
     }
 
-    __GetNTCreateAttr( mode, &desired_access, &attr );
+    __GetNTCreateAttr( attr, &desired_access, &os_attr );
     handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_NEW,
-                    attr, NULL );
+                    os_attr, NULL );
     if( handle == (HANDLE)-1 ) {
         __freePOSIXHandle( hid );
         return( __set_errno_nt_reterr() );
@@ -70,7 +70,7 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned mode, int *posix_ha
     *posix_handle = hid;
 
     iomode_flags = _READ;
-    if( !(mode & _A_RDONLY) )
+    if( !(attr & _A_RDONLY) )
         iomode_flags |= _WRITE;
     __SetIOMode( hid, iomode_flags );
     return( 0 );

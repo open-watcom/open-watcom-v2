@@ -32,16 +32,16 @@
 #ifndef __NTEXT_INCLUDED__
 #define __NTEXT_INCLUDED__
 
-extern void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr );
-extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr );
-extern void __GetNTShareAttr( int share, LPDWORD share_mode );
+extern void __GetNTCreateAttr( unsigned attr, LPDWORD desired_access, LPDWORD os_attr );
+extern void __GetNTAccessAttr( unsigned rwmode, LPDWORD desired_access, LPDWORD os_attr );
+extern void __GetNTShareAttr( unsigned share, LPDWORD share_mode );
 extern void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
 extern void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );
 
 extern void __GetNTDirInfoA( struct dirent *dirp, LPWIN32_FIND_DATAA ffb );
 extern void __GetNTDirInfoW( struct _wdirent *dirp, LPWIN32_FIND_DATAW ffb );
-extern BOOL __NTFindNextFileWithAttrA( HANDLE h, DWORD attr, LPWIN32_FIND_DATAA ffb );
-extern BOOL __NTFindNextFileWithAttrW( HANDLE h, DWORD attr, LPWIN32_FIND_DATAW ffb );
+extern BOOL __NTFindNextFileWithAttrA( HANDLE h, unsigned attr, LPWIN32_FIND_DATAA ffb );
+extern BOOL __NTFindNextFileWithAttrW( HANDLE h, unsigned attr, LPWIN32_FIND_DATAW ffb );
 
 #ifdef __WIDECHAR__
 #define __GetNTDirInfo              __GetNTDirInfoW
