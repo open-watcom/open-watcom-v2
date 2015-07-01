@@ -1367,7 +1367,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 .obj.ls1:
     @set ERROR_MSG=failure to decode $[@
-    $(buildtest_prefix)wdis -a $[@ | sed -f $(wasmtest_dir)/fixlst2.sed | awk -f $(wasmtest_dir)/fixlst3.awk >$@
+    $(buildtest_prefix)wdis -a $[@ | sed -f $(wasmtest_dir)/fixlst2.sed | awk -f $(wasmtest_dir)/fixlst3.awk -v OUTFILE=$^.
     @set CHK_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.asm
     @if exist $(wasmtest_dir)/inline/$^&.chk @set CHK_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.chk
     $(%CHK_CHECK)
