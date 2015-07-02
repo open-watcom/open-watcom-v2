@@ -30,13 +30,9 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <dos.h>
-#include <malloc.h>
-#include <stdarg.h>
+#include "variety.h"
+#include "cover.h"
 
-extern CALLBACKPTR vGetCallbackRoutine( PROCPTR fn, va_list al );
-extern void *UserProcs[];
 
 /*
  * DefineUserProc16 - define a user callback

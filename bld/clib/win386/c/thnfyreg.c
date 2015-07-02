@@ -30,13 +30,10 @@
 ****************************************************************************/
 
 
-#define INCLUDE_TOOLHELP_H
 #include "variety.h"
 #include "cover.h"
 
-BOOL PASCAL _Cover_NotifyRegister(HTASK hTask, LPFNNOTIFYCALLBACK lpfn,
-                                WORD wFlags)
+BOOL PASCAL _Cover_NotifyRegister(HTASK hTask, LPFNNOTIFYCALLBACK lpfn, WORD wFlags)
 {
-    return( NotifyRegister( hTask, SetProc( (FARPROC)lpfn, GETPROC_TOOLHELP_NOTIFY ),
-                wFlags ) );
+    return( NotifyRegister( hTask, SetProc( (FARPROC)lpfn, GETPROC_TOOLHELP_NOTIFY ), wFlags ) );
 }

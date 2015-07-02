@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "variety.h"
+#include "cover.h"
 
-extern void *UserProcs[];
 
 CALLBACKPTR GetProc16( PROCPTR pp, long type )
 {

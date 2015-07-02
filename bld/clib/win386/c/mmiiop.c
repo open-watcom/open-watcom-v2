@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define INCLUDE_MMSYSTEM_H
 #include "variety.h"
 #include "cover.h"
 

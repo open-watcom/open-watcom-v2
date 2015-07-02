@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define INCLUDE_DDEML_H
 #include "variety.h"
 #include "cover.h"
 
@@ -42,7 +41,7 @@ WORD PASCAL _Cover_DdeInitialize( LPDWORD pidInst, PFNCALLBACK p,
                 afCmd, ulRes ) );
 }
 
-HDDEDATA PASCAL _Cover_DdeClientTransaction( LPVOID lpvdata,
+HDDEDATA PASCAL _Cover_DdeClientTransaction( LPBYTE lpvdata,
                                              DWORD cbdata,
                                              HCONV hconv,
                                              HSZ hszitem,
