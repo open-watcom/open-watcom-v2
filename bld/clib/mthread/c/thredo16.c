@@ -101,8 +101,8 @@ _WCRTLINK int _WCFAR _beginthread( thread_fn *start_address,
     return( tid );
 }
 
-void _WCFAR *__chkstack( void _WCFAR *ptr ) {
-/***************************************/
+_WCRTLINK void _WCFAR *__chkstack( void _WCFAR *ptr ) {
+/*****************************************************/
     if( FP_SEG( ptr ) != FP_SEG( &Routine ) ) {
         __fatal_runtime_error( "thread stack not in DGROUP", 1 );
     }
