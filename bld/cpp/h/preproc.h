@@ -35,24 +35,6 @@
 #include <string.h>
 #include "bool.h"
 
-#define PPT_NULL            0
-#define PPT_SHARP_SHARP     1
-#define PPT_LAST_TOKEN      2
-#define PPT_EOF             3
-#define PPT_SHARP           '#'
-#define PPT_LEFT_PAREN      '('
-#define PPT_RIGHT_PAREN     ')'
-#define PPT_COMMA           ','
-#define PPT_ID              'A'
-#define PPT_TEMP_ID         'a'
-#define PPT_SAVED_ID        'B'
-#define PPT_COMMENT         'C'
-#define PPT_MACRO_PARM      'P'
-#define PPT_NUMBER          '0'
-#define PPT_LITERAL         '\"'
-#define PPT_WHITE_SPACE     ' '
-#define PPT_OTHER           '$'
-
 #define PPBUFSIZE           8192
 #define HASH_SIZE           211
 
@@ -82,6 +64,26 @@
 #define PPINCLUDE_SYS       1
 #define PPINCLUDE_SRC       2
 
+typedef enum {
+    PPT_NULL            = 0,
+    PPT_SHARP_SHARP     = 1,
+    PPT_LAST_TOKEN      = 2,
+    PPT_EOF             = 3,
+    PPT_SHARP           = '#',
+    PPT_LEFT_PAREN      = '(',
+    PPT_RIGHT_PAREN     = ')',
+    PPT_COMMA           = ',',
+    PPT_ID              = 'A',
+    PPT_TEMP_ID         = 'a',
+    PPT_SAVED_ID        = 'B',
+    PPT_COMMENT         = 'C',
+    PPT_MACRO_PARM      = 'P',
+    PPT_NUMBER          = '0',
+    PPT_LITERAL         = '\"',
+    PPT_WHITE_SPACE     = ' ',
+    PPT_OTHER           = '$'
+} ppt_token;
+
 typedef struct macro_entry {
     struct macro_entry *next;
     char            *replacement_list;
@@ -92,8 +94,8 @@ typedef struct macro_entry {
 
 typedef struct macro_token {
     struct macro_token *next;
-    char    token;
-    char    data[1];
+    ppt_token   token;
+    char        data[1];
 } MACRO_TOKEN;
 
 typedef struct  file_list {
@@ -126,8 +128,8 @@ extern  void        PP_Define( char *__p );
 extern  MACRO_ENTRY *PP_AddMacro( const char *__name );
 extern  MACRO_ENTRY *PP_MacroLookup( const char *__name, size_t len );
 extern  MACRO_ENTRY *PP_ScanMacroLookup( char *__name );
-extern  char        *PP_ScanToken( char *__p, char *__token );
-extern  int         PP_ScanNextToken( char *__token );
+extern  char        *PP_ScanToken( char *__p, ppt_token *__token );
+extern  int         PP_ScanNextToken( ppt_token *__token );
 extern  char        *PP_SkipWhiteSpace( char *__p, char *__white_space );
 extern  char        *PP_ScanName( char *__p );
 extern  int         PPEvalExpr( char *__p, char **__endptr, PREPROC_VALUE *__val );
