@@ -234,7 +234,7 @@ int PP_FindInclude( const char *filename, char *fullfilename, int incl_type )
             if( len > 0 ) {
                 char c = fullfilename[len - 1];
                 if( !IS_PATH_SEP( c ) ) {
-                    fullfilename[len++] = c;
+                    fullfilename[len++] = DIR_SEP;
                 }
             }
             strcpy( fullfilename + len, filename );
