@@ -51,7 +51,7 @@ void PP_CharConst( PREPROC_VALUE *val );
 void PP_Constant( PREPROC_VALUE *val );
 void PP_Constant( PREPROC_VALUE *val );
 
-int PPEvalExpr( char *ptr, char **endptr, PREPROC_VALUE *val )
+int PPEvalExpr( const char *ptr, const char **endptr, PREPROC_VALUE *val )
 {
     int         value;
 
@@ -103,7 +103,7 @@ void PP_Expr1( PREPROC_VALUE *val )
     PREPROC_VALUE   val2;
 
     PP_Expr2( val );
-    while( PPTokenPtr[0] == '|'  &&  PPTokenPtr[1] == '|' ) {
+    while( PPTokenPtr[0] == '|' && PPTokenPtr[1] == '|' ) {
         PPTokenPtr += 2;
         PP_Expr2( &val2 );
         val->val.ivalue |= val2.val.ivalue;
@@ -117,7 +117,7 @@ void PP_Expr2( PREPROC_VALUE *val )
     PREPROC_VALUE   val2;
 
     PP_Expr3( val );
-    while( PPTokenPtr[0] == '&'  &&  PPTokenPtr[1] == '&' ) {
+    while( PPTokenPtr[0] == '&' && PPTokenPtr[1] == '&' ) {
         PPTokenPtr += 2;
         PP_Expr3( &val2 );
         val->val.ivalue &= val2.val.ivalue;
@@ -131,7 +131,7 @@ void PP_Expr3( PREPROC_VALUE *val )
     PREPROC_VALUE   val2;
 
     PP_Expr4( val );
-    while( PPTokenPtr[0] == '|'  &&  PPTokenPtr[1] != '|' ) {
+    while( PPTokenPtr[0] == '|' && PPTokenPtr[1] != '|' ) {
         ++PPTokenPtr;
         PP_Expr4( &val2 );
         val->val.ivalue |= val2.val.ivalue;
@@ -159,7 +159,7 @@ void PP_Expr5( PREPROC_VALUE *val )
     PREPROC_VALUE   val2;
 
     PP_Expr6( val );
-    while( PPTokenPtr[0] == '&'  &&  PPTokenPtr[1] != '&' ) {
+    while( PPTokenPtr[0] == '&' && PPTokenPtr[1] != '&' ) {
         ++PPTokenPtr;
         PP_Expr6( &val2 );
         val->val.ivalue &= val2.val.ivalue;
@@ -174,12 +174,12 @@ void PP_Expr6( PREPROC_VALUE *val )
 
     PP_Expr7( val );
     for( ;; ) {
-        if( PPTokenPtr[0] == '='  &&  PPTokenPtr[1] == '=' ) {
+        if( PPTokenPtr[0] == '=' && PPTokenPtr[1] == '=' ) {
             PPTokenPtr += 2;
             PP_Expr7( &val2 );
             val->val.ivalue = val->val.ivalue == val2.val.ivalue;
             val->type = 0;
-        } else if( PPTokenPtr[0] == '!'  &&  PPTokenPtr[1] == '=' ) {
+        } else if( PPTokenPtr[0] == '!' && PPTokenPtr[1] == '=' ) {
             PPTokenPtr += 2;
             PP_Expr7( &val2 );
             val->val.ivalue = val->val.ivalue != val2.val.ivalue;
@@ -238,7 +238,7 @@ void PP_Expr8( PREPROC_VALUE *val )
 
     PP_Expr9( val );
     for( ;; ) {
-        if( PPTokenPtr[0] == '>'  &&  PPTokenPtr[1] == '>' ) {
+        if( PPTokenPtr[0] == '>' && PPTokenPtr[1] == '>' ) {
             PPTokenPtr += 2;
             PP_Expr9( &val2 );
             val->type |= val2.type;
@@ -247,7 +247,7 @@ void PP_Expr8( PREPROC_VALUE *val )
             } else {
                 val->val.uvalue >>= val2.val.uvalue;
             }
-        } else if( PPTokenPtr[0] == '<'  &&  PPTokenPtr[1] == '<' ) {
+        } else if( PPTokenPtr[0] == '<' && PPTokenPtr[1] == '<' ) {
             PPTokenPtr += 2;
             PP_Expr9( &val2 );
             val->val.ivalue <<= val2.val.uvalue;
@@ -374,7 +374,7 @@ rescan:
 
 void PP_AdvanceToken( void )
 {
-    char        white_space;
+    bool        white_space;
 
     for( ;; ) {
         PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
@@ -449,11 +449,11 @@ void PP_CharConst( PREPROC_VALUE *val )
         case '7':
             value = PPTokenPtr[0] - '0';
             c = PPTokenPtr[1];
-            if( c >= '0'  &&  c <= '7' ) {
+            if( c >= '0' && c <= '7' ) {
                 value = value * 8 + c - '0';
                 ++PPTokenPtr;
                 c = PPTokenPtr[1];
-                if( c >= '0'  &&  c <= '7' ) {
+                if( c >= '0' && c <= '7' ) {
                     value = value * 8 + c - '0';
                     ++PPTokenPtr;
                 }
@@ -486,24 +486,25 @@ void PP_Constant( PREPROC_VALUE *val )
     if( c == '0' ) {                            // octal or hex number
         ++PPTokenPtr;
         c = PPTokenPtr[0];
-        if( c == 'x'  ||  c == 'X' ) {          // hex number
+        if( c == 'x' || c == 'X' ) {          // hex number
             ++PPTokenPtr;
             value = PP_HexNumber();
         } else {                                // octal number
-            while( c >= '0'  &&  c <= '7' ) {
+            while( c >= '0' && c <= '7' ) {
                 value = value * 8 + c - '0';
                 ++PPTokenPtr;
                 c = PPTokenPtr[0];
             }
         }
     } else {                                    // decimal number
-        while( c >= '0'  &&  c <= '9' ) {
+        while( c >= '0' && c <= '9' ) {
             value = value * 10 + c - '0';
             ++PPTokenPtr;
             c = PPTokenPtr[0];
         }
     }
-    if( (unsigned long)value > 0x7fffffff )  val->type = 1;     // mark as unsigned
+    if( (unsigned long)value > 0x7fffffff )
+        val->type = 1;                          // mark as unsigned
     c = PPTokenPtr[0];
     if( c == 'u' || c == 'U' ) {
         ++PPTokenPtr;
@@ -526,9 +527,9 @@ void PP_Constant( PREPROC_VALUE *val )
 void PP_Identifier( PREPROC_VALUE *val )
 {
     long int    value;
-    char        *ptr;
+    const char  *ptr;
     MACRO_ENTRY *me;
-    char        white_space;
+    bool        white_space;
     size_t      len;
 
     val->type = 0;
@@ -542,7 +543,7 @@ void PP_Identifier( PREPROC_VALUE *val )
             ptr = PPCharPtr;
             value = PP_ScanMacroLookup( PPTokenPtr ) != NULL;
             PPTokenPtr = PPCharPtr;                     /* 23-sep-94 */
-            PPCharPtr = ptr;
+            PPCharPtr = (char *)ptr;
             PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
             if( PPTokenPtr[0] == ')' ) {
                 ++PPTokenPtr;
@@ -553,7 +554,7 @@ void PP_Identifier( PREPROC_VALUE *val )
             ptr = PPCharPtr;
             value = PP_ScanMacroLookup( PPTokenPtr ) != NULL;
             PPTokenPtr = PPCharPtr;                     /* 23-sep-94 */
-            PPCharPtr = ptr;
+            PPCharPtr = (char *)ptr;
         }
     } else {
         if( PPTokenList != NULL ) {
@@ -562,7 +563,7 @@ void PP_Identifier( PREPROC_VALUE *val )
             me = PP_MacroLookup( PPTokenPtr, len );
         }
         if( me != NULL ) {
-            PPCharPtr = ptr;
+            PPCharPtr = (char *)ptr;
             PPSavedChar = *ptr;
             DoMacroExpansion( me );
             PPCurToken = NextMToken();

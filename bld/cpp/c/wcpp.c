@@ -261,16 +261,16 @@ static bool scanEnvVarOrFile( const char *name )
      *
      * Recursion is supported but circularity is rejected.
      */
-    typedef struct EnvVarInfo {
-        struct EnvVarInfo       *next;
-        char                    *name;
-        char                    **argv; /* points into buf */
-        char                    buf[1]; /* dynamic array */
-    } EnvVarInfo;
+    typedef struct VarInfo {
+        struct VarInfo      *next;
+        char                *name;
+        char                **argv; /* points into buf */
+        char                buf[1]; /* dynamic array */
+    } VarInfo;
 
     int                 argc;
-    EnvVarInfo          *info;
-    static EnvVarInfo   *stack = NULL;  // Needed to detect recursion.
+    VarInfo             *info;
+    static VarInfo      *stack = NULL;  // Needed to detect recursion.
     size_t              argvsize;
     size_t              argbufsize;
     const char          *optstring;
