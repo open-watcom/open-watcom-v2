@@ -528,16 +528,14 @@ void PP_Identifier( PREPROC_VALUE *val )
     long int    value;
     char        *ptr;
     MACRO_ENTRY *me;
-    char        c;
     char        white_space;
+    size_t      len;
 
     val->type = 0;
     value = 0;
     ptr = PP_ScanName( PPTokenPtr );
-    c = *ptr;
-    *ptr = '\0';
-    if( strcmp( PPTokenPtr, "defined" ) == 0 ) {
-        *ptr = c;
+    len = ptr - PPTokenPtr;
+    if( len == 7 && memcmp( PPTokenPtr, "defined", 7 ) == 0 ) {
         PPTokenPtr = PP_SkipWhiteSpace( ptr, &white_space );
         if( PPTokenPtr[0] == '(' ) {
             ++PPTokenPtr;
@@ -561,12 +559,11 @@ void PP_Identifier( PREPROC_VALUE *val )
         if( PPTokenList != NULL ) {
             me = NULL;
         } else {
-            me = PP_MacroLookup( PPTokenPtr );
+            me = PP_MacroLookup( PPTokenPtr, len );
         }
-        *ptr = c;
         if( me != NULL ) {
             PPCharPtr = ptr;
-            PPSavedChar = c;
+            PPSavedChar = *ptr;
             DoMacroExpansion( me );
             PPCurToken = NextMToken();
             val->type = 1;      // indicate macro

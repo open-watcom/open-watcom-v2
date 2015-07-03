@@ -124,7 +124,7 @@ extern  int         PP_Class(char __c);
 extern  void        PP_Fini(void);
 extern  void        PP_Define( char *__p );
 extern  MACRO_ENTRY *PP_AddMacro( const char *__name );
-extern  MACRO_ENTRY *PP_MacroLookup( const char *__name );
+extern  MACRO_ENTRY *PP_MacroLookup( const char *__name, size_t len );
 extern  MACRO_ENTRY *PP_ScanMacroLookup( char *__name );
 extern  char        *PP_ScanToken( char *__p, char *__token );
 extern  int         PP_ScanNextToken( char *__token );

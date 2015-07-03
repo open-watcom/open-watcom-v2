@@ -212,8 +212,8 @@ static int findInclude( const char *path, const char *filename, char *fullfilena
 int PP_FindInclude( const char *filename, char *fullfilename, int incl_type )
 {
     int         rc = -1;
-    char        drivebuf[ _MAX_DRIVE ];
-    char        dirbuf[ _MAX_DIR ];
+    char        drivebuf[_MAX_DRIVE];
+    char        dirbuf[_MAX_DIR];
 
     if( HAS_PATH( filename ) ) {
         if( (rc = access( filename, R_OK )) == 0 ) {
@@ -314,7 +314,7 @@ static void PP_TimeInit( void )
     time_of_day = time( &time_of_day );
     tod = localtime( &time_of_day );
     sprintf( PP__TIME__, "\"%.2d:%.2d:%.2d\"", tod->tm_hour, tod->tm_min, tod->tm_sec );
-    sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[ tod->tm_mon ], tod->tm_mday, tod->tm_year + 1900 );
+    sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
 }
 
 static void SetRange( int low, int high, char data )
@@ -393,8 +393,7 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
 void PP_Dependency_List( pp_callback *callback )
 {
     PP_CallBack = callback;
-    for( ;; ) {
-        if( PP_Char() == EOF ) break;
+    for( ; PP_Char() != EOF; ) {
         PPTokenPtr = "";        // quickly skip over token
     }
 }
@@ -418,9 +417,7 @@ void PP_Fini( void )
     MACRO_ENTRY *me;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( ;; ) {
-            me = PPHashTable[hash];
-            if( me == NULL ) break;
+        for( ; (me = PPHashTable[hash]) != NULL; ) {
             PPHashTable[hash] = me->next;
             if( me->replacement_list != NULL )
                 PP_Free( me->replacement_list );
@@ -508,13 +505,13 @@ static size_t PP_ReadLine( char *line_generated )
 
 #define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
 
-static int PP_Hash( const char *name )
+static unsigned PP_Hash( const char *name, size_t len )
 {
     unsigned    hash;
 
     hash = 0;
-    for( ; *name; ++name ) {
-        hash = (hash << 4) + *name;
+    while( len-- > 0 ) {
+        hash = (hash << 4) + *name++;
         hash = (hash ^ _rotl( hash & 0xF000, 4 )) & 0x0FFF;
     }
     return( hash % HASH_SIZE );
@@ -524,9 +521,9 @@ static int PP_Hash( const char *name )
 int PP_Class( char c )
 {
     if( c == '_' )  return( CC_ALPHA );
-    if( c >= 'a'  &&  c <= 'z' ) return( CC_ALPHA );
-    if( c >= 'A'  &&  c <= 'Z' ) return( CC_ALPHA );
-    if( c >= '0'  &&  c <= '9' ) return( CC_DIGIT );
+    if( c >= 'a' && c <= 'z' ) return( CC_ALPHA );
+    if( c >= 'A' && c <= 'Z' ) return( CC_ALPHA );
+    if( c >= '0' && c <= '9' ) return( CC_DIGIT );
     return( 0 );
 }
 
@@ -617,7 +614,7 @@ MACRO_ENTRY *PP_AddMacro( const char *macro_name )
     size = sizeof( MACRO_ENTRY ) + strlen( macro_name );
     me = (MACRO_ENTRY *)PP_Malloc( size );
     if( me != NULL ) {
-        hash = PP_Hash( macro_name );
+        hash = PP_Hash( macro_name, strlen( macro_name ) );
         me->next = PPHashTable[hash];
         PPHashTable[hash] = me;
         strcpy( me->name, macro_name );
@@ -643,7 +640,7 @@ static char *PP_SkipSpace( char *p, char *white_space )
 static char *PP_SkipComment( char *p, char *comment )
 {
     *comment = 0;               // assume no comment
-    if( *p == '/'  && (p[1] == '/'  ||  p[1] == '*') ) {
+    if( *p == '/'  && (p[1] == '/' || p[1] == '*') ) {
         *comment = 1;           // indicate comment skipped
         if( p[1] == '/' ) {
             p += 2;
@@ -657,7 +654,7 @@ static char *PP_SkipComment( char *p, char *comment )
                     PPFlags |= PPFLAG_SKIP_COMMENT; // continued on next line
                     break;
                 }
-                if( *p == '*'  &&  p[1] == '/' ) {
+                if( *p == '*' && p[1] == '/' ) {
                     p += 2;
                     break;
                 }
@@ -761,14 +758,14 @@ void PP_Define( char *ptr )
     }
 }
 
-MACRO_ENTRY *PP_MacroLookup( const char *macro_name )
+MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
 {
     MACRO_ENTRY *me;
-    int         hash;
+    unsigned    hash;
 
-    hash = PP_Hash( macro_name );
-    for( me = PPHashTable[ hash ]; me; me = me->next ) {
-        if( strcmp( me->name, macro_name ) == 0 ) {
+    hash = PP_Hash( macro_name, len );
+    for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
+        if( len == strlen( me->name ) && memcmp( me->name, macro_name, len ) == 0 ) {
             break;
         }
     }
@@ -779,15 +776,14 @@ MACRO_ENTRY *PP_ScanMacroLookup( char *ptr )
 {
     char        *macro_name;
     MACRO_ENTRY *me;
-    char        c;
+    size_t      len;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     macro_name = ptr;
     ptr = PP_ScanName( ptr );
-    c = *ptr;
-    *ptr = '\0';
-    me = PP_MacroLookup( macro_name );
-    *ptr = c;
+    len = ptr - macro_name;
+    me = PP_MacroLookup( macro_name, len );
     PPCharPtr = ptr;
     return( me );
 }
@@ -851,7 +847,7 @@ static void PP_If( char *ptr )
 {
     int         value;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' ) ++ptr;
     if( NestLevel == SkipLevel ) {
         value = PPConstExpr( ptr );
         IncLevel( value );
@@ -864,8 +860,8 @@ static void PP_Elif( char *ptr )
 {
     int         value;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
-    if( NestLevel == 0  ||  PPStack->cpp_type == PP_ELSE ) {
+    while( *ptr == ' ' || *ptr == '\t' ) ++ptr;
+    if( NestLevel == 0 || PPStack->cpp_type == PP_ELSE ) {
         // CErr1( ERR_MISPLACED_ELIF );
     } else {
         if( NestLevel == SkipLevel ) {
@@ -925,45 +921,36 @@ static void PP_Endif( void )
 static int PP_Sharp( char *ptr )
 {
     char        *token;
-    char        c;
+    size_t      len;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     token = ptr;
-    while( *ptr >= 'a'  &&  *ptr <= 'z' ) ++ptr;
-    c = *ptr;
-    *ptr = '\0';
-    if( strcmp( token, "include" ) == 0 ) {
-        *ptr = c;
-        if( NestLevel == SkipLevel ) {
+    while( *ptr >= 'a' && *ptr <= 'z' )
+        ++ptr;
+    len = ptr - token;
+    if( len == 7 && memcmp( token, "include", 7 ) == 0 ) {
+       if( NestLevel == SkipLevel ) {
             PP_Include( ptr );
             return( 0 );
         }
-    } else if( strcmp( token, "define" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 6 && memcmp( token, "define", 6 ) == 0 ) {
         if( NestLevel == SkipLevel )  PP_Define( ptr );
-    } else if( strcmp( token, "undef" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 5 && memcmp( token, "undef", 5 ) == 0 ) {
         if( NestLevel == SkipLevel )  PP_Undef( ptr );
-    } else if( strcmp( token, "ifdef" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 5 && memcmp( token, "ifdef", 5 ) == 0 ) {
         PP_Ifdef( ptr );
-    } else if( strcmp( token, "ifndef" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 6 && memcmp( token, "ifndef", 6 ) == 0 ) {
         PP_Ifndef( ptr );
-    } else if( strcmp( token, "if" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 2 && memcmp( token, "if", 2 ) == 0 ) {
         PP_If( ptr );
-    } else if( strcmp( token, "elif" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 4 && memcmp( token, "elif", 4 ) == 0 ) {
         PP_Elif( ptr );
-    } else if( strcmp( token, "else" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 4 && memcmp( token, "else", 4 ) == 0 ) {
         PP_Else();
-    } else if( strcmp( token, "endif" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 5 && memcmp( token, "endif", 5 ) == 0 ) {
         PP_Endif();
     } else {
-        *ptr = c;
         if( PPFlags & PPFLAG_ASM_COMMENT ) {
             // # is also a line-comment char in MS's stupid assembler
             // so we just return 1 to say we recognized it and the rest
@@ -979,21 +966,17 @@ static int PP_Sharp( char *ptr )
 static void RCInclude( char *ptr )
 {
     char        *token;
-    char        c;
+    size_t      len;
 
     token = ptr;
     while( (*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z' ) ) {
         ++ptr;
     }
-    c = *ptr;
-    *ptr = '\0';
-    if( stricmp( token, "rcinclude" ) == 0 ) {
-        *ptr = c;
+    len = ptr - token;
+    if( len == 9 && stricmp( token, "rcinclude" ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_RCInclude( ptr );
         }
-    } else {
-        *ptr = c;
     }
 }
 
@@ -1056,13 +1039,13 @@ static char *PPScanLiteral( char *p )
 
 static char *PPScanDigits( char *p )
 {
-    while( *p >= '0'  &&  *p <= '9' ) ++p;
+    while( *p >= '0' && *p <= '9' ) ++p;
     return( p );
 }
 
 static char *PPScanSuffix( char *p )
 {
-    while( *p == 'u'  ||  *p == 'U'  ||  *p == 'l'  ||  *p == 'L' ) {
+    while( *p == 'u' || *p == 'U' || *p == 'l' || *p == 'L' ) {
         p++;
     }
     return( p );
@@ -1076,7 +1059,7 @@ static char *PPScanHexNumber( char *p )
     for( ;; ) {
         p = PPScanDigits( p );
         c = tolower( *p );
-        if( c < 'a'  ||  c > 'f' ) break;
+        if( c < 'a' || c > 'f' ) break;
         ++p;
     }
     p = PPScanSuffix( p );
@@ -1089,9 +1072,9 @@ static char *PPScanNumber( char *p )
     if( *p == '.' ) {
         p = PPScanDigits( p + 1 );
     }
-    if( *p == 'e'  ||  *p == 'E' ) {
+    if( *p == 'e' || *p == 'E' ) {
         p++;
-        if( *p == '+'  ||  *p == '-' ) {
+        if( *p == '+' || *p == '-' ) {
             ++p;
         }
         p = PPScanDigits( p );
@@ -1115,7 +1098,7 @@ static char *PPScanOther( char *p )
         if( *p == '\t' ) break;
         if( *p == '\r' ) break;
         if( *p == '\n' ) break;
-        if( *p >= '0'  &&  *p <= '9' ) break;
+        if( *p >= '0' && *p <= '9' ) break;
         if( isalpha( *p ) ) break;
         ++p;
     }
@@ -1130,9 +1113,8 @@ char *PP_ScanToken( char *p, char *token )
 
     if( PPFlags & PPFLAG_SKIP_COMMENT ) {
         *token = PPT_COMMENT;
-        for( ;; ) {
-            if( *p == '\0' ) break;
-            if( *p == '*'  &&  p[1] == '/' ) {
+        for( ; *p != '\0'; ) {
+            if( *p == '*' && p[1] == '/' ) {
                 p += 2;
                 PPFlags &= ~PPFLAG_SKIP_COMMENT;
                 break;
@@ -1154,7 +1136,7 @@ char *PP_ScanToken( char *p, char *token )
         c = PPT_LITERAL;
         break;
     case '.':
-        if( p[1] >= '0'  &&  p[1] <= '9' ) {
+        if( p[1] >= '0' && p[1] <= '9' ) {
             p2 = PPScanNumber( p );
             c = PPT_NUMBER;
         } else {
@@ -1200,8 +1182,8 @@ char *PP_ScanToken( char *p, char *token )
                 p2 = p + 1;
                 c = PPT_SHARP;
             }
-        } else if( c >= '0'  &&  c <= '9' ) {
-            if( p[1] == 'x'  ||  p[1] == 'X' ) {
+        } else if( c >= '0' && c <= '9' ) {
+            if( p[1] == 'x' || p[1] == 'X' ) {
                 p2 = PPScanHexNumber( p );
             } else {
                 p2 = PPScanNumber( p );
@@ -1251,7 +1233,7 @@ int PP_Char( void )
             PP_Free( mtok );
             mtok = PPTokenList;
             if( mtok == NULL ) break;
-            if( mtok->token == PPT_NULL  &&  mtok->data[0] == 'Z' ) {
+            if( mtok->token == PPT_NULL && mtok->data[0] == 'Z' ) {
                 DeleteNestedMacro();
                 continue;
             }
@@ -1272,10 +1254,12 @@ int PP_Char( void )
                     return( ' ' );
                 }
             }
-            if( token != PPT_ID )  break;
-            me = PP_MacroLookup( PPTokenPtr );
-            if( me == NULL )  break;
-            if( me->parmcount != PP_SPECIAL_MACRO && me->parmcount != 0) {
+            if( token != PPT_ID )
+                break;
+            me = PP_MacroLookup( PPTokenPtr, strlen( PPTokenPtr ) );
+            if( me == NULL )
+                break;
+            if( me->parmcount != PP_SPECIAL_MACRO && me->parmcount != 0 ) {
                 if( PPSavedChar != '(' ) {
                     break;
                 }
