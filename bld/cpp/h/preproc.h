@@ -94,9 +94,9 @@ typedef struct macro_entry {
 #define PP_SPECIAL_MACRO        255
 
 typedef struct macro_token {
-    struct macro_token *next;
-    ppt_token   token;
-    char        data[1];
+    struct macro_token  *next;
+    ppt_token           token;
+    char                data[1];
 } MACRO_TOKEN;
 
 typedef struct  file_list {
@@ -142,7 +142,7 @@ extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
 extern  void        PP_AddIncludePath( const char *path_list );
 extern  void        PP_IncludePathInit( void );
 extern  void        PP_IncludePathFini( void );
-extern  int         PP_FindInclude( const char *filename, size_t len, char *fullfilename, int sys_include );
+extern  int         PP_FindInclude( const char *filename, size_t len, char *fullfilename, int incl_type );
 
 extern  void        *PP_Malloc( size_t __size );
 extern  void        PP_Free( void *__ptr );

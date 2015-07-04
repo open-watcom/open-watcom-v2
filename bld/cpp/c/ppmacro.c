@@ -40,10 +40,10 @@ typedef struct macro_arg {
 
 typedef struct nested_macros {
     struct nested_macros *next;
-    MACRO_ENTRY *fmentry;
-    MACRO_ARG *macro_parms;
-    bool    rescanning;
-    bool    substituting_parms;
+    MACRO_ENTRY     *fmentry;
+    MACRO_ARG       *macro_parms;
+    bool            rescanning;
+    bool            substituting_parms;
 } NESTED_MACRO;
 
 extern  char    PP__DATE__[14];
@@ -79,7 +79,7 @@ void DeleteNestedMacro( void )
     nested = NestedMacros;
     if( nested != NULL ) {
         NestedMacros = nested->next;
-        macro_parms =  nested->macro_parms;
+        macro_parms = nested->macro_parms;
         fmentry = nested->fmentry;
         PP_Free( nested );
         i = fmentry->parmcount - 1;
@@ -735,10 +735,9 @@ static MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
     MACRO_TOKEN *prev_tok;
     ppt_token   prev_token;
 
-    mtok = head;
     prev_tok = NULL;
     prev_token = PPT_NULL;
-    for( ; mtok != NULL; ) {
+    for( mtok = head; mtok != NULL; mtok = mtok->next ) {
         list = NULL;
         if( mtok->token == PPT_SHARP ) {
             // replace this and next token (macro parm) with a string
@@ -788,9 +787,9 @@ static MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
         if( mtok == NULL )
             break;
         prev_tok = mtok;
-        if( mtok->token != PPT_WHITE_SPACE )
+        if( mtok->token != PPT_WHITE_SPACE ) {
             prev_token = mtok->token;
-        mtok = mtok->next;
+        }
     }
     return( head );
 }

@@ -279,9 +279,7 @@ static void PP_GenLine( void )
 
     p = PPLineBuf + 1;
     if( PPFlags & PPFLAG_EMIT_LINE ) {
-        sprintf( p, "%cline %u \"", PreProcChar, PP_File->linenum );
-        while( *p != '\0' )
-            ++p;
+        p += sprintf( p, "%cline %u \"", PreProcChar, PP_File->linenum );
         fname = PP_File->filename;
         while( *fname != '\0' ) {
 #ifndef __UNIX__
@@ -838,14 +836,12 @@ MACRO_ENTRY *PP_ScanMacroLookup( const char *ptr )
 {
     const char  *macro_name;
     MACRO_ENTRY *me;
-    size_t      len;
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
     macro_name = ptr;
-    ptr = PP_ScanName( ptr );
-    len = ptr - macro_name;
-    me = PP_MacroLookup( macro_name, len );
+    ptr = PP_ScanName( macro_name );
+    me = PP_MacroLookup( macro_name, ptr - macro_name );
     PPNextTokenPtr = ptr;
     return( me );
 }
@@ -994,7 +990,7 @@ static int PP_Sharp( const char *ptr )
         ++ptr;
     len = ptr - token;
     if( len == 7 && memcmp( token, "include", 7 ) == 0 ) {
-       if( NestLevel == SkipLevel ) {
+        if( NestLevel == SkipLevel ) {
             PP_Include( ptr );
             return( 0 );
         }
@@ -1365,7 +1361,7 @@ int PP_Char( void )
                 }
             }
             DoMacroExpansion( me );
-            if( PPTokenList != NULL ) {                 /* 08-feb-93 */
+            if( PPTokenList != NULL ) {
                 PPTokenPtr = PPTokenList->data;
                 break;
             }

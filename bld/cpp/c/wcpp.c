@@ -213,6 +213,7 @@ static int ParseVariable( const char *env, char **argv, char *buf )
 
     switchchar = _dos_switch_char();
     output_data = ( buf != NULL ) && ( argv != NULL );
+    bufstart = buf;
     bufend = buf;
     argc = 0;
     for( ;; ) {
