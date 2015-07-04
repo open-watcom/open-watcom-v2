@@ -70,13 +70,13 @@ static void dumpheap( void )
 static void PP_Dump_Macros( void )
 {
     int             hash;
-    char            *endptr;
+    const char      *endptr;
     MACRO_ENTRY     *me;
     PREPROC_VALUE   val;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( me = PPHashTable[hash]; me; me = me->next ) {
-            if( me->parmcount == 0  &&  me->replacement_list != NULL ) {
+        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
+            if( me->parmcount == 0 && me->replacement_list != NULL ) {
                 if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
                     if( *endptr == '\0' ) {
                         printf( "#define %s %s ", me->name,
