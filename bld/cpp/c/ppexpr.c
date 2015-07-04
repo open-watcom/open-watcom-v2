@@ -384,9 +384,9 @@ void PP_AdvanceToken( void )
             PPCurToken = PPNextToken();
         }
         if( PPCurToken == NULL ) {
-            if( PPCharPtr != NULL ) {
-                PPTokenPtr = PP_SkipWhiteSpace( PPCharPtr, &white_space );
-                PPCharPtr = NULL;
+            if( PPNextTokenPtr != NULL ) {
+                PPTokenPtr = PP_SkipWhiteSpace( PPNextTokenPtr, &white_space );
+                PPNextTokenPtr = NULL;
             }
             break;
         }
@@ -540,10 +540,10 @@ void PP_Identifier( PREPROC_VALUE *val )
         PPTokenPtr = PP_SkipWhiteSpace( ptr, &white_space );
         if( PPTokenPtr[0] == '(' ) {
             ++PPTokenPtr;
-            ptr = PPCharPtr;
+            ptr = PPNextTokenPtr;
             value = PP_ScanMacroLookup( PPTokenPtr ) != NULL;
-            PPTokenPtr = PPCharPtr;                     /* 23-sep-94 */
-            PPCharPtr = (char *)ptr;
+            PPTokenPtr = PPNextTokenPtr;                     /* 23-sep-94 */
+            PPNextTokenPtr = ptr;
             PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
             if( PPTokenPtr[0] == ')' ) {
                 ++PPTokenPtr;
@@ -551,10 +551,10 @@ void PP_Identifier( PREPROC_VALUE *val )
                 // error
             }
         } else {
-            ptr = PPCharPtr;
+            ptr = PPNextTokenPtr;
             value = PP_ScanMacroLookup( PPTokenPtr ) != NULL;
-            PPTokenPtr = PPCharPtr;                     /* 23-sep-94 */
-            PPCharPtr = (char *)ptr;
+            PPTokenPtr = PPNextTokenPtr;                     /* 23-sep-94 */
+            PPNextTokenPtr = ptr;
         }
     } else {
         if( PPTokenList != NULL ) {
@@ -563,7 +563,7 @@ void PP_Identifier( PREPROC_VALUE *val )
             me = PP_MacroLookup( PPTokenPtr, len );
         }
         if( me != NULL ) {
-            PPCharPtr = (char *)ptr;
+            PPNextTokenPtr = ptr;
             PPSavedChar = *ptr;
             DoMacroExpansion( me );
             PPCurToken = NextMToken();

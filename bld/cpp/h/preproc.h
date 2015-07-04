@@ -156,7 +156,7 @@ extern  void        PPMacroVarInit( void );
 extern  FILELIST    *PP_File;
 extern  unsigned    PPLineNumber;
 extern  const char  *PPTokenPtr;
-extern  char        *PPCharPtr;
+extern  const char  *PPNextTokenPtr;
 extern  MACRO_TOKEN *PPTokenList;
 extern  MACRO_TOKEN *PPCurToken;
 extern  unsigned    PPFlags;

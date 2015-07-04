@@ -67,7 +67,7 @@ unsigned    PPFlags;                        // pre-processor flags
 char        PP__DATE__[] = "\"Dec 31 2005\"";// value for __DATE__ macro
 char        PP__TIME__[] = "\"12:00:00\"";  // value for __TIME__ macro
 char        *PPBufPtr;                      // block buffer pointer
-char        *PPCharPtr;                     // character pointer
+const char  *PPNextTokenPtr;                // next character after token end pointer
 const char  *PPTokenPtr;                    // pointer to next char in token
 MACRO_TOKEN *PPTokenList;                   // pointer to list of tokens
 MACRO_TOKEN *PPCurToken;                    // pointer to current token
@@ -278,7 +278,6 @@ static void PP_GenLine( void )
     int         i;
 
     p = PPLineBuf + 1;
-    PPCharPtr = p;
     if( PPFlags & PPFLAG_EMIT_LINE ) {
         sprintf( p, "%cline %u \"", PreProcChar, PP_File->linenum );
         while( *p != '\0' )
@@ -301,12 +300,13 @@ static void PP_GenLine( void )
     }
     *p++ = '\n';
     *p = '\0';
+    PPNextTokenPtr = PPLineBuf + 1;
 }
 
 static void PP_GenError( const char *msg )
 {
     sprintf( PPLineBuf + 1, "%cerror %s\n", PreProcChar, msg );
-    PPCharPtr = PPLineBuf + 1;
+    PPNextTokenPtr = PPLineBuf + 1;
 }
 
 static void PP_TimeInit( void )
@@ -389,7 +389,7 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
         return( -1 );
     PP_GenLine();
     PPSavedChar = '\0';
-    PPTokenPtr = PPCharPtr;
+    PPTokenPtr = PPNextTokenPtr;
     return( 0 );
 }
 
@@ -454,7 +454,7 @@ static size_t PP_ReadLine( char *line_generated )
     }
     PPLineNumber = PP_File->linenum;
     PPLineBuf[0] = '\0';
-    PPCharPtr = PPLineBuf + 1;
+    PPNextTokenPtr = PPLineBuf + 1;
     *line_generated = 0;
     len = 1;
     for( ;; ) {
@@ -490,7 +490,7 @@ static size_t PP_ReadLine( char *line_generated )
                     }
                     PP_GenLine();
                     *line_generated = 1;
-                    len = strlen( PPCharPtr );
+                    len = strlen( PPNextTokenPtr );
                     return( len );
                 }
             }
@@ -508,7 +508,7 @@ static size_t PP_ReadLine( char *line_generated )
     }
     PPLineBuf[len++] = '\n';
     PPLineBuf[len++] = '\0';
-    PPCharPtr = PPLineBuf + 1;
+    PPNextTokenPtr = PPLineBuf + 1;
     return( len );
 }
 
@@ -529,10 +529,14 @@ static unsigned PP_Hash( const char *name, size_t len )
 
 int PP_Class( char c )
 {
-    if( c == '_' )  return( CC_ALPHA );
-    if( c >= 'a' && c <= 'z' ) return( CC_ALPHA );
-    if( c >= 'A' && c <= 'Z' ) return( CC_ALPHA );
-    if( c >= '0' && c <= '9' ) return( CC_DIGIT );
+    if( c == '_' )
+        return( CC_ALPHA );
+    if( c >= 'a' && c <= 'z' )
+        return( CC_ALPHA );
+    if( c >= 'A' && c <= 'Z' )
+        return( CC_ALPHA );
+    if( c >= '0' && c <= '9' )
+        return( CC_DIGIT );
     return( 0 );
 }
 
@@ -573,7 +577,7 @@ static void PP_Include( const char *ptr )
     len = ptr - filename;
     if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
         sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
-        PPCharPtr = PPLineBuf + 1;
+        PPNextTokenPtr = PPLineBuf + 1;
     } else {
         PP_GenLine();
     }
@@ -600,19 +604,25 @@ static void PP_RCInclude( const char *ptr )
         }
     } else {
         for( ;; ) {
-            if( *ptr == ' ' ) break;
-            if( *ptr == '\t' ) break;
-            if( *ptr == '\r' ) break;
-            if( *ptr == '\n' ) break;
-            if( *ptr == '\0' ) break;
-            if( *ptr == '\"' ) break;
+            if( *ptr == ' ' )
+                break;
+            if( *ptr == '\t' )
+                break;
+            if( *ptr == '\r' )
+                break;
+            if( *ptr == '\n' )
+                break;
+            if( *ptr == '\0' )
+                break;
+            if( *ptr == '\"' )
+                break;
             ++ptr;
         }
     }
     len = ptr - filename;
     if( PP_OpenInclude( filename, len, PPINCLUDE_USR ) == NULL ) {
         sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
-        PPCharPtr = PPLineBuf + 1;
+        PPNextTokenPtr = PPLineBuf + 1;
     } else {
         PP_GenLine();
     }
@@ -836,7 +846,7 @@ MACRO_ENTRY *PP_ScanMacroLookup( const char *ptr )
     ptr = PP_ScanName( ptr );
     len = ptr - macro_name;
     me = PP_MacroLookup( macro_name, len );
-    PPCharPtr = (char *)ptr;
+    PPNextTokenPtr = ptr;
     return( me );
 }
 
@@ -989,9 +999,13 @@ static int PP_Sharp( const char *ptr )
             return( 0 );
         }
     } else if( len == 6 && memcmp( token, "define", 6 ) == 0 ) {
-        if( NestLevel == SkipLevel )  PP_Define( ptr );
+        if( NestLevel == SkipLevel ) {
+            PP_Define( ptr );
+        }
     } else if( len == 5 && memcmp( token, "undef", 5 ) == 0 ) {
-        if( NestLevel == SkipLevel )  PP_Undef( ptr );
+        if( NestLevel == SkipLevel ) {
+            PP_Undef( ptr );
+        }
     } else if( len == 5 && memcmp( token, "ifdef", 5 ) == 0 ) {
         PP_Ifdef( ptr );
     } else if( len == 6 && memcmp( token, "ifndef", 6 ) == 0 ) {
@@ -1046,21 +1060,21 @@ static int PP_Read( void )
             return( 0 );
         // don't look for preprocessor directives inside multi-line comments
         if( !line_generated && !(PPFlags & PPFLAG_SKIP_COMMENT) ) {
-            p = PP_SkipSpace( PPCharPtr, &white_space );
+            p = PP_SkipSpace( PPNextTokenPtr, &white_space );
             if( *p == PreProcChar ) {
                 if( PP_Sharp( p + 1 ) ) {       // if recognized
-                    PPCharPtr = PPLineBuf + 1;
-                    PPCharPtr[0] = '\n';
-                    PPCharPtr[1] = '\0';
+                    PPLineBuf[1 + 0] = '\n';
+                    PPLineBuf[1 + 1] = '\0';
+                    PPNextTokenPtr = PPLineBuf + 1;
                 }
             } else {
                 RCInclude( p );
             }
         }
         if( NestLevel != SkipLevel ) {
-            PPCharPtr = PPLineBuf + 1;
-            PPCharPtr[0] = '\n';
-            PPCharPtr[1] = '\0';
+            PPLineBuf[1 + 0] = '\n';
+            PPLineBuf[1 + 1] = '\0';
+            PPNextTokenPtr = PPLineBuf + 1;
         }
         break;
     }
@@ -1079,14 +1093,17 @@ static const char *PPScanLiteral( const char *p )
             p += i + 1;
             continue;
         }
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         if( *p == quote_char ) {
             ++p;
             break;
         }
         if( *p == '\\' ) {
             ++p;
-            if( *p == '\0' ) break;
+            if( *p == '\0' ) {
+                break;
+            }
         }
         ++p;
     }
@@ -1144,20 +1161,34 @@ static const char *PPScanNumber( const char *p )
 static const char *PPScanOther( const char *p )
 {
     for( ;; ) {
-        if( *p == '\0' ) break;
-        if( *p == '\'' ) break;
-        if( *p == '\"' ) break;
-        if( *p == '_'  ) break;
-        if( *p == ','  ) break;
-        if( *p == PreProcChar ) break;
-        if( *p == '('  ) break;
-        if( *p == ')'  ) break;
-        if( *p == ' '  ) break;
-        if( *p == '\t' ) break;
-        if( *p == '\r' ) break;
-        if( *p == '\n' ) break;
-        if( *p >= '0' && *p <= '9' ) break;
-        if( isalpha( *p ) ) break;
+        if( *p == '\0' )
+            break;
+        if( *p == '\'' )
+            break;
+        if( *p == '\"' )
+            break;
+        if( *p == '_'  )
+            break;
+        if( *p == ','  )
+            break;
+        if( *p == PreProcChar )
+            break;
+        if( *p == '('  )
+            break;
+        if( *p == ')'  )
+            break;
+        if( *p == ' '  )
+            break;
+        if( *p == '\t' )
+            break;
+        if( *p == '\r' )
+            break;
+        if( *p == '\n' )
+            break;
+        if( *p >= '0' && *p <= '9' )
+            break;
+        if( isalpha( *p ) )
+            break;
         ++p;
     }
     return( p );
@@ -1272,18 +1303,18 @@ const char *PP_ScanToken( const char *p, ppt_token *token )
 
 int PP_ScanNextToken( ppt_token *token )
 {
-    *PPCharPtr = PPSavedChar;
-    if( *PPCharPtr == '\0' ) {
+    *(char *)PPNextTokenPtr = PPSavedChar;
+    if( *PPNextTokenPtr == '\0' ) {
         if( PPFlags & PPFLAG_DONT_READ )
             return( EOF );
         if( PP_Read() == 0 ) {
             return( EOF );
         }
     }
-    PPTokenPtr = PPCharPtr;
-    PPCharPtr = (char *)PP_ScanToken( PPCharPtr, token );
-    PPSavedChar = *PPCharPtr;
-    *PPCharPtr = '\0';
+    PPTokenPtr = PPNextTokenPtr;
+    PPNextTokenPtr = PP_ScanToken( PPNextTokenPtr, token );
+    PPSavedChar = *PPNextTokenPtr;
+    *(char *)PPNextTokenPtr = '\0';
     return( 0 );
 }
 
@@ -1315,11 +1346,11 @@ int PP_Char( void )
                 if( PPFlags & PPFLAG_KEEP_COMMENTS )
                     break;
                 if( PPSavedChar == '\0' ) {
-                    PPTokenPtr = PPCharPtr;
+                    PPTokenPtr = PPNextTokenPtr;
                     return( '\n' );
                 } else {
                     // replace comment with a space
-                    PPTokenPtr = PPCharPtr;
+                    PPTokenPtr = PPNextTokenPtr;
                     return( ' ' );
                 }
             }
@@ -1352,7 +1383,7 @@ extern void PreprocVarInit( void )
     strcpy( PP__DATE__, "\"Dec 31 2005\"" );
     strcpy( PP__TIME__, "\"12:00:00\"" );
     PPBufPtr = NULL;
-    PPCharPtr = NULL;
+    PPNextTokenPtr = NULL;
     PPTokenList = NULL;
     PPCurToken = NULL;
     memset( PPLineBuf, 0, sizeof( PPLineBuf ) );

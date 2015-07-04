@@ -126,7 +126,7 @@ MACRO_TOKEN *NextMToken( void )
             len = 1;
             PPTokenPtr = " ";
         } else {
-            len = PPCharPtr - PPTokenPtr;
+            len = PPNextTokenPtr - PPTokenPtr;
             if( token == PPT_WHITE_SPACE || token == PPT_COMMENT ) {
                 len = 1;
                 PPTokenPtr = " ";
@@ -135,8 +135,9 @@ MACRO_TOKEN *NextMToken( void )
         mtok = (MACRO_TOKEN *)PP_Malloc( sizeof(MACRO_TOKEN) + len );
         mtok->next = NULL;
         mtok->token = token;
-        strcpy( mtok->data, PPTokenPtr );
-        PPTokenPtr = PPCharPtr;
+        memcpy( mtok->data, PPTokenPtr, len );
+        mtok->data[len] = '\0';
+        PPTokenPtr = PPNextTokenPtr;
     }
     return( mtok );
 }
@@ -173,8 +174,7 @@ static MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
     macro_parms = NULL;
     if( fmentry->parmcount != 0 ) { /* if () expected */
         if( fmentry->parmcount > 1 ) {
-            macro_parms = (MACRO_ARG *)PP_Malloc( (fmentry->parmcount - 1) *
-                                    sizeof( MACRO_ARG ) );
+            macro_parms = (MACRO_ARG *)PP_Malloc( (fmentry->parmcount - 1) * sizeof( MACRO_ARG ) );
         }
         parm_cnt = 0;
         mtok = PPNextToken();
@@ -197,15 +197,19 @@ static MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
         for( ;; ) {
             for( ;; ) {
                 mtok = NextMToken();
-                if( mtok->token != PPT_WHITE_SPACE ) break;
-                if( head != NULL ) break;
+                if( mtok->token != PPT_WHITE_SPACE )
+                    break;
+                if( head != NULL )
+                    break;
                 PP_Free( mtok );
             }
-            if( mtok->token == PPT_EOF ) break;         /* 03-jan-95 */
+            if( mtok->token == PPT_EOF )
+                break;
             if( mtok->token == PPT_LEFT_PAREN ) {
                 ++bracket;
             } else if( mtok->token == PPT_RIGHT_PAREN ) {
-                if( bracket == 0 ) break;
+                if( bracket == 0 )
+                    break;
                 --bracket;
             } else if( mtok->token == PPT_COMMA && bracket == 0 ) {
                 if( parm_cnt < fmentry->parmcount - 1 ) {
@@ -217,8 +221,10 @@ static MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
                 tail = NULL;
                 continue;
             }
-            if( head == NULL )  head = mtok;
-            if( tail != NULL )  tail->next = mtok;
+            if( head == NULL )
+                head = mtok;
+            if( tail != NULL )
+                tail->next = mtok;
             tail = mtok;
         }
         PP_Free( mtok );
@@ -338,7 +344,9 @@ static int Expandable( MACRO_ENTRY *me, MACRO_TOKEN *mtok, bool macro_parm )
     }
     if( me->parmcount == 0 ) { /* if () not expected */
         if( macro_parm ) {                              /* 20-feb-93 */
-            if( MacroBeingExpanded( me ) )  return( 0 );
+            if( MacroBeingExpanded( me ) ) {
+                return( 0 );
+            }
         }
         return( 1 );
     }
@@ -511,8 +519,10 @@ static MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
     size_t      len;
 
     len = 0;
-    if( first != NULL )  len += strlen( first->data );  /* 21-apr-93 */
-    if( second != NULL ) len += strlen( second->data );
+    if( first != NULL )
+        len += strlen( first->data );
+    if( second != NULL )
+        len += strlen( second->data );
     mtok = (MACRO_TOKEN *)PP_Malloc( sizeof(MACRO_TOKEN) + len );
     mtok->next = NULL;
     mtok->token = first->token;
@@ -520,8 +530,10 @@ static MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
         mtok->token = PPT_ID;
     }
     mtok->data[0] = '\0';
-    if( first != NULL )  strcpy( mtok->data, first->data );
-    if( second != NULL ) strcat( mtok->data, second->data );
+    if( first != NULL )
+        strcpy( mtok->data, first->data );
+    if( second != NULL )
+        strcat( mtok->data, second->data );
     return( mtok );
 }
 
