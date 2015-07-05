@@ -57,7 +57,7 @@
 #include "toolbr.h"
 #include "guihint.h"
 
-#define GUI_IS_GUI      true
+#define GUI_IS_GUI
 
 /* use 0-9 for os-specific menu constants */
 

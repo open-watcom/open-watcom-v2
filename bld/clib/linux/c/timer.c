@@ -44,10 +44,10 @@
  * to properly create a timer
  */
 typedef struct ksigevent {
-        union sigval sigev_value;
-        int sigev_signo;
-        int sigev_notify;
-        int sigev_tid;
+    union sigval    sigev_value;
+    int             sigev_signo;
+    int             sigev_notify;
+    int             sigev_tid;
 };
 
 _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *__tmr )
@@ -60,14 +60,14 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
         _RWD_errno = EINVAL;
         return( -1 );
     }
-    
-    memset(&ksev, 0, sizeof(struct ksigevent));
+
+    memset( &ksev, 0, sizeof( struct ksigevent ) );
     if( __sevp != NULL ) {
         ksev.sigev_value = __sevp->sigev_value;
         ksev.sigev_signo = __sevp->sigev_signo;
         ksev.sigev_notify = __sevp->sigev_notify;
     } else {
-#ifdef SIGEV_SIGNAL        
+#ifdef SIGEV_SIGNAL
         ksev.sigev_notify = SIGEV_SIGNAL;
 #endif
         ksev.sigev_signo = SIGALRM;
@@ -77,15 +77,16 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
                       (u_long)__clk, 
                       (u_long)&ksev, 
                       (u_long)&id );
-    if( !__syscall_iserror( res ) )    
-    	*__tmr = (timer_t)(intptr_t)id;
+    if( !__syscall_iserror( res ) ) {
+        *__tmr = (timer_t)(intptr_t)id;
+    }
     __syscall_return( int, res );
 }
 
 
 _WCRTLINK int timer_delete( timer_t __tmr )
 {
-    syscall_res res = sys_call1( SYS_timer_getoverrun, (u_long)__tmr );
+    syscall_res res = sys_call1( SYS_timer_delete, (u_long)__tmr );
     __syscall_return( int, res );
 }
 

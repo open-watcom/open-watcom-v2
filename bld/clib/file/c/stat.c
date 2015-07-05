@@ -198,7 +198,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
             if( handle != -1 ) {
                 canwrite = 1;
                 if( __F_NAME(fstat,_wfstat)( handle, buf ) == -1 ) {
-                    rc = errno;
+                    rc = _RWD_errno;
                 } else {
                     fstatok = 1;
                 }
@@ -209,7 +209,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
                 canread = 1;
                 if( !fstatok ) {
                     if( __F_NAME(fstat,_wfstat)( handle, buf ) == -1 ) {
-                        rc = errno;
+                        rc = _RWD_errno;
                     }
                 }
             }

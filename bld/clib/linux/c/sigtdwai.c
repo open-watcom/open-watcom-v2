@@ -33,8 +33,7 @@
 #include <signal.h>
 #include "linuxsys.h"
 
-_WCRTLINK int sigtimedwait( const sigset_t *__set, siginfo_t *__info,
-                            const struct timespec *__timeout )
+_WCRTLINK int sigtimedwait( const sigset_t *__set, siginfo_t *__info, const struct timespec *__timeout )
 
 {
     syscall_res res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, (u_long)__info, (u_long)__timeout, sizeof( sigset_t ) );

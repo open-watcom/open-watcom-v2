@@ -34,5 +34,9 @@
 
 bool GUIIsGUI( void )
 {
-    return( GUI_IS_GUI );
+#if defined( GUI_IS_GUI )
+    return( true );
+#else
+    return( false );
+#endif
 }

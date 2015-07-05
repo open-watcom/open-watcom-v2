@@ -621,8 +621,8 @@ static  void    proc_input( char * filename )
             /***************************************************************/
             /*  Test for missing eXXX tag                                  */
             /***************************************************************/
-            if( (nest_cb != NULL) && (nest_cb->c_tag != t_NONE) ) {
-                g_err_tag_nest( nest_cb->c_tag );// eXXX expected
+            if( (nest_cb != NULL) && (nest_cb->gtag != GML_TAG_NONE) ) {
+                g_err_tag_nest( nest_cb->gtag );    // eXXX expected
             }
         }
         del_input_cb_entry();           // one level finished

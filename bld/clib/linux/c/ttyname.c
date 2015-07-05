@@ -43,27 +43,28 @@
 
 _WCRTLINK int ttyname_r(int fd, char *buf, size_t buflen)
 {
-char linkpath[MAX_TTY_NAME];
+    char linkpath[MAX_TTY_NAME];
 
-    if(isatty(fd) == 0) {
+    if( isatty( fd ) == 0 ) {
         _RWD_errno = ENOTTY;
         return( _RWD_errno );
     }
-    
-    snprintf(linkpath, MAX_TTY_NAME, "%s%d", BASE_LINK, fd);
-    if(readlink(linkpath, buf, buflen) < 0) {
+
+    snprintf( linkpath, MAX_TTY_NAME, "%s%d", BASE_LINK, fd );
+    if( readlink( linkpath, buf, buflen ) < 0 ) {
         return( _RWD_errno );
     }
-    
-    return 0;
+
+    return( 0 );
 }
 
 _WCRTLINK char *ttyname(int fd)
 {
-static char linkpath[MAX_TTY_NAME];
+    static char linkpath[MAX_TTY_NAME];
 
-    if(ttyname_r(fd, linkpath, (size_t)MAX_TTY_NAME) == 0)
-        return linkpath;
-    else
-        return NULL;
+    if( ttyname_r( fd, linkpath, (size_t)MAX_TTY_NAME ) == 0 ) {
+        return( linkpath );
+    } else {
+        return( NULL );
+    }
 }

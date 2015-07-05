@@ -34,7 +34,7 @@
 #include "guiwind.h"
 #include "guidlg.h"
 
-#if !defined( __NT__ ) || (GUI_IS_GUI == false)
+#if !defined( __NT__ ) || !defined( GUI_IS_GUI )
 static gui_colour_set DlgColours[GUI_NUM_ATTRS+1] = {
   /* Fore              Back        */
   { GUI_BRIGHT_BLUE,  GUI_BRIGHT_WHITE },   /* GUI_MENU_PLAIN     */
@@ -56,7 +56,7 @@ static gui_create_info DlgControl = {
     NULL,
     0,
     NULL,
-#if !defined( __NT__ ) || (GUI_IS_GUI == false)
+#if !defined( __NT__ ) || !defined( GUI_IS_GUI )
     GUI_NUM_ATTRS + 1,
     DlgColours,
 #else

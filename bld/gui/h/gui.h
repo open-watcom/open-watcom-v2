@@ -147,20 +147,9 @@ typedef enum {
 #define GUI_LAST_CONTROL_CLASS  GUI_EDIT_MLE
 
 typedef enum {
-    GUI_MENU_PLAIN,
-    GUI_MENU_STANDOUT,
-    GUI_MENU_GRAYED,
-    GUI_MENU_ACTIVE,
-    GUI_MENU_ACTIVE_STANDOUT,
-    GUI_BACKGROUND,
-    GUI_MENU_FRAME,
-    GUI_TITLE_INACTIVE,
-    GUI_FRAME_ACTIVE,
-    GUI_FRAME_INACTIVE,
-    GUI_ICON,
-    GUI_MENU_GRAYED_ACTIVE,
-    GUI_FRAME_RESIZE,
-    GUI_CONTROL_BACKGROUND,
+    #define pick(e,n)   e,
+    #include "attrgui.h"
+    #undef pick
     GUI_FIRST_UNUSED
 } gui_attr;
 #define GUI_FIRST_ATTR  GUI_MENU_PLAIN
@@ -168,15 +157,9 @@ typedef enum {
 #define GUI_NUM_ATTRS   GUI_FIRST_UNUSED
 
 typedef enum {
-    GUI_DLG_NORMAL,
-    GUI_DLG_FRAME,
-    GUI_DLG_SHADOW,
-    GUI_DLG_SCROLL_ICON,
-    GUI_DLG_SCROLL_BAR,
-    GUI_DLG_BUTTON_PLAIN,
-    GUI_DLG_BUTTON_STANDOUT,
-    GUI_DLG_BUTTON_ACTIVE,
-    GUI_DLG_BUTTON_ACTIVE_STANDOUT,
+    #define pick(e,n)   e,
+    #include "attrdlg.h"
+    #undef pick
     GUI_DLG_NUM_ATTRS
 } gui_dlg_attr;
 

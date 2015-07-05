@@ -64,8 +64,8 @@ typedef enum {
     SCR_TAG_LABEL
 } scr_tag;
 
-#define SCR_TAGMIN SCR_TAG_AD
-#define SCR_TAGMAX (SCR_TAG_LABEL + 1)
+#define SCR_TAGMIN  SCR_TAG_AD
+#define SCR_TAGMAX  (SCR_TAG_LABEL + 1)
 
 static  const   scrtag  scr_tags[] = {
     #define pick( name, routine, flags) { #name, routine, flags },
@@ -75,7 +75,7 @@ static  const   scrtag  scr_tags[] = {
 };
 
 
-static lay_tag      lay_ind = LAY_TAGMAX;   // index into lay_tab for attribute processing
+static lay_tag      lay_ind = LAY_TAG_NONE; // index into lay_tab for attribute processing
 
 const char *gml_tagname( gml_tag gtag )
 {
@@ -243,7 +243,7 @@ static void scan_gml( void )
             lay_tag     ltag;
             for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
                 if( taglen == lay_tags[ltag].taglen && !memcmp( lay_tags[ltag].tagname, tag_name, taglen ) ) {
-                    lay_ind = LAY_TAGMAX;   // process tag not attribute
+                    lay_ind = LAY_TAG_NONE;   // process tag not attribute
 
                     lay_tags[ltag].layproc( ltag );
 
@@ -782,7 +782,7 @@ void    scan_line( void )
                 g_info_lm( inf_text_line, scan_start );
             }
             if( ProcFlags.layout ) {    // LAYOUT active: process attributes
-                if( lay_ind < LAY_TAGMAX ) {
+                if( lay_ind != LAY_TAG_NONE ) {
                     lay_tags[lay_ind].layproc( lay_ind );
                 }
             } else {

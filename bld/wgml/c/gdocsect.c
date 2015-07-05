@@ -317,8 +317,10 @@ void    start_doc_sect( void )
         break;
     case   doc_sect_titlep:             // for preceding :BINCLUDE/:GRAPHIC
         page_e = ej_yes;
+
         init_nest_cb( true );
-        nest_cb->c_tag = t_TITLEP;
+
+        nest_cb->gtag = t_TITLEP;
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
     case   doc_sect_abstract:

@@ -89,7 +89,7 @@ _WCRTLINK int (spawnve)( mode, path, argv, envp )
         if( mode == P_WAIT ) {
             do {
                 err = waitpid( pid, &status, 0 );
-            } while( err == -1 && errno == EINTR );
+            } while( err == -1 && _RWD_errno == EINTR );
             if( err == pid ) err = status;
         }
     }

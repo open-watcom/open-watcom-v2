@@ -38,23 +38,19 @@
 _WCRTLINK struct passwd *getpwnam(const char *name)
 {
     struct passwd *res = NULL;
-    
-    if(name == NULL) {
+
+    if( name == NULL ) {
         _RWD_errno = EINVAL;
-        return NULL;
+        return( NULL );
     }
-    
     setpwent();
-    
     res = getpwent();
-    while(res != NULL) {
-        if(strcmp(res->pw_name, name) == 0) 
+    while( res != NULL ) {
+        if( strcmp( res->pw_name, name ) == 0 ) 
             break;
-            
         res = getpwent();
     }
-    
     endpwent();
-    
-    return res;
+
+    return( res );
 }

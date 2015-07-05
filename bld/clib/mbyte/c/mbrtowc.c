@@ -51,7 +51,7 @@ _WCRTLINK int _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR 
     rc = _NEARFAR(mbtowc,_fmbtowc)( pwc, s, n );
     if( rc != -1 ) {
         return( rc );
-    } else if( n < MB_LEN_MAX  &&  _ismbblead( *s ) ) {
+    } else if( n < MB_LEN_MAX && _ismbblead( *s ) ) {
         return( -2 );                       /* incomplete, possibly valid */
     } else {
         _RWD_errno = EILSEQ;                /* encoding error */

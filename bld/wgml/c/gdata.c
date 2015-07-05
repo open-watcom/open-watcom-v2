@@ -39,19 +39,6 @@
 #undef  global
 
 
-char str_tags[t_MAX + 1][10] = {
-    { "NONE" },
-    #define pick( name, length, routine, gmlflags, locflags )  { #name },
-    #include "gtags.h"
-    #undef pick
-//    #define picks( name, routine, flags) { #name },
-//    #define picklab( name, routine, flags) { #name },
-//    #include "gscrcws.h" TBD
-//    #undef picklab
-//    #undef picks
-    { "MAX" }
-};
-
 /***************************************************************************/
 /*  Init some global variables                                             */
 /***************************************************************************/

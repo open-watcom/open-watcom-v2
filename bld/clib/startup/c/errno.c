@@ -30,12 +30,13 @@
 
 
 #include "variety.h"
+#if defined(__QNX__)
+#include <sys/magic.h>
+#endif
 #include "rterrno.h"
 #include "thread.h"
 
 #if defined(__QNX__)
-
-#include <sys/magic.h>
 
 _WCRTLINK int *__get_errno_ptr( void )
 {

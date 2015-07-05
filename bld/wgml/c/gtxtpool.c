@@ -494,7 +494,7 @@ tag_cb  * alloc_tag_cb( void )
         prev->prev = NULL;
     }
     curr->prev = NULL;
-    curr->c_tag = t_NONE;
+    curr->gtag = GML_TAG_NONE;
 
     return( curr );
 }

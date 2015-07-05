@@ -59,10 +59,15 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
     for( tmpfnext = 'a'; ; tmpfnext++ ) {
         ptr[_TMPFCHAR] = tmpfnext;
         fd = open( name, O_RDWR | O_CREAT | O_EXCL | O_TEMP, 0666 );
-        if( fd != -1 ) break;
-        if( _RWD_errno != EEXIST ) return( NULL );
-        if( tmpfnext == 'z' ) tmpfnext = 'A' - 1;
-        if( tmpfnext == 'Z' ) return( NULL );
+        if( fd != -1 )
+            break;
+        if( _RWD_errno != EEXIST )
+            return( NULL );
+        if( tmpfnext == 'z' )
+            tmpfnext = 'A' - 1;
+        if( tmpfnext == 'Z' ) {
+            return( NULL );
+        }
     }
     fp = fdopen( fd, "wb+" );
     if( fp != NULL ) {

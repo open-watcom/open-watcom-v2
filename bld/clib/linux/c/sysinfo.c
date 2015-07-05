@@ -34,15 +34,15 @@
 #include <sys/sysinfo.h>
 #include "linuxsys.h"
 
-_WCRTLINK int sysinfo ( struct sysinfo *__info )
+_WCRTLINK int sysinfo( struct sysinfo *__info )
 {
     syscall_res res;
-    
+
     if( __info == 0 ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
-    
+
     res = sys_call1( SYS_sysinfo, (u_long)__info );
     __syscall_return( int, res );
 }

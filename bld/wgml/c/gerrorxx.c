@@ -120,7 +120,7 @@ void    file_mac_info_nest( void )
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
 
-        g_info( err_tag_starting, str_tags[nest_cb->c_tag] );
+        g_info( err_tag_starting, gml_tagname( nest_cb->gtag ) );
 
         nw = nest_cb->p_stack;
         while( nw != NULL ) {
@@ -419,13 +419,14 @@ static  void    g_err_tag_common( const char *tag, bool nest )
 
 void    g_err_tag( const char *tag )
 {
-    g_err_tag_common( tag, 0 );         // 'normal' stack display
+    g_err_tag_common( tag, false );     // 'normal' stack display
     return;
 }
 
-void    g_err_tag_nest( e_tags c_tag )
+void    g_err_tag_nest( gml_tag gtag )
 {
-    g_err_tag_common( str_tags[c_tag + 1], 1 );         // nested tag stack display
+    
+    g_err_tag_common( gml_tagname( tag2etag( gtag ) ), true );      // nested tag stack display
     return;
 }
 
@@ -443,7 +444,7 @@ void    g_err_tag_rsloc( locflags inloc, const char *pa )
     if( tag_name == NULL ) {        // should never happen, make internal error?
         tag_name = "unknown";
     }
-    g_err_tag_common( tag_name, 1 );
+    g_err_tag_common( tag_name, true );
     show_line_error( pa );
 
     return;
@@ -483,6 +484,152 @@ void    g_err_tag_prec( const char *tag )
     err_count++;
     return;
 }
+
+gml_tag etag2tag( gml_tag egtag )
+{
+    gml_tag gtag;
+
+    switch( egtag ) {
+    case GML_TAG_EADDRESS:
+        gtag = GML_TAG_ADDRESS;
+        break;
+    case GML_TAG_EDL:
+        gtag = GML_TAG_DL;
+        break;
+    case GML_TAG_EGL:
+        gtag = GML_TAG_GL;
+        break;
+    case GML_TAG_EOL:
+        gtag = GML_TAG_OL;
+        break;
+    case GML_TAG_ESL:
+        gtag = GML_TAG_SL;
+        break;
+    case GML_TAG_EUL:
+        gtag = GML_TAG_UL;
+        break;
+    case GML_TAG_ESF:
+        gtag = GML_TAG_SF;
+        break;
+    case GML_TAG_EHP0:
+        gtag = GML_TAG_HP0;
+        break;
+    case GML_TAG_EHP1:
+        gtag = GML_TAG_HP1;
+        break;
+    case GML_TAG_EHP2:
+        gtag = GML_TAG_HP2;
+        break;
+    case GML_TAG_EHP3:
+        gtag = GML_TAG_HP3;
+        break;
+#if 0
+    case GML_TAG_ECIT:
+        gtag = GML_TAG_CIT;
+        break;
+    case GML_TAG_EFIG:
+        gtag = GML_TAG_FIG;
+        break;
+    case GML_TAG_EFN:
+        gtag = GML_TAG_FN;
+        break;
+    case GML_TAG_EGDOC:
+        gtag = GML_TAG_GDOC;
+        break;
+    case GML_TAG_ELQ:
+        gtag = GML_TAG_LQ;
+        break;
+    case GML_TAG_EXMP:
+        gtag = GML_TAG_XMP;
+        break;
+#endif
+    default:
+        gtag = GML_TAG_NONE;
+        break;
+    }
+    return( gtag );
+}
+
+gml_tag tag2etag( gml_tag gtag )
+{
+    gml_tag egtag;
+
+    switch( gtag ) {
+    case GML_TAG_ADDRESS:
+        egtag = GML_TAG_EADDRESS;
+        break;
+    case GML_TAG_DL:
+        egtag = GML_TAG_EDL;
+        break;
+    case GML_TAG_GL:
+        egtag = GML_TAG_EGL;
+        break;
+    case GML_TAG_OL:
+        egtag = GML_TAG_EOL;
+        break;
+    case GML_TAG_SL:
+        egtag = GML_TAG_ESL;
+        break;
+    case GML_TAG_UL:
+        egtag = GML_TAG_EUL;
+        break;
+    case GML_TAG_SF:
+        egtag = GML_TAG_ESF;
+        break;
+    case GML_TAG_HP0:
+        egtag = GML_TAG_EHP0;
+        break;
+    case GML_TAG_HP1:
+        egtag = GML_TAG_EHP1;
+        break;
+    case GML_TAG_HP2:
+        egtag = GML_TAG_EHP2;
+        break;
+    case GML_TAG_HP3:
+        egtag = GML_TAG_EHP3;
+        break;
+    case GML_TAG_XMP:
+        egtag = GML_TAG_EXMP;
+        break;
+#if 0
+    case GML_TAG_CIT:
+        egtag = GML_TAG_ECIT;
+        break;
+    case GML_TAG_FIG:
+        egtag = GML_TAG_EFIG;
+        break;
+    case GML_TAG_FN:
+        egtag = GML_TAG_EFN;
+        break;
+    case GML_TAG_GDOC:
+        egtag = GML_TAG_EGDOC;
+        break;
+    case GML_TAG_LQ:
+        egtag = GML_TAG_ELQ;
+        break;
+#endif
+    default:
+        egtag = GML_TAG_NONE;
+        break;
+    }
+    return( egtag );
+}
+
+bool g_err_gml_etag( gml_tag egtag )
+{
+    if( nest_cb->gtag == etag2tag( egtag ) )
+        return( false );
+    // unexpected exxx tag
+    if( nest_cb->gtag == GML_TAG_NONE ) {
+        // no exxx expected, no tag active
+        g_err_tag_no( gml_tagname( egtag ) );
+    } else {
+        // exxx expected
+        g_err_tag_nest( nest_cb->gtag );
+    }
+    return( true );
+}
+
 
 void    g_err_tag_x_in_y( const char *tag1, const char *tag2 )
 {

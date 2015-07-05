@@ -751,7 +751,7 @@ typedef struct tag_cb {
     uint8_t             termhi;         // :dl :gl
     bool                dl_break : 1;   // :dl
     bool                compact  : 1;   // :dl :gl :ol :sl :ul
-    e_tags              c_tag;          // enum of tag
+    gml_tag             gtag;           // enum of tag
 } tag_cb;
 
 
