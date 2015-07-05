@@ -157,7 +157,7 @@ typedef enum {
 #define GUI_NUM_ATTRS   GUI_FIRST_UNUSED
 
 typedef enum {
-    #define pick(e,n)   e,
+    #define pick(e,f,b)   e,
     #include "attrdlg.h"
     #undef pick
     GUI_DLG_NUM_ATTRS
