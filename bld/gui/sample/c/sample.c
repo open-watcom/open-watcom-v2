@@ -45,10 +45,10 @@ char            *OldValue       = NULL;
 gui_window      *DialogWindow   = NULL;
 gui_ctl_id      CurrPopupItem   = MENU_CHANGE;
 
-static gui_window       *HelpWindow     = NULL;
-static char             *help_file;
-static gui_help_instance        help_inst;
-static const char       LongStr[] =
+static gui_window           *HelpWindow     = NULL;
+static const char           *help_file;
+static gui_help_instance    help_inst;
+static const char           LongStr[] =
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

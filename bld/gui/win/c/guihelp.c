@@ -42,7 +42,7 @@ extern  WPI_INST        GUIMainHInst;
 
 #ifdef __OS2_PM__
 
-static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, const char *help_lib )
+static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, const char *title, const char *help_lib )
 {
     HWND        hwndHelpInstance;
     HELPINIT    help;
@@ -54,7 +54,7 @@ static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, const 
     help.hmodAccelActionBarModule = 0;
     help.idAccelTable = 0;
     help.idActionBar = 0;
-    help.pszHelpWindowTitle = title;
+    help.pszHelpWindowTitle = (PSZ)title;
   #ifdef _M_I86
     help.usShowPanelId = CMIC_HIDE_PANEL_ID;
   #else
@@ -124,7 +124,7 @@ bool DisplayHelpContext( gui_help_instance inst, HWND hwnd, const char *file, co
 
 #else
 
-static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, const char *help_file )
+static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, const char *title, const char *help_file )
 {
     hwnd = hwnd;
     inst = inst;
@@ -202,7 +202,7 @@ bool DisplayHelpKeyHH( gui_help_instance inst, HWND hwnd, const char *file, cons
 #endif
 
 
-gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, char *title )
+gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title )
 {
     return( InitHelp( wnd->hwnd, GUIMainHInst, title, file ) );
 }
