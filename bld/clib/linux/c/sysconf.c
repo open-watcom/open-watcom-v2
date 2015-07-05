@@ -50,14 +50,12 @@
 
 static int __sysconf_nprocessors( void )
 {
-long ures;
-unsigned char mask[128];
-int ret;
-int i;
+    syscall_res res;
+    unsigned char mask[128];
+    int ret;
+    int i;
     
-    ures = sys_call3( SYS_sched_getaffinity, (u_long)0,
-                      (u_long)(sizeof(mask)), (u_long)mask );
-    
+    res = sys_call3( SYS_sched_getaffinity, (u_long)0, (u_long)(sizeof(mask)), (u_long)mask );
     ret = 0;
     for( i=0; i<sizeof( mask ); i++ ) {
         while(mask[i]) {
@@ -65,13 +63,13 @@ int i;
             ret++;
         }
     }
-    return ret;
+    return( ret );
 }
 
 static int __sysconf_rlimit_int( int rlimid )
 {
-int ret;
-struct rlimit rls;
+    int ret;
+    struct rlimit rls;
     
     if( getrlimit( rlimid, &rls ) == 0 ) {
         return (int)rls.rlim_cur;
@@ -83,8 +81,8 @@ struct rlimit rls;
 
 static int __sysconf_pages( int name )
 {
-long quantity;
-struct sysinfo info;
+    long quantity;
+    struct sysinfo info;
     
     quantity = -1;
     if( sysinfo(&info) == 0 ) {
@@ -104,7 +102,7 @@ struct sysinfo info;
 
 _WCRTLINK long sysconf( int name )
 {
-int ret;
+    int ret;
 
     ret = -1;
     switch( name ) {

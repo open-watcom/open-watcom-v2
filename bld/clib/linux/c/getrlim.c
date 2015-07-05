@@ -35,6 +35,6 @@
 
 _WCRTLINK int getrlimit( int resource, struct rlimit *rlim )
 {
-    u_long  res = sys_call2( SYS_getrlimit, (u_long)resource, (u_long)rlim );
+    syscall_res res = sys_call2( SYS_getrlimit, (u_long)resource, (u_long)rlim );
     __syscall_return( int, res );
 }

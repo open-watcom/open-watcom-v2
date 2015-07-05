@@ -38,6 +38,7 @@
 #endif
 #include "rtstack.h"
 #include "rterrno.h"
+#include "rtdata.h"
 #ifdef __WINDOWS_386__
  #include "tinyio.h"
 #else
@@ -48,7 +49,6 @@
 #endif
 #include "thread.h"
 
-extern  unsigned                _curbrk;
 
 #ifdef __WINDOWS_386__
  extern void * __pascal DPMIAlloc( unsigned long );
@@ -93,8 +93,6 @@ extern  unsigned short          GetDS( void );
         "mov    ax,ds"          \
         value                   [ax];
 
-_WCRTLINK void _WCNEAR *__brk( unsigned brk_value );
-
 _WCRTLINK void _WCNEAR *sbrk( int increment )
 {
 #if defined(__OS2__)
@@ -109,7 +107,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     } else {
         _RWD_errno = EINVAL;
     }
-    return( (void _WCNEAR *) -1 );
+    return( (void _WCNEAR *)-1 );
 #elif defined(__WINDOWS_386__)                          /* 26-may-93 */
     increment = ( increment + 0x0fff ) & ~0x0fff;
     return DPMIAlloc( increment );
@@ -129,11 +127,11 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
             }
             if( p == NULL ) {
                 _RWD_errno = ENOMEM;
-                p = (void _WCNEAR *) -1;
+                p = (void _WCNEAR *)-1;
             }
         } else {
             _RWD_errno = EINVAL;
-            p = (void _WCNEAR *) -1;
+            p = (void _WCNEAR *)-1;
         }
         return( p );
     } else if( _IsPharLap() ) {             /* 17-sep-93 */
@@ -155,7 +153,7 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
-        return( (void _WCNEAR *) -1 );
+        return( (void _WCNEAR *)-1 );
     }
 #if !defined(__CALL21__)
     if( _IsOS386() ) {
@@ -165,12 +163,12 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
         if( parent < 0 ) {
             if( SetBlock( parent & 0xffff, seg ) < 0 ) {
                 _RWD_errno = ENOMEM;
-                return( (void _WCNEAR *) -1 );
+                return( (void _WCNEAR *)-1 );
             }
         }
         if( SetBlock( GetDS(), seg ) < 0 ) {
             _RWD_errno = ENOMEM;
-            return( (void _WCNEAR *) -1 );
+            return( (void _WCNEAR *)-1 );
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
         seg = ( brk_value + 4095U ) / 4096U;
@@ -181,12 +179,12 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
         }
         if( SetBlock( GetDS(), seg ) < 0 ) {
             _RWD_errno = ENOMEM;
-            return( (void _WCNEAR *) -1 );
+            return( (void _WCNEAR *)-1 );
         }
     }
 #endif
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
-    return( (void _WCNEAR *) old_brk_value );
+    return( (void _WCNEAR *)old_brk_value );
 }
 #endif

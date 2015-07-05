@@ -35,6 +35,6 @@
 
 _WCRTLINK int readlink( const char *__path, char *__buf, size_t __bufsiz )
 {
-    u_long res = sys_call3( SYS_readlink, (u_long)__path, (u_long)__buf, __bufsiz );
+    syscall_res res = sys_call3( SYS_readlink, (u_long)__path, (u_long)__buf, __bufsiz );
     __syscall_return( int, res );
 }

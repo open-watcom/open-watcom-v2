@@ -35,24 +35,18 @@
 
 _WCRTLINK int sigwait( const sigset_t *__set, int *__sig )
 {
-    u_long  res;
+    syscall_res res;
 
-    while( 1 ) {
+    for( ;; ) {
         res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, 0, 0, sizeof( sigset_t ) );
-        if( res >= -125 ) {
-            _RWD_errno = -res;
-            res = -1;
+        if( !__syscall_iserror( res ) ) {
+            *__sig = __syscall_val( int, res );
+            return( 0 );
         }
-        if( res != -1 ) {
-            *__sig = res;
-            res = 0;
-            break;
-        }
-        if( (_RWD_errno != EAGAIN) && (_RWD_errno != EINTR) ) {
-            res = _RWD_errno;
+        if( ( __syscall_errno( res ) != EAGAIN ) && ( __syscall_errno( res ) != EINTR ) ) {
             break;
         }
         /* System call was interrupted, so loop around and try again */
     }
-    return( (int)res );
+    __syscall_return( int, res );
 }

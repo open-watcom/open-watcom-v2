@@ -36,6 +36,6 @@
 
 _WCRTLINK int gettimeofday( struct timeval *__tv, struct timezone *__tz )
 {
-    u_long res = sys_call2( SYS_gettimeofday, (u_long)__tv, (u_long)__tz );
+    syscall_res res = sys_call2( SYS_gettimeofday, (u_long)__tv, (u_long)__tz );
     __syscall_return( int, res );
 }

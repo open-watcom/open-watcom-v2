@@ -37,6 +37,6 @@
 
 _WCRTLINK mode_t umask( mode_t __cmask )
 {
-    u_long  res = sys_call1( SYS_umask, (u_long)__cmask );
+    syscall_res res = sys_call1( SYS_umask, (u_long)__cmask );
     __syscall_return( mode_t, res );
 }

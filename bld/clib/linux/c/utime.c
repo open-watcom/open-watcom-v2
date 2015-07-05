@@ -35,6 +35,6 @@
 
 _WCRTLINK int utime( const char *__path, const struct utimbuf * __times )
 {
-    u_long res = sys_call2( SYS_utime, (u_long)__path, (u_long)__times );
+    syscall_res res = sys_call2( SYS_utime, (u_long)__path, (u_long)__times );
     __syscall_return( int, res );
 }

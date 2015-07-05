@@ -38,13 +38,14 @@
 #include "linuxsys.h"
 #include "heapacc.h"
 #include "heap.h"
+#include "rtdata.h"
 
 _WCRTLINK void _WCNEAR *sbrk( int increment ) {
     return( __brk( _curbrk + increment ) );
 }
 
 _WCRTLINK int brk( void *endds ) {
-    return( __brk( (unsigned) endds ) == (void *)-1 ? -1 : 0 );
+    return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
 }
 
 _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
@@ -59,15 +60,16 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
     if( sys_brk_value == -1 ) {
         _RWD_errno = ENOMEM;
         _ReleaseNHeap();
-        return( (void _WCNEAR *) -1 );
+        return( (void _WCNEAR *)-1 );
     }
-    if ( _curbrk == 0 ) {
-        _curbrk = brk_value = sys_brk_value;
+    if( _curbrk == 0 ) {
+        _curbrk = sys_brk_value;
+        brk_value = sys_brk_value;
     }
     
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
     
     _ReleaseNHeap();
-    return( (void _WCNEAR *) old_brk_value );
+    return( (void _WCNEAR *)old_brk_value );
 }

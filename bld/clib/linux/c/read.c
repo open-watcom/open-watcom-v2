@@ -35,6 +35,6 @@
 
 _WCRTLINK ssize_t read( int __fildes, void *__buf, size_t __len )
 {
-    u_long res = sys_call3( SYS_read, __fildes, (u_long)__buf, __len );
+    syscall_res res = sys_call3( SYS_read, __fildes, (u_long)__buf, __len );
     __syscall_return( ssize_t, res );
 }

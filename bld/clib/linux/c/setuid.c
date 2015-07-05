@@ -35,6 +35,6 @@
 
 _WCRTLINK int setuid( uid_t __newuserid )
 {
-    u_long  res = sys_call1( SYS_setuid, (u_long)__newuserid );
+    syscall_res res = sys_call1( SYS_setuid, (u_long)__newuserid );
     __syscall_return( int, res );
 }

@@ -35,6 +35,6 @@
 
 _WCRTLINK int setegid( gid_t __newegroup )
 {
-    u_long  res = sys_call2( SYS_setregid, (u_long)-1, (u_long)__newegroup );
+    syscall_res res = sys_call2( SYS_setregid, (u_long)-1, (u_long)__newegroup );
     __syscall_return( int, res );
 }

@@ -35,6 +35,6 @@
 
 _WCRTLINK int pause( void )
 {
-    u_long  res = sys_call0( SYS_pause );
+    syscall_res res = sys_call0( SYS_pause );
     __syscall_return( int, res );
 }

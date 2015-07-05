@@ -35,6 +35,6 @@
 
 _WCRTLINK int chdir( const char *__path )
 {
-    u_long res = sys_call1( SYS_chdir, (u_long)__path );
+    syscall_res res = sys_call1( SYS_chdir, (u_long)__path );
     __syscall_return( int, res );
 }

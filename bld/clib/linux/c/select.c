@@ -35,6 +35,6 @@
 
 _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_set * __exceptfds, struct timeval * __timeout )
 {
-    u_long res = sys_call5( SYS__newselect, __width, (u_long)__readfds, (u_long)__writefds, (u_long)__exceptfds, (u_long)__timeout );
+    syscall_res res = sys_call5( SYS__newselect, __width, (u_long)__readfds, (u_long)__writefds, (u_long)__exceptfds, (u_long)__timeout );
     __syscall_return( int, res );
 }

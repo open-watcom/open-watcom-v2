@@ -36,6 +36,6 @@
 _WCRTLINK int nanosleep( const struct timespec *__rqtp,
                          struct timespec *__rmtp )
 {
-    u_long  res = sys_call2( SYS_nanosleep, (u_long)__rqtp, (u_long)__rmtp );
+    syscall_res res = sys_call2( SYS_nanosleep, (u_long)__rqtp, (u_long)__rmtp );
     __syscall_return( int, res );
 }

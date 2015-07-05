@@ -35,6 +35,6 @@
 
 _WCRTLINK int fsync( int __fildes )
 {
-    u_long res = sys_call1( SYS_fsync, __fildes );
+    syscall_res res = sys_call1( SYS_fsync, __fildes );
     __syscall_return( int, res );
 }

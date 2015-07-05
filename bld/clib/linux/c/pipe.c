@@ -35,6 +35,6 @@
 
 _WCRTLINK int pipe( int __fildes[2] )
 {
-    u_long res = sys_call1( SYS_pipe, (u_long)__fildes );
+    syscall_res res = sys_call1( SYS_pipe, (u_long)__fildes );
     __syscall_return( int, res );
 }

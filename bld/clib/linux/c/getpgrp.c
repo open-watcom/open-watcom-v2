@@ -35,6 +35,6 @@
 
 _WCRTLINK pid_t getpgrp( void )
 {
-    u_long  res = sys_call0( SYS_getpgrp );
+    syscall_res res = sys_call0( SYS_getpgrp );
     __syscall_return( pid_t, res );
 }

@@ -36,6 +36,6 @@
 
 _WCRTLINK int sched_rr_get_interval( pid_t pid, struct timespec *ts )
 {
-    u_long res = sys_call2( SYS_sched_rr_get_interval, pid, (u_long)ts );
+    syscall_res res = sys_call2( SYS_sched_rr_get_interval, pid, (u_long)ts );
     __syscall_return( int, res );
 }

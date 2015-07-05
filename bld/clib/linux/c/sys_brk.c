@@ -32,12 +32,12 @@
 #include "variety.h"
 #include "linuxsys.h"
 
-u_long sys_brk( u_long brk )
+long sys_brk( u_long brk )
 {
     u_long      newbrk;
 
-    newbrk = sys_call1( SYS_brk, brk );
+    newbrk = __syscall_val( u_long, sys_call1( SYS_brk, brk ) );
     if( newbrk >= brk )
         return( newbrk );
-    return( (u_long)-1 );
+    return( -1 );
 }

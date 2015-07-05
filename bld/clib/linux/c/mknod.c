@@ -36,6 +36,6 @@
 
 _WCRTLINK int mknod( const char *__path, mode_t __mode, int __dev )
 {
-    u_long res = sys_call3( SYS_mknod, (u_long)__path, __mode, __dev );
+    syscall_res res = sys_call3( SYS_mknod, (u_long)__path, __mode, __dev );
     __syscall_return( int, res );
 }

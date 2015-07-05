@@ -34,46 +34,34 @@
  * (fourth argument register) specifies whether the return value was an
  * error or not: zero a3 means valid return value, nonzero a3 means error
  * number. Don't look at me, I didn't invent this.
+ *
+ * To fix this 64-bit value is used for returning from sys_call.. routines.
+ * High 32-bit contains value/error flag and low 32-bit contains value.
  */
 
 #include "rterrno.h"
 
-// FIXME: This works fine as long as __syscall_return is called right
-// after the actual syscall. It might be safer to return long long (or
-// perhaps a struct, except struct returns are screwy on MIPS) from the
-// syscall inline assembler and unpack the return in C. That way there
-// would be no risk that a3 gets trashed before __syscall_return.
+typedef unsigned long long      syscall_res;
 
-u_long get_a3( void );
-#pragma aux get_a3 =                            \
-    "move   $v0,$a3"                            \
-    value [$v0];
+/* macros to access sys_call.. routines return/error value */
 
+#define __syscall_iserror( res )    (((res)>>32)
+#define __syscall_errno( res )      ((res)&0xFFFFFFFF)
+#define __syscall_val( type, res )  ((type)((res)&0xFFFFFFFF))
+
+#define __syscall_retcode( res, val )                   \
+    if( __syscall_iserror( res ) ) {                    \
+        _RWD_errno = __syscall_errno( res );            \
+        res = (syscall_res)(val);                       \
+    }
 
 #define __syscall_return( type, res )                   \
-    {                                                   \
-        u_long  is_error;                               \
-                                                        \
-        is_error = get_a3();                            \
-        if( is_error ) {                                \
-            _RWD_errno = res;                           \
-            res = (u_long)-1;                           \
-        }                                               \
-    }                                                   \
-    return( (type)(res) );
+    __syscall_retcode( res, -1 )                        \
+    return( __syscall_val( type, res ) );
 
 #define __syscall_return_pointer( type, res )           \
-    {                                                   \
-        u_long  is_error;                               \
-                                                        \
-        is_error = get_a3();                            \
-        if( is_error ) {                                \
-            _RWD_errno = res;                           \
-            res = (u_long)-1;                           \
-        }                                               \
-    }                                                   \
-    return( (type)(res) );
-
+    __syscall_retcode( res, 0 )                         \
+    return( __syscall_val( type, res ) );
 
 /*
  * Linux system call numbers
@@ -316,38 +304,44 @@ u_long get_a3( void );
  * Inline assembler for calling Linux system calls
  */
 
-u_long sys_call0( u_long func );
+syscall_res sys_call0( u_long func );
 #pragma aux sys_call0 =                         \
     "syscall"                                   \
+    "move $v1,$a3"                              \
     parm [$v0]                                  \
-    value [$v0];
+    value [$v1 $v0];
 
-u_long sys_call1( u_long func, u_long r_4 );
+syscall_res sys_call1( u_long func, u_long r_4 );
 #pragma aux sys_call1 =                         \
     "syscall"                                   \
+    "move $v1,$a3"                              \
     parm [$v0] [$a0]                            \
-    value [$v0];
+    value [$v1 $v0];
 
-u_long sys_call2( u_long func, u_long r_4, u_long r_5 );
+syscall_res sys_call2( u_long func, u_long r_4, u_long r_5 );
 #pragma aux sys_call2 =                         \
     "syscall"                                   \
+    "move $v1,$a3"                              \
     parm [$v0] [$a0] [$a1]                      \
-    value [$v0];
+    value [$v1 $v0];
 
-u_long sys_call3( u_long func, u_long r_4, u_long r_5, u_long r_6 );
+syscall_res sys_call3( u_long func, u_long r_4, u_long r_5, u_long r_6 );
 #pragma aux sys_call3 =                         \
     "syscall"                                   \
+    "move $v1,$a3"                              \
     parm [$v0] [$a0] [$a1] [$a2]                \
-    value [$v0];
+    value [$v1 $v0];
 
-u_long sys_call4( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r_7 );
+syscall_res sys_call4( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r_7 );
 #pragma aux sys_call4 =                         \
     "syscall"                                   \
+    "move $v1,$a3"                              \
     parm [$v0] [$a0] [$a1] [$a2] [$a3]          \
-    value [$v0];
+    value [$v1 $v0];
 
-u_long sys_call5( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r_7, u_long arg5 );
+syscall_res sys_call5( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r_7, u_long arg5 );
 #pragma aux sys_call5 =                         \
     "syscall"                                   \
+    "move $v1,$a3"                              \
     parm [$v0] [$a0] [$a1] [$a2] [$a3]          \
-    value [$v0];
+    value [$v1 $v0];

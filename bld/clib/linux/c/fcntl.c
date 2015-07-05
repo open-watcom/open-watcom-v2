@@ -38,7 +38,7 @@ _WCRTLINK int fcntl( int __fildes, int __cmd, ... )
 {
     u_long      rest;
     va_list     args;
-    u_long      res;
+    syscall_res res;
 
     va_start( args, __cmd );
     rest = va_arg( args, u_long );

@@ -35,6 +35,6 @@
 
 _WCRTLINK int unlink( const char *filename )
 {
-    u_long res = sys_call1( SYS_unlink, (u_long)filename );
+    syscall_res res = sys_call1( SYS_unlink, (u_long)filename );
     __syscall_return( int, res );
 }

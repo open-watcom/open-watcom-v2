@@ -35,6 +35,6 @@
 
 _WCRTLINK int nice( int __val )
 {
-    u_long res = sys_call1( SYS_nice, __val );
+    syscall_res res = sys_call1( SYS_nice, __val );
     __syscall_return( int, res );
 }

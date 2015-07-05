@@ -34,8 +34,8 @@
 #include <dirent.h>
 #include "linuxsys.h"
 
-int sys_getdents( u_int fd, struct dirent *dirp, u_int count )
+long sys_getdents( u_int fd, struct dirent *dirp, u_int count )
 {
-    u_long res = sys_call3( SYS_getdents, fd, (u_long)dirp, count );
+    syscall_res res = sys_call3( SYS_getdents, fd, (u_long)dirp, count );
     __syscall_return( int, res );
 }

@@ -38,7 +38,7 @@ _WCRTLINK int ioctl( int __fd, unsigned long int __request, ... )
 {
     u_long      argp;
     va_list     args;
-    u_long      res;
+    syscall_res res;
 
     va_start( args, __request );
     argp = va_arg( args, u_long );

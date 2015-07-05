@@ -36,6 +36,6 @@
 
 _WCRTLINK int mkdir( const char *__path, mode_t __mode )
 {
-    u_long res = sys_call2( SYS_mkdir, (u_long)__path, (u_long)__mode );
+    syscall_res res = sys_call2( SYS_mkdir, (u_long)__path, (u_long)__mode );
     __syscall_return( int, res );
 }

@@ -35,7 +35,6 @@
 
 _WCRTLINK pid_t waitpid( pid_t __pid, __WAIT_STATUS __stat_loc, int __options )
 {
-    u_long res = sys_call3( SYS_waitpid, __pid, (u_long)__stat_loc,
-                           (u_long)__options );
+    syscall_res res = sys_call3( SYS_waitpid, __pid, (u_long)__stat_loc, (u_long)__options );
     __syscall_return( pid_t, res );
 }

@@ -37,14 +37,12 @@ _WCRTLINK int sigtimedwait( const sigset_t *__set, siginfo_t *__info,
                             const struct timespec *__timeout )
 
 {
-    u_long  res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, (u_long)__info, (u_long)__timeout, sizeof( sigset_t ) );
-    if( res >= -125 ) {
-        _RWD_errno = -res;
-        res = -1;
-    }
+    syscall_res res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, (u_long)__info, (u_long)__timeout, sizeof( sigset_t ) );
+#if 0
     /* glibc does this, but no other libc */
-//    if ((res != -1) && __info && (__info->si_code == SI_TKILL)) {
-//        __info->si_code = SI_USER;
-//    }
-    return( (int)res );
+    if( !__syscall_iserror( res ) && __info != NULL && (__info->si_code == SI_TKILL)) {
+        __info->si_code = SI_USER;
+    }
+#endif
+    __syscall_return( int, res );
 }

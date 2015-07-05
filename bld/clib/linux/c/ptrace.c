@@ -36,7 +36,8 @@
 
 _WCRTLINK long ptrace( int request, int pid, void *addr, void *data )
 {
-    long    res, ret;
+    long        ret;
+    syscall_res res;
 
     /* Someone thought having ptrace() behave differently for the PEEK
      * requests was a clever idea. Instead of error code, ptrace()
@@ -45,7 +46,7 @@ _WCRTLINK long ptrace( int request, int pid, void *addr, void *data )
     if( (request >= PTRACE_PEEKTEXT) && (request <= PTRACE_PEEKUSER) )
         *((long**)&data) = &ret;
     res = sys_call4( SYS_ptrace, request, pid, (u_long)addr, (u_long)data );
-    if( res >= 0 ) {
+    if( !__syscall_iserror( res ) ) {
         if( (request >= PTRACE_PEEKTEXT) && (request <= PTRACE_PEEKUSER) ) {
             return( ret );
         }

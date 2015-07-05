@@ -34,5 +34,5 @@
 
 long sys_exit( int error_code )
 {
-    return( sys_call1( SYS_exit, error_code ) );
+    return( __syscall_val( long, sys_call1( SYS_exit, error_code ) ) );
 }

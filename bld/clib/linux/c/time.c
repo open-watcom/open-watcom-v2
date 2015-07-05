@@ -35,6 +35,6 @@
 
 _WCRTLINK time_t time( time_t *t )
 {
-    u_long res = sys_call1( SYS_time, (u_long)t );
-    __syscall_return( int, res );
+    syscall_res res = sys_call1( SYS_time, (u_long)t );
+    __syscall_return( time_t, res );
 }

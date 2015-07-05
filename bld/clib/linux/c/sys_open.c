@@ -34,6 +34,6 @@
 
 long sys_open( const char * filename, int flags, int mode )
 {
-    u_long res = sys_call3( SYS_open, (u_long)filename, flags, mode );
-    __syscall_return( ssize_t, res );
+    syscall_res res = sys_call3( SYS_open, (u_long)filename, flags, mode );
+    __syscall_return( int, res );
 }

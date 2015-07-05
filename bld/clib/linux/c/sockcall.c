@@ -34,6 +34,6 @@
 
 long __socketcall( int call, u_long *args )
 {
-    u_long res = sys_call2( SYS_socketcall, call, (u_long)args );
+    syscall_res res = sys_call2( SYS_socketcall, call, (u_long)args );
     __syscall_return( long, res );
 }

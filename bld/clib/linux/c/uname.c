@@ -36,6 +36,6 @@
 
 _WCRTLINK int uname( struct utsname *__name )
 {
-    u_long  res = sys_call1( SYS_uname, (u_long)__name );
+    syscall_res res = sys_call1( SYS_uname, (u_long)__name );
     __syscall_return( int, res );
 }

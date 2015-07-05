@@ -36,6 +36,6 @@
 
 _WCRTLINK extern int settimeofday( const struct timeval *__tv, const struct timezone *__tz )
 {
-    u_long res = sys_call2( SYS_settimeofday, (u_long)__tv, (u_long)__tz );
+    syscall_res res = sys_call2( SYS_settimeofday, (u_long)__tv, (u_long)__tz );
     __syscall_return( int, res );
 }

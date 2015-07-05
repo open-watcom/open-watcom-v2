@@ -35,12 +35,12 @@
 
 _WCRTLINK int sched_get_priority_max( int policy )
 {
-    u_long res = sys_call1( SYS_sched_get_priority_max, policy );
+    syscall_res res = sys_call1( SYS_sched_get_priority_max, policy );
     __syscall_return( int, res );
 }
 
 _WCRTLINK int sched_get_priority_min( int policy )
 {
-    u_long res = sys_call1( SYS_sched_get_priority_min, policy );
+    syscall_res res = sys_call1( SYS_sched_get_priority_min, policy );
     __syscall_return( int, res );
 }
