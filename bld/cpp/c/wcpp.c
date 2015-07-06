@@ -192,11 +192,11 @@ static bool ScanOptionsArg( const char * arg )
     return( contok );
 } /* ScanOptionsArg */
 
-static int ParseVariable( const char *env, char **argv, char *buf )
+static int ParseVariable( const char *var, char **argv, char *buf )
 /*****************************************************************/
 {
     /*
-     * Returns a count of the "command line" parameters in *env.
+     * Returns a count of the "command line" parameters in *var.
      * Unless argv is NULL, both argv and buf are completed.
      *
      * This function ought to be fairly similar to clib(initargv@_SplitParms).
@@ -218,35 +218,35 @@ static int ParseVariable( const char *env, char **argv, char *buf )
     argc = 0;
     for( ;; ) {
         got_quote = false;
-        while( isspace( *env ) && *env != '\0' )
-            env++;
-        start = env;
+        while( isspace( *var ) && *var != '\0' )
+            var++;
+        start = var;
         if( output_data ) {
             bufstart = bufend;
         }
-        if( *env == switchchar || *env == '-' ) {
+        if( *var == switchchar || *var == '-' ) {
             if( output_data ) {
-                *bufend++ = *env;
+                *bufend++ = *var;
             }
-            env ++;
+            var++;
         }
-        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
-            if( *env == '\"' ) {
+        while( ( got_quote || !isspace( *var ) ) && *var != '\0' ) {
+            if( *var == '\"' ) {
                 got_quote = !got_quote;
             }
             if( output_data ) {
-                *bufend++ = *env;
+                *bufend++ = *var;
             }
-            env++;
+            var++;
         }
-        if( start != env ) {
+        if( start != var ) {
             if( output_data ) {
                 *bufend++ = '\0';
                 argv[argc] = bufstart;
             }
             argc++;
         }
-        if( *env == '\0' ) {
+        if( *var == '\0' ) {
             break;
         }
     }

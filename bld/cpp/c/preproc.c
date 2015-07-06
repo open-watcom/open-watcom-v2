@@ -274,7 +274,7 @@ static FILE *PP_OpenInclude( const char *filename, size_t len, int incl_type )
 static void PP_GenLine( void )
 {
     char        *p;
-    char        *fname;
+    const char  *fname;
     int         i;
 
     p = PPLineBuf + 1;

@@ -142,7 +142,7 @@ MACRO_TOKEN *NextMToken( void )
 
     mtok = PPNextToken();
     if( mtok == NULL ) {
-        if( PP_ScanNextToken( &token ) != 0 ) {         /* 03-jan-95 */
+        if( PP_ScanNextToken( &token ) != 0 ) {
             token = PPT_EOF;
             len = 1;
             PPTokenPtr = " ";
@@ -664,7 +664,7 @@ static size_t MakeString( MACRO_TOKEN *list, char *p )
     ++len;
     for( ; list != NULL; list = list->next ) {
         for( p2 = list->data; *p2 != '\0'; ++p2 ) {
-            if( *p2 == '\"'  ||  *p2 == '\\' ) {
+            if( *p2 == '\"' || *p2 == '\\' ) {
                 if( list->token == PPT_LITERAL ) {
                     if( output )
                         *p++ = '\\';
@@ -779,7 +779,7 @@ static MACRO_TOKEN *BuildSpecialToken( MACRO_ENTRY *me )
 {
     MACRO_TOKEN *head;
     char        *p;
-    char        *filename;
+    const char  *filename;
     ppt_token   token;
     char        buffer[200];
 
