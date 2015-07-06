@@ -378,7 +378,8 @@ void PP_AdvanceToken( void )
 
     for( ;; ) {
         PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
-        if( PPTokenPtr[0] != '\0' ) break;
+        if( PPTokenPtr[0] != '\0' ) 
+            break;
         if( PPCurToken != NULL ) {
             PP_Free( PPCurToken );
             PPCurToken = PPNextToken();

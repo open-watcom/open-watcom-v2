@@ -79,8 +79,7 @@ static void PP_Dump_Macros( void )
             if( me->parmcount == 0 && me->replacement_list != NULL ) {
                 if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
                     if( *endptr == '\0' ) {
-                        printf( "#define %s %s ", me->name,
-                                me->replacement_list );
+                        printf( "#define %s %s ", me->name, me->replacement_list );
                         if( val.type == PPTYPE_SIGNED ) {
                             printf( "(value=%ld)\n", val.val.ivalue );
                         } else {

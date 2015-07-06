@@ -36,7 +36,7 @@
 #define PPT_UNEXPANDABLE_ID     PPT_LAST_TOKEN
 
 typedef struct macro_arg {
-    char            *name;
+    const char      *name;
     MACRO_TOKEN     *arg;
 } MACRO_ARG;
 
@@ -578,7 +578,7 @@ static MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
     MACRO_TOKEN     *mtok;
     MACRO_TOKEN     *head;
     MACRO_TOKEN     *tail;
-    char            *p;
+    const char      *p;
     const char      *p1;
     const char      *p2;
     size_t          len;
@@ -850,7 +850,7 @@ MACRO_TOKEN *MacroExpansion( MACRO_ENTRY *me, bool rescanning )
             nested->substituting_parms = FALSE;
         }
         head = GlueTokens( head );
-        for( mtok = head; mtok != NULL; mtok = mtok->next ) {   /* 26-oct-93 */
+        for( mtok = head; mtok != NULL; mtok = mtok->next ) {
             if( mtok->token == PPT_ID ) {
                 for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
                     if( strcmp( nested->fmentry->name, mtok->data ) == 0 ) {
@@ -865,8 +865,7 @@ MACRO_TOKEN *MacroExpansion( MACRO_ENTRY *me, bool rescanning )
             }
         }
     }
-    head = AppendToken( head, PPT_NULL, END_OF_MACRO_STR );
-    return( head );
+    return( AppendToken( head, PPT_NULL, END_OF_MACRO_STR ) );
 }
 
 MACRO_TOKEN *NestedMacroExpansion( MACRO_ENTRY *me )
