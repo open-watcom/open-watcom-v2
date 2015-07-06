@@ -714,14 +714,34 @@ const char *PP_SkipWhiteSpace( const char *p, bool *white_space )
     return( p );
 }
 
+char *resize_buf( char *buf, size_t new_size )
+{
+    static size_t   size = 0;
+    char            *new_buf;
+
+    if( new_size == 0 ) {
+        size = 0;
+    } else if( new_size > size ) {
+        new_size = ( ( 255 + new_size ) / 256 ) * 256;
+        new_buf = PP_Malloc( new_size );
+        if( buf != NULL ) {
+            memcpy( new_buf, buf, size );
+            PP_Free( buf );
+        }
+        buf = new_buf;
+        size = new_size;
+    }
+    return( buf );
+}
+
 void PP_Define( const char *ptr )
 {
     MACRO_ENTRY *me;
     const char  *macro_name;
     char        *p;
     const char  *p2;
-    const char  *mdef;
     size_t      len;
+    size_t      len1;
     bool        white_space;
     ppt_token   token;
 
@@ -729,10 +749,9 @@ void PP_Define( const char *ptr )
     ptr = PP_ScanName( macro_name );
     me = PP_AddMacro( macro_name, ptr - macro_name );
     if( me != NULL ) {
-        mdef = ptr;
-        /* calculate definition part size */
         me->parmcount = 0;
         len = 0;
+        p = resize_buf( NULL, 0 );
         if( *ptr == '(' ) {
             me->parmcount = 1;
             ptr++;
@@ -740,79 +759,48 @@ void PP_Define( const char *ptr )
                 ptr = PP_SkipWhiteSpace( ptr, &white_space );
                 if( *ptr == '\0' || *ptr == ')' )
                     break;
-                while( PP_Class( *ptr ) != 0 ) {        // collect name
-                    ++ptr;
-                    ++len;
-                }
+                macro_name = ptr;
+                ptr = PP_ScanName( macro_name );
+                len1 = ptr - macro_name;
+                p = resize_buf( p, len + len1 );
+                memcpy( p + len, macro_name, len1 );
+                len += len1;
                 me->parmcount++;
                 ptr = PP_SkipWhiteSpace( ptr, &white_space );
                 if( *ptr != ',' )
                     break;
-                ++len;            // mark end of parm
                 ++ptr;
+                p = resize_buf( p, len + 1 );
+                p[len++] = '\0';                        // mark end of parm
             }
             if( *ptr == ')' ) {
                 ++ptr;
                 if( me->parmcount != 1 ) {
-                    ++len;        // mark end of macro parms
+                    p = resize_buf( p, len + 1 );
+                    p[len++] = '\0';                    // mark end of macro parms
                 }
             }
         }
         ptr = PP_SkipWhiteSpace( ptr, &white_space );
         for( ; *ptr != '\0' && *ptr != '\n'; ) {
             p2 = PP_ScanToken( ptr, &token );
-            while( ptr != p2 ) {
-                ++ptr;
-                ++len;
-            }
-            ptr = PP_SkipWhiteSpace( ptr, &white_space );
+            len1 = p2 - ptr;
+            p = resize_buf( p, len + len1 );
+            memcpy( p + len, ptr, len1 );
+            len += len1;
+            ptr = PP_SkipWhiteSpace( p2, &white_space );
             if( *ptr == '\0' || *ptr == '\n' )
                 break;
             if( white_space ) {
-                ++len;
+                p = resize_buf( p, len + 1 );
+                p[len++] = ' ';
             }
         }
-        ++len;
-        /* allocate data for macro definition */
-        /* re-process definition part */
-        ptr = mdef;
-        p = PP_Malloc( len );
-        me->replacement_list = p;
-        if( *ptr == '(' ) {
-            ptr++;
-            for( ;; ) {
-                ptr = PP_SkipWhiteSpace( ptr, &white_space );
-                if( *ptr == '\0' || *ptr == ')' )
-                    break;
-                while( PP_Class( *ptr ) != 0 ) {    // collect name
-                    *p++ = *ptr++;
-                }
-                ptr = PP_SkipWhiteSpace( ptr, &white_space );
-                if( *ptr != ',' )
-                    break;
-                *p++ = '\0';                        // mark end of parm
-                ++ptr;
-            }
-            if( *ptr == ')' ) {
-                ++ptr;
-                if( me->parmcount != 1 ) {
-                    *p++ = '\0';                    // mark end of macro parms
-                }
-            }
-        }
-        ptr = PP_SkipWhiteSpace( ptr, &white_space );
-        for( ; *ptr != '\0' && *ptr != '\n'; ) {
-            p2 = PP_ScanToken( ptr, &token );
-            while( ptr != p2 )
-                *p++ = *ptr++;
-            ptr = PP_SkipWhiteSpace( ptr, &white_space );
-            if( *ptr == '\0' || *ptr == '\n' )
-                break;
-            if( white_space ) {
-                *p++ = ' ';
-            }
-        }
-        *p++ = '\0';
+        p = resize_buf( p, len + 1 );
+        p[len++] = '\0';
+        me->replacement_list = PP_Malloc( len );
+        memcpy( me->replacement_list, p, len );
+        PP_Free( p );
     } else {
         PP_OutOfMemory();
     }
@@ -1123,12 +1111,12 @@ static const char *PPScanSuffix( const char *p )
 
 static const char *PPScanHexNumber( const char *p )
 {
-    char        c;
+    char    c;
 
     p += 2;                             // skip over the "0x"
     for( ;; ) {
         p = PPScanDigits( p );
-        c = tolower( *p );
+        c = (char)tolower( *p );
         if( c < 'a' || c > 'f' )
             break;
         ++p;
