@@ -1,0 +1,4 @@
+inc_dirs += -I"$(trap_dir)/lcl/win/h"
+
+!include $(trap_dir)/lcl/dos/dos.mif
+!include $(trap_dir)/master.mif

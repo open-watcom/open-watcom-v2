@@ -41,13 +41,13 @@
 #include "getcsip.h"
 #include "getsaddr.h"
 #include "winerr.h"
+#include "dosextx.h"
+#include "dosfile.h"
 
 #define SIG_OFF         0
 #define SIG_SIZE        4
 
 #define TINY_ERROR(x)  ((signed long)x < 0)
-
-extern long FindFilePath( char *pgm, char *buffer, char *ext_list );
 
 const unsigned short __based(__segname("_CONST")) win386sig[] = { 0xDEAD,0xBEEF };
 const unsigned short __based(__segname("_CONST")) win386sig2[] = { 0xBEEF,0xDEAD };
@@ -166,7 +166,7 @@ trap_retval ReqProg_load( void )
      * get the file to execute
      */
     if( tid == 0 ) {
-        if( TINY_ERROR( FindFilePath( parm, exe_name, ExtensionList ) ) ) {
+        if( TINY_ERROR( FindFilePath( parm, exe_name, DosExtList ) ) ) {
             exe_name[0] = 0;
         } else {
             _splitpath( exe_name, drive, directory, NULL, NULL );
