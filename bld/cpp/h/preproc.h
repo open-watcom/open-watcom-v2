@@ -64,6 +64,8 @@
 #define PPINCLUDE_SYS       1
 #define PPINCLUDE_SRC       2
 
+#define IS_END_OF_MACRO(m)  ((m)->token == PPT_NULL && (m)->data[0] == 'Z')
+
 typedef enum {
     PPT_NULL            = 0,
     PPT_SHARP_SHARP     = 1,

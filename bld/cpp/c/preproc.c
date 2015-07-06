@@ -1327,7 +1327,7 @@ int PP_Char( void )
             mtok = PPTokenList;
             if( mtok == NULL )
                 break;
-            if( mtok->token != PPT_NULL || mtok->data[0] != 'Z' ) {
+            if( !IS_END_OF_MACRO( mtok ) ) {
                 PPTokenPtr = mtok->data;
                 return( *PPTokenPtr++ );
             }

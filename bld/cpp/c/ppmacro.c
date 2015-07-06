@@ -31,6 +31,8 @@
 
 #include "preproc.h"
 
+#define END_OF_MACRO_STR    "Z-<end of macro>"
+
 #define PPT_UNEXPANDABLE_ID     PPT_LAST_TOKEN
 
 typedef struct macro_arg {
@@ -103,13 +105,32 @@ MACRO_TOKEN *PPNextToken( void )
     for( ; (mtok = PPTokenList) != NULL; ) {
         PPTokenList = mtok->next;
         mtok->next = NULL;
-        if( mtok->token != PPT_NULL || mtok->data[0] != 'Z' ) {
+        if( !IS_END_OF_MACRO( mtok ) ) {
             PPTokenPtr = mtok->data;
             break;
         }
         DeleteNestedMacro();
         PP_Free( mtok );
     }
+    return( mtok );
+}
+
+static MACRO_TOKEN *NewToken( ppt_token token, size_t len )
+{
+    MACRO_TOKEN *mtok;
+
+    mtok = (MACRO_TOKEN *)PP_Malloc( sizeof( MACRO_TOKEN ) + len );
+    mtok->next = NULL;
+    mtok->token = token;
+    return( mtok );
+}
+
+static MACRO_TOKEN *BuildAToken( ppt_token token, const char *p )
+{
+    MACRO_TOKEN *mtok;
+
+    mtok = NewToken( token, strlen( p ) );
+    strcpy( mtok->data, p );
     return( mtok );
 }
 
@@ -132,9 +153,7 @@ MACRO_TOKEN *NextMToken( void )
                 PPTokenPtr = " ";
             }
         }
-        mtok = (MACRO_TOKEN *)PP_Malloc( sizeof(MACRO_TOKEN) + len );
-        mtok->next = NULL;
-        mtok->token = token;
+        mtok = NewToken( token, len );
         memcpy( mtok->data, PPTokenPtr, len );
         mtok->data[len] = '\0';
         PPTokenPtr = PPNextTokenPtr;
@@ -273,42 +292,12 @@ void DumpNestedMacros( void )
 }
 
 
-static int TokLength( char *p )
-{
-    int len;
-
-    len = 0;
-    while( *p++ )
-        ++len;
-    return( len );
-}
-
-static MACRO_TOKEN *BuildAToken( char *p )
-{
-    int         len;
-    MACRO_TOKEN *mtok;
-
-    len = TokLength( p );
-    mtok = (MACRO_TOKEN *)PP_Malloc( sizeof(MACRO_TOKEN) + len );
-    mtok->next = NULL;
-    len = 0;
-    for( ;; ) {
-        mtok->data[len] = *p;
-        if( *p == '\0' )
-            break;
-        ++p;
-        ++len;
-    }
-    return( mtok );
-}
-
 static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, ppt_token token, char *data )
 {
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
 
-    new = BuildAToken( data );
-    new->token = token;
+    new = BuildAToken( token, data );
     if( head == NULL ) {
         head = new;
     } else {
@@ -436,8 +425,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         case 2:         // we skipped over some white space
                             mtok->token = PPT_UNEXPANDABLE_ID;
                             toklist->next = NULL;
-                            toklist = BuildAToken( " " );
-                            toklist->token = PPT_WHITE_SPACE;
+                            toklist = BuildAToken( PPT_WHITE_SPACE, " " );
                             toklist->next = mtok->next;
                             mtok->next = toklist;
                             toklist = NULL;
@@ -523,9 +511,7 @@ static MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
         len += strlen( first->data );
     if( second != NULL )
         len += strlen( second->data );
-    mtok = (MACRO_TOKEN *)PP_Malloc( sizeof(MACRO_TOKEN) + len );
-    mtok->next = NULL;
-    mtok->token = first->token;
+    mtok = NewToken( first->token, len );
     if( mtok->token == PPT_SAVED_ID || mtok->token == PPT_UNEXPANDABLE_ID ) {
         mtok->token = PPT_ID;
     }
@@ -629,10 +615,8 @@ static MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
                 }
             }
         }
-        mtok = (MACRO_TOKEN *)PP_Malloc( sizeof(MACRO_TOKEN) + len );
-        mtok->next = NULL;
-        mtok->token = token;
         prev_token = token;
+        mtok = NewToken( token, len );
         if( token == PPT_MACRO_PARM ) {
             mtok->data[0] = i;
         } else {
@@ -657,8 +641,7 @@ static MACRO_TOKEN *DuplicateList( MACRO_TOKEN *list )
     head = NULL;
     tail = NULL;
     for( ; list != NULL; list = list->next ) {
-        mtok = BuildAToken( list->data );
-        mtok->token = list->token;
+        mtok = BuildAToken( list->token, list->data );
         if( head == NULL )
             head = mtok;
         if( tail != NULL )
@@ -668,9 +651,9 @@ static MACRO_TOKEN *DuplicateList( MACRO_TOKEN *list )
     return( head );
 }
 
-static unsigned MakeString( MACRO_TOKEN *list, char *p )
+static size_t MakeString( MACRO_TOKEN *list, char *p )
 {
-    unsigned    len;
+    size_t      len;
     char        *p2;
     bool        output;
 
@@ -704,12 +687,10 @@ static unsigned MakeString( MACRO_TOKEN *list, char *p )
 static MACRO_TOKEN *BuildString( MACRO_TOKEN *list )
 {
     MACRO_TOKEN *mtok;
-    unsigned    len;
+    size_t      len;
 
     len = MakeString( list, NULL );
-    mtok = (MACRO_TOKEN *)PP_Malloc( sizeof(MACRO_TOKEN) + len );
-    mtok->next = NULL;
-    mtok->token = PPT_LITERAL;
+    mtok = NewToken( PPT_LITERAL, len );
     MakeString( list, mtok->data );
     return( mtok );
 }
@@ -837,8 +818,7 @@ static MACRO_TOKEN *BuildSpecialToken( MACRO_ENTRY *me )
         token = PPT_NUMBER;
         break;
     }
-    head = BuildAToken( p );
-    head->token = token;
+    head = BuildAToken( token, p );
     return( head );
 }
 
@@ -885,7 +865,7 @@ MACRO_TOKEN *MacroExpansion( MACRO_ENTRY *me, bool rescanning )
             }
         }
     }
-    head = AppendToken( head, PPT_NULL, "Z-<end of macro>" );
+    head = AppendToken( head, PPT_NULL, END_OF_MACRO_STR );
     return( head );
 }
 
