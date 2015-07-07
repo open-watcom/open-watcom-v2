@@ -117,8 +117,8 @@ int main( int argc, char *argv[] )
 
     HelpMemInit();
     err = false;
-    if( argc < 2 || !strcmp( argv[1], "?" ) || !strcmp( argv[1], "-?" )
-        || !strcmp( argv[1], "/?" ) ) {
+    if( argc < 2 || strcmp( argv[1], "?" ) == 0 || strcmp( argv[1], "-?" ) == 0
+        || strcmp( argv[1], "/?" ) == 0 ) {
         showCmdlHelp( argv[0] );
         return( EXIT_SUCCESS );
     }
