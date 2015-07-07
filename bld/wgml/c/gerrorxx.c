@@ -450,24 +450,24 @@ void    g_err_tag_rsloc( locflags inloc, const char *pa )
     return;
 }
 
-static void g_err_tag_no( e_tags c_tag )
+static void g_err_tag_no( e_tags gtag )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
-    sprintf( tagn, "%c%s", GML_char, str_tags[c_tag + 1] );
+    sprintf( tagn, "%c%s", GML_char, gml_tagname( gtag ) );
     g_err( err_tag_not_expected, tagn );
     file_mac_info_nest();
     err_count++;
     return;
 }
 
-bool g_err_tag_t_nest( e_tags c_tag )
+bool g_err_tag_t_nest( e_tags egtag )
 {
-    if( nest_cb->c_tag != c_tag ) {             // unexpected exxx tag
-        if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( c_tag );              // no exxx expected
+    if( nest_cb->gtag != egtag ) {             // unexpected exxx tag
+        if( nest_cb->gtag == t_NONE ) {
+            g_err_tag_no( egtag );              // no exxx expected
         } else {
-            g_err_tag_nest( nest_cb->c_tag );   // exxx expected
+            g_err_tag_nest( nest_cb->gtag );   // exxx expected
         }
         return( true );
     }
@@ -622,7 +622,7 @@ bool g_err_gml_etag( gml_tag egtag )
     // unexpected exxx tag
     if( nest_cb->gtag == GML_TAG_NONE ) {
         // no exxx expected, no tag active
-        g_err_tag_no( gml_tagname( egtag ) );
+        g_err_tag_no( egtag );
     } else {
         // exxx expected
         g_err_tag_nest( nest_cb->gtag );
