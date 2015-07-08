@@ -81,6 +81,9 @@ pp_callback *PP_CallBack;                   // mkmk dependency callback function
 static char *IncludePath1 = NULL;           // include path from cmdl
 static char *IncludePath2 = NULL;           // include path from env
 
+static char *macro_buf = NULL;
+static size_t macro_buf_size = 0;
+
 static char *Months[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -412,6 +415,28 @@ static void PP_CloseAllFiles( void )
     }
 }
 
+static char *resize_macro_buf( char *buf, size_t new_size )
+{
+    if( new_size > macro_buf_size ) {
+        new_size = ( ( 255 + new_size ) / 256 ) * 256;
+        macro_buf = PP_Malloc( new_size );
+        if( buf != NULL ) {
+            memcpy( macro_buf, buf, macro_buf_size );
+            PP_Free( buf );
+        }
+        macro_buf_size = new_size;
+        buf = macro_buf;
+    }
+    return( buf );
+}
+
+static void free_macro_buf( void )
+{
+    PP_Free( macro_buf );
+    macro_buf = NULL;
+    macro_buf_size = 0;
+}
+
 void PP_Fini( void )
 {
     int         hash;
@@ -425,6 +450,7 @@ void PP_Fini( void )
             PP_Free( me );
         }
     }
+    free_macro_buf();
     PP_CloseAllFiles();
     PP_Free( IncludePath2 );
 }
@@ -714,26 +740,6 @@ const char *PP_SkipWhiteSpace( const char *p, bool *white_space )
     return( p );
 }
 
-char *resize_buf( char *buf, size_t new_size )
-{
-    static size_t   size = 0;
-    char            *new_buf;
-
-    if( new_size == 0 ) {
-        size = 0;
-    } else if( new_size > size ) {
-        new_size = ( ( 255 + new_size ) / 256 ) * 256;
-        new_buf = PP_Malloc( new_size );
-        if( buf != NULL ) {
-            memcpy( new_buf, buf, size );
-            PP_Free( buf );
-        }
-        buf = new_buf;
-        size = new_size;
-    }
-    return( buf );
-}
-
 void PP_Define( const char *ptr )
 {
     MACRO_ENTRY *me;
@@ -749,9 +755,9 @@ void PP_Define( const char *ptr )
     ptr = PP_ScanName( macro_name );
     me = PP_AddMacro( macro_name, ptr - macro_name );
     if( me != NULL ) {
+        p = NULL;
         me->parmcount = 0;
         len = 0;
-        p = resize_buf( NULL, 0 );
         if( *ptr == '(' ) {
             me->parmcount = 1;
             ptr++;
@@ -762,7 +768,7 @@ void PP_Define( const char *ptr )
                 macro_name = ptr;
                 ptr = PP_ScanName( macro_name );
                 len1 = ptr - macro_name;
-                p = resize_buf( p, len + len1 );
+                p = resize_macro_buf( p, len + len1 );
                 memcpy( p + len, macro_name, len1 );
                 len += len1;
                 me->parmcount++;
@@ -770,13 +776,13 @@ void PP_Define( const char *ptr )
                 if( *ptr != ',' )
                     break;
                 ++ptr;
-                p = resize_buf( p, len + 1 );
+                p = resize_macro_buf( p, len + 1 );
                 p[len++] = '\0';                        // mark end of parm
             }
             if( *ptr == ')' ) {
                 ++ptr;
                 if( me->parmcount != 1 ) {
-                    p = resize_buf( p, len + 1 );
+                    p = resize_macro_buf( p, len + 1 );
                     p[len++] = '\0';                    // mark end of macro parms
                 }
             }
@@ -785,22 +791,21 @@ void PP_Define( const char *ptr )
         for( ; *ptr != '\0' && *ptr != '\n'; ) {
             p2 = PP_ScanToken( ptr, &token );
             len1 = p2 - ptr;
-            p = resize_buf( p, len + len1 );
+            p = resize_macro_buf( p, len + len1 );
             memcpy( p + len, ptr, len1 );
             len += len1;
             ptr = PP_SkipWhiteSpace( p2, &white_space );
             if( *ptr == '\0' || *ptr == '\n' )
                 break;
             if( white_space ) {
-                p = resize_buf( p, len + 1 );
+                p = resize_macro_buf( p, len + 1 );
                 p[len++] = ' ';
             }
         }
-        p = resize_buf( p, len + 1 );
+        p = resize_macro_buf( p, len + 1 );
         p[len++] = '\0';
         me->replacement_list = PP_Malloc( len );
         memcpy( me->replacement_list, p, len );
-        PP_Free( p );
     } else {
         PP_OutOfMemory();
     }
