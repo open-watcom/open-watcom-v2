@@ -31,15 +31,6 @@
 
 #include "stdafx.h"
 
-// Define _sntprintf if it's not in tchar.h.
-#ifndef _sntprintf
-    #ifdef _UNICODE
-        #define _sntprintf  _snwprintf
-    #else
-        #define _sntprintf  snprintf
-    #endif
-#endif
-
 BOOL AfxRegisterClass( WNDCLASS *lpWndClass )
 /*******************************************/
 {

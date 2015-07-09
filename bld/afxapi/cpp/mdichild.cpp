@@ -32,15 +32,6 @@
 #include "stdafx.h"
 #include "handmap.h"
 
-// Define _sntprintf if it's not in tchar.h.
-#ifndef _sntprintf
-    #ifdef _UNICODE
-        #define _sntprintf  _snwprintf
-    #else
-        #define _sntprintf  snprintf
-    #endif
-#endif
-
 IMPLEMENT_DYNCREATE( CMDIChildWnd, CFrameWnd )
 
 BEGIN_MESSAGE_MAP( CMDIChildWnd, CFrameWnd )

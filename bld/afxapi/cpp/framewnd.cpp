@@ -32,15 +32,6 @@
 #include "stdafx.h"
 #include <dde.h>
 
-// Define _sntprintf if it's not in tchar.h.
-#ifndef _sntprintf
-    #ifdef _UNICODE
-        #define _sntprintf  _snwprintf
-    #else
-        #define _sntprintf  snprintf
-    #endif
-#endif
-
 // Number of dock bars
 #define NUM_DOCKBARS    4
 
