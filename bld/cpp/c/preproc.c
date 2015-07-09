@@ -425,9 +425,8 @@ static char *resize_macro_buf( char *buf, size_t new_size )
             PP_Free( buf );
         }
         macro_buf_size = new_size;
-        buf = macro_buf;
     }
-    return( buf );
+    return( macro_buf );
 }
 
 static void free_macro_buf( void )
