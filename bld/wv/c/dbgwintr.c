@@ -60,7 +60,7 @@ static void BadCmd( a_window *wnd )
 }
 
 
-void MenuCopy( char *dst, char *from, char *to )
+void MenuCopy( char *dst, const char *from, char *to )
 {
     char        ampchar;
     bool        ampdumped;
@@ -81,7 +81,9 @@ void MenuCopy( char *dst, char *from, char *to )
                 *to++ = ampchar;
                 *to++ = ')';
             }
-            while( to - dst < 30 ) *to++ = ' ';
+            while( to - dst < 30 ) {
+                *to++ = ' ';
+            }
         }
         *to++ = *from++;
     }
