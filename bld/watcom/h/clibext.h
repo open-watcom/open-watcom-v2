@@ -9,7 +9,11 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdarg.h>
+#ifdef __BSD__
+#include <unistd.h>         /* for off_t */
+#else
 #include <sys/types.h>      /* for off_t */
+#endif
 #if defined(__QNX__) || defined(__SVR4)
     #define _XPG4_2         /* Required on Solaris... */
     #include <strings.h>    /* for str*case* functions */
