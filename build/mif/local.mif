@@ -253,7 +253,11 @@ common_flags = $(common_flags_dbg)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
+!ifdef __CLANG__
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign
+!else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -287,14 +291,14 @@ cl_libs = $(cl_libs_gen)
 
 # bld settings
 ############################
-!ifdef __GCC__
-bcc  = gcc -pipe -c
-bcxx = g++ -pipe -c
-bcl  = gcc -pipe
-!else
+!ifdef __CLANG__
 bcc  = clang -pipe -c
 bcxx = clang++ -pipe -c
 bcl  = clang -pipe
+!else
+bcc  = gcc -pipe -c
+bcxx = g++ -pipe -c
+bcl  = gcc -pipe
 !endif
 
 blib      = ar
@@ -313,7 +317,11 @@ bld_cxxflags = -std=c++11
 # options for linking
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
+!ifdef __CLANG__
+bld_ldflags  = $(bld_extra_ldflags)
+!else
 bld_ldflags  = $(bld_extra_ldflags) -lsupc++ -lstdc++
+!endif
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -324,14 +332,14 @@ bld_libflags = crs $^@
 
 # standard settings
 ############################
-!ifdef __GCC__
-cc  = gcc -pipe -c
-cxx = g++ -pipe -c
-cl  = gcc -pipe
-!else
+!ifdef __CLANG__
 cc  = clang -pipe -c
 cxx = clang++ -pipe -c
 cl  = clang -pipe
+!else
+cc  = gcc -pipe -c
+cxx = g++ -pipe -c
+cl  = gcc -pipe
 !endif
 
 librarian = ar
@@ -351,8 +359,13 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
+!ifdef __CLANG__
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags)
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll)
+!else
 ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) -lsupc++ -lstdc++
 ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) -lsupc++ -lstdc++
+!endif
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
