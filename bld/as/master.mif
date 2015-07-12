@@ -198,7 +198,7 @@ $(name).res : $(as_dir)/h/as.rc msg.gh
         $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
 
 asinline.lib : asi_msg.gh $(asi_objs)
-        $(blib) $(libflags) $(asi_objs)
+        $(blib) $(bld_libflags) $(asi_objs)
 
 msg.gh : $(as_dir)/h/as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@

@@ -24,7 +24,7 @@ owl_objs = owl.obj &
         log.obj
 
 owl.lib : $(owl_objs)
-        $(blib) $(libflags) $<
+        $(blib) $(bld_libflags) $<
 
 
 bufftest.exe : bufftest.obj $(owl_objs)
