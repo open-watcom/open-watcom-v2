@@ -166,7 +166,7 @@ bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(project_type))
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -206,8 +206,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(project_type))
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(project_type))
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
@@ -337,7 +337,7 @@ bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(project_type))
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -375,8 +375,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(project_type))
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(project_type))
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
@@ -505,7 +505,7 @@ bld_ldflags_cxx = -lsupc++ -lstdc++
 
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(project_type))
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -543,8 +543,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(project_type))
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(project_type))
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
