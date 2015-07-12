@@ -45,4 +45,4 @@ inc_dirs = -I"$(wres_dir)/h"
 # explicit rules
 
 wres.lib : $(objs) $(__MAKEFILES__)
-    $(librarian) $(libflags) $(objs)
+    $(blib) $(libflags) $(objs)

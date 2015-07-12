@@ -21,4 +21,4 @@ cf_objs = &
     u32moddi.obj
 
 cf.lib : $(cf_objs) $(__MAKEFILES__)
-        $(librarian) $(libflags) $(cf_objs)
+        $(blib) $(libflags) $(cf_objs)

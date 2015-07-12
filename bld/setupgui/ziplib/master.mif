@@ -52,4 +52,4 @@ objs = &
     zuchgdat.obj
 
 $(proj_name).lib : $(objs)
-        $(librarian) $(libflags) $(objs)
+        $(blib) $(libflags) $(objs)

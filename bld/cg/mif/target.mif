@@ -15,7 +15,7 @@ cg$(target_name).dll : cgdmain.obj $(libs)
         $(linker) name $@ $(lflags) file {$[@} lib {$(libs)}
 
 cgdllcli.lib : $(cg_client_objs)
-        $(librarian) $(libflags) $<
+        $(blib) $(libflags) $<
 
 !else
 
@@ -31,7 +31,7 @@ debug_objs = $(cg_dump_objs)
 !endif
 
 cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
-        $(librarian) $(libflags) $<
+        $(blib) $(libflags) $<
 
 $(hostcglibname) : $($(host_os)_objs)
-        $(librarian) $(libflags) $<
+        $(blib) $(libflags) $<

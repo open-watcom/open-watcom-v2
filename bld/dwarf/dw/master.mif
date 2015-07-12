@@ -33,7 +33,7 @@ dwutils.obj
 inc_dirs = -I. -I"../h"
 
 dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
-        $(librarian) $(libflags) $(objs)
+        $(blib) $(libflags) $(objs)
 
 extra_c_flags = -s
 

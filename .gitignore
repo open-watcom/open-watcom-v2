@@ -2,6 +2,7 @@
 *.ch
 *.cop
 *.COP
+*.core
 *.d32
 *.dh
 *.dip
