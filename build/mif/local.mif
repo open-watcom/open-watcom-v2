@@ -94,7 +94,11 @@ common_flags = $(common_flags_dbg)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
+!ifdef __CLANG__
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+!else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -152,9 +156,17 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags = -std=c++11
 
 # options for linking
+!ifdef __CLANG__
+bld_ldflags_cxx = -lstdc++
+bld_ldflags_dll_cxx = -lstdc++
+!else
+bld_ldflags_cxx = -lsupc++ -lstdc++
+bld_ldflags_dll_cxx = -lsupc++ -lstdc++
+!endif
+
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) -lsupc++ -lstdc++
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(project_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -194,8 +206,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) -lsupc++ -lstdc++
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll)
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(project_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(project_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
@@ -254,7 +266,7 @@ common_flags = $(common_flags_dbg)
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
 !ifdef __CLANG__
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 !else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 !endif
@@ -315,13 +327,17 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags = -std=c++11
 
 # options for linking
+!ifdef __CLANG__
+bld_ldflags_cxx = -lstdc++
+bld_ldflags_dll_cxx = -lstdc++
+!else
+bld_ldflags_cxx = -lsupc++ -lstdc++
+bld_ldflags_dll_cxx = -lsupc++ -lstdc++
+!endif
+
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-!ifdef __CLANG__
-bld_ldflags  = $(bld_extra_ldflags)
-!else
-bld_ldflags  = $(bld_extra_ldflags) -lsupc++ -lstdc++
-!endif
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(project_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -359,13 +375,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-!ifdef __CLANG__
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags)
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll)
-!else
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) -lsupc++ -lstdc++
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) -lsupc++ -lstdc++
-!endif
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(project_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(project_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
@@ -424,7 +435,11 @@ common_flags = $(common_flags_dbg)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
+!ifdef __CLANG__
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+!else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -482,9 +497,15 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags = -std=c++11
 
 # options for linking
+!ifdef __CLANG__
+bld_ldflags_cxx = -lstdc++
+!else
+bld_ldflags_cxx = -lsupc++ -lstdc++
+!endif
+
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) -lsupc++ -lstdc++
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(project_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -522,8 +543,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) -lsupc++ -lstdc++
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) -lsupc++ -lstdc++
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(project_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(project_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1

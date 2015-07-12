@@ -1,4 +1,5 @@
 proj_name = ide2make
+proj_type = cxx
 
 !ifndef ide2make_autodepends
 ide2make_autodepends = .AUTODEPEND

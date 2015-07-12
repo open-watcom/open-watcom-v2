@@ -1,4 +1,5 @@
 proj_name = dlgprs
+proj_type = cxx
 
 !ifndef dlgprs_autodepends
 dlgprs_autodepends=.AUTODEPEND

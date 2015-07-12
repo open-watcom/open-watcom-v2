@@ -1,4 +1,5 @@
 proj_name = whc
+proj_type = cxx
 
 whc_autodepends = .autodepend
 

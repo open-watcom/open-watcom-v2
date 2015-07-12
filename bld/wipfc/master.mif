@@ -1,4 +1,5 @@
 proj_name = wipfc
+proj_type = cxx
 
 wipfc_autodepends = .autodepend
 
