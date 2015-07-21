@@ -24,7 +24,11 @@ owl_objs = owl.obj &
         log.obj
 
 owl.lib : $(owl_objs)
+!ifdef __WATCOM__
+        $(librarian) $(libflags) $<
+!else
         $(blib) $(bld_libflags) $<
+!endif
 
 
 bufftest.exe : bufftest.obj $(owl_objs)

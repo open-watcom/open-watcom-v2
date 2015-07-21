@@ -62,4 +62,8 @@ extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"
 extra_c_flags_drsearch = -I"$(posix_dir)/h"
 
 dwarfr.lib : $(objs)
+!ifdef __WATCOM__
     $(librarian) $(libflags) $(objs)
+!else
+    $(blib) $(bld_libflags) $(objs)
+!endif
