@@ -21,4 +21,8 @@ cf_objs = &
     u32moddi.obj
 
 cf.lib : $(cf_objs) $(__MAKEFILES__)
-        $(blib) $(bld_libflags) $(cf_objs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(cf_objs)
+!else
+    $(librarian) $(libflags) $(cf_objs)
+!endif
