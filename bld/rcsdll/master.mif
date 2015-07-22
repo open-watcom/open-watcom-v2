@@ -55,6 +55,10 @@ rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu))
 !else
 
 rcsdll.lib: $(objs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(objs)
+!else
     $(librarian) $(libflags) $(objs)
+!endif
 
 !endif

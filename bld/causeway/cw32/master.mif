@@ -2,6 +2,8 @@ proj_name = causeway
 
 causeway_autodepends = .AUTODEPEND
 
+causeway_distrib_lib = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
