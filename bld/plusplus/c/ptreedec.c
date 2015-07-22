@@ -632,6 +632,7 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
     PTD* ptd;                   // - current entry
     target_offset_t retn;       // - offset in decoration
 
+    retn = 0;
     RingIterBeg( expr->decor, ptd ) {
         if( kind == ptd->base.kind ) {
             retn = ptd->off.offset;
@@ -644,7 +645,7 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
         }
     } RingIterEnd( ptd );
     DbgVerify( found, "Ptd::getOffset -- no offset" );
-    return retn;
+    return( retn );
 }
 
 

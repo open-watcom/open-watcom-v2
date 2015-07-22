@@ -2647,6 +2647,8 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     TEMP_TYPE temp_class;       // - SC_... for next temporary
     OPAC *ap;                   // - actions pointer
     PTREE templ;
+    OPAC *opac_memb_ptr_ext;    // - operator-specific analysis string
+                                //   for member-ptr extension
 
     {   bool opsok;             // - indicates analysis ok
         PTREE on_left;          // - operand on left
@@ -2725,13 +2727,12 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     if( right != NULL ) {
         right->type = BindTemplateClass( right->type, &right->locn, FALSE );
     }
+    opac_memb_ptr_ext = NULL;
     temp_class = TEMP_TYPE_NONE;
     action_code = opr_rtn_table[ expr->cgop ][ index ];
     for( ap = opcomb_actions[ action_code ]; *ap < OPAC_END ; ++ap ) {
         // The following label is goto'ed when a new string is set for
         // analysis.
-        OPAC* opac_memb_ptr_ext;    // - operator-specific analysis string
-                                    //   for member-ptr extension
 start_opac_string:
         // The following cases "break" when an error is detected, and
         // will "continue" when successful
@@ -2756,8 +2757,7 @@ start_opac_string:
           case ERR__ONLY_AP :
             if( expr->op == PT_UNARY ) {
                 type = operandError( expr, ERR_NOT_PTR_ARITH );
-            } else if( ( index_left == OPCL_ARITH )
-                     ||( index_left == OPCL_PTR   ) ) {
+            } else if( ( index_left == OPCL_ARITH ) || ( index_left == OPCL_PTR ) ) {
                 type = operandError( expr, ERR_RIGHT_NOT_PTR_ARITH );
             } else {
                 type = operandError( expr, ERR_LEFT_NOT_PTR_ARITH );
@@ -2785,7 +2785,8 @@ start_opac_string:
             type = operandError( expr, ERR_SEGOP_OPERANDS );
             break;
           case DIAG_FUNC_LEFT :
-            if( index_left != OPCL_PTR ) continue;
+            if( index_left != OPCL_PTR )
+                continue;
 #if 0
             if( analyseAddrOfFunc( &expr->u.subtree[0]
                                  , ADDRFN_RESOLVE_MANY_USE ) ) {
@@ -2793,17 +2794,17 @@ start_opac_string:
             if( analyseAddrOfFunc( &expr->u.subtree[0]
                                  , ADDRFN_RESOLVE_ONE ) ) {
 #endif
-                if( left->flags & PTF_CALLED_ONLY ) {
-                    PTreeErrorExpr( left, ERR_MEMB_PTR_FUNC_NOT_CALLED );
-                    break;
+                if( (left->flags & PTF_CALLED_ONLY) == 0 ) {
+                    left = PTreeOpLeft( expr );
+                    continue;
                 }
-                left = PTreeOpLeft( expr );
-                continue;
+                PTreeErrorExpr( left, ERR_MEMB_PTR_FUNC_NOT_CALLED );
             }
             break;
           case DIAG_FUNC_MANY1 :
           { unsigned resolution;    // - used for resolution of func. addr
-            if( index_right != OPCL_PTR ) continue;
+            if( index_right != OPCL_PTR )
+                continue;
             resolution = ADDRFN_RESOLVE_ONE
                        | ADDRFN_RESOLVE_MANY
                        | ADDRFN_RESOLVE_MANY_USE;
@@ -2813,8 +2814,8 @@ start_opac_string:
                  resolution |= ADDRFN_MEMBPTR_KLUGE;
             }
             // END KLUGE FOR MFC
-            if( ! analyseAddrOfFunc( &expr->u.subtree[1]
-                                   , resolution ) ) break;
+            if( ! analyseAddrOfFunc( &expr->u.subtree[1], resolution ) )
+                break;
             right = PTreeOpRight( expr );
             if( right->flags & PTF_CALLED_ONLY ) {
                 PTreeErrorExpr( right, ERR_MEMB_PTR_FUNC_NOT_CALLED );
@@ -2823,7 +2824,8 @@ start_opac_string:
           } continue;
           case DIAG_FUNC_MANY2 :
           { unsigned resolution;    // - used for resolution of func. addr
-            if( index_right != OPCL_PTR ) continue;
+            if( index_right != OPCL_PTR )
+                continue;
             resolution = ADDRFN_RESOLVE_ONE
                        | ADDRFN_RESOLVE_MANY
                        | ADDRFN_RESOLVE_MANY_USE;
@@ -2832,8 +2834,8 @@ start_opac_string:
                  resolution |= ADDRFN_MEMBPTR_KLUGE;
             }
             // END KLUGE FOR MFC
-            if( ! analyseAddrOfFunc( &expr->u.subtree[1]
-                                   , resolution ) ) break;
+            if( ! analyseAddrOfFunc( &expr->u.subtree[1], resolution ) )
+                break;
             right = PTreeOpRight( expr );
             if( right->flags & PTF_CALLED_ONLY ) {
                 PTreeErrorExpr( right, ERR_MEMB_PTR_FUNC_NOT_CALLED );
@@ -2841,9 +2843,9 @@ start_opac_string:
             }
           } continue;
           case DIAG_FUNC_RIGHT_ONE :
-            if( index_right != OPCL_PTR ) continue;
-            if( ! analyseAddrOfFunc( &expr->u.subtree[1]
-                                   , ADDRFN_RESOLVE_ONE ) ) break;
+            if( index_right != OPCL_PTR )
+                continue;
+            if( ! analyseAddrOfFunc( &expr->u.subtree[1], ADDRFN_RESOLVE_ONE ) ) break;
             if( right->flags & PTF_CALLED_ONLY ) {
                 PTreeErrorExpr( right, ERR_MEMB_PTR_FUNC_NOT_CALLED );
                 break;
@@ -2862,21 +2864,25 @@ start_opac_string:
             }
             continue;
           case REQD_INT_LEFT :
-            if( IntegralType( TypeReferenced( type ) ) != NULL ) continue;
+            if( IntegralType( TypeReferenced( type ) ) != NULL )
+                continue;
             analyse_err_left( expr
                             , ERR_EXPR_MUST_BE_INTEGRAL
                             , ERR_LEFT_EXPR_MUST_BE_INTEGRAL );
             break;
           case REQD_INT_RIGHT :
-            if( IntegralType( TypeReferenced( right->type ) ) != NULL ) continue;
+            if( IntegralType( TypeReferenced( right->type ) ) != NULL )
+                continue;
             operandError( expr, ERR_RIGHT_EXPR_MUST_BE_INTEGRAL );
             break;
           case REQD_BOOL_LHS_ASSIGN :
-            if( BoolType( left->type ) != NULL ) continue;
+            if( BoolType( left->type ) != NULL )
+                continue;
             operandError( expr, ERR_PTR_TO_ARITH_ASSIGNMENT );
             break;
           case REQD_LVALUE_LEFT :
-            if( left->flags & PTF_LVALUE ) continue;
+            if( left->flags & PTF_LVALUE )
+                continue;
             if( allowClassCastAsLValue( &expr->u.subtree[0] ) ) {
                 left = PTreeOpLeft( expr );
                 left->type = BindTemplateClass( left->type, &left->locn,
@@ -2893,23 +2899,30 @@ start_opac_string:
             }
             break;
           case REQD_NOT_ENUM_LEFT :
-            if( EnumType( left->type ) == NULL ) continue;
+            if( EnumType( left->type ) == NULL )
+                continue;
             operandError( expr, ERR_BAD_ENUM_ASSIGNMENT );
-            if( expr->op != PT_ERROR ) continue;
+            if( expr->op != PT_ERROR )
+                continue;
             break;
 #if 0
           case REQD_NOT_BOOL_LEFT :
-            if( BoolType( left->type ) == NULL ) continue;
+            if( BoolType( left->type ) == NULL )
+                continue;
             operandError( expr, ERR_BAD_BOOL_ASSIGNMENT );
             break;
 #endif
           case REQD_ENUM_SAME :
           { TYPE type_l;    // - left type
             type_l = EnumType( left->type );
-            if( type_l == NULL ) continue;
-            if( type_l == EnumType( right->type ) ) continue;
+            if( type_l == NULL )
+                continue;
+            if( type_l == EnumType( right->type ) )
+                continue;
             operandError( expr, ERR_BAD_ENUM_ASSIGNMENT );
-            if( expr->op != PT_ERROR ) continue;
+            if( expr->op != PT_ERROR ) {
+                continue;
+            }
           } break;
           case REQD_ZERO_LEFT :
             if( ! NodeIsZeroIntConstant( left ) ) {
@@ -3011,14 +3024,16 @@ start_opac_string:
             continue;
           case REQD_PTR_SCALES_LEFT :
             left->type = BindTemplateClass( left->type, &left->locn, TRUE );
-            if( ptr_scales( left ) ) continue;
+            if( ptr_scales( left ) )
+                continue;
             analyse_err_left( expr
                             , ERR_PTR_SCALES
                             , ERR_PTR_SCALES_LEFT );
             break;
           case REQD_PTR_SCALES_RIGHT :
             right->type = BindTemplateClass( right->type, &right->locn, TRUE );
-            if( ptr_scales( right ) ) continue;
+            if( ptr_scales( right ) )
+                continue;
             operandError( expr, ERR_PTR_SCALES_RIGHT );
             break;
           case REQD_NOT_CONST_LEFT :
@@ -3029,57 +3044,70 @@ start_opac_string:
             }
             continue;
           case REQD_NOT_CONST_INIT :
-            if( ! is_ptr_constant( right ) ) continue;
-            if( is_ptr_constant( left ) ) continue;
+            if( !is_ptr_constant( right ) )
+                continue;
+            if( is_ptr_constant( left ) )
+                continue;
             operandError( expr, ERR_CONST_PTR_INIT );
             break;
           case REQD_NOT_ARRAY_LEFT :
-            if( ArrayType( type ) == NULL ) continue;
+            if( ArrayType( type ) == NULL )
+                continue;
             operandError( expr, ERR_ARRAY_LEFT );
             break;
           case REQD_NOT_VOID_INDIRECT :
-            if( VoidType( type ) == NULL ) continue;
+            if( VoidType( type ) == NULL )
+                continue;
             operandError( expr, ERR_VOID_INDIRECTION );
             break;
           case REQD_NOT_FUNC_LEFT :
-            if( NULL == FunctionDeclarationType( type ) ) continue;
+            if( NULL == FunctionDeclarationType( type ) )
+                continue;
             analyse_err_left( expr
                             , ERR_CANT_BE_FUNC
                             , ERR_CANT_BE_FUNC_LEFT );
             break;
           case REQD_NOT_FUNC_RIGHT :
-            if( NULL == FunctionDeclarationType( right->type ) ) {
+            if( NULL == FunctionDeclarationType( right->type ) )
                 continue;
-            }
             operandError( expr, ERR_CANT_BE_FUNC_RIGHT );
             break;
           case REQD_NOT_MFUN_LEFT :
-            if( diagThisMemberFun( left, expr ) ) break;
+            if( diagThisMemberFun( left, expr ) )
+                break;
             continue;
           case REQD_NOT_MFUN_RIGHT :
-            if( diagThisMemberFun( right, expr ) ) break;
+            if( diagThisMemberFun( right, expr ) )
+                break;
             continue;
           case REQD_DEFD_CLPTR_LEFT :
           { TYPE pointed;       // type pointed at
             pointed = TypedefModifierRemoveOnly( type->of );
-            if( pointed == NULL ) break;
-            if( pointed->id != TYP_CLASS ) continue;
-            if( pointed->u.c.info->defined ) continue;
+            if( pointed == NULL )
+                break;
+            if( pointed->id != TYP_CLASS )
+                continue;
+            if( pointed->u.c.info->defined )
+                continue;
             exprError( left, ERR_UNDEFED_CLASS_PTR );
           } break;
           case REQD_DEFD_CLPTR_RIGHT :
           { TYPE pointed;       // type pointed at
             pointed = TypedefModifierRemoveOnly( right->type );
             pointed = TypedefModifierRemoveOnly( pointed->of );
-            if( pointed == NULL ) break;
-            if( pointed->id != TYP_CLASS ) continue;
-            if( pointed->u.c.info->defined ) continue;
+            if( pointed == NULL )
+                break;
+            if( pointed->id != TYP_CLASS )
+                continue;
+            if( pointed->u.c.info->defined )
+                continue;
             exprError( right, ERR_UNDEFED_CLASS_PTR );
           } break;
           case REQD_CLASS_PTR_LEFT :
             if( ( type->id == TYP_POINTER )
               &&( 0 == ( type->flag & TF1_REFERENCE ) )
-              &&( NULL != StructType( type->of ) ) ) continue;
+              &&( NULL != StructType( type->of ) ) )
+                continue;
             exprError( left, ERR_NOT_CLASS_PTR );
             PTreeErrorNode( expr );
             break;
@@ -3099,10 +3127,12 @@ start_opac_string:
             }
           } continue;
           case REQD_BOOL_LEFT :
-            if( reqdBoolOperand( left ) ) continue;
+            if( reqdBoolOperand( left ) )
+                continue;
             break;
           case REQD_BOOL_RIGHT :
-            if( reqdBoolOperand( right ) ) continue;
+            if( reqdBoolOperand( right ) )
+                continue;
             break;
           case CONV_PP_ASSIGN :
           { type_flag flags_l;      // type flags (left)
@@ -3125,13 +3155,16 @@ start_opac_string:
                                     , NodeType( left )->of
                                     , CNV_ASSIGN
                                     , &diagPtrConvAssign );
-            if( expr->op != PT_ERROR ) continue;
+            if( expr->op != PT_ERROR ) {
+                continue;
+            }
           } break;
           case CONV_PP_COMMON :
             expr = CastImplicitCommonPtrExpr( expr
                                             , &diagPtrConvCommon
                                             , FALSE );
-            if( PT_ERROR == expr->op ) break;
+            if( PT_ERROR == expr->op )
+                break;
             continue;
           case CONV_AA_COMMON :
             expr->u.subtree[0] = NodeConvert( type
@@ -3152,14 +3185,16 @@ start_opac_string:
             left = expr->u.subtree[0];
             left = NodeConvertToBool( left );
             expr->u.subtree[0] = left;
-            if( left->op != PT_ERROR ) continue;
+            if( left->op != PT_ERROR )
+                continue;
             PTreeErrorNode( expr );
             break;
           case CONV_CMP_ZERO_RIGHT :
             right = expr->u.subtree[1];
             right = NodeConvertToBool( right );
             expr->u.subtree[1] = right;
-            if( right->op != PT_ERROR ) continue;
+            if( right->op != PT_ERROR )
+                continue;
             PTreeErrorNode( expr );
             break;
           case CONV_TO_PTR_DIFF :
@@ -3205,7 +3240,8 @@ start_opac_string:
           case CONV_REFERENCE :
           { TYPE refed;     // referenced type
             refed = TypeReference( type );
-            if( refed == NULL ) continue;
+            if( refed == NULL )
+                continue;
             type = BindTemplateClass( refed, &expr->locn, FALSE );
             expr->flags |= PTF_LVALUE;
           } continue;
@@ -3222,16 +3258,20 @@ start_opac_string:
                                         , left->type
                                         , CNV_EXPR
                                         , &diagAssignment );
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR ) {
+                    break;
+                }
             }
             continue;
           case CONV_FUN_MP_RIGHT :  // right --> member ptr, if req'd
-          { if( ! MembPtrExtension( right ) ) continue;
+          { if( !MembPtrExtension( right ) )
+                continue;
             expr->u.subtree[1] = MembPtrExtend( expr->u.subtree[1] );
             right = PTreeOpRight( expr );
           } continue;
           case CONV_FUN_MP_LEFT :   // left --> member ptr, if req'd
-          { if( ! MembPtrExtension( left ) ) continue;
+          { if( !MembPtrExtension( left ) )
+                continue;
             expr->u.subtree[0] = MembPtrExtend( expr->u.subtree[0] );
             left = PTreeOpLeft( expr );
             type = TypedefModifierRemoveOnly( left->type );
@@ -3243,8 +3283,7 @@ start_opac_string:
             opac_memb_ptr_ext = opac_CMP_MP;
             continue;
           case CONV_FUN_MP_CHECK :  // CHECK FOR MEMBPTR EXTENSION
-            if( MembPtrExtension( right )
-             || MembPtrExtension( left ) ) {
+            if( MembPtrExtension( right ) || MembPtrExtension( left ) ) {
                 ap = opac_memb_ptr_ext;
                 goto start_opac_string;
             }
@@ -3267,14 +3306,17 @@ start_opac_string:
                                         , CNV_EXPR
                                         , &diagAssignment );
             }
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR ) {
+                break;
+            }
           } continue;
           case RESULT_INIT :    // INITIALIZE A NON-CLASS ELEMENT
             expr = CastImplicitRight( expr
                                     , left->type
                                     , CNV_INIT_COPY
                                     , &diagInit );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = left->type;
             expr->type = type;
             expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL | PTF_LVALUE;
@@ -3287,7 +3329,9 @@ start_opac_string:
             type = BindTemplateClass( type, &expr->locn, FALSE );
             if( NULL != StructType( type ) ) {
                 expr = AnalyseReturnClassVal( expr );
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR ) {
+                    break;
+                }
             } else {
                 type_l = EnumType( left->type );
                 if( type_l != NULL ) {
@@ -3306,7 +3350,9 @@ start_opac_string:
                 }
                 type = left->type;
                 expr = AnalyseReturnSimpleVal( expr );
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR ) {
+                    break;
+                }
             }
           } continue;
           case RESULT_RETURN_PA :
@@ -3320,7 +3366,9 @@ start_opac_string:
             }
             type = left->type;
             expr = AnalyseReturnSimpleVal( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR ) {
+                break;
+            }
           } continue;
           case RESULT_RETURN_AA :
           { TYPE type_l;        // - left type
@@ -3333,7 +3381,9 @@ start_opac_string:
             }
             type = left->type;
             expr = AnalyseReturnSimpleVal( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR ) {
+                break;
+            }
           } continue;
           case CONV_INIT_BARE : // CONVERT TYPE(VAL) TO VAL
             right = convertInitBare( expr );
@@ -3355,7 +3405,8 @@ start_opac_string:
           { unsigned retn;      // - conversion return
             if( type->id == TYP_CLASS ) {
                 expr = initClassFromExpr( expr, &diagInit );
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR )
+                    break;
                 if( TypeExactDtorable( type ) ) {
                     expr->flags |= PTF_DTORABLE_INIT;
                 }
@@ -3374,13 +3425,16 @@ start_opac_string:
                                         , left->type
                                         , CNV_INIT_COPY
                                         , &diagInit );
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR ) {
+                    break;
+                }
             } else if( type->id == TYP_MEMBER_POINTER ) {
                 retn = MembPtrAssign( &expr );
                 if( CNV_OK != ConversionDiagnose( retn
                                                 , expr
-                                                , &diagInit )
-                  ) break;
+                                                , &diagInit ) ) {
+                    break;
+                }
             } else {
                 right = convertInitBare( expr );
                 expr->type = left->type;
@@ -3388,7 +3442,9 @@ start_opac_string:
                                         , left->type
                                         , CNV_INIT_COPY
                                         , &diagInit );
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR ) {
+                    break;
+                }
             }
           } continue;
           case RESULT_UN_ARITH :
@@ -3499,7 +3555,8 @@ start_opac_string:
                     if( ! analyseStaticFunc( ptr_type
                                            , &dup
                                            , fnode
-                                           , 0 ) ) break;
+                                           , 0 ) )
+                        break;
                     expr = dup;
                 }
                 type = ptr_type;
@@ -3511,7 +3568,8 @@ start_opac_string:
                     if( ! analyseStaticFunc( type
                                            , &dup
                                            , fnode
-                                           , 0 ) ) break;
+                                           , 0 ) )
+                        break;
                     expr = dup;
                 }
             }
@@ -3540,12 +3598,14 @@ start_opac_string:
             continue;
           case RESULT_TID_EXPR :
             expr = AnalyseTypeidExpr( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = expr->type;
             continue;
           case RESULT_TID_TYPE :
             expr = AnalyseTypeidType( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = expr->type;
             continue;
           case CONV_INIT_REF :
@@ -3555,7 +3615,8 @@ start_opac_string:
             continue;
           case CONV_CTOR :
             expr = convertCtor( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = expr->type;
             continue;
           case RESULT_INCDEC_ARITH :
@@ -3575,7 +3636,9 @@ start_opac_string:
                     new_op = CO_BPOST_BOOL_PLUS_PLUS;
                     break;
                 }
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR ) {
+                    break;
+                }
             } else {
                 new_op = expr->cgop + CO_BPRE_PLUS_PLUS - CO_PRE_PLUS_PLUS;
             }
@@ -3612,7 +3675,8 @@ start_opac_string:
             continue;
           case RESULT_ASSIGN :
             expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL;
-            if( NodeBitField( expr->u.subtree[0] ) ) continue;
+            if( NodeBitField( expr->u.subtree[0] ) )
+                continue;
             expr->flags |= PTF_LVALUE;
             if( CompFlags.plain_char_promotion ) {
                 CheckCharPromotion( expr );
@@ -3668,29 +3732,33 @@ start_opac_string:
             continue;
           case CONV_EXPLICIT_CAST :
             expr = CastExplicit( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = NodeType( expr );
             continue;
           case CONV_CONST_CAST :
             expr = CastConst( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = NodeType( expr );
             continue;
             break;
           case CONV_DYN_CAST :
             expr = CastDynamic( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = NodeType( expr );
             continue;
-            break;
           case CONV_REINT_CAST :
             expr = CastReint( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = NodeType( expr );
             continue;
           case CONV_STATIC_CAST :
             expr = CastStatic( expr );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = NodeType( expr );
             continue;
           case RESULT_MINUS_PP :
@@ -3733,16 +3801,19 @@ start_opac_string:
                 templ = NULL;
             }
             expr = AnalyseCall( expr, &diagCall );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             continue;
           case RESULT_NEW :
             expr = AnalyseNew( expr, left->type );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = BindTemplateClass( expr->type, &expr->locn, TRUE );
             continue;
           case RESULT_DLT :
             expr = AnalyseDelete( expr, FALSE );
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = expr->type;
             continue;
           case RESULT_COLON_RVALUE :
@@ -3752,7 +3823,8 @@ start_opac_string:
             TYPE ref_right;     // referenced type: right
             type_flag flags_left;   // reference flags on left
             type_flag flags_right;  // reference flags on right
-            if( type->id == TYP_VOID ) continue;
+            if( type->id == TYP_VOID )
+                continue;
             type_left = TypedefModifierRemoveOnly( NodeType( left ) );
             type_right = TypedefModifierRemoveOnly( NodeType( right ) );
             if( TypesIdentical( type_right, type_left ) ) {
@@ -3808,10 +3880,13 @@ start_opac_string:
                 }
                 if( force_rvalue ) {
                     left = NodeRvalueExactLeft( expr );
-                    if( PT_ERROR == left->op ) break;
+                    if( PT_ERROR == left->op )
+                        break;
                     type = TypedefModifierRemoveOnly( left->type );
                     right = NodeRvalueExactRight( expr );
-                    if( PT_ERROR == right->op ) break;
+                    if( PT_ERROR == right->op ) {
+                        break;
+                    }
                 } else {
                     PTREE bound;
                     if( cast_to_left ) {
@@ -3829,7 +3904,9 @@ start_opac_string:
                         expr->u.subtree[0] = bound;
                         type = type_right;
                     }
-                    if( PT_ERROR == bound->op ) break;
+                    if( PT_ERROR == bound->op ) {
+                        break;
+                    }
                 }
             }
             NodeSetType( expr, type, PTF_LV_CHECKED );
@@ -3841,7 +3918,8 @@ start_opac_string:
             type_flag flag_right;//- flags on right
             type_flag flags;    // - flags for result
             type = left->type;
-            if( expr->flags & PTF_LVALUE ) continue;
+            if( expr->flags & PTF_LVALUE )
+                continue;
             type_left = TypeModFlagsEC( left->type, &flag_left );
             type_right = TypeModFlagsEC( right->type, &flag_right );
             if( TypesIdentical( type_right, type_left ) ) {
@@ -3860,20 +3938,25 @@ start_opac_string:
           case RESULT_COLON_PP :
           {// unsigned retn;  // - conversion return
             NodeSetType( expr, type, PTF_LV_CHECKED );
-            if( expr->flags & PTF_LVALUE ) continue;
+            if( expr->flags & PTF_LVALUE )
+                continue;
             NodeRvalueRight( expr );
             NodeRvalueLeft( expr );
             expr = CastImplicitCommonPtrExpr( expr
                                             , &diagPtrConvCommon
                                             , TRUE );
-            if( PT_ERROR == expr->op ) break;
+            if( PT_ERROR == expr->op ) {
+                break;
+            }
           } continue;
           case RESULT_COLON_OTHER :
           { TYPE type_right;    // - unmodified type to left
-            if( expr->flags & PTF_LVALUE ) continue;
+            if( expr->flags & PTF_LVALUE )
+                continue;
             type_right = TypedefModifierRemoveOnly( right->type );
             if( type->id == TYP_VOID ) {
-                if( type_right->id == TYP_VOID ) continue;
+                if( type_right->id == TYP_VOID )
+                    continue;
                 if( left->flags & PTF_THROW_EXPR ) {
                     type = right->type;
                 } else {
@@ -3881,13 +3964,15 @@ start_opac_string:
                     break;
                 }
             } else if( type_right->id == TYP_VOID ) {
-                if( right->flags & PTF_THROW_EXPR ) continue;
+                if( right->flags & PTF_THROW_EXPR )
+                    continue;
                 exprError( left, ERR_NOT_VOID );
                 break;
             } else if( ConvertCommonType( &expr
                                         , &diagColonClass
                                         , &diagColonMp ) ) {
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR )
+                    break;
                 type = expr->type;
                 left = expr->u.subtree[0];
                 right = expr->u.subtree[1];
@@ -3937,11 +4022,14 @@ start_opac_string:
             if( ConvertCommonType( &expr
                                  , &diagClassCmp
                                  , &diagMembPtrCmp ) ) {
-                if( expr->op == PT_ERROR ) break;
+                if( expr->op == PT_ERROR )
+                    break;
                 type = expr->type;
                 if( MemberPtrType( type ) ) {
                     expr = MembPtrCompare( expr );
-                    if( expr->op != PT_ERROR ) continue;
+                    if( expr->op != PT_ERROR ) {
+                        continue;
+                    }
                 } else {
                     operandError( expr, ERR_LEFT_NOT_PTR_ARITH_MP );
                 }
@@ -4075,37 +4163,44 @@ start_opac_string:
             type = expr->type;
             continue;
           case DREF_PTR_LEFT :      // DE-REFERENCE PTR ON LEFT
-          { if( ! NodeDerefPtr( &expr->u.subtree[0] ) ) break;
+          { if( ! NodeDerefPtr( &expr->u.subtree[0] ) )
+                break;
             left = PTreeOpLeft( expr );
             type = left->type;
           } continue;
           case DREF_PTR_RIGHT :     // DE-REFERENCE PTR ON RIGHT
-          { if( ! NodeDerefPtr( &expr->u.subtree[1] ) ) break;
+          { if( ! NodeDerefPtr( &expr->u.subtree[1] ) )
+                break;
             right = PTreeOpRight( expr );
           } continue;
           case WARN_ADJ_COMPARES :
-            if( ! isRelationalOperator( expr ) ) continue;
-            if( ! isRelationalOperator( left ) ) continue;
+            if( !isRelationalOperator( expr ) )
+                continue;
+            if( !isRelationalOperator( left ) )
+                continue;
             PTreeWarnExpr( expr, WARN_ADJACENT_RELN_OPS );
             continue;
           case WARN_OPEQ_INT_TRUNC :
-            if( (PTreeOpFlags( expr ) & PTO_ASSIGN_SAME) == 0 ) continue;
+            if( (PTreeOpFlags( expr ) & PTO_ASSIGN_SAME) == 0 )
+                continue;
             /* fall through */
           case WARN_INT_TRUNC :
-            { unsigned tgt_bits;        // bits in target
-              TYPE  tgt_type;           // target type
-              if( ! IntegralType( type ) ) continue;
-              if( ! IntegralType( right->type ) ) continue;
-              if( NodeIsUnaryOp( left, CO_BITFLD_CONVERT ) ) {
-                  tgt_type = PTreeOpLeft( left )->type;
-                  tgt_type = TypedefModifierRemoveOnly( tgt_type );
-                  tgt_bits = tgt_type->u.b.field_width;
-              } else {
-                  tgt_type = type;
-                  tgt_bits = getConstBitsType( tgt_type );
-              }
-              warnIntTrunc( right, tgt_type, tgt_bits );
-            } continue;
+          { unsigned tgt_bits;        // bits in target
+            TYPE  tgt_type;           // target type
+            if( ! IntegralType( type ) )
+                continue;
+            if( ! IntegralType( right->type ) )
+                continue;
+            if( NodeIsUnaryOp( left, CO_BITFLD_CONVERT ) ) {
+                tgt_type = PTreeOpLeft( left )->type;
+                tgt_type = TypedefModifierRemoveOnly( tgt_type );
+                tgt_bits = tgt_type->u.b.field_width;
+            } else {
+                tgt_type = type;
+                tgt_bits = getConstBitsType( tgt_type );
+            }
+            warnIntTrunc( right, tgt_type, tgt_bits );
+          } continue;
           case WARN_BOOL_ASSIGN_LEFT :
             warnBoolAssignment( left );
             continue;
@@ -4138,7 +4233,8 @@ start_opac_string:
             left = PTreeOpLeft( expr );
             left->type = BindTemplateClass( left->type, &left->locn, FALSE );
           case RELOAD_EXPR_TYPE :               // drops thru
-            if( expr->op == PT_ERROR ) break;
+            if( expr->op == PT_ERROR )
+                break;
             type = expr->type;
             type = BindTemplateClass( type, &expr->locn, FALSE );
             continue;

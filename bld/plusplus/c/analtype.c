@@ -533,6 +533,7 @@ bool PointerToFuncEquivalent(   // TEST IF EQUIVALENT TO PTR(FUNCTION)
     bool retn;                  // - return: TRUE ==> equiv. to ptr to funct.
     type_flag not_used;
 
+    retn = FALSE;
     type = TypedefModifierRemove( type );
     if( type->id == TYP_FUNCTION ) {
         retn = TRUE;
@@ -540,11 +541,9 @@ bool PointerToFuncEquivalent(   // TEST IF EQUIVALENT TO PTR(FUNCTION)
         type = TypePointedAt( type, &not_used );
         if( type->id == TYP_FUNCTION ) {
             retn = TRUE;
-        } else {
-            retn = FALSE;
         }
     }
-    return retn;
+    return( retn );
 }
 
 

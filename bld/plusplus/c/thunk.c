@@ -281,7 +281,8 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     if( ! orig_ref ) {
         orig_sym->flag &= ~SF_REFERENCED;
     }
-    if( ! AddDefaultArgs( orig_sym, stmt ) ) {
+    if( !AddDefaultArgs( orig_sym, stmt ) ) {
+        return_sym = NULL;
         NodeFreeDupedExpr( stmt );
     } else {
         user_args = stmt->u.subtree[1];
