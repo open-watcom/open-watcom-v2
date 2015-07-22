@@ -39,6 +39,7 @@
 #undef ConsolePrintf
 #include "nw3to5.h"
 #include "trperr.h"
+#include "nlmstrt.h"
 
 
 #include <ecb.h>
