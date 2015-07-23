@@ -39,8 +39,6 @@
 #define NULL_HANDLE  (HANDLE)-1
 #define DUMMY_HANDLE (HANDLE)-2
 
-extern  unsigned    __NHandles;
-
 extern  void        __initPOSIXHandles( void );
 extern  unsigned    __growPOSIXHandles( unsigned num );
 extern  int         __allocPOSIXHandle( HANDLE hdl );
@@ -58,6 +56,9 @@ extern  HANDLE      *__OSHandles;
 #endif
 
 #if !defined(__NETWARE__)
+
+extern  unsigned    __NHandles;
+extern  unsigned    __NFiles;              /* maximum # of files we can open */
 
 extern  unsigned    __GetIOMode( int __handle );
 extern  int         __SetIOMode( int __handle, unsigned __value );

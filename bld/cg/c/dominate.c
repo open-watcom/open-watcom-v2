@@ -37,6 +37,7 @@
 #include "zoiks.h"
 #include "edgestk.h"
 #include "data.h"
+#include "dominate.h"
 
 extern void ClearBlockBits( block_class class );
 

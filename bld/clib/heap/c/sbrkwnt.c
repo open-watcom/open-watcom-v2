@@ -36,23 +36,23 @@
 #include <dos.h>
 #include <windows.h>
 #include "rterrno.h"
+#include "rtdata.h"
 #include "thread.h"
 
-extern  unsigned                _curbrk;
 
 _WCRTLINK void _WCNEAR *sbrk( int increment )
-    {
-        if( increment > 0 ) {
-            LPVOID      p;
+{
+    if( increment > 0 ) {
+        LPVOID      p;
 
-            increment = ( increment + 0x0fff ) & ~0x0fff;
-            //p = LocalAlloc( LMEM_FIXED, increment );
-            p = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
-            if( p != NULL )
-                return( p );
-            _RWD_errno = ENOMEM;
-        } else {
-            _RWD_errno = EINVAL;
-        }
-        return( (void *)-1 );
+        increment = ( increment + 0x0fff ) & ~0x0fff;
+        //p = LocalAlloc( LMEM_FIXED, increment );
+        p = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
+        if( p != NULL )
+            return( p );
+        _RWD_errno = ENOMEM;
+    } else {
+        _RWD_errno = EINVAL;
     }
+    return( (void *)-1 );
+}

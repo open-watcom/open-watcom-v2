@@ -34,6 +34,7 @@
 #include <stdarg.h>
 #include "wio.h"
 #include "exeelf.h"
+#include "browsio.h"
 
 static uint_32          relocValues[DW_W_MAX];
 
@@ -160,12 +161,12 @@ Elf32_Shdr section_header_template = {
     0
 };
 
-void CFatal( const char *msg )
+static void CFatal( const char *msg )
 {
     printf( "%s\n", msg );
 }
 
-void mywrite( FILE *fp, void *data, size_t len )
+static void mywrite( FILE *fp, void *data, size_t len )
 {
     size_t wroteSize;
 
@@ -416,7 +417,7 @@ static void dw_free( void *ptr )
 }
 
 dw_client DwarfInit( void )
-/********************/
+/*************************/
 {
     dw_client       client;
     dw_init_info    info;
@@ -486,7 +487,7 @@ dw_client DwarfInit( void )
 }
 
 void DwarfFini( dw_client client )
-/********************/
+/********************************/
 {
     FILE    *out_file;
 

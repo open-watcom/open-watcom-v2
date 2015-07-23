@@ -41,6 +41,7 @@
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "rscenc2.h"
 
 extern  void    ObjBytes( const void *, unsigned );
 extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
@@ -49,11 +50,6 @@ extern  void    TellScrapLabel( label_handle );
 extern  void    OutFuncStart( label_handle, offset, cg_linenum );
 extern  void    OutFuncEnd( offset );
 extern  void    OutPDataRec( label_handle, offset, offset );
-
-extern  void    EncodeRet( oc_ret * );
-extern  void    EncodeCall( oc_handle * );
-extern  void    EncodeJump( oc_handle * );
-extern  void    EncodeCond( oc_jcond * );
 
 static  offset  LastUnique = ADDR_UNKNOWN;
 static  any_oc  debugOC;

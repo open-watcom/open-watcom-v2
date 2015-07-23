@@ -27,7 +27,7 @@ setjmp_deps   = setjmp.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp 
 signal_deps   = signal.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
 stdarg_deps   = stdarg.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
 stdbool_deps  = stdbool.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp ../intptr.sp $(saferc) $(extension)
+stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp ../intptr.sp $(saferc) $(extension) ../thrdhndl.sp
 stdint_deps   = stdint.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(saferc) ../exactint.sp ../intptr.sp
 stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wint_t.sp $(saferc)
 stdlib_deps   = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp
@@ -275,7 +275,7 @@ sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus
 !ifeq system dos
 
 fcntl.h         : fcntl.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
-process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension)
+process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension) ../thrdhndl.sp
 unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
 
 sys/_lfndos.h   : dos/sys/_lfndos.mh ../crwatcnt.sp ../readonly.sp

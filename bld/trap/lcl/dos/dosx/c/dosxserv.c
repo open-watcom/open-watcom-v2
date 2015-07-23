@@ -41,11 +41,14 @@
 #include "trpimp.h"
 #include "packet.h"
 #include "servio.h"
+#include "dosxlink.h"
+
 #ifdef ACAD
     extern void LetACADDie(void);
     #include "adslib.h"
     #define _DBG(x) // printf x; fflush( stdout );
 #else
+
 #ifdef DEBUG_TRAP
 #define _DBG1( x ) printf x ; fflush( stdout )
 #define _DBG( x ) printf x ; fflush( stdout )
@@ -83,8 +86,8 @@ bool Session( void )
         In[0].len = GetPacket();
         In[0].ptr = GetPacketBuffPtr();
         _DBG(("Session got request "));
-        req = *(access_req *)In[0].ptr;
-        *(access_req *)In[0].ptr &= ~0x80;
+        req = TRP_REQUEST( In );
+        TRP_REQUEST( In ) &= ~0x80;
         if( req & 0x80 ) {
             req &= ~0x80;
             want_return = FALSE;
@@ -106,13 +109,12 @@ bool Session( void )
 }
 
 
-void Initialize( void )
+static void Initialize( void )
 {
     const char  *err;
 
-    RWBuff[0] = '\0';
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLink( RWBuff, TRUE );
+    err = RemoteLinkX( "\0", TRUE );
     _DBG(( "Back from PM remote link\n" ));
     if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));
@@ -124,10 +126,11 @@ void Initialize( void )
         StartupErr( err );
     #endif
     }
+    RWBuff[0] = '\0';
     _DBG(( "No Remote link error. About to TrapInit." ));
     TrapVer = TrapInit( "", RWBuff, FALSE );
     if( RWBuff[0] != '\0' ) {
-// NO, NO, NO!  RemoteUnLink();
+// NO, NO, NO!  RemoteUnLinkX();
         StartupErr( RWBuff );
     }
     _DBG(( "No TrapInit error. Initialize complete" ));
@@ -162,7 +165,7 @@ int main( void )
     _DBG(("Calling RemoteDisco\n"));
     RemoteDisco();
     _DBG(("Calling RemoteUnLink\n"));
-    RemoteUnLink();
+    RemoteUnLinkX();
     _DBG(("After calling RemoteUnLink\n"));
 #ifdef ACAD
     LetACADDie();

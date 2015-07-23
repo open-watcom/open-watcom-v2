@@ -24,26 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Novell NetWare NLM trap file I/O.
 *
 ****************************************************************************/
 
 
-#ifdef DLL32
-typedef LPVOID __far *LPLPVOID;
-#else
-typedef LPVOID *LPLPVOID;
-#endif
-
-void DPMIFreeAlias( WORD seg );
-#pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
-WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt );
-extern WORD DPMIGetHugeAlias( DWORD, DWORD __far *, DWORD );
-extern void DPMIFreeHugeAlias( DWORD , DWORD );
-extern WORD DataSelector;
-extern WORD MyDataSelector;
-extern DWORD DataSelectorSize;
-extern WORD Has87;
-extern void ReleaseAlias( LPVOID orig, LPVOID ptr );
-extern void GetAlias( LPLPVOID name );
+extern int  IOCreat( char *name );
+extern void StringToNLMPath( char *name, char *res );
+extern int  IOOpen( char *openname, int openmode );
+extern int  IOClose( int closehandle );
+extern int  IOWriteConsole( char *buff, int buff_len );
+extern int  IOWrite( int writehandle, char *buff, int buff_len );
+extern long IOSeek( int seekhandle, int seekmode, long seekpos );
+extern int  IORead( int readhandle, char *buff, int len );

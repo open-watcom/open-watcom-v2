@@ -24,24 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  QNX and Linux specific trap implementation stuff
+* Description:  Build code for a selection (switch) statement.
 *
 ****************************************************************************/
 
 
-typedef struct {
-    trap_init_func      *init_func;
-    trap_req_func       *req_func;
-    trap_fini_func      *fini_func;
-} trap_requests;
+typedef signed_32   cost_val;
 
-typedef struct {
-    unsigned long       len;
-    char                ***environ;
-    void                **_slib_func;
-    void                *(*malloc)( size_t );
-    void                *(*realloc)( void *, size_t );
-    void                (*free)( void * );
-    char                *(*getenv)( const char * );
-    void                (*(*signal)( int __sig, void (*__func)(int) ))(int);
-} trap_callbacks;
+extern  cost_val        IfCost(sel_handle,int);
+extern  name            *ScanCall(tbl_control*,name*,type_class_def);
+extern  cost_val        JumpCost(sel_handle);
+extern  cost_val        ScanCost(sel_handle);
+extern  tbl_control     *MakeScanTab(select_list *,signed_32,label_handle,cg_type,cg_type);
+extern  tbl_control     *MakeJmpTab(select_list *,signed_32,signed_32,label_handle);
+extern  name            *SelIdx(tbl_control *,an);
+extern  type_def        *SelNodeType(an,bool);
+extern  void            MkSelOp( name *idx, type_class_def class );

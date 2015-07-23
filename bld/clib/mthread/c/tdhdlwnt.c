@@ -30,8 +30,8 @@
 
 
 #include "variety.h"
-#include <windows.h>
 #include <process.h>
+#include <windows.h>
 
 _WCRTLINK unsigned long __threadhandle( void )
 {

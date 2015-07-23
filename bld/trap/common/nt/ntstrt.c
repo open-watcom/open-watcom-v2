@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "ntstrt.h"
 
 #ifdef __WATCOMC__
 #pragma library("kernel32")

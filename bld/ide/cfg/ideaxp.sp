@@ -1,5 +1,5 @@
 Project
-    TargetGroup "Alpha Win32 (NT/Win95/Win32s)"
+    TargetGroup "Alpha Win32 (NT)"
       Target *.exe, ncae_, "Character-mode Executable"
       Target *.exe, nwae_, "Windowed Executable"
       Target *.dll, n_ad_, "Dynamic Link Library"

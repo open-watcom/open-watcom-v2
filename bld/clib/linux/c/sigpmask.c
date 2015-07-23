@@ -35,7 +35,6 @@
 
 _WCRTLINK int sigprocmask( int __how, const sigset_t *__set, sigset_t *__oldset )
 {
-    u_long res = sys_call3( SYS_sigprocmask, __how, (u_long)__set,
-                           (u_long)__oldset );
+    syscall_res res = sys_call3( SYS_sigprocmask, __how, (u_long)__set, (u_long)__oldset );
     __syscall_return( int, res );
 }

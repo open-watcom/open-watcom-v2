@@ -29,7 +29,10 @@
 ****************************************************************************/
 
 
-extern int __stdcall DllMain( int hdll, int reason, void *reserved );
+#include "variety.h"
+#include "libmain.h"
+#include "dllmain.h"
+
 
 int __stdcall LibMain( int hdll, int reason, void *reserved )
 {

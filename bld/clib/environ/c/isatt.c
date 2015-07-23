@@ -34,6 +34,7 @@
 #include "rtdata.h"
 #include "tinyio.h"
 #include "defwin.h"
+#include "iomode.h"
 #include "rtcheck.h"
 
 /* determine if file is a terminal */

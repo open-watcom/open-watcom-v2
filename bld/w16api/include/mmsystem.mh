@@ -920,11 +920,11 @@ typedef MMTIME FAR  *LPMMTIME;
 
 /* Driver callback */
 typedef void (CALLBACK DRVCALLBACK)( HDRVR, UINT, DWORD, DWORD, DWORD );
-typedef DRVCALLBACK FAR     *LPDRVCALLBACK;
-typedef DRVCALLBACK         WAVECALLBACK;
-typedef WAVECALLBACK FAR    *LPWAVECALLBACK;
-typedef DRVCALLBACK         MIDICALLBACK;
-typedef MIDICALLBACK FAR    *LPMIDICALLBACK;
+typedef DRVCALLBACK     *LPDRVCALLBACK;
+typedef DRVCALLBACK     WAVECALLBACK;
+typedef WAVECALLBACK    *LPWAVECALLBACK;
+typedef DRVCALLBACK     MIDICALLBACK;
+typedef MIDICALLBACK    *LPMIDICALLBACK;
 
 /* Wave header */
 typedef struct wavehdr_tag {
@@ -1051,7 +1051,7 @@ typedef AUXCAPS FAR     *LPAUXCAPS;
 
 /* Time callback */
 typedef void (CALLBACK TIMECALLBACK)( UINT, UINT, DWORD, DWORD, DWORD );
-typedef TIMECALLBACK FAR    *LPTIMECALLBACK;
+typedef TIMECALLBACK    *LPTIMECALLBACK;
 
 /* Time capabilities */
 typedef struct timecaps_tag {
@@ -1094,7 +1094,7 @@ typedef JOYINFO FAR     *LPJOYINFO;
 
 /* Multimedia I/O callback */
 typedef LRESULT (CALLBACK MMIOPROC)( LPSTR, UINT, LPARAM, LPARAM );
-typedef MMIOPROC FAR    *LPMMIOPROC;
+typedef MMIOPROC        *LPMMIOPROC;
 
 /* Multimedia I/O information */
 typedef struct _MMIOINFO {

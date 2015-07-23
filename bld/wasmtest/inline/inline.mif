@@ -130,7 +130,7 @@ test_flags_386 = -wx -we -s -os -zq
 test_flags_i86 = -wx -we -s -os -zq
 
 .asm.gc:
-    awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk $[@ >$@
+    *awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk -v OUTFILE=$^. $[@
 
 !ifndef log_file
 log_file=testcomp.log

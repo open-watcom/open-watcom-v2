@@ -54,7 +54,7 @@ void __sigabort( void )
 }
 
 
-_WCRTLINK void __sigfpe_handler( int sig )
+_WCRTLINK void _WCI86FAR __sigfpe_handler( int sig )
 {
     raise( SIGFPE );
 }

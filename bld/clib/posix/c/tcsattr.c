@@ -38,14 +38,14 @@ _WCRTLINK int tcsetattr( int __fd, int __optional_actions, const struct termios 
 {
     switch(__optional_actions) {
     case TCSANOW:
-        return ioctl(__fd, TCSETS, __termios_p);
+        return( ioctl( __fd, TCSETS, __termios_p ) );
     case TCSADRAIN:
-        return ioctl(__fd, TCSETSW, __termios_p);
+        return( ioctl( __fd, TCSETSW, __termios_p ) );
     case TCSAFLUSH:
-        return ioctl(__fd, TCSETSF, __termios_p);
+        return( ioctl( __fd, TCSETSF, __termios_p ) );
     default:
         _RWD_errno = EINVAL;
-        return -1;
+        return( -1 );
     }
 }
 

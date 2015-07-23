@@ -36,6 +36,7 @@
 #else
     #include "malloc.h"
 #endif
+#include "_prof.h"
 
 void *__ProfAlloc( unsigned long size )
 {

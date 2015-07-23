@@ -39,7 +39,7 @@
 
 extern EVENT GUIAllEvents[];
 
-gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, char *title )
+gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title )
 {
     wnd=wnd;
     file=file;
@@ -80,8 +80,7 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
     return( ret );
 }
 
-bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
-                      const char *file, const char *topic )
+bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
 {
     inst=inst;wnd=wnd;act=act;file=file;topic=topic;
     return( false );

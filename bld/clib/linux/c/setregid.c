@@ -35,6 +35,6 @@
 
 _WCRTLINK int setregid( gid_t __real, uid_t __effective )
 {
-    u_long  res = sys_call2( SYS_setregid, (u_long)__real, (u_long)__effective );
+    syscall_res res = sys_call2( SYS_setregid, (u_long)__real, (u_long)__effective );
     __syscall_return( int, res );
 }

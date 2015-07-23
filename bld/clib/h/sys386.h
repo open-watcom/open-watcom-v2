@@ -36,22 +36,27 @@
 
 #include "rterrno.h"
 
-/* user-visible error numbers are in the range -1 - -124 */
+typedef unsigned long       syscall_res;
+
+/* macros to access sys_call.. routines return/error value */
+
+#define __syscall_iserror( res )    ((res) >= (syscall_res)(-125))
+#define __syscall_errno( res )      (-(res))
+#define __syscall_val( type, res )  ((type)(res))
+
+#define __syscall_retcode( res, val )                   \
+    if( __syscall_iserror( res ) ) {                    \
+        _RWD_errno = __syscall_errno( res );            \
+        res = (syscall_res)(val);                       \
+    }
 
 #define __syscall_return( type, res )                   \
-    if( (u_long)(res) >= (u_long)(-125) ) {             \
-        _RWD_errno = -(res);                            \
-        res = (u_long)-1;                               \
-    }                                                   \
-    return( (type)(res) );
+    __syscall_retcode( res, -1 )                        \
+    return( __syscall_val( type, res ) );
 
 #define __syscall_return_pointer( type, res )           \
-    if( (u_long)(res) >= (u_long)(-125) ) {             \
-        _RWD_errno = -(res);                            \
-        res = (u_long)0;                                \
-    }                                                   \
-    return( (type)(res) );
-
+    __syscall_retcode( res, 0 )                         \
+    return( __syscall_val( type, res ) );
 
 /*
  * Linux system call numbers
@@ -336,37 +341,37 @@
  * Inline assembler for calling Linux system calls
  */
 
-u_long sys_call0( u_long func );
+syscall_res sys_call0( u_long func );
 #pragma aux sys_call0 =                         \
     "int    0x80"                               \
     parm [eax]                                  \
     value [eax];
 
-u_long sys_call1( u_long func, u_long r_ebx );
+syscall_res sys_call1( u_long func, u_long r_ebx );
 #pragma aux sys_call1 =                         \
     "int    0x80"                               \
     parm [eax] [ebx]                            \
     value [eax];
 
-u_long sys_call2( u_long func, u_long r_ebx, u_long r_ecx );
+syscall_res sys_call2( u_long func, u_long r_ebx, u_long r_ecx );
 #pragma aux sys_call2 =                         \
     "int    0x80"                               \
     parm [eax] [ebx] [ecx]                      \
     value [eax];
 
-u_long sys_call3( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx );
+syscall_res sys_call3( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx );
 #pragma aux sys_call3 =                         \
     "int    0x80"                               \
     parm [eax] [ebx] [ecx] [edx]                \
     value [eax];
 
-u_long sys_call4( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_long r_esi );
+syscall_res sys_call4( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_long r_esi );
 #pragma aux sys_call4 =                         \
     "int    0x80"                               \
     parm [eax] [ebx] [ecx] [edx] [esi]          \
     value [eax];
 
-u_long sys_call5( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_long r_esi, u_long r_edi );
+syscall_res sys_call5( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_long r_esi, u_long r_edi );
 #pragma aux sys_call5 =                         \
     "int    0x80"                               \
     parm [eax] [ebx] [ecx] [edx] [esi] [edi]    \

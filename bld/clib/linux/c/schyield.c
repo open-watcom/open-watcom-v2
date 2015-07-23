@@ -35,6 +35,6 @@
 
 _WCRTLINK int sched_yield( void )
 {
-    u_long res = sys_call0( SYS_sched_yield );
+    syscall_res res = sys_call0( SYS_sched_yield );
     __syscall_return( int, res );
 }

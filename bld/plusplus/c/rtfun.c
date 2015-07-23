@@ -38,6 +38,7 @@
 #include "reposit.h"
 #include "initdefs.h"
 #include "pcheader.h"
+#include "rtfuns.h"
 
 typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 {   RTS_BASE_VOID = 0x0100      // - base type: void

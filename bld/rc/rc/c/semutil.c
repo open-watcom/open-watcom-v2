@@ -32,6 +32,7 @@
 #include "global.h"
 #include "errors.h"
 #include "rcrtns.h"
+#include "semutil.h"
 #include "clibext.h"
 #include "rccore.h"
 

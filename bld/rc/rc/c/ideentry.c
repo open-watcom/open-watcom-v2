@@ -44,6 +44,7 @@
 #include "rcldstr.h"
 #include "errors.h"
 #include "banner.h"
+#include "rc.h"
 #include "clibext.h"
 #include "rccore.h"
 

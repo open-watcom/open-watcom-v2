@@ -31,8 +31,9 @@
 
 #include "variety.h"
 #include <os2.h>
+#include "libmain.h"
+#include "dllmain.h"
 
-extern unsigned APIENTRY DllMain( unsigned, unsigned );
 
 unsigned APIENTRY LibMain( unsigned hmod, unsigned termination )
 {

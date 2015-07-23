@@ -37,7 +37,8 @@
 #include <malloc.h>
 #include <ole.h>
 #include "winext.h"
-#include "stubs.h"
+#include "winstubs.h"
+#include "_ole.h"
 
 #pragma aux Backpatch_olecli parm [ax];
 extern LPVOID FAR Backpatch_olecli( char *str );
@@ -99,7 +100,7 @@ static void aliasOleObject( LPOLEOBJECT lpobject, LPOLEOBJECTVTBL _FAR *olpvtbl 
     LPOLEOBJECTVTBL     nlpvtbl;
 
     nlpvtbl = (*olpvtbl) = lpobject->lpvtbl;
-    GetAlias( &nlpvtbl );
+    GetAlias( (LPVOID *)&nlpvtbl );
     lpobject->lpvtbl = nlpvtbl;
 
 } /* aliasOleObject */
@@ -119,7 +120,7 @@ static void permAliasOleClient( LPOLECLIENT _FAR *lpclient )
     new = _fmalloc( sizeof( OLEOBJECT ) );
     new->lpvtbl = _fmalloc( sizeof( OLECLIENTVTBL ) );
     nlpvtbl = (*lpclient)->lpvtbl;
-    GetAlias( &nlpvtbl );
+    GetAlias( (LPVOID *)&nlpvtbl );
     _fmemcpy( new->lpvtbl, nlpvtbl, sizeof( OLECLIENTVTBL ) );
     ReleaseAlias( (*lpclient)->lpvtbl, nlpvtbl );
 
@@ -131,7 +132,7 @@ static void aliasOleClient( LPOLECLIENT lpclient, LPOLECLIENTVTBL _FAR *olpvtbl 
     LPOLECLIENTVTBL     nlpvtbl;
 
     nlpvtbl = (*olpvtbl) = lpclient->lpvtbl;
-    GetAlias( &nlpvtbl );
+    GetAlias( (LPVOID *)&nlpvtbl );
     lpclient->lpvtbl = nlpvtbl;
 
 } /* aliasOleClient */
@@ -148,7 +149,7 @@ static void aliasOleStream( LPOLESTREAM lpstream, LPOLESTREAMVTBL _FAR *olpstbl 
     LPOLESTREAMVTBL     nlpstbl;
 
     nlpstbl = (*olpstbl) = lpstream->lpstbl;
-    GetAlias( &nlpstbl );
+    GetAlias( (LPVOID *)&nlpstbl );
     lpstream->lpstbl = nlpstbl;
 
 } /* aliasOleStream */
@@ -1149,7 +1150,7 @@ OLESTATUS FAR PASCAL __OleRegisterServer( LPCSTR class, LPOLESERVER lpserver,
     new->lpvtbl = _fmalloc( sizeof( OLESERVERVTBL ) );
 
     nlpvtbl = lpserver->lpvtbl;
-    GetAlias( &nlpvtbl );
+    GetAlias( (LPVOID *)&nlpvtbl );
     _fmemcpy( new->lpvtbl, nlpvtbl, sizeof( OLESERVERVTBL ) );
     ReleaseAlias( lpserver->lpvtbl, nlpvtbl );
 
@@ -1178,7 +1179,7 @@ OLESTATUS FAR PASCAL __OleRegisterServerDoc(LHSERVER hsrvr, LPCSTR docname,
     new->lpvtbl = _fmalloc( sizeof( OLESERVERDOCVTBL ) );
 
     nlpvtbl = lpdoc->lpvtbl;
-    GetAlias( &nlpvtbl );
+    GetAlias( (LPVOID *)&nlpvtbl );
     _fmemcpy( new->lpvtbl, nlpvtbl, sizeof( OLESERVERDOCVTBL ) );
     ReleaseAlias( lpdoc->lpvtbl, nlpvtbl );
 

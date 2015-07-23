@@ -132,7 +132,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
                 void *__arglist, unsigned __initflag, unsigned *__thrdaddr );
   #pragma intrinsic(_beginthread,_beginthreadex);
   _WCRTLINK extern void _endthreadex( unsigned __retval );
-  _WCRTLINK extern unsigned long __threadhandle( void );
+:include thrdhndl.sp
  #elif defined(__RDOS__)
   _WCRTLINK extern int  _beginthread(
                 void (*__start_address)(void *), int prio,

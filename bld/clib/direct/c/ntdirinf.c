@@ -48,7 +48,7 @@ void __GetNTDirInfo(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
     dirp->d_name[NAME_MAX] = 0;
 }
 
-BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb )
+BOOL __NTFindNextFileWithAttr( HANDLE h, unsigned attr, LPWIN32_FIND_DATA ffb )
 {
     for(;;) {
         if( ffb->dwFileAttributes == 0 ) {

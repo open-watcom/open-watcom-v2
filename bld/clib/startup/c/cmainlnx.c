@@ -40,6 +40,7 @@
 #include "thread.h"
 #include "linuxsys.h"
 #include "initarg.h"
+#include "osmain.h"
 
 int     _argc;                      /* argument count  */
 char    **_argv;                    /* argument vector */

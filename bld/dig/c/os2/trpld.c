@@ -79,7 +79,7 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
     unsigned            len;
@@ -88,13 +88,12 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
     unsigned            rc;
     trap_init_func      *init_func;
 
-    if( trap_parms == NULL || *trap_parms == '\0' )
-        trap_parms = "std";
-    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+    if( parms == NULL || *parms == '\0' )
+        parms = "std";
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    len = ptr - trap_parms;
-    memcpy( trpfile, trap_parms, len );
+    len = ptr - parms;
+    memcpy( trpfile, parms, len );
     trpfile[len] = '\0';
     if( !stricmp( trpfile, "std" ) ) {
         unsigned        version;
@@ -126,7 +125,10 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
         if( DosGetProcAddr( TrapFile, "#5", (PFN FAR *)&HardFunc ) != 0 ) {
             HardFunc = NULL;
         }
-        *trap_ver = init_func( parm, buff, trap_ver->remote );
+        parms = ptr;
+        if( *parms != '\0' )
+            ++parms;
+        *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;

@@ -67,8 +67,8 @@ unsigned    PPFlags;                        // pre-processor flags
 char        PP__DATE__[] = "\"Dec 31 2005\"";// value for __DATE__ macro
 char        PP__TIME__[] = "\"12:00:00\"";  // value for __TIME__ macro
 char        *PPBufPtr;                      // block buffer pointer
-char        *PPCharPtr;                     // character pointer
-char        *PPTokenPtr;                    // pointer to next char in token
+const char  *PPNextTokenPtr;                // next character after token end pointer
+const char  *PPTokenPtr;                    // pointer to next char in token
 MACRO_TOKEN *PPTokenList;                   // pointer to list of tokens
 MACRO_TOKEN *PPCurToken;                    // pointer to current token
 char        PPSavedChar;                    // saved char at end of token
@@ -81,6 +81,9 @@ pp_callback *PP_CallBack;                   // mkmk dependency callback function
 static char *IncludePath1 = NULL;           // include path from cmdl
 static char *IncludePath2 = NULL;           // include path from env
 
+static char *macro_buf = NULL;
+static size_t macro_buf_size = 0;
+
 static char *Months[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -88,23 +91,11 @@ static char *Months[] = {
 
 static char MBCharLen[256];         // multi-byte character len table
 
-static char *doStrDup( const char *str )
-{
-    char        *ptr;
-    size_t      len;
-
-    len = strlen( str ) + 1;
-    ptr = PP_Malloc( len );
-    if( ptr != NULL ) {
-        memcpy( ptr, str, len );
-    }
-    return( ptr );
-}
-
-FILE *PP_Open( const char *filename )
+static FILE *PP_Open( const char *filename )
 {
     FILE        *handle;
     FILELIST    *prev_file;
+    size_t      len;
 
     handle = fopen( filename, "rb" );
     if( handle != NULL ) {
@@ -119,7 +110,9 @@ FILE *PP_Open( const char *filename )
             PP_File->prev_file = prev_file;
             PP_File->handle    = handle;
             PP_File->prev_bufptr  = PPBufPtr;
-            PP_File->filename  = doStrDup( filename );
+            len = strlen( filename ) + 1;
+            PP_File->filename  = PP_Malloc( len );
+            memcpy( PP_File->filename, filename, len );
             PP_File->linenum   = 1;
             PPBufPtr = PP_File->buffer;
             *PPBufPtr = '\0';                   // indicate buffer empty
@@ -173,7 +166,7 @@ void PP_IncludePathFini( void )
     PP_Free( IncludePath1 );
 }
 
-static int findInclude( const char *path, const char *filename, char *fullfilename )
+static int findInclude( const char *path, const char *filename, size_t len, char *fullfilename )
 {
     char        *p;
     char        c;
@@ -191,7 +184,8 @@ static int findInclude( const char *path, const char *filename, char *fullfilena
         if( !IS_PATH_SEP( c ) ) {
             *p++ = DIR_SEP;
         }
-        strcpy( p, filename );
+        memcpy( p, filename, len );
+        p[len] = '\0';
         if( access( fullfilename, R_OK ) == 0 ) {
             return( 0 );
         }
@@ -219,45 +213,46 @@ static int findInclude( const char *path, const char *filename, char *fullfilena
  * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or
  * PPFLAG_IGNORE_INCLUDE is set.
  */
-int PP_FindInclude( const char *filename, char *fullfilename, int incl_type )
+int PP_FindInclude( const char *filename, size_t len, char *fullfilename, int incl_type )
 {
     int         rc = -1;
-    char        drivebuf[ _MAX_DRIVE ];
-    char        dirbuf[ _MAX_DIR ];
+    char        drivebuf[_MAX_DRIVE];
+    char        dirbuf[_MAX_DIR];
 
-    if( HAS_PATH( filename ) ) {
-        if( (rc = access( filename, R_OK )) == 0 ) {
-            strcpy( fullfilename, filename );
-        }
+    memcpy( fullfilename, filename, len );
+    fullfilename[len] = '\0';
+    if( HAS_PATH( fullfilename ) ) {
+        rc = access( fullfilename, R_OK );
     } else {
         if( rc == -1 && incl_type != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
-            if( (rc = access( filename, R_OK )) == 0 ) {
-                strcpy( fullfilename, filename );
-            }
+            rc = access( fullfilename, R_OK );
         }
         if( rc == -1 && incl_type == PPINCLUDE_USR && PP_File != NULL ) {
-            size_t  len;
+            size_t  len1;
 
             _splitpath( PP_File->filename, drivebuf, dirbuf, NULL, NULL );
             _makepath( fullfilename, drivebuf, dirbuf, NULL, NULL );
-            len = strlen( fullfilename );
-            if( len > 0 ) {
-                char c = fullfilename[len - 1];
+            len1 = strlen( fullfilename );
+            if( len1 > 0 ) {
+                char c = fullfilename[len1 - 1];
                 if( !IS_PATH_SEP( c ) ) {
-                    fullfilename[len++] = c;
+                    fullfilename[len1++] = DIR_SEP;
                 }
             }
-            strcpy( fullfilename + len, filename );
+            memcpy( fullfilename + len1, filename, len );
+            fullfilename[len1 + len] = '\0';
             rc = access( fullfilename, R_OK );
         }
         if( rc == -1 && IncludePath1 != NULL ) {
-            rc = findInclude( IncludePath1, filename, fullfilename );
+            rc = findInclude( IncludePath1, filename, len, fullfilename );
         }
         if( rc == -1 && IncludePath2 != NULL ) {
-            rc = findInclude( IncludePath2, filename, fullfilename );
+            rc = findInclude( IncludePath2, filename, len, fullfilename );
         }
         if( rc == -1 && incl_type == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
-            sprintf( fullfilename, H_DIR "%s", filename );
+            memcpy( fullfilename, H_DIR, sizeof( H_DIR ) - 1 );
+            memcpy( fullfilename + sizeof( H_DIR ) - 1, filename, len );
+            fullfilename[sizeof( H_DIR ) - 1 + len] = '\0';
             rc = access( fullfilename, R_OK );
         }
     }
@@ -265,14 +260,14 @@ int PP_FindInclude( const char *filename, char *fullfilename, int incl_type )
 }
 
 
-FILE *PP_OpenInclude( const char *filename, int incl_type )
+static FILE *PP_OpenInclude( const char *filename, size_t len, int incl_type )
 {
     char        fullfilename[_MAX_PATH];
     int         rc;
 
-    rc = PP_FindInclude( filename, fullfilename, incl_type );
+    rc = PP_FindInclude( filename, len, fullfilename, incl_type );
     if( PPFlags & PPFLAG_DEPENDENCIES ) {
-        (*PP_CallBack)( filename, fullfilename, incl_type );
+        (*PP_CallBack)( filename, len, fullfilename, incl_type );
     } else if( rc == 0 ) {
         return( PP_Open( fullfilename ) );
     }
@@ -282,14 +277,12 @@ FILE *PP_OpenInclude( const char *filename, int incl_type )
 static void PP_GenLine( void )
 {
     char        *p;
-    char        *fname;
+    const char  *fname;
     int         i;
 
-    p = PPCharPtr = &PPLineBuf[1];
+    p = PPLineBuf + 1;
     if( PPFlags & PPFLAG_EMIT_LINE ) {
-        sprintf( PPCharPtr, "%cline %u \"", PreProcChar, PP_File->linenum );
-        while( *p != '\0' )
-            ++p;
+        p += sprintf( p, "%cline %u \"", PreProcChar, PP_File->linenum );
         fname = PP_File->filename;
         while( *fname != '\0' ) {
 #ifndef __UNIX__
@@ -308,12 +301,13 @@ static void PP_GenLine( void )
     }
     *p++ = '\n';
     *p = '\0';
+    PPNextTokenPtr = PPLineBuf + 1;
 }
 
-static void PP_GenError( char *msg )
+static void PP_GenError( const char *msg )
 {
-    PPCharPtr = &PPLineBuf[1];
-    sprintf( PPCharPtr, "%cerror %s\n", PreProcChar, msg );
+    sprintf( PPLineBuf + 1, "%cerror %s\n", PreProcChar, msg );
+    PPNextTokenPtr = PPLineBuf + 1;
 }
 
 static void PP_TimeInit( void )
@@ -324,7 +318,7 @@ static void PP_TimeInit( void )
     time_of_day = time( &time_of_day );
     tod = localtime( &time_of_day );
     sprintf( PP__TIME__, "\"%.2d:%.2d:%.2d\"", tod->tm_hour, tod->tm_min, tod->tm_sec );
-    sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[ tod->tm_mon ], tod->tm_mday, tod->tm_year + 1900 );
+    sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
 }
 
 static void SetRange( int low, int high, char data )
@@ -361,18 +355,6 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
     NestLevel = 0;
     SkipLevel = 0;
     PPFlags = flags;
-    IncludePath2 = PP_Malloc( 1 );
-    *IncludePath2 = '\0';
-    IncludePath2 = AddIncludePath( IncludePath2, include_path );
-    if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
-        IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
-    }
-    PP_AddMacro( "__LINE__" );
-    PP_AddMacro( "__FILE__" );
-    PP_AddMacro( "__DATE__" );
-    PP_AddMacro( "__TIME__" );
-    PP_AddMacro( "__STDC__" );
-    PP_TimeInit();
     memset( MBCharLen, 0, 256 );
     if( leadbytes != NULL ) {
         PP_SetLeadBytes( leadbytes );
@@ -390,20 +372,32 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
         SetRange( 0xf8, 0xfb, 4 );
         SetRange( 0xfc, 0xfd, 5 );
     }
+    IncludePath2 = PP_Malloc( 1 );
+    *IncludePath2 = '\0';
+    IncludePath2 = AddIncludePath( IncludePath2, include_path );
+    if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
+        IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
+    }
+    PP_AddMacro( "__LINE__", 8 );
+    PP_AddMacro( "__FILE__", 8 );
+    PP_AddMacro( "__DATE__", 8 );
+    PP_AddMacro( "__TIME__", 8 );
+    PP_AddMacro( "__STDC__", 8 );
+    PP_TimeInit();
+
     handle = PP_Open( filename );
     if( handle == NULL )
         return( -1 );
     PP_GenLine();
     PPSavedChar = '\0';
-    PPTokenPtr = PPCharPtr;
+    PPTokenPtr = PPNextTokenPtr;
     return( 0 );
 }
 
 void PP_Dependency_List( pp_callback *callback )
 {
     PP_CallBack = callback;
-    for( ;; ) {
-        if( PP_Char() == EOF ) break;
+    for( ; PP_Char() != EOF; ) {
         PPTokenPtr = "";        // quickly skip over token
     }
 }
@@ -421,26 +415,46 @@ static void PP_CloseAllFiles( void )
     }
 }
 
+static char *resize_macro_buf( char *buf, size_t new_size )
+{
+    if( new_size > macro_buf_size ) {
+        new_size = ( ( 255 + new_size ) / 256 ) * 256;
+        macro_buf = PP_Malloc( new_size );
+        if( buf != NULL ) {
+            memcpy( macro_buf, buf, macro_buf_size );
+            PP_Free( buf );
+        }
+        macro_buf_size = new_size;
+    }
+    return( macro_buf );
+}
+
+static void free_macro_buf( void )
+{
+    PP_Free( macro_buf );
+    macro_buf = NULL;
+    macro_buf_size = 0;
+}
+
 void PP_Fini( void )
 {
     int         hash;
     MACRO_ENTRY *me;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( ;; ) {
-            me = PPHashTable[hash];
-            if( me == NULL ) break;
+        for( ; (me = PPHashTable[hash]) != NULL; ) {
             PPHashTable[hash] = me->next;
             if( me->replacement_list != NULL )
                 PP_Free( me->replacement_list );
             PP_Free( me );
         }
     }
+    free_macro_buf();
     PP_CloseAllFiles();
     PP_Free( IncludePath2 );
 }
 
-size_t PP_ReadBuf( void )
+static size_t PP_ReadBuf( void )
 {
     size_t      len;
     FILELIST    *this_file;
@@ -452,7 +466,7 @@ size_t PP_ReadBuf( void )
     return( len );
 }
 
-size_t PP_ReadLine( char *line_generated )
+static size_t PP_ReadLine( char *line_generated )
 {
     FILELIST            *this_file;
     size_t              len;
@@ -462,8 +476,8 @@ size_t PP_ReadLine( char *line_generated )
         return( 0 );            // - indicate EOF
     }
     PPLineNumber = PP_File->linenum;
-    PPCharPtr = &PPLineBuf[1];
     PPLineBuf[0] = '\0';
+    PPNextTokenPtr = PPLineBuf + 1;
     *line_generated = 0;
     len = 1;
     for( ;; ) {
@@ -472,11 +486,14 @@ size_t PP_ReadLine( char *line_generated )
                 c = *PPBufPtr;
                 if( c == DOS_EOF_CHAR ) {               // 17-oct-94
                     c = '\n';
-                    if( len != 1 ) break;
+                    if( len != 1 )
+                        break;
                     c = DOS_EOF_CHAR;
                 } else {
                     ++PPBufPtr;
-                    if( c != '\0' )  break;
+                    if( c != '\0' ) {
+                        break;
+                    }
                 }
                 if( c == DOS_EOF_CHAR || (PP_ReadBuf() == 0) ) {
                     // if the last line of a file does not end with a carriage
@@ -496,34 +513,37 @@ size_t PP_ReadLine( char *line_generated )
                     }
                     PP_GenLine();
                     *line_generated = 1;
-                    len = strlen( PPCharPtr );
+                    len = strlen( PPNextTokenPtr );
                     return( len );
                 }
             }
             PPLineBuf[len] = c;
-            if( c == '\n' ) break;
+            if( c == '\n' )
+                break;
             ++len;
         }
         PP_File->linenum++;
-        if( PPLineBuf[len-1] == '\r' )  --len;
-        if( PPLineBuf[len-1] != '\\' )  break;
+        if( PPLineBuf[len - 1] == '\r' )
+            --len;
+        if( PPLineBuf[len - 1] != '\\' )
+            break;
         --len;
     }
     PPLineBuf[len++] = '\n';
     PPLineBuf[len++] = '\0';
-    PPCharPtr = &PPLineBuf[1];
+    PPNextTokenPtr = PPLineBuf + 1;
     return( len );
 }
 
 #define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
 
-int PP_Hash( const char *name )
+static unsigned PP_Hash( const char *name, size_t len )
 {
     unsigned    hash;
 
     hash = 0;
-    for( ; *name; ++name ) {
-        hash = (hash << 4) + *name;
+    while( len-- > 0 ) {
+        hash = (hash << 4) + *name++;
         hash = (hash ^ _rotl( hash & 0xF000, 4 )) & 0x0FFF;
     }
     return( hash % HASH_SIZE );
@@ -532,30 +552,38 @@ int PP_Hash( const char *name )
 
 int PP_Class( char c )
 {
-    if( c == '_' )  return( CC_ALPHA );
-    if( c >= 'a'  &&  c <= 'z' ) return( CC_ALPHA );
-    if( c >= 'A'  &&  c <= 'Z' ) return( CC_ALPHA );
-    if( c >= '0'  &&  c <= '9' ) return( CC_DIGIT );
+    if( c == '_' )
+        return( CC_ALPHA );
+    if( c >= 'a' && c <= 'z' )
+        return( CC_ALPHA );
+    if( c >= 'A' && c <= 'Z' )
+        return( CC_ALPHA );
+    if( c >= '0' && c <= '9' )
+        return( CC_DIGIT );
     return( 0 );
 }
 
-char *PP_ScanName( char *ptr )
+const char *PP_ScanName( const char *ptr )
 {
     if( PP_Class( *ptr ) == CC_ALPHA ) {
         ++ptr;
-        while( PP_Class( *ptr ) != 0 )  ++ptr;
+        while( PP_Class( *ptr ) != 0 ) {
+            ++ptr;
+        }
     }
     return( ptr );
 }
 
-void PP_Include( char *ptr )
+static void PP_Include( const char *ptr )
 {
-    char        *filename;
+    const char  *filename;
     char        delim;
     int         incl_type;
+    size_t      len;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
-    filename = ptr+1;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
+    filename = ptr + 1;
     if( *ptr == '<' ) {
         delim = '>';
         incl_type = PPINCLUDE_SYS;
@@ -567,28 +595,28 @@ void PP_Include( char *ptr )
         return;
     }
     ++ptr;
-    while( *ptr != delim  &&  *ptr != '\0' )
+    while( *ptr != delim && *ptr != '\0' )
         ++ptr;
-    *ptr = '\0';
-    if( PP_OpenInclude( filename, incl_type ) == NULL ) {
-        filename = doStrDup( filename );        // want to reuse buffer
-        PPCharPtr = &PPLineBuf[1];
-        sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
-        PP_Free( filename );
+    len = ptr - filename;
+    if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
+        sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
+        PPNextTokenPtr = PPLineBuf + 1;
     } else {
         PP_GenLine();
     }
 }
 
-void PP_RCInclude( char *ptr )
+static void PP_RCInclude( const char *ptr )
 {
-    char        *filename;
-    int         quoted = 0;
+    const char  *filename;
+    bool        quoted = false;
+    size_t      len;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     if( *ptr == '\"' ) {
         ptr++;
-        quoted = 1;
+        quoted = true;
     }
 
     filename = ptr;
@@ -599,63 +627,67 @@ void PP_RCInclude( char *ptr )
         }
     } else {
         for( ;; ) {
-            if( *ptr == ' ' ) break;
-            if( *ptr == '\t' ) break;
-            if( *ptr == '\r' ) break;
-            if( *ptr == '\n' ) break;
-            if( *ptr == '\0' ) break;
-            if( *ptr == '\"' ) break;
+            if( *ptr == ' ' )
+                break;
+            if( *ptr == '\t' )
+                break;
+            if( *ptr == '\r' )
+                break;
+            if( *ptr == '\n' )
+                break;
+            if( *ptr == '\0' )
+                break;
+            if( *ptr == '\"' )
+                break;
             ++ptr;
         }
     }
-    *ptr = '\0';
-    if( PP_OpenInclude( filename, PPINCLUDE_USR ) == NULL ) {
-        filename = doStrDup( filename );        // want to reuse buffer
-        PPCharPtr = &PPLineBuf[1];
-        sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
-        PP_Free( filename );
+    len = ptr - filename;
+    if( PP_OpenInclude( filename, len, PPINCLUDE_USR ) == NULL ) {
+        sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
+        PPNextTokenPtr = PPLineBuf + 1;
     } else {
         PP_GenLine();
     }
 }
 
-MACRO_ENTRY *PP_AddMacro( const char *macro_name )
+MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
 {
     MACRO_ENTRY     *me;
     unsigned int    hash;
-    size_t          size;
 
-    size = sizeof( MACRO_ENTRY ) + strlen( macro_name );
-    me = (MACRO_ENTRY *)PP_Malloc( size );
+    me = (MACRO_ENTRY *)PP_Malloc( sizeof( MACRO_ENTRY ) + len );
     if( me != NULL ) {
-        hash = PP_Hash( macro_name );
+        hash = PP_Hash( macro_name, len );
         me->next = PPHashTable[hash];
         PPHashTable[hash] = me;
-        strcpy( me->name, macro_name );
+        memcpy( me->name, macro_name, len );
+        me->name[len] = '\0';
         me->parmcount = PP_SPECIAL_MACRO;
         me->replacement_list = NULL;
     }
     return( me );
 }
 
-char *PP_SkipSpace( char *p, char *white_space )
+static const char *PP_SkipSpace( const char *p, bool *white_space )
 {
-    char        *p2;
+    const char  *p2;
 
     p2 = p;
-    *white_space = 0;           // assume no white space
-    while( *p == ' ' || *p == '\t' || *p == '\r' || *p == '\n' )  ++p;
+    *white_space = false;       // assume no white space
+    while( *p == ' ' || *p == '\t' || *p == '\r' || *p == '\n' )
+        ++p;
     if( p != p2 ) {
-        *white_space = 1;       // indicate white space skipped
+        *white_space = true;    // indicate white space skipped
     }
     return( p );
 }
 
-char *PP_SkipComment( char *p, char *comment )
+static const char *PP_SkipComment( const char *p, bool *comment )
 {
-    *comment = 0;               // assume no comment
-    if( *p == '/'  && (p[1] == '/'  ||  p[1] == '*') ) {
-        *comment = 1;           // indicate comment skipped
+    *comment = false;           // assume no comment
+    if( *p == '/' && (p[1] == '/' || p[1] == '*') ) {
+        *comment = true;        // indicate comment skipped
         if( p[1] == '/' ) {
             p += 2;
             while( *p != '\0' ) {
@@ -668,7 +700,7 @@ char *PP_SkipComment( char *p, char *comment )
                     PPFlags |= PPFLAG_SKIP_COMMENT; // continued on next line
                     break;
                 }
-                if( *p == '*'  &&  p[1] == '/' ) {
+                if( *p == '*' && p[1] == '/' ) {
                     p += 2;
                     break;
                 }
@@ -678,7 +710,7 @@ char *PP_SkipComment( char *p, char *comment )
     } else {
         if( PPFlags & PPFLAG_ASM_COMMENT ) {
             if( *p == ';' || *p == '#' ) {
-                *comment = 1;
+                *comment = true;
                 do {
                     p++;
                 } while( *p != '\0' );
@@ -688,118 +720,121 @@ char *PP_SkipComment( char *p, char *comment )
     return( p );
 }
 
-char *PP_SkipWhiteSpace( char *p, char *white_space )
+const char *PP_SkipWhiteSpace( const char *p, bool *white_space )
 {
-    char        *p2;
+    const char  *p2;
 
     p2 = p;
     for( ;; ) {
-        while( *p == ' ' || *p == '\t' || *p == '\r' || *p == '\n' )  ++p;
+        while( *p == ' ' || *p == '\t' || *p == '\r' || *p == '\n' )
+            ++p;
         p = PP_SkipComment( p, white_space );
-        if( *white_space == 0 ) break;
+        if( !*white_space ) {
+            break;
+        }
     }
     if( p != p2 ) {
-        *white_space = 1;       // indicate white space skipped
+        *white_space = true;    // indicate white space skipped
     }
     return( p );
 }
 
-void PP_Define( char *ptr )
+void PP_Define( const char *ptr )
 {
     MACRO_ENTRY *me;
-    char        *macro_name;
-    char        *rep_list;
+    const char  *macro_name;
     char        *p;
-    char        *p2;
+    const char  *p2;
     size_t      len;
-    char        c;
-    char        white_space;
-    char        token;
+    size_t      len1;
+    bool        white_space;
+    ppt_token   token;
 
     macro_name = PP_SkipWhiteSpace( ptr, &white_space );
     ptr = PP_ScanName( macro_name );
-    c = *ptr;
-    *ptr = '\0';
-    me = PP_AddMacro( macro_name );
+    me = PP_AddMacro( macro_name, ptr - macro_name );
     if( me != NULL ) {
+        p = NULL;
         me->parmcount = 0;
-        *ptr = c;
-        rep_list = ptr;
-        p = rep_list;
-        if( c == '(' ) {
+        len = 0;
+        if( *ptr == '(' ) {
             me->parmcount = 1;
             ptr++;
             for( ;; ) {
                 ptr = PP_SkipWhiteSpace( ptr, &white_space );
-                if( *ptr == '\0' ) break;
-                if( *ptr == ')'  ) break;
-                while( PP_Class( *ptr ) != 0 ) {        // collect name
-                    *p++ = *ptr++;
-                }
+                if( *ptr == '\0' || *ptr == ')' )
+                    break;
+                macro_name = ptr;
+                ptr = PP_ScanName( macro_name );
+                len1 = ptr - macro_name;
+                p = resize_macro_buf( p, len + len1 );
+                memcpy( p + len, macro_name, len1 );
+                len += len1;
                 me->parmcount++;
                 ptr = PP_SkipWhiteSpace( ptr, &white_space );
-                if( *ptr != ',' ) break;
-                *p++ = '\0';            // mark end of parm
+                if( *ptr != ',' )
+                    break;
                 ++ptr;
+                p = resize_macro_buf( p, len + 1 );
+                p[len++] = '\0';                        // mark end of parm
             }
             if( *ptr == ')' ) {
                 ++ptr;
                 if( me->parmcount != 1 ) {
-                    *p++ = '\0';        // mark end of macro parms
+                    p = resize_macro_buf( p, len + 1 );
+                    p[len++] = '\0';                    // mark end of macro parms
                 }
             }
         }
         ptr = PP_SkipWhiteSpace( ptr, &white_space );
-        for( ;; ) {
-            if( *ptr == '\0' ) break;
-            if( *ptr == '\n' ) break;
+        for( ; *ptr != '\0' && *ptr != '\n'; ) {
             p2 = PP_ScanToken( ptr, &token );
-            while( ptr != p2 )
-                *p++ = *ptr++;
-            ptr = PP_SkipWhiteSpace( ptr, &white_space );
-            if( *ptr == '\0' ) break;
-            if( *ptr == '\n' ) break;
-            if( white_space )  *p++ = ' ';
+            len1 = p2 - ptr;
+            p = resize_macro_buf( p, len + len1 );
+            memcpy( p + len, ptr, len1 );
+            len += len1;
+            ptr = PP_SkipWhiteSpace( p2, &white_space );
+            if( *ptr == '\0' || *ptr == '\n' )
+                break;
+            if( white_space ) {
+                p = resize_macro_buf( p, len + 1 );
+                p[len++] = ' ';
+            }
         }
-        *p++ = '\0';
-        if( *rep_list != '\0' ) {
-            len = p - rep_list;
-            me->replacement_list = PP_Malloc( len );
-            memcpy( me->replacement_list, rep_list, len );
-        }
+        p = resize_macro_buf( p, len + 1 );
+        p[len++] = '\0';
+        me->replacement_list = PP_Malloc( len );
+        memcpy( me->replacement_list, p, len );
     } else {
         PP_OutOfMemory();
     }
 }
 
-MACRO_ENTRY *PP_MacroLookup( const char *macro_name )
+MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
 {
     MACRO_ENTRY *me;
-    int         hash;
+    unsigned    hash;
 
-    hash = PP_Hash( macro_name );
-    for( me = PPHashTable[ hash ]; me; me = me->next ) {
-        if( strcmp( me->name, macro_name ) == 0 ) {
+    hash = PP_Hash( macro_name, len );
+    for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
+        if( len == strlen( me->name ) && memcmp( me->name, macro_name, len ) == 0 ) {
             break;
         }
     }
     return( me );
 }
 
-MACRO_ENTRY *PP_ScanMacroLookup( char *ptr )
+MACRO_ENTRY *PP_ScanMacroLookup( const char *ptr )
 {
-    char        *macro_name;
+    const char  *macro_name;
     MACRO_ENTRY *me;
-    char        c;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     macro_name = ptr;
-    ptr = PP_ScanName( ptr );
-    c = *ptr;
-    *ptr = '\0';
-    me = PP_MacroLookup( macro_name );
-    *ptr = c;
-    PPCharPtr = ptr;
+    ptr = PP_ScanName( macro_name );
+    me = PP_MacroLookup( macro_name, ptr - macro_name );
+    PPNextTokenPtr = ptr;
     return( me );
 }
 
@@ -821,7 +856,7 @@ static void IncLevel( int value )
     ++NestLevel;
 }
 
-void PP_Undef( char *ptr )
+static void PP_Undef( const char *ptr )
 {
     MACRO_ENTRY *me;
 
@@ -831,7 +866,7 @@ void PP_Undef( char *ptr )
     }
 }
 
-void PP_Ifdef( char *ptr )
+static void PP_Ifdef( const char *ptr )
 {
     MACRO_ENTRY *me;
 
@@ -839,7 +874,7 @@ void PP_Ifdef( char *ptr )
     IncLevel( me != NULL );
 }
 
-void PP_Ifndef( char *ptr )
+static void PP_Ifndef( const char *ptr )
 {
     MACRO_ENTRY *me;
 
@@ -847,7 +882,7 @@ void PP_Ifndef( char *ptr )
     IncLevel( me == NULL );
 }
 
-int PPConstExpr( char *ptr )
+static int PPConstExpr( const char *ptr )
 {
     PREPROC_VALUE   value;
 
@@ -858,11 +893,12 @@ int PPConstExpr( char *ptr )
     return( value.val.ivalue != 0 );
 }
 
-void PP_If( char *ptr )
+static void PP_If( const char *ptr )
 {
     int         value;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     if( NestLevel == SkipLevel ) {
         value = PPConstExpr( ptr );
         IncLevel( value );
@@ -871,12 +907,13 @@ void PP_If( char *ptr )
     }
 }
 
-void PP_Elif( char *ptr )
+static void PP_Elif( const char *ptr )
 {
     int         value;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
-    if( NestLevel == 0  ||  PPStack->cpp_type == PP_ELSE ) {
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
+    if( NestLevel == 0 || PPStack->cpp_type == PP_ELSE ) {
         // CErr1( ERR_MISPLACED_ELIF );
     } else {
         if( NestLevel == SkipLevel ) {
@@ -897,7 +934,7 @@ void PP_Elif( char *ptr )
     }
 }
 
-void PP_Else( void )
+static void PP_Else( void )
 {
     if( PPStack != NULL ) {
         if( PPStack->cpp_type == PP_ELSE ) {
@@ -918,7 +955,7 @@ void PP_Else( void )
     }
 }
 
-void PP_Endif( void )
+static void PP_Endif( void )
 {
     CPP_INFO    *cpp;
 
@@ -933,48 +970,43 @@ void PP_Endif( void )
     }
 }
 
-int PP_Sharp( char *ptr )
+static int PP_Sharp( const char *ptr )
 {
-    char        *token;
-    char        c;
+    const char  *token;
+    size_t      len;
 
-    while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     token = ptr;
-    while( *ptr >= 'a'  &&  *ptr <= 'z' ) ++ptr;
-    c = *ptr;
-    *ptr = '\0';
-    if( strcmp( token, "include" ) == 0 ) {
-        *ptr = c;
+    while( *ptr >= 'a' && *ptr <= 'z' )
+        ++ptr;
+    len = ptr - token;
+    if( len == 7 && memcmp( token, "include", 7 ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_Include( ptr );
             return( 0 );
         }
-    } else if( strcmp( token, "define" ) == 0 ) {
-        *ptr = c;
-        if( NestLevel == SkipLevel )  PP_Define( ptr );
-    } else if( strcmp( token, "undef" ) == 0 ) {
-        *ptr = c;
-        if( NestLevel == SkipLevel )  PP_Undef( ptr );
-    } else if( strcmp( token, "ifdef" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 6 && memcmp( token, "define", 6 ) == 0 ) {
+        if( NestLevel == SkipLevel ) {
+            PP_Define( ptr );
+        }
+    } else if( len == 5 && memcmp( token, "undef", 5 ) == 0 ) {
+        if( NestLevel == SkipLevel ) {
+            PP_Undef( ptr );
+        }
+    } else if( len == 5 && memcmp( token, "ifdef", 5 ) == 0 ) {
         PP_Ifdef( ptr );
-    } else if( strcmp( token, "ifndef" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 6 && memcmp( token, "ifndef", 6 ) == 0 ) {
         PP_Ifndef( ptr );
-    } else if( strcmp( token, "if" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 2 && memcmp( token, "if", 2 ) == 0 ) {
         PP_If( ptr );
-    } else if( strcmp( token, "elif" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 4 && memcmp( token, "elif", 4 ) == 0 ) {
         PP_Elif( ptr );
-    } else if( strcmp( token, "else" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 4 && memcmp( token, "else", 4 ) == 0 ) {
         PP_Else();
-    } else if( strcmp( token, "endif" ) == 0 ) {
-        *ptr = c;
+    } else if( len == 5 && memcmp( token, "endif", 5 ) == 0 ) {
         PP_Endif();
     } else {
-        *ptr = c;
         if( PPFlags & PPFLAG_ASM_COMMENT ) {
             // # is also a line-comment char in MS's stupid assembler
             // so we just return 1 to say we recognized it and the rest
@@ -987,59 +1019,57 @@ int PP_Sharp( char *ptr )
     return( 1 );                // indicate recognized
 }
 
-static void RCInclude( char *ptr )
+static void RCInclude( const char *ptr )
 {
-    char        *token;
-    char        c;
+    const char  *token;
+    size_t      len;
 
     token = ptr;
     while( (*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z' ) ) {
         ++ptr;
     }
-    c = *ptr;
-    *ptr = '\0';
-    if( stricmp( token, "rcinclude" ) == 0 ) {
-        *ptr = c;
+    len = ptr - token;
+    if( len == 9 && stricmp( token, "rcinclude" ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_RCInclude( ptr );
         }
-    } else {
-        *ptr = c;
     }
 }
 
 
-int PP_Read( void )
+static int PP_Read( void )
 {
-    char        *p;
+    const char  *p;
     char        line_generated;
-    char        white_space;
+    bool        white_space;
 
     for( ;; ) {
-        if( PP_ReadLine( &line_generated ) == 0 )  return( 0 );
+        if( PP_ReadLine( &line_generated ) == 0 )
+            return( 0 );
         // don't look for preprocessor directives inside multi-line comments
         if( !line_generated && !(PPFlags & PPFLAG_SKIP_COMMENT) ) {
-            p = PP_SkipSpace( PPCharPtr, &white_space );
+            p = PP_SkipSpace( PPNextTokenPtr, &white_space );
             if( *p == PreProcChar ) {
                 if( PP_Sharp( p + 1 ) ) {       // if recognized
-                    PPCharPtr = &PPLineBuf[1];
-                    PPCharPtr[0] = '\n';
-                    PPCharPtr[1] = '\0';
+                    PPLineBuf[1 + 0] = '\n';
+                    PPLineBuf[1 + 1] = '\0';
+                    PPNextTokenPtr = PPLineBuf + 1;
                 }
             } else {
                 RCInclude( p );
             }
         }
-        if( NestLevel == SkipLevel ) break;
-        PPCharPtr = &PPLineBuf[1];
-        PPCharPtr[0] = '\n';
-        PPCharPtr[1] = '\0';
+        if( NestLevel != SkipLevel ) {
+            PPLineBuf[1 + 0] = '\n';
+            PPLineBuf[1 + 1] = '\0';
+            PPNextTokenPtr = PPLineBuf + 1;
+        }
         break;
     }
     return( 1 );
 }
 
-char *PPScanLiteral( char *p )
+static const char *PPScanLiteral( const char *p )
 {
     char        quote_char;
     int         i;
@@ -1051,58 +1081,63 @@ char *PPScanLiteral( char *p )
             p += i + 1;
             continue;
         }
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         if( *p == quote_char ) {
             ++p;
             break;
         }
         if( *p == '\\' ) {
             ++p;
-            if( *p == '\0' ) break;
+            if( *p == '\0' ) {
+                break;
+            }
         }
         ++p;
     }
     return( p );
 }
 
-char *PPScanDigits( char *p )
+static const char *PPScanDigits( const char *p )
 {
-    while( *p >= '0'  &&  *p <= '9' ) ++p;
+    while( *p >= '0' && *p <= '9' )
+        ++p;
     return( p );
 }
 
-char *PPScanSuffix( char *p )
+static const char *PPScanSuffix( const char *p )
 {
-    while( *p == 'u'  ||  *p == 'U'  ||  *p == 'l'  ||  *p == 'L' ) {
+    while( *p == 'u' || *p == 'U' || *p == 'l' || *p == 'L' ) {
         p++;
     }
     return( p );
 }
 
-char *PPScanHexNumber( char *p )
+static const char *PPScanHexNumber( const char *p )
 {
-    char        c;
+    char    c;
 
     p += 2;                             // skip over the "0x"
     for( ;; ) {
         p = PPScanDigits( p );
-        c = tolower( *p );
-        if( c < 'a'  ||  c > 'f' ) break;
+        c = (char)tolower( *p );
+        if( c < 'a' || c > 'f' )
+            break;
         ++p;
     }
     p = PPScanSuffix( p );
     return( p );
 }
 
-char *PPScanNumber( char *p )
+static const char *PPScanNumber( const char *p )
 {
     p = PPScanDigits( p );
     if( *p == '.' ) {
         p = PPScanDigits( p + 1 );
     }
-    if( *p == 'e'  ||  *p == 'E' ) {
+    if( *p == 'e' || *p == 'E' ) {
         p++;
-        if( *p == '+'  ||  *p == '-' ) {
+        if( *p == '+' || *p == '-' ) {
             ++p;
         }
         p = PPScanDigits( p );
@@ -1111,140 +1146,163 @@ char *PPScanNumber( char *p )
     return( p );
 }
 
-char *PPScanOther( char *p )
+static const char *PPScanOther( const char *p )
 {
     for( ;; ) {
-        if( *p == '\0' ) break;
-        if( *p == '\'' ) break;
-        if( *p == '\"' ) break;
-        if( *p == '_'  ) break;
-        if( *p == ','  ) break;
-        if( *p == PreProcChar ) break;
-        if( *p == '('  ) break;
-        if( *p == ')'  ) break;
-        if( *p == ' '  ) break;
-        if( *p == '\t' ) break;
-        if( *p == '\r' ) break;
-        if( *p == '\n' ) break;
-        if( *p >= '0'  &&  *p <= '9' ) break;
-        if( isalpha( *p ) ) break;
+        if( *p == '\0' )
+            break;
+        if( *p == '\'' )
+            break;
+        if( *p == '\"' )
+            break;
+        if( *p == '_'  )
+            break;
+        if( *p == ','  )
+            break;
+        if( *p == PreProcChar )
+            break;
+        if( *p == '('  )
+            break;
+        if( *p == ')'  )
+            break;
+        if( *p == ' '  )
+            break;
+        if( *p == '\t' )
+            break;
+        if( *p == '\r' )
+            break;
+        if( *p == '\n' )
+            break;
+        if( *p >= '0' && *p <= '9' )
+            break;
+        if( isalpha( *p ) )
+            break;
         ++p;
     }
     return( p );
 }
 
-char *PP_ScanToken( char *p, char *token )
+const char *PP_ScanToken( const char *p, ppt_token *token )
 {
-    char        *p2;
-    char        c;
-    char        white_space;
+    const char  *p2;
+    bool        white_space;
+    ppt_token   ctoken;
 
     if( PPFlags & PPFLAG_SKIP_COMMENT ) {
         *token = PPT_COMMENT;
-        for( ;; ) {
-            if( *p == '\0' ) break;
-            if( *p == '*'  &&  p[1] == '/' ) {
+        for( ; *p != '\0'; ++p ) {
+            if( p[0] == '*' && p[1] == '/' ) {
                 p += 2;
                 PPFlags &= ~PPFLAG_SKIP_COMMENT;
                 break;
             }
-            ++p;
         }
         return( p );
     }
-    c = *p;
     switch( *p ) {
     case '(':
+        ++p;
+        ctoken = PPT_LEFT_PAREN;
+        break;
     case ')':
+        ++p;
+        ctoken = PPT_RIGHT_PAREN;
+        break;
     case ',':
-        p2 = p + 1;
+        ++p;
+        ctoken = PPT_COMMA;
         break;
     case '\'':
     case '\"':
-        p2 = PPScanLiteral( p );
-        c = PPT_LITERAL;
+        p = PPScanLiteral( p );
+        ctoken = PPT_LITERAL;
         break;
     case '.':
-        if( p[1] >= '0'  &&  p[1] <= '9' ) {
-            p2 = PPScanNumber( p );
-            c = PPT_NUMBER;
+        if( p[1] >= '0' && p[1] <= '9' ) {
+            p = PPScanNumber( p );
+            ctoken = PPT_NUMBER;
         } else {
-            p2 = PPScanOther( p );
-            c = PPT_OTHER;
+            p = PPScanOther( p );
+            ctoken = PPT_OTHER;
         }
         break;
     case ' ':
     case '\t':
     case '\r':
     case '\n':
-        p2 = PP_SkipSpace( p, &white_space );
-        c = PPT_WHITE_SPACE;
+        p = PP_SkipSpace( p, &white_space );
+        ctoken = PPT_WHITE_SPACE;
         break;
     case ';':
     case '/':
         p2 = PP_SkipComment( p, &white_space );
         if( white_space ) {
-            c = PPT_COMMENT;
+            p = p2;
+            ctoken = PPT_COMMENT;
         } else {
-            p2 = PPScanOther( p );
-            c = PPT_OTHER;
+            p = PPScanOther( p );
+            ctoken = PPT_OTHER;
         }
         break;
     case '#':
         if( PPFlags & PPFLAG_ASM_COMMENT ) {
             p2 = PP_SkipComment( p, &white_space );
             if( white_space ) {
-                c = PPT_COMMENT;
+                p = p2;
+                ctoken = PPT_COMMENT;
             } else {
-                p2 = PPScanOther( p );
-                c = PPT_OTHER;
+                p = PPScanOther( p );
+                ctoken = PPT_OTHER;
             }
             break;
         }
         // Fall through!
     default:
-        if( c == PreProcChar ) {
+        if( p[0] == PreProcChar ) {
             if( p[1] == PreProcChar ) {
-                p2 = p + 2;
-                c = PPT_SHARP_SHARP;
+                p += 2;
+                ctoken = PPT_SHARP_SHARP;
             } else {
-                p2 = p + 1;
-                c = PPT_SHARP;
+                ++p;
+                ctoken = PPT_SHARP;
             }
-        } else if( c >= '0'  &&  c <= '9' ) {
-            if( p[1] == 'x'  ||  p[1] == 'X' ) {
-                p2 = PPScanHexNumber( p );
+        } else if( p[0] >= '0' && p[0] <= '9' ) {
+            if( p[1] == 'x' || p[1] == 'X' ) {
+                p = PPScanHexNumber( p );
             } else {
-                p2 = PPScanNumber( p );
+                p = PPScanNumber( p );
             }
-            c = PPT_NUMBER;
-        } else if( c == 'L' && (p[1] == '\'' || p[1] == '\"') ) {
-            p2 = PPScanLiteral( p + 1 );
-            c = PPT_LITERAL;
-        } else if( isalpha( c ) || c == '_' ) {
-            p2 = PP_ScanName( p );
-            c = PPT_ID;
+            ctoken = PPT_NUMBER;
+        } else if( p[0] == 'L' && (p[1] == '\'' || p[1] == '\"') ) {
+            p = PPScanLiteral( p + 1 );
+            ctoken = PPT_LITERAL;
+        } else if( isalpha( p[0] ) || p[0] == '_' ) {
+            p = PP_ScanName( p );
+            ctoken = PPT_ID;
         } else {
-            p2 = PPScanOther( p );
-            c = PPT_OTHER;
+            p = PPScanOther( p );
+            ctoken = PPT_OTHER;
         }
         break;
     }
-    *token = c;
-    return( p2 );
+    *token = ctoken;
+    return( p );
 }
 
-int PP_ScanNextToken( char *token )
+int PP_ScanNextToken( ppt_token *token )
 {
-    *PPCharPtr = PPSavedChar;
-    if( *PPCharPtr == '\0' ) {
-        if( PPFlags & PPFLAG_DONT_READ )  return( EOF );
-        if( PP_Read() == 0 )   return( EOF );
+    *(char *)PPNextTokenPtr = PPSavedChar;
+    if( *PPNextTokenPtr == '\0' ) {
+        if( PPFlags & PPFLAG_DONT_READ )
+            return( EOF );
+        if( PP_Read() == 0 ) {
+            return( EOF );
+        }
     }
-    PPTokenPtr = PPCharPtr;
-    PPCharPtr = PP_ScanToken( PPCharPtr, token );
-    PPSavedChar = *PPCharPtr;
-    *PPCharPtr = '\0';
+    PPTokenPtr = PPNextTokenPtr;
+    PPNextTokenPtr = PP_ScanToken( PPNextTokenPtr, token );
+    PPSavedChar = *PPNextTokenPtr;
+    *(char *)PPNextTokenPtr = '\0';
     return( 0 );
 }
 
@@ -1252,47 +1310,50 @@ int PP_Char( void )
 {
     MACRO_TOKEN *mtok;
     MACRO_ENTRY *me;
-    char        token;
+    ppt_token   token;
 
     if( *PPTokenPtr == '\0' ) {
-        for( ;; ) {
-            mtok = PPTokenList;
-            if( mtok == NULL ) break;
+        for( ; (mtok = PPTokenList) != NULL; ) {
             PPTokenList = mtok->next;
             PP_Free( mtok );
             mtok = PPTokenList;
-            if( mtok == NULL ) break;
-            if( mtok->token == PPT_NULL  &&  mtok->data[0] == 'Z' ) {
-                DeleteNestedMacro();
-                continue;
+            if( mtok == NULL )
+                break;
+            if( !IS_END_OF_MACRO( mtok ) ) {
+                PPTokenPtr = mtok->data;
+                return( *PPTokenPtr++ );
             }
-            PPTokenPtr = mtok->data;
-            return( *PPTokenPtr++ );
+            DeleteNestedMacro();
         }
         for( ;; ) {
             for( ;; ) {
-                if( PP_ScanNextToken( &token ) == EOF )  return( EOF );
-                if( token != PPT_COMMENT )  break;
-                if( PPFlags & PPFLAG_KEEP_COMMENTS )  break;
+                if( PP_ScanNextToken( &token ) == EOF )
+                    return( EOF );
+                if( token != PPT_COMMENT )
+                    break;
+                if( PPFlags & PPFLAG_KEEP_COMMENTS )
+                    break;
                 if( PPSavedChar == '\0' ) {
-                    PPTokenPtr = PPCharPtr;
+                    PPTokenPtr = PPNextTokenPtr;
                     return( '\n' );
                 } else {
                     // replace comment with a space
-                    PPTokenPtr = PPCharPtr;
+                    PPTokenPtr = PPNextTokenPtr;
                     return( ' ' );
                 }
             }
-            if( token != PPT_ID )  break;
-            me = PP_MacroLookup( PPTokenPtr );
-            if( me == NULL )  break;
-            if( me->parmcount != PP_SPECIAL_MACRO && me->parmcount != 0) {
+            if( token != PPT_ID )
+                break;
+            me = PP_MacroLookup( PPTokenPtr, strlen( PPTokenPtr ) );
+            if( me == NULL )
+                break;
+            if( me->parmcount != PP_SPECIAL_MACRO && me->parmcount != 0 ) {
                 if( PPSavedChar != '(' ) {
                     break;
                 }
             }
             DoMacroExpansion( me );
-            if( PPTokenList != NULL ) {                 /* 08-feb-93 */
+            if( PPTokenList != NULL ) {
                 PPTokenPtr = PPTokenList->data;
                 break;
             }
@@ -1310,7 +1371,7 @@ extern void PreprocVarInit( void )
     strcpy( PP__DATE__, "\"Dec 31 2005\"" );
     strcpy( PP__TIME__, "\"12:00:00\"" );
     PPBufPtr = NULL;
-    PPCharPtr = NULL;
+    PPNextTokenPtr = NULL;
     PPTokenList = NULL;
     PPCurToken = NULL;
     memset( PPLineBuf, 0, sizeof( PPLineBuf ) );

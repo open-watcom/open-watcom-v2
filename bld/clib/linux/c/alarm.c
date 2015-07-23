@@ -35,6 +35,6 @@
 
 _WCRTLINK unsigned alarm( unsigned int __seconds )
 {
-    u_long res = sys_call1( SYS_alarm, __seconds );
+    syscall_res res = sys_call1( SYS_alarm, __seconds );
     __syscall_return( unsigned, res );
 }

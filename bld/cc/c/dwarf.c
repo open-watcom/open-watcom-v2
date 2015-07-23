@@ -262,6 +262,7 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
     return( dh );
 }
 
+#if 0
 uint dwarfTypeModifier( type_modifiers decl_flags )
 /*************************************************/
 {
@@ -296,6 +297,7 @@ uint dwarfTypeModifier( type_modifiers decl_flags )
 #endif
     return( modtype  );
 }
+#endif
 
 static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
 /***********************************************************/
@@ -618,13 +620,13 @@ static void dwarfEmitFunctions( void )
     }
 }
 
-void SetDwarfType( TYPEPTR typ )
+static void SetDwarfType( TYPEPTR typ )
 {
     typ->type_flags &= ~TF2_DWARF;
     typ->u1.dwarf_type = 0;
 }
 
-void SetFuncDwarfType( TYPEPTR typ, int index )
+static void SetFuncDwarfType( TYPEPTR typ, int index )
 {
     index = index;   /* unused */
     typ->type_flags &= ~TF2_DWARF;

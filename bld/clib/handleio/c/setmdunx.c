@@ -38,6 +38,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "rterrno.h"
+#include "iomode.h"
 #include "rtcheck.h"
 
 _WCRTLINK int (setmode)( int handle, int mode )

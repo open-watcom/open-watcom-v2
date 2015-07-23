@@ -41,7 +41,7 @@ static  void    end_lp( void )
 {
     tag_cb  *   wk;
 
-    if( nest_cb->c_tag == t_LP ) {      // terminate current :LP
+    if( nest_cb->gtag == GML_TAG_LP ) {    // terminate current :LP
         wk = nest_cb;
         nest_cb = nest_cb->prev;
         add_tag_cb_to_pool( wk );
@@ -53,7 +53,7 @@ static  void    end_lp( void )
 /*  :SL, ... common processing                                             */
 /***************************************************************************/
 
-static void gml_xl_lp_common( gml_tag gtag, e_tags t )
+static void gml_xl_lp_common( gml_tag gtag )
 {
     char        *   p;
 
@@ -63,13 +63,13 @@ static void gml_xl_lp_common( gml_tag gtag, e_tags t )
 
     init_nest_cb( true );
 
-    nest_cb->c_tag = t;
+    nest_cb->gtag = gtag;
 
     scan_err = false;
     p = scan_start;
     if( *p == '.' ) p++;                    // possible tag end
-    if( t != t_LP ) {                       // text only allowed for :LP
-        if( t != t_DL && t != t_GL ) {      // DL/GL don't require LI/LP
+    if( gtag != GML_TAG_LP ) {                       // text only allowed for :LP
+        if( gtag != GML_TAG_DL && gtag != GML_TAG_GL ) {      // DL/GL don't require LI/LP
             ProcFlags.need_li_lp = true;    // :LI or :LP  next
         }
         start_doc_sect();                   // if not already done
@@ -135,7 +135,7 @@ void    gml_dl( gml_tag gtag )  // not tested TBD
     } else {
         compact = false;
     }
-    gml_xl_lp_common( gtag, t_DL );
+    gml_xl_lp_common( gtag );
 
     nest_cb->compact = compact;
 
@@ -187,7 +187,7 @@ void    gml_gl( gml_tag gtag )  // not tested TBD
     } else {
         compact = false;
     }
-    gml_xl_lp_common( gtag, t_GL );
+    gml_xl_lp_common( gtag );
 
     nest_cb->compact = compact;
 
@@ -237,7 +237,7 @@ void    gml_ol( gml_tag gtag )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
-    gml_xl_lp_common( gtag, t_OL );
+    gml_xl_lp_common( gtag );
 
     nest_cb->compact = compact;
 
@@ -286,7 +286,7 @@ void    gml_sl( gml_tag gtag )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
-    gml_xl_lp_common( gtag, t_SL );
+    gml_xl_lp_common( gtag );
 
     nest_cb->compact = compact;
 
@@ -337,7 +337,7 @@ void    gml_ul( gml_tag gtag )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
-    gml_xl_lp_common( gtag, t_UL );
+    gml_xl_lp_common( gtag );
 
     nest_cb->compact = compact;
 
@@ -357,17 +357,14 @@ void    gml_ul( gml_tag gtag )
 /*  common :eXXX processing                                                */
 /***************************************************************************/
 
-void    gml_exl_common( gml_tag gtag, e_tags t )
+void    gml_exl_common( gml_tag egtag )
 {
     char    *   p;
     tag_cb  *   wk;
 
-    gtag = gtag;
-    if( nest_cb->c_tag == t_LP ) {      // terminate :LP if active
-        end_lp();
-    }
+    end_lp();                           // terminate :LP if active
 
-    if( !g_err_tag_t_nest( t ) ) {
+    if( !g_err_gml_etag( egtag ) ) {
         g_cur_left = nest_cb->lm;
         g_cur_h_start = nest_cb->lm;
         g_page_right = nest_cb->rm;
@@ -424,51 +421,51 @@ void    gml_exl_common( gml_tag gtag, e_tags t )
 void    gml_edl( gml_tag gtag ) // not tested TBD
 {
     scr_process_break();
-    if( nest_cb->c_tag == t_DL ) {
+    if( nest_cb->gtag == GML_TAG_DL ) {
         set_skip_vars( NULL, NULL,
             &((dl_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( gtag, t_DL );
+    gml_exl_common( gtag );
 }
 
 void    gml_egl( gml_tag gtag ) // not tested TBD
 {
     scr_process_break();
-    if( nest_cb->c_tag == t_GL ) {
+    if( nest_cb->gtag == GML_TAG_GL ) {
         set_skip_vars( NULL, NULL,
             &((gl_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( gtag, t_GL );
+    gml_exl_common( gtag );
 }
 
 void    gml_eol( gml_tag gtag )
 {
     scr_process_break();
-    if( nest_cb->c_tag == t_OL ) {
+    if( nest_cb->gtag == GML_TAG_OL ) {
         set_skip_vars( NULL, NULL,
             &((ol_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( gtag, t_OL );
+    gml_exl_common( gtag );
 }
 
 void    gml_esl( gml_tag gtag )
 {
     scr_process_break();
-    if( nest_cb->c_tag == t_SL ) {
+    if( nest_cb->gtag == GML_TAG_SL ) {
         set_skip_vars( NULL, NULL,
             &((sl_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( gtag, t_SL );
+    gml_exl_common( gtag );
 }
 
 void    gml_eul( gml_tag gtag )
 {
     scr_process_break();
-    if( nest_cb->c_tag == t_UL ) {
+    if( nest_cb->gtag == GML_TAG_UL ) {
         set_skip_vars( NULL, NULL,
             &((ul_lay_tag *)(nest_cb->lay_tag))->post_skip, 1, g_curr_font );
     }
-    gml_exl_common( gtag, t_UL );
+    gml_exl_common( gtag );
 }
 
 
@@ -704,25 +701,23 @@ static  void    gml_li_ul( gml_tag gtag )
 
 void    gml_li( gml_tag gtag )
 {
-    if( nest_cb->c_tag == t_LP ) {      // terminate :LP if active
-        end_lp();
-    }
+    end_lp();                           // terminate :LP if active
 
-    switch( nest_cb->c_tag ) {
-    case t_OL :
+    switch( nest_cb->gtag ) {
+    case GML_TAG_OL :
         gml_li_ol( gtag );
         break;
-    case t_SL :
+    case GML_TAG_SL :
         gml_li_sl( gtag );
         break;
-    case t_UL :
+    case GML_TAG_UL :
         gml_li_ul( gtag );
         break;
 #if 0
-    case t_DL :
+    case GML_TAG_DL :
         gml_li_dl( gtag );             // error message here?
         break;
-    case t_GL :
+    case GML_TAG_GL :
         gml_li_gl( gtag );             // error message here?
         break;
 #endif
@@ -753,20 +748,20 @@ void    gml_lp( gml_tag gtag )
         return;
     }
 
-    switch( nest_cb->c_tag ) {
-    case t_OL :
+    switch( nest_cb->gtag ) {
+    case GML_TAG_OL :
         list_skip_su = &((ol_lay_tag *)(nest_cb->lay_tag))->pre_skip;
         break;
-    case t_SL :
+    case GML_TAG_SL :
         list_skip_su = &((sl_lay_tag *)(nest_cb->lay_tag))->pre_skip;
         break;
-    case t_UL :
+    case GML_TAG_UL :
         list_skip_su = &((ul_lay_tag *)(nest_cb->lay_tag))->pre_skip;
         break;
-    case t_DL :             // TBD
+    case GML_TAG_DL :           // TBD
         list_skip_su = &((dl_lay_tag *)(nest_cb->lay_tag))->pre_skip;
         break;
-    case t_GL :             // TBD
+    case GML_TAG_GL :           // TBD
         list_skip_su = &((gl_lay_tag *)(nest_cb->lay_tag))->pre_skip;
         break;
     default:
@@ -774,7 +769,7 @@ void    gml_lp( gml_tag gtag )
     }
     lp_skip_su = &layout_work.lp.pre_skip;
 
-    gml_xl_lp_common( gtag, t_LP );
+    gml_xl_lp_common( gtag );
 
     nest_cb->compact = false;
 

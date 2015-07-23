@@ -35,6 +35,6 @@
 
 _WCRTLINK int chroot( const char *__path )
 {
-    u_long res = sys_call1( SYS_chroot, (u_long)__path );
+    syscall_res res = sys_call1( SYS_chroot, (u_long)__path );
     __syscall_return( int, res );
 }

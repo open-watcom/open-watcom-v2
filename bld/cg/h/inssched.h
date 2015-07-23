@@ -52,3 +52,6 @@ typedef struct dep_list_entry {
     struct dep_list_entry   *next;
     data_dag                *dep;
 } dep_list_entry;
+
+extern const FU_entry   *FUEntry( instruction *ins );
+extern void             Schedule( void );

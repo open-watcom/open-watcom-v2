@@ -63,11 +63,11 @@ extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
         AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static unsigned ___getdcwd_lfn( char *buff, unsigned char drv )
-/*************************************************************/
+static tiny_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
+/**************************************************************/
 {
   #ifdef _M_I86
-    return( __getdcwd_lfn( buff, drv ) );
+    return( ___getdcwd_lfn( buff, drv ) );
   #else
     call_struct     dpmi_rm;
 
@@ -81,7 +81,7 @@ static unsigned ___getdcwd_lfn( char *buff, unsigned char drv )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     strcpy( buff, RM_TB_PARM1_LINEAR );
     return( 0 );
@@ -93,13 +93,13 @@ unsigned __getdcwd( char *buff, unsigned char drv )
 /*************************************************/
 {
 #ifdef __WATCOM_LFN__
-    unsigned        rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = ___getdcwd_lfn( buff, drv )) == 0 ) {
-        return( rc );
+    if( _RWD_uselfn && TINY_OK( rc = __getdcwd_lfn( buff, drv ) ) ) {
+        return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( rc );
+        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
     return( __getdcwd_sfn( buff, drv ) );

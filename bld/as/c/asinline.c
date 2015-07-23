@@ -32,13 +32,11 @@
 
 #include "as.h"
 #include "asinline.h"
+#include "asparser.h"
 
 #ifdef _STANDALONE_
 #error For inline-assembler only!
 #endif
-
-extern void AsLexerFini( void );
-extern int yyparse( void );
 
 
 const char *AsmInStr;

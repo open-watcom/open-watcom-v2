@@ -92,10 +92,14 @@ inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
 .asm: ../asm
 
 $(name).lib : uistr.gh $(objs) $(libs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(objs) $(libs)
+!else
     $(librarian) $(libflags) $(objs) $(libs)
+!endif
 
 uistr.gh : uistrmsg.gh
-    awk -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE $[@ > $^@
+    *awk -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE -v OUTFILE=$^. $[@
 
 uistrmsg.gh : ../res/commonui.msg
-    $(cpp) $(rc_aui_flags) -I"../h" $[@ >$^@
+    $(cpp) $(rc_aui_flags) -I"../h" -o$^@ $[@

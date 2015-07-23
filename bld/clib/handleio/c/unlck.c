@@ -37,6 +37,7 @@
 #ifndef __OS2__
     #include "tinyio.h"
 #endif
+#include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "thread.h"

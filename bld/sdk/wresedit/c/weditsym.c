@@ -76,7 +76,7 @@ static void addSymbols( WRHashTable *table )
 {
     int                 hash;
     MACRO_ENTRY         *me;
-    char                *endptr;
+    const char          *endptr;
     PREPROC_VALUE       val;
     WRHashValue         value;
     WRHashEntry         *entry;

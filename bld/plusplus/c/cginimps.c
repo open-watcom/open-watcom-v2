@@ -50,7 +50,7 @@ struct imp_list_s {
 static IMP_LIST *importRing;
 static IMP_LIST_S *importRingS;
 
-static IMP_LIST *addNewImport( char *name )
+static IMP_LIST *addNewImport( const char *name )
 {
     size_t len;
     IMP_LIST *new_import;
@@ -72,7 +72,7 @@ static IMP_LIST_S *addNewImportS( SYMBOL sym )
     return( new_import );
 }
 
-void CgInfoAddImport( char *name )
+void CgInfoAddImport( const char *name )
 /********************************/
 {
     if(CompFlags.emit_targimp_symbols)
@@ -98,7 +98,7 @@ void *CgInfoImportNextS( void *h )
     return( RingStep( importRingS, h ) );
 }
 
-char *CgInfoImportName( void *h )
+const char *CgInfoImportName( void *h )
 /*******************************/
 {
     return( ((IMP_LIST *)h)->name );

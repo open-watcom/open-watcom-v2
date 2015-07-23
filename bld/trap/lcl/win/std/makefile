@@ -60,5 +60,4 @@ extra_linker = &
 inc_dirs = $(windbg_inc_dirs)
 extra_libs = $(windbg_lib)
 
-!include $(trap_dir)/lcl/dos/dos.mif
-!include $(trap_dir)/master.mif
+!include $(trap_dir)/lcl/win/win.mif

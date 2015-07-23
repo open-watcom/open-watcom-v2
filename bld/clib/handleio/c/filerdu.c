@@ -41,12 +41,15 @@
 #include <sys/stat.h>
 #include <share.h>
 #include <time.h>
+#include <sys/locking.h>
 #include <rdos.h>
 #include "rtdata.h"
 #include "liballoc.h"
 #include "rtinit.h"
 #include "iomode.h"
 #include "openmode.h"
+#include "qread.h"
+#include "qwrite.h"
 #include "_rdos.h"
 
 #define CONSOLE "CON"
@@ -282,7 +285,7 @@ static void ProcessInherit( const char *inherit )
     }
 }
 
-void InitHandle( void )
+static void InitHandle( void )
 {
     int i;
     rdos_handle_type *h;
@@ -321,7 +324,7 @@ void InitHandle( void )
         ProcessInherit( inherit );
 }
 
-void FiniHandle( void )
+static void FiniHandle( void )
 {
     int i;
 

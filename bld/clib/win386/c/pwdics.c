@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define INCLUDE_PENWIN_H
 #include "variety.h"
 #include "cover.h"
 

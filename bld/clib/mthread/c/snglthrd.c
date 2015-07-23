@@ -52,7 +52,7 @@ static thread_data *__SingleThread( void )
     return( __FirstThreadData );
 }
 
-_WCRTDATA thread_data *(*__GetThreadPtr)( void ) = __SingleThread;
+thread_data *(*__GetThreadPtr)( void ) = __SingleThread;
 
 #if defined( __NETWARE__ )
 

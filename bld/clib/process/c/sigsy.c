@@ -39,6 +39,7 @@
 #include "stacklow.h"
 #include "sigfunc.h"
 #include "_int23.h"
+#include "_ctrlc.h"
 
 /* Ctrl-Break vector (IBM compatible) */
 #define CTRL_BRK_VEC    0x1B
@@ -51,8 +52,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
  #else
   #include "extender.h"
   #include "dpmi.h"
-
-  extern  int __DPMI_hosted( void );
+  #include "dpmihost.h"
 
   extern  void pharlap_setvect( unsigned, pfun );
   #pragma aux  pharlap_setvect =  0x1e   /* push ds    */\
@@ -114,8 +114,6 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
  #endif
 #endif
 
-        void    __restore_int23( void );
-        void    __restore_int_ctrl_break( void );
 static  void    __restore_int( void );
 // __int23_exit is now a multi-state pointer:
 // __null_int23_exit        -> implies no vectors are hooked
@@ -341,4 +339,5 @@ void __grab_FPE_handler( void )
         _RWD_FPE_handler = __sigfpe_handler;
     }
 }
+
 #endif

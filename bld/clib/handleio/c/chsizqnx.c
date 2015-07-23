@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include "rtdata.h"
+#include "iomode.h"
 #include "rtcheck.h"
 
 _WCRTLINK int chsize( int handle, long size )

@@ -454,7 +454,7 @@ TYPE MakeFlagModifier( type_flag flag )
     return( makeFullModifier( flag, NULL, NULL ) );
 }
 
-TYPE MakeVolatileModifier( void )
+static TYPE MakeVolatileModifier( void )
 /*******************************/
 {
     return( MakeFlagModifier( TF1_VOLATILE ) );
@@ -9378,7 +9378,7 @@ static void relocType( void *e, carve_walk_base *d )
 #undef __type_reloc_size
 }
 
-pch_status PCHRelocTypes( char *block, unsigned size )
+pch_status PCHRelocTypes( char *block, size_t size )
 {
     auto type_reloc_pch_walk type_data;
 

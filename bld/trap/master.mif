@@ -177,10 +177,10 @@ d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
         @%make $(target)
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
         $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
@@ -256,4 +256,4 @@ rc_inc_dirs = -I"$(trap_dir)/common"
         $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
 usage.u : ../$(srv).sp
-        wsplice -u $< $@
+        *wsplice -u $< $@

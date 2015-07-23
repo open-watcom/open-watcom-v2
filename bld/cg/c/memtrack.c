@@ -142,7 +142,7 @@ static char *FormHex( char *ptr, size_t data, unsigned size )
     return( ptr );
 }
 
-void TrPrt( tracker *trk, char *fmt, ... )
+static void TrPrt( tracker *trk, char *fmt, ... )
 {
     va_list         args;
     char            buff[80];

@@ -103,7 +103,11 @@ objs = &
 all : $(dlgfiles) aui.lib .SYMBOLIC
 
 aui.lib : auistr.gh $(objs) $(__makefiles__)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(objs)
+!else
     $(librarian) $(libflags) $(objs)
+!endif
 
 !ifeq os2pm 1
 dlg_command  = parsedlg -font=10.Helv $[@ $@
@@ -128,4 +132,4 @@ japsrcha.gdl : ../res/dlgs/japsrcha.dlg
     $(dlgj_command)
 
 auistr.gh : ../res/aui.msg
-    awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+    *awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

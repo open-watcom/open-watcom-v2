@@ -24,11 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Abnormal termination processing.
 *
 ****************************************************************************/
 
 
-extern  void    (*__int23_exit)( void );
-extern  void    __null_int23_exit( void );
+extern bool TBreak( void );
+extern void CauseTBreak( void );
+extern void FatalError( const char *str );

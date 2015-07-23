@@ -159,9 +159,9 @@ extra_l_flags_rdos =
 # resources
 ############
 !ifeq sys_windowed 1
-resname_win         = wvwin
-resname_nt          = wvnt
-resname_os2         = wvpm
+resname_win     = wvwin
+resname_nt      = wvnt
+resname_os2     = wvpm
 !endif
 
 !ifdef resname_$(host_os)
@@ -218,39 +218,41 @@ extra_ldflags = -ldl
 
 $(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
+    $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
-        %create $^&.lnk
-        @%append $^&.lnk option verbose,nocache
-        @for %i in ($(libs))    do @%append $^&.lnk library %i
-        @for %i in ($(sysobjs)) do @%append $^&.lnk file %i
-        @%append $^&.lnk file fingmsg.obj
+    %create $^&.lnk
+    @%append $^&.lnk option verbose,nocache
+    @for %i in ($(libs))    do @%append $^&.lnk library %i
+    @for %i in ($(sysobjs)) do @%append $^&.lnk file %i
+    @%append $^&.lnk file fingmsg.obj
 !ifeq host_os dos
 !ifdef ovl_dos
-        @%append $^&.lnk begin autosection
+    @%append $^&.lnk begin autosection
 !endif
 !endif
-        @for %i in ($(objs)) do @%append $^&.lnk file %i
-        $(linker) name $^@ $(lflags) @$^&.lnk $(endsect)
+    @for %i in ($(objs)) do @%append $^&.lnk file %i
+    $(linker) name $^@ $(lflags) @$^&.lnk $(endsect)
 !if 0
 !ifdef ovl_dos
-        copy $^&.map $(lnk2)
-        vi -d -q -s ..\mapfix.vi $(lnk2)
-        $(linker) name $^@ $(lflags) @$(lnk) @$(lnk2) $(endsect)
+    copy $^&.map $(lnk2)
+    vi -d -q -s ..\mapfix.vi $(lnk2)
+    $(linker) name $^@ $(lflags) @$(lnk) @$(lnk2) $(endsect)
 !endif
 !endif
 !endif
 !ifneq sys_windowed 1
-        @%make bind_version_res_exe
-        $(wstrip) -q -a -r $^@ . $(resfile)
+    @%make bind_version_res_exe
+    $(wstrip) -q -a -r $^@ . $(resfile)
 !else
-        $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
+    $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
 wd.lib : litdef.gh $(engine_objs)
-        @%create tmp.lbc
-        @for %i in ($(engine_objs)) do @%append tmp.lbc +%i
-        $(librarian) $(libflags) @tmp.lbc
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(engine_objs)
+!else
+    $(librarian) $(libflags) $(engine_objs)
+!endif
 
 $(lnk) : $(__MAKEFILES__)
 
@@ -434,22 +436,22 @@ rcfiles = &
     $(wv_dialogs)
 
 wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
-        $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvuidll.res : $(rdir)/wvuidll.rc litdef.gh .autodepend
-        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvnt.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
 
 ####################
 .EXTENSIONS: .str
@@ -463,18 +465,19 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
 .str: h;$(rdir)/strings
 
 litdefm.tmp : menu.str
-        $(cpp) $(rc_aui_flags) $< >$@
+    $(cpp) $(rc_aui_flags) -o$@ $<
 
 litdefs1.tmp : wdeng.str
-        $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
+    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $<
 
 litdefs2.tmp : wddui.str
-        $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
+    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $<
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp
-        awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg.awk litdefs1.tmp > $^@
-        awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg.awk litdefs2.tmp >> $^@
-        awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg.awk litdefm.tmp >>$^@
+    @%create $^@ 
+    *awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
+    *awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
+    *awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
 
 !ifeq release 0
 wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN
@@ -483,14 +486,10 @@ wsplice_keys = -kIS_RC -k$(host_os)
 !endif
 
 usage.gh : $(hdir)/usage.sp
-        wsplice -kENGLISH $(wsplice_keys) -t8 @<<usage.tmp $< $@
--f "pick((MSG_USAGE_BASE+%#%+), \"%s\", \"\")"
-<<
+    *wsplice -kENGLISH $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $@
 
 usagej.gh : $(hdir)/usage.sp
-        wsplice -kJAPANESE $(wsplice_keys) -t8 @<<usagej.tmp $< $@
--f "pick((MSG_USAGE_BASE+%#%+), \"\", \"%s\")"
-<<
+    *wsplice -kJAPANESE $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@
 
 usage.u : $(hdir)/usage.sp
-        wsplice -u -kENGLISH -k$(host_os) -klinkres $[@ $@
+    *wsplice -u -kENGLISH -k$(host_os) -klinkres $[@ $@

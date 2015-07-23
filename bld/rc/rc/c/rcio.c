@@ -140,7 +140,7 @@ static bool Pass1InitRes( void )
 
 int RcFindResource( const char *name, char *fullpath )
 {
-    return( PP_FindInclude( name, fullpath, PPINCLUDE_SRC ) );
+    return( PP_FindInclude( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }
 
 extern void RcTmpFileName( char *tmpfilename )
@@ -875,8 +875,17 @@ extern int RcIoGetChar( void )
     }
 
     if( InStack.NextChar >= InStack.EofChar ) {
-        /* if this is a real EOF */
-        if( InStack.NextChar < InStack.Buffer + InStack.BufferSize ) {
+        /* we have reached the end of the buffer */
+        if( InStack.NextChar >= InStack.Buffer + InStack.BufferSize ) {
+            /* try to read next buffer */
+            error = ReadBuffer( &(InStack) );
+            if( error ) {
+                /* this error is reported in ReadBuffer so just terminate */
+                RcFatalError( ERR_NO_MSG );
+            }
+        }
+        if( InStack.NextChar >= InStack.EofChar ) {
+            /* this is a real EOF */
             /* unstack one file */
             isempty = RcIoPopInputFile();
             if( isempty ) {
@@ -892,13 +901,6 @@ extern int RcIoGetChar( void )
                     /* string error for strings */
                     return( '\n' );
                 }
-            }
-        } else {
-            /* otherwise we have reached the end of the buffer */
-            error = ReadBuffer( &(InStack) );
-            if( error ) {
-                /* this error is reported in ReadBuffer so just terminate */
-                RcFatalError( ERR_NO_MSG );
             }
         }
     }

@@ -2074,7 +2074,7 @@ bool ScopeHasVirtualFunctions( SCOPE scope )
 }
 
 
-SYMBOL_NAME scopeInsertName( SCOPE scope, SYMBOL sym, NAME name )
+static SYMBOL_NAME scopeInsertName( SCOPE scope, SYMBOL sym, NAME name )
 {
     SYMBOL_NAME sym_name;
     SYMBOL_NAME check_name;
@@ -7225,13 +7225,13 @@ SYMBOL_NAME SymbolNameMapIndex( SYMBOL_NAME i )
     return( CarveMapIndex( carveSYMBOL_NAME, i ) );
 }
 
-NAME_SPACE *NameSpaceGetIndex( NAME_SPACE *e )
+static NAME_SPACE *NameSpaceGetIndex( NAME_SPACE *e )
 /********************************************/
 {
     return( CarveGetIndex( carveNAME_SPACE, e ) );
 }
 
-NAME_SPACE *NameSpaceMapIndex( NAME_SPACE *i )
+static NAME_SPACE *NameSpaceMapIndex( NAME_SPACE *i )
 /********************************************/
 {
     return( CarveMapIndex( carveNAME_SPACE, i ) );

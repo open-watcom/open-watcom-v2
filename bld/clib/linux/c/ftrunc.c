@@ -35,6 +35,6 @@
 
 _WCRTLINK int ftruncate( int __fd, off_t __length )
 {
-    u_long res = sys_call2( SYS_ftruncate, __fd, __length );
+    syscall_res res = sys_call2( SYS_ftruncate, __fd, __length );
     __syscall_return( int, res );
 }

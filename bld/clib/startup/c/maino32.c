@@ -33,18 +33,16 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stddef.h>
 #include <io.h>
 #include <i86.h>
 #include <string.h>
 #define INCL_DOSMISC
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
-#include "osthread.h"
-#include "sigtab.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "rtinit.h"
@@ -53,6 +51,13 @@
 #include "snglthrd.h"
 #include "thread.h"
 #include "mthread.h"
+#include "fileacc.h"
+#include "heapacc.h"
+#include "trdlstac.h"
+#include "cinit.h"
+#include "osmainin.h"
+#include "procfini.h"
+#include "_exit.h"
 
 extern unsigned         __hmodule;
 unsigned short          __saved_CS;
@@ -84,30 +89,29 @@ extern  unsigned GetThreadStack(void);
 #pragma aux GetThreadStack = "mov eax,fs:[4]" value [eax];
 #endif
 
-unsigned __threadstack()
-/**********************/
+unsigned __threadstack( void )
+/****************************/
 {
 //    return( (unsigned)__TIBAddr()->tib_pstack );
     return( GetThreadStack() );
 }
 
-_WCRTLINK int *__threadid()
-/***************/
+_WCRTLINK int *__threadid( void )
+/*******************************/
 {
 //    return( (int *)(&__TIBAddr()->tib_ptib2->tib2_ultid) );
     return( GetTIDp() );
 }
 
-static  void    NullSigInit() {}
-static  void    NullSigFini() {}
+static  void    NullSigRtn( void ) {}
 
-_WCRTLINK void  (*__sig_init_rtn)(void) = { &NullSigInit };
-_WCRTLINK void  (*__sig_fini_rtn)(void) = { &NullSigFini };
+_WCRTDATA void  (*__sig_init_rtn)(void) = { NullSigRtn };
+_WCRTDATA void  (*__sig_fini_rtn)(void) = { NullSigRtn };
 
+extern  char            _end;
 #if defined(_M_IX86)
 #pragma aux _end "*"
 #endif
-extern  char            _end;
 
 int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 
@@ -121,7 +125,6 @@ typedef struct sys_info {
     unsigned long       version_minor;
 } sys_info;
 
-void __OS2Init( int, thread_data * );
 void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
                     unsigned hmod, char *env, char *cmd )
 /*******************************************************/
@@ -193,13 +196,13 @@ void __OS2Fini( void )
     __FirstThreadData = NULL;
 }
 
-_WCRTLINK void (*__process_fini)(unsigned,unsigned) = 0;
+_WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
 _WCRTLINK void __exit( unsigned ret_code )
 {
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
-        if( __process_fini != 0 ) {
+        if( __process_fini != NULL ) {
             (*__process_fini)( 0, FINI_PRIORITY_EXIT - 1 );
         }
     } else {

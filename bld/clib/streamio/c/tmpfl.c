@@ -89,7 +89,8 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
                 hdl = sopen( name1, OPEN_MODE, OPENMODE_DENY_COMPAT, PMODE );
 
                 // if we created it then continue with part II
-                if( hdl != -1 ) break;
+                if( hdl != -1 )
+                    break;
                 _RWD_errno = EAGAIN;
             }
             suffix1++;

@@ -156,9 +156,10 @@ pch_status PCHFiniIncAlias( bool writing )
     return( PCHCB_OK );
 }
 
+#if 0
 pch_status PCHRelocIncAlias( char *block, size_t size )
 {
     block = block; size = size;
     return( PCHCB_OK );
 }
-
+#endif

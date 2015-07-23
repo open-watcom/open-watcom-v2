@@ -23,45 +23,45 @@ gui_autodepends = .AUTODEPEND
 !include trmem.mif
 
 wv_objs = &
-       guicreat.obj   &
-       guihint.obj    &
-       guihook.obj    &
-       guimdi.obj     &
-       guiimdi.obj    &
-       guiimmdi.obj   &
-       guihflt.obj    &
-       guihot.obj     &
-       guidraw.obj    &
-       guiutil.obj    &
-       guipixel.obj   &
-       guipick.obj    &
-       guiscale.obj   &
-       guirscal.obj   &
-       guigcolr.obj   &
-       guimkey.obj    &
-       guizlist.obj   &
-       guiextra.obj   &
-       guimin.obj     &
-       guisetup.obj   &
-       guidlg.obj     &
-       guindlg.obj    &
-       guistyle.obj   &
-       guiwnclr.obj   &
-       guistr.obj     &
-       guiisgui.obj   &
-       guideath.obj   &
-       guidead.obj    &
-       guihtool.obj   &
-       guiclrst.obj   &
-       guiev.obj      &
-       guisdef.obj    &
-       guiextnm.obj   &
-       guifcrck.obj   &
-       guiclass.obj
+   guicreat.obj   &
+   guihint.obj    &
+   guihook.obj    &
+   guimdi.obj     &
+   guiimdi.obj    &
+   guiimmdi.obj   &
+   guihflt.obj    &
+   guihot.obj     &
+   guidraw.obj    &
+   guiutil.obj    &
+   guipixel.obj   &
+   guipick.obj    &
+   guiscale.obj   &
+   guirscal.obj   &
+   guigcolr.obj   &
+   guimkey.obj    &
+   guizlist.obj   &
+   guiextra.obj   &
+   guimin.obj     &
+   guisetup.obj   &
+   guidlg.obj     &
+   guindlg.obj    &
+   guistyle.obj   &
+   guiwnclr.obj   &
+   guistr.obj     &
+   guiisgui.obj   &
+   guideath.obj   &
+   guidead.obj    &
+   guihtool.obj   &
+   guiclrst.obj   &
+   guiev.obj      &
+   guisdef.obj    &
+   guiextnm.obj   &
+   guifcrck.obj   &
+   guiclass.obj
 
 mem_objs = &
-       guimem.obj     &
-       $(trmem_objs)
+   guimem.obj     &
+   $(trmem_objs)
 
 
 objs = $(wv_objs) $(mem_objs)
@@ -96,7 +96,11 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(
 .msg:   ../../h
 
 $(name).lib : guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
-        $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
+!else
+    $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
+!endif
 
 guimsgs.gh : ../../h/gui.msg
-        awk -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+    *awk -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

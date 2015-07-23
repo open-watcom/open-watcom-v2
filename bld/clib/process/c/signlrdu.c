@@ -37,11 +37,12 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rterrno.h"
-#include "sigtab.h"
 #include "sigfunc.h"
 #include "signlrdu.h"
 #include "rtinit.h"
 #include "thread.h"
+#include "sigtab.h"
+#include "initsig.h"
 
 #define FALSE 0
 #define TRUE !FALSE
@@ -62,7 +63,7 @@ sigtab  _SignalTable[] = {
     { SIG_DFL, STATUS_INTEGER_OVERFLOW }            /* SIGIOVFL */
 };
 
-__sig_func __SetSignalFunc( int sig, __sig_func new_func )
+static __sig_func __SetSignalFunc( int sig, __sig_func new_func )
 {
     __sig_func  prev_func = NULL;
 
@@ -77,7 +78,7 @@ __sig_func __SetSignalFunc( int sig, __sig_func new_func )
 }
 
 
-__sig_func __GetSignalFunc( int sig )
+static __sig_func __GetSignalFunc( int sig )
 {
     if(( sig == SIGBREAK ) || ( sig == SIGINT ))
         return( _SignalTable[ sig ].func );
@@ -86,7 +87,7 @@ __sig_func __GetSignalFunc( int sig )
 }
 
 
-long __GetSignalOSCode( int sig )
+static long __GetSignalOSCode( int sig )
 {
     if(( sig == SIGBREAK ) || ( sig == SIGINT ))
         return( _SignalTable[ sig ].os_sig_code );
@@ -95,7 +96,7 @@ long __GetSignalOSCode( int sig )
 }
 
 
-__sig_func __CheckSignalExCode( int sig, long code )
+static __sig_func __CheckSignalExCode( int sig, long code )
 {
     if( code == __GetSignalOSCode( sig ) )
         return( __GetSignalFunc( sig ) );
@@ -186,7 +187,7 @@ _WCRTLINK int raise( int sig )
 }
 
 
-void __SigInit( void )
+static void __SigInit( void )
 {
 #if defined( __MT__ )
     int         i;
@@ -201,7 +202,7 @@ void __SigInit( void )
 }
 
 
-void __SigFini( void )
+static void __SigFini( void )
 {
     /*
      * If there are still SIGINT or SIGBREAK handlers in the sig table,
@@ -214,7 +215,7 @@ void __SigFini( void )
 
 
 
-void __sig_init( void )
+static void __sig_init( void )
 {
     __sig_init_rtn = __SigInit;
     __sig_fini_rtn = __SigFini;

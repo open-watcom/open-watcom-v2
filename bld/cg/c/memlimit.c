@@ -35,6 +35,8 @@
 #include "data.h"
 #include "cfloat.h"
 #include "objout.h"
+#include "memcheck.h"
+#include "memlimit.h"
 #include "feprotos.h"
 
 static    pointer_int   MemLimit;
@@ -56,7 +58,6 @@ extern  bool            ShrinkQueue( pointer_int );
 extern  pointer_int     MemInUse( void );
 extern  pointer_int     MemSize( void );
 extern  bool            TreeFrlFree( void );
-extern  bool            FreeObjCache( void );
 
 
 static  bool    FlushSomeOpt( pointer_int size )

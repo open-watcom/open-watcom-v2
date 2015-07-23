@@ -560,7 +560,7 @@ void WdeAddSymbols( WdeHashTable *table )
 {
     int                 hash;
     MACRO_ENTRY         *me;
-    char                *endptr;
+    const char          *endptr;
     PREPROC_VALUE       val;
     WdeHashValue        value;
     void                *vp;
@@ -580,7 +580,7 @@ void WdeAddSymbols( WdeHashTable *table )
     busy_str[1] = '\0';
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( me = PPHashTable[hash]; me; me = me->next ) {
+        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
             if( me->parmcount == 0 && me->replacement_list != NULL ) {
                 if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
                     if( *endptr == '\0' ) {

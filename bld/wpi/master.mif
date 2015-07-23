@@ -44,7 +44,11 @@ inc_dirs = -I"../h"
 objs = $(objs_$(host_os)) $(extra_objs_$(host_os))
 
 wpi.lib: $(objs)
-        $(librarian) $(libflags) $(objs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(objs)
+!else
+    $(librarian) $(libflags) $(objs)
+!endif
 
 wpi_win.obj : wpi_win.c wpi_win.h wpitypes.h wpi.h
 wpi_os2.obj : wpi_os2.c wpi_os2.h wpitypes.h wpi.h

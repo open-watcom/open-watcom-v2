@@ -85,7 +85,7 @@ using std::ptrdiff_t;
  _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
  #define _threadid (__threadid())
  #if defined(__NT__)
-  _WCRTLINK extern unsigned long __threadhandle( void );
+:include thrdhndl.sp
  #endif
 #endif
 :include extepi.sp

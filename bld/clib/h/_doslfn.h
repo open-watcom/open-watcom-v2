@@ -105,9 +105,12 @@ typedef struct {
 extern unsigned __doserror_( unsigned );
 #pragma aux __doserror_ "*" parm caller;
 
+extern unsigned __doserror1_( unsigned );
+#pragma aux __doserror1_ "*" parm caller;
+
 #ifdef _M_I86
 
-extern unsigned __dos_create_ex_lfn( const char *name, unsigned mode, unsigned attrib, unsigned action, int *handle );
+extern tiny_ret_t __dos_create_ex_lfn( const char *name, unsigned mode, unsigned attrib, unsigned action );
   #ifdef __BIG_DATA__
     #pragma aux __dos_create_ex_lfn = \
         "push ds"       \
@@ -117,21 +120,19 @@ extern unsigned __dos_create_ex_lfn( const char *name, unsigned mode, unsigned a
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "jc short L1"   \
-        "mov  es:[di],ax" \
-    "L1: call __doserror_" \
-        parm caller     [si ax] [bx] [cx] [dx] [es di] \
-        modify exact    [ax cx si];
+        "sbb  dx,dx"    \
+        parm caller     [si ax] [bx] [cx] [dx] \
+        value           [dx ax] \
+        modify exact    [cx si];
   #else
     #pragma aux __dos_create_ex_lfn = \
         "mov  ax,716Ch" \
         "stc"           \
         "int  21h"      \
-        "jc short L1"   \
-        "mov  [di],ax"  \
-    "L1: call __doserror_" \
-        parm caller     [si] [bx] [cx] [dx] [di] \
-        modify exact    [ax cx];
+        "sbb  dx,dx"    \
+        parm caller     [si] [bx] [cx] [dx] \
+        value           [dx ax] \
+        modify exact    [cx];
   #endif
 
 extern tiny_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_t __far *lfndta );
@@ -148,7 +149,7 @@ extern tiny_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind
         "sbb  dx,dx"    \
         parm caller     [dx ax] [cx] [es di] \
         value           [dx ax] \
-        modify exact    [ax cx dx si];
+        modify exact    [cx si];
   #else
     #pragma aux __dos_find_first_lfn = \
         "mov  si,1"     \
@@ -158,29 +159,36 @@ extern tiny_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind
         "sbb  dx,dx"    \
         parm caller     [dx] [cx] [es di] \
         value           [dx ax] \
-        modify exact    [ax cx dx si];
+        modify exact    [cx si];
   #endif
 
-extern unsigned __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta );
+extern tiny_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta );
 #pragma aux __dos_find_next_lfn = \
         "mov  si,1"     \
         "mov  ax,714fh" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [bx] [es di] \
-        modify exact    [ax cx si];
+        value           [dx ax] \
+        modify exact    [cx si];
 
-extern unsigned __dos_find_close_lfn( unsigned handle );
+extern tiny_ret_t __dos_find_close_lfn( unsigned handle );
 #pragma aux __dos_find_close_lfn = \
         "mov  ax,71A1h" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [bx] \
-        modify exact    [ax];
+        value           [dx ax];
 
-extern unsigned __dos_getfileattr_lfn( const char *path, unsigned *attr );
+extern tiny_ret_t __dos_getfileattr_lfn( const char *path );
   #ifdef __BIG_DATA__
     #pragma aux __dos_getfileattr_lfn = \
         "push ds"       \
@@ -191,25 +199,29 @@ extern unsigned __dos_getfileattr_lfn( const char *path, unsigned *attr );
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "jc short L1"   \
-        "mov  es:[di],cx" \
-    "L1: call __doserror_" \
-        parm caller     [dx ax] [es di] \
-        modify exact    [ax bl cx dx];
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "mov  ax,cx"    \
+"L1:"                   \
+        parm caller     [dx ax] \
+        value           [dx ax] \
+        modify exact    [bl cx];
   #else
     #pragma aux __dos_getfileattr_lfn = \
         "mov  bl,0"     \
         "mov  ax,7143h" \
         "stc"           \
         "int  21h"      \
-        "jc short L1"   \
-        "mov  [di],cx"  \
-    "L1: call __doserror_" \
-        parm caller     [dx] [di] \
-        modify exact    [ax bl cx];
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "mov  ax,cx"    \
+"L1:"                   \
+        parm caller     [dx] \
+        value           [dx ax] \
+        modify exact    [bl cx];
   #endif
 
-extern unsigned __dos_setfileattr_lfn( const char *path, unsigned attr );
+extern tiny_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
   #ifdef __BIG_DATA__
     #pragma aux __dos_setfileattr_lfn = \
         "push ds"       \
@@ -220,44 +232,57 @@ extern unsigned __dos_setfileattr_lfn( const char *path, unsigned attr );
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx ax] [cx] \
-        modify exact    [ax bl dx];
+        value           [dx ax] \
+        modify exact    [bl];
   #else
     #pragma aux __dos_setfileattr_lfn = \
         "mov  bl,1"     \
         "mov  ax,7143h" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx] [cx] \
-        modify exact    [ax bl];
+        value           [dx ax] \
+        modify exact    [bl];
   #endif
 
-extern unsigned __getdcwd_lfn( char *path, unsigned char drv );
+extern tiny_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
   #ifdef __BIG_DATA__
-    #pragma aux __getdcwd_lfn = \
+    #pragma aux ___getdcwd_lfn = \
         "push ds"       \
-        "xchg ax,si"    \
-        "mov  ds,ax"    \
-        "mov ax,7147h"  \
+        "mov  ds,cx"    \
+        "mov  ax,7147h" \
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
-        parm caller     [si ax] [dl] \
-        modify exact    [ax si];
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
+        parm caller     [cx si] [dl] \
+        value           [dx ax];
   #else
-    #pragma aux __getdcwd_lfn = \
+    #pragma aux ___getdcwd_lfn = \
         "mov ax,7147h"  \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [si] [dl] \
-        modify exact    [ax];
+        value           [dx ax];
   #endif
 
-extern unsigned __chdir_lfn( const char *path );
+extern tiny_ret_t __chdir_lfn( const char *path );
   #ifdef __BIG_DATA__
     #pragma aux __chdir_lfn = \
         "push ds"       \
@@ -267,20 +292,26 @@ extern unsigned __chdir_lfn( const char *path );
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx ax] \
-        modify exact    [ax dx];
+        value           [dx ax];
   #else
     #pragma aux __chdir_lfn = \
         "mov  ax,713Bh" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx] \
-        modify exact    [ax];
+        value           [dx ax];
   #endif
 
-extern unsigned __mkdir_lfn( const char *path );
+extern tiny_ret_t __mkdir_lfn( const char *path );
   #ifdef __BIG_DATA__
     #pragma aux __mkdir_lfn = \
         "push ds"       \
@@ -290,20 +321,26 @@ extern unsigned __mkdir_lfn( const char *path );
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx ax] \
-        modify exact    [ax dx];
+        value           [dx ax];
   #else
     #pragma aux __mkdir_lfn = \
         "mov  ax,7139h" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx] \
-        modify exact    [ax];
+        value           [dx ax];
   #endif
 
-extern unsigned __rmdir_lfn( const char *path );
+extern tiny_ret_t __rmdir_lfn( const char *path );
   #ifdef __BIG_DATA__
 #pragma aux __rmdir_lfn = \
         "push ds"       \
@@ -313,20 +350,26 @@ extern unsigned __rmdir_lfn( const char *path );
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx ax] \
-        modify exact    [ax dx];
+        value           [dx ax];
   #else
 #pragma aux __rmdir_lfn = \
         "mov  ax,713Ah" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx] \
-        modify exact    [ax];
+        value           [dx ax];
   #endif
 
-extern unsigned __rename_lfn( const char *old, const char *new );
+extern tiny_ret_t __rename_lfn( const char *old, const char *new );
   #ifdef __BIG_DATA__
     #pragma aux __rename_lfn = \
         "push ds"       \
@@ -336,9 +379,12 @@ extern unsigned __rename_lfn( const char *old, const char *new );
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx ax] [es di] \
-        modify exact    [ax dx];
+        value           [dx ax];
   #else
     #pragma aux __rename_lfn = \
         "push es"       \
@@ -348,12 +394,15 @@ extern unsigned __rename_lfn( const char *old, const char *new );
         "stc"           \
         "int  21h"      \
         "pop  es"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx] [di] \
-        modify exact    [ax];
+        value           [dx ax];
   #endif
 
-extern unsigned __dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode );
+extern tiny_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode );
   #ifdef __BIG_DATA__
     #pragma aux __dos_utime_lfn = \
         "push ds"       \
@@ -363,45 +412,59 @@ extern unsigned __dos_utime_lfn( const char *path, unsigned time, unsigned date,
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx ax] [cx] [di] [bx] \
-        modify exact    [ax dx];
+        value           [dx ax];
   #else
     #pragma aux __dos_utime_lfn = \
         "mov  ax,7143h" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx] [cx] [di] [bx] \
-        modify exact    [ax];
+        value           [dx ax];
   #endif
 
-extern unsigned __unlink_lfn( const char *filename );
+extern tiny_ret_t __unlink_lfn( const char *filename );
   #ifdef __BIG_DATA__
     #pragma aux __unlink_lfn = \
         "push ds"       \
         "xchg ax,dx"    \
         "mov  ds,ax"    \
-        "mov  si,0"     \
+        "xor  si,si"    \
         "mov  ax,7141h" \
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx ax] \
-        modify exact    [ax dx si];
+        value           [dx ax] \
+        modify exact    [si];
   #else
     #pragma aux __unlink_lfn = \
-        "mov  si,0"     \
+        "xor  si,si"    \
         "mov  ax,7141h" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [dx] \
-        modify exact    [ax si];
+        value           [dx ax] \
+        modify exact    [si];
   #endif
 
-extern unsigned __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
+extern tiny_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
   #ifdef __BIG_DATA__
     #pragma aux __getfileinfo_lfn = \
         "push ds"       \
@@ -411,17 +474,23 @@ extern unsigned __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
         "stc"           \
         "int  21h"      \
         "pop  ds"       \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [bx] [dx ax] \
-        modify exact    [ax dx];
+        value           [dx ax];
   #else
     #pragma aux __getfileinfo_lfn = \
         "mov  ax,71A6h" \
         "stc"           \
         "int  21h"      \
-        "call __doserror_" \
+        "sbb  dx,dx"    \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+"L1:"                   \
         parm caller     [bx] [dx] \
-        modify exact    [ax];
+        value           [dx ax];
   #endif
 
 extern long __cvt_stamp2dos_lfn( long long *timestamp );
@@ -442,7 +511,7 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
     "L1: mov  ax,cx"    \
         parm caller     [si ax] \
         value           [dx ax] \
-        modify exact    [ax bx cx dx si];
+        modify exact    [bx cx si];
   #else
     #pragma aux __cvt_stamp2dos_lfn = \
         "xor  bx,bx"    \
@@ -456,7 +525,7 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
     "L1: mov  ax,cx"    \
         parm caller     [si] \
         value           [dx ax] \
-        modify exact    [ax bx cx dx];
+        modify exact    [bx cx];
   #endif
 
 #endif
@@ -481,13 +550,13 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
         "mov  ds,ebx"
 
 #define RETURN_VALUE    \
-        "jc short L1"   \
+        "jc short LX"   \
         SAVE_VALUE      \
-"L1:"
+"LX:"
 
 #define _LFN_SIGN           0x004e464cUL    // "LFN"
 
-#define IS_LFN_ERROR(x)     ((x)!=0&&(x)!= 0x7100)
+#define IS_LFN_ERROR(x)     ((int_32)(x)<0&&(x)!= 0xFFFF7100)
 
 #define IS_LFN(x)           (_RWD_uselfn && LFN_SIGN_OF(x) == _LFN_SIGN && LFN_HANDLE_OF(x))
 

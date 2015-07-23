@@ -248,6 +248,7 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
     cg_type ptr_type;
     cg_type offset_type;
 
+    flags = 0;
     ptr_type = CgTypeOutput( type );
     switch( ptr_type ) {
     case TY_HUGE_POINTER:

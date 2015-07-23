@@ -87,7 +87,7 @@ static long ModeTable[ 18 ] = {
 short                   _NoClear = 0;       // allow user to control whether
                                             // SetMode clears the screen
 
-short _ValidMode( short mode )
+static short _ValidMode( short mode )
 /*============================
 
     Check if desired mode is valid  */

@@ -31,7 +31,7 @@
 
 
 #ifndef _CGSTUFF_H_
-#define CGSTUFF_H_
+#define _CGSTUFF_H_
 
 // CODEGEN.H -- collect definitions for code generator
 //

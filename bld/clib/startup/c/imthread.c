@@ -41,18 +41,24 @@
     #endif
 #else
     static void __imthread_fn( void ) {
-        #if defined(__NT__)
-            if( !__NTThreadInit() ) return;
-        #elif defined(_NETWARE_LIB)
-            if( !__LibCThreadInit() ) return;
-        #elif defined(__QNX__)
-        #elif defined(__LINUX__)
-        #elif defined(__WARP__)
-            if( __InitThreadProcessing() == 0 ) return;
-        #elif defined(__RDOS__)            
-            if( !__RdosThreadInit() ) return;
-        #endif
+    #if defined(__NT__)
+        if( !__NTThreadInit() )
+            return;
+    #elif defined(_NETWARE_LIB)
+        if( !__LibCThreadInit() )
+            return;
+    #elif defined(__QNX__)
+    #elif defined(__LINUX__)
+    #elif defined(__WARP__)
+        if( __InitThreadProcessing() == 0 )
+            return;
+    #elif defined(__RDOS__)            
+        if( !__RdosThreadInit() )
+            return;
+    #endif
+    #if !defined(__LINUX__)
         __InitMultipleThread();
+    #endif
     }
 
     _WCRTDATA XI( __imthread, __imthread_fn, INIT_PRIORITY_RUNTIME + 1 )

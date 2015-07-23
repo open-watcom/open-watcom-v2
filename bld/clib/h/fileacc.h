@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  macros/functions for serialization of access to the file.
 *
 ****************************************************************************/
 
@@ -34,10 +33,8 @@
 #define SetupTGCSandNCS( x )            /* initialization for Netware/386 */
 
 #if defined( __MT__ )
-
     #define _AccessFile( fp )       _AccessFileH( (fp)->_handle )
     #define _ReleaseFile( fp )      _ReleaseFileH( (fp)->_handle )
-
   #if defined( _M_I86 )
     // 16bit OS/2 multi-thread is different
     extern void __AccessFileH( int );
@@ -51,16 +48,22 @@
     #define _AccessIOB()            __AccessIOB()
     #define _ReleaseIOB()           __ReleaseIOB()
   #else
-    extern void (*_AccessFileH)( int );
-    extern void (*_ReleaseFileH)( int );
-    extern void (*_AccessIOB)( void );
-    extern void (*_ReleaseIOB)( void );
+    #if !defined(_THIN_LIB)
+        extern void (*_AccessFileH)( int );
+        extern void (*_ReleaseFileH)( int );
+        extern void (*_AccessIOB)( void );
+        extern void (*_ReleaseIOB)( void );
+    #else
+        #define _AccessFileH( hdl )
+        #define _ReleaseFileH( hdl )
+        #define _AccessIOB()
+        #define _ReleaseIOB()
+    #endif
+    #if defined(__NT__)
+        extern void (*_AccessFList)( void );
+        extern void (*_ReleaseFList)( void );
+    #endif
   #endif
-  #if defined(__NT__)
-    extern void (*_AccessFList)( void );
-    extern void (*_ReleaseFList)( void );
-  #endif
-
 #else
     /* these are for multi thread support */
     /* they are not required if not building multi-thread library */

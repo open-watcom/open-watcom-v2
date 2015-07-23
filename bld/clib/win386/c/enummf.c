@@ -36,6 +36,5 @@
 BOOL PASCAL _Cover_EnumMetaFile( HDC dc, LOCALHANDLE hmf, FARPROC p,
                                 LPSTR data )
 {
-    return( EnumMetaFile( dc, hmf, SetProc( p, GETPROC_ENUMMETAFILE ),
-                (LPARAM) data ) );
+    return( EnumMetaFile( dc, hmf, SetProc( p, GETPROC_ENUMMETAFILE ), (DWORD)data ) );
 }

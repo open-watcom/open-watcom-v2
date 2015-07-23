@@ -21,7 +21,7 @@ test_flags_i86 += -s -os -wx -we
 
 .asm.gcp:
     @set ERROR_MSG=failure to create $^&
-    @awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk $[@ >$@
+    @*awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk -v OUTFILE=$^. $[@
 
 .src.gcp:
     @cp $< $@

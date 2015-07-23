@@ -35,7 +35,7 @@
 
 static bool IsConstantZero( TREEPTR tree );
 
-uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )
+static uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )
 {
     uint_32         value;
 
@@ -112,7 +112,7 @@ uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )
 }
 
 
-uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
+static uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
 {
     uint64          tmp;
     uint64          value;
@@ -213,7 +213,7 @@ uint64 DoOp64( uint64 left, opr_code opr, uint64 right, bool sign )
     return( value );
 }
 
-int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
+static int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 /******************************************************/
 {
     int_32          value;
@@ -272,7 +272,7 @@ int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 }
 
 
-int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
+static int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 /********************************************************/
 {
     uint_32         value;
@@ -414,7 +414,7 @@ int64 LongValue64( TREEPTR leaf )
 }
 
 
-int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
+static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 /**********************************************************/
 {
     uint64          value;
@@ -472,7 +472,7 @@ int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 }
 
 
-int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
+static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 /********************************************************/
 {
     int64           value;
@@ -657,7 +657,7 @@ void MakeBinaryFloat( TREEPTR opnd )
 }
 
 
-int FltCmp( ld_arg ld1, ld_arg ld2 )
+static int FltCmp( ld_arg ld1, ld_arg ld2 )
 {
 #ifdef _LONG_DOUBLE_
     return( __FLDC( ld1, ld2 ) );

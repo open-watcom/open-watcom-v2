@@ -35,6 +35,6 @@
 
 _WCRTLINK int mprotect( void *addr, size_t len, int prot )
 {
-    u_long  res = sys_call3( SYS_mprotect, (u_long)addr, len, prot );
+    syscall_res res = sys_call3( SYS_mprotect, (u_long)addr, len, prot );
     __syscall_return( int, res );
 }

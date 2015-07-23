@@ -35,6 +35,6 @@
 
 _WCRTLINK int dup( int __oldfd )
 {
-    u_long  res = sys_call1( SYS_dup, (u_long)__oldfd );
+    syscall_res res = sys_call1( SYS_dup, (u_long)__oldfd );
     __syscall_return( int, res );
 }

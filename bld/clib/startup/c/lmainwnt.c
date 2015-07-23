@@ -29,9 +29,11 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <windows.h>
+#include "libmain.h"
+#include "dllmain.h"
 
-extern int __stdcall DllMain( HANDLE hdll, DWORD reason, LPVOID reserved );
 
 int __stdcall LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
 {

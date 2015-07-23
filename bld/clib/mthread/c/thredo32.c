@@ -39,13 +39,10 @@
 #include <float.h>
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
-#define INCL_DOSEXCEPTIONS
 #include "rtdata.h"
 #include "liballoc.h"
-#include "osthread.h"
 #include "thread.h"
-//#include "stacklow.h"
-#include "sigtab.h"
+#include "initsig.h"
 #include "trdlist.h"
 #include "mthread.h"
 #include "initarg.h"

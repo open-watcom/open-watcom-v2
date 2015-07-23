@@ -30,10 +30,7 @@
 ****************************************************************************/
 
 
-#define MENU_ABOUT              1
-#define MENU_EXIT               2
-#define MENU_CONNECT            3
-#define MENU_DISCONNECT         4
-#define MENU_OPTIONS            5
-#define MENU_BREAK              6
-#define MENU_STOP               7
+#include "wserveri.h"
+
+WINEXPORT extern BOOL CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT extern LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );

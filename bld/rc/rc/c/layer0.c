@@ -36,6 +36,7 @@
 #include "rcmem.h"
 #include "iortns.h"
 #include "wresset2.h"
+#include "rclayer0.h"
 #include "clibext.h"
 #include "rccore.h"
 

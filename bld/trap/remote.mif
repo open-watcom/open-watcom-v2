@@ -1,4 +1,0 @@
-remote_objs = &
-        $($(which)_remote_objs) &
-        packet.obj &
-        $(srv)link.obj &

@@ -45,7 +45,7 @@ dbg_list = &
 all: $(dbg_list) .symbolic
 
 .sp.dbg:
-    wsplice $< $@
+    *wsplice $< $@
 
 clean : .symbolic
     rm -f *.dbg

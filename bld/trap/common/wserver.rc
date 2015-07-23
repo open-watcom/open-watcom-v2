@@ -1,5 +1,5 @@
 #include "windows.h"
-#include "wserver.h"
+#include "wserveri.h"
 #include "servname.h"
 #include "banner.h"
 
@@ -38,5 +38,5 @@ BEGIN
     DEFPUSHBUTTON "OK", IDOK, 74, 45, 32, 14, WS_GROUP
 END
 
-#include "options.h"
+#include "optionsi.h"
 #include "options.dlg"

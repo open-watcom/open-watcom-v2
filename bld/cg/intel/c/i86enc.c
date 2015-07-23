@@ -50,6 +50,7 @@
 #include "i86obj.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "objprof.h"
 #include "feprotos.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
@@ -101,8 +102,6 @@ extern  void            CodeLabel(label_handle, unsigned);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            GenJumpLabel( label_handle );
 extern  void            GenKillLabel( label_handle );
-extern  segment_id      GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack );
-extern  void            EndBlockProfiling( void );
 extern  void            LayOpbyte( gen_opcode op );
 extern  void            LayOpword( gen_opcode op );
 extern  void            LayW( type_class_def class );
@@ -1168,7 +1167,7 @@ extern  void    GenObjCode( instruction *ins ) {
                 label_handle    lbl;
                 segment_id      seg;
 
-                seg = GenP5ProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
+                seg = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
                 _Code;
                 LayOpword( 0xc4f7 ); // test esp, offset L1
                 ILen += WORD_SIZE;
@@ -1189,11 +1188,11 @@ extern  void    GenObjCode( instruction *ins ) {
                 segment_id      seg;
                 char            c[2];
 
-                seg = GenP5ProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
-                GenP5ProfileData( "", &junk, &CurrProc->targ.routine_profile_data );
+                seg = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
+                GenProfileData( "", &junk, &CurrProc->targ.routine_profile_data );
                 c[0] = PROFILE_FLAG_END_GROUP;
                 c[1] = 0;
-                GenP5ProfileData( c, &junk, &CurrProc->targ.routine_profile_data );
+                GenProfileData( c, &junk, &CurrProc->targ.routine_profile_data );
                 _Code;
                 LayOpword( 0xc5f7 ); // test ebp, offset L1
                 ILen += WORD_SIZE;

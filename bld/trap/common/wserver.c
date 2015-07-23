@@ -41,6 +41,7 @@
 #include "servio.h"
 #include "tcerr.h"
 #include "nothing.h"
+#include "options.h"
 
 extern trap_version TrapVersion;
 
@@ -48,10 +49,7 @@ extern trap_version TrapVersion;
 extern void         TellHWND( HWND );
 #endif
 
-WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
-char  TrapFile[ 0x400 ];
-char  TrapParm[ 0x400 ];
+char            ServParms[PARMS_MAXLEN];
 
 HANDLE          Instance;
 
@@ -67,9 +65,6 @@ static BOOL     AnyInstance( HINSTANCE, int, LPSTR );
 
 #define MENU_ON     (MF_ENABLED+MF_BYCOMMAND)
 #define MENU_OFF    (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
-
-WINEXPORT LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
-
 
 /*
  * WinMain - initialization, message loop
@@ -146,11 +141,12 @@ static void EnableMenus( HWND hwnd, BOOL connected, BOOL session )
 static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 {
     const char  *err;
+    char        trapparms[PARMS_MAXLEN];
 
-    if( !ParseCommandLine( cmdline, TrapFile, TrapParm, &OneShot ) ) {
+    if( !ParseCommandLine( cmdline, trapparms, ServParms, &OneShot ) ) {
         return( FALSE );
     }
-    err = LoadTrap( TrapFile, RWBuff, &TrapVersion );
+    err = LoadTrap( trapparms, RWBuff, &TrapVersion );
     if( err != NULL ) {
         StartupErr( err );
         return( FALSE );
@@ -240,7 +236,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             err = NULL;
             if( !Linked ) {
                 HCURSOR cursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
-                err = RemoteLink( TrapParm, TRUE );
+                err = RemoteLink( ServParms, TRUE );
                 SetCursor( cursor );
             }
             EnableMenus( hwnd, TRUE, FALSE );

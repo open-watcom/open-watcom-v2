@@ -43,10 +43,10 @@
 #include "cgmem.h"
 #include "useinfo.h"
 #include "dumpio.h"
+#include "onexit.h"
 #include "feprotos.h"
 #include "clibext.h"
 
-extern  void            FatalError(const char *);
 extern  bool            GetEnvVar(const char *,char *,int);
 extern  int             BGInlineDepth( void );
 
@@ -433,7 +433,7 @@ static void handleSetup( handle_type hdltype, use_info *useinfo )
     useinfo->used = FALSE;
 }
 
-void handleAddReuse( handle_type hdltype, use_info *useinfo )
+static void handleAddReuse( handle_type hdltype, use_info *useinfo )
 {
     if( useinfo->hdltype == hdltype ) {
         if( useinfo->used ) {

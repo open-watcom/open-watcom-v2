@@ -50,7 +50,7 @@ static const FU_entry FUnits[] = {
     F_ALU,                      1,          1,      /* LDSTR */
 };
 
-FU_entry const *FUEntry( instruction *ins )
+const FU_entry *FUEntry( instruction *ins )
 {
     return( &FUnits[ ins->u.gen_table->func_unit ] );
 }

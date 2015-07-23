@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#undef max
+#include "_minmax.h"
 
 
 _WCRTLINK int max( int a, int b )

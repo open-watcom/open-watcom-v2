@@ -321,6 +321,12 @@ extern short            _SetRows( short );
 extern short            _SwapBits( short );
 extern short            _SysMonType( void );
 extern short            _SuperVGAType( void );
+extern void             _SetSVGAType( short vga_type );
+
+extern void             _EGASet( void );
+extern void             _EGASetEO( void );
+extern void             _EGAReset( void );
+extern void             _EGASetup80( short x, short y, grcolor colour );
 
 extern short            _L0BlockClip( short *, short *, short *, short * );
 extern void             _L0DrawLine( char __far *, grcolor, unsigned short, short,

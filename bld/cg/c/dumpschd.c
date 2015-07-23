@@ -40,6 +40,7 @@
 #include "freelist.h"
 #include "inssched.h"
 #include "dumpio.h"
+#include "dmpinc.h"
 
 extern  void            DumpIns(instruction *);
 extern  int             CountIns( block * );
@@ -47,7 +48,7 @@ extern  int             CountIns( block * );
 extern data_dag         *DataDag;
 
 
-void DumpADataDag( data_dag *dag )
+static void DumpADataDag( data_dag *dag )
 /********************************/
 {
     int             i;

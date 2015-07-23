@@ -39,18 +39,6 @@ _WCRTLINK int clock_nanosleep( clockid_t __clk, int __flags,
                                const struct timespec *__req, 
                                struct timespec *__rmdr )
 {
-    u_long ures;
-    long res;
-    ures = sys_call4( SYS_clock_nanosleep,
-                      (u_long)__clk, 
-                      (u_long)__flags, 
-                      (u_long)__req,
-                      (u_long)__rmdr );
-    
-    res = (long)(-ures);
-    if(res != 0) {
-        _RWD_errno = res;
-    }
-    
-    __syscall_return( int, ures );
+    syscall_res res = sys_call4( SYS_clock_nanosleep, (u_long)__clk, (u_long)__flags, (u_long)__req, (u_long)__rmdr );
+    __syscall_return( int, res );
 }

@@ -90,23 +90,15 @@ static int ProcSet( char *cmd )
     if( rep == NULL )
         return( 1 );
     *rep++ = '\0';
+    /* Our setenv() is extended vs. POSIX, check for blank value is not necessary */
+#ifndef __WATCOMC__
     if( *rep == '\0' ) {
-        rep = NULL;     /* Delete the environment variable! */
-    }
-#ifdef __WATCOMC__
-    /* We don't have unsetenv(), but our setenv() is extended vs. POSIX */
-    if( rep == NULL ) {
-        setenv( var, NULL, 1 );
-        return( 0 );
-    } else
-        return( setenv( var, rep, 1 ) );
-#else
-    if( rep == NULL ) {
+        /* Delete the environment variable! */
         unsetenv( var );
         return( 0 );
-    } else
-        return( setenv( var, rep, 1 ) );
+    }
 #endif
+    return( setenv( var, rep, 1 ) );
 }
 
 void ResetArchives( copy_entry *list )

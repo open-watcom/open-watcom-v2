@@ -35,6 +35,6 @@
 
 _WCRTLINK int fchown( int __fd, uid_t __owner, gid_t __group )
 {
-    u_long  res = sys_call3( SYS_fchown, __fd, __owner, __group );
+    syscall_res res = sys_call3( SYS_fchown, __fd, __owner, __group );
     __syscall_return( int, res );
 }

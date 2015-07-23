@@ -41,6 +41,25 @@ static char         PackBuff[0x400];
 
 static trap_elen    PackInd = 0;
 
+#if defined( SERVER )
+
+trap_retval PutBuffPacket( void *buff, trap_elen len )
+{
+    trap_retval result;
+
+    _DBG_Writeln( "in PutBuffPacket()" );
+    result = RemotePut( buff, len );
+    PackInd = 0;
+    return( result );
+}
+
+void *GetPacketBuffPtr( void )
+{
+    return( &PackBuff[PackInd] );
+}
+
+#else
+
 void StartPacket( void )
 {
     _DBG_Writeln( "in StartPacket()" );
@@ -57,16 +76,6 @@ trap_retval PutPacket( void )
     return( result );
 }
 
-trap_retval PutBuffPacket( void *buff, trap_elen len )
-{
-    trap_retval result;
-
-    _DBG_Writeln( "in PutBuffPacket()" );
-    result = RemotePut( buff, len );
-    PackInd = 0;
-    return( result );
-}
-
 void AddPacket( const void *ptr, trap_elen len )
 {
     if( ( len + PackInd ) > sizeof( PackBuff ) ) {
@@ -74,13 +83,6 @@ void AddPacket( const void *ptr, trap_elen len )
     }
     memcpy( &PackBuff[PackInd], ptr, len );
     PackInd += len;
-}
-
-trap_retval GetPacket( void )
-{
-    _DBG_Writeln( "in GetPacket()" );
-    PackInd = 0;
-    return( RemoteGet( PackBuff, sizeof( PackBuff ) ) );
 }
 
 void RemovePacket( void *ptr, trap_elen len )
@@ -92,9 +94,13 @@ void RemovePacket( void *ptr, trap_elen len )
     PackInd += len;
 }
 
-void *GetPacketBuffPtr( void )
+#endif
+
+trap_retval GetPacket( void )
 {
-    return( &PackBuff[PackInd] );
+    _DBG_Writeln( "in GetPacket()" );
+    PackInd = 0;
+    return( RemoteGet( PackBuff, sizeof( PackBuff ) ) );
 }
 
 trap_elen MaxPacketSize( void )

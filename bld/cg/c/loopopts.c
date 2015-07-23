@@ -43,6 +43,8 @@
 #include "makeins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "propind.h"
+#include "blips.h"
 #include "feprotos.h"
 
 
@@ -73,7 +75,6 @@ extern  bool            TempsOverlap(name*,name*);
 extern  bool            RepOp(name**,name*,name*);
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
-extern  void            LPBlip(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  block           *ReGenBlock(block*,label_handle);
 extern  bool            NameIsConstant(name*);
@@ -81,7 +82,6 @@ extern  void            ConstToTemp(block*,block*,block*(*)(block*));
 extern  bool            SideEffect(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  int             CountIns(block*);
-extern  void            PropIndexes(block*);
 extern  void            FixBlockIds(void);
 extern  bool            UnRoll(void);
 extern  void            MoveEdge(block_edge*,block*);

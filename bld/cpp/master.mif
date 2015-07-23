@@ -17,7 +17,7 @@ common_objs     = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj ppenv.obj pathlis
 mkmk_objs       = mkmk.obj $(common_objs)
 testpp_objs     = testpp.obj $(common_objs)
 dumpmac_objs    = dumpmac.obj $(common_objs)
-wcpp_objs       = wcpp.obj getopt.obj $(common_objs)
+wcpp_objs       = wcpp.obj $(common_objs)
 
 !ifneq bootstrap 1
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC

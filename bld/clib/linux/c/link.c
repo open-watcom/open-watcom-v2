@@ -35,6 +35,6 @@
 
 _WCRTLINK int link( const char *__path1, const char *__path2 )
 {
-    u_long res = sys_call2( SYS_link, (u_long)__path1, (u_long)__path2 );
+    syscall_res res = sys_call2( SYS_link, (u_long)__path1, (u_long)__path2 );
     __syscall_return( int, res );
 }

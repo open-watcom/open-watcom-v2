@@ -45,7 +45,7 @@
 
 #if defined( __DOS__ )
 
-int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
+static int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
 {
     deverr = deverr; errcode = errcode; devhdr = devhdr;
     return( _HARDERR_FAIL );

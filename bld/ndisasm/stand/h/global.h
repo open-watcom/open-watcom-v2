@@ -33,7 +33,7 @@
 #ifndef WDIS_GLOBALS_INCLUDED
 #define WDIS_GLOBALS_INCLUDED
 
-#include "types.h"
+#include "dtypes.h"
 #include "msg.h"
 
 #define MAX_OBJ_NAME            1024

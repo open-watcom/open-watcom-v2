@@ -33,17 +33,21 @@ dwutils.obj
 inc_dirs = -I. -I"../h"
 
 dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
-        $(librarian) $(libflags) $(objs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(objs)
+!else
+    $(librarian) $(libflags) $(objs)
+!endif
 
 extra_c_flags = -s
 
 ./dwmakeab.exe : dwmakeab.c
-        $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
-        $[@
+    $[@
 
 dwabbrev.obj : dwabbrev.c dwabinfo.gh
 
 testcli.exe : testcli.obj testtest.obj testdump.obj dwarfw.lib
-        $(linker) name $@ $(lflags) file {testcli.obj testtest.obj testdump.obj} lib {dwarfw.lib}
+    $(linker) name $@ $(lflags) file {testcli.obj testtest.obj testdump.obj} lib {dwarfw.lib}

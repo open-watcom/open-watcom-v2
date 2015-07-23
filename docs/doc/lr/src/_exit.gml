@@ -1,10 +1,10 @@
-.func begin _exit
-.func2 _Exit ISO C99
+.func begin _Exit
+.func2 _exit POSIX 1003.1
 .func end
 .synop begin
 #include <stdlib.h>
-void _exit( int status );
 void _Exit( int status );
+void _exit( int status );
 .ixfunc2 '&Process' &funcb
 .synop end
 .desc begin
@@ -101,6 +101,10 @@ value is typically set to 0 to indicate successful termination and
 set to some other value to indicate an error.
 .endnote
 .do end
+The
+.id _exit
+is functionaly equivalent to
+.id &funcb..
 .desc end
 .return begin
 The
@@ -126,11 +130,11 @@ void main( int argc, char *argv[] )
     fp = fopen( argv[1], "r" );
     if( fp == NULL ) {
         fprintf( stderr, "Unable to open '%s'\n", argv[1] );
-        _exit( EXIT_FAILURE );
+        _Exit( EXIT_FAILURE );
     }
     fclose( fp );
-    _exit( EXIT_SUCCESS );
+    _Exit( EXIT_SUCCESS );
 }
 .exmp end
-.class POSIX 1003.1
+.class ISO C99
 .system

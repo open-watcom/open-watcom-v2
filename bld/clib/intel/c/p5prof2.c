@@ -122,7 +122,8 @@ static FILE *OpenPrfFile( int isInit )
         }
     }
     out = fopen( pname, "at+" );
-    if( out == NULL ) return( NULL );
+    if( out == NULL )
+        return( NULL );
     if( !already ) {
         fprintf( out, "Format: C/C++ 1\n" );
         _RDTSC( &start_tsc );
@@ -133,12 +134,16 @@ static FILE *OpenPrfFile( int isInit )
     return( out );
 }
 
-static void init( void )
+static void new_p5_profile_init( void )
+/*
+ * Create profiling data file, enable profiling
+ */
 {
     FILE *out;
 
     out = OpenPrfFile( TRUE );
-    if( out == NULL ) return;
+    if( out == NULL )
+        return;
 #ifdef __UNIX__
     fprintf( out, "Start Run\n" );
 #else
@@ -167,7 +172,8 @@ static char *FormatLong( void *pu, char *buff )
 
     _Bin2String((short int _WCNEAR *)pu,(char _WCNEAR *)buff, PROFILE_LONG_FORMAT_LEN );
     for( i = 0; buff[i+1] != '\0'; i++ ) {
-        if( buff[i] != '0' ) break;
+        if( buff[i] != '0' )
+            break;
         buff[i] = ' ';
         lastspace = buff+i;
     }
@@ -218,32 +224,43 @@ static void dumpOneBlock( FILE *out, new_P5_timing_info *curr, int todump )
         dynamic = curr->dynamic;
         for( ;; ) {
             dumpOneBlock( out, dynamic, todump );
-            if( dynamic->flag[0] == PROFILE_FLAG_END_GROUP ) break;
-            if( dynamic->flag[0] == PROFILE_FLAG_DYNAMIC ) break;
+            if( dynamic->flag[0] == PROFILE_FLAG_END_GROUP )
+                break;
+            if( dynamic->flag[0] == PROFILE_FLAG_DYNAMIC )
+                break;
             dynamic = NEXT_INFO( dynamic );
         }
     }
     switch( todump ) {
     case DUMP_FUNCTIONS:
-        if( curr->flag[0] == PROFILE_FLAG_BLOCK ) break;
-        if( curr->call_ins != 0 ) break;
+        if( curr->flag[0] == PROFILE_FLAG_BLOCK )
+            break;
+        if( curr->call_ins != 0 )
+            break;
         curr->caller = 0;
         dumpOneCallThing( out, curr );
         break;
     case DUMP_CALLS:
-        if( curr->flag[0] == PROFILE_FLAG_BLOCK ) break;
-        if( curr->call_ins == 0 ) break;
+        if( curr->flag[0] == PROFILE_FLAG_BLOCK )
+            break;
+        if( curr->call_ins == 0 )
+            break;
         dumpOneCallThing( out, curr );
         break;
     case DUMP_BLOCKS:
-        if( curr->flag[0] != PROFILE_FLAG_BLOCK ) break;
+        if( curr->flag[0] != PROFILE_FLAG_BLOCK )
+            break;
         dumpOneBlockThing( out, (block_count_info*)curr );
         break;
     }
 }
 
 
-static void fini( void ) {
+static void new_p5_profile_fini( void )
+/*
+ * Disable profiling, save all data to file
+ */
+{
     new_P5_timing_info  *curr;
     new_P5_timing_info  *last;
     FILE                *out;
@@ -258,7 +275,8 @@ static void fini( void ) {
     _RDTSC( &final_tsc );
     last = (void *)&_End_TI;
     out = OpenPrfFile( FALSE );
-    if( out == NULL ) return;
+    if( out == NULL )
+        return;
 #ifdef __UNIX__
     fprintf( out, "Image Name %s\n", PGM_NAME );
 #else
@@ -296,14 +314,14 @@ static void fini( void ) {
     }
 
     fclose( out );
-    #if defined(__SW_BR)
-        __ProfEnable();
-    #endif
+#if defined(__SW_BR)
+    __ProfEnable();
+#endif
     __ProfExitCriticalSection();
 }
 
 #if defined(_M_IX86)
  #pragma aux __new_p5_profile "*";
 #endif
-XI( __new_p5_profile_init, init, INIT_PRIORITY_LIBRARY+1 )
-YI( __new_p5_profile, fini, INIT_PRIORITY_LIBRARY+1 )
+AXI(                  new_p5_profile_init, INIT_PRIORITY_LIBRARY + 1 )
+YI( __new_p5_profile, new_p5_profile_fini, INIT_PRIORITY_LIBRARY + 1 )

@@ -723,11 +723,10 @@ typedef void            *HINDIR;
 #define GCB_CDECL               -2
 
 extern CALLBACKPTR  GetProc16( PROCPTR, long );
-extern void         ReleaseCallbackRoutine( CALLBACKPTR );
 extern void         ReleaseProc16( CALLBACKPTR );
 
-CALLBACKPTR GetCallbackRoutine( PROCPTR, ... );
-void        ReleaseCallbackRoutine( CALLBACKPTR );
+extern CALLBACKPTR  GetCallbackRoutine( PROCPTR, ... );
+extern void         ReleaseCallbackRoutine( CALLBACKPTR );
 
 /* Functions implemented with inline assembly code */
 extern void __far *MK_LOCAL32( void * );

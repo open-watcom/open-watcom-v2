@@ -67,7 +67,10 @@ extern  void    *_Start_TI;
 extern  void    *_End_TI;
 extern  char    **_argv;
 
-void __p5_profile_reset( void )
+static void p5_profile_init( void )
+/*
+ * Reset profiling data
+ */
 {
     P5_timing_info      *curr;
     P5_timing_info      *last;
@@ -92,7 +95,10 @@ void __p5_profile_reset( void )
 #define _MAX_PATH2 (_MAX_PATH+3) /* maximum size of output buffer for _splitpath2() */
 #endif
 
-void __p5_profile_dump( void )
+static void p5_profile_fini( void )
+/*
+ * Dump profiling data to file
+ */
 {
     P5_timing_info      *curr;
     P5_timing_info      *last;
@@ -166,4 +172,5 @@ void __p5_profile_dump( void )
 #if defined(_M_IX86)
  #pragma aux __p5_profile "*";
 #endif
-YI( __p5_profile, __p5_profile_dump, INIT_PRIORITY_LIBRARY+1 )
+AXI(              p5_profile_init, INIT_PRIORITY_LIBRARY + 1 )
+YI( __p5_profile, p5_profile_fini, INIT_PRIORITY_LIBRARY + 1 )

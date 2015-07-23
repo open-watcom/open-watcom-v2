@@ -39,18 +39,19 @@
 #include "mthread.h"
 #include "maxthrds.h"
 
+#if defined( __OS2__ ) || defined( _NETWARE_CLIB )
+
 #ifdef _NETWARE_CLIB
 void                    **__ThreadIDs;
 #endif
 
 #if defined( _M_I86 )
     thread_data         **__ThreadData;
-#elif defined( __OS2__ ) || ( defined( __NETWARE__ ) && !defined( _NETWARE_LIBC ) )
+#else
     thread_data_vector  *__ThreadData;
 #endif
 
 
-#if defined( __OS2__ ) || ( defined( __NETWARE__ ) && !defined( _NETWARE_LIBC ) )
 void *__InitThreadProcessing( void )
 /**********************************/
 {
@@ -60,8 +61,8 @@ void *__InitThreadProcessing( void )
     // allocate 1 more than we have to since thread 1 will
     // actually access 2nd element of __ThreadData
 
-    __MaxThreads = __GETMAXTHREADS();
-    __ThreadData = lib_calloc( (__MaxThreads + 1), sizeof( *__ThreadData ) );
+    __MaxThreads = __GetMaxThreads();
+    __ThreadData = lib_calloc( __MaxThreads + 1, sizeof( *__ThreadData ) );
   #ifdef __NETWARE__
     if( __ThreadData != NULL ) {
         __ThreadIDs = lib_calloc( __MaxThreads + 1, sizeof( int ) );
@@ -99,7 +100,7 @@ void __FiniThreadProcessing( void )
         lib_free( __ThreadIDs );
     }
 #endif
-#if defined( __OS2__ ) || defined( __NETWARE__ ) && !defined( _NETWARE_LIBC )
+#if defined( __OS2__ ) || defined( _NETWARE_CLIB )
     if( __ThreadData != NULL ) {
         unsigned    i;
         thread_data *tdata;

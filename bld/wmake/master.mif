@@ -113,19 +113,13 @@ wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh
         $(rc_aui) $[@ -fo=$@
 
 usage.gh : ../h/usage.sp
-        wsplice -kIS_RC -kENGLISH @<<usage.tmp $@
--f "pick((MSG_USAGE_BASE+%#%+), \"%s\", \"\")" $< -o "%n%n%n%n"
-<<
+        *wsplice -kIS_RC -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" -o "%n%n%n%n" $< $@
 
 usagej.gh : ../h/usage.sp
-        wsplice -kIS_RC -kJAPANESE @<<usagej.tmp $@
--f "pick((MSG_USAGE_BASE+%#%+), \"\", \"%s\")" $< -o "%n%n%n%n"
-<<
+        *wsplice -kIS_RC -kJAPANESE -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" -o "%n%n%n%n" $< $@
 
 usageend.gh : usage.gh
-        wsplice @<<usageend.tmp $@
--f "%+" $< -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n"
-<<
+        *wsplice -f "%+" -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)%n" $< $@
 
 # usage.h : ..\h\usage.sp
 # I want the usage message codes to be generated on the fly, and also
@@ -133,9 +127,9 @@ usageend.gh : usage.gh
 # compile ).  Fortunately, by simply defining more constants, we don't
 # make the final program any larger.  Oh well - the end justifying the
 # means, I suppose. CSK
-#       wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
-#       wsplice -f "#define USAGE_LN_%# (MSG_USAGE_BASE+%#)%+" usage.h usage.h
-#       wsplice -f "%s%+"usage.h -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)" usage.h
+#       *wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
+#       *wsplice -f "#define USAGE_LN_%$# (MSG_USAGE_BASE+%$#)%+" usage.h usage.h
+#       *wsplice -f "%s%+"usage.h -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)" usage.h
 
 ##############################################################################
 # special case targets
@@ -156,7 +150,7 @@ mglob.obj : isarray.gh .AUTODEPEND
 # print a list of unreferenced messages
 chkmsg :
     sed -f ../msgdef.sed ../h/msg.h | sort -u >chkmsg.1
-    awk -f ../msgref.awk chkmsg.1 >chkmsg.2
+    *awk -f ../msgref.awk -v OUTFILE=chkmsg.2 chkmsg.1
     sed -f chkmsg.2 ../c/*.c | sort -u >chkmsg.3
     comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
     rm chkmsg.?

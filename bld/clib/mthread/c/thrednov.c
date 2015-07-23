@@ -36,9 +36,7 @@
 #include <malloc.h>
 #include <i86.h>
 #include "rtstack.h"
-//#include "stacklow.h"
 #include "liballoc.h"
-#include "sigtab.h"
 #include "exitwmsg.h"
 #include "thread.h"
 #include "cthread.h"
@@ -74,7 +72,7 @@ static int gettid( void *netid )
                       whenever we can't find a match */
 }
 
-extern int *__threadid( void )
+_WCRTLINK int *__threadid( void )
 {
     void *netid;
     int   id;

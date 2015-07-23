@@ -349,6 +349,7 @@ DECL_SPEC *EnumReference( ENUM_DATA *edata )
     SYMBOL sym;
     SYMBOL_NAME sym_name;
 
+    name = NULL;
     ref_type = TypeError;
 
     if( edata->id != NULL ) {

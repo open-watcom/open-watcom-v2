@@ -48,4 +48,8 @@ inc_dirs = -I. -I"../h" $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
 .cpp : ../cpp
 
 $(name).lib : $(objs)
-        $(librarian) $(libflags) $(objs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $<
+!else
+    $(librarian) $(libflags) $<
+!endif

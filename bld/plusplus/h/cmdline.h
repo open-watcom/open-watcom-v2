@@ -74,9 +74,6 @@ void CmdLnSwNotImplemented(     // ISSUE WARNING FOR UN-IMPLEMENTED SWITCH
 void CmdLnWarn(                 // ISSUE WARNING FOR A SWITCH
     unsigned message )          // - message code
 ;
-int CmdPeekChar(                // PEEK AT NEXT CHARACTER, IN LOWER CASE
-    void )
-;
 char *copy_eq(                  // COPY OPTION, UP TO '=' OR DELIMITER
     char *dest,                 // - destination
     char *src )                 // - source
@@ -103,7 +100,7 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
 void SetDBChar(                 // SET ASIAN CHARACTERS
     int character_set );        // - character set
 
-extern void CBanner();          // DEFINED IN WATCOM.C
+//extern void CBanner();          // DEFINED IN WATCOM.C
 
 
 

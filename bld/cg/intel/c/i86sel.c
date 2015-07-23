@@ -45,6 +45,8 @@
 #include "makeaddr.h"
 #include "namelist.h"
 #include "cgprotos.h"
+#include "bldsel.h"
+#include "bldselco.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/
@@ -66,7 +68,6 @@
 #define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
-extern  cg_type         SelType(unsigned_32);
 extern  an              BGDuplicate(an);
 extern  void            Gen4ByteValue(unsigned_32);
 extern  an              TreeGen(tn);
@@ -77,8 +78,6 @@ extern  void            GenSelEntry(bool);
 extern  void            Gen2ByteValue(unsigned_16);
 extern  void            BGDone(an);
 extern  void            Gen1ByteValue(byte);
-extern  signed_32       NumValues(select_list*,signed_32);
-extern  int             SelCompare(signed_32,signed_32);
 extern  void            AddIns(instruction*);
 extern  an              BGInteger( signed_32, type_def * );
 
@@ -91,36 +90,38 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
                                   cg_type tipe );
 
 
-static  signed_32 Balance( signed_32 size, signed_32 time )
-/*********************************************************/
+static cost_val Balance( signed_32 size, signed_32 time )
+/*******************************************************/
 {
-    signed_32   balance;
+    cost_val    balance;
     byte        opt_size;
-    signed_32   cost_size;
-    signed_32   cost_time;
+    cost_val    cost_size;
+    cost_val    cost_time;
 
     opt_size = OptForSize;
     if( opt_size < 25 ) {
         opt_size = 25;
     }
     cost_size = size * opt_size;
-    if( cost_size < 0 ) return( MAX_COST );     // overflow
+    if( cost_size < 0 )
+        return( MAX_COST );     // overflow
     cost_time = 10 * time * ( 100 - opt_size );
-    if( cost_time < 0 ) return( MAX_COST );     // overflow
+    if( cost_time < 0 )
+        return( MAX_COST );     // overflow
     // balance = ( size * opt_size + 10 * time * ( 100 - opt_size ) ) / 100;
     balance = ( cost_time + cost_size ) / 100;
     return( balance );
 }
 
 
-extern  signed_32       ScanCost( sel_handle s_node )
-/***************************************************/
+cost_val ScanCost( sel_handle s_node )
+/************************************/
 {
     select_list *list;
     signed_32   hi;
     signed_32   lo;
     signed_32   values;
-    signed_32   cost;
+    cost_val    cost;
     int         type_length;
     cg_type     tipe;
 
@@ -143,11 +144,11 @@ extern  signed_32       ScanCost( sel_handle s_node )
 }
 
 
-extern  signed_32       JumpCost( sel_handle s_node )
-/***************************************************/
+cost_val JumpCost( sel_handle s_node )
+/************************************/
 {
     signed_32   in_range;
-    signed_32   cost;
+    cost_val    cost;
 
     in_range = s_node->upper - s_node->lower + 1;
     if( in_range > MAX_IN_RANGE || in_range < 0 ) {
@@ -179,12 +180,12 @@ extern  signed_32       JumpCost( sel_handle s_node )
     static byte CmpSize[] = { 0, 2, 4, 0, 5 };
 #endif
 
-extern  signed_32       IfCost( sel_handle s_node, int entries )
-/**************************************************************/
+cost_val IfCost( sel_handle s_node, int entries )
+/***********************************************/
 {
     signed_32   hi;
     signed_32   lo;
-    signed_32   cost;
+    cost_val    cost;
     signed_32   jumpsize;
     int         log_entries;
     int         tipe_length;
@@ -219,7 +220,7 @@ extern  signed_32       IfCost( sel_handle s_node, int entries )
 }
 
 
-extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
+tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
                                       label_handle other, cg_type tipe,
                                       cg_type real_tipe )
 /*********************************************************************/
@@ -351,7 +352,7 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
     }
 }
 
-extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
+tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
                                      signed_32 hi, label_handle other )
 /*********************************************************************/
 {
@@ -387,8 +388,8 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
 }
 
 
-extern  name        *SelIdx( tbl_control *table, an node )
-/********************************************************/
+name        *SelIdx( tbl_control *table, an node )
+/************************************************/
 {
     an          idxan;
     name        *idx;
@@ -402,8 +403,8 @@ extern  name        *SelIdx( tbl_control *table, an node )
 }
 
 
-extern  type_def        *SelNodeType( an node, bool is_signed )
-/*************************************************************/
+type_def        *SelNodeType( an node, bool is_signed )
+/*****************************************************/
 {
     cg_type     unsigned_t;
     cg_type     signed_t;
@@ -430,8 +431,8 @@ extern  type_def        *SelNodeType( an node, bool is_signed )
 }
 
 
-extern  void    MkSelOp( name *idx, type_class_def class )
-/********************************************************/
+void    MkSelOp( name *idx, type_class_def class )
+/************************************************/
 {
     instruction         *ins;
 

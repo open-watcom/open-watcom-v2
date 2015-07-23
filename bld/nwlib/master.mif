@@ -196,13 +196,13 @@ $(dllname).dll: $(depends_dll) $(xlibs) $(dll_objs) $(version_res_dll_$(host_os)
 !endif
 
 msg.gh : wlibmsg.gh
-    awk -f $(build_dir)/msgtoh.awk $[@ >$^@
+    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 incltext.gh : ../h/incltext.h ../wlib.msg
-    $(cpp) $(rc_aui_flags) -I.. $[@ >$^@
+    $(cpp) $(rc_aui_flags) -I.. -o$^@ $[@
 
 wlibmsg.gh : ../wlib.msg
-    $(cpp) $(rc_aui_flags) $[@ >$^@
+    $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 wlib.res : ../wlib.rc ../wlib.msg msg.gh
     $(rc_aui) $[@ -fo=$@

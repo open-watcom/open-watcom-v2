@@ -34,6 +34,7 @@
 #include <banner.h>
 
 #include "fingprnt.h"
+#include "preproc.h"
 
 #if _CPU == 8086
 #define _TARGET_    "x86 16-bit"

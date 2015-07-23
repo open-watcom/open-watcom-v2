@@ -253,8 +253,8 @@ _cstart_ proc  far
 _cstart_ endp
 
 
-__exit_  proc far
-public __exit_
+__exit  proc far
+public "C",__exit
         push    eax                     ; save return value
         push    edx                     ; save edx
         mov     eax,00h                 ; run finalizers
@@ -264,7 +264,7 @@ public __exit_
         pop     eax                     ; restore return value
         mov     esp,_STACKTOP           ; reset stack pointer
         ret
-__exit_ endp
+__exit  endp
 
 __null_FPE_rtn proc near
         ret                             ; return

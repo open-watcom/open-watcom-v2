@@ -167,7 +167,7 @@ typedef enum {
 } pch_reloc_index;
 
 /* Relocation function prototypes */
-#define PCH_RELOC( s, g )       extern pch_status PCHReloc##g( char *, unsigned );
+#define PCH_RELOC( s, g )       extern pch_status PCHReloc##g( char *, size_t );
 #include "pcregdef.h"
 
 typedef enum {

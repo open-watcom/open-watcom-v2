@@ -44,7 +44,7 @@ void    proc_p_pc( p_lay_tag * p_pc )
     start_doc_sect();                   // if not already done
 
     scr_process_break();
-    if( nest_cb->c_tag == t_NONE ) {
+    if( nest_cb->gtag == GML_TAG_NONE ) {
         g_cur_left = g_page_left + g_indent;// left start    TBD
     } else {
         g_cur_left = g_cur_left;
@@ -108,7 +108,7 @@ extern  void    gml_note( gml_tag gtag )
     set_skip_vars( &layout_work.note.pre_skip, NULL, &layout_work.note.post_skip, g_spacing_ln, g_curr_font );
     post_space = 0;
 
-    if( nest_cb->c_tag == t_NONE ) {
+    if( nest_cb->gtag == GML_TAG_NONE ) {
         g_cur_left = g_page_left + conv_hor_unit( &layout_work.note.left_indent );
     } else {
         g_cur_left += conv_hor_unit( &layout_work.note.left_indent );

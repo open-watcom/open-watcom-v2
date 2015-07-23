@@ -31,6 +31,7 @@
 
 #include <stddef.h>
 #include "cmemmgr.h"
+#include "asalloc.h"
 
 void *AsmAlloc( size_t amount )
 {

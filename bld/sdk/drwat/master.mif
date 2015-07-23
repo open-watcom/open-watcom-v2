@@ -113,7 +113,7 @@ $(proj_name).res : ../res/$(host_os)/drnt.rc .AUTODEPEND
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
-        $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) $[@ >$^@
+        $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$^@ $[@

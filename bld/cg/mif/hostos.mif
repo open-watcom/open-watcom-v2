@@ -57,12 +57,10 @@ haiku_objs = $(unix_objs)
 !ifeq cg_trmem 1
 mem_include = -I"$(trmem_dir)"
 mem_objs = &
-    memwrap.obj &
     memmgt.obj &
     trmem.obj
 !else
 mem_include =
 mem_objs = &
-    memwrap.obj &
     memmgt.obj
 !endif

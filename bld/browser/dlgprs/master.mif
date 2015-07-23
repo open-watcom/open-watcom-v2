@@ -1,4 +1,5 @@
 proj_name = dlgprs
+proj_type = cxx
 
 !ifndef dlgprs_autodepends
 dlgprs_autodepends=.AUTODEPEND
@@ -54,10 +55,10 @@ dlg_yacc_options = -b $(dlg_yacc_prefix) -d -db
 
 $(dlg_yacc_file).h $(dlg_yacc_file).cpp : ../y/prsdlg.y ../cpp/yydriver.cpp
     $(yacc) $(dlg_yacc_options) $[@ $]@ >$(nulldevice)
-    @sed -e "s/^static //" $(dlg_yacc_file).c >$(dlg_yacc_file).cpp
+    @sed -f ../static.sed $(dlg_yacc_file).c >$(dlg_yacc_file).cpp
     @rm -f $(dlg_yacc_file).c
 
 $(bnd_yacc_file).h $(bnd_yacc_file).cpp : ../y/prsbnd.y ../cpp/yydriver.cpp
     $(yacc) $(bnd_yacc_options) $[@ $]@ >$(nulldevice)
-    @sed -e "s/^static //" $(bnd_yacc_file).c >$(bnd_yacc_file).cpp
+    @sed -f ../static.sed $(bnd_yacc_file).c >$(bnd_yacc_file).cpp
     @rm -f $(bnd_yacc_file).c

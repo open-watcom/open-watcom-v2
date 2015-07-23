@@ -120,10 +120,10 @@ static bool elfAddImport( arch_header *arch, libfile io )
     Elf32_Word      ElfMagic;
 
     LibSeek( io, 0x00, SEEK_SET );
-    if( !LibRead( io, &ElfMagic, sizeof( ElfMagic ) ) == sizeof( ElfMagic ) ) {
+    if( LibRead( io, &ElfMagic, sizeof( ElfMagic ) ) != sizeof( ElfMagic ) ) {
         return( false );
     }
-    if( !memcmp( &ElfMagic, ELF_SIGNATURE, sizeof( SEEK_CUR ) ) == 0 ) {
+    if( memcmp( &ElfMagic, ELF_SIGNATURE, sizeof( SEEK_CUR ) ) != 0 ) {
         return( false );
     }
     LibSeek( io, 0x10 - sizeof( ElfMagic) , SEEK_CUR );

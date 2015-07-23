@@ -37,8 +37,6 @@
     && ( !defined(__NETWARE__) && !defined(__UNIX__)            \
     && !defined(__OSI__) )
 
-    extern unsigned __NFiles;
-
     #define __handle_check( __h, __r )                          \
                     if( (__h) < 0  ||  (__h) >= __NFiles ) {    \
                         _RWD_errno = EBADF;                     \

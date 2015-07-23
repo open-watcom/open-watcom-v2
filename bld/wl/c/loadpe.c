@@ -33,6 +33,9 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
+#ifdef __BSD__
+#include <unistd.h>
+#endif
 #include "linkstd.h"
 #include "exeos2.h"
 #include "loados2.h"

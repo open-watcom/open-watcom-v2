@@ -37,16 +37,6 @@
 
 _WCRTLINK int clock_getres( clockid_t __clk, struct timespec *__ts)
 {
-    u_long ures;
-    long res;
-    ures = sys_call2( SYS_clock_getres, 
-                      (u_long)__clk, 
-                      (u_long)__ts );
-
-    res = (long)(-ures);
-    if(res != 0) {
-        _RWD_errno = res;
-    }
-    
-    __syscall_return( int, ures );
+    syscall_res res = sys_call2( SYS_clock_getres, (u_long)__clk, (u_long)__ts );
+    __syscall_return( int, res );
 }

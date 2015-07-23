@@ -258,7 +258,7 @@ void printDosHeader( ExeFile *exeFile, Parameters *param )
     }
 }
 
-void printFlags( unsigned_32 value,
+static void printFlags( unsigned_32 value,
                  const unsigned_32 masks[], const char *labels[],
                  const char *indentString )
 /****************************************************************/
@@ -567,8 +567,8 @@ void printHexBytes( unsigned long addr, unsigned long length, ExeFile *exeFile )
     printf( ERR_FORMAT_CANNOT_DUMP_HEX );
 }
 
-bool isPrintable( unsigned_8 buffer )
-/************************************/
+static bool isPrintable( unsigned_8 buffer )
+/******************************************/
 {
     if( buffer == '\0' ||
         buffer == '\n' ||
@@ -584,7 +584,7 @@ bool isPrintable( unsigned_8 buffer )
     }
 }
 
-void printHexLine( unsigned long lower, unsigned long upper, ExeFile *exeFile,
+static void printHexLine( unsigned long lower, unsigned long upper, ExeFile *exeFile,
                    const char *mask, const char *emptyMask,
                    const char *unprintableMask, bool testPrintable,
                    bool splitAtEight )

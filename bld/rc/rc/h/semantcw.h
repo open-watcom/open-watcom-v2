@@ -32,6 +32,7 @@
 #ifndef SEMANTCW_H_INCLUDED
 #define SEMANTCW_H_INCLUDED
 
+#include "yydriver.h"
 #include "yydrivrw.h"
 
 #include "semmenuw.h"

@@ -153,6 +153,8 @@ argument.
 The thread ends when it exits from its main function or calls
 .kw exit
 .ct,
+.kw _Exit
+.ct,
 .kw _exit
 .ct,
 .kw _endthread

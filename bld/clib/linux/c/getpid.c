@@ -35,6 +35,6 @@
 
 _WCRTLINK pid_t getpid( void )
 {
-    u_long  res = sys_call0( SYS_getpid );
+    syscall_res res = sys_call0( SYS_getpid );
     __syscall_return( pid_t, res );
 }

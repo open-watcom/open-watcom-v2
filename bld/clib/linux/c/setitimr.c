@@ -35,6 +35,6 @@
 
 _WCRTLINK int getitimer( int which, struct itimerval *value )
 {
-    u_long  res = sys_call2( SYS_getitimer, which, (u_long)value );
+    syscall_res res = sys_call2( SYS_getitimer, which, (u_long)value );
     __syscall_return( int, res );
 }

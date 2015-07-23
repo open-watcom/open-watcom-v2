@@ -37,13 +37,13 @@
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rterrno.h"
-#include "osthread.h"
-#include "sigtab.h"
 #include "sigfunc.h"
 #include "fpusig.h"
 #include "rtinit.h"
 #include "_int23.h"
 #include "thread.h"
+#include "sigtab.h"
+#include "initsig.h"
 
 unsigned        char    __ExceptionHandled;
 
@@ -200,8 +200,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
 }
 
 
-void    __SigInit( void )
-/***********************/
+static void __SigInit( void )
+/***************************/
 {
 
 #if defined( __MT__ )
@@ -216,9 +216,9 @@ void    __SigInit( void )
 }
 
 
-void    __SigFini( void ) {
-/**************************/
-
+static void __SigFini( void )
+/***************************/
+{
 #if defined( __MT__ )
     ULONG               nesting;
     APIRET              rc;
@@ -325,8 +325,8 @@ _WCRTLINK int raise( int sig ) {
 
 
 static void __SetSigInit( void ) {
-    __sig_init_rtn = &__SigInit;
-    __sig_fini_rtn = &__SigFini;
+    __sig_init_rtn = __SigInit;
+    __sig_fini_rtn = __SigFini;
     _RWD_FPE_handler = (FPEhandler *)__sigfpe_handler;
 }
 

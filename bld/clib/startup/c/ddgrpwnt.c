@@ -33,6 +33,7 @@
 #include <windows.h>
 #include <string.h>
 #include <stdlib.h>
+#include "ddgrp.h"
 
 #define message_prefix \
     "This Dynamic Link Library is already in use by:\n"

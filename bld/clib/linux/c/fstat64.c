@@ -35,6 +35,6 @@
 
 _WCRTLINK int fstat64( int __fildes, struct stat64 * __buf )
 {
-    u_long res = sys_call2( SYS_fstat64, __fildes, (u_long)__buf );
+    syscall_res res = sys_call2( SYS_fstat64, __fildes, (u_long)__buf );
     __syscall_return( int, res );
 }

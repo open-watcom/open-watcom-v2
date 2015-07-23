@@ -43,7 +43,7 @@ void InitPurge( void )
 }
 
 
-void SrcPurge( void )
+static void SrcPurge( void )
 /*******************/
 {
     FCB *src_file;

@@ -35,6 +35,6 @@
 
 _WCRTLINK int access( const char *filename, int mode )
 {
-    u_long res = sys_call2( SYS_access, (u_long)filename, mode );
+    syscall_res res = sys_call2( SYS_access, (u_long)filename, mode );
     __syscall_return( int, res );
 }

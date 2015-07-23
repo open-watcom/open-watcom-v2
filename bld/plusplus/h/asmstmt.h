@@ -34,6 +34,7 @@
 #define _ASMSTMT_H
 
 #include "vbuf.h"
+#include "asalloc.h"
 #if _INTEL_CPU
   #include "asminlin.h"
 #else
@@ -55,9 +56,5 @@ extern void         AsmSysDone( void );
 extern char const   *AsmSysDefineByte( void );
 extern void         AsmSysCopyCode( void );
 extern void         AsmSysLine( const char * );
-
-// in ASMALLOC
-void    *AsmAlloc( size_t );
-void    AsmFree( void * );
 
 #endif

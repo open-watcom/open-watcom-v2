@@ -35,6 +35,6 @@
 
 _WCRTLINK int sigwaitinfo( const sigset_t *__set, siginfo_t *__info )
 {
-    u_long  res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, (u_long)__info, 0, sizeof( sigset_t ) );
+    syscall_res res = sys_call4( SYS_rt_sigtimedwait, (u_long)__set, (u_long)__info, 0, sizeof( sigset_t ) );
     __syscall_return( int, res );
 }

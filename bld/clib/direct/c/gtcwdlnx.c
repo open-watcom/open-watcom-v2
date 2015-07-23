@@ -40,25 +40,24 @@
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 {
     unsigned char   path[ _MAX_PATH ];
-    long            realsize;
+    syscall_res     res;
     UCHAR_TYPE      *out;
     unsigned char   *in;
     CHAR_TYPE       ch;
 
-    realsize = sys_call2( SYS_getcwd, (u_long)path, _MAX_PATH );
-
-    if( realsize < 0 ) {
-        _RWD_errno = -realsize;
+    res = sys_call2( SYS_getcwd, (u_long)path, _MAX_PATH );
+    if( __syscall_iserror( res ) ) {
+        _RWD_errno = __syscall_errno( res );
         return( NULL );
     }
     if( buf == NULL ) {
-        buf = lib_malloc( max( size, realsize ) * CHARSIZE );
+        buf = lib_malloc( max( size, __syscall_val( size_t, res ) ) * CHARSIZE );
         if( buf == NULL ) {
             _RWD_errno = ENOMEM;
             return( NULL );
         }
     } else {
-        if( realsize > size ) {
+        if( __syscall_val( size_t, res ) > size ) {
             _RWD_errno = ERANGE;
             return( NULL );
         }

@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <dos16.h>
 #include "wdebug.h"
+#include "hook387.h"
 
 extern void __int7( void );
 #pragma aux __int7 "*";
@@ -90,7 +91,6 @@ static char has_wgod_emu = 0;
 
 static char FPArea[128];
 
-#pragma aux __hook387 "*" parm caller [DX EAX];
 char __hook387( D16INFO __far *_d16infop )
 /****************************************/
 {
@@ -120,7 +120,6 @@ char __hook387( D16INFO __far *_d16infop )
     return( 0 );
 }
 
-#pragma aux __unhook387 "*" parm caller [DX EAX];
 char __unhook387( D16INFO __far *_d16infop )
 /******************************************/
 {

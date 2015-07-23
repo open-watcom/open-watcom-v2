@@ -67,18 +67,13 @@ typedef struct {
     DWORD stackstart;
 } exe_data;
 
+extern WORD DataSelector;
+extern WORD MyDataSelector;
+extern DWORD DataSelectorSize;
+extern WORD Has87;
+
 extern short MaxGlueRoutines,MaxCallbackRoutines;
 extern rtns Glue[];
 extern char MsgTitle[];
-void DPMIFreeAlias( WORD seg );
-#pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
-WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt );
-extern WORD DPMIGet32( DWORD _FAR *, DWORD );
-extern void DPMIFree32( DWORD );
-extern int  InitSelectorCache( void );
-extern void FiniSelectorCache( void );
-extern void FiniSelList( void );
-extern void FreeDPMIMemBlocks( void );
-extern int Fini( int, ... );
 extern void FAR FiniDLLs( void );
-int Init32BitTask( HINSTANCE, HINSTANCE, LPSTR, int );
+extern int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline );

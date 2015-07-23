@@ -100,7 +100,7 @@ BOOL CALLBACK GetBitmapNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lpar
     return( TRUE );
 }
 
-void doDisplayBitmap( HBITMAP newbm )
+static void doDisplayBitmap( HBITMAP newbm )
 {
     HDC         windc;
 

@@ -35,6 +35,6 @@
 
 _WCRTLINK clock_t times( struct tms *__buf )
 {
-    u_long  res = sys_call1( SYS_times, (u_long)__buf );
+    syscall_res res = sys_call1( SYS_times, (u_long)__buf );
     __syscall_return( clock_t, res );
 }

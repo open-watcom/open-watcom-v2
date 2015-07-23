@@ -327,7 +327,7 @@ bool ParmsToBeReversed( int flags, aux_info *inf )
     return( FALSE );
 }
 
-aux_info *InfoLookup( SYMPTR sym )
+static aux_info *InfoLookup( SYMPTR sym )
 {
     char            *name;
     aux_info        *inf;

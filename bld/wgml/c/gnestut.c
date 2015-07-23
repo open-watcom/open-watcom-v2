@@ -84,7 +84,7 @@ void init_nest_cb( bool copy_stack )
     memset( wk, 0, sizeof( *wk ) );
 
     wk->prev = nest_cb;
-    wk->c_tag = t_NONE;
+    wk->gtag = GML_TAG_NONE;
     wk->p_stack = NULL;
     wk->lay_tag = NULL;
 

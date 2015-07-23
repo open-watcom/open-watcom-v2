@@ -66,7 +66,7 @@ getche        getche            _getche           d16 d32 nt  nta ntp         o1
 getch_        getch             _getch            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32         rdu rdk
 getcwd        getcwd            _getcwd           d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
 getpid        getpid            _getpid           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-getpwent      setpwent          endpwent                                                                  l32 lpc lmp
+getpwe        setpwent          endpwent                                                                  l32 lpc lmp
 getws_        getws             _getws            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
 gmtm_r        _gmtime           gmtime_r                                                                  l32 lpc lmp
 i64toa        lltoa             _i64toa           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk

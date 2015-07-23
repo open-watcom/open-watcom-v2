@@ -49,9 +49,9 @@
 _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
 {
     APIRET      rc;
-    OS_UINT     rwmode, actiontaken, openmode;
+    OS_UINT     actiontaken;
     HFILE       fhandle;
-    int         share;
+    OS_UINT     rwmode, share, openmode;
     unsigned    iomode_flags;
 
     while( *name == ' ' ) ++name;
@@ -68,7 +68,7 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
     if( share == OPENMODE_DENY_COMPAT ) {
         share = OPENMODE_DENY_NONE;
     }
-    openmode = share+rwmode;
+    openmode = share + rwmode;
     rc = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0ul,
         _A_NORMAL, OPENFLAG_OPEN_IF_EXISTS, openmode, 0ul );
     if( rc ) {

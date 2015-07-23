@@ -34,6 +34,18 @@
 #include <malloc.h>
 #include "stkavail.h"
 
+// Visit code is used to get around a bug in the floodfill algorithm.
+// If filling with a non-solid pattern, it is not always possible to
+// tell if an area has already been filled, leading to infinite loops.
+// For WPAINT, (which uses worldm.lib or worldl.lib) the visit routines
+// keep track of what points we have visited.
+
+#if defined( __MEDIUM__ ) || defined( __LARGE__ )
+  #include "visit.h"
+#else
+  #define _flood_visit( x, y, len )
+#endif
+
 #define TUNING          6
 
 
@@ -51,20 +63,6 @@ static short    PaintRight( short, short, grcolor, short );
 static short    AddEntry( short, short, short, short, unsigned, unsigned *, struct frame * );
 static char     NotValidFrame( unsigned, unsigned *, struct frame * );
 static char     StackCompare( struct frame *, unsigned * );
-
-
-// Visit code is used to get around a bug in the floodfill algorithm.
-// If filling with a non-solid pattern, it is not always possible to
-// tell if an area has already been filled, leading to infinite loops.
-// For WPAINT, (which uses worldm.lib or worldl.lib) the visit routines
-// keep track of what points we have visited.
-
-#if defined( __MEDIUM__ ) || defined( __LARGE__ )
-extern int      _flood_is_visited( short, short );
-extern void     _flood_visit( short, short, short );
-#else
-#define _flood_visit( x, y, len )
-#endif
 
 #endif
 

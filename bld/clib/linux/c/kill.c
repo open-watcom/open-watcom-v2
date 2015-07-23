@@ -35,6 +35,6 @@
 
 _WCRTLINK int kill( pid_t __pid, int __sig )
 {
-    u_long  res = sys_call2( SYS_kill, (u_long)__pid, (u_long)__sig );
+    syscall_res res = sys_call2( SYS_kill, (u_long)__pid, (u_long)__sig );
     __syscall_return( int, res );
 }

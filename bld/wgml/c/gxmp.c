@@ -94,7 +94,7 @@ extern  void    gml_xmp( gml_tag gtag )
         }
     }
     if( ProcFlags.xmp_active ) {        // nested :XMP tag not supported
-        g_err_tag_nest( t_XMP );
+        g_err_tag_nest( gtag );
         scan_start = scan_stop;
         return;
     }
@@ -125,7 +125,7 @@ extern  void    gml_xmp( gml_tag gtag )
     font_save = g_curr_font;
     g_curr_font = layout_work.xmp.font;
 
-    if( nest_cb->c_tag == t_NONE ) {
+    if( nest_cb->gtag == GML_TAG_NONE ) {
         g_cur_left = g_page_left + conv_hor_unit( &layout_work.xmp.left_indent );
     } else {
         g_cur_left += conv_hor_unit( &layout_work.xmp.left_indent );
@@ -135,7 +135,7 @@ extern  void    gml_xmp( gml_tag gtag )
 
     init_nest_cb( true );
 
-    nest_cb->c_tag = t_XMP;
+    nest_cb->gtag = gtag;
 
     g_spacing_ln = layout_work.xmp.spacing;
 

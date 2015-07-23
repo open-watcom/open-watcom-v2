@@ -41,6 +41,7 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "peepopt.h"
 
 extern  bool                    IsVolatile(name*);
 extern  bool                    InsOrderDependant(instruction*,instruction*);

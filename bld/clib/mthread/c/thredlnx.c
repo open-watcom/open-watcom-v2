@@ -37,7 +37,6 @@
 #include <process.h>
 #include "rtdata.h"
 #include "liballoc.h"
-#include "osthread.h"
 #include "thread.h"
 #include "extfunc.h"
 #include "mthread.h"

@@ -39,6 +39,7 @@
 #include "data.h"
 #include "utils.h"
 #include "namelist.h"
+#include "i86obj.h"
 
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);

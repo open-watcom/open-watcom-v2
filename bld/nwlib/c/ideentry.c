@@ -34,7 +34,9 @@
 #ifdef __WATCOMC__
     #include <malloc.h> // for _heapshrink()
 #endif
-#include <banner.h>
+#include "banner.h"
+#include "main.h"
+
 #include "clibext.h"
 
 static IDECBHdl     ideHdl;

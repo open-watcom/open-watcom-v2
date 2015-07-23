@@ -96,7 +96,7 @@ PCH_EXEC( CPRAGMA,              PragmaData )
 PCH_EXEC( MESSAGE,              ErrWarnData )
 PCH_EXEC( INCALIAS,             IncAlias )
 PCH_EXEC( STATS,                Stats )
-//PCH_EXEC( CARVE,                      Test )
+//PCH_EXEC( CARVE,                Test )
 PCH_EXEC( PCHEADER,             Verify )
 
 //

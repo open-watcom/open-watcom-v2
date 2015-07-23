@@ -32,7 +32,8 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "trpimp.h"
-#include "trpqimp.h"
+#include "trpuximp.h"
+#include "qnxstrt.h"
 
 void                            *_slib_func[2];
 char                            **dbg_environ;  /* pointer to environment strings */

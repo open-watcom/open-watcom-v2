@@ -27,6 +27,10 @@
 * Description:  Prototypes for *blips.c
 *
 ****************************************************************************/
+
+
+extern  void    Blip( unsigned short loc, char ch );
+extern  void    BlipInit( void );
 extern  void    FiniBlip( void );
 extern  void    InitBlip( void );
 extern  bool    WantZoiks2( void );
@@ -42,3 +46,4 @@ extern  void    SCBlip( void );
 extern  void    PSBlip( void );
 extern  void    PLBlip( void );
 extern  void    DGBlip( void );
+extern  void    PGBlip( const char *name );

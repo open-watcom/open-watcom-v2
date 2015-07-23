@@ -30,24 +30,9 @@
 ****************************************************************************/
 
 
-/* include dump routines */
+#include "dmpinc.h"
 
-extern void DumpFPUIns();
-extern void Dumpan();
-extern void DumpBlk();
-extern void DumpConflicts();
-extern void DumpCurrLoop();
-extern void DumpIns();
-extern void DumpOpcodeName();
-extern void DumpRegTree();
-extern void DumpSc();
-extern void DumpGen();
-extern void DumpTree();
-extern void DumpCurrLoop();
-extern void DumpIVList();
-extern void DumpInvariants();
-extern void DumpOpt();
-extern void DumpDataDag();
+/* include dump routines */
 
 void (*__DmpRef[])() = {
         &DumpFPUIns,

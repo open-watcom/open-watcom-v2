@@ -83,7 +83,7 @@ struct hash_tab {
 #endif
 };
 
-unsigned countBits( unsigned x )
+static unsigned countBits( unsigned x )
 {
     unsigned y;
 
@@ -351,7 +351,7 @@ void StatsHASHTAB( HASHTAB hash )
 }
 #endif
 
-void expandHASHTAB( HASHTAB hash )
+static void expandHASHTAB( HASHTAB hash )
 /********************************/
 {
     unsigned expand_next;

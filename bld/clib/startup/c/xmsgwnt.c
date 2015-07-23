@@ -35,6 +35,7 @@
 #include "iomode.h"
 #include "rtdata.h"
 #include "exitwmsg.h"
+#include "_exit.h"
 
 _WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
 {

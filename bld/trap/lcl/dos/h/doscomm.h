@@ -30,7 +30,5 @@
 ****************************************************************************/
 
 
-extern long     FindFilePath( char *pgm, char *buffer, char *ext_list );
 extern void     SetDbgTask( void );
 extern int      SetUsrTask( void );
-

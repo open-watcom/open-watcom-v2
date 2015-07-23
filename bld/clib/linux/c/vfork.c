@@ -31,6 +31,8 @@
 
 #include "variety.h"
 #include <unistd.h>
+#include "rterrno.h"
+#include "thread.h"
 #include "linuxsys.h"
 
 #if defined( __386__ )
@@ -44,7 +46,7 @@
  *
  * Otherwise, the code is equivalent to:
  *
- *  u_long res = sys_call0( SYS_vfork );
+ *  syscall_res res = sys_call0( SYS_vfork );
  *  __syscall_return( pid_t, res );
  *
  * Since no stack is available to save registers before they are used,
@@ -54,27 +56,20 @@
  * in the header file.
  */
 
-extern pid_t __vfork( void );
-#pragma aux __vfork = \
-    "pop    edx"        /* Get the return address off the stack */ \
-    "mov    eax, 190"   /* SYS_vfork */ \
-    "int    80h" \
-    "push   edx" \
-    "cmp    eax, -125" \
-    "jb     funcret" \
-    "neg    eax" \
-    "mov    edx,eax" \
-    "call   __get_errno_ptr" \
-    "mov    dword ptr [eax],edx" \
-    "mov    eax, -1" \
-"funcret:" \
-    "ret" \
-    value [eax] \
-    modify [edx]
-#endif
-
 _WCRTLINK pid_t __declspec( naked ) vfork( void )
 {
-        return( __vfork() ); /* The return here doesn't actually do anything since
-                             __vfork() returns on its own. */
+__asm {
+    pop    edx;
+    mov    eax, 190;
+    int    80h;
+    push   edx;
+    cmp    eax, -125;
+    jb short L1;
+    neg    eax;
+    mov    _RWD_errno,eax;
+    mov    eax, -1;
+L1: ret;
+};
 }
+
+#endif

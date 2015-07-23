@@ -35,6 +35,6 @@
 
 _WCRTLINK gid_t getgid( void )
 {
-    u_long  res = sys_call0( SYS_getgid );
+    syscall_res res = sys_call0( SYS_getgid );
     __syscall_return( gid_t, res );
 }

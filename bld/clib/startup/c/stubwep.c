@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "libmain.h"
 
 int _WCFAR __pascal _WEP( int arg )
 {

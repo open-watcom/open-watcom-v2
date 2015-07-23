@@ -48,7 +48,6 @@ extern  mem_out_action  SetMemOut(mem_out_action);
 extern  bool_maybe      ReDefinedBy(instruction *, name *);
 extern  instruction_id  Renumber(void);
 extern  hw_reg_set      StackReg(void);
-extern  FU_entry        *FUEntry(instruction *);
 extern  int             CountIns(block*);
 extern  bool            VisibleToCall(instruction *,name *, bool);
 extern  bool            IsSegReg(hw_reg_set);
@@ -605,14 +604,14 @@ extern int StallCost( instruction *ins, instruction *top )
     complete?
 */
 {
-    unsigned    avail_fu;
-    unsigned    fu_overlap;
-    int         unit_stall;
-    int         opnd_stall;
-    FU_entry    *entry;
-    instruction *curr;
-    instruction *last;
-    bool        ins_stack;
+    unsigned        avail_fu;
+    unsigned        fu_overlap;
+    int             unit_stall;
+    int             opnd_stall;
+    const FU_entry  *entry;
+    instruction     *curr;
+    instruction     *last;
+    bool            ins_stack;
 
     /*
         NOP's always get a stall cost of -1 so that they are scheduled

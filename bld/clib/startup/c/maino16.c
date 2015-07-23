@@ -45,6 +45,7 @@
 #define INCL_DOSINFOSEG
 #define INCL_DOSMISC
 #define INCL_DOSMEMMGR
+#include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtstack.h"
 #include "stacklow.h"
@@ -53,6 +54,10 @@
 #include "crwd.h"
 #include "thread.h"
 #include "mthread.h"
+#include "osmain.h"
+#include "cmain.h"
+#include "maxthrds.h"
+#include "_exit.h"
 
 #if defined( __MT__ )
 
@@ -62,10 +67,6 @@ ULONG                   __iosemaphore[_NFILES];
 int                     __iosemcount[_NFILES];
 TID                     __iothreadid[_NFILES];
 
-extern  unsigned        __MaxThreads;
-
-extern  struct thread_data *    __MultipleThread();
-
 #else
 
 unsigned        _STACKLOW;
@@ -74,7 +75,7 @@ unsigned        _STACKLOW;
 
 /* global data */
 
-int             _WCI86FAR *_threadid;
+_WCRTDATA int   _WCI86FAR *_threadid;
 char            _WCI86FAR *_LpCmdLine;  /* pointer to command line */
 char            _WCI86FAR *_LpPgmName;  /* pointer to program name */
 unsigned        _dynend;
@@ -98,17 +99,12 @@ int             _nothread;
 /* End of static data - used in OS/2 DLL to find beginning of near heap */
 extern char     end;
 
-void _WCI86FAR  __null_FPE_handler( int fpe_type )
+_WCRTLINK void _WCI86FAR  __null_FPE_handler( int fpe_type )
 {
-	fpe_type = fpe_type;
+    fpe_type = fpe_type;
 }
 
-FPEhandler      *__FPE_handler = __null_FPE_handler;
-
-extern  int _CMain( void );
-#pragma aux _CMain "_*";
-#pragma aux _OS2Main "_*" parm caller [ dx ax ] [ cx bx ];
-
+FPEhandler  *__FPE_handler = __null_FPE_handler;
 
 int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
                         unsigned envseg, unsigned cmdoff )
@@ -133,11 +129,11 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
     _HShift = shftval;
     DosGetMachineMode( (PBYTE)&_osmode );
     {
-    unsigned short      version;
-
-    DosGetVersion( (PUSHORT)&version );
-    _osmajor = version >> 8;
-    _osminor = version & 0xff;
+        unsigned short      version;
+    
+        DosGetVersion( (PUSHORT)&version );
+        _RWD_osmajor = version >> 8;
+        _RWD_osminor = version & 0xff;
     }
 
 #if defined(__SW_BD)
@@ -146,19 +142,24 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
 #else
     /* copy progname and arguments to bottom of stack */
     {
-    char    _WCI86FAR *src;
-    char    _WCI86FAR *pgmp;
-
-    src = MK_FP( envseg, cmdoff );
-    _LpPgmName = stklow;
-    /* back up from the ao: pointer to the eo: pointer (see OS/2 2.0 docs)*/
-    for( pgmp = src - 1; *--pgmp != '\0'; );
-    ++pgmp;
-    while( *stklow++ = *pgmp++ );
-    while( *src ) ++src;
-    ++src;
-    _LpCmdLine = stklow;
-    while( *stklow++ = *src++ );
+        char    _WCI86FAR *src;
+        char    _WCI86FAR *pgmp;
+    
+        src = MK_FP( envseg, cmdoff );
+        _LpPgmName = stklow;
+        /* back up from the ao: pointer to the eo: pointer (see OS/2 2.0 docs)*/
+        for( pgmp = src - 1; *--pgmp != '\0'; )
+            ;
+        ++pgmp;
+        while( *stklow++ = *pgmp++ )
+            ;
+        while( *src )
+            ++src;
+        ++src;
+        _LpCmdLine = stklow;
+        while( *stklow++ = *src++ ) {
+            ;
+        }
     }
 #endif
 
@@ -171,7 +172,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
         _threadid = MK_FP( localseg, offsetof( LINFOSEG, tidCurrent ) );
         if( __InitThreadProcessing() == NULL )
             __fatal_runtime_error( "Not enough memory", 1 );
-        #if defined(__SW_BD)
+    #if defined(__SW_BD)
         {
             unsigned    i;
             unsigned    j;
@@ -180,9 +181,9 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
                 __SetupThreadProcessing( i );
             }
         }
-        #else
-            __SetupThreadProcessing( 1 );
-        #endif
+    #else
+        __SetupThreadProcessing( 1 );
+    #endif
         _STACKLOW = (unsigned)stklow;
     }
 #else
@@ -195,7 +196,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
 //      // this needs to be done before the InitRtns
 //      extern  void    __grow_iomode(int);
 
-//      if( _osmode == OS2_MODE ) {
+//      if( _RWD_osmode == OS2_MODE ) {
 //          __grow_iomode( 100 );
 //      }
 //  }
@@ -204,11 +205,13 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
     {
         int status;
         status = setjmp( JmpBuff );
-        if( status == 0 ) return( _CMain() );
+        if( status == 0 )
+            return( _CMain() );
         return( RetCode );
     }
 #else
-    return( _CMain() );
+    _CMain();   // this doesn't return, following line quiet compiler only
+    return( EXIT_FAILURE );
 #endif
 }
 

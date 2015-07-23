@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 #include "rtdata.h"
 #include "thrdreg.h"
 #include "liballoc.h"
@@ -40,6 +41,7 @@
 #include "mthread.h"
 #include "exitwmsg.h"
 #include "maxthrds.h"
+#include "trdlstac.h"
 
 
 typedef struct thread_data_list {
@@ -355,6 +357,7 @@ void __FreeThreadDataList( void )
     }
 }
 
+#if 0
 // a sanity check routine that can be called from a termination routine
 int __ActiveThreads( void )
 {
@@ -367,3 +370,4 @@ int __ActiveThreads( void )
     }
     return( threads );
 }
+#endif

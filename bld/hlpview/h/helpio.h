@@ -31,6 +31,8 @@
 
 
 #ifndef HELPIO_H_INCLUDED
+#define HELPIO_H_INCLUDED
+
 #define HELPIO
 
 typedef int     HelpFp;
@@ -39,7 +41,7 @@ typedef enum {
     HELP_SEEK_SET = 0,
     HELP_SEEK_CUR,
     HELP_SEEK_END
-}HelpSeekType;
+} HelpSeekType;
 
 #define HELP_OPEN_RDONLY        0x000000001
 #define HELP_OPEN_WRONLY        0x000000002
@@ -55,18 +57,17 @@ typedef enum {
 #define HELP_ACCESS_EXEC        0x0004
 #define HELP_ACCESS_EXIST       0x0008
 
-HELPIO int HelpRead( HelpFp fp, void *buf, int len );
-HELPIO int HelpWrite( HelpFp fp, const char *buf, int len );
-HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where );
-HELPIO long int HelpTell( HelpFp fp );
-HELPIO HelpFp HelpOpen( const char *path, unsigned long mode );
-HELPIO int HelpClose( HelpFp fp );
-HELPIO long int HelpFileLen( HelpFp fp );
+extern HELPIO int       HelpRead( HelpFp fp, void *buf, int len );
+extern HELPIO int       HelpWrite( HelpFp fp, const char *buf, int len );
+extern HELPIO long int  HelpSeek( HelpFp fp, long int offset, HelpSeekType where );
+extern HELPIO long int  HelpTell( HelpFp fp );
+extern HELPIO HelpFp    HelpOpen( const char *path, unsigned long mode );
+extern HELPIO int       HelpClose( HelpFp fp );
+extern HELPIO long int  HelpFileLen( HelpFp fp );
 #ifndef __NLM__
-HELPIO void HelpSearchEnv( const char *name, const char *env_var, char *buf );
+extern HELPIO void      HelpSearchEnv( const char *name, const char *env_var, char *buf );
 #endif
-HELPIO char *HelpGetCWD( char *buf, int size );
-HELPIO int HelpAccess( const char *path, int mode );
+extern HELPIO char      *HelpGetCWD( char *buf, int size );
+extern HELPIO int       HelpAccess( const char *path, int mode );
 
-#define HELPIO_H_INCLUDED
 #endif

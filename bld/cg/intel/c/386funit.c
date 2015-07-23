@@ -81,7 +81,7 @@ static const FU_entry FUnits586[] = {
 };
 
 
-FU_entry const *FUEntry( instruction *ins )
+const FU_entry *FUEntry( instruction *ins )
 {
     if( _CPULevel( CPU_586 ) ) {
         return( &FUnits586[ ins->u.gen_table->func_unit ] );

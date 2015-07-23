@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <windows.h>
+#include "libmain.h"
 
 int APIENTRY LibMain( HANDLE h, DWORD d, LPVOID l )
 {

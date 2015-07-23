@@ -35,6 +35,6 @@
 
 _WCRTLINK int iopl( int __level )
 {
-    u_long res = sys_call1( SYS_iopl, __level );
+    syscall_res res = sys_call1( SYS_iopl, __level );
     __syscall_return( int, res );
 }

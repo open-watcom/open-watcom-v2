@@ -193,9 +193,8 @@ static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
     strcpy( fdta->name, ( *lfndta->lfn != '\0' ) ? lfndta->lfn : lfndta->sfn );
 }
 
-static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, 
-                                                             lfnfind_t *lfndta )
-/******************************************************************************/
+static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind_t *lfndta )
+/*******************************************************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_first_lfn( path, attrib, lfndta ) );
@@ -216,15 +215,15 @@ static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib,
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( dpmi_rm.eax | ~ 0xFFFF );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
-    return( (unsigned short)dpmi_rm.eax );
+    return( dpmi_rm.ax );
 #endif
 }
 
-static unsigned _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
-/**********************************************************************/
+static tiny_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
+/************************************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_next_lfn( handle, lfndta ) );
@@ -242,15 +241,15 @@ static unsigned _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
     return( 0 );
 #endif
 }
 
-static unsigned _dos_find_close_lfn( unsigned handle )
-/****************************************************/
+static tiny_ret_t _dos_find_close_lfn( unsigned handle )
+/******************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_close_lfn( handle ) );
@@ -265,7 +264,7 @@ static unsigned _dos_find_close_lfn( unsigned handle )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     return( 0 );
 #endif
@@ -288,7 +287,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attrib,
         LFN_HANDLE_OF( fdta ) = TINY_INFO( rc );
         return( 0 );
     }
-    if( TINY_ERROR( rc ) && TINY_INFO( rc ) != 0x7100 ) {
+    if( IS_LFN_ERROR( rc ) ) {
         return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
@@ -301,14 +300,15 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *fdta )
 {
 #ifdef __WATCOM_LFN__
     lfnfind_t       lfndta;
-    unsigned        rc;
+    tiny_ret_t      rc;
 
     if( IS_LFN( fdta ) ) {
         rc = _dos_find_next_lfn( LFN_HANDLE_OF( fdta ), &lfndta );
-        if( rc == 0 ) {
+        if( TINY_OK( rc ) ) {
             convert_to_find_t( fdta, &lfndta );
+            return( 0 );
         }
-        return( rc );
+        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
     return( __dos_find_next_dta( fdta ) );
@@ -319,8 +319,12 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
 /******************************************************/
 {
 #if defined( __WATCOM_LFN__ )
+    tiny_ret_t      rc;
+
     if( IS_LFN( fdta ) ) {
-        return( _dos_find_close_lfn( LFN_HANDLE_OF( fdta ) ) );
+        if( TINY_OK( rc = _dos_find_close_lfn( LFN_HANDLE_OF( fdta ) ) ) )
+            return( 0 );
+        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
 #ifdef __OSI__

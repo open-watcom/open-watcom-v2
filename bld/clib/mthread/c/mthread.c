@@ -33,6 +33,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
+#if defined( __QNX__ )
+  #include <sys/magic.h>
+#endif
+#if defined (_NETWARE_LIBC)
+  #include "nw_libc.h"
+#elif defined( __QNX__ )
+  #include "semaqnx.h"
+#endif
 #include "rterrno.h"
 #include "liballoc.h"
 //#include "stacklow.h"
@@ -42,30 +51,13 @@
 #include "rtinit.h"
 #include "exitwmsg.h"
 #include "osver.h"
-
-#if defined (_NETWARE_LIBC)
-#include "nw_libc.h"
-#endif
-
-#if defined( __QNX__ )
-  #include "semaqnx.h"
-  #include <sys/magic.h>
-#endif
+#include "heapacc.h"
+#include "fileacc.h"
+#include "trdlstac.h"
+#include "maxthrds.h"
 
 #if !defined( _M_I86 )
-    extern void         (*_AccessFileH)( int );
-    extern void         (*_ReleaseFileH)( int );
-    extern void         (*_AccessIOB)( void );
-    extern void         (*_ReleaseIOB)( void );
-  #if !defined( __NETWARE__ )
-    extern void         (*_AccessNHeap)( void );
-    extern void         (*_AccessFHeap)( void );
-    extern void         (*_ReleaseNHeap)( void );
-    extern void         (*_ReleaseFHeap)( void );
-  #endif
   #if defined( __NT__ )
-    extern void         (*_AccessFList)( void );
-    extern void         (*_ReleaseFList)( void );
     static semaphore_object FListSemaphore;
   #endif
     void static nullSema4Rtn( semaphore_object *p ) { p = p; }
@@ -81,7 +73,6 @@ extern  int             __Sema4Fini;            // in finalizer segment
 #ifdef _M_IX86
 #pragma aux             __Sema4Fini "_*";
 #endif
-extern  unsigned        __MaxThreads;
 extern  void            **__ThreadIDs;
 
 #define MAX_SEMAPHORE   16
@@ -300,6 +291,8 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
     }
 }
 
+#if defined( _M_I86 )
+
 void    __AccessIOB( void )
 /*************************/
 {
@@ -311,8 +304,6 @@ void    __ReleaseIOB( void )
 {
     __ReleaseSemaphore( &IOBSemaphore );
 }
-
-
 
 void __AccessFileH( int handle )
 /******************************/
@@ -327,8 +318,6 @@ void __ReleaseFileH( int handle )
     __ReleaseSemaphore( &FileSemaphores[ (unsigned)handle % MAX_SEMAPHORE ] );
 }
 
-
-#if !defined( __NETWARE__ )
 void    __AccessNHeap( void )
 /***************************/
 {
@@ -352,9 +341,64 @@ void    __ReleaseFHeap( void )
 {
     __ReleaseSemaphore( &FHeapSemaphore );
 }
-#endif
 
-#if !defined( _M_I86 )
+#else
+
+  #if !defined (_THIN_LIB)
+
+static void    __AccessIOB( void )
+/*************************/
+{
+    __AccessSemaphore( &IOBSemaphore );
+}
+
+static void    __ReleaseIOB( void )
+/**************************/
+{
+    __ReleaseSemaphore( &IOBSemaphore );
+}
+
+static void __AccessFileH( int handle )
+/******************************/
+{
+    __AccessSemaphore( &FileSemaphores[ (unsigned)handle % MAX_SEMAPHORE ] );
+}
+
+static void __ReleaseFileH( int handle )
+/*******************************/
+{
+    __ReleaseSemaphore( &FileSemaphores[ (unsigned)handle % MAX_SEMAPHORE ] );
+}
+
+  #endif
+
+  #if !defined( __NETWARE__ )
+
+static void    __AccessNHeap( void )
+/***************************/
+{
+    __AccessSemaphore( &NHeapSemaphore );
+}
+
+static void    __ReleaseNHeap( void )
+/****************************/
+{
+    __ReleaseSemaphore( &NHeapSemaphore );
+}
+
+static void    __AccessFHeap( void )
+/***************************/
+{
+    __AccessSemaphore( &FHeapSemaphore );
+}
+
+static void    __ReleaseFHeap( void )
+/****************************/
+{
+    __ReleaseSemaphore( &FHeapSemaphore );
+}
+
+  #endif
 
 void    __AccessTDList( void )
 /****************************/
@@ -370,13 +414,13 @@ void    __ReleaseTDList( void )
 
   #if defined( __NT__ )
 
-void    __AccessFList( void )
+static void    __AccessFList( void )
 /***************************/
 {
     __AccessSemaphore( &FListSemaphore );
 }
 
-void    __ReleaseFList( void )
+static void    __ReleaseFList( void )
 /****************************/
 {
     __ReleaseSemaphore( &FListSemaphore );
@@ -813,27 +857,29 @@ void __InitMultipleThread( void )
     #error Multiple thread support is not defined for this platform
   #endif
 
-        // Set these up after we have created the InitSemaphore
-  #if !defined (_THIN_LIB)
+  #if !defined( _M_I86 )
+    // Set these up after we have created the InitSemaphore
+    #if !defined (_THIN_LIB)
         _AccessFileH      = &__AccessFileH;
         _ReleaseFileH     = &__ReleaseFileH;
         _AccessIOB        = &__AccessIOB;
         _ReleaseIOB       = &__ReleaseIOB;
-  #endif
+    #endif
         _AccessTDList     = &__AccessTDList;
         _ReleaseTDList    = &__ReleaseTDList;
         __AccessSema4     = &__AccessSemaphore;
         __ReleaseSema4    = &__ReleaseSemaphore;
         __CloseSema4      = &__CloseSemaphore;
-  #if !defined( __NETWARE__ )
+    #if !defined( __NETWARE__ )
         _AccessNHeap  = &__AccessNHeap;
         _AccessFHeap  = &__AccessFHeap;
         _ReleaseNHeap = &__ReleaseNHeap;
         _ReleaseFHeap = &__ReleaseFHeap;
-  #endif
-  #if defined( __NT__ )
+    #endif
+    #if defined( __NT__ )
         _AccessFList  = &__AccessFList;
         _ReleaseFList = &__ReleaseFList;
+    #endif
   #endif
         __GetThreadPtr  = __MultipleThread;
     }

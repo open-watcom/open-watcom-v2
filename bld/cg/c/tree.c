@@ -61,6 +61,7 @@
 #include "i64.h"
 #include "utils.h"
 #include "cgauxinf.h"
+#include "blips.h"
 
 #include "feprotos.h"
 #include "cgprotos.h"

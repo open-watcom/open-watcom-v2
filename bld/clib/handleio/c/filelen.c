@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include "rterrno.h"
 #include "fileacc.h"
+#include "iomode.h"
 #include "rtcheck.h"
 #include "lseek.h"
 #include "thread.h"

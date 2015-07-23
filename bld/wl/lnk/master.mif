@@ -9,7 +9,7 @@ skip_build: .symbolic
 !endif
 
 wlink.lnk : ../wlink.sp ../specs.sp
-    wsplice -k Pwlsystem -k $(host_os) -k $(host_cpu) $< $@
+    *wsplice -k Pwlsystem -k $(host_os) -k $(host_cpu) $< $@
 
 clean : .symbolic
     rm -f *.lnk

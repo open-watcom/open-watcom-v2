@@ -29,4 +29,8 @@ ncurses_objs = &
 inc_dirs        = -I"../h"
 
 ncurses.lib : $(ncurses_objs) $(__MAKEFILES__)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(ncurses_objs)
+!else
     $(librarian) $(libflags) $(ncurses_objs)
+!endif

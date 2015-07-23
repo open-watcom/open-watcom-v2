@@ -49,10 +49,10 @@ $(name)j.exe : $(name).exe $(name)j.res
         $(rc) -k $(name)j.res $^@
 
 rcstr.gh : rcstrmsg.gh
-        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/wzoom.msg
-        $(cpp) $(rc_aui_flags) $[@ >$^@
+        $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 $(name).res : ../res/wzoom.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@

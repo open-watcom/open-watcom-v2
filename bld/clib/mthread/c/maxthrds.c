@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "maxthrds.h"
 
 /*
    User can statically initialize this variable to the number of threads

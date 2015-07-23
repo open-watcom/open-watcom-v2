@@ -35,13 +35,13 @@
 
 #define __Align4K( x ) (((x)+0xfffL) & ~0xfffL )
 
-#if defined(_M_IX86)
+#if defined( _M_IX86 )
     extern  unsigned    _SP( void );
-    #if defined(__386__)
-        #pragma aux _SP = "mov eax,esp" value [eax];
-    #else
-        #pragma aux _SP = "mov ax,sp" value [ax];
-    #endif
+  #if defined( _M_I86 )
+    #pragma aux _SP = "mov ax,sp" value [ax];
+  #else
+    #pragma aux _SP = "mov eax,esp" value [eax];
+  #endif
 #endif
 
 #if defined(__NT__)

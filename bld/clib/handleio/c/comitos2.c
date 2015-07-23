@@ -49,7 +49,7 @@ _WCRTLINK int _commit( int handle )
     }
     rc = DosBufReset( handle );
     if( rc ) {
-        __set_errno_dos_reterr( rc );
+        __set_errno_dos( rc );
         return( 0 );
     }
     return( -1 );

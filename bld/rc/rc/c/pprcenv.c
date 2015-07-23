@@ -16,8 +16,7 @@
 #include "clibext.h"
 #include "rccore.h"
 
-
-char *PP_GetEnv( const char *name )
+const char *PP_GetEnv( const char *name )
 {
     return( RcGetEnv( name ) );
 }

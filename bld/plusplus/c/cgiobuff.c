@@ -46,6 +46,7 @@
 #include "stringl.h"
 #include "conpool.h"
 #include "pcheader.h"
+#include "cgio.h"
 
 #define CGIOBUFF_CHECK  (-(int)(sizeof(CGIOBUFF)|1))
 

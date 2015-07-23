@@ -30,17 +30,34 @@
 ****************************************************************************/
 
 
-//
-// MEMWRAP     : C library memory manager wrappers
-//
-// Modified     By:             Reason:
-// --------     ---             -------
-// 89/08/15     G. Coschi       initial implementation
-// 12-mar-92    Craig Eisler    modified for NT
-// 15-jan-93    B.J. Stecher    added SAVE stuff so that things work with the
-//                              "/r" compiled library when this file is not
-//                              is not compiled "/r"
-// 26-may-95    M.J. Carmody    get rid off malloc,free
-#include <string.h>
-#include <stdlib.h>
-void stbubg( void ){}
+#ifndef _XCONIO_H_INCLUDED
+#define _XCONIO_H_INCLUDED
+
+#include <conio.h>
+
+#undef  inp
+#undef  inpd
+#undef  inpw
+#undef  outp
+#undef  outpd
+#undef  outpw
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
+  extern unsigned _inline_inp(unsigned __port);
+  extern unsigned _inline_inpw(unsigned __port);
+  extern unsigned _inline_outp(unsigned __port, unsigned __value);
+  extern unsigned _inline_outpw(unsigned __port,unsigned __value);
+ #ifdef __386__
+  extern unsigned _inline_inpd(unsigned __port);
+  extern unsigned _inline_outpd(unsigned __port,unsigned __value);
+ #endif
+#endif
+
+#ifdef __cplusplus
+};
+#endif
+#endif

@@ -59,4 +59,3 @@ _WCRTLINK int (kbhit)( void )
     tcsetattr( STDIN_FILENO, TCSADRAIN, &old );
     return( rc );
 }
-

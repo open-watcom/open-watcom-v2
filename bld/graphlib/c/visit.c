@@ -31,6 +31,7 @@
 
 
 #include "gdefn.h"
+#include "visit.h"
 
 
 // Visit code is used to get around a bug in the floodfill algorithm.

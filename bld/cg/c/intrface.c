@@ -51,6 +51,8 @@
 #include "patch.h"
 #include "dbsyms.h"
 #include "objio.h"
+#include "blips.h"
+#include "bldsel.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -59,8 +61,6 @@
 #include <stdlib.h>
 #endif
 
-extern  void            InitBlip(void);
-extern  void            FiniBlip(void);
 extern  void            InitWeights(uint);
 extern  void            CGMemInit(void);
 extern  void            TInit(void);
@@ -75,15 +75,9 @@ extern  void            TellNoSymbol(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
 extern  void            BGParmDecl(cg_sym_handle,type_def*);
 extern  void            BGAutoDecl(cg_sym_handle,type_def*);
-extern  sel_handle      BGSelInit(void);
-extern  void            BGSelCase(sel_handle,label_handle,signed_32);
-extern  void            BGSelRange(sel_handle,signed_32,signed_32,label_handle);
-extern  void            BGSelOther(sel_handle,label_handle);
 extern  an              TGen(tn,type_def*);
-extern  void            BGSelect(sel_handle,an,cg_switch_type);
 extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
-extern  void            DGBlip(void);
 extern  void            DataLabel(label_handle);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned,const void *);

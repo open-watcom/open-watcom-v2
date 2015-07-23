@@ -35,6 +35,6 @@
 
 _WCRTLINK __sig_func signal( int signum, __sig_func sighandler )
 {
-    u_long res = sys_call2( SYS_signal, (u_long)signum, (u_long)sighandler );
+    syscall_res res = sys_call2( SYS_signal, (u_long)signum, (u_long)sighandler );
     __syscall_return( __sig_func, res );
 }

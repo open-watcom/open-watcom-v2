@@ -42,18 +42,25 @@ else
             ;;
     esac
 fi
-cd $OWSRCDIR/builder || die "Failed to enter $OWSRCDIR/builder"
-if [ ! -d $OWOBJDIR ]; then mkdir -p $OWOBJDIR || die "Failed to mkdir $OWOBJDIR"; fi
-cd $OWOBJDIR || die "Failed to enter $OWOBJDIR"
-rm -f $OWBINDIR/builder || die "Failed to remove $OWBINDIR/builder"
-output_redirect $OWBINDIR/wmake -f ../binmake clean || die "Failed to wmake binmake clean"
-output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe || die "Failed to wmake binmake"
-cd $OWSRCDIR || exit 1
-builder boot
 RC=$?
-if [ $RC -eq 0 ]; then
-    builder build
+if [ $RC -ne 0 ]; then
+    echo "wmake bootstrap build error"
+else
+    cd $OWSRCDIR/builder
+    if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+    cd $OWOBJDIR
+    rm -f $OWBINDIR/builder
+    output_redirect $OWBINDIR/wmake -f ../binmake clean
+    output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+    cd $OWSRCDIR
+    builder boot
     RC=$?
+    if [ $RC -ne 0 ]; then
+        echo "builder bootstrap build error"
+    else
+        builder build
+        RC=$?
+    fi
 fi
 cd $OWROOT
 exit $RC

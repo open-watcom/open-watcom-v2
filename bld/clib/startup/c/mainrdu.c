@@ -32,26 +32,27 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include <rdos.h>
-
 #include <stdio.h>
+#include <stddef.h>
 #include <io.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <rdos.h>
 #include "iomode.h"
 #include "strdup.h"
 #include "liballoc.h"
 #include "rtdata.h"
-//#include "stacklow.h"
-#include "sigtab.h"
 #include "initfini.h"
 #include "rtinit.h"
 #include "initarg.h"
 #include "thread.h"
 #include "mthread.h"
-#include "rdosexc.h"
 #include "snglthrd.h"
+#include "fileacc.h"
+#include "heapacc.h"
+#include "trdlstac.h"
+#include "cinit.h"
+#include "_exit.h"
 
 static char    DllName[_MAX_PATH];
 
@@ -85,9 +86,10 @@ void    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
 void    (*_AccessFList)(void)    = &__NullAccIOBRtn;
 void    (*_ReleaseFList)(void)   = &__NullAccIOBRtn;
 
-void __sig_null_rtn(void) {}
-_WCRTLINK void  (*__sig_init_rtn)(void) = __sig_null_rtn;
-_WCRTLINK void  (*__sig_fini_rtn)(void) = __sig_null_rtn;
+static void __sig_null_rtn(void) {}
+
+_WCRTDATA void  (*__sig_init_rtn)(void) = __sig_null_rtn;
+_WCRTDATA void  (*__sig_fini_rtn)(void) = __sig_null_rtn;
 
 #ifdef _M_IX86
  #pragma aux _end "*"

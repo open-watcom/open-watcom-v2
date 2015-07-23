@@ -97,10 +97,10 @@ $(name).exe: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
 rcstrmsg.gh: ../res/wre.msg
-        $(cpp) $(rc_aui_flags) $[@ >$^@
+        $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 rcstr.gh: rcstrmsg.gh
-        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 $(name).res: ../res/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@

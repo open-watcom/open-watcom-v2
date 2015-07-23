@@ -35,6 +35,6 @@
 
 _WCRTLINK pid_t fork( void )
 {
-    u_long res = sys_call0( SYS_fork );
+    syscall_res res = sys_call0( SYS_fork );
     __syscall_return( pid_t, res );
 }

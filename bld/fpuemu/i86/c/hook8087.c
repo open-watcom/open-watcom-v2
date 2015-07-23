@@ -38,6 +38,7 @@
 #define INCL_DOSINFOSEG
 #define INCL_DOSMISC
 #include <wos2.h>
+#include "hook8087.h"
 
 extern void __interrupt __int7( void );
 #pragma aux __int7 "*";

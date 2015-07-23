@@ -35,6 +35,6 @@
 
 _WCRTLINK int ioperm( unsigned long __from, unsigned long __num, int __turn_on )
 {
-    u_long res = sys_call3( SYS_ioperm, __from, __num, __turn_on );
+    syscall_res res = sys_call3( SYS_ioperm, __from, __num, __turn_on );
     __syscall_return( int, res );
 }

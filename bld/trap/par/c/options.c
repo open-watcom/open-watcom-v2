@@ -32,13 +32,12 @@
 
 #include <wwindows.h>
 #include <stdlib.h>
-#include "wserver.h"
+#include "servio.h"
 #include "options.h"
+#include "optionsi.h"
 
-extern char TrapParm[];
 extern int              NumPrinters(void);
 extern unsigned         PrnAddress(int);
-extern
 
 WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
@@ -51,10 +50,12 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
     switch( msg ) {
     case WM_INITDIALOG:
         EnableWindow( edit, FALSE );
-        if( TrapParm[0] >= '1' && TrapParm[0] <= '3' ) {
-            if( TrapParm[0] > num + '0' ) TrapParm[0] = num + '0';
+        if( ServParms[0] >= '1' && ServParms[0] <= '3' ) {
+            if( ServParms[0] > num + '0' ) {
+                ServParms[0] = num + '0';
+            }
         }
-        switch( TrapParm[0] ) {
+        switch( ServParms[0] ) {
         case '1':
         default:
             if( num >= 1 ) {
@@ -77,7 +78,7 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
         case 'p':
         case 'P':
             SendDlgItemMessage( hwnd, IDDI_PORT, BM_SETCHECK, 1, 0 );
-            SetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm+1 );
+            SetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1 );
             EnableWindow( edit, TRUE );
         }
         if( num < 3 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT3 ), FALSE );
@@ -88,18 +89,18 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            TrapParm[1] = '\0';
+            ServParms[1] = '\0';
             if( SendDlgItemMessage( hwnd, IDDI_LPT1, BM_GETCHECK, 0, 0 ) ) {
-                TrapParm[0] = '1';
+                ServParms[0] = '1';
             } else if( SendDlgItemMessage( hwnd, IDDI_LPT2, BM_GETCHECK, 0, 0 ) ) {
-                TrapParm[0] = '2';
+                ServParms[0] = '2';
             } else if( SendDlgItemMessage( hwnd, IDDI_LPT3, BM_GETCHECK, 0, 0 ) ) {
-                TrapParm[0] = '3';
+                ServParms[0] = '3';
             } else if( SendDlgItemMessage( hwnd, IDDI_PORT, BM_GETCHECK, 0, 0 ) ) {
-                TrapParm[0] = 'p';
-                GetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm+1, 256 );
+                ServParms[0] = 'p';
+                GetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1, PARMS_MAXLEN - 1 );
             } else {
-                TrapParm[0] = '1';
+                ServParms[0] = '1';
             }
         case IDCANCEL:
             EndDialog( hwnd, TRUE );
@@ -117,7 +118,7 @@ WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
             EnableWindow( edit, FALSE );
             break;
         case IDDI_PORT:
-            SetDlgItemText( hwnd, IDDI_PORT_EDIT, TrapParm[0] == '\0' ? "" : TrapParm+1 );
+            SetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms[0] == '\0' ? "" : ServParms + 1 );
             EnableWindow( edit, TRUE );
             break;
         }

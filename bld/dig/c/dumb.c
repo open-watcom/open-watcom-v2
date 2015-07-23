@@ -207,7 +207,7 @@ trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, tra
 
     num_in_mx = num_in_mx; num_out_mx = num_out_mx;
     Out_Mx_Ptr = mx_out;
-    result = DumbRequests[*(access_req *)mx_in[0].ptr]();
+    result = DumbRequests[TRP_REQUEST( mx_in )]();
     return( result );
 }
 

@@ -37,6 +37,7 @@
 #include <sys/time.h>
 #include "trpimp.h"
 #include "servio.h"
+#include "digio.h"
 
 
 void Output( const char *str )
@@ -257,12 +258,12 @@ unsigned PathOpen( char *name, unsigned name_len, char *exts )
     return( filehndl );
 }
 
-unsigned long GetSystemHandle( unsigned h )
+long GetSystemHandle( int h )
 {
     return( h );
 }
 
-unsigned FileClose( unsigned h )
+unsigned FileClose( int h )
 {
     close( h );
     return( 0 );

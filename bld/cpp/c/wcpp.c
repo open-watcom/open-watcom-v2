@@ -35,21 +35,20 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include "getopt.h"
 #include "misc.h"
 #include "iopath.h"
 #include "swchar.h"
 
 
-char *OptEnvVar = "";
-
 static const char *usageMsg[] = {
-    "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-zk0] [-zk1] [-zk2] [-zku8] [input files]\n",
+    "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-o<file>] [-zk0] [-zk1] [-zk2]\n"
+    "\t\t[-zku8] [input files]\n",
     "input files\t\tlist of input source file names\n",
     "-c\t\tpreserve comments\n",
     "-d<macro>\t\tdefine macro\n",
     "-i<path>\t\tinclude path\n",
     "-l\t\tgenerate #line directives\n",
+    "-o<file>\t\toutput file\n",
     "-zk{0,1,2,u8}\t\tsource file character encoding\n",
     "-zk0\t\tJapanese (Kanji, CP 932) double-byte encoding\n",
     "-zk1\t\tChinese (Traditional, CP 950) double-byte encoding\n",
@@ -60,7 +59,7 @@ static const char *usageMsg[] = {
 };
 
 /* forward declaration */
-static bool scanEnvVar( const char *varname );
+static bool doScanParams( int argc, char *argv[] );
 
 void Quit( const char *usage_msg[], const char *str, ... )
 {
@@ -84,16 +83,49 @@ void Quit( const char *usage_msg[], const char *str, ... )
     exit( EXIT_FAILURE );
 }
 
-static int          flags = 0;
-static const char   **defines = NULL;
-static int          numdefs = 0;
-static const char   **filenames = NULL;
-static int          nofilenames = 0;
+static char *my_strdup( const char *str )
+{
+    size_t     len;
+    char       *ptr;
+
+    len = strlen( str ) + 1;
+    ptr = malloc( len );
+    return( memcpy( ptr, str, len ) );
+}
+
+static int      flags = 0;
+static char     **defines = NULL;
+static int      numdefs = 0;
+static char     **filenames = NULL;
+static int      nofilenames = 0;
+static char     *out_filename = NULL;
+
+static bool scanString( char *buf, const char *str, unsigned len )
+/*****************************************************************/
+{
+    bool        have_quote;
+    char        c;
+
+    have_quote = false;
+    while( isspace( *str ) )
+        ++str;
+    while( (c = *str++) != '\0' && len > 0 ) {
+        if( c == '\"' ) {
+            have_quote = !have_quote;
+        } else {
+            *buf++ = c;
+            len--;
+        }
+    }
+    *buf = '\0';
+    return( have_quote );
+}
 
 static bool ScanOptionsArg( const char * arg )
 /********************************************/
 {
     bool        contok;
+    size_t      len;
 
     contok = true;
 
@@ -104,17 +136,34 @@ static bool ScanOptionsArg( const char * arg )
     case 'd':
         ++arg;
         defines = realloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
-        defines[numdefs++] = arg;
+        defines[numdefs++] = my_strdup( arg );
         break;
     case 'h':
         Quit( usageMsg, NULL );
         break;
     case 'i':
-        ++arg;
-        PP_AddIncludePath( arg );
+        {
+            char    *p;
+
+            ++arg;
+            len = strlen( arg );
+            p = malloc( len + 1 );
+            scanString( p, arg, len );
+            PP_AddIncludePath( p );
+            free( p );
+        }
         break;
     case 'l':
         flags |= PPFLAG_EMIT_LINE;
+        break;
+    case 'o':
+        ++arg;
+        if( out_filename != NULL ) {
+            free( out_filename );
+        }
+        len = strlen( arg );
+        out_filename = malloc( len + 1 );
+        scanString( out_filename, arg, len );
         break;
     case 'z':
         ++arg;
@@ -135,49 +184,19 @@ static bool ScanOptionsArg( const char * arg )
                 }
             }
         }
+        // fall down
+    default:
         Quit( usageMsg, "Incorrect option\n" );
-        break;
-    default:            /* option that could have others with it */
-//        contok = ScanMultiOptArg( arg ) && contok;
         break;
     }
     return( contok );
 } /* ScanOptionsArg */
 
-static bool doScanParams( int argc, char *argv[] )
-/************************************************/
-{
-    const char *arg;
-    int     switchchar;
-    bool    contok;         /* continue with main execution */
-    int     currarg;
-    int     fnarg;
-
-    contok = true;
-    switchchar = _dos_switch_char();
-    fnarg = 1;
-    for( currarg = 1; currarg < argc && contok; currarg++ ) {
-        arg = argv[currarg];
-        if( *arg == switchchar || *arg == '-' ) {
-            contok = ScanOptionsArg( arg + 1 ) && contok;
-        } else if( *arg == '@' ) {
-            contok = scanEnvVar( arg + 1 ) && contok;
-        } else if( *arg == '?' ) {
-            Quit( usageMsg, NULL );
-//            contok = false;
-        } else {
-            filenames = realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
-            filenames[nofilenames++] = arg;
-        }
-    }
-    return( contok );
-}
-
-static int ParseEnvVar( const char *env, char **argv, char *buf )
-/***************************************************************/
+static int ParseVariable( const char *var, char **argv, char *buf )
+/*****************************************************************/
 {
     /*
-     * Returns a count of the "command line" parameters in *env.
+     * Returns a count of the "command line" parameters in *var.
      * Unless argv is NULL, both argv and buf are completed.
      *
      * This function ought to be fairly similar to clib(initargv@_SplitParms).
@@ -188,122 +207,153 @@ static int ParseEnvVar( const char *env, char **argv, char *buf )
     int         switchchar;
     int         argc;
     char        *bufend;
+    char        *bufstart;
     bool        got_quote;
+    bool        output_data;
 
     switchchar = _dos_switch_char();
+    output_data = ( buf != NULL ) && ( argv != NULL );
+    bufstart = buf;
     bufend = buf;
-    argc = 1;
-    if( argv != NULL )
-        argv[0] = ""; //fill in the program name
+    argc = 0;
     for( ;; ) {
         got_quote = false;
-        while( isspace( *env ) && *env != '\0' )
-            env++;
-        start = env;
-        if( buf != NULL ) {
-            argv[argc] = bufend;
+        while( isspace( *var ) && *var != '\0' )
+            var++;
+        start = var;
+        if( output_data ) {
+            bufstart = bufend;
         }
-        if( *env == switchchar || *env == '-' ) {
-            if( buf != NULL ) {
-                *bufend = *env;
-                bufend++;
+        if( *var == switchchar || *var == '-' ) {
+            if( output_data ) {
+                *bufend++ = *var;
             }
-            env ++;
+            var++;
         }
-        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
-            if( *env == '\"' ) {
+        while( ( got_quote || !isspace( *var ) ) && *var != '\0' ) {
+            if( *var == '\"' ) {
                 got_quote = !got_quote;
             }
-            if( buf != NULL ) {
-                *bufend = *env;
-                bufend++;
+            if( output_data ) {
+                *bufend++ = *var;
             }
-            env++;
+            var++;
         }
-        if( start != env ) {
+        if( start != var ) {
+            if( output_data ) {
+                *bufend++ = '\0';
+                argv[argc] = bufstart;
+            }
             argc++;
-            if( buf != NULL ) {
-                *bufend = '\0';
-                bufend++;
-            }
         }
-        if( *env == '\0' ) {
+        if( *var == '\0' ) {
             break;
         }
     }
     return( argc );
 }
 
-static bool scanEnvVar( const char *varname )
-/*******************************************/
+static bool scanEnvVarOrFile( const char *name )
+/**********************************************/
 {
     /*
-     * Pass nofilenames and analysis of getenv(varname) into argc and argv
+     * Pass nofilenames and analysis of getenv(name) into argc and argv
      * to doScanParams. Return view on usability of data. (true is usable.)
      *
      * Recursion is supported but circularity is rejected.
-     *
-     * The analysis is fairly similar to that done in clib(initargv@_getargv).
-     * It is possible to use that function but it is not generally exported and
-     * ParseEnvVar() above is called from other places.
      */
-    typedef struct EnvVarInfo {
-        struct EnvVarInfo       *next;
-        char                    *varname;
-        char                    **argv; /* points into buf */
-        char                    buf[1]; /* dynamic array */
-    } EnvVarInfo;
+    typedef struct VarInfo {
+        struct VarInfo      *next;
+        char                *name;
+        char                **argv; /* points into buf */
+        char                buf[1]; /* dynamic array */
+    } VarInfo;
 
     int                 argc;
-    EnvVarInfo          *info;
-    static EnvVarInfo   *stack = 0; // Needed to detect recursion.
+    VarInfo             *info;
+    static VarInfo      *stack = NULL;  // Needed to detect recursion.
     size_t              argvsize;
     size_t              argbufsize;
-    char                *env;
-    size_t              varlen;     // size to hold varname copy.
-    bool                result;     // doScanParams Result.
+    const char          *optstring;
+    size_t              varlen;         // size to hold name copy.
+    bool                result;         // doScanParams Result.
+    char                fbuf[512];
 
-    env = PP_GetEnv( varname );
-    if( env == NULL ) {
-//        RcWarning( ERR_ENV_VAR_NOT_FOUND, varname );
-        return( true );
+    optstring = PP_GetEnv( name );
+    if( optstring == NULL ) {
+        FILE *fh;
+
+        fh = fopen( name, "rt" );
+        if( fh == NULL ) {
+//            RcWarning( ERR_ENV_VAR_NOT_FOUND, name );
+            return( true );
+        }
+        fgets( fbuf, sizeof( fbuf ), fh );
+        fclose( fh );
+        optstring = fbuf;
     }
     // This used to cause stack overflow: set foo=@foo && wrc @foo.
     for( info = stack; info != NULL; info = info->next ) {
-#if !defined( __UNIX__ )
-        if( stricmp( varname, info->varname ) == 0 ) {  // Case-insensitive
+#if defined( __UNIX__ )
+        if( strcmp( name, info->name ) == 0 ) {     // Case-sensitive
 #else
-        if( strcmp( varname, info->varname ) == 0 ) {   // Case-sensitive
+        if( stricmp( name, info->name ) == 0 ) {    // Case-insensitive
 #endif
-//            RcFatalError( ERR_RCVARIABLE_RECURSIVE, varname );
+//            RcFatalError( ERR_RCVARIABLE_RECURSIVE, name );
         }
     }
-    argc = ParseEnvVar( env, NULL, NULL );  // count parameters.
-    argbufsize = strlen( env ) + 1 + argc;  // inter-parameter spaces map to 0
-    argvsize = ( argc + 1 ) * sizeof( char * ); // sizeof argv[argc+1]
-    varlen = strlen( varname ) + 1;         // Copy taken to detect recursion.
+    argc = ParseVariable( optstring, NULL, NULL );  // count parameters.
+    argbufsize = strlen( optstring ) + 1 + argc;    // inter-parameter spaces map to 0
+    argvsize = argc * sizeof( char * );             // sizeof argv[argc+1]
+    varlen = strlen( name ) + 1;                    // Copy taken to detect recursion.
     info = malloc( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
-    stack = info;                           // push info on stack
+    stack = info;                                   // push info on stack
     info->argv = (char **)info->buf;
-    ParseEnvVar( env, info->argv, info->buf + argvsize );
-    info->varname = info->buf + argvsize + argbufsize;
-    strcpy( info->varname, varname );
-    info->argv[argc] = NULL;    //there must be a NULL element on the end
-                                // of the list
+    ParseVariable( optstring, info->argv, info->buf + argvsize );
+    info->name = info->buf + argvsize + argbufsize;
+    strcpy( info->name, name );
     result = doScanParams( argc, info->argv );
 
-    stack = info->next;                     // pop stack
+    stack = info->next;                             // pop stack
     free( info );
     return( result );
 }
 
+static bool doScanParams( int argc, char *argv[] )
+/************************************************/
+{
+    const char  *arg;
+    int         switchchar;
+    bool        contok;         /* continue with main execution */
+    int         currarg;
+
+    contok = true;
+    switchchar = _dos_switch_char();
+    for( currarg = 0; currarg < argc && contok; currarg++ ) {
+        arg = argv[currarg];
+        if( *arg == switchchar || *arg == '-' ) {
+            contok = ScanOptionsArg( arg + 1 ) && contok;
+        } else if( *arg == '@' ) {
+            contok = scanEnvVarOrFile( arg + 1 ) && contok;
+        } else if( *arg == '?' ) {
+            Quit( usageMsg, NULL );
+//            contok = false;
+        } else {
+            filenames = realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
+            filenames[nofilenames++] = my_strdup( arg );
+        }
+    }
+    return( contok );
+}
 
 int main( int argc, char *argv[] )
 {
     int         ch;
     int         i;
     int         j;
+    int         rc;
+    FILE        *fo;
 
     if( argc < 2 ) {
         Quit( usageMsg, "No filename specified\n" );
@@ -315,38 +365,58 @@ int main( int argc, char *argv[] )
 
     PP_IncludePathInit();
 
-    if( !doScanParams( argc, argv ) ) {
-        free( (void *)filenames );
-        free( (void *)defines );
-        return( EXIT_FAILURE );
+    rc = EXIT_FAILURE;
+    if( doScanParams( argc - 1, argv + 1 ) && nofilenames != 0 ) {
+        fo = stdout;
+        if( out_filename != NULL ) {
+            fo = fopen( out_filename, "wb" );
+        }
+        rc = EXIT_SUCCESS;
+        for( i = 0; i < nofilenames; ++i ) {
+            if( PP_Init( filenames[i], flags, NULL ) != 0 ) {
+                fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
+                rc = EXIT_FAILURE;
+                break;
+            }
+            for( j = 0; j < numdefs; j++ ) {
+                PP_Define( defines[j] );
+            }
+            for( ;; ) {
+                ch = PP_Char();
+                if( ch == EOF )
+                    break;
+#ifndef __UNIX__
+                if( ch == '\n' )
+                    fputc( '\r', fo );
+#endif
+                fputc( ch, fo );
+            }
+            PP_Fini();
+        }
+        if( fo == stdout ) {
+            fflush( fo );
+        } else if( fo != NULL ) {
+            fclose( fo );
+        }
     }
-    if( nofilenames == 0 ) {
-        free( (void *)filenames );
-        free( (void *)defines );
+
+    if( out_filename != NULL ) {
+        free( out_filename );
+    }
+    for( i = 0; i < nofilenames; ++i ) {
+        free( filenames[i] );
+    }
+    free( (void *)filenames );
+    for( i = 0; i < numdefs; i++ ) {
+        free( defines[i] );
+    }
+    free( (void *)defines );
+
+    PP_IncludePathFini();
+
+    if( rc == EXIT_FAILURE && nofilenames == 0 ) {
         Quit( usageMsg, "No filename specified\n" );
     }
 
-    for( i = 0; i < nofilenames; ++i ) {
-        if( PP_Init( filenames[i], flags, NULL ) != 0 ) {
-            fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
-            free( (void *)filenames );
-            free( (void *)defines );
-            return( EXIT_FAILURE );
-        }
-        for( j = 0; j < numdefs; j++ ) {
-            PP_Define( (void *)defines[j] );
-        }
-        for( ;; ) {
-            ch = PP_Char();
-            if( ch == EOF )
-                break;
-            putchar( ch );
-        }
-        PP_Fini();
-    }
-    PP_IncludePathFini();
-
-    free( (void *)filenames );
-    free( (void *)defines );
-    return( EXIT_SUCCESS );
+    return( rc );
 }

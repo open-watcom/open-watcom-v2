@@ -80,6 +80,9 @@ void CmdScanInit(               // INITIALIZE FOR COMMAND SCANNING
 int CmdScanLowerChar(           // SCAN THE NEXT CHARACTER, IN LOWER CASE
     void )
 ;
+int CmdPeekChar(                // PEEK AT NEXT CHARACTER, IN LOWER CASE
+    void )
+;
 size_t CmdScanOption(           // SCAN AN OPTION
     char const **option )       // - addr( option pointer )
 ;

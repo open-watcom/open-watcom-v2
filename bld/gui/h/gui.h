@@ -147,20 +147,9 @@ typedef enum {
 #define GUI_LAST_CONTROL_CLASS  GUI_EDIT_MLE
 
 typedef enum {
-    GUI_MENU_PLAIN,
-    GUI_MENU_STANDOUT,
-    GUI_MENU_GRAYED,
-    GUI_MENU_ACTIVE,
-    GUI_MENU_ACTIVE_STANDOUT,
-    GUI_BACKGROUND,
-    GUI_MENU_FRAME,
-    GUI_TITLE_INACTIVE,
-    GUI_FRAME_ACTIVE,
-    GUI_FRAME_INACTIVE,
-    GUI_ICON,
-    GUI_MENU_GRAYED_ACTIVE,
-    GUI_FRAME_RESIZE,
-    GUI_CONTROL_BACKGROUND,
+    #define pick(e,n)   e,
+    #include "attrgui.h"
+    #undef pick
     GUI_FIRST_UNUSED
 } gui_attr;
 #define GUI_FIRST_ATTR  GUI_MENU_PLAIN
@@ -168,15 +157,9 @@ typedef enum {
 #define GUI_NUM_ATTRS   GUI_FIRST_UNUSED
 
 typedef enum {
-    GUI_DLG_NORMAL,
-    GUI_DLG_FRAME,
-    GUI_DLG_SHADOW,
-    GUI_DLG_SCROLL_ICON,
-    GUI_DLG_SCROLL_BAR,
-    GUI_DLG_BUTTON_PLAIN,
-    GUI_DLG_BUTTON_STANDOUT,
-    GUI_DLG_BUTTON_ACTIVE,
-    GUI_DLG_BUTTON_ACTIVE_STANDOUT,
+    #define pick(e,f,b)   e,
+    #include "attrdlg.h"
+    #undef pick
     GUI_DLG_NUM_ATTRS
 } gui_dlg_attr;
 
@@ -838,7 +821,7 @@ extern bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
 //                                             required for pm only
 //                                                           |
 //                                                           V
-extern gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, char *title );
+extern gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title );
 extern void GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file );
 extern bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );
 extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );

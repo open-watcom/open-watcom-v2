@@ -130,7 +130,6 @@ struct dpmi_hdr {
 };
 #endif
 
-extern unsigned                         _curbrk;
 extern mheapptr _WCNEAR                 __nheapbeg;
 #if defined(_M_IX86)
 extern __segment                        __fheap;

@@ -2,8 +2,8 @@
 # specific extensions, no 'clever' tricks here. That means the stupid hard
 # tabs, too!
 
-INCS = -I../h -I../../watcom/h -I../../lib_misc/h -I. $(DEFS)
-DEFS = $(TARGETDEF) -D__UNIX__ -DUNIX -Uunix -DBOOTSTRAP
+INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
+DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP
 CFLAGS = -g -O2 $(INCS)
 
 all: $(OWBINDIR)/wmake

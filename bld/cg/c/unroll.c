@@ -43,6 +43,7 @@
 #include "makeins.h"
 #include "dumpio.h"
 #include "namelist.h"
+#include "blips.h"
 
 extern  block           *MakeBlock(label_handle,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
@@ -71,7 +72,6 @@ extern  int             CountIns( block *);
 extern  void            MoveDownLoop( block * );
 extern  block           *ReGenBlock( block *, label_handle );
 extern  void            MakeJumpBlock( block *, block_edge * );
-extern  void            URBlip( void );
 
 extern type_class_def   Signed[];
 extern block            *PreHead;

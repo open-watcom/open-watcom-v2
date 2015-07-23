@@ -29,7 +29,8 @@
 ****************************************************************************/
 
 
-#pragma off (unreferenced)
+#include "variety.h"
+#include "initdll.h"
 
 unsigned __dll_terminate( void )
 /******************************/

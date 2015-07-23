@@ -49,12 +49,12 @@ static trap_retval DoRequest( void )
     StartPacket();
     if( Out_Mx_Num == 0 ) {
         /* Tell the server we're not expecting anything back */
-        *(access_req *)In_Mx_Ptr[0].ptr |= 0x80;
+        TRP_REQUEST( In_Mx_Ptr ) |= 0x80;
     }
     for( i = 0; i < In_Mx_Num; ++i ) {
         AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
-    *(access_req *)In_Mx_Ptr[0].ptr &= ~0x80;
+    TRP_REQUEST( In_Mx_Ptr ) &= ~0x80;
     result = PutPacket();
     if( result != REQUEST_FAILED ) {
         result = 0;
@@ -164,13 +164,13 @@ trap_retval TRAPENTRY TrapRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, tra
     trap_retval     result;
 
     _DBG_EnterFunc( "TrapAccess" );
-    _DBG_Writeln( _DBG_Request( *(access_req *)mx_in[0].ptr ) );
+    _DBG_Writeln( _DBG_Request( TRP_REQUEST( mx_in ) ) );
     In_Mx_Num = num_in_mx;
     Out_Mx_Num = num_out_mx;
     In_Mx_Ptr = mx_in;
     Out_Mx_Ptr = mx_out;
 
-    switch( *(access_req *)mx_in[0].ptr ) {
+    switch( TRP_REQUEST( mx_in ) ) {
     case REQ_CONNECT:
         result = ReqRemoteConnect();
         break;

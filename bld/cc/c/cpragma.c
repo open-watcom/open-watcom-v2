@@ -355,7 +355,7 @@ struct magic_words {
     #undef pick
 };
 
-aux_info *MagicKeyword( const char *name )
+static aux_info *MagicKeyword( const char *name )
 {
     int         i;
     size_t      len;

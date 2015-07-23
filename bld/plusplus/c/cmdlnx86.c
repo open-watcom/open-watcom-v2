@@ -312,7 +312,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 
 static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
 {
-    char model;
+    char model = '\0';
     unsigned bit;
 
     if( data->mem_model == OPT_mem_model_default ) {

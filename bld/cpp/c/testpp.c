@@ -33,7 +33,7 @@
 
 extern char PreProcChar;
 
-void dumpheap( void )
+static void dumpheap( void )
 {
 #if 0
     struct _heapinfo h;

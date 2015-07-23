@@ -714,8 +714,8 @@ static int getcharUTF8( const char **p, uint_32 *c )
 }
 
 
-int UTF8StringToUnicode( int len, const char *str, char *buf )
-/************************************************************/
+static int UTF8StringToUnicode( int len, const char *str, char *buf )
+/*******************************************************************/
 {
     int             ret;
     int             outlen;

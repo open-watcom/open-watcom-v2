@@ -31,7 +31,9 @@
 
 #include <stdio.h>
 #include <windows.h>
-#include "stubs.h"
+#include "winext.h"
+#include "windpmi.h"
+#include "_bitmap.h"
 
 /*
  * __CreateBitmap - cover for CreateBitmap, makes sure lpbits are ok

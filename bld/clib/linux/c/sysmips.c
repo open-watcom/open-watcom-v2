@@ -36,6 +36,6 @@
 
 _WCRTLINK int sysmips( const int cmd, const int arg1, const int arg2, const int arg3 )
 {
-    u_long res = sys_call4( SYS_sysmips, cmd, arg1, arg2, arg3 );
+    syscall_res res = sys_call4( SYS_sysmips, cmd, arg1, arg2, arg3 );
     __syscall_return( int, res );
 }

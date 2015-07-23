@@ -45,6 +45,7 @@
 #include "cgauxinf.h"
 #include "dumpio.h"
 #include "dbsyms.h"
+#include "rscconst.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
@@ -57,7 +58,6 @@ extern void             TryScrapLabel( label_handle );
 extern void             ObjEmitSeq( byte_seq * );
 extern void             InputOC( any_oc * );
 extern opcode_defs      FlipOpcode( opcode_defs );
-extern void             FactorInt32( signed_32 val, signed_16 *, signed_16 *, signed_16 * );
 extern  void            GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 
 extern type_class_def   Unsigned[];

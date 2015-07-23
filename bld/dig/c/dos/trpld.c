@@ -115,23 +115,22 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle     filehndl;
     const char      *ptr;
-    const char      *parm;
     trap_init_func  *init_func;
 
-    if( trap_parms == NULL || *trap_parms == '\0' )
-        trap_parms = "std";
-    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+    if( parms == NULL || *parms == '\0' )
+        parms = "std";
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    filehndl = DIGPathOpen( trap_parms, ptr - trap_parms, "trp", NULL, 0 );
+    filehndl = DIGPathOpen( parms, ptr - parms, "trp", NULL, 0 );
     if( filehndl == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_parms );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
+    parms = ptr;
     ptr = ReadInTrap( DIGGetSystemHandle( filehndl ) );
     DIGPathClose( filehndl );
     if( ptr != NULL ) {
@@ -140,7 +139,9 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         if( TrapCode->signature == TRAP_SIGNATURE ) {
             init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
-            *trap_ver = init_func( parm, buff, trap_ver->remote );
+            if( *parms != '\0' )
+                ++parms;
+            *trap_ver = init_func( parms, buff, trap_ver->remote );
             if( buff[0] == '\0' ) {
                 if( TrapVersionOK( *trap_ver ) ) {
                     TrapVer = *trap_ver;

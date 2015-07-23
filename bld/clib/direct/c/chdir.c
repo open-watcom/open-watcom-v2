@@ -63,12 +63,12 @@ extern unsigned __chdir_sfn( const char *path );
         _MOV_AH DOS_CHDIR \
         _INT_21         \
         _RST_DS         \
-        "call __doserror_" \
+        "call __doserror1_" \
         AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
-static unsigned _chdir_lfn( const char *path )
-/********************************************/
+static tiny_ret_t _chdir_lfn( const char *path )
+/**********************************************/
 {
 #ifdef _M_I86
     return( __chdir_lfn( path ) );
@@ -85,7 +85,7 @@ static unsigned _chdir_lfn( const char *path )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     return( 0 );
 #endif
@@ -107,18 +107,15 @@ _WCRTLINK int __F_NAME(chdir,_wchdir)( const CHAR_TYPE *path )
     return( chdir( mbcsPath ) );
 #else
   #ifdef __WATCOM_LFN__
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = _chdir_lfn( path )) == 0 ) {
+    if( _RWD_uselfn && TINY_OK( rc = _chdir_lfn( path ) ) ) {
         return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( -1 );
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
-    if( __chdir_sfn( path ) ) {
-        return( -1 );
-    }
-    return( 0 );
+    return( __chdir_sfn( path ) );
 #endif
 }

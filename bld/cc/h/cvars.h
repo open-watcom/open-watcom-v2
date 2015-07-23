@@ -468,6 +468,7 @@ extern dbug_type    DBType(TYPEPTR);
 extern void         EmitDBType(void);
 
 extern void         ParsePgm(void);
+extern bool         CheckFuncMain( const char *name );
 extern void         AdjParmType(SYMPTR sym);
 extern void         Chk_Struct_Union_Enum(TYPEPTR);
 extern void         Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state );
@@ -503,6 +504,7 @@ extern void         SymDump(void);
 extern char         *DiagGetTypeName(TYPEPTR typ);
 
 /* cems */
+extern void         CSegFree( SEGADDR_T segment );
 extern SEGADDR_T    AccessSegment(seg_info *);
 extern SEGADDR_T    AllocSegment(seg_info *);
 
@@ -801,6 +803,8 @@ extern unsigned     SymGetNumSyms( void );
 extern unsigned     SymGetNumSpecialSyms( void );
 extern SYM_HANDLE   SymGetFirst( void );
 extern SYM_HANDLE   SymGetNext( SYM_HANDLE sym_handle );
+extern void         SymsPurge( void );
+extern void         SetNextSymHandle( unsigned val );
 
 /* ctimepc */
 extern void         TimeInit(void);
@@ -855,7 +859,7 @@ extern void         DwarfBrowseEmit( void );
 extern char         *ftoa( FLOATVAL * );
 
 /* jis2unic */
-extern unsigned int JIS2Unicode( unsigned );
+extern unsigned     JIS2Unicode( unsigned );
 
 // pchdr.c
 extern int          UsePreCompiledHeader( const char * );

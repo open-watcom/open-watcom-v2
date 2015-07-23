@@ -80,8 +80,8 @@ bool Session( void )
         In[0].len = GetPacket();
         In[0].ptr = GetPacketBuffPtr();
         _DBG(("Session got request "));
-        req = *(access_req *)In[0].ptr;
-        *(access_req *)In[0].ptr &= ~0x80;
+        req = TRP_REQUEST( In );
+        TRP_REQUEST( In ) &= ~0x80;
         if( req & 0x80 ) {
             req &= ~0x80;
             want_return = FALSE;
@@ -107,9 +107,8 @@ void Initialize( void )
 {
     const char  *err;
 
-    RWBuff[0] = '\0';
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLink( RWBuff, 1 );
+    err = RemoteLink( "", 1 );
     _DBG(( "Back from PM remote link\n" ));
     if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));

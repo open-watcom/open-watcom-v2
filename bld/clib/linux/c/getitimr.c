@@ -35,6 +35,6 @@
 
 _WCRTLINK int setitimer( int which, const struct itimerval *value, struct itimerval *ovalue )
 {
-    u_long  res = sys_call3( SYS_setitimer, which, (u_long)value, (u_long)ovalue );
+    syscall_res res = sys_call3( SYS_setitimer, which, (u_long)value, (u_long)ovalue );
     __syscall_return( int, res );
 }

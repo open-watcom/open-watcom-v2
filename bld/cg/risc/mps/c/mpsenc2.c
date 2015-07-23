@@ -36,6 +36,7 @@
 #include "ocentry.h"
 #include "mipsenc.h"
 #include "reloc.h"
+#include "rscenc2.h"
 
 extern void ObjBytes( const void *, unsigned );
 extern void OutReloc( pointer, owl_reloc_type, unsigned );

@@ -31,3 +31,4 @@ extern void        BackBigOffset( back_handle bck, segment_id seg, offset plus )
 extern void        FEPtr( cg_sym_handle sym, type_def *tipe, offset plus );
 extern void        FEPtrBaseOffset( cg_sym_handle sym,  offset plus );
 extern void        FEPtrBase( cg_sym_handle sym );
+extern bool        FreeObjCache( void );

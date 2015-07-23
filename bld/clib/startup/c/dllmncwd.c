@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include "dllmain.h"
 
 /* The DllMain signature is compatible with main(). */
 int DllMain( int termination, void *reserved )

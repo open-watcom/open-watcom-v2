@@ -30,6 +30,11 @@
 ****************************************************************************/
 
 
+#include "variety.h"
+#include <wos2.h>
+#include "initdll.h"
+
+
 #if defined(__SW_BD)
 
 extern          int     main( void );

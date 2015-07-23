@@ -6,7 +6,7 @@ w16api_distrib_lib = 1
 !include cproj.mif
 !include defrule.mif
 
-splice = wsplice -i".." -i"$(hdr_dir)" -i"../include" $[@ $^@
+splice = *wsplice -i".." -i"$(hdr_dir)" -i"../include" $[@ $^@
 
 .EXTENSIONS : .lbc .def .mh
 
@@ -83,7 +83,7 @@ all : $(headers) $(libs) .SYMBOLIC
 .mh: ../include
 
 .def.lbc:
-    awk -f ../def16lbc.awk $[@ > $@
+    *awk -f ../def16lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib:
     $(librarian) $(libflags) @$<

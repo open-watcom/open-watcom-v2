@@ -36,12 +36,14 @@
 #if defined(__DOS_386__) && !defined(__OSI__)
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #elif defined(__OS2__)
     #define INCL_DOSFILEMGR
     #include <wos2.h>
 #elif defined(__WINDOWS_386__) || defined(__NT__)
     #include <windows.h>
 #endif
+#include "cominit.h"
 
 #if defined(__OS2__)
     #if defined(__PPC__)
@@ -54,7 +56,6 @@
 #if defined(__DOS_386__) && !defined(__OSI__)
     extern int __GETDSStart_;
     extern int __GETDSEnd_;
-    extern int __DPMI_hosted(void);
 #endif
 
 void    __CommonInit( void )

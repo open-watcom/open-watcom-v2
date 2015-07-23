@@ -45,6 +45,7 @@
 !inject exwc2mb.obj  d16 d32                                o16 o32         w16 w32
 !inject _povrlay.obj                     nt nta ntp
 !inject raise.obj                                                   q16 q32
+!inject raisefpe.obj                                                        w16
 !inject raisep.obj                                                                      l32 lpc lmp
 !inject sigfpe.obj   d16 d32                                                w16
 !inject sigjmp.obj                                                  q16 q32

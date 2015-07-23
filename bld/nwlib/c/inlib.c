@@ -46,14 +46,27 @@ void AddInputLib( libfile io, char *name )
     strcpy( new->name, name );
 }
 
-void InitInputLibs()
+void CloseOneInputLib( void )
+{
+    input_lib   *curr;
+
+    for( curr = InputLibs; curr != NULL; curr = curr->next ) {
+        if( curr->io != NULL ) {
+            LibClose( curr->io );
+            curr->io = NULL;
+            return;
+        }
+    }
+}
+
+void InitInputLibs( void )
 {
     InputLibs = NULL;
 }
 
-void ResetInputLibs()
+void ResetInputLibs( void )
 {
-    input_lib   *curr,*next;
+    input_lib   *curr, *next;
 
     for( curr = InputLibs; curr != NULL; curr = next ) {
         next = curr->next;

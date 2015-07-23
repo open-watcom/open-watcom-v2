@@ -37,7 +37,6 @@
 #include <string.h>
 #include <dos.h>
 #include "winext.h"
-#include "stubs.h"
 
 #pragma aux BackPatch_penwin parm [ax];
 extern LPVOID FAR BackPatch_penwin( char *str );

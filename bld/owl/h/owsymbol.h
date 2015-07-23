@@ -109,3 +109,4 @@ extern void                     OWLENTRY OWLSymbolDefine( owl_symbol_table *tabl
 extern owl_symbol_index         OWLENTRY OWLSymbolIndex( owl_symbol_handle symbol );
 
 extern void                     OWLENTRY OWLSymbolEmit( owl_symbol_table *table );
+extern void                     OWLENTRY OWLDumpSymTab( owl_file_handle file );

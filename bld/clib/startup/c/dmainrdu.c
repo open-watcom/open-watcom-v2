@@ -36,19 +36,15 @@
 #include <string.h>
 #include <malloc.h>
 #include <rdos.h>
-#include "sigtab.h"
 #include "initfini.h"
 #include "initarg.h"
-#include "rdosexc.h"
 #include "snglthrd.h"
 #include "thread.h"
+#include "initsig.h"
 #include "mthread.h"
-
-extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );
-extern int __RdosFini();
-
-extern int __stdcall LibMain( int, int, void * );
-extern void __CommonInit( void );
+#include "cominit.h"
+#include "libmain.h"
+#include "cinit.h"
 
 static int  processes;
 
@@ -57,11 +53,7 @@ static int  processes;
 #define DLL_THREAD_ATTACH   2
 #define DLL_THREAD_DETACH   3
 
-#pragma aux __LibMain "*" \
-        value [eax] \
-        parm [ebx] [edx] [eax]
-
-int __LibMain( int hdll, int reason, void *reserved )
+int _LibMain( int hdll, int reason, void *reserved )
 {
     thread_data             *tdata;
     int                     rc = 0;

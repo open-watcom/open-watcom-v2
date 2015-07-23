@@ -31,6 +31,8 @@
 #ifndef _ASMALLOC_H_
 #define _ASMALLOC_H_
 
+#include "asalloc.h"
+
 #if defined( _STANDALONE_ )
   #include "walloca.h"
   #include "memutil.h"  // WOMP memory routines declaration
@@ -39,8 +41,5 @@
 
 extern  void    *AsmStrDup( const char *str );
 #endif
-
-extern  void    *AsmAlloc( size_t );
-extern  void    AsmFree( void * );
 
 #endif

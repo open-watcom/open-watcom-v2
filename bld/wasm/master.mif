@@ -24,7 +24,7 @@ wasm_trmem = 1
 
 fpu_flags = -fpc
 
-inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h"
+inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h" -I"$(fe_misc_dir)/h"
 
 libs = $(wres_lib)
 
@@ -126,25 +126,21 @@ $(name).res : ../h/$(proj_name).rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.g
         $(rc_aui) -D_STANDALONE_ $[@ -fo=$@
 
 msg.gh : ../h/asmshare.msg
-        awk -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk $[@ > $@
+        *awk -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 wasmmsg.gh : ../h/wasm.msg
-        awk -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk $[@ > $@
+        *awk -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 wmpmsg.gh : ../h/womp.msg
-        awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk $[@ > $@
+        *awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 usage.gh : ../h/options.gml
         optencod -q $(optencod_opt_$(host_os)) $]@ . . $^&.tmp any
-        wsplice -t8 @<<usagex.tmp $@
--f "pick((MSG_USAGE_BASE+%#%+), %s, \"\")" $^&.tmp -o "pick((MSG_USAGE_BASE+%#%+), \".\", \"\")%n"
-<<
+        *wsplice -t8  -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" -o "pick((MSG_USAGE_BASE+%$#%+), \".\", \"\")%n" $^&.tmp $@
 
 usagej.gh : ../h/options.gml
         optencod -l 1 -q $]@ . . $^&.tmp any
-        wsplice -t8 @<<usagejx.tmp $@
--f "pick((MSG_USAGE_BASE+%#%+), \"\", %s)" $^&.tmp -o "pick((MSG_USAGE_BASE+%#%+), \"\", \".\")%n"
-<<
+        *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" -o "pick((MSG_USAGE_BASE+%$#%+), \"\", \".\")%n" $^&.tmp $@
 
 usage.u : ../h/options.gml
         optencod -q -u $@ $]@ . . . any

@@ -15,18 +15,23 @@ inc_dirs = -I"$(zlib_dir)"
 # if it can be avoided.
 extra_c_flags = -wcd=201
 
-objs = adler32.obj  &
-       compress.obj &
-       crc32.obj    &
-       deflate.obj  &
-       gzio.obj     &
-       infback.obj  &
-       inffast.obj  &
-       inflate.obj  &
-       inftrees.obj &
-       trees.obj    &
-       uncompr.obj  &
-       zutil.obj 
+objs = &
+    adler32.obj  &
+    compress.obj &
+    crc32.obj    &
+    deflate.obj  &
+    gzio.obj     &
+    infback.obj  &
+    inffast.obj  &
+    inflate.obj  &
+    inftrees.obj &
+    trees.obj    &
+    uncompr.obj  &
+    zutil.obj 
 
 $(proj_name).lib : $(objs)
-        $(librarian) $(libflags) $(objs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(objs)
+!else
+    $(librarian) $(libflags) $(objs)
+!endif

@@ -31,6 +31,7 @@
 
 
 #include <rdos.h>
+#include "rdosstrt.h"
 
 #pragma off (unreferenced);
 int __stdcall LibMain( int hdll, long reason, void *reserved )

@@ -29,7 +29,9 @@
 ****************************************************************************/
 
 
-extern void __wNTMain( void );
+#include "variety.h"
+#include "osmain.h"
+
 
 void wmainCRTStartup( void )
 {

@@ -40,15 +40,15 @@ yacc_flags      = -b $(yacc_prefix) -d -db -dd
 asi_yacc_flags  = -b $(asi_yacc_prefix) -d -db -dd
 
 yacc_src        = as.y
-yacc_in         = as_in.y
-asi_yacc_in     = asi_in.y
+yacc_in         = as_in
+asi_yacc_in     = asi_in
 yacc_out        = $(yacc_prefix)tab
 asi_yacc_out    = $(asi_yacc_prefix)tab
 
 lex_flags       =
 lex_src         = scan.re
-lex_in          = scan_in.re
-asi_lex_in      = scani_in.re
+lex_in          = scan_in
+asi_lex_in      = scani_in
 lex_out         = aslexyy
 asi_lex_out     = asilexyy
 
@@ -156,7 +156,7 @@ splice_opts     = $(splice_opts_$(target_cpu))
 
 .c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(cpp_inc_dirs) -I"$(trmem_dir)"
+inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(cpp_inc_dirs) -I"$(fe_misc_dir)/h" -I"$(trmem_dir)"
 
 # explicit rules
 #################
@@ -164,7 +164,7 @@ inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(
 !ifdef test_inline_as
 
 asinline.exe : $(asi_test_objs) $(asminline_lib)
-        $(cl) $(clflags) $(asi_test_objs) $(asminline_lib) $(ldflags)
+    $(cl) $(clflags) $(asi_test_objs) $(asminline_lib) $(ldflags)
 
 !endif
 
@@ -186,60 +186,68 @@ all : $(all_as) .symbolic
 
 $(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(as_objs) $(libs) $(ldflags)
+    $(cl) $(clflags) $(as_objs) $(libs) $(ldflags)
 !else
-        $(linker) name $(lname) $(lflags) file {$(as_objs)} lib {$(libs)}
-        @%make bind_osildr
+    $(linker) name $(lname) $(lflags) file {$(as_objs)} lib {$(libs)}
+    @%make bind_osildr
 !endif
-        @%make bind_version_res_exe
-        $(wstrip) -q -a -r $@ . $(name).res
+    @%make bind_version_res_exe
+    $(wstrip) -q -a -r $@ . $(name).res
 
 $(name).res : $(as_dir)/h/as.rc msg.gh
-        $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
+    $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
 
 asinline.lib : asi_msg.gh $(asi_objs)
-        $(librarian) $(libflags) $(asi_objs)
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $(asi_objs)
+!else
+    $(librarian) $(libflags) $(asi_objs)
+!endif
 
 msg.gh : $(as_dir)/h/as.msg
-        $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ $[@ > msg.tmp
-        awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
+    $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
+    *awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.gh : $(as_dir)/h/as.msg
-        $(cpp) $(rc_aui_flags) $(cppflags) $[@ > asi_msg.tmp
-        awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk asi_msg.tmp >> $^@
+    $(cpp) $(rc_aui_flags) $(cppflags) -oasi_msg.tmp $[@
+    *awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 
-$(yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
-        @if not exist $(stand_subdir) mkdir $(stand_subdir)
-        wsplice $(splice_opts) -k_STANDALONE_ $[@ - | sed -e "s/ytab.h/asytab.h/g" > $^@
+$(yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
+    @if not exist $(stand_subdir) mkdir $(stand_subdir)
+    *wsplice $(splice_opts) -k_STANDALONE_ $[@ $(yacc_in).tmp
+    sed -e "s/ytab.h/asytab.h/g" $(yacc_in).tmp > $^@
 
-$(asi_yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
-        wsplice $(splice_opts) $[@ - | sed -e "s/ytab.h/asiytab.h/g" > $^@
+$(asi_yacc_in).y : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
+    *wsplice $(splice_opts) $[@ $(asi_yacc_in).tmp
+    sed -e "s/ytab.h/asiytab.h/g" $(asi_yacc_in).tmp > $^@
 
-$(yacc_out).c : $(yacc_in)
-        $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
+$(yacc_out).c : $(yacc_in).y $(as_dir)/y/yydriver.c
+    $(yacc) $(yacc_flags) $< > $(nulldevice)
 
-$(asi_yacc_out).c : $(asi_yacc_in)
-        $(yacc) $(asi_yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
+$(asi_yacc_out).c : $(asi_yacc_in).y $(as_dir)/y/yydriver.c
+    $(yacc) $(asi_yacc_flags) $< > $(nulldevice)
 
-$(lex_in) : $(as_dir)/y/$(lex_src)
-        @if not exist $(stand_subdir) mkdir $(stand_subdir)
-        wsplice $(splice_opts) -k_STANDALONE_ $[@ - | sed -e "s/ytab.h/asytab.h/g" > $@
+$(lex_in).re : $(as_dir)/y/$(lex_src)
+    @if not exist $(stand_subdir) mkdir $(stand_subdir)
+    *wsplice $(splice_opts) -k_STANDALONE_ $[@ $(lex_in).tmp
+    sed -e "s/ytab.h/asytab.h/g" $(lex_in).tmp > $@
 
-$(asi_lex_in) : $(as_dir)/y/$(lex_src)
-        wsplice $(splice_opts) $[@ - | sed -e "s/ytab.h/asiytab.h/g" > $@
+$(asi_lex_in).re : $(as_dir)/y/$(lex_src)
+    *wsplice $(splice_opts) $[@ $(asi_lex_in).tmp
+    sed -e "s/ytab.h/asiytab.h/g" $(asi_lex_in).tmp > $@
 
 .ERASE
-$(lex_out).c : $(lex_in)
-        $(re2c) $(lex_flags) $[@ > $@
+$(lex_out).c : $(lex_in).re
+    $(re2c) $(lex_flags) $[@ > $@
 
-$(asi_lex_out).c : $(asi_lex_in)
-        $(re2c) $(lex_flags) $[@ > $@
+$(asi_lex_out).c : $(asi_lex_in).re
+    $(re2c) $(lex_flags) $[@ > $@
 
 .c{$(stand_subdir)}.obj: $($(proj_name)_autodepends)
-        @if not exist $(stand_subdir) mkdir $(stand_subdir)
+    @if not exist $(stand_subdir) mkdir $(stand_subdir)
 !ifeq verbose 1
-        $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 !else
-        @echo cc $@
-        @$(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    @echo cc $@
+    @$(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 !endif

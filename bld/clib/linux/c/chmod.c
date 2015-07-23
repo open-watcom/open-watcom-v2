@@ -36,6 +36,6 @@
 
 _WCRTLINK int chmod( const char *__path, mode_t __mode )
 {
-    u_long res = sys_call2( SYS_chmod, (u_long)__path, __mode );
+    syscall_res res = sys_call2( SYS_chmod, (u_long)__path, __mode );
     __syscall_return( int, res );
 }

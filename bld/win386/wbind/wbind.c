@@ -66,7 +66,7 @@ static void updateNHStuff( int handle, char *modname, char *desc )
     dos_exe_header      dh;
     os2_exe_header      nh;
     long                off;
-    int                 len;
+    size_t              len;
 
     lseek( handle, 0, SEEK_SET );
     read( handle, &dh, sizeof( dh ) );
@@ -88,7 +88,7 @@ static void updateNHStuff( int handle, char *modname, char *desc )
     }
     off = nh.nonres_off+1L;
     lseek( handle, off, SEEK_SET );
-    write( handle, desc, len );
+    write( handle, desc, (unsigned)len );
 }
 
 
@@ -204,7 +204,7 @@ static long CopyFile( int in, int out, char *infile, char *outfile )
     return( totalsize );
 }
 
-void FindExtender( char *extname, char *winext )
+static void FindExtender( char *extname, char *winext )
 {
     char        *watcom;
 
@@ -248,7 +248,8 @@ int main( int argc, char *argv[] )
     long            totalsize;
     const char      **arglist;
     char            *path = NULL;
-    int             currarg,len;
+    int             currarg;
+    size_t          len;
     simple_header   re;
     long            exelen;
     char            *desc = NULL;
@@ -462,7 +463,7 @@ int main( int argc, char *argv[] )
     lseek( out, MAGIC_OFFSET, SEEK_SET );
     write( out, &tsize, sizeof( tsize ) );
     len = strlen( fname );
-    memset( &fname[len],' ',8-len );
+    memset( &fname[len],' ',8 - len );
     updateNHStuff( out, fname, desc );
     close( out );
     if( dllflag ) {

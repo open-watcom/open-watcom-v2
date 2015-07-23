@@ -46,7 +46,7 @@
 
 static ENV_TRACKER  *envList;
 
-char *SkipWS( char *p )
+char *SkipWS( const char *p )
 /*****************************
  * p is not const because the return value is usually used to write data.
  */
@@ -54,7 +54,7 @@ char *SkipWS( char *p )
     while( isws( *p ) ) {
         ++p;
     }
-    return( p );
+    return( (char *)p );
 }
 
 char *FindNextWS( char *str )

@@ -48,15 +48,19 @@
 #define INCL_ERRORS
 #include <wos2.h>
 
+typedef unsigned short  WORD;
+typedef unsigned long   DWORD;
+#include "loader.h"
+
 #define CARRY_CLEAR     0
 #define CARRY_SET       0x0100          /* carry bit in AH */
 
-static char     _cbyte2;
-static unsigned long __DTA;
+extern unsigned __Int21C( union REGS *r );
 
-extern  void    PrintMsg( char *fmt,... );
+static char             _cbyte2;
+static unsigned long    __DTA;
 
-APIRET __getch( union REGS *r )
+static APIRET __getch( union REGS *r )
 {
     KBDKEYINFO  info;
 
@@ -73,7 +77,7 @@ APIRET __getch( union REGS *r )
     return( 0 );
 }
 
-APIRET __filedate( union REGS *r )
+static APIRET __filedate( union REGS *r )
 {
     APIRET      rc;
     FILESTATUS  info;
@@ -115,7 +119,7 @@ static void copydir( struct find_t *buf, FF_BUFFER *dir_buff )
     strcpy( buf->name, dir_buff->achName );
 }
 
-APIRET __findfirst( union REGS *r )
+static APIRET __findfirst( union REGS *r )
 {
     APIRET      rc;
     FF_BUFFER   dir_buff;
@@ -137,7 +141,7 @@ APIRET __findfirst( union REGS *r )
     return( 0 );
 }
 
-APIRET __findnext( union REGS *r )
+static APIRET __findnext( union REGS *r )
 {
     APIRET      rc = 0;
     FF_BUFFER   dir_buff;
@@ -162,7 +166,7 @@ APIRET __findnext( union REGS *r )
     return( rc );
 }
 
-APIRET __chmod( union REGS *r )
+static APIRET __chmod( union REGS *r )
 {
     APIRET      rc = 0;
     FILESTATUS  fs;
@@ -327,7 +331,8 @@ unsigned __Int21C( union REGS *r )
         rc = ~0ul;
         break;
     }
-    if( rc == 0 )  return( CARRY_CLEAR );
+    if( rc == 0 )
+        return( CARRY_CLEAR );
     r->x.eax = rc;
     return( CARRY_SET );
 }

@@ -31,9 +31,7 @@
 
 #include "variety.h"
 #include <stdlib.h>
-#include <stdarg.h>
 #include "cover.h"
-#include "wclbproc.h"
 
 #define MAX_CB_PARMS            50
 #define MAX_CB_JUMPTABLE        512
@@ -41,7 +39,7 @@
 DWORD               _CBJumpTable[MAX_CB_JUMPTABLE]; /* Callback jump table */
 BYTE                _CBRefsTable[MAX_CB_JUMPTABLE]; /* Callback reference counts */
 extern  CALLBACKPTR __16BitCallBackAddr;
-extern  FARPROCx    __far *__32BitCallBackAddr;
+extern  REALFARPROC __far *__32BitCallBackAddr;
 extern  void        __far __32BitCallBack( void );
 
 #pragma aux _CBJumpTable        "*";
@@ -230,7 +228,7 @@ static CALLBACKPTR DoEmitCode( int argcnt, int bytecnt, char *array,
                                         + *_CodeSelectorBaseAddr;
     _CBRefsTable[i]++;  /* increase reference count */
     if( i > MaxCBIndex )  MaxCBIndex = i;
-    *__32BitCallBackAddr = (FARPROCx)&__32BitCallBack;
+    *__32BitCallBackAddr = &__32BitCallBack;
     return( (char *)__16BitCallBackAddr - (i+1) * CB_CODE_SIZE );
 
 } /* DoEmitCode */
@@ -306,7 +304,7 @@ void *SetProc( FARPROC fp, int type )
 #undef FreeProcInstance
 #undef MakeProcInstance
 
-FARPROC PASCAL _Cover_MakeProcInstance( FARPROCx proc, HINSTANCE inst )
+FARPROC PASCAL _Cover_MakeProcInstance( REALFARPROC proc, HINSTANCE inst )
 {
     inst;
     return( (FARPROC)proc );

@@ -69,11 +69,11 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
         AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static unsigned _dos_getfileattr_lfn( const char *path, unsigned *attrib )
-/************************************************************************/
+static tiny_ret_t _dos_getfileattr_lfn( const char *path )
+/********************************************************/
 {
   #ifdef _M_I86
-    return( __dos_getfileattr_lfn( path, attrib ) );
+    return( __dos_getfileattr_lfn( path ) );
   #else
     call_struct     dpmi_rm;
 
@@ -89,10 +89,9 @@ static unsigned _dos_getfileattr_lfn( const char *path, unsigned *attrib )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
-    *attrib = dpmi_rm.ecx;
-    return( 0 );
+    return( dpmi_rm.cx );
   #endif
 }
 #endif
@@ -101,13 +100,14 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attrib )
 /***********************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = _dos_getfileattr_lfn( path, attrib )) == 0 ) {
-        return( rc );
+    if( _RWD_uselfn && TINY_OK( rc = _dos_getfileattr_lfn( path ) ) ) {
+        *attrib = TINY_INFO( rc );
+        return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( rc );
+        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
     return( __dos_getfileattr_sfn( path, attrib ) );

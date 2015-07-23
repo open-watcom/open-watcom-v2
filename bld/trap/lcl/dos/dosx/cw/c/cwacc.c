@@ -46,11 +46,12 @@
 #include "ioports.h"
 #include "dosredir.h"
 #include "doscomm.h"
-
 #include "tinyio.h"
 #include "exeos2.h"
 #include "exeflat.h"
 #include "cpuglob.h"
+#include "cwacc.h"
+
 
 #define MAX_WATCHES         256
 

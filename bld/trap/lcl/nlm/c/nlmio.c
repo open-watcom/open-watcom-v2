@@ -48,6 +48,7 @@
 
 #include "locks.h"
 #include "bits.h"
+#include "nlmio.h"
 
 extern LONG ConvertPathString(
                 LONG stationNumber,

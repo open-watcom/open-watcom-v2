@@ -35,6 +35,6 @@
 
 _WCRTLINK int symlink( const char *__pname, const char *__slink )
 {
-    u_long res = sys_call2( SYS_symlink, (u_long)__pname, (u_long)__slink );
+    syscall_res res = sys_call2( SYS_symlink, (u_long)__pname, (u_long)__slink );
     __syscall_return( int, res );
 }

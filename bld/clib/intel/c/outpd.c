@@ -36,10 +36,8 @@
 #endif
 #include "xconio.h"
 
-#undef  outpd
 
-
-_WCRTLINK unsigned (outpd)( unsigned port, unsigned value )
+_WCRTLINK unsigned outpd( unsigned port, unsigned value )
 {
     return( _inline_outpd( port, value ) );
 }

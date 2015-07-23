@@ -32,7 +32,7 @@ statname = owfs$(bld_ver)
 
 inc_path += -I"../$(host_os)" -I"../h"
 
-splice = wsplice -i"$(hdr_dir)" $[@ $^@
+splice = *wsplice -i"$(hdr_dir)" $[@ $^@
 
 headers =               &
         afx.h           &
@@ -313,8 +313,8 @@ all : $($(what_to_build)) .SYMBOLIC
     $(splice)
 
 afx.h: afx.mh
-    wsplice -i"$(hdr_dir)" $[@ tmp.h
-    awk -f ../dobldver.awk -v bld_ver=$(bld_ver) tmp.h > afx.h
+    *wsplice -i"$(hdr_dir)" $[@ tmp.h
+    *awk -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
     @rm tmp.h
 
 $(libname).lib: $(objs) $(static_objs)

@@ -53,8 +53,6 @@
 #include "thread.h"
 #include "os2fil64.h"
 
-extern unsigned __NFiles;
-
 
 static int _set_binary( int handle )
 {
@@ -63,10 +61,12 @@ static int _set_binary( int handle )
 }
 
 
-static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share, va_list args )
+static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned share, va_list args )
 {
-    OS_UINT     rwmode, error, actiontaken, fileattr, openflag, openmode;
+    OS_UINT     error, actiontaken;
+    OS_UINT     fileattr, openflag, openmode;
     HFILE       handle;
+    unsigned    rwmode;
     int         perm = S_IREAD | S_IWRITE;
     unsigned    iomode_flags;
 #ifdef __WIDECHAR__

@@ -32,7 +32,7 @@
 
 /* stub */
 
-unsigned int JIS2Unicode( unsigned short dbc )
+unsigned JIS2Unicode( unsigned dbc )
 {
     return( dbc );
 }

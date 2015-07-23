@@ -44,110 +44,66 @@
  * to properly create a timer
  */
 typedef struct ksigevent {
-        union sigval sigev_value;
-        int sigev_signo;
-        int sigev_notify;
-        int sigev_tid;
+    union sigval    sigev_value;
+    int             sigev_signo;
+    int             sigev_notify;
+    int             sigev_tid;
 };
 
 _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *__tmr )
 {
-    u_long ures;
-    long res;
+    syscall_res res;
     struct ksigevent ksev;
     int id;
 
     if( __tmr == NULL ) {
         _RWD_errno = EINVAL;
-        return -1;
+        return( -1 );
     }
-    
-    memset(&ksev, 0, sizeof(struct ksigevent));
+
+    memset( &ksev, 0, sizeof( struct ksigevent ) );
     if( __sevp != NULL ) {
         ksev.sigev_value = __sevp->sigev_value;
         ksev.sigev_signo = __sevp->sigev_signo;
         ksev.sigev_notify = __sevp->sigev_notify;
     } else {
-#ifdef SIGEV_SIGNAL        
+#ifdef SIGEV_SIGNAL
         ksev.sigev_notify = SIGEV_SIGNAL;
 #endif
         ksev.sigev_signo = SIGALRM;
     }
 
-    ures = sys_call3( SYS_timer_create, 
+    res = sys_call3( SYS_timer_create, 
                       (u_long)__clk, 
                       (u_long)&ksev, 
                       (u_long)&id );
-    
-    res = (long)ures;
-    
-    if( res < 0 ) {
-        _RWD_errno = res;
-        return -1;
+    if( !__syscall_iserror( res ) ) {
+        *__tmr = (timer_t)(intptr_t)id;
     }
-    
-    *__tmr = (timer_t)(intptr_t)id;
-    
-    __syscall_return( int, ures );
+    __syscall_return( int, res );
 }
 
 
 _WCRTLINK int timer_delete( timer_t __tmr )
 {
-    long res;
-    u_long ures = sys_call1( SYS_timer_getoverrun, (u_long)__tmr );
-    
-    res = (long)ures;
-    
-    if( res < 0 ) {
-        _RWD_errno = EINVAL;
-        return -1;
-    }
-    
-    __syscall_return( int, ures );
+    syscall_res res = sys_call1( SYS_timer_delete, (u_long)__tmr );
+    __syscall_return( int, res );
 }
 
 _WCRTLINK int timer_getoverrun( timer_t __tmr )
 {
-    long res;
-    u_long ures = sys_call1( SYS_timer_getoverrun, (u_long)__tmr );
-    
-    res = (long)ures;
-    
-    if( res < 0 ) {
-        _RWD_errno = EINVAL;
-        return -1;
-    }
-    
-    __syscall_return( int, ures );
+    syscall_res res = sys_call1( SYS_timer_getoverrun, (u_long)__tmr );
+    __syscall_return( int, res );
 }
 
 _WCRTLINK int timer_gettime( timer_t __tmr, struct itimerspec *__v )
 {
-    long res;
-    u_long ures = sys_call2( SYS_timer_gettime, (u_long)__tmr, (u_long)__v );
-    
-    res = (long)ures;
-    
-    if( res < 0 ) {
-        _RWD_errno = -(res);
-        return -1;
-    }
-    
-    __syscall_return( int, ures );
+    syscall_res res = sys_call2( SYS_timer_gettime, (u_long)__tmr, (u_long)__v );
+    __syscall_return( int, res );
 }
 
 _WCRTLINK int timer_settime( timer_t __tmr, int flags, struct itimerspec *__new, struct itimerspec *__old )
 {
-    long res;
-    u_long ures = sys_call4( SYS_timer_settime, (u_long)__tmr, (u_long)flags, (u_long)__new, (u_long)__old );
-    
-    res = (long)ures;
-    
-    if( res < 0 ) {
-        _RWD_errno = -(res);
-        return -1;
-    }
-    
-    __syscall_return( int, ures );
+    syscall_res res = sys_call4( SYS_timer_settime, (u_long)__tmr, (u_long)flags, (u_long)__new, (u_long)__old );
+    __syscall_return( int, res );
 }

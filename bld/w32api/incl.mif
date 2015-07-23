@@ -8,9 +8,9 @@ w32api_distrib_lib  = 1
 !include cproj.mif
 !include defrule.mif
 
-splice    = wsplice -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
-rsplice   = wsplice -kRESOURCE -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
-ws2splice = wsplice -kWINSOCK2 -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
+splice    = *wsplice -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
+rsplice   = *wsplice -kRESOURCE -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
+ws2splice = *wsplice -kWINSOCK2 -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
 
 dirs = ddk directx GL
 

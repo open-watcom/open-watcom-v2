@@ -911,7 +911,7 @@ void RTFparser::handleFootnote( char Fchar )
     case 'K':   // Keyword strings.
         while( !finished ) {
             start = skipSpaces( start );
-            if( start == '\0' )
+            if( *start == '\0' )
                 break;
             end = start;
             while( *end != '\0' && *end != ';' ) {

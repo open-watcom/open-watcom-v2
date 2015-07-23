@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "rtdata.h"
+#include "iomode.h"
 #include "rtcheck.h"
 
 _WCRTLINK int (unlock)( handle, offset, nbytes )

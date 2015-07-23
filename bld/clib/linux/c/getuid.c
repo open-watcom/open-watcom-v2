@@ -35,6 +35,6 @@
 
 _WCRTLINK uid_t getuid( void )
 {
-    u_long  res = sys_call0( SYS_getuid );
+    syscall_res res = sys_call0( SYS_getuid );
     __syscall_return( uid_t, res );
 }

@@ -35,6 +35,7 @@
 #include "codegen.h"
 #include "rtfuns.h"
 #include "pstk.h"
+#include "feprotos.h"
 
 #ifndef NDEBUG
 #   include "pragdefn.h"

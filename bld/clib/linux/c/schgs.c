@@ -35,13 +35,13 @@
 
 _WCRTLINK int sched_getscheduler( pid_t pid )
 {
-    u_long res = sys_call1( SYS_sched_getscheduler, pid );
+    syscall_res res = sys_call1( SYS_sched_getscheduler, pid );
     __syscall_return( int, res );
 }
 
 _WCRTLINK int sched_setscheduler( pid_t pid, int policy,
                                   const struct sched_param *sp )
 {
-    u_long res = sys_call3( SYS_sched_getscheduler, pid, policy, (u_long)sp );
+    syscall_res res = sys_call3( SYS_sched_getscheduler, pid, policy, (u_long)sp );
     __syscall_return( int, res );
 }

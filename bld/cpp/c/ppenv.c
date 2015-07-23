@@ -13,7 +13,7 @@
 
 #include "preproc.h"
 
-char *PP_GetEnv( const char *name )
+const char *PP_GetEnv( const char *name )
 {
     return( getenv( name ) );
 }

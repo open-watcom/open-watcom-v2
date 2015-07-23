@@ -59,9 +59,7 @@
 
 #undef __getOSHandle
 
-extern  unsigned    __NFiles;       // the size of the iomode array
-extern  void        __grow_iomode( int num );
-        unsigned    __NHandles = 0;
+unsigned    __NHandles = 0;
 
 #if defined(__NT__)
 

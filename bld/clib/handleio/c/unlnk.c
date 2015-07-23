@@ -60,12 +60,12 @@ extern unsigned __unlink_sfn( const char *filename );
         _MOV_AH DOS_UNLINK \
         _INT_21         \
         _RST_DS         \
-        "call __doserror_" \
+        "call __doserror1_" \
         AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
-static unsigned _unlink_lfn( const char *filename )
-/*************************************************/
+static tiny_ret_t _unlink_lfn( const char *filename )
+/***************************************************/
 {
 #ifdef _M_I86
     return( __unlink_lfn( filename ) );
@@ -83,7 +83,7 @@ static unsigned _unlink_lfn( const char *filename )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+        return( dpmi_rm.ax | ~ 0xFFFF );
     }
     return( 0 );
 #endif
@@ -102,18 +102,15 @@ _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
     return( unlink( mbFilename ) );
 #else
   #ifdef __WATCOM_LFN__
-    unsigned    rc = 0;
+    tiny_ret_t  rc = 0;
 
-    if( _RWD_uselfn && (rc = _unlink_lfn( filename )) == 0 ) {
+    if( _RWD_uselfn && TINY_OK( rc = _unlink_lfn( filename ) ) ) {
         return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
-        return( -1 );
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
   #endif
-    if( __unlink_sfn( filename ) ) {
-        return( -1 );
-    }
-    return( 0 );
+    return( __unlink_sfn( filename ) );
 #endif
 }

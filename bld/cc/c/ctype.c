@@ -244,7 +244,7 @@ void WalkTypeList( void (*func)(TYPEPTR) )
     }
 }
 
-TYPEPTR DupType( TYPEPTR typ, enum type_state flags, bool force_duplicate )
+static TYPEPTR DupType( TYPEPTR typ, enum type_state flags, bool force_duplicate )
 {
     TYPEPTR     newtype;
     TYPEPTR     next;
@@ -706,7 +706,7 @@ void TypeSpecifier( decl_info *info )
     DeclSpecifiers( &plain_int, info );
 }
 
-void GetFieldTypeSpecifier( bool *plain_int, decl_info *info )
+static void GetFieldTypeSpecifier( bool *plain_int, decl_info *info )
 {
 
     info->stg = SC_NONE;      // indicate don't want any storage class specifiers

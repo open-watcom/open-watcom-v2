@@ -36,21 +36,16 @@
 #include <process.h>
 #include "initfini.h"
 #include "libwin32.h"
-#include "osthread.h"
 #include "initarg.h"
-#include "sigtab.h"
 #include "snglthrd.h"
 #include "thread.h"
+#include "initsig.h"
 #include "mthread.h"
+#include "cominit.h"
+#include "libmain.h"
+#include "cinit.h"
+#include "ddgrp.h"
 
-extern int APIENTRY LibMain( HANDLE, DWORD, LPVOID );
-extern void __CommonInit( void );
-extern BOOL __disallow_single_dgroup( HANDLE );
-
-#ifndef __SW_BR
-    extern int  __NTInit( int, void *, HANDLE );
-    extern void __NTFini( void );
-#endif
 
 int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
 {

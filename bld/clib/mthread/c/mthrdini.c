@@ -51,25 +51,24 @@ void __InitThreadData( thread_data *tdata )
 /*****************************************/
 {
     if( tdata != NULL ) {
-    tdata->__randnext = 1;
-    #if defined( __OS2__ )
+        tdata->__randnext = 1;
+#if defined( __OS2__ )
         // We want to detect stack overflow before it actually
         // happens; let's have a page in reserve.
         // Note that this implementation works fine for any thread
         // or DLL as it gets the stack size from the OS.
         tdata->__stklowP = __threadstack() + 4096;
-    #elif defined( __NT__ )
+#elif defined( __NT__ )
         __init_stack_limits( &tdata->__stklowP, 0 );
         tdata->thread_id = GetCurrentThreadId();
-    #elif defined( _NETWARE_LIBC )
+#elif defined( _NETWARE_LIBC )
         tdata->thread_id = GetCurrentThreadId();
-    #elif defined( __QNX__ )
+#elif defined( __QNX__ )
         tdata->thread_id = GetCurrentThreadId();
-    #elif defined( __LINUX__ )
+#elif defined( __LINUX__ )
         // TODO: Add thread id code for Linux!
-    #elif defined( __RDOS__ )
+#elif defined( __RDOS__ )
         tdata->thread_id = GetCurrentThreadId();
-    #endif
+#endif
     }
 }
-

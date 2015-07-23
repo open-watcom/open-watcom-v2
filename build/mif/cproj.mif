@@ -1,6 +1,8 @@
 !ifneq bootstrap 1
 !ifeq host_cpu x64
 !undef __WATCOM__
+!else ifeq host_cpu arm
+!undef __WATCOM__
 !else
 !define __WATCOM__
 !endif

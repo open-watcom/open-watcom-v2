@@ -36,6 +36,6 @@
 
 _WCRTLINK int rename( const char *__old, const char *__new )
 {
-    u_long res = sys_call2( SYS_rename, (u_long)__old, (u_long)__new );
+    syscall_res res = sys_call2( SYS_rename, (u_long)__old, (u_long)__new );
     __syscall_return( int, res );
 }

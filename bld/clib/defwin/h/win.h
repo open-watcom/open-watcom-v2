@@ -33,8 +33,8 @@
 #define INCL_WIN
 #include <wos2.h>
 typedef int     HANDLE;
-#pragma aux __WinSetWindowPos = parm [eax] modify [ebx]
 extern  unsigned        __WinSetWindowPos(unsigned);
+#pragma aux __WinSetWindowPos = parm [eax] modify [ebx]
 #define WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7)           \
         __WinSetWindowPos(WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7))
 #else
@@ -277,10 +277,11 @@ extern void     _ClearWindow( LPWDATA );
 /* windlg.c */
 extern void     _GetClearInterval( void );
 extern void     _DoAbout( void );
+extern BOOL     CALLBACK _GetIntervalBox( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 
 #if !defined( __OS2__ )
 /* windrvr.c */
-extern long CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam );
+extern long     CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam );
 extern int      _SetAboutDlg( char *, char * );
 #endif
 
@@ -297,6 +298,7 @@ extern void     _GetWindowNameAndCoords( char *name, char *dest, int *x1, int *x
 extern void     _WindowsExit( void );
 extern int      _DestroyOnClose( LPWDATA );
 extern int      _YieldControl( void );
+extern void     _RemoveWindowedHandle( int handle );
 
 /* winio.c */
 extern unsigned _DoStdin( LPWDATA, void *, unsigned );
@@ -363,4 +365,10 @@ extern void     _ReleaseWindowResources( LPWDATA w );
 extern void     _RepaintWindow( LPWDATA, PRECT, HPS );
 #else
 extern void     _RepaintWindow( LPWDATA, PRECT, HDC );
+#endif
+
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+extern int      PASCAL DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
+                        LPSTR cmd, int show, int (*pmain)( int, char ** ) );
+extern int      PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show );
 #endif

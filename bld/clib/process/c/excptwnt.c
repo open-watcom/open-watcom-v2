@@ -37,14 +37,18 @@
 #include <unistd.h>
 #include "iomode.h"
 #include "rtdata.h"
-#include "sigtab.h"
 #include "sigfunc.h"
 #include "fpusig.h"
 #include "excptwnt.h"
 #include "clearfpe.h"
 #include "ntconio.h"
-#include "ntexc.h"
 #include "thread.h"
+
+LONG WINAPI __ReportException( EXCEPTION_POINTERS *rec );
+int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
+                               LPVOID establisher_frame,
+                               LPCONTEXT context,
+                               LPVOID dispatch_context );
 
 __sig_func  (*__oscode_check_func)( int, long ) = NULL;
 int         (*__raise_func)( int )              = NULL;

@@ -38,7 +38,6 @@
 #include "liballoc.h"
 #include "rtstack.h"
 #include "stacklow.h"
-#include "sigtab.h"
 #include "exitwmsg.h"
 #include "thread.h"
 #include "trdlist.h"
@@ -288,28 +287,25 @@ extern int __IsFirstThreadData(thread_data * tdata)
 }
 
 /*
-//  This is all new and partially untested code to help support _beginthread() and _threadid macro
-*/
+ *  This is all new and partially untested code to help support _beginthread() and _threadid macro
+ */
 _WCRTLINK int *__threadid( void )
 {
-//extern int *__threadid( void )
-
     static int BadThreadId = -1L;
     thread_data *tdata = NULL;
 
     if( __NXSlotID != NO_INDEX ){
         int ccode = NXKeyGetValue(__NXSlotID, (void **)&tdata);
-        if(0 != ccode)
-            return &BadThreadId;
-        #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
-            if( tdata == (thread_data *)2 )
-                return &BadThreadId;
-        #else
-            if( tdata == NULL )
-                return &BadThreadId;
-        #endif
-
-        return ( (int *) &(tdata->thread_id) );
+        if( 0 != ccode )
+            return( &BadThreadId );
+#if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
+        if( tdata == (thread_data *)2 )
+            return( &BadThreadId );
+#else
+        if( tdata == NULL )
+            return( &BadThreadId );
+#endif
+        return ( (int *)&(tdata->thread_id) );
     }
-    return &BadThreadId;
+    return( &BadThreadId );
 }

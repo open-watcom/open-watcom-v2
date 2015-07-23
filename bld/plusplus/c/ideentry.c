@@ -305,6 +305,7 @@ void IDEAPI IDEFreeHeap( void )
 #endif
 }
 
+#if 0
 // HELP Interface
 
 IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
@@ -317,6 +318,7 @@ IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
     msg = msg;
     return TRUE;
 }
+#endif
 
 
 #if 0

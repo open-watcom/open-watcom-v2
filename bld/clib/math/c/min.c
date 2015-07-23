@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#undef min
+#include "_minmax.h"
 
 
 _WCRTLINK int min( int a, int b )

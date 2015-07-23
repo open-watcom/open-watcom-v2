@@ -36,6 +36,6 @@
 
 _WCRTLINK int fchmod( int __fd, mode_t __mode )
 {
-    u_long  res = sys_call2( SYS_fchmod, __fd, __mode );
+    syscall_res res = sys_call2( SYS_fchmod, __fd, __mode );
     __syscall_return( int, res );
 }

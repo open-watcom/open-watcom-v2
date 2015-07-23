@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "rtdata.h"
+#include "iomode.h"
 #include "rtcheck.h"
 
 // TODO: Need Linux POSIX library!

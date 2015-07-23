@@ -57,7 +57,8 @@ extern  void    gml_address( gml_tag gtag )
     rs_loc = address_tag;
 
     init_nest_cb( true );
-    nest_cb->c_tag = t_ADDRESS;
+
+    nest_cb->gtag = gtag;
 
     g_spacing_ln = layout_work.titlep.spacing;
 

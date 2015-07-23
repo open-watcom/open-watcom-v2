@@ -34,23 +34,24 @@ extra_c_flags_trmem = $(trmem_cflags)
 # memory tracker cover routines
 extra_c_flags_uialloc = $(trmem_cover_cflags)
 
-objs =  uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
-        uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
-        uibcopy.obj  uibfake.obj  uibfill.obj  uibgnd.obj   &
-        uibios.obj   uiblank.obj  uibox.obj    uibpix.obj   &
-        uibstr.obj   uicheck.obj  uiconfig.obj uicurs.obj   &
-        uidata.obj   uidchfld.obj uidebug.obj  uidevent.obj &
-        uidialcb.obj uidialog.obj uidirty.obj  uidlgfcn.obj &
-        uiev.obj     uifar.obj    uifmem.obj   uiforce.obj  &
-        uigadget.obj uigchar.obj  uiget.obj    uihotspt.obj &
-        uiinit.obj   uiledit.obj  uilist.obj   uilstbox.obj &
-        uimem.obj    uimenu.obj   uimenucr.obj uimget.obj   &
-        uimisc.obj   uimousev.obj uipad.obj    uipget.obj   &
-        uipopup.obj  uiprot.obj   uisnow.obj   uispawn.obj  &
-        uitab.obj    uivattr.obj  uivedit.obj  uivfill.obj  &
-        uivfld.obj   uivhide.obj  uivline.obj  uivmove.obj  &
-        uivopen.obj  uivscrn.obj  uivstr.obj   uivutil.obj  &
-        uiwin.obj    uiyield.obj
+objs = &
+    uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
+    uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
+    uibcopy.obj  uibfake.obj  uibfill.obj  uibgnd.obj   &
+    uibios.obj   uiblank.obj  uibox.obj    uibpix.obj   &
+    uibstr.obj   uicheck.obj  uiconfig.obj uicurs.obj   &
+    uidata.obj   uidchfld.obj uidebug.obj  uidevent.obj &
+    uidialcb.obj uidialog.obj uidirty.obj  uidlgfcn.obj &
+    uiev.obj     uifar.obj    uifmem.obj   uiforce.obj  &
+    uigadget.obj uigchar.obj  uiget.obj    uihotspt.obj &
+    uiinit.obj   uiledit.obj  uilist.obj   uilstbox.obj &
+    uimem.obj    uimenu.obj   uimenucr.obj uimget.obj   &
+    uimisc.obj   uimousev.obj uipad.obj    uipget.obj   &
+    uipopup.obj  uiprot.obj   uisnow.obj   uispawn.obj  &
+    uitab.obj    uivattr.obj  uivedit.obj  uivfill.obj  &
+    uivfld.obj   uivhide.obj  uivline.obj  uivmove.obj  &
+    uivopen.obj  uivscrn.obj  uivstr.obj   uivutil.obj  &
+    uiwin.obj    uiyield.obj
 
 # system type         dos  nlm  nt   os2  qnx  unix  win  rdos
 # builder builds      yes  no   yes  yes  no   yes   yes  yes
@@ -92,28 +93,31 @@ objs =  uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
 objs += $(trmem_objs) $($(ui_os))
 
 $(name).lib: $(objs)
-        $(librarian) $(libflags) $<
+!ifndef __WATCOM__
+    $(blib) $(bld_libflags) $<
+!else
+    $(librarian) $(libflags) $<
+!endif
 
 !ifeq SAMPLE_MODE WIN_C_M_J
 sample.exe : samplew.obj sampdial.obj $(name).lib
-        %create sample.lnk
-        %append sample.lnk system windows op m D A library $(name).lib
-        %append sample.lnk n sample
-        %append sample.lnk f samplew f sampdial
-        %append sample.lnk import DEATH GDI.121
-        %append sample.lnk import RESURRECTION GDI.122
-        wlink @sample.lnk
+    %create sample.lnk
+    %append sample.lnk system windows op m D A library $(name).lib
+    %append sample.lnk n sample
+    %append sample.lnk f samplew f sampdial
+    %append sample.lnk import DEATH GDI.121
+    %append sample.lnk import RESURRECTION GDI.122
+    wlink @sample.lnk
 !else ifeq SAMPLE_MODE WIN_C_M
 sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
-        %create sample.lnk
-        %append sample.lnk system windows op m D A library $(name).lib
-        %append sample.lnk n sample
-        %append sample.lnk f samplew f sampdial f swap
-        %append sample.lnk import DEATH GDI.121
-        %append sample.lnk import RESURRECTION GDI.122
-        wlink @sample.lnk
+    %create sample.lnk
+    %append sample.lnk system windows op m D A library $(name).lib
+    %append sample.lnk n sample
+    %append sample.lnk f samplew f sampdial f swap
+    %append sample.lnk import DEATH GDI.121
+    %append sample.lnk import RESURRECTION GDI.122
+    wlink @sample.lnk
 !else
 sample.exe : sample.obj sampdial.obj $(name).lib
-        $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(name).lib}
+    $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(name).lib}
 !endif
-

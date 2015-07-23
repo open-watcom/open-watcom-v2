@@ -104,10 +104,10 @@ test.exe: $(name).lib $(TESTLNK) test.obj
         $(linker) name $^@ $(test_lflags) file {test.obj} library {$(name).lib}
 
 rcmsg.gh: wrmsg.gh
-        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
+        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 wrmsg.gh: ../res/master.msg $(msgfiles)
-        $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" $[@ >$^@
+        $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
 
 $(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h
         $(yacc) -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)

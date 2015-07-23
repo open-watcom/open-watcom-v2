@@ -110,7 +110,7 @@ void FrontEndFini( void )
     GlobalCompFlags.cc_first_use = TRUE;
 }
 
-void ClearGlobals( void )
+static void ClearGlobals( void )
 {
     InitStats();
     IsStdIn = FALSE;
@@ -205,7 +205,7 @@ static bool ParseCmdLine( char **cmdline )
     return( TRUE );
 }
 
-void OpenDepFile( void )
+static void OpenDepFile( void )
 {
     char        *name;
 
@@ -249,7 +249,7 @@ FNAMEPTR NextDependency( FNAMEPTR curr )
     return( curr );
 }
 
-void DumpDepFile( void )
+static void DumpDepFile( void )
 {
     FNAMEPTR    curr;
 
@@ -659,7 +659,7 @@ void CppPrtf( char *fmt, ... )
 }
 
 
-void OpenCppFile( void )
+static void OpenCppFile( void )
 {
     char  *name = NULL;
 
@@ -910,7 +910,7 @@ static bool OpenFCB( FILE *fp, const char *filename )
     return( FALSE );
 }
 
-bool FreeSrcFP( void )
+static bool FreeSrcFP( void )
 /********************/
 {
     FCB     *src_file;
@@ -1130,7 +1130,7 @@ void FreeIncFileList( void )
     }
 }
 
-RDIRPTR AddRDir( const char *path )
+static RDIRPTR AddRDir( const char *path )
 {
     RDIRPTR     dirlist;
     RDIRPTR     *lnk;

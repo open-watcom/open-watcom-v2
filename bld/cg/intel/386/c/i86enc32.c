@@ -45,6 +45,7 @@
 #include "data.h"
 #include "objout.h"
 #include "i86obj.h"
+#include "objprof.h"
 #include "feprotos.h"
 
 
@@ -75,7 +76,6 @@ extern  hw_reg_set      High64Reg( hw_reg_set );
 extern  hw_reg_set      Low64Reg( hw_reg_set );
 extern  type_length     NewBase( name * );
 extern  int             GetLog2( unsigned_32 );
-extern  unsigned        UseRepForm( unsigned );
 extern  void            DoNothing( instruction * );
 extern  bool            BaseIsSP( name * );
 extern  segment_id      AskCode16Seg( void );
@@ -100,6 +100,7 @@ extern  void            DoRelocConst( name *op, type_class_def kind );
 extern  void            DoMAddr( name *op );
 static  void            Add32Displacement( signed_32 val );
 static  void            LayIdxModRM( name *op );
+
         void            doProfilingCode( char *fe_name, label_handle *data, bool prolog );
 
 #define RMR_MOD_IND     0x80
@@ -655,6 +656,7 @@ extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remov
     return( code_32 );
 }
 
+#if 0
 void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
 /************************************************************************/
 {
@@ -662,9 +664,12 @@ void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
         doProfilingCode( fe_name, data, prolog );
     }
 }
+#endif
 
-segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack )
-/***********************************************************************************/
+segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
+/*********************************************************************************/
+/* generate P5 profiler code                                                     */
+/*********************************************************************************/
 {
     segment_id      old;
     segment_id      data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
@@ -706,7 +711,8 @@ segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *st
 void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
 /***********************************************************************/
 {
-    if( prolog ) GenP5ProfileData( fe_name, data, NULL );
+    if( prolog )
+        GenProfileData( fe_name, data, NULL );
     _Code;
     LayOpbyte( 0x68 );
     ILen += 4;

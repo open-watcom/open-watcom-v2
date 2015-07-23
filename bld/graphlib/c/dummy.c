@@ -31,6 +31,7 @@
 
 
 #include "gdefn.h"
+#include "dummy.h"
 
 // This file contains definitions used to create the
 // standalone graphics library GRAPH.LIB and GRAPH386.LIB

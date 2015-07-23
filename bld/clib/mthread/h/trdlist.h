@@ -34,13 +34,11 @@
 #define _TRDLIST_H_INCLUDED
 
 #if defined( __NETWARE__ )
-  extern int            *__threadid( void );
  #if defined( _NETWARE_CLIB )
   #define TID                   int
-  #define _threadid             (__threadid())
   #define GetCurrentThreadId()  (*__threadid())
-  extern void           ThreadSwitch( void );
-  extern void           *GetThreadID( void );
+  extern void                   ThreadSwitch( void );
+  extern void                   *GetThreadID( void );
  #elif defined (_NETWARE_LIBC)
   #include "nw_libc.h"
  #endif
@@ -50,7 +48,7 @@
   #endif
   #include <windows.h>
   #include "ntext.h"
-  extern DWORD          __TlsIndex;
+  extern DWORD                  __TlsIndex;
   #define TID                   DWORD
 #elif defined( __QNX__ )
   #include <sys/types.h>
@@ -65,9 +63,9 @@
   #define GetCurrentThreadId()  (0)
 #elif defined( __RDOS__ )
   #include <rdos.h>
-  #define TID int
-  extern int __TlsIndex;
-  #define GetCurrentThreadId() (RdosGetThreadHandle())
+  #define TID                   int
+  extern int                    __TlsIndex;
+  #define GetCurrentThreadId()  (RdosGetThreadHandle())
   extern int __tls_alloc();
   extern void __tls_free(int index);
   extern void *__tls_get_value(int index);
@@ -79,31 +77,26 @@
   #pragma aux __tls_get_value "*" parm [ecx] modify [edx] value [eax];
   #pragma aux __tls_set_value "*" parm [ecx] [eax] modify [edx];
   #pragma aux __create_thread "*" parm [edx] [ebx] [edi] [eax] [ecx];
-
 #elif defined( __RDOSDEV__ )
   #include <rdos.h>
   #include <rdosdev.h>
-  #define TID int
-  #define GetCurrentThreadId() (RdosGetThreadHandle())
-#else
+  #define TID                   int
+  #define GetCurrentThreadId()  (RdosGetThreadHandle())
+#elif defined( __OS2__ )
   #define INCL_DOSSEMAPHORES
   #define INCL_DOSPROCESS
-  #define INCL_DOSEXCEPTIONS
-//  #include <wos2.h>
   #if defined( __WARP__ )
-    extern int          *__threadid(void);      // OS/2 2.0
-   #define _threadid             (__threadid())
-    #define GetCurrentThreadId() (*__threadid())
-    extern unsigned     __threadstack(void);
+    // OS/2 2.0
+    #define GetCurrentThreadId()    (*__threadid())
+    extern unsigned                 __threadstack(void);
   #else
-    extern int _WCFAR    *_threadid;            // OS/2 1.x
-    #define GetCurrentThreadId() (*_threadid)
+    // OS/2 1.x
+    #define GetCurrentThreadId()    (*_threadid)
   #endif
 #endif
 
 #if !defined( __QNX__ ) && !defined(__LINUX__) && !defined(__RDOSDEV__)
 // QNX and RDOS device-drivers doesn't maintain a list of allocated thread data blocks
-
 
 // lookup thread data
 thread_data *__GetThreadData( void );

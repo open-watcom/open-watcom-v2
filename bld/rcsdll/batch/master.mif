@@ -36,10 +36,10 @@ misc_objs = $+$(template_objs)$-
 all: $(misc_objs) .symbolic
 
 .sp.bat :
-    wsplice -k $(host_os) -k $(host_cpu) $[@ $@
+    *wsplice -k $(host_os) -k $(host_cpu) $[@ $@
 
 .sp.cmd :
-    wsplice -k $(host_os) -k $(host_cpu) $[@ $@
+    *wsplice -k $(host_os) -k $(host_cpu) $[@ $@
 
 clean: .symbolic
     rm -f *.bat *.cmd

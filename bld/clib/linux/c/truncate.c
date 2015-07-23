@@ -35,6 +35,6 @@
 
 _WCRTLINK int truncate( const char *__path, off_t __length )
 {
-    u_long res = sys_call2( SYS_truncate, (u_long)__path, __length );
+    syscall_res res = sys_call2( SYS_truncate, (u_long)__path, __length );
     __syscall_return( int, res );
 }

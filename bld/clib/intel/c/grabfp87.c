@@ -31,19 +31,12 @@
 
 #include "variety.h"
 #include "rtdata.h"
-
 #ifndef __WINDOWS__
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #endif
-
-extern  void    __Init_FPE_handler( void );
-extern  void    __Fini_FPE_handler( void );
-#ifdef __DOS_386__
-extern int __FPEHandlerStart_;
-extern int __FPEHandlerEnd_;
-extern int __DPMI_hosted( void );
-#endif
+#include "grabfp87.h"
 
 void __GrabFP87( void )
 {

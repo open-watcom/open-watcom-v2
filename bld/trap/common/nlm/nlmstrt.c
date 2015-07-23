@@ -37,8 +37,9 @@
 #define ConsolePrintf _
 #include <conio.h>
 #undef ConsolePrintf
-#include "nw3to4.h"
+#include "nw3to5.h"
 #include "trperr.h"
+#include "nlmstrt.h"
 
 
 #include <ecb.h>

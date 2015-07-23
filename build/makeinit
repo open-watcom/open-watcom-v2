@@ -71,6 +71,9 @@ bld_os = linux
 !else ifdef __LINUXPPC__
 bld_cpu = ppc
 bld_os = linux
+!else ifdef __LINUXARM__
+bld_cpu = arm
+bld_os = linux
 !else ifdef __BSD386__
 bld_cpu = 386
 bld_os = bsd

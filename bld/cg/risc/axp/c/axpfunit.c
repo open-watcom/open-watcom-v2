@@ -43,14 +43,14 @@ enum {
     F_LDSTR     = 0x0008,
 };
 
-static FU_entry FUnits[] = {
+static const FU_entry FUnits[] = {
     /* units                    unit_stall  opnd_stall */
     F_NONE,                     0,          0,      /* NO */
     F_ALU,                      1,          1,      /* ALU */
     F_ALU,                      1,          1,      /* LDSTR */
 };
 
-FU_entry *FUEntry( instruction *ins )
+const FU_entry *FUEntry( instruction *ins )
 {
     return( &FUnits[ ins->u.gen_table->func_unit ] );
 }

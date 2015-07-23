@@ -51,6 +51,10 @@
 #include "dosredir.h"
 #include "doscomm.h"
 #include "cpuglob.h"
+#include "dosextx.h"
+#include "dosovl.h"
+#include "dosfile.h"
+
 
 typedef enum {
     EXE_UNKNOWN,
@@ -142,8 +146,6 @@ extern void             Read87EmuState( void __far * );
 extern void             Write87EmuState( void __far * );
 extern unsigned         StringToFullPath( char * );
 extern int              __far NoOvlsHdlr( int, void * );
-extern bool             CheckOvl( addr32_ptr );
-extern int              NullOvlHdlr(void);
 
 extern word             __based(__segname("_CODE")) SegmentChain;
 
@@ -518,7 +520,6 @@ static EXE_TYPE CheckEXEType( char *name )
     }
 }
 
-static char DosExtList[] = { ".com\0.exe\0" };
 
 trap_retval ReqProg_load( void )
 {
@@ -975,11 +976,6 @@ trap_retval ReqGet_message_text( void )
     }
     ret->flags = MSG_NEWLINE | MSG_ERROR;
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
-}
-
-char *GetExeExtensions( void )
-{
-    return( DosExtList );
 }
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )

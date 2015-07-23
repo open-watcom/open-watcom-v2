@@ -30,4 +30,4 @@ inc_dirs = -I"$(posix_dir)/h"
 #       define the main target
 #
 posix.lib : $(objs)
-        $(librarian) $(libflags) $<
+        $(blib) $(bld_libflags) $<

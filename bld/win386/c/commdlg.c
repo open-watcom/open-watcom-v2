@@ -35,7 +35,8 @@
 #include <dos.h>
 #include <windows.h>
 #include <commdlg.h>
-#include "stubs.h"
+#include "winstubs.h"
+#include "_commdlg.h"
 
 #pragma aux BackPatch_commdlg parm [ax];
 extern LPVOID FAR BackPatch_commdlg( char *str );
@@ -85,9 +86,9 @@ HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr )
         commdlgReplaceText = BackPatch_commdlg( "ReplaceText" );
         if( commdlgReplaceText == NULL ) return( 0 );
     }
-    pnew1 = psave1 = pfr->lpstrFindWhat;
-    pnew2 = psave2 = pfr->lpstrReplaceWith;
-    pnew3 = psave3 = pfr->lpTemplateName;
+    pnew1 = psave1 = (LPVOID)pfr->lpstrFindWhat;
+    pnew2 = psave2 = (LPVOID)pfr->lpstrReplaceWith;
+    pnew3 = psave3 = (LPVOID)pfr->lpTemplateName;
     GetAlias( &pnew1 );
     GetAlias( &pnew2 );
     GetAlias( &pnew3 );
@@ -121,8 +122,8 @@ HWND FAR PASCAL __FindText( LPFINDREPLACE pfr )
         commdlgFindText = BackPatch_commdlg( "FindText" );
         if( commdlgFindText == NULL ) return( 0 );
     }
-    pnew1 = psave1 = pfr->lpstrFindWhat;
-    pnew2 = psave2 = pfr->lpTemplateName;
+    pnew1 = psave1 = (LPVOID)pfr->lpstrFindWhat;
+    pnew2 = psave2 = (LPVOID)pfr->lpTemplateName;
     GetAlias( &pnew1 );
     GetAlias( &pnew2 );
     pfr->lpstrFindWhat = pnew1;
@@ -151,9 +152,9 @@ BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf )
         commdlgChooseFont = BackPatch_commdlg( "ChooseFont" );
         if( commdlgChooseFont == NULL ) return( 0 );
     }
-    pnew1 = psave1 = pcf->lpLogFont;
-    pnew2 = psave2 = pcf->lpTemplateName;
-    pnew3 = psave3 = pcf->lpszStyle;
+    pnew1 = psave1 = (LPVOID)pcf->lpLogFont;
+    pnew2 = psave2 = (LPVOID)pcf->lpTemplateName;
+    pnew3 = psave3 = (LPVOID)pcf->lpszStyle;
     GetAlias( &pnew1 );
     GetAlias( &pnew2 );
     GetAlias( &pnew3 );
@@ -184,14 +185,14 @@ static BOOL GetSaveOrOpenFileName( FARPROC fp, LPOPENFILENAME pofn )
     LPVOID              pnew1,pnew2,pnew3,pnew4;
     LPVOID              pnew5,pnew6,pnew7,pnew8;
 
-    pnew1 = psave1 = pofn->lpstrFilter;
-    pnew2 = psave2 = pofn->lpstrCustomFilter;
-    pnew3 = psave3 = pofn->lpstrFile;
-    pnew4 = psave4 = pofn->lpstrFileTitle;
-    pnew5 = psave5 = pofn->lpstrInitialDir;
-    pnew6 = psave6 = pofn->lpstrTitle;
-    pnew7 = psave7 = pofn->lpstrDefExt;
-    pnew8 = psave8 = pofn->lpTemplateName;
+    pnew1 = psave1 = (LPVOID)pofn->lpstrFilter;
+    pnew2 = psave2 = (LPVOID)pofn->lpstrCustomFilter;
+    pnew3 = psave3 = (LPVOID)pofn->lpstrFile;
+    pnew4 = psave4 = (LPVOID)pofn->lpstrFileTitle;
+    pnew5 = psave5 = (LPVOID)pofn->lpstrInitialDir;
+    pnew6 = psave6 = (LPVOID)pofn->lpstrTitle;
+    pnew7 = psave7 = (LPVOID)pofn->lpstrDefExt;
+    pnew8 = psave8 = (LPVOID)pofn->lpTemplateName;
 
     GetAlias( &pnew1 );
     GetAlias( &pnew2 );
@@ -210,7 +211,7 @@ static BOOL GetSaveOrOpenFileName( FARPROC fp, LPOPENFILENAME pofn )
     pofn->lpstrDefExt = pnew7;
     pofn->lpTemplateName = pnew8;
 
-    rc = fp( (LPOPENFILENAME) pofn );
+    rc = ((BOOL(FAR PASCAL *)(LPOPENFILENAME))fp)( (LPOPENFILENAME)pofn );
 
     ReleaseAlias( psave1, pnew1 );
     ReleaseAlias( psave2, pnew2 );
@@ -241,7 +242,7 @@ BOOL FAR PASCAL __GetOpenFileName( LPOPENFILENAME pofn )
         commdlgGetOpenFileName = BackPatch_commdlg( "GetOpenFileName" );
         if( commdlgGetOpenFileName == NULL ) return( 0 );
     }
-    return( GetSaveOrOpenFileName( commdlgGetOpenFileName, pofn ) );
+    return( GetSaveOrOpenFileName( (FARPROC)commdlgGetOpenFileName, pofn ) );
 } /* __GetOpenFileName */
 
 /*
@@ -253,7 +254,7 @@ BOOL FAR PASCAL __GetSaveFileName( LPOPENFILENAME pofn )
         commdlgGetSaveFileName = BackPatch_commdlg( "GetSaveFileName" );
         if( commdlgGetSaveFileName == NULL ) return( 0 );
     }
-    return( GetSaveOrOpenFileName( commdlgGetSaveFileName, pofn ) );
+    return( GetSaveOrOpenFileName( (FARPROC)commdlgGetSaveFileName, pofn ) );
 
 } /* __GetSaveFileName */
 
@@ -270,8 +271,8 @@ BOOL FAR PASCAL __PrintDlg( LPPRINTDLG ppd )
         commdlgPrintDlg = BackPatch_commdlg( "PrintDlg" );
         if( commdlgPrintDlg == NULL ) return( 0 );
     }
-    pnew1 = psave1 = ppd->lpPrintTemplateName;
-    pnew2 = psave2 = ppd->lpSetupTemplateName;
+    pnew1 = psave1 = (LPVOID)ppd->lpPrintTemplateName;
+    pnew2 = psave2 = (LPVOID)ppd->lpSetupTemplateName;
     GetAlias( &pnew1 );
     GetAlias( &pnew2 );
     ppd->lpPrintTemplateName = pnew1;

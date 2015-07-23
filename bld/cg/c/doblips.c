@@ -33,6 +33,9 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "utils.h"
+#include "onexit.h"
+#include "qtimer.h"
+#include "blips.h"
 #include "feprotos.h"
 
 #define Version         "WATCOM Code Generator --------"
@@ -44,12 +47,7 @@ extern  int             OSCall(void);
  static void OSCall(void){}
 #endif
 
-extern  void            FatalError(const char *);
-extern  void            Blip(unsigned_16,char);
-extern  void            BlipInit( void );
 extern  bool            GetEnvVar(const char *,char *,int);
-extern  bool            TBreak( void );
-extern  uint            GetTickCnt( void );
 
 static uint             LastBlipCount;
 static uint             NextTickCount;
@@ -139,14 +137,14 @@ static  void    CheckEvents( void )
     }
 }
 
-extern  void    FiniBlip( void )
-/******************************/
+void    FiniBlip( void )
+/**********************/
 {
 }
 
 
-extern  void    InitBlip( void )
-/******************************/
+void    InitBlip( void )
+/**********************/
 {
     char        buff[80];
 
@@ -169,15 +167,15 @@ extern  void    InitBlip( void )
 #endif
 }
 
-extern  bool    WantZoiks2( void )
-/********************************/
+bool    WantZoiks2( void )
+/************************/
 {
     return( Zoiks2 );
 }
 
 
-extern  void    LNBlip( source_line_number num )
-/**********************************************/
+void    LNBlip( source_line_number num )
+/**************************************/
 {
     int         i;
     char        ch;
@@ -198,8 +196,8 @@ extern  void    LNBlip( source_line_number num )
 }
 
 
-extern  void    PGBlip( const char *name )
-/****************************************/
+void    PGBlip( const char *name )
+/********************************/
 {
     int         count;
 
@@ -221,8 +219,8 @@ extern  void    PGBlip( const char *name )
 }
 
 
-extern  void    TGBlip( void )
-/****************************/
+void    TGBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -230,8 +228,8 @@ extern  void    TGBlip( void )
     }
 }
 
-extern  void    LPBlip( void )
-/****************************/
+void    LPBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -239,8 +237,8 @@ extern  void    LPBlip( void )
     }
 }
 
-extern  void    URBlip( void )
-/****************************/
+void    URBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -248,8 +246,8 @@ extern  void    URBlip( void )
     }
 }
 
-extern  void    SXBlip( void )
-/****************************/
+void    SXBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -257,8 +255,8 @@ extern  void    SXBlip( void )
     }
 }
 
-extern  void    EXBlip( void )
-/****************************/
+void    EXBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -266,8 +264,8 @@ extern  void    EXBlip( void )
     }
 }
 
-extern  void    GRBlip( void )
-/****************************/
+void    GRBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -275,8 +273,8 @@ extern  void    GRBlip( void )
     }
 }
 
-extern  void    IMBlip( void )
-/****************************/
+void    IMBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -284,8 +282,8 @@ extern  void    IMBlip( void )
     }
 }
 
-extern  void    SCBlip( void )
-/****************************/
+void    SCBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -293,8 +291,8 @@ extern  void    SCBlip( void )
     }
 }
 
-extern  void    PSBlip( void )
-/****************************/
+void    PSBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -302,8 +300,8 @@ extern  void    PSBlip( void )
     }
 }
 
-extern  void    PLBlip( void )
-/****************************/
+void    PLBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {
@@ -311,8 +309,8 @@ extern  void    PLBlip( void )
     }
 }
 
-extern  void    DGBlip( void )
-/****************************/
+void    DGBlip( void )
+/********************/
 {
     CheckEvents();
     if( BlipsOn ) {

@@ -45,7 +45,7 @@
 #endif
 
 #if _PGCHART_ALT_ENABLED
-  #define Entry2( f1, f2 )      void f1( void ) { JMP ## f2(); }
+  #define Entry2( f1, f2 )      extern void f1( void ); void f1( void ) { JMP ## f2(); }
 #else
   #define Entry2( f1, f2 )
 #endif

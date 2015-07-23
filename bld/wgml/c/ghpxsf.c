@@ -37,7 +37,7 @@
 /*  :HPx :SF common processing                                             */
 /***************************************************************************/
 
-static void gml_hp_sf_common( gml_tag gtag, int level, e_tags t )
+static void gml_hp_sf_common( gml_tag gtag, int level )
 {
     char    *   p;
 
@@ -58,7 +58,7 @@ static void gml_hp_sf_common( gml_tag gtag, int level, e_tags t )
     nest_cb->font = level;
     g_curr_font = level;
 
-    nest_cb->c_tag = t;
+    nest_cb->gtag = gtag;
 
     scan_err = false;
     p = scan_start;
@@ -92,22 +92,22 @@ static void gml_hp_sf_common( gml_tag gtag, int level, e_tags t )
 
 void    gml_hp0( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 0, t_HP0 );
+    gml_hp_sf_common( gtag, 0 );
 }
 
 void    gml_hp1( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 1, t_HP1 );
+    gml_hp_sf_common( gtag, 1 );
 }
 
 void    gml_hp2( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 2, t_HP2 );
+    gml_hp_sf_common( gtag, 2 );
 }
 
 void    gml_hp3( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 3, t_HP3 );
+    gml_hp_sf_common( gtag, 3 );
 }
 
 
@@ -115,13 +115,12 @@ void    gml_hp3( gml_tag gtag )
 /*  :eHPx :eSF common processing                                           */
 /***************************************************************************/
 
-static  void    gml_ehp_esf_common( gml_tag gtag, e_tags t )
+static  void    gml_ehp_esf_common( gml_tag egtag )
 {
     char    *   p;
     tag_cb  *   wk;
 
-    gtag = gtag;
-    if( !g_err_tag_t_nest( t ) ) {
+    if( !g_err_gml_etag( egtag ) ) {
         wk = nest_cb;
         nest_cb = nest_cb->prev;
         add_tag_cb_to_pool( wk );
@@ -158,22 +157,22 @@ static  void    gml_ehp_esf_common( gml_tag gtag, e_tags t )
 
 void    gml_ehp0( gml_tag gtag )
 {
-    gml_ehp_esf_common( gtag, t_HP0 );
+    gml_ehp_esf_common( gtag );
 }
 
 void    gml_ehp1( gml_tag gtag )
 {
-    gml_ehp_esf_common( gtag, t_HP1 );
+    gml_ehp_esf_common( gtag );
 }
 
 void    gml_ehp2( gml_tag gtag )
 {
-    gml_ehp_esf_common( gtag, t_HP2 );
+    gml_ehp_esf_common( gtag );
 }
 
 void    gml_ehp3( gml_tag gtag )
 {
-    gml_ehp_esf_common( gtag, t_HP3 );
+    gml_ehp_esf_common( gtag );
 }
 
 /***************************************************************************/
@@ -186,7 +185,7 @@ void    gml_ehp3( gml_tag gtag )
 
 void    gml_esf( gml_tag gtag )
 {
-    gml_ehp_esf_common( gtag, t_SF );
+    gml_ehp_esf_common( gtag );
 }
 
 
@@ -228,7 +227,7 @@ void    gml_sf( gml_tag gtag )
         if( (font < 0) || (font >= wgml_font_cnt) ) {// invalid font use default
             font = 0;
         }
-        gml_hp_sf_common( gtag, font, t_SF );
+        gml_hp_sf_common( gtag, font );
     } else {
         err_count++;
         // AT-001 Required attribute not found

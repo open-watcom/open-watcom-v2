@@ -109,7 +109,8 @@ static int doNULL( IntlData *data, _LocaleItem *item )
     return( -1 );
 }
 
-IntlData *getData( int fh ) {
+static IntlData *getData( int fh )
+{
     unsigned raw_size;
     LocaleData intl_header;
     IntlData *data;

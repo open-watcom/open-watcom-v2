@@ -94,7 +94,7 @@ void FiniSuppServices( void )
 #endif
 
 static bool InitTrapError;
-void InitTrap( const char *trap_parms )
+void InitTrap( const char *parms )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -116,14 +116,14 @@ void InitTrap( const char *trap_parms )
     InitTrapError = FALSE;
     RestoreHandlers();
     ver.remote = FALSE;
-    if( trap_parms == NULL )
-        trap_parms = "";
+    if( parms == NULL )
+        parms = "";
 #if !defined( BUILD_RFX )
-    if( stricmp( trap_parms, "dumb" ) == 0 ) {
+    if( stricmp( parms, "dumb" ) == 0 ) {
         error = LoadDumbTrap( &ver );
     } else {
 #endif
-        error = LoadTrap( trap_parms, buff, &ver );
+        error = LoadTrap( parms, buff, &ver );
 #if !defined( BUILD_RFX )
     }
 #endif
@@ -227,12 +227,12 @@ void FiniTrap( void )
 }
 
 #if 0
-bool ReInitTrap( const char *trap_parms )
+bool ReInitTrap( const char *parms )
 /***************************************/
 {
     // only tested under NT - this is here for Lexus/Fusion/What's my name?
     FiniTrap();
-    InitTrap( trap_parms );
+    InitTrap( parms );
     return( !InitTrapError );
 }
 #endif

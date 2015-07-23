@@ -35,6 +35,6 @@
 
 _WCRTLINK int setsid( void )
 {
-    u_long  res = sys_call0( SYS_setsid );
+    syscall_res res = sys_call0( SYS_setsid );
     __syscall_return( int, res );
 }

@@ -32,6 +32,7 @@
 
 #include <windows.h>
 #include "trpimp.h"
+#include "winstrt.h"
 
 HINSTANCE  Instance;
 HWND       DesktopWindow;

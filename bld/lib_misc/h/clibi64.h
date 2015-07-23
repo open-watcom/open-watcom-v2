@@ -52,6 +52,13 @@
     #define _clib_U64Div( a, b, c, d )  (d = a % b, c = a / b)
     #define _clib_U64Add( a, b, c )     c = a + b
 
+#if defined( _M_I86 ) && ( defined( __DOS__ ) || defined( __WINDOWS__ ) )
+    _WCRTLINK void __U64Add( const UINT64_TYPE *a, const UINT64_TYPE *b, UINT64_TYPE *res );
+    _WCRTLINK void __U64Div( const UINT64_TYPE *a, const UINT64_TYPE *b, UINT64_TYPE *div, UINT64_TYPE *rem );
+    _WCRTLINK void __U64Mul( const UINT64_TYPE *a, const UINT64_TYPE *b, UINT64_TYPE *res );
+    _WCRTLINK void __U64Shift( const UINT64_TYPE *a, int shift, UINT64_TYPE *res );
+#endif
+
 // conversion functions - use standard ulltoa()/atoll()
 
 #endif

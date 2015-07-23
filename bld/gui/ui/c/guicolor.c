@@ -39,16 +39,9 @@
 #include <string.h>
 
 static gui_colour_set IBMDialColours[] = {
-    { GUI_WHITE, GUI_BLUE },            // GUI_DLG_NORMAL,
-    { GUI_BLUE, GUI_CYAN },             // GUI_DLG_FRAME,
-    { GUI_BLACK, GUI_BLUE },            // GUI_DLG_SHADOW,
-    { GUI_WHITE, GUI_BLUE },            // GUI_DLG_SCROLL_ICON,
-    { GUI_WHITE, GUI_BLUE },            // GUI_DLG_SCROLL_BAR,
-    /* hot spot is inverted on purpose */
-    { GUI_BLUE, GUI_WHITE },            // GUI_DLG_BUTTON_PLAIN,
-    { GUI_BRIGHT_WHITE, GUI_WHITE },    // GUI_DLG_BUTTON_STANDOUT,
-    { GUI_BLUE, GUI_CYAN },             // GUI_DLG_BUTTON_ACTIVE,
-    { GUI_BRIGHT_WHITE, GUI_CYAN },     // GUI_DLG_BUTTON_ACTIVE_STANDOUT
+    #define pick(e,f,b)     { f, b },
+    #include "attrdlg.h"
+    #undef pick
 };
 
 #define DialColours IBMDialColours
@@ -193,12 +186,12 @@ void GUISetBackgroundColour( gui_colour_set *colour )
 
 void GUIGetDialogColours( gui_colour_set *colours )
 {
-    memcpy( colours, DialColours, GUI_DLG_NUM_ATTRS*sizeof( gui_colour_set ) );
+    memcpy( colours, DialColours, GUI_DLG_NUM_ATTRS * sizeof( gui_colour_set ) );
 }
 
 void GUISetDialogColours( gui_colour_set *colours )
 {
-    memcpy( DialColours, colours, GUI_DLG_NUM_ATTRS*sizeof( gui_colour_set ) );
+    memcpy( DialColours, colours, GUI_DLG_NUM_ATTRS * sizeof( gui_colour_set ) );
     GUIResetDialColours();
 }
 

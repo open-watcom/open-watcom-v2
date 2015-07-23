@@ -76,22 +76,21 @@ void KillTrap( void )
     }
 }
 
-char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
+char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
     const char          *ptr;
-    const char          *parm;
     char                *dst;
     bool                have_ext;
     char                chr;
     UINT                prev;
     trap_init_func      *init_func;
 
-    if( trap_parms == NULL || *trap_parms == '\0' )
-        trap_parms = "std";
+    if( parms == NULL || *parms == '\0' )
+        parms = "std";
     have_ext = FALSE;
     dst = trpfile;
-    for( ptr = trap_parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         chr = *ptr;
         switch( chr ) {
         case ':':
@@ -112,7 +111,6 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
         *dst++ = 'l';
     }
     *dst = '\0';
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
     /*
      * load toolhelp since windows can't seem to handle having a static
      * reference to a dll inside a dynamically loaded dll
@@ -142,7 +140,10 @@ char *LoadTrap( const char *trap_parms, char *buff, trap_version *trap_ver )
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL
       && HookFunc != NULL && InfoFunction != NULL && HardModeCheck != NULL
       && GetHwndFunc != NULL && SetHardMode != NULL && UnLockInput != NULL ) {
-        *trap_ver = init_func( parm, buff, trap_ver->remote );
+        parms = ptr;
+        if( *parms != '\0' )
+            ++parms;
+        *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;

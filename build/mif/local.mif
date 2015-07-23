@@ -22,6 +22,12 @@ skip_build: .SYMBOLIC
 !else ifndef bld64host_$(host_os)
 skip_build: .SYMBOLIC
 !endif
+# use native tools for arm cpu
+# skip build for unsupported platforms
+!else ifeq host_cpu arm
+!ifneq bld_cpu arm
+skip_build: .SYMBOLIC
+!endif
 !endif
 
 # enable to switch to causeway extender
@@ -66,7 +72,7 @@ cxx_386     += $(bld_incs)
 ##############################################################################
 !ifdef __LINUX__
 
-!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
+!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm"
 
 # common settings
 ############################
@@ -76,6 +82,7 @@ common_cppflags_386   = -D_M_IX86 -D__386__ -D__LINUX_386__
 common_cppflags_x64   = -D_M_X64 -D__LINUX_X64__
 common_cppflags_ppc   = -D__PPC__
 common_cppflags_mips  = -D__MIPS__ -Umips
+common_cppflags_arm   = -D_M_ARM -D__LINUX_ARM__
 
 # common release/debug flags
 common_flags_rel = -O -g
@@ -87,7 +94,11 @@ common_flags = $(common_flags_dbg)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
+!ifdef __CLANG__
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+!else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -145,9 +156,17 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags = -std=c++11
 
 # options for linking
+!ifdef __CLANG__
+bld_ldflags_cxx = -lstdc++
+bld_ldflags_dll_cxx = -lstdc++
+!else
+bld_ldflags_cxx = -lsupc++ -lstdc++
+bld_ldflags_dll_cxx = -lsupc++ -lstdc++
+!endif
+
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) -lsupc++ -lstdc++
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -168,14 +187,13 @@ cxx  = g++ -pipe -c
 cl   = gcc -pipe
 !endif
 
-librarian = ar
-
 cppflags_linux = $(common_cppflags_linux)
 cppflags_osi   = $(common_cppflags_linux)
 cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_mips  = $(common_cppflags_mips)
 cppflags_x64   = $(common_cppflags_x64)
+cppflags_arm   = $(common_cppflags_arm)
 
 cxxflags = -std=c++11
 
@@ -186,8 +204,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) -lsupc++ -lstdc++
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll)
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
@@ -202,8 +220,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-libflags = crs $^@
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -finput-charset=CP932
@@ -245,7 +261,11 @@ common_flags = $(common_flags_dbg)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
+!ifdef __CLANG__
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+!else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -279,14 +299,14 @@ cl_libs = $(cl_libs_gen)
 
 # bld settings
 ############################
-!ifdef __GCC__
-bcc  = gcc -pipe -c
-bcxx = g++ -pipe -c
-bcl  = gcc -pipe
-!else
+!ifdef __CLANG__
 bcc  = clang -pipe -c
 bcxx = clang++ -pipe -c
 bcl  = clang -pipe
+!else
+bcc  = gcc -pipe -c
+bcxx = g++ -pipe -c
+bcl  = gcc -pipe
 !endif
 
 blib      = ar
@@ -303,9 +323,17 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags = -std=c++11
 
 # options for linking
+!ifdef __CLANG__
+bld_ldflags_cxx = -lstdc++
+bld_ldflags_dll_cxx = -lstdc++
+!else
+bld_ldflags_cxx = -lsupc++ -lstdc++
+bld_ldflags_dll_cxx = -lsupc++ -lstdc++
+!endif
+
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) -lsupc++ -lstdc++
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -316,17 +344,15 @@ bld_libflags = crs $^@
 
 # standard settings
 ############################
-!ifdef __GCC__
-cc  = gcc -pipe -c
-cxx = g++ -pipe -c
-cl  = gcc -pipe
-!else
+!ifdef __CLANG__
 cc  = clang -pipe -c
 cxx = clang++ -pipe -c
 cl  = clang -pipe
+!else
+cc  = gcc -pipe -c
+cxx = g++ -pipe -c
+cl  = gcc -pipe
 !endif
-
-librarian = ar
 
 cppflags_bsd   = $(common_cppflags_bsd)
 cppflags_osi   = $(common_cppflags_bsd)
@@ -343,8 +369,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) -lsupc++ -lstdc++
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) -lsupc++ -lstdc++
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
@@ -359,8 +385,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-libflags = crs $^@
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -finput-charset=CP932
@@ -403,7 +427,11 @@ common_flags = $(common_flags_dbg)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
+!ifdef __CLANG__
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+!else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -461,9 +489,15 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags = -std=c++11
 
 # options for linking
+!ifdef __CLANG__
+bld_ldflags_cxx = -lstdc++
+!else
+bld_ldflags_cxx = -lsupc++ -lstdc++
+!endif
+
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-bld_ldflags  = $(bld_extra_ldflags) -lsupc++ -lstdc++
+bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
@@ -484,8 +518,6 @@ cxx = g++ -pipe -c
 cl  = gcc -pipe
 !endif
 
-librarian = ar
-
 cppflags_haiku = $(common_cppflags_haiku)
 cppflags_osi   = $(common_cppflags_haiku)
 cppflags_386   = $(common_cppflags_386)
@@ -501,8 +533,8 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) -lsupc++ -lstdc++
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) -lsupc++ -lstdc++
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1
@@ -517,8 +549,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-libflags = crs $^@
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -finput-charset=CP932
@@ -635,7 +665,8 @@ bld_ldflags1 = $(common_ldflags) -Fm
 
 bld_ldflags  =  -link -nologo &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
-    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(bld_extra_ldflags)
+    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(bld_extra_ldflags) &
+    $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_libs_gen) $(bld_ldflags1)
@@ -651,13 +682,11 @@ cc  = icl -nologo -c
 cxx = icl -nologo -c
 cl  = icl -nologo
 
-librarian = xilib -nologo
 !else
 cc   = cl -nologo -c
 cxx  = cl -nologo -c
 cl   = cl -nologo
 
-librarian = lib -nologo
 !endif
 
 cppflags_nt  = $(common_cppflags_nt)
@@ -678,9 +707,9 @@ ldflags_gen_all  = -link -nologo &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib
 
-ldflags_gen  = $(cl_libs_gen) $(ldflags_gen_all) $(extra_ldflags)
-ldflags_dll  = $(cl_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll)
-ldflags_wind = $(cl_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags)
+ldflags_gen  = $(cl_libs_gen) $(ldflags_gen_all) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
+ldflags_wind = $(cl_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags) $(bld_ldflags_$(proj_type))
 
 !ifeq sys_dll 1
 ldflags = $(ldflags_dll)
@@ -694,8 +723,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -Fe$@ $(ldflags1)
 clflags_dll  = $(bld_cl_sys) $(common_flags) $(common_clflags_lib_shared) -Fe$@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-libflags = -out:$^@
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset =

@@ -41,6 +41,7 @@
 #include <time.h>
 #include <sys/locking.h>
 #include "rterrno.h"
+#include "iomode.h"
 #include "rtcheck.h"
 #include "lseek.h"
 #include "thread.h"
@@ -94,7 +95,8 @@ _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
         if( --tries == 0 ) break;
         sleep( 1 );
     }
-    if( _RWD_errno == EAGAIN ) _RWD_errno = EDEADLK;
+    if( _RWD_errno == EAGAIN )
+        _RWD_errno = EDEADLK;
     return( ret );
 }
 

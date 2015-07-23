@@ -41,42 +41,42 @@
 #include "ntext.h"
 
 
-void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr )
+void __GetNTCreateAttr( unsigned attr, LPDWORD desired_access, LPDWORD os_attr )
 {
-    if( mode & _A_RDONLY ) {
+    if( attr & _A_RDONLY ) {
         *desired_access = GENERIC_READ;
-        *attr = FILE_ATTRIBUTE_READONLY;
+        *os_attr = FILE_ATTRIBUTE_READONLY;
     } else {
         *desired_access = GENERIC_READ | GENERIC_WRITE;
-        *attr = FILE_ATTRIBUTE_NORMAL;
+        *os_attr = FILE_ATTRIBUTE_NORMAL;
     }
-    if( mode & _A_HIDDEN ) {
-        *attr |= FILE_ATTRIBUTE_HIDDEN;
+    if( attr & _A_HIDDEN ) {
+        *os_attr |= FILE_ATTRIBUTE_HIDDEN;
     }
-    if( mode & _A_SYSTEM ) {
-        *attr |= FILE_ATTRIBUTE_SYSTEM;
+    if( attr & _A_SYSTEM ) {
+        *os_attr |= FILE_ATTRIBUTE_SYSTEM;
     }
 
 }
 
-void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr )
+void __GetNTAccessAttr( unsigned rwmode, LPDWORD desired_access, LPDWORD os_attr )
 {
     if( rwmode == O_RDWR ) {
         *desired_access = GENERIC_READ | GENERIC_WRITE;
-        *attr = FILE_ATTRIBUTE_NORMAL;
+        *os_attr = FILE_ATTRIBUTE_NORMAL;
     } else if( rwmode == O_WRONLY ) {
         *desired_access = GENERIC_WRITE;
-        *attr = FILE_ATTRIBUTE_NORMAL;
+        *os_attr = FILE_ATTRIBUTE_NORMAL;
     } else {
         *desired_access = GENERIC_READ;
-        *attr = FILE_ATTRIBUTE_READONLY;
+        *os_attr = FILE_ATTRIBUTE_READONLY;
     }
 }
 
-void __GetNTShareAttr( int mode, LPDWORD share_mode )
+void __GetNTShareAttr( unsigned mode, LPDWORD share_mode )
 {
-    int share;
-    int rwmode;
+    unsigned share;
+    unsigned rwmode;
 
     share  = mode & OPENMODE_SHARE_MASK;
     rwmode = mode & OPENMODE_ACCESS_MASK;

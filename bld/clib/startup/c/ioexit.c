@@ -32,9 +32,9 @@
 #include "variety.h"
 #include <stdio.h>
 #include "rtdata.h"
+#include "ioctrl.h"
+#include "streamio.h"
 
-extern void     __purgefp(void);
-extern int      __shutdown_stream( FILE *fp, int );
 
 static int docloseall( unsigned dont_close )
 {

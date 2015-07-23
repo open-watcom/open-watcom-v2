@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Init/Fini routines delcarations.
+* Description:  Init/Fini routines declarations.
 *
 ****************************************************************************/
 
@@ -46,20 +46,23 @@
 #endif
 
 extern void __InitRtns( unsigned );
+#if defined(_M_IX86)
+  #pragma aux __InitRtns "*" parm [__PARMREG1]
+#endif
 // - takes priority limit parm in __PARMREG1
 //      code will run init routines whose
 //      priority is <= __PARMREG1 (really [0-255])
 //      __PARMREG1==255 -> run all init routines
 //      __PARMREG1==15  -> run init routines whose priority is <= 15
-#if defined(_M_IX86)
-  #pragma aux __InitRtns "*" parm [__PARMREG1]
-  #if !defined(__386__)
-    extern void _WCI86FAR __FInitRtns(unsigned);
-    #pragma aux __FInitRtns "*" parm [__PARMREG1]
-  #endif
+#if defined(_M_I86)
+  extern void _WCI86FAR __FInitRtns(unsigned);
+  #pragma aux __FInitRtns "*" parm [__PARMREG1]
 #endif
 
 extern void __FiniRtns(unsigned,unsigned);
+#if defined(_M_IX86)
+  #pragma aux __FiniRtns "*" parm [__PARMREG1] [__PARMREG2]
+#endif
 // - takes priority limit range in __PARMREG1, __PARMREG2
 //      code will run fini routines whose
 //      priority is >= __PARMREG1 (really [0-255]) and
@@ -67,12 +70,9 @@ extern void __FiniRtns(unsigned,unsigned);
 //      __PARMREG1==0 ,__PARMREG2==255 -> run all fini routines
 //      __PARMREG1==16,__PARMREG2==255 -> run fini routines in range 16...255
 //      __PARMREG1==16,__PARMREG2==40  -> run fini routines in range 16...40
-#if defined(_M_IX86)
-  #pragma aux __FiniRtns "*" parm [__PARMREG1] [__PARMREG2]
-  #if !defined(__386__)
-    extern void _WCI86FAR __FFiniRtns( unsigned, unsigned );
-    #pragma aux __FFiniRtns "*" parm [__PARMREG1] [__PARMREG2]
-  #endif
+#if defined(_M_I86)
+  extern void _WCI86FAR __FFiniRtns( unsigned, unsigned );
+  #pragma aux __FFiniRtns "*" parm [__PARMREG1] [__PARMREG2]
 #endif
 
 #if defined(__OS2__) && defined(__386__)

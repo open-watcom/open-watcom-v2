@@ -30,25 +30,23 @@
 
 
 #include "variety.h"
+#include "libmain.h"
 
 #if defined(__WINDOWS_386__)
-    #define _EXPORT_ENTRY
-#elif defined(__WINDOWS_286__)
-    #define _EXPORT_ENTRY __export
-#else
-    #error platform not supported
-#endif
 
-int _EXPORT_ENTRY _WCFAR __pascal WEP( int arg )
+int _WCFAR __pascal WEP( int arg )
 {
-#if defined(__WINDOWS_386__)
     arg = arg;
     return( 1 );
-#else
-    extern int _EXPORT_ENTRY _WCI86FAR __pascal _WEP( int );
-    return( _WEP( arg ) );
-#endif
 }
-#if defined(__WINDOWS_286__)
-    void __clib_WEP( void ) {}
+
+#else
+
+int __export _WCFAR __pascal WEP( int arg )
+{
+    return( _WEP( arg ) );
+}
+
+void __clib_WEP( void ) {}
+
 #endif

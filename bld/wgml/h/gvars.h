@@ -139,12 +139,6 @@ typedef struct proc_flags {
 
 
 /***************************************************************************/
-/*  tagnames as strings for msg display                                    */
-/***************************************************************************/
-
-extern char str_tags[t_MAX + 1][10];
-
-/***************************************************************************/
 /* Layout attribute names as character strings                             */
 /*  array initialized in glconvrt.c                                        */
 /*  longest attribute name is extract_threshold  (=17)                     */

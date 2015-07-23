@@ -17,6 +17,8 @@ function is called whenever
 .kw main
 returns, or
 .kw exit
+, or
+.kw _Exit
 or
 .kw _exit
 are explicity called.

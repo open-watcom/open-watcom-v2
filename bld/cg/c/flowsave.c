@@ -37,6 +37,7 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "flowsave.h"
 
 extern  hw_reg_set      PushRegs[];
 

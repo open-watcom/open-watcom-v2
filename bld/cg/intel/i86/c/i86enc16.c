@@ -34,13 +34,14 @@
 #include "ocentry.h"
 #include "pccode.h"
 #include "system.h"
-#include "escape.h"
 #include "pcencode.h"
 #include "zoiks.h"
 #include "zeropage.h"
 #include "fppatch.h"
 #include "cfloat.h"
 #include "data.h"
+#include "i86obj.h"
+#include "objprof.h"
 
 
 extern  void            DoSymRef( name *, offset, bool );
@@ -67,7 +68,6 @@ extern  void            LayReg( hw_reg_set );
 extern  void            GCondFwait( void );
 extern  type_length     NewBase( name * );
 extern  int             GetLog2( unsigned_32 );
-extern  unsigned        UseRepForm( unsigned );
 
 /* forward declarations */
 extern  void            DoRelocConst( name *op, type_class_def kind );
@@ -725,11 +725,9 @@ void EndBlockProfiling( void )
 {
 }
 
-segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack )
-/*****************************************************************************/
+segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
+/***********************************************************************************/
 {
-    fe_name = fe_name;
-    data = data;
-    stack = stack;
+    fe_name = fe_name; data = data; stack = stack;
     return( 0 );
 }

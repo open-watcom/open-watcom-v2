@@ -35,6 +35,6 @@
 
 _WCRTLINK pid_t clone( int __flags, void *__child_stack )
 {
-    u_long res = sys_call5( SYS_clone, __flags, (u_long)__child_stack, 0, 0, 0 );
+    syscall_res res = sys_call5( SYS_clone, __flags, (u_long)__child_stack, 0, 0, 0 );
     __syscall_return( pid_t, res );
 }

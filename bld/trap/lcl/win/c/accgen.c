@@ -36,6 +36,7 @@
 #include "stdwin.h"
 #include "winctrl.h"
 #include "trperr.h"
+#include "dosenv.h"
 #include "winerr.h"
 
 #pragma aux set_carry = 0xf9;
@@ -120,22 +121,18 @@ trap_retval ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-char *GetExeExtensions( void )
+const char *DOSEnvFind( const char *src )
 {
-    return( ExtensionList );
-}
-
-char *DOSEnvFind( char *src )
-{
-    char        *p;
-    char        *env;
-
+    const char  *p;
+    const char  *env;
 
     env = GetDOSEnvironment();
     do {
         p = src;
         do {
-            if( *p == '\0' && *env == '=' ) return( env + 1 );
+            if( *p == '\0' && *env == '=' ) {
+                return( env + 1 );
+            }
         } while( *env++ == *p++ );
         while( *env++ != '\0' )
             ;
