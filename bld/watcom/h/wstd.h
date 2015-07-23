@@ -249,6 +249,9 @@ typedef unsigned_8      sbit;
 #elif defined( SUN86 )
     #undef  PR_386
     #define PR_386              1
+#elif defined( __ARMEL__)
+    #undef PR_ARM
+    #define PR_ARM              1
 #else
     #error PR_xxx macro not enabled.
 #endif
