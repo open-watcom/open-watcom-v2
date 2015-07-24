@@ -56,6 +56,8 @@ set PROJNAME=wcc
     <CCCMD> ntx64.dll/wcci8601.int  <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wcc.exe        <OWRELROOT>/binl64/wcc
     <CCCMD> linuxx64/wcci8601.int   <OWRELROOT>/binl64/
+    <CCCMD> linuxarm/wcc.exe        <OWRELROOT>/arml/wcc
+    <CCCMD> linuxarm/wcci8601.int   <OWRELROOT>/arml/
 
 [ BLOCK . . ]
 #============

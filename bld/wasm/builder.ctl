@@ -40,6 +40,7 @@ set PROJNAME=wasm
     <CCCMD> qnx386/wasm.sym     <OWRELROOT>/qnx/sym/
 
     <CCCMD> linuxx64/wasm.exe   <OWRELROOT>/binl64/wasm
+    <CCCMD> linuxarm/wasm.exe   <OWRELROOT>/arml/wasm
     <CCCMD> ntx64/wasm.exe      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]

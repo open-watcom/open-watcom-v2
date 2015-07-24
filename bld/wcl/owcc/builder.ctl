@@ -42,7 +42,10 @@ set PROJNAME=owcc
 
     <CCCMD> ntx64/specs.owc      <OWRELROOT>/binnt64/
     <CCCMD> ntx64/owcc.exe       <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/specs.owc   <OWRELROOT>/binl64/
     <CCCMD> linuxx64/owcc.exe    <OWRELROOT>/binl64/owcc
+    <CCCMD> linuxarm/specs.owc   <OWRELROOT>/arml/
+    <CCCMD> linuxarm/owcc.exe    <OWRELROOT>/arml/owcc
 
 [ BLOCK . . ]
 #============

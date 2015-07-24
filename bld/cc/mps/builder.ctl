@@ -56,6 +56,8 @@ set PROJNAME=wccmps
     <CCCMD> ntx64.dll/wccmps01.int  <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wccmps.exe     <OWRELROOT>/binl64/wccmps
     <CCCMD> linuxx64/wccmps01.int   <OWRELROOT>/binl64/
+    <CCCMD> linuxarm/wccmps.exe     <OWRELROOT>/arml/wccmps
+    <CCCMD> linuxarm/wccmps01.int   <OWRELROOT>/arml/
 
 [ BLOCK . . ]
 #============

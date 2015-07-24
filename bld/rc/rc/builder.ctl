@@ -59,6 +59,9 @@ set PROJNAME=wrc
     <CCCMD> ntx64.dll/wrcd.dll      <OWRELROOT>/binnt64/
     <CCCMD> ntx64.dll/*.uni         <OWRELROOT>/binnt64/
 
+    <CCCMD> linuxarm/wrc.exe        <OWRELROOT>/arml/wrc
+    <CCCMD> linuxarm/*.uni          <OWRELROOT>/arml/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>
