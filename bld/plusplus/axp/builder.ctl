@@ -53,6 +53,8 @@ set PROJNAME=wppaxp
     <CCCMD> ntx64.dll/wppaxp01.int  <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wppaxp.exe     <OWRELROOT>/binl64/wppaxp
     <CCCMD> linuxx64/wppaxp01.int   <OWRELROOT>/binl64/
+    <CCCMD> linuxarm/wppaxp.exe     <OWRELROOT>/arml/wppaxp
+    <CCCMD> linuxarm/wppaxp01.int   <OWRELROOT>/arml/
 
 [ BLOCK . . ]
 #============

@@ -37,6 +37,7 @@ set PROJNAME=wasmps
 
     <CCCMD> ntx64/wasmps.exe      <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wasmps.exe   <OWRELROOT>/binl64/wasmps
+    <CCCMD> linuxarm/wasmps.exe   <OWRELROOT>/arml/wasmps
 
 [ BLOCK . . ]
 #============

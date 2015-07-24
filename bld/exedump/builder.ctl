@@ -23,6 +23,7 @@ set PROJNAME=wdump
 
     <CCCMD> ntx64/wdump.exe     <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wdump.exe  <OWRELROOT>/binl64/wdump
+    <CCCMD> linuxarm/wdump.exe  <OWRELROOT>/arml/wdump
 
 [ BLOCK . . ]
 #============

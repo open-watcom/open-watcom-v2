@@ -56,6 +56,8 @@ set PROJNAME=wpp
     <CCCMD> ntx64.dll/wppi8601.int  <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wpp.exe        <OWRELROOT>/binl64/wpp
     <CCCMD> linuxx64/wppi8601.int   <OWRELROOT>/binl64/
+    <CCCMD> linuxarm/wpp.exe        <OWRELROOT>/arml/wpp
+    <CCCMD> linuxarm/wppi8601.int   <OWRELROOT>/arml/
 
 [ BLOCK . . ]
 #============

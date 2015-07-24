@@ -81,6 +81,12 @@ set PROJNAME=wlink
     <CCCMD> linuxx64/wlink.exe              <OWRELROOT>/binl64/wlink
     <CCCMD> lnk/linuxx64/wlink.lnk          <OWRELROOT>/binl64/
 
+    <CCCMD> linuxarm/wlink.exe              <OWRELROOT>/arml/wlink
+#    <CCCMD> ms2wlink/linuxarm/ms2wlink.exe  <OWRELROOT>/arml/ms2wlink
+#    <CCCMD> fcenable/linuxarm/fcenable.exe  <OWRELROOT>/arml/fcenable
+#    <CCCMD> exe2bin/linuxarm/exe2bin.exe    <OWRELROOT>/arml/exe2bin
+    <CCCMD> lnk/linuxarm/wlink.lnk          <OWRELROOT>/arml/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

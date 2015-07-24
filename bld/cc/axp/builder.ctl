@@ -56,6 +56,8 @@ set PROJNAME=wccaxp
     <CCCMD> ntx64.dll/wccaxp01.int   <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wccaxp.exe      <OWRELROOT>/binl64/wccaxp
     <CCCMD> linuxx64/wccaxp01.int    <OWRELROOT>/binl64/
+    <CCCMD> linuxarm/wccaxp.exe      <OWRELROOT>/arml/wccaxp
+    <CCCMD> linuxarm/wccaxp01.int    <OWRELROOT>/arml/
 
 [ BLOCK . . ]
 #============

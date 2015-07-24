@@ -64,6 +64,9 @@ set PROJNAME=vi
     <CCCMD> linuxx64/vi.exe           <OWRELROOT>/binl64/vi
     <CCCMD> ctags/linuxx64/ctags.exe  <OWRELROOT>/binl64/ctags
     <CCCMD> bind/linuxx64/edbind.exe  <OWRELROOT>/binl64/edbind
+    <CCCMD> linuxarm/vi.exe           <OWRELROOT>/arml/vi
+    <CCCMD> ctags/linuxarm/ctags.exe  <OWRELROOT>/arml/ctags
+    <CCCMD> bind/linuxarm/edbind.exe  <OWRELROOT>/arml/edbind
 
 [ BLOCK . . ]
 #============
