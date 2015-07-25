@@ -82,6 +82,8 @@
 #include "wlink.h"
 #include "ideentry.h"
 
+#define DEF_STACK_SIZE  (4 * 1024UL)
+
 static void     PreAddrCalcFormatSpec( void );
 static void     PostAddrCalcFormatSpec( void );
 static void     DoDefaultSystem( void );
@@ -360,7 +362,7 @@ static void ResetMisc( void )
     OvlNum = 0;
     OvlFName = NULL;
     CurrMod = NULL;
-    StackSize = 0x1000;
+    StackSize = DEF_STACK_SIZE;
     // set case sensitivity for symbols
     ResetSym();
     SetSymCase();
