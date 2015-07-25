@@ -68,7 +68,14 @@ void __init_stack_limits( unsigned *stacklow, unsigned *stacktop )
     // issues are their problem, not ours.
     {
         // cap the low point adjustment so that it does not go beyond 1/2 the overall stack size.
-        unsigned mid = ((((unsigned)mbi.AllocationBase + top) / 2) + 0x7FF) & (~0xFFF); // align to 4K page
+        // make sure to compute A + ((B - A) / 2) not (A + B) / 2 to avoid integer overflow issues.
+        unsigned mid = (unsigned)mbi.AllocationBase; // A
+
+        if (mid < top) {
+            mid += (top - mid) / 2; // A += (B - A) / 2
+            mid  = (mid + 0x7FF) & (~0xFFF); //4K page align
+        }
+
         if (low > mid) low = mid;
     }
 
