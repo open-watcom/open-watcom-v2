@@ -403,7 +403,7 @@ static bool AddCommit( void )
 
 bool ProcCommit( void )
 /****************************/
-// set NT stack commit and heap sizes.
+// set NT stack and heap commit sizes.
 {
     return( ProcArgList( AddCommit, TOK_INCLUDE_DOT ) );
 }
@@ -500,9 +500,9 @@ bool ProcPE( void )
 /************************/
 {
     ProcOne( NTFormatKeywords, SEP_NO, FALSE );
-    FmtData.u.pe.heapcommit = 4*1024;   // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = 8*1024; // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = PE_DEF_STACK_COMMIT;
+    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
+    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.pe.stackcommit = DEF_VALUE;
     FmtData.u.pe.os2.segment_shift = 9;    // 512 byte arbitrary rounding
     return( TRUE );
 }
@@ -513,9 +513,9 @@ bool ProcVXD( void )
     return( ProcOS2() );
 /*
     ProcOne( VXDFormatKeywords, SEP_NO, FALSE );
-    FmtData.u.pe.heapcommit = 4*1024;   // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = 8*1024; // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = PE_DEF_STACK_COMMIT;
+    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
+    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.pe.stackcommit = DEF_VALUE;
     return( TRUE );
 */
 }

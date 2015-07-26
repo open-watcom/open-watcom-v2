@@ -90,7 +90,6 @@ extra_l_flags     =
 
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
 extra_l_flags_qnx = option stack=16k,offset=24k, res=$(extra_link_res_qnx), priv=3
-extra_l_flags_nt  = option stack=1024k commit stack=32k
 extra_l_flags_dos = option stack=32k
 
 #

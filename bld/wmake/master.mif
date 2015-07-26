@@ -72,7 +72,6 @@ extra_l_flags = opt statics sort
 # large stacks are necessary for !loaddll support
 # os2 seems to crash with 128k stack and wccd386 - mjc
 extra_l_flags_os2 = opt stack=96k
-extra_l_flags_nt = opt stack=0x10000k commit stack=32k
 extra_l_flags_qnx = opt stack=20k
 !ifdef LARGE
 extra_l_flags_dos_i86 = opt stack=16k

@@ -48,8 +48,8 @@ extra_c_flags_mem = -DWANT_MSGS -DNO_WPI
 
 extra_l_flags = option quiet name $(exc_name)
 
-extra_l_flags_nt = op stack=100k
 extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
+extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
 extra_proj_obj_nt = global.obj param.obj procctl.obj dipcli.obj memory.obj &
             drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &

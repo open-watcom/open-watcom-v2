@@ -137,9 +137,6 @@ extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESUR
 extra_l_flags_win_i86 = op stack=15K, heap=10K, align=512
 !endif
 extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
-!ifeq sys_windowed 1
-extra_l_flags_nt = op stack=100k
-!endif
 extra_l_flags_dos_i86 = op stack=12k, area=0
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos_386 = op stack=12k #export DOS4GOPTIONS=_DOS4GOPTIONS

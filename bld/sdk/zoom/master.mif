@@ -19,7 +19,6 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_c_flags_mem = -DNO_WPI
 
-extra_l_flags_nt  = op stack=64k
 extra_l_flags_win = op stack=7k, heapsize=2k
 
 xlibs = $(commonui_lib)

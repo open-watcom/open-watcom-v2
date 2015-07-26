@@ -31,8 +31,12 @@
 
 #include "exepe.h"
 
-#define PE_DEFAULT_BASE (0x400000UL)
-#define PE_DEF_STACK_COMMIT (0xFFFFFFFFUL)
+#define PE_DEFAULT_BASE     (0x400000UL)
+#define PE_DEF_STACK_SIZE   (1024 * 1024UL)
+#define PE_DEF_STACK_COMMIT (64 * 1024UL)
+#define PE_DEF_HEAP_SIZE    (8 * 1024UL)
+#define PE_DEF_HEAP_COMMIT  (4 * 1024UL)
+#define DEF_VALUE           (0xFFFFFFFFUL)
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );
@@ -58,3 +62,5 @@ typedef struct module_import {
     struct import_name          *imports;
     unsigned                    num_entries;
 } module_import;
+
+extern unsigned_32 StackSizePE( void );

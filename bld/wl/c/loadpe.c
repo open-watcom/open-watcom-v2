@@ -355,6 +355,11 @@ static void GenPETransferTable( void )
     group->size = group->totalsize;
 }
 
+unsigned_32 StackSizePE( void )
+{
+    return( PE_DEF_STACK_SIZE );
+}
+
 static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned_32 file_align )
 /**********************************************************************************************/
 /* write the enumerated data pages */
@@ -1166,11 +1171,11 @@ void FiniPELoadFile( void )
         }
         PE64( h ).stack_reserve_size.u._32[0] = StackSize;
         PE64( h ).stack_reserve_size.u._32[1] = 0;
-        if( FmtData.u.pe.stackcommit == PE_DEF_STACK_COMMIT ) {
+        if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
             PE64( h ).stack_commit_size.u._32[0] = StackSize;
             PE64( h ).stack_commit_size.u._32[1] = 0;
-            if( PE64( h ).stack_commit_size.u._32[0] > (64*1024UL) ) {
-                PE64( h ).stack_commit_size.u._32[0] = 64*1024UL;
+            if( StackSize > PE_DEF_STACK_COMMIT ) {
+                PE64( h ).stack_commit_size.u._32[0] = PE_DEF_STACK_COMMIT;
             }
         } else if( FmtData.u.pe.stackcommit > StackSize ) {
             PE64( h ).stack_commit_size.u._32[0] = StackSize;
@@ -1321,10 +1326,10 @@ void FiniPELoadFile( void )
             PE32( h ).subsystem = PE_SS_WINDOWS_GUI;
         }
         PE32( h ).stack_reserve_size = StackSize;
-        if( FmtData.u.pe.stackcommit == PE_DEF_STACK_COMMIT ) {
+        if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
             PE32( h ).stack_commit_size = StackSize;
-            if( PE32( h ).stack_commit_size > (64*1024UL) ) {
-                PE32( h ).stack_commit_size = 64*1024UL;
+            if( StackSize > PE_DEF_STACK_COMMIT ) {
+                PE32( h ).stack_commit_size = PE_DEF_STACK_COMMIT;
             }
         } else if( FmtData.u.pe.stackcommit > StackSize ) {
             PE32( h ).stack_commit_size = StackSize;

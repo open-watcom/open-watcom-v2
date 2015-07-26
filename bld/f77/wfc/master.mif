@@ -51,9 +51,6 @@ fobjs += trmem.obj trmemcvr.obj
 extra_c_flags_trmem = -DTRMEM -of+
 extra_c_flags_trmemcvr = -DTRMEM -of+
 
-# Need lots of stack for NT because code gen turns off safe recurse.
-extra_l_flags_nt = op stack=1024k commit stack=32k
-
 libs = $(asminline_lib) $(cg_libs) $(wres_lib)
 
 # systems where version resources must be added to .EXE

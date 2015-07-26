@@ -73,7 +73,7 @@ xlibs = $(commonui_lib) $(wr_lib) $(wres_lib) $(wpi_lib) &
         $(wresedit_dir)/wmenu/$(host_os)$(host_cpu)/wmenu.lib &
         $(wresedit_dir)/wstring/$(host_os)$(host_cpu)/wstring.lib
 
-extra_l_flags_nt = op stack=100k,heap=16k commit heap=8k
+extra_l_flags_nt = op heap=16k commit heap=8k
 extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml
 
 # systems where version resource must be added to .EXE
