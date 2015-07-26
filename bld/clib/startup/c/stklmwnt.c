@@ -35,13 +35,10 @@
 #include <windows.h>
 #include "stacklow.h"
 
+/* Reserved stack space we need for stack overflow processing by C run-time   */
+/* library and by OS. All these values looks like empirically derived values. */
 #define STACK_RESERVED_SPACE_NT     (4096 * 3)
 #define STACK_RESERVED_SPACE_WIN9X  (4096 * (16 + 3))
-
-/* It looks like WIN32s has limited maximum stack size to 128 kB (32 pages). */
-/* Question is how big reserved stack space we need for stack overflow       */
-/* processing. Now more then half of maximum is reserved (18 pages) that     */
-/* only 14 pages (56 kB) are available for WIN32s application                */
 #define STACK_RESERVED_SPACE_WIN32S (4096 * (16 + 2))
 
 void __init_stack_limits( unsigned *stacklow, unsigned *stacktop )
