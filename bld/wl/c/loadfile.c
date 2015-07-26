@@ -410,12 +410,18 @@ void SetStkSize( void )
     } else if( StackSize < 0x200 ) {
         LnkMsg( WRN+MSG_STACK_SMALL, "d", 0x200 );
     }
+#ifdef _OS2
+    if( !FmtData.dll && (FmtData.type & MK_PE) && (LinkFlags & STK_SIZE_FLAG) == 0 ) {
+        StackSize = StackSizePE();
+    } else if( StackSegPtr != NULL ) {
+#else
     if( StackSegPtr != NULL ) {
+#endif
         if( LinkFlags & STK_SIZE_FLAG ) {
             if( !(FmtData.type & MK_NOVELL) ) {
                 StackSegPtr->size = StackSize;
             }
-        } else if( StackSegPtr->size >= 0x200 && !FmtData.dll ) {
+        } else if( !FmtData.dll && StackSegPtr->size >= 0x200 ) {
             StackSize = StackSegPtr->size;
         } else {
             StackSegPtr->size = StackSize;

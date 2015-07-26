@@ -355,6 +355,11 @@ static void GenPETransferTable( void )
     group->size = group->totalsize;
 }
 
+unsigned_32 StackSizePE( void )
+{
+    return( PE_DEF_STACK_SIZE );
+}
+
 static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned_32 file_align )
 /**********************************************************************************************/
 /* write the enumerated data pages */

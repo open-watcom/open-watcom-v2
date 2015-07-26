@@ -62,3 +62,5 @@ typedef struct module_import {
     struct import_name          *imports;
     unsigned                    num_entries;
 } module_import;
+
+extern unsigned_32 StackSizePE( void );
