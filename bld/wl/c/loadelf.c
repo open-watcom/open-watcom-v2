@@ -341,7 +341,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;
     for( group = Groups; group != NULL; group = group->next_group ) {
-	relocs = group->g.grp_relocs;
+        relocs = group->g.grp_relocs;
         if( relocs != NULL ) {
             sh->sh_offset = hdr->curr_off;
             sh->sh_entsize = sizeof(elf_reloc_item);

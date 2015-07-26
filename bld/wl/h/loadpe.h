@@ -63,4 +63,4 @@ typedef struct module_import {
     unsigned                    num_entries;
 } module_import;
 
-extern unsigned_32 StackSizePE( void );
+extern unsigned_32 DefStackSizePE( void );

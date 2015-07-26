@@ -259,13 +259,16 @@ void GetStkAddr( void )
 #ifdef _OS2
             if( (FmtData.type & MK_WINDOWS) && (LinkFlags & STK_SIZE_FLAG) ) {
                 PhoneyStack();
-            } else
+            } else {
 #endif
-            if( !(FmtData.type & (MK_COM|MK_PE|MK_QNX|MK_ELF|MK_RDOS)) ) {
-                LnkMsg( WRN+MSG_STACK_NOT_FOUND, NULL );
-                StackAddr.seg = 0;
-                StackAddr.off = 0;
+                if( (FmtData.type & (MK_COM|MK_PE|MK_QNX|MK_ELF|MK_RDOS)) == 0 ) {
+                    LnkMsg( WRN+MSG_STACK_NOT_FOUND, NULL );
+                    StackAddr.seg = 0;
+                    StackAddr.off = 0;
+                }
+#ifdef _OS2
             }
+#endif
         }
     }
 }
@@ -407,24 +410,31 @@ void SetStkSize( void )
     StackSegPtr = StackSegment();
     if( FmtData.dll ) {
         StackSize = 0;  // DLLs don't have their own stack
-    } else if( StackSize < 0x200 ) {
-        LnkMsg( WRN+MSG_STACK_SMALL, "d", 0x200 );
-    }
-#ifdef _OS2
-    if( !FmtData.dll && (FmtData.type & MK_PE) && (LinkFlags & STK_SIZE_FLAG) == 0 ) {
-        StackSize = StackSizePE();
-    } else if( StackSegPtr != NULL ) {
-#else
-    if( StackSegPtr != NULL ) {
-#endif
+    } else {
         if( LinkFlags & STK_SIZE_FLAG ) {
-            if( !(FmtData.type & MK_NOVELL) ) {
+            if( StackSize < 0x200 ) {
+                LnkMsg( WRN+MSG_STACK_SMALL, "d", 0x200 );
+            }
+#ifdef _OS2
+        } else {
+            if( FmtData.type & MK_PE ) {
+                StackSize = DefStackSizePE();
+                LinkFlags |= STK_SIZE_FLAG;
+            }
+#endif
+        }
+    }
+    if( StackSegPtr != NULL ) {
+        if( LinkFlags & STK_SIZE_FLAG ) {
+            if( (FmtData.type & MK_NOVELL) == 0 ) {
                 StackSegPtr->size = StackSize;
             }
-        } else if( !FmtData.dll && StackSegPtr->size >= 0x200 ) {
-            StackSize = StackSegPtr->size;
         } else {
-            StackSegPtr->size = StackSize;
+            if( !FmtData.dll && StackSegPtr->size >= 0x200 ) {
+                StackSize = StackSegPtr->size;
+            } else {
+                StackSegPtr->size = StackSize;
+            }
         }
     }
 }
@@ -432,7 +442,7 @@ void SetStkSize( void )
 void ClearStartAddr( void )
 /********************************/
 {
-    memset( &StartInfo, 0, sizeof(startinfo) );
+    memset( &StartInfo, 0, sizeof( startinfo ) );
 }
 
 void SetStartSym( char *name )
@@ -516,8 +526,7 @@ offset CalcGroupSize( group_entry *group )
     offset size;
 
     if(( group == DataGroup ) && ( FmtData.dgroupsplitseg != NULL )) {
-        size = FmtData.dgroupsplitseg->seg_addr.off - group->grp_addr.off
-                                                    - FmtData.bsspad;
+        size = FmtData.dgroupsplitseg->seg_addr.off - group->grp_addr.off - FmtData.bsspad;
         DbgAssert( size >= group->size );
     } else {
         size = group->totalsize;
@@ -534,8 +543,7 @@ offset CalcSplitSize( void )
     if( FmtData.dgroupsplitseg == NULL ) {
         return( 0 );
     } else {
-        size = DataGroup->totalsize -
-            (FmtData.dgroupsplitseg->seg_addr.off - DataGroup->grp_addr.off);
+        size = DataGroup->totalsize - (FmtData.dgroupsplitseg->seg_addr.off - DataGroup->grp_addr.off);
         if( StackSegPtr != NULL ) {
             size -= StackSize;
         }
