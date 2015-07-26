@@ -1,4 +1,4 @@
-#pmake: build cpu_386 os_linux
+#pmake: build cxx cpu_386 os_linux
 host_os  = linux
 host_cpu = 386
 
