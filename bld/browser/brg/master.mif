@@ -70,6 +70,7 @@ extra_c_flags_dmem     = $(mem_flags) -I"$(trmem_dir)"
 # linker
 extra_l_flags        = op stack=16k
 extra_l_flags_nt_axp = op undefsok
+extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
 $(name).exe : $(OBJECTS)
     $(linker) name $(lname) $(lflags) file {$(OBJECTS)}

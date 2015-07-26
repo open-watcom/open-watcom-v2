@@ -117,9 +117,8 @@ extra_l_flags   += op show,art,static
 
 extra_l_flags_dos = op stub=$(pharlap)stub386.exe
 extra_l_flags_win = op packdata=48k seg CLASS CODE FIXED, CLASS FAR_DATA FIXED, CLASS DATA FIXED
-extra_l_flags_nt_386 =
 extra_l_flags_nt_axp = op undefsok
-extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu)) op stack=100k
+extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 extra_l_flags_os2 =
 
 # systems where version resource must be added to .EXE

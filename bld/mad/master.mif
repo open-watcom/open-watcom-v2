@@ -61,9 +61,8 @@ lflags_dll_qnx_386   = sys pharlap rex disable 1023,1014
 lflags_dll_win_i86   = sys windows op rwr
 
 extra_l_flags_dll         = $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
-!ifeq host_cpu axp
-extra_l_flags_dll_nt      = op dosseg
-!endif
+extra_l_flags_dll_nt_axp  = op dosseg
+extra_l_flags_dll_nt = $(extra_l_flags_dll_nt_$(host_cpu))
 
 ##################
 

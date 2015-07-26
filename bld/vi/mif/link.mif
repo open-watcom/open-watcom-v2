@@ -10,12 +10,12 @@ extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
 
 !ifeq sys_windowed 1
 ! ifeq host_cpu 386
-extra_l_flags_nt = op stack=100k,heap=8k commit heap=4k
+extra_l_flags_nt = op heap=8k commit heap=4k
 ! else
-extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k
+extra_l_flags_nt = op heap=8k commit heap=4k
 ! endif
 !else
-extra_l_flags_nt = runtime console op stack=20k
+extra_l_flags_nt = runtime console
 !endif
 
 extra_l_flags_qnx = op stack=2k,priv=3

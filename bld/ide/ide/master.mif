@@ -67,7 +67,6 @@ extra_cxx_flags_i86 = -zc -zm
 !endif
 
 extra_l_flags       = op eliminate sort global
-extra_l_flags_nt    = op stack=100k
 
 doc_inc_dirs_nt     = -I"$(doc_path_nt)"
 doc_inc_dirs_os2    = -I"$(doc_path_os2)"

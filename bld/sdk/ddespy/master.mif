@@ -21,10 +21,10 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_c_flags     = -fh
 
-extra_l_flags_nt  = option stack=100k
 extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib, commdlg.lib
 
 #extra_l_flags_nt_axp = lib ctl3d32.lib
+#extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
 .c: ../c
 

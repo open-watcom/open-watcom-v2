@@ -71,7 +71,7 @@ xlibs = $(wres_lib) $(commonui_lib)
 
 #------------- LINK
 extra_l_flags_dll = op implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
-extra_l_flags_dll_nt = op stack=32k,heap=16k commit heap=8k
+extra_l_flags_dll_nt = op heap=16k commit heap=8k
 extra_l_flags_dll_win = op rwr,stack=16k export WEP RESIDENT
 #extra_l_flags_dll_win += segment  _TEXT PRELOAD FIXED
 #extra_l_flags_dll_win += segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
