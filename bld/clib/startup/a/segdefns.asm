@@ -38,13 +38,18 @@ include langenv.inc
 
         extrn   __DOSseg__      : byte
 
+
 if COMP_CFG_COFF
 DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,_BSS,STACK
 else
 ifdef __LINUX__
 DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,_BSS
 else
+ifdef __NT__
+DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,_BSS,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE
+else
 DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,_BSS,STACK,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE
+endif
 endif
 endif
 
@@ -124,11 +129,13 @@ _BSS    segment word public 'BSS'
 _BSS    ends
 
 ifndef __LINUX__
+ifndef __NT__
 STACK_SIZE      equ     10000h
 
 STACK   segment para stack 'STACK'
         db      (STACK_SIZE) dup(?)
 STACK   ends
+endif
 endif
 
 _TEXT   segment use32 word public 'CODE'

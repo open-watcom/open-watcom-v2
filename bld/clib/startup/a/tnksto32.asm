@@ -40,11 +40,11 @@
 extrn __STK                     : near
 extrn "C",__init_threadstksize  : near
 
-dgroup  group   stack
+DGROUP  group   STACK
 
-stack   segment para stack 'STACK'
+STACK   segment para stack 'STACK'
         db      8192 dup(?)
-stack   ends
+STACK   ends
 
 _TEXT           segment use32 word public 'CODE'
 

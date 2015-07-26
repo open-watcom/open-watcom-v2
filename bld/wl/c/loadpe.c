@@ -355,7 +355,7 @@ static void GenPETransferTable( void )
     group->size = group->totalsize;
 }
 
-unsigned_32 StackSizePE( void )
+unsigned_32 DefStackSizePE( void )
 {
     return( PE_DEF_STACK_SIZE );
 }

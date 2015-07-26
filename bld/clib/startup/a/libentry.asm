@@ -104,7 +104,7 @@ _DATA segment word public 'DATA'
 ;*
 assume es:nothing
 assume ss:nothing
-assume ds:dgroup
+assume ds:DGROUP
 assume cs:_TEXT
 
         extrn   __AHSHIFT                   : word
