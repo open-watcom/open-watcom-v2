@@ -60,6 +60,30 @@ void __init_stack_limits( unsigned *stacklow, unsigned *stacktop )
     } else {    // Win 9x
         low += STACK_RESERVED_SPACE_WIN9X;
     }
+
+    // check to make sure our low point adjustments are sane.
+    // at the time of this patch, Open Watcom defaults to 64KB stack size for Win32s.
+    // Windows 3.1 actually honors the stack reservation size and gives us 64KB of stack.
+    // if you do the math above for the Win32s case, you'll realize our low point adjustment
+    // pushes the low point 72KB from the base which is 8KB past the top of the stack!
+    // the true fix to the problem would be to set the default stack size for Win32s to
+    // something larger (128KB), and to take the Windows 95 default of 1MB if targeting
+    // Windows 95 or NT. But, if we were told to use a smaller stack, then we need to
+    // deal with it. If the user compiled their EXE with a smaller stack then stack overflow
+    // issues are their problem, not ours.
+    {
+        // cap the low point adjustment so that it does not go beyond 1/2 the overall stack size.
+        // make sure to compute A + ((B - A) / 2) not (A + B) / 2 to avoid integer overflow issues.
+        unsigned mid = (unsigned)mbi.AllocationBase; // A
+
+        if (mid < top) {
+            mid += (top - mid) / 2; // A += (B - A) / 2
+            mid  = (mid + 0x7FF) & (~0xFFF); //4K page align
+        }
+
+        if (low > mid) low = mid;
+    }
+
     if( stacklow ) {
         *stacklow = low;
     }
