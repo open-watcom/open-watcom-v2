@@ -153,7 +153,7 @@ bld_cppflags = $(common_cppflags_linux) $(common_cppflags_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
-bld_cxxflags = -std=c++11
+bld_cxxflags = -std=c++98
 
 # options for linking
 !ifdef __CLANG__
@@ -195,7 +195,7 @@ cppflags_mips  = $(common_cppflags_mips)
 cppflags_x64   = $(common_cppflags_x64)
 cppflags_arm   = $(common_cppflags_arm)
 
-cxxflags = -std=c++11
+cxxflags = -std=c++98
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
@@ -320,7 +320,7 @@ bld_cppflags = $(common_cppflags_bsd) $(common_cppflags_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
-bld_cxxflags = -std=c++11
+bld_cxxflags = -std=c++98
 
 # options for linking
 !ifdef __CLANG__
@@ -360,7 +360,7 @@ cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_x64   = $(common_cppflags_x64)
 
-cxxflags = -std=c++11
+cxxflags = -std=c++98
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
@@ -486,7 +486,7 @@ bld_cppflags = $(common_cppflags_haiku) $(common_cppflags_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
-bld_cxxflags = -std=c++11
+bld_cxxflags = -std=c++98
 
 # options for linking
 !ifdef __CLANG__
@@ -524,7 +524,7 @@ cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_x64   = $(common_cppflags_x64)
 
-cxxflags = -std=c++11
+cxxflags = -std=c++98
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
