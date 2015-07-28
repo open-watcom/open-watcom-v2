@@ -241,6 +241,8 @@ void DoCmdFile( char *fname )
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
 #elif defined( __LINUX__ )
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
+#elif defined( __BSD__ )
+#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
 #elif defined( __NT__ )
 #define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
 #else
