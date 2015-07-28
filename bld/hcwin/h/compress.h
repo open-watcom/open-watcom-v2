@@ -91,7 +91,7 @@ class CompReader
     Buffer<short>   _htable;    // the text.
 
     CompWriter  *_dest;
-    short   _last, _first, _current;
+    size_t  _last, _first, _current;
 
     void    shuffle();  // Free space in the buffer.
 public:

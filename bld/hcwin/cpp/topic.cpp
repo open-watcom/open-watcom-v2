@@ -179,7 +179,7 @@ class TextHeader
 
     Buffer<uint_16> _tabStops;
     Buffer<uint_8>  _tabFlags;
-    uint_16     _numStops, _maxStops;
+    size_t          _numStops, _maxStops;
 
     uint_32 _border;
     uint_16 _spacing[6];
@@ -229,8 +229,8 @@ class TextHolder
     // I must be able to insert those zeroes in the middle of the text.
 
     Buffer<uint_16> _zeroes;
-    uint_16         _numZeroes;
-    uint_16         _maxZeroes;
+    size_t          _numZeroes;
+    size_t          _maxZeroes;
 
     TextHolder();
 
@@ -506,7 +506,7 @@ void TextHeader::unsetPar( ParFlags type )
     _flags ^= _parBits[type];
     if( type == TOP_TAB_STOPS ) {
         _parAttrSize -= _numStops;
-        for( int i=0; i < _numStops; ++i ) {
+        for( size_t i = 0; i < _numStops; ++i ) {
             if( _tabStops[i] & 0x1 ) {
                 _parAttrSize -= 1;
             }
@@ -674,7 +674,7 @@ uint_32 TextHeader::attrData( unsigned index )
 void TextHeader::dumpTo( TopicLink *dest )
 {
     char        *location = dest->_myData;
-    unsigned    i;
+    size_t      i;
 
     *( (uint_16*) location ) = (uint_16) ( (2*_headerSize) | 0x8000 );
     location += sizeof( uint_16 );
@@ -992,7 +992,7 @@ int HFTopic::dump( OutFile * dest )
             // "Magic" check to see if the current node is a topic header
             // or a text header.  This is the only way to do it since
             // at this stage the node is just a binary data block.
-            if( current->_myData[20] == 0x02 ) {
+            if( current->_myData[(size_t)20] == 0x02 ) {
                 current = current->_next;
                 page_size += _myReader->add( current->_myData, current->_size );
             } else {
@@ -1370,9 +1370,9 @@ void HFTopic::addText( char const source[], bool use_phr )
 //  HFTopic::addZero    --Add a 0x00 byte (to signal a format change) to
 //            the current text buffer.
 
-void HFTopic::addZero( unsigned index )
+void HFTopic::addZero( size_t index )
 {
-    int zero_pos;
+    size_t zero_pos;
     if( _curText->_size == COMP_PAGE_SIZE ) {
         HCError( TOP_TOOLARGE );
     }

@@ -155,9 +155,9 @@ CompReader::CompReader( CompWriter *riter )
       _current( 0 )
 {
     // Set all of the hash table entries to -1.
-    memset( &(_htable[0]), (uint_8)HTABLE_NIL, HTABLE_SIZE * sizeof( short ) );
+    memset( _htable, (uint_8)HTABLE_NIL, HTABLE_SIZE * sizeof( short ) );
 
-    _indices[0] = HTABLE_NIL;
+    *_indices = HTABLE_NIL;
 }
 
 
@@ -171,9 +171,9 @@ void CompReader::flush( bool nodump )
     _current = 0;
 
     // Set all of the hash table entries to -1.
-    memset( &(_htable[0]), (uint_8)HTABLE_NIL, HTABLE_SIZE * sizeof( short ) );
+    memset( _htable, (uint_8)HTABLE_NIL, HTABLE_SIZE * sizeof( short ) );
 
-    _indices[0] = HTABLE_NIL;
+    *_indices = HTABLE_NIL;
 
     if( !nodump ) {
         _dest->dump();
@@ -195,7 +195,7 @@ void CompReader::reset( CompWriter *riter, bool nodump )
 
 void CompReader::shuffle()
 {
-    int     i;
+    size_t  i;
 
     memmove( _buffer, _buffer + _first, _last - _first );
     HCTick();
@@ -236,7 +236,7 @@ unsigned CompReader::compress( char const source[], size_t amount )
 
     unsigned    hash_value;
     unsigned    key_size, old_key_size;
-    short       offset;
+    size_t      offset;
     short       best_match = 0;
     unsigned    limit;
     uint_8      *p1, *p2;

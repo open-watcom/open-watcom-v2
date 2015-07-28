@@ -81,7 +81,7 @@ class RTFparser
 
     // An all-purpose string buffer.
     Buffer<char>    _storage;
-    int     _storSize, _maxStor;
+    size_t  _storSize, _maxStor;
 
     Token   *_current;
     bool    _wereWarnings;
