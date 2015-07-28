@@ -90,7 +90,7 @@ int WListBox::findString( int index, const char *str ) {
 
     size_t len = strlen( str );
     int icount = count();
-    int k;
+    size_t k;
 
     if( icount > 0 ) {
         if( index < 0 ) index = icount-1;
@@ -100,7 +100,7 @@ int WListBox::findString( int index, const char *str ) {
             if( i >= icount ) i = 0;
             WString s;
             getString( i, s );
-            for( k=0; isspace( s[k] ); k++ );
+            for( k = 0; isspace( s[k] ); k++ );
             if( strnicmp( str, &s[k], len ) == 0 ) {
                 return( i );
             }

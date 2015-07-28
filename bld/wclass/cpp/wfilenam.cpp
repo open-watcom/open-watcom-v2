@@ -512,7 +512,7 @@ bool WEXPORT WFileName::needQuotes( char ch ) const
 {
     if( !isMask() ) {
         size_t len = size();
-        if( len > 0 && ( (*this)[0] != ch || (*this)[len - 1] != ch ) ) {
+        if( len > 0 && ( (*this)[(size_t)0] != ch || (*this)[len - 1] != ch ) ) {
             _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
             if( isLongDirName( _x.dir, PATHSEP_STR ) || isLongName( _x.fname ) ) {
                 return( true );
@@ -525,7 +525,7 @@ bool WEXPORT WFileName::needQuotes( char ch ) const
 void WEXPORT WFileName::removeQuotes( char ch )
 {
     size_t len = size() - 1;
-    if( (*this)[0] == ch && (*this)[len] == ch ) {
+    if( (*this)[(size_t)0] == ch && (*this)[len] == ch ) {
         deleteChar( len );
         deleteChar( 0 );
     }
