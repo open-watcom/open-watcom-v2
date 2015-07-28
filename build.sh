@@ -14,7 +14,8 @@ output_redirect()
 
 rm -f $OWBUILDER_BOOTX_OUTPUT
 cd $OWSRCDIR/wmake
-if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+if [ -d $OWOBJDIR ]; then rmdir $OWOBJDIR; fi
+mkdir $OWOBJDIR
 cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
 if [ "$OWTOOLS" = "WATCOM" ]; then
@@ -42,7 +43,8 @@ if [ $RC -ne 0 ]; then
     echo "wmake bootstrap build error"
 else
     cd $OWSRCDIR/builder
-    if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+    if [ ! -d $OWOBJDIR ]; then rmdir $OWOBJDIR; fi
+    mkdir $OWOBJDIR
     cd $OWOBJDIR
     rm -f $OWBINDIR/builder
     output_redirect $OWBINDIR/wmake -f ../binmake clean
