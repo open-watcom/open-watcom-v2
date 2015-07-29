@@ -60,7 +60,7 @@ class HFPhrases : public Dumpable
     PTable      *_newPtable;
 
     P_String    **_result;
-    P_String    **_htable;
+    P_String    **_hptable;
     int         _resultSize;
 
     uint_16     _numPhrases;
@@ -73,7 +73,7 @@ class HFPhrases : public Dumpable
     Scanner     *_scanner;
     void        startInput( InFile * );
     char        *nextInput( InFile * );
-    void        initHashTable();
+    void        initHashPTable();
 
     // Assignment of HFPhrases is not allowed.
     HFPhrases( HFPhrases const & ) {};

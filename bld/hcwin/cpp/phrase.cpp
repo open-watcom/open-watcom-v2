@@ -203,7 +203,7 @@ class PTable
     int     _size;
     int     _maxSize;
 
-    Phrase  **_htable;
+    Phrase  **_hptable;
 
     int     _iterPos;
 
@@ -249,9 +249,9 @@ PTable::PTable()
     // Set all of _phrases to NULL.
     memset( _phrases, 0, _maxSize * sizeof( Phrase * ) );
 
-    _htable = new Phrase *[HASH_SIZE];
+    _hptable = new Phrase *[HASH_SIZE];
     // Set all of _phrases to NULL.
-    memset( _htable, 0, HASH_SIZE * sizeof( Phrase * ) );
+    memset( _hptable, 0, HASH_SIZE * sizeof( Phrase * ) );
 }
 
 
@@ -269,8 +269,8 @@ PTable::~PTable()
 
     if( _edges )
         delete _edges;
-    if( _htable ) {
-        delete[] _htable;
+    if( _hptable ) {
+        delete[] _hptable;
     }
 }
 
@@ -296,7 +296,7 @@ Phrase *PTable::match( char * &start )
         // First, try to find a match based on the first three characters.
         h_val = 0;
         memcpy( &h_val, start, PH_MIN_LEN );
-        for( result = _htable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+        for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
             if( result->_len <= length ) {
                 break;
             }
@@ -323,7 +323,7 @@ Phrase *PTable::match( char * &start )
         }
         h_val = 0;
         memcpy( &h_val, start, length );
-        for( result = _htable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+        for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
             if( result->_len <= length ) {
                 break;
             }
@@ -371,7 +371,7 @@ Phrase *PTable::find( Phrase *other )
         memcpy( &h_val, str, PH_MIN_LEN );
     }
 
-    for( result = _htable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+    for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
         if( result->_len <= len ) {
             break;
         }
@@ -423,7 +423,7 @@ void PTable::insert( Phrase *p )
     }
 
     temp = NULL;
-    for( current = _htable[h_val % HASH_SIZE]; current != NULL; current = current->_next ) {
+    for( current = _hptable[h_val % HASH_SIZE]; current != NULL; current = current->_next ) {
         if( current->_len <= p->_len )
             break;
         temp = current;
@@ -432,7 +432,7 @@ void PTable::insert( Phrase *p )
     if( temp != NULL ) {
         temp->_next = p;
     } else {
-        _htable[h_val % HASH_SIZE] = p;
+        _hptable[h_val % HASH_SIZE] = p;
     }
 
     if( _size == _maxSize ) {
@@ -479,7 +479,7 @@ void PTable::clear()
         delete _phrases[i];
     }
     for( i = 0; i < HASH_SIZE; i++ ) {
-        _htable[i] = NULL;
+        _hptable[i] = NULL;
     }
     _iterPos = -1;
     _size = 0;
@@ -530,8 +530,8 @@ void PTable::prune()
     // Toss out memory we no longer need.
     delete _edges;
     _edges = NULL;
-    delete[] _htable;
-    _htable = NULL;
+    delete[] _hptable;
+    _hptable = NULL;
 
     // Heapsort the Phrases to get the top (PTBL_SIZE) Phrases.
     old_size = _size;
@@ -595,7 +595,7 @@ HFPhrases::HFPhrases( HFSDirectory * d_file, bool (*firstf)(InFile *), bool (*ne
     : _oldPtable( NULL ),
       _newPtable( NULL ),
       _result( NULL ),
-      _htable( NULL ),
+      _hptable( NULL ),
       _numPhrases( 0 ),
       _size( 0 ),
       _nextf( nextf ),
@@ -621,8 +621,8 @@ HFPhrases::~HFPhrases()
         }
         delete[] _result;
     }
-    if( _htable ) {
-        delete[] _htable;
+    if( _hptable ) {
+        delete[] _hptable;
     }
 }
 
@@ -975,17 +975,17 @@ void HFPhrases::readPhrases()
 }
 
 
-//  HFPhrases::initHashTable    --Initialize the hash table.
+//  HFPhrases::initHashPTable    --Initialize the hash table.
 
-void HFPhrases::initHashTable()
+void HFPhrases::initHashPTable()
 {
     uint_32 hvalue;
     P_String    *curr_str;
 
-    if( _htable == NULL ) {
-        _htable = new P_String *[HASH_SIZE];
+    if( _hptable == NULL ) {
+        _hptable = new P_String *[HASH_SIZE];
     }
-    memset( _htable, 0, HASH_SIZE * sizeof( P_String * ) );
+    memset( _hptable, 0, HASH_SIZE * sizeof( P_String * ) );
 
     for( int i = 0; i < _resultSize; i++ ) {
         curr_str = _result[i];
@@ -993,8 +993,8 @@ void HFPhrases::initHashTable()
         hvalue &= 0xFFFFFF;
         hvalue %= HASH_SIZE;
     
-        curr_str->_next = _htable[hvalue];
-        _htable[hvalue] = curr_str;
+        curr_str->_next = _hptable[hvalue];
+        _hptable[hvalue] = curr_str;
     }
 }
 
@@ -1037,7 +1037,7 @@ void HFPhrases::createQueue( char const *path )
     Phrase::freePool();
 
     // Initialize the 'hash table'.
-    initHashTable();
+    initHashPTable();
 }
 
 
@@ -1088,7 +1088,7 @@ int HFPhrases::oldTable( char const *path )
     }
 
     // Initialize the 'hash table'.
-    initHashTable();
+    initHashPTable();
 
     return 1;
 }
@@ -1110,7 +1110,7 @@ void HFPhrases::replace( char * dst, char const *src, int & len )
         hvalue %= HASH_SIZE;
     
         best = NULL;
-        for( current = _htable[hvalue]; current != NULL; current = current->_next ) {
+        for( current = _hptable[hvalue]; current != NULL; current = current->_next ) {
             if( current->_len <= len - read_pos
               && memcmp( current->_str, src + read_pos, current->_len ) == 0 ) {
                 if( best == NULL || best->_len < current->_len ) {
