@@ -78,8 +78,8 @@ struct StringNode
     StringNode  *_next, *_prev;
 
     // Handy access functions used by HFTopic::dumpBrowse().
-    uint_32 &   prevBrowse() { return *((uint_32*) (_me->_myData+4)); };
-    uint_32 &   nextBrowse() { return *((uint_32*) (_me->_myData+8)); };
+    uint_32 &   prevBrowse() { return( *(uint_32 *)(_me->_myData + 4) ); };
+    uint_32 &   nextBrowse() { return( *(uint_32 *)(_me->_myData + 8) ); };
 };
 
 
@@ -95,9 +95,9 @@ struct PageHeader
     uint_32 _pageNums[3];
 
     // Some mnemonic access functions for accessing _pageNums.
-    uint_32 &   lastNode() { return *_pageNums; };
-    uint_32 &   nextNode() { return *( _pageNums + 1 ); };
-    uint_32 &   lastTopic() { return *( _pageNums + 2 ); };
+    uint_32 &   lastNode() { return( *_pageNums ); };
+    uint_32 &   nextNode() { return( *( _pageNums + 1 ) ); };
+    uint_32 &   lastTopic() { return( *( _pageNums + 2 ) ); };
 
     PageHeader();
 };
@@ -372,15 +372,15 @@ int TextHeader::setTab( int val, uint_8 flag )
     uint_16 trueval;
 
     if( val < 0 ) {
-        return 0;
+        return( 0 );
     } else if( val >= INT_LARGE_LIMIT ) {
-        return 0;
+        return( 0 );
     }
 
     // Convert the value into WinHelp's bizarre format for
     // storing integers; see "topic.doc".
 
-    trueval = (uint_16) (val/10);
+    trueval = (uint_16)( val / 10 );
     trueval <<= 1;
     if( trueval < INT_SMALL_LIMIT ) {
         _parAttrSize += 1;
@@ -410,7 +410,7 @@ int TextHeader::setTab( int val, uint_8 flag )
         _parAttrSize += 1;
     }
     _flags |= _parBits[TOP_TAB_STOPS];
-    return 1;
+    return( 1 );
 }
 
 
@@ -423,10 +423,10 @@ int TextHeader::setPar( ParFlags type, int val )
     uint_16 trueval = 0;
 
     if( val < 0 && type == TOP_TAB_STOPS ) {
-        return 0;
+        return( 0 );
     }
     if( type == TOP_BORDER ) {
-        _border = (uint_32) val;
+        _border = (uint_32)val;
         _parAttrSize += BORDER_BYTE_SIZE;
     } else {
         // Convert the value into binary form.
@@ -434,13 +434,13 @@ int TextHeader::setPar( ParFlags type, int val )
         // storing integers; see "topic.doc".
         if( type < TOP_RIGHT_JUST ) {
             if( val == -1 )
-                return 1;
+                return( 1 );
             sign = ( val < 0 );
             if( sign ) {
                 val = -val;
             }
             if( val >= INT_LARGE_LIMIT ) {
-                return 0;
+                return( 0 );
             }
             trueval = (uint_16)( val / 10 );
             trueval <<= 1;
@@ -482,9 +482,9 @@ int TextHeader::setPar( ParFlags type, int val )
             }
             if( sign ) {
                 if( trueval & 01 ) {
-                    trueval ^= (uint_16) ~1;
+                    trueval ^= (uint_16)~1;
                 } else {
-                    trueval ^= (uint_8) ~1;
+                    trueval ^= (uint_8)~1;
                 }
                 trueval += 4;
             }
@@ -492,7 +492,7 @@ int TextHeader::setPar( ParFlags type, int val )
         }
     }
     _flags |= _parBits[type];
-    return 1;
+    return( 1 );
 }
 
 
@@ -579,7 +579,7 @@ unsigned TextHeader::addAttr( FontFlags type, uint_32 val, char const str[], int
     _size += _attribs[_numAttribs]._size;
     ++_numAttribs;
 
-    return result;
+    return( result );
 }
 
 
@@ -620,7 +620,7 @@ unsigned TextHeader::appendAttr( unsigned index, FontFlags type, uint_32 val,
     _size += _attribs[result]._size;
     ++_numAttribs;
 
-    return result;
+    return( result );
 }
 
 
@@ -664,7 +664,7 @@ uint_32 TextHeader::attrData( unsigned index )
         HCError( HLP_ATTR );
     }
 
-    return _attribs[index]._data;
+    return( _attribs[index]._data );
 }
 
 
@@ -676,24 +676,24 @@ void TextHeader::dumpTo( TopicLink *dest )
     char        *location = dest->_myData;
     size_t      i;
 
-    *( (uint_16*) location ) = (uint_16) ( (2*_headerSize) | 0x8000 );
+    *( (uint_16 *)location ) = (uint_16)( ( 2 * _headerSize ) | 0x8000 );
     location += sizeof( uint_16 );
     if( _textSize < INT_SMALL_LIMIT ) {
-        *location++ = (uint_8) (_textSize*2);
+        *location++ = (uint_8)( _textSize * 2 );
     } else {
-        *( (uint_16*) location ) = (uint_16) (_textSize*2+1) ;
+        *( (uint_16 *)location ) = (uint_16)( _textSize * 2 + 1 ) ;
         location += sizeof( uint_16 );
     }
     *location++ = _numColumns;
     *location++ = '\x80'; // magic byte
-    *((uint_32*) location ) = _flags;
+    *(uint_32 *)location = _flags;
     location += sizeof( uint_32 );
 
     // Print out the paragraph attributes.
     for( i=0; i < TOP_BORDER; i++ ) {
         if( _flags & _parBits[i] ) {
             if( _spacing[i] & 0x1 ) {
-                *((uint_16*) location) = _spacing[i];
+                *((uint_16 *)location) = _spacing[i];
                 location += sizeof( uint_16 );
             } else {
                 *location++ = (uint_8)_spacing[i];
@@ -701,9 +701,9 @@ void TextHeader::dumpTo( TopicLink *dest )
         }
     }
     if( _flags & _parBits[TOP_BORDER] ) {
-        *((uint_16*) location) = (uint_16) _border;
+        *((uint_16 *)location) = (uint_16)_border;
         location += sizeof( uint_16 );
-        *location++ = (uint_8) (_border >> 16);
+        *location++ = (uint_8)( _border >> 16 );
     }
     // Dump the tab stops, converting them into WinHelp's integer format.
     if( _flags & _parBits[TOP_TAB_STOPS] ) {
@@ -711,15 +711,15 @@ void TextHeader::dumpTo( TopicLink *dest )
         stops_num <<= 1;
         if( stops_num < INT_SMALL_LIMIT ) {
             stops_num |= 0x80;
-            *location++ = (uint_8) stops_num;
+            *location++ = (uint_8)stops_num;
         } else {
             stops_num |= 0x8001;
-            *((uint_16*) location) = stops_num;
+            *(uint_16 *)location = stops_num;
             location += sizeof( uint_16 );
         }
         for( i = 0; i < _numStops; i++ ) {
             if( _tabStops[i] & 0x1 ) {
-                *((uint_16*) location) = _tabStops[i];
+                *(uint_16 *)location = _tabStops[i];
                 location += sizeof( uint_16 );
                 if( _tabStops[i] & 0x8000 ) {
                     *location++ = _tabFlags[i];
@@ -751,16 +751,16 @@ void TextHeader::dumpTo( TopicLink *dest )
         case TOP_LEFT_BITMAP:
         case TOP_RIGHT_BITMAP:
             // Right now these numbers are mostly magic.
-            *((uint_32*) location) = 0x02800822;
+            *(uint_32 *)location = 0x02800822;
             location += sizeof( uint_32 );
-            *((uint_16*) location) = (uint_16)0;
+            *(uint_16 *)location = (uint_16)0;
             location += sizeof( uint_16 );
-            *((uint_16*) location) = (uint_16)_attribs[i]._data;
+            *(uint_16 *)location = (uint_16)_attribs[i]._data;
             location += sizeof( uint_16 );
             break;
 
         case TOP_FONT_CHANGE:
-            *((uint_16*) location) = (uint_16)_attribs[i]._data;
+            *(uint_16 *)location = (uint_16)_attribs[i]._data;
             location += sizeof( uint_16 );
             break;
 
@@ -769,14 +769,14 @@ void TextHeader::dumpTo( TopicLink *dest )
         case TOP_JUMP_LINK:
         case TOP_POPUP_INVIS:
         case TOP_JUMP_INVIS:
-            *((uint_32*) location) = _attribs[i]._data;
+            *(uint_32 *)location = _attribs[i]._data;
             location += sizeof( uint_32 );
             break;
 
         case TOP_MACRO_LINK:
         case TOP_MACRO_INVIS:
             length = (uint_16)( _attribs[i]._size - 3 );
-            *((uint_16*) location) = length;
+            *(uint_16 *)location = length;
             location += sizeof( uint_16 );
             memcpy( location, _attribs[i]._stringDat, length );
             location += length;
@@ -784,10 +784,10 @@ void TextHeader::dumpTo( TopicLink *dest )
 
         default:
             length = (uint_16)( _attribs[i]._size - _attrSizes[_attribs[i]._type] );
-            *((uint_16*) location) = (uint_16)( length + 4 );
+            *(uint_16 *)location = (uint_16)( length + 4 );
             location += sizeof( uint_16 );
             *location++ = _attribs[i]._stringDat[0];
-            *((uint_32*) location) = _attribs[i]._data;
+            *(uint_32 *)location = _attribs[i]._data;
             location += sizeof( uint_32 );
             memcpy( location, _attribs[i]._stringDat + 1, length - 1 );
             location += length - 1;
@@ -933,7 +933,7 @@ uint_32 HFTopic::size()
         newNode();
         _haveCleanedUp = true;
     }
-    return _size;
+    return( _size );
 }
 
 
@@ -1003,7 +1003,7 @@ int HFTopic::dump( OutFile * dest )
             page_size += _myReader->compress( current->_myData, current->_size );
             current = current->_next;
         } else {
-            for( i=0; i<3; i++, current=current->_next ) {
+            for( i = 0; i < 3; i++, current=current->_next ) {
                 page_size += current->_size;
                 dest->write( current->_myData, 1, current->_size );
             }
@@ -1014,7 +1014,7 @@ int HFTopic::dump( OutFile * dest )
     if( _useCompress ) {
         _myReader->flush();
     }
-    return 1;
+    return( 1 );
 }
 
 
@@ -1259,10 +1259,10 @@ void HFTopic::newNode( bool is_new_topic )
             }
             _curOffset = _ptail->nextNode();
             if( _browseOffset == _curCharOffset ) {
-                _browseOffset = ( _curOffset & ~((COMP_PAGE_SIZE << 2) - 1) ) << 1;
+                _browseOffset = ( _curOffset & ~( ( COMP_PAGE_SIZE << 2 ) - 1 ) ) << 1;
             }
-            _curCharOffset = ( _curOffset & ~((COMP_PAGE_SIZE << 2) - 1) ) << 1;
-            _size = (_numPages++) * COMP_PAGE_SIZE + PAGE_HEADER_SIZE;
+            _curCharOffset = ( _curOffset & ~( ( COMP_PAGE_SIZE << 2 ) - 1 ) ) << 1;
+            _size = ( _numPages++ ) * COMP_PAGE_SIZE + PAGE_HEADER_SIZE;
             if( _useCompress ) {
                 _myReader->flush();
                 if( _curNode->_recordType == TOP_HEADER ) {
@@ -1411,7 +1411,7 @@ uint_32 HFTopic::presentSize()
     } else {
         result += _curPar->_size + _curPar->_parAttrSize;
     }
-    return result;
+    return( result );
 }
 
 
@@ -1436,7 +1436,7 @@ unsigned HFTopic::addAttr( FontFlags type, uint_32 val )
         break;
     }
     addZero( _curPar->_numAttribs );
-    return _curPar->addAttr( type, val, NULL, 0 );
+    return( _curPar->addAttr( type, val, NULL, 0 ) );
 }
 
 unsigned HFTopic::addAttr( FontFlags type, char const str[], uint_16 len )
@@ -1456,7 +1456,7 @@ unsigned HFTopic::addAttr( FontFlags type, char const str[], uint_16 len )
     }
 
     addZero( _curPar->_numAttribs );
-    return _curPar->addAttr( type, 0, str, len );
+    return( _curPar->addAttr( type, 0, str, len ) );
 }
 
 unsigned HFTopic::addAttr( FontFlags type, char const str[], uint_16 len, uint_32 val )
@@ -1477,7 +1477,7 @@ unsigned HFTopic::addAttr( FontFlags type, char const str[], uint_16 len, uint_3
     }
 
     addZero( _curPar->_numAttribs );
-    return _curPar->addAttr( type, val, str, len );
+    return( _curPar->addAttr( type, val, str, len ) );
 }
 
 unsigned HFTopic::appendAttr( unsigned index, FontFlags type, uint_32 val )
@@ -1500,7 +1500,7 @@ unsigned HFTopic::appendAttr( unsigned index, FontFlags type, uint_32 val )
 
     unsigned result = _curPar->appendAttr( index, type, val, NULL, 0 );
     addZero( index );
-    return result;
+    return( result );
 }
 
 unsigned HFTopic::appendAttr( unsigned index, FontFlags type, char const str[], uint_16 len )
@@ -1520,7 +1520,7 @@ unsigned HFTopic::appendAttr( unsigned index, FontFlags type, char const str[], 
 
     unsigned result = _curPar->appendAttr( index, type, 0, str, len );
     addZero( index );
-    return result;
+    return( result );
 }
 
 unsigned HFTopic::appendAttr( unsigned index, FontFlags type, char const str[], uint_16 len, uint_32 val )
@@ -1542,7 +1542,7 @@ unsigned HFTopic::appendAttr( unsigned index, FontFlags type, char const str[], 
 
     unsigned result = _curPar->appendAttr( index, type, val, str, len );
     addZero( index );
-    return result;
+    return( result );
 }
 
 void HFTopic::chgAttr( unsigned index, FontFlags type, uint_32 val )
@@ -1610,17 +1610,17 @@ uint_32 HFTopic::attrData( unsigned index )
         HCError( HLP_ATTR );
     }
 
-    return _curPar->attrData( index );
+    return( _curPar->attrData( index ) );
 }
 
 int HFTopic::setTab( int val, TabTypes flag )
 {
-    return _curPar->setTab( val, (uint_8) flag );
+    return( _curPar->setTab( val, (uint_8)flag ) );
 }
 
 int HFTopic::setPar( ParFlags type, int val )
 {
-    return _curPar->setPar( type, val );
+    return( _curPar->setPar( type, val ) );
 }
 
 void HFTopic::unsetPar( ParFlags type )
