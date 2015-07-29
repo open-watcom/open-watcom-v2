@@ -121,7 +121,7 @@ static unsigned scanHyperLink( char *line, TokenType *type,
                     info->hfname_len = cur - hfname;
                     info->topic_len = hfname - topic - 1;
                 } else {
-                    info->hfname = '\0';
+                    info->hfname = NULL;
                     info->hfname_len = 0;
                     info->topic_len = cur - topic;
                 }
