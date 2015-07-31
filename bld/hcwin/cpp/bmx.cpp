@@ -166,8 +166,8 @@ uint_32 Bitmap::size()
     CompWriter  riter;
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
-    size_t      blocksize;
-    uint_32     count;
+    unsigned    blocksize;
+    unsigned    count;
 
     _pixSize = 0;
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
@@ -270,8 +270,8 @@ int Bitmap::dump( OutFile *dest )
     CompOutFile riter( dest );
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
-    size_t      blocksize;
-    uint_32     count;
+    unsigned    blocksize;
+    unsigned    count;
 
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
         blocksize = _fp->readbuf( buffer, BLOCK_SIZE );

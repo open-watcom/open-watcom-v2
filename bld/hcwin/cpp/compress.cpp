@@ -33,7 +33,7 @@
 #include <string.h>
 
 #define HOLD_SIZE   4096
-#define HOLD_BUF    (2*HOLD_SIZE)
+#define HOLD_BUF    (2 * HOLD_SIZE)
 #define WRITE_SIZE  8
 #define READ_SIZE   18
 #define MIN_READ    3
@@ -155,7 +155,9 @@ CompReader::CompReader( CompWriter *riter )
       _current( 0 )
 {
     // Set all of the hash table entries to -1.
-    memset( _htable, (uint_8)HTABLE_NIL, HTABLE_SIZE * sizeof( short ) );
+    for( size_t i = 0; i < HTABLE_SIZE; ++i ) {
+        _htable[i] = HTABLE_NIL;
+    }
 
     *_indices = HTABLE_NIL;
 }
@@ -171,7 +173,9 @@ void CompReader::flush( bool nodump )
     _current = 0;
 
     // Set all of the hash table entries to -1.
-    memset( _htable, (uint_8)HTABLE_NIL, HTABLE_SIZE * sizeof( short ) );
+    for( size_t i = 0; i < HTABLE_SIZE; ++i ) {
+        _htable[i] = HTABLE_NIL;
+    }
 
     *_indices = HTABLE_NIL;
 
@@ -204,7 +208,7 @@ void CompReader::shuffle()
         if( _indices[i + _first] < _first ) {
             _indices[i] = HTABLE_NIL;
         } else {
-            _indices[i] = (short)( _indices[i + _first] - _first );
+            _indices[i] = _indices[i + _first] - _first;
         }
     }
 
@@ -224,7 +228,7 @@ void CompReader::shuffle()
 
 //  CompReader::compress    --Compress a block of text.
 
-unsigned CompReader::compress( char const source[], size_t amount )
+unsigned CompReader::compress( char const source[], unsigned amount )
 {
     unsigned result = 0;
     if( _last + amount > HOLD_BUF ) {
@@ -232,13 +236,13 @@ unsigned CompReader::compress( char const source[], size_t amount )
     }
 
     memcpy( _buffer + _last, source, amount );
-    _last += static_cast<short>( amount );
+    _last += amount;
 
     unsigned    hash_value;
-    unsigned    key_size, old_key_size;
-    size_t      offset;
-    short       best_match = 0;
-    unsigned    limit;
+    int         key_size, old_key_size;
+    int         offset;
+    int         best_match = 0;
+    int         limit;
     uint_8      *p1, *p2;
 
     while( _current + MIN_READ <= _last ) {
@@ -246,9 +250,9 @@ unsigned CompReader::compress( char const source[], size_t amount )
 
         hash_value = LocalHash( _buffer + _current );
         old_key_size = MIN_READ - 1;
-        offset = _htable[hash_value];
 
-        _indices[_current] = offset;
+        offset = _htable[hash_value];
+        _indices[(size_t)_current] = offset;
         _htable[hash_value] = _current;
 
         limit = READ_SIZE;
@@ -273,8 +277,7 @@ unsigned CompReader::compress( char const source[], size_t amount )
             if( key_size > limit ) {
                 key_size = limit;
             } else {
-                while( key_size < limit
-                  && _buffer[offset + key_size] == _buffer[_current + key_size] ) {
+                while( key_size < limit && _buffer[(size_t)(offset + key_size)] == _buffer[(size_t)(_current + key_size)] ) {
                     key_size += 1;
                 }
             }
@@ -286,40 +289,40 @@ unsigned CompReader::compress( char const source[], size_t amount )
                     break;
                 }
             }
-            offset = _indices[offset];
+            offset = _indices[(size_t)offset];
         }
 
         // See if we found a match of usable size.
 
         if( old_key_size < MIN_READ ) {
-            result += _dest->putChr( _buffer[_current] );
+            result += _dest->putChr( _buffer[(size_t)_current] );
             _current += 1;
         } else {
             result += _dest->putCode( _current - best_match, old_key_size );
-            _current += static_cast<short>( old_key_size );
+            _current += old_key_size;
         }
         if( _current > HOLD_SIZE ) {
-            _first = (short)( _current - HOLD_SIZE );
+            _first = _current - HOLD_SIZE;
         }
     }
 
     // If there's text left over, dump it to output.
 
     while( _current < _last ) {
-        result += _dest->putChr( _buffer[_current++] );
+        result += _dest->putChr( _buffer[(size_t)(_current++)] );
     }
     if( _current > HOLD_SIZE ) {
-        _first = (short)( _current - HOLD_SIZE );
+        _first = _current - HOLD_SIZE;
     }
 
-    return result;
+    return( result );
 }
 
 
 //  CompReader::add --Add more text to buffer, but
 //            pretend it's uncompressible.
 
-unsigned CompReader::add( char const source[], size_t amount )
+unsigned CompReader::add( char const source[], unsigned amount )
 {
     unsigned result = 0;
     if( _last + amount > HOLD_BUF ) {
@@ -332,21 +335,21 @@ unsigned CompReader::add( char const source[], size_t amount )
     // the buffer with a "rare" byte.
     memset( _buffer + _current, RARE_BYTE, amount );
 
-    for( size_t i = 0; i < amount; ++i ) {
+    for( unsigned i = 0; i < amount; ++i ) {
         result += _dest->putChr( source[i] );
     }
-    _last += static_cast<short>( amount );
-    _current += static_cast<short>( amount );
+    _last += amount;
+    _current += amount;
     if( _current > HOLD_SIZE ) {
-        _first = (short)( _current - HOLD_SIZE );
+        _first = _current - HOLD_SIZE;
     }
-    return result;
+    return( result );
 }
 
 
 //  CompReader::skip    --Pretend to add uncompressible text to output.
 
-unsigned CompReader::skip( size_t amount )
+unsigned CompReader::skip( unsigned amount )
 {
     unsigned result = 0;
     if( _last + amount > HOLD_BUF ) {
@@ -358,13 +361,13 @@ unsigned CompReader::skip( size_t amount )
     // So we fill the buffer with a "rare" byte.
     memset( _buffer + _current, RARE_BYTE, amount );
 
-    for( size_t i = 0; i < amount; ++i ) {
+    for( unsigned i = 0; i < amount; ++i ) {
         result += _dest->putChr( 0 );
     }
-    _last += static_cast<short>( amount );
-    _current += static_cast<short>( amount );
+    _last += amount;
+    _current += amount;
     if( _current > HOLD_SIZE ) {
-        _first = (short)( _current - HOLD_SIZE );
+        _first = _current - HOLD_SIZE;
     }
-    return result;
+    return( result );
 }

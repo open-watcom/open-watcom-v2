@@ -676,12 +676,12 @@ void TextHeader::dumpTo( TopicLink *dest )
     char        *location = dest->_myData;
     size_t      i;
 
-    *( (uint_16 *)location ) = (uint_16)( ( 2 * _headerSize ) | 0x8000 );
+    *(uint_16 *)location = (uint_16)( ( 2 * _headerSize ) | 0x8000 );
     location += sizeof( uint_16 );
     if( _textSize < INT_SMALL_LIMIT ) {
         *location++ = (uint_8)( _textSize * 2 );
     } else {
-        *( (uint_16 *)location ) = (uint_16)( _textSize * 2 + 1 ) ;
+        *(uint_16 *)location = (uint_16)( _textSize * 2 + 1 ) ;
         location += sizeof( uint_16 );
     }
     *location++ = _numColumns;
@@ -693,7 +693,7 @@ void TextHeader::dumpTo( TopicLink *dest )
     for( i=0; i < TOP_BORDER; i++ ) {
         if( _flags & _parBits[i] ) {
             if( _spacing[i] & 0x1 ) {
-                *((uint_16 *)location) = _spacing[i];
+                *(uint_16 *)location = _spacing[i];
                 location += sizeof( uint_16 );
             } else {
                 *location++ = (uint_8)_spacing[i];
@@ -701,13 +701,13 @@ void TextHeader::dumpTo( TopicLink *dest )
         }
     }
     if( _flags & _parBits[TOP_BORDER] ) {
-        *((uint_16 *)location) = (uint_16)_border;
+        *(uint_16 *)location = (uint_16)_border;
         location += sizeof( uint_16 );
         *location++ = (uint_8)( _border >> 16 );
     }
     // Dump the tab stops, converting them into WinHelp's integer format.
     if( _flags & _parBits[TOP_TAB_STOPS] ) {
-        uint_16 stops_num = _numStops;
+        uint_16 stops_num = static_cast<uint_16>( _numStops );
         stops_num <<= 1;
         if( stops_num < INT_SMALL_LIMIT ) {
             stops_num |= 0x80;
@@ -962,9 +962,11 @@ int HFTopic::dump( OutFile * dest )
         _myWriter = temp;
     }
 
-    TopicLink       *current = _head;
-    PageHeader      *cur_page = _phead->_next;
+    TopicLink   *current = _head;
+    PageHeader  *cur_page = _phead->_next;
+
     dest->write( _phead->_pageNums, 3, sizeof( uint_32 ) );
+
     uint_32     page_size = PAGE_HEADER_SIZE;
 
     // Write the linked list nodes in order.
