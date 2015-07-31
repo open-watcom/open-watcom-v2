@@ -136,7 +136,7 @@ void CompOutFile::dump()
 {
     if( _numTokens > 0 ) {
         _dest->write( _bitMask );
-        _dest->write( _buffer, 1, _numBytes );
+        _dest->write( _buffer, _numBytes );
         _numBytes = _numTokens = 0;
     }
     _bitMask = 0;

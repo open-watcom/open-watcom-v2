@@ -311,7 +311,7 @@ int SegGraph::dump( OutFile *dest )
 
     _fp->open();
     while( (this_block = _fp->readbuf( block, BLOCK_SIZE )) != 0 ) {
-        dest->write( block, 1, this_block );
+        dest->write( block, this_block );
     }
 
     return 1;

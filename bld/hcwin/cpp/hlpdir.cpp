@@ -87,7 +87,7 @@ public:
 
 int HFSkey::dump( OutFile *dest )
 {
-    dest->write( _name, 1, strlen( _name ) + 1 );
+    dest->write( _name, strlen( _name ) + 1 );
     return 1;
 }
 
@@ -113,7 +113,7 @@ bool HFSkey::lessThan( BtreeData *other )
 
 int HFSnode::dump( OutFile * dest )
 {
-    dest->write( _name, 1, strlen( _name ) + 1 );
+    dest->write( _name, strlen( _name ) + 1 );
     dest->write( _offset );
     return 1;
 }
@@ -179,7 +179,7 @@ void HFSDirectory::dump()
         0xFFFFFFFF
     };
 
-    _output.write( header, sizeof( uint_32 ), 3 );
+    _output.write( header, 3, sizeof( uint_32 ) );
     _output.write( filesize );
 
     // Now dump the directory file itself.

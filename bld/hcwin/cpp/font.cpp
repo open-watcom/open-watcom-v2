@@ -65,7 +65,7 @@ FontName::~FontName()
 
 int FontName::dump( OutFile * dest )
 {
-    dest->write( _name, 1, FONT_NAME_LEN );
+    dest->write( _name, FONT_NAME_LEN );
     return 1;
 }
 
@@ -120,8 +120,8 @@ int FontDesc::dump( OutFile * dest )
         colours[i] = (uint_8) ((_rgb >> i*8) & 0xFF);
     }
 
-    dest->write( colours, 1, 3 );
-    dest->write( colours, 1, 3 );
+    dest->write( colours, 3 );
+    dest->write( colours, 3 );
     return 1;
 }
 

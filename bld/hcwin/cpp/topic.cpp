@@ -964,7 +964,7 @@ int HFTopic::dump( OutFile * dest )
 
     TopicLink       *current = _head;
     PageHeader      *cur_page = _phead->_next;
-    dest->write( _phead->_pageNums, sizeof( uint_32 ), 3 );
+    dest->write( _phead->_pageNums, 3, sizeof( uint_32 ) );
     uint_32     page_size = PAGE_HEADER_SIZE;
 
     // Write the linked list nodes in order.
@@ -982,13 +982,13 @@ int HFTopic::dump( OutFile * dest )
                 page_size++;
             }
             page_size = PAGE_HEADER_SIZE;
-            dest->write( cur_page->_pageNums, sizeof( uint_32 ), 3 );
+            dest->write( cur_page->_pageNums, 3, sizeof( uint_32 ) );
             cur_page = cur_page->_next;
         }
-    
+
         if( _useCompress ) {
             page_size += _myReader->add( current->_myData, current->_size );
-    
+
             // "Magic" check to see if the current node is a topic header
             // or a text header.  This is the only way to do it since
             // at this stage the node is just a binary data block.
@@ -1005,7 +1005,7 @@ int HFTopic::dump( OutFile * dest )
         } else {
             for( i = 0; i < 3; i++, current=current->_next ) {
                 page_size += current->_size;
-                dest->write( current->_myData, 1, current->_size );
+                dest->write( current->_myData, current->_size );
             }
         }
     }

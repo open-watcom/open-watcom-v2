@@ -109,7 +109,7 @@ public:
     size_t write( uint_32 d )
         { return fwrite( &d, sizeof( d ), 1, _fp ); };
 
-    size_t write( const void *buf, size_t el_size, size_t nelems )
+    size_t write( const void *buf, size_t nelems, size_t el_size=1 )
         { return fwrite( buf, el_size, nelems, _fp ); };
 };
 
