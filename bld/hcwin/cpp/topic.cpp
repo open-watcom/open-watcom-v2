@@ -1262,7 +1262,8 @@ void HFTopic::newNode( bool is_new_topic )
                 _browseOffset = ( _curOffset & ~( ( COMP_PAGE_SIZE << 2 ) - 1 ) ) << 1;
             }
             _curCharOffset = ( _curOffset & ~( ( COMP_PAGE_SIZE << 2 ) - 1 ) ) << 1;
-            _size = ( _numPages++ ) * COMP_PAGE_SIZE + PAGE_HEADER_SIZE;
+            _size = _numPages * COMP_PAGE_SIZE + PAGE_HEADER_SIZE;
+            _numPages++;
             if( _useCompress ) {
                 _myReader->flush();
                 if( _curNode->_recordType == TOP_HEADER ) {

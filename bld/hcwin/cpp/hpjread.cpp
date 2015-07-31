@@ -144,12 +144,12 @@ int HPJScanner::getLine()
             if( !isspace( current ) ) {
                 has_text = true;
             }
-    
+
             if( cur_len == _lineSize ) {
                 _lineSize += LINE_BLOCK;
                 _curLine = (char *)renew( _curLine, _lineSize );
             }
-    
+
             _curLine[cur_len++] = (char)current;
         }
         if( current == ';' && cur_len == 0 ) {
@@ -356,13 +356,13 @@ void HPJReader::parseFile()
             length = skipSection();
             continue;
         }
-    
+
         // Read in the name of the section.
         for( i=1; i < length ; i++ ) {
             if( _scanner[i] == ']' ) break;
             section[i - 1] = (char)toupper( _scanner[i] );
         }
-    
+
         // If the section name wasn't terminated properly, skip the section.
         if( i == length ) {
             HCWarning( HPJ_BADSECTION, _scanner.lineNum(), _scanner.name() );
@@ -370,7 +370,7 @@ void HPJReader::parseFile()
             continue;
         }
         section[i - 1] = '\0';
-    
+
         // Pass control to the appropriate "section handler".
         if( strcmp( section, SBaggage ) == 0 ) {
             length = handleBaggage();
@@ -402,19 +402,19 @@ void HPJReader::parseFile()
         _topFile = _rtfFiles;
         _firstDir = _root;
         _startDir = _homeDir;
-    
+
         _theFiles->_phrFile = new HFPhrases( _dir, &firstFile, &nextFile );
-    
+
         char    full_path[_MAX_PATH];
         char    drive[_MAX_DRIVE];
         char    dir[_MAX_DIR];
         char    fname[_MAX_FNAME];
         char    ext[_MAX_EXT];
-    
+
         _fullpath( full_path, _scanner.name(), _MAX_PATH );
         _splitpath( full_path, drive, dir, fname, ext );
         _makepath( full_path, drive, dir, fname, PhExt );
-    
+
         if( !_oldPhrases || !_theFiles->_phrFile->oldTable(full_path) ) {
             _theFiles->_phrFile->readPhrases();
             _theFiles->_phrFile->createQueue( full_path );
@@ -494,7 +494,7 @@ int HPJReader::handleOptions()
         result = _scanner.getLine();
         if( !result || _scanner[0] == '[' )
             break;
-    
+
         // Read in the name of the option.
         for( i=0; i<MAX_OPTION_LEN; i++ ) {
             if( isspace( _scanner[i] ) || _scanner[i] == '=' )
@@ -502,7 +502,7 @@ int HPJReader::handleOptions()
             option[i] = (char)toupper( _scanner[i] );
         }
         option[i] = '\0';
-    
+
         // At present, I only support a few options.
         // Most of these involve passing information to
         // the HFSystem object "_sysFile".
@@ -544,7 +544,7 @@ int HPJReader::handleOptions()
             arg = _scanner.getArg( i );
             _theFiles->_bitFiles->addToPath( arg );
         } else if( strcmp( option, SRoot ) == 0 ) {
-    
+
             // Update the search paths.
             arg = _scanner.getArg( i );
             StrNode *current;
@@ -554,7 +554,7 @@ int HPJReader::handleOptions()
                     current = current->_next;
                 }
             }
-    
+
             // There may be many directories specified on each line.
             if( arg != NULL ) {
                 int j;
@@ -942,20 +942,20 @@ int HPJReader::handleMap()
         token = _scanner.tokLine();
         if( token == NULL )
             continue;
-    
+
         // "#include" means go to another file.
         if( stricmp( token, Sinclude ) == 0 ) {
             includeMapFile( _scanner.endTok() );
             continue;
         }
-    
+
         // "#define" is an optional header, ignore it.
         if( stricmp( token, Sdefine ) == 0 ) {
             token = _scanner.tokLine();
         }
         if( token == NULL )
             continue;
-    
+
         // verify that the current token at this point is a context string.
         is_good_string = true;
         for( i=0; token[i] != '\0'; ++i ) {
@@ -1048,16 +1048,16 @@ void HPJReader::includeMapFile( char *str )
         not_done = ( input.getLine() != 0 );
         if( !not_done )
             break;
-    
+
         token = input.tokLine();
-    
+
         if( stricmp( token, Sinclude ) == 0 ) {
-    
+
             // "#include" directives may be nested.
             includeMapFile( input.endTok() );
             continue;
         } else if( stricmp( token, Sdefine ) == 0 ) {
-    
+
             // "#define" directives specify a context string.
             token = input.tokLine();
             if( token == NULL )
@@ -1082,7 +1082,7 @@ void HPJReader::includeMapFile( char *str )
                 }
             }
         } else if( strncmp( token, SstartComment, 2 ) == 0 ) {
-    
+
             // #include-d files may contain comments.
             int startcomment = input.lineNum();
             while( token != NULL && strstr( token, SendComment ) == NULL ) {
@@ -1093,7 +1093,7 @@ void HPJReader::includeMapFile( char *str )
                     not_done = ( input.getLine() != 0 );
                 } while( not_done );
             }
-    
+
             if( token == NULL ) {
                 HCWarning( HPJ_RUNONCOMMENT, startcomment, input.name() );
                 break;

@@ -243,27 +243,27 @@ unsigned CompReader::compress( char const source[], size_t amount )
 
     while( _current + MIN_READ <= _last ) {
         // Find the linked list corresponding to the current string.
-    
+
         hash_value = LocalHash( _buffer + _current );
         old_key_size = MIN_READ - 1;
         offset = _htable[hash_value];
-    
+
         _indices[_current] = offset;
         _htable[hash_value] = _current;
-    
+
         limit = READ_SIZE;
         if( limit > _last - _current ) {
             limit = _last - _current;
         }
-    
+
         while( offset >= _first ) {
             // Find the length of the longest common string
             // starting at offset and current.  Optimized
             // for a little extra speed.
-    
+
             p1 = _buffer + offset;
             p2 = _buffer + _current;
-    
+
             // Compare four bytes at a time.
             for( key_size = 0; key_size < limit; key_size += 4 ) {
                 if( *(uint_32 *)( p1 + key_size ) != *(uint_32 *)( p2 + key_size ) ) {
@@ -278,7 +278,7 @@ unsigned CompReader::compress( char const source[], size_t amount )
                     key_size += 1;
                 }
             }
-    
+
             if( key_size > old_key_size ) {
                 old_key_size = key_size;
                 best_match = offset;
@@ -288,9 +288,9 @@ unsigned CompReader::compress( char const source[], size_t amount )
             }
             offset = _indices[offset];
         }
-    
+
         // See if we found a match of usable size.
-    
+
         if( old_key_size < MIN_READ ) {
             result += _dest->putChr( _buffer[_current] );
             _current += 1;

@@ -44,7 +44,7 @@
 
 //  TokenTypes  --List of possible tokens.
 
-enum TokenTypes {   
+enum TokenTypes {
     TOK_PUSH_STATE,
     TOK_POP_STATE,
     TOK_COMMAND,

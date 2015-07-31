@@ -208,13 +208,13 @@ void *Pool::get()
     if( _pfree == NULL ) {
         unsigned char *index;
         unsigned char *temp = new unsigned char[_block * _size + sizeof( unsigned char * )];
-    
+
         for( index = temp; index < temp + ( _block - 1 ) * _size; index += _size ) {
             *((void **)index) = (void *)( index + _size );
         }
         *((void **)index) = NULL;
         *((unsigned char **)( index + _size )) = _array;
-    
+
         _pfree = (void *)( _array = temp );
     }
     result = _pfree;

@@ -478,7 +478,7 @@ uint_16 HFBitmaps::use( char const name[] )
     static char filename[9] = "|bm";
 
     // Check to see if this bitmap has already been referenced.
-    
+
     result = (uint_16)0;
     for( current = _usedFiles; current != NULL; current = current->_next ) {
         if( stricmp( name, current->_name ) == 0 )
@@ -510,7 +510,7 @@ uint_16 HFBitmaps::use( char const name[] )
         if( !current->_image->validImage() ) {
             throw ImageNotValid();  // EXCEPTION
         }
-    
+
         if( temp != NULL ) {
             temp->_next = current->_next;
         } else {
@@ -524,13 +524,13 @@ uint_16 HFBitmaps::use( char const name[] )
             bmp->open( name, true );
             chdir( _startDir );
         }
-    
+
         if( bmp->bad() ) {
             delete bmp;
             throw ImageNotFound();  // EXCEPTION
         } else {
             uint_16 magic;
-    
+
             bmp->reset();
             bmp->readbuf( &magic, 1, sizeof( uint_16 ) );
             switch( magic ) {
@@ -538,12 +538,12 @@ uint_16 HFBitmaps::use( char const name[] )
             case SHG1_MAGIC:
             case SHG2_MAGIC:
                 break;
-    
+
             default:
                 throw ImageNotSupported();  // EXCEPTION
             }
             bmp->reset();
-    
+
             current = new Image;
             current->_name = new char[strlen( name ) + 1];
             strcpy( current->_name, name );
