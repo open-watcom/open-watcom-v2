@@ -36,6 +36,7 @@
 #include "asmops.gh"
 
 typedef enum asm_cpu {
+        P_EMPTY = -1,
         /* bit count from left: ( need at least 7 bits )
            bit 0-2:   Math coprocessor
            bit 3:     Protected mode
