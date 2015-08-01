@@ -551,7 +551,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
         }
     } else if( typ->decl_type == TYPE_FUNCTION ) {
 
-        symb_flags = FLAG_NONE;
+        symb_flags = SYM_NONE;
         if( tree->op.opr == OPR_PUSHADDR ) {
             SymGet( &sym, tree->op.u2.sym_handle );
             decl_flags = sym.mods;

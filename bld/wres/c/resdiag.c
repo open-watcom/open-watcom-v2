@@ -22,6 +22,7 @@
 *    NON-INFRINGEMENT. Please see the License for the specific language
 *    governing rights and limitations under the License.
 *
+* 
 *  ========================================================================
 *
 * Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
@@ -176,7 +177,7 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID ha
     char    *newname;
 
     if( add_quotes ) {
-        if( head->MenuName != NULL || head->MenuName->name != NULL ) {
+        if( head->MenuName != NULL || head->MenuName->name[0] != '\0' ) {
             len = strlen( head->MenuName->name );
             newname = WRESALLOC( ( len + 3 ) * sizeof( char ) );
             newname[0] = '"';
@@ -562,7 +563,7 @@ static ControlClass *ReadControlClass( WResFileID handle )
     if( !error ) {
         newclass->Class = class;
         if( stringlen > 0 ) {
-            memcpy( &(newclass->ClassName[1]), restofstring, stringlen );
+            memcpy( newclass->ClassName + 1, restofstring, stringlen );
         }
     }
 
@@ -593,6 +594,7 @@ static ControlClass *Read32ControlClass( WResFileID handle )
         if( flags == 0xffff ) {
             error = ResReadUint16( &class, handle );
         } else {
+            class = flags & 0xFF;       /* first 16-bit UNICODE character */
             restofstring = ResRead32String( handle, &stringlen );
             stringlen++;    /* for the '\0' */
             error = (restofstring == NULL);
@@ -612,11 +614,9 @@ static ControlClass *Read32ControlClass( WResFileID handle )
 
     /* copy the class or string into the correct place */
     if( !error ) {
-        if( flags == 0xffff ) {
-            newclass->Class = class;
-        } else {
-            newclass->ClassName[0] = (char)( flags & 0x00ff );
-            memcpy( &(newclass->ClassName[1]), restofstring, stringlen );
+        newclass->Class = class;
+        if( flags != 0xffff ) {
+            memcpy( newclass->ClassName + 1, restofstring, stringlen );
         }
     }
 
@@ -755,7 +755,7 @@ ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *name )
                 WRES_ERROR( WRS_MALLOC_FAILED );
             } else {
                 /* +1 to copy the '\0' */
-                memcpy( &(class->ClassName), name->name, stringlen + 1 );
+                memcpy( class->ClassName, name->name, stringlen + 1 );
             }
         }
     }
@@ -779,8 +779,8 @@ ControlClass *ResNumToControlClass( uint_16 classnum )
         if( class == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            class->ClassName[0] = classnum;
-            class->ClassName[1] = '\0';
+            class->Class = classnum;
+            *(class->ClassName + 1) = '\0';
         }
     }
     return( class );

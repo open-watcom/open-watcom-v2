@@ -816,7 +816,6 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
 #define RINT    DOF_REP_INT
 #define RFLT    DOF_REP_FLT
 #define REP     ( DOF_REP_INT | DOF_REP_FLT )
-#define NONE    DOF_NONE
 
 static dir_table asm_directives[] = {
 //  { name,         func,                   parm,           flags }
@@ -826,21 +825,21 @@ static dir_table asm_directives[] = {
     { ".asciz",     dirFuncString,          DT_STR_NULL,    STR },
     { ".asciiz",    dirFuncString,          DT_STR_NULL,    STR },
 #ifdef _STANDALONE_
-    { ".bss",       dirFuncBSS,             DT_SEC_BSS,     INT | SYM | NONE },
+    { ".bss",       dirFuncBSS,             DT_SEC_BSS,     INT | SYM | DOF_NONE },
 #endif
     { ".byte",      dirFuncValues,          DT_VAL_INT8,    INT | RINT },
 #ifdef _STANDALONE_
     { ".comm",      dirFuncStorageAlloc,    DT_SEC_DATA,    INT | SYM },
-    { ".data",      dirFuncSwitchSection,   DT_SEC_DATA,    NONE },
-    { ".debug$P",   dirFuncSwitchSection,   DT_SEC_DEBUG_P, NONE },
-    { ".debug$S",   dirFuncSwitchSection,   DT_SEC_DEBUG_S, NONE },
-    { ".debug$T",   dirFuncSwitchSection,   DT_SEC_DEBUG_T, NONE },
+    { ".data",      dirFuncSwitchSection,   DT_SEC_DATA,    DOF_NONE },
+    { ".debug$P",   dirFuncSwitchSection,   DT_SEC_DEBUG_P, DOF_NONE },
+    { ".debug$S",   dirFuncSwitchSection,   DT_SEC_DEBUG_S, DOF_NONE },
+    { ".debug$T",   dirFuncSwitchSection,   DT_SEC_DEBUG_T, DOF_NONE },
 #endif
     { ".double",    dirFuncValues,          DT_VAL_DOUBLE,  FLT | RFLT },
 #ifdef _STANDALONE_
     { ".err",       dirFuncErr,             DT_NOPARM,      LINE },
 #endif
-    { ".even",      dirFuncIgnore,          DT_NOPARM,      NONE },
+    { ".even",      dirFuncIgnore,          DT_NOPARM,      DOF_NONE },
 #ifdef _STANDALONE_
     { ".extern",    dirFuncSetLinkage,      DT_LNK_GLOBAL,  SYM },
 #endif
@@ -857,15 +856,15 @@ static dir_table asm_directives[] = {
 #ifdef _STANDALONE_
     { ".new_section", dirFuncUserSection,   DT_USERSEC_NEW, SYM | STR },
 #endif
-    { "nop",        dirFuncNop,             DT_NOP_NOP,     NONE },
+    { "nop",        dirFuncNop,             DT_NOP_NOP,     DOF_NONE },
 #ifdef _STANDALONE_
-    { ".pdata",     dirFuncSwitchSection,   DT_SEC_PDATA,   NONE },
-    { ".rdata",     dirFuncSwitchSection,   DT_SEC_RDATA,   NONE },
-    { ".xdata",     dirFuncSwitchSection,   DT_SEC_XDATA,   NONE },
-    { ".ydata",     dirFuncSwitchSection,   DT_SEC_YDATA,   NONE },
+    { ".pdata",     dirFuncSwitchSection,   DT_SEC_PDATA,   DOF_NONE },
+    { ".rdata",     dirFuncSwitchSection,   DT_SEC_RDATA,   DOF_NONE },
+    { ".xdata",     dirFuncSwitchSection,   DT_SEC_XDATA,   DOF_NONE },
+    { ".ydata",     dirFuncSwitchSection,   DT_SEC_YDATA,   DOF_NONE },
 #ifdef AS_PPC
-    { ".reldata",   dirFuncSwitchSection,   DT_SEC_RELDATA, NONE },
-    { ".tocd",      dirFuncSwitchSection,   DT_SEC_TOCD,    NONE },
+    { ".reldata",   dirFuncSwitchSection,   DT_SEC_RELDATA, DOF_NONE },
+    { ".tocd",      dirFuncSwitchSection,   DT_SEC_TOCD,    DOF_NONE },
 #endif
     { ".section",   dirFuncUserSection,     DT_NOPARM,      SYM | STR },
 #endif
@@ -874,15 +873,15 @@ static dir_table asm_directives[] = {
     { ".space",     dirFuncSpace,           DT_NOPARM,      INT },
     { ".string",    dirFuncString,          DT_STR_NULL,    STR },
 #ifdef _STANDALONE_
-    { ".text",      dirFuncSwitchSection,   DT_SEC_TEXT,    NONE },
+    { ".text",      dirFuncSwitchSection,   DT_SEC_TEXT,    DOF_NONE },
 #endif
     { ".value",     dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
 #ifdef _STANDALONE_
     { ".version",   dirFuncIgnore,          DT_NOPARM,      LINE },
 #endif
 #if defined( AS_ALPHA )
-    { "unop",       dirFuncNop,             DT_NOP_NOP,     NONE },
-    { "fnop",       dirFuncNop,             DT_NOP_FNOP,    NONE },
+    { "unop",       dirFuncNop,             DT_NOP_NOP,     DOF_NONE },
+    { "fnop",       dirFuncNop,             DT_NOP_FNOP,    DOF_NONE },
 // The .quad directive is disabled because 64-bit integers are not parsed
 // properly
 //    { ".quad",      dirFuncValues,          DT_VAL_INT64,   INT | RINT },
