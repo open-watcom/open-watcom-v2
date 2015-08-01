@@ -118,12 +118,12 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 } else if( cmd[i+l] == EMACRO ) {
                     l += 1;
                     WString v;
-                    if( m.size() > 0 && m[0] == '%' ) {
+                    if( m.size() > 0 && *m == '%' ) {
                         m.deleteChar( 0 );
                         v.puts( getenv( m ) );
                     } else {
                         WVList list;
-                        if( m[0] == '#' ) {
+                        if( *m == '#' ) {
                             m.deleteChar( 0 );
                             MTool* t = _config->findTool( m );
                             if( !t ) {
@@ -236,7 +236,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                     } else if( com[l] == ')' ) {
                         l += 1;
                         WString v;
-                        if( m.size() > 0 && m[0] == '%' ) {
+                        if( m.size() > 0 && *m == '%' ) {
                             m.deleteChar( 0 );
                             v.puts( getenv( m ) );
                         } else {

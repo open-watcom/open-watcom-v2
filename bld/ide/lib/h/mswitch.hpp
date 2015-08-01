@@ -55,7 +55,7 @@ WCLASS MSwitch : public WObject
         void getTag( WString& tag );
         virtual void displayText( WString& s );
         bool hasText() { return( _text.size() > 0 ); }
-        bool isSetable() { return( _text.size() > 0 && _text[0] != ' ' ); }
+        bool isSetable() { return( _text.size() > 0 && *_text != ' ' ); }
         bool isTagEqual( WString& tag, int kludge=0 );
 #if CUR_CFG_VERSION > 4
         bool isTagEqual( MTool *tool, WString& mask, int kludge=0 );

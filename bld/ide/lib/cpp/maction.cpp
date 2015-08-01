@@ -130,10 +130,9 @@ int MAction::accelKey()
 {
     int accel = 0;
     if( _accelString.size() > 1 ) {
-        if( toupper(_accelString[0]) == 'F' ) {
-            //this line is not portable!
-            //it should call WCLASS for this mapping?????????
-            accel = 0x006F + atoi( &_accelString[1] );
+        if( toupper( *_accelString ) == 'F' ) {
+            WString x( &_accelString[(size_t)1] );
+            accel = 0x006F + (int)x;
         }
     }
     return( accel );
