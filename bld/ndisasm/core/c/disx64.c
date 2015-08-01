@@ -151,9 +151,9 @@ typedef enum {
 } SCALE;
 
 typedef enum {
-    W_DEFAULT = 0x1,
+    W_BYTE    = 0x0,    // Byte Size Operand
     W_FULL    = 0x1,    // Full Size Operand
-    W_BYTE    = 0x0     // Byte Size Operand
+    W_DEFAULT = W_FULL
 } WBIT;
 
 typedef enum {
@@ -165,9 +165,9 @@ typedef enum {
 } REGWIDTH;
 
 typedef enum {
-    S_DEFAULT = 0x0,
     S_FULL    = 0x0,    // Full Mode for Immediate Value Fetch
-    S_BYTE    = 0x1     // Byte Mode for Immediate Value Fetch
+    S_BYTE    = 0x1,    // Byte Mode for Immediate Value Fetch
+    S_DEFAULT = S_FULL
 } SBIT;
 
 typedef enum {
@@ -1399,15 +1399,15 @@ dis_handler_return X64SReg_8( dis_handle *h, void *d, dis_dec_ins *ins )
     switch( ins->type ) {
     case DI_X64_push3:
         oper = ins->num_ops++;
-        ins->op[oper].base = X64GetRegister( W_DEFAULT, REG_RSP, ins );
+        ins->op[oper].base = X64GetRegister( RW_DEFAULT, REG_RSP, ins );
         ins->op[oper].type = DO_MEMORY_ABS | DO_HIDDEN;
-        ins->op[oper].ref_type = X64GetRefType( W_DEFAULT, ins );
+        ins->op[oper].ref_type = X64GetRefType( RW_DEFAULT, ins );
         break;
     default:
         break;
     }
 #endif
-    X64GetSReg( W_DEFAULT, code.sreg.sreg, ins );
+    X64GetSReg( RW_DEFAULT, code.sreg.sreg, ins );
     return( DHR_DONE );
 }
 
@@ -1812,8 +1812,8 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
                 ins->type = DI_X64_nop;
 //            }
         } else {
-            X64GetReg( W_DEFAULT, REG_RAX, ins );
-            X64GetReg( W_DEFAULT, code.type2.reg, ins );
+            X64GetReg( RW_DEFAULT, REG_RAX, ins );
+            X64GetReg( RW_DEFAULT, code.type2.reg, ins );
         }
         return( DHR_DONE );
 
@@ -2022,9 +2022,9 @@ dis_handler_return X64SReg_16( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_X64_push4f:
     case DI_X64_push4g:
         oper = ins->num_ops++;
-        ins->op[oper].base = X64GetRegister( W_DEFAULT, REG_RSP, ins );
+        ins->op[oper].base = X64GetRegister( RW_DEFAULT, REG_RSP, ins );
         ins->op[oper].type = DO_MEMORY_ABS | DO_HIDDEN;
-        ins->op[oper].ref_type = X64GetRefType( W_DEFAULT, ins );
+        ins->op[oper].ref_type = X64GetRefType( RW_DEFAULT, ins );
         break;
     default:
         break;
@@ -2038,15 +2038,15 @@ dis_handler_return X64SReg_16( dis_handle *h, void *d, dis_dec_ins *ins )
         return( DHR_INVALID );
     }
 
-    X64GetSReg( W_DEFAULT, code.sreg.sreg, ins );
+    X64GetSReg( RW_DEFAULT, code.sreg.sreg, ins );
 
     switch( ins->type ) {
     case DI_X64_pop4f:
     case DI_X64_pop4g:
         oper = ins->num_ops++;
-        ins->op[oper].base = X64GetRegister( W_DEFAULT, REG_RSP, ins );
+        ins->op[oper].base = X64GetRegister( RW_DEFAULT, REG_RSP, ins );
         ins->op[oper].type = DO_MEMORY_ABS | DO_HIDDEN;
-        ins->op[oper].ref_type = X64GetRefType( W_DEFAULT, ins );
+        ins->op[oper].ref_type = X64GetRefType( RW_DEFAULT, ins );
         break;
     default:
         break;
@@ -2457,7 +2457,7 @@ dis_handler_return X64CRegReg_24( dis_handle *h, void *d, dis_dec_ins *ins )
     if( code.type2.dir ) {
         oper = ins->num_ops++;
         ins->op[1].type = DO_REG;
-        ins->op[1].base = X64GetRegister_D( W_DEFAULT, code.type2.rm, ins );
+        ins->op[1].base = X64GetRegister_D( RW_DEFAULT, code.type2.rm, ins );
         ins->op[0].type = DO_REG;
         ins->op[0].base = X64GetCRegister( W_DEFAULT, code.type2.reg, ins );
         if( ins->op[0].base == DR_NONE ) {
@@ -2465,7 +2465,7 @@ dis_handler_return X64CRegReg_24( dis_handle *h, void *d, dis_dec_ins *ins )
         }
     } else {
         ins->op[0].type = DO_REG;
-        ins->op[0].base = X64GetRegister_D( W_DEFAULT, code.type2.rm, ins );
+        ins->op[0].base = X64GetRegister_D( RW_DEFAULT, code.type2.rm, ins );
         ins->op[1].type = DO_REG;
         ins->op[1].base = X64GetCRegister( W_DEFAULT, code.type2.reg, ins );
         if( ins->op[1].base == DR_NONE ) {
@@ -2489,7 +2489,7 @@ dis_handler_return X64DRegReg_24( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->num_ops = 2;
     if( code.type2.dir ) {
         ins->op[1].type = DO_REG;
-        ins->op[1].base = X64GetRegister_D( W_DEFAULT, code.type2.rm, ins );
+        ins->op[1].base = X64GetRegister_D( RW_DEFAULT, code.type2.rm, ins );
         ins->op[0].type = DO_REG;
         ins->op[0].base = X64GetDRegister( W_DEFAULT, code.type2.reg, ins );
         if( ins->op[0].base == DR_NONE ) {
@@ -2497,7 +2497,7 @@ dis_handler_return X64DRegReg_24( dis_handle *h, void *d, dis_dec_ins *ins )
         }
     } else {
         ins->op[0].type = DO_REG;
-        ins->op[0].base = X64GetRegister_D( W_DEFAULT, code.type2.rm, ins );
+        ins->op[0].base = X64GetRegister_D( RW_DEFAULT, code.type2.rm, ins );
         ins->op[1].type = DO_REG;
         ins->op[1].base = X64GetDRegister( W_DEFAULT, code.type2.reg, ins );
         if( ins->op[1].base == DR_NONE ) {
