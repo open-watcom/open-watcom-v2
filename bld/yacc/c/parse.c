@@ -42,23 +42,26 @@
 #define INIT_RHS_SIZE       16
 
 typedef enum {
-    IDENTIFIER = 256,   /* includes identifiers and literals */
-    C_IDENTIFIER,       /* identifier (but not literal) followed by colon */
-    NUMBER,             /* -?[0-9]+ */
-    MARK,               /* %% */
-    LCURL,              /* %{ */
-    RCURL,              /* }% */
-    AMBIG,              /* %keywords */
-    KEYWORD_ID,
-    LEFT,
-    RIGHT,
-    NONASSOC,
-    TOKEN,
-    PREC,
-    TYPE,
-    START,
-    UNION,
-    TYPENAME,
+    /* ASCII_MIN = 0x0000 */
+    /* ASCII_MAX = 0x00FF */
+    T_IDENTIFIER = 0x0100,  /* includes identifiers and literals */
+    T_CIDENTIFIER,          /* identifier (but not literal) followed by colon */
+    T_NUMBER,               /* -?[0-9]+ */
+    T_MARK,                 /* %% */
+    T_LCURL,                /* %{ */
+    T_RCURL,                /* }% */
+    T_AMBIG,                /* %keywords */
+    T_KEYWORD_ID,
+    T_LEFT,
+    T_RIGHT,
+    T_NONASSOC,
+    T_TOKEN,
+    T_PREC,
+    T_TYPE,
+    T_START,
+    T_UNION,
+    T_TYPENAME,
+    T_EOF
 } a_token;
 
 typedef struct y_token {
@@ -121,7 +124,7 @@ static a_token scan_typename( unsigned used )
             addbuf( ch );
             nextc();
         } while( TYPENAME_NEXT_CHAR( ch ) );
-        token = TYPENAME;
+        token = T_TYPENAME;
     }
     addbuf( '\0' );
     value = 0;
@@ -284,15 +287,15 @@ void defs( void )
     scan( 0 );
     prec.prec = 0;
     prec.assoc = NON_ASSOC;
-    for( ; token != MARK; ) {
+    for( ; token != T_MARK; ) {
         switch( token ) {
-        case START:
-            if( scan( 0 ) != IDENTIFIER )
+        case T_START:
+            if( scan( 0 ) != T_IDENTIFIER )
                 msg( "Identifier needed after %%start.\n" );
             startsym = addsym( buf );
             scan( 0 );
             break;
-        case UNION:
+        case T_UNION:
             if( scan( 0 ) != '{' ) {
                 msg( "Need '{' after %%union.\n" );
             }
@@ -310,35 +313,35 @@ void defs( void )
             }
             scan( 0 );
             break;
-        case LCURL:
+        case T_LCURL:
             lineinfo();
             copycurl();
             scan( 0 );
             break;
-        case KEYWORD_ID:
+        case T_KEYWORD_ID:
             switch( scan( 0 ) ) {
-            case IDENTIFIER:
+            case T_IDENTIFIER:
                 sym = addsym( buf );
                 if( sym->token == 0 ) {
                     msg( "Token must be assigned number before %keyword_id\n" );
                 }
                 value = sym->token;
                 break;
-            case NUMBER:
+            case T_NUMBER:
                 break;
             default:
                 msg( "Expecting identifier or number.\n" );
             }
             keyword_id_low = value;
             switch( scan( 0 ) ) {
-            case IDENTIFIER:
+            case T_IDENTIFIER:
                 sym = addsym( buf );
                 if( sym->token == 0 ) {
                     msg( "Token must be assigned number before %keyword_id\n" );
                 }
                 value = sym->token;
                 break;
-            case NUMBER:
+            case T_NUMBER:
                 break;
             default:
                 msg( "Expecting identifier or number.\n" );
@@ -346,17 +349,17 @@ void defs( void )
             keyword_id_high = value;
             scan( 0 );
             break;
-        case LEFT:
-        case RIGHT:
-        case NONASSOC:
+        case T_LEFT:
+        case T_RIGHT:
+        case T_NONASSOC:
             ++prec.prec;
             prec.assoc = value;
             // pass through
-        case TOKEN:
-        case TYPE:
+        case T_TOKEN:
+        case T_TYPE:
             ctype = token;
             if( scan( 0 ) == '<' ) {
-                if( scan_typename( 0 ) != TYPENAME ) {
+                if( scan_typename( 0 ) != T_TYPENAME ) {
                     msg( "Expecting type specifier.\n" );
                 }
                 type = dupbuf();
@@ -367,7 +370,7 @@ void defs( void )
             } else {
                 type = NULL;
             }
-            while( token == IDENTIFIER ) {
+            while( token == T_IDENTIFIER ) {
                 sym = addsym( buf );
                 if( type != NULL && sym->type != NULL ) {
                     if( strcmp( sym->type, type ) != 0 ) {
@@ -376,16 +379,16 @@ void defs( void )
                     }
                 }
                 sym->type = type;
-                if( ctype == TYPE ) {
+                if( ctype == T_TYPE ) {
                     scan( 0 );
                 } else {
                     if( sym->token == 0 ) {
                         sym->token = (token_n)value;
                     }
-                    if( ctype != TOKEN ) {
+                    if( ctype != T_TOKEN ) {
                         sym->prec = prec;
                     }
-                    if( scan( 0 ) == NUMBER ) {
+                    if( scan( 0 ) == T_NUMBER ) {
                         if( sym->token != 0 ) {
                             if( sym->name[0] != '\'' ) {
                                 tlist_remove( sym->name );
@@ -423,15 +426,15 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
     a_SR_conflict_list      *en;
 
     absorbed_something = FALSE;
-    for( ; token == AMBIG; ) {
+    for( ; token == T_AMBIG; ) {
         /* syntax is "%ambig <number> <token>" */
         /* token has already been scanned by scanprec() */
-        if( scan( used ) != NUMBER || value < 0 ) {
+        if( scan( used ) != T_NUMBER || value < 0 ) {
             msg( "Expecting a non-negative number after %ambig.\n" );
             break;
         }
         index = value;
-        if( scan( used ) != IDENTIFIER ) {
+        if( scan( used ) != T_IDENTIFIER ) {
             msg( "Expecting a token name after %ambig <number>.\n" );
             break;
         }
@@ -460,9 +463,9 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
 
 static bool scanprec( unsigned used, a_sym **precsym )
 {
-    if( token != PREC )
+    if( token != T_PREC )
         return( FALSE );
-    if( scan( used ) != IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
+    if( scan( used ) != T_IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
         msg( "Expecting a token after %prec.\n" );
     }
     scan( used );
@@ -506,7 +509,7 @@ void rules( void )
     ambiguousstates = NULL;
     maxrhs = INIT_RHS_SIZE;
     rhs = CALLOC( maxrhs, a_sym * );
-    while( token == C_IDENTIFIER ) {
+    while( token == T_CIDENTIFIER ) {
         int sym_lineno = lineno;
         lhs = addsym( buf );
         if( lhs->token != 0 )
@@ -520,12 +523,12 @@ void rules( void )
             list_of_ambiguities = NULL;
             nrhs = 0;
             scanextra( 0, &precsym, &list_of_ambiguities );
-            for( ; token == '{' || token == IDENTIFIER; ) {
+            for( ; token == '{' || token == T_IDENTIFIER; ) {
                 if( token == '{' ) {
                     i = bufused;
                     scanextra( bufused, &precsym, &list_of_ambiguities );
                     numacts++;
-                    if( token == '{' || token == IDENTIFIER ) {
+                    if( token == '{' || token == T_IDENTIFIER ) {
                         sprintf( buffer, "$pro%d", npro );
                         sym = addsym( buffer );
                         copyact( npro, sym, rhs, nrhs, nrhs );
@@ -591,7 +594,7 @@ void rules( void )
                     scan( 0 );
                 } while( token == ';' );
             } else if( token != '|' ) {
-                if( token == C_IDENTIFIER ) {
+                if( token == T_CIDENTIFIER ) {
                     msg( "Missing ';'\n" );
                 } else {
                     msg( "Incorrect syntax.\n" );
@@ -635,9 +638,9 @@ static void copyfile( void )
 
 void tail( void )
 {
-    if( token == MARK ) {
+    if( token == T_MARK ) {
         copyfile();
-    } else if( token != EOF ) {
+    } else if( token != T_EOF ) {
         msg( "Expected end of file.\n" );
     }
 }
@@ -1064,7 +1067,7 @@ static void xlat_token( void )
     }
     addbuf( '\0' );
     value = 0;
-    token = IDENTIFIER;
+    token = T_IDENTIFIER;
 }
 
 static a_token scan( unsigned used )
@@ -1090,9 +1093,9 @@ static a_token scan( unsigned used )
         addbuf( '\0' );
         if( eatcrud() == ':' ) {
             nextc();
-            token = C_IDENTIFIER;
+            token = T_CIDENTIFIER;
         } else {
-            token = IDENTIFIER;
+            token = T_IDENTIFIER;
         }
         value = 0;
     } else if( isdigit( ch ) || ch == '-' ) {
@@ -1100,7 +1103,7 @@ static a_token scan( unsigned used )
             addbuf( ch );
         } while( isdigit( nextc() ) );
         addbuf( '\0' );
-        token = NUMBER;
+        token = T_NUMBER;
         value = atoi( buf );
     } else {
         switch( ch ) {
@@ -1127,7 +1130,7 @@ static a_token scan( unsigned used )
                 }
                 addbuf( '\'' );
                 value = ch;
-                token = IDENTIFIER;
+                token = T_IDENTIFIER;
                 need( "'" );
             } else {
                 xlat_token();
@@ -1138,66 +1141,68 @@ static a_token scan( unsigned used )
             copybal();
             break;
         case '<': case '>': case '|': case ';': case ',':
-        case EOF:
             token = ch;
+            break;
+        case EOF:
+            token = T_EOF;
             break;
         case '%':
             switch( nextc() ) {
             case '%':
-                token = MARK;
+                token = T_MARK;
                 break;
             case '{':
-                token = LCURL;
+                token = T_LCURL;
                 break;
             case '}':
-                token = RCURL;
+                token = T_RCURL;
                 break;
             case 'a':
                 need( "mbig" );
-                token = AMBIG;
+                token = T_AMBIG;
                 break;
             case 'k':
                 need( "eyword_id" );
-                token = KEYWORD_ID;
+                token = T_KEYWORD_ID;
                 break;
             case 'l':
                 need( "eft" );
-                token = LEFT;
+                token = T_LEFT;
                 value = L_ASSOC;
                 break;
             case 'n':
                 need( "onassoc" );
-                token = NONASSOC;
+                token = T_NONASSOC;
                 value = NON_ASSOC;
                 break;
             case 'p':
                 need( "rec" );
-                token = PREC;
+                token = T_PREC;
                 break;
             case 'r':
                 need( "ight" );
-                token = RIGHT;
+                token = T_RIGHT;
                 value = R_ASSOC;
                 break;
             case 's':
                 need( "tart" );
-                token = START;
+                token = T_START;
                 break;
             case 't':
                 nextc();
                 if( ch == 'o' ) {
                     need( "ken" );
-                    token = TOKEN;
+                    token = T_TOKEN;
                 } else if( ch == 'y' ) {
                     need( "pe" );
-                    token = TYPE;
+                    token = T_TYPE;
                 } else {
                     msg( "Expecting %%token or %%type.\n" );
                 }
                 break;
             case 'u':
                 need( "nion" );
-                token = UNION;
+                token = T_UNION;
                 break;
             default:
                 msg( "Unrecognized %% token.\n" );
