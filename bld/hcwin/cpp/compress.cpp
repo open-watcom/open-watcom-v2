@@ -143,30 +143,9 @@ void CompOutFile::dump()
 }
 
 
-//  CompReader::CompReader
+//  CompReader::shuffle --Make room in the buffer for new text.
 
-CompReader::CompReader( CompWriter *riter )
-    : _buffer( HOLD_BUF ),
-      _indices( HOLD_BUF ),
-      _htable( HTABLE_SIZE ),
-      _dest( riter ),
-      _last( 0 ),
-      _first( 0 ),
-      _current( 0 )
-{
-    // Set all of the hash table entries to -1.
-    for( size_t i = 0; i < HTABLE_SIZE; ++i ) {
-        _htable[i] = HTABLE_NIL;
-    }
-
-    *_indices = HTABLE_NIL;
-}
-
-
-//  CompReader::flush   --Throw out the buffered text and
-//            start compressing from scratch.
-
-void CompReader::flush( bool nodump )
+void CompReader::init()
 {
     _last = 0;
     _first = 0;
@@ -178,6 +157,27 @@ void CompReader::flush( bool nodump )
     }
 
     *_indices = HTABLE_NIL;
+}
+
+
+//  CompReader::CompReader
+
+CompReader::CompReader( CompWriter *riter )
+    : _buffer( HOLD_BUF ),
+      _indices( HOLD_BUF ),
+      _htable( HTABLE_SIZE ),
+      _dest( riter )
+{
+    init();
+}
+
+
+//  CompReader::flush   --Throw out the buffered text and
+//            start compressing from scratch.
+
+void CompReader::flush( bool nodump )
+{
+    init();
 
     if( !nodump ) {
         _dest->dump();
@@ -200,11 +200,14 @@ void CompReader::reset( CompWriter *riter, bool nodump )
 void CompReader::shuffle()
 {
     size_t  i;
+    size_t  len = _last - _first;
 
-    memmove( _buffer, _buffer + _first, _last - _first );
+    memmove( _buffer, _buffer + _first, len );
     HCTick();
 
-    for( i = 0; i < _last - _first && i < _current; ++i ) {
+    if( len > static_cast<size_t>( _current ) )
+        len = static_cast<size_t>( _current );
+    for( i = 0; i < len; ++i ) {
         if( _indices[i + _first] < _first ) {
             _indices[i] = HTABLE_NIL;
         } else {
@@ -238,7 +241,7 @@ unsigned CompReader::compress( char const source[], unsigned amount )
     memcpy( _buffer + _last, source, amount );
     _last += amount;
 
-    unsigned    hash_value;
+    size_t      hash_value;
     int         key_size, old_key_size;
     int         offset;
     int         best_match = 0;
@@ -252,7 +255,7 @@ unsigned CompReader::compress( char const source[], unsigned amount )
         old_key_size = MIN_READ - 1;
 
         offset = _htable[hash_value];
-        _indices[(size_t)_current] = offset;
+        _indices[static_cast<size_t>( _current )] = offset;
         _htable[hash_value] = _current;
 
         limit = READ_SIZE;
@@ -277,7 +280,7 @@ unsigned CompReader::compress( char const source[], unsigned amount )
             if( key_size > limit ) {
                 key_size = limit;
             } else {
-                while( key_size < limit && _buffer[(size_t)(offset + key_size)] == _buffer[(size_t)(_current + key_size)] ) {
+                while( key_size < limit && _buffer[static_cast<size_t>( offset + key_size )] == _buffer[static_cast<size_t>( _current + key_size )] ) {
                     key_size += 1;
                 }
             }
@@ -289,13 +292,13 @@ unsigned CompReader::compress( char const source[], unsigned amount )
                     break;
                 }
             }
-            offset = _indices[(size_t)offset];
+            offset = _indices[static_cast<size_t>( offset )];
         }
 
         // See if we found a match of usable size.
 
         if( old_key_size < MIN_READ ) {
-            result += _dest->putChr( _buffer[(size_t)_current] );
+            result += _dest->putChr( _buffer[static_cast<size_t>( _current )] );
             _current += 1;
         } else {
             result += _dest->putCode( _current - best_match, old_key_size );
@@ -309,7 +312,7 @@ unsigned CompReader::compress( char const source[], unsigned amount )
     // If there's text left over, dump it to output.
 
     while( _current < _last ) {
-        result += _dest->putChr( _buffer[(size_t)(_current++)] );
+        result += _dest->putChr( _buffer[static_cast<size_t>( _current++ )] );
     }
     if( _current > HOLD_SIZE ) {
         _first = _current - HOLD_SIZE;

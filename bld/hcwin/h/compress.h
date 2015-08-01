@@ -107,4 +107,6 @@ public:
     void    flush( bool nodump = false );
 
     void    reset( CompWriter *riter, bool nodump = false );
+private:
+    void    init();
 };
