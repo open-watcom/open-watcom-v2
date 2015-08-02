@@ -867,7 +867,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
         DoAddResource( FmtData.resource );
         FmtData.resource = NULL;
     }
-    status = OpenResFiles( (ExtraRes *)FmtData.u.pe.resources, &rinfo, &allopen, RC_TARGET_OS_WIN32, Root->outfile->fname );
+    status = OpenResFiles( (ExtraRes *)FmtData.u.pe.resources, &rinfo, &allopen, EXE_TYPE_PE, Root->outfile->fname );
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;
