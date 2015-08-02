@@ -113,8 +113,8 @@ cfloat  *CFAlloc( size_t size ) {
     number->exp = 1;
     number->len = 1;
     number->alloc = size;
-    number->mant[0] = '0';
-    number->mant[1] = NULLCHAR;
+    *number->mant = '0';
+    *(number->mant + 1) = NULLCHAR;
     return( number );
 }
 

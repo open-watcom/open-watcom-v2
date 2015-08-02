@@ -89,9 +89,9 @@ char    *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
     if( f->sign == -1 ) {
         *buffer++ = '-';
     }
-    *buffer++ = f->mant[0];
+    *buffer++ = *f->mant;
     *buffer++ = '.';                            /* don't forget decimal point!*/
-    memcpy( buffer, &f->mant[1], len );         /* copy mantissa*/
+    memcpy( buffer, f->mant + 1, len );         /* copy mantissa*/
     buffer += len;
     *buffer++ = 'E';
     if( f->exp > 0 ) {
@@ -217,7 +217,7 @@ cfloat  *CFTrunc( cfloat *f ) {
     if( new->len <= len )
         return( new );
     new->len = len;
-    new->mant[ len ] = NULLCHAR;
+    *(new->mant + len) = NULLCHAR;
     return( new );
 }
 
@@ -233,11 +233,11 @@ cfloat  *CFRound( cfloat *f ) {
     len = f->exp;
     if( f->len <= len ) return( CFCopy( f ) );
     trim = CFTrunc( f );
-    if( f->mant[ len ] < '5' ) return( trim );
+    if( *(f->mant + len) < '5' ) return( trim );
     if( f->sign < 0 && f->len == ( len + 1 ) ) return( trim );
     addto = CFAlloc( 1 );
     addto->sign = f->sign;
-    addto->mant[0] = '1';
+    *addto->mant = '1';
     new = CFAdd( trim, addto );
     CFFree( trim );
     CFFree( addto );
