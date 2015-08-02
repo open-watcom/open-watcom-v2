@@ -452,33 +452,58 @@ static bool dirFuncString( directive_t *dir, dir_table_enum parm )
 static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm )
 //***********************************************************************
 {
+    reserved_section    as_section = 0;
+
     dir = dir;
 
     switch( parm ) {
-    /* The ones that need autoAlignment are here. */
     case DT_SEC_TEXT:
-    case DT_SEC_DATA:
+        /* The ones that need autoAlignment are here. */
         autoAlignment = TRUE;
-        // fall through
+        as_section = AS_SECTION_TEXT;
+        break;
+    case DT_SEC_DATA:
+        /* The ones that need autoAlignment are here. */
+        autoAlignment = TRUE;
+        as_section = AS_SECTION_DATA;
+        break;
     case DT_SEC_BSS:
+        as_section = AS_SECTION_BSS;
+        break;
     case DT_SEC_PDATA:
+        as_section = AS_SECTION_PDATA;
+        break;
     case DT_SEC_DEBUG_P:
+        as_section = AS_SECTION_DEBUG_P;
+        break;
     case DT_SEC_DEBUG_S:
+        as_section = AS_SECTION_DEBUG_S;
+        break;
     case DT_SEC_DEBUG_T:
+        as_section = AS_SECTION_DEBUG_T;
+        break;
     case DT_SEC_RDATA:
+        as_section = AS_SECTION_RDATA;
+        break;
     case DT_SEC_XDATA:
+        as_section = AS_SECTION_XDATA;
+        break;
     case DT_SEC_YDATA:
+        as_section = AS_SECTION_YDATA;
+        break;
 #ifdef AS_PPC
     case DT_SEC_RELDATA:
-    case DT_SEC_TOCD:
-#endif
-        // these enum values should correspond to reserved_section enums
-        ObjSwitchSection( parm );
+        as_section = AS_SECTION_RELDATA;
         break;
+    case DT_SEC_TOCD:
+        as_section = AS_SECTION_TOCD;
+        break;
+#endif
     default:
         Error( INTERNAL_UNKNOWN_SECTYPE );
         return( FALSE );
     }
+    ObjSwitchSection( as_section );
     return( TRUE );
 }
 #endif
@@ -501,7 +526,7 @@ static bool dirFuncUserSection( directive_t *dir, dir_table_enum parm )
     dir_operand                 *dirop;
     sym_handle                  sym;
     char                        *str, *s;
-    owl_section_type            type = OWL_SEC_ATTR_NONE;
+    owl_section_type            type = 0;
     owl_section_type            *ptype;
     owl_alignment               align = 0;
 
@@ -656,7 +681,7 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
 #endif
     if( autoAlignment ) {
         prev_alignment = CurrAlignment;
-        CurrAlignment = data_table[TABLE_IDX(parm)].alignment;
+        CurrAlignment = data_table[TABLE_IDX( parm )].alignment;
     }
     dirop = dir->operand_list;
     opnum = 0;
@@ -760,37 +785,37 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
         }
 #ifdef _STANDALONE_
         // only align for the first data operand
-        ObjEmitData( CurrentSection, data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size, ( opnum == 0 ) );
+        ObjEmitData( CurrentSection, data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size, ( opnum == 0 ) );
 #else
         // only align for the first data operand
-        ObjEmitData( data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size, ( opnum == 0 ) );
+        ObjEmitData( data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size, ( opnum == 0 ) );
 #endif
         for( rep--; rep > 0; rep-- ) {
 #ifdef _STANDALONE_
-            OWLEmitData( CurrentSection, data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size );
+            OWLEmitData( CurrentSection, data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size );
 #else
-            ObjDirectEmitData( data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size );
+            ObjDirectEmitData( data_table[TABLE_IDX( parm )].ptr, data_table[TABLE_IDX( parm )].size );
 #endif
 #if 0
-            printf( "Size=%d\n", data_table[TABLE_IDX(parm)].size );
+            printf( "Size=%d\n", data_table[TABLE_IDX( parm )].size );
             switch( parm ) {
             case DT_VAL_INT8:
-                printf( "Out->%d\n", *(int_8 *)(data_table[TABLE_IDX(parm)].ptr) );
+                printf( "Out->%d\n", *(int_8 *)(data_table[TABLE_IDX( parm )].ptr) );
                 break;
             case DT_VAL_DOUBLE:
-                printf( "Out->%lf\n", *(double *)(data_table[TABLE_IDX(parm)].ptr) );
+                printf( "Out->%lf\n", *(double *)(data_table[TABLE_IDX( parm )].ptr) );
                 break;
             case DT_VAL_FLOAT:
-                printf( "Out->%f\n", *(float *)(data_table[TABLE_IDX(parm)].ptr) );
+                printf( "Out->%f\n", *(float *)(data_table[TABLE_IDX( parm )].ptr) );
                 break;
             case DT_VAL_INT16:
-                printf( "Out->%d\n", *(int_16 *)(data_table[TABLE_IDX(parm)].ptr) );
+                printf( "Out->%d\n", *(int_16 *)(data_table[TABLE_IDX( parm )].ptr) );
                 break;
             case DT_VAL_INT32:
-                printf( "Out->%d\n", *(int_32 *)(data_table[TABLE_IDX(parm)].ptr) );
+                printf( "Out->%d\n", *(int_32 *)(data_table[TABLE_IDX( parm )].ptr) );
                 break;
             case DT_VAL_INT64:
-                printf( "Out->%d\n", ((signed_64 *)(data_table[TABLE_IDX(parm)].ptr))->_32[0] );
+                printf( "Out->%d\n", ((signed_64 *)(data_table[TABLE_IDX( parm )].ptr))->_32[0] );
                 break;
             default:
                 assert( FALSE );
@@ -807,54 +832,48 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
 }
 
 
-#define INT     DOF_INT
-#define FLT     DOF_FLT
-#define NUM     ( DOF_INT | DOF_FLT )
-#define SYM     ( DOF_SYM | DOF_NUMREF )
-#define LINE    DOF_LINE
-#define STR     DOF_STR
-#define RINT    DOF_REP_INT
-#define RFLT    DOF_REP_FLT
-#define REP     ( DOF_REP_INT | DOF_REP_FLT )
+#define DOF_NUM     ( DOF_INT | DOF_FLT )
+#define DOF_REF     ( DOF_SYM | DOF_NUMREF )
+#define DOF_REP     ( DOF_REP_INT | DOF_REP_FLT )
 
 static dir_table asm_directives[] = {
 //  { name,         func,                   parm,           flags }
-    { ".address",   dirFuncValues,          DT_VAL_INT32,   INT | SYM },
-    { ".align",     dirFuncAlign,           DT_NOPARM,      INT },
-    { ".ascii",     dirFuncString,          DT_STR_NONULL,  STR },
-    { ".asciz",     dirFuncString,          DT_STR_NULL,    STR },
-    { ".asciiz",    dirFuncString,          DT_STR_NULL,    STR },
+    { ".address",   dirFuncValues,          DT_VAL_INT32,   DOF_INT | DOF_REF },
+    { ".align",     dirFuncAlign,           DT_NOPARM,      DOF_INT },
+    { ".ascii",     dirFuncString,          DT_STR_NONULL,  DOF_STR },
+    { ".asciz",     dirFuncString,          DT_STR_NULL,    DOF_STR },
+    { ".asciiz",    dirFuncString,          DT_STR_NULL,    DOF_STR },
 #ifdef _STANDALONE_
-    { ".bss",       dirFuncBSS,             DT_SEC_BSS,     INT | SYM | DOF_NONE },
+    { ".bss",       dirFuncBSS,             DT_SEC_BSS,     DOF_INT | DOF_REF | DOF_NONE },
 #endif
-    { ".byte",      dirFuncValues,          DT_VAL_INT8,    INT | RINT },
+    { ".byte",      dirFuncValues,          DT_VAL_INT8,    DOF_INT | DOF_REP_INT },
 #ifdef _STANDALONE_
-    { ".comm",      dirFuncStorageAlloc,    DT_SEC_DATA,    INT | SYM },
+    { ".comm",      dirFuncStorageAlloc,    DT_SEC_DATA,    DOF_INT | DOF_REF },
     { ".data",      dirFuncSwitchSection,   DT_SEC_DATA,    DOF_NONE },
     { ".debug$P",   dirFuncSwitchSection,   DT_SEC_DEBUG_P, DOF_NONE },
     { ".debug$S",   dirFuncSwitchSection,   DT_SEC_DEBUG_S, DOF_NONE },
     { ".debug$T",   dirFuncSwitchSection,   DT_SEC_DEBUG_T, DOF_NONE },
 #endif
-    { ".double",    dirFuncValues,          DT_VAL_DOUBLE,  FLT | RFLT },
+    { ".double",    dirFuncValues,          DT_VAL_DOUBLE,  DOF_FLT | DOF_REP_FLT },
 #ifdef _STANDALONE_
-    { ".err",       dirFuncErr,             DT_NOPARM,      LINE },
+    { ".err",       dirFuncErr,             DT_NOPARM,      DOF_LINE },
 #endif
     { ".even",      dirFuncIgnore,          DT_NOPARM,      DOF_NONE },
 #ifdef _STANDALONE_
-    { ".extern",    dirFuncSetLinkage,      DT_LNK_GLOBAL,  SYM },
+    { ".extern",    dirFuncSetLinkage,      DT_LNK_GLOBAL,  DOF_REF },
 #endif
-    { ".float",     dirFuncValues,          DT_VAL_FLOAT,   FLT | RFLT },
+    { ".float",     dirFuncValues,          DT_VAL_FLOAT,   DOF_FLT | DOF_REP_FLT },
 #ifdef _STANDALONE_
-    { ".globl",     dirFuncSetLinkage,      DT_LNK_GLOBAL,  SYM },
+    { ".globl",     dirFuncSetLinkage,      DT_LNK_GLOBAL,  DOF_REF },
 #endif
-    { ".half",      dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
+    { ".half",      dirFuncValues,          DT_VAL_INT16,   DOF_INT | DOF_REP_INT | DOF_REF },
 #ifdef _STANDALONE_
-    { ".ident",     dirFuncIgnore,          DT_NOPARM,      LINE },
-    { ".lcomm",     dirFuncStorageAlloc,    DT_SEC_BSS,     INT | SYM },
+    { ".ident",     dirFuncIgnore,          DT_NOPARM,      DOF_LINE },
+    { ".lcomm",     dirFuncStorageAlloc,    DT_SEC_BSS,     DOF_INT | DOF_REF },
 #endif
-    { ".long",      dirFuncValues,          DT_VAL_INT32,   INT | RINT | SYM },
+    { ".long",      dirFuncValues,          DT_VAL_INT32,   DOF_INT | DOF_REP_INT | DOF_REF },
 #ifdef _STANDALONE_
-    { ".new_section", dirFuncUserSection,   DT_USERSEC_NEW, SYM | STR },
+    { ".new_section", dirFuncUserSection,   DT_USERSEC_NEW, DOF_REF | DOF_STR },
 #endif
     { "nop",        dirFuncNop,             DT_NOP_NOP,     DOF_NONE },
 #ifdef _STANDALONE_
@@ -866,18 +885,18 @@ static dir_table asm_directives[] = {
     { ".reldata",   dirFuncSwitchSection,   DT_SEC_RELDATA, DOF_NONE },
     { ".tocd",      dirFuncSwitchSection,   DT_SEC_TOCD,    DOF_NONE },
 #endif
-    { ".section",   dirFuncUserSection,     DT_NOPARM,      SYM | STR },
+    { ".section",   dirFuncUserSection,     DT_NOPARM,      DOF_REF | DOF_STR },
 #endif
-    { ".set",       dirFuncSetOption,       DT_NOPARM,      LINE },
-    { ".short",     dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
-    { ".space",     dirFuncSpace,           DT_NOPARM,      INT },
-    { ".string",    dirFuncString,          DT_STR_NULL,    STR },
+    { ".set",       dirFuncSetOption,       DT_NOPARM,      DOF_LINE },
+    { ".short",     dirFuncValues,          DT_VAL_INT16,   DOF_INT | DOF_REP_INT | DOF_REF },
+    { ".space",     dirFuncSpace,           DT_NOPARM,      DOF_INT },
+    { ".string",    dirFuncString,          DT_STR_NULL,    DOF_STR },
 #ifdef _STANDALONE_
     { ".text",      dirFuncSwitchSection,   DT_SEC_TEXT,    DOF_NONE },
 #endif
-    { ".value",     dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
+    { ".value",     dirFuncValues,          DT_VAL_INT16,   DOF_INT | DOF_REP_INT | DOF_REF },
 #ifdef _STANDALONE_
-    { ".version",   dirFuncIgnore,          DT_NOPARM,      LINE },
+    { ".version",   dirFuncIgnore,          DT_NOPARM,      DOF_LINE },
 #endif
 #if defined( AS_ALPHA )
     { "unop",       dirFuncNop,             DT_NOP_NOP,     DOF_NONE },
@@ -885,15 +904,15 @@ static dir_table asm_directives[] = {
 // The .quad directive is disabled because 64-bit integers are not parsed
 // properly
 //    { ".quad",      dirFuncValues,          DT_VAL_INT64,   INT | RINT },
-    { ".s_floating",dirFuncValues,          DT_VAL_FLOAT,   FLT | RFLT },
-    { ".t_floating",dirFuncValues,          DT_VAL_DOUBLE,  FLT | RFLT },
-    { ".word",      dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
+    { ".s_floating",dirFuncValues,          DT_VAL_FLOAT,   DOF_FLT | DOF_REP_FLT },
+    { ".t_floating",dirFuncValues,          DT_VAL_DOUBLE,  DOF_FLT | DOF_REP_FLT },
+    { ".word",      dirFuncValues,          DT_VAL_INT16,   DOF_INT | DOF_REP_INT | DOF_REF },
 #elif defined( AS_PPC )
-    { ".word",      dirFuncValues,          DT_VAL_INT32,   INT | RINT | SYM },
-    { ".little_endian", dirFuncIgnore,      DT_NOPARM,      LINE },
-    { ".big_endian",    dirFuncUnsupported, DT_NOPARM,      LINE },
+    { ".word",      dirFuncValues,          DT_VAL_INT32,   DOF_INT | DOF_REP_INT | DOF_REF },
+    { ".little_endian", dirFuncIgnore,      DT_NOPARM,      DOF_LINE },
+    { ".big_endian",    dirFuncUnsupported, DT_NOPARM,      DOF_LINE },
 #elif defined( AS_MIPS )
-    { ".word",      dirFuncValues,          DT_VAL_INT32,   INT | RINT | SYM },
+    { ".word",      dirFuncValues,          DT_VAL_INT32,   DOF_INT | DOF_REP_INT | DOF_REF },
 #endif
 };
 
