@@ -261,12 +261,12 @@ void CPreviewDC::MirrorMappingMode( BOOL bCompute )
         // Increase the extents so that they won't get rounded down to zero when doing
         // the conversions.
         while( m_sizeWinExt.cx > -20000 && m_sizeWinExt.cx < 20000 &&
-               m_sizeVpExt.cx > -20000 && m_sizeWinExt.cx < 20000 ) {
+               m_sizeVpExt.cx > -20000 && m_sizeVpExt.cx < 20000 ) {
             m_sizeWinExt.cx <<= 1;
             m_sizeVpExt.cx <<= 1;
         }
         while( m_sizeWinExt.cy > -20000 && m_sizeWinExt.cy < 20000 &&
-               m_sizeVpExt.cy > -20000 && m_sizeWinExt.cy < 20000 ) {
+               m_sizeVpExt.cy > -20000 && m_sizeVpExt.cy < 20000 ) {
             m_sizeWinExt.cy <<= 1;
             m_sizeVpExt.cy <<= 1;
         }
