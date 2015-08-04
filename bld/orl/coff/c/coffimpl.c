@@ -495,15 +495,16 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym * import
         break;
     }
 
+    type = 0;
     ordinal = import->ordinal;
     if( import->type == IMPORT_OBJECT_ORDINAL) {
 /* .idata$5 section data - ordinal */
         AddDataImpLib( coff_file_hnd, &ordinal, sizeof(ordinal) );
         type = 0x8000;
-        AddDataImpLib( coff_file_hnd, &type, sizeof(type) );
+        AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
 /* .idata$4 section data - ordinal */
         AddDataImpLib( coff_file_hnd, &ordinal, sizeof(ordinal) );
-        AddDataImpLib( coff_file_hnd, &type, sizeof(type) );
+        AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
     } else {
         switch( import->processor ) {
         case IMAGE_FILE_MACHINE_ALPHA:

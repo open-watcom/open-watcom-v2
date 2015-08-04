@@ -33,6 +33,7 @@
 #ifndef ORL_LEVEL_INCLUDED
 #define ORL_LEVEL_INCLUDED
 
+#include "orl.h"
 #include "orlintnl.h"
 #include "cofforl.h"
 #include "elforl.h"
