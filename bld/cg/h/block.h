@@ -31,7 +31,6 @@
 
 
 #include "dominati.h"
-#include "blocknum.h"
 
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U

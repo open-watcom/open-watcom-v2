@@ -43,5 +43,6 @@
 #include "optdata.h"
 #include "hwreg.h"
 #include "typclass.h"
+#include "blocknum.h"
 #include "name.h"
 #include "opcodes.h"
