@@ -33,8 +33,6 @@
 #define OBJREC_H    1
 
 typedef struct obj_rec      obj_rec;
-typedef struct linnum_data  linnum_data;
-typedef struct pubdef_data  pubdef_data;
 
 #include "watcom.h"
 #include "pcobj.h"
