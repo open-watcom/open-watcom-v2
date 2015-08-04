@@ -132,11 +132,11 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
         r_entry = NULL;
     }
 
-    flags.u.all = 0;
+    flags.u.all = DIF_NONE;
     if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
         if( ( GetFormat() != ORL_OMF ) ||
             ( ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32 ) ) {
-            flags.u.all = DIF_X86_USE32_FLAGS;
+            flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
         is_intel = 1;
     } else {

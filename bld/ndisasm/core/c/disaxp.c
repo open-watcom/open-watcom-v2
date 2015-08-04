@@ -146,7 +146,7 @@ dis_handler_return AXPMemoryLA( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     AXPMemory( h, d, ins );
     ins->op[1].type = DO_ABSOLUTE;
-    ins->op[1].ref_type = DR_NONE;
+    ins->op[1].ref_type = DRT_NONE;
     return( DHR_DONE );
 }
 

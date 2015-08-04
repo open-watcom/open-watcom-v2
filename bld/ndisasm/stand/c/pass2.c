@@ -648,11 +648,11 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
     PrintHeader( sec );
     if( size && sec_label_list )
         PrintAssumeHeader( sec );
-    flags.u.all = 0;
+    flags.u.all = DIF_NONE;
     if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
         if( ( GetFormat() != ORL_OMF ) ||
             ( ORLSecGetFlags( sec->shnd ) & ORL_SEC_FLAG_USE_32 ) ) {
-            flags.u.all = DIF_X86_USE32_FLAGS;
+            flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
         is_intel = 1;
     } else {
