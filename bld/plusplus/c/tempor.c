@@ -58,7 +58,7 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
 {
     SYMBOL sym;                 // - symbol for temporary
     NAME name;                  // - name for temporary
-    symbol_class id;            // - class for symbol
+    symbol_class id = SC_NULL;  // - class for symbol
 
 #if 0
     if( ( type->id == TYP_POINTER ) && ( type->flag & TF1_REFERENCE ) ) {

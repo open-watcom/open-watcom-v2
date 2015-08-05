@@ -1584,7 +1584,7 @@ static PTREE doCastResult           // DO CAST RESULT
     ( CONVCTL* ctl                  // - cast info
     , CAST_RESULT result )          // - cast result
 {
-    PTREE expr;                     // - resultant expression
+    PTREE expr = NULL;              // - resultant expression
     CNV_RETN retn;                  // - conversion indication
 
     switch( result ) {

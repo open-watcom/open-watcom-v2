@@ -8066,7 +8066,7 @@ static SYMBOL templateArgTypedef( TYPE type )
 static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
 {
     SYMBOL addr_sym;
-    SYMBOL sym;
+    SYMBOL sym = NULL;
     TYPE parm_type;
 
     parm_type = parm->type;

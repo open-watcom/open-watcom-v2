@@ -1030,7 +1030,7 @@ static OV_RESULT compareArgument(
   , TYPE *second_type
   , FNOV_CONTROL control )
 {
-    OV_RESULT         retn;
+    OV_RESULT         retn = OV_CMP_UNDEFINED;
     FNOV_COARSE_RANK  firstrank;
     FNOV_COARSE_RANK  secondrank;
 

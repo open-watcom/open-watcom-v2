@@ -341,7 +341,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     VBUF buffer;                // - printing buffer
     char buf[16];               // - buffer
     int numb;                   // - a numeric value
-    const char *name;           // - name to be printed
+    const char *name = NULL;    // - name to be printed
     bool sign;                  // - TRUE ==> signed enum
     unsigned mask;              // - used to mask to true size
     unsigned val;               // - value as unsigned
