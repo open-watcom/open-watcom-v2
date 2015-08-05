@@ -384,9 +384,9 @@ static bool dataInitCheckHugeAlign( TYPE type )
     }
     base_size = CgMemorySize( type );
 #if _CPU == 8086
-    return( ( base_size % (TARGET_UINT_MAX + 1) ) != 0 );
+    return( ( (TARGET_UINT_MAX + 1) % base_size ) != 0 );
 #else
-    return( base_size != 0 );
+    return( FALSE );
 #endif
 }
 
