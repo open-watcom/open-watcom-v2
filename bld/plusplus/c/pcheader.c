@@ -76,7 +76,7 @@ static pch_status (*finiFunctions[])( bool ) = {
 #define PCH_EXEC( s, g )        PCHFini##g,
 #include "pcregdef.h"
 };
-static pch_status (*relocFunctions[])( char *, unsigned ) = {
+static pch_status (*relocFunctions[])( char *, size_t ) = {
 #define PCH_RELOC( s, g )       PCHReloc##g,
 #include "pcregdef.h"
 };
