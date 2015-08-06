@@ -198,12 +198,12 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
             sprintf( buff, "%s%s%s%c$%ld", int_pref, frame, sep,
                      LabelChar, (long)l_entry->label.number );
             if( l_entry->offset > size ) {
-                return( ERROR );
+                return( RC_ERROR );
             }
             break;
         }
     }
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
@@ -231,7 +231,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_26:
             error = referenceString( *r_entry, sec_size, "j^", "", "",
                                      buff, flags );
-            if( error != OKAY ) {
+            if( error != RC_OKAY ) {
                 // label is defined to be beyond the boundaries of the section!
                 if( !(DFormat & DFF_ASM) ){
                     BufferStore("\t     %04X", offset );

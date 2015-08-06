@@ -76,7 +76,7 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry,
                 }
             }
             CreateUnnamedLabel( r_entry->label->shnd, value, &rs );
-            if( rs.error == OKAY ) {
+            if( rs.error == RC_OKAY ) {
                 r_entry->label = rs.entry;
                 r_entry->no_val = 1;
             }
@@ -181,7 +181,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
         dr = DisDecode( &DHnd, &sds, &decoded );
         // if an invalid instruction was found, there is nothing we can do.
         if( dr != DR_OK )
-            return( ERROR );
+            return( RC_ERROR );
 
         for( i = 0; i < decoded.num_ops; ++i ) {
             adjusted = 0;
@@ -241,7 +241,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
                             }
                             CreateUnnamedLabel( r_entry->label->shnd, value, &rs );
                         }
-                        if( rs.error != OKAY )
+                        if( rs.error != RC_OKAY )
                             return( rs.error );
                         r_entry->label = rs.entry;
                     } else {
@@ -265,13 +265,13 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
                                 // labels for memory references if no symbol is present
                                 // (ex: executable file)
                                 CreateUnnamedLabel( shnd, decoded.op[i].value, &rs );
-                                if( rs.error != OKAY )
+                                if( rs.error != RC_OKAY )
                                     return( rs.error );
                                 error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos );
                             } else {
                                 // create an LTYP_ABSOLUTE label
                                 CreateAbsoluteLabel( shnd, decoded.op[i].value, &rs );
-                                if( rs.error != OKAY )
+                                if( rs.error != RC_OKAY )
                                     return( rs.error );
                                 error = CreateAbsoluteLabelRef( shnd, rs.entry, op_pos );
                             }
@@ -279,12 +279,12 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
                         default:
                             // create an LTYP_UNNAMED label
                             CreateUnnamedLabel( shnd, decoded.op[i].value, &rs );
-                            if( rs.error != OKAY )
+                            if( rs.error != RC_OKAY )
                                 return( rs.error );
                             error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos );
                             break;
                         }
-                        if( error != OKAY ) {
+                        if( error != RC_OKAY ) {
                             return( error );
                         }
                     }
@@ -293,5 +293,5 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
             }
         }
     }
-    return( OKAY );
+    return( RC_OKAY );
 }

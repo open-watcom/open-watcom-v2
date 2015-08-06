@@ -190,7 +190,7 @@ void FreeServicesUsed( void )
     DisFini( &DHnd );
     status = ORLFini( ORLHnd );
     if( status != ORL_OKAY ) {
-        PrintErrorMsg( ERROR, WHERE_CLOSING_ORL );
+        PrintErrorMsg( RC_ERROR, WHERE_CLOSING_ORL );
     }
 }
 

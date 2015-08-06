@@ -619,8 +619,8 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         size = sizeof( unsigned_32 );
     buffer = MemAlloc( size + 1 );
     if( !buffer ) {
-        PrintErrorMsg( OUT_OF_MEMORY, WHERE_PRINT_SECTION );
-        return( OUT_OF_MEMORY );
+        PrintErrorMsg( RC_OUT_OF_MEMORY, WHERE_PRINT_SECTION );
+        return( RC_OUT_OF_MEMORY );
     }
 
     for( curr_pos = start; curr_pos < end; curr_pos += curr_size ) {
@@ -664,7 +664,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
     *refent = r_entry;
     MemFree( buffer );
 
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size, unsigned pass )
@@ -696,7 +696,7 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
 
     if( pass == 1 ) {
         DoPass1Relocs( contents, r_entry, 0, size );
-        return( OKAY );
+        return( RC_OKAY );
     }
 
     if( size == 0 ) {
@@ -705,7 +705,7 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
             dumpAsmLabel( l_entry, sec, 0, 0, NULL, NULL );
             PrintTail( sec );
         }
-        return( OKAY );
+        return( RC_OKAY );
     }
 
     PrintHeader( sec );
@@ -715,7 +715,7 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
     }
     BufferConcatNL();
     BufferPrint();
-    if( err == OKAY ) {
+    if( err == RC_OKAY ) {
         PrintTail( sec );
     }
     return( err );
@@ -729,7 +729,7 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
     label_entry                 prev_entry;
 
     if( ( size == 0 ) && ( l_entry == NULL ) )
-        return( OKAY );
+        return( RC_OKAY );
 
     PrintHeader( sec );
     prev_entry = NULL;
@@ -798,7 +798,7 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
     BufferConcatNL();
     BufferPrint();
 
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 #define OFFSET_UNDEF    ((size_t)-1)
@@ -855,7 +855,7 @@ static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
     BufferConcatNL();
     BufferPrint();
 
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 return_val BssASMSection( section_ptr sec, orl_sec_size size, unsigned pass )
@@ -864,12 +864,12 @@ return_val BssASMSection( section_ptr sec, orl_sec_size size, unsigned pass )
     label_list                  sec_label_list;
 
     if( pass == 1 ) {
-        return OKAY;
+        return RC_OKAY;
     }
     /* Obtain the Symbol Table */
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
     if( !data_ptr ) {
-        return OKAY;
+        return RC_OKAY;
     }
     sec_label_list = (label_list) *data_ptr;
 

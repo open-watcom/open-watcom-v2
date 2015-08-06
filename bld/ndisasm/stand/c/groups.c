@@ -57,7 +57,7 @@ return_val      DumpASMGroupName( char *name, bool fasm )
     } else {
         BufferStore( "GROUP: '%s' ", name );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 
@@ -70,7 +70,7 @@ return_val      DumpASMGroupMember( char *name )
     }
     BufferQuoteName( name );
     useComma = 1;
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 
@@ -79,5 +79,5 @@ return_val      DumpASMGroupFini( void )
     BufferConcatNL();
     BufferPrint();
     useComma = 0;
-    return( OKAY );
+    return( RC_OKAY );
 }

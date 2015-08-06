@@ -224,7 +224,8 @@ static return_val processDrectveSection( orl_sec_handle shnd )
     orl_return          o_error;
     orl_note_callbacks  cb;
 
-    if( !shnd ) return( OKAY );
+    if( !shnd )
+        return( RC_OKAY );
 
     cb.export_fn = nopCallBack;
     cb.deflib_fn = nopCallBack;
@@ -233,10 +234,10 @@ static return_val processDrectveSection( orl_sec_handle shnd )
 
     o_error = ORLNoteSecScan( shnd, &cb, NULL );
     if( o_error == ORL_OKAY )
-        return( OKAY );
+        return( RC_OKAY );
     if( o_error == ORL_OUT_OF_MEMORY )
-        return( OUT_OF_MEMORY );
-    return( ERROR );
+        return( RC_OUT_OF_MEMORY );
+    return( RC_ERROR );
 }
 
 static return_val addRelocSection( orl_sec_handle shnd )
@@ -244,7 +245,7 @@ static return_val addRelocSection( orl_sec_handle shnd )
     section_ptr         sec;
 
     if( relocSections.first && ( GetFormat() == ORL_OMF ) )
-        return( OKAY );
+        return( RC_OKAY );
 
     sec = MemAlloc( sizeof( section_struct ) );
     if( sec ) {
@@ -259,9 +260,9 @@ static return_val addRelocSection( orl_sec_handle shnd )
             relocSections.last = sec;
         }
     } else {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 static return_val registerSec( orl_sec_handle shnd, section_type type )
@@ -272,7 +273,7 @@ static return_val registerSec( orl_sec_handle shnd, section_type type )
     sec = MemAlloc( sizeof( section_struct ) );
     if( sec ) {
         error = HashTableInsert( HandleToSectionTable, (hash_value) shnd, (hash_data) sec );
-        if( error == OKAY ) {
+        if( error == RC_OKAY ) {
             memset( sec, 0, sizeof( section_struct ) );
             sec->shnd = shnd;
             sec->name = ORLSecGetName( shnd );
@@ -287,12 +288,12 @@ static return_val registerSec( orl_sec_handle shnd, section_type type )
             }
         } else {
             MemFree( sec );
-            return( OUT_OF_MEMORY );
+            return( RC_OUT_OF_MEMORY );
         }
     } else {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 static return_val addListToPublics( label_list list )
@@ -310,9 +311,9 @@ static return_val addListToPublics( label_list list )
             Publics.label_lists = list_ptr;
         }
     } else {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 static return_val createLabelList( orl_sec_handle shnd )
@@ -325,10 +326,10 @@ static return_val createLabelList( orl_sec_handle shnd )
         list->first = NULL;
         list->last = NULL;
         error = HashTableInsert( HandleToLabelListTable, (hash_value) shnd, (hash_data) list );
-        if( error == OKAY ) {
+        if( error == RC_OKAY ) {
             if( (Options & PRINT_PUBLICS) && shnd != 0 ) {
                 error = addListToPublics( list );
-                if( error != OKAY ) {
+                if( error != RC_OKAY ) {
                     MemFree( list );
                 }
             }
@@ -336,7 +337,7 @@ static return_val createLabelList( orl_sec_handle shnd )
             MemFree( list );
         }
     } else {
-        error = OUT_OF_MEMORY;
+        error = RC_OUT_OF_MEMORY;
     }
     return( error );
 }
@@ -351,11 +352,11 @@ static return_val createRefList( orl_sec_handle shnd )
         list->first = NULL;
         list->last = NULL;
         error = HashTableInsert( HandleToRefListTable, (hash_value) shnd, (hash_data) list );
-        if( error != OKAY ) {
+        if( error != RC_OKAY ) {
             MemFree( list );
         }
     } else {
-        error = OUT_OF_MEMORY;
+        error = RC_OUT_OF_MEMORY;
     }
     return( error );
 }
@@ -366,9 +367,9 @@ static return_val textOrDataSectionInit( orl_sec_handle shnd )
     orl_sec_handle      reloc_sec;
 
     error = createLabelList( shnd );
-    if( error == OKAY ) {
+    if( error == RC_OKAY ) {
         error = createRefList( shnd );
-        if( error == OKAY ) {
+        if( error == RC_OKAY ) {
             reloc_sec = ORLSecGetRelocTable( shnd );
             if( reloc_sec ) {
                 error = addRelocSection( reloc_sec );
@@ -381,7 +382,7 @@ static return_val textOrDataSectionInit( orl_sec_handle shnd )
 static orl_return sectionInit( orl_sec_handle shnd )
 {
     section_type        type;
-    return_val          error = OKAY;
+    return_val          error = RC_OKAY;
 
     type = IdentifySec( shnd );
     switch( type ) {
@@ -389,7 +390,7 @@ static orl_return sectionInit( orl_sec_handle shnd )
             symbolTable = shnd;
             // Might have a label or relocation in symbol section
             error = registerSec( shnd, type );
-            if( error == OKAY ) {
+            if( error == RC_OKAY ) {
                 error = createLabelList( shnd );
             }
             break;
@@ -397,7 +398,7 @@ static orl_return sectionInit( orl_sec_handle shnd )
             dynSymTable = shnd;
             // Might have a label or relocation in dynsym section
             error = registerSec( shnd, type );
-            if( error == OKAY ) {
+            if( error == RC_OKAY ) {
                 error = createLabelList( shnd );
             }
             break;
@@ -408,7 +409,7 @@ static orl_return sectionInit( orl_sec_handle shnd )
             } // else fall through
         case SECTION_TYPE_BSS:
             error = registerSec( shnd, type );
-            if( error == OKAY ) {
+            if( error == RC_OKAY ) {
                 error = createLabelList( shnd );
             }
             break;
@@ -424,14 +425,14 @@ static orl_return sectionInit( orl_sec_handle shnd )
         case SECTION_TYPE_DATA:
         default: // Just in case we get a label or relocation in these sections
             error = registerSec( shnd, type );
-            if( error == OKAY ) {
+            if( error == RC_OKAY ) {
                 error = textOrDataSectionInit( shnd );
             }
             break;
     }
-    if( error == OKAY )
+    if( error == RC_OKAY )
         return( ORL_OKAY );
-    if( error == OUT_OF_MEMORY )
+    if( error == RC_OUT_OF_MEMORY )
         return( ORL_OUT_OF_MEMORY );
     return( ORL_ERROR );
 }
@@ -456,7 +457,7 @@ static void openFiles( void )
         }
         objFileLen = filelength( objhdl );
         if( objFileLen == 0 ) {
-            LeaveProgram( OKAY, WHERE_OBJ_ZERO_LEN );
+            LeaveProgram( RC_OKAY, WHERE_OBJ_ZERO_LEN );
         }
         objFileBuf = MemAlloc( objFileLen );
         objFilePos = 0;
@@ -529,27 +530,27 @@ static return_val createHashTables( void )
                         HashTableFree( HandleToLabelListTable );
                         HashTableFree( HandleToRefListTable );
                         HashTableFree( SymbolToLabelTable );
-                        return( OUT_OF_MEMORY );
+                        return( RC_OUT_OF_MEMORY );
                     }
                 } else {
                     HashTableFree( HandleToSectionTable );
                     HashTableFree( HandleToLabelListTable );
                     HashTableFree( HandleToRefListTable );
-                    return( OUT_OF_MEMORY );
+                    return( RC_OUT_OF_MEMORY );
                 }
             } else {
                 HashTableFree( HandleToSectionTable );
                 HashTableFree( HandleToLabelListTable );
-                return( OUT_OF_MEMORY );
+                return( RC_OUT_OF_MEMORY );
             }
         } else {
             HashTableFree( HandleToSectionTable );
-            return( OUT_OF_MEMORY );
+            return( RC_OUT_OF_MEMORY );
         }
     } else {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 static return_val initHashTables( void )
@@ -558,7 +559,7 @@ static return_val initHashTables( void )
     return_val  error;
 
     error = createHashTables();
-    if( error == OKAY ) {
+    if( error == RC_OKAY ) {
         for( loop = 0; loop < NUM_ELTS( RecognizedName ); loop++ ) {
             HashTableInsert( NameRecognitionTable, (hash_value) RecognizedName[loop].name, RecognizedName[loop].type );
         }
@@ -627,8 +628,8 @@ static return_val initORL( void )
     if( ORLHnd ) {
         type = ORLFileIdentify( ORLHnd, NULL );
         if( type == ORL_UNRECOGNIZED_FORMAT ) {
-            PrintErrorMsg( OKAY, WHERE_NOT_COFF_ELF );
-            return( ERROR );
+            PrintErrorMsg( RC_OKAY, WHERE_NOT_COFF_ELF );
+            return( RC_ERROR );
         }
         ObjFileHnd = ORLFileInit( ORLHnd, NULL, type );
         if( ObjFileHnd ) {
@@ -654,15 +655,15 @@ static return_val initORL( void )
             case ORL_MACHINE_TYPE_ALPHA:
                 if( DisInit( DISCPU_axp, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
-                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( ERROR );
+                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( RC_ERROR );
                 }
                 break;
             case ORL_MACHINE_TYPE_PPC601:
                 if( DisInit( DISCPU_ppc, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
-                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( ERROR );
+                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( RC_ERROR );
                 }
                 // PAS assembler expects "", not \" for quotes.
                 if( !(Options & METAWARE_COMPATIBLE) ) {
@@ -673,39 +674,39 @@ static return_val initORL( void )
             case ORL_MACHINE_TYPE_R4000:
                 if( DisInit( DISCPU_mips, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
-                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( ERROR );
+                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( RC_ERROR );
                 }
                 break;
             case ORL_MACHINE_TYPE_I386:
             case ORL_MACHINE_TYPE_I8086:
                 if( DisInit( DISCPU_x86, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
-                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( ERROR );
+                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( RC_ERROR );
                 }
                 break;
             case ORL_MACHINE_TYPE_AMD64:
                 if( DisInit( DISCPU_x64, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
-                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( ERROR );
+                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( RC_ERROR );
                 }
                 break;
             case ORL_MACHINE_TYPE_SPARC:
             case ORL_MACHINE_TYPE_SPARCPLUS:
                 if( DisInit( DISCPU_sparc, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
-                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( ERROR );
+                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( RC_ERROR );
                 }
                 break;
             default:
                     ORLFini( ORLHnd );
-                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( ERROR );
+                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( RC_ERROR );
             }
-            return( OKAY );
+            return( RC_OKAY );
         } else {
             o_error = ORLGetError( ORLHnd );
             ORLFini( ORLHnd );
@@ -713,15 +714,15 @@ static return_val initORL( void )
             // The ORL returns this error when encountering a bad or
             // unrecognized object file record.
             if( o_error == ORL_OUT_OF_MEMORY ) {
-                PrintErrorMsg( OUT_OF_MEMORY, WHERE_OPENING_ORL );
-                return( OUT_OF_MEMORY );
+                PrintErrorMsg( RC_OUT_OF_MEMORY, WHERE_OPENING_ORL );
+                return( RC_OUT_OF_MEMORY );
             } else {
-                PrintErrorMsg( ERROR, WHERE_OPENING_ORL );
-                return( ERROR );
+                PrintErrorMsg( RC_ERROR, WHERE_OPENING_ORL );
+                return( RC_ERROR );
             }
         }
     } else {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
 }
 
@@ -738,7 +739,7 @@ static return_val initSectionTables( void )
 
     // list for references to external functions, etc.
     error = createLabelList( 0 );
-    if( error == OKAY ) {
+    if( error == RC_OKAY ) {
         o_error = ORLFileScan( ObjFileHnd, NULL, &sectionInit );
         if( o_error == ORL_OKAY && symbolTable ) {
             o_error = DealWithSymbolSection( symbolTable );
@@ -751,9 +752,9 @@ static return_val initSectionTables( void )
                     o_error = DealWithRelocSection( sec->shnd );
                     if( o_error != ORL_OKAY ) {
                         if( o_error == ORL_OUT_OF_MEMORY ) {
-                            return( OUT_OF_MEMORY );
+                            return( RC_OUT_OF_MEMORY );
                         } else {
-                            return( ERROR );
+                            return( RC_ERROR );
                         }
                     }
                     relocSections.first = sec->next;
@@ -763,9 +764,9 @@ static return_val initSectionTables( void )
                 error = processDrectveSection( drectveSection );
             } else {
                 if( o_error == ORL_OUT_OF_MEMORY ) {
-                    return( OUT_OF_MEMORY );
+                    return( RC_OUT_OF_MEMORY );
                 } else {
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
             }
         }
@@ -776,9 +777,9 @@ static return_val initSectionTables( void )
 void PrintErrorMsg( return_val exit_code, int where )
 {
     ChangePrintDest( STDERR_FILENO );
-    if( exit_code == OUT_OF_MEMORY ) {
+    if( exit_code == RC_OUT_OF_MEMORY ) {
         BufferMsg( OUT_OF_MEMORY );
-    } else if( exit_code == ERROR ) {
+    } else if( exit_code == RC_ERROR ) {
         BufferMsg( ERROR_OCCURRED );
     }
     BufferMsg( where );
@@ -816,11 +817,11 @@ void Init( void )
     openFiles();
     initGlobals();
     error = initHashTables();
-    if( error == OKAY ) {
+    if( error == RC_OKAY ) {
         error = initServicesUsed();
-        if( error == OKAY ) {
+        if( error == RC_OKAY ) {
             error = initSectionTables();
-            if( error != OKAY ) {
+            if( error != RC_OKAY ) {
                 // free hash tables and services
                 MemClose();
                 LeaveProgram( error, WHERE_CREATE_SEC_TABLES );
@@ -851,7 +852,7 @@ void Init( void )
             while( *list ) {
                 error = HashTableInsert( SkipRefTable, (hash_value) *list,
                                          (hash_data) *list );
-                if( error != OKAY ) break;
+                if( error != RC_OKAY ) break;
                 list++;
             }
         }
