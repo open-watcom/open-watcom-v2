@@ -72,7 +72,7 @@ extern void *renew( void *p, size_t size );
 
 class Pool
 {
-    unsigned char *_array;
+    char    *_array;
     void    *_pfree;
 
     const unsigned  _block;
