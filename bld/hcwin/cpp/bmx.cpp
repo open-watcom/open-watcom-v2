@@ -172,7 +172,7 @@ uint_32 Bitmap::size()
 
     _pixSize = 0;
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
-        blocksize = _fp->read( buffer, BLOCK_SIZE );
+        blocksize = (unsigned)_fp->read( buffer, BLOCK_SIZE );
         _pixSize += reader.compress( buffer, blocksize );
     }
 
@@ -275,7 +275,7 @@ int Bitmap::dump( OutFile *dest )
     unsigned    count;
 
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
-        blocksize = _fp->read( buffer, BLOCK_SIZE );
+        blocksize = (unsigned)_fp->read( buffer, BLOCK_SIZE );
         reader.compress( buffer, blocksize );
     }
 

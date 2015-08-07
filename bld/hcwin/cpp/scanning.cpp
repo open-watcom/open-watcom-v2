@@ -275,7 +275,7 @@ void Scanner::pullText( Token * tok )
         tok->_text[i++] = static_cast<char>(current);
     }
     tok->_text[i] = '\0';
-    tok->_value = i;
+    tok->_value = (int)i;
     if( current != S_ENDC && i < BUF_SIZE - 1 ) {
         putback( current );
     }

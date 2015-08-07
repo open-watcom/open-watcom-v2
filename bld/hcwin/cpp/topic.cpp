@@ -171,7 +171,7 @@ class TopicHeader
 class TextHeader
 {
     uint_32 _size;
-    uint_32 _parAttrSize;
+    size_t  _parAttrSize;
     uint_16 _headerSize;
     uint_16 _textSize;
     uint_8  _numColumns;
@@ -1204,7 +1204,7 @@ void HFTopic::newNode( bool is_new_topic )
                 }
             }
             addAttr( TOP_END );
-            _curPar->_size += _curPar->_parAttrSize;
+            _curPar->_size += (uint_32)_curPar->_parAttrSize;
             _curPar->_textSize = (uint_16)_curText->_size;
             _curPar->_headerSize = (uint_16)( _curPar->_size - 3 );
             if( _curPar->_textSize >= INT_SMALL_LIMIT ) {
@@ -1341,15 +1341,15 @@ void HFTopic::newNode( bool is_new_topic )
 
 void HFTopic::addText( char const source[], bool use_phr )
 {
-    int      length;
+    unsigned    length;
 
     if( source[0] == '\0' ) {
         length = 1;
     } else {
-        length = strlen( source );
+        length = (unsigned)strlen( source );
     }
     if( length + _curText->_size > _curText->_maxSize ) {
-        _curText->_maxSize = (length + _curText->_size) / TEXT_BLOCK_SIZE + 1;
+        _curText->_maxSize = ( length + _curText->_size ) / TEXT_BLOCK_SIZE + 1;
         _curText->_maxSize *= TEXT_BLOCK_SIZE;
         _curText->_text.resize( _curText->_maxSize );
     }
@@ -1412,7 +1412,7 @@ uint_32 HFTopic::presentSize()
     if( _curNode->_recordType == TOP_HEADER ) {
         result += _curTopic->_size;
     } else {
-        result += _curPar->_size + _curPar->_parAttrSize;
+        result += (uint_32)( _curPar->_size + _curPar->_parAttrSize );
     }
     return( result );
 }

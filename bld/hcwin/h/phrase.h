@@ -61,7 +61,7 @@ class HFPhrases : public Dumpable
 
     P_String    **_result;
     P_String    **_hptable;
-    int         _resultSize;
+    unsigned    _resultSize;
 
     uint_16     _numPhrases;
     uint_32     _phSize;
@@ -94,7 +94,7 @@ public:
     void        createQueue( char const *path );
     int         oldTable( char const *path );
 
-    void        replace( char *dst, char const *src, int &len );
+    void        replace( char *dst, char const *src, unsigned &len );
 };
 
 #endif

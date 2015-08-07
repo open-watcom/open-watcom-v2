@@ -217,8 +217,7 @@ KWRec::~KWRec()
 
 uint_32 KWRec::size()
 {
-    size_t len = strlen( _keyword ) + 1 + sizeof( uint_16 ) + sizeof( uint_32 );
-    return len;
+    return( (uint_32)( strlen( _keyword ) + 1 + sizeof( uint_16 ) + sizeof( uint_32 ) ) );
 }
 
 

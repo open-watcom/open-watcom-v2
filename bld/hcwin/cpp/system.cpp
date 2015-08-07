@@ -285,7 +285,7 @@ int HFSystem::dump( OutFile *dest )
     dest->write( magic, 3, sizeof( uint_16 ) );
 
     // Write the "time of creation" for the help file.
-    uint_32 cur_time = time( NULL );
+    uint_32 cur_time = (uint_32)time( NULL );
     dest->write( cur_time );
 
     // Write out the compression level.

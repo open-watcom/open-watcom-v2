@@ -38,7 +38,7 @@ HLPDIR:  directory for the WinHelp "file system"
 #include "hlpdir.h"
 
 
-#define HFSKEY_SIZE     13
+#define HFSKEY_SIZE         13
 #define HFSPAGE_SIZE        1024
 #define FILE_HEADER_SIZE    9
 
@@ -53,7 +53,7 @@ protected:
     char        _name[HFSKEY_SIZE];
 
     // Overrides of the BtreeData virtual functions.
-    virtual uint_32 size() { return strlen(_name)+1; };
+    virtual uint_32 size() { return( (uint_32)( strlen( _name ) + 1 ) ); };
     virtual int     dump( OutFile * dest );
     BtreeData       *myKey();
     bool            lessThan( BtreeData *other );
@@ -70,9 +70,9 @@ public:
 class   HFSnode : public HFSkey
 {
     Dumpable    *_pointer;
-    uint_32 _offset;
+    uint_32     _offset;
 
-    uint_32 size() { return strlen(_name) + 1 + sizeof( uint_32 ); };
+    uint_32 size() { return( (uint_32)( strlen( _name ) + 1 + sizeof( uint_32 ) ) ); };
     int     dump( OutFile * dest );
 
 public:

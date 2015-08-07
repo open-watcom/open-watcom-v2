@@ -135,8 +135,7 @@ TTLRec::~TTLRec()
 
 uint_32 TTLRec::size()
 {
-    size_t result = 5 + strlen( _title );
-    return result;
+    return( (uint_32)( 5 + strlen( _title ) ) );
 }
 
 

@@ -215,7 +215,8 @@ void *Pool::get()
         *((void **)index) = NULL;
         *((char **)( index + _size )) = _array;
 
-        _pfree = (void *)( _array = temp );
+        _array = temp;
+        _pfree = (void *)temp;
     }
     result = _pfree;
     _pfree = *((void **)_pfree);

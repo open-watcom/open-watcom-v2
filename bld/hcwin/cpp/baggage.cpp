@@ -77,7 +77,7 @@ int Baggage::dump( OutFile * dest )
         return 1;
     }
     char    *buf = new char[BDUMP_SIZE];
-    uint_32 left_to_dump;
+    size_t  left_to_dump;
     size_t  amount_dumped;
 
     for( left_to_dump = _size; left_to_dump != 0; left_to_dump -= amount_dumped ) {
