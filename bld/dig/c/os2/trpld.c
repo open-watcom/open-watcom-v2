@@ -84,7 +84,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     char                trpfile[256];
     unsigned            len;
     const char          *ptr;
-    const char          *parm;
     unsigned            rc;
     trap_init_func      *init_func;
 

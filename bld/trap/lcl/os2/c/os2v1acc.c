@@ -67,9 +67,9 @@ extern char             UtilBuff[BUFF_SIZE];
 extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
-extern USHORT           __far *ModHandles;
-extern USHORT           NumModHandles;
-extern int              CurrModHandle;
+extern HMODULE          __far *ModHandles;
+extern unsigned         NumModHandles;
+extern unsigned         CurrModHandle;
 extern int              ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 extern scrtype          Screen;
@@ -214,7 +214,7 @@ static USHORT ReadBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT siz
 }
 
 
-static void RecordModHandle( USHORT value )
+static void RecordModHandle( HMODULE value )
 {
     SEL         sel;
 
@@ -222,11 +222,9 @@ static void RecordModHandle( USHORT value )
         DosAllocSeg( sizeof( USHORT ), (PSEL)&sel, 0 );
         ModHandles = MK_FP( sel, 0 );
     } else {
-        DosReallocSeg( (NumModHandles+1)*sizeof( USHORT ),
-                       FP_SEG( ModHandles ) );
+        DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), FP_SEG( ModHandles ) );
     }
-    ModHandles[ NumModHandles ] = value;
-    ++NumModHandles;
+    ModHandles[NumModHandles++] = value;
 }
 
 
@@ -395,9 +393,9 @@ trap_retval ReqMap_addr( void )
             Buff.value = 1;
             break;
         }
-        Buff.mte = ModHandles[ acc->handle ];
+        Buff.mte = ModHandles[acc->handle];
         DosPTrace( &Buff );
-        Buff.mte = ModHandles[ 0 ];
+        Buff.mte = ModHandles[0];
         ret->out_addr.segment = Buff.value;
     }
     ret->out_addr.offset = acc->in_addr.offset;
@@ -821,10 +819,10 @@ trap_retval ReqProg_load( void )
         if( CanExecTask ) {
             Buff.cmd = PT_CMD_SEG_TO_SEL;
             Buff.value = startCS;
-            Buff.mte = ModHandles[ 0 ];
+            Buff.mte = ModHandles[0];
             DosPTrace( &Buff );
             if( Buff.cmd == PT_RET_SUCCESS ) {
-                Buff.mte = ModHandles[ 0 ];
+                Buff.mte = ModHandles[0];
                 startCS = Buff.value;
                 if( startCS != Buff.u.r.CS || startIP != Buff.u.r.IP ) {
                     ExecuteUntil( startCS, startIP );
@@ -1220,7 +1218,7 @@ trap_retval ReqGet_lib_name( void )
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof(*ret) );
-    Buff.value = ModHandles[ CurrModHandle ];
+    Buff.value = ModHandles[CurrModHandle];
     Buff.segv = FP_SEG( name );
     Buff.offv = FP_OFF( name );
     Buff.cmd = PT_CMD_GET_LIB_NAME;

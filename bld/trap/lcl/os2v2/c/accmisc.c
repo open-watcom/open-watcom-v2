@@ -57,9 +57,9 @@ char            UtilBuff[BUFF_SIZE];
 HFILE           SaveStdIn;
 HFILE           SaveStdOut;
 bool            CanExecTask;
-ULONG           *ModHandles = NULL;
-ULONG           NumModHandles = 0;
-int             CurrModHandle = 0;
+HMODULE         *ModHandles = NULL;
+unsigned        NumModHandles = 0;
+unsigned        CurrModHandle = 0;
 ULONG           ExceptNum;
 scrtype         Screen;
 

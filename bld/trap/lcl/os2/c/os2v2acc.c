@@ -126,7 +126,7 @@ static bool Is32BitSeg( unsigned seg )
 /*
  * RecordModHandle - save module handle for later reference
  */
-void RecordModHandle( ULONG value )
+void RecordModHandle( HMODULE value )
 {
     SEL         sel;
 
@@ -134,11 +134,9 @@ void RecordModHandle( ULONG value )
         DosAllocSeg( sizeof( ULONG ), (PSEL)&sel, 0 );
         ModHandles = MK_FP( sel, 0 );
     } else {
-        DosReallocSeg( (NumModHandles+1)*sizeof( ULONG ),
-                       FP_SEG( ModHandles ) );
+        DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), FP_SEG( ModHandles ) );
     }
-    ModHandles[ NumModHandles ] = value;
-    ++NumModHandles;
+    ModHandles[NumModHandles++] = value;
 }
 
 
@@ -212,11 +210,11 @@ static BOOL FindNewHeader( char *name, HFILE *hdl,
 
 #define MAX_OBJECTS     128
 
-static ULONG            LastMTE;
+static HMODULE          LastMTE;
 static unsigned         NumObjects;
 static object_record    ObjInfo[MAX_OBJECTS];
 
-static void GetObjectInfo( ULONG mte )
+static void GetObjectInfo( HMODULE mte )
 {
     HFILE               hdl;
     ULONG               new_head;
