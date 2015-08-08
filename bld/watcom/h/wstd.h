@@ -237,7 +237,7 @@ typedef unsigned_8      sbit;
 #elif defined( _SH4_ )
     #undef PR_SH4
     #define PR_SH4              1
-#elif defined( _ARM_ )
+#elif defined( _ARM_ ) || defined( __ARM__ ) || defined( __arm__ )
     #undef PR_ARM
     #define PR_ARM              1
 #elif defined( __hppa ) || defined( __hppa__ )
@@ -249,9 +249,6 @@ typedef unsigned_8      sbit;
 #elif defined( SUN86 )
     #undef  PR_386
     #define PR_386              1
-#elif defined( __ARMEL__)
-    #undef PR_ARM
-    #define PR_ARM              1
 #else
     #error PR_xxx macro not enabled.
 #endif

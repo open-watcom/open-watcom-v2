@@ -112,7 +112,7 @@ const char FAR *BuiltIns = {
         "__LINUXPPC__=\n"
     #elif defined( __MIPS__ ) || defined( __mips__ )
         "__LINUXMIPS__=\n"
-    #elif defined( __ARMEL__ ) || defined( __arm__ )
+    #elif defined( __ARM__ ) || defined( __arm__ )
         "__LINUXARM__=\n"
     #else
         #error Unknown CPU architecture
