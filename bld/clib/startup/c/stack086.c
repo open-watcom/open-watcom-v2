@@ -38,5 +38,5 @@
 
 _WCRTLINK unsigned stackavail( void )
 {
-    return( _SP() - _STACKLOW );
+    return( _SP() - _RWD_stacklow );
 }
