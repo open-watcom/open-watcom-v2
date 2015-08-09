@@ -237,7 +237,7 @@ typedef unsigned_8      sbit;
 #elif defined( _SH4_ )
     #undef PR_SH4
     #define PR_SH4              1
-#elif defined( _ARM_ ) || defined( __ARM__ ) || defined( __arm__ )
+#elif defined( _M_ARM ) || defined( _ARM_ ) || defined( __ARM__ ) || defined( __arm__ )
     #undef PR_ARM
     #define PR_ARM              1
 #elif defined( __hppa ) || defined( __hppa__ )
