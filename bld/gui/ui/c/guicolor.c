@@ -199,7 +199,7 @@ gui_colour GetColour( ATTR attr )
 {
     gui_colour i;
 
-    for( i = GUI_FIRST_COLOUR; i < GUI_NUM_COLOURS; i++ ) {
+    for( i = 0; i < GUI_NUM_COLOURS; i++ ) {
         if( Colours[i] == attr ) {
             return( i );
         }

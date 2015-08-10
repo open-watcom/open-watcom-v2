@@ -106,7 +106,7 @@ void InitSystemRGB( void )
 
 bool GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
-    if( colour <= GUI_LAST_COLOUR  ) {
+    if( colour < GUI_NUM_COLOURS  ) {
         GUIColours[colour] = GETRGB( rgb );
         return( true );
     }
@@ -127,7 +127,7 @@ static void FillInRGB( WPI_COLOUR colour, gui_rgb *rgb )
 
 bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
-    if( ( colour <= GUI_LAST_COLOUR  )  && ( rgb != NULL ) ) {
+    if( ( colour < GUI_NUM_COLOURS ) && ( rgb != NULL ) ) {
         FillInRGB( GUIColours[colour], rgb );
         return( true );
     }
