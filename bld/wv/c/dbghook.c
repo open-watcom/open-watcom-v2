@@ -94,22 +94,23 @@ void ProcHook( void )
     idx = ScanCmd( HookNames );
     if( idx == 0 ) {
         Error( ERR_NONE, LIT_ENG( ERR_BAD_HOOK ) );
-    }
-    idx -= 1;
-    list = NULL;
-    if( ScanEOC() ) {
-    } else if( ScanItem( FALSE, &start, &len ) ) {
-        ReqEOC();
-        while( len > 0 && *start == '\r' ) {
-            ++start;
-            --len;
+    } else {
+        idx -= 1;
+        list = NULL;
+        if( ScanEOC() ) {
+        } else if( ScanItem( FALSE, &start, &len ) ) {
+            ReqEOC();
+            while( len > 0 && *start == '\r' ) {
+                ++start;
+                --len;
+            }
+            if( len > 0 ) {
+                list = AllocCmdList( start, len );
+            }
         }
-        if( len > 0 ) {
-            list = AllocCmdList( start, len );
-        }
+        FreeCmdList( HookCmdLists[idx] );
+        HookCmdLists[idx] = list;
     }
-    FreeCmdList( HookCmdLists[idx] );
-    HookCmdLists[idx] = list;
 }
 
 void ConfigHook( void )
@@ -127,7 +128,7 @@ void ConfigHook( void )
         *p++ = '\0';
         DUIDlgTxt( TxtBuff );
         if( HookCmdLists[idx] != NULL ) {
-            ConfigCmdList( HookCmdLists[ idx ]->buff, 0 );
+            ConfigCmdList( HookCmdLists[idx]->buff, 0 );
         }
         DUIDlgTxt( "}" );
     }
