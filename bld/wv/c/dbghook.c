@@ -100,7 +100,13 @@ void ProcHook( void )
     if( ScanEOC() ) {
     } else if( ScanItem( FALSE, &start, &len ) ) {
         ReqEOC();
-        list = AllocCmdList( start, len );
+        while( len > 0 && *start == '\r' ) {
+            ++start;
+            --len;
+        }
+        if( len > 0 ) {
+            list = AllocCmdList( start, len );
+        }
     }
     FreeCmdList( HookCmdLists[idx] );
     HookCmdLists[idx] = list;
