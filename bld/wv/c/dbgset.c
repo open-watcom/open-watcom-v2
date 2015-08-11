@@ -87,7 +87,7 @@ extern const char       WndNameTab[];
 extern margins          SrcMar;
 extern margins          AsmMar;
 
-static char_ring        *SupportRtns;
+static char_ring        *SupportRtns = NULL;
 
 typedef struct pending_toggle_list      pending_toggle_list;
 
@@ -904,7 +904,6 @@ static void VarSet( void )
 static void VarConf( void )
 {
     ConfWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
-    ConfigLine( TxtBuff );
 }
 
 
@@ -1016,6 +1015,18 @@ void SupportFini( void )
 }
 
 
+static bool IsInSupportNames( const char *name, size_t len )
+{
+    char_ring   *curr;
+
+    for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
+        if( strlen( curr->name ) == len && memcmp( curr->name, name, len ) == 0 ) {
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+}
+
 static void SupportSet( void )
 {
     char_ring   *new;
@@ -1024,15 +1035,18 @@ static void SupportSet( void )
     unsigned    count;
 
     count = 0;
-    while( ScanItem( TRUE, &start, &len ) ) {
-        new = DbgMustAlloc( sizeof( *new ) + len );
-        new->next = SupportRtns;
-        SupportRtns = new;
-        memcpy( new->name, start, len );
-        new->name[len] = '\0';
+    while( ScanItemDelim( " \t;}", &start, &len ) ) {
+        if( !IsInSupportNames( start, len ) ) {
+            new = DbgMustAlloc( sizeof( *new ) + len );
+            new->next = SupportRtns;
+            SupportRtns = new;
+            memcpy( new->name, start, len );
+            new->name[len] = '\0';
+        }
         ++count;
     }
     ReqEOC();
+    // if no argument then clean all support names
     if( count == 0 ) {
         SupportFini();
     }

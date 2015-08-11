@@ -45,6 +45,7 @@ extern bool         TokenName( unsigned token, const char **start, unsigned *len
 extern void         Recog( unsigned token );
 extern bool         ScanQuote( const char **start, size_t *len );
 extern bool         ScanItem( bool blank_delim, const char **start, size_t *len );
+extern bool         ScanItemDelim( const char *delim, const char **start, size_t *len );
 extern void         ReqEOC( void );
 extern void         FlushEOC( void );
 extern const char   *NamePos( void );

@@ -424,6 +424,31 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
 
 
 /*
+ * ScanItemDelim - scan to one of delimiter characters or EOC
+ */
+
+bool ScanItemDelim( const char *delim, const char **start, size_t *len )
+{
+    if( ScanEOC() ) {
+        *start = NULL;
+        *len   = 0;
+        return( FALSE );
+    }
+    if( ScanQuote( start, len ) )
+        return( TRUE );
+    *start = TokenStart;
+    for( ;; ) {
+        if( strchr( delim, *ScanPtr ) != NULL || *ScanPtr == NULLCHAR )
+            break;
+        ++ScanPtr;
+    }
+    *len = ScanPtr - TokenStart;
+    Scan();
+    return( TRUE );
+}
+
+
+/*
  * ReqEOC -- require end of command
  */
 
