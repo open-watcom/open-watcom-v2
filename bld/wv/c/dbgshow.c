@@ -57,27 +57,16 @@ extern const char       *GetCmdName( wd_cmd cmd );
 
 
 /*
- * GetCmdPtr -- get an entry from a command table
+ * GetCmdEntry -- get an entry from a command table
  */
 
-const char *GetCmdPtr( const char *tab, int index )
+char *GetCmdEntry( const char *tab, int index, char *buff )
 {
     while( index-- > 0 ) {
         while( *tab != NULLCHAR )
             ++tab;
         ++tab;
     }
-    return( tab );
-}
-
-
-/*
- * GetCmdEntry -- get an entry from a command table
- */
-
-char *GetCmdEntry( const char *tab, int index, char *buff )
-{
-    tab = GetCmdPtr( tab, index );
     for( ;; ) {
         *buff = tolower( *tab );
         if( *buff == NULLCHAR )
@@ -252,7 +241,7 @@ OVL_EXTERN void ShowAll( void )
     unsigned    i;
 
     DUIDlgTxt( GetCmdName( CMD_CONFIGFILE ) );
-    for( i = 1; i < sizeof( ShowJmpTab ) / sizeof( ShowJmpTab[0] ); ++i ) {
+    for( i = 0; i < sizeof( ShowJmpTab ) / sizeof( ShowJmpTab[0] ); ++i ) {
         if( ShowJmpTab[i].config ) {
             ShowJmpTab[i].rtn();
         }

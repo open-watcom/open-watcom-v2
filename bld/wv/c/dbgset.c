@@ -527,7 +527,7 @@ static unsigned DoMADToggle( const mad_reg_set_data *rsd, unsigned on, unsigned 
 }
 
 static void PendingAdd( mad_window_toggles wt, mad_handle mh,
-                        const char *name, unsigned len )
+                        const char *name, size_t len )
 {
     pending_toggle_list **owner;
     pending_toggle_list *new;
@@ -535,7 +535,8 @@ static void PendingAdd( mad_window_toggles wt, mad_handle mh,
     owner = &PendToggleList[wt];
     for( ;; ) {
         new = *owner;
-        if( new == NULL ) break;
+        if( new == NULL )
+            break;
         owner = &new->next;
     }
     new = DbgMustAlloc( sizeof( *new ) + len );
@@ -675,22 +676,22 @@ static bool OneToggle( mad_window_toggles wt )
     return( res );
 }
 
-static void ToggleWindowSwitches( window_toggle *toggle, int len,
+static void ToggleWindowSwitches( window_toggle *toggle, size_t len,
                                 const char *settings, mad_window_toggles wt )
 {
-    int idx;
-    int i;
+    int     idx;
+    size_t  i;
 
     while( !ScanEOC() ) {
         if( settings != NULL ) {
             idx = ScanCmd( settings );
             for( i = 0; i < len; ++i ) {
-                if( toggle[ i ].on == idx ) {
-                    SwitchTwiddle( toggle[ i ].sw, 1 );
+                if( toggle[i].on == idx ) {
+                    SwitchTwiddle( toggle[i].sw, 1 );
                     break;
                 }
-                if( toggle[ i ].off == idx ) {
-                    SwitchTwiddle( toggle[ i ].sw, 0 );
+                if( toggle[i].off == idx ) {
+                    SwitchTwiddle( toggle[i].sw, 0 );
                     break;
                 }
             }

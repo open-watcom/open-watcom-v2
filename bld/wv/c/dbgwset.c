@@ -45,7 +45,6 @@
 
 
 extern char             *GetCmdEntry( const char *, int, char * );
-extern const char       *GetCmdPtr( const char *, int );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
@@ -529,14 +528,16 @@ extern void MacroSet( void )
 
 extern  void    MacroConf( void )
 {
+    char        wnd_name[20];
     wnd_macro   *mac;
     char        *fmt;
 
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
-        if( TxtBuff[ 0 ] == NULLCHAR )
+        GetCmdEntry( WndNameTab, mac->class, wnd_name );
+        if( TxtBuff[0] == NULLCHAR )
             break;
         fmt = isspace( mac->key ) ? "%s {%s} {" : "%s %s {";
-        Format( TxtBuff, fmt, GetCmdPtr( WndNameTab, mac->class ), KeyName( mac->key ) );
+        Format( TxtBuff, fmt, wnd_name, KeyName( mac->key ) );
         ConfigLine( TxtBuff );
         ConfigCmdList( ((cmd_list*)mac->cmd)->buff, 0 );
         WndDlgTxt( "}" );

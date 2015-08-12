@@ -68,7 +68,7 @@ extern void             FiniPaint( void );
 extern void             FiniToolBar( void );
 extern void             FiniTrace( void );
 extern void             FiniTrap( void );
-extern const char       *GetCmdPtr( const char *tab, int index );
+extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern trap_shandle     GetSuppId( char * );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
@@ -180,9 +180,12 @@ static void ( * const CmdJmpTab[] )( void ) = {
 };
 
 
-const char *GetCmdName( wd_cmd cmd )
+char *GetCmdName( wd_cmd cmd )
 {
-    return( GetCmdPtr( CmdNameTab, (int)cmd ) );
+    static char buff[MAX_CMD_NAME + 1];
+
+    GetCmdEntry( CmdNameTab, (int)cmd, buff );
+    return( buff );
 }
 
 

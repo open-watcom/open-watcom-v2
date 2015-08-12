@@ -268,7 +268,7 @@ int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
         w = ucwhat;
         for( ;; ) {
             isuppertc = isupper( tc );
-            if( (int) (w - ucwhat) == tokenlen ) {
+            if( (size_t)( w - ucwhat ) == tokenlen ) {
                 if( isuppertc )
                     break;
                 return( tokennum );
@@ -283,7 +283,7 @@ int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
                     break;
                 }
             }
-            if( !tc )
+            if( tc == '\0' )
                 return( tokennum );
             t++;
             tc = *t;

@@ -99,7 +99,7 @@ extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );
 extern const char       *GetCmdName( wd_cmd cmd );
-extern const char       *GetCmdPtr( const char *tab, int index );
+extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern void             RecordEvent( const char * );
 extern bool             HookPendingPush( void );
 extern const char       *CheckForPowerBuilder( const char * );
@@ -1642,11 +1642,14 @@ void ProcNew( void )
 
 void RecordNewProg( void )
 {
+    char        buff[40];
     char        *p;
 
-    p = Format( TxtBuff, "%s/%s", GetCmdName( CMD_NEW ), GetCmdPtr( NewNameTab, 0 ) );
+    GetCmdEntry( NewNameTab, 0, buff );
+    p = Format( TxtBuff, "%s/%s", GetCmdName( CMD_NEW ), buff );
     if( !ProgStartHook ) {
-        p = Format( p, "/%s", GetCmdPtr( NogoTab, 0 ) );
+        GetCmdEntry( NogoTab, 0, buff );
+        p = Format( p, "/%s", buff );
     }
     *p++ = ' ';
     p += GetProgName( p, TXT_LEN - ( p - TxtBuff ) );

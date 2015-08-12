@@ -102,7 +102,6 @@ extern int              AddrComp( address, address );
 extern unsigned         Execute( bool, bool );
 extern void             GetCurrOpcode( void );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern const char       *GetCmdPtr( const char *, int );
 extern const char       *GetCmdName( wd_cmd cmd );
 extern void             ConfigLine( char * );
 extern bool             SimIntr( char, unsigned int );
@@ -515,6 +514,8 @@ static char DoTrace( debug_level curr_level )
 void PerformTrace( void )
 {
     char        ret;
+    char        level[20];
+    char        over[20];
 
     TraceState.userstat = UserTmpBrk.status.b;
     TraceState.curr_control = MDC_OPER | MDC_TAKEN;
@@ -522,9 +523,9 @@ void PerformTrace( void )
     NullStatus( &DbgTmpBrk );
     switch( TraceState.state ) {
     case TS_ACTIVE:
-        Format( TxtBuff, "%s/%s/%s", GetCmdName( CMD_TRACE ),
-                GetCmdPtr( LevelTab, TraceState.cur_level ),
-                GetCmdPtr( TraceTab2, TraceState.type ) );
+        GetCmdEntry( LevelTab, TraceState.cur_level, level );
+        GetCmdEntry( TraceTab2, TraceState.type, over );
+        Format( TxtBuff, "%s/%s/%s", GetCmdName( CMD_TRACE ), level, over );
         RecordEvent( TxtBuff );
         ret = DoTrace( TraceState.cur_level );
         CheckEventRecorded();
@@ -664,8 +665,8 @@ void ProcTrace( void )
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
     ReqEOC();
-    trace_level = ( level_index == -1 ) ? DbgLevel : level_index;
-    trace_type = ( type_index == -1 ) ? TRACE_OVER : type_index;
+    trace_level = ( level_index < 0 ) ? DbgLevel : level_index;
+    trace_type = ( type_index < 0 ) ? TRACE_OVER : type_index;
     ExecTrace( trace_type, trace_level );
 }
 
