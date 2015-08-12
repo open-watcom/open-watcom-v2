@@ -49,13 +49,12 @@ extern void             WndUserAdd(char *,unsigned int );
 extern void             WndDlgTxt(const char *);
 extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
 extern void             SymCompFini( void );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 
 extern const char       WndNameTab[];
 
-static void BadCmd( a_window *wnd )
+static void BadCmd( void )
 {
-    wnd=wnd;
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
@@ -140,7 +139,7 @@ void XDumpMenus( void )
     ReqEOC();
     for( class = 0; class < WND_CURRENT; ++class ) {
         p = StrCopy( "The ", TxtBuff );
-        p = GetCmdEntry( WndNameTab, class+1, p );
+        p = GetCmdEntry( WndNameTab, class, p );
         p = StrCopy( " Window", p );
         WndDlgTxt( TxtBuff );
         MenuDump( 4, WndInfoTab[ class ]->num_popups, WndInfoTab[ class ]->popupmenu );
@@ -169,14 +168,20 @@ static const char InternalNameTab[] =
 
 static void (*InternalJmpTab[])() =
 {
-    &BadCmd,
     &XDumpMenus,
     &XTimeSymComp,
 };
 
 void ProcInternal( void )
 {
-    InternalJmpTab[ ScanCmd( InternalNameTab ) ]();
+    int     cmd;
+
+    cmd = ScanCmd( InternalNameTab );
+    if( cmd < 0 ) {
+        BadCmd();
+    } else {
+        InternalJmpTab[cmd]();
+    }
 }
 
 #endif

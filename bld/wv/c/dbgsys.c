@@ -46,7 +46,7 @@ extern void         RemoteSuspend(void);
 extern void         RemoteResume(void);
 extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
-extern char         *GetCmdName( int );
+extern const char   *GetCmdName( wd_cmd cmd );
 
 static const char SystemOps[] = { "Remote\0Local\0" };
 
@@ -86,11 +86,17 @@ void ProcSystem( void )
     loc = 0;
     if( CurrToken == T_DIV ) {
         Scan();
-        loc = ScanCmd( SystemOps );
-        if( loc == 0 ) {
+        switch( ScanCmd( SystemOps ) ) {
+        case 0:
+            loc = 1;
+            break;
+        case 1:
+            loc = -1;
+            break;
+        default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_SYSTEM ) );
+            break;
         }
-        if( loc == 2 ) loc = -1;
     }
     ScanItem( FALSE, &start, &len );
     ReqEOC();

@@ -51,7 +51,7 @@ extern void             WndIOInspect( address *, mad_type_handle );
 extern void             WndAddrInspect( address );
 extern void             SetDataDot( address );
 extern address          GetDataDot( void );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 
 
 /*
@@ -122,7 +122,6 @@ static const char FmtNameTab[] = {
 };
 
 static void (* const ExamJmpTab[])( void ) = {
-    &TypeExam,
     &AsmExam,
     &SrcExam,
 };
@@ -134,10 +133,17 @@ static void (* const ExamJmpTab[])( void ) = {
 
 void ProcExamine( void )
 {
+    int     cmd;
+
     if( CurrToken != T_DIV ) {
         MemExam( GetMADTypeHandleDefaultAt( NilAddr, MTK_BASIC ) );
     } else {
         Scan();
-        (*ExamJmpTab[ ScanCmd( FmtNameTab ) ])();
+        cmd = ScanCmd( FmtNameTab );
+        if( cmd <  0 ) {
+            TypeExam();
+        } else {
+            (*ExamJmpTab[cmd])();
+        }
     }
 }

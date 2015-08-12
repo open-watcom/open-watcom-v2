@@ -139,7 +139,7 @@ typedef struct {
 
 extern bool                     HasEquals( void );
 extern unsigned                 GetValue( void );
-extern unsigned                 Lookup( const char *, const char *, unsigned );
+extern int                      Lookup( const char *, const char *, size_t );
 
 extern void                     StartupErr( const char * );
 extern bool                     UserScreen( void );
@@ -1327,7 +1327,7 @@ static const char ScreenOptNameTab[] = {
 };
 
 enum {
-    OPT_MONO = 1,
+    OPT_MONO,
     OPT_COLOR,
     OPT_COLOUR,
     OPT_EGA43,

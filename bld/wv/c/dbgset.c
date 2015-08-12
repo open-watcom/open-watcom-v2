@@ -59,7 +59,7 @@ extern void             CallConf( void );
 extern void             ImplicitConf( void );
 extern void             LookConf( void );
 extern void             LevelConf( void );
-extern void             DoConfig( char *,const char *,void (**)(void), void (**)(void) );
+extern void             DoConfig( const char *,const char *,void (**)(void), void (**)(void) );
 extern void             ConfigLine( char * );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
@@ -76,7 +76,7 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             AddrFloat( address * );
 
 extern bool             CapabilitiesGetExactBreakpointSupport( void );
@@ -189,7 +189,6 @@ static void     RecursionSet( void );
 static void     SupportSet( void );
 
 static void (* const SetJmpTab[])( void ) = {
-    &BadSet,
     &AutoSet,
     &AsmSet,
     &VarSet,
@@ -267,18 +266,19 @@ static void (* SetNotAllTab[])( void ) =
 
 bool SwitchOnOff( void )
 {
-    unsigned which;
+    int     cmd;
 
-    which = ScanCmd( "ON\0OFf\0" );
-    if( which == 0 ) Error( ERR_LOC, LIT_ENG( ERR_WANT_ON_OFF ) );
+    cmd = ScanCmd( "ON\0OFf\0" );
+    if( cmd < 0 )
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_ON_OFF ) );
     ReqEOC();
-    return( which == 1 );
+    return( cmd == 0 );
 }
 
 
 void ShowSwitch( bool on )
 {
-    GetCmdEntry( "ON\0OFf\0", on ? 1 : 2, TxtBuff );
+    GetCmdEntry( "ON\0OFf\0", on ? 0 : 1, TxtBuff );
     ConfigLine( TxtBuff );
 }
 
@@ -296,7 +296,14 @@ static void BadSet( void )
 
 void ProcSet( void )
 {
-    (*SetJmpTab[ ScanCmd( SetNameTab ) ])();
+    int     cmd;
+
+    cmd = ScanCmd( SetNameTab );
+    if( cmd < 0 ) {
+        BadSet();
+    } else {
+        (*SetJmpTab[cmd])();
+    }
 }
 
 
@@ -773,9 +780,9 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
     ptr = TxtBuff;
     for( i = 0; i < len; ++i ) {
         ptr = GetCmdEntry( settings,
-                           SwitchIsOn( toggle[ i ].sw ) ?
-                               toggle[ i ].on :
-                               toggle[ i ].off,
+                           SwitchIsOn( toggle[i].sw ) ?
+                               toggle[i].on :
+                               toggle[i].off,
                            ptr );
         *ptr++= ' ';
     }
@@ -805,7 +812,7 @@ static char AsmSettings[] = {
 };
 
 enum {
-    ASM_SOURCE = 1,
+    ASM_SOURCE,
     ASM_NOSOURCE,
     ASM_HEX,
     ASM_DECIMAL,
@@ -866,7 +873,7 @@ static char VarSettings[] = {
 };
 
 enum {
-    VAR_ENTIRE = 1,
+    VAR_ENTIRE,
     VAR_PARTIAL,
     VAR_CODE,
     VAR_NOCODE,
@@ -913,7 +920,7 @@ static char FuncSettings[] = {
 };
 
 enum {
-    FUNC_TYPED = 1,
+    FUNC_TYPED,
     FUNC_ALL,
 };
 

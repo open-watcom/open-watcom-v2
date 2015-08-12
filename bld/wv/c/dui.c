@@ -293,11 +293,12 @@ void DUIShowLogWindow( void )
 
 wnd_class ReqWndName( void )
 {
-    wnd_class   class;
-
-    class = ScanCmd( WndNameTab );
-    if( class == 0 ) Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );
-    return( class-1 );
+    int     cmd;
+    
+    cmd = ScanCmd( WndNameTab );
+    if( cmd < 0 )
+        Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );
+    return( (wnd_class)cmd );
 }
 
 int DUIGetMonitorType( void )

@@ -75,7 +75,7 @@ extern void             FontChange( void );
 extern void             ToggleHardMode( void );
 extern void             WndDumpPrompt( a_window * );
 extern void             WndDumpLog( a_window * );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             DlgWndSet( void );
 extern bool             VarInfoRelease( void );
 extern void             SkipToAddr( address );
@@ -309,7 +309,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
 
     *menu = *parent = NULL;
     child = NULL;
-    if( ScanCmd( MainTab ) ) {
+    if( ScanCmd( MainTab ) == 0 ) {
         main_menu = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
         if( main_menu == NULL ) {
             if( add_to_menu ) return( TRUE );
@@ -493,7 +493,7 @@ gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class class
 
     old = ReScan( cmd );
     menu = NULL;
-    if( ScanCmd( GetCmdName( CMD_ACCEL ) ) ) {
+    if( ScanCmd( GetCmdName( CMD_ACCEL ) ) == 0 ) {
         *is_main = DoProcAccel( TRUE, &menu, &parent, &num_sibs, class );
     }
     ReScan( old );

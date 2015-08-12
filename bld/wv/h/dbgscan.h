@@ -39,7 +39,7 @@ extern void         InitScan( void );
 extern void         FiniScan( void );
 extern const char   *ScanPos( void );
 extern unsigned     ScanLen( void );
-extern unsigned     ScanCmd( const char *cmd_table );
+extern int          ScanCmd( const char *cmd_table );
 extern bool         ScanEOC( void );
 extern bool         TokenName( unsigned token, const char **start, unsigned *len );
 extern void         Recog( unsigned token );

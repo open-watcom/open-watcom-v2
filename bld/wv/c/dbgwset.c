@@ -45,6 +45,7 @@
 
 
 extern char             *GetCmdEntry( const char *, int, char * );
+extern const char       *GetCmdPtr( const char *, int );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
@@ -76,7 +77,7 @@ extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             WndDlgTxt( const char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             DbgUpdate( update_list );
 
 extern const char       WndNameTab[];
@@ -117,7 +118,7 @@ extern void InputSet( void )
     ReqEOC();
     wnd = WndFindClass( NULL, class );
     if( wnd == NULL ) {
-        GetCmdEntry( WndNameTab, class+1, TxtBuff );
+        GetCmdEntry( WndNameTab, class, TxtBuff );
         Error( ERR_NONE, LIT_DUI( ERR_WIND_NOT_OPEN ), TxtBuff );
     }
     WndRestoreToFront( wnd );
@@ -130,7 +131,7 @@ extern void InputConf( void )
 
     wnd = WndFindActive();
     if( wnd != NULL && WndHasClass( wnd ) ) {
-        GetCmdEntry( WndNameTab, WndClass( wnd )+1, TxtBuff );
+        GetCmdEntry( WndNameTab, WndClass( wnd ), TxtBuff );
         ConfigLine( TxtBuff );
     }
 }
@@ -528,15 +529,14 @@ extern void MacroSet( void )
 
 extern  void    MacroConf( void )
 {
-    char        wnd_name[20];
-    wnd_macro     *mac;
+    wnd_macro   *mac;
     char        *fmt;
 
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
-        GetCmdEntry( WndNameTab, mac->class+1, wnd_name );
-        if( TxtBuff[ 0 ] == NULLCHAR ) break;
+        if( TxtBuff[ 0 ] == NULLCHAR )
+            break;
         fmt = isspace( mac->key ) ? "%s {%s} {" : "%s %s {";
-        Format( TxtBuff, fmt, wnd_name, KeyName( mac->key ) );
+        Format( TxtBuff, fmt, GetCmdPtr( WndNameTab, mac->class ), KeyName( mac->key ) );
         ConfigLine( TxtBuff );
         ConfigCmdList( ((cmd_list*)mac->cmd)->buff, 0 );
         WndDlgTxt( "}" );
@@ -600,7 +600,7 @@ static const char SearchSettings[] = {
 };
 
 enum {
-    SEARCH_IGNORE = 1,
+    SEARCH_IGNORE,
     SEARCH_RESPECT,
     SEARCH_RX,
     SEARCH_NORX
@@ -645,11 +645,9 @@ extern void SearchConf( void )
 
     ptr = TxtBuff;
     *ptr++ = '/';
-    ptr = GetCmdEntry( SearchSettings,
-                       WndGetSrchIgnoreCase() ? SEARCH_IGNORE : SEARCH_RESPECT, ptr );
+    ptr = GetCmdEntry( SearchSettings, WndGetSrchIgnoreCase() ? SEARCH_IGNORE : SEARCH_RESPECT, ptr );
     *ptr++ = '/';
-    ptr = GetCmdEntry( SearchSettings,
-                       WndGetSrchRX() ? SEARCH_RX : SEARCH_NORX, ptr );
+    ptr = GetCmdEntry( SearchSettings, WndGetSrchRX() ? SEARCH_RX : SEARCH_NORX, ptr );
     ptr = StrCopy( " {", ptr );
     ptr = StrCopy( WndGetSrchMagicChars(), ptr );
     ptr = StrCopy( "}", ptr );

@@ -57,7 +57,7 @@ typedef struct rad_str {
     char             radstr[1];         /* first byte is length */
 } rad_str;
 
-extern unsigned         Lookup( const char *, const char *, unsigned );
+extern int              Lookup( const char *, const char *, size_t );
 extern unsigned int     ReqExpr( void );
 extern void             ConfigLine( char * );
 extern void             DbgUpdate( update_list );
@@ -168,9 +168,9 @@ unsigned ScanLen( void )
  * ScanCmd -- scan a command start of current token, looking up in given table
  */
 
-unsigned ScanCmd( const char *cmd_table )
+int ScanCmd( const char *cmd_table )
 {
-    unsigned    ind;
+    int         ind;
     const char  *saveptr;
 
     saveptr = ScanPtr;
@@ -179,10 +179,10 @@ unsigned ScanCmd( const char *cmd_table )
         ++ScanPtr;
     }
     ind = Lookup( cmd_table, TokenStart, ScanPtr - TokenStart );
-    if( ind != 0 ) {
-        Scan();
-    } else {
+    if( ind < 0 ) {
         ScanPtr = saveptr;
+    } else {
+        Scan();
     }
     return( ind );
 }

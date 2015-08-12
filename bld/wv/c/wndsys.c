@@ -76,7 +76,7 @@ extern char             LookUpCtrlKey( unsigned key );
 extern bool             MacKeyHit( a_window *wnd, unsigned key );
 extern gui_coord        *WndMainClientSize( void );
 extern void             FingClose( void );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             SetUpdateFlags( update_list );
 extern void             ScrnSpawnStart( void );
 extern void             ScrnSpawnEnd( void );
@@ -158,7 +158,6 @@ static void ToWndChooseNew( a_window *p )
 
 static void (*WndJmpTab[])( a_window * ) =
 {
-    &WndBadCmd,
     &WndClose,
     &WndCursorStart,
     &WndCursorEnd,
@@ -267,13 +266,17 @@ static void WndBadCmd( a_window *wnd )
 
 void ProcWindow( void )
 {
+    int         cmd;
     a_window    *wnd = WndFindActive();
-    unsigned    cmd;
 
     cmd = ScanCmd( WindowNameTab );
     ReqEOC();
     if( wnd != NULL ) {
-        WndJmpTab[ cmd ]( wnd );
+        if( cmd < 0 ) {
+            WndBadCmd( wnd );
+        } else {
+            WndJmpTab[cmd]( wnd );
+        }
     }
 }
 

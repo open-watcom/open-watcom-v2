@@ -39,7 +39,7 @@
 #include "dbgswtch.h"
 
 
-extern unsigned         Lookup(const char *,const char *, unsigned);
+extern int              Lookup( const char *, const char *, size_t );
 extern unsigned long    GetMemory( void );
 extern void             StartupErr( const char * );
 
@@ -55,7 +55,7 @@ static const char SysOptNameTab[] = {
 };
 
 enum { 
-    OPT_NOSNOW = 1,
+    OPT_NOSNOW,
     OPT_CHECKSIZE,
     OPT_SIZE
 };

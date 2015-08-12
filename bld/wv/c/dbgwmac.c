@@ -46,7 +46,7 @@
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
 extern wnd_macro        *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds );
-extern char             *GetCmdName( int index );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
 extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);
@@ -248,7 +248,7 @@ static bool MacPopupClicked( a_window *wnd, gui_ctl_id id )
     p = StrCopy( GetCmdName( CMD_ACCEL ), TxtBuff );
     *p++ = ' ';
     if( wndmac->mac->type == MACRO_MAIN_MENU ) {
-        p = GetCmdEntry( MainTab, 1, p );
+        p = GetCmdEntry( MainTab, 0, p );
         *p++ = ' ';
         main_id = id - id % MAIN_MENU_MULT;
         *p++ = '{';

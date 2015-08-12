@@ -73,7 +73,6 @@ extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
 extern void             WndInspectExprSP( const char *item );
-extern char             *GetCmdName( int );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 

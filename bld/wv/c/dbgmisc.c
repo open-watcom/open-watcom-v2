@@ -50,7 +50,7 @@ extern unsigned         Go( bool );
 extern void             PopEntry( void );
 extern void             NormalExpr( void );
 extern char             *GetCmdEntry( const char *, int , char * );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern address          GetRegIP( void );
@@ -71,7 +71,7 @@ extern address          ReturnAddress( void );
 extern void             SetCodeDot( address );
 extern void             ChkExpr( void );
 extern bool             AdvMachState( int );
-extern void             RecordCommand( const char *startpos, int cmd );
+extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern int              AddrComp( address a, address b );
 
 static const char ElseifTab[]         = { "ELSEIF\0" };
@@ -80,7 +80,7 @@ static const char GoOptionTab[]       = { "Keep\0Noflip\0Until\0" };
 static const char ThreadOps[]         = { "Show\0Freeze\0Thaw\0Change\0" };
 
 enum {
-    KEEP = 1,
+    KEEP,
     NOFLIP,
     UNTIL
 };
@@ -103,18 +103,16 @@ void ProcFlip( void )
 {
     const char  *old;
     unsigned    wait;
-    unsigned    cmd;
 
     wait = 0;
     if( !ScanEOC() ) {
         old = ScanPos();
-        cmd = ScanCmd( "ON\0OFf\0" );
-        switch( cmd ) {
-        case 1:
+        switch( ScanCmd( "ON\0OFf\0" ) ) {
+        case 0:
             ReqEOC();
             _SwitchOn( SW_FLIP );
             return;
-        case 2:
+        case 1:
             ReqEOC();
             _SwitchOff( SW_FLIP );
             return;
@@ -136,7 +134,7 @@ void ConfigFlip( void )
     ReqEOC();
     p = StrCopy( GetCmdName( CMD_FLIP ), TxtBuff );
     *p++ = ' ';
-    GetCmdEntry( "ON\0OFf\0", _IsOn( SW_FLIP ) ? 1 : 2, p );
+    GetCmdEntry( "ON\0OFf\0", _IsOn( SW_FLIP ) ? 0 : 1, p );
     DUIDlgTxt( TxtBuff );
 }
 
@@ -381,7 +379,9 @@ void ProcIf( void )
             true_len   = len;
             have_true  = TRUE;
         }
-        if( ScanCmd( ElseifTab ) == 0 ) break;
+        if( ScanCmd( ElseifTab ) < 0 ) {
+            break;
+        }
     }
     ScanCmd( ElseTab ); /* optional else */
     if( ScanQuote( &start, &len ) && !have_true ) {
@@ -710,33 +710,41 @@ thread_state   *FindThread( dtid_t tid )
 
 void ProcThread( void )
 {
-    enum thread_cmds cmd;
-    dtid_t          tid;
-    bool            all;
-    thread_state    *thd;
+    enum thread_cmds    tcmd;
+    int                 cmd;
+    dtid_t              tid;
+    bool                all;
+    thread_state        *thd;
     unsigned            old;
 
-    cmd = T_BAD;
+    cmd = -1;
     if( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( ThreadOps );
-        if( cmd == T_BAD ) Error( ERR_NONE, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_THREAD ) );
+        if( cmd < 0 ) {
+            Error( ERR_NONE, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_THREAD ) );
+        } else {
+            tcmd = (enum thread_cmds)cmd;
+        }
     }
     CheckForNewThreads( FALSE );
     if( CurrToken == T_MUL ) {
-        if( cmd == T_BAD ) cmd = T_SHOW;
+        if( cmd < 0 )
+            tcmd = T_SHOW;
         Scan();
         all = TRUE;
     } else if( ScanEOC() ) {
-        if( cmd == T_BAD ) cmd = T_SHOW;
-        if( cmd == T_SHOW ) {
+        if( cmd < 0 )
+            tcmd = T_SHOW;
+        if( tcmd == T_SHOW ) {
             all = TRUE;
         } else {
             tid = DbgRegs->tid;
             all = FALSE;
         }
     } else {
-        if( cmd == T_BAD ) cmd = T_CHANGE;
+        if( cmd < 0 )
+            tcmd = T_CHANGE;
         old = SetCurrRadix( 16 );
         tid = ReqExpr();
         all = FALSE;
@@ -744,14 +752,16 @@ void ProcThread( void )
     }
     ReqEOC();
     if( all ) {
-        if( cmd == T_CHANGE ) Error( ERR_NONE, LIT_ENG( ERR_CANT_SET_ALL_THREADS ) );
+        if( tcmd == T_CHANGE )
+            Error( ERR_NONE, LIT_ENG( ERR_CANT_SET_ALL_THREADS ) );
         for( thd = HeadThd; thd != NULL; thd = thd->link ) {
-            ThdCmd( thd, cmd );
+            ThdCmd( thd, tcmd );
         }
     } else {
         thd = FindThread( tid );
-        if( thd == NULL ) Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_THREAD ), tid );
-        ThdCmd( thd, cmd );
+        if( thd == NULL )
+            Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_THREAD ), tid );
+        ThdCmd( thd, tcmd );
     }
 }
 

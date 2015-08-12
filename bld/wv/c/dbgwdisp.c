@@ -41,12 +41,12 @@
 
 extern unsigned int     OptExpr( unsigned int );
 extern void             ConfigLine( char * );
-extern char             *GetCmdEntry( const char *, int, char * );
+extern const char       *GetCmdPtr( const char *, int );
 extern bool             WndDlgTxt( const char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern bool             HookPendingPush( void );
 
 extern a_window         *WndMain;
@@ -75,8 +75,8 @@ static const char   DispOptions[] =
     "Fixed\0"
 };
 
-enum {
-    OPEN = 1,
+typedef enum {
+    OPEN,
     CLOSE,
     NEW,
     MINIMIZE,
@@ -84,12 +84,12 @@ enum {
     RESTORE,
     FLOATING,
     FIXED
-};
+} disp_optn;
 
 static const char   MiscTab[] = { "TOolbar\0Status\0" };
 
 enum {
-    MISC_TOOL = 1,
+    MISC_TOOL,
     MISC_STATUS
 };
 
@@ -106,18 +106,19 @@ static int      range( int x, int min_x, int max_x, int default_x )
     return( x );
 }
 
-static char     GetOption( void )
+static disp_optn GetOption( void )
 {
-    char        optn;
+    int         cmd;
+    disp_optn   optn = OPEN;
 
     if( CurrToken == T_DIV ) {
         Scan();
-        optn = ScanCmd( DispOptions );
-        if( optn == 0 ) {
+        cmd = ScanCmd( DispOptions );
+        if( cmd < 0 ) {
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
+        } else {
+            optn = (disp_optn)cmd;
         }
-    } else {
-        optn = OPEN;
     }
     return( optn );
 }
@@ -235,14 +236,13 @@ void ProcFont( void )
 
 static void PrintFont( wnd_class class, char *def )
 {
-    char        wndname[ 20 ];
     char        *font;
 
     font = WndFontInfo[ class ];
-    if( font == NULL ) return;
+    if( font == NULL )
+        return;
     if( def == NULL || strcmp( font, def ) != 0 ) {
-        GetCmdEntry( WndNameTab, class+1, wndname );
-        Format( TxtBuff, "%s %s {%s}", GetCmdName( CMD_FONT ), wndname, font );
+        Format( TxtBuff, "%s %s {%s}", GetCmdName( CMD_FONT ), GetCmdPtr( WndNameTab, class ), font );
         WndDlgTxt( TxtBuff );
     }
 }
@@ -278,7 +278,7 @@ void FontChange( void )
 static void ProcSize( int wnd_num )
 {
     gui_rect    size;
-    char        optn;
+    disp_optn   optn;
     a_window    *wnd;
     a_window    *next;
     gui_coord   min;
@@ -370,7 +370,7 @@ static void ProcSize( int wnd_num )
 static void ProcTool( void )
 {
     int         height;
-    char        optn,type,tmp;
+    disp_optn   optn,type,tmp;
 
     type = FIXED;
     optn = OPEN;
@@ -393,7 +393,7 @@ static void ProcTool( void )
 
 static void ProcStatus( void )
 {
-    char        optn;
+    disp_optn   optn;
 
     optn = GetOption();
     if( optn == OPEN ) {
@@ -460,13 +460,10 @@ void ProcDisplay( void )
 }
 
 
-static  void    PrintPosition( int option, int class,
-                               gui_rect *rect, char *buff, char *buff2 )
+static  void    PrintPosition( int option, int class, gui_rect *rect )
 {
-    GetCmdEntry( WndNameTab, class+1, buff );
-    GetCmdEntry( DispOptions, option, buff2 );
-    Format( TxtBuff, "%s %s /%s %d,%d,%d,%d", GetCmdName( CMD_DISPLAY ), buff, buff2,
-                     rect->x, rect->y, rect->width, rect->height );
+    Format( TxtBuff, "%s %s /%s %d,%d,%d,%d", GetCmdName( CMD_DISPLAY ), GetCmdPtr( WndNameTab, class ),
+                        GetCmdPtr( DispOptions, option ), rect->x, rect->y, rect->width, rect->height );
     WndDlgTxt( TxtBuff );
 }
 
@@ -475,29 +472,22 @@ void ConfigDisp( void )
 {
 
     a_window    *wnd, *scan;
-    char        buff[20];
-    char        buff2[20];
     a_window    *head, *next;
     int         h;
     int         class;
     gui_rect    rect;
 
     ReqEOC();
-    GetCmdEntry( WndNameTab, WND_ALL+1, buff );
-    GetCmdEntry( DispOptions, CLOSE, buff2 );
-    Format( TxtBuff, "%s %s /%s", GetCmdName( CMD_DISPLAY ), buff, buff2 );
+    Format( TxtBuff, "%s %s /%s", GetCmdName( CMD_DISPLAY ), GetCmdPtr( WndNameTab, WND_ALL ), GetCmdPtr( DispOptions, CLOSE ) );
     WndDlgTxt( TxtBuff );
     if( WndHaveStatusWindow() ) {
-        GetCmdEntry( MiscTab, MISC_STATUS, buff );
-        Format( TxtBuff, "%s %s", GetCmdName( CMD_DISPLAY ), buff );
+        Format( TxtBuff, "%s %s", GetCmdName( CMD_DISPLAY ), GetCmdPtr( MiscTab, MISC_STATUS ) );
         WndDlgTxt( TxtBuff );
     }
     if( WndHaveToolBar() ) {
         h = WndToolHeight();
-        GetCmdEntry( MiscTab, MISC_TOOL, buff );
-        GetCmdEntry( DispOptions, WndToolFixed() ? FIXED : FLOATING, buff2 );
         Format( TxtBuff, "%s %s /%s %d", GetCmdName( CMD_DISPLAY ),
-                buff, buff2, h );
+                GetCmdPtr( MiscTab, MISC_TOOL ), GetCmdPtr( DispOptions, WndToolFixed() ? FIXED : FLOATING ), h );
         WndDlgTxt( TxtBuff );
     }
     for( class = 0; class < WND_NUM_CLASSES; ++class ) {
@@ -506,7 +496,7 @@ void ConfigDisp( void )
         WndPosToRect( &WndPosition[ class ], &rect, &WndScreen );
         if( rect.width == 0 ) continue;
         if( rect.height == 0 ) continue;
-        PrintPosition( CLOSE, class, &rect, buff, buff2 );
+        PrintPosition( CLOSE, class, &rect );
     }
     head = WndNext( NULL );
     if( head == NULL ) return;
@@ -528,7 +518,7 @@ void ConfigDisp( void )
         case WND_MEMORY:
             WndResizeHook( wnd );
             WndPosToRect( &WndPosition[ class ], &rect, &WndScreen );
-            PrintPosition( CLOSE, class, &rect, buff, buff2 );
+            PrintPosition( CLOSE, class, &rect );
             break;
         case WND_VARIABLE:
         case WND_TMPFILE:
@@ -536,7 +526,7 @@ void ConfigDisp( void )
         default:
             WndResizeHook( wnd );
             WndPosToRect( &WndPosition[ class ], &rect, &WndScreen );
-            PrintPosition( OPEN, class, &rect, buff, buff2 );
+            PrintPosition( OPEN, class, &rect );
             break;
         }
         if( wnd == head ) break;

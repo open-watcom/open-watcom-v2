@@ -43,7 +43,7 @@
 #include "trpld.h"
 #include "strutil.h"
 
-extern unsigned         Lookup( const char *, const char *, unsigned );
+extern int              Lookup( const char *, const char *, size_t );
 extern bool             OptDelim( char );
 extern void             ProcSysOptInit( void );
 extern bool             ProcSysOption( const char *, unsigned, int );
@@ -97,35 +97,36 @@ static const char OptNameTab[] = {
 #endif
 };
 
-enum { OPT_INVOKE=1,
-       OPT_NOINVOKE,
-       OPT_NOSYMBOLS,
-       OPT_NOMOUSE,
-       OPT_DIP,
-       OPT_DYNAMIC,
-       OPT_TRAP,
-       OPT_REMOTE_FILES,
+enum {
+    OPT_INVOKE,
+    OPT_NOINVOKE,
+    OPT_NOSYMBOLS,
+    OPT_NOMOUSE,
+    OPT_DIP,
+    OPT_DYNAMIC,
+    OPT_TRAP,
+    OPT_REMOTE_FILES,
 #ifdef BACKWARDS
-       OPT_NO_FPU,
+    OPT_NO_FPU,
 #endif
-       OPT_LINES,
-       OPT_COLUMNS,
+    OPT_LINES,
+    OPT_COLUMNS,
 #ifdef BACKWARDS
-       OPT_NO_ALTSYM,
-       OPT_REGISTERS,
+    OPT_NO_ALTSYM,
+    OPT_REGISTERS,
 #endif
-       OPT_INITCMD,
-       OPT_POWERBUILDER,
-       OPT_LOCALINFO,
-       OPT_NOEXPORTS,
-       OPT_DOWNLOAD,
-       OPT_DEFERSYM,
-       OPT_NOSOURCECHECK,
-       OPT_CONTINUE_UNEXPECTED_BREAK,
-       OPT_HELP,
+    OPT_INITCMD,
+    OPT_POWERBUILDER,
+    OPT_LOCALINFO,
+    OPT_NOEXPORTS,
+    OPT_DOWNLOAD,
+    OPT_DEFERSYM,
+    OPT_NOSOURCECHECK,
+    OPT_CONTINUE_UNEXPECTED_BREAK,
+    OPT_HELP,
 #ifdef ENABLE_TRAP_LOGGING
-       OPT_TRAP_DEBUG,
-       OPT_TRAP_DEBUG_FLUSH,
+    OPT_TRAP_DEBUG,
+    OPT_TRAP_DEBUG_FLUSH,
 #endif
 };
 

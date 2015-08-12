@@ -44,7 +44,7 @@
 #include "dbgutil.h"
 
 extern char             *GetCmdEntry(const char *,int ,char *);
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             DoProcPending(void);
 
@@ -88,14 +88,13 @@ void ProcHook( void )
 {
     const char  *start;
     size_t      len;
-    unsigned    idx;
+    int         idx;
     cmd_list    *list;
 
     idx = ScanCmd( HookNames );
-    if( idx == 0 ) {
+    if( idx < 0 ) {
         Error( ERR_NONE, LIT_ENG( ERR_BAD_HOOK ) );
     } else {
-        idx -= 1;
         list = NULL;
         if( ScanEOC() ) {
         } else if( ScanItem( FALSE, &start, &len ) ) {
@@ -122,7 +121,7 @@ void ConfigHook( void )
     for( idx = 0; idx < HOOK_NUM; ++idx ) {
         p = StrCopy( GetCmdName( CMD_HOOK ), TxtBuff );
         *p++ = ' ';
-        p = GetCmdEntry( HookNames, idx+1, p );
+        p = GetCmdEntry( HookNames, idx, p );
         *p++ = ' ';
         *p++ = '{';
         *p++ = '\0';

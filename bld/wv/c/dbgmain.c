@@ -68,7 +68,7 @@ extern void             FiniPaint( void );
 extern void             FiniToolBar( void );
 extern void             FiniTrace( void );
 extern void             FiniTrap( void );
-extern char             *GetCmdEntry( const char *tab, int index, char *buff );
+extern const char       *GetCmdPtr( const char *tab, int index );
 extern trap_shandle     GetSuppId( char * );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
@@ -173,21 +173,16 @@ static const char CmdNameTab[] = {
     #undef pick
 };
 
-
-
 static void ( * const CmdJmpTab[] )( void ) = {
-    &ProcNil,
     #define pick( a, b, c ) &b,
     #include "dbgcmd.h"
     #undef pick
 };
 
 
-char *GetCmdName( int index )
+const char *GetCmdName( wd_cmd cmd )
 {
-    static char buff[ MAX_CMD_NAME+1 ];
-    GetCmdEntry( CmdNameTab, index, buff );
-    return( buff );
+    return( GetCmdPtr( CmdNameTab, (int)cmd ) );
 }
 
 
@@ -295,7 +290,7 @@ void ChkBreak( void )
 
 void ProcACmd( void )
 {
-    unsigned cmd;
+    int     cmd;
 
     ChkBreak();
     CmdStart = ScanPos();
@@ -333,8 +328,12 @@ void ProcACmd( void )
         break;
     default:
         cmd = ScanCmd( CmdNameTab );
-        if( cmd == 0 && _IsOn( SW_IMPLICIT ) ) {
-            ProcInvoke();
+        if( cmd < 0 ) {
+            if( _IsOn( SW_IMPLICIT ) ) {
+                ProcInvoke();
+            } else {
+                ProcNil();
+            }
         } else {
             (*CmdJmpTab[ cmd ])();
         }

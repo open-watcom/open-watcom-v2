@@ -44,14 +44,14 @@
 #define PSP_CMDTAIL_OFF         0x80
 
 
-extern unsigned                 Lookup( const char *, const char *, unsigned );
-extern unsigned long            GetMemory( void );
+extern int              Lookup( const char *, const char *, size_t );
+extern unsigned long    GetMemory( void );
 
 
-extern unsigned_8               DPMICheck;
-extern addr_seg                 _psp;
+extern unsigned_8       DPMICheck;
+extern addr_seg         _psp;
 
-static char                     *cmdStart;
+static char             *cmdStart;
 
 static const char SysOptNameTab[] = {
     "CHecksize\0"
@@ -63,7 +63,7 @@ static const char SysOptNameTab[] = {
 };
 
 enum {
-   OPT_CHECKSIZE = 1,
+   OPT_CHECKSIZE,
    OPT_NOREMAP,
    OPT_NOGMOUSE,
    OPT_HEAPENABLE,

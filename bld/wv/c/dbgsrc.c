@@ -48,7 +48,7 @@ extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             ConfigLine( char * );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             DbgUpdate( update_list );
 extern bool             IsAbsolutePath( char *path );
 
@@ -156,7 +156,7 @@ void SourceSet( void )
 
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( AddTab ) == 0 ) {
+        if( ScanCmd( AddTab ) < 0 ) {
             Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
         }
         owner = RingEnd( &SrcSpec );

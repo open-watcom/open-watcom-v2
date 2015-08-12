@@ -81,7 +81,7 @@ extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern void             InvokeAFile( const char * );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern void             RecordEvent( const char *p );
@@ -124,7 +124,7 @@ static const char PointNameTab[] = {
 };
 
 typedef enum {
-    B_ACTIVATE = 1,
+    B_ACTIVATE,
     B_CLEAR,
     B_DEACTIVATE,
     B_SET,
@@ -151,7 +151,6 @@ bool    Supports8ByteBreakpoints = FALSE;
 bool    SupportsExactBreakpoints = FALSE;
 
 static bpjmptab_type BPJmpTab[] = {
-    { &TypePoint,       EXPR_DATA },
     { &ActivatePoint,   EXPR_CODE },
     { &ClearPoint,      EXPR_CODE },
     { &DeactivatePoint, EXPR_CODE },
@@ -162,6 +161,9 @@ static bpjmptab_type BPJmpTab[] = {
     { &UnResumePoint,   EXPR_CODE },
     { &BadPoint,        EXPR_DATA },
     { &ImageBreak,      EXPR_DATA },
+    { &BadPoint,        EXPR_DATA },
+    { &BadPoint,        EXPR_DATA },
+    { &BadPoint,        EXPR_DATA },
 };
 
 
@@ -754,7 +756,11 @@ static void DoProcBreak( void )
     if( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( PointNameTab );
-        BPJmpTab[ cmd ].rtn( BPJmpTab[ cmd ].type );
+        if( cmd < 0 ) {
+            TypePoint( EXPR_DATA );
+        } else {
+            BPJmpTab[ cmd ].rtn( BPJmpTab[ cmd ].type );
+        }
     } else if( ScanEOC() ) {
         ShowBPs();
     } else {
@@ -815,13 +821,15 @@ OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
     const char  *start;
     size_t      len;
     bool        clear = FALSE;
+    int         cmd;
 
     def_seg=def_seg;
     while( CurrToken == T_DIV ) {
         Scan();
-        switch( ScanCmd( PointNameTab ) ) {
-        case 0:
-            goto done;
+        cmd = ScanCmd( PointNameTab );
+        if( cmd < 0 )
+            break;
+        switch( cmd ) {
         case B_CLEAR:
             clear = TRUE;
             break;
@@ -830,7 +838,6 @@ OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
             break;
         }
     }
-done:;
     if( !ScanItem( TRUE, &start, &len ) ) {
         BadPoint( def_seg );
     }
@@ -1333,6 +1340,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
     char            *sym_name;
     long            cue_diff;
     long            addr_diff;
+    int             cmd;
 
     resume = FALSE;
     index = 0;
@@ -1342,9 +1350,10 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
     symaddress = FALSE;
     while( CurrToken == T_DIV ) {
         Scan();
-        switch( ScanCmd( PointNameTab ) ) {
-        case 0:
-            goto done;
+        cmd = ScanCmd( PointNameTab );
+        if( cmd < 0 )
+            break;
+        switch( cmd ) {
         case B_RESUME:
             resume = TRUE;
             break;
@@ -1393,7 +1402,6 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
             break;
         }
     }
-done:;
     if( !unmapped ) {
         ReqMemAddr( def_seg, &loc );
     }

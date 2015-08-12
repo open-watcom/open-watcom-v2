@@ -58,7 +58,7 @@ extern void         StartupErr( const char * );
 extern void         ReleaseProgOvlay( bool );
 extern void         KillDebugger( int );
 extern unsigned     GetValue( void );
-extern unsigned     Lookup( const char *, const char *, unsigned );
+extern int          Lookup( const char *, const char *, size_t );
 extern void         WantEquals(void);
 extern void         GetRawItem( char * );
 extern char         *GetFileName( int pass );
@@ -407,7 +407,7 @@ static const char SysOptNameTab[] = {
     ""
 };
 
-enum { OPT_CONSOLE = 1, OPT_XCONFIG };
+enum { OPT_CONSOLE, OPT_XCONFIG };
 
 
 void SetNumLines( int num )

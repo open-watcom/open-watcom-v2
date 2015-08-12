@@ -928,7 +928,7 @@ void ProcView( void )
     start = ScanPos();
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( "Binary\0" ) != 0 ) {
+        if( ScanCmd( "Binary\0" ) == 0 ) {
             binary = TRUE;
         } else {
             ReScan( start );

@@ -43,7 +43,7 @@ extern char             *GetCmdEntry( const char *, int, char * );
 extern bool             WndDlgTxt( const char *buff );
 extern char             *GetWndFont( a_window * );
 extern bool             ScanStatus( void );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 
 
 extern const char       WndNameTab[];
@@ -262,8 +262,9 @@ static wnd_attr ScanAttr( attr_map *map, int size )
     bits = 0;
     for( ;; ) {
         i = ScanCmd( AttrNameTab );
-        if( i == 0 ) break;
-        bits |= AttrBits[ i-1 ];
+        if( i < 0 )
+            break;
+        bits |= AttrBits[i];
     }
     for( i = 0; i < size; ++i ) {
         if( map[i].bits == bits ) {
@@ -282,9 +283,12 @@ static gui_colour ScanColour( void )
     bits = 0;
     for( ;; ) {
         i = ScanCmd( ColourNameTab );
-        if( i == 0 ) break;
-        bits |= ColourBits[ i-1 ];
-        if( bits != CLR_NONE && bits != CLR_BRIGHT ) break;
+        if( i < 0 )
+            break;
+        bits |= ColourBits[i];
+        if( bits != CLR_NONE && bits != CLR_BRIGHT ) {
+            break;
+        }
     }
     for( i = 0; i < ArraySize( ColourMap ); ++i ) {
         if( ColourMap[i].bits == bits ) {
@@ -309,7 +313,7 @@ void ProcPaint( void )
     dialog = FALSE;
     class = WND_NO_CLASS;
     if( ScanStatus() ) {
-    } else if( ScanCmd( "DIalog\0" ) ) {
+    } else if( ScanCmd( "DIalog\0" ) == 0 ) {
         dlg_attr = ScanAttr( DlgAttrMap, ArraySize( DlgAttrMap ) );
         dialog = TRUE;
     } else {
@@ -424,7 +428,7 @@ static void GetAttrName( attr_map *map, int i, char *buff )
 
     bits = map[i].bits;
     p = buff;
-    for( i = 1;; ++i ) {
+    for( i = 0;; ++i ) {
         if( bits & 1 ) {
             p = GetCmdEntry( AttrNameTab, i, p );
             blank = TRUE;
@@ -458,7 +462,7 @@ static void GetColourName( gui_colour colour, char *buff )
         p = StrCopy( "bright ", p );
         bits &= ~CLR_BRIGHT;
     }
-    for( i = 1;; ++i ) {
+    for( i = 0;; ++i ) {
         if( bits & 1 ) {
             p = GetCmdEntry( ColourNameTab, i, p );
             break;
@@ -510,7 +514,7 @@ static void PrintColours( wnd_class class,
     char        back[20];
     int         i;
 
-    GetCmdEntry( WndNameTab, class+1, wndname );
+    GetCmdEntry( WndNameTab, class, wndname );
     for( i = 0; i < ArraySize( AttrMap ); ++i ) {
         if( i == GUI_BACKGROUND ) continue;
         if( i == GUI_FRAME_RESIZE ) continue;

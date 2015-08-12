@@ -53,7 +53,22 @@ extern void             ConfigEvent( void );
 extern void             ConfigCalls( void );
 extern void             InvokeAFile( const char * );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
+
+
+/*
+ * GetCmdPtr -- get an entry from a command table
+ */
+
+const char *GetCmdPtr( const char *tab, int index )
+{
+    while( index-- > 0 ) {
+        while( *tab != NULLCHAR )
+            ++tab;
+        ++tab;
+    }
+    return( tab );
+}
 
 
 /*
@@ -62,14 +77,11 @@ extern char             *GetCmdName( int );
 
 char *GetCmdEntry( const char *tab, int index, char *buff )
 {
-    for( --index; index != 0; --index ) {
-        for( ; *tab != NULLCHAR; ++tab )
-            ;
-        ++tab;
-    }
+    tab = GetCmdPtr( tab, index );
     for( ;; ) {
         *buff = tolower( *tab );
-        if( *buff == NULLCHAR ) break;
+        if( *buff == NULLCHAR )
+            break;
         ++buff;
         ++tab;
     }
@@ -141,40 +153,43 @@ void ConfigLine( char *conf )
 }
 
 
-void DoConfig( char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
+void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
 {
     int         num;
     const char  *start;
     char        *ptr;
     unsigned    i;
+    int         cmdx;
 
     ptr = StrCopy( cmd, NameBuff );
     *ptr++ = ' ';
     if( ScanEOC() ) {
         /* show configuration on everything */
-        for( num = 0; jmp_tab[ num ] != NULL; ++num ) {
-            GetCmdEntry( name_tab, num + 1, ptr );
+        for( num = 0; jmp_tab[num] != NULL; ++num ) {
+            GetCmdEntry( name_tab, num, ptr );
             for( i = 0; not_all[i] != NULL; ++i ) {
-                if( jmp_tab[ num ] == not_all[ i ] ) break;
+                if( jmp_tab[num] == not_all[i] ) {
+                    break;
+                }
             }
-            if( not_all[ i ] == NULL ) {
-                (*jmp_tab[ num ])();
+            if( not_all[i] == NULL ) {
+                (*jmp_tab[num])();
             }
         }
     } else {
         start = ScanPos();
         do {
-            i = ScanCmd( name_tab );
-            if( i == 0 ) {
+            cmdx = ScanCmd( name_tab );
+            if( cmdx < 0 ) {
                 Format( TxtBuff, "%s %s", GetCmdName( CMD_SHOW ), cmd );
                 Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), TxtBuff );
             }
         } while( !ScanEOC() );
         ReScan( start );
         do {
-            i = ScanCmd( name_tab );
-            GetCmdEntry( name_tab, i, ptr );
-            (*jmp_tab[ i - 1 ])();
+            cmdx = ScanCmd( name_tab );
+            GetCmdEntry( name_tab, cmdx, ptr );
+            (*jmp_tab[cmdx])();
         } while( !ScanEOC() );
     }
 }
@@ -203,21 +218,32 @@ typedef struct {
     bool        config; /* should info be dumped for save config call */
 } show_rtn;
 
+static void ConfigTypes( void )
+{
+}
+
 static  show_rtn ShowJmpTab[] = {
-        &BadShow,       FALSE,
-        &ConfigPaint,   TRUE,
-        &ConfigDisp,    TRUE,
-        &ConfigFont,    TRUE,
-        &ConfigSet,     TRUE,
-        &ConfigFlip,    TRUE,
-        &ConfigHook,    TRUE,
-        &ConfigEvent,   FALSE,
-        &ConfigCalls,   FALSE,
+    &ConfigPaint,   TRUE,
+    &ConfigDisp,    TRUE,
+    &ConfigFont,    TRUE,
+    &ConfigSet,     TRUE,
+    &ConfigFlip,    TRUE,
+    &ConfigHook,    TRUE,
+    &ConfigEvent,   FALSE,
+    &ConfigCalls,   FALSE,
+    &ConfigTypes,   FALSE,
 };
 
 void ProcShow( void )
 {
-    ShowJmpTab[ ScanCmd( ShowNameTab ) ].rtn();
+    int     cmd;
+
+    cmd = ScanCmd( ShowNameTab );
+    if( cmd < 0 ) {
+        BadShow();
+    } else {
+        ShowJmpTab[cmd].rtn();
+    }
 }
 
 
