@@ -48,7 +48,7 @@ extern const char       *GetCmdName( wd_cmd cmd );
 
 extern const char       WndNameTab[];
 
-static gui_colour_set   *WndClassColour[ WND_NUM_CLASSES ];
+static gui_colour_set   *WndClassColour[WND_NUM_CLASSES];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
 
 wnd_attr WndPlainAttr = WND_PLAIN;
@@ -68,7 +68,6 @@ static gui_colour_set   WndDlgColours[] = {
 };
 
 gui_colour_set WndColours[] = {
-
     { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
     { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
     { GUI_GREY,         GUI_BLUE },             /* GUI_MENU_GRAYED */
@@ -91,7 +90,6 @@ gui_colour_set WndColours[] = {
     { GUI_BRIGHT_RED,   GUI_BLACK },            /* WND_STANDOUT_TABSTOP */
 };
 int WndNumColours = { ArraySize( WndColours ) };
-
 
 
 typedef enum {
@@ -137,8 +135,8 @@ static attr_bits AttrBits[] = {
 };
 
 typedef struct {
-        wnd_attr        attr;
-        attr_bits       bits;
+    int             attr;
+    attr_bits       bits;
 } attr_map;
 
 static attr_map AttrMap[] = {
@@ -147,14 +145,12 @@ static attr_map AttrMap[] = {
     { GUI_MENU_GRAYED,          ATTR_MENU+ATTR_DISABLED },
     { GUI_MENU_ACTIVE,          ATTR_MENU+ATTR_ACTIVE },
     { GUI_MENU_ACTIVE_STANDOUT, ATTR_MENU+ATTR_ACTIVE+ATTR_STANDOUT },
-    { 0,                        0 }, // background
     { GUI_MENU_FRAME,           ATTR_FRAME+ATTR_MENU },
     { GUI_TITLE_INACTIVE,       ATTR_TITLE+ATTR_DISABLED },
     { GUI_FRAME_ACTIVE,         ATTR_FRAME+ATTR_ACTIVE },
     { GUI_FRAME_INACTIVE,       ATTR_FRAME+ATTR_DISABLED },
     { GUI_ICON,                 ATTR_ICON },
     { GUI_MENU_GRAYED_ACTIVE,   ATTR_MENU+ATTR_DISABLED+ATTR_ACTIVE },
-    { GUI_FRAME_RESIZE,         0 },
     { WND_PLAIN,                ATTR_PLAIN },
     { WND_TABSTOP,              ATTR_ACTIVE },
     { WND_SELECTED,             ATTR_SELECTED },
@@ -167,8 +163,6 @@ static attr_map DlgAttrMap[] = {
     { GUI_DLG_NORMAL,                   ATTR_PLAIN },
     { GUI_DLG_FRAME,                    ATTR_FRAME },
     { GUI_DLG_SHADOW,                   ATTR_SHADOW },
-    { 0,                        0 }, // scroll icon
-    { 0,                        0 }, // scroll bar
     { GUI_DLG_BUTTON_PLAIN,             ATTR_BUTTON+ATTR_PLAIN },
     { GUI_DLG_BUTTON_STANDOUT,          ATTR_BUTTON+ATTR_STANDOUT },
     { GUI_DLG_BUTTON_ACTIVE,            ATTR_BUTTON+ATTR_ACTIVE },
@@ -222,8 +216,8 @@ static colour_bits ColourBits[] = {
 };
 
 typedef struct {
-        gui_colour      colour;
-        colour_bits     bits;
+    gui_colour      colour;
+    colour_bits     bits;
 } colour_map;
 
 static colour_map ColourMap[] = {
@@ -254,16 +248,13 @@ wnd_attr WndMapTabAttr( wnd_attr attr )
 
 wnd_attr WndTabStopAttr = WND_TABSTOP;
 
-static wnd_attr ScanAttr( attr_map *map, int size )
+static int ScanAttr( attr_map *map, int size )
 {
     attr_bits   bits;
     int         i;
 
     bits = 0;
-    for( ;; ) {
-        i = ScanCmd( AttrNameTab );
-        if( i < 0 )
-            break;
+    while( (i = ScanCmd( AttrNameTab )) >= 0 ) {
         bits |= AttrBits[i];
     }
     for( i = 0; i < size; ++i ) {
@@ -272,7 +263,7 @@ static wnd_attr ScanAttr( attr_map *map, int size )
         }
     }
     Error( ERR_LOC, LIT_DUI( ERR_BAD_WINDOW_ATTR ) );
-    return( 0 );
+    return( -1 );
 }
 
 static gui_colour ScanColour( void )
@@ -281,10 +272,7 @@ static gui_colour ScanColour( void )
     int         i;
 
     bits = 0;
-    for( ;; ) {
-        i = ScanCmd( ColourNameTab );
-        if( i < 0 )
-            break;
+    while( (i = ScanCmd( ColourNameTab )) >= 0 ) {
         bits |= ColourBits[i];
         if( bits != CLR_NONE && bits != CLR_BRIGHT ) {
             break;
@@ -296,26 +284,61 @@ static gui_colour ScanColour( void )
         }
     }
     Error( ERR_LOC, LIT_DUI( ERR_BAD_COLOUR_ATTR ) );
-    return( 0 );
+    return( -1 );
+}
+
+static void set_dlg_attr( gui_dlg_attr dlg_attr, gui_colour fore, gui_colour back )
+{
+    WndDlgColours[dlg_attr].fore = fore;
+    WndDlgColours[dlg_attr].back = back;
+    if( dlg_attr == GUI_DLG_NORMAL ) {
+        WndDlgColours[GUI_DLG_SCROLL_ICON].fore = fore;
+        WndDlgColours[GUI_DLG_SCROLL_ICON].fore = fore;
+        WndDlgColours[GUI_DLG_SCROLL_BAR].fore = fore;
+        WndDlgColours[GUI_DLG_SCROLL_BAR].back = back;
+    }
+}
+
+static void set_wndcls_attr( wnd_attr wndcls_attr, gui_colour_set *set, gui_colour fore, gui_colour back, bool wndall )
+{
+    wnd_class       wndcls;
+
+    set[wndcls_attr].fore = fore;
+    set[wndcls_attr].back = back;
+    if( wndcls_attr == WND_PLAIN ) {
+        set[GUI_BACKGROUND].fore = fore;
+        set[GUI_BACKGROUND].back = back;
+    }
+    if( wndall ) {
+        for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
+            if( WndClassColour[wndcls] != NULL ) {
+                WndClassColour[wndcls][wndcls_attr].fore = fore;
+                WndClassColour[wndcls][wndcls_attr].back = back;
+                if( wndcls_attr == WND_PLAIN ) {
+                    WndClassColour[wndcls][GUI_BACKGROUND].fore = fore;
+                    WndClassColour[wndcls][GUI_BACKGROUND].back = back;
+                }
+            }
+        }
+    }
 }
 
 void ProcPaint( void )
 {
     wnd_class           wndcls;
-    wnd_attr            attr;
     gui_colour          fore;
     gui_colour          back;
     gui_colour_set      *set;
     bool                dialog;
-    int                 dlg_attr;
+    int                 attr;
 
-    dlg_attr = 0;
     dialog = FALSE;
     wndcls = WND_NO_CLASS;
     if( ScanStatus() ) {
+        attr = 0;
     } else if( ScanCmd( "DIalog\0" ) == 0 ) {
-        dlg_attr = ScanAttr( DlgAttrMap, ArraySize( DlgAttrMap ) );
         dialog = TRUE;
+        attr = ScanAttr( DlgAttrMap, ArraySize( DlgAttrMap ) );
     } else {
         wndcls = ReqWndName();
         attr = ScanAttr( AttrMap, ArraySize( AttrMap ) );
@@ -324,17 +347,12 @@ void ProcPaint( void )
     ScanCmd( "On\0" );
     back = ScanColour();
     ReqEOC();
+    if( attr < 0 )
+        return;
     if( wndcls == WND_NO_CLASS ) {
         if( dialog ) {
             GUIGetDialogColours( WndDlgColours );
-            WndDlgColours[ dlg_attr ].fore = fore;
-            WndDlgColours[ dlg_attr ].back = back;
-            if( dlg_attr == GUI_DLG_NORMAL ) {
-                WndDlgColours[ GUI_DLG_SCROLL_ICON ].fore = fore;
-                WndDlgColours[ GUI_DLG_SCROLL_ICON ].back = back;
-                WndDlgColours[ GUI_DLG_SCROLL_BAR ].fore = fore;
-                WndDlgColours[ GUI_DLG_SCROLL_BAR ].back = back;
-            }
+            set_dlg_attr( (gui_dlg_attr)attr, fore, back );
             GUISetDialogColours( WndDlgColours );
         } else {
             WndStatusColour.fore = fore;
@@ -351,21 +369,7 @@ void ProcPaint( void )
             memcpy( set, WndColours, sizeof( WndColours ) );
             WndClassColour[wndcls] = set;
         }
-        set[ attr ].fore = fore;
-        set[ attr ].back = back;
-        if( attr == WND_PLAIN ) {
-            set[ GUI_BACKGROUND ] = set[ attr ];
-        }
-        if( wndcls == WND_ALL ) {
-            for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
-                if( WndClassColour[wndcls] != NULL ) {
-                    WndClassColour[wndcls][ attr ] = set[ attr ];
-                    if( attr == WND_PLAIN ) {
-                        WndClassColour[wndcls][GUI_BACKGROUND] = set[attr];
-                    }
-                }
-            }
-        }
+        set_wndcls_attr( (wnd_attr)attr, set, fore, back, ( wndcls == WND_ALL ) );
         _SwitchOn( SW_PENDING_REPAINT );
     }
 }
@@ -380,12 +384,12 @@ void ProcPendingPaint( void )
     _SwitchOff( SW_PENDING_REPAINT );
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( WndHasClass( wnd ) ) {
-            set = WndClassColour[ WndClass( wnd ) ];
+            set = WndClassColour[WndClass( wnd )];
         } else {
             set = NULL;
         }
         if( set == NULL ) {
-            set = WndClassColour[ WND_ALL ];
+            set = WndClassColour[WND_ALL];
         }
         if( set == NULL ) {
             set = WndColours;
@@ -398,12 +402,12 @@ void ProcPendingPaint( void )
 
 void FiniPaint( void )
 {
-    int         i;
+    wnd_class   wndcls;
 
-    for( i = 0; i < WND_NUM_CLASSES; ++i ) {
-        if( WndClassColour[ i ] != NULL ) {
-            WndFree( WndClassColour[ i ] );
-            WndClassColour[ i ] = NULL;
+    for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
+        if( WndClassColour[wndcls] != NULL ) {
+            WndFree( WndClassColour[wndcls] );
+            WndClassColour[wndcls] = NULL;
         }
     }
 }
@@ -414,8 +418,8 @@ extern gui_colour_set *GetWndColours( wnd_class wndcls )
         return( WndColours );
     if( WndClassColour[wndcls] != NULL ) 
         return( WndClassColour[wndcls] );
-    if( WndClassColour[ WND_ALL ] != NULL ) 
-        return( WndClassColour[ WND_ALL ] );
+    if( WndClassColour[WND_ALL] != NULL ) 
+        return( WndClassColour[WND_ALL] );
     return( WndColours );
 }
 
@@ -487,41 +491,40 @@ static void PrintStatusColour( void )
 
 static void PrintDialogColours( void )
 {
-    int         i;
-    char        fore[20];
-    char        back[20];
-    char        attr[30];
+    int             i;
+    gui_dlg_attr    dlg_attr;
+    char            fore[20];
+    char            back[20];
+    char            attr[30];
 
     GUIGetDialogColours( WndDlgColours );
     for( i = 0; i < ArraySize( DlgAttrMap ); ++i ) {
-        if( i == GUI_DLG_SCROLL_ICON ) continue;
-        if( i == GUI_DLG_SCROLL_BAR ) continue;
+        dlg_attr = DlgAttrMap[i].attr;
         GetAttrName( DlgAttrMap, i, attr );
-        GetColourName( WndDlgColours[ i ].fore, fore );
-        GetColourName( WndDlgColours[ i ].back, back );
+        GetColourName( WndDlgColours[dlg_attr].fore, fore );
+        GetColourName( WndDlgColours[dlg_attr].back, back );
         Format( TxtBuff, "%s dialog %s %s on %s", GetCmdName( CMD_PAINT ), attr, fore, back );
         WndDlgTxt( TxtBuff );
     }
 }
 
 
-static void PrintColours( wnd_class wndcls,
-                          gui_colour_set *set, gui_colour_set *def )
+static void PrintColours( wnd_class wndcls, gui_colour_set *set, gui_colour_set *def )
 {
     char        wndname[20];
     char        attr[30];
     char        fore[20];
     char        back[20];
     int         i;
+    wnd_class   wndcls1;
 
-    GetCmdEntry( WndNameTab, (int)wndcls, wndname );
+    GetCmdEntry( WndNameTab, wndcls, wndname );
     for( i = 0; i < ArraySize( AttrMap ); ++i ) {
-        if( i == GUI_BACKGROUND ) continue;
-        if( i == GUI_FRAME_RESIZE ) continue;
-        if( def == NULL || memcmp( &set[i], &def[i], sizeof( *set ) ) != 0 ) {
+        wndcls1 = AttrMap[i].attr;
+        if( def == NULL || memcmp( &set[wndcls1], &def[wndcls1], sizeof( *set ) ) != 0 ) {
             GetAttrName( AttrMap, i, attr );
-            GetColourName( set[i].fore, fore );
-            GetColourName( set[i].back, back );
+            GetColourName( set[wndcls1].fore, fore );
+            GetColourName( set[wndcls1].back, back );
             Format( TxtBuff, "%s %s %s %s on %s", GetCmdName( CMD_PAINT ), wndname, attr, fore, back );
             WndDlgTxt( TxtBuff );
         }
@@ -530,18 +533,19 @@ static void PrintColours( wnd_class wndcls,
 
 void ConfigPaint( void )
 {
-    gui_colour_set *def;
-    int                 i;
+    gui_colour_set  *def;
+    wnd_class       wndcls;
 
-    def = WndClassColour[ WND_ALL ];
+    def = WndClassColour[WND_ALL];
     if( def == NULL ) {
         def = WndColours;
     }
     PrintColours( WND_ALL, def, NULL );
-    for( i = 0; i < WND_NUM_CLASSES; ++i ) {
-        if( i == WND_ALL ) continue;
-        if( WndClassColour[ i ] != NULL ) {
-            PrintColours( i, WndClassColour[ i ], def );
+    for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
+        if( wndcls == WND_ALL )
+            continue;
+        if( WndClassColour[wndcls] != NULL ) {
+            PrintColours( wndcls, WndClassColour[wndcls], def );
         }
     }
     PrintStatusColour();

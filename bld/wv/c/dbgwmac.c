@@ -114,7 +114,7 @@ wnd_macro *MacFindMac( unsigned key, wnd_class wndcls )
     wnd_macro   *mac;
 
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
-        if( mac->key == key && mac->class == wndcls ) return( mac );
+        if( mac->key == key && mac->wndcls == wndcls ) return( mac );
     }
     return( NULL );
 }
