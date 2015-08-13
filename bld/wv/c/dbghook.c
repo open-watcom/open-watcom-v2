@@ -43,46 +43,45 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 
+#define SET_HOOK_BIT(x)     HookPendingBits |= ((hook_bits)1 << x)
+#define RESET_HOOK_BIT(x)   HookPendingBits &= ~((hook_bits)1 << x)
+#define TEST_HOOK_BIT(x)    HookPendingBits & ((hook_bits)1 << x)
+
+typedef unsigned long   hook_bits;
+
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *GetCmdName( wd_cmd cmd );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             DoProcPending(void);
 
 
-static unsigned long    HookPendingBits;
+static hook_bits        HookPendingBits;
 static cmd_list         *HookCmdLists[HOOK_NUM];
 static bool             HadSrcInfo;
+
+static const char HookNames[] = {
+    #define pick(e,name)    name
+    #include "_dbghook.h"
+    #undef pick
+};
 
 
 void InitHook( void )
 {
     HookPendingBits = 0;
     /* this is so we run the src/asm stuff after first load */
-    HadSrcInfo = 2;
+    HadSrcInfo = TRUE;
 }
 
 void FiniHook( void )
 {
-    int         i;
+    hook_type   hook;
 
-    for( i = 0; i < HOOK_NUM; ++i ) {
-        FreeCmdList( HookCmdLists[i] );
-        HookCmdLists[i] = NULL;
+    for( hook = 0; hook < HOOK_NUM; ++hook ) {
+        FreeCmdList( HookCmdLists[hook] );
+        HookCmdLists[hook] = NULL;
     }
 }
-
-static const char HookNames[] = {
-    "PROGStart\0"
-    "PROGEnd\0"
-    "DLLStart\0"
-    "DLLEnd\0"
-    "EXECStart\0"
-    "EXECEnd\0"
-    "Sourceinfo\0"
-    "Assemblyinfo\0"
-    "Modulechange\0"
-    "Quit\0"
-};
 
 void ProcHook( void )
 {
@@ -114,20 +113,20 @@ void ProcHook( void )
 
 void ConfigHook( void )
 {
-    unsigned    idx;
+    hook_type   hook;
     char        *p;
 
     ReqEOC();
-    for( idx = 0; idx < HOOK_NUM; ++idx ) {
+    for( hook = 0; hook < HOOK_NUM; ++hook ) {
         p = StrCopy( GetCmdName( CMD_HOOK ), TxtBuff );
         *p++ = ' ';
-        p = GetCmdEntry( HookNames, idx, p );
+        p = GetCmdEntry( HookNames, hook, p );
         *p++ = ' ';
         *p++ = '{';
         *p++ = '\0';
         DUIDlgTxt( TxtBuff );
-        if( HookCmdLists[idx] != NULL ) {
-            ConfigCmdList( HookCmdLists[idx]->buff, 0 );
+        if( HookCmdLists[hook] != NULL ) {
+            ConfigCmdList( HookCmdLists[hook]->buff, 0 );
         }
         DUIDlgTxt( "}" );
     }
@@ -138,7 +137,6 @@ void HookNotify( bool immediate, hook_type hook )
     cmd_list    *list;
     input_type  save;
 
-    hook -= HOOK_FIRST;
     if( immediate || _IsOn( SW_RUNNING_PROFILE ) ) {
         list = HookCmdLists[hook];
         if( list != NULL ) {
@@ -149,43 +147,46 @@ void HookNotify( bool immediate, hook_type hook )
             SetInpStack( save );
         }
     } else {
-        HookPendingBits |= 1UL << hook;
+        SET_HOOK_BIT( hook );
     }
 }
 
 
 bool HookPendingPush( void )
 {
-    unsigned long       test;
-    cmd_list            **list;
-    bool                have_src_info;
+    hook_type       test;
+    cmd_list        **list;
+    bool            have_src_info;
 
-    if( HookPendingBits == 0 ) return( FALSE );
-    test = 1;
+    if( HookPendingBits == 0 )
+        return( FALSE );
+    test = 0;
     list = HookCmdLists;
-    while( !(test & HookPendingBits) ) {
+    while( !TEST_HOOK_BIT( test ) ) {
         ++list;
-        test <<= 1;
+        ++test;
     }
-    HookPendingBits &= ~test;
+    RESET_HOOK_BIT( test );
     if( *list != NULL ) {
         PushCmdList( *list );
         TypeInpStack( INP_HOOK );
     }
-    if( !(test & (1UL << (HOOK_NEW_MODULE-HOOK_FIRST))) ) return( TRUE );
-    if( _IsOff( SW_HAVE_TASK ) && _IsOff( SW_PROC_ALREADY_STARTED ) ) return( TRUE );
+    if( test != HOOK_NEW_MODULE )
+        return( TRUE );
+    if( _IsOff( SW_HAVE_TASK ) && _IsOff( SW_PROC_ALREADY_STARTED ) )
+        return( TRUE );
     /*
        If the module has changed, we have to see if we've changed
        from a region with no source information to one with or
        vis-versa.
     */
-    have_src_info = (ModHasInfo( ContextMod, HK_CUE ) == DS_OK);
+    have_src_info = ( ModHasInfo( ContextMod, HK_CUE ) == DS_OK );
     if( have_src_info != HadSrcInfo ) {
         HadSrcInfo = have_src_info;
         if( have_src_info ) {
-            HookPendingBits |= 1UL << (HOOK_SRC_START-HOOK_FIRST);
+            SET_HOOK_BIT( HOOK_SRC_START );
         } else {
-            HookPendingBits |= 1UL << (HOOK_SRC_END-HOOK_FIRST);
+            SET_HOOK_BIT( HOOK_SRC_END );
         }
     }
     return( TRUE );

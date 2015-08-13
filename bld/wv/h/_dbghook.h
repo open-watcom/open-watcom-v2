@@ -24,18 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger hook related constant definitions
 *
 ****************************************************************************/
 
 
-/* Note: We've got problems if there are more than 32 hook_types */
-typedef enum {
-    #define pick(e,name)    e,
-    #include "_dbghook.h"
-    #undef pick
-    HOOK_NUM,
-} hook_type;
-
-extern void             HookNotify( bool, hook_type );
+pick( HOOK_PROG_START, "PROGStart\0" )
+pick( HOOK_PROG_END,   "PROGEnd\0" )
+pick( HOOK_DLL_START,  "DLLStart\0" )
+pick( HOOK_DLL_END,    "DLLEnd\0" )     /* not used yet */
+pick( HOOK_EXEC_START, "EXECStart\0" )
+pick( HOOK_EXEC_END,   "EXECEnd\0" )
+pick( HOOK_SRC_START,  "Sourceinfo\0" )
+pick( HOOK_SRC_END,    "Assemblyinfo\0" )
+pick( HOOK_NEW_MODULE, "Modulechange\0" )
+pick( HOOK_QUIT,       "Quit\0" )
