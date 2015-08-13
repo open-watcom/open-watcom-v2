@@ -39,9 +39,8 @@
 #include "dui.h"
 #include "trapaccs.h"
 #include "madinter.h"
+#include "trapglbl.h"
 
-extern void             FiniSuppServices( void );
-extern void             InitSuppServices( void );
 extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
 extern int              SameAddrSpace( address, address );

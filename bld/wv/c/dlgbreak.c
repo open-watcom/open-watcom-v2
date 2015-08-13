@@ -39,6 +39,7 @@
 #include "strutil.h"
 #include "madinter.h"
 #include "dbgutil.h"
+#include "trapglbl.h"
 
 extern bool             RemovePoint( brkp * );
 extern brkp             *FindBreak( address );
@@ -58,9 +59,6 @@ extern void             RecordNewPoint( brkp *bp );
 extern void             RecordClearPoint( brkp *bp );
 extern void             SetRecord( bool on );
 
-
-extern bool             Supports8ByteBreakpoints;
-extern bool             SupportsExactBreakpoints;
 
 static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
 {
@@ -184,7 +182,7 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUISetChecked( gui, CTL_BRK_WORD,    mti.b.bits == 2*BITS_PER_BYTE );
     GUISetChecked( gui, CTL_BRK_DWORD,   mti.b.bits == 4*BITS_PER_BYTE );
     
-    GUIEnableControl( gui, CTL_BRK_QWORD, Supports8ByteBreakpoints );
+    GUIEnableControl( gui, CTL_BRK_QWORD, Is8ByteBreakpointsSupported() );
     GUISetChecked( gui, CTL_BRK_QWORD,   mti.b.bits == 8*BITS_PER_BYTE );
 
     if( dlg->cmd_error ) {

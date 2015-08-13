@@ -47,6 +47,7 @@
 #include "dbgscan.h"
 #include "madinter.h"
 #include "dbgutil.h"
+#include "trapglbl.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -143,12 +144,6 @@ typedef struct {
     brkp *(* rtn)( memory_expr );
     memory_expr type;
 } bpjmptab_type;
-
-/*
- *  Queried from trap file supplemental services
- */
-bool    Supports8ByteBreakpoints = FALSE;
-bool    SupportsExactBreakpoints = FALSE;
 
 static bpjmptab_type BPJmpTab[] = {
     { &ActivatePoint,   EXPR_CODE },
@@ -1433,7 +1428,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
         case 4:
             break;
         case 8:
-            if( Supports8ByteBreakpoints )
+            if( Is8ByteBreakpointsSupported() )
                 break;
         default:
             Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
@@ -1481,7 +1476,7 @@ bool BreakWrite( address addr, mad_type_handle th, const char *comment )
     MADTypeInfo( th, &mti );
     switch( mti.b.bits / BITS_PER_BYTE ) {
     case 8:
-        if( !Supports8ByteBreakpoints ) {
+        if( !Is8ByteBreakpointsSupported() ) {
             ok_to_try = FALSE;
         }
         // fall down
@@ -1657,7 +1652,7 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                      *
                      */
                     
-                    if( _IsOn( SW_BREAK_ON_WRITE ) && SupportsExactBreakpoints ) {
+                    if( _IsOn( SW_BREAK_ON_WRITE ) && IsExactBreakpointsSupported() ) {
 
                         bool    drop_hit = FALSE;
                         

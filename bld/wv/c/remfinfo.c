@@ -36,8 +36,7 @@
 #include "trpcore.h"
 #include "trpfinfo.h"
 #include "filermt.h"
-
-extern trap_shandle     GetSuppId( char * );
+#include "trapglbl.h"
 
 #define SUPP_FILE_INFO_SERVICE( in, request )   \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \

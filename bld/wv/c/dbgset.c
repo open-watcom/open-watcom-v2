@@ -43,6 +43,7 @@
 #include "dbgmad.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "trapglbl.h"
 
 #include "clibext.h"
 
@@ -78,10 +79,6 @@ extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern char             *GetCmdName( wd_cmd cmd );
 extern void             AddrFloat( address * );
-
-extern bool             CapabilitiesGetExactBreakpointSupport( void );
-extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
-extern bool             SupportsExactBreakpoints;
 
 extern const char       WndNameTab[];
 extern margins          SrcMar;
@@ -349,9 +346,7 @@ static void AutoConf( void )
 static void BreakOnWriteSet( void )
 {
     _SwitchSet( SW_BREAK_ON_WRITE, SwitchOnOff() );
-
-    if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
-        CapabilitiesSetExactBreakpointSupport( TRUE );
+    SetCapabilitiesExactBreakpointSupport( TRUE, FALSE );
 }
 
 static void BreakOnWriteConf( void )

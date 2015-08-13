@@ -47,9 +47,9 @@
 #include "dbgio.h"
 #include "trpfile.h"
 #include "filermt.h"
+#include "trapglbl.h"
 
 
-extern trap_shandle     GetSuppId( char * );
 extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
 
 extern unsigned         MaxPacketLen;
