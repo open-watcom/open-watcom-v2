@@ -64,6 +64,7 @@ enum {
     #define pick( a,b,c,d,e,f ) b,
     #include "wndnames.h"
     #undef pick
+    WND_NUM_CLASSES
 };
 
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
