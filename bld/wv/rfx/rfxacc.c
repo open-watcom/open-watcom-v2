@@ -37,8 +37,7 @@
 #include "trpcore.h"
 #include "trprfx.h"
 #include "remote.h"
-
-extern trap_shandle     GetSuppId( char * );
+#include "trapglbl.h"
 
 extern char *TxtBuff;
 

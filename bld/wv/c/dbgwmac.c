@@ -147,7 +147,7 @@ static void MacChangeMac( a_window *wnd, wnd_macro *mac, unsigned key,
 
     cmds = mac->cmd;
     LockCmdList( cmds );
-    MacAddDel( mac->key, mac->class, NULL );
+    MacAddDel( mac->key, mac->wndcls, NULL );
     curr = MacAddDel( key, wndcls, cmds );
     for( owner = &WndMacroList; *owner; owner = &(*owner)->link ) {
         if( *owner == curr ) break;
@@ -173,7 +173,7 @@ static bool MacModWhat( a_window *wnd, wnd_row row )
 
     wnd=wnd;
     old = mac->type;
-    if( mac->class == WND_ALL ) {
+    if( mac->wndcls == WND_ALL ) {
         new = DlgPickWithRtn( LIT_DUI( Macro_Type ), WhatList + 1,
                        mac->type == MACRO_COMMAND, WndGetName, ArraySize( WhatList ) - 1 );
         if( new != -1 ) ++new;
@@ -211,7 +211,7 @@ bool MacKeyHit( a_window *wnd, unsigned key )
         if( wndmac->changing ) {
             wndmac->changing = FALSE;
             mac = MacGetMacro( wndmac->change_row );
-            MacChangeMac( wnd, mac, key, mac->class, wndmac->change_row );
+            MacChangeMac( wnd, mac, key, mac->wndcls, wndmac->change_row );
         } else if( wndmac->creating ) {
             wndmac->creating = FALSE;
             new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, WND_ALL, WndGetName, WND_CURRENT );
@@ -265,7 +265,7 @@ static bool MacPopupClicked( a_window *wnd, gui_ctl_id id )
         *p++ = '}';
         *p++ = '\0';
         cmds = AllocCmdList( TxtBuff, p-TxtBuff );
-        MacAddDel( wndmac->mac->key, wndmac->mac->class, cmds );
+        MacAddDel( wndmac->mac->key, wndmac->mac->wndcls, cmds );
     }
     return( TRUE );
 }
@@ -279,7 +279,7 @@ static void MacModMenu( a_window *wnd, wnd_row row )
     mac_window          *wndmac= WndMac( wnd );
     wnd_macro           *mac = MacGetMacro( row );
 
-    info = WndInfoTab[ mac->class ];
+    info = WndInfoTab[mac->wndcls];
     WndCurrToGUIPoint( wnd, &point );
     WndInstallClickHook( MacPopupClicked );
     if( mac->type == MACRO_MAIN_MENU ) {
@@ -305,8 +305,8 @@ static void MacModWhere( a_window *wnd, wnd_row row )
     wnd_class           wndcls;
 
     wnd=wnd;
-    wndcls = ( mac->class == WND_NO_CLASS ) ? WND_ALL : mac->class;
-    new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, def, WndGetName, WND_CURRENT );
+    wndcls = ( mac->wndcls == WND_NO_CLASS ) ? WND_ALL : mac->wndcls;
+    new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, wndcls, WndGetName, WND_CURRENT );
     if( new == -1 ) return;
 //    WndRepaint( wnd );
     MacChangeMac( wnd, mac, mac->key, new, row );
@@ -407,7 +407,7 @@ static void     MacMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         WndZapped( wnd );
         break;
     case MENU_MAC_DELETE:
-        MacAddDel( mac->key, mac->class, NULL );
+        MacAddDel( mac->key, mac->wndcls, NULL );
         break;
     case MENU_MAC_TD:
         FiniMacros();
@@ -495,7 +495,7 @@ static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line
             return( TRUE );
         case PIECE_WHERE:
             line->text = TxtBuff;
-            StrCopy( *WndDisplayNames[mac->class], TxtBuff );
+            StrCopy( *WndDisplayNames[mac->wndcls], TxtBuff );
             return( TRUE );
         case PIECE_WHAT:
             line->text = *WhatList[ mac->type ];

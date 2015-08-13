@@ -430,9 +430,9 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
     }
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         if( mac->key == key ) {
-            if( mac->class == WND_ALL ) {
+            if( mac->wndcls == WND_ALL ) {
                 all = mac;
-            } else if( mac->class == WndClass( wnd ) ) {
+            } else if( mac->wndcls == WndClass( wnd ) ) {
                 ProcessMacro( mac );
                 return( TRUE );
             }

@@ -445,7 +445,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
         curr = *owner;
         if( curr == NULL )
             break;
-        if( curr->key == key && curr->class == wndcls )
+        if( curr->key == key && curr->wndcls == wndcls )
             break;
         owner = &curr->link;
     }
@@ -457,7 +457,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
             }
             curr->key = key;
-            curr->class = wndcls;
+            curr->wndcls = wndcls;
             curr->link = NULL;
             curr->menu = NULL;
             *owner = curr;
@@ -535,7 +535,7 @@ extern  void    MacroConf( void )
     char        *fmt;
 
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
-        GetCmdEntry( WndNameTab, mac->class, wnd_name );
+        GetCmdEntry( WndNameTab, mac->wndcls, wnd_name );
         if( TxtBuff[0] == NULLCHAR )
             break;
         fmt = isspace( mac->key ) ? "%s {%s} {" : "%s %s {";

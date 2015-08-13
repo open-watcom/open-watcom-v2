@@ -267,7 +267,7 @@ void ConfigFont( void )
 
 void FontChange( void )
 {
-    wnd_class   wnscls;
+    wnd_class   wndcls;
     char        *text;
 
     text = GUIGetFontFromUser( WndFontInfo[WND_ALL] );
