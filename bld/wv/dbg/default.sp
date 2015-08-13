@@ -20,7 +20,6 @@ font memory {-12 0 0 0 400 0 0 0 0 1 2 1 49 "Fixedsys"}
 set autosave off
 set assembly lower source hexadecimal
 set variable partial nocode noinherit nocompiler members private protected
-set variable partial nocode noinherit nocompiler members private protected
 set functions all
 set globals all
 set register hexadecimal normal
@@ -72,24 +71,17 @@ hook progstart {
         elseif _dbg@dbg$os == 12 && ?@main {
             go/until/noflip @main
         }
-
     };
-
 }
 hook progend {
-
 }
 hook dllstart {
-
 }
 hook dllend {
-
 }
 hook execstart {
-
 }
 hook execend {
-
 }
 hook sourceinfo {
     display locals; display source
@@ -98,5 +90,4 @@ hook assemblyinfo {
     display register; display assembly
 }
 hook modulechange {
-
 }
