@@ -427,7 +427,7 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
  * ScanItemDelim - scan to one of delimiter characters or EOC
  */
 
-bool ScanItemDelim( const char *delim, const char **start, size_t *len )
+bool ScanItemDelim( const char *delim, bool blank_delim, const char **start, size_t *len )
 {
     if( ScanEOC() ) {
         *start = NULL;
@@ -438,7 +438,11 @@ bool ScanItemDelim( const char *delim, const char **start, size_t *len )
         return( TRUE );
     *start = TokenStart;
     for( ;; ) {
-        if( strchr( delim, *ScanPtr ) != NULL || *ScanPtr == NULLCHAR )
+        if( blank_delim && isspace( *ScanPtr ) )
+            break;
+        if( strchr( delim, *ScanPtr ) != NULL )
+            break;
+        if( *ScanPtr == NULLCHAR )
             break;
         ++ScanPtr;
     }

@@ -1038,7 +1038,7 @@ static void SupportSet( void )
     unsigned    count;
 
     count = 0;
-    while( ScanItemDelim( " \t;}", &start, &len ) ) {
+    while( ScanItemDelim( ";}", TRUE, &start, &len ) ) {
         if( !IsInSupportNames( start, len ) ) {
             new = DbgMustAlloc( sizeof( *new ) + len );
             new->next = SupportRtns;
