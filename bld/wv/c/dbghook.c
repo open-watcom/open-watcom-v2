@@ -45,7 +45,7 @@
 
 #define SET_HOOK_BIT(x)     HookPendingBits |= ((hook_bits)1 << x)
 #define RESET_HOOK_BIT(x)   HookPendingBits &= ~((hook_bits)1 << x)
-#define TEST_HOOK_BIT(x)    HookPendingBits & ((hook_bits)1 << x)
+#define TEST_HOOK_BIT(x)    ((HookPendingBits & ((hook_bits)1 << x)) != 0)
 
 typedef unsigned long   hook_bits;
 
