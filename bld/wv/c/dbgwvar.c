@@ -831,12 +831,12 @@ static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 
-static bool VarDoClass( wnd_class class, bool (*rtn)( var_info*, void* ), void *cookie )
+static bool VarDoClass( wnd_class wndcls, bool (*rtn)( var_info*, void* ), void *cookie )
 {
     a_window    *wnd;
 
-    for( wnd = WndFindClass( NULL, class );
-         wnd != NULL; wnd = WndFindClass( wnd, class ) ) {
+    for( wnd = WndFindClass( NULL, wndcls );
+         wnd != NULL; wnd = WndFindClass( wnd, wndcls ) ) {
         if( rtn( WndVarInfo( wnd ), cookie ) ) return( TRUE );
     }
     return( FALSE );

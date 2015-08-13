@@ -301,7 +301,7 @@ static gui_colour ScanColour( void )
 
 void ProcPaint( void )
 {
-    wnd_class           class;
+    wnd_class           wndcls;
     wnd_attr            attr;
     gui_colour          fore;
     gui_colour          back;
@@ -311,20 +311,20 @@ void ProcPaint( void )
 
     dlg_attr = 0;
     dialog = FALSE;
-    class = WND_NO_CLASS;
+    wndcls = WND_NO_CLASS;
     if( ScanStatus() ) {
     } else if( ScanCmd( "DIalog\0" ) == 0 ) {
         dlg_attr = ScanAttr( DlgAttrMap, ArraySize( DlgAttrMap ) );
         dialog = TRUE;
     } else {
-        class = ReqWndName();
+        wndcls = ReqWndName();
         attr = ScanAttr( AttrMap, ArraySize( AttrMap ) );
     }
     fore = ScanColour();
     ScanCmd( "On\0" );
     back = ScanColour();
     ReqEOC();
-    if( class == WND_NO_CLASS ) {
+    if( wndcls == WND_NO_CLASS ) {
         if( dialog ) {
             GUIGetDialogColours( WndDlgColours );
             WndDlgColours[ dlg_attr ].fore = fore;
@@ -345,23 +345,23 @@ void ProcPaint( void )
             }
         }
     } else {
-        set = WndClassColour[ class ];
+        set = WndClassColour[wndcls];
         if( set == NULL ) {
             set = WndAlloc( sizeof( WndColours ) );
             memcpy( set, WndColours, sizeof( WndColours ) );
-            WndClassColour[ class ] = set;
+            WndClassColour[wndcls] = set;
         }
         set[ attr ].fore = fore;
         set[ attr ].back = back;
         if( attr == WND_PLAIN ) {
             set[ GUI_BACKGROUND ] = set[ attr ];
         }
-        if( class == WND_ALL ) {
-            for( class = 0; class < WND_NUM_CLASSES; ++class ) {
-                if( WndClassColour[ class ] != NULL ) {
-                    WndClassColour[ class ][ attr ] = set[ attr ];
+        if( wndcls == WND_ALL ) {
+            for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
+                if( WndClassColour[wndcls] != NULL ) {
+                    WndClassColour[wndcls][ attr ] = set[ attr ];
                     if( attr == WND_PLAIN ) {
-                        WndClassColour[ class ][ GUI_BACKGROUND ] = set[ attr ];
+                        WndClassColour[wndcls][GUI_BACKGROUND] = set[attr];
                     }
                 }
             }
@@ -408,12 +408,12 @@ void FiniPaint( void )
     }
 }
 
-extern gui_colour_set *GetWndColours( wnd_class class )
+extern gui_colour_set *GetWndColours( wnd_class wndcls )
 {
-    if( class == WND_NO_CLASS ) 
+    if( wndcls == WND_NO_CLASS ) 
         return( WndColours );
-    if( WndClassColour[ class ] != NULL ) 
-        return( WndClassColour[ class ] );
+    if( WndClassColour[wndcls] != NULL ) 
+        return( WndClassColour[wndcls] );
     if( WndClassColour[ WND_ALL ] != NULL ) 
         return( WndClassColour[ WND_ALL ] );
     return( WndColours );
@@ -505,7 +505,7 @@ static void PrintDialogColours( void )
 }
 
 
-static void PrintColours( wnd_class class,
+static void PrintColours( wnd_class wndcls,
                           gui_colour_set *set, gui_colour_set *def )
 {
     char        wndname[20];
@@ -514,7 +514,7 @@ static void PrintColours( wnd_class class,
     char        back[20];
     int         i;
 
-    GetCmdEntry( WndNameTab, class, wndname );
+    GetCmdEntry( WndNameTab, (int)wndcls, wndname );
     for( i = 0; i < ArraySize( AttrMap ); ++i ) {
         if( i == GUI_BACKGROUND ) continue;
         if( i == GUI_FRAME_RESIZE ) continue;

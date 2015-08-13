@@ -45,7 +45,7 @@
 
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
-extern wnd_macro        *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds );
+extern wnd_macro        *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds );
 extern const char       *GetCmdName( wd_cmd cmd );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
 extern void             FiniMacros( void );
@@ -109,12 +109,12 @@ static const char *WndGetName( const void *data_handle, int item )
 }
 
 #ifdef DEADCODE
-wnd_macro *MacFindMac( unsigned key, wnd_class class )
+wnd_macro *MacFindMac( unsigned key, wnd_class wndcls )
 {
     wnd_macro   *mac;
 
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
-        if( mac->key == key && mac->class == class ) return( mac );
+        if( mac->key == key && mac->class == wndcls ) return( mac );
     }
     return( NULL );
 }
@@ -139,7 +139,7 @@ static wnd_macro *MacGetMacro( int row )
 
 
 static void MacChangeMac( a_window *wnd, wnd_macro *mac, unsigned key,
-                          wnd_class class, wnd_row row )
+                          wnd_class wndcls, wnd_row row )
 {
     cmd_list    *cmds;
     wnd_macro   **owner,*curr;
@@ -148,7 +148,7 @@ static void MacChangeMac( a_window *wnd, wnd_macro *mac, unsigned key,
     cmds = mac->cmd;
     LockCmdList( cmds );
     MacAddDel( mac->key, mac->class, NULL );
-    curr = MacAddDel( key, class, cmds );
+    curr = MacAddDel( key, wndcls, cmds );
     for( owner = &WndMacroList; *owner; owner = &(*owner)->link ) {
         if( *owner == curr ) break;
     }
@@ -302,10 +302,10 @@ static void MacModWhere( a_window *wnd, wnd_row row )
 {
     int                 new;
     wnd_macro           *mac = MacGetMacro( row );
-    wnd_class           def;
+    wnd_class           wndcls;
 
     wnd=wnd;
-    def = mac->class == WND_NO_CLASS ? WND_ALL : mac->class;
+    wndcls = ( mac->class == WND_NO_CLASS ) ? WND_ALL : mac->class;
     new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, def, WndGetName, WND_CURRENT );
     if( new == -1 ) return;
 //    WndRepaint( wnd );
@@ -542,7 +542,7 @@ static void MacReSize( a_window *wnd )
     wnd_macro   *mac;
     int         piece;
     gui_ord     size;
-    wnd_class   class;
+    wnd_class   wndcls;
     gui_ord     max[PIECE_LAST];
     int         i;
 
@@ -558,8 +558,8 @@ static void MacReSize( a_window *wnd )
         size = WndExtentX( wnd, *WhatList[ i ] );
         if( size > max[ PIECE_WHAT ] ) max[ PIECE_WHAT ] = size;
     }
-    for( class = 0; class < WND_CURRENT; ++class ) {
-        size = WndExtentX( wnd, *WndDisplayNames[ class ] );
+    for( wndcls = 0; wndcls < WND_CURRENT; ++wndcls ) {
+        size = WndExtentX( wnd, *WndDisplayNames[wndcls] );
         if( size > max[ PIECE_WHERE ] ) max[ PIECE_WHERE ] = size;
     }
     Indents[ PIECE_KEY ] = WndAvgCharX( wnd );

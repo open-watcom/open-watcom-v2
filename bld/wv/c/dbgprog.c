@@ -98,7 +98,7 @@ extern address          GetRegSP( void );
 extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern void             RecordEvent( const char * );
 extern bool             HookPendingPush( void );

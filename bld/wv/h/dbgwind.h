@@ -84,7 +84,7 @@ typedef struct wnd_macro {
         struct wnd_macro        *link;
         void                    *cmd;
         unsigned                key;
-        wnd_class               class;
+        wnd_class               wndcls;
         int                     menu_item;
         gui_menu_struct         *menu;
         macro_type              type;
@@ -118,11 +118,11 @@ extern char             *WndClipItem;
 extern void             WndUpdate(update_list );
 
 extern a_window *DbgWndCreate( const char *title, wnd_info *info,
-                               wnd_class class, void * extra,
+                               wnd_class wndcls, void * extra,
                                gui_resource *icon );
 
 extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
-                                    wnd_class class, void * extra,
+                                    wnd_class wndcls, void * extra,
                                     gui_resource * icon,
                                     int title_size, bool vdrag );
 

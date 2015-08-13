@@ -60,7 +60,7 @@ extern a_window         *DoWndFuncOpen( bool is_global, mod_handle mod );
 extern void             DupStack( void );
 extern a_window         *DoWndFileOpen( const char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,
-                                    wnd_class class );
+                                    wnd_class wndcls );
 extern void             DoWndBinOpen( const char *title, handle );
 extern a_window         *DoWndModOpen( mod_handle handle );
 extern a_window         *DoWndGlobOpen( mod_handle handle );
@@ -85,11 +85,11 @@ extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];
 
 
-static a_window *WndFindExisting( wnd_class class )
+static a_window *WndFindExisting( wnd_class wndcls )
 {
     a_window    *wnd;
 
-    wnd = WndFindClass( NULL, class );
+    wnd = WndFindClass( NULL, wndcls );
     if( wnd != NULL ) {
         WndRestoreToFront( wnd );
     }
@@ -389,13 +389,13 @@ extern  void    WndInspect( const char *item )
     }
 }
 
-a_window *WndClassInspect( wnd_class class )
+a_window *WndClassInspect( wnd_class wndcls )
 {
     a_window    *wnd;
 
-    wnd = WndFindExisting( class );
+    wnd = WndFindExisting( wndcls );
     if( wnd == NULL ) {
-        wnd = WndOpenTab[ class ]();
+        wnd = WndOpenTab[wndcls]();
     }
     return( wnd );
 }

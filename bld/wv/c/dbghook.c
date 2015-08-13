@@ -44,7 +44,7 @@
 #include "dbgutil.h"
 
 extern char             *GetCmdEntry(const char *,int ,char *);
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             DoProcPending(void);
 

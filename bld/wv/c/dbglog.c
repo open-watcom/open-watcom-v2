@@ -37,7 +37,7 @@
 #include "dbgscan.h"
 
 
-extern const char   *GetCmdName( wd_cmd cmd );
+extern char         *GetCmdName( wd_cmd cmd );
 
 
 static handle       LogHndl;

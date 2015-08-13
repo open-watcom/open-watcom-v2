@@ -75,7 +75,7 @@ extern bool             CheckStackPos( void );
 extern void             RecordEvent( const char *p );
 extern void             RecordGo( const char *p );
 extern void             CheckEventRecorded( void );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern void             RecordAsynchEvent( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern char             *GetLastImageName( void );

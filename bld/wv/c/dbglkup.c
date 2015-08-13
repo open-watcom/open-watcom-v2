@@ -47,7 +47,7 @@ extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( const char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );
 extern unsigned         ProgPoke( address, const void *, unsigned );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 
 
 typedef struct lookup_list {

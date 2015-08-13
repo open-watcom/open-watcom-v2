@@ -60,7 +60,7 @@ extern void             GoToAddr( address addr );
 extern void             ToggleBreak( address );
 extern void             SetCodeDot( address );
 extern address          GetCodeDot( void );
-extern a_window         *WndClassInspect( wnd_class class );
+extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             WndVarInspect( const char * );
 extern void             AsmMoveDot( a_window *, address );
 extern void             AsmJoinSrc( a_window *, a_window * );
@@ -820,7 +820,7 @@ wnd_info FileInfo = {
 
 a_window        *DoWndFileOpen( const char *name, void *viewhndl,
                                         cue_handle *ch, bool track,
-                                        bool erase, int class )
+                                        bool erase, int wndcls )
 {
     file_window *file;
     a_window    *wnd;
@@ -843,7 +843,7 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
     file->eof = UINT_MAX;
     file->name = DupStr( name );
     file->dotaddr = NilAddr;
-    wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, class, file, &SrcIcon );
+    wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, wndcls, file, &SrcIcon );
     if( ch != NULL ) {
         FileSetDotAddr( wnd, CueAddr( ch ) );
         FileSetTitle( wnd, file->mod );

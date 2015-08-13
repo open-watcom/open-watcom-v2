@@ -46,7 +46,7 @@ extern void             RecordPointStart( void );
 extern void             RecordNewProg( void );
 extern void             PointFini( void );
 extern int              GetStackPos( void );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );

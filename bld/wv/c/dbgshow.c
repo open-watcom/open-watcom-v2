@@ -53,7 +53,7 @@ extern void             ConfigEvent( void );
 extern void             ConfigCalls( void );
 extern void             InvokeAFile( const char * );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 
 
 /*

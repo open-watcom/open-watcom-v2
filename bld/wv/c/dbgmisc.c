@@ -50,7 +50,7 @@ extern unsigned         Go( bool );
 extern void             PopEntry( void );
 extern void             NormalExpr( void );
 extern char             *GetCmdEntry( const char *, int , char * );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern address          GetRegIP( void );

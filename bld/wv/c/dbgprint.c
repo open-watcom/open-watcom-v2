@@ -76,7 +76,7 @@ extern void             AddSubscript( void );
 extern void             EndSubscript( void );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 extern unsigned         ProgPeek( address, void *, unsigned int );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )

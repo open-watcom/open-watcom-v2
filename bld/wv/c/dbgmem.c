@@ -39,7 +39,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern unsigned         ChangeMem( address, const void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );

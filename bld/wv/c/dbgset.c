@@ -76,7 +76,7 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern void             AddrFloat( address * );
 
 extern bool             CapabilitiesGetExactBreakpointSupport( void );

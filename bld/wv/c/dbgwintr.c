@@ -133,16 +133,16 @@ extern wnd_info *WndInfoTab[];
 
 void XDumpMenus( void )
 {
-    int         class;
+    int         wndcls;
     char        *p;
 
     ReqEOC();
-    for( class = 0; class < WND_CURRENT; ++class ) {
+    for( wndcls = 0; wndcls < WND_CURRENT; ++wndcls ) {
         p = StrCopy( "The ", TxtBuff );
-        p = GetCmdEntry( WndNameTab, class, p );
+        p = GetCmdEntry( WndNameTab, wndcls, p );
         p = StrCopy( " Window", p );
         WndDlgTxt( TxtBuff );
-        MenuDump( 4, WndInfoTab[ class ]->num_popups, WndInfoTab[ class ]->popupmenu );
+        MenuDump( 4, WndInfoTab[wndcls]->num_popups, WndInfoTab[wndcls]->popupmenu );
     }
     WndDlgTxt( "The main menu" );
     MenuDump( 4, WndNumMenus, WndMainMenu );

@@ -51,7 +51,7 @@ extern void             WndIOInspect( address *, mad_type_handle );
 extern void             WndAddrInspect( address );
 extern void             SetDataDot( address );
 extern address          GetDataDot( void );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 
 
 /*

@@ -36,7 +36,7 @@
 #include "dbgitem.h"
 #include "dbgmad.h"
 
-extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class class, gui_resource *icon );
+extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class wndcls, gui_resource *icon );
 extern void MadRegChangeOptions( a_window *wnd );
 
 void MMXChangeOptions( void )

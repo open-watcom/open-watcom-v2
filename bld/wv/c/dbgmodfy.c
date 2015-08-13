@@ -51,7 +51,7 @@ extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsi
 extern unsigned         ReqExpr( void );
 extern void             SetDataDot( address addr );
 extern address          GetDataDot( void );
-extern const char       *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdName( wd_cmd cmd );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern bool             AdvMachState( int );
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
