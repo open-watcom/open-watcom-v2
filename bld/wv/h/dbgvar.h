@@ -169,14 +169,12 @@ typedef struct type_display {
     char                        name[1];        // MUST BE LAST FIELD
 } type_display;
 
-typedef unsigned_8 var_type; enum {
-    VAR_FIRST,
-    VAR_VARIABLE = VAR_FIRST,
-    VAR_WATCH,
-    VAR_LOCALS,
-    VAR_FILESCOPE,
-    VAR_LAST,
-};
+typedef enum {
+    #define pick(e,name,wndcls,icon)    e,
+    #include "_dbgvar.h"
+    #undef pick
+    NUM_VAR_TYPE
+} var_type;
 
 typedef void            VARDIRTRTN( void *, int );
 

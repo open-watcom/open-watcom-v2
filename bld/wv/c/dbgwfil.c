@@ -820,7 +820,7 @@ wnd_info FileInfo = {
 
 a_window        *DoWndFileOpen( const char *name, void *viewhndl,
                                         cue_handle *ch, bool track,
-                                        bool erase, int wndcls )
+                                        bool erase, wnd_class wndcls )
 {
     file_window *file;
     a_window    *wnd;

@@ -466,7 +466,7 @@ void ProcDisplay( void )
 }
 
 
-static  void    PrintPosition( disp_optn optn, int wndcls,
+static  void    PrintPosition( disp_optn optn, wnd_class wndcls,
                                gui_rect *rect, char *buff, char *buff2 )
 {
     GetCmdEntry( WndNameTab, wndcls, buff );
@@ -485,7 +485,7 @@ void ConfigDisp( void )
     char        buff2[20];
     a_window    *head, *next;
     int         h;
-    int         wndcls;
+    wnd_class   wndcls;
     gui_rect    rect;
 
     ReqEOC();
