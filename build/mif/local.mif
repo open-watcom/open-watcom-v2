@@ -241,7 +241,8 @@ incl_file_opts = -include
 
 !else ifdef __BSD__
 
-!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
+#!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "386"
+!if 1
 
 # common settings
 ############################
