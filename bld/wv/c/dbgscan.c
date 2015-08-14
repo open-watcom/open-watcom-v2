@@ -62,8 +62,11 @@ extern unsigned int     ReqExpr( void );
 extern void             ConfigLine( char * );
 extern void             DbgUpdate( update_list );
 
-
-static const char CmdLnDelimTab[] = { "<>*/(),{}!?;[]~#\0" };
+static const char CmdLnDelimTab[] = {
+    #define pick(t,c)   c
+    #include "_dbgtok.h"
+    #undef pick
+};
 
 typedef union {
         unsigned_64     int_val;
