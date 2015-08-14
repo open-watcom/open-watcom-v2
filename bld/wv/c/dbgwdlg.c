@@ -46,7 +46,7 @@ typedef struct dlg_entry {
     struct dlg_entry        *prev;
     struct dlg_entry        *next;
     unsigned                line;
-    wnd_attr                attr;
+    wnd_attr                wndattr;
     char                    data[1];
 } dlg_entry;
 
@@ -57,7 +57,7 @@ static unsigned         DlgListLineNum = 0;
 static unsigned         DlgLines = 0;
 
 
-static void DlgListPush( const char *buff, unsigned len, unsigned attr )
+static void DlgListPush( const char *buff, size_t len, wnd_attr wndattr )
 {
     dlg_entry   *entry;
 
@@ -65,7 +65,7 @@ static void DlgListPush( const char *buff, unsigned len, unsigned attr )
     SET_SYM_NAME_LEN( entry->data, len );
     memcpy( SYM_NAME_NAME( entry->data ), buff, len );
     SYM_NAME_NAME( entry->data )[len] = '\0';
-    entry->attr = attr;
+    entry->wndattr = wndattr;
     entry->next = NULL;
     entry->prev = DlgListBot;
     entry->line = DlgListLineNum++;
@@ -94,51 +94,54 @@ static void DlgListPopLine( void )
 
 bool DlgInfoRelease( void )
 {
-    if( DlgListBot == NULL || DlgListTop == NULL) return( FALSE );
-    if( (DlgListBot->line - DlgListTop->line) <= 1 ) return( FALSE );
+    if( DlgListBot == NULL || DlgListTop == NULL)
+        return( FALSE );
+    if( (DlgListBot->line - DlgListTop->line) <= 1 )
+        return( FALSE );
     DlgListPopLine();
     return( TRUE );
 }
 
-static void WndDlgLine( const char *buff, wnd_attr attr )
+static void WndDlgLine( const char *buff, wnd_attr wndattr )
 {
-    unsigned    len;
+    size_t  len;
 
     len = strlen( buff );
-    DlgListPush( buff, len, attr );
+    DlgListPush( buff, len, wndattr );
     while( (DlgListBot->line - DlgListTop->line) > MAX_DLG_LINES ) {
         DlgListPopLine();
     }
 }
 
 
-static bool WndDlgTxtAttr( const char *buff, wnd_attr attr )
+static bool WndDlgTxtAttr( const char *buff, wnd_attr wndattr )
 {
-    char        ch,*p;
+    char        ch, *p;
     bool        multi = FALSE;
 
     for( ;; ) {
         p = strchr( buff, '\n' );
-        if( p == NULL ) break;
+        if( p == NULL )
+            break;
         ch = *p;
         *p = '\0';
         LogLine( buff );
-        WndDlgLine( buff, attr );
+        WndDlgLine( buff, wndattr );
         multi = TRUE;
         *p = ch;
         buff = p + 1;
     }
     if( !multi || buff[0] != '\0' ) {
         LogLine( buff );
-        WndDlgLine( buff, attr );
+        WndDlgLine( buff, wndattr );
     }
-    if( WndDlg == NULL ) return( FALSE );
+    if( WndDlg == NULL )
+        return( FALSE );
     DbgUpdate( UP_DLG_WRITTEN );
     return( TRUE );
 }
 
 
-static WNDNUMROWS DlgNumRows;
 static int DlgNumRows( a_window *wnd )
 {
     wnd = wnd;
@@ -146,10 +149,10 @@ static int DlgNumRows( a_window *wnd )
 }
 
 
-static WNDREFRESH DlgRefresh;
 static void DlgRefresh( a_window *wnd )
 {
-    if( DlgLines != 0 ) WndMoveCurrent( wnd, DlgLines - 1, 0 );
+    if( DlgLines != 0 )
+        WndMoveCurrent( wnd, DlgLines - 1, 0 );
     WndNoSelect( wnd );
     WndRepaint( wnd );
 }
@@ -178,12 +181,12 @@ static  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     if( curr == NULL )
         return( FALSE );
     line->text = SYM_NAME_NAME( curr->data );
-    line->attr = curr->attr;
+    line->attr = curr->wndattr;
     return( TRUE );
 }
 
 
-extern void WndDlgFini( void )
+void WndDlgFini( void )
 {
     dlg_entry   *old;
 
@@ -234,10 +237,10 @@ wnd_info LogInfo = {
 };
 
 
-extern WNDOPEN WndDlgOpen;
-extern a_window *WndDlgOpen( void )
+a_window *WndDlgOpen( void )
 {
-    if( WndDlg != NULL ) WndClose( WndDlg );
+    if( WndDlg != NULL )
+        WndClose( WndDlg );
     WndDlg = DbgWndCreate( LIT_DUI( WindowLog ), &LogInfo, WND_DIALOGUE, NULL, &LogIcon );
     return( WndDlg );
 }
