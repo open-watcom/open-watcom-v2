@@ -287,11 +287,11 @@ static gui_colour ScanColour( void )
     return( -1 );
 }
 
-static void set_dlg_attr( gui_dlg_attr dlg_attr, gui_colour fore, gui_colour back )
+static void set_dlg_attr( gui_dlg_attr dlgattr, gui_colour fore, gui_colour back )
 {
-    WndDlgColours[dlg_attr].fore = fore;
-    WndDlgColours[dlg_attr].back = back;
-    if( dlg_attr == GUI_DLG_NORMAL ) {
+    WndDlgColours[dlgattr].fore = fore;
+    WndDlgColours[dlgattr].back = back;
+    if( dlgattr == GUI_DLG_NORMAL ) {
         WndDlgColours[GUI_DLG_SCROLL_ICON].fore = fore;
         WndDlgColours[GUI_DLG_SCROLL_ICON].fore = fore;
         WndDlgColours[GUI_DLG_SCROLL_BAR].fore = fore;
@@ -299,22 +299,22 @@ static void set_dlg_attr( gui_dlg_attr dlg_attr, gui_colour fore, gui_colour bac
     }
 }
 
-static void set_wndcls_attr( wnd_attr wndcls_attr, gui_colour_set *set, gui_colour fore, gui_colour back, bool wndall )
+static void set_wndcls_attr( wnd_attr wndattr, gui_colour_set *set, gui_colour fore, gui_colour back, bool wndall )
 {
     wnd_class       wndcls;
 
-    set[wndcls_attr].fore = fore;
-    set[wndcls_attr].back = back;
-    if( wndcls_attr == WND_PLAIN ) {
+    set[wndattr].fore = fore;
+    set[wndattr].back = back;
+    if( wndattr == WND_PLAIN ) {
         set[GUI_BACKGROUND].fore = fore;
         set[GUI_BACKGROUND].back = back;
     }
     if( wndall ) {
         for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
             if( WndClassColour[wndcls] != NULL ) {
-                WndClassColour[wndcls][wndcls_attr].fore = fore;
-                WndClassColour[wndcls][wndcls_attr].back = back;
-                if( wndcls_attr == WND_PLAIN ) {
+                WndClassColour[wndcls][wndattr].fore = fore;
+                WndClassColour[wndcls][wndattr].back = back;
+                if( wndattr == WND_PLAIN ) {
                     WndClassColour[wndcls][GUI_BACKGROUND].fore = fore;
                     WndClassColour[wndcls][GUI_BACKGROUND].back = back;
                 }
@@ -492,17 +492,17 @@ static void PrintStatusColour( void )
 static void PrintDialogColours( void )
 {
     int             i;
-    gui_dlg_attr    dlg_attr;
+    gui_dlg_attr    dlgattr;
     char            fore[20];
     char            back[20];
     char            attr[30];
 
     GUIGetDialogColours( WndDlgColours );
     for( i = 0; i < ArraySize( DlgAttrMap ); ++i ) {
-        dlg_attr = DlgAttrMap[i].attr;
+        dlgattr = DlgAttrMap[i].attr;
         GetAttrName( DlgAttrMap, i, attr );
-        GetColourName( WndDlgColours[dlg_attr].fore, fore );
-        GetColourName( WndDlgColours[dlg_attr].back, back );
+        GetColourName( WndDlgColours[dlgattr].fore, fore );
+        GetColourName( WndDlgColours[dlgattr].back, back );
         Format( TxtBuff, "%s dialog %s %s on %s", GetCmdName( CMD_PAINT ), attr, fore, back );
         WndDlgTxt( TxtBuff );
     }
