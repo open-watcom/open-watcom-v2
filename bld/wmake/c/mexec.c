@@ -1510,7 +1510,7 @@ STATIC BOOLEAN remove_item( const char *name, const rm_flags *flags, BOOLEAN dir
 static int IsDotOrDotDot( const char *fname )
 {
     /* return 1 if fname is "." or "..", 0 otherwise */
-    return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
+    return( fname[0] == '.' && ( fname[1] == 0 || ( fname[1] == '.' && fname[2] == 0 ) ) );
 }
 
 static BOOLEAN doRM( const char *f, const rm_flags *flags )
