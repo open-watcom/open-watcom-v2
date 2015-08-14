@@ -51,9 +51,9 @@ extern const char       WndNameTab[];
 static gui_colour_set   *WndClassColour[WND_NUM_CLASSES];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
 
-wnd_attr WndPlainAttr = WND_PLAIN;
+wnd_attr WndPlainAttr    = WND_PLAIN;
 wnd_attr WndSelectedAttr = WND_SELECTED;
-wnd_attr WndCursorAttr = WND_SELECTED;
+wnd_attr WndCursorAttr   = WND_SELECTED;
 
 static gui_colour_set   WndDlgColours[] = {
     #define pick(e,f,b)     { f, b },
@@ -234,9 +234,10 @@ static colour_map ColourMap[] = {
     { GUI_BRIGHT_WHITE,         CLR_BRIGHT+CLR_WHITE },
 };
 
-wnd_attr WndMapTabAttr( wnd_attr attr )
+wnd_attr WndMapTabAttr( wnd_attr wndattr )
 {
-    if( attr == WND_STANDOUT ) return( WND_STANDOUT_TABSTOP );
+    if( wndattr == WND_STANDOUT )
+        return( WND_STANDOUT_TABSTOP );
     return( WND_TABSTOP );
 }
 
