@@ -1477,7 +1477,7 @@ int spawnlp( int mode, const char *path, const char *cmd, ... )
 {
     va_list     ap;
     const char  *arg;
-    const char  *args[8];
+    const char  *args[16];
     int         i;
 
     va_start( ap, cmd );
