@@ -56,15 +56,9 @@ wnd_attr WndSelectedAttr = WND_SELECTED;
 wnd_attr WndCursorAttr = WND_SELECTED;
 
 static gui_colour_set   WndDlgColours[] = {
-    { GUI_WHITE,        GUI_BLUE },     // GUI_DLG_NORMAL
-    { GUI_BLUE,         GUI_CYAN },     // GUI_DLG_FRAME
-    { GUI_BLACK,        GUI_BLUE },     // GUI_DLG_SHADOW
-    { GUI_WHITE,        GUI_BLUE },     // GUI_DLG_SCROLL_ICON
-    { GUI_WHITE,        GUI_BLUE },     // GUI_DLG_SCROLL_BAR
-    { GUI_BLUE,         GUI_WHITE },    // GUI_DLG_BUTTON_PLAIN
-    { GUI_BRIGHT_WHITE, GUI_WHITE },    // GUI_DLG_BUTTON_STANDOUT
-    { GUI_BLUE,         GUI_CYAN },     // GUI_DLG_BUTTON_ACTIVE
-    { GUI_BRIGHT_WHITE, GUI_CYAN },     // GUI_DLG_BUTTON_ACTIVE_STANDOUT
+    #define pick(e,f,b)     { f, b },
+    #include "attrdlg.h"
+    #undef pick
 };
 
 gui_colour_set WndColours[] = {

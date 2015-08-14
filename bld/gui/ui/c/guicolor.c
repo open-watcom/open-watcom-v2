@@ -105,14 +105,14 @@ bool GUIXSetColours( gui_window *wnd, gui_colour_set *colours )
     }
     if( wnd->vbarmenu != NULL ) {
 #if !defined( ISQL_COLOURS )
-        UIData->attrs[ATTR_MENU] = wnd->colours[GUI_MENU_FRAME];
-        UIData->attrs[ATTR_ACTIVE] = wnd->colours[GUI_MENU_PLAIN];
-        UIData->attrs[ATTR_INACTIVE] = wnd->colours[GUI_MENU_GRAYED];
-        UIData->attrs[ATTR_CURR_INACTIVE] = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
-        UIData->attrs[ATTR_HOT] = wnd->colours[GUI_MENU_STANDOUT];
-        UIData->attrs[ATTR_HOT_QUIET] = wnd->colours[GUI_MENU_STANDOUT];
-        UIData->attrs[ATTR_CURR_ACTIVE] = wnd->colours[GUI_MENU_ACTIVE];
-        UIData->attrs[ATTR_HOT_CURR] = wnd->colours[GUI_MENU_ACTIVE_STANDOUT];
+        UIData->attrs[ATTR_MENU]            = wnd->colours[GUI_MENU_FRAME];
+        UIData->attrs[ATTR_ACTIVE]          = wnd->colours[GUI_MENU_PLAIN];
+        UIData->attrs[ATTR_INACTIVE]        = wnd->colours[GUI_MENU_GRAYED];
+        UIData->attrs[ATTR_CURR_INACTIVE]   = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
+        UIData->attrs[ATTR_HOT]             = wnd->colours[GUI_MENU_STANDOUT];
+        UIData->attrs[ATTR_HOT_QUIET]       = wnd->colours[GUI_MENU_STANDOUT];
+        UIData->attrs[ATTR_CURR_ACTIVE]     = wnd->colours[GUI_MENU_ACTIVE];
+        UIData->attrs[ATTR_HOT_CURR]        = wnd->colours[GUI_MENU_ACTIVE_STANDOUT];
 #endif
         uimenutitlebar();
     }
