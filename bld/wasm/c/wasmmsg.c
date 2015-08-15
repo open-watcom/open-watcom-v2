@@ -142,7 +142,7 @@ void MsgPrintf( int resourceid )
 
     PrintBanner();
     MsgGet( resourceid, msgbuf );
-    printf( msgbuf );
+    printf( "%s", msgbuf );
 }
 
 void MsgPrintf1( int resourceid, const char *token )

@@ -45,8 +45,8 @@
  */
 #define STACK_FRAME  3*4+4
 
-char line[] = ";****************************************************************************\n";
-char blank[] = ";***                                                                      ***\n";
+#define LINE  ";****************************************************************************\n"
+#define BLANK ";***                                                                      ***\n"
 
 char GlueInc[] = "winglue.inc";
 
@@ -1167,8 +1167,8 @@ void CloseHeader( FILE *f )
     fprintf( f, ";*** By:  Craig Eisler                                                    ***\n" );
     fprintf( f, ";***      December 1990-November 1992                                     ***\n" );
     fprintf( f, ";*** By:  F.W.Crigger May 1993                                            ***\n" );
-    fprintf( f,blank );
-    fprintf( f,line );
+    fprintf( f, BLANK );
+    fprintf( f, LINE );
 
 } /* CloseHeader */
 
@@ -1213,8 +1213,8 @@ void DLLThunkHeader( void )
 {
     int      i;
 
-    fprintf( dllthunk, line );
-    fprintf( dllthunk, blank );
+    fprintf( dllthunk, LINE );
+    fprintf( dllthunk, BLANK );
     fprintf( dllthunk, ";*** DLLTHK.ASM - thunking layer to Windows 3.1 DLLs                      ***\n" );
     fprintf( dllthunk, ";***              This set of functions makes sure that the proper dll    ***\n" );
     fprintf( dllthunk, ";***              is loaded, and gets the real address of the function    ***\n" );
@@ -1344,8 +1344,8 @@ void FunctionHeader( void )
     char        *thunkstr;
     char        *th1,*th2;
 
-    fprintf( stubs, line );
-    fprintf( stubs, blank );
+    fprintf( stubs, LINE );
+    fprintf( stubs, BLANK );
     fprintf( stubs, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
     fprintf( stubs, ";***               This set of functions encompasses all possible types   ***\n" );
     fprintf( stubs, ";***               of calls.  Each API call has a little                  ***\n" );
