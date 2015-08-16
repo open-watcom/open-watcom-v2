@@ -71,17 +71,18 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
             SWAP_32( header.dbg_pos );
             SWAP_32( header.dbg_length );
         }
-        if( header.version != DWARF_VERSION ) DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
+        if( header.version != DWARF_VERSION )
+            DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
         unit_end = pos + header.len + sizeof( uint_32 );
         pos += sizeof( header );
-        header.dbg_pos += dbg_base;
-        pubname.dbg_cu = header.dbg_pos;
+        pubname.dbg_cu = dbg_base + header.dbg_pos;
         pubname.is_start = TRUE;
         for( ;; ) {
             dbg_handle = DWRVMReadDWord( pos );
-            if( dbg_handle == 0 ) break;
+            if( dbg_handle == 0 )
+                break;
             pos += sizeof( uint_32 );
-            pubname.dbg_handle = dbg_handle + header.dbg_pos;
+            pubname.dbg_handle = pubname.dbg_cu + dbg_handle;
             curr_len = DWRGetStrBuff( pos, str, str_len );
             pubname.len = curr_len - 1;
             if( curr_len > str_len ) {
