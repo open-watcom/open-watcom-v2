@@ -95,7 +95,7 @@ public:
     void *              operator new( size_t );
     void                operator delete( void * );
 
-    virtual uint_32     getHandle( void ) const { return _handle; }
+    virtual dr_handle   getHandle( void ) const { return _handle; }
     virtual char *      name();
     virtual Symbol *    makeSymbol( void );
     virtual PaintInfo * getPaintInfo( void );

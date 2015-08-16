@@ -96,7 +96,7 @@ bool ClassMember::operator< ( const ClassMember & o ) const
             if( _access < o._access ) {
                 return TRUE;
             } else {
-                if( _access == o._parent ) {
+                if( _access == o._access ) {
 
                     if( (_symbol == NULL) && (o._symbol != NULL) ) {
                         return TRUE;

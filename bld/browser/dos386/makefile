@@ -4,5 +4,6 @@ host_os  = dos
 host_cpu = 386
 
 quick_link = 1
+use_virtmem = 1
 
 !include ../master.mif

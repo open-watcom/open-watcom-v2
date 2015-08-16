@@ -83,7 +83,7 @@ public:
 
     virtual PaintInfo *     getPaintInfo( void );
     virtual int             getLevel( void ) const;
-    virtual uint_32         getHandle( void ) const { return ClassLattice::_handle; }
+    virtual dr_handle       getHandle( void ) const { return ClassLattice::_handle; }
     virtual TreePtr*        getPtr( TreeList_T list, int index );
     virtual TreeNode*       getNode( TreeList_T list, int index );
     virtual int             getCount( TreeList_T list );

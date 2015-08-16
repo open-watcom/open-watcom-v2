@@ -70,6 +70,9 @@ extra_cpp_flags = -DSTANDALONE_RX=1 -DNOPERSIST=1
 !ifeq release 0
 extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
 !endif
+!ifeq use_virtmem 1
+extra_cpp_flags += -DUSE_VIRTMEM
+!endif
 
 extra_c_flags_i86 = -zc -zm
 !ifdef DBG

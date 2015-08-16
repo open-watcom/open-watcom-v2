@@ -75,7 +75,7 @@ public:
 
 protected:
             int         findNode( TreeNode * node );
-            int         findNode( uint_32 handle );
+            int         findNode( dr_handle handle );
             int         findChild( TreeNode * node );
             bool        isChild( TreeNode * node );
             int         findParent( TreeNode * node );
