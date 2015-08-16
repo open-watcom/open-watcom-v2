@@ -22,8 +22,8 @@ dwarfr_lib_win_i86   = $(dwarfr_dir)/wini86/dwarfr.lib
 !endif
 
 #
-!ifdef dwarfr_lib_$(host_os)_$(host_cpu)$(inline_vmem_$(host_os)_$(host_cpu))
-dwarfr_lib = $(dwarfr_lib_$(host_os)_$(host_cpu)$(inline_vmem_$(host_os)_$(host_cpu)))
+!ifdef dwarfr_lib_$(host_os)_$(host_cpu)
+dwarfr_lib = $(dwarfr_lib_$(host_os)_$(host_cpu))
 !else
 dwarfr_lib = $(dwarfr_lib_$(host_cpu))
 !endif

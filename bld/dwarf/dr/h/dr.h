@@ -94,7 +94,12 @@ typedef enum {
 
 #define DR_HANDLE_VOID  ((dr_handle)-1)     /* special handle denoting void type */
 #define DR_HANDLE_NUL   ((dr_handle)0)
+
+#if defined( USE_VIRTMEM )
 typedef unsigned long   dr_handle;
+#else
+typedef char            *dr_handle;
+#endif
 
 struct WDRRoutines {                                        /* defaults */
 /* I/O routines */
