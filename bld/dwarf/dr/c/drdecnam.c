@@ -526,7 +526,7 @@ static void GetClassName( dr_handle   entry,
     char            *name;
 
     name = NULL;
-    while( entry ) {
+    while( entry != DR_HANDLE_NUL ) {
         tmp_entry = entry;
         abbrev_idx = DWRVMReadULEB128( &tmp_entry );
         abbrev = DWRLookupAbbrev( tmp_entry, abbrev_idx );
@@ -557,7 +557,7 @@ static dr_handle SkipPCH( dr_handle entry )
     dw_tagnum       tag;
     dw_atnum        attrib;
 
-    while( entry ) {
+    while( entry != DR_HANDLE_NUL ) {
         tmp_entry = entry;
         abbrev_idx = DWRVMReadULEB128( &tmp_entry );
         abbrev = DWRLookupAbbrev( tmp_entry, abbrev_idx );
@@ -598,7 +598,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->var_bas ), TRUE, loc->entry_st, DR_SYM_VARIABLE );
     ListConcat( &( decname->var_bas ), varname );
-    EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     DWRFREE( varname.s );
 
@@ -619,7 +619,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
         dr_handle containing_die;
 
         containing_die = DWRReadReference( tmp_abbrev, tmp_entry );
-        if( containing_die != DW_TAG_padding ) {
+        if( containing_die != DR_HANDLE_NUL ) {
             String    containing_name;
 
             GetClassName( containing_die, &containing_name );
@@ -629,7 +629,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
 
                 EndNode( &( decname->var_bas ), TRUE, containing_die, DR_SYM_CLASS );
                 ListConcat( &( decname->var_bas ), containing_name );
-                EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+                EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
                 DWRFREE( containing_name.s );
             }
@@ -646,7 +646,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
 
         type_die = DWRReadReference( tmp_abbrev, tmp_entry );
         type_die =  SkipPCH( type_die );
-        if( type_die != DW_TAG_padding ) {
+        if( type_die != DR_HANDLE_NUL ) {
             Loc_T type_loc;
 
             FillLoc( &type_loc, type_die );
@@ -679,7 +679,7 @@ static BrokenName_T *DecorateMember( BrokenName_T *decname, Loc_T *loc )
     tmp_str.l = strlen( tmp_str.s );
     EndNode( &( decname->var_bas ), TRUE, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
-    EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
     DWRFREE( tmp_str.s );
 
     return( decname );
@@ -698,7 +698,7 @@ static BrokenName_T *DecorateLabel( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), LabelKwd );  /* NYI -- sb label */
     EndNode( &( decname->var_bas ), TRUE, loc->entry_st, DR_SYM_VARIABLE );
     ListConcat( &( decname->var_bas ), lab_name );
-    EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     DWRFREE( lab_name.s );
 
@@ -766,10 +766,9 @@ static void GetContaining( List_T *list, dr_handle of )
             if( containing_name.s != NULL ) {
                 ListConcat( list, MemberKwd );
 
-                EndNode( list, TRUE, curr->handle,
-                        DR_SYM_CLASS );
+                EndNode( list, TRUE, curr->handle, DR_SYM_CLASS );
                 ListConcat( list, containing_name );
-                EndNode( list, FALSE, 0, DR_SYM_NOT_SYM );
+                EndNode( list, FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
                 DWRFREE( containing_name.s );
             }
             break;
@@ -797,7 +796,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
     if( func_name.s != NULL ) {
         EndNode( &( decname->var_bas ), TRUE, loc->entry_st, DR_SYM_FUNCTION );
         ListConcat( &( decname->var_bas ), func_name );
-        EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+        EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
         DWRFREE( func_name.s );
     }
@@ -816,7 +815,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
         dr_handle containing_entry;
 
         containing_entry = DWRReadReference( tmp_abbrev, tmp_entry );
-        if( containing_entry != DW_TAG_padding ) {
+        if( containing_entry != DR_HANDLE_NUL ) {
             GetContaining( &decname->var_bas, containing_entry );
         }
     }
@@ -827,7 +826,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
         dr_handle type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
 
         type_entry =  SkipPCH( type_entry );
-        if( type_entry != DW_TAG_padding ) {
+        if( type_entry != DR_HANDLE_NUL ) {
             FillLoc( &type_loc, type_entry );
             DecorateType( decname, &type_loc, DW_TAG_padding );
         }
@@ -866,7 +865,7 @@ static List_T StartFunctionParms( Loc_T *loc )
 
         FillLoc( &parm_loc, tmp_entry );
 
-        while( parm_loc.entry_st != 0 ) {
+        while( parm_loc.entry_st != DR_HANDLE_NUL ) {
 
             add_parm = DecorateParameter( &parm_loc );
 
@@ -904,7 +903,7 @@ static List_T StartFunctionParms( Loc_T *loc )
  * this child -- if it is a parameter, it decorates it and returns a List_T.
  * otherwise, it checks siblings. loc is always updated to point to
  * the next sibling. If there are no more siblings, it sets
- * loc->entry_st to 0.
+ * loc->entry_st to DR_HANDLE_NUL.
  */
 
 static List_T DecorateParameter( Loc_T *loc )
@@ -920,7 +919,7 @@ static List_T DecorateParameter( Loc_T *loc )
     tmp_abbrev = loc->abbrev_cr;
 
     while( loc->tag != DW_TAG_unspecified_parameters &&
-             loc->tag != DW_TAG_formal_parameter && loc->abbrev_st != 0 ) {
+             loc->tag != DW_TAG_formal_parameter && loc->abbrev_st != DR_HANDLE_NUL ) {
 
         if( loc->child == DW_CHILDREN_yes ) {
             DWRSkipChildren( &tmp_abbrev, &tmp_entry );
@@ -932,7 +931,7 @@ static List_T DecorateParameter( Loc_T *loc )
         tmp_entry = loc->entry_cr;
     }
 
-    if( loc->abbrev_st != 0 ) {
+    if( loc->abbrev_st != DR_HANDLE_NUL ) {
         switch( loc->tag ) {
         case DW_TAG_unspecified_parameters:
             ListConcat( &ret, UnspecParamKwd );
@@ -942,7 +941,7 @@ static List_T DecorateParameter( Loc_T *loc )
             DecorateVariable( &decstruct, loc );
             ret = FormList( &decstruct );
             ret.end = LIST_TAIL;
-            EndNode( &ret, FALSE, 0, DR_SYM_NOT_SYM );
+            EndNode( &ret, FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
             break;
 
         default:
@@ -993,7 +992,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
         if( loc->tag == DW_TAG_typedef ) {
             EndNode( &( decname->type_bas ), TRUE, loc->entry_st, DR_SYM_TYPEDEF );
             ListConcat( &( decname->type_bas ), typename );
-            EndNode( &( decname->type_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+            EndNode( &( decname->type_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
         } else {
             ListConcat( &( decname->type_bas ), typename );
         }
@@ -1007,25 +1006,25 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
 
     case DW_TAG_const_type:
         if( prev_tag != DW_TAG_const_type && prev_tag != DW_TAG_volatile_type ) {
-            EndNode( &( decname->type_elg ), FALSE, 0, DR_SYM_NOT_SYM );
+            EndNode( &( decname->type_elg ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
         }
         AddTypeString( decname, ConstKwd, TYPE_ELG );
         break;
 
     case DW_TAG_volatile_type:
         if( prev_tag != DW_TAG_const_type && prev_tag != DW_TAG_volatile_type ) {
-            EndNode( &( decname->type_elg ), FALSE, 0, DR_SYM_NOT_SYM );
+            EndNode( &( decname->type_elg ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
         }
         AddTypeString( decname, VolatileKwd, TYPE_ELG );
         break;
 
     case DW_TAG_pointer_type:
-        EndNode( &( decname->type_ptr ), FALSE, 0, DR_SYM_NOT_SYM );
+        EndNode( &( decname->type_ptr ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
         AddTypeString( decname, PtrKwd, TYPE_PTR );
         break;
 
     case DW_TAG_reference_type:
-        EndNode( &( decname->type_ptr ), FALSE, 0, DR_SYM_NOT_SYM );
+        EndNode( &( decname->type_ptr ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
         AddTypeString( decname, RefKwd, TYPE_PTR );
         break;
 
@@ -1035,7 +1034,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
 
     case DW_TAG_WATCOM_address_class_type:
         if( prev_tag != DW_TAG_pointer_type ) {
-            EndNode( &( decname->type_ptr ), FALSE, 0, DR_SYM_NOT_SYM );
+            EndNode( &( decname->type_ptr ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
         }
         AddPtrModifier( decname, loc );
         break;
@@ -1075,7 +1074,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
         if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
             next_die =  SkipPCH( next_die );
-            if( next_die != DW_TAG_padding ) {
+            if( next_die != DR_HANDLE_NUL ) {
                 if( loc->tag == DW_TAG_WATCOM_address_class_type ) {
                     prev_tag = prev_tag;
                 } else {
@@ -1121,7 +1120,7 @@ static BrokenName_T *AddPtrModifier( BrokenName_T *decname, Loc_T *loc )
 {
     dr_handle   tmp_entry;
     dr_handle   tmp_abbrev;
-    unsigned_32 addr_class;
+    dw_addr     addr_class;
     bool        spaceit = FALSE;
 
     tmp_entry = loc->entry_cr;
@@ -1132,8 +1131,8 @@ static BrokenName_T *AddPtrModifier( BrokenName_T *decname, Loc_T *loc )
             spaceit = TRUE;
         }
 
-        addr_class = DWRReadConstant( tmp_abbrev, tmp_entry );
-        ListConcat( &( decname->type_ptr ), *AddressClasses[ addr_class] );
+        addr_class = (dw_addr)DWRReadConstant( tmp_abbrev, tmp_entry );
+        ListConcat( &( decname->type_ptr ), *AddressClasses[addr_class] );
 
         if( spaceit ) {
             ListConcat( &( decname->type_ptr ), SpaceKwd );
@@ -1220,7 +1219,7 @@ BrokenName_T *DecorateCompoundType( BrokenName_T *decname, Loc_T *loc,
 
     EndNode( &( decname->type_bas ), TRUE, loc->entry_st, symtype );
     ListConcat( &( decname->type_bas ), typename );
-    EndNode( &( decname->type_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->type_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     ListConcat( &( decname->type_bas ), Kwd );
 
@@ -1254,7 +1253,7 @@ static bool baseHook( dr_sym_type stype, dr_handle base, char *name,
     }
     EndNode( &( data->decname->type_inh ), TRUE, base, stype );
     ListConcat( &( data->decname->type_inh ), namestr );
-    EndNode( &( data->decname->type_inh ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( data->decname->type_inh ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     DWRFREE( namestr.s );
 
@@ -1302,7 +1301,7 @@ BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
 
         EndNode( &( decname->var_plg ), TRUE, containing_entry, DR_SYM_CLASS );
         ListConcat( &( decname->var_plg ), containing_name );
-        EndNode( &( decname->var_plg ), FALSE, 0, DR_SYM_NOT_SYM );
+        EndNode( &( decname->var_plg ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
         DWRFREE( containing_name.s );
     }
@@ -1402,7 +1401,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->var_bas ), TRUE, loc->entry_st, DR_SYM_VARIABLE );
     ListConcat( &( decname->var_bas ), varname );
-    EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     DWRFREE( varname.s );
 
@@ -1416,7 +1415,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
         dr_handle containing_die;
 
         containing_die = DWRReadReference( tmp_abbrev, tmp_entry );
-        if( containing_die != DW_TAG_padding ) {
+        if( containing_die != DR_HANDLE_NUL ) {
             String    containing_name;
 
             tmp_entry = containing_die;
@@ -1429,7 +1428,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
 
                 EndNode( &( decname->var_bas ), TRUE, containing_die, DR_SYM_CLASS );
                 ListConcat( &( decname->var_bas ), containing_name );
-                EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+                EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
                 DWRFREE( containing_name.s );
             }
@@ -1444,7 +1443,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
     if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         type_die = DWRReadReference( tmp_abbrev, tmp_entry );
         type_die =  SkipPCH( type_die );
-        if( type_die != DW_TAG_padding ) {
+        if( type_die != DR_HANDLE_NUL ) {
             FillLoc( &type_loc, type_die );
             type_loc.inParam = inParam;
 
@@ -1506,6 +1505,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
         default:
             DWREXCEPT( DREXCEP_BAD_DBG_INFO );
             len = 0;
+            buf = NULL;
         }
 
         if( type_loc->tag == DW_TAG_string_type ) {
@@ -1525,7 +1525,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             tmp_abbrev = type_loc->abbrev_cr;
             tmp_entry = type_loc->entry_cr;
             if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_encoding ) ) {
-                encoding = DWRReadConstant( tmp_abbrev, tmp_entry );
+                encoding = (dw_ate)DWRReadConstant( tmp_abbrev, tmp_entry );
             } else {
                 DWREXCEPT( DREXCEP_BAD_DBG_INFO );
                 encoding = 0;
@@ -1681,7 +1681,7 @@ static void FORDecMember( BrokenName_T *decname, Loc_T *loc )
     tmp_str.l = strlen( tmp_str.s );
     EndNode( &( decname->var_bas ), TRUE, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
-    EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
     DWRFREE( tmp_str.s );
 }
 
@@ -1707,7 +1707,7 @@ static bool FORAddParam( dr_handle entry, int index, void *data )
         list->head = add.head;
         list->tail = add.tail;
     } else {
-        EndNode( list, FALSE, 0, DR_SYM_NOT_SYM );
+        EndNode( list, FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
         ListConcat( list, FORParmSepKwd );
         list->tail->next = add.head;
         list->tail = add.tail;
@@ -1720,7 +1720,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
 /***************************************************************/
 {
     static const dw_tagnum  WalkTags[] = { DW_TAG_formal_parameter, 0 };
-    static DRWLKBLK         WalkFns[] = { FORAddParam, NULL };
+    static const DRWLKBLK   WalkFns[] = { FORAddParam, NULL };
 
     String      func_name;
     List_T      parms = { NULL, NULL, LIST_TAIL };
@@ -1736,7 +1736,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
     if( strcmp( func_name.s, FORMainProgMatch ) == 0 ) {
         EndNode( &( decname->var_bas ), TRUE, loc->entry_st, DR_SYM_FUNCTION );
         ListConcat( &( decname->var_bas ), func_name );
-        EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+        EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
         DWRFREE( func_name.s );
 
@@ -1745,7 +1745,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->var_bas ), TRUE, loc->entry_st, DR_SYM_FUNCTION );
     ListConcat( &( decname->var_bas ), func_name );
-    EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     DWRFREE( func_name.s );
 
@@ -1755,7 +1755,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
         dr_handle type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
 
         type_entry =  SkipPCH( type_entry );
-        if( type_entry != DW_TAG_padding ) {
+        if( type_entry != DR_HANDLE_NUL ) {
             FillLoc( &type_loc, type_entry );
             FORDecType( decname, &type_loc );
         }
@@ -1781,8 +1781,8 @@ static void FORDecEntryPoint( BrokenName_T *decname, Loc_T *loc )
     List_T      parms = { NULL, NULL, LIST_TAIL };
     dr_handle   tmp_abbrev;
     dr_handle   tmp_entry;
-    dw_tagnum   WalkTags[] = { DW_TAG_formal_parameter, 0 };
-    DRWLKBLK    WalkFns[] = { FORAddParam, NULL };
+    static const dw_tagnum   WalkTags[] = { DW_TAG_formal_parameter, 0 };
+    static const DRWLKBLK    WalkFns[] = { FORAddParam, NULL };
 
     tmp_abbrev = loc->abbrev_cr;
     tmp_entry = loc->entry_cr;
@@ -1791,7 +1791,7 @@ static void FORDecEntryPoint( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->var_bas ), TRUE, loc->entry_st, DR_SYM_FUNCTION );
     ListConcat( &( decname->var_bas ), func_name );
-    EndNode( &( decname->var_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->var_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     DWRFREE( func_name.s );
 
@@ -1820,7 +1820,7 @@ static void FORDecStructure( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->type_bas ), TRUE, loc->entry_st, DR_SYM_CLASS );
     ListConcat( &( decname->type_bas ), strucName );
-    EndNode( &( decname->type_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->type_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORStructKwd );
@@ -1856,7 +1856,7 @@ static bool FORAddNameListItem( dr_handle entry, int index, void *data )
 
     EndNode( &( decname->type_elg ), TRUE, loc.entry_st, DR_SYM_VARIABLE );
     ListConcat( &( decname->type_elg ), itemName );
-    EndNode( &( decname->type_elg ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->type_elg ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     DWRFREE( itemName.s );
 
@@ -1867,7 +1867,7 @@ static void FORDecNameList( BrokenName_T *decname, Loc_T *loc )
 /*************************************************************/
 {
     static const dw_tagnum  WalkTags[] = { DW_TAG_namelist_item, 0 };
-    static DRWLKBLK         WalkFns[] = { FORAddNameListItem, NULL };
+    static const DRWLKBLK   WalkFns[] = { FORAddNameListItem, NULL };
 
     String strucName;
 
@@ -1878,7 +1878,7 @@ static void FORDecNameList( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->type_bas ), TRUE, loc->entry_st, DR_SYM_CLASS );
     ListConcat( &( decname->type_bas ), strucName );
-    EndNode( &( decname->type_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->type_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORNameListKwd );
@@ -1900,7 +1900,7 @@ static void FORDecRecord( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->type_bas ), TRUE, loc->entry_st, DR_SYM_CLASS );
     ListConcat( &( decname->type_bas ), strucName );
-    EndNode( &( decname->type_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->type_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORRecordKwd );
@@ -1915,7 +1915,7 @@ static void FORDecUnion( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->type_bas ), TRUE, loc->entry_st, DR_SYM_CLASS );
     ListConcat( &( decname->type_bas ), FORUnionKwd );
-    EndNode( &( decname->type_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->type_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 }
 
 typedef struct FORArrIndexInf_S {
@@ -2089,7 +2089,7 @@ static void FORDecType( BrokenName_T *decname, Loc_T *loc )
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
 
             next_die =  SkipPCH( next_die );
-            if( next_die != DW_TAG_padding ) {
+            if( next_die != DR_HANDLE_NUL ) {
                 FillLoc( loc, next_die );
                 FORDecType( decname, loc );
             }
@@ -2143,7 +2143,7 @@ static void FORDecCommon( BrokenName_T *decname, Loc_T *loc )
 
     EndNode( &( decname->type_bas ), TRUE, loc->entry_st, DR_SYM_CLASS );
     ListConcat( &( decname->type_bas ), commonName );
-    EndNode( &( decname->type_bas ), FALSE, 0, DR_SYM_NOT_SYM );
+    EndNode( &( decname->type_bas ), FALSE, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORCommonKwd );
@@ -2232,7 +2232,7 @@ static List_T FormList( BrokenName_T *decname )
 
         list.tail->next->next = NULL;
         list.tail->next->user_def = FALSE;
-        list.tail->next->entry = 0;
+        list.tail->next->entry = DR_HANDLE_NUL;
         list.tail->next->buf.l = SpaceKwd.l;
         list.tail->next->buf.s = NULL;
         ReallocStr( &( list.tail->next->buf ) );
@@ -2275,10 +2275,10 @@ static void FillLoc( Loc_T *loc, dr_handle die )
         loc->abbrev_cr += sizeof( unsigned_8 );    /* skip child byte */
         loc->inParam = FALSE;
     } else {
-        loc->entry_st = 0;
-        loc->entry_cr = 0;
-        loc->abbrev_st = 0;
-        loc->abbrev_cr = 0;
+        loc->entry_st = DR_HANDLE_NUL;
+        loc->entry_cr = DR_HANDLE_NUL;
+        loc->abbrev_st = DR_HANDLE_NUL;
+        loc->abbrev_cr = DR_HANDLE_NUL;
         loc->tag = 0;
         loc->child = DW_CHILDREN_no;
         loc->inParam = FALSE;
@@ -2372,7 +2372,7 @@ static void ListConcat( List_T *list, String str )
 
         newnode->next = NULL;
         newnode->user_def = FALSE;
-        newnode->entry = 0;
+        newnode->entry = DR_HANDLE_NUL;
         newnode->buf.l = 0;
         newnode->buf.s = 0;
 

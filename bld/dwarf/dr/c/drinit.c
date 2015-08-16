@@ -81,7 +81,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
             abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( dr_handle ) );
             memset( &abbrevs[oldsize], 0, ( sizealloc - oldsize ) * sizeof( dr_handle ) );
         }
-        if( abbrevs[code] == 0 ) {
+        if( abbrevs[code] == DR_HANDLE_NUL ) {
             abbrevs[code] = start;
         }
         DWRVMSkipLEB128( &start );              // skip tag
@@ -120,12 +120,12 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
         dbg->sections[i].size = *sizes;
         if( *sizes != 0 ) {
             dbg->sections[i].base = DWRVMAlloc( *sizes, i );
-            if( dbg->sections[i].base == 0 ) {
+            if( dbg->sections[i].base == DR_HANDLE_NUL ) {
                 DWRFREE( dbg );
                 return( NULL );
             }
         } else {
-            dbg->sections[i].base = 0;
+            dbg->sections[i].base = DR_HANDLE_NUL;
         }
         sizes++;
     }
@@ -152,7 +152,7 @@ extern void DRDbgDone( dr_dbg_handle dbg )
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         DWRVMSectDone( dbg->sections[i].base, dbg->sections[i].size );
-        dbg->sections[i].base = 0;
+        dbg->sections[i].base = DR_HANDLE_NUL;
         dbg->sections[i].size = 0;
     }
 }

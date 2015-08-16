@@ -80,8 +80,8 @@ static uint_32 SectInt( sec_file *file, int size )
 }
 
 
-static void SectRead( sec_file *file, void *buff, int size )
-/**********************************************************/
+static void SectRead( sec_file *file, void *buff, unsigned size )
+/***************************************************************/
 {
     DWRVMRead( file->pos, buff, size  );
     file->pos += size;
@@ -97,6 +97,7 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
     dr_handle           base;
     uint_32             tuple_size;
     uint_32             aligned_addr;
+    uint_32             addr;
     bool                old_ver;
     bool                zero_padding = TRUE;
 
@@ -104,15 +105,17 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
     file->pos = DWRCurrNode->sections[DR_DEBUG_ARANGES].base;
     file->finish = file->pos + DWRCurrNode->sections[DR_DEBUG_ARANGES].size;
     for( ;; ) {
-        if( file->pos >= file->finish ) break;
+        if( file->pos >= file->finish )
+            break;
         SectRead( file, &header, sizeof( header ) );
         if( DWRCurrNode->byte_swap ) {
             SWAP_32( header.len );
             SWAP_16( header.version );
             SWAP_32( header.dbg_pos );
         }
-        if( header.version != DWARF_VERSION ) DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        arange.dbg = header.dbg_pos+base;
+        if( header.version != DWARF_VERSION )
+            DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
+        arange.dbg = header.dbg_pos + base;
         arange.addr_size = header.addr_size;
         arange.seg_size = header.seg_size;
         arange.is_start = TRUE;   /* start of bunch */
@@ -126,27 +129,30 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
          * no alignment padding was used.
          */
         old_ver = (DWRCurrNode->wat_version == 1) || (DWRCurrNode->wat_version == 2) || (tuple_size == 10);
-        aligned_addr = file->pos;
-        aligned_addr = (aligned_addr + tuple_size - 1) & ~(tuple_size - 1);
-        if( aligned_addr != file->pos ) {
+        addr = file->pos;
+        aligned_addr = (addr + tuple_size - 1) & ~(tuple_size - 1);
+        if( aligned_addr != addr ) {
             /* try reading the padding; if it's nonzero, assume it's not there */
             if( ReadInt( file->pos, header.addr_size ) != 0 )
                 zero_padding = FALSE;
             if( header.seg_size && ReadInt( file->pos + header.addr_size, header.seg_size ) != 0 )
                 zero_padding = FALSE;
-            if( !old_ver && zero_padding )
+            if( !old_ver && zero_padding ) {
                 file->pos = aligned_addr;
+            }
         }
         for( ;; ) {
             arange.addr = SectInt( file, header.addr_size );
             if( header.seg_size != 0 ) {
-                arange.seg = SectInt( file, header.seg_size );
+                arange.seg = (uint_16)SectInt( file, header.seg_size );
             } else { /* flat */
                 arange.seg = 0;
             }
             arange.len = SectInt( file, header.addr_size );
-            if( arange.addr == 0 && arange.len == 0 ) break;
-            if( !callback( data, &arange ) ) break;
+            if( arange.addr == 0 && arange.len == 0 )
+                break;
+            if( !callback( data, &arange ) )
+                break;
             arange.is_start = FALSE;
         }
     }

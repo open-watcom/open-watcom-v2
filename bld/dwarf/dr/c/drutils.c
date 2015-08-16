@@ -470,28 +470,29 @@ dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
 {
     dr_handle       handle;
     dw_formnum      form;
+    unsigned_32     offset;
 
+    handle = DR_HANDLE_NUL;
     form = DWRVMReadULEB128( &abbrev );
-    handle =  ReadConst( form, info );
-    if( handle != 0 ) {     // if not NULL relocate
+    offset =  ReadConst( form, info );
+    if( offset != 0 ) {     // if not NULL relocate
         if( form != DW_FORM_ref_addr ) {
-            handle += DWRFindCompileUnit( info );
+            handle = DWRFindCompileUnit( info ) + offset;
         } else {
             if( DWRCurrNode->wat_version == 1 ) { // handle Watcom 10.x DWARF
-                handle += DWRFindCompileUnit( info );
+                handle = DWRFindCompileUnit( info ) + offset;
             } else {
-                handle += DWRCurrNode->sections[DR_DEBUG_INFO].base;
+                handle = DWRCurrNode->sections[DR_DEBUG_INFO].base + offset;
             }
         }
     }
     return( handle );
 }
 
-dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
-/**************************************************************/
+unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
+/*********************************************************/
 // address size dependent on CCU info
 {
-    dr_handle    handle;
     unsigned     addr_size;
     unsigned_32  retval;
     dw_formnum   form;
@@ -501,8 +502,7 @@ dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     if( DWRCurrNode->addr_size == 0 ) {
-        handle =  DWRFindCompileUnit( info );
-        addr_size = DWRGetAddrSize( handle );
+        addr_size = DWRGetAddrSize( DWRFindCompileUnit( info ) );
     } else {
         addr_size = DWRCurrNode->addr_size;
     }
@@ -580,7 +580,7 @@ dr_handle DWRLookupAbbrev( dr_handle entry, dr_abbrev_idx abbrev_idx )
     cu = DWRFindCompileInfo( entry );
     if( abbrev_idx >= cu->numabbrevs ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
-        abbrev = 0;
+        abbrev = DR_HANDLE_NUL;
     } else
         abbrev = cu->abbrevs[abbrev_idx];
     return( abbrev );
@@ -645,7 +645,7 @@ bool DWRScanForAttrib( dr_handle *abbrev, dr_handle *info, dw_atnum at )
     return( found );
 }
 
-static dw_tagnum CompUnitTag[] = { DW_TAG_compile_unit, 0 };
+static const dw_tagnum CompUnitTag[] = { DW_TAG_compile_unit, 0 };
 
 void DWRGetCompileUnitHdr( dr_handle mod, DWRCUWLK fn, void *data )
 /*****************************************************************/
@@ -787,8 +787,8 @@ bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-bool DWRWalkChildren( dr_handle mod, const dw_tagnum *tags, DRWLKBLK *wlks, void *d )
-/*************************************************************************************/
+bool DWRWalkChildren( dr_handle mod, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
+/*****************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
 {
@@ -901,8 +901,8 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
     return( TRUE );
 }
 
-bool DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, DRWLKBLK *wlks, void *d )
-/**************************************************************************************/
+bool DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
+/******************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
 // positions curr at next tag return TRUE if end of list

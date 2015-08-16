@@ -206,7 +206,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
                 owning_node = ScopeLastNameable( &registers.scope, &name );
 
                 /* make sure that there is something nameable on the stack */
-                if( owning_node != 0 ) {
+                if( owning_node != DR_HANDLE_NUL ) {
                     quit = !callback( owning_node, &registers, name, data2 );
                 }
             }

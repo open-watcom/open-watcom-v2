@@ -43,11 +43,11 @@ enum {
     TAB_IDX_PATH
 };
 
-typedef unsigned_16     file_tab_idx;
+typedef unsigned_16     filetab_idx;
 
 typedef struct {
-    file_tab_idx        fnameidx;
-    file_tab_idx        pathidx;
+    filetab_idx         fnameidx;
+    filetab_idx         pathidx;
 } fileidx_entry;
 
 typedef struct {
@@ -58,7 +58,7 @@ typedef struct {
 } filetab_entry;
 
 typedef struct {
-    file_tab_idx        len;
+    filetab_idx         len;
     filetab_entry       *tab;
 } file_table;
 

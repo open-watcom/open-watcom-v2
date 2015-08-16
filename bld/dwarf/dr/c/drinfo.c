@@ -51,11 +51,11 @@ static dr_language GetLanguage( dr_handle abbrev, dr_handle mod )
 /***************************************************************/
 {
     dr_language result;
-    unsigned    lang;
+    dw_langnum  lang;
 
     result = DR_LANG_UNKNOWN;
     if( DWRScanForAttrib( &abbrev, &mod, DW_AT_language ) ) {
-        lang = DWRReadConstant( abbrev, mod );
+        lang = (dw_langnum)DWRReadConstant( abbrev, mod );
         switch( lang ) {
         case DW_LANG_C89:
         case DW_LANG_C:
@@ -73,14 +73,11 @@ static dr_language GetLanguage( dr_handle abbrev, dr_handle mod )
     return( result );
 }
 
-static bool CheckLanguage( dr_handle abbrev, dr_handle mod, mod_scan_info *x,
-                           void *_data )
-/***************************************************************************/
+static bool CheckLanguage( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void *data )
+/****************************************************************************************/
 {
-    dr_language *data = _data;
-
     x = x;
-    *data = GetLanguage( abbrev, mod );
+    *(dr_language *)data = GetLanguage( abbrev, mod );
     return( FALSE );        // do not continue processing
 }
 
@@ -104,7 +101,7 @@ dr_model DRGetMemModelAT( dr_handle entry )
 
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_WATCOM_memory_model ) ) {
-        retval = DWRReadConstant( abbrev, entry );
+        retval = (dr_model)DWRReadConstant( abbrev, entry );
     } else {
         retval = DR_MODEL_NONE;
     }
@@ -190,10 +187,8 @@ unsigned DRGetNameBuff( dr_handle entry, char *buff, unsigned length )
     return( GetNameBuffAttr( entry, buff, length, DW_AT_name ) );
 }
 
-unsigned DRGetScopedNameBuff( dr_handle entry,
-                                     char     *buff,
-                                     unsigned  max )
-/***************************************************/
+unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
+/***********************************************************************/
 {
     dr_handle       of;
     scope_trail     container;
@@ -202,7 +197,7 @@ unsigned DRGetScopedNameBuff( dr_handle entry,
     unsigned        length;
 
     of = DRGetContaining( entry );
-    if( of == 0 ) {
+    if( of == DR_HANDLE_NUL ) {
         of = entry;
     }
     DRGetScopeList( &container, of );
@@ -265,8 +260,8 @@ long DRGetColumn( dr_handle entry )
 /*********************************/
 // NYI: this is not going to work for macros.
 {
-    unsigned long retval;
-    dr_handle     abbrev;
+    long        retval;
+    dr_handle   abbrev;
 
     retval = -1;        // signifies no column available
     abbrev = DWRGetAbbrev( &entry );
@@ -280,8 +275,8 @@ long DRGetLine( dr_handle entry )
 /**************************************/
 // NYI: this is not going to work for macros.
 {
-    unsigned long retval;
-    dr_handle     abbrev;
+    long        retval;
+    dr_handle   abbrev;
 
     retval = -1;        // signifies no column available
     abbrev = DWRGetAbbrev( &entry );
@@ -301,7 +296,7 @@ extern char *DRGetFileName( dr_handle entry )
     name = NULL;
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_file ) ) {
-        fileidx = DWRReadConstant( abbrev, entry );
+        fileidx = (dr_fileidx)DWRReadConstant( abbrev, entry );
         name = DWRFindFileName( fileidx, entry );
     }
     return( name );
@@ -312,7 +307,7 @@ void DRGetFileNameList( DRFNAMECB callback, void *data )
 {
     compunit_info       *compunit;
     dr_fileidx          fileidx;
-    file_tab_idx        ftidx;
+    filetab_idx         ftidx;
     char                *name;
 
     compunit = &DWRCurrNode->compunit;
@@ -335,7 +330,7 @@ char *DRIndexFileName( dr_handle mod, dr_fileidx fileidx  )
 {
     compunit_info       *compunit;
     char                *name;
-    file_tab_idx        ftidx;
+    filetab_idx         ftidx;
 
     compunit = DWRFindCompileInfo( mod );
     ftidx = DWRIndexFile( fileidx - 1, &compunit->filetab );
@@ -350,7 +345,7 @@ dr_access DRGetAccess( dr_handle entry )
 
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_accessibility ) ) {
-        return( DWRReadConstant( abbrev, entry ) );
+        return( (dr_access)DWRReadConstant( abbrev, entry ) );
     }
     return( DR_ACCESS_PUBLIC );
 }
@@ -434,7 +429,7 @@ dr_virtuality DRGetVirtuality( dr_handle entry )
 
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_virtuality ) ) {
-        return( DWRReadConstant( abbrev, entry ) );
+        return( (dr_virtuality)DWRReadConstant( abbrev, entry ) );
     }
     return( DR_VIRTUALITY_NONE );
 }
@@ -497,7 +492,7 @@ dr_handle DRGetContaining( dr_handle entry )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_containing_type ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = 0;
+        ret = DR_HANDLE_NUL;
     }
     return( ret );
 }
@@ -521,7 +516,7 @@ dr_handle DRWalkParent( dr_search_context * context )
         prev = context->functionhdl;
         break;
     default:
-        prev = 0;
+        prev = DR_HANDLE_NUL;
         break;
     }
     return( prev );
@@ -691,7 +686,7 @@ dr_handle DRDebugPCHDef( dr_handle entry )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_base_types ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = 0;
+        ret = DR_HANDLE_NUL;
     }
     return( ret );
 }

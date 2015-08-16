@@ -159,8 +159,8 @@ extern int DRGetBitFieldInfo( dr_handle mem, dr_bitfield *info )
 }
 
 
-extern bool DRGetTypeInfo( dr_handle entry,  dr_typeinfo *info )
-/**************************************************************/
+extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
+/*************************************************************/
 // Assume entry is pointing at start of a type
 {
     dr_handle       curr_ab;
@@ -355,11 +355,11 @@ extern dr_ptr DRGetAddrClass( dr_handle entry )
 {
     dr_handle   abbrev;
     dr_ptr      ret;
-    int         value;
+    dw_addr     value;
 
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_address_class ) ) {
-        value = DWRReadConstant( abbrev, entry );
+        value = (dw_addr)DWRReadConstant( abbrev, entry );
     } else {
         value = DW_ADDR_none;
     }
@@ -396,7 +396,7 @@ extern dr_handle DRGetTypeAT( dr_handle entry )
     dr_handle   type;
 
     abbrev = DWRGetAbbrev( &entry );
-    type = 0;
+    type = DR_HANDLE_NUL;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
         type = DWRReadReference( abbrev, entry );
     }
@@ -438,7 +438,7 @@ extern dr_array_stat DRGetArrayInfo( dr_handle entry, dr_array_info *info )
         DWRSkipAttribs( abbrev, &entry );
         info->child = entry;
     } else {
-        info->child = 0;
+        info->child = DR_HANDLE_NUL;
     }
     return( stat );
 }
@@ -471,8 +471,8 @@ extern dr_handle DRSkipTypeChain( dr_handle tref )
             entry = DWRReadReference( abbrev, entry );
             tref = entry;
         } else {
-            tref = 0;
-            goto end_loop;
+            tref = DR_HANDLE_NUL;
+            break;
         }
     } end_loop:;
     return( tref );
@@ -482,8 +482,8 @@ static const dw_tagnum MemTag[DR_WLKBLK_STRUCT] = {
     DW_TAG_member, DW_TAG_inheritance, DW_TAG_variable, DW_TAG_subprogram, 0
 };
 
-bool DRWalkStruct( dr_handle mod,  DRWLKBLK *wlks, void *d )
-/**********************************************************/
+bool DRWalkStruct( dr_handle mod, const DRWLKBLK *wlks, void *d )
+/***************************************************************/
 // wlks[0] == member func, wlks[1] inherit func, wlks[2] default
 {
     return( DWRWalkChildren( mod, MemTag, wlks, d ) );
@@ -493,8 +493,8 @@ static const dw_tagnum ArrayTag[DR_WLKBLK_ARRSIB] = {
     DW_TAG_subrange_type, DW_TAG_enumerator, 0
 };
 
-bool DRWalkArraySibs( dr_handle mod,  DRWLKBLK *wlks, void *d )
-/*************************************************************/
+bool DRWalkArraySibs( dr_handle mod, const DRWLKBLK *wlks, void *d )
+/******************************************************************/
 // wlks[0] == subrange [1] = enumerator , 0 = Null
 {
     return( DWRWalkSiblings( mod, ArrayTag, wlks, d ) );

@@ -43,18 +43,15 @@
 
 file_info               FileNameTable;
 
-static bool GrabLineAddr( dr_handle abbrev, dr_handle mod, mod_scan_info *x,
-                          void *_data )
-/***************************************************************************/
+static bool GrabLineAddr( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void *data )
+/***************************************************************************************/
 /* this is called by ScanCompileUnit with abbrevptr and dataptr pointing at
  * the start of a compile unit die.  This picks out the line number info.
  * offset, and stores it in data */
 {
-    long    *data = _data;
-
     x = x;      // to avoid a warning
     if( DWRScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) ) {
-        *data = DWRReadConstant( abbrev, mod );
+        *((unsigned_32 *)data) = DWRReadConstant( abbrev, mod );
     }
     return( FALSE );    // do not continue with the search.
 }
@@ -69,7 +66,7 @@ extern void DWRInitFileTable( file_table *tab )
 extern void DWRFiniFileTable( file_table *tab, bool freenames )
 /*************************************************************/
 {
-    file_tab_idx    ftidx;
+    filetab_idx     ftidx;
 
     if( freenames ) {
         for( ftidx = 0; ftidx < tab->len; ftidx++ ) {
@@ -91,10 +88,10 @@ static void GrowTable( file_table *tab )
     }
 }
 
-extern file_tab_idx DWRAddFileName( char *name, file_table *tab )
-/***************************************************************/
+extern filetab_idx DWRAddFileName( char *name, file_table *tab )
+/**************************************************************/
 {
-    file_tab_idx    ftidx;
+    filetab_idx     ftidx;
     char            **names;
 
     names = (char **)tab->tab;
@@ -110,8 +107,8 @@ extern file_tab_idx DWRAddFileName( char *name, file_table *tab )
     return( ftidx );
 }
 
-static void DWRInsertIndex( file_tab_idx ftidx, file_table *tab, unsigned where )
-/*******************************************************************************/
+static void DWRInsertIndex( filetab_idx ftidx, file_table *tab, unsigned where )
+/******************************************************************************/
 {
     if( where == TAB_IDX_FNAME ) {
         tab->tab[tab->len - 1].u.idx.fnameidx = ftidx;
@@ -120,27 +117,27 @@ static void DWRInsertIndex( file_tab_idx ftidx, file_table *tab, unsigned where 
     }
 }
 
-extern void DWRAddIndex( file_tab_idx ftidx, file_table *tab, unsigned where )
-/****************************************************************************/
+extern void DWRAddIndex( filetab_idx ftidx, file_table *tab, unsigned where )
+/***************************************************************************/
 {
     GrowTable( tab );
     DWRInsertIndex( ftidx, tab, where );
 }
 
-extern file_tab_idx DWRIndexPath( dr_fileidx pathidx, file_table *tab )
-/*********************************************************************/
+extern filetab_idx DWRIndexPath( dr_fileidx pathidx, file_table *tab )
+/********************************************************************/
 {
     return( tab->tab[pathidx].u.idx.pathidx );
 }
 
-extern file_tab_idx DWRIndexFile( dr_fileidx fileidx, file_table *tab )
-/*********************************************************************/
+extern filetab_idx DWRIndexFile( dr_fileidx fileidx, file_table *tab )
+/********************************************************************/
 {
     return( tab->tab[fileidx].u.idx.fnameidx );
 }
 
-extern char * DWRIndexFileName( file_tab_idx ftidx, file_table *tab )
-/*******************************************************************/
+extern char * DWRIndexFileName( filetab_idx ftidx, file_table *tab )
+/******************************************************************/
 {
     return( tab->tab[ftidx].u.name );
 }
@@ -156,7 +153,7 @@ static void ReadNameEntry( dr_handle *start, file_info *nametab,
 /*****************************************************************/
 {
     char            *name;
-    file_tab_idx    ftidx;
+    filetab_idx     ftidx;
     dr_fileidx      pathidx;
 
     name = DWRCopyString( start );
@@ -178,22 +175,21 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     file_table      curridxmap;
     char            *name;
     int             index;
-    file_tab_idx    ftidx;
+    filetab_idx     ftidx;
     unsigned        length;
     unsigned_8      *oparray;
     int             op_base;
     int             value;
-    long            stmt_offset;
+    unsigned_32     stmt_offset;
     dw_lns          value_lns;
     dw_lne          value_lne;
 
-    stmt_offset = -1;
+    stmt_offset = (unsigned_32)-1;
     DWRGetCompileUnitHdr( start, GrabLineAddr, &stmt_offset );
-    if( stmt_offset == -1 ) {
+    if( stmt_offset == (unsigned_32)-1 ) {
         return;
     }
-    start = DWRCurrNode->sections[DR_DEBUG_LINE].base;
-    start += stmt_offset;
+    start = DWRCurrNode->sections[DR_DEBUG_LINE].base + stmt_offset;
     finish = start + DWRVMReadDWord( start );
     start += 4 + 2 + 4 + 1 + 1 + 1 + 1;         // skip the start of the header
     op_base = DWRVMReadByte( start );
@@ -252,7 +248,7 @@ extern char * DWRFindFileName( dr_fileidx fileidx, dr_handle entry )
 /***************************************************************/
 {
     compunit_info   *compunit;
-    file_tab_idx    ftidx;
+    filetab_idx     ftidx;
 
     if( fileidx != 0 ) {
         compunit = DWRFindCompileInfo( entry );

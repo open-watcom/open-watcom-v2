@@ -39,16 +39,16 @@ extern dr_handle DWRVMAlloc( unsigned long, int );
 
 extern unsigned  DWRStrLen( dr_handle );
 extern void      DWRGetString( char *, dr_handle * );
-extern unsigned  DWRGetStrBuff(  dr_handle drstr, char *buf, unsigned max );
+extern unsigned  DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max );
 
 #if defined( INLINE_VMEM )
 
 
 #define DWRVMSwap( __ig1, __ig2, __ig3 ) ((void)((__ig1) == (__ig2) == *(__ig3)))  /* ignored */
 
-#define DWRVMRead( __hdl, __blk, __len ) ( (void) memcpy( (void *) __blk, (const void *) __hdl, (unsigned) __len ) )
-#define DWRVMReadByte( __hdl )           ( *((unsigned_8 *) (__hdl)) )
-#define DWRVMReadSLEB128( __hdlp )       ( (signed_32)  ReadLEB128( (dr_handle *) (__hdlp), TRUE ) )
+#define DWRVMRead( __hdl, __blk, __len ) ( (void)memcpy( __blk, (void *)__hdl, __len ) )
+#define DWRVMReadByte( __hdl )           ( *((unsigned_8 *)(__hdl)) )
+#define DWRVMReadSLEB128( __hdlp )       ( (signed_32)ReadLEB128( __hdlp, TRUE ) )
 #define DWRVMSkipLEB128( __hdl )                        \
          { unsigned_8 *p = (unsigned_8 *)*(__hdl);      \
                 do { } while( *p++ & 0x80 );            \
@@ -63,7 +63,7 @@ extern unsigned_32      ReadLEB128( dr_handle *, bool );
 
 extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
 
-#define DWRVMReadULEB128( __hdlp )       ( (uint_32) ReadULEB128( (dr_handle *) (__hdlp) ) )
+#define DWRVMReadULEB128( __hdlp )       ReadULEB128( __hdlp )
 
 /* warning -- this function only works if the ULEB128 is <= 0x0fffffff */
 /* if greater numbers are used, the lowest nibble is zeroed. */
@@ -90,7 +90,7 @@ extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
 
 #else
 
-#define DWRVMReadULEB128( __hdlp )       ( (signed_32)  ReadLEB128( (dr_handle *) (__hdlp), FALSE ) )
+#define DWRVMReadULEB128( __hdlp )       ( (signed_32)ReadLEB128( __hdlp, FALSE ) )
 
 #endif
 
