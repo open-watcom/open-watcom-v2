@@ -420,65 +420,27 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
     //node = AccessPage( vm );
     ACCESSPAGE( node, vm );                         // ITB
     off = NODE_OFF( vm );
-    vm.l++;
     inbyte = *(node->mem + off);
     result = inbyte & 0x7F;
     while( inbyte & 0x80 ) {
         off++;
+        vm.l++;
         if( off == MAX_NODE_SIZE ) {
-            off = 0;
             //node = AccessPage( vm );
             ACCESSPAGE( node, vm );                 // ITB
+            off = 0;
         }
         shift += 7;
         inbyte = *(node->mem + off);
         result |= (unsigned_32)(inbyte & 0x7F) << shift;
-        vm.l++;
     }
-    *vmptr = vm.l;
-    if( issigned ) {
-        if( inbyte & 0x40 ) {   // we have to sign extend
-            result |= - ((signed_32)(1 << (shift + 7)));
+    *vmptr = vm.l + 1;
+    if( issigned && (inbyte & 0x40) != 0 ) {   // we have to sign extend
+        shift += 7;
+        if( shift < 32 ) {
+            result |= - ((signed_32)(1 << shift));
         }
     }
-    return( result );
-}
-
-extern signed_32 DWRVMReadSLEB128( dr_handle *vmptr )
-/***************************************************/
-{
-    return( (signed_32)ReadLEB128( vmptr, TRUE ) );
-}
-
-extern unsigned_32 DWRVMReadULEB128( dr_handle *vmptr )
-/*****************************************************/
-{
-    page_entry  *node;
-    char *      walk;
-    unsigned    off;
-    virt_struct vm;
-    unsigned_32 result = 0;
-    unsigned    shift = 0;
-    char        b;
-
-    vm.l = *vmptr;
-    //node = AccessPage( vm );
-    ACCESSPAGE( node, vm );                         // ITB
-    off = NODE_OFF(vm);
-    if( off <= MAX_NODE_SIZE - 5 ) {  // we can read whole uleb from buffer
-        walk = node->mem + off;
-        for( ;; ) {
-            b = *walk++;
-            result |= ( b & 0x7f ) << shift;
-            if( ( b & 0x80 ) == 0 )
-                break;
-            shift += 7;
-        }
-        *vmptr += walk - node->mem - off;
-    } else {
-        result = ReadLEB128( vmptr, FALSE );
-    }
-
     return( result );
 }
 

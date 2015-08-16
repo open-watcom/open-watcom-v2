@@ -35,29 +35,35 @@ extern void             DWRVMInit( void );
 extern void             DWRVMDestroy( void );
 extern void             DWRVMReset( void );
 extern bool             DWRVMSectDone( dr_handle base, unsigned_32 size );
-
 // DWRCurrNode must be set for alloc, free
 extern dr_handle        DWRVMAlloc( unsigned long, int );
-
 extern unsigned         DWRStrLen( dr_handle );
 extern void             DWRGetString( char *, dr_handle * );
 extern unsigned         DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max );
+extern unsigned_16      DWRVMReadWord( dr_handle );
+extern unsigned_32      DWRVMReadDWord( dr_handle );
 
-#if defined( INLINE_VMEM )
+#define DWRVMReadSLEB128( __h ) (signed_32)ReadLEB128( __h, TRUE )
+
+#if !defined( INLINE_VMEM )
+
+extern void             DWRVMSwap( dr_handle, unsigned_32, bool *ret );
+extern void             DWRVMSkipLEB128( dr_handle * );
+extern void             DWRVMRead( dr_handle, void *, unsigned );
+extern unsigned_8       DWRVMReadByte( dr_handle );
+
+#define DWRVMReadULEB128( __h ) ReadLEB128( __h, FALSE )
+
+#else
 
 #define DWRVMSwap(__ig1,__ig2,__ig3)    ((void)((__ig1) == (__ig2) == *(__ig3)))  /* ignored */
-
-#define DWRVMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )
-#define DWRVMReadByte(__h)      *((unsigned_8 *)(__h))
-#define DWRVMReadSLEB128(__h)   (signed_32)ReadLEB128( __h, TRUE )
 #define DWRVMSkipLEB128(__h)                    \
      { unsigned_8 *p = (unsigned_8 *)*(__h);    \
             do { } while( *p++ & 0x80 );        \
             *(__h) = (dr_handle)p;              \
      }
-
-extern unsigned_16      DWRVMReadWord( dr_handle );
-extern unsigned_32      DWRVMReadDWord( dr_handle );
+#define DWRVMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )
+#define DWRVMReadByte(__h)      *((unsigned_8 *)(__h))
 
 #if 0   // defined(__386__)   need to figure out
 
@@ -92,16 +98,5 @@ extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
 #define DWRVMReadULEB128(__h)   (signed_32)ReadLEB128( __h, FALSE )
 
 #endif
-
-#else
-
-extern void             DWRVMRead( dr_handle, void *, unsigned );
-extern unsigned_8       DWRVMReadByte( dr_handle );
-extern unsigned_16      DWRVMReadWord( dr_handle );
-extern unsigned_32      DWRVMReadDWord( dr_handle );
-extern signed_32        DWRVMReadSLEB128( dr_handle * );
-extern unsigned_32      DWRVMReadULEB128( dr_handle * );
-extern void             DWRVMSkipLEB128( dr_handle * );
-extern void             DWRVMSwap( dr_handle, unsigned_32, bool *ret );
 
 #endif // INLINE_VMEM
