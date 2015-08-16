@@ -56,10 +56,10 @@ extern unsigned_8       DWRVMReadByte( dr_handle );
 
 #else
 
-#define DWRVMSwap(__ig1,__ig2,__ig3)    ((void)((__ig1) == (__ig2) == *(__ig3)))  /* ignored */
+#define DWRVMSwap(__ig1,__ig2,__ig3)    ((void)((int)(__ig1) == (__ig2) == *(__ig3)))  /* ignored */
 #define DWRVMSkipLEB128(__h)                    \
      { unsigned_8 *p = (unsigned_8 *)*(__h);    \
-            do { } while( *p++ & 0x80 );        \
+            do { } while( (*p++ & 0x80) != 0 ); \
             *(__h) = (dr_handle)p;              \
      }
 #define DWRVMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )

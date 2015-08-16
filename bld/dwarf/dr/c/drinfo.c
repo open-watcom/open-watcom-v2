@@ -504,7 +504,7 @@ dr_handle DRWalkParent( dr_search_context * context )
     dr_handle   prev;
     stack_op      op;
 
-    op = DWRContext( &context->stack, 0 );
+    op = (stack_op)(pointer_int)DWRContext( &context->stack, 0 );
     switch( op ) {
     case DO_NOTHING:
         prev = DWRContext( &context->stack, 1 );

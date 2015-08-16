@@ -56,13 +56,13 @@ extern void DWRVMReset( void )
 extern dr_handle DWRVMAlloc( unsigned long len, int sect )
 /********************************************************/
 {
-    alloc_struct * nChunk;
+    alloc_struct *nChunk;
 
     if( len == 0 ) {
         return( 0 );
     }
 
-    nChunk = (alloc_struct *) DWRALLOC( len - 1 + sizeof( alloc_struct ) );
+    nChunk = (alloc_struct *)DWRALLOC( len - 1 + sizeof( alloc_struct ) );
     if( nChunk == NULL ) {
         DWREXCEPT( DREXCEP_OUT_OF_MMEM );
         return( 0 );
@@ -74,7 +74,7 @@ extern dr_handle DWRVMAlloc( unsigned long len, int sect )
     DWRSEEK( DWRCurrNode->file, sect, 0 );
     DWRREAD( DWRCurrNode->file, sect, nChunk->data, len );
 
-    return( (dr_handle) nChunk->data );
+    return( (dr_handle)nChunk->data );
 }
 
 bool DWRVMSectDone( dr_handle base, unsigned_32 size )
@@ -126,24 +126,23 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
 /*******************************************************/
 // works for signed or unsigned
 {
-    char            *buf = (char *)*vmptr;
-    unsigned_32     result = 0;
-    unsigned        shift = 0;
+    const char      *buf = (const char *)*vmptr;
+    unsigned_32     result;
+    unsigned        shift;
     char            b;
 
-    for( ;; ) {
+    result = 0;
+    shift = 0;
+    do {
         b = *buf++;
-        result |= ( b & 0x7f ) << shift;
-        if( ( b & 0x80 ) == 0 )
-            break;
+        result |= (b & 0x7f) << shift;
         shift += 7;
+    } while( (b & 0x80) != 0 );
+    *vmptr = (dr_handle)buf;
+    if( issigned && shift < 32 && (b & 0x40) != 0 ) {
+        // we have to sign extend
+        result |= - ((unsigned_32)( 1 << shift ));
     }
-
-    *vmptr = (dr_handle) buf;
-    if( issigned && (b & 0x40) ) {      // we have to sign extend
-        result |= - ((unsigned_32)(1 << (shift + 7)));
-    }
-
     return( result );
 }
 
@@ -151,33 +150,34 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
 extern unsigned DWRStrLen( dr_handle hdl )
 /****************************************/
 {
-    return( strlen( (const char *) hdl ) );
+    return( strlen( (const char *)hdl ) );
 }
 
-extern void DWRGetString( char * buf, dr_handle * hdlp )
-/******************************************************/
+extern void DWRGetString( char *buf, dr_handle *hdlp )
+/****************************************************/
 {
     uint len;
 
-    len = DWRStrLen( (*hdlp) ) + 1;
+    len = DWRStrLen( *hdlp ) + 1;
     memcpy( buf, (const char *)(*hdlp), len );
-    *hdlp = (dr_handle) ((const char *) *hdlp + len );
+    *hdlp = (dr_handle)( (const char *)*hdlp + len );
 }
 
 extern unsigned DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max )
 /***********************************************************************/
 {
     unsigned    len;
-    char        *curr;
+    const char  *curr;
 
-    curr = (char *)drstr;
+    curr = (const char *)drstr;
     len = 0;
     for( ;; ) {
         if( len < max ) {
            *buf++ = *curr;
         }
         ++len;
-        if( *curr == '\0' ) break;
+        if( *curr == '\0' )
+            break;
         ++curr;
     }
     return( len );
@@ -196,7 +196,9 @@ extern unsigned_16 DWRVMReadWord( dr_handle hdl )
 
 extern unsigned_32 DWRVMReadDWord( dr_handle hdl )
 /************************************************/
-{    unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));
+{
+    unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));
+
     if( DWRCurrNode->byte_swap ) {
         SWAP_32( dword );
     }

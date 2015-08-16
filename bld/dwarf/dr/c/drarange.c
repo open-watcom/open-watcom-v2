@@ -129,7 +129,7 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
          * no alignment padding was used.
          */
         old_ver = (DWRCurrNode->wat_version == 1) || (DWRCurrNode->wat_version == 2) || (tuple_size == 10);
-        addr = file->pos;
+        addr = (pointer_int)file->pos;
         aligned_addr = (addr + tuple_size - 1) & ~(tuple_size - 1);
         if( aligned_addr != addr ) {
             /* try reading the padding; if it's nonzero, assume it's not there */
@@ -138,7 +138,7 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
             if( header.seg_size && ReadInt( file->pos + header.addr_size, header.seg_size ) != 0 )
                 zero_padding = FALSE;
             if( !old_ver && zero_padding ) {
-                file->pos = aligned_addr;
+                file->pos = (dr_handle)aligned_addr;
             }
         }
         for( ;; ) {

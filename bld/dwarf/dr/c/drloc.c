@@ -80,8 +80,8 @@ static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
     return( (uint_8 *)input );
 }
 
-static uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
-/***************************************************************/
+static uint_8 *DecodeSLEB128( const uint_8 *input, int_32 *value )
+/****************************************************************/
 {
     int_32      result;
     uint        shift;
@@ -204,13 +204,13 @@ static void DoLocExpr( unsigned_8       *p,
             op1 = utmp;
             break;
         case DW_LOP_S128:
-            p = DecodeLEB128( p, &stmp );
+            p = DecodeSLEB128( p, &stmp );
             op1 = stmp;
             break;
         case DW_LOP_U128_S128:
             p = DecodeULEB128( p, &utmp );
             op1 = utmp;
-            p = DecodeLEB128( p, &stmp );
+            p = DecodeSLEB128( p, &stmp );
             op2 = stmp;
             break;
         case DW_LOP_LIT1:
@@ -224,7 +224,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DW_LOP_BRG1:
             op1 = op - DW_OP_breg0;
             op = DW_OP_breg0;
-            p = DecodeLEB128( p, &stmp );
+            p = DecodeSLEB128( p, &stmp );
             op2 = stmp;
             break;
         case DW_LOP_STK2:
@@ -444,9 +444,8 @@ static void DoLocExpr( unsigned_8       *p,
     return;
 }
 
-static dr_handle SearchLocList( uint_32 start, uint_32 context,
-                                uint addr_size )
-/*************************************************************/
+static dr_handle SearchLocList( uint_32 start, uint_32 context, uint addr_size )
+/******************************************************************************/
 // Search loc list for context return start of loc_expr block or NULL
 {
     uint_32     low;
@@ -487,7 +486,7 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
     uint_8      loc_buff[256];
     uint_8      *expr;
     bool        ret;
-    dr_handle   loclist;
+    uint_32     loclist;
     uint_32     context;
     int         addr_size;
 
