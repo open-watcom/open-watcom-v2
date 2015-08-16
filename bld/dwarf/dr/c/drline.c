@@ -112,16 +112,18 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
 //Run the statement program
 // On each row append (as blathered about in DWARF spec) call the wlk
 {
-    dr_handle      curr;
-    dr_handle      finish;
-    unsigned_8     value;
-    unsigned       length;
-    unsigned_8     min_ins_len;
-    signed_8       line_base;
-    unsigned_8     line_range;
-    unsigned_8     opcode_base;
-    dr_line_file   df;
-    bool           cont;
+    dr_handle       curr;
+    dr_handle       finish;
+    unsigned_8      value;
+    unsigned        length;
+    unsigned_8      min_ins_len;
+    signed_8        line_base;
+    unsigned_8      line_range;
+    unsigned_8      opcode_base;
+    dr_line_file    df;
+    bool            cont;
+    dw_lns          value_lns;
+    dw_lne          value_lne;
 
     curr = info->rdr.curr;
     finish = info->rdr.finish;
@@ -132,12 +134,12 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
     info->state.addr_set = TRUE;  // address starts at 0
     cont = TRUE;
     while( curr < finish ) {    // now go through the statement program
-        value = DWRVMReadByte( curr );
+        value_lns = DWRVMReadByte( curr );
         curr++;
-        if( value == 0 ) {      // it's an extended opcode
+        if( value_lns == 0 ) {      // it's an extended opcode
             length = DWRVMReadULEB128( &curr );
-            value = DWRVMReadByte( curr );
-            switch( value ) {
+            value_lne = DWRVMReadByte( curr );
+            switch( value_lne ) {
             case DW_LNE_end_sequence:
                 curr++;
                 info->state.end_seq = TRUE;
@@ -179,8 +181,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
             default:
                 curr += length;
             }
-        } else if( value < opcode_base ) {  // it is a standard opcode
-            switch( value ) {
+        } else if( value_lns < opcode_base ) {  // it is a standard opcode
+            switch( value_lns ) {
             case DW_LNS_copy:
                 /* append a row */
                 if( cue != NULL ) {
@@ -219,14 +221,14 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 curr += 2;
                 break;
             default: //op codes not processed
-                value = info->rdr.op_lens[value];
+                value = info->rdr.op_lens[value_lns];
                 while( value > 0 ) {
                     DWRVMSkipLEB128( &curr );
                     value--;
                 }
             }
         } else { /* special opcodes */
-            value -= opcode_base;
+            value = value_lns - opcode_base;
             info->state.offset += value / line_range * min_ins_len;
             info->state.line += value % line_range + line_base;
             /* append a row */

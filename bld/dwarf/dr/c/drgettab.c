@@ -184,6 +184,8 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     int             op_base;
     int             value;
     long            stmt_offset;
+    dw_lns          value_lns;
+    dw_lne          value_lne;
 
     stmt_offset = -1;
     DWRGetCompileUnitHdr( start, GrabLineAddr, &stmt_offset );
@@ -204,7 +206,8 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     DWRInitFileTable( &curridxmap );
     while( start < finish ) {           // get directory table
         value = DWRVMReadByte( start );
-        if( value == 0 ) break;
+        if( value == 0 )
+            break;
         name = DWRCopyString( &start );
         ftidx = DWRAddFileName( name, &nametab->pathtab );
         DWRAddIndex( ftidx, &curridxmap, TAB_IDX_PATH );
@@ -212,27 +215,28 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     start++;
     while( start < finish ) {           // get filename table
         value = DWRVMReadByte( start );
-        if( value == 0 ) break;
+        if( value == 0 )
+            break;
         ReadNameEntry( &start, nametab, idxtab, &curridxmap );
     }
     start++;
     while( start < finish ) {   // now go through the statement program
-        value = DWRVMReadByte( start );
+        value_lns = DWRVMReadByte( start );
         start++;
-        if( value == 0 ) {      // it's an extended opcode
+        if( value_lns == 0 ) {      // it's an extended opcode
             length = DWRVMReadULEB128( &start );
-            value = DWRVMReadByte( start );
-            if( value == DW_LNE_define_file ) {
+            value_lne = DWRVMReadByte( start );
+            if( value_lne == DW_LNE_define_file ) {
                 start++;
                 ReadNameEntry( &start, nametab, idxtab, &curridxmap );
             } else {
                 start += length;
             }
-        } else if( value < op_base ) {  // it is a standard opcode
-            if( value == DW_LNS_fixed_advance_pc ) {
-                start += sizeof(unsigned_16);    // it is a fixed size
+        } else if( value_lns < op_base ) {  // it is a standard opcode
+            if( value_lns == DW_LNS_fixed_advance_pc ) {
+                start += sizeof( unsigned_16 );    // it is a fixed size
             } else {    // it is a variable # of blocks
-                value = oparray[value-1];
+                value = oparray[value_lns - 1];
                 while( value > 0 ) {
                     DWRVMSkipLEB128( &start );
                     value--;

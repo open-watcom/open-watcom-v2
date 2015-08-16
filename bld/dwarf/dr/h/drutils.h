@@ -59,11 +59,11 @@ typedef enum {
 
 /* function prototypes */
 extern long         DWRInfoLength( dr_handle  );
-extern bool         DWRScanCompileUnit( dr_search_context *, DWRCUWLK, const unsigned_16 *, dr_depth, void * );
+extern bool         DWRScanCompileUnit( dr_search_context *, DWRCUWLK, const dw_tagnum *, dr_depth, void * );
 extern void         DWRAllChildren( dr_handle, DWRCHILDCB, void * );
-extern void         DWRSkipForm( dr_handle *, unsigned_16 );
+extern void         DWRSkipForm( dr_handle *, dw_formnum );
 extern unsigned_32  DWRReadConstant( dr_handle, dr_handle );
-extern unsigned_32  ReadConst( unsigned form, dr_handle  );
+extern unsigned_32  ReadConst( dw_formnum form, dr_handle  );
 extern dr_handle    DWRReadReference( dr_handle, dr_handle );
 extern dr_handle    DWRReadAddr( dr_handle, dr_handle );
 extern char         *DWRReadString( dr_handle, dr_handle );
@@ -71,11 +71,11 @@ extern int          DWRReadFlag( dr_handle, dr_handle );
 extern char         *DWRCopyString( dr_handle * );
 extern char         *DWRCopyDbgSecString( dr_handle *, unsigned_32 offset );
 extern bool         DWRScanForAttrib( dr_handle *, dr_handle *, dw_atnum );
-extern bool         DWRSearchArray( const unsigned_16 *, unsigned_16 );
+extern bool         DWRSearchArray( const dw_tagnum *, dw_tagnum );
 extern unsigned     DWRGetAddrSize( dr_handle );
 extern dr_handle    DWRGetAbbrev( dr_handle * );
 extern dr_handle    DWRReadAbbrev( dr_handle );
-extern dr_handle    DWRLookupAbbrev( dr_handle entry, dr_handle abbr );
+extern dr_handle    DWRLookupAbbrev( dr_handle entry, dr_abbrev_idx abbrev_idx );
 extern void         DWRGetCompileUnitHdr( dr_handle, DWRCUWLK, void * );
 extern char         *DWRGetName( dr_handle, dr_handle );
 extern void         DWRSkipChildren( dr_handle *, dr_handle * );
@@ -83,28 +83,28 @@ extern void         DWRSkipAttribs( dr_handle, dr_handle * );
 extern void         DWRSkipRest( dr_handle, dr_handle * );
 extern dr_handle    DWRFindCompileUnit( dr_handle );
 extern compunit_info *DWRFindCompileInfo( dr_handle );
-extern bool         DWRScanAllCompileUnits( dr_search_context *, DWRCUWLK, const unsigned_16 *, dr_depth, void * );
-extern bool         DWRWalkCompileUnit( dr_handle, DWRCUWLK, const unsigned_16 *, dr_depth , void * );
+extern bool         DWRScanAllCompileUnits( dr_search_context *, DWRCUWLK, const dw_tagnum *, dr_depth, void * );
+extern bool         DWRWalkCompileUnit( dr_handle, DWRCUWLK, const dw_tagnum *, dr_depth , void * );
 
-extern bool         DWRWalkChildren( dr_handle mod, const unsigned_16 *tags, DRWLKBLK *wlks, void *d );
+extern bool         DWRWalkChildren( dr_handle mod, const dw_tagnum *tags, DRWLKBLK *wlks, void *d );
 extern bool         DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d );
-extern bool         DWRWalkSiblings( dr_handle curr, unsigned_16  const *tags, DRWLKBLK *wlks, void *d );
-extern bool         DWRWalkScope( dr_handle mod, const unsigned_16 *tags, DRWLKBLK wlks, void *d );
+extern bool         DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, DRWLKBLK *wlks, void *d );
+extern bool         DWRWalkScope( dr_handle mod, const dw_tagnum *tags, DRWLKBLK wlks, void *d );
 extern void         DWRContextPush( dr_context_stack *, uint_32 );
 extern uint_32      DWRContextPop( dr_context_stack * );
 extern dr_handle    DWRContext( dr_context_stack *stack, int up );
 extern void         DWRFreeContextStack( dr_context_stack * );
 
-extern dwr_formcl   DWRFormClass( unsigned_16 form );
+extern dwr_formcl   DWRFormClass( dw_formnum form );
 
 /* data declarations */
-extern const unsigned_16 * const SearchTypes[];
-extern const unsigned_16 * const SearchTags[];
-extern const unsigned_16         ScanKidsTags[];
-extern const unsigned_16         DeclarationTags[];
-extern const unsigned_16         FunctionTags[];
-extern const unsigned_16         VariableTags[];
-extern const unsigned_16         ClassTags[];
-extern const unsigned_16         TypedefTags[];
-extern const unsigned_16         EnumTags[];
-extern const unsigned_16         LabelTags[];
+extern const dw_tagnum * const SearchTypes[];
+extern const dw_tagnum * const SearchTags[];
+extern const dw_tagnum         ScanKidsTags[];
+extern const dw_tagnum         DeclarationTags[];
+extern const dw_tagnum         FunctionTags[];
+extern const dw_tagnum         VariableTags[];
+extern const dw_tagnum         ClassTags[];
+extern const dw_tagnum         TypedefTags[];
+extern const dw_tagnum         EnumTags[];
+extern const dw_tagnum         LabelTags[];

@@ -84,16 +84,17 @@ static dr_handle ScopePop( dr_scope_stack * stack )
 static dr_handle ScopeLastNameable( dr_scope_stack * scope, char ** name )
 /************************************************************************/
 {
-    int         i;
-    dr_handle   tmp_entry;
-    dr_handle   abbrev;
+    int             i;
+    dr_handle       tmp_entry;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
 
     for( i = scope->free; i > 0; i -= 1 ) {
         tmp_entry = scope->stack[ i - 1 ];
 
-        abbrev = DWRVMReadULEB128( &tmp_entry );
-        if( abbrev != 0 ) {
-            abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
+        abbrev_idx = DWRVMReadULEB128( &tmp_entry );
+        if( abbrev_idx != 0 ) {
+            abbrev = DWRLookupAbbrev( tmp_entry, abbrev_idx );
             DWRVMSkipLEB128( &abbrev );
             abbrev += sizeof( unsigned_8 );
 

@@ -44,13 +44,13 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
  * array of pointers to it.
  */
 {
-    unsigned        maxnum;
-    unsigned        sizealloc;
-    unsigned        oldsize;
+    dr_abbrev_idx   maxnum;
+    dr_abbrev_idx   sizealloc;
+    dr_abbrev_idx   oldsize;
     dr_handle       start;
     dr_handle       finish;
     dr_handle       *abbrevs;
-    unsigned        code;
+    dr_abbrev_idx   code;
     compunit_info   *cu;
 
     // if a previous compilation unit shares the same table, reuse it
@@ -71,13 +71,15 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     finish = dbg->sections[DR_DEBUG_ABBREV].base + dbg->sections[DR_DEBUG_ABBREV].size;
     while( start < finish ) {
         code = DWRVMReadULEB128( &start );
-        if( code == 0 ) break;                  // indicates end of table
-        if( code > maxnum ) maxnum = code;
+        if( code == 0 )
+            break;                  // indicates end of table
+        if( code > maxnum )
+            maxnum = code;
         if( code >= sizealloc ) {
             oldsize = sizealloc;
             sizealloc = code + ABBREV_TABLE_INCREMENT;
-            abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof(dr_handle) );
-            memset( &abbrevs[oldsize], 0, (sizealloc - oldsize) * sizeof(dr_handle) );
+            abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( dr_handle ) );
+            memset( &abbrevs[oldsize], 0, ( sizealloc - oldsize ) * sizeof( dr_handle ) );
         }
         if( abbrevs[code] == 0 ) {
             abbrevs[code] = start;
@@ -91,7 +93,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     }
     if( sizealloc > maxnum ) {  // reduce size to actual amount needed
         /* abbrev[0] not used but we want abbrev[code] = start to work */
-        abbrevs = DWRREALLOC( abbrevs, (maxnum + 1) * sizeof(dr_handle) );
+        abbrevs = DWRREALLOC( abbrevs, ( maxnum + 1 ) * sizeof( dr_handle ) );
     }
     compunit->numabbrevs = maxnum + 1;
     compunit->abbrevs = abbrevs;

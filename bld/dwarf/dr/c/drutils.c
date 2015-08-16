@@ -34,80 +34,80 @@
 #include "drpriv.h"
 #include "drutils.h"
 
-const unsigned_16 FunctionTags[] = {
+const dw_tagnum FunctionTags[] = {
     DW_TAG_subprogram, 0
 };
 
-const unsigned_16 ClassTags[] = {
+const dw_tagnum ClassTags[] = {
     DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-const unsigned_16 TypedefTags[] = {
+const dw_tagnum TypedefTags[] = {
     DW_TAG_typedef, 0
 };
 
-const unsigned_16 EnumTags[] = {
+const dw_tagnum EnumTags[] = {
     DW_TAG_enumeration_type, 0
 };
 
-const unsigned_16 LabelTags[] = {
+const dw_tagnum LabelTags[] = {
     DW_TAG_label, 0
 };
 
-const unsigned_16 VariableTags[] = {
+const dw_tagnum VariableTags[] = {
     DW_TAG_common_block, DW_TAG_variable,
     DW_TAG_formal_parameter, DW_TAG_member, 0
 };
 
-const unsigned_16 MacroTags[] = { 0 };
+const dw_tagnum MacroTags[] = { 0 };
 
-const unsigned_16 * const SearchTags[] = {
+const dw_tagnum *const SearchTags[] = {
     FunctionTags, ClassTags, EnumTags,
     TypedefTags, VariableTags,
     MacroTags, LabelTags
 };
 
-const unsigned_16 SearchSymbolTags[] = {
+const dw_tagnum SearchSymbolTags[] = {
     DW_TAG_class_type, DW_TAG_common_block, DW_TAG_enumeration_type,
     DW_TAG_subprogram, DW_TAG_variable, DW_TAG_member, DW_TAG_structure_type,
     DW_TAG_typedef, DW_TAG_union_type, DW_TAG_label, 0
 };
 
-const unsigned_16 SearchFunctionTags[] = {
+const dw_tagnum SearchFunctionTags[] = {
     DW_TAG_subprogram, 0
 };
 
-const unsigned_16 SearchClassTags[] = {
+const dw_tagnum SearchClassTags[] = {
     DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-const unsigned_16 SearchTypeTags[] = {
+const dw_tagnum SearchTypeTags[] = {
     DW_TAG_typedef, DW_TAG_enumeration_type, 0
 };
 
-const unsigned_16 SearchVariableTags[] = {
+const dw_tagnum SearchVariableTags[] = {
     DW_TAG_common_block, DW_TAG_variable, DW_TAG_member, 0
 };
 
-const unsigned_16 SearchFriendTags[] = {
+const dw_tagnum SearchFriendTags[] = {
     DW_TAG_friend, 0
 };
 
-const unsigned_16 SearchBaseTags[] = {
+const dw_tagnum SearchBaseTags[] = {
     DW_TAG_inheritance, 0
 };
 
-const unsigned_16 ScanKidsTags[] = {
+const dw_tagnum ScanKidsTags[] = {
     DW_TAG_compile_unit,  DW_TAG_lexical_block, 0
 };
 
-const unsigned_16 DeclarationTags[] = {
+const dw_tagnum DeclarationTags[] = {
     DW_TAG_array_type, DW_TAG_class_type, DW_TAG_common_block, DW_TAG_constant,
     DW_TAG_enumeration_type, DW_TAG_member, DW_TAG_structure_type,
     DW_TAG_subprogram, DW_TAG_union_type, DW_TAG_variable, 0
 };
 
-const unsigned_16 * const SearchTypes[] = {
+const dw_tagnum *const SearchTypes[] = {
     SearchSymbolTags, SearchFunctionTags, SearchClassTags,
     SearchTypeTags, SearchVariableTags, SearchFriendTags, SearchBaseTags
 };
@@ -127,14 +127,14 @@ long DWRInfoLength( dr_handle mod )
 
 bool DWRScanCompileUnit( dr_search_context *ctxt,
                            DWRCUWLK fn,
-                           const unsigned_16 *tagarray, dr_depth depth, void *data)
+                           const dw_tagnum *tagarray, dr_depth depth, void *data)
 /*********************************************************************************/
 /* note this modifies the start and stack fields of the context passed in */
 {
     dr_handle           mod;
-    unsigned            abbrevidx;
+    dr_abbrev_idx       abbrev_idx;
     mod_scan_info       info;
-    unsigned_8          haschild;
+    dw_children         haschild;
     stack_op            op;
     dr_handle           abbrev;
     bool                skipped;
@@ -149,8 +149,8 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
 
     while( mod < ctxt->end ) {
         info.handle = mod;
-        abbrevidx = DWRVMReadULEB128( &mod );
-        if( abbrevidx == 0 ) {
+        abbrev_idx = DWRVMReadULEB128( &mod );
+        if( abbrev_idx == 0 ) {
             op = DWRContextPop( &ctxt->stack );
             switch( op ) {
             case SET_CLASS:
@@ -167,7 +167,7 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
                 DWREXCEPT( DREXCEP_BAD_DBG_INFO );
             continue;   // <------------------  NOTE: weird control flow!
         }
-        abbrev = ctxt->compunit->abbrevs[abbrevidx];
+        abbrev = ctxt->compunit->abbrevs[abbrev_idx];
         info.tag = DWRVMReadULEB128( &abbrev );
         haschild = DWRVMReadByte( abbrev );
         abbrev++;
@@ -215,16 +215,17 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
 void DWRSkipChildren( dr_handle *abbrev, dr_handle *mod )
 /**************************************************************/
 {
-    dr_handle   handle;
+    dr_handle       handle;
+    dr_abbrev_idx   abbrev_idx;
 
     if( DWRScanForAttrib( abbrev, mod, DW_AT_sibling ) ) {
         *mod = DWRReadReference( *abbrev, *mod );
     } else {    // we have to manually skip everything
         for( ;; ) {
-            handle = DWRVMReadULEB128( mod );   // get attribute
-            if( handle == 0 )                   // found end of chain!
+            abbrev_idx = DWRVMReadULEB128( mod );   // get attribute
+            if( abbrev_idx == 0 )                   // found end of chain!
                 break;
-            handle = DWRLookupAbbrev( *mod, handle );
+            handle = DWRLookupAbbrev( *mod, abbrev_idx );
             DWRVMSkipLEB128( &handle );         // skip tag
             handle++;                           // skip child;
             DWRSkipAttribs( handle, mod );
@@ -269,13 +270,14 @@ void DWRSkipRest( dr_handle abbrev, dr_handle *mod )
 void DWRAllChildren( dr_handle mod, DWRCHILDCB fn, void *data )
 /*************************************************************/
 {
-    dr_handle   abbrev;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
 
     for( ;; ) {
-        abbrev = DWRVMReadULEB128( &mod );
-        if( abbrev == 0 )
+        abbrev_idx = DWRVMReadULEB128( &mod );
+        if( abbrev_idx == 0 )
             break;
-        abbrev = DWRLookupAbbrev( mod, abbrev );
+        abbrev = DWRLookupAbbrev( mod, abbrev_idx );
         DWRVMSkipLEB128( &abbrev );
         abbrev += sizeof( unsigned_8 );
         if( !fn( abbrev, mod, data ) )
@@ -284,8 +286,8 @@ void DWRAllChildren( dr_handle mod, DWRCHILDCB fn, void *data )
     }
 }
 
-bool DWRSearchArray( const unsigned_16 *array, unsigned_16 value )
-/****************************************************************/
+bool DWRSearchArray( const dw_tagnum *array, dw_tagnum value )
+/************************************************************/
 {
     while( *array != 0 ) {
         if( *array == value )
@@ -303,8 +305,8 @@ unsigned DWRGetAddrSize( dr_handle mod )
 }
 
 
-void DWRSkipForm( dr_handle *addr, unsigned_16 form )
-/**********************************************************/
+void DWRSkipForm( dr_handle *addr, dw_formnum form )
+/**************************************************/
 {
     unsigned_32 value;
     switch( form ) {
@@ -365,8 +367,8 @@ void DWRSkipForm( dr_handle *addr, unsigned_16 form )
     }
 }
 
-dwr_formcl DWRFormClass( unsigned_16 form )
-/************************************************/
+dwr_formcl DWRFormClass( dw_formnum form )
+/****************************************/
 // class a form
 {
     dwr_formcl formcl;
@@ -414,10 +416,11 @@ dwr_formcl DWRFormClass( unsigned_16 form )
     return( formcl );
 }
 
-unsigned_32 ReadConst( unsigned form, dr_handle info )
-/***********************************************************/
+unsigned_32 ReadConst( dw_formnum form, dr_handle info )
+/******************************************************/
 {
     unsigned_32 retval;
+    dw_formnum  form1;
 
     switch( form ) {
     case DW_FORM_data1:
@@ -442,8 +445,8 @@ unsigned_32 ReadConst( unsigned form, dr_handle info )
         retval = DWRVMReadULEB128( &info );
         break;
     case DW_FORM_indirect:
-        retval = DWRVMReadULEB128( &info );
-        retval = ReadConst( retval, info );
+        form1 = DWRVMReadULEB128( &info );
+        retval = ReadConst( form1, info );
         break;
     default:
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -455,7 +458,7 @@ unsigned_32 ReadConst( unsigned form, dr_handle info )
 unsigned_32 DWRReadConstant( dr_handle abbrev, dr_handle info )
 /********************************************************************/
 {
-    unsigned    form;
+    dw_formnum  form;
 
     form = DWRVMReadULEB128( &abbrev );
     return( ReadConst( form, info ) );
@@ -491,7 +494,7 @@ dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
     dr_handle    handle;
     unsigned     addr_size;
     unsigned_32  retval;
-    unsigned     form;
+    dw_formnum   form;
 
     form = DWRVMReadULEB128( &abbrev );
     if( form != DW_FORM_addr ) {
@@ -523,7 +526,7 @@ dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
 char * DWRReadString( dr_handle abbrev, dr_handle info )
 /*************************************************************/
 {
-    unsigned    form;
+    dw_formnum  form;
     unsigned_32 offset;
 
     form = DWRVMReadULEB128( &abbrev );
@@ -542,7 +545,7 @@ char * DWRReadString( dr_handle abbrev, dr_handle info )
 int DWRReadFlag( dr_handle abbrev, dr_handle info )
 /********************************************************/
 {
-    unsigned    form;
+    dw_formnum  form;
 
     form = DWRVMReadULEB128( &abbrev );
     if( form == DW_FORM_data1 || form == DW_FORM_flag ) {
@@ -557,38 +560,39 @@ dr_handle DWRGetAbbrev( dr_handle *entry )
 /***********************************************/
 {
     dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
     compunit_info   *cu;
 
     cu = DWRFindCompileInfo( *entry );
-    abbrev = DWRVMReadULEB128( entry );
-    abbrev = cu->abbrevs[abbrev];
+    abbrev_idx = DWRVMReadULEB128( entry );
+    abbrev = cu->abbrevs[abbrev_idx];
     DWRVMSkipLEB128( &abbrev ); // skip the tag.
     abbrev++;                   // skip the child pointer.
     return( abbrev );
 }
 
-dr_handle DWRLookupAbbrev( dr_handle entry, dr_handle abbr )
-/*****************************************************************/
+dr_handle DWRLookupAbbrev( dr_handle entry, dr_abbrev_idx abbrev_idx )
+/********************************************************************/
 {
     dr_handle       abbrev;
     compunit_info   *cu;
 
     cu = DWRFindCompileInfo( entry );
-    if( abbr >= cu->numabbrevs ) {
+    if( abbrev_idx >= cu->numabbrevs ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
         abbrev = 0;
     } else
-        abbrev = cu->abbrevs[abbr];
+        abbrev = cu->abbrevs[abbrev_idx];
     return( abbrev );
 }
 
 dr_handle DWRReadAbbrev( dr_handle entry )
 /***********************************************/
 {
-    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    return( DWRLookupAbbrev( entry, abbrev ) );
+    abbrev_idx = DWRVMReadULEB128( &entry );
+    return( DWRLookupAbbrev( entry, abbrev_idx ) );
 }
 
 char * DWRCopyString( dr_handle *info )
@@ -610,6 +614,7 @@ char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
     char        *str;
     dr_handle   dbgsec_str;
 
+    info = info;
     dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
     count = DWRStrLen( dbgsec_str );
     str = DWRALLOC( count + 1 );
@@ -640,7 +645,7 @@ bool DWRScanForAttrib( dr_handle *abbrev, dr_handle *info, dw_atnum at )
     return( found );
 }
 
-static unsigned_16 CompUnitTag[] = { DW_TAG_compile_unit, 0 };
+static dw_tagnum CompUnitTag[] = { DW_TAG_compile_unit, 0 };
 
 void DWRGetCompileUnitHdr( dr_handle mod, DWRCUWLK fn, void *data )
 /*****************************************************************/
@@ -713,7 +718,7 @@ void DRIterateCompileUnits( void *data, DRITERCUCB callback )
 }
 
 bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
-                        const unsigned_16 *tagarray, dr_depth depth, void *data )
+                        const dw_tagnum *tagarray, dr_depth depth, void *data )
 /*******************************************************************************/
 {
     bool                cont;
@@ -757,7 +762,7 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
 }
 
 bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
-                        const unsigned_16 *tagarray, dr_depth depth, void *data )
+                        const dw_tagnum *tagarray, dr_depth depth, void *data )
 /*******************************************************************************/
 {
     bool                cont;
@@ -782,26 +787,26 @@ bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-bool DWRWalkChildren( dr_handle mod, const unsigned_16 *tags, DRWLKBLK *wlks, void *d )
+bool DWRWalkChildren( dr_handle mod, const dw_tagnum *tags, DRWLKBLK *wlks, void *d )
 /*************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
 {
     dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
     dr_handle       curr;
     dw_tagnum       tag;
-    unsigned_8      haschild;
+    dw_children     haschild;
     int             index;
     DRWLKBLK        wlk;
     compunit_info   *cu;
 
     cu = DWRFindCompileInfo( mod );
-    abbrev = DWRVMReadULEB128( &mod );
-    if( abbrev == 0 ) {
+    abbrev_idx = DWRVMReadULEB128( &mod );
+    if( abbrev_idx == 0 ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-
-    abbrev = cu->abbrevs[abbrev];
+    abbrev = cu->abbrevs[abbrev_idx];
     tag = DWRVMReadULEB128( &abbrev );
     haschild = DWRVMReadByte( abbrev );
 
@@ -811,10 +816,10 @@ bool DWRWalkChildren( dr_handle mod, const unsigned_16 *tags, DRWLKBLK *wlks, vo
         curr = mod;
         for( ;; ) {
             mod = curr;
-            abbrev = DWRVMReadULEB128( &curr );
-            if( abbrev == 0 )
+            abbrev_idx = DWRVMReadULEB128( &curr );
+            if( abbrev_idx == 0 )
                 break;
-            abbrev = cu->abbrevs[ abbrev ];
+            abbrev = cu->abbrevs[abbrev_idx];
             tag = DWRVMReadULEB128( &abbrev );
             haschild = DWRVMReadByte( abbrev );
             abbrev += sizeof( unsigned_8 );
@@ -830,7 +835,7 @@ bool DWRWalkChildren( dr_handle mod, const unsigned_16 *tags, DRWLKBLK *wlks, vo
                     return( FALSE );    // FALSE == quit
                 }
             }
-            if( haschild ) {
+            if( haschild == DW_CHILDREN_yes ) {
                 DWRSkipChildren( &abbrev, &curr );
             } else {
                 DWRSkipAttribs( abbrev, &curr );
@@ -845,16 +850,16 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
 // Walk into tags that enclose target
 // The final call shoud be target else a goose chase
 {
-    dr_handle   abbrev;
-    dr_handle   curr;
-    unsigned_8  haschild;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
+    dr_handle       curr;
+    dw_children     haschild;
 
-    abbrev = DWRVMReadULEB128( &mod );
-    if( abbrev == 0 ) {
+    abbrev_idx = DWRVMReadULEB128( &mod );
+    if( abbrev_idx == 0 ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-
-    abbrev = DWRLookupAbbrev( mod, abbrev );
+    abbrev = DWRLookupAbbrev( mod, abbrev_idx );
     DWRVMReadULEB128( &abbrev );            /* skip tag */
     haschild = DWRVMReadByte( abbrev );
 
@@ -869,16 +874,16 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
             if( curr > target )
                 break;
             mod = curr;
-            abbrev = DWRVMReadULEB128( &curr );
-            if( abbrev == 0 )
+            abbrev_idx = DWRVMReadULEB128( &curr );
+            if( abbrev_idx == 0 )
                 break;
-            abbrev = DWRLookupAbbrev( mod, abbrev );
+            abbrev = DWRLookupAbbrev( mod, abbrev_idx );
             DWRVMReadULEB128( &abbrev );    /* skip tag */
             haschild = DWRVMReadByte( abbrev );
             abbrev += sizeof( unsigned_8 );
             old_abbrev = abbrev;
             old_curr = curr;
-            if( haschild ) {
+            if( haschild == DW_CHILDREN_yes ) {
                 DWRSkipChildren( &abbrev, &curr );
             } else {
                 DWRSkipAttribs( abbrev, &curr );
@@ -896,27 +901,28 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
     return( TRUE );
 }
 
-bool DWRWalkSiblings( dr_handle curr, const unsigned_16 *tags, DRWLKBLK *wlks, void *d )
+bool DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, DRWLKBLK *wlks, void *d )
 /**************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
 // positions curr at next tag return TRUE if end of list
 {
-    dr_handle   abbrev;
-    dr_handle   start;
-    dw_tagnum   tag;
-    unsigned_8  haschild;
-    int         index;
-    bool        cont;
-    DRWLKBLK    wlk;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
+    dr_handle       start;
+    dw_tagnum       tag;
+    dw_children     haschild;
+    int             index;
+    bool            cont;
+    DRWLKBLK        wlk;
 
     cont = TRUE;
     for( ;; ) {
         start = curr;
-        abbrev = DWRVMReadULEB128( &curr );
-        if( abbrev == 0 )
+        abbrev_idx = DWRVMReadULEB128( &curr );
+        if( abbrev_idx == 0 )
             break;
-        abbrev = DWRLookupAbbrev( curr, abbrev );
+        abbrev = DWRLookupAbbrev( curr, abbrev_idx );
         tag = DWRVMReadULEB128( &abbrev );
         haschild = DWRVMReadByte( abbrev );
         abbrev += sizeof( unsigned_8 );
@@ -933,7 +939,7 @@ bool DWRWalkSiblings( dr_handle curr, const unsigned_16 *tags, DRWLKBLK *wlks, v
                 break;
             }
         }
-        if( haschild ) {
+        if( haschild == DW_CHILDREN_yes ) {
             DWRSkipChildren( &abbrev, &curr );
         } else {
             DWRSkipAttribs( abbrev, &curr );
@@ -942,25 +948,25 @@ bool DWRWalkSiblings( dr_handle curr, const unsigned_16 *tags, DRWLKBLK *wlks, v
     return( cont );
 }
 
-bool DWRWalkScope( dr_handle mod, const unsigned_16 *tags, DRWLKBLK wlk, void *d )
+bool DWRWalkScope( dr_handle mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
 /********************************************************************************/
 // walk a scope starting at mod
 // if a block go into it, if a tag we are interested in call user
 {
-    dr_handle   abbrev;
-    dr_handle   curr;
-    dw_tagnum   tag;
-    unsigned_8  haschild;
-    int         index;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
+    dr_handle       curr;
+    dw_tagnum       tag;
+    dw_children     haschild;
+    int             index;
 
     if( !wlk( mod, 0, d ) ) // call with parent
         return( FALSE );    // FALSE == quit
-    abbrev = DWRVMReadULEB128( &mod );
-    if( abbrev == 0 ) {
+    abbrev_idx = DWRVMReadULEB128( &mod );
+    if( abbrev_idx == 0 ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-
-    abbrev = DWRLookupAbbrev( mod, abbrev );
+    abbrev = DWRLookupAbbrev( mod, abbrev_idx );
     tag = DWRVMReadULEB128( &abbrev );
     haschild = DWRVMReadByte( abbrev );
 
@@ -975,13 +981,13 @@ bool DWRWalkScope( dr_handle mod, const unsigned_16 *tags, DRWLKBLK wlk, void *d
         curr = mod;
         for( ;; ) {
             mod = curr;
-            abbrev = DWRVMReadULEB128( &curr );
-            if( abbrev == 0 ) {
+            abbrev_idx = DWRVMReadULEB128( &curr );
+            if( abbrev_idx == 0 ) {
                 if( --depth == 0 )
                     break;
                 continue;
             }
-            abbrev = DWRLookupAbbrev( curr, abbrev );
+            abbrev = DWRLookupAbbrev( curr, abbrev_idx );
             tag = DWRVMReadULEB128( &abbrev );
             haschild = DWRVMReadByte( abbrev );
             abbrev += sizeof( unsigned_8 );
@@ -998,7 +1004,7 @@ bool DWRWalkScope( dr_handle mod, const unsigned_16 *tags, DRWLKBLK wlk, void *d
                 ++depth;                    // go into block
                  DWRSkipAttribs( abbrev, &curr );
             } else {
-                if( haschild ) {            // skip fuzz
+                if( haschild == DW_CHILDREN_yes ) { // skip fuzz
                     DWRSkipChildren( &abbrev, &curr );
                 } else {
                     DWRSkipAttribs( abbrev, &curr );

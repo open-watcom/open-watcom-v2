@@ -36,11 +36,12 @@
 
 static dw_tagnum GetTag( dr_handle entry )
 {
-    dr_handle   abbrev;
-    dw_tagnum   tag;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
+    dw_tagnum       tag;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev_idx = DWRVMReadULEB128( &entry );
+    abbrev = DWRLookupAbbrev( entry, abbrev_idx );
     tag = DWRVMReadULEB128( &abbrev );
     return( tag );
 }
@@ -140,7 +141,7 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
 /**********************************************************************************************/
 {
     dr_handle   abbrev;
-    unsigned    form;
+    dw_formnum  form;
 
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, attrib ) ) {
@@ -214,8 +215,8 @@ unsigned DRGetScopedNameBuff( dr_handle entry,
         }
         outside = NULL;
         while( curr != NULL ) {     //reverse list to outer scope first
-            scope_entry    *next;
-            dw_tagnum     tag;
+            scope_entry     *next;
+            dw_tagnum       tag;
 
             next = curr->next;
             tag = GetTag( curr->handle );
@@ -390,11 +391,12 @@ bool DRIsSymDefined( dr_handle entry )
 bool DRIsMemberStatic( dr_handle entry )
 /**************************************/
 {
-    dr_handle   abbrev;
-    dw_tagnum   tag;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
+    dw_tagnum       tag;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev_idx = DWRVMReadULEB128( &entry );
+    abbrev = DWRLookupAbbrev( entry, abbrev_idx );
     tag = DWRVMReadULEB128( &abbrev );
     return( tag == DW_TAG_variable );
 }
@@ -402,11 +404,12 @@ bool DRIsMemberStatic( dr_handle entry )
 bool DRIsFunc( dr_handle entry )
 /******************************/
 {
-    dr_handle   abbrev;
-    dw_tagnum   tag;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
+    dw_tagnum       tag;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev_idx = DWRVMReadULEB128( &entry );
+    abbrev = DWRLookupAbbrev( entry, abbrev_idx );
     tag = DWRVMReadULEB128( &abbrev );
     return( tag == DW_TAG_subprogram );
 }
@@ -414,11 +417,12 @@ bool DRIsFunc( dr_handle entry )
 bool DRIsParm( dr_handle entry )
 /******************************/
 {
-    dr_handle   abbrev;
-    dw_tagnum   tag;
+    dr_handle       abbrev;
+    dr_abbrev_idx   abbrev_idx;
+    dw_tagnum       tag;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev_idx = DWRVMReadULEB128( &entry );
+    abbrev = DWRLookupAbbrev( entry, abbrev_idx );
     tag = DWRVMReadULEB128( &abbrev );
     return( tag == DW_TAG_formal_parameter );
 }
@@ -539,11 +543,11 @@ static bool CheckAFunc( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void 
     return( d->wlk( mod, d->d, x->context ) );
 }
 
-static unsigned_16 const BlockTags[] = {
+static const dw_tagnum BlockTags[] = {
     DW_TAG_subprogram, DW_TAG_lexical_block, 0
 };
 
-static unsigned_16 const EntryTags[] = {
+static const dw_tagnum EntryTags[] = {
     DW_TAG_subprogram, DW_TAG_label, DW_TAG_variable, 0
 };
 
@@ -563,7 +567,7 @@ bool DRWalkModFunc( dr_handle mod, bool blocks, DRWLKMODF wlk, void *d )
     return( ret );
 }
 
-static unsigned_16 const TypeTags[] = { // any type
+static const dw_tagnum TypeTags[] = { // any type
     DW_TAG_array_type,
     DW_TAG_enumeration_type,
     DW_TAG_pointer_type,
@@ -602,26 +606,26 @@ bool DRWalkScope( dr_handle mod, DRWLKBLK wlk, void *d )
     return( DWRWalkScope( mod, &BlockTags[1], wlk, d ) );
 }
 
-static unsigned_16 const CodeDataTags[] = {
+static const dw_tagnum CodeDataTags[] = {
     DW_TAG_subprogram, DW_TAG_variable, DW_TAG_label,
     DW_TAG_WATCOM_namespace, DW_TAG_formal_parameter, 0
 };
 
-static unsigned_16 const ParmTags[] = {
+static const dw_tagnum ParmTags[] = {
     DW_TAG_formal_parameter, 0
 };
 
-static unsigned_16 const CTypeTags[] = {    // visible c type names
+static const dw_tagnum CTypeTags[] = {    // visible c type names
     DW_TAG_typedef, 0
 };
 
-static unsigned_16 const CPPTypeTags[] = {  // visible c++ type names
+static const dw_tagnum CPPTypeTags[] = {  // visible c++ type names
     DW_TAG_base_type, DW_TAG_typedef,
     DW_TAG_enumeration_type, DW_TAG_class_type,
     DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-static unsigned_16 const * const SrchTags[DR_SRCH_LAST] = {
+static const dw_tagnum * const SrchTags[DR_SRCH_LAST] = {
     CodeDataTags,
     FunctionTags,
     ClassTags,
@@ -638,7 +642,7 @@ static unsigned_16 const * const SrchTags[DR_SRCH_LAST] = {
 bool DRWalkBlock( dr_handle mod, dr_srch what, DRWLKBLK wlk, void *d )
 /********************************************************************/
 {
-    unsigned_16 const   *tags;
+    const dw_tagnum     *tags;
     DRWLKBLK            wlks[MAX_TAG_WLK];
     int                 index;
 
