@@ -1058,8 +1058,8 @@ dr_handle DWRFindCompileUnit( dr_handle addr )
 
 #define CONTEXT_GUESS 0x10
 
-void DWRContextPush( dr_context_stack *stack, uint_32 val )
-/****************************************************************/
+void DWRContextPush( dr_context_stack *stack, dr_handle val )
+/***********************************************************/
 {
     if( stack->stack == NULL ) {
         stack->stack = DWRALLOC( CONTEXT_GUESS * sizeof( uint_32 ) );
@@ -1071,23 +1071,23 @@ void DWRContextPush( dr_context_stack *stack, uint_32 val )
         stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( dr_handle ) );
     }
 
-    stack->stack[ stack->free ] = val;
+    stack->stack[stack->free] = val;
     stack->free += 1;
 }
 
-uint_32 DWRContextPop( dr_context_stack *stack )
-/*****************************************************/
+dr_handle DWRContextPop( dr_context_stack *stack )
+/************************************************/
 {
     if( stack->free <= 0 ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     stack->free -= 1;
-    return( stack->stack[ stack->free ] );
+    return( stack->stack[stack->free] );
 }
 
 dr_handle DWRContext( dr_context_stack *stack, int up )
-/************************************************************/
+/*****************************************************/
 {
     int free;
 

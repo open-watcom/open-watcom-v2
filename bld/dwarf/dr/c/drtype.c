@@ -95,9 +95,8 @@ static int DWRGetAT( dr_handle abbrev, dr_handle  info,
                     vals[index].val_class = DR_VAL_INT;
                     vals[index].val.s = value;
                 } else {
-                    value += DWRFindCompileUnit( info );
                     vals[index].val_class = DR_VAL_REF;
-                    vals[index].val.ref = value;
+                    vals[index].val.ref = DWRFindCompileUnit( info ) + value;
                 }
             }
         }

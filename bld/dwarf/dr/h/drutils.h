@@ -90,8 +90,8 @@ extern bool         DWRWalkChildren( dr_handle mod, const dw_tagnum *tags, const
 extern bool         DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d );
 extern bool         DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d );
 extern bool         DWRWalkScope( dr_handle mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d );
-extern void         DWRContextPush( dr_context_stack *, uint_32 );
-extern uint_32      DWRContextPop( dr_context_stack * );
+extern void         DWRContextPush( dr_context_stack *, dr_handle );
+extern dr_handle    DWRContextPop( dr_context_stack * );
 extern dr_handle    DWRContext( dr_context_stack *stack, int up );
 extern void         DWRFreeContextStack( dr_context_stack * );
 
