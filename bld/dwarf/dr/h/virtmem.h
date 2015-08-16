@@ -37,7 +37,7 @@ extern void             DWRVMReset( void );
 extern bool             DWRVMSectDone( dr_handle base, unsigned_32 size );
 // DWRCurrNode must be set for alloc, free
 extern dr_handle        DWRVMAlloc( unsigned long, int );
-extern unsigned         DWRStrLen( dr_handle );
+extern size_t           DWRStrLen( dr_handle );
 extern void             DWRGetString( char *, dr_handle * );
 extern unsigned         DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max );
 extern unsigned_16      DWRVMReadWord( dr_handle );

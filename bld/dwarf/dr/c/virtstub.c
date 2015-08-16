@@ -84,6 +84,7 @@ bool DWRVMSectDone( dr_handle base, unsigned_32 size )
     alloc_struct    **lnk;
     bool            ret;
 
+    size = size;
     lnk = &AllocHead;
     ret = FALSE;
     while( (walk = *lnk) != NULL ) {
@@ -141,14 +142,14 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
     *vmptr = (dr_handle)buf;
     if( issigned && shift < 32 && (b & 0x40) != 0 ) {
         // we have to sign extend
-        result |= - ((unsigned_32)( 1 << shift ));
+        result |= - ((signed_32)( 1 << shift ));
     }
     return( result );
 }
 
 
-extern unsigned DWRStrLen( dr_handle hdl )
-/****************************************/
+extern size_t DWRStrLen( dr_handle hdl )
+/**************************************/
 {
     return( strlen( (const char *)hdl ) );
 }

@@ -121,7 +121,7 @@ long DWRInfoLength( dr_handle mod )
 
     finish = mod + DWRVMReadDWord( mod );
     mod += COMPILE_UNIT_HDR_SIZE;
-    return( finish - mod );
+    return( (long)( finish - mod ) );
 }
 
 
@@ -599,7 +599,7 @@ dr_handle DWRReadAbbrev( dr_handle entry )
 char * DWRCopyString( dr_handle *info )
 /********************************************/
 {
-    unsigned    count;
+    size_t      count;
     char        *str;
 
     count = DWRStrLen( *info );
@@ -611,7 +611,7 @@ char * DWRCopyString( dr_handle *info )
 char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
 /**********************************************************************/
 {
-    unsigned    count;
+    size_t      count;
     char        *str;
     dr_handle   dbgsec_str;
 
@@ -685,18 +685,15 @@ char * DWRGetName( dr_handle abbrev, dr_handle entry )
 {
     char    *name;
     char    buffer[ DEMANGLE_BUF_SIZE ];
-    int     len;
-    int     base_len;
+    size_t  len;
+    size_t  base_len;
 
     name = NULL;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_name ) ) {
         name = DWRReadString( abbrev, entry );
-
         len = strlen( name );
         if( __is_mangled( name, len ) ) {
-            base_len = __demangled_basename( name, len,
-                                             buffer, DEMANGLE_BUF_SIZE );
-
+            base_len = __demangled_basename( name, len, buffer, DEMANGLE_BUF_SIZE );
             DWRREALLOC( name, base_len + 1 );
             strncpy( name, buffer, base_len + 1 );
         }

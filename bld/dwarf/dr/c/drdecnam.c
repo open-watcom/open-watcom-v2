@@ -747,8 +747,8 @@ static dw_tagnum GetTag( dr_handle entry )
 static void GetContaining( List_T *list, dr_handle of )
 /*****************************************************/
 {
-    scope_trail container;
-    scope_entry *curr;
+    dr_scope_trail container;
+    dr_scope_entry *curr;
 
     DRGetScopeList( &container, of );
     curr = container.head;

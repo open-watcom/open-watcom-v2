@@ -191,8 +191,8 @@ unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
 /***********************************************************************/
 {
     dr_handle       of;
-    scope_trail     container;
-    scope_entry     *curr;
+    dr_scope_trail  container;
+    dr_scope_entry  *curr;
     unsigned        total;
     unsigned        length;
 
@@ -203,14 +203,14 @@ unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
     DRGetScopeList( &container, of );
     curr = container.head;
     if( curr != NULL  ) {
-        scope_entry    *outside;
+        dr_scope_entry  *outside;
 
         if( of == entry ) {         //bump from list
             curr = curr->next;
         }
         outside = NULL;
         while( curr != NULL ) {     //reverse list to outer scope first
-            scope_entry     *next;
+            dr_scope_entry  *next;
             dw_tagnum       tag;
 
             next = curr->next;

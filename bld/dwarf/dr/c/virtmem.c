@@ -502,14 +502,14 @@ extern unsigned_32 DWRVMReadDWord( dr_handle hdl )
     return( result );
 }
 
-extern unsigned DWRStrLen( dr_handle hdl )
-/****************************************/
+extern size_t DWRStrLen( dr_handle hdl )
+/**************************************/
 {
     unsigned    off;
     unsigned    start_off;
     page_entry  *node;
     virt_struct vm;
-    int         length = 0;
+    size_t      length = 0;
 
     vm.l = hdl;
     start_off = NODE_OFF( vm );
