@@ -1,5 +1,6 @@
-#pmake: nobuild os_qnx cpu_386
-host_os  = qnx
+#pmake: build os_dos cpu_386
+
+host_os  = dos
 host_cpu = 386
 
 use_virtmem = 1

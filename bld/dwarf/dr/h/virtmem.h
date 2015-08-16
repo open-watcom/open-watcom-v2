@@ -43,25 +43,26 @@ extern unsigned         DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max 
 extern unsigned_16      DWRVMReadWord( dr_handle );
 extern unsigned_32      DWRVMReadDWord( dr_handle );
 
-#define DWRVMReadSLEB128( __h ) (signed_32)ReadLEB128( __h, TRUE )
+#define DWRVMReadSLEB128(__h) (signed_32)ReadLEB128( __h, TRUE )
 
-#if !defined( INLINE_VMEM )
+#if defined( USE_VIRTMEM )
 
 extern void             DWRVMSwap( dr_handle, unsigned_32, bool *ret );
 extern void             DWRVMSkipLEB128( dr_handle * );
 extern void             DWRVMRead( dr_handle, void *, unsigned );
 extern unsigned_8       DWRVMReadByte( dr_handle );
 
-#define DWRVMReadULEB128( __h ) ReadLEB128( __h, FALSE )
+#define DWRVMReadULEB128(__h) ReadLEB128( __h, FALSE )
 
-#else
+#else   /* !USE_VIRTMEM */
 
-#define DWRVMSwap(__ig1,__ig2,__ig3)    ((void)((int)(__ig1) == (__ig2) == *(__ig3)))  /* ignored */
-#define DWRVMSkipLEB128(__h)                    \
-     { unsigned_8 *p = (unsigned_8 *)*(__h);    \
-            do { } while( (*p++ & 0x80) != 0 ); \
-            *(__h) = (dr_handle)p;              \
-     }
+#define DWRVMSwap(__ig1,__ig2,__ig3)
+#define DWRVMSkipLEB128(__h)          \
+    {                                 \
+        uint_8 *p = (uint_8 *)*(__h); \
+        while( (*p++ & 0x80) != 0 );  \
+        *(__h) = (dr_handle)p;        \
+    }
 #define DWRVMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )
 #define DWRVMReadByte(__h)      *((unsigned_8 *)(__h))
 
@@ -99,4 +100,4 @@ extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
 
 #endif
 
-#endif // INLINE_VMEM
+#endif  /* !USE_VIRTMEM */

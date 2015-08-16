@@ -3,4 +3,6 @@
 host_os  = dos
 host_cpu = 386
 
+use_virtmem = 1
+
 !include ../dwarf.mif

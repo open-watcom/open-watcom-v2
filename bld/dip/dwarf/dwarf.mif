@@ -21,6 +21,10 @@ imp_objs_watcom = stub.obj
 
 extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c
+!ifeq use_virtmem 1
+extra_cppflags = -DDIP_PRIORITY=DIP_PRIOR_DEFAULT -DUSE_VIRTMEM
+!else
 extra_cppflags = -DDIP_PRIORITY=DIP_PRIOR_DEFAULT
+!endif
 
 !include ../../master.mif
