@@ -144,14 +144,14 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
 
     if( ctxt->stack.free == 0 ) { // start out in an unnamed chain
         DWRContextPush( &ctxt->stack, mod );
-        DWRContextPush( &ctxt->stack, DO_NOTHING );
+        DWRContextPush( &ctxt->stack, (dr_handle)DO_NOTHING );
     }
 
     while( mod < ctxt->end ) {
         info.handle = mod;
         abbrev_idx = DWRVMReadULEB128( &mod );
         if( abbrev_idx == 0 ) {
-            op = DWRContextPop( &ctxt->stack );
+            op = (stack_op)(pointer_int)DWRContextPop( &ctxt->stack );
             switch( op ) {
             case SET_CLASS:
                 ctxt->classhdl = DWRContextPop( &ctxt->stack );
@@ -185,7 +185,7 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
                     skipped = TRUE;
                 } else {
                     DWRContextPush( &ctxt->stack, ctxt->classhdl );
-                    DWRContextPush( &ctxt->stack, SET_CLASS );
+                    DWRContextPush( &ctxt->stack, (dr_handle)SET_CLASS );
                     ctxt->classhdl = info.handle;
                 }
             } else {
@@ -195,12 +195,12 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
                         skipped = TRUE;
                     } else {
                         DWRContextPush( &ctxt->stack, ctxt->functionhdl );
-                        DWRContextPush( &ctxt->stack, SET_FUNCTION );
+                        DWRContextPush( &ctxt->stack, (dr_handle)SET_FUNCTION );
                         ctxt->functionhdl = info.handle;
                     }
                 } else {
                     DWRContextPush( &ctxt->stack, info.handle );
-                    DWRContextPush( &ctxt->stack, DO_NOTHING );
+                    DWRContextPush( &ctxt->stack, (dr_handle)DO_NOTHING );
                 }
             }
         }
@@ -309,6 +309,7 @@ void DWRSkipForm( dr_handle *addr, dw_formnum form )
 /**************************************************/
 {
     unsigned_32 value;
+
     switch( form ) {
     case DW_FORM_addr:
         if( DWRCurrNode->addr_size == 0 ) {
