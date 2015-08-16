@@ -29,42 +29,41 @@
 ****************************************************************************/
 
 
-extern void      DWRVMInit( void );
-extern void      DWRVMDestroy( void );
-extern void      DWRVMReset( void );
-extern bool      DWRVMSectDone( dr_handle base, unsigned_32 size );
+extern unsigned_32      ReadLEB128( dr_handle *, bool );
+
+extern void             DWRVMInit( void );
+extern void             DWRVMDestroy( void );
+extern void             DWRVMReset( void );
+extern bool             DWRVMSectDone( dr_handle base, unsigned_32 size );
 
 // DWRCurrNode must be set for alloc, free
-extern dr_handle DWRVMAlloc( unsigned long, int );
+extern dr_handle        DWRVMAlloc( unsigned long, int );
 
-extern unsigned  DWRStrLen( dr_handle );
-extern void      DWRGetString( char *, dr_handle * );
-extern unsigned  DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max );
+extern unsigned         DWRStrLen( dr_handle );
+extern void             DWRGetString( char *, dr_handle * );
+extern unsigned         DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max );
 
 #if defined( INLINE_VMEM )
 
+#define DWRVMSwap(__ig1,__ig2,__ig3)    ((void)((__ig1) == (__ig2) == *(__ig3)))  /* ignored */
 
-#define DWRVMSwap( __ig1, __ig2, __ig3 ) ((void)((__ig1) == (__ig2) == *(__ig3)))  /* ignored */
-
-#define DWRVMRead( __hdl, __blk, __len ) ( (void)memcpy( __blk, (void *)__hdl, __len ) )
-#define DWRVMReadByte( __hdl )           ( *((unsigned_8 *)(__hdl)) )
-#define DWRVMReadSLEB128( __hdlp )       ( (signed_32)ReadLEB128( __hdlp, TRUE ) )
-#define DWRVMSkipLEB128( __hdl )                        \
-         { unsigned_8 *p = (unsigned_8 *)*(__hdl);      \
-                do { } while( *p++ & 0x80 );            \
-                *(__hdl) = (dr_handle)p;                \
-         }
+#define DWRVMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )
+#define DWRVMReadByte(__h)      *((unsigned_8 *)(__h))
+#define DWRVMReadSLEB128(__h)   (signed_32)ReadLEB128( __h, TRUE )
+#define DWRVMSkipLEB128(__h)                    \
+     { unsigned_8 *p = (unsigned_8 *)*(__h);    \
+            do { } while( *p++ & 0x80 );        \
+            *(__h) = (dr_handle)p;              \
+     }
 
 extern unsigned_16      DWRVMReadWord( dr_handle );
 extern unsigned_32      DWRVMReadDWord( dr_handle );
-extern unsigned_32      ReadLEB128( dr_handle *, bool );
 
-#if   0  // defined(__386__)   need to figure out
+#if 0   // defined(__386__)   need to figure out
+
+#define DWRVMReadULEB128(__h)   ReadULEB128( __h )
 
 extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
-
-#define DWRVMReadULEB128( __hdlp )       ReadULEB128( __hdlp )
-
 /* warning -- this function only works if the ULEB128 is <= 0x0fffffff */
 /* if greater numbers are used, the lowest nibble is zeroed. */
 #pragma aux ReadULEB128 =                                           \
@@ -90,20 +89,19 @@ extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
 
 #else
 
-#define DWRVMReadULEB128( __hdlp )       ( (signed_32)ReadLEB128( __hdlp, FALSE ) )
+#define DWRVMReadULEB128(__h)   (signed_32)ReadLEB128( __h, FALSE )
 
 #endif
 
 #else
 
-extern void        DWRVMRead( dr_handle, void *, unsigned );
-extern unsigned_8  DWRVMReadByte( dr_handle );
-extern unsigned_16 DWRVMReadWord( dr_handle );
-extern unsigned_32 DWRVMReadDWord( dr_handle );
-extern signed_32   DWRVMReadSLEB128( dr_handle * );
-extern unsigned_32 DWRVMReadULEB128( dr_handle * );
-extern void        DWRVMSkipLEB128( dr_handle * );
-extern void        DWRVMSwap( dr_handle, unsigned_32, bool *ret );
-
+extern void             DWRVMRead( dr_handle, void *, unsigned );
+extern unsigned_8       DWRVMReadByte( dr_handle );
+extern unsigned_16      DWRVMReadWord( dr_handle );
+extern unsigned_32      DWRVMReadDWord( dr_handle );
+extern signed_32        DWRVMReadSLEB128( dr_handle * );
+extern unsigned_32      DWRVMReadULEB128( dr_handle * );
+extern void             DWRVMSkipLEB128( dr_handle * );
+extern void             DWRVMSwap( dr_handle, unsigned_32, bool *ret );
 
 #endif // INLINE_VMEM

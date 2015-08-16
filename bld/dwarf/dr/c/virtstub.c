@@ -122,25 +122,26 @@ bool DRSwap( void )
 }
 
 
-extern dr_handle ReadLEB128( dr_handle *vmptr, bool issigned )
-/************************************************************/
+unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
+/*******************************************************/
 // works for signed or unsigned
 {
-    char            *buf = (char *) *vmptr;
-    long            result = 0;
+    char            *buf = (char *)*vmptr;
+    unsigned_32     result = 0;
     unsigned        shift = 0;
     char            b;
 
     for( ;; ) {
         b = *buf++;
         result |= ( b & 0x7f ) << shift;
-        if( ( b & 0x80 ) == 0 ) break;
+        if( ( b & 0x80 ) == 0 )
+            break;
         shift += 7;
     }
 
     *vmptr = (dr_handle) buf;
     if( issigned && (b & 0x40) ) {      // we have to sign extend
-        result |= - ((long)(1 << (shift + 7)));
+        result |= - ((unsigned_32)(1 << (shift + 7)));
     }
 
     return( result );

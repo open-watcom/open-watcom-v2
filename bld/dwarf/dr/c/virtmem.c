@@ -404,8 +404,8 @@ extern unsigned_8 DWRVMReadByte( dr_handle hdl )
     return( *(node->mem + NODE_OFF(vm)) );
 }
 
-static unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
-/**************************************************************/
+unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
+/*******************************************************/
 /* read and advance the vm pointer */
 {
     virt_struct vm;
@@ -447,7 +447,7 @@ static unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
 extern signed_32 DWRVMReadSLEB128( dr_handle *vmptr )
 /***************************************************/
 {
-    return( (signed_32) ReadLEB128( vmptr, TRUE ) );
+    return( (signed_32)ReadLEB128( vmptr, TRUE ) );
 }
 
 extern unsigned_32 DWRVMReadULEB128( dr_handle *vmptr )
