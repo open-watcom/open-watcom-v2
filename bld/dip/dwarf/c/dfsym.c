@@ -910,8 +910,7 @@ static search_result  DFAddrScope( imp_image_handle *ii,
             scope->start.mach.offset = node->start;
             scope->len = node->end - node->start;
             DCMapAddr( &scope->start.mach, ii->dcmap );
-            scope->unique = node->what;
-            scope->unique -= IM2MODI( ii, im )->cu_tag;   /* make relative */
+            scope->unique = node->what - IM2MODI( ii, im )->cu_tag;   /* make relative */
             ret = SR_CLOSEST;
         }
     }
@@ -983,8 +982,7 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
         ret = SR_NONE;
         cu_tag = IM2MODI(ii, im )->cu_tag;
         node = FindScope( ctl->root, addr.mach.offset );
-        what = in->unique;
-        what += cu_tag;    /* make absolute */
+        what = cu_tag + in->unique;    /* make absolute */
         while( node != NULL ) {
             if( node->what == what ) {
                 node = node->down;
@@ -997,9 +995,7 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
             out->start.mach.offset = node->start;
             out->len = node->end - node->start;
             DCMapAddr( &out->start.mach, ii->dcmap );
-            what = node->what;
-            what -= cu_tag;
-            out->unique = what; /* make relative */
+            out->unique = node->what - cu_tag; /* make relative */
             ret = SR_EXACT;
         }
     }
