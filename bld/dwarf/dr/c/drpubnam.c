@@ -51,7 +51,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
     dr_handle           pos;
     dr_handle           finish;
     dr_handle           unit_end;
-    dr_handle           dbg_handle;
+    uint_32             dbg_handle;
     dr_handle           dbg_base;
     char                str_buff[256];
     char                *str;
