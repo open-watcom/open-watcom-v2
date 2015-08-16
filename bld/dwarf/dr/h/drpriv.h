@@ -80,7 +80,7 @@ typedef struct COMPUNIT_INFO {
     dr_handle                   end;
     file_table                  filetab;
     dr_abbrev_idx               numabbrevs;
-    dr_handle                   abbrev_start;   // offset into abbrev section
+    unsigned_32                 abbrev_start;   // offset into abbrev section
     dr_handle                   *abbrevs;       // variable length array
     unsigned                    *abbrev_refs;   // abbrevs reference counter
 } compunit_info;
