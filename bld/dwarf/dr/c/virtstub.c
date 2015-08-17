@@ -127,11 +127,12 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
 /*******************************************************/
 // works for signed or unsigned
 {
-    const char      *buf = (const char *)*vmptr;
+    const char      *buf;
     unsigned_32     result;
     unsigned        shift;
     char            b;
 
+    buf = (const char *)*vmptr;
     result = 0;
     shift = 0;
     do {
@@ -140,18 +141,11 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
         shift += 7;
     } while( (b & 0x80) != 0 );
     *vmptr = (dr_handle)buf;
-    if( issigned && shift < 32 && (b & 0x40) != 0 ) {
+    if( issigned && (b & 0x40) != 0 && shift < 32 ) {
         // we have to sign extend
         result |= - ((signed_32)( 1 << shift ));
     }
     return( result );
-}
-
-
-extern size_t DWRStrLen( dr_handle hdl )
-/**************************************/
-{
-    return( strlen( (const char *)hdl ) );
 }
 
 extern void DWRGetString( char *buf, dr_handle *hdlp )

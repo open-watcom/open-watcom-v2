@@ -37,7 +37,6 @@ extern void             DWRVMReset( void );
 extern bool             DWRVMSectDone( dr_handle base, unsigned_32 size );
 // DWRCurrNode must be set for alloc, free
 extern dr_handle        DWRVMAlloc( unsigned long, int );
-extern size_t           DWRStrLen( dr_handle );
 extern void             DWRGetString( char *, dr_handle * );
 extern unsigned         DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max );
 extern unsigned_16      DWRVMReadWord( dr_handle );
@@ -47,6 +46,7 @@ extern unsigned_32      DWRVMReadDWord( dr_handle );
 
 #if defined( USE_VIRTMEM )
 
+extern size_t           DWRStrLen( dr_handle );
 extern void             DWRVMSwap( dr_handle, unsigned_32, bool *ret );
 extern void             DWRVMSkipLEB128( dr_handle * );
 extern void             DWRVMRead( dr_handle, void *, unsigned );
@@ -56,10 +56,11 @@ extern unsigned_8       DWRVMReadByte( dr_handle );
 
 #else   /* !USE_VIRTMEM */
 
+#define DWRStrLen(__h)          strlen((const char *)__h)
 #define DWRVMSwap(__ig1,__ig2,__ig3)
 #define DWRVMSkipLEB128(__h)          \
     {                                 \
-        uint_8 *p = (uint_8 *)*(__h); \
+        const char *p = (const char *)*(__h); \
         while( (*p++ & 0x80) != 0 );  \
         *(__h) = (dr_handle)p;        \
     }

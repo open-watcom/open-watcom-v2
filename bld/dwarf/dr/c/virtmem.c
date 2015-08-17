@@ -395,29 +395,26 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
     unsigned_8  inbyte;
     unsigned    shift;
 
-    shift = 0;
     vm.l = *vmptr;
     ACCESSPAGE( node, vm );
     off = NODE_OFF( vm );
-    inbyte = *(node->mem + off);
-    result = inbyte & 0x7F;
-    while( inbyte & 0x80 ) {
-        off++;
-        vm.l++;
+    shift = 0;
+    result = 0;
+    do {
         if( off == MAX_NODE_SIZE ) {
             ACCESSPAGE( node, vm );
             off = 0;
         }
-        shift += 7;
         inbyte = *(node->mem + off);
         result |= (unsigned_32)(inbyte & 0x7F) << shift;
-    }
-    *vmptr = vm.l + 1;
-    if( issigned && (inbyte & 0x40) != 0 ) {   // we have to sign extend
+        off++;
+        vm.l++;
         shift += 7;
-        if( shift < 32 ) {
-            result |= - ((signed_32)(1 << shift));
-        }
+    } while( inbyte & 0x80 );
+    *vmptr = vm.l;
+    if( issigned && (inbyte & 0x40) != 0 && shift < 32 ) {
+        // we have to sign extend
+        result |= - ((signed_32)(1 << shift));
     }
     return( result );
 }
@@ -434,17 +431,16 @@ extern void DWRVMSkipLEB128( dr_handle *hdl )
     vm.l = *hdl;
     ACCESSPAGE( node, vm );
     off = NODE_OFF( vm );
-    inbyte = *(node->mem + off);
-    while( inbyte & 0x80 ) {
-        off++;
-        vm.l++;
+    do {
         if( off == MAX_NODE_SIZE ) {
             ACCESSPAGE( node, vm );
             off = 0;
         }
         inbyte = *(node->mem + off);
-    }
-    *hdl = vm.l + 1;
+        off++;
+        vm.l++;
+    } while( (inbyte & 0x80) != 0 );
+    *hdl = vm.l;
 }
 
 extern unsigned_16 DWRVMReadWord( dr_handle hdl )
