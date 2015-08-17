@@ -33,9 +33,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
-#ifdef __BSD__
-#include <unistd.h>
-#endif
 #include "linkstd.h"
 #include "exeos2.h"
 #include "loados2.h"
@@ -60,7 +57,6 @@
 #include "permdata.h"
 #include "loadpe.h"
 #include "reserr.h"
-#include "wres.h"
 #include "exerespe.h"
 #include "impexp.h"
 #include "toc.h"
@@ -71,7 +67,6 @@
 #include "param.h"
 #include "sharedio.h"
 #include "exeutil.h"
-
 
 #define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
 #define I386_TRANSFER_OP2       0x25    /* second byte of a "JMP [FOO]" */
