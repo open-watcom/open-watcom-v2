@@ -70,12 +70,11 @@ static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
 
     result = 0;
     shift = 0;
-    for( ;; ) {
+    do {
         in = *input++;
-        result |= ( in & 0x7f ) << shift;
-        if( ( in & 0x80 ) == 0 ) break;
+        result |= (in & 0x7f) << shift;
         shift += 7;
-    }
+    } while( (in & 0x80) != 0 );
     *value = result;
     return( (uint_8 *)input );
 }
@@ -89,18 +88,18 @@ static uint_8 *DecodeSLEB128( const uint_8 *input, int_32 *value )
 
     result = 0;
     shift = 0;
-    for( ;; ) {
+    do {
         in = *input++;
         result |= ( in & 0x7f ) << shift;
         shift += 7;
-        if( ( in & 0x80 ) == 0 ) break;
-    }
-    if( ( shift < 32 ) && ( in & 0x40 ) ) {
-        result |= - ( 1 << shift );
+    } while( (in & 0x80) != 0 );
+    if( ( shift < 32 ) && (in & 0x40) != 0 ) {
+        result |= - ((int_32)( 1 << shift ));
     }
     *value = result;
     return( (uint_8 *)input );
 }
+
 //TODO: check stack bounds
 static void DoLocExpr( unsigned_8       *p,
                        int              length,

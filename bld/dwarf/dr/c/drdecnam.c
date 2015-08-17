@@ -411,10 +411,10 @@ static void BuildFortranList( BrokenName_T *decname, Loc_T *loc )
         break;
 
     case DW_TAG_member:
-        if( loc->parent ) {
-            FORDecMember( decname, loc );
-        } else {
+        if( loc->parent == DR_HANDLE_NUL ) {
             FORDecVariable( decname, loc );
+        } else {
+            FORDecMember( decname, loc );
         }
         break;
 
@@ -457,10 +457,10 @@ static void BuildCList( BrokenName_T *decname, Loc_T *loc )
         break;
 
     case DW_TAG_member:
-        if( loc->parent ) {
-            DecorateMember( decname, loc );
-        } else {
+        if( loc->parent == DR_HANDLE_NUL ) {
             DecorateVariable( decname, loc );
+        } else {
+            DecorateMember( decname, loc );
         }
         break;
 
@@ -2300,7 +2300,7 @@ static void IterateList( DRDECORCB cb, void *obj, List_T list )
         }
     }
     FreeList( list );
-    cb( obj, NULL, 0, (dr_handle) 0, DR_SYM_NOT_SYM );
+    cb( obj, NULL, 0, DR_HANDLE_NUL, DR_SYM_NOT_SYM );
 }
 
 /*

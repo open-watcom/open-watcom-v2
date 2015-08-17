@@ -153,7 +153,7 @@ extern dr_search_context * DRDuplicateSearchContext( dr_search_context *cxt )
     newCtxt->stack.stack = DWRALLOC( newCtxt->stack.size * sizeof( uint_32 ) );
 
     for( i = 0; i < cxt->stack.free; i += 1 ) {
-        newCtxt->stack.stack[ i ] = cxt->stack.stack[ i ];
+        newCtxt->stack.stack[i] = cxt->stack.stack[i];
     }
 
     return( newCtxt );

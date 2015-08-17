@@ -55,8 +55,8 @@ typedef bool (*hook_func)( dr_ref_info *, void * );
 
 #define SCOPE_GUESS 0x50
 
-static void ScopePush( dr_scope_stack * stack, dr_handle entry )
-/**************************************************************/
+static void ScopePush( dr_scope_stack *stack, dr_handle entry )
+/*************************************************************/
 {
     if( stack->stack == NULL ) {
         stack->stack = DWRALLOC( SCOPE_GUESS * sizeof( dr_handle ) );
@@ -66,23 +66,23 @@ static void ScopePush( dr_scope_stack * stack, dr_handle entry )
         stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( dr_handle ) );
     }
 
-    stack->stack[ stack->free ] = entry;
+    stack->stack[stack->free] = entry;
     stack->free += 1;
 }
 
-static dr_handle ScopePop( dr_scope_stack * stack )
-/*************************************************/
+static dr_handle ScopePop( dr_scope_stack *stack )
+/************************************************/
 {
     if( stack->free <= 0 ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     stack->free -= 1;
-    return( stack->stack[ stack->free ] );
+    return( stack->stack[stack->free] );
 }
 
-static dr_handle ScopeLastNameable( dr_scope_stack * scope, char ** name )
-/************************************************************************/
+static dr_handle ScopeLastNameable( dr_scope_stack *scope, char **name )
+/**********************************************************************/
 {
     int             i;
     dr_handle       tmp_entry;
@@ -90,7 +90,7 @@ static dr_handle ScopeLastNameable( dr_scope_stack * scope, char ** name )
     dr_abbrev_idx   abbrev_idx;
 
     for( i = scope->free; i > 0; i -= 1 ) {
-        tmp_entry = scope->stack[ i - 1 ];
+        tmp_entry = scope->stack[i - 1];
 
         abbrev_idx = DWRVMReadULEB128( &tmp_entry );
         if( abbrev_idx != 0 ) {
@@ -100,7 +100,7 @@ static dr_handle ScopeLastNameable( dr_scope_stack * scope, char ** name )
 
             *name = DWRGetName( abbrev, tmp_entry );
             if( *name != NULL ) {
-                return( scope->stack[ i - 1 ] );
+                return( scope->stack[i - 1] );
             }
         }
     }
@@ -113,7 +113,7 @@ static bool ToHook( dr_ref_info *reg, void *data )
     ToData  *info = (ToData *)data;
 
     return( (reg->scope.free > 0)
-            && reg->scope.stack[ reg->scope.free - 1 ] == info->entry );
+            && reg->scope.stack[reg->scope.free - 1] == info->entry );
 }
 
 static bool ByHook( dr_ref_info *registers, void * data )
@@ -150,7 +150,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             owning_node = DWRVMReadDWord( loc ) + infoOffset;
             loc += sizeof( unsigned_32 );
             ScopePush( &registers.scope, owning_node );
-            if( which & REFERSTO && owning_node == entry ) {
+            if( (which & REFERSTO) != 0 && owning_node == entry ) {
                 inScope = TRUE;
             }
             break;

@@ -298,7 +298,7 @@ bool DWRSearchArray( const dw_tagnum *array, dw_tagnum value )
 }
 
 unsigned DWRGetAddrSize( dr_handle mod )
-/**********************************************/
+/**************************************/
 /* returns the size of the address for the compile unit */
 {
     return( DWRVMReadByte( mod + 10 ) );
@@ -525,7 +525,7 @@ unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
 }
 
 char * DWRReadString( dr_handle abbrev, dr_handle info )
-/*************************************************************/
+/******************************************************/
 {
     dw_formnum  form;
     unsigned_32 offset;
@@ -544,7 +544,7 @@ char * DWRReadString( dr_handle abbrev, dr_handle info )
 }
 
 int DWRReadFlag( dr_handle abbrev, dr_handle info )
-/********************************************************/
+/*************************************************/
 {
     dw_formnum  form;
 
@@ -684,7 +684,7 @@ char * DWRGetName( dr_handle abbrev, dr_handle entry )
 /****************************************************/
 {
     char    *name;
-    char    buffer[ DEMANGLE_BUF_SIZE ];
+    char    buffer[DEMANGLE_BUF_SIZE];
     size_t  len;
     size_t  base_len;
 
@@ -728,8 +728,8 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
         ctxt.start = ((compunit_info *)ctxt.compunit)->start;
         ctxt.end = ctxt.start + DWRVMReadDWord( ctxt.start );
         ctxt.start += COMPILE_UNIT_HDR_SIZE;
-        ctxt.classhdl = 0;
-        ctxt.functionhdl = 0;
+        ctxt.classhdl = DR_HANDLE_NUL;
+        ctxt.functionhdl = DR_HANDLE_NUL;
         ctxt.stack.size = 0;
         ctxt.stack.free = 0;
         ctxt.stack.stack = NULL;
@@ -739,7 +739,7 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
         /* but allocate and copy own stack */
         ctxt.stack.stack = DWRALLOC( ctxt.stack.size * sizeof( uint_32 ) );
         for( i = 0; i < ctxt.stack.free; i += 1 ) {
-            ctxt.stack.stack[ i ] = startingCtxt->stack.stack[ i ];
+            ctxt.stack.stack[i] = startingCtxt->stack.stack[i];
         }
     }
 
@@ -771,8 +771,8 @@ bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
     ctxt.compunit = compunit;
     ctxt.start = mod;
     ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
-    ctxt.classhdl = 0;
-    ctxt.functionhdl = 0;
+    ctxt.classhdl = DR_HANDLE_NUL;
+    ctxt.functionhdl = DR_HANDLE_NUL;
     ctxt.stack.size = 0;
     ctxt.stack.free = 0;
     ctxt.stack.stack = NULL;
