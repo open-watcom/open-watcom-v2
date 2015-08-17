@@ -455,18 +455,18 @@ static void dump_state( line_state_info *state )
 
     if( state->has_seg ) {
         if( state->is_32 ) {
-            sprintf( str, "%5d %04hX:%08hX ", state->line, state->segment, state->address );
+            sprintf( str, "%5d %04Xh:%08Xh ", state->line, state->segment, state->address );
             BufWrite( str, strlen( str ) );
         } else {
-            sprintf( str, "%5d %04hX:%04hX ", state->line, state->segment, state->address );
+            sprintf( str, "%5d %04Xh:%04Xh ", state->line, state->segment, state->address );
             BufWrite( str, strlen( str ) );
         }
     } else {
         if( state->is_32 ) { 
-            sprintf( str, "%6d %08hX ", state->line, state->address );
+            sprintf( str, "%6d %08Xh ", state->line, state->address );
             BufWrite( str, strlen( str ) );
         } else {
-            sprintf( str, "%6d %04hX ", state->line, state->address );
+            sprintf( str, "%6d %04Xh ", state->line, state->address );
             BufWrite( str, strlen( str ) );
         }
     }
