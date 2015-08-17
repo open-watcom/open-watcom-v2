@@ -57,32 +57,32 @@ typedef unsigned        uint;
 
 typedef unsigned char   uint_8;
 typedef unsigned short  uint_16;
-#if defined (LONG_IS_64BITS)
-typedef unsigned int    uint_32;
-#else
+#if defined( _M_I86 )
 typedef unsigned long   uint_32;
+#else
+typedef unsigned int    uint_32;
 #endif
 typedef unsigned char   unsigned_8;
 typedef unsigned short  unsigned_16;
-#if defined (LONG_IS_64BITS)
-typedef unsigned int    unsigned_32;
-#else
+#if defined( _M_I86 )
 typedef unsigned long   unsigned_32;
+#else
+typedef unsigned int    unsigned_32;
 #endif
 
 typedef signed char     int_8;
 typedef signed short    int_16;
-#if defined (LONG_IS_64BITS)
-typedef signed int      int_32;
-#else
+#if defined( _M_I86 )
 typedef signed long     int_32;
+#else
+typedef signed int      int_32;
 #endif
 typedef signed char     signed_8;
 typedef signed short    signed_16;
-#if defined (LONG_IS_64BITS)
-typedef signed int      signed_32;
-#else
+#if defined( _M_I86 )
 typedef signed long     signed_32;
+#else
+typedef signed int      signed_32;
 #endif
 
 #if _INTEGRAL_MAX_BITS >= 64
