@@ -53,7 +53,7 @@ public:
             bool        isCut() { return _cut; }
 
     virtual int         getLevel( void ) const;
-    virtual dr_handle   getHandle( void ) const { return 0; }
+    virtual dr_handle   getHandle( void ) const { return DR_HANDLE_NUL; }
     virtual TreePtr*    getPtr( TreeList_T, int );
     virtual TreeNode*   getNode( TreeList_T, int );
     virtual int         getCount( TreeList_T );

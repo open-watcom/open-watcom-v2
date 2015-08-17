@@ -187,7 +187,7 @@ bool KeySymbol::matches( Symbol * sym )
     }
 
     if( _contClassProg ) {
-        if( sym->getParent() ) {
+        if( sym->getParent() != DR_HANDLE_NUL ) {
             container = DRGetName( sym->getParent() );
             if( container ) {
                 accept = (bool)RegExec( (regexp *)_contClassProg, container, true );
@@ -300,13 +300,13 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
     return( TRUE );
 }
 
-bool KeySymbol::matches( dr_handle hdl, const char * name )
+bool KeySymbol::matches( dr_handle drhdl, const char * name )
 //---------------------------------------------------------
 // perform a partial comparison (no containers)
 {
     dr_sym_type type;
 
-    type = DRGetSymType( hdl );
+    type = DRGetSymType( drhdl );
     if( !(SymTypeConvert[type] & _searchFor) ) {
         return( FALSE );
     }
@@ -318,13 +318,13 @@ bool KeySymbol::matches( dr_handle hdl, const char * name )
     }
 
     if( !_artificial ) {
-        if( DRIsArtificial( hdl ) ) {
+        if( DRIsArtificial( drhdl ) ) {
             return( FALSE );
         }
     }
 
     if( !_declaration ) {
-        if( !DRIsSymDefined( hdl ) ) {
+        if( !DRIsSymDefined( drhdl ) ) {
             return( FALSE );
         }
     }
@@ -341,7 +341,7 @@ bool KeySymbol::matches( dr_handle hdl, const char * name )
         }
     }
 
-    if( !_fileFilter->matches( hdl ) ) {
+    if( !_fileFilter->matches( drhdl ) ) {
         return FALSE;
     }
 

@@ -47,8 +47,8 @@ struct searchData {
     WVList *    list;
 };
 
-EnumType::EnumType( dr_handle h, dr_handle p, Module * m, char * name )
-            : Symbol( h, p, m, name )
+EnumType::EnumType( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * name )
+            : Symbol( drhdl, drhdl_prt, m, name )
 //---------------------------------------------------------------------
 {
     _byteSize = DRGetByteSize( getHandle() );

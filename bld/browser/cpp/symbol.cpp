@@ -49,9 +49,9 @@
 #include "viewmgr.h"
 #include "browse.h"
 
-Symbol::Symbol( dr_handle i, dr_handle p, Module * m, char * n )
-        :_handle(i)
-        ,_parent(p)
+Symbol::Symbol( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * n )
+        :_drhandle(drhdl)
+        ,_parent(drhdl_prt)
         ,_module(m)
         ,_description(NULL)
         ,_name(n)       // n should be dynamic memory which symbol can free
@@ -59,7 +59,7 @@ Symbol::Symbol( dr_handle i, dr_handle p, Module * m, char * n )
         ,_anonymous(FALSE)
 //--------------------------------------------------------------
 {
-    _defined = (bool) DRIsSymDefined( i );
+    _defined = DRIsSymDefined( drhdl );
 
     if( _name == NULL || _name[ 0 ] == '\0' ) {
         WBRFree( _name );
@@ -69,7 +69,7 @@ Symbol::Symbol( dr_handle i, dr_handle p, Module * m, char * n )
 }
 
 Symbol::Symbol( const Symbol &i )
-        :_handle(i._handle)
+        :_drhandle(i._drhandle)
         ,_parent(i._parent)
         ,_module(i._module)
         ,_description(NULL)
@@ -93,7 +93,7 @@ Symbol::~Symbol()
 bool Symbol::isEqual( WObject const * o ) const
 //---------------------------------------------
 {
-    return ((Symbol *)o)->_handle == _handle;
+    return ((Symbol *)o)->_drhandle == _drhandle;
 }
 
 const char * Symbol::name()
@@ -117,7 +117,7 @@ const char * Symbol::scopedName( bool fullScoping )
         WString scoped;
 
         _description = &desc;
-        DRDecoratedNameList( this, _handle, fullScoping ? _parent : 0L, descCallBack );
+        DRDecoratedNameList( this, _drhandle, fullScoping ? _parent : DR_HANDLE_NUL, descCallBack );
         _description = NULL;
 
         for( i = 0; i < desc.count(); i += 1 ) {
@@ -152,14 +152,14 @@ bool Symbol::defSourceFile( char *buff )
 {
     char        *p;
 
-    p = DRGetFileName( _handle );
+    p = DRGetFileName( _drhandle );
     if( p == NULL ) return( FALSE );
     strcpy( buff, p );
     return browseTop->makeFileName( buff );
 }
 
-static Symbol * Symbol::defineSymbol( dr_sym_type type, dr_handle handle,
-                                      dr_handle clhandle, Module * module,
+static Symbol * Symbol::defineSymbol( dr_sym_type type, dr_handle drhdl,
+                                      dr_handle drhdl_prt, Module * module,
                                       char * name )
 //-----------------------------------------------------------------------
 {
@@ -167,22 +167,22 @@ static Symbol * Symbol::defineSymbol( dr_sym_type type, dr_handle handle,
 
     switch( type ) {
     case DR_SYM_ENUM:
-        newsym = new EnumType( handle, clhandle, module, name );
+        newsym = new EnumType( drhdl, drhdl_prt, module, name );
         break;
     case DR_SYM_FUNCTION:
-        newsym = new FunctionSym( handle, clhandle, module, name );
+        newsym = new FunctionSym( drhdl, drhdl_prt, module, name );
         break;
     case DR_SYM_CLASS:
-        newsym = new ClassType( handle, clhandle, module, name );
+        newsym = new ClassType( drhdl, drhdl_prt, module, name );
         break;
     case DR_SYM_TYPEDEF:
-        newsym = new TypeSym( handle, clhandle, module, name );
+        newsym = new TypeSym( drhdl, drhdl_prt, module, name );
         break;
     case DR_SYM_VARIABLE:
-        newsym = new VariableSym( handle, clhandle, module, name );
+        newsym = new VariableSym( drhdl, drhdl_prt, module, name );
         break;
     case DR_SYM_MACRO:
-        newsym = new MacroSym( handle, clhandle, module, name );
+        newsym = new MacroSym( drhdl, drhdl_prt, module, name );
         break;
     default:
         newsym = NULL;
@@ -269,28 +269,22 @@ static Symbol * Symbol::defineSymbol( const Symbol * info )
     symtype = info->symtype();
     switch( symtype ) {
     case DR_SYM_CLASS:
-        newsym = new ClassType( info->_handle, info->_parent,
-                                info->_module, newname );
+        newsym = new ClassType( info->_drhandle, info->_parent, info->_module, newname );
         break;
     case DR_SYM_FUNCTION:
-        newsym = new FunctionSym( info->_handle, info->_parent,
-                                  info->_module, newname );
+        newsym = new FunctionSym( info->_drhandle, info->_parent, info->_module, newname );
         break;
     case DR_SYM_TYPEDEF:
-        newsym = new TypeSym( info->_handle, info->_parent,
-                              info->_module, newname );
+        newsym = new TypeSym( info->_drhandle, info->_parent, info->_module, newname );
         break;
     case DR_SYM_VARIABLE:
-        newsym = new VariableSym( info->_handle, info->_parent,
-                                  info->_module, newname );
+        newsym = new VariableSym( info->_drhandle, info->_parent, info->_module, newname );
         break;
     case DR_SYM_MACRO:
-        newsym = new MacroSym( info->_handle, info->_parent,
-                               info->_module, newname );
+        newsym = new MacroSym( info->_drhandle, info->_parent, info->_module, newname );
         break;
     case DR_SYM_ENUM:
-        newsym = new EnumType( info->_handle, info->_parent,
-                               info->_module, newname );
+        newsym = new EnumType( info->_drhandle, info->_parent, info->_module, newname );
         break;
     default:
         newsym = NULL;
@@ -304,8 +298,8 @@ static Symbol * Symbol::defineSymbol( const Symbol * info )
 void Symbol::filePosition( ulong & line, uint & col )
 //---------------------------------------------------
 {
-    line = DRGetLine( _handle );
-    col = (uint) DRGetColumn( _handle );
+    line = DRGetLine( _drhandle );
+    col = (uint) DRGetColumn( _drhandle );
     if( line == -1 ) line = 0;
     if( col == -1 ) col = 0;
 }
@@ -315,35 +309,35 @@ WVList & Symbol::description( WVList & parts )
 //--------------------------------------------
 {
     _description = &parts;
-    DRDecoratedNameList( this, _handle, _parent, descCallBack );
+    DRDecoratedNameList( this, _drhandle, _parent, descCallBack );
     _description = NULL;
     return parts;
 }
 
 static void Symbol::descCallBack ( void * obj, char * name,
-                                   int u_def, dr_handle entry,
+                                   int u_def, dr_handle drhdl,
                                    dr_sym_type sym_type )
 //------------------------------------------------------------
 {
     Symbol *sptr = (Symbol *) obj;
 
-    sptr->addDesc( name, u_def, entry, sym_type );
+    sptr->addDesc( name, u_def, drhdl, sym_type );
 }
 
 void Symbol::addDesc( char * name, int u_def,
-                      dr_handle entry, dr_sym_type st )
+                      dr_handle drhdl, dr_sym_type st )
 //-----------------------------------------------------
 // mySym is the symbol being described
 {
     Description * desc;
     Symbol *      sym;
 
-    if( entry == _handle ) {    /* our symbol */
+    if( drhdl == _drhandle ) {    /* our symbol */
         desc = new Description( Symbol::defineSymbol( this ) );
         delete [] name;
     } else {
         if( u_def ) {
-            sym = Symbol::defineSymbol(st, entry, 0L, _module, name );
+            sym = Symbol::defineSymbol(st, drhdl, DR_HANDLE_NUL, _module, name );
             desc = new Description( sym );
         } else {
             desc = new Description( name );
@@ -391,5 +385,5 @@ void Symbol::getAnonName()
 bool Symbol::isArtificial() const
 //-------------------------------
 {
-    return (bool) DRIsArtificial( _handle );
+    return DRIsArtificial( _drhandle );
 }

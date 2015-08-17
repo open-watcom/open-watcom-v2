@@ -59,6 +59,6 @@ void VariableSym::loadTypeInfo( WVList & parts )
 
     _description = &parts;
     module->setModule();
-    DRDecoratedNameList( this, getHandle(), NULL, descCallBack );
+    DRDecoratedNameList( this, getHandle(), DR_HANDLE_NUL, descCallBack );
 }
 #endif

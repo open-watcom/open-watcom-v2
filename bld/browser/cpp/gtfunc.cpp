@@ -100,11 +100,11 @@ PaintInfo * TreeFuncPtr::getPaintInfo( void )
 /*---------------------------- TreeFuncNode --------------------------*/
 
 TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
-                            dr_handle hdl, Module * mod, char * nm,
+                            dr_handle drhdl, Module * mod, char * nm,
                             TreeCycleList * flatNode, TreeRefList * flatRef )
                 :TreeCycleNode(prt, flatNode, flatRef )
                 ,_symType(stp)
-                ,_handle(hdl)
+                ,_drhandle(drhdl)
                 ,_module(mod)
                 ,_name(nm)
                 ,_decName(NULL)
@@ -114,13 +114,13 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
     char *      name;
     String      accum;
 
-    container = DRGetContaining( hdl );
-    if( container ) {
+    container = DRGetContaining( drhdl );
+    if( container != DR_HANDLE_NUL ) {
         accum = strrev( _name );
         strrev( _name );
 
-        while( container ) {
-            Symbol contSym( hdl, NULL, mod, DRGetName( container ) );
+        while( container != DR_HANDLE_NUL ) {
+            Symbol contSym( drhdl, NULL, mod, DRGetName( container ) );
             name = WBRStrDup( contSym.name() );
             accum += "::";
             accum += strrev( name );
@@ -129,7 +129,7 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
             container = DRGetContaining( container );
         }
 
-        _decName = WBRStrDup( (const char *) accum );
+        _decName = WBRStrDup( (const char *)accum );
         strrev( _decName );
     }
 }
@@ -184,7 +184,7 @@ Symbol * TreeFuncNode::makeSymbol( void )
 //---------------------------------------
 {
     char * name = WBRStrDup( _name );
-    return Symbol::defineSymbol( _symType, _handle, 0L, _module, name );
+    return Symbol::defineSymbol( _symType, _drhandle, DR_HANDLE_NUL, _module, name );
 }
 
 char * TreeFuncNode::name()

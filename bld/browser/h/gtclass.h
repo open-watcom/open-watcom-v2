@@ -83,7 +83,7 @@ public:
 
     virtual PaintInfo *     getPaintInfo( void );
     virtual int             getLevel( void ) const;
-    virtual dr_handle       getHandle( void ) const { return ClassLattice::_handle; }
+    virtual dr_handle       getHandle( void ) const { return ClassLattice::_drhandle; }
     virtual TreePtr*        getPtr( TreeList_T list, int index );
     virtual TreeNode*       getNode( TreeList_T list, int index );
     virtual int             getCount( TreeList_T list );
@@ -99,10 +99,10 @@ public:
 
             void            setAllDeriveds( void );
 protected:
-            TreeClassNode( TreeWindow* prt, dr_handle hdl, Module *, char *,
+            TreeClassNode( TreeWindow* prt, dr_handle drhdl, Module *, char *,
                            ClassList *, dr_access, dr_virtuality, int );
 
-    virtual  ClassLattice *  newLattice( dr_handle hdl, Module *mod, char *nm,
+    virtual  ClassLattice *  newLattice( dr_handle drhdl, Module *mod, char *nm,
                                          ClassList *l, dr_access acc,
                                          dr_virtuality v, int lvl );
 

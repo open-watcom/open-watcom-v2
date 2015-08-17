@@ -96,7 +96,7 @@ public:
             Symbol *       makeSymbol( void );
     virtual char *         name( void ) const;
             char *         derivation( ClassLattice * );
-            dr_handle      getHandle( void ) const { return _handle; }
+            dr_handle      getHandle( void ) const { return _drhandle; }
             dr_access      getAccess( void ) const { return _effAccess; }
             void           loadBases( void );
             void           enumerateBases( BaseCB, void * );
@@ -127,7 +127,7 @@ protected:
             ClassLattice *  joinTo( dr_handle, dr_virtuality, dr_access, int );
 
             ClassList *     _flatClasses;   // a flat list of all nodes
-            dr_handle       _handle;
+            dr_handle       _drhandle;
 
             DeriveList      _bases;         // all my base classes
             DeriveList      _deriveds;      // derived from me

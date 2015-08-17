@@ -66,7 +66,7 @@ public:
 
             bool        matches( Symbol * sym );
             bool        matches( dr_sym_context * ctxt );
-            bool        matches( dr_handle hdl, const char * name );
+            bool        matches( dr_handle drhdl, const char * name );
 
             void        setSymType( int type );
             void        setName( const char * );

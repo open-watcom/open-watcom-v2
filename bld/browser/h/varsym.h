@@ -41,9 +41,9 @@ class Module;
 class VariableSym : public Symbol
 {
 public:
-                        VariableSym( dr_handle h, dr_handle p,
+                        VariableSym( dr_handle drhdl, dr_handle drhdl_prt,
                                      Module * m, char * name )
-                                : Symbol( h, p, m, name ) {}
+                                : Symbol( drhdl, drhdl_prt, m, name ) {}
     virtual             ~VariableSym() {}
 
     virtual dr_sym_type symtype() const { return DR_SYM_VARIABLE; }

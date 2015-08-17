@@ -41,7 +41,7 @@ class Module;
 class EnumType : public Symbol
 {
 public:
-                            EnumType( dr_handle h, dr_handle p,
+                            EnumType( dr_handle drhdl, dr_handle drhdl_prt,
                                         Module * m, char * name );
     virtual                 ~EnumType() {}
 

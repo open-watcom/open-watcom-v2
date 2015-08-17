@@ -61,9 +61,9 @@ void ClassType::operator delete( void * mem )
     _pool.free( mem );
 }
 
-static bool CheckAccess( dr_handle handle, dr_access inherit )
+static bool CheckAccess( dr_handle drhdl, dr_access inherit )
 //------------------------------------------------------------
-// returns TRUE if the given handle is acceptable given the filters
+// returns TRUE if the given drhdl is acceptable given the filters
 {
     int          access;
     MemberFilter filt = WBRWinBase::optManager()->getMemberFilter();
@@ -72,7 +72,7 @@ static bool CheckAccess( dr_handle handle, dr_access inherit )
     if( filt._accessLevel == MemberFilter::AccAll ) {
         ret = TRUE;     // acess is ok
     } else {
-        access = DRGetAccess( handle ) + inherit;
+        access = DRGetAccess( drhdl ) + inherit;
 
         switch( access ) {
         case DR_ACCESS_PRIVATE:
@@ -92,8 +92,8 @@ static bool CheckAccess( dr_handle handle, dr_access inherit )
     return( ret );
 }
 
-static bool ClassType::memberHook( dr_sym_type symtype, dr_handle handle,
-                                  char * name, dr_handle prt, void * info )
+static bool ClassType::memberHook( dr_sym_type symtype, dr_handle drhdl,
+                                  char * name, dr_handle drhdl_prt, void * info )
 //-------------------------------------------------------------------------
 {
     MemberSearchData *  data = (MemberSearchData *) info;
@@ -103,20 +103,20 @@ static bool ClassType::memberHook( dr_sym_type symtype, dr_handle handle,
 
     quit = FALSE;
 
-    quit = !CheckAccess( handle, data->access );
+    quit = !CheckAccess( drhdl, data->access );
 
     if( symtype == DR_SYM_FUNCTION ) {
         if( !quit && !(filt._members & MemberFilter::MemFuncStatic) ) {
-            quit = ( DRIsStatic( handle ) != 0 );
+            quit = DRIsStatic( drhdl );
         }
     } else {
         if( !quit && !(filt._members & MemberFilter::MemVarStatic) ) {
-            quit = ( DRIsMemberStatic( handle ) != 0 );
+            quit = DRIsMemberStatic( drhdl );
         }
     }
 
     if( !quit && !(filt._members & MemberFilter::MemVirtual) ) {
-        quit = ( DRGetVirtuality( handle ) == DR_VIRTUALITY_VIRTUAL );
+        quit = ( DRGetVirtuality( drhdl ) == DR_VIRTUALITY_VIRTUAL );
     }
 
     if( !quit && !(filt._members & MemberFilter::MemVariables ) ) {
@@ -130,8 +130,7 @@ static bool ClassType::memberHook( dr_sym_type symtype, dr_handle handle,
     if( quit ) {
         WBRFree( name );
     } else {
-        sym = defineSymbol( symtype, handle, prt,
-                            data->me->getModule(), name );
+        sym = defineSymbol( symtype, drhdl, drhdl_prt, data->me->getModule(), name );
         data->list->add( sym );
     }
     return TRUE;
@@ -164,7 +163,7 @@ void ClassType::getMembers( WVList & list, dr_search srch )
 
     data.me = this;
     data.list = &list;
-    data.access = (dr_access) 0;
+    data.access = (dr_access)0;
 
     if( srch == DR_SEARCH_FRIENDS ) {
         DRFriendsSearch( latt->getHandle(), &data, memberHook );

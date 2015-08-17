@@ -243,7 +243,7 @@ struct RefSymData {
     WVList *    list;
 };
 
-static bool refSymHook( dr_handle handle, dr_ref_info *, char * name,
+static bool refSymHook( dr_handle drhdl, dr_ref_info *, char * name,
                         void * info )
 //-------------------------------------------------------------------
 {
@@ -253,14 +253,14 @@ static bool refSymHook( dr_handle handle, dr_ref_info *, char * name,
     int         i;
 
     for( i = 0; i < data->list->count(); i += 1 ) {
-        if( ((Symbol *)(*data->list)[ i ])->getHandle() == handle ) {
+        if( ((Symbol *)(*data->list)[ i ])->getHandle() == drhdl ) {
             WBRFree( name );
             return TRUE;        // <---- early return
         }
     }
 
-    stype = DRGetSymType( handle );
-    sym = Symbol::defineSymbol( stype, handle, 0, data->me, name );
+    stype = DRGetSymType( drhdl );
+    sym = Symbol::defineSymbol( stype, drhdl, DR_HANDLE_NUL, data->me, name );
     data->list->add( sym );
 
     return TRUE;    // continue
