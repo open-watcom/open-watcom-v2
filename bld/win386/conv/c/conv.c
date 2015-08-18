@@ -1717,16 +1717,16 @@ void AddCommentTrailer( char *tmp )
     size_t      i, j;
     char        tmp2[81];
 
+    tmp2[0] = '\0';
     i = strlen( tmp );
     if( i < 75 )  {
         for( j = i; j <= 75; j++ ) {
             tmp2[j - i] = ' ';
         }
-        tmp2[j - i] = 0;
+        tmp2[j - i] = '\0';
     }
     strcat( tmp, tmp2 );
-    strcat( tmp, "***\n" );
-    fprintf( stubs,tmp );
+    fprintf( stubs,"%s***\n", tmp );
 
 } /* AddCommentTrailer */
 
