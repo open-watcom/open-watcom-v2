@@ -163,10 +163,12 @@ trap_retval ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
+    unsigned long       pos;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = DosSetFilePtr( acc->handle, acc->pos, acc->mode, &ret->pos );
+    ret->err = DosSetFilePtr( acc->handle, acc->pos, acc->mode, &pos );
+    ret->pos = pos;
     return( sizeof( *ret ) );
 }
 
