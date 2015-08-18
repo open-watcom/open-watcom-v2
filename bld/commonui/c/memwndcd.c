@@ -97,12 +97,12 @@ int_16 MemWndGetNextByte( void )
 /*
  * MemWndGetDataLong
  */
-long MemWndGetDataLong( void )
+int_32 MemWndGetDataLong( void )
 {
-    long        buf;
+    int_32      buf;
 
-    ReadMem( Sel, _Offset, (char *)&buf, sizeof( long ) );
-    _Offset += sizeof( long );
+    ReadMem( Sel, _Offset, (char *)&buf, sizeof( buf ) );
+    _Offset += sizeof( buf );
     return( buf );
 
 } /* MemWndGetDataLong */
@@ -129,7 +129,7 @@ DWORD MemWndGetOffset( void )
  * MemWndToStr - return a string of length 'length' containing 'value'
  *               in hex notation
  */
-char *MemWndToStr( unsigned long value, uint_16 len, DWORD addr )
+char *MemWndToStr( uint_32 value, uint_16 len, DWORD addr )
 {
     int         i;
 
@@ -146,7 +146,7 @@ char *MemWndToStr( unsigned long value, uint_16 len, DWORD addr )
 /*
  * MemWndJmpLabel - return a string containing addr in segment:offset form
  */
-char *MemWndJmpLabel( unsigned long addr, DWORD off )
+char *MemWndJmpLabel( uint_32 addr, DWORD off )
 {
     unsigned    len;
 
@@ -160,7 +160,7 @@ char *MemWndJmpLabel( unsigned long addr, DWORD off )
 /*
  * MemWndToBrStr - return a string representing 'value' in hex form enclosed in []
  */
-char *MemWndToBrStr( unsigned long value, DWORD addr )
+char *MemWndToBrStr( uint_32 value, DWORD addr )
 {
     unsigned    len;
 
@@ -174,14 +174,14 @@ char *MemWndToBrStr( unsigned long value, DWORD addr )
 /*
  * MemWndToIndex - convert value to a hex string with a + or - at the beginning
  */
-char *MemWndToIndex( unsigned long value, unsigned long addr )
+char *MemWndToIndex( uint_32 value, uint_32 addr )
 {
     char        sign[2];
 
     addr = addr;
-    if( (long)value < 0 ) {
+    if( (int_32)value < 0 ) {
         sign[0] = '-';
-        value = -(long)value;
+        value = -(int_32)value;
     } else {
         sign[0] = '+';
     }
