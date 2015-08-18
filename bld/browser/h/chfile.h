@@ -34,6 +34,7 @@
 
 #include <string.hpp>
 #include <sys/types.h>
+#include <time.h>
 #include <wstd.h>
 #include "wio.h"
 

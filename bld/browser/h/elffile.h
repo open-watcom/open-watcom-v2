@@ -39,6 +39,7 @@
 // disable "integral value may be truncated" warning
 #pragma warning 389 9
 
+#include <time.h>
 #include <wstd.h>
 
 #ifndef _WATCOM_H_INCLUDED_     // otherwise <exeelf.h> will try to haul it in
@@ -56,7 +57,7 @@ class CheckedBufferedFile;
 #pragma pack(push, 1);
 
 struct ComponentFile {
-    uint_32         time;           /* time last modified */
+    time_t          time;           /* time last modified */
     bool            enabled;        /* true if enabled */
     uint_16         nameLen;        /* length of file name, including '\0' */
     char            name[1];        /* file name (entire path) */

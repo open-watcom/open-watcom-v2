@@ -33,6 +33,7 @@
 #ifndef __CHFILE_H__
 
 #include <sys/types.h>
+#include <time.h>
 #include "wstd.h"
 #include "wio.h"
 #include <string>

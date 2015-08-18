@@ -90,11 +90,11 @@ MergeRefSection::MergeRefSection( MergeLineSection& line,
 void MergeRefSection::mergeRefs( WCPtrOrderedVector<MergeFile>& files )
 //---------------------------------------------------------------------
 {
-    uint_8      i;
-    uint_32 *   drSizes;
-    uint_32     totLen = 0;
-    uint_32     offset;
-    RefLineCol  lnCol;
+    uint_8          i;
+    unsigned long   *drSizes;
+    uint_32         totLen = 0;
+    uint_32         offset;
+    RefLineCol      lnCol;
 
     _outFile->startWriteSect( DR_DEBUG_REF );
 

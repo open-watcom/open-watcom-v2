@@ -155,8 +155,8 @@ bool ElfFile::initSections()
         throw DEATH_BY_BAD_SIGNATURE;
     }
 
-    memset( _drSections, 0, DR_DEBUG_NUM_SECTS * sizeof(unsigned_32) );
-    memset( _drSizes, 0, DR_DEBUG_NUM_SECTS * sizeof(unsigned_32) );
+    memset( _drSections, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
+    memset( _drSizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
 
     _file->seek( _elfHdr.e_shoff + _elfHdr.e_shstrndx * _elfHdr.e_shentsize, SEEK_SET );
     _file->read( &sectHdr, _elfHdr.e_shentsize );

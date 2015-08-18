@@ -52,7 +52,7 @@ struct MergeComponent {
                             return *this;
                         }
 
-    uint_32         _time;
+    time_t          _time;
     bool            _enabled;
 };
 
