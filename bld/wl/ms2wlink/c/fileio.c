@@ -33,8 +33,9 @@
 #include <stdio.h>      /* for SEEK_SET/SEEK_END */
 #include <string.h>
 #include "wio.h"
-#include "clibext.h"
 #include "ms2wlink.h"
+
+#include "clibext.h"
 
 static bool     DeleteMsg = FALSE;
 

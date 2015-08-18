@@ -50,6 +50,7 @@
 #include "wreslang.h"
 #include "rcrtns.h"
 #include "wresset2.h"
+
 #include "clibext.h"
 
 #define NO_RES_MESSAGE "could not open message resource file"

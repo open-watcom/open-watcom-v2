@@ -48,12 +48,12 @@
 #include "ring.h"
 #include "objio.h"
 #include "mapio.h"
-
 #include "dwarf.h"
 #include "virtmem.h"
 #include "exeelf.h"
 #include "dbgcomm.h"
 #include "dbgdwarf.h"
+
 #include "clibext.h"
 
 typedef struct {

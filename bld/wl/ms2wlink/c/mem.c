@@ -35,6 +35,7 @@
 #ifdef TRMEM
 
 #include "wio.h"
+
 #include "clibext.h"
 #include "trmem.h"
 
