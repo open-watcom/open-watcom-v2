@@ -34,8 +34,8 @@
 #define RCCORE_INCLUDED
 
 #include "pass2.h"
-#include "param.h"
 #include "rcio.h"
+#include "param.h"
 #include "rcvars.h"
 
 #endif

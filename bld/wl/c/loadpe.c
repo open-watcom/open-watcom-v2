@@ -62,7 +62,7 @@
 #include "toc.h"
 #include "objstrip.h"
 #include "rcrtns.h"
-#include "pass2.h"
+#include "pass2l1.h"
 #include "sharedio.h"
 #include "exeutil.h"
 

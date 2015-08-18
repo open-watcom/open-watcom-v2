@@ -32,70 +32,7 @@
 #ifndef EXEFMT_INCLUDED
 #define EXEFMT_INCLUDED
 
-#include "wres.h"
-#include "exeos2.h"
-#include "exepe.h"
-#include "exeflat.h"
-#include "exerespe.h"
-#include "exereslx.h"
-#include "exeseg.h"
-#include "exeres.h"
-
-#define PEHDR(h)    (*(h)->WinHead)
-
-typedef enum {
-    EXE_TYPE_UNKNOWN,
-    EXE_TYPE_PE,        // PE format, Win32
-    EXE_TYPE_NE_WIN,    // NE format, Win16
-    EXE_TYPE_NE_OS2,    // NE format, 16-bit OS/2
-    EXE_TYPE_LX         // LX format, 32-bit OS/2
-} ExeType;
-
-typedef struct ResFileInfo {
-    struct ResFileInfo  *next;
-    char                *name;
-    bool                IsOpen;
-    WResFileID          Handle;
-    WResDir             Dir;
-} ResFileInfo;
-
-typedef struct NEExeInfo {
-    os2_exe_header  WinHead;
-    SegTable        Seg;
-    ResTable        Res;
-    OS2ResTable     OS2Res;
-} NEExeInfo;
-
-typedef struct PEExeInfo {
-    exe_pe_header   *WinHead;
-    pe_object       *Objects;   /* array of objects. wlink no initialize */
-    PEResDir        Res;        /* non-initialized */
-    exe_pe_header   WinHeadData; // never access this value directly.  Use
-                                 // WinHead to get at it instead
-} PEExeInfo;
-
-typedef struct LXExeInfo {
-    os2_flat_header OS2Head;
-    object_record   *Objects;
-    lx_map_entry    *Pages;
-    LXResTable      Res;
-    uint_32         FirstResObj;
-    uint_32         FirstResPage;
-} LXExeInfo;
-
-typedef struct ExeFileInfo {
-    bool            IsOpen;
-    WResFileID      Handle;
-    char            *name;
-    uint_32         WinHeadOffset;      /* wlink doesn't initialize this */
-    ExeType         Type;
-    union {
-        NEExeInfo   NEInfo;
-        PEExeInfo   PEInfo;
-        LXExeInfo   LXInfo;
-    } u;
-    uint_32         DebugOffset;        /* wlink doesn't initialize this */
-} ExeFileInfo;
+#include "pass2l1.h"
 
 typedef struct RcPass2Info {
     char            TmpFileName[_MAX_PATH];
