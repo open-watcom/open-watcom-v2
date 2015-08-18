@@ -63,7 +63,6 @@
 #include "objstrip.h"
 #include "rcrtns.h"
 #include "pass2.h"
-#include "param.h"
 #include "sharedio.h"
 #include "exeutil.h"
 

@@ -42,11 +42,6 @@
 #define DB_SIMPLIFIED_CHINESE   4
 #define MB_UTF8                 5
 
-typedef struct ExtraRes {
-    struct ExtraRes     *next;
-    char                 name[_MAX_PATH];
-}ExtraRes;
-
 typedef struct FRStrings {
     struct FRStrings    *next;
     char                *findString; /* points to the string to find */

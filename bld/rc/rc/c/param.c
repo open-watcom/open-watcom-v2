@@ -275,7 +275,7 @@ static bool ScanOptionsArg( const char * arg )
             arg++;
             if( *arg == '=' )
                 arg++;
-            resfile = RcMemMalloc( sizeof( ExtraRes ) );
+            resfile = RcMemMalloc( sizeof( ExtraRes ) + _MAX_PATH );
             if( scanString( resfile->name, arg, _MAX_PATH  ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
                 RcMemFree( resfile );
