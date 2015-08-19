@@ -388,6 +388,7 @@ static bool OpenResFileInfo( ExeType type )
 {
     bool            error;
     ExtraRes        *curfile;
+    size_t          len;
 
 
     if( ( type == EXE_TYPE_NE_WIN || type == EXE_TYPE_NE_OS2 )
@@ -405,7 +406,12 @@ static bool OpenResFileInfo( ExeType type )
         return( true );
     }
 
-    curfile = RCALLOC( sizeof( ExtraRes ) );
+    if( CmdLineParms.Pass2Only ) {
+        len = strlen( CmdLineParms.InFileName );
+    } else {
+        len = strlen( CmdLineParms.OutResFileName );
+    }
+    curfile = RCALLOC( sizeof( ExtraRes ) + len );
     curfile->next = CmdLineParms.ExtraResFiles;
     CmdLineParms.ExtraResFiles = curfile;
 
