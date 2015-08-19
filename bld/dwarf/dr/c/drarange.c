@@ -52,8 +52,8 @@ typedef struct sec_file {
 }sec_file;
 
 
-static uint_32 SectInt( sec_file *file, int size )
-/************************************************/
+static uint_32 SectInt( sec_file *file, unsigned size )
+/*****************************************************/
 {
     uint_32 ret;
 
