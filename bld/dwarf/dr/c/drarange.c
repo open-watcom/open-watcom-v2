@@ -29,9 +29,10 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "drpriv.h"
 #include "drgettab.h"
-#include <string.h>
+#include "drutils.h"
 
 #include "pushpck1.h"
 typedef struct arange_header {
@@ -51,30 +52,12 @@ typedef struct sec_file {
 }sec_file;
 
 
-static uint_32 ReadInt( dr_handle offset, int size )
-/**************************************************/
-{
-    uint_32 ret;
-
-    if( size == sizeof( uint_16 ) ) {
-        ret = DWRVMReadWord( offset );
-    } else if( size == sizeof( uint_32 ) ) {
-        ret = DWRVMReadDWord( offset );
-    } else if( size == sizeof( uint_8 ) ) {
-        ret = DWRVMReadByte( offset );
-    } else {
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
-        ret = 0;
-    }
-    return( ret );
-}
-
 static uint_32 SectInt( sec_file *file, int size )
 /************************************************/
 {
     uint_32 ret;
 
-    ret = ReadInt( file->pos, size );
+    ret = DWRReadInt( file->pos, size );
     file->pos += size;
     return( ret );
 }
@@ -133,9 +116,9 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
         aligned_addr = (addr + tuple_size - 1) & ~(tuple_size - 1);
         if( aligned_addr != addr ) {
             /* try reading the padding; if it's nonzero, assume it's not there */
-            if( ReadInt( file->pos, header.addr_size ) != 0 )
+            if( DWRReadInt( file->pos, header.addr_size ) != 0 )
                 zero_padding = FALSE;
-            if( header.seg_size && ReadInt( file->pos + header.addr_size, header.seg_size ) != 0 )
+            if( header.seg_size && DWRReadInt( file->pos + header.addr_size, header.seg_size ) != 0 )
                 zero_padding = FALSE;
             if( !old_ver && zero_padding ) {
                 file->pos = (dr_handle)aligned_addr;

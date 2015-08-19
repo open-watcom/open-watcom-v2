@@ -40,27 +40,6 @@ static dw_locop_op const LocOpr[] = {
 #undef DW_LOC_OP
 };
 
-static unsigned_32 ReadVWord( dr_handle where, int size )
-//Read an int
-{
-    unsigned_32 ret;
-
-    switch( size ) {
-    case 1:
-        ret = DWRVMReadByte( where );
-        break;
-    case 2:
-        ret = DWRVMReadWord( where );
-        break;
-    case 4:
-        ret = DWRVMReadDWord( where );
-        break;
-    default:
-        ret = 0;
-        break;
-    }
-    return( ret );
-}
 static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
 /*****************************************************************/
 {
@@ -459,9 +438,9 @@ static dr_handle SearchLocList( uint_32 start, uint_32 context, uint addr_size )
     }
     p += start;
     for( ;; ) {
-        low = ReadVWord( p, addr_size );
+        low = DWRReadInt( p, addr_size );
         p += addr_size;
-        high = ReadVWord( p, addr_size );
+        high = DWRReadInt( p, addr_size );
         p += addr_size;
         if( low == high && low == 0 ) {
             p = DR_HANDLE_NUL;

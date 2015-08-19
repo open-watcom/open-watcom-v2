@@ -495,7 +495,6 @@ unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
 // address size dependent on CCU info
 {
     unsigned     addr_size;
-    unsigned_32  retval;
     dw_formnum   form;
 
     form = DWRVMReadULEB128( &abbrev );
@@ -507,21 +506,7 @@ unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
     } else {
         addr_size = DWRCurrNode->addr_size;
     }
-    switch( addr_size ) {
-    case 1:
-        retval = DWRVMReadByte( info );
-        break;
-    case 2:
-        retval = DWRVMReadWord( info );
-        break;
-    case 4:
-        retval = DWRVMReadDWord( info );
-        break;
-    default:
-        retval = 0;
-        break;
-    }
-    return( retval );
+    return( DWRReadInt( info, addr_size ) );
 }
 
 char * DWRReadString( dr_handle abbrev, dr_handle info )
@@ -541,6 +526,30 @@ char * DWRReadString( dr_handle abbrev, dr_handle info )
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     return( NULL );
+}
+
+unsigned_32 DWRReadInt( dr_handle where, unsigned size )
+/******************************************************/
+//Read an int
+{
+    unsigned_32 ret;
+
+    switch( size ) {
+    case 1:
+        ret = DWRVMReadByte( where );
+        break;
+    case 2:
+        ret = DWRVMReadWord( where );
+        break;
+    case 4:
+        ret = DWRVMReadDWord( where );
+        break;
+    default:
+        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        ret = 0;
+        break;
+    }
+    return( ret );
 }
 
 int DWRReadFlag( dr_handle abbrev, dr_handle info )

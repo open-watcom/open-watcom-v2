@@ -33,31 +33,9 @@
 #include "drutils.h"
 #include <string.h>
 #include "walloca.h"
+
 #include "clibext.h"
 
-
-static unsigned_32 ReadVWord( dr_handle where, int size )
-/*******************************************************/
-//Read an int
-{
-    unsigned_32 ret;
-
-    switch( size ) {
-    case 1:
-        ret = DWRVMReadByte( where );
-        break;
-    case 2:
-        ret = DWRVMReadWord( where );
-        break;
-    case 4:
-        ret = DWRVMReadDWord( where );
-        break;
-    default:
-        ret = 0;
-        break;
-    }
-    return( ret );
-}
 
 static void InitState( dr_line_data *state, uint_16 seg, bool is_stmt )
 /*********************************************************************/
@@ -155,14 +133,14 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
             case DW_LNE_set_address:
                 curr++;
                 --length;
-                info->state.offset = ReadVWord( curr, length );
+                info->state.offset = DWRReadInt( curr, length );
                 info->state.addr_set = TRUE;
                 curr += length;
                 break;
             case DW_LNE_set_segment:
                 curr++;
                 --length;
-                info->state.seg = (uint_16)ReadVWord( curr, length );
+                info->state.seg = (uint_16)DWRReadInt( curr, length );
                 curr += length;
                 break;
             case DW_LNE_define_file:
