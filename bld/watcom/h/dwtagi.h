@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-DWTAGI( padding                    ,0x00 )
+DWTAGI( WATCOM_padding             ,0x00 )
 DWTAGI( array_type                 ,0x01 )
 DWTAGI( class_type                 ,0x02 )
 DWTAGI( entry_point                ,0x03 )

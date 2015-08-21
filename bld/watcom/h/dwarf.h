@@ -198,13 +198,21 @@ typedef enum {
     DW_LNE_end_sequence = 1,
     DW_LNE_set_address,
     DW_LNE_define_file,
-#if 1
+    DW_LNE_set_discriminator,   /* Dwarf V4 */
+    DW_LNE_lo_user      = 0x80, /* Dwarf V3 */
+    DW_LNE_hi_user      = 0xff, /* Dwarf V3 */
+
+    /* WATCOM extension */
     /*
     //  Carl Young - 2004-07-05
     //  Despite recognizing the need for this extended opcode, I disagree with its use. Dwarf 3
     //  may yet add more extended instructions which will screw us over using enumeration value 4!
     */
-    DW_LNE_set_segment
+#if 0
+    DW_LNE_set_segment_V2   = DW_LNE_set_discriminator, /* for backward compatibility */
+    DW_LNE_set_segment      = DW_LNE_lo_user + 0,       /* new definition compatible with Dwarf 3 and higher */
+#else
+    DW_LNE_set_segment      = DW_LNE_set_discriminator,
 #endif
 }dw_lne;
 

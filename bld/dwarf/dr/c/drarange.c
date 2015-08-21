@@ -79,8 +79,8 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
     arange_header       header;
     dr_handle           base;
     uint_32             tuple_size;
-    uint_32             aligned_addr;
-    uint_32             addr;
+    pointer_int         aligned_addr;
+    pointer_int         addr;
     bool                old_ver;
     bool                zero_padding = TRUE;
 

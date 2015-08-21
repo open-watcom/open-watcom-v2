@@ -651,7 +651,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
 
             FillLoc( &type_loc, type_die );
 
-            DecorateType( decname, &type_loc, DW_TAG_padding );
+            DecorateType( decname, &type_loc, DW_TAG_WATCOM_padding );
         }
     }
 
@@ -828,7 +828,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
         type_entry =  SkipPCH( type_entry );
         if( type_entry != DR_HANDLE_NUL ) {
             FillLoc( &type_loc, type_entry );
-            DecorateType( decname, &type_loc, DW_TAG_padding );
+            DecorateType( decname, &type_loc, DW_TAG_WATCOM_padding );
         }
     }
 
@@ -1346,7 +1346,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
     type_entry = DWRReadReference( abbrev, entry );
     type_entry =  SkipPCH( type_entry );
     FillLoc( &type_loc, type_entry );
-    DecorateType( decname, &type_loc, DW_TAG_padding );
+    DecorateType( decname, &type_loc, DW_TAG_WATCOM_padding );
 
     abbrev = loc->abbrev_cr;
     entry = loc->entry_cr;

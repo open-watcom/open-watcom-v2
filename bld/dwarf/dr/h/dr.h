@@ -98,7 +98,7 @@ typedef enum {
 #if defined( USE_VIRTMEM )
 typedef unsigned long   dr_handle;
 #else
-typedef char            *dr_handle;
+typedef const char      *dr_handle;
 #endif
 
 struct WDRRoutines {                                        /* defaults */
