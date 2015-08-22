@@ -83,7 +83,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
                 break;
             pos += sizeof( uint_32 );
             pubname.dbg_handle = pubname.dbg_cu + dbg_handle;
-            curr_len = DWRGetStrBuff( pos, str, str_len );
+            curr_len = DWRVMGetStrBuff( pos, str, str_len );
             pubname.len = curr_len - 1;
             if( curr_len > str_len ) {
                 if( str != str_buff ) {
@@ -91,7 +91,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
                 }
                 str = DWRALLOC( curr_len );
                 str_len = curr_len;
-                curr_len = DWRGetStrBuff( pos, str, curr_len );
+                curr_len = DWRVMGetStrBuff( pos, str, curr_len );
             }
             pos += curr_len;
             pubname.name = str;

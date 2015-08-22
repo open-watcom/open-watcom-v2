@@ -145,7 +145,7 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
         form = DWRVMReadULEB128( &abbrev );
         switch( form ) {
         case DW_FORM_string:
-            length = DWRGetStrBuff( entry, buff, length );
+            length = DWRVMGetStrBuff( entry, buff, length );
             break;
         case DW_FORM_strp: {
             unsigned_32 offset;
@@ -153,7 +153,7 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
 
             offset = ReadConst( DW_FORM_data4, entry );
             dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-            length = DWRGetStrBuff( dbgsec_str, buff, length );
+            length = DWRVMGetStrBuff( dbgsec_str, buff, length );
             break;
             }
         default:

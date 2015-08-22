@@ -132,7 +132,7 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
     unsigned        shift;
     char            b;
 
-    buf = (const char *)*vmptr;
+    buf = *vmptr;
     result = 0;
     shift = 0;
     do {
@@ -148,23 +148,23 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
     return( result );
 }
 
-extern void DWRGetString( char *buf, dr_handle *hdlp )
-/****************************************************/
+extern void DWRVMGetString( char *buf, dr_handle *hdlp )
+/******************************************************/
 {
     uint len;
 
-    len = DWRStrLen( *hdlp ) + 1;
-    memcpy( buf, (const char *)(*hdlp), len );
-    *hdlp = (dr_handle)( (const char *)*hdlp + len );
+    len = DWRVMStrLen( *hdlp ) + 1;
+    memcpy( buf, *hdlp, len );
+    *hdlp += len;
 }
 
-extern unsigned DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max )
-/***********************************************************************/
+extern unsigned DWRVMGetStrBuff( dr_handle drstr, char *buf, unsigned max )
+/*************************************************************************/
 {
     unsigned    len;
     const char  *curr;
 
-    curr = (const char *)drstr;
+    curr = drstr;
     len = 0;
     for( ;; ) {
         if( len < max ) {

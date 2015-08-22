@@ -498,8 +498,8 @@ extern unsigned_32 DWRVMReadDWord( dr_handle hdl )
     return( result );
 }
 
-extern size_t DWRStrLen( dr_handle hdl )
-/**************************************/
+extern size_t DWRVMStrLen( dr_handle hdl )
+/****************************************/
 {
     unsigned    off;
     unsigned    start_off;
@@ -527,8 +527,8 @@ end:
     return( length - 1 );   // remove '\0' terminator's contrib
 }
 
-extern void DWRGetString( char *buf, dr_handle *hdlp )
-/****************************************************/
+extern void DWRVMGetString( char *buf, dr_handle *hdlp )
+/******************************************************/
 {
     unsigned    off;
     page_entry  *node;
@@ -551,8 +551,8 @@ end:
     *hdlp = vm.l;
 }
 
-extern unsigned DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max )
-/***********************************************************************/
+extern unsigned DWRVMGetStrBuff( dr_handle drstr, char *buf, unsigned max )
+/*************************************************************************/
 {
     unsigned    off;
     page_entry  *node;

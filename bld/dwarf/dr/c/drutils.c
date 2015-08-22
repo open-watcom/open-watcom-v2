@@ -354,7 +354,7 @@ void DWRSkipForm( dr_handle *addr, dw_formnum form )
         DWRVMSkipLEB128( addr );
         break;
     case DW_FORM_string:
-        *addr += DWRStrLen( *addr ) + 1;
+        *addr += DWRVMStrLen( *addr ) + 1;
         break;
     case DW_FORM_strp:
         *addr += 4;
@@ -611,9 +611,9 @@ char * DWRCopyString( dr_handle *info )
     size_t      count;
     char        *str;
 
-    count = DWRStrLen( *info );
+    count = DWRVMStrLen( *info );
     str = DWRALLOC( count + 1 );
-    DWRGetString( str, info );
+    DWRVMGetString( str, info );
     return( str );
 }
 
@@ -626,9 +626,9 @@ char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
 
     info = info;
     dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-    count = DWRStrLen( dbgsec_str );
+    count = DWRVMStrLen( dbgsec_str );
     str = DWRALLOC( count + 1 );
-    DWRGetString( str, &dbgsec_str );
+    DWRVMGetString( str, &dbgsec_str );
     return( str );
 }
 
