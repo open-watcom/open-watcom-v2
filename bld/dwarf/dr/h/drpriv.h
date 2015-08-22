@@ -91,7 +91,7 @@ struct dr_dbg_info {
     sect_info           sections[DR_DEBUG_NUM_SECTS];
     compunit_info       compunit;
     compunit_info       *last_ccu;
-    df_var              wat_producer_ver;
+    df_ver              wat_producer_ver;
     unsigned_8          addr_size;
     bool                byte_swap;
 };
