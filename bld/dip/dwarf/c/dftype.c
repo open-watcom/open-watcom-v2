@@ -69,7 +69,7 @@ static dr_handle GetArrayDim( dr_handle index, int skip  ){
     if( !DRWalkArraySibs( index, ArrayWlkNext, &df ) ){
         index = df.curr;
     }else{
-        index = 0;
+        index = DR_HANDLE_NUL;
     }
     return( index );
 }
@@ -261,10 +261,10 @@ static void InitTypeHandle( imp_image_handle *ii,
                 }else if( IM2MODI( ii, it->im )->lang == DR_LANG_FORTRAN ){
                     it->array.column_major = 1;
                 }
-                if( info.child == 0 ) { // set info now
+                if( info.child == DR_HANDLE_NUL ) { // set info now
                     it->array.dims = 1;
                     it->array.low = 0;
-                    it->array.index = 0;
+                    it->array.index = DR_HANDLE_NUL;
                     if( stat & DR_ARRAY_COUNT ){
                         if( info.count == 0 ){ // ie  char (*x)[]
                             info.count = 1;
@@ -514,13 +514,13 @@ dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
             base->array.is_set = FALSE;
         }
         base->array.is_based = TRUE;
-        if( base->array.index ) {
+        if( base->array.index != DR_HANDLE_NUL ) {
             return( DS_OK );
         }
     }
     btype =  DRSkipTypeChain( base->type ); /* skip modifiers and typedefs */
     base->type = DRGetTypeAT( btype );      /* get base type */
-    if( base->type == 0 ) {
+    if( base->type == DR_HANDLE_NUL ) {
         base->type = DR_HANDLE_VOID;        /* no type means 'void' */
     }
     base->state = DF_NOT;
@@ -583,8 +583,8 @@ static bool GetSymVal( imp_image_handle *ii,
     location_list   src;
     location_list   dst;
 
-    dr_type =  DRGetTypeAT( dr_sym );
-    if( dr_type == 0 ) {
+    dr_type = DRGetTypeAT( dr_sym );
+    if( dr_type == DR_HANDLE_NUL ) {
         return( FALSE );
     }
     DRGetTypeInfo( dr_type, typeinfo );
@@ -694,9 +694,9 @@ dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     ai->stride = array->array.base_stride;
     if( index != NULL ){
         index->im = array->im;
-        if( array->array.index == 0 ) { //Fake a type up
+        if( array->array.index == DR_HANDLE_NUL ) { //Fake a type up
             index->state = DF_SET;
-            index->type  = 0;
+            index->type  = DR_HANDLE_NUL;
             index->typeinfo.size = 0;
             index->typeinfo.kind = DR_TYPEK_NONE;
             index->typeinfo.mclass = DR_MOD_NONE;
@@ -769,18 +769,18 @@ dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
                 imp_type_handle *proc, imp_type_handle *parm, unsigned n )
 {
     dr_handle       btype;
-    dr_handle       parm_type = 0;
+    dr_handle       parm_type = DR_HANDLE_NUL;
     dip_status      ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    btype =  DRSkipTypeChain( proc->type ); /* skip modifiers and typedefs */
+    btype = DRSkipTypeChain( proc->type ); /* skip modifiers and typedefs */
     if( n > 0 ){
         btype = GetParmN( ii, btype, n );
     }// if n == 0 just fall through and get type of function
-    if( btype ) {
+    if( btype != DR_HANDLE_NUL ) {
         parm_type = DRGetTypeAT( btype );    /* get type */
     }
-    if( parm_type ) {
+    if( parm_type != DR_HANDLE_NUL ) {
         parm->state = DF_NOT;
         parm->type = parm_type;
         parm->im = proc->im;
@@ -977,7 +977,7 @@ static bool AInherit( dr_handle inh, int index, void *_d )
 
     btype = DRGetTypeAT( inh );
     btype =  DRSkipTypeChain( btype ); /* skip modifiers and typedefs */
-    if(  DRGetVirtuality( inh ) == DR_VIRTUALITY_VIRTUAL  ){
+    if( DRGetVirtuality( inh ) == DR_VIRTUALITY_VIRTUAL  ){
         if( !AddBase( btype, &d->com.vbase ) ){
             return( cont );
         }
@@ -1067,8 +1067,8 @@ static bool AInheritLookup( dr_handle inh, int index, void *_d )
 
     index = index;
     btype = DRGetTypeAT( inh );
-    btype =  DRSkipTypeChain( btype ); /* skip modifiers and typedefs */
-    if(  DRGetVirtuality( inh ) == DR_VIRTUALITY_VIRTUAL ){
+    btype = DRSkipTypeChain( btype ); /* skip modifiers and typedefs */
+    if( DRGetVirtuality( inh ) == DR_VIRTUALITY_VIRTUAL ){
         if( !AddBase( btype, &d->com.vbase ) ){
             return( TRUE );
         }
@@ -1361,10 +1361,11 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     ++num;
     len = 0;
     dr_type = it->type;
-    while( dr_type ) {
+    while( dr_type != DR_HANDLE_NUL ) {
         name =  DRGetName( dr_type );
         if( name != NULL ){
-            if(  --num == 0 )break;
+            if( --num == 0 )
+                break;
             DCFree( name );
         }
         dr_type = DRGetTypeAT( dr_type );

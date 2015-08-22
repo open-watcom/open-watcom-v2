@@ -167,7 +167,7 @@ dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
     }
     ret = DS_OK;
     it->im = is->im;
-    if( it->type ) {
+    if( it->type != DR_HANDLE_NUL ) {
         it->state = DF_NOT;
     } else {
         it->state = DF_SET;         // default the type
@@ -694,7 +694,7 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
         if( dr_type ) {
             DRGetTypeInfo( dr_type, &typeinfo );
             MapImpTypeInfo( &typeinfo, ti );
-            dr_type =  DRSkipTypeChain( dr_type );
+            dr_type = DRSkipTypeChain( dr_type );
             it->type = DRGetTypeAT( dr_type );
             it->state = DF_NOT;
             it->im = is->im;
@@ -1009,11 +1009,11 @@ static dr_handle GetContainingClass( dr_handle curr )
     dr_tag_type     sc;
 
     curr = DRGetContaining( curr );
-    if( curr ) {
+    if( curr != DR_HANDLE_NUL ) {
         curr = DRSkipTypeChain( curr ); /* PCH typedef link */
         sc = DRGetTagType( curr );
         if( sc != DR_TAG_CLASS ) {
-            curr = 0;
+            curr = DR_HANDLE_NUL;
         }
     }
     return( curr );
@@ -1040,7 +1040,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
         break;
     case DR_TAG_FUNCTION:
         curr = GetContainingClass( curr );
-        if( curr ) {
+        if( curr != DR_HANDLE_NUL ) {
             *out = *in;
             out->unique = curr - cu_tag;    /* make relatine */
             ret = SR_EXACT;
@@ -1314,7 +1314,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                     imp_type_handle     it;
 
                     curr = GetContainingClass( curr );
-                    if( curr ) {
+                    if( curr != DR_HANDLE_NUL ) {
                         it.state = DF_NOT;
                         it.type = curr;
                         it.im = im;
