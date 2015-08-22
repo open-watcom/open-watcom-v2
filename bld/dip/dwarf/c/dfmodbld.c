@@ -39,7 +39,7 @@
 extern void  InitModList( mod_list *list ){
 /*********************************/
     list->count = 0;
-    list->version = VER_NONE;
+    list->wat_producer_ver = VER_NONE;
     list->head = NULL;
     list->curr = NULL;
     list->lnk = &list->head;
