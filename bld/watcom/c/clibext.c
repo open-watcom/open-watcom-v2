@@ -1953,34 +1953,34 @@ typedef struct __nt_dta {
 #define OPENMODE_DENY_READ      0x0030
 #define OPENMODE_DENY_NONE      0x0040
 
-static void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr )
+static void __GetNTCreateAttr( unsigned attr, LPDWORD desired_access, LPDWORD nt_attr )
 {
-    if( mode & _A_RDONLY ) {
+    if( attr & _A_RDONLY ) {
         *desired_access = GENERIC_READ;
-        *attr = FILE_ATTRIBUTE_READONLY;
+        *nt_attr = FILE_ATTRIBUTE_READONLY;
     } else {
         *desired_access = GENERIC_READ | GENERIC_WRITE;
-        *attr = FILE_ATTRIBUTE_NORMAL;
+        *nt_attr = FILE_ATTRIBUTE_NORMAL;
     }
-    if( mode & _A_HIDDEN ) {
-        *attr |= FILE_ATTRIBUTE_HIDDEN;
+    if( attr & _A_HIDDEN ) {
+        *nt_attr |= FILE_ATTRIBUTE_HIDDEN;
     }
-    if( mode & _A_SYSTEM ) {
-        *attr |= FILE_ATTRIBUTE_SYSTEM;
+    if( attr & _A_SYSTEM ) {
+        *nt_attr |= FILE_ATTRIBUTE_SYSTEM;
     }
 }
 
-void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr )
+void __GetNTAccessAttr( unsigned rwmode, LPDWORD desired_access, LPDWORD nt_attr )
 {
     if( rwmode == O_RDWR ) {
         *desired_access = GENERIC_READ | GENERIC_WRITE;
-        *attr = FILE_ATTRIBUTE_NORMAL;
+        *nt_attr = FILE_ATTRIBUTE_NORMAL;
     } else if( rwmode == O_WRONLY ) {
         *desired_access = GENERIC_WRITE;
-        *attr = FILE_ATTRIBUTE_NORMAL;
+        *nt_attr = FILE_ATTRIBUTE_NORMAL;
     } else {
         *desired_access = GENERIC_READ;
-        *attr = FILE_ATTRIBUTE_READONLY;
+        *nt_attr = FILE_ATTRIBUTE_READONLY;
     }
 }
 
@@ -2199,14 +2199,14 @@ unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
     return( 0 );
 }
 
-unsigned _dos_creat( const char *name, unsigned mode, HANDLE *h )
+unsigned _dos_creat( const char *name, unsigned attr, HANDLE *h )
 {
     HANDLE      handle;
     DWORD       desired_access;
-    DWORD       attr;
+    DWORD       nt_attr;
 
-    __GetNTCreateAttr( mode, &desired_access, &attr );
-    handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_ALWAYS, attr, NULL );
+    __GetNTCreateAttr( attr, &desired_access, &nt_attr );
+    handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_ALWAYS, nt_attr, NULL );
     if( handle == INVALID_HANDLE_VALUE ) {
         __set_errno( ENOENT );
         return( (unsigned)-1 );
