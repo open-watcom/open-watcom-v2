@@ -38,4 +38,4 @@ extern bool             DRDbgClear( dr_dbg_handle dbg );
 extern void             DRDbgDone( dr_dbg_handle dbg );
 extern void             DRInit( void );
 extern void             DRFini( void );
-extern void             DRDbgOldVersion( dr_dbg_handle dbg, int version );
+extern void             DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver );

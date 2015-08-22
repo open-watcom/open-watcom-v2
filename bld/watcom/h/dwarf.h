@@ -45,7 +45,22 @@ extern "C" {
 
 */
 
-#define DWARF_IMPL_VERSION  2   /* uint_16 */
+#define DWARF_IMPL_VERSION          2
+
+#define DWARF_WATCOM_PRODUCER       DWARF_WATCOM_PRODUCER_V2
+
+#define DWARF_WATCOM_PRODUCER_V3    "V2.0 WATCOM"
+#define DWARF_WATCOM_PRODUCER_V2    "V1.0 WATCOM"
+#define DWARF_WATCOM_PRODUCER_V1    "WATCOM"
+
+/* Watcom producer versions enumeration constant */
+typedef enum {
+    VER_ERROR = -1,
+    VER_NONE,
+    VER_V1,     /* Watcom 10.x */
+    VER_V2,     /* Watcom 11.0 and early Open Watcom */
+    VER_V3,     /* Open Watcom 2.0 and newer */
+} df_ver;
 
 /*
     IMPORTANT:

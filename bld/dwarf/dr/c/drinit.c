@@ -113,7 +113,7 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
     dbg->next = NULL;
     dbg->file = file;
     dbg->addr_size = 0;
-    dbg->wat_version = 0; /* zero means not Watcom DWARF */
+    dbg->wat_producer_ver = VER_NONE;
     dbg->byte_swap = byteswap;
     dbg->last_ccu = &dbg->compunit;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
@@ -157,10 +157,10 @@ extern void DRDbgDone( dr_dbg_handle dbg )
     }
 }
 
-extern void DRDbgOldVersion( dr_dbg_handle dbg, int version )
-/***********************************************************/
+extern void DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
+/***************************************************************************/
 {
-    dbg->wat_version = version;
+    dbg->wat_producer_ver = wat_producer_ver;
 }
 
 static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )

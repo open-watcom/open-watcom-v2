@@ -110,22 +110,21 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
     }
     path = DRGetProducer( cu_tag );
     if( path != NULL ) {
+        df_ver wat_producer_ver;
 
-        df_ver version;
-
-        if( strcmp( path, "V2.0 WATCOM" ) == 0 ) {
-            version = VER_V3;
-        } else if( strcmp( path, "V1.0 WATCOM" ) == 0 ) {
-            version = VER_V2;
-        } else if( strcmp( path, "WATCOM" ) == 0 ) {
-            version = VER_V1;
+        if( memcmp( path, DWARF_WATCOM_PRODUCER_V3, sizeof( DWARF_WATCOM_PRODUCER_V3 ) - 1 ) == 0 ) {
+            wat_producer_ver = VER_V3;
+        } else if( memcmp( path, DWARF_WATCOM_PRODUCER_V2, sizeof( DWARF_WATCOM_PRODUCER_V2 ) - 1 ) == 0 ) {
+            wat_producer_ver = VER_V2;
+        } else if( memcmp( path, DWARF_WATCOM_PRODUCER_V1, sizeof( DWARF_WATCOM_PRODUCER_V1 ) - 1 ) == 0 ) {
+            wat_producer_ver = VER_V1;
         } else {
-            version = VER_NONE;
+            wat_producer_ver = VER_NONE;
         }
-        if( mod->version == VER_NONE ) {
-            mod->version = version;
-        } else if( mod->version != version ) {
-            mod->version = VER_ERROR;
+        if( mod->wat_producer_ver == VER_NONE ) {
+            mod->wat_producer_ver = wat_producer_ver;
+        } else if( mod->wat_producer_ver != wat_producer_ver ) {
+            mod->wat_producer_ver = VER_ERROR;
         }
         DCFree( path );
     }
@@ -167,11 +166,13 @@ dip_status     InitModMap( imp_image_handle *ii )
     DRDbgClear( ii->dwarf->handle ); /* clear some mem */
     ii->mod_count = list.count;
     ii->mod_map = FiniModInfo( &list );
-    if( list.version == VER_V1 ) {
-        DRDbgOldVersion( ii->dwarf->handle, 1 );
-    } else if( list.version == VER_V2 ) {
-        DRDbgOldVersion( ii->dwarf->handle, 2 );
-    } else if( list.version == VER_ERROR ) {
+    if( list.wat_producer_ver == VER_V3 ) {
+        DRDbgWatProducerVer( ii->dwarf->handle, VER_V3 );
+    } else if( list.wat_producer_ver == VER_V2 ) {
+        DRDbgWatProducerVer( ii->dwarf->handle, VER_V2 );
+    } else if( list.wat_producer_ver == VER_V1 ) {
+        DRDbgWatProducerVer( ii->dwarf->handle, VER_V1 );
+    } else if( list.wat_producer_ver == VER_ERROR ) {
         DCStatus( DS_INFO_BAD_VERSION );
         ret = DS_FAIL | DS_INFO_BAD_VERSION;
     }

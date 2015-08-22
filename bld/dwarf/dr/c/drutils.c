@@ -475,19 +475,19 @@ dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
 
     handle = DR_HANDLE_NUL;
     form = DWRVMReadULEB128( &abbrev );
-    offset =  ReadConst( form, info );
+    offset = ReadConst( form, info );
     if( offset != 0 ) {     // if not NULL relocate
         if( form != DW_FORM_ref_addr ) {
-            handle = DWRFindCompileUnit( info ) + offset;
+            handle = DWRFindCompileUnit( info );
         } else {
-            if( DWRCurrNode->wat_version == 1 ) { // handle Watcom 10.x DWARF
-                handle = DWRFindCompileUnit( info ) + offset;
+            if( DWRCurrNode->wat_producer_ver == VER_V1 ) { // handle Watcom 10.x DWARF
+                handle = DWRFindCompileUnit( info );
             } else {
-                handle = DWRCurrNode->sections[DR_DEBUG_INFO].base + offset;
+                handle = DWRCurrNode->sections[DR_DEBUG_INFO].base;
             }
         }
     }
-    return( handle );
+    return( handle + offset );
 }
 
 unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
