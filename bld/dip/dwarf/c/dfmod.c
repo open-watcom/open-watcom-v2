@@ -258,7 +258,7 @@ imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
 }
 
 imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_handle )
-/******************************************************************************/
+/*********************************************************************/
 // Look up cu_handle in mod_map
 {
     im_idx      i;
@@ -468,7 +468,7 @@ address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
     address     a;
     dr_handle   stmts;
 
-    if( im != IMH_NOMOD && (stmts = IM2MODI( ii, im )->stmts) != 0 ) {
+    if( im != IMH_NOMOD && (stmts = IM2MODI( ii, im )->stmts) != DR_HANDLE_NUL ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
         walk.ii = ii;
         walk.im = im;
@@ -503,13 +503,13 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
     case HK_IMAGE:
         break;
     case HK_TYPE:
-        if( modinfo->stmts != 0 ) {
+        if( modinfo->stmts != DR_HANDLE_NUL ) {
             ret = DS_OK;
         }
         break;
     case HK_CUE:
         stmts = modinfo->stmts;
-        if( stmts != 0 ) {  // need to get rid of stmts for file with no cues
+        if( stmts != DR_HANDLE_NUL ) {  // need to get rid of stmts for file with no cues
             l_walk_info walk;
             address     a;
 

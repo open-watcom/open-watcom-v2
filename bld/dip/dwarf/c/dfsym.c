@@ -1031,7 +1031,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
     cu_tag = IM2MODI( ii, im )->cu_tag;
-    curr = in->unique + cu_tag;
+    curr = cu_tag + in->unique;         /* make absolute */
     sc = DRGetTagType( curr );
     switch( sc ) {
     case DR_TAG_CLASS:
@@ -1042,7 +1042,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
         curr = GetContainingClass( curr );
         if( curr ) {
             *out = *in;
-            out->unique = curr - cu_tag;
+            out->unique = curr - cu_tag;    /* make relatine */
             ret = SR_EXACT;
         } else {
             DCStatus( DS_FAIL );
@@ -1299,7 +1299,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
             df->com.im = im;
             cu_tag = modinfo->cu_tag;
             for( ;; ) {
-                curr = scope.unique + cu_tag;
+                curr = cu_tag + scope.unique;   /* make absolute */
                 cont = WalkOneBlock( df, fn, curr );
                 if( !cont )
                     break;
@@ -1363,7 +1363,7 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
         DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
         df->com.im = im;
         cu_tag = IM2MODI( ii, im )->cu_tag;
-        blk = scope->unique + cu_tag;
+        blk = cu_tag + scope->unique;               /* make absolute */
         sc = DRGetTagType( blk );
         if( sc == DR_TAG_CLASS ) {
             imp_type_handle     it;
