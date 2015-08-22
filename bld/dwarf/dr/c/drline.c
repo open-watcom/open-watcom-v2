@@ -56,7 +56,7 @@ static dr_handle  DefineFile( dr_handle start, dr_line_file *df )
 /***************************************************************/
 {
 
-    df->name = DWRCopyString( &start );
+    df->name = DWRVMCopyString( &start );
     df->dir = (uint_16)DWRVMReadULEB128( &start );  // directory index
     df->time = DWRVMReadULEB128( &start );          // time
     df->len = DWRVMReadULEB128( &start );           // length
@@ -317,7 +317,7 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         if( value == 0 )
             break;
         ++index;
-        dd.name = DWRCopyString( &stmt );
+        dd.name = DWRVMCopyString( &stmt );
         dd.index = (filetab_idx)index;
         cont = dir( dir_data, &dd );
         if( !cont ) {

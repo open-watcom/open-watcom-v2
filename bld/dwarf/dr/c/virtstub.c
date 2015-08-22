@@ -127,20 +127,20 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
 /*******************************************************/
 // works for signed or unsigned
 {
-    const char      *buf;
+    dr_handle       src;
     unsigned_32     result;
     unsigned        shift;
     char            b;
 
-    buf = *vmptr;
+    src = *vmptr;
     result = 0;
     shift = 0;
     do {
-        b = *buf++;
+        b = *src++;
         result |= (b & 0x7f) << shift;
         shift += 7;
     } while( (b & 0x80) != 0 );
-    *vmptr = (dr_handle)buf;
+    *vmptr = src;
     if( issigned && (b & 0x40) != 0 && shift < 32 ) {
         // we have to sign extend
         result |= - ((signed_32)( 1 << shift ));
@@ -148,7 +148,8 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
     return( result );
 }
 
-extern void DWRVMGetString( char *buf, dr_handle *hdlp )
+#if 0
+static void DWRVMGetString( char *buf, dr_handle *hdlp )
 /******************************************************/
 {
     uint len;
@@ -157,23 +158,36 @@ extern void DWRVMGetString( char *buf, dr_handle *hdlp )
     memcpy( buf, *hdlp, len );
     *hdlp += len;
 }
+#endif
 
-extern unsigned DWRVMGetStrBuff( dr_handle drstr, char *buf, unsigned max )
-/*************************************************************************/
+char *DWRVMCopyString( dr_handle *info )
+/**************************************/
+{
+    size_t      len;
+    char        *dst;
+    dr_handle   src;
+
+    src = *info;
+    len = strlen( src ) + 1;
+    *info += len;
+    dst = DWRALLOC( len );
+    return( memcpy( dst, src, len ) );
+}
+
+extern unsigned DWRVMGetStrBuff( dr_handle str, char *buf, unsigned max )
+/***********************************************************************/
 {
     unsigned    len;
-    const char  *curr;
 
-    curr = drstr;
     len = 0;
     for( ;; ) {
         if( len < max ) {
-           *buf++ = *curr;
+           *buf++ = *str;
         }
         ++len;
-        if( *curr == '\0' )
+        if( *str == '\0' )
             break;
-        ++curr;
+        ++str;
     }
     return( len );
 }

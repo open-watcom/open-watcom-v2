@@ -509,8 +509,8 @@ unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
     return( DWRReadInt( info, addr_size ) );
 }
 
-char * DWRReadString( dr_handle abbrev, dr_handle info )
-/******************************************************/
+char *DWRReadString( dr_handle abbrev, dr_handle info )
+/*****************************************************/
 {
     dw_formnum  form;
     unsigned_32 offset;
@@ -518,7 +518,7 @@ char * DWRReadString( dr_handle abbrev, dr_handle info )
     form = DWRVMReadULEB128( &abbrev );
     switch( form ) {
     case DW_FORM_string:
-        return( DWRCopyString( &info ) );
+        return( DWRVMCopyString( &info ) );
     case DW_FORM_strp:
         offset = ReadConst( DW_FORM_data4, info );
         return( DWRCopyDbgSecString( &info, offset ) );
@@ -605,30 +605,15 @@ dr_handle DWRReadAbbrev( dr_handle entry )
     return( DWRLookupAbbrev( entry, abbrev_idx ) );
 }
 
-char * DWRCopyString( dr_handle *info )
-/********************************************/
-{
-    size_t      count;
-    char        *str;
-
-    count = DWRVMStrLen( *info );
-    str = DWRALLOC( count + 1 );
-    DWRVMGetString( str, info );
-    return( str );
-}
-
 char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
 /**********************************************************************/
 {
-    size_t      count;
-    char        *str;
     dr_handle   dbgsec_str;
+    char        *str;
 
     info = info;
     dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-    count = DWRVMStrLen( dbgsec_str );
-    str = DWRALLOC( count + 1 );
-    DWRVMGetString( str, &dbgsec_str );
+    str = DWRVMCopyString( &dbgsec_str );
     return( str );
 }
 

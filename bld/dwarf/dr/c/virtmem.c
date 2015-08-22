@@ -527,7 +527,7 @@ end:
     return( length - 1 );   // remove '\0' terminator's contrib
 }
 
-extern void DWRVMGetString( char *buf, dr_handle *hdlp )
+static void DWRVMGetString( char *buf, dr_handle *hdlp )
 /******************************************************/
 {
     unsigned    off;
@@ -549,6 +549,18 @@ extern void DWRVMGetString( char *buf, dr_handle *hdlp )
     }
 end:
     *hdlp = vm.l;
+}
+
+char *DWRVMCopyString( dr_handle *info )
+/**************************************/
+{
+    size_t      count;
+    char        *str;
+
+    count = DWRVMStrLen( *info );
+    str = DWRALLOC( count + 1 );
+    DWRVMGetString( str, info );
+    return( str );
 }
 
 extern unsigned DWRVMGetStrBuff( dr_handle drstr, char *buf, unsigned max )

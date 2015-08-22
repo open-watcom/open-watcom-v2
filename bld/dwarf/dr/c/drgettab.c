@@ -156,7 +156,7 @@ static void ReadNameEntry( dr_handle *start, file_info *nametab,
     filetab_idx     ftidx;
     dr_fileidx      pathidx;
 
-    name = DWRCopyString( start );
+    name = DWRVMCopyString( start );
     ftidx = DWRAddFileName( name, &nametab->fnametab );
     DWRAddIndex( ftidx, idxtab, TAB_IDX_FNAME );
     pathidx = DWRVMReadULEB128( start );
@@ -204,7 +204,7 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
         value = DWRVMReadByte( start );
         if( value == 0 )
             break;
-        name = DWRCopyString( &start );
+        name = DWRVMCopyString( &start );
         ftidx = DWRAddFileName( name, &nametab->pathtab );
         DWRAddIndex( ftidx, &curridxmap, TAB_IDX_PATH );
     }
