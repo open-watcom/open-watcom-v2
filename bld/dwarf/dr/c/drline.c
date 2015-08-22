@@ -137,6 +137,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 info->state.addr_set = TRUE;
                 curr += length;
                 break;
+            case DW_LNE_set_segment_OLD:
             case DW_LNE_set_segment:
                 curr++;
                 --length;

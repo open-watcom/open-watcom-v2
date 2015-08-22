@@ -321,6 +321,7 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                     state.address = tmp;
                     p += op_len;
                     break;
+                case DW_LNE_set_segment_OLD:
                 case DW_LNE_set_segment:
                     if( op_len == 4 ){
                         tmp = *(uint_32 *)p;

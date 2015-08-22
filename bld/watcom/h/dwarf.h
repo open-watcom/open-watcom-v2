@@ -208,12 +208,8 @@ typedef enum {
     //  Despite recognizing the need for this extended opcode, I disagree with its use. Dwarf 3
     //  may yet add more extended instructions which will screw us over using enumeration value 4!
     */
-#if 0
-    DW_LNE_set_segment_V2   = DW_LNE_set_discriminator, /* for backward compatibility */
+    DW_LNE_set_segment_OLD  = DW_LNE_set_discriminator, /* for backward compatibility */
     DW_LNE_set_segment      = DW_LNE_lo_user + 0,       /* new definition compatible with Dwarf 3 and higher */
-#else
-    DW_LNE_set_segment      = DW_LNE_set_discriminator,
-#endif
 }dw_lne;
 
 /* Macinfo type encodings: figure 36 */

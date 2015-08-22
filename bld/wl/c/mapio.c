@@ -639,6 +639,7 @@ void WriteMapLines( void )
                     state.address = tmp;
                     p += op_len;
                     break;
+                case DW_LNE_set_segment_OLD:
                 case DW_LNE_set_segment:
                     state.has_seg = 1;
                     if( op_len == 4 ) {

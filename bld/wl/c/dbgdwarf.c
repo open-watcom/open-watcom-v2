@@ -572,7 +572,8 @@ void DwarfGenLines( lineinfo *info )
     vmem_addr += dwsize;
     if( FmtData.type & MK_SEGMENTED ) {
         buff[1] = 3;
-        buff[2] = DW_LNE_set_segment;
+        buff[2] = DW_LNE_set_segment_OLD;
+//        buff[2] = DW_LNE_set_segment;
         *( (unsigned_16 *)&buff[3] ) = seg->u.leader->seg_addr.seg;
         PutInfo( vmem_addr, buff, 5 );
         vmem_addr += 5;
