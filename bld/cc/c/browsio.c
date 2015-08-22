@@ -437,7 +437,7 @@ dw_client DwarfInit( void )
     DWSectInit();
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_BROWSER;
-    info.producer_name = "WATCOM C V10";
+    info.producer_name = "C V10";
     memcpy( &info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs = cli_funcs;
 

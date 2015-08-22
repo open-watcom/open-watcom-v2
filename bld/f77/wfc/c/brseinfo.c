@@ -132,7 +132,7 @@ void    BIInit( void ) {
     if( !_GenerateBrInfo() ) return;
     init_dwl.language = DWLANG_FORTRAN;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
-    init_dwl.producer_name = "WATCOM FORTRAN 77";
+    init_dwl.producer_name = "FORTRAN 77";
     if ( !setjmp( init_dwl.exception_handler ) ) {
         CLIInit( &(init_dwl.funcs), MEM_SECTION );
         cBIId = DWInit( &init_dwl );

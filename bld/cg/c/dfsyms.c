@@ -527,7 +527,7 @@ extern  void    DFObjInitDbgInfo( void ) {
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
-    info.producer_name = "WATCOM";
+    info.producer_name = "";
     info.language = SetLang();
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;
@@ -593,7 +593,7 @@ extern  void    DFObjLineInitDbgInfo( void ) {
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
-    info.producer_name = "WATCOM";
+    info.producer_name = "";
     info.language = SetLang();
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;

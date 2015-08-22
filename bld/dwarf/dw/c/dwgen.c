@@ -111,7 +111,10 @@ dw_handle DWENTRY DWBeginCompileUnit(
     /* AT_comp_dir */
     InfoString( cli, cu->directory );
     /* AT_producer */
-    InfoBytes( cli, "V1.0 ", 5  );
+    InfoBytes( cli, "V1.0 WATCOM", 11 );
+    if( cli->producer_name[0] != '\0' ) {
+        InfoBytes( cli, " ", 1 );
+    }
     InfoString( cli, cli->producer_name );
     /* AT_identifier_case */
     tmp = DW_ID_case_sensitive;
