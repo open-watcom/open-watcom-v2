@@ -96,7 +96,7 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
             SWAP_16( header.version );
             SWAP_32( header.dbg_pos );
         }
-        if( header.version != DWARF_VERSION )
+        if( DWARF_VER_INVALID( header.version ) )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
         arange.dbg = header.dbg_pos + base;
         arange.addr_size = header.addr_size;

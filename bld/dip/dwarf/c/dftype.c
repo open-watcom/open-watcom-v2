@@ -1146,7 +1146,7 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
-    df.com.inh = 0;
+    df.com.inh = DR_HANDLE_NUL;
     df.com.vbase = NULL;
     cleanup.rtn = FreeBases;   //push cleanup
     cleanup.d = &df.com.vbase;
@@ -1198,7 +1198,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it, lookup_item 
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
-    df.com.inh = 0;
+    df.com.inh = DR_HANDLE_NUL;
     df.com.vbase = NULL;
     cleanup.rtn = FreeBases;   //push cleanup
     cleanup.d = &df.com.vbase;

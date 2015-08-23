@@ -645,7 +645,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
         dr_handle type_die;
 
         type_die = DWRReadReference( tmp_abbrev, tmp_entry );
-        type_die =  SkipPCH( type_die );
+        type_die = SkipPCH( type_die );
         if( type_die != DR_HANDLE_NUL ) {
             Loc_T type_loc;
 
@@ -825,7 +825,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
     if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         dr_handle type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
 
-        type_entry =  SkipPCH( type_entry );
+        type_entry = SkipPCH( type_entry );
         if( type_entry != DR_HANDLE_NUL ) {
             FillLoc( &type_loc, type_entry );
             DecorateType( decname, &type_loc, DW_TAG_WATCOM_padding );
@@ -1073,7 +1073,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
         tmp_entry = loc->entry_cr;
         if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
-            next_die =  SkipPCH( next_die );
+            next_die = SkipPCH( next_die );
             if( next_die != DR_HANDLE_NUL ) {
                 if( loc->tag == DW_TAG_WATCOM_address_class_type ) {
                     prev_tag = prev_tag;
@@ -1344,7 +1344,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     type_entry = DWRReadReference( abbrev, entry );
-    type_entry =  SkipPCH( type_entry );
+    type_entry = SkipPCH( type_entry );
     FillLoc( &type_loc, type_entry );
     DecorateType( decname, &type_loc, DW_TAG_WATCOM_padding );
 
@@ -1442,7 +1442,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
 
     if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         type_die = DWRReadReference( tmp_abbrev, tmp_entry );
-        type_die =  SkipPCH( type_die );
+        type_die = SkipPCH( type_die );
         if( type_die != DR_HANDLE_NUL ) {
             FillLoc( &type_loc, type_die );
             type_loc.inParam = inParam;
@@ -1754,7 +1754,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
     if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         dr_handle type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
 
-        type_entry =  SkipPCH( type_entry );
+        type_entry = SkipPCH( type_entry );
         if( type_entry != DR_HANDLE_NUL ) {
             FillLoc( &type_loc, type_entry );
             FORDecType( decname, &type_loc );
@@ -2016,7 +2016,7 @@ static void FORDecArray( BrokenName_T *decname, Loc_T *loc )
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     type_entry = DWRReadReference( abbrev, entry );
-    type_entry =  SkipPCH( type_entry );
+    type_entry = SkipPCH( type_entry );
     FillLoc( &type_loc, type_entry );
     FORDecType( decname, &type_loc );
 
@@ -2088,7 +2088,7 @@ static void FORDecType( BrokenName_T *decname, Loc_T *loc )
         if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
 
-            next_die =  SkipPCH( next_die );
+            next_die = SkipPCH( next_die );
             if( next_die != DR_HANDLE_NUL ) {
                 FillLoc( loc, next_die );
                 FORDecType( decname, loc );

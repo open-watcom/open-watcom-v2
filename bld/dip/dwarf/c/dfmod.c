@@ -258,16 +258,16 @@ imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
     return( IMX2IM( i ) );
 }
 
-imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_handle )
-/*********************************************************************/
-// Look up cu_handle in mod_map
+imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_tag )
+/******************************************************************/
+// Look up cu_tag in mod_map
 {
     im_idx      i;
     mod_info    *modinfo;
 
     modinfo = ii->mod_map;
     for( i = 0; i < ii->mod_count; ++i ) {
-        if( cu_handle == modinfo->cu_tag ) {
+        if( cu_tag == modinfo->cu_tag ) {
             return( IMX2IM( i ) );
         }
         ++modinfo;

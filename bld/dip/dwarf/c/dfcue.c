@@ -173,9 +173,9 @@ static bool IsRelPathname( const char *name )
 }
 
 
-unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned buff_size )
-/********************************************************************/
+unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                                          char *buff, unsigned buff_size )
+/************************************************************************/
 {
     char            *name;
     char            *dir_path;
@@ -183,15 +183,15 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     unsigned        len;
     unsigned        dir_len;
     dr_handle       stmts;
-    dr_handle       cu_handle;
+    dr_handle       cu_tag;
     int             i;
     mod_info        *modinfo;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into dwarf */
     modinfo = IM2MODI( ii, ic->im );
     stmts = modinfo->stmts;
-    cu_handle = modinfo->cu_tag;
-    if( stmts == DR_HANDLE_NUL || cu_handle == DR_HANDLE_NUL ) {
+    cu_tag = modinfo->cu_tag;
+    if( stmts == DR_HANDLE_NUL || cu_tag == DR_HANDLE_NUL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -215,8 +215,8 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     // If compilation unit has a DW_AT_comp_dir attribute, we need to
     // stuff that in front of the file pathname, unless that is absolute
     len = 0;
-    dir_len = DRGetCompDirBuff( cu_handle, NULL, 0 );
-    if( (dir_len > 1) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
+    dir_len = DRGetCompDirBuff( cu_tag, NULL, 0 );
+    if( ( dir_len > 1 ) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
         if( buff_size == 0 ) {
             len = NameCopy( buff, name, buff_size ) + dir_len;
         } else {
@@ -224,10 +224,10 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
             if( dir_path == NULL ) {
                 DCStatus( DS_FAIL );
             } else {
-                DRGetCompDirBuff( cu_handle, dir_path, dir_len );
+                DRGetCompDirBuff( cu_tag, dir_path, dir_len );
                 len = NameCopy( buff, dir_path, buff_size );
                 DCFree( dir_path );
-                if( buff_size > len + 1 ) {
+                if( buff_size > ( len + 1 ) ) {
                     len += NameCopy( buff + len, "/", 1 + 1 );
                     len += NameCopy( buff + len, name, buff_size - len );
                 }

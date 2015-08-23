@@ -33,7 +33,7 @@ extern dip_status       InitModMap( imp_image_handle *ii );
 extern void             FiniModMap( imp_image_handle *ii );
 extern imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle );
 extern imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle );
-extern imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_handle );
+extern imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_tag );
 extern unsigned         NameCopy( char *buff, const char *from, unsigned buff_size );
 extern walk_result      DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d );
 extern walk_result      DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, void *d );

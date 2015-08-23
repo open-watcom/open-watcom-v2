@@ -466,7 +466,7 @@ unsigned_32 DWRReadConstant( dr_handle abbrev, dr_handle info )
 }
 
 dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
-/*******************************************************************/
+/************************************************************/
 // references are just a constant with the start of the compile unit added on.
 {
     dr_handle       handle;

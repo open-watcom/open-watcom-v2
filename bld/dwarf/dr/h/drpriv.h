@@ -38,6 +38,8 @@
 #define TRUE  (1==1)
 #endif
 
+#define DWARF_VER_INVALID(x)   ((x) != DWARF_IMPL_VERSION)
+
 enum {
     TAB_IDX_FNAME,
     TAB_IDX_PATH
@@ -97,7 +99,6 @@ struct dr_dbg_info {
 };
 
 extern struct dr_dbg_info * DWRCurrNode;
-#define DWARF_VERSION 2
 
 #define ABBREV_TABLE_GUESS 500
 #define ABBREV_TABLE_INCREMENT 100

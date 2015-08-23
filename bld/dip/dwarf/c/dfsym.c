@@ -354,7 +354,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
                 DCStatus( ret );
                 return( ret );
             }
-            if( is->f.minfo.inh ) {
+            if( is->f.minfo.inh != DR_HANDLE_NUL ) {
                 DFBaseAdjust( ii, is->f.minfo.root,
                       DRGetTypeAT( is->f.minfo.inh ),lc, &ll->e[0].u.addr );
             }
@@ -370,7 +370,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
             break;
         }
         case SYM_MEMF:
-            if( is->f.minfo.inh == 0 ) {
+            if( is->f.minfo.inh == DR_HANDLE_NUL ) {
                 sym = is->f.minfo.root;
             } else {
                 sym = DRGetTypeAT( is->f.minfo.inh );   /* get inherited type */
@@ -588,7 +588,7 @@ static bool ARet( dr_handle var, int index, void *_var_ptr )
 }
 
 
-extern dr_handle GetRet(  imp_image_handle *ii, dr_handle proc )
+extern dr_handle GetRet( imp_image_handle *ii, dr_handle proc )
 /**************************************************************/
 {
     /* Find handle of Watcom return symbol. */
@@ -1624,7 +1624,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     sr = SR_NONE;
     data.ii  = ii;
     data.compare = li->case_sensitive ? &strcmp : &stricmp;
-    data.sym = 0;
+    data.sym = DR_HANDLE_NUL;
     len = QualifiedName( li, buff, sizeof( buff ) );
     if( len <= sizeof( buff ) ) {
         data.name = buff;
@@ -1640,7 +1640,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     wlk.d = &data;
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     FindHashWalk( ii->name_map, &wlk );
-    if( data.sym ) {
+    if( data.sym != DR_HANDLE_NUL ) {
         sr = SR_EXACT;
     }
     if( data.name != buff ) {

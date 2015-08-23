@@ -191,10 +191,9 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     }
     start = DWRCurrNode->sections[DR_DEBUG_LINE].base + stmt_offset;
     finish = start + DWRVMReadDWord( start );
-    start += 4 + 2 + 4 + 1 + 1 + 1 + 1;         // skip the start of the header
-    op_base = DWRVMReadByte( start );
+    op_base = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
+    start += STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS;
     oparray = __alloca( op_base - 1 );
-    start++;
     for( index = 0; index < op_base - 1; index++ ) {
         oparray[index] = DWRVMReadByte( start );
         start++;

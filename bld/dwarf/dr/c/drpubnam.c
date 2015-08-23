@@ -71,7 +71,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
             SWAP_32( header.dbg_pos );
             SWAP_32( header.dbg_length );
         }
-        if( header.version != DWARF_VERSION )
+        if( DWARF_VER_INVALID( header.version ) )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
         unit_end = pos + header.len + sizeof( uint_32 );
         pos += sizeof( header );
