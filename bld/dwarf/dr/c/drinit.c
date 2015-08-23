@@ -47,6 +47,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     dr_abbrev_idx   maxnum;
     dr_abbrev_idx   sizealloc;
     dr_abbrev_idx   oldsize;
+    dr_abbrev_idx   i;
     dr_handle       start;
     dr_handle       finish;
     dr_handle       *abbrevs;
@@ -65,7 +66,9 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     }
     sizealloc = ABBREV_TABLE_GUESS;
     abbrevs = DWRALLOC( sizealloc * sizeof( dr_handle ) );
-    memset( abbrevs, 0, sizealloc * sizeof( dr_handle ) );
+    for( i = 0; i < sizealloc; ++i ) {
+        abbrevs[i] = DR_HANDLE_NUL;
+    }
     maxnum = 0;
     start = dbg->sections[DR_DEBUG_ABBREV].base + compunit->abbrev_start;
     finish = dbg->sections[DR_DEBUG_ABBREV].base + dbg->sections[DR_DEBUG_ABBREV].size;
@@ -79,7 +82,9 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
             oldsize = sizealloc;
             sizealloc = code + ABBREV_TABLE_INCREMENT;
             abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( dr_handle ) );
-            memset( &abbrevs[oldsize], 0, ( sizealloc - oldsize ) * sizeof( dr_handle ) );
+            for( i = oldsize; i < sizealloc; ++i ) {
+                abbrevs[i] = DR_HANDLE_NUL;
+            }
         }
         if( abbrevs[code] == DR_HANDLE_NUL ) {
             abbrevs[code] = start;
@@ -97,7 +102,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     }
     compunit->numabbrevs = maxnum + 1;
     compunit->abbrevs = abbrevs;
-    compunit->abbrev_refs = DWRALLOC( sizeof(unsigned) );
+    compunit->abbrev_refs = DWRALLOC( sizeof( unsigned ) );
     *compunit->abbrev_refs = 1;
 }
 
@@ -187,7 +192,7 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
         compunit->next = NULL;
         compunit->start = start;
         length = DWRVMReadDWord( start );
-        compunit->end          = start + length + sizeof( unsigned_32 );
+        compunit->end          = start + sizeof( unsigned_32 ) + length;
         version = DWRVMReadWord( start + COMPILE_UNIT_HDR_VERSION );
         if( DWARF_VER_INVALID( version ) )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
@@ -202,13 +207,13 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
             DWRInitFileTable( &compunit->filetab );
             DWRScanFileTable( start, &FileNameTable, &compunit->filetab );
         } else {
-            compunit->filetab.len  = 0;
-            compunit->filetab.tab  = NULL;
+            compunit->filetab.len = 0;
+            compunit->filetab.tab = NULL;
         }
-
-        start += length + sizeof(unsigned_32);
-        if( start >= finish ) break;
-        next = DWRALLOC( sizeof(compunit_info) );
+        start += sizeof( unsigned_32 ) + length;
+        if( start >= finish )
+            break;
+        next = DWRALLOC( sizeof( compunit_info ) );
         compunit->next = next;
         compunit = next;
     }
@@ -253,7 +258,7 @@ void DRDbgFini( dr_dbg_handle dbg )
         next = compunit->next;
         DWRFiniFileTable( &compunit->filetab, FALSE );
         if( compunit->abbrevs != NULL ) {
-            *compunit->abbrev_refs -= 1;
+            --(*compunit->abbrev_refs);
             if( *compunit->abbrev_refs == 0 ) {
                 DWRFREE( compunit->abbrevs );
                 DWRFREE( compunit->abbrev_refs );
