@@ -151,6 +151,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                     DefineFile( curr + 1, &df );
                     df.index = (filetab_idx)info->rdr.file_idx;
                     cont = file( file_data, &df );
+                    DWRFREE( df.name );
                     if( !cont ) {
                         goto end_loop;
                     }
@@ -320,6 +321,7 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         dd.name = DWRVMCopyString( &stmt );
         dd.index = (filetab_idx)index;
         cont = dir( dir_data, &dd );
+        DWRFREE( dd.name );
         if( !cont ) {
             return( cont );
         }
@@ -335,6 +337,7 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         stmt = DefineFile( stmt, &df );
         df.index = (filetab_idx)index;
         cont = file( file_data, &df );
+        DWRFREE( df.name );
         if( !cont ) {
             return( cont );
         }
