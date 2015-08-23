@@ -237,23 +237,24 @@ static dr_handle InitProgInfo( prog_rdr *rdr, dr_handle start, uint_16 seg )
 
     rdr->seg = seg;
     len = DWRVMReadDWord( start );
-    rdr->finish = start + len + 4;
+    rdr->finish = start + 4 + len;
     len = DWRVMReadDWord( start + STMT_PROLOGUE_HDR_PROLOGUE_LEN );
-    rdr->start = start + len + 4;
-    rdr->curr = start + len + 4;
+    rdr->start = start + STMT_PROLOGUE_HDR_PROLOGUE_LEN + 4 + len;
+    rdr->curr = start + STMT_PROLOGUE_HDR_PROLOGUE_LEN + 4 + len;
     rdr->min_ins_len = DWRVMReadByte( start + STMT_PROLOGUE_HDR_MIN_INS_LEN );
     rdr->def_is_stmt = DWRVMReadByte( start + STMT_PROLOGUE_HDR_DEF_IN_STMT );
     rdr->line_base   = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_BASE );
     rdr->line_range  = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_RANGE );
-    rdr->opcode_base = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
-    rdr->op_lens = DWRALLOC( rdr->opcode_base - 1 );
+    len = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
+    rdr->opcode_base = len--;
+    rdr->op_lens = DWRALLOC( len );
     pos = start + STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS;
-    for( index = 0; index < rdr->opcode_base - 1; index++ ) {
+    for( index = 0; index < len; index++ ) {
         rdr->op_lens[index] = DWRVMReadByte( pos++ );
     }
     rdr->dir_idx = 0;
     rdr->file_idx = 0;
-    return( start + STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS );
+    return( pos );
 }
 
 static void FiniProgInfo( prog_rdr *rdr )
