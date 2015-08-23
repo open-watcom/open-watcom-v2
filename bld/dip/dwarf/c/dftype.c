@@ -169,7 +169,7 @@ static void GetArraySize( imp_image_handle *ii,
     it->array.low = df.low;
     df.cont = TRUE;
     dim = GetArrayDim( it->array.index, 1 );
-    if( dim ) {
+    if( dim != DR_HANDLE_NUL ) {
         DRWalkArraySibs( dim, ArrayWlk, &df );
     }
     it->array.dims = df.dim;
@@ -298,7 +298,7 @@ static void InitTypeHandle( imp_image_handle *ii,
         }
     }
     if( it->typeinfo.kind == DR_TYPEK_ARRAY ){
-        if( it->array.is_set == FALSE ){
+        if( !it->array.is_set ){
             GetArraySize( ii, it, lc );
         }else if( it->array.is_based ){
             GetArraySubSize( ii, it, lc );
@@ -745,8 +745,8 @@ extern dr_handle GetParmN(  imp_image_handle *ii,dr_handle proc, int count ){
     df.count = 0;
     df.last = count;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    if( DRWalkBlock( proc, DR_SRCH_parm, AParm, &df ) ) {
-        ret = 0;
+    if( DRWalkBlock( proc, DR_SRCH_parm, AParm, (void *)&df ) ) {
+        ret = DR_HANDLE_NUL;
     }else{
         ret = df.var;
     }
@@ -761,7 +761,7 @@ extern int GetParmCount(  imp_image_handle *ii, dr_handle proc ){
     df.count = 0;
     df.last = 0;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    DRWalkBlock( proc, DR_SRCH_parm, AParm, &df );
+    DRWalkBlock( proc, DR_SRCH_parm, AParm, (void *)&df );
     return( df.count );
 }
 
@@ -786,7 +786,7 @@ dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
         parm->im = proc->im;
         ret = DS_OK;
     }else{
-       ret = DS_FAIL;
+        ret = DS_FAIL;
     }
     return( ret );
 }
@@ -1047,7 +1047,7 @@ static bool AMemLookup( dr_handle var, int index, void *_d )
             }else if( !DRIsSymDefined( var ) ){
                 is->sclass = SYM_MEMF;    // memfunc decl
             }else{
-               is->sclass = SYM_MEMVAR;   // inlined defn treat like a var
+                is->sclass = SYM_MEMVAR;   // inlined defn treat like a var
             }
             break;
         }
@@ -1187,7 +1187,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it, lookup_item 
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     if( it->state == DF_NOT ){
-        if(  DRGetTypeInfo( it->type, &it->typeinfo ) ){
+        if( DRGetTypeInfo( it->type, &it->typeinfo ) ){
             it->state = DF_SET;
         }
     }
@@ -1282,7 +1282,8 @@ static bool AInhFind( dr_handle inh, int index, void *_df )
         curr = df->head;
         while( curr != NULL ){
             df->wr = EvalLocAdj( df->ii, df->lc, curr->inh, df->addr );
-            if( df->wr != DS_OK )break;
+            if( df->wr != DS_OK )
+                break;
             curr = curr->next;
         }
         df->cont = FALSE;

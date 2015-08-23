@@ -108,8 +108,9 @@ static bool ACueFile( void *_info, dr_line_file *curr )
     bool            cont;
     int             i;
 
+    cont = TRUE;
     if( info->index == curr->index ) {
-        if( curr->name ) {
+        if( curr->name != NULL ) {
             if( curr->dir != 0) {
                 for( i = 0; i < info->num_dirs; i++ ) {
                     if( info->dirs[i].index == curr->dir ) {
@@ -121,23 +122,21 @@ static bool ACueFile( void *_info, dr_line_file *curr )
                     strcpy( info->ret, info->dirs[i].name );
                     strcat( info->ret, "/");
                     strcat( info->ret, curr->name );
-                    DCFree( curr->name );
                 } else {
                     /* This should be an error, but it isn't fatal as we should
                      * never get here in practice.
                      */
-                    info->ret = curr->name;
+                    info->ret = DCAlloc( strlen( curr->name ) + 1 );
+                    strcpy( info->ret, curr->name );
                 }
             } else {
-                info->ret = curr->name;
+                info->ret = DCAlloc( strlen( curr->name ) + 1 );
+                strcpy( info->ret, curr->name );
             }
         } else {
             info->ret = NULL;
         }
         cont = FALSE;
-    } else {
-        cont = TRUE;
-        DCFree( curr->name );
     }
     return( cont  );
 }
@@ -148,7 +147,7 @@ static bool ACueDir( void *_info, dr_line_dir *curr )
 {
     file_walk_name  *info = _info;
 
-    if( info ) {
+    if( info != NULL ) {
         info->dirs = DCRealloc( info->dirs, sizeof( dr_line_dir ) * (info->num_dirs + 1) );
         info->dirs[info->num_dirs].index = curr->index;
         info->dirs[info->num_dirs].name = DCAlloc( strlen( curr->name ) + 1 );
@@ -215,6 +214,7 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     }
     // If compilation unit has a DW_AT_comp_dir attribute, we need to
     // stuff that in front of the file pathname, unless that is absolute
+    len = 0;
     dir_len = DRGetCompDirBuff( cu_handle, NULL, 0 );
     if( (dir_len > 1) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
         if( buff_size == 0 ) {
@@ -223,14 +223,14 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
             dir_path = DCAlloc( dir_len );
             if( dir_path == NULL ) {
                 DCStatus( DS_FAIL );
-                return( 0 );
-            }
-            DRGetCompDirBuff( cu_handle, dir_path, dir_len );
-            len = NameCopy( buff, dir_path, buff_size );
-            DCFree( dir_path );
-            if( buff_size > len + 1 ) {
-                len += NameCopy( buff + len, "/", 1 + 1 );
-                len += NameCopy( buff + len, name, buff_size - len );
+            } else {
+                DRGetCompDirBuff( cu_handle, dir_path, dir_len );
+                len = NameCopy( buff, dir_path, buff_size );
+                DCFree( dir_path );
+                if( buff_size > len + 1 ) {
+                    len += NameCopy( buff + len, "/", 1 + 1 );
+                    len += NameCopy( buff + len, name, buff_size - len );
+                }
             }
         }
     } else {
@@ -299,7 +299,6 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
     dr_dbg_handle   saved;
 
     ic = fc->ic;
-    DCFree( curr->name );
     ic->a = NilAddr;
     ic->im = fc->im;
     if( FirstCue( fc->stmts, curr->index, ic ) ) {
