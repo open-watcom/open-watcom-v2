@@ -175,7 +175,7 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     dr_handle           finish;
     unsigned_32         length;
     unsigned_32         abbrev_offset;
-    dwarf_uhalf         version;
+    unsigned_16         version;
     unsigned_8          addr_size;
     unsigned_8          curr_addr_size;
 
