@@ -178,8 +178,6 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     compunit_info       *next;
     dr_handle           start;
     dr_handle           finish;
-    unsigned_32         length;
-    unsigned_32         abbrev_offset;
     unsigned_16         version;
     unsigned_8          addr_size;
     unsigned_8          curr_addr_size;
@@ -191,17 +189,15 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     for( ;; ) {
         compunit->next = NULL;
         compunit->start = start;
-        length = DWRVMReadDWord( start );
-        compunit->end          = start + sizeof( unsigned_32 ) + length;
+        compunit->end = start + sizeof( unsigned_32 ) + DWRVMReadDWord( start );
         version = DWRVMReadWord( start + COMPILE_UNIT_HDR_VERSION );
         if( DWARF_VER_INVALID( version ) )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        abbrev_offset = DWRVMReadDWord( start + COMPILE_UNIT_HDR_ABBREV_OFFSET );
+        compunit->abbrev_start = DWRVMReadDWord( start + COMPILE_UNIT_HDR_ABBREV_OFFSET );
         curr_addr_size = DWRVMReadByte( start + COMPILE_UNIT_HDR_ADDR_SIZE );
         if( curr_addr_size != addr_size ) {
             addr_size = 0;
         }
-        compunit->abbrev_start = abbrev_offset;
         ReadCUAbbrevTable( dbg, compunit );
         if( read_ftab ) {
             DWRInitFileTable( &compunit->filetab );
@@ -210,9 +206,9 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
             compunit->filetab.len = 0;
             compunit->filetab.tab = NULL;
         }
-        start += sizeof( unsigned_32 ) + length;
-        if( start >= finish )
+        if( compunit->end >= finish )
             break;
+        start = compunit->end;
         next = DWRALLOC( sizeof( compunit_info ) );
         compunit->next = next;
         compunit = next;

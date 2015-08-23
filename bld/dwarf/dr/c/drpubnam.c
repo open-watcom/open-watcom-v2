@@ -53,16 +53,15 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
     dr_handle           unit_end;
     uint_32             dbg_handle;
     dr_handle           dbg_base;
-    char                str_buff[256];
-    char                *str;
-    int                 str_len;
+    char                *name_buf;
+    int                 name_buf_len;
     int                 curr_len;
 
+    name_buf = NULL;
+    name_buf_len = 0;
     pos = DWRCurrNode->sections[DR_DEBUG_PUBNAMES].base;
     dbg_base = DWRCurrNode->sections[DR_DEBUG_INFO].base;
     finish = pos + DWRCurrNode->sections[DR_DEBUG_PUBNAMES].size;
-    str = str_buff;
-    str_len = sizeof( str_buff );
     while( pos < finish ) {
         DWRVMRead( pos, &header, sizeof( header ) );
         if( DWRCurrNode->byte_swap ) {
@@ -73,7 +72,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
         }
         if( DWARF_VER_INVALID( header.version ) )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        unit_end = pos + header.len + sizeof( uint_32 );
+        unit_end = pos + sizeof( uint_32 ) + header.len;
         pos += sizeof( header );
         pubname.dbg_cu = dbg_base + header.dbg_pos;
         pubname.is_start = TRUE;
@@ -83,26 +82,26 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
                 break;
             pos += sizeof( uint_32 );
             pubname.dbg_handle = pubname.dbg_cu + dbg_handle;
-            curr_len = DWRVMGetStrBuff( pos, str, str_len );
+            curr_len = DWRVMGetStrBuff( pos, name_buf, name_buf_len );
             pubname.len = curr_len - 1;
-            if( curr_len > str_len ) {
-                if( str != str_buff ) {
-                    DWRFREE( str );
-                }
-                str = DWRALLOC( curr_len );
-                str_len = curr_len;
-                curr_len = DWRVMGetStrBuff( pos, str, curr_len );
+            if( curr_len > name_buf_len ) {
+                /* extend name buffer */
+                if( name_buf != NULL )
+                    DWRFREE( name_buf );
+                name_buf_len = curr_len;
+                if( name_buf_len < 256 )
+                    name_buf_len = 256;
+                name_buf = DWRALLOC( name_buf_len );
+                curr_len = DWRVMGetStrBuff( pos, name_buf, name_buf_len );
             }
             pos += curr_len;
-            pubname.name = str;
-            if( !callback( data,  &pubname ) ) {
+            pubname.name = name_buf;
+            if( !callback( data, &pubname ) ) {
                 break;
             }
             pubname.is_start = FALSE;
         }
         pos = unit_end;
     }
-    if( str != str_buff ) {
-        DWRFREE( str );
-    }
+    DWRFREE( name_buf );
 }
