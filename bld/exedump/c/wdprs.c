@@ -54,17 +54,18 @@ void Puthex( unsigned_32 num, unsigned_16 width )
 /*
  * Put a decimal number
  */
-void Putdec( unsigned_16 num )
+void Putdec( unsigned_32 num )
 /****************************/
 {
-    if( num >= 10 )   Putdec( num / 10 );
+    if( num >= 10 )
+        Putdec( num / 10 );
     Wdputc( num % 10 + '0' );
 }
 
 /*
  * Put a signed decimal number
  */
-void Putdecs( signed_16 num )
+void Putdecs( signed_32 num )
 /***************************/
 {
     if( num < 0 ) {
@@ -80,22 +81,30 @@ void Putdecs( signed_16 num )
  * this will print 0 if num == 0.
 */
 
-void Putdecl( unsigned_16 num, unsigned_16 len )
+void Putdecl( unsigned_32 num, unsigned_16 len )
 /**********************************************/
 {
-    Putdecbz( num/10, len - 1 );
+    Putdecbz( num /10, len - 1 );
     Wdputc( num % 10 + '0' );
 }
 
-static void DecBZRecurse( unsigned_16 num, unsigned_16 len )
-/**********************************************************/
+static void DecBZRecurse( unsigned_32 num, unsigned_16 len, char minus )
+/*********************************************************************/
 {
-    if( len > 1 ) {
-        DecBZRecurse( num / 10, len - 1 );
+    if( num > 0 ) {
+        if( len > 1 ) {
+            DecBZRecurse( num / 10, len - 1, minus );
+        } else {
+            DecBZRecurse( num / 10, 0, minus );
+        }
     }
     if( num == 0 ) {        /* we are to the left of the 1st digit */
-        Wdputc( ' ' );
+        while( len-- > 0 ) {
+            Wdputc( ' ' );
+        }
     } else {
+        if( num < 10 && minus )
+            Wdputc( '-' );
         Wdputc( num % 10 + '0' );
     }
 }
@@ -106,7 +115,7 @@ static void DecBZRecurse( unsigned_16 num, unsigned_16 len )
  * (i.e. PUT DECimal Blank when Zero)
 */
 
-void Putdecbz( unsigned_16 num, unsigned_16 len )
+void Putdecbz( unsigned_32 num, unsigned_16 len )
 /***********************************************/
 {
     if( num == 0 ) {
@@ -116,7 +125,23 @@ void Putdecbz( unsigned_16 num, unsigned_16 len )
         }
         Wdputc( '0' );
     } else {
-        DecBZRecurse( num, len );
+        DecBZRecurse( num, len, 0 );
+    }
+}
+
+void Putdecsbz( signed_32 num, unsigned_16 len )
+/**********************************************/
+{
+    if( num == 0 ) {
+        while( len > 1 ) {
+            Wdputc( ' ' );
+            len--;
+        }
+        Wdputc( '0' );
+    } else if( num < 0 ) {
+        DecBZRecurse( -num, len - 1, 1 );
+    } else {
+        DecBZRecurse( num, len, 0 );
     }
 }
 
