@@ -38,7 +38,6 @@
         DBG_NAME,
         CSECT_NAME,
         CLASS_APPENDED_NAME,
-        __UNUSED_AUX_CLASS_29,
         IMPORT_NAME,
         NEXT_IMPORT,
         IMPORT_NAME_S,
