@@ -72,7 +72,7 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
         }
         if( DWARF_VER_INVALID( header.version ) )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        arange.dbg = header.dbg_pos + base;
+        arange.dbg = base + header.dbg_pos;
         arange.addr_size = header.addr_size;
         arange.seg_size = header.seg_size;
         arange.is_start = TRUE;   /* start of bunch */

@@ -201,20 +201,22 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     DWRInitFileTable( &curridxmap );
     while( start < finish ) {           // get directory table
         value = DWRVMReadByte( start );
-        if( value == 0 )
+        if( value == 0 ) {
+            start++;
             break;
+        }
         name = DWRVMCopyString( &start );
         ftidx = DWRAddFileName( name, &nametab->pathtab );
         DWRAddIndex( ftidx, &curridxmap, TAB_IDX_PATH );
     }
-    start++;
     while( start < finish ) {           // get filename table
         value = DWRVMReadByte( start );
-        if( value == 0 )
+        if( value == 0 ) {
+            start++;
             break;
+        }
         ReadNameEntry( &start, nametab, idxtab, &curridxmap );
     }
-    start++;
     while( start < finish ) {   // now go through the statement program
         value_lns = DWRVMReadByte( start );
         start++;

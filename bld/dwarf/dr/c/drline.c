@@ -208,10 +208,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 curr += 2;
                 break;
             default: //op codes not processed
-                value = info->rdr.op_lens[value_lns];
-                while( value > 0 ) {
+                for( value = info->rdr.op_lens[value_lns - 1]; value > 0; --value ) {
                     DWRVMSkipLEB128( &curr );
-                    value--;
                 }
             }
         } else { /* special opcodes */
@@ -254,10 +252,10 @@ static dr_handle InitProgInfo( prog_rdr *rdr, dr_handle start, uint_16 seg )
     rdr->line_base   = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_BASE );
     rdr->line_range  = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_RANGE );
     len = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
-    rdr->opcode_base = len--;
-    rdr->op_lens = DWRALLOC( len );
+    rdr->opcode_base = len;
+    rdr->op_lens = DWRALLOC( len - 1 );
     pos = start + STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS;
-    for( index = 0; index < len; index++ ) {
+    for( index = 0; index < len - 1; index++ ) {
         rdr->op_lens[index] = DWRVMReadByte( pos++ );
     }
     rdr->dir_idx = 0;
