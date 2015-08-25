@@ -864,7 +864,7 @@ int main( void )
 
     fp = fopen( "dwabinfo.gh", "w" );
     if( fp == NULL ) {
-        fprintf( stderr, "unable to open dwabinfo.i for writing: %s",
+        fprintf( stderr, "unable to open dwabinfo.gh for writing: %s",
             strerror( errno ) );
         return( 1 );
     }
@@ -875,7 +875,7 @@ int main( void )
 
     fp = fopen( "dwabenum.gh", "w" );
     if( fp == NULL ) {
-        fprintf( stderr, "unable to open dwabenum.i for writing: %s",
+        fprintf( stderr, "unable to open dwabenum.gh for writing: %s",
             strerror( errno ) );
         return( 1 );
     }
