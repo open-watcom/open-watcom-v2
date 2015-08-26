@@ -37,21 +37,6 @@
 #include "clibext.h"
 
 
-static void InitState( dr_line_data *state, uint_16 seg, bool is_stmt )
-/*********************************************************************/
-// Start state
-{
-    state->seg = seg;
-    state->offset = 0;
-    state->file = 1;
-    state->line = 1;
-    state->col = 0;
-    state->is_stmt = is_stmt;
-    state->basic_blk = FALSE;
-    state->end_seq = FALSE;
-    state->addr_set = FALSE;
-}
-
 typedef struct { /* stmt program read info */
     dr_handle   start;
     dr_handle   curr;
@@ -72,6 +57,21 @@ typedef struct line_info {
     prog_rdr     rdr;
 } line_info;
 
+
+static void InitState( dr_line_data *state, uint_16 seg, bool is_stmt )
+/*********************************************************************/
+// Start state
+{
+    state->seg = seg;
+    state->offset = 0;
+    state->file = 1;
+    state->line = 1;
+    state->col = 0;
+    state->is_stmt = is_stmt;
+    state->basic_blk = FALSE;
+    state->end_seq = FALSE;
+    state->addr_set = FALSE;
+}
 
 static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                                           DRLFILEWLK file, void *file_data )
