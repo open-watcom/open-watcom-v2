@@ -58,19 +58,20 @@ typedef struct line_info {
 } line_info;
 
 
-static void InitState( dr_line_data *state, uint_16 seg, bool is_stmt )
-/*********************************************************************/
+static void InitState( line_info *info )
+/**************************************/
 // Start state
 {
-    state->seg = seg;
-    state->offset = 0;
-    state->file = 1;
-    state->line = 1;
-    state->col = 0;
-    state->is_stmt = is_stmt;
-    state->basic_blk = FALSE;
-    state->end_seq = FALSE;
-    state->addr_set = FALSE;
+    info->state.seg = info->rdr.seg;
+    info->state.offset = 0;
+    info->state.file = 1;
+    info->state.line = 1;
+    info->state.col = 0;
+    info->state.is_stmt = info->rdr.def_is_stmt;
+    info->state.basic_blk = FALSE;
+    info->state.end_seq = FALSE;
+    info->state.addr_set = FALSE;
+//    info->state.addr_set = TRUE;  // address starts at 0
 }
 
 static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
@@ -97,13 +98,14 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
 
     name_buf = NULL;
     name_buf_len = 0;
+    InitState( info );
+    info->state.addr_set = TRUE;  // address starts at 0
     curr = info->rdr.curr;
     finish = info->rdr.finish;
     min_ins_len = info->rdr.min_ins_len;
     line_base = info->rdr.line_base;
     line_range = info->rdr.line_range;
     opcode_base = info->rdr.opcode_base;
-    info->state.addr_set = TRUE;  // address starts at 0
     cont = TRUE;
     while( cont && curr < finish ) {    // now go through the statement program
         value_lns = DWRVMReadByte( curr );
@@ -122,7 +124,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                         break;
                     }
                 }
-                InitState( &info->state, info->rdr.seg, info->rdr.def_is_stmt );
+                InitState( info );
                 break;
             case DW_LNE_set_address:
                 curr++;
@@ -291,7 +293,6 @@ bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
     bool        ret;
 
     stmt = InitProgInfo( &info.rdr, stmt, seg );
-    InitState( &info.state, seg, info.rdr.def_is_stmt );
     ret = WlkStateProg( &info, wlk, d, NULL, NULL );
     FiniProgInfo( &info.rdr );
     return( ret );
@@ -365,7 +366,6 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         cont = file( file_data, &df );
     }
     if( cont ) {
-        InitState( &info.state, 0, info.rdr.def_is_stmt );
         WlkStateProg( &info, NULL, NULL, file, file_data );
     }
     DWRFREE( name_buf );
