@@ -719,7 +719,7 @@ static void dump_info( const uint_8 *input, uint length )
         Puthex( p - input, 8 );
         Wdputs( "  Length: " );
         Puthex( unit_length, 8 );
-        Wdputslc( "\nVersion: " );
+        Wdputslc( "  Version: " );
         Puthex( get_u16( (uint_16 *)(p + 4) ), 4 );
         Wdputs( " Abbrev: " );
         abbrev_offset =  get_u32( (uint_32 *)(p + 6) );
