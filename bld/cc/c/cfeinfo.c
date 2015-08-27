@@ -44,6 +44,7 @@
 #include "feprotos.h"
 #include "cfeinfo.h"
 #include "caux.h"
+#include "dwarfid.h"
 
 #define TRUNC_SYMBOL_HASH_LEN        4
 #define TRUNC_SYMBOL_LEN_WARN        120
@@ -1131,6 +1132,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     case PEGGED_REGISTER:
         return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_int)req_handle ) );
+    case DBG_DWARF_PRODUCER:
+        return( (CGPOINTER)DWARF_PRODUCER_ID );
     default:
         break;
     }

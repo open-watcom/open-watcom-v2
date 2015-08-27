@@ -46,6 +46,8 @@
 #include "fmemmgr.h"
 #include "types.h"
 #include "ferror.h"
+#include "dwarfid.h"
+
 #include "clibext.h"
 
 // linked list storage facility
@@ -132,7 +134,7 @@ void    BIInit( void ) {
     if( !_GenerateBrInfo() ) return;
     init_dwl.language = DWLANG_FORTRAN;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
-    init_dwl.producer_name = "FORTRAN 77";
+    init_dwl.producer_name = DWARF_PRODUCER_ID " V1";
     if ( !setjmp( init_dwl.exception_handler ) ) {
         CLIInit( &(init_dwl.funcs), MEM_SECTION );
         cBIId = DWInit( &init_dwl );

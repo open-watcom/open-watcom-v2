@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "ftnstd.h"
 #include "global.h"
 #include "wf77defs.h"
@@ -66,10 +69,8 @@
 #include "feprotos.h"
 
 #include "wf77segs.h"
+#include "dwarfid.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include "clibext.h"
 
 
@@ -2149,6 +2150,8 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
 #endif
     case UNROLL_COUNT:
         return( NULL );
+    case DBG_DWARF_PRODUCER:
+        return( DWARF_PRODUCER_ID );
     default:
         return( NULL );
     }
