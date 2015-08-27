@@ -87,17 +87,12 @@ static dr_handle ScopeLastNameable( dr_scope_stack *scope, char **name )
     int             i;
     dr_handle       tmp_entry;
     dr_handle       abbrev;
-    dr_abbrev_idx   abbrev_idx;
 
     for( i = scope->free; i > 0; i -= 1 ) {
         tmp_entry = scope->stack[i - 1];
 
-        abbrev_idx = DWRVMReadULEB128( &tmp_entry );
-        if( abbrev_idx != 0 ) {
-            abbrev = DWRLookupAbbrev( tmp_entry, abbrev_idx );
-            DWRVMSkipLEB128( &abbrev );
+        if( !DWRReadTagEnd( &tmp_entry, &abbrev, NULL ) ) {
             abbrev += sizeof( unsigned_8 );
-
             *name = DWRGetName( abbrev, tmp_entry );
             if( *name != NULL ) {
                 return( scope->stack[i - 1] );
@@ -141,7 +136,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
     infoOffset = DWRCurrNode->sections[ DR_DEBUG_INFO ].base;
 
     loc += sizeof( unsigned_32 );   /* skip size */
-    while( loc < end  && !quit ) {
+    while( loc < end && !quit ) {
         opcode = DWRVMReadByte( loc );
         loc += sizeof( unsigned_8 );
 
@@ -169,7 +164,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             break;
 
         case REF_SET_COLUMN:
-            registers.column = DWRVMReadULEB128( &loc );
+            registers.column = (unsigned_8)DWRVMReadULEB128( &loc );
             break;
 
         case REF_ADD_LINE:
@@ -178,7 +173,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             break;
 
         case REF_ADD_COLUMN:
-            registers.column += DWRVMReadSLEB128( &loc );
+            registers.column += (signed_8)DWRVMReadSLEB128( &loc );
             break;
 
         case REF_COPY:

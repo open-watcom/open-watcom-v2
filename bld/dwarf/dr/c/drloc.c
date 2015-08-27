@@ -538,16 +538,12 @@ bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
     dw_tagnum       tag;
     dw_atnum        at;
     dr_handle       abbrev;
-    dr_abbrev_idx   abbrev_idx;
     dr_handle       sym = var;
     bool            ret;
 
-    abbrev_idx = DWRVMReadULEB128( &var );
-    abbrev = DWRLookupAbbrev( var, abbrev_idx );
-    tag = DWRVMReadULEB128( &abbrev );
-    ++abbrev; /* skip child flag */
+    tag = DWRReadTag( &var, &abbrev );
+    abbrev++;   /* skip child flag */
     switch( tag ) {
-        break;
     case DW_TAG_member:
     case DW_TAG_inheritance:
         at = DW_AT_data_member_location;
@@ -585,14 +581,11 @@ bool DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d )
     dw_tagnum       tag;
     dw_atnum        at;
     dr_handle       abbrev;
-    dr_abbrev_idx   abbrev_idx;
     dr_handle       sym = var;
     bool            ret;
 
-    abbrev_idx = DWRVMReadULEB128( &var );
-    abbrev = DWRLookupAbbrev( var, abbrev_idx );
-    tag = DWRVMReadULEB128( &abbrev );
-    ++abbrev; /* skip child flag */
+    tag = DWRReadTag( &var, &abbrev );
+    abbrev++;   /* skip child flag */
     switch( tag ) {
     case DW_TAG_common_block:
     case DW_TAG_formal_parameter:
@@ -618,14 +611,10 @@ bool DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d )
 /*******************************************************************/
 {
     dr_handle       abbrev;
-    dr_abbrev_idx   abbrev_idx;
     dr_handle       sym = var;
     bool            ret;
 
-    abbrev_idx = DWRVMReadULEB128( &var );
-    abbrev = DWRLookupAbbrev( var, abbrev_idx );
-    DWRVMReadULEB128( &abbrev );    /* skip tag */
-    ++abbrev;                       /* skip child flag */
+    abbrev = DWRSkipTag( &var ) + 1;
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
@@ -639,7 +628,7 @@ extern dr_handle DRStringLengthAT( dr_handle str )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &str );
+    abbrev = DWRSkipTag( &str ) + 1;
     if( DWRScanForAttrib( &abbrev, &str, DW_AT_string_length ) ) {
          return( str );
     } else {
@@ -654,7 +643,7 @@ bool DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
     dr_handle   sym = var;
     bool        ret;
 
-    abbrev = DWRGetAbbrev( &var );
+    abbrev = DWRSkipTag( &var ) + 1;
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_return_addr ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
@@ -670,7 +659,7 @@ bool DRSegLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
     dr_handle   sym = var;
     bool        ret;
 
-    abbrev = DWRGetAbbrev( &var );
+    abbrev = DWRSkipTag( &var ) + 1;
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_segment ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {

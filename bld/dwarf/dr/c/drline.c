@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DWARF statement program virtual machine.
+* Description:  DWARF statement program virtual machine (.debug_line section).
 *
 ****************************************************************************/
 
@@ -113,9 +113,10 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
         if( value_lns == 0 ) {      // it's an extended opcode
             length = DWRVMReadULEB128( &curr );
             value_lne = DWRVMReadByte( curr );
+            curr++;
+            --length;
             switch( value_lne ) {
             case DW_LNE_end_sequence:
-                curr++;
                 info->state.end_seq = TRUE;
                 /* append a row */
                 if( cue != NULL ) {
@@ -127,16 +128,12 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 InitState( info );
                 break;
             case DW_LNE_set_address:
-                curr++;
-                --length;
                 info->state.offset = DWRReadInt( curr, length );
                 info->state.addr_set = TRUE;
                 curr += length;
                 break;
             case DW_LNE_set_segment_OLD:
             case DW_LNE_set_segment:
-                curr++;
-                --length;
                 info->state.seg = (uint_16)DWRReadInt( curr, length );
                 curr += length;
                 break;
@@ -145,7 +142,6 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 if( file == NULL ) {
                     curr += length;
                 } else {
-                    curr++;
                     curr_len = DWRVMGetStrBuff( curr, name_buf, name_buf_len );
                     if( curr_len > name_buf_len ) {
                         /* extend name buffer */
@@ -239,25 +235,23 @@ static dr_handle InitProgInfo( prog_rdr *rdr, dr_handle start, uint_16 seg )
 /**************************************************************************/
 // Init statement program info
 {
-    unsigned_32         len;
-    dr_handle           pos;
-    int                 index;
+    unsigned        len;
+    dr_handle       pos;
+    unsigned        index;
 
     rdr->seg = seg;
-    len = DWRVMReadDWord( start );
-    rdr->finish = start + 4 + len;
-    len = DWRVMReadDWord( start + STMT_PROLOGUE_HDR_PROLOGUE_LEN );
-    rdr->start = start + STMT_PROLOGUE_HDR_PROLOGUE_LEN + 4 + len;
+    rdr->finish = start + 4 + DWRVMReadDWord( start );
+    rdr->start = start + STMT_PROLOGUE_HDR_PROLOGUE_LEN + 4 + DWRVMReadDWord( start + STMT_PROLOGUE_HDR_PROLOGUE_LEN );
     rdr->curr = rdr->start;
     rdr->min_ins_len = DWRVMReadByte( start + STMT_PROLOGUE_HDR_MIN_INS_LEN );
     rdr->def_is_stmt = DWRVMReadByte( start + STMT_PROLOGUE_HDR_DEF_IN_STMT );
     rdr->line_base   = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_BASE );
     rdr->line_range  = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_RANGE );
-    len = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
-    rdr->opcode_base = len;
-    rdr->op_lens = DWRALLOC( len - 1 );
+    rdr->opcode_base = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
+    len = rdr->opcode_base - 1;
+    rdr->op_lens = DWRALLOC( len );
     pos = start + STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS;
-    for( index = 0; index < len - 1; index++ ) {
+    for( index = 0; index < len; index++ ) {
         rdr->op_lens[index] = DWRVMReadByte( pos++ );
     }
     rdr->dir_idx = 0;
@@ -276,7 +270,7 @@ extern dr_handle  DRGetStmtList( dr_handle ccu )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &ccu );
+    abbrev = DWRSkipTag( &ccu ) + 1;
     if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) ) {
         ccu = DWRCurrNode->sections[DR_DEBUG_LINE].base + DWRReadConstant( abbrev, ccu );
     } else {

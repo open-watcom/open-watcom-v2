@@ -520,7 +520,6 @@ static void GetClassName( dr_handle   entry,
 /******************************************************/
 {  //try and skip PCH
     dr_handle       abbrev;
-    dr_abbrev_idx   abbrev_idx;
     dr_handle       tmp_entry;
     dw_tagnum       tag;
     char            *name;
@@ -528,10 +527,8 @@ static void GetClassName( dr_handle   entry,
     name = NULL;
     while( entry != DR_HANDLE_NUL ) {
         tmp_entry = entry;
-        abbrev_idx = DWRVMReadULEB128( &tmp_entry );
-        abbrev = DWRLookupAbbrev( tmp_entry, abbrev_idx );
-        tag = DWRVMReadULEB128( &abbrev );
-        abbrev++;           // skip the child pointer.
+        tag = DWRReadTag( &tmp_entry, &abbrev );
+        abbrev++;   /* skip child flag */
         name = DWRGetName( abbrev, tmp_entry );
         if( name != NULL )
             break;
@@ -552,19 +549,16 @@ static dr_handle SkipPCH( dr_handle entry )
 /*****************************************/
 {  //try and skip PCH
     dr_handle       abbrev;
-    dr_abbrev_idx   abbrev_idx;
     dr_handle       tmp_entry;
     dw_tagnum       tag;
     dw_atnum        attrib;
 
     while( entry != DR_HANDLE_NUL ) {
         tmp_entry = entry;
-        abbrev_idx = DWRVMReadULEB128( &tmp_entry );
-        abbrev = DWRLookupAbbrev( tmp_entry, abbrev_idx );
-        tag = DWRVMReadULEB128( &abbrev );
+        tag = DWRReadTag( &tmp_entry, &abbrev );
         if( tag != DW_TAG_typedef )
             break;
-        abbrev++;           // skip the child pointer.
+        abbrev++;   /* skip child flag */
         for( ;; ) {
             attrib = DWRVMReadULEB128( &abbrev );
             if( attrib == DW_AT_name )
@@ -728,21 +722,10 @@ static BrokenName_T *DecorateNameSpace( BrokenName_T *decname, Loc_T *loc )
 
     return( decname );
 }
+
 /*
  * decorate a function.
  */
-static dw_tagnum GetTag( dr_handle entry )
-/****************************************/
-{
-    dr_handle       abbrev;
-    dr_abbrev_idx   abbrev_idx;
-    dw_tagnum       tag;
-
-    abbrev_idx = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev_idx );
-    tag = DWRVMReadULEB128( &abbrev );
-    return( tag );
-}
 
 static void GetContaining( List_T *list, dr_handle of )
 /*****************************************************/
@@ -756,7 +739,7 @@ static void GetContaining( List_T *list, dr_handle of )
         String      containing_name;
         dw_tagnum   tag;
 
-        tag = GetTag( curr->handle );
+        tag = DWRGetTag( curr->handle );
         switch( tag ){
         case DW_TAG_class_type:
         case DW_TAG_union_type:
@@ -1419,8 +1402,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
             String    containing_name;
 
             tmp_entry = containing_die;
-            tmp_abbrev = DWRGetAbbrev( &tmp_entry );
-
+            tmp_abbrev = DWRSkipTag( &tmp_entry ) + 1;
             GrabName( tmp_abbrev, tmp_entry, &containing_name );
             if( containing_name.s != NULL ) {
 
@@ -1839,7 +1821,7 @@ static bool FORAddNameListItem( dr_handle entry, int index, void *data )
     dr_handle       item;
 
     index = index;
-    abbrev = DWRGetAbbrev( &mod );
+    abbrev = DWRSkipTag( &mod ) + 1;
     if( !DWRScanForAttrib( &abbrev, &mod, DW_AT_namelist_item ) ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
@@ -2262,15 +2244,17 @@ static void FillLoc( Loc_T *loc, dr_handle die )
 /**********************************************/
 {
     dr_abbrev_idx   abbrev_idx;
+    compunit_info   *cu;
 
     loc->entry_st = die;
     loc->entry_cr = die;
     abbrev_idx = DWRVMReadULEB128( &loc->entry_cr );
 
     if( abbrev_idx != 0 ) {
-        loc->abbrev_st = DWRLookupAbbrev( loc->entry_cr, abbrev_idx );
+        cu = DWRFindCompileInfo( loc->entry_cr );
+        loc->abbrev_st = cu->abbrevs[abbrev_idx];
         loc->abbrev_cr = loc->abbrev_st;
-        loc->tag = DWRVMReadULEB128( &( loc->abbrev_cr ) );
+        loc->tag = DWRVMReadULEB128( &loc->abbrev_cr );
         loc->child = DWRVMReadByte( loc->abbrev_cr );
         loc->abbrev_cr += sizeof( unsigned_8 );    /* skip child byte */
         loc->inParam = FALSE;

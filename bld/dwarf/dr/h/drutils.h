@@ -37,6 +37,13 @@ typedef enum {
     SET_FUNCTION
 } stack_op;
 
+#define OP2HDL(x)   ((dr_handle)(pointer_int)(x))
+#define HDL2OP(x)   ((stack_op)(pointer_int)(x))
+
+#define DWRContextOP(x,y)       HDL2OP(DWRContext(x,y))
+#define DWRContextPushOP(x,y)   DWRContextPush(x,OP2HDL(y))
+#define DWRContextPopOP(x)      HDL2OP(DWRContextPop(x))
+
 typedef struct {
     dr_handle           handle;         // original handle
     dr_search_context   *context;       // context to resume search
@@ -73,9 +80,10 @@ extern char         *DWRCopyDbgSecString( dr_handle *, unsigned_32 offset );
 extern bool         DWRScanForAttrib( dr_handle *, dr_handle *, dw_atnum );
 extern bool         DWRSearchArray( const dw_tagnum *, dw_tagnum );
 extern unsigned     DWRGetAddrSize( dr_handle );
-extern dr_handle    DWRGetAbbrev( dr_handle * );
-extern dr_handle    DWRReadAbbrev( dr_handle );
-extern dr_handle    DWRLookupAbbrev( dr_handle entry, dr_abbrev_idx abbrev_idx );
+extern dr_handle    DWRSkipTag( dr_handle * );
+extern dw_tagnum    DWRGetTag( dr_handle entry );
+extern dw_tagnum    DWRReadTag( dr_handle *entry, dr_handle *abbrev );
+extern bool         DWRReadTagEnd( dr_handle *entry, dr_handle *abbrev, dw_tagnum * );
 extern void         DWRGetCompileUnitHdr( dr_handle, DWRCUWLK, void * );
 extern char         *DWRGetName( dr_handle, dr_handle );
 extern void         DWRSkipChildren( dr_handle *, dr_handle * );

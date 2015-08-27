@@ -74,11 +74,9 @@ void FiniDebugPubnames(
     CLIWrite( DW_DEBUG_PUBNAMES, zeros, sizeof( uint_32 ) );
 
     /* backpatch the section length */
-    offset = CLITell( DW_DEBUG_PUBNAMES )
-        - cli->section_base[ DW_DEBUG_PUBNAMES ] - sizeof( debug_ref );
+    offset = CLITell( DW_DEBUG_PUBNAMES ) - cli->section_base[DW_DEBUG_PUBNAMES] - sizeof( debug_ref );
     WriteRef( buf, offset );
-    CLISeek( DW_DEBUG_PUBNAMES, cli->section_base[ DW_DEBUG_PUBNAMES ],
-        DW_SEEK_SET );
+    CLISeek( DW_DEBUG_PUBNAMES, cli->section_base[DW_DEBUG_PUBNAMES], DW_SEEK_SET );
     CLIWrite( DW_DEBUG_PUBNAMES, buf, sizeof( debug_ref ) );
     CLISeek( DW_DEBUG_PUBNAMES, 0, DW_SEEK_END );
 }

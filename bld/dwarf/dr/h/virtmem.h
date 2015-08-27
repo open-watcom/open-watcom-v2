@@ -97,7 +97,7 @@ extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
 
 #else
 
-#define DWRVMReadULEB128(__h)   (signed_32)ReadLEB128( __h, FALSE )
+#define DWRVMReadULEB128(__h)   ReadLEB128( __h, FALSE )
 
 #endif
 
