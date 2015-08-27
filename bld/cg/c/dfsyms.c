@@ -509,9 +509,13 @@ static const char *SetDwarfProducer( void )
 {
     const char  *name;
 
+#if 0      // disable this feature for now, to have compatibility with OW 1.9
     name = (const char *)FEAuxInfo( NULL, DBG_DWARF_PRODUCER );
     if( name == NULL )
         name = "";
+#else
+    name = "";
+#endif
     return( name );
 }
 
