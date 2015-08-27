@@ -53,8 +53,11 @@
 
 #include "clibext.h"
 
-
+#if 0      // disable this feature for now, to have compatibility with OW 1.9
 #define WLINK_PRODUCER  DWARF_WATCOM_PRODUCER " WL"
+#else
+#define WLINK_PRODUCER  DWARF_WATCOM_PRODUCER
+#endif
 
 static class_entry  *DBIClass;       // Assume there is only one!
 
