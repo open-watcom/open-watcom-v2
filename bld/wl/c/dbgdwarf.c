@@ -665,8 +665,8 @@ static void DwarfGenAddrInit( segdata *sdata, void *_tuple )
     arange_tuple *tuple = _tuple;
 
     if( FmtData.type & MK_SEGMENTED ) {
-        tuple->s.segment = sdata->u.leader->seg_addr.seg;
-        tuple->s.offset = sdata->u.leader->seg_addr.off + sdata->a.delta;
+        tuple->s.v2.segment = sdata->u.leader->seg_addr.seg;
+        tuple->s.v2.offset = sdata->u.leader->seg_addr.off + sdata->a.delta;
     } else {
         tuple->f.offset = GetNewAddrOffset( sdata, sdata->a.delta );
     }
@@ -685,10 +685,10 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
     mod = sdata->o.mod;
     if( !( mod->modinfo & MOD_DBI_SEEN ) ) {
         if( FmtData.type & MK_SEGMENTED ) {
-            tuple->s.length = size;
+            tuple->s.v2.length = size;
             tup_size = sizeof( segmented_arange_tuple );
             if( sdata->u.leader->class->flags & CLASS_STACK ) {
-                tuple->s.length = StackSize;
+                tuple->s.v2.length = StackSize;
             }
         } else {
             tuple->f.length = size;
@@ -701,7 +701,7 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
         mod->d.d->arange.u.vm_ptr += tup_size;
     }
     if( FmtData.type & MK_SEGMENTED ) {
-        tuple->s.offset = sdata->u.leader->seg_addr.off + delta;
+        tuple->s.v2.offset = sdata->u.leader->seg_addr.off + delta;
     } else {
         tuple->f.offset = GetNewAddrOffset( sdata, delta );
     }

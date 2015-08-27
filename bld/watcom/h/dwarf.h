@@ -322,11 +322,32 @@ typedef struct {
 #define STMT_PROLOGUE_HDR_OPCODE_BASE           14    // 4 + 2 + 4 + 1 + 1 + 1 + 1
 #define STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS   15    // 4 + 2 + 4 + 1 + 1 + 1 + 1 + 1
 
+// !!!! WARNING !!!!
+// In Dwarf V4 was specified arange triple structure in different field order
+// { selector, offset, length }.
+// It is big issue, because it can not be simply derived what version was used
+// for records creation.
+// Version of this record is same from Dwarf V2 even if it was changed in V4.
+// Dwarf comitee probably think that changes for segmented architectures are
+// minor nowdays and don't take care about it.
+// Therefore we have hadache how to resolve this backward compatible way.
+
 typedef struct {
     unsigned_32 offset;
     unsigned_16 segment;
     unsigned_32 length;
-} _WCUNALIGNED segmented_arange_tuple;
+} _WCUNALIGNED segmented_arange_tuple_v2;
+
+typedef struct {
+    unsigned_16 segment;
+    unsigned_32 offset;
+    unsigned_32 length;
+} _WCUNALIGNED segmented_arange_tuple_v4;
+
+typedef union {
+    segmented_arange_tuple_v2   v2;
+    segmented_arange_tuple_v4   v4;
+} segmented_arange_tuple;
 
 typedef struct {
     unsigned_32 offset;
