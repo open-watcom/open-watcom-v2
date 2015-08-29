@@ -286,19 +286,6 @@ typedef enum {
 #define DWLINE_BASE             (-1)
 #define DWLINE_RANGE            4
 
-/* *****NOTE*******NOTE******** BIG KLUDGE FOLLOWS *****NOTE*****NOTE******
- *
- * in the dwarf reading library, we assume that the abbrev codes are unique -
- * i.e. that a particular abbreviation code corresponds to only one kind
- * of abbreviation.  This used to be true, since the dwarf writing library was
- * the only thing we had generating dwarf.  Now that the linker is doing it,
- * we have a problem of conflicting abbrev codes.  So... until the reading
- * library assumption is removed, we have to keep the abbrev code spaces
- * separate!  This next constant is used in the dwarf reading library for this.
-***************************************************************************/
-
-#define LAST_LINKER_ABBREV 4
-
 /* handy structures section */
 
 typedef struct {

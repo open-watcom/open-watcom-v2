@@ -121,11 +121,6 @@ typedef struct {
 #define CU_NOLINE_ABBREV_CODE   2
 #define LABEL_ABBREV_CODE       3
 #define VARIABLE_ABBREV_CODE    4
-#define LAST_ABBREV_CODE        4
-
-#if LAST_ABBREV_CODE != LAST_LINKER_ABBREV
-#error "make sure dwarf.h is updated and dwarf writing library recompiled!"
-#endif
 
 static char SegmentedStandardAbbrevs[] = {
     COMPUNIT_ABBREV_CODE,
