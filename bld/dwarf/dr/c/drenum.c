@@ -70,9 +70,7 @@ extern void DRLoadEnum( dr_handle entry, void * data, enumCallback callback )
     if( tag != DW_TAG_enumeration_type ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-
-    abbrev += sizeof( unsigned_8 );         /* skip child byte */
-
+    abbrev++;   /* skip child flag */
     DWRSkipAttribs( abbrev, &entry );
 
     info.callback = callback;

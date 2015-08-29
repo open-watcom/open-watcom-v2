@@ -92,7 +92,7 @@ static dr_handle ScopeLastNameable( dr_scope_stack *scope, char **name )
         tmp_entry = scope->stack[i - 1];
 
         if( !DWRReadTagEnd( &tmp_entry, &abbrev, NULL ) ) {
-            abbrev += sizeof( unsigned_8 );
+            abbrev++;   /* skip child flag */
             *name = DWRGetName( abbrev, tmp_entry );
             if( *name != NULL ) {
                 return( scope->stack[i - 1] );

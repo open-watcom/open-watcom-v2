@@ -268,7 +268,7 @@ void DWRAllChildren( dr_handle mod, DWRCHILDCB fn, void *data )
     dr_handle       abbrev;
 
     while( !DWRReadTagEnd( &mod, &abbrev, NULL ) ) {
-        abbrev += sizeof( unsigned_8 );
+        abbrev++;   /* skip child flag */
         if( !fn( abbrev, mod, data ) )
             break;
         DWRSkipAttribs( abbrev, &mod );
@@ -863,7 +863,7 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
     if( DWRReadTagEnd( &mod, &abbrev, NULL ) )  /* skip tag */
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     haschild = DWRVMReadByte( abbrev );
-    abbrev += sizeof( unsigned_8 );
+    abbrev++;
     DWRSkipAttribs( abbrev, &mod );
     if( haschild == DW_CHILDREN_yes ) {
         curr = mod;
@@ -877,7 +877,7 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
             if( DWRReadTagEnd( &curr, &abbrev, NULL ) ) /* skip tag */
                 break;
             haschild = DWRVMReadByte( abbrev );
-            abbrev += sizeof( unsigned_8 );
+            abbrev++;
             old_abbrev = abbrev;
             old_curr = curr;
             if( haschild == DW_CHILDREN_yes ) {
@@ -916,7 +916,7 @@ bool DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, const DRWLKBLK *wlk
     start = curr;
     while( !DWRReadTagEnd( &curr, &abbrev, &tag ) ) {
         haschild = DWRVMReadByte( abbrev );
-        abbrev += sizeof( unsigned_8 );
+        abbrev++;
         index = 0;
         while( tags[index] != 0 ) {
             if( tags[index] == tag )
@@ -957,8 +957,7 @@ bool DWRWalkScope( dr_handle mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
     haschild = DWRVMReadByte( abbrev );
-
-    abbrev += sizeof( unsigned_8 );         /* skip child byte */
+    abbrev++;
     DWRSkipAttribs( abbrev, &mod );
     if( haschild == DW_CHILDREN_yes ) {
         int         depth;
@@ -975,7 +974,7 @@ bool DWRWalkScope( dr_handle mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
                 }
             } else {
                 haschild = DWRVMReadByte( abbrev );
-                abbrev += sizeof( unsigned_8 );
+                abbrev++;
                 index = 0;
                 while( tags[index] != 0 ) {
                     if( tags[index] == tag ) {

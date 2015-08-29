@@ -2254,9 +2254,9 @@ static void FillLoc( Loc_T *loc, dr_handle die )
         cu = DWRFindCompileInfo( loc->entry_current );
         loc->abbrev_start = cu->abbrevs[abbrev_idx];
         loc->abbrev_current = loc->abbrev_start;
-        loc->tag = DWRVMReadULEB128( &( loc->abbrev_current ) );
+        loc->tag = DWRVMReadULEB128( &loc->abbrev_current );
         loc->child = DWRVMReadByte( loc->abbrev_current );
-        loc->abbrev_current += sizeof( unsigned_8 );    /* skip child byte */
+        loc->abbrev_current++;
         loc->inParam = FALSE;
     } else {
         loc->entry_start = DR_HANDLE_NUL;
