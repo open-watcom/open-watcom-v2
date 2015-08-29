@@ -40,7 +40,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "bool.h"
-#include "clibext.h"
 
 /* for testing */
 //#define static
