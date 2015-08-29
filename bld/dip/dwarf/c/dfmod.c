@@ -158,7 +158,6 @@ dip_status     InitModMap( imp_image_handle *ii )
     dip_status  ret;
 
     ret = DS_OK;
-    ii->mod_count = 0;
     InitModList( &list );
     InitAddrSym( ii->addr_sym );
     DRSetDebug( ii->dwarf->handle ); /* set dwarf to image */
@@ -237,8 +236,8 @@ imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
     return( IMH_NOMOD );
 }
 
-imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
-/*********************************************************************/
+imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle dr_sym )
+/*****************************************************************/
 // find the imp_mod_handle where a dwarf dbginfo comes from
 {
     im_idx      i;
@@ -250,7 +249,7 @@ imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
     modinfo = ii->mod_map + 1;
     last = ii->mod_count - 1;
     for( i = 0; i < last; ++i ) {
-        if( mod_handle < modinfo->mod_handle ) {
+        if( dr_sym < modinfo->mod_handle ) {
             break;
         }
         ++modinfo;
@@ -344,7 +343,7 @@ unsigned    DIGENTRY DIPImpModName( imp_image_handle *ii,
         DCStatus( DS_FAIL );
         return( 0 );
     }
-    len = NameCopy( buff, name, buff_size );
+    len = NameCopy( buff, name, buff_size, 0 );
     return( len );
 }
 
@@ -596,22 +595,24 @@ dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     return( DS_OK );
 }
 
-unsigned    NameCopy( char *buff, const char *from, unsigned buff_size )
-/**********************************************************************/
+unsigned    NameCopy( char *buff, const char *from, unsigned buff_size, unsigned len )
+/************************************************************************************/
 {
-    unsigned    len;
+    unsigned    new_len;
 
-    len = strlen( from );
+    new_len = len + strlen( from );
     if( buff_size > 0 ) {
         --buff_size;
-        if( buff_size > len )
-            buff_size = len;
+        if( buff_size > new_len )
+            buff_size = new_len;
+        buff_size -= len;
+        buff -= len;
         while( buff_size-- > 0 ) {
             *buff++ = *from++;
         }
         *buff = '\0';
     }
-    return( len );
+    return( new_len );
 }
 
 void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )

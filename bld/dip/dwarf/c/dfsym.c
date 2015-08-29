@@ -116,7 +116,7 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                 DCStatus( DS_FAIL );
                 return( 0 );
             }
-            len = NameCopy( buff, name, buff_size );
+            len = NameCopy( buff, name, buff_size, 0 );
             DCFree( name );
         } else if( buff == NULL ) {
             return( 0 );
@@ -1525,18 +1525,18 @@ typedef struct {
     dr_handle           sym;
 } hash_look_data;
 
-static bool AHashItem( void *_find, dr_handle sym, const char *name )
-/*******************************************************************/
+static bool AHashItem( void *_find, dr_handle dr_sym, const char *name )
+/**********************************************************************/
 {
     hash_look_data  *find = _find;
     imp_sym_handle  *is;
 
     if( find->compare( name, find->name ) == 0 ) {
-        find->sym = sym;
+        find->sym = dr_sym;
         is = DCSymCreate( find->ii, find->d );
-        is->im = DwarfMod( find->ii, sym );
+        is->im = DwarfMod( find->ii, dr_sym );
         is->sclass = SYM_VAR;
-        is->sym = sym;
+        is->sym = dr_sym;
         is->state = DF_NOT;
     }
     return( TRUE );

@@ -178,10 +178,8 @@ unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
 /************************************************************************/
 {
     char            *name;
-    char            *dir_path;
     file_walk_name  wlk;
     unsigned        len;
-    unsigned        dir_len;
     dr_handle       stmts;
     dr_handle       cu_tag;
     int             i;
@@ -214,28 +212,13 @@ unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
     }
     // If compilation unit has a DW_AT_comp_dir attribute, we need to
     // stuff that in front of the file pathname, unless that is absolute
-    len = 0;
-    dir_len = DRGetCompDirBuff( cu_tag, NULL, 0 );
-    if( ( dir_len > 1 ) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
-        if( buff_size == 0 ) {
-            len = NameCopy( buff, name, buff_size ) + dir_len;
-        } else {
-            dir_path = DCAlloc( dir_len );
-            if( dir_path == NULL ) {
-                DCStatus( DS_FAIL );
-            } else {
-                DRGetCompDirBuff( cu_tag, dir_path, dir_len );
-                len = NameCopy( buff, dir_path, buff_size );
-                DCFree( dir_path );
-                if( buff_size > ( len + 1 ) ) {
-                    len += NameCopy( buff + len, "/", 1 + 1 );
-                    len += NameCopy( buff + len, name, buff_size - len );
-                }
-            }
-        }
+    len = DRGetCompDirBuff( cu_tag, buff, buff_size );
+    if( ( len > 1 ) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
+        len = NameCopy( buff, "/", buff_size, len );
     } else {
-        len = NameCopy( buff, name, buff_size );
+        len = 0;
     }
+    len = NameCopy( buff, name, buff_size, len );
     DCFree( name );
     return( len );
 }

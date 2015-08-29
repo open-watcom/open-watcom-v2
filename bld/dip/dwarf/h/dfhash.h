@@ -33,7 +33,7 @@
 typedef  struct name_ctl name_ctl;
 
 typedef struct{
-    bool        (*fn)( void *d, dr_handle sym, const char *name );
+    bool        (*fn)( void *d, dr_handle dr_sym, const char *name );
     const char  *name;
     void        *d;
 } name_wlk;

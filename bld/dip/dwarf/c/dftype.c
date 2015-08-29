@@ -1390,7 +1390,7 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
             *tag = ST_NONE;
             break;
         }
-        len = NameCopy( buff, name, buff_size );
+        len = NameCopy( buff, name, buff_size, 0 );
         DCFree( name );
     }
     return( len );
