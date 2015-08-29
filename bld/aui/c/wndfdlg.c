@@ -32,9 +32,9 @@
 #include "auipvt.h"
 #include <stdlib.h>
 #include <string.h>
-#ifndef __WATCOMC__
+
 #include "clibext.h"
-#endif
+
 
 extern gui_window *DlgGetParent( void );
 

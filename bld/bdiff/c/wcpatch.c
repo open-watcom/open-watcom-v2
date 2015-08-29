@@ -34,11 +34,12 @@
 #include <string.h>
 #include <direct.h>
 #include "wio.h"
-
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
+
 #include "clibext.h"
+
 
 #define FALSE 0
 
