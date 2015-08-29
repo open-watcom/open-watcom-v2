@@ -34,6 +34,8 @@
 #include "drgettab.h"
 #include "drutils.h"
 
+#define DEBUG_ARANGES_VERSION   2
+
 #include "pushpck1.h"
 typedef struct arange_header {
     uint_32     len;
@@ -70,7 +72,7 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
             SWAP_16( header.version );
             SWAP_32( header.dbg_pos );
         }
-        if( DWARF_VER_INVALID( header.version ) )
+        if( header.version != DEBUG_ARANGES_VERSION )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
         arange.dbg = base + header.dbg_pos;
         arange.addr_size = header.addr_size;

@@ -34,6 +34,8 @@
 #include "drutils.h"
 #include <string.h>
 
+#define DEBUG_PUBNAMES_VERSION   2
+
 #include "pushpck1.h"
 typedef struct pubname_header {
     uint_32     len;
@@ -70,7 +72,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
             SWAP_32( header.dbg_pos );
             SWAP_32( header.dbg_length );
         }
-        if( DWARF_VER_INVALID( header.version ) )
+        if( header.version != DEBUG_PUBNAMES_VERSION )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
         unit_end = pos + sizeof( uint_32 ) + header.len;
         pos += sizeof( header );
