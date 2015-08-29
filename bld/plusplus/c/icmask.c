@@ -163,7 +163,6 @@ static unsigned whatICAmI( char *p )
             return( i );
         }
     }
-    fail( "cannot find IC '%s'\n", s );
     return( NO_IDX );
 }
 
@@ -195,6 +194,8 @@ static void processIC_H( char *fname )
             p = skipNonSpace( ic_start );
             p = skipSpace( p );
             ic_idx = whatICAmI( p );
+            if( ic_idx == NO_IDX )
+                fail( "cannot find IC '%s'\n", p );
             continue;
         }
         if( ic_idx != NO_IDX ) {
@@ -283,6 +284,8 @@ static void scanSource( char *fname )
                 p = skipSpace( p );
                 if( memcmp( p, "IC_", 3 ) == 0 ) {
                     ic_idx = whatICAmI( p );
+                    if( ic_idx == NO_IDX )
+                        fail( "cannot find IC '%s'\n", p );
                     addName( icMaskTable, ic_idx, mask_id );
                 }
             }
