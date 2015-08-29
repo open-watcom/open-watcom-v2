@@ -95,7 +95,7 @@ static bool GetStrLen( imp_image_handle *ii,
     if( im == IMH_NOMOD ){
         return( FALSE );
     }
-    modinfo = IM2MODI( ii, im );
+    modinfo = IMH2MODI( ii, im );
     if( modinfo->is_segment == FALSE ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
@@ -258,7 +258,7 @@ static void InitTypeHandle( imp_image_handle *ii,
                     if( info.ordering == DW_ORD_col_major ){
                         it->array.column_major = 1;
                     }
-                }else if( IM2MODI( ii, it->im )->lang == DR_LANG_FORTRAN ){
+                }else if( IMH2MODI( ii, it->im )->lang == DR_LANG_FORTRAN ){
                     it->array.column_major = 1;
                 }
                 if( info.child == DR_HANDLE_NUL ) { // set info now
@@ -346,7 +346,7 @@ walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     struct mod_type typ_wlk;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each interface */
-    cu_tag = IM2MODI( ii, im )->cu_tag;
+    cu_tag = IMH2MODI( ii, im )->cu_tag;
     typ_wlk.ii = ii;
     typ_wlk.im = im;
     typ_wlk.wk = wk;
@@ -595,7 +595,7 @@ static bool GetSymVal( imp_image_handle *ii,
     if( im == IMH_NOMOD ){
         return( FALSE );
     }
-    if( IM2MODI( ii, im )->is_segment == FALSE ){
+    if( IMH2MODI( ii, im )->is_segment == FALSE ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
         EvalSeg( ii, dr_sym, &seg );
@@ -641,7 +641,7 @@ static bool ArraySubRange( dr_handle tsub, int index, void *_df )
     DRGetSubrangeInfo( tsub, &info );
     /* DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1) */
     if( info.low.val_class == DR_VAL_NOT ) {
-        if( IM2MODI( df->ii, df->it->im )->lang == DR_LANG_FORTRAN )
+        if( IMH2MODI( df->ii, df->it->im )->lang == DR_LANG_FORTRAN )
             low = 1;
         else
             low = 0;

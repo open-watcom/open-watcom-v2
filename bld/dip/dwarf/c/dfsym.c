@@ -110,7 +110,7 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
         }
         break;
     case SN_DEMANGLED:
-        if( IM2MODI( ii, is->im )->lang == DR_LANG_CPLUSPLUS ) {
+        if( IMH2MODI( ii, is->im )->lang == DR_LANG_CPLUSPLUS ) {
             name = DRDecoratedName( is->sym, 0 );
             if( name == NULL ) {
                 DCStatus( DS_FAIL );
@@ -205,7 +205,7 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
 
     cont = cont;
 //    ret = TRUE;
-    is_segment = IM2MODI( d->ii, d->im )->is_segment;
+    is_segment = IMH2MODI( d->ii, d->im )->is_segment;
     if( DRGetLowPc( sym, &offset) ) {
         if( !is_segment ) {
             seg = SEG_FLAT; // if flat hoke segment
@@ -236,7 +236,7 @@ seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
     seg_list        *addr_sym;
     mod_info        *modinfo;
 
-    modinfo = IM2MODI( ii, im );
+    modinfo = IMH2MODI( ii, im );
     addr_sym = modinfo->addr_sym;
     if( addr_sym->head == NULL ) {  /* no cache */
         FiniAddrSym( addr_sym );    /* kill cache */
@@ -329,7 +329,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
 
     ret = DS_FAIL;
     base = NilAddr;
-    is_segment = IM2MODI( ii, is->im )->is_segment;
+    is_segment = IMH2MODI( ii, is->im )->is_segment;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     if( DRGetLowPc( is->sym, &base.mach.offset) ) {
         if( !is_segment ) {
@@ -735,7 +735,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
 
     dr_this = GetThis( ii, is->sym );
     if( dr_this != DR_HANDLE_NUL ) {
-        if( !IM2MODI( ii, is->im )->is_segment ) {
+        if( !IMH2MODI( ii, is->im )->is_segment ) {
             seg = SEG_DATA; // if flat hoke segment
         } else {
             EvalSeg( ii, is->sym, &seg );
@@ -910,7 +910,7 @@ static search_result  DFAddrScope( imp_image_handle *ii,
             scope->start.mach.offset = node->start;
             scope->len = node->end - node->start;
             DCMapAddr( &scope->start.mach, ii->dcmap );
-            scope->unique = node->what - IM2MODI( ii, im )->cu_tag;   /* make relative */
+            scope->unique = node->what - IMH2MODI( ii, im )->cu_tag;   /* make relative */
             ret = SR_CLOSEST;
         }
     }
@@ -980,7 +980,7 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
     }
     if( ctl->root != NULL ) {
         ret = SR_NONE;
-        cu_tag = IM2MODI(ii, im )->cu_tag;
+        cu_tag = IMH2MODI(ii, im )->cu_tag;
         node = FindScope( ctl->root, addr.mach.offset );
         what = cu_tag + in->unique;    /* make absolute */
         while( node != NULL ) {
@@ -1030,7 +1030,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
     dr_handle       cu_tag;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
-    cu_tag = IM2MODI( ii, im )->cu_tag;
+    cu_tag = IMH2MODI( ii, im )->cu_tag;
     curr = cu_tag + in->unique;         /* make absolute */
     sc = DRGetTagType( curr );
     switch( sc ) {
@@ -1266,7 +1266,7 @@ static bool WalkModSymList( blk_wlk *df, DRWLKBLK fn, imp_mod_handle im )
     mod_info        *modinfo;
 
     df->com.im = im;
-    modinfo = IM2MODI( df->com.ii, im );
+    modinfo = IMH2MODI( df->com.ii, im );
     if( df->com.what == DR_SRCH_ctypes && modinfo->lang == DR_LANG_CPLUSPLUS ) {
         df->com.what = DR_SRCH_cpptypes;
     }
@@ -1294,7 +1294,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
     ii = df->com.ii;
     cont = TRUE;
     if( DFAddrMod( ii, *addr, &im ) != SR_NONE ) {
-        modinfo = IM2MODI( ii, im );
+        modinfo = IMH2MODI( ii, im );
         if( DFAddrScope( ii, im, *addr, &scope ) != SR_NONE ) {
             df->com.im = im;
             cu_tag = modinfo->cu_tag;
@@ -1363,7 +1363,7 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
     if( DFAddrMod( ii, scope->start, &im ) != SR_NONE ) {
         DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
         df->com.im = im;
-        cu_tag = IM2MODI( ii, im )->cu_tag;
+        cu_tag = IMH2MODI( ii, im )->cu_tag;
         blk = cu_tag + scope->unique;               /* make absolute */
         sc = DRGetTagType( blk );
         if( sc == DR_TAG_CLASS ) {
@@ -1391,7 +1391,7 @@ static bool WalkSymSymList( blk_wlk *df, DRWLKBLK fn, imp_sym_handle *is )
     bool                cont;
 
     df->com.im = is->im;
-    if( df->com.what == DR_SRCH_ctypes && IM2MODI( df->com.ii, is->im )->lang == DR_LANG_CPLUSPLUS ) {
+    if( df->com.what == DR_SRCH_ctypes && IMH2MODI( df->com.ii, is->im )->lang == DR_LANG_CPLUSPLUS ) {
         df->com.what = DR_SRCH_cpptypes;
     }
     cont = WalkOneBlock( df, fn, is->sym );

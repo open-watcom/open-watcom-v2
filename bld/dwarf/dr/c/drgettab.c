@@ -233,10 +233,8 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
             if( value_lns == DW_LNS_fixed_advance_pc ) {
                 start += sizeof( unsigned_16 );    // it is a fixed size
             } else {    // it is a variable # of blocks
-                value = oparray[value_lns - 1];
-                while( value > 0 ) {
+                for( value = oparray[value_lns - 1]; value > 0; --value ) {
                     DWRVMSkipLEB128( &start );
-                    value--;
                 }
             }
         }       // else it was a special op, and thus only 1 byte long

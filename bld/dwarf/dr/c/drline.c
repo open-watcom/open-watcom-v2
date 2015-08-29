@@ -70,8 +70,7 @@ static void InitState( line_info *info )
     info->state.is_stmt = info->rdr.def_is_stmt;
     info->state.basic_blk = FALSE;
     info->state.end_seq = FALSE;
-    info->state.addr_set = FALSE;
-//    info->state.addr_set = TRUE;  // address starts at 0
+    info->state.addr_set = TRUE;  // address starts at 0
 }
 
 static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
@@ -99,7 +98,6 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
     name_buf = NULL;
     name_buf_len = 0;
     InitState( info );
-    info->state.addr_set = TRUE;  // address starts at 0
     curr = info->rdr.curr;
     finish = info->rdr.finish;
     min_ins_len = info->rdr.min_ins_len;

@@ -229,7 +229,7 @@ imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
     modinfo = ii->mod_map;
     for( i = 0; i < ii->mod_count; ++i ) {
         if( mod_handle == modinfo->mod_handle ) {
-            return( IMX2IM( i ) );
+            return( IMX2IMH( i ) );
         }
         ++modinfo;
     }
@@ -254,7 +254,7 @@ imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle dr_sym )
         }
         ++modinfo;
     }
-    return( IMX2IM( i ) );
+    return( IMX2IMH( i ) );
 }
 
 imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_tag )
@@ -267,7 +267,7 @@ imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_tag )
     modinfo = ii->mod_map;
     for( i = 0; i < ii->mod_count; ++i ) {
         if( cu_tag == modinfo->cu_tag ) {
-            return( IMX2IM( i ) );
+            return( IMX2IMH( i ) );
         }
         ++modinfo;
     }
@@ -283,7 +283,7 @@ walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
     ret = WR_CONTINUE;
     for( i = 0; i < ii->mod_count; ++i ) {
         saved = DRGetDebug();
-        ret = wk( ii, IMX2IM( i ), d );
+        ret = wk( ii, IMX2IMH( i ), d );
         DRSetDebug( saved );
         if( ret != WR_CONTINUE ) {
             break;
@@ -304,7 +304,7 @@ walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, vo
     for( i = 0; i < ii->mod_count; ++i ) {
         if( src == modinfo->has_pubnames ) {
             saved = DRGetDebug();
-            ret = wk( ii, IMX2IM( i ), d );
+            ret = wk( ii, IMX2IMH( i ), d );
             DRSetDebug( saved );
             if( ret != WR_CONTINUE ) {
                 break;
@@ -324,7 +324,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
     ret = WR_CONTINUE;
     for( i = 0; i < ii->mod_count; ++i ) {
         saved = DRGetDebug();
-        ret = wk( ii, IMX2IM( i ), d );
+        ret = wk( ii, IMX2IMH( i ), d );
         DRSetDebug( saved );
         if( ret != WR_CONTINUE ) {
             break;
@@ -339,7 +339,7 @@ unsigned    DIGENTRY DIPImpModName( imp_image_handle *ii,
     char        *name;
     unsigned    len;
 
-    if( im == IMH_NOMOD || (name = IM2MODI( ii, im )->name) == NULL ) {
+    if( im == IMH_NOMOD || (name = IMH2MODI( ii, im )->name) == NULL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -355,7 +355,7 @@ char    *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
         DCStatus( DS_FAIL );
         return( NULL );
     }
-    switch( IM2MODI( ii, im )->lang ) {
+    switch( IMH2MODI( ii, im )->lang ) {
     case DR_LANG_UNKNOWN:
 //      ret = "unknown";
         ret = "c";
@@ -468,7 +468,7 @@ address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
     address     a;
     dr_handle   stmts;
 
-    if( im != IMH_NOMOD && (stmts = IM2MODI( ii, im )->stmts) != DR_HANDLE_NUL ) {
+    if( im != IMH_NOMOD && (stmts = IMH2MODI( ii, im )->stmts) != DR_HANDLE_NUL ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
         walk.ii = ii;
         walk.im = im;
@@ -498,7 +498,7 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
         DCStatus( ret );
         return( ret );
     }
-    modinfo = IM2MODI( ii, im );
+    modinfo = IMH2MODI( ii, im );
     switch( hk ) {
     case HK_IMAGE:
         break;
@@ -546,7 +546,7 @@ dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     mod_info    *modinfo;
 
 //TODO: finish
-    modinfo = IM2MODI( ii, im );
+    modinfo = IMH2MODI( ii, im );
     ti->size = modinfo->addr_size;
     switch( dk ) {
     case DK_INT:
@@ -606,7 +606,7 @@ unsigned    NameCopy( char *buff, const char *from, unsigned buff_size, unsigned
         if( buff_size > new_len )
             buff_size = new_len;
         buff_size -= len;
-        buff -= len;
+        buff += len;
         while( buff_size-- > 0 ) {
             *buff++ = *from++;
         }
@@ -622,6 +622,6 @@ void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
 
     im = Dwarf2Mod( ii, mod_handle );
     if( im != IMH_NOMOD ) {
-        IM2MODI( ii, im )->has_pubnames = TRUE;
+        IMH2MODI( ii, im )->has_pubnames = TRUE;
     }
 }

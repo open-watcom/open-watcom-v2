@@ -186,7 +186,7 @@ unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
     mod_info        *modinfo;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into dwarf */
-    modinfo = IM2MODI( ii, ic->im );
+    modinfo = IMH2MODI( ii, ic->im );
     stmts = modinfo->stmts;
     cu_tag = modinfo->cu_tag;
     if( stmts == DR_HANDLE_NUL || cu_tag == DR_HANDLE_NUL ) {
@@ -310,7 +310,7 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
     dr_handle       stmts;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IM2MODI( ii, im )->stmts;
+    stmts = IMH2MODI( ii, im )->stmts;
     if( stmts == DR_HANDLE_NUL ) {
         DCStatus( DS_FAIL );
         return( WR_CONTINUE );
@@ -399,7 +399,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
     address         map_addr;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IM2MODI( ii, src->im )->stmts;
+    stmts = IMH2MODI( ii, src->im )->stmts;
     if( stmts == DR_HANDLE_NUL ) {
         DCStatus( DS_FAIL );
         return( DS_ERR|DS_FAIL  );
@@ -504,7 +504,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
         return( SR_NONE );
     }
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    stmts = IM2MODI( ii, im )->stmts;
+    stmts = IMH2MODI( ii, im )->stmts;
     if( stmts == DR_HANDLE_NUL ) {
         return( SR_NONE );
     }
@@ -570,7 +570,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
         return( SR_NONE );
     }
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IM2MODI( ii, im )->stmts;
+    stmts = IMH2MODI( ii, im )->stmts;
     if( stmts == DR_HANDLE_NUL ) {
         return( SR_NONE );
     }

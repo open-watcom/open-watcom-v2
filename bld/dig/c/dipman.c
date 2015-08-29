@@ -91,7 +91,7 @@ struct sym_handle {
 
 #define MK_MH( ii, sm )         ((unsigned_32)((ii)+1) << 16 | (sm))
 #define MH_IMAGE( mh )          ((unsigned)((mh)>>16)-1)
-#define II2IH( ii )             ((ActProc==NULL)||(ActProc->map_entries<=ii)?NULL:ActProc->ih_map[ii])
+#define II2IH( ii )             (((ActProc==NULL)||(ActProc->map_entries<=ii))?NULL:ActProc->ih_map[ii])
 #define MH2IH( mh )             (((mh&0xffff0000)==0)?NULL:II2IH(MH_IMAGE(mh)))
 
 #define NO_IMAGE_IDX    ((image_idx)-1)
