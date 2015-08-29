@@ -33,15 +33,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-
 #include "preproc.h"
-#undef T_LEFT_PAREN
-#undef T_RIGHT_PAREN
-#undef T_LITERAL
-#undef T_EOF
-#undef T_COMMA
 #include "ssl.h"
 #include "sslint.h"
+
+#include "clibext.h"
 
 
 token           CurrToken;
