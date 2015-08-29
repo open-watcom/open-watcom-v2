@@ -39,6 +39,7 @@
 
 #include "clibext.h"
 
+
 /* buttons and icons that can be in the dialog */
 typedef enum {
     NO_CONTROL  = 0x000,

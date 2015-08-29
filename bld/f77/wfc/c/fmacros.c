@@ -30,14 +30,16 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "progsw.h"
 #include "errcod.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
 #include "ferror.h"
-#include <string.h>
+
 #include "clibext.h"
+
 
 typedef struct macro_entry {
     struct macro_entry  *link;

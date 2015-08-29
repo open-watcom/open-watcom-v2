@@ -73,10 +73,12 @@
     #include <dos.h>
 #endif
 #include "walloca.h"
-#include "clibext.h"
 #include "guifdlg.h"
 #include "guidlg.h"
 #include "guistr.h"
+
+#include "clibext.h"
+
 
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
     #define FILE_SEP    "/"

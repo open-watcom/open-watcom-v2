@@ -47,6 +47,8 @@
 #include "encodlng.h"
 #include "intlload.h"
 
+#include "clibext.h"
+
 
 static uint_16 const sigCheck[] = {
     #define LS_DEF( name, sig ) sig ,

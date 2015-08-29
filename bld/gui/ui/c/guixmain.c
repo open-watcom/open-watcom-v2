@@ -47,11 +47,18 @@
 #ifdef __UNIX__
     #include <termios.h>
 #endif
+#ifdef __WINDOWS__
+    #include "swap.h"
+    #include <wwindows.h>
+    #include <dos.h>
+#endif
+
 #if defined(__WATCOMC__)
     #include "clibint.h"
 #else
     #include "clibext.h"
 #endif
+
 
 extern int GUIXMain( int argc, char * argv[] );
 
@@ -59,10 +66,6 @@ extern int GUIXMain( int argc, char * argv[] );
 bool GUIMainTouched = false;
 
 #ifdef __WINDOWS__
-
-#include "swap.h"
-#include <wwindows.h>
-#include <dos.h>
 
 int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPSTR lpCmdLine, int nShowCmd )

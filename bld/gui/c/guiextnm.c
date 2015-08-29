@@ -32,9 +32,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bool.h"
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
+
+#include "clibext.h"
+
 
 static char   GUIExtName[_MAX_PATH] = "";
 

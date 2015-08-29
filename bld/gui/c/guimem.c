@@ -38,6 +38,7 @@
     #include "clibext.h"
 #endif
 
+
 #ifdef TRMEM
 _trmem_hdl  GUIMemHandle;
 static int  GUIMemFileHandle;   /* stream to put output on */

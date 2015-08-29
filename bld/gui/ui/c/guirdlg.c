@@ -40,7 +40,9 @@
 #include "wressetr.h"
 #include "resdiag.h"
 #include "wresdefn.h"
+
 #include "clibext.h"
+
 
 #define DLG_X_MULT      4
 #define DLG_Y_MULT      14
