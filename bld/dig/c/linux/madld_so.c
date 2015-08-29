@@ -36,9 +36,8 @@
 #include "madimp.h"
 #include "madcli.h"
 #include "madsys.h"
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
+
+#include "clibext.h"
 
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
