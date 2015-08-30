@@ -33,11 +33,13 @@
 #include <stdlib.h>
 #ifdef __NT__
     #include <windows.h>
-#endif
-#include "leadbyte.h"
+    #include "bool.h"
+    #include "watcom.h"
+    #include "pass2.h"
+    #include "sharedio.h"
+    #include "param.h"
+    #include "leadbyte.h"
 
-
-#ifdef __NT__
 
 void SetNativeLeadBytes( void ) {
 /*********************************/
