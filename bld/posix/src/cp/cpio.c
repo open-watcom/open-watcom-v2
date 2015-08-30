@@ -47,7 +47,9 @@
 #include <os2.h>
 #endif
 #include "cp.h"
+
 #include "clibext.h"
+
 
 #if !defined( __WATCOMC__ ) && defined( __NT__ )
 #else

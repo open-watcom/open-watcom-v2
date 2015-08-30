@@ -49,7 +49,9 @@
 #if defined( __NT__ )
 #include <windows.h>
 #endif
+
 #include "clibext.h"
+
 
 long GetClusterSize( unsigned char drive )
 {

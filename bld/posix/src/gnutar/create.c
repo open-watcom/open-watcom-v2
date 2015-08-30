@@ -44,12 +44,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
-
 #include "tar.h"
 #include "create.h"
 #include "list.h"
 #include "buffer.h"
-
 #ifndef MSDOS
 #include <pwd.h>
 #include <grp.h>
@@ -77,8 +75,6 @@
 #endif /* V7 */
 #endif /* !BSD42 */
 
-#include "clibext.h"
-
 #ifdef USG
 #ifdef MSDOS
 /* DOS doesn't have minor device numbers */
@@ -92,6 +88,10 @@
 #include <sys/sysmacros.h>              /* major() and minor() defined here */
 #endif
 #endif
+#include <errno.h>
+
+#include "clibext.h"
+
 
 /*
  * V7 doesn't have a #define for this.
@@ -106,8 +106,6 @@
 #ifndef S_IFLNK
 #define lstat stat
 #endif
-
-#include <errno.h>
 
 union record   *start_header( char *name, struct stat *st );
 

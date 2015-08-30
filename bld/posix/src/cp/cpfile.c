@@ -52,8 +52,10 @@
 #include "watcom.h"
 #include "cp.h"
 #include "fnutils.h"
+
 #include "clibext.h"
 #include "filerx.h"
+
 
 #if defined( __OS2__ ) && defined( _M_I86 ) || defined( __DOS__ )
 extern long DosGetFullPath( char __FAR *org, char __FAR *real );
