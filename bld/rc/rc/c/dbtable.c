@@ -37,6 +37,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 typedef struct {
     DBTableHeader       header;

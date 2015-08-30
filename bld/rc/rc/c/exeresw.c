@@ -39,6 +39,8 @@
 #include "exeutil.h"
 #include "exeres.h"
 
+#include "clibext.h"
+
 
 extern void InitWINResTable( void )
 /*********************************/
