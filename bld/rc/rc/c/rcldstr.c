@@ -40,6 +40,8 @@
 #include "iortns.h"
 #include "clibint.h"
 
+#include "clibext.h"
+
 
 extern HANDLE_INFO  Instance;
 
