@@ -37,7 +37,6 @@
 #include "depend.h"
 #include "errprt.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 
 

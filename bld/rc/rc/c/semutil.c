@@ -33,8 +33,8 @@
 #include "errors.h"
 #include "rcrtns.h"
 #include "semutil.h"
-#include "clibext.h"
 #include "rccore.h"
+
 
 void ReportCopyError( RcStatus status, int read_msg, const char *filename, int err_code )
 {

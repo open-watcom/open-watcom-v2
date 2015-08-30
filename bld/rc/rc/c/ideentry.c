@@ -45,8 +45,10 @@
 #include "errors.h"
 #include "banner.h"
 #include "rc.h"
-#include "clibext.h"
 #include "rccore.h"
+
+#include "clibext.h"
+
 
 #define PRINTF_BUF_SIZE         2048
 
@@ -147,10 +149,10 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
     return( err );
 }
 
-char *RcGetEnv( const char *name )
-/********************************/
+const char *RcGetEnv( const char *name )
+/**************************************/
 {
-    char        *val;
+    const char  *val;
 
     if( ideCb != NULL && !initInfo->ignore_env ) {
         if( !ideCb->GetInfo( cbHandle, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {

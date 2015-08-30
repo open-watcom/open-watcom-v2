@@ -46,8 +46,8 @@
 #include "wresset2.h"
 #include "rclayer0.h"
 #include "rc.h"
-#include "clibext.h"
 #include "rccore.h"
+
 
 extern HANDLE_INFO  Instance;
 

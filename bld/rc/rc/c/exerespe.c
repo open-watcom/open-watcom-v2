@@ -38,7 +38,6 @@
 #include "errors.h"
 #include "wrmergdi.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exeobj.h"
 #include "exeutil.h"
@@ -685,8 +684,11 @@ static void FreePEResDir( PEResDir * dir )
 /****************************************/
 {
     FreeSubDir( &dir->Root );
-    RCFREE( dir->String.StringBlock );
-    RCFREE( dir->String.StringList );
+    if( dir->String.StringBlock != NULL )
+        RCFREE( dir->String.StringBlock );
+    if( dir->String.StringList != NULL ) {
+        RCFREE( dir->String.StringList );
+    }
 }
 
 #ifndef INSIDE_WLINK

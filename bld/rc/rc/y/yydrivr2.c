@@ -37,8 +37,6 @@
 #include "rcmem.h"
 #include "errors.h"
 #include "errprt.h"
-//#include "os2res.h"
-#include "clibext.h"
 #include "rccore.h"
 
 

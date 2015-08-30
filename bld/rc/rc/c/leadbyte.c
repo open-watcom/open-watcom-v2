@@ -31,14 +31,15 @@
 
 
 #include <stdlib.h>
+#ifdef __NT__
+    #include <windows.h>
+#endif
 #include "watcom.h"
 #include "leadbyte.h"
-#include "clibext.h"
 #include "rccore.h"
 
-#ifdef __NT__
 
-#include <windows.h>
+#ifdef __NT__
 
 void SetNativeLeadBytes( void ) {
 /*********************************/

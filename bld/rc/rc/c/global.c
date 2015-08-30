@@ -31,7 +31,5 @@
 
 
 #include "global.h"
-
-#include "clibext.h"
 #define RCEXTERN            /* nothing */
 #include "rccore.h"

@@ -38,7 +38,6 @@
 #include "errors.h"
 #include "errprt.h"
 #include "wresdefn.h"
-#include "clibext.h"
 #include "rccore.h"
 
 

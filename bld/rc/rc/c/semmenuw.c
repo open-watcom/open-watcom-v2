@@ -67,7 +67,6 @@ struct PopupMenuExItem {
 #include "semantcw.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 
 
@@ -340,8 +339,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
 
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-             strerror( err_code ) );
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = true;
     SemFreeSubMenu( menu );
     return;

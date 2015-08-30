@@ -36,8 +36,8 @@
 #include "semantcw.h"
 #include "tmpctl.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
+
 
 static WResLangType curLang;
 static bool         resourceHasLang;

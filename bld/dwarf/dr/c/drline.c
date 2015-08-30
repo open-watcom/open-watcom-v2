@@ -30,8 +30,8 @@
 
 
 #include "drpriv.h"
-#include "drutils.h"
 #include <string.h>
+#include "drutils.h"
 #include "walloca.h"
 
 #include "clibext.h"

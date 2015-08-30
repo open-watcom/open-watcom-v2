@@ -33,10 +33,10 @@
 #include "global.h"
 #include "errors.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exelxobj.h"
 #include "exeutil.h"
+
 
 static bool readObjectAndPageTable( ExeFileInfo *exe )
 /****************************************************/

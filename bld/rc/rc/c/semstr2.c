@@ -35,7 +35,6 @@
 #include "semantic.h"
 #include "semantc2.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 
 
@@ -308,8 +307,7 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
                                                  CurrResFile.handle,
                                                  currblock->codePage );
             if( error ) {
-                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                         LastWresErrStr() );
+                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                 ErrorHasOccured = true;
                 SemOS2FreeStringTable( currtable );
                 return;

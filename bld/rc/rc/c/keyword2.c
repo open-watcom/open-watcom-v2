@@ -32,11 +32,9 @@
 #include <ctype.h>
 #include "yydrivr2.h"
 #include "weights2.gh"
-
 #define IGNORE_CASE
 #include "kwhash.h"
 
-#include "clibext.h"
 
 /* This array is intended to be accessed by ASCII values of a char */
 static const unsigned char Weights[] = {

@@ -32,9 +32,9 @@
 #include "wio.h"
 #include "global.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exeutil.h"
+
 
 /*
  * CopyExeData

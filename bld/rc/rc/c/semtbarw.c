@@ -36,7 +36,6 @@
 #include "restbar.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 
 

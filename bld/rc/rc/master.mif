@@ -38,15 +38,13 @@ additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 
 .EXTENSIONS : .y .key .gh .res .rc
 
-!ifeq release 0
-!ifeq host_os nt
-!ifneq host_cpu axp
-TRACK_MEM_OPTS = -DRCMEM_DEBUG
-!else   # axp: -DRCMEM_DEBUG version is NOT working! Fix me!
-!endif
-!else
-TRACK_MEM_OPTS = -DRC_USE_TRMEM $(trmem_cover_cflags)
 WRC_USE_TRMEM = 1
+
+!ifeq release 0
+!ifeq WRC_USE_TRMEM 1
+TRACK_MEM_OPTS = -DRC_USE_TRMEM $(trmem_cover_cflags)
+!else
+TRACK_MEM_OPTS = -DRCMEM_DEBUG
 !endif
 !endif
 
@@ -196,8 +194,10 @@ depends_drv =
 depends_dll = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 depends_exe = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !else
-depends_dll = rcmsg.gh wrc.res $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
-depends_exe = rcmsg.gh wrc.res $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+depends_dll = rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+depends_exe = rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+res_dll = wrc.res
+res_exe = wrc.res
 !endif
 
 # explicit rules
@@ -217,7 +217,7 @@ $(exename).exe : $(misc_objs) $(depends_drv) $(dllname).dll $(objs_drv) $(versio
 
 !else
 
-$(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(res_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs_exe) $(xlibs) $(ldflags)
 !else
@@ -228,13 +228,13 @@ $(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(version_res_
         @%make bind_osildr
 !endif
         @%make bind_version_res_exe
-!ifneq bootstrap 1
-        $(wstrip) -q -a -r $@ . wrc.res
+!ifdef res_exe
+        $(wstrip) -q -a -r $@ . $(res_exe)
 !endif
 
 !endif
 
-$(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(res_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags_dll) $(objs_dll) $(xlibs) $(ldflags)
 !else
@@ -244,8 +244,8 @@ $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(version_res_dll_$(host_os
         $(linker) name $@ @dll.lnk
 !endif
         @%make bind_version_res_dll
-!ifneq bootstrap 1
-        $(wstrip) -q -a -r $@ . wrc.res
+!ifdef res_dll
+        $(wstrip) -q -a -r $@ . $(res_dll)
 !endif
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de

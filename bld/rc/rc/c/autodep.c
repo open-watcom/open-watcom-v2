@@ -37,7 +37,6 @@
 #include "semantic.h"
 #include "rcrtns.h"
 #include "depend.h"
-#include "clibext.h"
 #include "rccore.h"
 
 

@@ -51,16 +51,16 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exeutil.h"
 
 
-static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
-/******************************************************************************/
+static char *MakeTmpInSameDir( const char *dirfile, char *ext )
+/*************************************************************/
 {
     char    drive[_MAX_DRIVE];
     char    dir[_MAX_DIR];
+    char    *out;
 #ifdef __DOS__
     char    *fname = "__TMP__";
 #else
@@ -69,8 +69,10 @@ static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
     // in the same directory
     sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
 #endif
+    out = RCALLOC( strlen( dirfile ) + 1 + strlen( fname ) + strlen( ext ) + 1 );
     _splitpath( dirfile, drive, dir, NULL, NULL );
-    _makepath( outfile, drive, dir, fname, ext );
+    _makepath( out, drive, dir, fname, ext );
+    return( out );
 } /* MakeTmpInSameDir */
 
 static bool Pass1InitRes( void )
@@ -81,10 +83,10 @@ static bool Pass1InitRes( void )
     ResLocation   null_loc;
 
     /* put the temporary file in the same location as the output file */
-    CurrResFile.filename = CurrResFile.namebuf;
 #ifdef USE_TEMPFILE
-    MakeTmpInSameDir( CmdLineParms.OutResFileName, CurrResFile.filename, "res" );
+    CurrResFile.filename = MakeTmpInSameDir( CmdLineParms.OutResFileName, "res" );
 #else
+    CurrResFile.filename = RCALLOC( strlen( CmdLineParms.OutResFileName ) + 1 );
     strcpy( CurrResFile.filename, CmdLineParms.OutResFileName );
 #endif
 
@@ -143,16 +145,55 @@ int RcFindResource( const char *name, char *fullpath )
     return( PP_FindInclude( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }
 
-extern void RcTmpFileName( char *tmpfilename )
-/********************************************/
+
+static size_t GetPathElementLen( const char *path_list, const char *end )
+/*
+ * This code is derived from code in watcom/c/pathlist.c
+ * hold it in sync with this code
+ */
+{
+    bool    is_blank;
+    char    c;
+    size_t  len;
+
+    is_blank = TRUE;
+    len = 0;
+    while( path_list != end && (c = *path_list) != '\0' ) {
+        path_list++;
+        if( IS_INCLUDE_LIST_SEP( c ) ) {
+            if( !is_blank ) {
+                break;
+            }
+        } else if( IS_DIR_SEP( c ) ) {
+            is_blank = FALSE;
+            ++len;
+        } else if( !is_blank ) {
+            ++len;
+        } else if( c != ' ' ) {
+            is_blank = FALSE;
+            ++len;
+        }
+    }
+    return( len );
+}
+
+char *RcTmpFileName( void )
+/*************************/
 /* uses the TMP env. var. if it is set and puts the result into tmpfilename */
 /* which is assumed to be a buffer of at least _MAX_PATH characters */
 {
-    char    *nextchar;
-    char    *tmpdir;
+    char        *nextchar;
+    const char  *tmpdir;
+    char        *out;
+    size_t      len;
 
     tmpdir = RcGetEnv( "TMP" );
-    nextchar = tmpfilename;
+    len = L_tmpnam + 1;
+    if( tmpdir != NULL && *tmpdir != '\0' ) {
+        len += GetPathElementLen( tmpdir, NULL ) + 1;
+    }
+    out = RCALLOC( len );
+    nextchar = out;
     if( tmpdir != NULL && *tmpdir != '\0' ) {
         GetPathElement( tmpdir, NULL, &nextchar );
         if( !IS_PATH_SEP( nextchar[-1] ) ) {
@@ -160,6 +201,7 @@ extern void RcTmpFileName( char *tmpfilename )
         }
     }
     tmpnam( nextchar );
+    return( out );
 }
 
 static bool PreprocessInputFile( void )
@@ -220,7 +262,7 @@ extern bool RcPass1IoInit( void )
 /* Returns false if there is a problem opening one of the files. */
 {
     bool        error;
-    char       *includepath = NULL;
+    const char  *includepath = NULL;
 
     if( !CmdLineParms.IgnoreINCLUDE ) {
         if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
@@ -260,10 +302,11 @@ extern bool RcPass1IoInit( void )
     return( true );
 }
 
-static bool ChangeTmpToOutFile( const char * tmpfile, const char * outfile )
-/**************************************************************************/
+static bool ChangeTmpToOutFile( const char *tmpfile, const char *outfile )
+/************************************************************************/
 {
     int     fileerror;      /* error while deleting or renaming */
+    bool    rc;
 
     /* remove the old copy of the output file */
     fileerror = remove( outfile );
@@ -278,16 +321,16 @@ static bool ChangeTmpToOutFile( const char * tmpfile, const char * outfile )
             return( true );
         }
     }
+    rc = false;
     /* rename the temp file to the output file */
     fileerror = rename( tmpfile, outfile );
     if( fileerror ) {
         RcError( ERR_RENAMEING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
         remove( tmpfile );
-        UnregisterTmpFile( tmpfile );
-        return( true );
+        rc = true;
     }
-
-    return( false );
+    UnregisterTmpFile( tmpfile );
+    return( rc );
 } /* ChangeTmpToOutFile */
 
 static bool RemoveCurrResFile( void )
@@ -371,6 +414,8 @@ static void Pass1ResFileShutdown( void )
         }
         WResFreeDir( CurrResFile.dir );
         CurrResFile.dir = NULL;
+        RCFREE( CurrResFile.filename );
+        CurrResFile.filename = NULL;
     }
 } /* Pass1ResFileShutdown */
 
@@ -602,7 +647,7 @@ extern bool RcPass2IoInit( void )
 
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RCALLOC( IO_BUFFER_SIZE );
-    MakeTmpInSameDir( CmdLineParms.OutExeFileName, Pass2Info.TmpFileName, "tmp" );
+    Pass2Info.TmpFileName = MakeTmpInSameDir( CmdLineParms.OutExeFileName, "tmp" );
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
         noerror = openNewExeFileInfo( Pass2Info.TmpFileName, &(Pass2Info.TmpFile) );
@@ -632,6 +677,8 @@ extern bool RcPass2IoInit( void )
         if( tmpexe_exists ) {
             remove( Pass2Info.TmpFileName );
             UnregisterTmpFile( Pass2Info.TmpFileName );
+            RCFREE( Pass2Info.TmpFileName );
+            Pass2Info.TmpFileName = NULL;
         }
     }
 
@@ -647,12 +694,13 @@ extern void RcPass2IoShutdown( bool noerror )
         Pass2Info.IoBuffer = NULL;
     }
     if( noerror ) {
-        ChangeTmpToOutFile( Pass2Info.TmpFileName,
-                            CmdLineParms.OutExeFileName);
+        ChangeTmpToOutFile( Pass2Info.TmpFileName, CmdLineParms.OutExeFileName);
     } else {
         UnregisterTmpFile( Pass2Info.TmpFileName );
         remove( Pass2Info.TmpFileName );
     }
+    RCFREE( Pass2Info.TmpFileName );
+    Pass2Info.TmpFileName = NULL;
 } /* RcPass2IoShutdown */
 
 /****** Text file input routines ******/
@@ -664,7 +712,7 @@ extern void RcPass2IoShutdown( bool noerror )
 #define MAX_INCLUDE_DEPTH   16
 
 typedef struct PhysFileInfo {
-    char        Filename[_MAX_PATH];
+    char        *Filename;
     bool        IsOpen;
     WResFileID  Handle;
     long        Offset;     /* offset in file to read from next time if this */
@@ -745,7 +793,8 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
 static bool OpenNewPhysicalFile( PhysFileInfo *phys, const char *filename )
 /*************************************************************************/
 {
-    strncpy( phys->Filename, filename, _MAX_PATH );
+    phys->Filename = RCALLOC( strlen( filename ) + 1 );
+    strcpy( phys->Filename, filename );
     phys->IsOpen = false;
     phys->Offset = 0;
 
@@ -797,6 +846,24 @@ static bool ReadBuffer( FileStack * stack )
     return( false );
 } /* ReadBuffer */
 
+static void FreeLogicalFilename( void )
+{
+    LogicalFileInfo     *log;
+
+    log = &(InStack.Current->Logical);
+    RCFREE( log->Filename );
+    log->Filename = NULL;
+}
+
+static void FreePhysicalFilename( void )
+{
+    PhysFileInfo    *phys;
+
+    phys = &(InStack.Current->Physical);
+    RCFREE( phys->Filename );
+    phys->Filename = NULL;
+}
+
 extern bool RcIoPushInputFile( const char * filename )
 /****************************************************/
 {
@@ -817,6 +884,8 @@ extern bool RcIoPushInputFile( const char * filename )
     /* set up the physical file info */
     error = OpenNewPhysicalFile( &(InStack.Current->Physical), filename );
     if( error ) {
+        FreeLogicalFilename();
+        FreePhysicalFilename();
         InStack.Current--;
     } else {
         error = ReadBuffer( &(InStack) );
@@ -841,6 +910,8 @@ extern bool RcIoPopInputFile( void )
 
     phys = &(InStack.Current->Physical);
     ClosePhysicalFile( phys );
+    FreeLogicalFilename();
+    FreePhysicalFilename();
     InStack.Current--;
     if( IsEmptyFileStack( InStack ) ) {
         return( true );
@@ -957,7 +1028,14 @@ extern void RcIoSetLogicalFileInfo( int linenum, const char * filename )
         log = &(InStack.Current->Logical);
         log->LineNum = linenum;
         if( filename != NULL ) {
-            strncpy( log->Filename, filename, _MAX_PATH );
+            if( log->Filename == NULL ) {
+                log->Filename = RCALLOC( strlen( filename ) + 1 );
+                strcpy( log->Filename, filename );
+            } else if( strcmp( log->Filename, filename ) != 0 ) {
+                RCFREE( log->Filename );
+                log->Filename = RCALLOC( strlen( filename ) + 1 );
+                strcpy( log->Filename, filename );
+            }
             RcIoSetIsCOrHFlag();
         }
     }

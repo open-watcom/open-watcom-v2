@@ -33,10 +33,10 @@
 #include "global.h"
 #include "errors.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exeutil.h"
 #include "exeseg.h"
+
 
 static RcStatus allocSegTable( SegTable *seg, int *err_code )
 {

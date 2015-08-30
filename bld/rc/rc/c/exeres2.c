@@ -33,7 +33,6 @@
 #include "errors.h"
 #include "os2res.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exeutil.h"
 #include "exeres.h"

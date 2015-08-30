@@ -13,8 +13,8 @@
 
 #include "global.h"
 #include "preproc.h"
-#include "clibext.h"
 #include "rccore.h"
+
 
 const char *PP_GetEnv( const char *name )
 {

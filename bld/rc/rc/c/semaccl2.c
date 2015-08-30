@@ -35,7 +35,6 @@
 #include "semantc2.h"
 #include "reserr.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 
 
@@ -242,8 +241,7 @@ void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-             strerror( err_code ) );
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = true;
     SemOS2FreeAccelTable( acctable );
     return;

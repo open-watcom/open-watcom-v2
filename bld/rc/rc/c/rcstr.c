@@ -35,7 +35,7 @@
 #include "rcstrblk.h"
 #include "rcstr.h"
 #include "rcrtns.h"
-#include "clibext.h"
+
 
 static int RemoveRedundantStrings( void ** strlist, unsigned int num,
                     int (*compare)(const void *, const void *) )

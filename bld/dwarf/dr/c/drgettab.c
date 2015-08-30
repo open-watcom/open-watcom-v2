@@ -30,10 +30,12 @@
 
 
 #include "drpriv.h"
-#include "drutils.h"
 #include <string.h>
+#include "drutils.h"
 #include "walloca.h"
+
 #include "clibext.h"
+
 
 // these are the increments in which the dynamically growing tables will
 // grow. NOTE that the code relies on VBL_ARRAY_DELTA being a power of 2
