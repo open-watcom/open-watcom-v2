@@ -50,11 +50,10 @@
 #include "asmstmt.h"
 #include "ialias.h"
 #include "cgfront.h"
-
-#include "clibext.h"
-
 // from \watcom\h
 #include "rtprior.h"
+
+#include "clibext.h"
 
 
 typedef struct {                // PRAG_EXT_REF -- extref's pragma'd

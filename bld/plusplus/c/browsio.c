@@ -30,11 +30,14 @@
 
 
 #include "plusplus.h"
-
 #include <setjmp.h>
 #include <stdarg.h>
 #include <errno.h>
-
+#if defined(__UNIX__)
+ #include <unistd.h>
+#else
+ #include <direct.h>
+#endif
 #include "preproc.h"
 #include "memmgr.h"
 #include "srcfile.h"
@@ -46,11 +49,6 @@
 #include "exeelf.h"
 #include "dwarfid.h"
 
-#if defined(__UNIX__)
- #include <unistd.h>
-#else
- #include <direct.h>
-#endif
 #include "clibext.h"
 
 

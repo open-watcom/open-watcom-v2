@@ -31,15 +31,15 @@
 
 
 #include "plusplus.h"
-
 #include <limits.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
-
 #include "memmgr.h"
 #include "idedrv.h"
+
 #include "clibext.h"
+
 
 #ifdef wpp_drv
 #   ifndef DLL_NAME

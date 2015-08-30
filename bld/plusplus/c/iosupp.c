@@ -30,14 +30,12 @@
 
 
 #include "plusplus.h"
-
 #include <stdarg.h>
 #if defined(__UNIX__)
  #include <dirent.h>
 #else
  #include <direct.h>
 #endif
-
 #include "wio.h"
 #include "preproc.h"
 #include "memmgr.h"
@@ -52,7 +50,9 @@
 #include "brinfo.h"
 #include "autodept.h"
 #include "iopath.h"
+
 #include "clibext.h"
+
 
 typedef struct buf_alloc BUF_ALLOC;
 struct buf_alloc {              // BUF_ALLOC -- allocated buffer

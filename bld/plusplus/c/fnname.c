@@ -33,11 +33,9 @@
 #define ZZ_LEN_3
 
 #include "plusplus.h"
-
 #include <stdarg.h>
 #include <stddef.h>
 #include <ctype.h>
-
 #include "ppintnam.h"
 #include "memmgr.h"
 #include "template.h"
@@ -55,7 +53,9 @@
 #include "stats.h"
 #include "srcfile.h"
 #include "pragdefn.h"
+
 #include "clibext.h"
+
 
 #ifdef ZZ_LEN_3
 #define ZZ_LEN_LIMIT    (36 * 36 * 36)

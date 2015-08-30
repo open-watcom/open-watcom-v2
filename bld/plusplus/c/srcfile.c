@@ -30,9 +30,7 @@
 
 
 #include "plusplus.h"
-
 #include <errno.h>
-
 #include "wio.h"
 #include "memmgr.h"
 #include "fname.h"
@@ -53,6 +51,7 @@
 #include "pragdefn.h"
 #endif
 #include "brinfo.h"
+
 #include "clibext.h"
 
 

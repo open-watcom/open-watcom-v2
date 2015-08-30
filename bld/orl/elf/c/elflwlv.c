@@ -37,6 +37,7 @@
 
 #include "clibext.h"
 
+
 static void fix_sym_byte_order( elf_file_handle elf_file_hnd, Elf32_Sym *e_sym )
 {
     // note that one of the branches will always get compiled out,
