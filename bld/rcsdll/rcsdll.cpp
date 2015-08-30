@@ -32,22 +32,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "wio.h"
-#include "bool.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
-    static      HINSTANCE   hInstance = 0;
 #elif defined( __OS2__ )
     #define INCL_WINSHELLDATA
-    extern "C" {
     #include <os2.h>
-    }
 #endif
+#include "wio.h"
+#include "bool.h"
 #include "rcsdll.hpp"
 #include "inifile.hpp"
-extern "C" {
+
 #include "clibext.h"
-}
+
+
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+    static      HINSTANCE   hInstance = 0;
+#endif
 
 extern "C" {
 

@@ -34,17 +34,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
 #define INCLUDE_DDEML_H
 #include <windows.h>
 #include <ddeml.h>
-
 #include "watcom.h"
 #include "gui.h"
 #include "setup.h"
 #include "setupinf.h"
 #include "genvbl.h"
+
 #include "clibext.h"
+
 
 #define DDE_WAITTIME    3000
 

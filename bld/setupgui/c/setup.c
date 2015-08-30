@@ -43,7 +43,9 @@
 #include "gendlg.h"
 #include "genvbl.h"
 #include "utils.h"
+
 #include "clibext.h"
+
 
 extern void DoSpawn( when_time );
 extern void SetupTitle();

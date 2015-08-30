@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
 #include "wio.h"
 #include "gui.h"
 #include "guiutil.h"
@@ -46,6 +45,7 @@
 #include "nlmver.h"
 
 #include "clibext.h"
+
 
 static void LenToASCIIZStr( char *tobuf, const unsigned char *frombuf )
 {

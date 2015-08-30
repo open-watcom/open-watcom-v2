@@ -32,7 +32,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
-
 #include "wio.h"
 #include "gui.h"
 #include "guistr.h"
@@ -47,6 +46,7 @@
 #include "genctrl.h"
 
 #include "clibext.h"
+
 
 void set_dlg_textwindow( gui_control_info *gui_controls,
                         int num_controls, const char *s,
