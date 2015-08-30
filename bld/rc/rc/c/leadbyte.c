@@ -34,9 +34,7 @@
 #ifdef __NT__
     #include <windows.h>
 #endif
-#include "watcom.h"
 #include "leadbyte.h"
-#include "rccore.h"
 
 
 #ifdef __NT__
@@ -71,4 +69,5 @@ int NativeDBStringToUnicode( int len, const char *str, char *buf ) {
     }
     return( ret * 2 );
 }
+
 #endif
