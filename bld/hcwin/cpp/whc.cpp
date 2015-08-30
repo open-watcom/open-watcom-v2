@@ -29,6 +29,11 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include <ctype.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <process.h>
+#endif
 #include "hcmem.h"
 #include "hlpdir.h"
 #include "system.h"
@@ -42,11 +47,7 @@
 #include "hpjread.h"
 #include "parsing.h"
 #include "hcerrors.h"
-#include <stdlib.h>
-#include <ctype.h>
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
-#endif
+
 #include "clibext.h"
 
 

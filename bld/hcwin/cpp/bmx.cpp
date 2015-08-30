@@ -42,7 +42,9 @@ BMX:  Image file handling
 #endif
 #include "bmx.h"
 #include "compress.h"
+
 #include "clibext.h"
+
 
 // Magic numbers for the supported image formats.
 #define BITMAP_MAGIC    0x4D42

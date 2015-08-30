@@ -58,8 +58,10 @@ extern "C" {
     #include <autodep.h>
 //  #include <wressetr.h>
     #include <direct.h>
-    #include "clibext.h"
 };
+
+#include "clibext.h"
+
 
 extern char _viperError[];
 extern char _viperRequest[];

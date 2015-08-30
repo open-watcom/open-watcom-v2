@@ -45,7 +45,9 @@
 #include "watcom.h"
 #include "walloca.h"
 #include "demangle.h"
+
 #include "clibext.h"
+
 
 #if defined( __WATCOMC__ )
 #define STRNCMP _fstrncmp
@@ -1790,7 +1792,7 @@ int __unmangled_name(                           // FIND UNMANGLED BASE NAME
     } else {
         for( ; name != end ; ++name ) {
             if( *name == SYMBOL_SUFFIX )
-             	break;
+                break;
             base_size++;
         }
     }

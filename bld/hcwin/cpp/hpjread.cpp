@@ -43,7 +43,9 @@
 #include "topic.h"
 #include "phrase.h"
 #include "bmx.h"
+
 #include "clibext.h"
+
 
 #define NB_FILES    10
 #define LINE_BLOCK  128

@@ -33,9 +33,9 @@
 #include "wfilenam.hpp"
 #include "wobjfile.hpp"
 #include "mconfig.hpp"
-extern "C" {
-    #include "clibext.h"
-};
+
+#include "clibext.h"
+
 
 Define( MCommand )
 

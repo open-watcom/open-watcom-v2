@@ -34,9 +34,10 @@
 CONTEXT:  Hash-value-to-topic-offset mapping.
 */
 
+#include <string.h>
 #include "context.h"
 #include "hcmem.h"
-#include <string.h>
+
 #include "clibext.h"
 
 

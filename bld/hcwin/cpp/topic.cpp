@@ -31,7 +31,9 @@
 
 #include <string.h>
 #include "topic.h"
+
 #include "clibext.h"
+
 
 #define COMP_PAGE_SIZE 4096
 
