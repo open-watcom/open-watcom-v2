@@ -41,6 +41,8 @@
 #include "leadbyte.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 /* forward declaration */
 static bool scanEnvVar( const char *varname, int *nofilenames );

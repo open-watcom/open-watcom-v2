@@ -35,6 +35,8 @@
 #define IGNORE_CASE
 #include "kwhash.h"
 
+#include "clibext.h"
+
 
 /* This array is intended to be accessed by ASCII values of a char */
 static const unsigned char Weights[] = {

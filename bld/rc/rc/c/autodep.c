@@ -39,6 +39,8 @@
 #include "depend.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 typedef struct DepNode {
     struct DepNode      *next;

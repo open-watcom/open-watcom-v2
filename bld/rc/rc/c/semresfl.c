@@ -39,6 +39,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 #define BUFFER_SIZE     1024
 

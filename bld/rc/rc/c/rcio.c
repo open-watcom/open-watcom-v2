@@ -54,6 +54,8 @@
 #include "rccore.h"
 #include "exeutil.h"
 
+#include "clibext.h"
+
 
 static char *MakeTmpInSameDir( const char *dirfile, char *ext )
 /*************************************************************/

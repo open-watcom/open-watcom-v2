@@ -41,6 +41,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 /**** forward references ****/
 static void AddIconResource( WResID * name, ResMemFlags flags,

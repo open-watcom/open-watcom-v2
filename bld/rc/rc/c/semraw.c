@@ -38,6 +38,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 void SemWriteRawDataItem( RawDataItem item )
 /******************************************/

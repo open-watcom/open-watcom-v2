@@ -39,6 +39,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 /*** Forward References ***/
 static uint_16 CalcNestSize( FullVerBlockNest * nest );

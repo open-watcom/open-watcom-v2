@@ -40,6 +40,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 /**** forward references ****/
 static void AddFontResources( WResID * name, ResMemFlags, const char * filename );

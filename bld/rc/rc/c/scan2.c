@@ -39,6 +39,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 #ifdef SCANDEBUG
 
