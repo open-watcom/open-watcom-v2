@@ -42,6 +42,9 @@ extern "C" {
     #include "guifdlg.h"
 }
 
+#include "clibext.h"
+
+
 #define WMaxFiles       32      // for multi-select file dialogs
 
 #define WFOpenNew       OFN_HIDEREADONLY | OFN_PATHMUSTEXIST

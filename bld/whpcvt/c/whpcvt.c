@@ -39,6 +39,9 @@
 #define WHPCVT_GBL
 #include "whpcvt.h"
 
+#include "clibext.h"
+
+
 static const char *Help_info[] = {
     "Usage: whpcvt [options] <in_file> [<out_file>]",
     "   Options for all help file types:",

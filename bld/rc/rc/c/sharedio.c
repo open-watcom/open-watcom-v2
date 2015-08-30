@@ -38,6 +38,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 #define MAX_OPEN_RESFILES       6
 
