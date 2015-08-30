@@ -32,9 +32,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hashtab.h"
-#ifndef __WATCOMC__
-  #include "clibext.h"
-#endif
+
+#include "clibext.h"
+
 
 #define HASH_TABLE_SIZE 211
 

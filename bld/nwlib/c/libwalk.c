@@ -33,7 +33,9 @@
 #include "wlib.h"
 #include "ar.h"
 #include "convert.h"
+
 #include "clibext.h"
+
 
 static void AllocFNameTab( char *name, libfile io, arch_header *arch )
 /********************************************************************/

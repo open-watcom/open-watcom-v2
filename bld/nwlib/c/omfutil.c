@@ -30,7 +30,9 @@
 
 
 #include "wlib.h"
+
 #include "clibext.h"
+
 
 static unsigned long    charCount;
 static unsigned long    symCount;

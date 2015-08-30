@@ -40,7 +40,9 @@
 #include "formasm.h"
 #include "main.h"
 #include "init.h"
+
 #include "clibext.h"
+
 
 extern hash_table       HandleToRefListTable;
 extern hash_table       SymbolToLabelTable;
