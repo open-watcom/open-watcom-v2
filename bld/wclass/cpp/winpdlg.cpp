@@ -36,10 +36,10 @@
 #include "wpshbttn.hpp"
 #include "wfilenam.hpp"
 #include "wmetrics.hpp"
-extern "C" {
-    #include "clibext.h"
-};
 #include "wfiledlg.hpp"
+
+#include "clibext.h"
+
 
 static  char    BrowseText[] = "&Browse...";
 static  char    CancelText[] = "&Cancel";

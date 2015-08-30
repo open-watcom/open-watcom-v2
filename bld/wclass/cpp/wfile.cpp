@@ -42,8 +42,10 @@ extern "C" {
     #include <stdlib.h>
     #include <stdarg.h>
     #include "wio.h"
-    #include "clibext.h"
 };
+
+#include "clibext.h"
+
 
 #define MAX_FORMATTED 500
 #define MAX_BUFFER 1000

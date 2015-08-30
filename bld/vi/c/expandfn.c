@@ -31,7 +31,9 @@
 
 #include "vi.h"
 #include "posix.h"
+
 #include "clibext.h"
+
 
 /*
  * ExpandFileNames - take a file name, and expand it out to a list of dos

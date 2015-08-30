@@ -45,7 +45,9 @@
     #include "wprocmap.h"
 #endif
 #include <assert.h>
+
 #include "clibext.h"
+
 
 #define isEOL(x)        ((x == CR) || (x == LF) || (x == CTRLZ))
 

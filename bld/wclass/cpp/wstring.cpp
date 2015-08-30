@@ -31,13 +31,12 @@
 
 #include "wstring.hpp"
 #include "wobjfile.hpp"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 
-extern "C" {
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <stdarg.h>
-    #include "clibext.h"
-};
+#include "clibext.h"
+
 
 #define DEF_BUFFER 500
 

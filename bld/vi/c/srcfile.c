@@ -32,7 +32,9 @@
 
 #include "vi.h"
 #include "source.h"
+
 #include "clibext.h"
+
 
 #define isEOL(x)        ((x == CR) || (x == LF) || (x == CTRLZ))
 

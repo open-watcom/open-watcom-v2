@@ -32,7 +32,9 @@
 
 #include "vi.h"
 #include "posix.h"
+
 #include "clibext.h"
+
 
 extern char  _NEAR * _NEAR ExeExtensions[];
 extern int ExeExtensionCount;

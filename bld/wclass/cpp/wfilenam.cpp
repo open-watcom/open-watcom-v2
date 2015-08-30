@@ -48,8 +48,10 @@ extern "C" {
     #include <sys/utime.h>
 #endif
     #include "wio.h"
-    #include "clibext.h"
 };
+
+#include "clibext.h"
+
 
 #define PATHSEP_CHAR    (_pathsep[2])
 #define PATHSEP_STR     (_pathsep + 2)

@@ -32,9 +32,8 @@
 
 #include "wlistbox.hpp"
 #include "wstring.hpp"
-extern "C" {
-    #include "clibext.h"
-};
+
+#include "clibext.h"
 
 
 WEXPORT WListBox::WListBox( WWindow* parent, const WRect& r, WStyle wstyle )

@@ -32,7 +32,9 @@
 #include "vi.h"
 #include "sstyle.h"
 #include <assert.h>
+
 #include "clibext.h"
+
 
 static lang_info    langInfo[] = {
     #define pick_lang(enum,enumrc,name,namej,fname) { NULL, 0, 0, NULL },

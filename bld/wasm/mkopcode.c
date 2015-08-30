@@ -38,7 +38,9 @@
 #include "asmops.h"
 #define MKOPCODE
 #include "asminsd.h"
+
 #include "clibext.h"
+
 
 char Chars[32000];
 

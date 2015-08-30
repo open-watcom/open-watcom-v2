@@ -35,8 +35,6 @@
 #include <ctype.h>
 #if defined(__WATCOMC__)
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
 #if defined(__AXP__) && defined(__NT__)
     #include <windows.h>
@@ -49,6 +47,8 @@
 #include "tcerr.h"
 #include "servio.h"
 #include "nothing.h"
+
+#include "clibext.h"
 
 
 extern trap_version     TrapVersion;

@@ -34,6 +34,7 @@
 
 #include "clibext.h"
 
+
 #define global                          // allocate storage for global vars
 #include "gvars.h"
 #undef  global

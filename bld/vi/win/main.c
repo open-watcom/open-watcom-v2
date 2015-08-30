@@ -38,7 +38,9 @@
 #include "font.h"
 #include "color.h"
 #include "ldstr.h"
+
 #include "clibext.h"
+
 
 window_id       Root;
 window_id       EditContainer;

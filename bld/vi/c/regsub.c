@@ -32,7 +32,9 @@
 
 #include "vi.h"
 #include "rxsupp.h"
+
 #include "clibext.h"
+
 
 extern void Lead( char c, int num, char *buff );
 

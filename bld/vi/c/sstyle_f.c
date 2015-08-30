@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "sstyle.h"
+
 #include "clibext.h"
 
 
