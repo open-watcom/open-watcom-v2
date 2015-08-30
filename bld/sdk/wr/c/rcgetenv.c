@@ -35,8 +35,8 @@
 #include "pass2.h"
 #include "rcio.h"
 
-char *RcGetEnv( const char *name )
-/********************************/
+const char *RcGetEnv( const char *name )
+/**************************************/
 {
     return( getenv( name ) );
 }

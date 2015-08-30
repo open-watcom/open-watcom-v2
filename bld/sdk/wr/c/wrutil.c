@@ -37,7 +37,7 @@
 #include "watcom.h"
 #include "wrglbl.h"
 #include "wresall.h"
-#include "clibext.h"
+
 
 static int WRCountChars( const unsigned char *str, char c )
 {
