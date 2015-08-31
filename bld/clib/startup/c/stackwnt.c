@@ -36,7 +36,7 @@
 #include "exitwmsg.h"
 #include "thread.h"
 
-#if defined(__AXP__) || defined(__PPC__)
+#if !defined( _M_IX86 )
 void _init_stk( void )
 {
 }
@@ -59,12 +59,12 @@ _WCRTLINK void __STKOVERFLOW( void )
 
 _WCRTLINK unsigned stackavail( void )
 {
-#if defined(__AXP__) || defined(__PPC__)
+#if defined( _M_IX86 )
+    return( _SP() - _RWD_stacklow );
+#else
     unsigned    _SP;
 
     _SP = (unsigned)&_SP;
     return( _SP - _RWD_stacklow );
-#else
-    return( _SP() - _RWD_stacklow );
 #endif
 }
