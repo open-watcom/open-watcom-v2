@@ -102,12 +102,12 @@ void SysSeek( int fh, unsigned long pos )
 
 
 time_t SysFileTime(             // GET TIME STAMP FOR FILE
-    FILE *fp )                  // - file control
+    const char *fname )         // - file control
 {
     struct stat file_info;      // - file information
     time_t time_stamp;          // - time stamp for file
 
-    if( fstat( fileno( fp ), &file_info ) ) {
+    if( stat( fname, &file_info ) ) {
         time_stamp = 0;     // not terrific error handling
     } else {
         time_stamp = file_info.st_mtime;

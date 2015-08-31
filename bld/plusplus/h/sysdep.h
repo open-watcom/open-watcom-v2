@@ -42,4 +42,4 @@ extern char SysSwitchChar( void );
 extern size_t           SysRead( int fh, void *, size_t );
 extern unsigned long    SysTell( int fh );
 extern void             SysSeek( int fh, unsigned long pos );
-extern time_t           SysFileTime( FILE * );
+extern time_t           SysFileTime( const char * );

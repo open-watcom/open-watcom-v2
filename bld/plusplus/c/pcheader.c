@@ -569,17 +569,16 @@ static bool headerIsOK( precompiled_header_header const* hp )
     return( TRUE );
 }
 
-static bool sameStamp( char *name, time_t saved )
+static bool sameStamp( const char *name, time_t saved )
 {
-    struct stat statbuf;
+    time_t  ftime;
 
     if( CompFlags.pch_min_check ) {
         return( TRUE );
     }
-    if( stat( name, &statbuf ) == 0 ) {
-        if( statbuf.st_mtime == saved ) {
-            return( TRUE );
-        }
+    ftime = SysFileTime( name );
+    if( ftime == saved ) {
+        return( TRUE );
     }
     return( FALSE );
 }
