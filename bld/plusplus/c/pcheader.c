@@ -51,6 +51,7 @@
 #include "pcheader.h"
 #include "cgiobuff.h"
 #include "brinfo.h"
+#include "sysdep.h"
 
 #include "clibext.h"
 

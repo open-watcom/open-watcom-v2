@@ -50,6 +50,7 @@
 #include "brinfo.h"
 #include "autodept.h"
 #include "iopath.h"
+#include "sysdep.h"
 
 #include "clibext.h"
 
