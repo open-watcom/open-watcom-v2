@@ -141,7 +141,7 @@ EVENT intern keyboardevent( void )
                 }
             }
         }
-        if( ev > EV_LAST_KEYBOARD ) {
+        if( !iskeyboardchar( ev ) ) {
             ev = EV_NO_EVENT;
         }
     } else {
