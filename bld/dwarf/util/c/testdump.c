@@ -833,8 +833,8 @@ static void dumpLines(
                     printf( "SET_ADDRESS %08lx\n", tmp );
 #endif
                     break;
-                case DW_LNE_set_segment_OLD:
-                case DW_LNE_set_segment:
+                case DW_LNE_WATCOM_set_segment_OLD:
+                case DW_LNE_WATCOM_set_segment:
                     tmp_seg = getU16( (uint_16 *)p );
                     p += sizeof( uint_16 );
                     printf( "SET_ADDRESS_SEG %04x\n", tmp_seg );

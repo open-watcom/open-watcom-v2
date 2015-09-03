@@ -188,8 +188,8 @@ void DWLineSeg(  dw_client  cli, dw_sym_handle sym )
     if( cli->segment_size != 0 ) {
         buf[ 0 ] = 0;  //extended
         end = ULEB128(buf+1, 1+cli->segment_size ); // write the opcode size
-        *end = DW_LNE_set_segment_OLD;
-//        *end = DW_LNE_set_segment;
+        *end = DW_LNE_WATCOM_set_segment_OLD;
+//        *end = DW_LNE_WATCOM_set_segment;
         ++end;
         CLIWrite( DW_DEBUG_LINE, buf, end-buf );
         CLIReloc3( DW_DEBUG_LINE, DW_W_LABEL_SEG, sym );

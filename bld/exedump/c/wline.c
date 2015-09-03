@@ -290,8 +290,8 @@ void Dump_lines( const uint_8 *input, uint length )
                     Wdputslc( "\n" );
                     p += op_len;
                     break;
-                case DW_LNE_set_segment_OLD:
-                case DW_LNE_set_segment:
+                case DW_LNE_WATCOM_set_segment_OLD:
+                case DW_LNE_WATCOM_set_segment:
                     Wdputs( "SET_SEGMENT " );
                     if( op_len == 4 ) {
                         tmp = get_u32( (uint_32 *)p );
