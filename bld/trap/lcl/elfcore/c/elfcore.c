@@ -63,7 +63,7 @@ static plat_drv_t   *drivers[] = {
     NULL
 };
 
-extern unsigned FindFilePath( int exe, char *name, char *result );
+extern unsigned FindFilePath( int exe, const char *name, char *result );
 
 enum {
     MH_NONE,

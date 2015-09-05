@@ -547,7 +547,7 @@ trap_retval ReqFile_run_cmd( void )
 }
 
 
-long TryPath( char *name, char *end, const char *ext_list )
+long TryPath( const char *name, char *end, const char *ext_list )
 {
     long         rc;
     char         *p;
@@ -571,14 +571,14 @@ long TryPath( char *name, char *end, const char *ext_list )
     return( 0xffff0000 | rc );
 }
 
-long FindFilePath( char *pgm, char *buffer, const char *ext_list )
+long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
-    char    *p;
-    char    *p2;
-    char    *p3;
-    APIRET  rc;
-    int     have_ext;
-    int     have_path;
+    const char  *p;
+    char        *p2;
+    const char  *p3;
+    APIRET      rc;
+    int         have_ext;
+    int         have_path;
 
     have_ext = 0;
     have_path = 0;
@@ -600,8 +600,9 @@ long FindFilePath( char *pgm, char *buffer, const char *ext_list )
     rc = TryPath( buffer, p2, ext_list );
     if( rc == 0 || have_path )
         return( rc );
-    if( DosScanEnv( "PATH", &p ) != 0 )
+    if( DosScanEnv( "PATH", &p2 ) != 0 )
         return( rc );
+    p = p2;
     for( ;; ) {
         if( *p == '\0' )
             break;

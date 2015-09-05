@@ -535,7 +535,7 @@ trap_retval ReqFile_run_cmd( void )
 }
 
 
-long TryPath( char *name, char *end, const char *ext_list )
+long TryPath( const char *name, char *end, const char *ext_list )
 {
     long        rc;
     char        *p;
@@ -562,12 +562,12 @@ long TryPath( char *name, char *end, const char *ext_list )
     return( 0xffff0000 | rc );
 }
 
-long FindFilePath( char *pgm, char *buffer, const char *ext_list )
+long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
     char    *p;
     char    *p2;
     char    *p3;
-    long  rc;
+    long    rc;
     int     have_ext;
     int     have_path;
 

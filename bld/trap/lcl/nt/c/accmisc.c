@@ -423,7 +423,7 @@ trap_retval ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-static int tryPath( char *name, char *end, const char *ext_list )
+static int tryPath( const char *name, char *end, const char *ext_list )
 {
     char    *p;
     BOOL    done;
@@ -447,16 +447,16 @@ static int tryPath( char *name, char *end, const char *ext_list )
     return( -1 );
 }
 
-int FindFilePath( char *pgm, char *buffer, const char *ext_list )
+int FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
-    char    *p;
-    char    *p2;
-    char    *p3;
-    BOOL    have_ext;
-    BOOL    have_path;
-    char    *envbuf;
-    DWORD   envlen;
-    int     rc;
+    const char  *p;
+    char        *p2;
+    const char  *p3;
+    BOOL        have_ext;
+    BOOL        have_path;
+    char        *envbuf;
+    DWORD       envlen;
+    int         rc;
 
     have_ext = FALSE;
     have_path = FALSE;
