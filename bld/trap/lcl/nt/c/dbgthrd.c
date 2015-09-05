@@ -251,74 +251,66 @@ static DWORD WINAPI ControlFunc( void *parm )
 static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
 {
     HANDLE              Token;
-    PTOKEN_PRIVILEGES   NewPrivileges;
+    TOKEN_PRIVILEGES    NewPrivileges;
     BYTE                OldPriv[1024];
     PBYTE               pbOldPriv;
     ULONG               cbNeeded;
     BOOL                b;
     BOOLEAN             fRc;
     LUID                LuidPrivilege;
-    size_t              extras;
 
+    fRc = 0;
+    pbOldPriv = NULL;
     //
     // Make sure we have access to adjust and to get the old token privileges
     //
-    if( !OpenProcessToken( GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
-        goto done;
-    }
+    Token = NULL;
+    if( OpenProcessToken( GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
 
-    cbNeeded = 0;
-
-    //
-    // Initialize the privilege adjustment structure
-    //
-
-    LookupPrivilegeValue( NULL, SE_DEBUG_NAME, &LuidPrivilege );
-
-    extras = ( 1 - ANYSIZE_ARRAY ) * sizeof( LUID_AND_ATTRIBUTES );
-    NewPrivileges = calloc( 1, sizeof( TOKEN_PRIVILEGES ) + extras );
-                                                  
-    if( NewPrivileges == NULL ) {
-        CloseHandle( Token );
-        goto done;
-    }
-
-    NewPrivileges->PrivilegeCount = 1;
-    NewPrivileges->Privileges[0].Luid = LuidPrivilege;
-    NewPrivileges->Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-    //
-    // Enable the privilege
-    //
-
-    pbOldPriv = OldPriv;
-    fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, 1024, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
-
-    if( !fRc ) {
-
+        cbNeeded = 0;
+    
         //
-        // If the stack was too small to hold the privileges
-        // then allocate off the heap
+        // Initialize the privilege adjustment structure
         //
-        if( GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
-            pbOldPriv = calloc( 1, cbNeeded );
-            if( pbOldPriv == NULL ) {
-                CloseHandle( Token );
-                goto done;
+    
+        LookupPrivilegeValue( NULL, SE_DEBUG_NAME, &LuidPrivilege );
+    
+        NewPrivileges.PrivilegeCount = 1;
+        NewPrivileges.Privileges[0].Luid = LuidPrivilege;
+        NewPrivileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+    
+        //
+        // Enable the privilege
+        //
+    
+        pbOldPriv = OldPriv;
+        fRc = AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, 1024, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
+    
+        if( fRc == 0 && GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
+    
+            // 
+            // If the stack was too small to hold the privileges
+            // then allocate off the heap
+            //
+            pbOldPriv = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, cbNeeded );
+            if( pbOldPriv != NULL ) {
+                fRc = AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, cbNeeded, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
             }
-
-            fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, cbNeeded, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
         }
     }
-
+    if( fRc == 0 && Token != NULL ) {
+        /* failed to set privilege, close privilege token handle */
+        CloseHandle( Token );
+    }
     b = DebugActiveProcess( dwPidToDebug );
-
-    CloseHandle( Token );
-
+    if( fRc != 0 ) {
+        /* restore original privileges */
+        AdjustTokenPrivileges( Token, FALSE, (PTOKEN_PRIVILEGES)pbOldPriv, 0, NULL, NULL );
+        CloseHandle( Token );
+    }
+    if( pbOldPriv != NULL && pbOldPriv != OldPriv )
+        LocalFree( pbOldPriv );
     return( b );
-done:
-    ;
-    return( DebugActiveProcess( dwPidToDebug ) );
 }
 
 static int match( const char *p, const char *criterion )
@@ -415,7 +407,7 @@ static BOOL StartDebuggee( void )
 
         EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER, SERVICE_ACTIVE + SERVICE_INACTIVE, NULL, 0, &bytesNeeded, &servicesReturned, &resumeHandle );
         if( servicesReturned == 0 ) {
-            eenum = calloc( 1, bytesNeeded );
+            eenum = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, bytesNeeded );
             if( eenum == NULL ) {
                 rc = FALSE;
                 goto failed;
@@ -461,7 +453,7 @@ static BOOL StartDebuggee( void )
             rc = FALSE;
             goto failed;
         }
-        free( eenum );
+        LocalFree( eenum );
     }
 
     if( service != NULL ) {

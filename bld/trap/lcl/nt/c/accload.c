@@ -251,8 +251,8 @@ trap_retval ReqProg_load( void )
     DWORD           pid;
     DWORD           pid_started;
     DWORD           cr_flags;
-    char            *buff = NULL;
-    size_t          nBuffRequired = 0;
+    char            *buff;
+    size_t          nBuffRequired;
     char            *dll_name;
     char            *service_name;
     char            *dll_destination;
@@ -286,7 +286,8 @@ trap_retval ReqProg_load( void )
     //  Just to be really safe!
     */
     nBuffRequired = GetTotalSize() + PATH_MAX + 16;
-    if( NULL == ( buff = malloc( nBuffRequired ) ) ) {
+    buff = LocalAlloc( LMEM_FIXED, nBuffRequired );
+    if( buff == NULL ) {
         ret->err = ERROR_NOT_ENOUGH_MEMORY;
         return( sizeof( *ret ) );
     }
@@ -579,9 +580,8 @@ trap_retval ReqProg_load( void )
     ret->mod_handle = 0;
 
 error_exit:
-    if( buff ) {
-        free( buff );
-        buff = NULL;
+    if( buff != NULL ) {
+        LocalFree( buff );
     }
     return( sizeof( *ret ) );
 
