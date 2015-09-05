@@ -54,6 +54,7 @@
 #include "exeos2.h"
 #include "exeflat.h"
 #include "x86cpu.h"
+#include "os2extx.h"
 
 uDB_t                   Buff;
 static BOOL             stopOnSecond;
@@ -120,8 +121,8 @@ static unsigned_32      lastEIP;
 static unsigned_32      lastESP;
 
 
-bool    ExpectingAFault;
-char    OS2ExtList[] = {".exe\0"};
+bool        ExpectingAFault;
+const char  OS2ExtList[] = OS2EXTLIST;
 
 static bool Is32BitSeg( unsigned seg )
 {

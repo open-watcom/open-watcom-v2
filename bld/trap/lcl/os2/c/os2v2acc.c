@@ -56,6 +56,7 @@
 #include "exeflat.h"
 #include "x86cpu.h"
 #include "cpuglob.h"
+#include "os2extx.h"
 
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
@@ -113,8 +114,8 @@ static unsigned_16      lastSS;
 static unsigned_32      lastEIP;
 static unsigned_32      lastESP;
 
-bool    ExpectingAFault;
-char    OS2ExtList[] = { ".exe\0" };
+bool        ExpectingAFault;
+const char  OS2ExtList[] = OS2EXTLIST;
 
 static bool Is32BitSeg( unsigned seg )
 {

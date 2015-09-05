@@ -45,6 +45,7 @@
 #include "trperr.h"
 #include "os2err.h"
 #include "doserr.h"
+#include "os2extx.h"
 
 /*
  * globals
@@ -534,7 +535,7 @@ trap_retval ReqFile_run_cmd( void )
 }
 
 
-long TryPath( char *name, char *end, char *ext_list )
+long TryPath( char *name, char *end, const char *ext_list )
 {
     long        rc;
     char        *p;
@@ -548,17 +549,20 @@ long TryPath( char *name, char *end, char *ext_list )
 
     done = 0;
     do {
-        if( *ext_list == '\0' ) done = 1;
+        if( *ext_list == '\0' )
+            done = 1;
         for( p = end; *p = *ext_list; ++p, ++ext_list )
             {}
         count = 1;
         rc = DosFindFirst(name, &hdl, 0, &info.d, sizeof( info ), &count, 0);
-        if( rc == 0 ) return( 0 );
+        if( rc == 0 ) {
+            return( 0 );
+        }
     } while( !done );
     return( 0xffff0000 | rc );
 }
 
-long FindFilePath( char *pgm, char *buffer, char *ext_list )
+long FindFilePath( char *pgm, char *buffer, const char *ext_list )
 {
     char    *p;
     char    *p2;
@@ -582,15 +586,18 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
             break;
         }
     }
-    if( have_ext ) ext_list = "";
+    if( have_ext )
+        ext_list = "";
     rc = TryPath( buffer, p2, ext_list );
-    if( rc == 0 || have_path ) return( rc );
-    if( DosScanEnv( "PATH", &p ) != 0 ) return( rc );
-    for(;;) {
-        if( *p == '\0' ) break;
+    if( rc == 0 || have_path )
+        return( rc );
+    if( DosScanEnv( "PATH", &p ) != 0 )
+        return( rc );
+    for( ; *p != '\0'; ) {
         p2 = buffer;
         while( *p ) {
-            if( *p == ';' ) break;
+            if( *p == ';' )
+                break;
             *p2++ = *p++;
         }
         if( p2[-1] != '\\' && p2[-1] != '/' ) {
@@ -599,20 +606,20 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
         for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
             {}
         rc = TryPath( buffer, p2, ext_list );
-        if( rc == 0 ) break;
-        if( *p == '\0' ) break;
+        if( rc == 0 )
+            break;
+        if( *p == '\0' )
+            break;
         ++p;
     }
     return( rc );
 }
 
-extern char    OS2ExtList[];
-
 trap_retval ReqFile_string_to_fullpath( void )
 {
-    char               *ext_list;
-    char               *name;
-    char               *fullname;
+    const char                  *ext_list;
+    char                        *name;
+    char                        *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
 

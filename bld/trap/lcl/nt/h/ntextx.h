@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-#define DOSEXTLIST  ".com\0.exe\0"
+#define NTEXTLIST ".com\0.exe\0"
 
-extern const char   DosExtList[];
+extern const char NtExtList[];

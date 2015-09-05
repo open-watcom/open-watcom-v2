@@ -45,6 +45,7 @@
 #include "trperr.h"
 #include "os2err.h"
 #include "doserr.h"
+#include "os2extx.h"
 
 /*
  * globals
@@ -546,7 +547,7 @@ trap_retval ReqFile_run_cmd( void )
 }
 
 
-long TryPath( char *name, char *end, char *ext_list )
+long TryPath( char *name, char *end, const char *ext_list )
 {
     long         rc;
     char         *p;
@@ -563,13 +564,14 @@ long TryPath( char *name, char *end, char *ext_list )
             ;
         count = 1;
         rc = DosFindFirst( name, &hdl, FILE_NORMAL, &info, sizeof( info ), &count, FIL_STANDARD );
-        if( rc == 0 )
+        if( rc == 0 ) {
             return( 0 );
+        }
     } while( !done );
     return( 0xffff0000 | rc );
 }
 
-long FindFilePath( char *pgm, char *buffer, char *ext_list )
+long FindFilePath( char *pgm, char *buffer, const char *ext_list )
 {
     char    *p;
     char    *p2;
@@ -624,11 +626,9 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
     return( rc );
 }
 
-extern char    OS2ExtList[];
-
 trap_retval ReqFile_string_to_fullpath( void )
 {
-    char                        *ext_list;
+    const char                  *ext_list;
     char                        *name;
     char                        *fullname;
     file_string_to_fullpath_req *acc;

@@ -44,6 +44,7 @@
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "cpuglob.h"
+#include "os2extx.h"
 
 typedef void (*excfn)();
 
@@ -77,7 +78,7 @@ extern scrtype          Screen;
 static TRACEBUF         Buff;
 static USHORT           SessionType;
 __GINFOSEG              __far *GblInfo;
-char                    OS2ExtList[] = { ".exe\0" };
+const char              OS2ExtList[] = OS2EXTLIST;
 
 
 typedef struct watch {

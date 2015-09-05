@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-TRPGLOBAL char                  ExtensionList[] TRPGLOBINIT( ".com\0.exe\0" );
 TRPGLOBAL DWORD                 DebugeePid;
 TRPGLOBAL DWORD                 DebugeeTid;
 TRPGLOBAL process_info          ProcessInfo;

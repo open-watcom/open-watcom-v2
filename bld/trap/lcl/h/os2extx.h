@@ -24,11 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  DOS executable file extension declarations.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#define DOSEXTLIST  ".com\0.exe\0"
+#define OS2EXTLIST      ".exe\0"
 
-extern const char   DosExtList[];
+extern const char       OS2ExtList[];

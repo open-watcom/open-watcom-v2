@@ -36,6 +36,7 @@
 #include <windows.h>
 #include "ntext.h"
 #include "stdnt.h"
+#include "ntextx.h"
 
 trap_retval ReqFile_get_config( void )
 {
@@ -270,7 +271,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     file_string_to_fullpath_ret *ret;
     char                        *name;
     char                        *fullname;
-    char                        *ext_list;
+    const char                  *ext_list;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
@@ -284,7 +285,7 @@ trap_retval ReqFile_string_to_fullpath( void )
         if( acc->file_type != TF_TYPE_EXE ) {
             ext_list = "";
         } else {
-            ext_list = ExtensionList;
+            ext_list = NtExtList;
         }
         ret->err = FindFilePath( name, fullname, ext_list );
     }

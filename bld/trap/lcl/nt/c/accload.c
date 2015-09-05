@@ -37,6 +37,7 @@
 #include "trperr.h"
 #include "srvcdbg.h"
 #include "doserr.h"
+#include "ntextx.h"
 
 #include "clibext.h"
 
@@ -44,6 +45,8 @@
 #ifndef CREATE_SEPARATE_WOW_VDM
 #define CREATE_SEPARATE_WOW_VDM     0x00000800  // new for NT 3.5 (daytona)
 #endif
+
+const char  NtExtList[] = NTEXTLIST;
 
 /*
  * executeUntilStart - run program until start address hit
@@ -317,7 +320,7 @@ trap_retval ReqProg_load( void )
     IsDOS = FALSE;
 #endif
     if( pid == 0 ) {
-        if( FindFilePath( parm, exe_name, ExtensionList ) != 0 ) {
+        if( FindFilePath( parm, exe_name, NtExtList ) != 0 ) {
             ret->err = ERROR_FILE_NOT_FOUND;
             goto error_exit;
         }
