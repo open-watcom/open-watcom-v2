@@ -372,8 +372,8 @@ static int MapStateToCond( unsigned state )
     return( rc );
 }
 
-static void AddModHandle( char *name, epsp_t *epsp )
-/**************************************************/
+static void AddModHandle( const char *name, epsp_t *epsp )
+/********************************************************/
 {
     mod_t           *mod;
     tiny_ret_t      rc;
@@ -472,8 +472,8 @@ static void FreeModsInfo( void )
     NumModHandles = 0;
 }
 
-static void AddModsInfo( char *name, epsp_t *epsp )
-/*************************************************/
+static void AddModsInfo( const char *name, epsp_t *epsp )
+/*******************************************************/
 {
     if( XVersion >= 0x404 ) {
         for( ; epsp != NULL; epsp = epsp->NextPSP ) {
