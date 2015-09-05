@@ -141,7 +141,7 @@ typedef struct __LINFOSEG {      /* lis */
 
 #endif
 
-char        *StrCopy( char *, char * );
+char        *StrCopy( const char *, char * );
 long        OpenFile( char *, USHORT, int );
 void        RestoreScreen( void );
 long        TryPath( char *, char *, const char * );

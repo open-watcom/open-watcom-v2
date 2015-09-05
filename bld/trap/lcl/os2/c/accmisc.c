@@ -457,7 +457,7 @@ static void DOSEnvLkup( char *src, char *dst )
     }
 }
 
-char *StrCopy( char *src, char *dst )
+char *StrCopy( const char *src, char *dst )
 {
     strcpy( dst, src );
     return( strlen( dst ) + dst );

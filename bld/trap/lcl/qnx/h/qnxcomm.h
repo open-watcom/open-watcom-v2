@@ -31,7 +31,7 @@
 
 extern char         **dbg_environ;
 
-extern char         *StrCopy( char *, char * );
-extern unsigned     TryOnePath( char *, struct stat *, char *, char * );
-extern unsigned     FindFilePath( bool, char *, char * );
+extern char         *StrCopy( const char *, char * );
+extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
+extern unsigned     FindFilePath( bool, const char *, char * );
 extern char         *CollectNid( char *name, unsigned len, nid_t *nidp );

@@ -51,7 +51,7 @@ void print_msg( const char *format, ... )
     va_end( args );
 }
 
-char *StrCopy( char *src, char *dst )
+char *StrCopy( const char *src, char *dst )
 {
     while( (*dst = *src) ) {
         ++src;
@@ -60,7 +60,7 @@ char *StrCopy( char *src, char *dst )
     return( dst );
 }
 
-unsigned TryOnePath( char *path, struct stat *tmp, char *name, char *result )
+unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;
@@ -91,7 +91,7 @@ unsigned TryOnePath( char *path, struct stat *tmp, char *name, char *result )
     }
 }
 
-unsigned FindFilePath( int exe, char *name, char *result )
+unsigned FindFilePath( int exe, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;

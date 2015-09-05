@@ -312,8 +312,8 @@ u_long inpd(u_long port);
 
 /* Internal helper functions */
 
-extern unsigned     TryOnePath( char *, struct stat *, char *, char * );
-extern unsigned     FindFilePath( int, char *, char * );
+extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
+extern unsigned     FindFilePath( int, const char *, char * );
 extern u_long       GetDR6( void );
 extern void         ClearDebugRegs( void );
 extern int          SetDebugRegs( void );

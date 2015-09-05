@@ -37,7 +37,7 @@
 #include "trpimp.h"
 
 
-char *StrCopy( char *src, char *dst )
+char *StrCopy( const char *src, char *dst )
 {
     while( (*dst = *src) ) {
         ++src;
@@ -90,23 +90,26 @@ char *CollectNid( char *ptr, unsigned len, nid_t *nidp )
 }
 #endif
 
-unsigned TryOnePath( char *path, struct stat *tmp, char *name,
-                         char *result )
+unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;
 
-    if( path == NULL ) return( 0 );
+    if( path == NULL )
+        return( 0 );
     ptr = result;
     for( ;; ) {
         switch( *path ) {
         case ':':
         case '\0':
-            if( ptr != result && ptr[-1] != '/' ) *ptr++ = '/';
+            if( ptr != result && ptr[-1] != '/' )
+                *ptr++ = '/';
             end = StrCopy( name, ptr );
             //NYI: really should check permission bits
-            if( stat( result, tmp ) == 0 ) return( end - result );
-            if( *path == '\0' ) return( 0 );
+            if( stat( result, tmp ) == 0 )
+                return( end - result );
+            if( *path == '\0' )
+                return( 0 );
             ptr = result;
             break;
         case ' ':
@@ -120,7 +123,7 @@ unsigned TryOnePath( char *path, struct stat *tmp, char *name,
     }
 }
 
-unsigned FindFilePath( bool exe, char *name, char *result )
+unsigned FindFilePath( bool exe, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;

@@ -253,11 +253,12 @@ trap_retval ReqSet_debug_screen( void )
     return( 0 );
 }
 
-unsigned TryOnePath( char *path, struct stat *tmp, char *name, char *result )
+unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *ptr;
 
-    if( path == NULL ) return( 0 );
+    if( path == NULL )
+        return( 0 );
     ptr = result;
     for( ;; ) {
         switch( *path ) {
@@ -283,7 +284,7 @@ unsigned TryOnePath( char *path, struct stat *tmp, char *name, char *result )
     }
 }
 
-unsigned FindFilePath( int exe, char *name, char *result )
+unsigned FindFilePath( int exe, const char *name, char *result )
 {
     struct stat     tmp;
     unsigned        len;
