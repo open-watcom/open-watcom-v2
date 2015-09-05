@@ -101,7 +101,7 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
     }
     tmp_bp->initial_countdown = tmp_bp->countdown;
     if( GUIIsChecked( gui, CTL_BRK_EXECUTE ) ) {
-        tmp_bp->th = MAD_NIL_TYPE_HANDLE;
+        tmp_bp->th = BP_EXECUTE;
     } else if( GUIIsChecked( gui, CTL_BRK_BYTE ) ) {
         tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 1 );
     } else if( GUIIsChecked( gui, CTL_BRK_WORD ) ) {
@@ -172,7 +172,7 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUISetChecked( gui, CTL_BRK_ACTIVE, tmp_bp->status.b.active );
     GUISetChecked( gui, CTL_BRK_RESUME, tmp_bp->status.b.resume );
 
-    if( tmp_bp->th == MAD_NIL_TYPE_HANDLE ) {
+    if( IS_BP_EXECUTE( tmp_bp->th ) ) {
         mti.b.bits = 0;
     } else {
         MADTypeInfo( tmp_bp->th, &mti );
@@ -264,7 +264,7 @@ OVL_EXTERN bool BrkEvent( gui_window *gui, gui_event gui_ev, void *param )
                 } else {
                     saved = *bp;
                     *bp = dlg->tmpbp;
-                    if( !BrkCheckWatchLimit( NilAddr, MAD_NIL_TYPE_HANDLE ) ) {
+                    if( !BrkCheckWatchLimit( NilAddr, BP_EXECUTE ) ) {
                         ok = false;
                     }
                     *bp = saved;

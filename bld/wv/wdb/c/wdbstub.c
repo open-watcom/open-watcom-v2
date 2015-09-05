@@ -108,8 +108,7 @@ extern void             DlgCmd( void );
 extern void             DoCmd(char*);
 extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern brkp             *GetBPAt(int row);
-extern int              GetBPsCount( void );
+extern brkp             *GetBPAtIndex( int index );
 extern address          GetCodeDot( void );
 extern address          GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool exact );
 extern unsigned         Go( bool );
@@ -132,6 +131,8 @@ extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, in
 extern void             *WndAsmInspect( address addr );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
+extern void             RemovePoint( brkp *bp );
+extern void             ActPoint( brkp *bp, bool act );
 
 volatile bool           BrkPending;
 
@@ -279,7 +280,7 @@ char *MyStrTrim( char *s )
     StrLTrim( s );
     StrRTrim( s );
     return( s );
-} 
+}
 
 const char *MyStrTrimLen( const char *start, unsigned *len )
 {
@@ -295,7 +296,7 @@ const char *MyStrTrimLen( const char *start, unsigned *len )
     }
     *len = new_len;
     return( start );
-} 
+}
 
 char *GetCmdPartByChar( const char *cmd, const char *delimit )
 {
@@ -440,7 +441,6 @@ address SetBreakPointInFile( char *filename,int line_num )
             }
             break;
         }
-        
     }
     ModListFree( &list );
     if( bp_handled ) {
@@ -476,7 +476,7 @@ void ShowModuleList( void )
 static void DisplayDebuggerVarRecursively( var_info *pVarInfoList, var_node *v )
 {
     var_node    *e;
-        
+
     /*temp code start*/
     VarBuildName( pVarInfoList , v, TRUE );
     printf( "%s = {\n", TxtBuff );
@@ -537,7 +537,7 @@ void DisplayDebuggerVarValue( var_info *pVarInfoList )
             VarBuildName( pVarInfoList , v, TRUE );
             printf( "%s = { \n%s\n}\n", TxtBuff, v->value );
         }
-        
+
         fflush( stdout );
     }
 }
@@ -562,7 +562,7 @@ bool InspectDebuggerVar( const char *item )
                     v = VarAdd1( &InspectVars, item, strlen( item ), TRUE, FALSE );
                     if( v != NULL ) {
                         DisplayDebuggerVarValue( &InspectVars );
-                    }                    
+                    }
                     return( v != NULL );
                 }
             case INSP_RAW_DATA:
@@ -586,7 +586,7 @@ static void DumpLocals( void )
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
         VarOkToCache( &Locals, TRUE );
     }
-    
+
     DisplayDebuggerVarValue( &Locals );
 
     if( !_IsOn( SW_TASK_RUNNING ) ) {
@@ -681,10 +681,20 @@ and delete the bps one at a time
 */
 bool DeleteBps( char *params )
 {
-   //fixme:
-//    GetBPsCount();
-//    GetBPAt();
-//    RemoveOneBP( bp );
+    //if possible replace strtok with other 
+    //efficient tokenizer
+    char    *num;
+    int     index;
+    brkp    *bp;
+
+    num = strtok( params, " " );
+    while( num != NULL ) {
+        MyStrTrim( num );
+        index = atoi( num );
+        bp = GetBPAtIndex( index );
+        RemovePoint( bp );
+        num = strtok( NULL, " " );
+    }
     return( TRUE );
 }
 
@@ -695,17 +705,17 @@ bool DisableBps( char *params )
 {
     //if possible replace strtok with other 
     //efficient tokenizer
-    char    delims[] = " ";
-    char    *num = NULL;
-    int     bppos = 0;
+    char    *num;
+    int     index;
+    brkp    *bp;
 
-    num = strtok( params, delims );
+    num = strtok( params, " " );
     while( num != NULL ) {
         MyStrTrim( num );
-        bppos = atoi( num );
-        //Get Nth BP's address
-        //ActPoint( Nth bp 's address , FALSE );
-        num = strtok( NULL, delims );
+        index = atoi( num );
+        bp = GetBPAtIndex( index );
+        ActPoint( bp, FALSE );
+        num = strtok( NULL, " " );
     }
     return( TRUE );
 }
@@ -717,17 +727,17 @@ bool EnableBps( char *params )
 {
     //if possible replace strtok with other 
     //efficient tokenizer
-    char    delims[] = " ";
-    char    *num = NULL;
-    int     bppos = 0;
+    char    *num;
+    int     index;
+    brkp    *bp;
 
-    num = strtok( params, delims );
+    num = strtok( params, " " );
     while( num != NULL ) {
         MyStrTrim( num );
-        bppos = atoi( num );
-        // Get Nth BP's address
-        // ActPoint( Nth bp 's address , TRUE );
-        num = strtok( NULL, delims );
+        index = atoi( num );
+        bp = GetBPAtIndex( index );
+        ActPoint( bp, TRUE );
+        num = strtok( NULL, " " );
     }
     return( TRUE );
 }
@@ -813,7 +823,7 @@ bool ProcessCmdLoad( const char *param )
     char    *program_name = GetFirstQuotedPart( param );
     char    *program_param = GetSecondQuotedPart( param );
     bool    do_return = FALSE;
-    
+
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_LOAD );
         return( TRUE );
@@ -852,7 +862,7 @@ bool ProcessCmdBreakpoint( const char *param )
     char    *line_number_str;
     char    *only_file_name;
     int     line_num = 0;
-    
+
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg(WDB_HELP_BREAKPOINT);
         return( TRUE );
@@ -910,6 +920,7 @@ bool IsCmdDisable( const char *cmd )
 {
     return( IsCmdEqualCmd( cmd, WDB_CMD_DISABLE, WDB_SHORT_CMD_DISABLE ) );
 }
+
 bool ProcessCmdDisable( const char *param )
 {
     char    *disable_cmd = NULL;
@@ -929,7 +940,7 @@ bool ProcessCmdDisable( const char *param )
         disable_param = GetParamPartByChar( param, " " );
         if( IsCmdEqualCmd2( disable_param, "" ) ) {
             BrkDisableAll();
-            ShowDebuggerMsg( "All break points are enabled." );
+            ShowDebuggerMsg( "All break points are disabled." );
         } else {
             DisableBps( disable_param );
         }
@@ -1119,7 +1130,7 @@ bool ProcessCmdBacktrace( const char *param )
     }
     if( IsCmdEqualCmd2( "full", param ) ) {
         DumpLocals();
-    } else {    
+    } else {
         ShowCalls();
     }
     return( TRUE );
@@ -1877,7 +1888,6 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void RemovePoint( brkp *bp );
 extern void DUIRemoveBreak( brkp *bp )
 /************************************/
 {
@@ -1999,9 +2009,9 @@ int main( int argc, char **argv )
         //MessageBox( NULL, "Error creating thread!", "Stubugger", MB_APPLMODAL+MB_OK );
         ShowDebuggerError( "Error creating thread!" );
     }
-    
+
     DlgCmd();
-    
+
     CloseHandle( Requestsem );
     CloseHandle( Requestdonesem );
     DebugFini();

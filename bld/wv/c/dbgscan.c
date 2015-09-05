@@ -240,8 +240,8 @@ static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
     data.len = 0;
     data.th = MAD_NIL_TYPE_HANDLE;
     MADTypeWalk( tk, FindTypeName, &data );
-    if( data.th == MAD_NIL_TYPE_HANDLE ) return( MAD_NIL_TYPE_HANDLE );
-    ReScan( data.start + data.len );
+    if( data.th != MAD_NIL_TYPE_HANDLE )
+        ReScan( data.start + data.len );
     return( data.th );
 }
 

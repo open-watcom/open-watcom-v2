@@ -85,3 +85,7 @@ typedef struct brkp {
         long    cue_diff;
         long    addr_diff;
 } brkp;
+
+#define BP_EXECUTE          MAD_NIL_TYPE_HANDLE
+
+#define IS_BP_EXECUTE(x)    ((x) == BP_EXECUTE)
