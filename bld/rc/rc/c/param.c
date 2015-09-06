@@ -73,7 +73,8 @@ extern void RcAddCPPArg( char * newarg )
         cppargs = RcMemRealloc( cppargs, numargs * sizeof( char * ) );
     }
 
-    cppargs[numargs - 2] = newarg;
+    cppargs[numargs - 2] = RcMemMalloc( strlen( newarg ) + 1 );
+    strcpy( cppargs[numargs - 2], newarg );
     cppargs[numargs - 1] = NULL;
 
     CmdLineParms.CPPArgs = cppargs;

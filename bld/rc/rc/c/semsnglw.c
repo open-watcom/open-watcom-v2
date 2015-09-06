@@ -360,13 +360,7 @@ static bool writeIconDir( FullIconDir * dir, WResID * name, ResMemFlags flags,
 
     if( !error ) {
         loc.len = SemEndResource( loc.start );
-#ifdef PREPROC_BUG
-        SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_ICON ),
-                            flags, loc );
-#else
-        SemAddResourceFree( name, WResIDFromNum( (long)14 ),
-                            flags, loc );
-#endif
+        SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_ICON ), flags, loc );
     } else {
         *err_code = LastWresErr();
     }
@@ -460,13 +454,7 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
 
     if( !error ) {
         loc.len = SemEndResource( loc.start );
-#ifdef PREPROC_BUG
-        SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_CURSOR ),
-                         flags, loc );
-#else
-        SemAddResourceFree( name, WResIDFromNum( (long)12 ),
-                         flags, loc );
-#endif
+        SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_CURSOR ), flags, loc );
     } else {
         *err_code = LastWresErr();
     }

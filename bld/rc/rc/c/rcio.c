@@ -251,6 +251,7 @@ static bool PreprocessInputFile( void )
             }
             p = *cppargs;
             PP_Define( p + 2 );         // skip over -d
+            RcMemFree( p );
             ++cppargs;
         }
     }
