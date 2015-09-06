@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Macro dump utility.
+* Description:  Macro dump function.
 *
 ****************************************************************************/
 
@@ -33,66 +33,27 @@
 #include "ppdmpmac.h"
 
 
-static void dumpheap( void )
+void PP_Dump_Macros( void )
 {
-#if 0
-    struct _heapinfo h;
-    int         status;
+    int             hash;
+    const char      *endptr;
+    MACRO_ENTRY     *me;
+    PREPROC_VALUE   val;
 
-    h._pentry = NULL;
-    for( ;; ) {
-        status = _heapwalk( &h );
-        if( status != _HEAPOK )
-            break;
-        printf( "%s block at %Fp of size %4.4X\r\n",
-                (h._useflag == _USEDENTRY ? "USED": "FREE"),
-                h._pentry, h._size );
+    for( hash = 0; hash < HASH_SIZE; hash++ ) {
+        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
+            if( me->parmcount == 0 && me->replacement_list != NULL ) {
+                if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
+                    if( *endptr == '\0' ) {
+                        printf( "#define %s %s ", me->name, me->replacement_list );
+                        if( val.type == PPTYPE_SIGNED ) {
+                            printf( "(value=%ld)\n", val.val.ivalue );
+                        } else {
+                            printf( "(value=%luUL)\n", val.val.uvalue );
+                        }
+                    }
+                }
+            }
+        }
     }
-    switch( status ) {
-    case _HEAPEND:
-        printf( "OK - end of heap\r\n" );
-        break;
-    case _HEAPEMPTY:
-        printf( "OK - heap is empty\r\n" );
-        break;
-    case _HEAPBADBEGIN:
-        printf( "ERROR - heap is damaged\r\n" );
-        break;
-    case _HEAPBADPTR:
-        printf( "ERROR - bad pointer to heap\r\n" );
-        break;
-    case _HEAPBADNODE:
-        printf( "ERROR - bad node in heap\r\n" );
-        break;
-    }
-#endif
-}
-
-int main( int argc, char *argv[] )
-{
-    int         c;
-
-    dumpheap();
-    if( argc < 2 ) {
-        printf( "Usage: dumpmac filename\r\n" );
-        exit( 1 );
-    }
-    if( argv[2] != NULL ) {
-        PreProcChar = argv[2][0];
-    }
-    if( PP_Init( argv[1], 0, NULL ) != 0 ) {
-        printf( "Unable to open '%s'\r\n", argv[1] );
-        exit( 1 );
-    }
-    for( ;; ) {
-        c = PP_Char();
-        if( c == EOF )
-            break;
-//      putchar( c );
-    }
-    PP_Dump_Macros();
-    dumpheap();
-    PP_Fini();
-    dumpheap();
-    return( 0 );
 }
