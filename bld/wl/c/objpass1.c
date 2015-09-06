@@ -113,8 +113,7 @@ static void DoSavedExport( symbol *sym )
         exp->impname = NULL;
         AddToExportList( exp );
     } else {
-        AddNameTable( sym->name, strlen(sym->name), TRUE,
-                      &FmtData.u.nov.exp.export );
+        AddNameTable( sym->name, strlen( sym->name ), TRUE, &FmtData.u.nov.exp.export );
     }
 }
 
