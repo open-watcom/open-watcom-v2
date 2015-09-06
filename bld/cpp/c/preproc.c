@@ -585,7 +585,7 @@ const char *PP_ScanName( const char *ptr )
     return( ptr );
 }
 
-static void open_iuffernclude_file( const char *filename, const char *end, int incl_type )
+static void open_include_file( const char *filename, const char *end, int incl_type )
 {
     size_t      len;
     char        *buffer;
