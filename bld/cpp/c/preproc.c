@@ -93,11 +93,22 @@ static char *Months[] = {
 
 static char MBCharLen[256];         // multi-byte character len table
 
+static char *str_dup( const char *str )
+{
+    size_t  len;
+    char    *p;
+
+    len = strlen( str ) + 1;
+    p = PP_Malloc( len );
+    if( p != NULL )
+        memcpy( p, str, len );
+    return( p );
+}
+
 static FILE *PP_Open( const char *filename )
 {
     FILE        *handle;
     FILELIST    *prev_file;
-    size_t      len;
 
     handle = fopen( filename, "rb" );
     if( handle != NULL ) {
@@ -111,10 +122,8 @@ static FILE *PP_Open( const char *filename )
         } else {
             PP_File->prev_file = prev_file;
             PP_File->handle    = handle;
-            PP_File->prev_bufptr  = PPBufPtr;
-            len = strlen( filename ) + 1;
-            PP_File->filename  = PP_Malloc( len );
-            memcpy( PP_File->filename, filename, len );
+            PP_File->prev_bufptr = PPBufPtr;
+            PP_File->filename  = str_dup( filename );
             PP_File->linenum   = 1;
             PPBufPtr = PP_File->buffer;
             *PPBufPtr = '\0';                   // indicate buffer empty
@@ -576,12 +585,31 @@ const char *PP_ScanName( const char *ptr )
     return( ptr );
 }
 
+static void open_iuffernclude_file( const char *filename, const char *end, int incl_type )
+{
+    size_t      len;
+    char        *buffer;
+
+    len = end - filename;
+    if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
+        /* filename is located in preprocessor buffer
+         * temporary copy is necessary, because buffer is
+         * overwriten by sprintf function
+         */
+        buffer = str_dup( filename );
+        sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PreProcChar, (int)len, buffer );
+        PP_Free( buffer );
+        PPNextTokenPtr = PPLineBuf + 1;
+    } else {
+        PP_GenLine();
+    }
+}
+
 static void PP_Include( const char *ptr )
 {
     const char  *filename;
     char        delim;
     int         incl_type;
-    size_t      len;
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
@@ -599,20 +627,13 @@ static void PP_Include( const char *ptr )
     ++ptr;
     while( *ptr != delim && *ptr != '\0' )
         ++ptr;
-    len = ptr - filename;
-    if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
-        sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
-        PPNextTokenPtr = PPLineBuf + 1;
-    } else {
-        PP_GenLine();
-    }
+    open_include_file( filename, ptr, incl_type );
 }
 
 static void PP_RCInclude( const char *ptr )
 {
     const char  *filename;
     bool        quoted = false;
-    size_t      len;
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
@@ -644,13 +665,7 @@ static void PP_RCInclude( const char *ptr )
             ++ptr;
         }
     }
-    len = ptr - filename;
-    if( PP_OpenInclude( filename, len, PPINCLUDE_USR ) == NULL ) {
-        sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
-        PPNextTokenPtr = PPLineBuf + 1;
-    } else {
-        PP_GenLine();
-    }
+    open_include_file( filename, ptr, PPINCLUDE_USR );
 }
 
 MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
