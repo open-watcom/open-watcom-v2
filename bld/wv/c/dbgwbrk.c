@@ -155,7 +155,7 @@ static void     BrkModify( a_window *wnd, int row, int piece )
 #ifdef OPENER_GADGET
     } else if( piece == PIECE_OPENER ) {
         if( bp->size == 0 ) {
-            if( bp->source_line ) {
+            if( bp->source_line != NULL ) {
                 WndSrcInspect( bp->loc.addr );
             } else {
                 WndAsmInspect( bp->loc.addr );

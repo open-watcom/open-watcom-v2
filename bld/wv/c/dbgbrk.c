@@ -303,7 +303,6 @@ void GetBPAddr( brkp *bp, char *buff )
         }
     } else if( !IS_BP_EXECUTE( bp->th ) && bp->source_line != NULL ) {
         p = StrCopy( bp->source_line, buff );
-
     } else {
         p = CnvNearestAddr( bp->loc.addr, buff, TXT_LEN );
     }
