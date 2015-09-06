@@ -607,7 +607,7 @@ static MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
         if( token == PPT_ID ) {
             for( i = 1; i < me->parmcount; i++ ) {
                 p = macro_parms[i - 1].name;
-                if( len == strlen( p ) && memcmp( p1, p, len ) == 0 ) {
+                if( memcmp( p1, p, len ) == 0 && p[len] == '\0' ) {
                     token = PPT_MACRO_PARM;
                     i--;
                     len = 0;

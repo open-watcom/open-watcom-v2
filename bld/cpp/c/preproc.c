@@ -673,15 +673,18 @@ MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
     MACRO_ENTRY     *me;
     unsigned int    hash;
 
-    me = (MACRO_ENTRY *)PP_Malloc( sizeof( MACRO_ENTRY ) + len );
-    if( me != NULL ) {
-        hash = PP_Hash( macro_name, len );
-        me->next = PPHashTable[hash];
-        PPHashTable[hash] = me;
-        memcpy( me->name, macro_name, len );
-        me->name[len] = '\0';
-        me->parmcount = PP_SPECIAL_MACRO;
-        me->replacement_list = NULL;
+    me = PP_MacroLookup( macro_name, len );
+    if( me == NULL ) {
+        me = (MACRO_ENTRY *)PP_Malloc( sizeof( MACRO_ENTRY ) + len );
+        if( me != NULL ) {
+            hash = PP_Hash( macro_name, len );
+            me->next = PPHashTable[hash];
+            PPHashTable[hash] = me;
+            memcpy( me->name, macro_name, len );
+            me->name[len] = '\0';
+            me->parmcount = PP_SPECIAL_MACRO;
+            me->replacement_list = NULL;
+        }
     }
     return( me );
 }
@@ -834,7 +837,7 @@ MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
 
     hash = PP_Hash( macro_name, len );
     for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-        if( len == strlen( me->name ) && memcmp( me->name, macro_name, len ) == 0 ) {
+        if( memcmp( me->name, macro_name, len ) == 0 && me->name[len] == '\0' ) {
             break;
         }
     }
