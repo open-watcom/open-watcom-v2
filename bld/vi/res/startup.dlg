@@ -1,5 +1,6 @@
-#include "windows.h"
 #include "startup.h"
+#include "viabout.h"
+
 Startup DIALOG 74, 24, 212, 100
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_BORDER
 FONT 8, "MS Sans Serif"
