@@ -41,7 +41,7 @@ extern int      CurrentMenuNumber;
 /*
  * SelectFileOpen - select file from specified directory
  */
-vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs )
+vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool want_all_dirs )
 {
     char                dd[FILENAME_MAX], cdir[FILENAME_MAX];
     int                 j;

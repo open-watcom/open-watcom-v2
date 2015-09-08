@@ -64,11 +64,11 @@ void GetCWD2( char *str, int maxlen )
 /*
  * ChangeDirectory - change to given drive/directory
  */
-vi_rc ChangeDirectory( char *dir )
+vi_rc ChangeDirectory( const char *dir )
 {
     vi_rc       rc;
-    int         shift;
-    char        *tmp;
+    size_t      shift;
+    const char  *tmp;
     int         i;
 
     shift = 0;
@@ -79,7 +79,7 @@ vi_rc ChangeDirectory( char *dir )
         }
         shift = 2;
     }
-    tmp = &(dir[shift]);
+    tmp = dir + shift;
     i = chdir( tmp );
     if( i != 0 ) {
         return( ERR_DIRECTORY_OP_FAILED );
@@ -91,7 +91,7 @@ vi_rc ChangeDirectory( char *dir )
 /*
  * ConditionalChangeDirectory - change dir only if needed
  */
-vi_rc ConditionalChangeDirectory( char *where )
+vi_rc ConditionalChangeDirectory( const char *where )
 {
     if( CurrentDirectory != NULL ) {
         if( !stricmp( CurrentDirectory, where ) ) {
@@ -105,7 +105,7 @@ vi_rc ConditionalChangeDirectory( char *where )
 /*
  * SetCWD - set current working directory
  */
-vi_rc SetCWD( char *str )
+vi_rc SetCWD( const char *str )
 {
     vi_rc   rc;
 

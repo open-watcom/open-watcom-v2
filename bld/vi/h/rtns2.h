@@ -56,7 +56,7 @@ extern void         MyDelay( int );
 extern void         ClearScreen( void );
 extern long         MemSize( void );
 extern void         MyBeep( void );
-extern vi_rc        SetCWD( char * );
+extern vi_rc        SetCWD( const char * );
 extern void         KillCursor( void );
 extern void         TurnOffCursor( void );
 extern void         RestoreCursor( void );

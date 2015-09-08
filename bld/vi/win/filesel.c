@@ -100,7 +100,7 @@ WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 /*
  * SelectFileOpen - use common dialog file open to pick a file to edit
  */
-vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
+vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool want_all_dirs )
 {
     OPENFILENAME        of;
     bool                rc;

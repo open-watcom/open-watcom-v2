@@ -134,8 +134,8 @@ vi_rc   Filter( range * );
 void    DirFini( void );
 void    GetCWD1( char ** );
 void    GetCWD2( char *, int );
-vi_rc   ChangeDirectory( char * );
-vi_rc   ConditionalChangeDirectory( char * );
+vi_rc   ChangeDirectory( const char * );
+vi_rc   ConditionalChangeDirectory( const char * );
 void    FormatDirToFile( file *cfile, bool add_drives );
 
 /* dirdisp.c */
@@ -357,7 +357,7 @@ vi_rc   FancyFileSave( void );
 vi_rc   DoKeyboardSave( void );
 
 /* filesel.c */
-vi_rc SelectFileOpen( char *, char **, char *, bool );
+vi_rc SelectFileOpen( const char *, char **, const char *, bool );
 vi_rc SelectFileSave( char * );
 vi_rc SelectLineInFile( selflinedata *sfd );
 
