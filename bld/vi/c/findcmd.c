@@ -627,7 +627,7 @@ vi_rc ColorFind( char *data, find_type findfl )
 /*
  * SetLastFind - set the last find string
  */
-void SetLastFind( char* newLastFind )
+void SetLastFind( const char *newLastFind )
 {
     AddString2( &lastFind, newLastFind );
 

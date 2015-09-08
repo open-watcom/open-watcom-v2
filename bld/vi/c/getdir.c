@@ -50,7 +50,7 @@ static int compare( const void *p1, const void *p2 )
 /*
  * getDir - get current directory list (no sorting)
  */
-static vi_rc getDir( char *dname, bool want_all_dirs )
+static vi_rc getDir( const char *dname, bool want_all_dirs )
 {
     DIR                 *d;
     struct dirent       *nd;
@@ -161,7 +161,7 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
 /*
  * GetSortDir - get a directory and sort it
  */
-vi_rc GetSortDir( char *name, bool want_all_dirs )
+vi_rc GetSortDir( const char *name, bool want_all_dirs )
 {
     vi_rc       rc;
 

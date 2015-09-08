@@ -53,21 +53,21 @@
 
 #define MAX_DISP 60
 
-static void fileGrep( char *, char **, int *, window_id );
-static vi_rc fSearch( char *, char * );
-static vi_rc eSearch( char *, char * );
-static vi_rc doGREP( char * );
+static void fileGrep( const char *, char **, int *, window_id );
+static vi_rc fSearch( const char *, char * );
+static vi_rc eSearch( const char *, char * );
+static vi_rc doGREP( const char * );
 
-static regexp   *cRx;
-static char     *sString;
-static char     *origString;
-static char     *cTable;
-static bool     isFgrep, caseIgn;
+static regexp       *cRx;
+static char         *sString;
+static const char   *origString;
+static char         *cTable;
+static bool         isFgrep, caseIgn;
 
 /*
  * DoFGREP - do a fast grep
  */
-vi_rc DoFGREP( char *dirlist, char *string, bool ci )
+vi_rc DoFGREP( const char *dirlist, const char *string, bool ci )
 {
     char        table[256];
     int         i;
@@ -96,7 +96,7 @@ vi_rc DoFGREP( char *dirlist, char *string, bool ci )
 /*
  * DoEGREP - do an extended grep
  */
-vi_rc DoEGREP( char *dirlist, char *string )
+vi_rc DoEGREP( const char *dirlist, const char *string )
 {
     vi_rc   rc;
 
@@ -104,10 +104,11 @@ vi_rc DoEGREP( char *dirlist, char *string )
     if( RegExpError ) {
         return( RegExpError );
     }
-    sString = string;
+    AddString( &sString, string );
     origString = string;
     isFgrep = false;
     rc = doGREP( dirlist );
+    MemFree( sString );
     MemFree( cRx );
     return( rc );
 
@@ -150,7 +151,7 @@ static vi_rc getFile( char *fname )
     return( rc );
 }
 
-static int initList( window_id w, char *dirlist, char **list )
+static int initList( window_id w, const char *dirlist, char **list )
 {
     char        dir[MAX_STR];
     int         clist;
@@ -164,7 +165,8 @@ static int initList( window_id w, char *dirlist, char **list )
      */
     clist = 0;
     EditFlags.WatchForBreak = true;
-    if( NextWord1( dirlist, dir ) <= 0 ) {
+    dirlist = GetNextWord1( dirlist, dir );
+    if( *dir == '\0' ) {
         fileGrep( EditVars.GrepDefault, list, &clist, w );
     } else {
         do {
@@ -176,7 +178,8 @@ static int initList( window_id w, char *dirlist, char **list )
             if( EditFlags.BreakPressed ) {
                 break;
             }
-        } while( NextWord1( dirlist, dir ) > 0 );
+            dirlist = GetNextWord1( dirlist, dir );
+        } while( *dir != '\0' );
     }
     if( EditFlags.BreakPressed ) {
 #ifdef __WIN__
@@ -383,7 +386,7 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
 } /* GrepListProc95 */
 #endif
 
-static vi_rc doGREP( char *dirlist )
+static vi_rc doGREP( const char *dirlist )
 {
     FARPROC     fp;
     vi_rc       rc;
@@ -406,7 +409,7 @@ static vi_rc doGREP( char *dirlist )
 /*
  * doGREP - perform GREP on a specified file
  */
-static vi_rc doGREP( char *dirlist )
+static vi_rc doGREP( const char *dirlist )
 {
     int         i, clist, n = 0;
     window_id   wn, optwin;
@@ -541,7 +544,7 @@ static vi_rc doGREP( char *dirlist )
 /*
  * fileGrep - search a single dir and build list of files
  */
-static void fileGrep( char *dir, char **list, int *clist, window_id wn )
+static void fileGrep( const char *dir, char **list, int *clist, window_id wn )
 {
     char        fn[FILENAME_MAX], data[FILENAME_MAX], ts[FILENAME_MAX];
     char        path[FILENAME_MAX];
@@ -629,7 +632,7 @@ static void fileGrep( char *dir, char **list, int *clist, window_id wn )
 /*
  * eSearch - scan a file for a search string (extended)
  */
-static vi_rc eSearch( char *fn, char *res )
+static vi_rc eSearch( const char *fn, char *res )
 {
     int         i;
     char        *buff;
@@ -675,7 +678,7 @@ static vi_rc eSearch( char *fn, char *res )
 /*
  * fSearch - scan a file for a search string (fast)
  */
-static vi_rc fSearch( char *fn, char *r )
+static vi_rc fSearch( const char *fn, char *r )
 {
     int         handle, j;
     int         bytes, bcnt;

@@ -54,6 +54,18 @@ void RemoveLeadingSpaces( char *buff )
 } /* RemoveLeadingSpaces */
 
 /*
+ * SkipLeadingSpaces - remove leading spaces from a string
+ */
+char *SkipLeadingSpaces( const char *buff )
+{
+    while( isspace( *buff ) ) {
+        buff++;
+    }
+    return( (char *)buff );
+
+} /* SkipLeadingSpaces */
+
+/*
  * TranslateTabs
  */
 void TranslateTabs( char *buff )
@@ -135,6 +147,30 @@ int NextWord1( char *buff, char *res )
     return( j );
 
 } /* NextWord1 */
+
+/*
+ * GetNextWord1 - get next space delimited word in buff
+ */
+char *GetNextWord1( const char *buff, char *res )
+{
+    int         j;
+    char        c;
+
+    while( isspace( *buff ) ) {
+        ++buff;
+    }
+    /*
+     * get word
+     */
+    for( j = 0; (c = *buff) != '\0'; ++buff ) {
+        if( isspace( c ) )
+            break;
+        res[j++] = c;
+    }
+    res[j] = '\0';
+    return( (char *)buff );
+
+} /* GetNextWord1 */
 
 /*
  * NextWordSlash - next slash delimited word

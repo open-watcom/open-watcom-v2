@@ -312,8 +312,8 @@ void    FetchFcb( fcb * );
 void    SwapBlockFini( void );
 
 /* fgrep.c */
-vi_rc DoFGREP( char *, char *, bool );
-vi_rc DoEGREP( char *, char * );
+vi_rc DoFGREP( const char *, const char *, bool );
+vi_rc DoEGREP( const char *, const char * );
 
 /* file.c */
 void    SaveInfo( info * );
@@ -379,7 +379,7 @@ vi_rc   GetFind( char *, i_mark *, int *, find_type );
 vi_rc   FindBackwardsWithString( char * );
 void    SaveFindRowColumn( void );
 vi_rc   ColorFind( char *, find_type );
-void    SetLastFind( char * );
+void    SetLastFind( const char * );
 void    FindCmdFini( void );
 void    JumpTo( i_mark * );
 
@@ -419,7 +419,7 @@ vi_rc   GenerateConfiguration( char *fname, bool is_cmdline );
 int     GetAutoIndentAmount( char *, int, bool );
 
 /* getdir.c */
-vi_rc GetSortDir( char *, bool );
+vi_rc GetSortDir( const char *, bool );
 
 /* getspcmd.c */
 void    GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds );
@@ -650,6 +650,7 @@ vi_rc   LocateCmd( char * );
 
 /* parse.c */
 void    RemoveLeadingSpaces( char *);
+char    *SkipLeadingSpaces( const char *);
 void    TranslateTabs( char * );
 vi_rc   GetStringWithPossibleSlash( char *, char * );
 vi_rc   GetStringWithPossibleQuote( char *, char * );
@@ -657,6 +658,7 @@ vi_rc   GetStringWithPossibleQuote2( char *, char *, bool );
 int     NextWord( char *, char *, char *);
 int     NextWordSlash( char *, char * );
 int     NextWord1( char *, char * );
+char    *GetNextWord1( const char *, char * );
 void    EliminateFirstN( char *, int );
 int     Tokenize( const char *, const char *, bool );
 int     GetLongestTokenLength( const char * );
