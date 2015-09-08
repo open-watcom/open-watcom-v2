@@ -73,13 +73,14 @@ void Expand( char *odata, const char *data, vlist *vl )
     char        *obptr;
     int         obpos;
 
-    obpos = bPos;
-    obptr = bPtr;
     if( recurseDepth >= 3 ) {
+        if( odata != data )
+            strcpy( odata, data );
         return;
     }
+    obpos = bPos;
+    obptr = bPtr;
     recurseDepth++;
-
     bPos = 0;
     bPtr = result;
 
