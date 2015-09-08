@@ -43,7 +43,7 @@ static int closeAFile( void );
 /*
  * FileExists - test if a file exists
  */
-vi_rc FileExists( char *name )
+vi_rc FileExists( const char *name )
 {
     int     i, en;
     vi_rc   rc;
@@ -105,7 +105,7 @@ vi_rc FileExists( char *name )
 /*
  * FileOpen - open a file, conditional on exist flag
  */
-vi_rc FileOpen( char *name, bool existflag, int stat, int attr, int *_handle )
+vi_rc FileOpen( const char *name, bool existflag, int stat, int attr, int *_handle )
 {
     int         handle, en;
     vi_rc       rc;
@@ -268,7 +268,7 @@ void VerifyTmpDir( void )
 /*
  * MakeTmpPath - make a path to a file from TmpDir
  */
-void MakeTmpPath( char *out, char *in )
+void MakeTmpPath( char *out, const char *in )
 {
     out[0] = 0;
     if( EditVars.TmpDir == NULL ) {
@@ -300,7 +300,7 @@ vi_rc TmpFileOpen( char *inname, int *_handle )
 /*
  * TmpFileClose - close and delete a tmp file
  */
-void TmpFileClose( int handle, char *name )
+void TmpFileClose( int handle, const char *name )
 {
     char        file[FILENAME_MAX];
 

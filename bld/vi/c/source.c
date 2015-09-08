@@ -191,88 +191,90 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
             if( rc < ERR_NO_ERR ) {
                 rc = ERR_NO_ERR;
             }
-        } else switch( curr->token ) {
-        case SRC_T_ATOMIC:
-            if( atomic == NULL ) {
-                atomic = UndoStack;
-                StartUndoGroup( atomic );
-            }
-            break;
-
-        case SRC_T_IF:
-            rc = SrcIf( &curr, &vl );
-            break;
-
-        case SRC_T_GOTO:
-            rc = SrcGoTo( &curr, tmp, lab );
-            break;
-
-        case SRC_T_LABEL:
-            break;
-
-        case SRC_T_GET:
-            SrcGet( tmp, &vl );
-            rc = ERR_NO_ERR;
-            break;
-
-        case SRC_T_INPUT:
-            LastRC = SrcInput( tmp, &vl );
-            if( LastRC != NO_VALUE_ENTERED && LastRC != ERR_NO_ERR ) {
-                rc = LastRC;
-            }
-            break;
-
-        case SRC_T_NEXTWORD:
-            rc = SrcNextWord( tmp, &vl );
-            break;
-
-        case SRC_T_ASSIGN:
-            rc = SrcAssign( tmp, &vl );
-            break;
-
-        case SRC_T_EXPR:
-            rc = SrcExpr( curr, &vl );
-            break;
-
-        case SRC_T_OPEN:
-            LastRC = SrcOpen( curr, &vl, &fi, tmp );
-            if( LastRC != ERR_FILE_NOT_FOUND && LastRC != ERR_NO_ERR ) {
-                rc = LastRC;
-            }
-            break;
-
-        case SRC_T_READ:
-            LastRC = SrcRead( curr, &fi, tmp, &vl );
-            if( LastRC != END_OF_FILE && LastRC != ERR_NO_ERR ) {
-                rc = LastRC;
-            }
-            break;
-
-        case SRC_T_WRITE:
-            rc = SrcWrite( curr, &fi, tmp, &vl );
-            break;
-
-        case SRC_T_CLOSE:
-            rc = SrcClose( curr, &vl, &fi, tmp );
-            break;
-
-        default:
-#ifdef __WIN__
-            {
-                if( RunWindowsCommand( tmp, &LastRC, &vl ) ) {
-                    rc = LastRC;
-                    break;
+        } else {
+            switch( curr->token ) {
+            case SRC_T_ATOMIC:
+                if( atomic == NULL ) {
+                    atomic = UndoStack;
+                    StartUndoGroup( atomic );
                 }
+                break;
+    
+            case SRC_T_IF:
+                rc = SrcIf( &curr, &vl );
+                break;
+    
+            case SRC_T_GOTO:
+                rc = SrcGoTo( &curr, tmp, lab );
+                break;
+    
+            case SRC_T_LABEL:
+                break;
+    
+            case SRC_T_GET:
+                SrcGet( tmp, &vl );
+                rc = ERR_NO_ERR;
+                break;
+    
+            case SRC_T_INPUT:
+                LastRC = SrcInput( tmp, &vl );
+                if( LastRC != NO_VALUE_ENTERED && LastRC != ERR_NO_ERR ) {
+                    rc = LastRC;
+                }
+                break;
+    
+            case SRC_T_NEXTWORD:
+                rc = SrcNextWord( tmp, &vl );
+                break;
+    
+            case SRC_T_ASSIGN:
+                rc = SrcAssign( tmp, &vl );
+                break;
+    
+            case SRC_T_EXPR:
+                rc = SrcExpr( curr, &vl );
+                break;
+    
+            case SRC_T_OPEN:
+                LastRC = SrcOpen( curr, &vl, &fi, tmp );
+                if( LastRC != ERR_FILE_NOT_FOUND && LastRC != ERR_NO_ERR ) {
+                    rc = LastRC;
+                }
+                break;
+    
+            case SRC_T_READ:
+                LastRC = SrcRead( curr, &fi, tmp, &vl );
+                if( LastRC != END_OF_FILE && LastRC != ERR_NO_ERR ) {
+                    rc = LastRC;
+                }
+                break;
+    
+            case SRC_T_WRITE:
+                rc = SrcWrite( curr, &fi, tmp, &vl );
+                break;
+    
+            case SRC_T_CLOSE:
+                rc = SrcClose( curr, &vl, &fi, tmp );
+                break;
+    
+            default:
+    #ifdef __WIN__
+                {
+                    if( RunWindowsCommand( tmp, &LastRC, &vl ) ) {
+                        rc = LastRC;
+                        break;
+                    }
+                }
+    #endif
+                if( curr->hasvar ) {
+                    Expand( tmp, &vl );
+                }
+                LastRC = RunCommandLine( tmp );
+                if( LastRC == DO_NOT_CLEAR_MESSAGE_WINDOW ) {
+                    LastRC = LastError;
+                }
+                break;
             }
-#endif
-            if( curr->hasvar ) {
-                Expand( tmp, &vl );
-            }
-            LastRC = RunCommandLine( tmp );
-            if( LastRC == DO_NOT_CLEAR_MESSAGE_WINDOW ) {
-                LastRC = LastError;
-            }
-            break;
         }
     }
     if( EditFlags.Appending ) {

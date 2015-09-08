@@ -35,7 +35,7 @@
 /*
  * AddString2 - free a string, then allocate new one
  */
-void AddString2( char **where, char *str )
+void AddString2( char **where, const char *str )
 {
 
     MemFree( *where );
@@ -46,7 +46,7 @@ void AddString2( char **where, char *str )
 /*
  * AddString - allocate a string, and copy it in
  */
-void AddString( char **where, char *str )
+void AddString( char **where, const char *str )
 {
     int sl;
 

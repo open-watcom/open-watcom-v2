@@ -40,7 +40,7 @@
 /*
  * MyGetFileSize - do just that
  */
-vi_rc MyGetFileSize( char *name, long *size )
+vi_rc MyGetFileSize( const char *name, long *size )
 {
     DIR         *d;
 

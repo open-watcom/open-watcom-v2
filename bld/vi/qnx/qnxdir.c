@@ -66,7 +66,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
 /*
  * MyGetFileSize - do just that
  */
-int MyGetFileSize( char *inname, long *size )
+int MyGetFileSize( const char *inname, long *size )
 {
     struct stat sb;
 

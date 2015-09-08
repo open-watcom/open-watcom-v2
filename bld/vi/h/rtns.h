@@ -33,8 +33,8 @@
 void    AbandonHopeAllYeWhoEnterHere( vi_rc );
 
 /* addstr.c */
-void    AddString( char **, char * );
-void    AddString2( char **, char * );
+void    AddString( char **, const char * );
+void    AddString2( char **, const char * );
 void    DeleteString( char ** );
 
 /* alias.c */
@@ -147,7 +147,7 @@ void    FinishFileComplete( void );
 /* dosdir.c */
 struct dirent;
 
-vi_rc   MyGetFileSize( char *, long * );
+vi_rc   MyGetFileSize( const char *, long * );
 void    FormatFileEntry( direct_ent *file, char *res );
 bool    IsDirectory( char *name );
 void    GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path );
@@ -339,8 +339,8 @@ void    UpdateLastFileList( char *fname );
 char    *GetFileInLastFileList( int num );
 
 /* filenew.c */
-vi_rc   NewFile( char *, bool );
-file    *FileAlloc( char * );
+vi_rc   NewFile( const char *, bool );
+file    *FileAlloc( const char * );
 void    FileFree( file * );
 void    FreeEntireFile( file * );
 
@@ -458,18 +458,18 @@ char    *GetConfigFileName( void );
 void    FiniConfigFileName( void );
 
 /* io.c */
-vi_rc   FileExists( char * );
-vi_rc   FileOpen( char *, bool, int, int, int * );
+vi_rc   FileExists( const char * );
+vi_rc   FileOpen( const char *, bool, int, int, int * );
 vi_rc   FileSeek( int, long );
 FILE    *GetFromEnvAndOpen( const char * );
 void    GetFromEnv( const char *, char * );
 vi_rc   TmpFileOpen( char *, int * );
-void    TmpFileClose( int, char * );
+void    TmpFileClose( int, const char * );
 void    FileLower( char *str );
 bool    FileTemplateMatch( const char *, const char * );
 char    *StripPath( const char * );
 void    VerifyTmpDir( void );
-void    MakeTmpPath( char *out, char *in );
+void    MakeTmpPath( char *out, const char *in );
 
 /* key.c */
 vi_key  GetVIKey( vi_key ch, int scan, bool shift );

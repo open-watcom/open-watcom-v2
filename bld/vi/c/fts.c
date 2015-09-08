@@ -108,7 +108,7 @@ vi_rc FTSAddCmd( char *data, int tok )
 /*
  * FTSAddBoolean - add a boolean set to the current (tail) fts
  */
-vi_rc FTSAddBoolean( bool val, char *name )
+vi_rc FTSAddBoolean( bool val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -120,7 +120,7 @@ vi_rc FTSAddBoolean( bool val, char *name )
 /*
  * FTSAddInt - add an integral set to the current (tail) fts
  */
-vi_rc FTSAddInt( int val, char *name )
+vi_rc FTSAddInt( int val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -132,7 +132,7 @@ vi_rc FTSAddInt( int val, char *name )
 /*
  * FTSAddChar - add a character set to the current (tail) fts
  */
-vi_rc FTSAddChar( char val, char *name )
+vi_rc FTSAddChar( char val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -144,7 +144,7 @@ vi_rc FTSAddChar( char val, char *name )
 /*
  * FTSAddStr - add a string set to the current (tail) fts
  */
-vi_rc FTSAddStr( char *val, char *name )
+vi_rc FTSAddStr( char *val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -240,7 +240,7 @@ static vi_rc runCmds( ft_src *fts )
 /*
  * FTSRunCmds - run commands if 'name' has a registered file type
  */
-vi_rc FTSRunCmds( char *name )
+vi_rc FTSRunCmds( const char *name )
 {
     ft_src      *fts;
 

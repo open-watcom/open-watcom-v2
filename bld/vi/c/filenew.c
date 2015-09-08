@@ -39,7 +39,7 @@
 /*
  * createNewFile - create new file entry
  */
-static vi_rc createNewFile( char *name, bool same_file )
+static vi_rc createNewFile( const char *name, bool same_file )
 {
     int         height;
     window_id   cw;
@@ -200,7 +200,7 @@ static int      inReadHook;
 /*
  * NewFile - load up a new file
  */
-vi_rc NewFile( char *name, bool same_file )
+vi_rc NewFile( const char *name, bool same_file )
 {
     vi_rc       rc;
     bool        dup;
@@ -274,7 +274,7 @@ vi_rc NewFile( char *name, bool same_file )
 /*
  * FileAlloc - allocate a file entry
  */
-file *FileAlloc( char *name )
+file *FileAlloc( const char *name )
 {
     file        *cfile;
 
