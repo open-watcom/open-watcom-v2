@@ -378,7 +378,7 @@ vi_rc   FindForwardWithString( char * );
 vi_rc   GetFind( char *, i_mark *, int *, find_type );
 vi_rc   FindBackwardsWithString( char * );
 void    SaveFindRowColumn( void );
-vi_rc   ColorFind( char *, find_type );
+vi_rc   ColorFind( const char *, find_type );
 void    SetLastFind( const char * );
 void    FindCmdFini( void );
 void    JumpTo( i_mark * );
@@ -787,9 +787,9 @@ bool    ConvertSpacesToTabsUpToColumn( int, char *, int, char *, int );
 
 /* tags.c */
 vi_rc GetCurrentTag( void );
-vi_rc TagHunt( char * );
-vi_rc FindTag( char * );
-vi_rc LocateTag( char *, char *, char * );
+vi_rc TagHunt( const char * );
+vi_rc FindTag( const char * );
+vi_rc LocateTag( const char *, char *, char * );
 
 /* time.c */
 void    GetTimeString( char *st );

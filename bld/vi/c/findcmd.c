@@ -588,7 +588,7 @@ void SaveFindRowColumn( void )
 /*
  * ColorFind - find string and color it
  */
-vi_rc ColorFind( char *data, find_type findfl )
+vi_rc ColorFind( const char *data, find_type findfl )
 {
     vi_rc       rc;
     int         len;
@@ -599,7 +599,8 @@ vi_rc ColorFind( char *data, find_type findfl )
      * get search string and flags
      */
     buff = StaticAlloc();
-    if( (len = NextWordSlash( data, buff ) ) <= 0 ) {
+    GetNextWord1( data, buff );
+    if( *buff == '\0' ) {
         StaticFree( buff );
         return( ERR_INVALID_FIND_CMD );
     }

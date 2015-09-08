@@ -61,7 +61,7 @@ vi_rc GetCurrentTag( void )
 /*
  * TagHunt - hunt for a specified tag
  */
-vi_rc TagHunt( char *str )
+vi_rc TagHunt( const char *str )
 {
     char        buff[MAX_STR], file[FILENAME_MAX];
     int         num;
@@ -79,8 +79,7 @@ vi_rc TagHunt( char *str )
             } else {
                 rc = FindTag( buff );
                 if( rc < ERR_NO_ERR ) {
-                    strcpy( buff, str );
-                    ColorFind( buff, 0 );
+                    ColorFind( str, 0 );
                     rc = ERR_TAG_NOT_FOUND;
                 }
             }
@@ -101,7 +100,7 @@ vi_rc TagHunt( char *str )
 /*
  * FindTag - locate a given tag
  */
-vi_rc FindTag( char *tag )
+vi_rc FindTag( const char *tag )
 {
     vi_rc               rc;
 
@@ -116,7 +115,7 @@ vi_rc FindTag( char *tag )
 /*
  * PickATag - pick a tag
  */
-int PickATag( int clist, char **list, char *tagname )
+int PickATag( int clist, char **list, const char *tagname )
 {
     window_info tw;
     int         i;
@@ -162,21 +161,22 @@ int PickATag( int clist, char **list, char *tagname )
 /*
  * selectTag - select a tag from a list of possible tags
  */
-static vi_rc selectTag( FILE *f, char *str, char *buff, char *fname )
+static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
 {
     int         tagcnt;
     char        **taglist;
     int         i;
     int         whichtag;
     char        tag[MAX_STR];
+    char        *p;
 
     tagcnt = 0;
     taglist = NULL;
-
+    p = GetNextWord1( buff, tag );
     for( ;; ) {
-        RemoveLeadingSpaces( buff );
-        taglist = MemReAlloc( taglist, sizeof( char * ) * (tagcnt + 1) );
-        AddString( &taglist[tagcnt], buff );
+        p = SkipLeadingSpaces( p );
+        taglist = MemReAlloc( taglist, sizeof( char * ) * ( tagcnt + 1 ) );
+        AddString( &taglist[tagcnt], p );
         i = 0;
         while( !isspace( taglist[tagcnt][i] ) ) {
             i++;
@@ -186,7 +186,8 @@ static vi_rc selectTag( FILE *f, char *str, char *buff, char *fname )
         if( fgets( buff, MAX_STR, f ) == NULL )  {
             break;
         }
-        if( NextWord1( buff, tag ) <= 0 ) {
+        p = GetNextWord1( buff, tag );
+        if( *tag == '\0' ) {
             continue;
         }
         if( EditFlags.IgnoreTagCase ) {
@@ -194,7 +195,7 @@ static vi_rc selectTag( FILE *f, char *str, char *buff, char *fname )
         } else {
             i = strcmp( str, tag );
         }
-        if( i ) {
+        if( i != 0 ) {
             break;
         }
     }
@@ -210,15 +211,16 @@ static vi_rc selectTag( FILE *f, char *str, char *buff, char *fname )
     taglist[whichtag][strlen( taglist[whichtag] )] = ' ';
     strcpy( buff, taglist[whichtag] );
     MemFreeList( tagcnt, taglist );
-
-    if( NextWord1( buff, fname ) <= 0 ) {
+    p = GetNextWord1( buff, fname );
+    if( *fname == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );
     }
-    buff[strlen( buff ) - 1] = 0;
-    RemoveLeadingSpaces( buff );
-    if( buff[0] == 0 ) {
+    p[strlen( p ) - 1] = 0;
+    p = SkipLeadingSpaces( p );
+    if( p[0] == 0 ) {
         return( ERR_INVALID_TAG_FOUND );
     }
+    strcpy( buff, p );;
     return( ERR_NO_ERR );
 
 } /* selectTag */
@@ -274,7 +276,7 @@ FILE *SearchForTags( void )
 /*
  * LocateTag - locate a tag in the tag file
  */
-vi_rc LocateTag( char *str, char *fname, char *buff )
+vi_rc LocateTag( const char *str, char *fname, char *buff )
 {
     char        tag[MAX_STR];
     int         i;
@@ -284,12 +286,12 @@ vi_rc LocateTag( char *str, char *fname, char *buff )
      * get file and buffer
      */
     f = GetFromEnvAndOpen( EditVars.TagFileName );
-    if( !f ) {
+    if( f == NULL ) {
         if( EditFlags.SearchForTagfile ) {
             f = SearchForTags();
         }
 
-        if( !f ) {
+        if( f == NULL ) {
             return( ERR_FILE_NOT_FOUND );
         }
     }
@@ -302,7 +304,8 @@ vi_rc LocateTag( char *str, char *fname, char *buff )
             fclose( f );
             return( ERR_TAG_NOT_FOUND );
         }
-        if( NextWord1( buff, tag ) <= 0 ) {
+        GetNextWord1( buff, tag );
+        if( *tag == '\0' ) {
             continue;
         }
         if( EditFlags.IgnoreTagCase ) {
@@ -314,7 +317,7 @@ vi_rc LocateTag( char *str, char *fname, char *buff )
                 return( ERR_TAG_NOT_FOUND );
             }
         }
-        if( !i ) {
+        if( i == 0 ) {
             return( selectTag( f, str, buff, fname ) );
         }
     }

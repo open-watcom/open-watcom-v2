@@ -49,7 +49,7 @@ typedef enum {
 /*
  * updateHist - add a string to a history list
  */
-static void updateHist( history_data *hist, char *str )
+static void updateHist( history_data *hist, const char *str )
 {
     if( hist->curr < hist->max ) {
         AddString2( &hist->data[hist->curr], str );

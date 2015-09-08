@@ -395,7 +395,7 @@ static void doInitializeEditor( int argc, char *argv[] )
 #endif
         rc1 = LocateTag( cTag, file, buff );
         cFN = file;
-        if( rc1 ) {
+        if( rc1 != ERR_NO_ERR ) {
             if( rc1 == ERR_TAG_NOT_FOUND ) {
                 Error( GetErrorMsg( rc1 ), cTag );
                 ExitEditor( 0 );
