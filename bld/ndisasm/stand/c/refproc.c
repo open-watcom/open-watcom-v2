@@ -40,7 +40,9 @@
 #include "formasm.h"
 #include "main.h"
 #include "init.h"
+
 #include "clibext.h"
+
 
 extern hash_table       HandleToRefListTable;
 extern hash_table       SymbolToLabelTable;
@@ -164,7 +166,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, orl_se
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
     if( !ref ) {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
@@ -178,9 +180,9 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, orl_se
     } else {
         // error!!!!  should have been created
         MemFree( ref );
-        return( ERROR );
+        return( RC_ERROR );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, orl_sec_offset loc ) {
@@ -190,7 +192,7 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, orl_s
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
     if( !ref ) {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
@@ -204,7 +206,7 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, orl_s
     } else {
         // error!!!!  should have been created
         MemFree( ref );
-        return( ERROR );
+        return( RC_ERROR );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }

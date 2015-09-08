@@ -616,9 +616,9 @@ void RTFparser::Go()
             break;
         if( _current->_type == TOK_NONE )
             continue;
-    
+
         switch( _current->_type ) {
-    
+
         case TOK_TEXT:
             // At this stage of the program, text is just
             // dumped to output.
@@ -630,8 +630,7 @@ void RTFparser::Go()
             }
             _topFile->addText( _current->_text, true );
             break;
-    
-    
+
         case TOK_PUSH_STATE:
             // Store the _current font once for every consecutive '{'
             for( ;; ) {
@@ -642,14 +641,13 @@ void RTFparser::Go()
                 _input->next();
             }
             break;
-    
-    
+
         case TOK_POP_STATE:
             // Restore the correct font.
             --_nestLevel;
             _fontFile->pop();
             temp_font = closeBraces();
-    
+
             // If the next command is "\v" we may have just terminated
             // a hotlink.
             if( _input->look( 1 )->_type == TOK_COMMAND && FindCommand( _input->look( 1 )->_text ) == RC_V && ( !_input->look( 1 )->_hasValue || _input->look( 1 )->_value != 0 ) ) {
@@ -674,8 +672,7 @@ void RTFparser::Go()
                 }
             }
             break;
-    
-    
+
         case TOK_SPEC_CHAR:
             // This character may start a footnote.
             if( _input->isFootnoteChar( (char) _current->_value ) ) {
@@ -696,12 +693,12 @@ void RTFparser::Go()
               && _input->look( 2 )->_value == '}' ) {
                 // We must perform a special check for the
                 // "\{bm* image_file\}" construct.
-        
+
                 char const  *string = _input->look( 1 )->_text;
                 uint_16     bmnum;
-        
+
                 FontFlags   bmtype = NOT_A_BITMAP;
-        
+
                 if( strncmp( string, "bmc ", 4 ) == 0 ) {
                     bmtype = TOP_CENT_BITMAP;
                 } else if( strncmp( string, "bml ", 4 ) == 0 ) {
@@ -709,7 +706,7 @@ void RTFparser::Go()
                 } else if( strncmp( string, "bmr ", 4 ) == 0 ) {
                     bmtype = TOP_RIGHT_BITMAP;
                 }
-        
+
                 if( bmtype != NOT_A_BITMAP ) {
                     string += 4;
                     while( isspace( *string ) ) {
@@ -728,7 +725,7 @@ void RTFparser::Go()
                         HCWarning( RTF_USEDBADIMAGE, string, _current->_lineNum, _fname );
                         _wereWarnings = true;
                     }
-        
+
                     _input->next();
                     _input->next();
                 } else {
@@ -744,8 +741,7 @@ void RTFparser::Go()
                 _topFile->addText( smallstr );
             }
             break;
-    
-    
+
         case TOK_COMMAND:
             // For font commands, we go through the same junk as for
             // TOK_POP_STATE.  Other commands go to handleCommand().
@@ -833,7 +829,7 @@ void RTFparser::handleFootnote( char Fchar )
         _current = _input->next();
         if( _current->_type == TOK_POP_STATE || _current->_type == TOK_END )
             break;
-    
+
         if( _current->_type == TOK_TEXT ) {
             if( _storSize + _current->_value + 1 >= _maxStor ) {
                 _maxStor = (_storSize+_current->_value+1) / BLOCK_SIZE + 1;
@@ -994,19 +990,19 @@ void RTFparser::handleHidden( bool IsHotLink )
             break;
         if( _current->_type == TOK_NONE )
             continue;
-    
+
         switch( _current->_type ) {
         case TOK_PUSH_STATE:
             _fontFile->push();
             ++_nestLevel;
             break;
-    
+
         case TOK_POP_STATE:
             --_nestLevel;
             result = _fontFile->pop();
             result = closeBraces();
             break;
-    
+
         case TOK_COMMAND:
             // We do have to keep track of font changes.
             if( isFontCommand( _current, &result ) ) {
@@ -1015,7 +1011,7 @@ void RTFparser::handleHidden( bool IsHotLink )
                 done = true;
             }
             break;
-    
+
         case TOK_TEXT:
             if( _storSize+_current->_value+1 >= _maxStor ) {
                 _maxStor = (_storSize+_current->_value+1) / BLOCK_SIZE + 1;
@@ -1025,7 +1021,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             memcpy( _storage+_storSize, _current->_text, _current->_value );
             _storSize += _current->_value;
             break;
-    
+
         case TOK_SPEC_CHAR:
             if( _storSize+2 >= _maxStor ) {
                 _maxStor += BLOCK_SIZE;
@@ -1044,7 +1040,7 @@ void RTFparser::handleHidden( bool IsHotLink )
         // Parse the destination context string.
         hotlink_type = NORMAL;
         pfile = pwindow = NULL;
-    
+
         pstorage = skipSpaces( _storage );
         if( *pstorage == '%' || *pstorage == '*' ) {
             if( *pstorage == '%' ) {
@@ -1060,7 +1056,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             pstorage++;
             pstorage = skipSpaces( pstorage );
         }
-    
+
         if( _linkType != MACRO ) {
             pfile = pstorage;
             while( *pfile != '\0' && *pfile != '>' && *pfile != '@' ) {
@@ -1077,14 +1073,14 @@ void RTFparser::handleHidden( bool IsHotLink )
                 *pfile = '\0';
                 pfile++;
             }
-    
+
             hash_value = Hash( pstorage );
-    
+
             length = (uint_16) (strlen( pfile )+2);
             if( pwindow != NULL ) {
                 length = (uint_16) (length + strlen( pwindow ) + 1 );
             }
-    
+
             if( pwindow != NULL && *pwindow != '\0' ) {
                 pwindow--;
                 if( *pfile != '\0' ) {
@@ -1109,7 +1105,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             hash_value = 0;
             length = (uint_16) (strlen( pstorage )+1);
         }
-    
+
         FontFlags   link_t;
         if( pwindow == NULL && (pfile == NULL || *pfile == '\0') ) {
             if( hotlink_type == NORMAL ) {
@@ -1144,14 +1140,14 @@ void RTFparser::handleHidden( bool IsHotLink )
                 }
             }
         }
-    
+
         if( hotlink_type == UNDERLINED ) {
             _fontFile->setFont( (uint_16) _topFile->attrData( _hotlinkStart ) );
             new_font = _fontFile->setAttribs( FNT_UNDERLINE );
             _topFile->chgAttr( _hotlinkStart, TOP_FONT_CHANGE, new_font );
             _fontFile->setFont( result );
         }
-    
+
         if( result != _lastFont || hotlink_type != NORMAL ) {
             if( link_t < TOP_POPUP_LINK ) {
                 _topFile->appendAttr( _hotlinkStart, link_t, pstorage, length );
@@ -1170,12 +1166,12 @@ void RTFparser::handleHidden( bool IsHotLink )
             }
         }
         _topFile->addAttr( TOP_END_LINK );
-    
+
         if( _linkType != MACRO && ( link_t<TOP_POPUP_FILE || *pfile==TO_WINDOW ) ) {
             *pfile = '\0';
             _hashFile->recordContext( pstorage );
         }
-    
+
         if( result != _curFont ) {
             _lastFont = _curFont;
             _curFont = result;
@@ -1220,7 +1216,7 @@ void RTFparser::handleFonts()
             break;
         if( _current->_type == TOK_NONE )
             continue;
-    
+
         ok2read = true;    // the default behaviour
         switch( _current->_type ) {
         case TOK_POP_STATE:
@@ -1233,12 +1229,12 @@ void RTFparser::handleFonts()
                 _wereWarnings = true;
             }
             break;
-    
+
         case TOK_PUSH_STATE:
             _fontFile->push();
             ++_nestLevel;
             break;
-    
+
         case TOK_COMMAND:
             com_num = FindCommand( _current->_text );
             if( com_num == RC_FONTTBL && _current->_hasValue && _current->_value == 0 ) {
@@ -1264,7 +1260,7 @@ void RTFparser::handleFonts()
                     }
                 }
                 break;
-    
+
             case FAMILY:    // We're looking for the font family.
                 state = NAME;
                 switch( com_num ) {
@@ -1289,7 +1285,7 @@ void RTFparser::handleFonts()
                     state = FAMILY;
                 }
                 break;
-    
+
             case NAME:  // We're looking for the font name.
                 if( com_num == RC_F ) {
                     HCWarning( FONT_CUTOFF, _current->_lineNum, _fname );
@@ -1304,7 +1300,7 @@ void RTFparser::handleFonts()
                 break;
             }
             break;
-    
+
         case TOK_TEXT:  // We'd better be in the NAME state.
             if( state == NAME ) {
                 i = 0;

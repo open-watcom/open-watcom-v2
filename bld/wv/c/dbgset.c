@@ -43,6 +43,7 @@
 #include "dbgmad.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "trapglbl.h"
 
 #include "clibext.h"
 
@@ -59,7 +60,7 @@ extern void             CallConf( void );
 extern void             ImplicitConf( void );
 extern void             LookConf( void );
 extern void             LevelConf( void );
-extern void             DoConfig( char *,const char *,void (**)(void), void (**)(void) );
+extern void             DoConfig( const char *,const char *,void (**)(void), void (**)(void) );
 extern void             ConfigLine( char * );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
@@ -76,18 +77,14 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern char             *GetCmdName( int );
+extern char             *GetCmdName( wd_cmd cmd );
 extern void             AddrFloat( address * );
-
-extern bool             CapabilitiesGetExactBreakpointSupport( void );
-extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
-extern bool             SupportsExactBreakpoints;
 
 extern const char       WndNameTab[];
 extern margins          SrcMar;
 extern margins          AsmMar;
 
-static char_ring        *SupportRtns;
+static char_ring        *SupportRtns = NULL;
 
 typedef struct pending_toggle_list      pending_toggle_list;
 
@@ -189,7 +186,6 @@ static void     RecursionSet( void );
 static void     SupportSet( void );
 
 static void (* const SetJmpTab[])( void ) = {
-    &BadSet,
     &AutoSet,
     &AsmSet,
     &VarSet,
@@ -267,18 +263,19 @@ static void (* SetNotAllTab[])( void ) =
 
 bool SwitchOnOff( void )
 {
-    unsigned which;
+    int     cmd;
 
-    which = ScanCmd( "ON\0OFf\0" );
-    if( which == 0 ) Error( ERR_LOC, LIT_ENG( ERR_WANT_ON_OFF ) );
+    cmd = ScanCmd( "ON\0OFf\0" );
+    if( cmd < 0 )
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_ON_OFF ) );
     ReqEOC();
-    return( which == 1 );
+    return( cmd == 0 );
 }
 
 
 void ShowSwitch( bool on )
 {
-    GetCmdEntry( "ON\0OFf\0", on ? 1 : 2, TxtBuff );
+    GetCmdEntry( "ON\0OFf\0", on ? 0 : 1, TxtBuff );
     ConfigLine( TxtBuff );
 }
 
@@ -296,7 +293,14 @@ static void BadSet( void )
 
 void ProcSet( void )
 {
-    (*SetJmpTab[ ScanCmd( SetNameTab ) ])();
+    int     cmd;
+
+    cmd = ScanCmd( SetNameTab );
+    if( cmd < 0 ) {
+        BadSet();
+    } else {
+        (*SetJmpTab[cmd])();
+    }
 }
 
 
@@ -342,9 +346,7 @@ static void AutoConf( void )
 static void BreakOnWriteSet( void )
 {
     _SwitchSet( SW_BREAK_ON_WRITE, SwitchOnOff() );
-
-    if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
-        CapabilitiesSetExactBreakpointSupport( TRUE );
+    SetCapabilitiesExactBreakpointSupport( TRUE, FALSE );
 }
 
 static void BreakOnWriteConf( void )
@@ -520,7 +522,7 @@ static unsigned DoMADToggle( const mad_reg_set_data *rsd, unsigned on, unsigned 
 }
 
 static void PendingAdd( mad_window_toggles wt, mad_handle mh,
-                        const char *name, unsigned len )
+                        const char *name, size_t len )
 {
     pending_toggle_list **owner;
     pending_toggle_list *new;
@@ -528,7 +530,8 @@ static void PendingAdd( mad_window_toggles wt, mad_handle mh,
     owner = &PendToggleList[wt];
     for( ;; ) {
         new = *owner;
-        if( new == NULL ) break;
+        if( new == NULL )
+            break;
         owner = &new->next;
     }
     new = DbgMustAlloc( sizeof( *new ) + len );
@@ -668,22 +671,22 @@ static bool OneToggle( mad_window_toggles wt )
     return( res );
 }
 
-static void ToggleWindowSwitches( window_toggle *toggle, int len,
+static void ToggleWindowSwitches( window_toggle *toggle, size_t len,
                                 const char *settings, mad_window_toggles wt )
 {
-    int idx;
-    int i;
+    int     idx;
+    size_t  i;
 
     while( !ScanEOC() ) {
         if( settings != NULL ) {
             idx = ScanCmd( settings );
             for( i = 0; i < len; ++i ) {
-                if( toggle[ i ].on == idx ) {
-                    SwitchTwiddle( toggle[ i ].sw, 1 );
+                if( toggle[i].on == idx ) {
+                    SwitchTwiddle( toggle[i].sw, 1 );
                     break;
                 }
-                if( toggle[ i ].off == idx ) {
-                    SwitchTwiddle( toggle[ i ].sw, 0 );
+                if( toggle[i].off == idx ) {
+                    SwitchTwiddle( toggle[i].sw, 0 );
                     break;
                 }
             }
@@ -773,9 +776,9 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
     ptr = TxtBuff;
     for( i = 0; i < len; ++i ) {
         ptr = GetCmdEntry( settings,
-                           SwitchIsOn( toggle[ i ].sw ) ?
-                               toggle[ i ].on :
-                               toggle[ i ].off,
+                           SwitchIsOn( toggle[i].sw ) ?
+                               toggle[i].on :
+                               toggle[i].off,
                            ptr );
         *ptr++= ' ';
     }
@@ -805,7 +808,7 @@ static char AsmSettings[] = {
 };
 
 enum {
-    ASM_SOURCE = 1,
+    ASM_SOURCE,
     ASM_NOSOURCE,
     ASM_HEX,
     ASM_DECIMAL,
@@ -866,7 +869,7 @@ static char VarSettings[] = {
 };
 
 enum {
-    VAR_ENTIRE = 1,
+    VAR_ENTIRE,
     VAR_PARTIAL,
     VAR_CODE,
     VAR_NOCODE,
@@ -904,7 +907,6 @@ static void VarSet( void )
 static void VarConf( void )
 {
     ConfWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
-    ConfigLine( TxtBuff );
 }
 
 
@@ -914,7 +916,7 @@ static char FuncSettings[] = {
 };
 
 enum {
-    FUNC_TYPED = 1,
+    FUNC_TYPED,
     FUNC_ALL,
 };
 
@@ -1016,6 +1018,18 @@ void SupportFini( void )
 }
 
 
+static bool IsInSupportNames( const char *name, size_t len )
+{
+    char_ring   *curr;
+
+    for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
+        if( strlen( curr->name ) == len && memcmp( curr->name, name, len ) == 0 ) {
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+}
+
 static void SupportSet( void )
 {
     char_ring   *new;
@@ -1024,15 +1038,18 @@ static void SupportSet( void )
     unsigned    count;
 
     count = 0;
-    while( ScanItem( TRUE, &start, &len ) ) {
-        new = DbgMustAlloc( sizeof( *new ) + len );
-        new->next = SupportRtns;
-        SupportRtns = new;
-        memcpy( new->name, start, len );
-        new->name[len] = '\0';
+    while( ScanItemDelim( ";}", TRUE, &start, &len ) ) {
+        if( !IsInSupportNames( start, len ) ) {
+            new = DbgMustAlloc( sizeof( *new ) + len );
+            new->next = SupportRtns;
+            SupportRtns = new;
+            memcpy( new->name, start, len );
+            new->name[len] = '\0';
+        }
         ++count;
     }
     ReqEOC();
+    // if no argument then clean all support names
     if( count == 0 ) {
         SupportFini();
     }

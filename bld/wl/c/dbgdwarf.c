@@ -50,7 +50,14 @@
 #include "fileio.h"
 #include "loadelf.h"
 #include "specials.h"
+
 #include "clibext.h"
+
+#if 0      // disable this feature for now, to have compatibility with OW 1.9
+#define WLINK_PRODUCER  DWARF_WATCOM_PRODUCER " WL"
+#else
+#define WLINK_PRODUCER  DWARF_WATCOM_PRODUCER
+#endif
 
 static class_entry  *DBIClass;       // Assume there is only one!
 
@@ -94,12 +101,6 @@ enum {
 // die information
 
 typedef struct {
-    unsigned_8  abbrev_code;    // the abbrev code used.
-//  unsigned_32 stmt_list;      // (optional) offset to the line number info
-//    char      name[1];        // name of the module
-} compunit_die;
-
-typedef struct {
     unsigned_8  abbrev_code;
     offset      off;
     unsigned_8  isexternal;
@@ -120,23 +121,20 @@ typedef struct {
 #define CU_NOLINE_ABBREV_CODE   2
 #define LABEL_ABBREV_CODE       3
 #define VARIABLE_ABBREV_CODE    4
-#define LAST_ABBREV_CODE        4
-
-#if LAST_ABBREV_CODE != LAST_LINKER_ABBREV
-#error "make sure dwarf.h is updated and dwarf writing library recompiled!"
-#endif
 
 static char SegmentedStandardAbbrevs[] = {
     COMPUNIT_ABBREV_CODE,
     DW_TAG_compile_unit,
     DW_CHILDREN_yes,
-    DW_AT_stmt_list,    DW_FORM_ref_addr,
     DW_AT_name,         DW_FORM_string,
+    DW_AT_producer,     DW_FORM_string,
+    DW_AT_stmt_list,    DW_FORM_ref_addr,
     0,                  0,
     CU_NOLINE_ABBREV_CODE,
     DW_TAG_compile_unit,
     DW_CHILDREN_yes,
     DW_AT_name,         DW_FORM_string,
+    DW_AT_producer,     DW_FORM_string,
     0,                  0,
     LABEL_ABBREV_CODE,
     DW_TAG_label,
@@ -160,13 +158,15 @@ static char FlatStandardAbbrevs[] = {
     COMPUNIT_ABBREV_CODE,
     DW_TAG_compile_unit,
     DW_CHILDREN_yes,
-    DW_AT_stmt_list,    DW_FORM_ref_addr,
     DW_AT_name,         DW_FORM_string,
+    DW_AT_producer,     DW_FORM_string,
+    DW_AT_stmt_list,    DW_FORM_ref_addr,
     0,                  0,
     CU_NOLINE_ABBREV_CODE,
     DW_TAG_compile_unit,
     DW_CHILDREN_yes,
     DW_AT_name,         DW_FORM_string,
+    DW_AT_producer,     DW_FORM_string,
     0,                  0,
     LABEL_ABBREV_CODE,
     DW_TAG_label,
@@ -293,15 +293,18 @@ void DwarfP1ModuleFinished( mod_entry *mod )
     } else {
         SectionTable[SECT_DEBUG_ABBREV].size = sizeof( FlatStandardAbbrevs );
     }
+    /* add length of compile unit header, abrrev code, module name, producer, stmts offset and reserve one byte for end */
+    mod->d.d->pubsym.u.vm_offs = SectionTable[SECT_DEBUG_INFO].size;
+    mod->d.d->pubsym.size += sizeof( compuhdr_prologue ) + sizeof( unsigned_8 ) + strlen( mod->name ) + 1 + sizeof( WLINK_PRODUCER ) + 1;
+    if( mod->d.d->dasi.size > 0 )
+        mod->d.d->pubsym.size += sizeof( unsigned_32 ); // DW_AT_STMT_LIST
+    SectionTable[SECT_DEBUG_INFO].size += mod->d.d->pubsym.size;
+    /* add length of lines info */
     if( mod->d.d->dasi.size > 0 ) {
         mod->d.d->dasi.u.vm_offs = SectionTable[SECT_DEBUG_LINE].size;
         mod->d.d->dasi.size += GetStmtHeaderSize( mod );
         SectionTable[SECT_DEBUG_LINE].size += mod->d.d->dasi.size;
-        mod->d.d->pubsym.size += sizeof( unsigned_32 ); // DW_AT_STMT_LIST
     }
-    mod->d.d->pubsym.u.vm_offs = SectionTable[SECT_DEBUG_INFO].size;
-    mod->d.d->pubsym.size += strlen( mod->name ) + sizeof( compunit_die ) + 1 + COMPILE_UNIT_HDR_SIZE + 1;
-    SectionTable[SECT_DEBUG_INFO].size += mod->d.d->pubsym.size;
 }
 
 void DwarfStoreAddrInfo( mod_entry *mod )
@@ -328,7 +331,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
     arange_prologue     arange_hdr;
     stmt_prologue       stmt_hdr;
     compuhdr_prologue   compuhdr;
-    compunit_die        die;
+    unsigned_8          abbrev_code;
     size_t              namelen;
     char *              buff;
     unsigned_32         stmt_list;
@@ -355,24 +358,29 @@ void DwarfAddModule( mod_entry *mod, section *sect )
         compuhdr.version = 2;
         compuhdr.abbrev_offset = SectionTable[SECT_DEBUG_ABBREV].start;
         compuhdr.addr_size = sizeof( offset );
-        PutInfo( mod->d.d->pubsym.u.vm_ptr, (void *) &compuhdr, sizeof( compuhdr_prologue ) );
-        mod->d.d->pubsym.u.vm_ptr += sizeof( compuhdr_prologue );
+        PutInfo( mod->d.d->pubsym.u.vm_ptr, (void *)&compuhdr, sizeof( compuhdr ) );
+        mod->d.d->pubsym.u.vm_ptr += sizeof( compuhdr );
+        /* output abbrev code */
         if( mod->d.d->dasi.size > 0 ) {
-            die.abbrev_code = COMPUNIT_ABBREV_CODE;
+            abbrev_code = COMPUNIT_ABBREV_CODE;
         } else {
-            die.abbrev_code = CU_NOLINE_ABBREV_CODE;
+            abbrev_code = CU_NOLINE_ABBREV_CODE;
         }
-        PutInfo( mod->d.d->pubsym.u.vm_ptr, &die, sizeof( compunit_die ) );
-        mod->d.d->pubsym.u.vm_ptr += sizeof( compunit_die );
-        if( mod->d.d->dasi.size > 0 ) {
-            stmt_list = mod->d.d->dasi.u.vm_offs + SectionTable[SECT_DEBUG_LINE].start;
-            PutInfo( mod->d.d->pubsym.u.vm_ptr, &stmt_list, sizeof( unsigned_32 ) );
-            mod->d.d->pubsym.u.vm_ptr += sizeof( unsigned_32 );
-        }
+        PutInfo( mod->d.d->pubsym.u.vm_ptr, &abbrev_code, sizeof( abbrev_code ) );
+        mod->d.d->pubsym.u.vm_ptr += sizeof( abbrev_code );
+        /* output module name */
         namelen = strlen( mod->name ) + 1;
         PutInfo( mod->d.d->pubsym.u.vm_ptr, mod->name, namelen );
         mod->d.d->pubsym.u.vm_ptr += namelen;
+        /* output producer */
+        PutInfo( mod->d.d->pubsym.u.vm_ptr, WLINK_PRODUCER, sizeof( WLINK_PRODUCER ) );
+        mod->d.d->pubsym.u.vm_ptr += sizeof( WLINK_PRODUCER );
         if( mod->d.d->dasi.size > 0 ) {
+            /* output stmts offset */
+            stmt_list = mod->d.d->dasi.u.vm_offs + SectionTable[SECT_DEBUG_LINE].start;
+            PutInfo( mod->d.d->pubsym.u.vm_ptr, &stmt_list, sizeof( unsigned_32 ) );
+            mod->d.d->pubsym.u.vm_ptr += sizeof( unsigned_32 );
+            /* output stmts header */
             mod->d.d->dasi.u.vm_ptr = SectionTable[SECT_DEBUG_LINE].vm_ptr + mod->d.d->dasi.u.vm_offs;
             stmt_hdr.total_length = mod->d.d->dasi.size - sizeof( unsigned_32 );
             stmt_hdr.version = 2;
@@ -571,7 +579,8 @@ void DwarfGenLines( lineinfo *info )
     vmem_addr += dwsize;
     if( FmtData.type & MK_SEGMENTED ) {
         buff[1] = 3;
-        buff[2] = DW_LNE_set_segment;
+        buff[2] = DW_LNE_WATCOM_set_segment_OLD;
+//        buff[2] = DW_LNE_WATCOM_set_segment;
         *( (unsigned_16 *)&buff[3] ) = seg->u.leader->seg_addr.seg;
         PutInfo( vmem_addr, buff, 5 );
         vmem_addr += 5;
@@ -651,8 +660,8 @@ static void DwarfGenAddrInit( segdata *sdata, void *_tuple )
     arange_tuple *tuple = _tuple;
 
     if( FmtData.type & MK_SEGMENTED ) {
-        tuple->s.segment = sdata->u.leader->seg_addr.seg;
-        tuple->s.offset = sdata->u.leader->seg_addr.off + sdata->a.delta;
+        tuple->s.v2.segment = sdata->u.leader->seg_addr.seg;
+        tuple->s.v2.offset = sdata->u.leader->seg_addr.off + sdata->a.delta;
     } else {
         tuple->f.offset = GetNewAddrOffset( sdata, sdata->a.delta );
     }
@@ -671,10 +680,10 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
     mod = sdata->o.mod;
     if( !( mod->modinfo & MOD_DBI_SEEN ) ) {
         if( FmtData.type & MK_SEGMENTED ) {
-            tuple->s.length = size;
+            tuple->s.v2.length = size;
             tup_size = sizeof( segmented_arange_tuple );
             if( sdata->u.leader->class->flags & CLASS_STACK ) {
-                tuple->s.length = StackSize;
+                tuple->s.v2.length = StackSize;
             }
         } else {
             tuple->f.length = size;
@@ -687,7 +696,7 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
         mod->d.d->arange.u.vm_ptr += tup_size;
     }
     if( FmtData.type & MK_SEGMENTED ) {
-        tuple->s.offset = sdata->u.leader->seg_addr.off + delta;
+        tuple->s.v2.offset = sdata->u.leader->seg_addr.off + delta;
     } else {
         tuple->f.offset = GetNewAddrOffset( sdata, delta );
     }

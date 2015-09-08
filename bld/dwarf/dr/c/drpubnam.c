@@ -34,6 +34,8 @@
 #include "drutils.h"
 #include <string.h>
 
+#define DEBUG_PUBNAMES_VERSION   2
+
 #include "pushpck1.h"
 typedef struct pubname_header {
     uint_32     len;
@@ -51,18 +53,17 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
     dr_handle           pos;
     dr_handle           finish;
     dr_handle           unit_end;
-    dr_handle           dbg_handle;
+    uint_32             dbg_handle;
     dr_handle           dbg_base;
-    char                str_buff[256];
-    char                *str;
-    int                 str_len;
+    char                *name_buf;
+    int                 name_buf_len;
     int                 curr_len;
 
+    name_buf = NULL;
+    name_buf_len = 0;
     pos = DWRCurrNode->sections[DR_DEBUG_PUBNAMES].base;
     dbg_base = DWRCurrNode->sections[DR_DEBUG_INFO].base;
     finish = pos + DWRCurrNode->sections[DR_DEBUG_PUBNAMES].size;
-    str = str_buff;
-    str_len = sizeof( str_buff );
     while( pos < finish ) {
         DWRVMRead( pos, &header, sizeof( header ) );
         if( DWRCurrNode->byte_swap ) {
@@ -71,37 +72,38 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
             SWAP_32( header.dbg_pos );
             SWAP_32( header.dbg_length );
         }
-        if( header.version != DWARF_VERSION ) DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        unit_end = pos + header.len + sizeof( uint_32 );
+        if( header.version != DEBUG_PUBNAMES_VERSION )
+            DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
+        unit_end = pos + sizeof( uint_32 ) + header.len;
         pos += sizeof( header );
-        header.dbg_pos += dbg_base;
-        pubname.dbg_cu = header.dbg_pos;
+        pubname.dbg_cu = dbg_base + header.dbg_pos;
         pubname.is_start = TRUE;
         for( ;; ) {
             dbg_handle = DWRVMReadDWord( pos );
-            if( dbg_handle == 0 ) break;
+            if( dbg_handle == 0 )
+                break;
             pos += sizeof( uint_32 );
-            pubname.dbg_handle = dbg_handle + header.dbg_pos;
-            curr_len = DWRGetStrBuff( pos, str, str_len );
+            pubname.dbg_handle = pubname.dbg_cu + dbg_handle;
+            curr_len = DWRVMGetStrBuff( pos, name_buf, name_buf_len );
             pubname.len = curr_len - 1;
-            if( curr_len > str_len ) {
-                if( str != str_buff ) {
-                    DWRFREE( str );
-                }
-                str = DWRALLOC( curr_len );
-                str_len = curr_len;
-                curr_len = DWRGetStrBuff( pos, str, curr_len );
+            if( curr_len > name_buf_len ) {
+                /* extend name buffer */
+                if( name_buf != NULL )
+                    DWRFREE( name_buf );
+                name_buf_len = curr_len;
+                if( name_buf_len < 256 )
+                    name_buf_len = 256;
+                name_buf = DWRALLOC( name_buf_len );
+                curr_len = DWRVMGetStrBuff( pos, name_buf, name_buf_len );
             }
             pos += curr_len;
-            pubname.name = str;
-            if( !callback( data,  &pubname ) ) {
+            pubname.name = name_buf;
+            if( !callback( data, &pubname ) ) {
                 break;
             }
             pubname.is_start = FALSE;
         }
         pos = unit_end;
     }
-    if( str != str_buff ) {
-        DWRFREE( str );
-    }
+    DWRFREE( name_buf );
 }

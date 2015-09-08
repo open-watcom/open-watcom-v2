@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 #include "plusplus.h"
-
 #include <stddef.h>
 #include <setjmp.h>
 #include <limits.h>
@@ -52,7 +51,10 @@
 #include "pcheader.h"
 #include "cgiobuff.h"
 #include "brinfo.h"
+#include "sysdep.h"
+
 #include "clibext.h"
+
 
 typedef struct pch_reloc_info {
     long        start;
@@ -76,7 +78,7 @@ static pch_status (*finiFunctions[])( bool ) = {
 #define PCH_EXEC( s, g )        PCHFini##g,
 #include "pcregdef.h"
 };
-static pch_status (*relocFunctions[])( char *, unsigned ) = {
+static pch_status (*relocFunctions[])( char *, size_t ) = {
 #define PCH_RELOC( s, g )       PCHReloc##g,
 #include "pcregdef.h"
 };
@@ -568,17 +570,16 @@ static bool headerIsOK( precompiled_header_header const* hp )
     return( TRUE );
 }
 
-static bool sameStamp( char *name, time_t saved )
+static bool sameStamp( const char *name, time_t saved )
 {
-    struct stat statbuf;
+    time_t  ftime;
 
     if( CompFlags.pch_min_check ) {
         return( TRUE );
     }
-    if( stat( name, &statbuf ) == 0 ) {
-        if( statbuf.st_mtime == saved ) {
-            return( TRUE );
-        }
+    ftime = SysFileTime( name );
+    if( ftime == saved ) {
+        return( TRUE );
     }
     return( FALSE );
 }

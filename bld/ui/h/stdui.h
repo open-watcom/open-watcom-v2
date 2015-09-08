@@ -426,8 +426,8 @@ typedef struct sarea {
 
 typedef unsigned char   ATTR;
 
-#define         iseditchar( ev )        ( ( ev >= EV_FIRST_EDIT_CHAR ) \
-                                       && ( ev <= EV_LAST_EDIT_CHAR ) )
+#define iseditchar( ev )        ( ( ev >= EV_FIRST_EDIT_CHAR ) && ( ev <= EV_LAST_EDIT_CHAR ) )
+#define iskeyboardchar( ev )    ( ( ev >= EV_FIRST_EVENT ) && ( ev <= EV_LAST_KEYBOARD ) )
 
 #if defined(__NT__)
     typedef struct pixel {

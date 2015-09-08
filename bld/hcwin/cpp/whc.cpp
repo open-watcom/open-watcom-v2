@@ -29,6 +29,11 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include <ctype.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <process.h>
+#endif
 #include "hcmem.h"
 #include "hlpdir.h"
 #include "system.h"
@@ -42,11 +47,7 @@
 #include "hpjread.h"
 #include "parsing.h"
 #include "hcerrors.h"
-#include <stdlib.h>
-#include <ctype.h>
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
-#endif
+
 #include "clibext.h"
 
 
@@ -154,9 +155,9 @@ int main( int argc, char *argv[] )
             HCWarning( FILE_ERR, pfilename );
             return( -1 );
         }
-    
+
         //  Set up and start the help compiler.
-    
+
         try {
             HFSDirectory    helpfile( destpath );
             HFFont          fontfile( &helpfile );
@@ -166,7 +167,7 @@ int main( int argc, char *argv[] )
             HFTtlbtree      ttlfile( &helpfile );
             HFKwbtree       keyfile( &helpfile );
             HFBitmaps       bitfiles( &helpfile );
-    
+
             Pointers        my_files = {
                                 NULL,
                                 NULL,
@@ -178,7 +179,7 @@ int main( int argc, char *argv[] )
                                 &ttlfile,
                                 &bitfiles,
             };
-    
+
             if( stricmp( ext, RtfExt ) == 0 ) {
                 my_files._topFile = new HFTopic( &helpfile );
                 RTFparser   rtfhandler( &my_files, &input );
@@ -187,7 +188,7 @@ int main( int argc, char *argv[] )
                 HPJReader   projfile( &helpfile, &my_files, &input );
                 projfile.parseFile();
             }
-    
+
             helpfile.dump();
             if( my_files._topFile != NULL ) {
                 delete my_files._topFile;

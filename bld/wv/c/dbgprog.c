@@ -98,8 +98,8 @@ extern address          GetRegSP( void );
 extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );
-extern char             *GetCmdName( int index );
-extern char             *GetCmdEntry( const char *tab, int index, char *buff );
+extern char             *GetCmdName( wd_cmd cmd );
+extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern void             RecordEvent( const char * );
 extern bool             HookPendingPush( void );
 extern const char       *CheckForPowerBuilder( const char * );
@@ -1313,7 +1313,7 @@ static void ProgNew( void )
     progstarthook = TRUE;
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( NogoTab ) != 1 ) {
+        if( ScanCmd( NogoTab ) != 0 ) {
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
         }
         progstarthook = FALSE;
@@ -1610,7 +1610,6 @@ static const char NewNameTab[] = {
 
 
 static void (* const NewJmpTab[])( void ) = {
-    &BadNew,
     &ProgNew,
     &ResNew,
     &StdInNew,
@@ -1625,9 +1624,16 @@ static void (* const NewJmpTab[])( void ) = {
 
 void ProcNew( void )
 {
+    int     cmd;
+
     if( CurrToken == T_DIV ) {
         Scan();
-        (*NewJmpTab[ ScanCmd( NewNameTab ) ])();
+        cmd = ScanCmd( NewNameTab );
+        if( cmd < 0 ) {
+            BadNew();
+        } else {
+            (*NewJmpTab[cmd])();
+        }
     } else {
         ResNew();
     }
@@ -1639,15 +1645,15 @@ void RecordNewProg( void )
     char        buff[40];
     char        *p;
 
-    GetCmdEntry( NewNameTab, 1, buff );
+    GetCmdEntry( NewNameTab, 0, buff );
     p = Format( TxtBuff, "%s/%s", GetCmdName( CMD_NEW ), buff );
     if( !ProgStartHook ) {
-        GetCmdEntry( NogoTab, 1, buff );
+        GetCmdEntry( NogoTab, 0, buff );
         p = Format( p, "/%s", buff );
     }
     *p++ = ' ';
-    p += GetProgName( p, TXT_LEN - (p-TxtBuff) );
+    p += GetProgName( p, TXT_LEN - ( p - TxtBuff ) );
     *p++ = ' ';
-    PrepProgArgs( p, TXT_LEN - (p-TxtBuff) );
+    PrepProgArgs( p, TXT_LEN - ( p - TxtBuff ) );
     RecordEvent( TxtBuff );
 }

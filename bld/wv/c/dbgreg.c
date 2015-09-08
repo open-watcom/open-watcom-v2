@@ -47,7 +47,7 @@
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
-extern char             *GetCmdName( int index );
+extern char             *GetCmdName( wd_cmd cmd );
 extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );
 extern bool             DlgIncompleteUndo( void );

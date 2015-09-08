@@ -1413,7 +1413,7 @@ static void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
     int             op1_size, result_size;
     cmp_result      ret;
     bool            rev_ret;
-    rel_op          rel;
+    rel_op          rel = 0;
     char            num1[25], num2[25];
     INT_CONSTANT    icon;
 

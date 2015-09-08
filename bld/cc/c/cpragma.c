@@ -36,7 +36,9 @@
 #include "pdefn2.h"
 #include "caux.h"
 #include "cfeinfo.h"
+
 #include "clibext.h"
+
 
 struct  pack_info {
     struct pack_info    *next;
@@ -548,7 +550,7 @@ void PragEnding( void )
     }
 
     /* If this pragma defines code, check to see if we already have a function body */   
-    if( CurrEntry->name != NULL && CurrEntry->info != NULL && CurrEntry->info->code != NULL ) {
+    if( CurrEntry != NULL && CurrEntry->info != NULL && CurrEntry->info->code != NULL ) {
         SYM_HANDLE  sym_handle;
         SYM_ENTRY   sym;
 

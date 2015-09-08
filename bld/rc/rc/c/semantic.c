@@ -36,12 +36,14 @@
 #include "semantic.h"
 #include "tmpctl.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 
+
 /* used in the work around for MS format RES files */
-static WResFileID   MSFormatHandle;     /* holding place for the RES file handle */
-static char         MSFormatTmpFile[2 * _MAX_PATH] = "";
+static char         *MSFormatTmpFile = NULL;
+
+static WResFileID   save_handle;        /* holding place for the RES file handle */
+static char         *save_name;
 
 /* Modified from WINNT.H */
 #ifndef MAKELANGID
@@ -57,14 +59,16 @@ SemOffset SemStartResource( void )
     if( CurrResFile.IsWatcomRes ) {
         return( ResTell( CurrResFile.handle ) );
     } else {
+        /* save current values */
+        save_handle = CurrResFile.handle;
+        save_name = CurrResFile.filename;
         /* open a temporary file and trade handles with the RES file */
-        RcTmpFileName( MSFormatTmpFile );
-        MSFormatHandle = CurrResFile.handle;
+        MSFormatTmpFile = RcTmpFileName();
         CurrResFile.handle = MResOpenNewFile( MSFormatTmpFile );
         if( CurrResFile.handle == NIL_HANDLE ) {
-            CurrResFile.handle = MSFormatHandle;
-            ResCloseFile( CurrResFile.handle );
-            remove( CurrResFile.filename );
+            CurrResFile.handle = save_handle;
+            ResCloseFile( save_handle );
+            remove( save_name );
             RcFatalError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
         } else {
             RegisterTmpFile( MSFormatTmpFile );
@@ -91,9 +95,9 @@ SemLength SemEndResource( SemOffset start )
             RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
             ErrorHasOccured = true;
         }
-        CurrResFile.handle = MSFormatHandle;
-        CurrResFile.filename = CurrResFile.namebuf;
-
+        /* restore previous values */
+        CurrResFile.handle = save_handle;
+        CurrResFile.filename = save_name;
         return( len );
     }
 }
@@ -239,12 +243,14 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
         /* erase the temporary file */
         remove( MSFormatTmpFile );
         UnregisterTmpFile( MSFormatTmpFile );
-        MSFormatTmpFile[0] = '\0';
+        RCFREE( MSFormatTmpFile );
+        MSFormatTmpFile = NULL;
     }
 }
 
 void SemanticInitStatics( void )
 /******************************/
 {
-    MSFormatHandle = NIL_HANDLE;
+    save_handle = NIL_HANDLE;
+    MSFormatTmpFile = NULL;
 }

@@ -55,6 +55,7 @@
 #include "objpass2.h"
 #include "objpass1.h"
 #include "loadpe.h"
+
 #include "clibext.h"
 
 #define MAX_SEGMENT         0x10000
@@ -112,8 +113,7 @@ static void DoSavedExport( symbol *sym )
         exp->impname = NULL;
         AddToExportList( exp );
     } else {
-        AddNameTable( sym->name, strlen(sym->name), TRUE,
-                      &FmtData.u.nov.exp.export );
+        AddNameTable( sym->name, strlen( sym->name ), TRUE, &FmtData.u.nov.exp.export );
     }
 }
 

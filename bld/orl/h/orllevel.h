@@ -33,38 +33,37 @@
 #ifndef ORL_LEVEL_INCLUDED
 #define ORL_LEVEL_INCLUDED
 
+#include "orl.h"
 #include "orlintnl.h"
 #include "cofforl.h"
 #include "elforl.h"
 #include "omforl.h"
 
+#define ORL_FILE_TYPE(x)    (((orli_file_handle)x)->type)
+#define ORL_FILE_HND_ELF(x) (((orli_file_handle)x)->file_hnd.elf)
+#define ORL_FILE_HND_OMF(x) (((orli_file_handle)x)->file_hnd.omf)
+#define ORL_FILE_HND_COFF(x)(((orli_file_handle)x)->file_hnd.coff)
+
 /* NB _handle = a type, _hnd = a variable */
 
-struct orl_handle_struct {
+typedef struct orli_handle_struct {
     orl_funcs *                         funcs;
     elf_handle                          elf_hnd;
     coff_handle                         coff_hnd;
     omf_handle                          omf_hnd;
-    struct orl_file_handle_struct *     first_file_hnd;
+    struct orli_file_handle_struct *    first_file_hnd;
     orl_return                          error;
-};
+} * orli_handle;
 
-typedef struct orl_handle_struct orl_handle_struct;
-typedef orl_handle_struct * orl_handle;
-
-struct orl_file_handle_struct {
-    orl_handle                          orl_hnd;
-    struct orl_file_handle_struct *     next;
+typedef struct orli_file_handle_struct {
+    orli_handle                         orli_hnd;
+    struct orli_file_handle_struct *    next;
     orl_file_format                     type;
     union {
         elf_file_handle                 elf;
         coff_file_handle                coff;
         omf_file_handle                 omf;
     } file_hnd;
-};
-
-typedef struct orl_file_handle_struct orl_file_handle_struct;
-
-typedef orl_file_handle_struct * orl_file_handle;
+} * orli_file_handle;
 
 #endif

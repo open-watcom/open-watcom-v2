@@ -32,8 +32,8 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "trpovl.h"
+#include "trapglbl.h"
 
-extern trap_shandle     GetSuppId( char * );
 extern void             RemapSection( unsigned, unsigned );
 extern void             InvalidateTblCache( void );
 extern void             AddrFix( address * );

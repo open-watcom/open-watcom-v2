@@ -286,11 +286,12 @@ void Dump_lines( const uint_8 *input, uint length )
                         tmp = 0xffffffff;
                     }
                     state.address = tmp;
-                    Puthex( tmp, op_len*2 );
+                    Puthex( tmp, op_len * 2 );
                     Wdputslc( "\n" );
                     p += op_len;
                     break;
-                case DW_LNE_set_segment:
+                case DW_LNE_WATCOM_set_segment_OLD:
+                case DW_LNE_WATCOM_set_segment:
                     Wdputs( "SET_SEGMENT " );
                     if( op_len == 4 ) {
                         tmp = get_u32( (uint_32 *)p );
@@ -333,28 +334,29 @@ void Dump_lines( const uint_8 *input, uint length )
                 get_standard_op( op_code );
                 switch( op_code ) {
                 case DW_LNS_copy:
+                    Wdputslc( "\n" );
                     dump_state( &state );
                     state.basic_block = 0;
                     break;
                 case DW_LNS_advance_pc:
-                    p = DecodeLEB128( p, &itmp );
-                    Putdec( itmp );
-                    state.address += itmp * min_instr;
+                    p = DecodeULEB128( p, &tmp );
+                    Putdec( tmp );
+                    state.address += tmp * min_instr;
                     break;
                 case DW_LNS_advance_line:
-                    p = DecodeLEB128( p, &itmp );
-                    Putdec( itmp );
+                    p = DecodeSLEB128( p, &itmp );
+                    Putdecs( itmp );
                     state.line += itmp;
                     break;
                 case DW_LNS_set_file:
-                    p = DecodeLEB128( p, &itmp );
-                    Putdec( itmp );
-                    state.file = itmp;
+                    p = DecodeULEB128( p, &tmp );
+                    Putdec( tmp );
+                    state.file = tmp;
                     break;
                 case DW_LNS_set_column:
-                    p = DecodeLEB128( p, &itmp );
-                    Putdec( itmp );
-                    state.column = itmp;
+                    p = DecodeULEB128( p, &tmp );
+                    Putdec( tmp );
+                    state.column = tmp;
                     break;
                 case DW_LNS_negate_stmt:
                     state.is_stmt = !state.is_stmt;
@@ -373,20 +375,21 @@ void Dump_lines( const uint_8 *input, uint length )
                     break;
                 default:
                     for( u = 0; u < opcode_lengths[ op_code - 1 ]; ++u ) {
-                        p = DecodeLEB128( p, &itmp );
-                        Puthex( itmp, 8 );
+                        p = DecodeULEB128( p, &tmp );
+                        Puthex( tmp, 8 );
                     }
                 }
             } else {
                 Wdputs( "SPECIAL " );
                 Puthex( op_code, 2 );
-                op_code -= opcode_base;
+                itmp = op_code - opcode_base;
                 Wdputs( ": addr incr: " );
-                Putdec( op_code / line_range );
+                Putdecbz( ( itmp / line_range ) * min_instr, 2 );
                 Wdputs( "  line incr: " );
-                Putdec( line_base + op_code % line_range );
-                state.line += line_base + op_code % line_range;
-                state.address += ( op_code / line_range ) * min_instr;
+                Putdecsbz( line_base + itmp % line_range, 2 );
+                state.line += line_base + itmp % line_range;
+                state.address += ( itmp / line_range ) * min_instr;
+                Wdputslc( "\n" );
                 dump_state( &state );
                 state.basic_block = 0;
             }

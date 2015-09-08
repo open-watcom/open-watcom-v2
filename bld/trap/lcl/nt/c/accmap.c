@@ -106,12 +106,10 @@ static void addModuleToLibList( DWORD module )
     lib_load_info   *lli;
 
     lli = &moduleInfo[module];
-    curr = listInfoHead;
-    while( curr != NULL ) {
-        if( !stricmp( lli->modname, curr->modname ) && !stricmp( lli->filename, curr->filename ) ) {
+    for( curr = listInfoHead; curr != NULL; curr = curr->next ) {
+        if( stricmp( lli->modname, curr->modname ) == 0 && stricmp( lli->filename, curr->filename ) == 0 ) {
             return;
         }
-        curr = curr->next;
     }
 
     curr = LocalAlloc( LMEM_FIXED, sizeof( lib_list_info ) );
@@ -246,11 +244,10 @@ void AddProcess( header_info *hi )
 {
     lib_load_info   *lli;
 
-    moduleInfo = LocalAlloc( LMEM_FIXED, sizeof( lib_load_info ) );
-    memset( moduleInfo, 0, sizeof( lib_load_info ) );
+    moduleInfo = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, sizeof( lib_load_info ) );
     ModuleTop = 1;
 
-    lli = &moduleInfo[0];
+    lli = moduleInfo;
 
 #if defined( MD_x86 )
     if( IsWOW || IsDOS ) {
@@ -417,8 +414,7 @@ void AddLib( BOOL is_16, IMAGE_NOTE *im )
     lib_load_info   *lli;
 
     ModuleTop++;
-    lli = LocalAlloc( LMEM_FIXED, ModuleTop * sizeof( lib_load_info ) );
-    memset( lli, 0, ModuleTop * sizeof( lib_load_info ) );
+    lli = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, ModuleTop * sizeof( lib_load_info ) );
     memcpy( lli, moduleInfo, ( ModuleTop - 1 ) * sizeof( lib_load_info ) );
     LocalFree( moduleInfo );
     moduleInfo = lli;

@@ -44,13 +44,14 @@
 
 //  TokenTypes  --List of possible tokens.
 
-enum TokenTypes {   TOK_PUSH_STATE,
-                TOK_POP_STATE,
-            TOK_COMMAND,
-            TOK_SPEC_CHAR,
-            TOK_TEXT,
-            TOK_NONE,
-            TOK_END
+enum TokenTypes {
+    TOK_PUSH_STATE,
+    TOK_POP_STATE,
+    TOK_COMMAND,
+    TOK_SPEC_CHAR,
+    TOK_TEXT,
+    TOK_NONE,
+    TOK_END
 };
 
 
@@ -80,8 +81,8 @@ class Scanner
 
     // A buffer to provide a little extra lookahead.
     Buffer<uint_8> _buffer;
-    int         _maxBuf;
-    int         _curPos;
+    size_t      _maxBuf;
+    size_t      _curPos;
 
     int     nextch();
     void    putback( int c );

@@ -110,7 +110,7 @@ int_16 GetNextByte( void )
 /*
  * GetDataLong
  */
-long GetDataLong( void )
+int_32 GetDataLong( void )
 {
     return( CurRtns->GetDataLong() );
 
@@ -128,7 +128,7 @@ char EndOfSegment( void )
 /*
  * GetOffset
  */
-DWORD GetOffset( void )
+uint_32 GetOffset( void )
 {
     return( CurRtns->GetOffset() );
 
@@ -137,7 +137,7 @@ DWORD GetOffset( void )
 /*
  * ToStr
  */
-char *ToStr( unsigned long value, uint_16 len, DWORD addr )
+char *ToStr( uint_32 value, uint_16 len, uint_32 addr )
 {
     return( CurRtns->ToStr( value, len, addr ) );
 
@@ -146,7 +146,7 @@ char *ToStr( unsigned long value, uint_16 len, DWORD addr )
 /*
  * JmpLabel
  */
-char *JmpLabel( unsigned long addr, DWORD off )
+char *JmpLabel( uint_32 addr, uint_32 off )
 {
     return( CurRtns->JmpLabel( addr, off ) );
 
@@ -155,7 +155,7 @@ char *JmpLabel( unsigned long addr, DWORD off )
 /*
  * ToBrStr
  */
-char *ToBrStr( unsigned long value, DWORD addr )
+char *ToBrStr( uint_32 value, uint_32 addr )
 {
     return( CurRtns->ToBrStr( value, addr ) );
 
@@ -164,7 +164,7 @@ char *ToBrStr( unsigned long value, DWORD addr )
 /*
  * ToIndex
  */
-char *ToIndex( unsigned long value, unsigned long addr )
+char *ToIndex( uint_32 value, uint_32 addr )
 {
     return( CurRtns->ToIndex( value, addr ) );
 
@@ -173,7 +173,7 @@ char *ToIndex( unsigned long value, unsigned long addr )
 /*
  * ToSegStr
  */
-char *ToSegStr( DWORD value, WORD seg, DWORD addr )
+char *ToSegStr( uint_32 value, uint_16 seg, uint_32 addr )
 {
     return( CurRtns->ToSegStr( value, seg, addr ) );
 

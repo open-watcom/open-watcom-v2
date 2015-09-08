@@ -36,7 +36,9 @@
 #include "watcom.h"
 #include "iopath.h"
 #include "pathlist.h"
+
 #include "clibext.h"
+
 
 #define DOS_EOF_CHAR    0x1A
 
@@ -91,11 +93,22 @@ static char *Months[] = {
 
 static char MBCharLen[256];         // multi-byte character len table
 
+static char *str_dup( const char *str )
+{
+    size_t  len;
+    char    *p;
+
+    len = strlen( str ) + 1;
+    p = PP_Malloc( len );
+    if( p != NULL )
+        memcpy( p, str, len );
+    return( p );
+}
+
 static FILE *PP_Open( const char *filename )
 {
     FILE        *handle;
     FILELIST    *prev_file;
-    size_t      len;
 
     handle = fopen( filename, "rb" );
     if( handle != NULL ) {
@@ -109,10 +122,8 @@ static FILE *PP_Open( const char *filename )
         } else {
             PP_File->prev_file = prev_file;
             PP_File->handle    = handle;
-            PP_File->prev_bufptr  = PPBufPtr;
-            len = strlen( filename ) + 1;
-            PP_File->filename  = PP_Malloc( len );
-            memcpy( PP_File->filename, filename, len );
+            PP_File->prev_bufptr = PPBufPtr;
+            PP_File->filename  = str_dup( filename );
             PP_File->linenum   = 1;
             PPBufPtr = PP_File->buffer;
             *PPBufPtr = '\0';                   // indicate buffer empty
@@ -574,12 +585,31 @@ const char *PP_ScanName( const char *ptr )
     return( ptr );
 }
 
+static void open_include_file( const char *filename, const char *end, int incl_type )
+{
+    size_t      len;
+    char        *buffer;
+
+    len = end - filename;
+    if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
+        /* filename is located in preprocessor buffer
+         * temporary copy is necessary, because buffer is
+         * overwriten by sprintf function
+         */
+        buffer = str_dup( filename );
+        sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PreProcChar, (int)len, buffer );
+        PP_Free( buffer );
+        PPNextTokenPtr = PPLineBuf + 1;
+    } else {
+        PP_GenLine();
+    }
+}
+
 static void PP_Include( const char *ptr )
 {
     const char  *filename;
     char        delim;
     int         incl_type;
-    size_t      len;
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
@@ -597,20 +627,13 @@ static void PP_Include( const char *ptr )
     ++ptr;
     while( *ptr != delim && *ptr != '\0' )
         ++ptr;
-    len = ptr - filename;
-    if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
-        sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
-        PPNextTokenPtr = PPLineBuf + 1;
-    } else {
-        PP_GenLine();
-    }
+    open_include_file( filename, ptr, incl_type );
 }
 
 static void PP_RCInclude( const char *ptr )
 {
     const char  *filename;
     bool        quoted = false;
-    size_t      len;
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
@@ -642,13 +665,7 @@ static void PP_RCInclude( const char *ptr )
             ++ptr;
         }
     }
-    len = ptr - filename;
-    if( PP_OpenInclude( filename, len, PPINCLUDE_USR ) == NULL ) {
-        sprintf( PPLineBuf + 1, "%cerror Unable to open '%*s'\n", PreProcChar, (int)len, filename );
-        PPNextTokenPtr = PPLineBuf + 1;
-    } else {
-        PP_GenLine();
-    }
+    open_include_file( filename, ptr, PPINCLUDE_USR );
 }
 
 MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
@@ -656,15 +673,18 @@ MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
     MACRO_ENTRY     *me;
     unsigned int    hash;
 
-    me = (MACRO_ENTRY *)PP_Malloc( sizeof( MACRO_ENTRY ) + len );
-    if( me != NULL ) {
-        hash = PP_Hash( macro_name, len );
-        me->next = PPHashTable[hash];
-        PPHashTable[hash] = me;
-        memcpy( me->name, macro_name, len );
-        me->name[len] = '\0';
-        me->parmcount = PP_SPECIAL_MACRO;
-        me->replacement_list = NULL;
+    me = PP_MacroLookup( macro_name, len );
+    if( me == NULL ) {
+        me = (MACRO_ENTRY *)PP_Malloc( sizeof( MACRO_ENTRY ) + len );
+        if( me != NULL ) {
+            hash = PP_Hash( macro_name, len );
+            me->next = PPHashTable[hash];
+            PPHashTable[hash] = me;
+            memcpy( me->name, macro_name, len );
+            me->name[len] = '\0';
+            me->parmcount = PP_SPECIAL_MACRO;
+            me->replacement_list = NULL;
+        }
     }
     return( me );
 }
@@ -817,7 +837,7 @@ MACRO_ENTRY *PP_MacroLookup( const char *macro_name, size_t len )
 
     hash = PP_Hash( macro_name, len );
     for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-        if( len == strlen( me->name ) && memcmp( me->name, macro_name, len ) == 0 ) {
+        if( memcmp( me->name, macro_name, len ) == 0 && me->name[len] == '\0' ) {
             break;
         }
     }

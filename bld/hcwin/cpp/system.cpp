@@ -74,7 +74,7 @@ int SystemText::dump( OutFile * dest )
 {
     dest->write( _flag );
     dest->write( _size );
-    dest->write( _text, 1, _size );
+    dest->write( _text, _size );
     return 1;
 }
 
@@ -133,10 +133,10 @@ int SystemWin::dump( OutFile * dest )
     dest->write( _flag );
     dest->write( _size );
     dest->write( _winFlags );
-    dest->write( _type, 1, HLP_SYS_TYPE );
-    dest->write( _name, 1, HLP_SYS_NAME );
-    dest->write( _caption, 1, HLP_SYS_CAP );
-    dest->write( _position, sizeof( uint_16 ), 4 );
+    dest->write( _type, HLP_SYS_TYPE );
+    dest->write( _name, HLP_SYS_NAME );
+    dest->write( _caption, HLP_SYS_CAP );
+    dest->write( _position, 4, sizeof( uint_16 ) );
     dest->write( _maximize );
     dest->write( _rgbMain );
     dest->write( _rgbNonScroll );
@@ -282,10 +282,10 @@ int HFSystem::dump( OutFile *dest )
 
     // Write the |SYSTEM header to output.
     static const uint_16    magic[3] = { 0x036C, 0x0015, 0x0001 };
-    dest->write( magic, sizeof( uint_16 ), 3 );
+    dest->write( magic, 3, sizeof( uint_16 ) );
 
     // Write the "time of creation" for the help file.
-    uint_32 cur_time = time( NULL );
+    uint_32 cur_time = (uint_32)time( NULL );
     dest->write( cur_time );
 
     // Write out the compression level.

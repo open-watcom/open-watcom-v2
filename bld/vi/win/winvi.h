@@ -36,16 +36,12 @@
 #include "winrtns.h"
 
 #if defined( __WINDOWS_386__ )
-    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __WINDOWS__ )
-    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __NT__ )
-    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __OS2__ )
-    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for OS/2 PM"
 #endif
 
 typedef LPVOID  *LPLPVOID;

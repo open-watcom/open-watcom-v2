@@ -37,11 +37,16 @@
 #include "trperr.h"
 #include "srvcdbg.h"
 #include "doserr.h"
+#include "ntextx.h"
+
 #include "clibext.h"
+
 
 #ifndef CREATE_SEPARATE_WOW_VDM
 #define CREATE_SEPARATE_WOW_VDM     0x00000800  // new for NT 3.5 (daytona)
 #endif
+
+const char  NtExtList[] = NTEXTLIST;
 
 /*
  * executeUntilStart - run program until start address hit
@@ -249,8 +254,8 @@ trap_retval ReqProg_load( void )
     DWORD           pid;
     DWORD           pid_started;
     DWORD           cr_flags;
-    char            *buff = NULL;
-    size_t          nBuffRequired = 0;
+    char            *buff;
+    size_t          nBuffRequired;
     char            *dll_name;
     char            *service_name;
     char            *dll_destination;
@@ -284,7 +289,8 @@ trap_retval ReqProg_load( void )
     //  Just to be really safe!
     */
     nBuffRequired = GetTotalSize() + PATH_MAX + 16;
-    if( NULL == ( buff = malloc( nBuffRequired ) ) ) {
+    buff = LocalAlloc( LMEM_FIXED, nBuffRequired );
+    if( buff == NULL ) {
         ret->err = ERROR_NOT_ENOUGH_MEMORY;
         return( sizeof( *ret ) );
     }
@@ -314,7 +320,7 @@ trap_retval ReqProg_load( void )
     IsDOS = FALSE;
 #endif
     if( pid == 0 ) {
-        if( FindFilePath( parm, exe_name, ExtensionList ) != 0 ) {
+        if( FindFilePath( parm, exe_name, NtExtList ) != 0 ) {
             ret->err = ERROR_FILE_NOT_FOUND;
             goto error_exit;
         }
@@ -577,9 +583,8 @@ trap_retval ReqProg_load( void )
     ret->mod_handle = 0;
 
 error_exit:
-    if( buff ) {
-        free( buff );
-        buff = NULL;
+    if( buff != NULL ) {
+        LocalFree( buff );
     }
     return( sizeof( *ret ) );
 

@@ -80,18 +80,18 @@ return_val HashTableInsert( hash_table hash_tbl, hash_value key, hash_data data 
     for( hash_ptr = hash_tbl->table[hash_val]; hash_ptr != NULL; hash_ptr = hash_ptr->next ) {
         if( !hash_tbl->compare( hash_ptr->key, key ) ) {
             hash_ptr->data = data;
-            return( OKAY );
+            return( RC_OKAY );
         }
     }
     new_element = (hash_struct *)MemAlloc( sizeof( hash_struct ) );
     if( !new_element ) {
-        return( OUT_OF_MEMORY );
+        return( RC_OUT_OF_MEMORY );
     }
     new_element->key = key;
     new_element->data = data;
     new_element->next = hash_tbl->table[hash_val];
     hash_tbl->table[hash_val] = new_element;
-    return( OKAY );
+    return( RC_OKAY );
 }
 
 hash_data *HashTableQuery( hash_table hash_tbl, hash_value key )

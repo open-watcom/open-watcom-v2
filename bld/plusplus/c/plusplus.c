@@ -29,12 +29,10 @@
 ****************************************************************************/
 
 #include "plusplus.h"
-
 #include <signal.h>
 #include <ctype.h>
 #include <setjmp.h>
 #include <limits.h>
-
 #include "wio.h"
 #include "walloca.h"
 #include "scan.h"
@@ -61,13 +59,14 @@
 #include "autodep.h"
 #include "swchar.h"
 #include "ialias.h"
-#include "clibext.h"
-#include "clibint.h"
-
 #ifndef NDEBUG
 #include "pragdefn.h"
 #include "enterdb.h"
 #endif
+
+#include "clibext.h"
+#include "clibint.h"
+
 
 enum {
     WPP_WARNINGS        = 0x01,                 /* only if -we is on */

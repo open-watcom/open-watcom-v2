@@ -10,9 +10,15 @@
 *
 ****************************************************************************/
 
+#include <stddef.h>
 #include "bool.h"
 #include "iopath.h"
 #include "pathlist.h"
+
+/*
+ * In rc/rc/c/rcio.c code function GetPathElementLen is derived from this code.
+ * Hold rcio.c in sync with this code.
+ */
 
 char *GetPathElement( const char *path_list, const char *end, char **path )
 {

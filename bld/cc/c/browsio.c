@@ -35,6 +35,7 @@
 #include "wio.h"
 #include "exeelf.h"
 #include "browsio.h"
+#include "dwarfid.h"
 
 static uint_32          relocValues[DW_W_MAX];
 
@@ -437,7 +438,7 @@ dw_client DwarfInit( void )
     DWSectInit();
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_BROWSER;
-    info.producer_name = "WATCOM C V10";
+    info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( &info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs = cli_funcs;
 

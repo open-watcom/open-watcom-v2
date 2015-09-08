@@ -55,8 +55,8 @@ typedef bool (*hook_func)( dr_ref_info *, void * );
 
 #define SCOPE_GUESS 0x50
 
-static void ScopePush( dr_scope_stack * stack, dr_handle entry )
-/**************************************************************/
+static void ScopePush( dr_scope_stack *stack, dr_handle entry )
+/*************************************************************/
 {
     if( stack->stack == NULL ) {
         stack->stack = DWRALLOC( SCOPE_GUESS * sizeof( dr_handle ) );
@@ -66,40 +66,36 @@ static void ScopePush( dr_scope_stack * stack, dr_handle entry )
         stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( dr_handle ) );
     }
 
-    stack->stack[ stack->free ] = entry;
+    stack->stack[stack->free] = entry;
     stack->free += 1;
 }
 
-static dr_handle ScopePop( dr_scope_stack * stack )
-/*************************************************/
+static dr_handle ScopePop( dr_scope_stack *stack )
+/************************************************/
 {
     if( stack->free <= 0 ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     stack->free -= 1;
-    return( stack->stack[ stack->free ] );
+    return( stack->stack[stack->free] );
 }
 
-static dr_handle ScopeLastNameable( dr_scope_stack * scope, char ** name )
-/************************************************************************/
+static dr_handle ScopeLastNameable( dr_scope_stack *scope, char **name )
+/**********************************************************************/
 {
-    int         i;
-    dr_handle   tmp_entry;
-    dr_handle   abbrev;
+    int             i;
+    dr_handle       tmp_entry;
+    dr_handle       abbrev;
 
     for( i = scope->free; i > 0; i -= 1 ) {
-        tmp_entry = scope->stack[ i - 1 ];
+        tmp_entry = scope->stack[i - 1];
 
-        abbrev = DWRVMReadULEB128( &tmp_entry );
-        if( abbrev != 0 ) {
-            abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
-            DWRVMSkipLEB128( &abbrev );
-            abbrev += sizeof( unsigned_8 );
-
+        if( !DWRReadTagEnd( &tmp_entry, &abbrev, NULL ) ) {
+            abbrev++;   /* skip child flag */
             *name = DWRGetName( abbrev, tmp_entry );
             if( *name != NULL ) {
-                return( scope->stack[ i - 1 ] );
+                return( scope->stack[i - 1] );
             }
         }
     }
@@ -112,7 +108,7 @@ static bool ToHook( dr_ref_info *reg, void *data )
     ToData  *info = (ToData *)data;
 
     return( (reg->scope.free > 0)
-            && reg->scope.stack[ reg->scope.free - 1 ] == info->entry );
+            && reg->scope.stack[reg->scope.free - 1] == info->entry );
 }
 
 static bool ByHook( dr_ref_info *registers, void * data )
@@ -140,7 +136,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
     infoOffset = DWRCurrNode->sections[ DR_DEBUG_INFO ].base;
 
     loc += sizeof( unsigned_32 );   /* skip size */
-    while( loc < end  && !quit ) {
+    while( loc < end && !quit ) {
         opcode = DWRVMReadByte( loc );
         loc += sizeof( unsigned_8 );
 
@@ -149,7 +145,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             owning_node = DWRVMReadDWord( loc ) + infoOffset;
             loc += sizeof( unsigned_32 );
             ScopePush( &registers.scope, owning_node );
-            if( which & REFERSTO && owning_node == entry ) {
+            if( (which & REFERSTO) != 0 && owning_node == entry ) {
                 inScope = TRUE;
             }
             break;
@@ -168,7 +164,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             break;
 
         case REF_SET_COLUMN:
-            registers.column = DWRVMReadULEB128( &loc );
+            registers.column = (unsigned_8)DWRVMReadULEB128( &loc );
             break;
 
         case REF_ADD_LINE:
@@ -177,7 +173,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             break;
 
         case REF_ADD_COLUMN:
-            registers.column += DWRVMReadSLEB128( &loc );
+            registers.column += (signed_8)DWRVMReadSLEB128( &loc );
             break;
 
         case REF_COPY:
@@ -205,7 +201,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
                 owning_node = ScopeLastNameable( &registers.scope, &name );
 
                 /* make sure that there is something nameable on the stack */
-                if( owning_node != 0 ) {
+                if( owning_node != DR_HANDLE_NUL ) {
                     quit = !callback( owning_node, &registers, name, data2 );
                 }
             }

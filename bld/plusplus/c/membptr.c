@@ -654,7 +654,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
     PTREE item,                 // - source item
     TYPE type_mp,               // - unmodified member-ptr type
     MEMBER_PTR_CAST *castinfo,  // - information for casting
-    unsigned conversion )       // - type of conversion
+    CNV_REQD conversion )       // - type of conversion
 {
     CNV_RETN retn;              // - return: CNV_...
     SYMBOL base_item;           // - item required
@@ -721,7 +721,7 @@ static PTREE analyseAddrOf(     // ANALYSE (& item)
     MEMBER_PTR_CAST *castinfo ) // - information for casting
 {
     PTREE item;                 // - item being pointed at
-    CNV_RETN convert;           // - type of conversion
+    CNV_REQD convert;           // - type of conversion
 
     item = PTreeOpLeft( src );
     if( nodeIsMembPtrCon( item ) ) {

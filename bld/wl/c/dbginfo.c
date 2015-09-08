@@ -49,6 +49,7 @@
 #include "ring.h"
 #include "dbgcomm.h"
 #include "dbgwat.h"
+
 #include "clibext.h"
 
 #define EXE_MAJOR_VERSION   3
@@ -584,7 +585,7 @@ void ODBIP2Start( section *sect )
             WriteBogusAddrInfo( dptr );
         } else {
             dptr->dump_addr = dptr->addr.curr.u.vm_ptr;
-            SectWalkClass( sect, ODBIGenAddrInfo );
+            SectWalkClass( sect, (void *)ODBIGenAddrInfo );
         }
         dptr->dump_addr = dptr->line.curr.u.vm_ptr;
         dptr->modnum = 0;

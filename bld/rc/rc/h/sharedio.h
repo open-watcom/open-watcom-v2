@@ -30,6 +30,11 @@
 ****************************************************************************/
 
 
+typedef struct ExtraRes {
+    struct ExtraRes     *next;
+    char                name[1];
+} ExtraRes;
+
 extern void     ReportDupResource( WResID *nameid, WResID *typeid, const char *file1, const char *file2, bool warn );
 extern bool     OpenResFiles( struct ExtraRes *resnames, struct ResFileInfo **resinfo, bool *allopen, ExeType type, const char *exename );
 extern void     CloseResFiles( struct ResFileInfo *resfiles );

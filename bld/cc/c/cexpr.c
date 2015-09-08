@@ -551,7 +551,6 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
         }
     } else if( typ->decl_type == TYPE_FUNCTION ) {
 
-        symb_flags = FLAG_NONE;
         if( tree->op.opr == OPR_PUSHADDR ) {
             SymGet( &sym, tree->op.u2.sym_handle );
             decl_flags = sym.mods;
@@ -2273,7 +2272,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         if( CompFlags.initializing_data ) {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
             sym_handle = SYM_NULL;
-            sym.flags = 0;
+            sym.flags = SYM_NONE;
         } else {
             if( tree->op.opr == OPR_POINTS ) {  //need to recover decl flags
                 decl_flags = typ->u.fn.decl_flags;

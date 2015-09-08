@@ -48,6 +48,7 @@
 
 #include "clibext.h"
 
+
 #define MAX_HELPFILES   100
 
 typedef struct {

@@ -47,7 +47,7 @@ extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( const char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );
 extern unsigned         ProgPoke( address, const void *, unsigned );
-extern char             *GetCmdName( int );
+extern char             *GetCmdName( wd_cmd cmd );
 
 
 typedef struct lookup_list {
@@ -143,19 +143,20 @@ void LookSet( void )
     just_respect = FALSE;
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( AddTab ) == 1 ) {
+        if( ScanCmd( AddTab ) == 0 ) {
             add = TRUE;
         } else {
             switch( ScanCmd( CaseTab ) ) {
             case 0:
-                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
-            case 1:
                 respect = FALSE;
                 just_respect = TRUE;
                 break;
-            case 2:
+            case 1:
                 respect = TRUE;
                 just_respect = TRUE;
+                break;
+            default:
+                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
                 break;
             }
         }
@@ -166,16 +167,17 @@ void LookSet( void )
             Scan();
             switch( ScanCmd( CaseTab ) ) {
             case 0:
-                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
-            case 1:
                 respect = FALSE;
                 need_item = TRUE;
                 just_respect = FALSE;
                 break;
-            case 2:
+            case 1:
                 respect = TRUE;
                 need_item = TRUE;
                 just_respect = FALSE;
+                break;
+            default:
+                Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
                 break;
             }
         }
@@ -249,10 +251,11 @@ void LookConf( void )
 /*
  * LookUp - find a token in a list
  */
-int Lookup( const char *tokenlist,  const char *what, int tokenlen )
+int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
 {
-    int         tokennum = 1;
-    int         k,isuppertc;
+    int         tokennum = 0;
+    int         isuppertc;
+    size_t      k;
     char        *w,*ucwhat;
     char        tc,wc;
     const char  *t;
@@ -265,7 +268,7 @@ int Lookup( const char *tokenlist,  const char *what, int tokenlen )
         w = ucwhat;
         for( ;; ) {
             isuppertc = isupper( tc );
-            if( (int) (w - ucwhat) == tokenlen ) {
+            if( (size_t)( w - ucwhat ) == tokenlen ) {
                 if( isuppertc )
                     break;
                 return( tokennum );
@@ -280,7 +283,7 @@ int Lookup( const char *tokenlist,  const char *what, int tokenlen )
                     break;
                 }
             }
-            if( !tc )
+            if( tc == '\0' )
                 return( tokennum );
             t++;
             tc = *t;
@@ -289,7 +292,7 @@ int Lookup( const char *tokenlist,  const char *what, int tokenlen )
             t++;
         tokennum++;
     }
-    return( 0 );
+    return( -1 );
 }
 
 struct mod_lkup {

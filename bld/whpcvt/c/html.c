@@ -30,6 +30,9 @@
 
 #include "whpcvt.h"
 
+#include "clibext.h"
+
+
 static int Curr_head_level = 0;
 static int Curr_head_skip = 0;
 

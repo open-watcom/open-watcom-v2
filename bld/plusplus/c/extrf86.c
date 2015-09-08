@@ -93,7 +93,7 @@ static void extrefPruneOvfn(    // PRUNE ANY NON-ORIGINATING VIRT FUNC.S
 void *ExtrefImportType(         // GET NEXT IMPORT TYPE FOR A SYMBOL
     EXTRF *rinfo )              // - resolution information
 {
-    void *retn;                 // - return type
+    void *retn = NULL;          // - return type
 
     if( rinfo->type == EXTRF_DATA_WEAK ) {
         retn = (void*)IMPORT_IS_WEAK;

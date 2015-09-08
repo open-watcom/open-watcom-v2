@@ -175,7 +175,7 @@ void GlobalViewList::event( ViewEvent ve, View * view )
             int             i;
             int             maxRows = getRows() + _topIndex;
             DetailView *    dtv = (DetailView *) view;
-            dr_handle       handle = dtv->symHandle();
+            dr_handle       drhdl = dtv->symHandle();
 
             for( i = _topIndex; i < maxRows; i += 1 ) {
                 Symbol * sym = getSymbol( i );
@@ -183,7 +183,7 @@ void GlobalViewList::event( ViewEvent ve, View * view )
                 if( sym == NULL ) {
                     break;
                 }
-                if( handle == sym->getHandle() ) {
+                if( drhdl == sym->getHandle() ) {
                     invalidateRow( i - _topIndex );
                     break;
                 }

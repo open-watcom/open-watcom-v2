@@ -35,7 +35,9 @@
 #ifdef __WIN__
     #include "statwnd.h"
 #endif
+
 #include "clibext.h"
+
 
 /*
  * NewStatusWindow - create a new status window

@@ -199,7 +199,7 @@ DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
 
 /* accmisc.c */
 BOOL IsBigSel( WORD sel );
-int FindFilePath( char *pgm, char *buffer, char *ext_list );
+int FindFilePath( const char *pgm, char *buffer, const char *ext_list );
 void AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */

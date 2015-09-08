@@ -87,24 +87,26 @@ class CompReader
 {
     Buffer<uint_8>  _buffer;    // Stores the text being compressed.
 
-    Buffer<short>   _indices;   // Used to find patterns within
-    Buffer<short>   _htable;    // the text.
+    Buffer<int>     _indices;   // Used to find patterns within
+    Buffer<int>     _htable;    // the text.
 
-    CompWriter  *_dest;
-    short   _last, _first, _current;
+    CompWriter      *_dest;
+    int             _last, _first, _current;
 
     void    shuffle();  // Free space in the buffer.
 public:
     CompReader( CompWriter *riter );
 
-    unsigned compress( char const source[], size_t amount );
+    unsigned compress( char const source[], unsigned amount );
 
     // Add text to the compressed stream in a 'stupid' manner;
     // i.e. it pretends it's uncompressible.
-    unsigned add( char const source[], size_t amount );
-    unsigned skip( size_t amount );
+    unsigned add( char const source[], unsigned amount );
+    unsigned skip( unsigned amount );
 
     void    flush( bool nodump = false );
 
     void    reset( CompWriter *riter, bool nodump = false );
+private:
+    void    init();
 };

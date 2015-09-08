@@ -120,7 +120,7 @@ static char *StrCopy( const char *src, char *dst )
     return( dst );
 }
 
-static unsigned TryOnePath( char *path, struct stat *tmp, const char *name, char *result )
+static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;

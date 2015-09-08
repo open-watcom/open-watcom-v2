@@ -40,6 +40,7 @@
 
 #include "clibext.h"
 
+
 _trmem_hdl  UIMemHandle;
 static int  UIMemFileHandle;   /* stream to put output on */
 static void UIMemPrintLine( void *, const char *buff, size_t len );

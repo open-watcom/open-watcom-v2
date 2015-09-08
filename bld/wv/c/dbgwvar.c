@@ -73,7 +73,6 @@ extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
 extern void             WndInspectExprSP( const char *item );
-extern char             *GetCmdName( int );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 
@@ -121,9 +120,23 @@ static gui_menu_struct VarMenu[] = {
 #define INDENT_AMOUNT           2
 #define REASONABLE_NAME_WIDTH   30
 
-static char **VarNames[] = { LITREF_ENG( Empty ), LITREF_DUI( WindowWatches ), LITREF_ENG( Empty ), LITREF_DUI( WindowFile_Variables ) };
-static wnd_class VarClass[] = { WND_VARIABLE, WND_WATCH, WND_LOCALS, WND_FILESCOPE };
-static gui_resource *VarIcons[] = { &VarIcon, &WatIcon, &LocIcon, &VarIcon };
+static char **VarNames[] = {
+    #define pick(e,name,wndcls,icon)    name,
+    #include "_dbgvar.h"
+    #undef pick
+};
+
+static wnd_class VarWndClass[] = {
+    #define pick(e,name,wndcls,icon)    wndcls,
+    #include "_dbgvar.h"
+    #undef pick
+};
+
+static gui_resource *VarIcons[] = {
+    #define pick(e,name,wndcls,icon)    icon,
+    #include "_dbgvar.h"
+    #undef pick
+};
 
 static WNDMENU VarMenuItem;
 
@@ -832,12 +845,12 @@ static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 
-static bool VarDoClass( wnd_class class, bool (*rtn)( var_info*, void* ), void *cookie )
+static bool VarDoClass( wnd_class wndcls, bool (*rtn)( var_info*, void* ), void *cookie )
 {
     a_window    *wnd;
 
-    for( wnd = WndFindClass( NULL, class );
-         wnd != NULL; wnd = WndFindClass( wnd, class ) ) {
+    for( wnd = WndFindClass( NULL, wndcls );
+         wnd != NULL; wnd = WndFindClass( wnd, wndcls ) ) {
         if( rtn( WndVarInfo( wnd ), cookie ) ) return( TRUE );
     }
     return( FALSE );
@@ -848,8 +861,8 @@ static bool VarDoAll( bool (*rtn)(var_info *, void *), void *cookie )
 {
     int         i;
 
-    for( i = 0; i < ArraySize( VarClass ); ++i ) {
-        if( VarDoClass( VarClass[ i ], rtn, cookie ) ) return( TRUE );
+    for( i = 0; i < ArraySize( VarWndClass ); ++i ) {
+        if( VarDoClass( VarWndClass[ i ], rtn, cookie ) ) return( TRUE );
     }
     return( FALSE );
 }
@@ -881,10 +894,10 @@ static void DoVarChangeOptions( a_window *wnd )
 
 static void VarWndDoAll( void (*rtn)( a_window *) )
 {
-    int         i;
+    var_type    i;
 
-    for( i = VAR_FIRST; i < VAR_LAST; ++i ) {
-        WndForAllClass( VarClass[ i ], rtn );
+    for( i = 0; i < NUM_VAR_TYPE; ++i ) {
+        WndForAllClass( VarWndClass[i], rtn );
     }
 }
 
@@ -930,7 +943,7 @@ static  a_window        *DoWndVarOpen( var_type vtype )
 
     var = WndMustAlloc( sizeof( var_window ) );
     var->vtype = vtype;
-    wnd = DbgWndCreate( *VarNames[vtype], &VarInfo, VarClass[vtype], var, VarIcons[vtype] );
+    wnd = DbgWndCreate( *VarNames[vtype], &VarInfo, VarWndClass[vtype], var, VarIcons[vtype] );
     if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }

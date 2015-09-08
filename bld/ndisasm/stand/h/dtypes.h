@@ -138,9 +138,9 @@ struct externs_struct {
 #define TAB_WIDTH 8
 
 typedef enum {
-    OUT_OF_MEMORY,
-    ERROR,
-    OKAY
+    RC_OUT_OF_MEMORY,
+    RC_ERROR,
+    RC_OKAY
 } return_val;
 
 #include "bool.h"

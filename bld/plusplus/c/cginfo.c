@@ -64,6 +64,7 @@
 #include "pragdefn.h"
 #include "specfuns.h"
 #include "autodept.h"
+#include "dwarfid.h"
 #include "cgfront.h"
 #include "feprotos.h"
 
@@ -1515,6 +1516,9 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = FstabExcData();
         break;
 #endif
+    case DBG_DWARF_PRODUCER:
+        retn = DWARF_PRODUCER_ID;
+        break;
     default :
         DbgNotSym();
         DbgNotRetn();

@@ -44,7 +44,9 @@
 #include <sys/types.h>
 #include "wio.h"
 #include "watcom.h"
+
 #include "clibext.h"
+
 
 struct bursts {
     unsigned short defs;
@@ -53,8 +55,6 @@ struct bursts {
 };
 
 static unsigned char *buff;
-
-static char usage[] = "Usage: inp.file out.file\n";
 
 #define Xptr(x) (unsigned char *)(buff + x)
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     struct stat         bufstat;
 
     if( argc < 3 ) {
-        printf( usage );
+        printf( "Usage: inp.file out.file\n" );
         return( 1 );
     }
     fi = open( argv[1], O_BINARY );

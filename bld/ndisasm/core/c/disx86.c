@@ -33,7 +33,9 @@
 #include <ctype.h>
 #include "distypes.h"
 #include "dis.h"
+
 #include "clibext.h"
+
 
 extern long SEX( unsigned long v, unsigned bit );
 

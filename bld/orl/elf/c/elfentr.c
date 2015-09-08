@@ -56,7 +56,7 @@ orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
         error = ElfRemoveFileLinks( elf_hnd->first_file_hnd );
         if( error != ORL_OKAY ) return( error );
     }
-    elf_hnd->funcs->free( elf_hnd );
+    ORL_FUNCS_FREE( elf_hnd, elf_hnd );
     return( ORL_OKAY );
 }
 
@@ -65,7 +65,7 @@ orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, void *file, elf_file_handle
     elf_file_handle     elf_file_hnd;
     orl_return          error;
 
-    elf_file_hnd = (elf_file_handle)elf_hnd->funcs->alloc( sizeof( elf_file_handle_struct ) );
+    elf_file_hnd = (elf_file_handle)ORL_FUNCS_ALLOC( elf_hnd, sizeof( elf_file_handle_struct ) );
     if( elf_file_hnd == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }

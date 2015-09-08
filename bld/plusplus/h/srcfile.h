@@ -134,7 +134,8 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
 ;
 SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     void *fp,                   // - system file control
-    char *name )                // - file name
+    char *name,                 // - file name
+    time_t ftime )
 ;
 void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
     SRCFILE sf )                // - the device source file

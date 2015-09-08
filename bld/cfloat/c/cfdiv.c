@@ -52,7 +52,7 @@ static int efGet( cfloat *u, char ue[], int i )
     if( i >= u->len ) {
         return( ue[i - u->len] );
     } else {
-        return( u->mant[i] - '0' );
+        return( *(u->mant + i) - '0' );
     }
 }
 
@@ -61,7 +61,7 @@ static void efSet( cfloat *u, char ue[], int i, int val )
     if( i >= u->len ) {
         ue[i - u->len] = (char)val;
     } else {
-        u->mant[i] = (char)val + '0';
+        *(u->mant + i) = (char)val + '0';
     }
 }
 
@@ -98,9 +98,10 @@ static void expandCF( cfloat **f, int scale )
     new = CFAlloc( new_len );
     memcpy( new, *f, offsetof( cfloat, mant ) + old_len );
     while( old_len < new_len ) {
-        new->mant[old_len++] = '0';
+        *(new->mant + old_len) = '0';
+        old_len++;
     }
-    new->mant[old_len] = NULLCHAR;
+    *(new->mant + old_len) = NULLCHAR;
     new->len  = new_len;
 
     CFFree( *f );
@@ -113,15 +114,15 @@ static void roundupCF( cfloat *f )
     int     i;
 
     for( i = f->len - 1; i >= 0; i-- ) {
-        if( f->mant[i] == '9' ) {
-            f->mant[i] = '0';
+        if( *(f->mant + i) == '9' ) {
+            *(f->mant + i) = '0';
         } else {
-            f->mant[i] += 1;
+            *(f->mant + i) += 1;
             return;
         }
     }
 
-    f->mant[0] = '1';
+    *f->mant = '1';
     f->exp += 1;
 }
 
@@ -139,7 +140,7 @@ cfloat  *CFDiv( cfloat *op1, cfloat *op2 )
 
     if( ! op2->sign ) {                         // Attempt to divide by zero.
         result = CFAlloc( 1 );
-        result->mant[0] = '1';
+        *result->mant   = '1';
         result->sign    = 1;
         result->exp     = CF_ERR_EXP;           // Return error-type.
         return( result );

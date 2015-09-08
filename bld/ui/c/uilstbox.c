@@ -36,7 +36,9 @@
 #include "uivedit.h"
 #include "uiledit.h"
 #include "uidialog.h"
+
 #include "clibext.h"
+
 
 static bool SelStart =  FALSE;    // user has moused over a valid choice
 static bool Dclick =    FALSE;    // TRUE between DCLICK and MOUSE_RELEASE

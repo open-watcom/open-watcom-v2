@@ -63,9 +63,7 @@ extern void             LangInit( void );
 extern void             LangFini( void );
 extern bool             LangLoad( const char *, unsigned );
 extern void             WndRedraw( wnd_class );
-extern a_window         *WndFindActive( void );
 extern void             WndRestoreToFront( a_window* );
-extern a_window         *WndFindClass( a_window*, wnd_class );
 extern wnd_class        ReqWndName( void );
 extern gui_menu_struct  *AddMenuAccel( const char *, const char *, wnd_class, bool * );
 extern void             VarChangeOptions( void );
@@ -76,7 +74,7 @@ extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             WndDlgTxt( const char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             DbgUpdate( update_list );
 
 extern const char       WndNameTab[];
@@ -110,14 +108,14 @@ extern void DClickConf( void )
 
 extern void InputSet( void )
 {
-    wnd_class   class;
+    wnd_class   wndcls;
     a_window    *wnd;
 
-    class = ReqWndName();
+    wndcls = ReqWndName();
     ReqEOC();
-    wnd = WndFindClass( NULL, class );
+    wnd = WndFindClass( NULL, wndcls );
     if( wnd == NULL ) {
-        GetCmdEntry( WndNameTab, class+1, TxtBuff );
+        GetCmdEntry( WndNameTab, (int)wndcls, TxtBuff );
         Error( ERR_NONE, LIT_DUI( ERR_WIND_NOT_OPEN ), TxtBuff );
     }
     WndRestoreToFront( wnd );
@@ -130,7 +128,7 @@ extern void InputConf( void )
 
     wnd = WndFindActive();
     if( wnd != NULL && WndHasClass( wnd ) ) {
-        GetCmdEntry( WndNameTab, WndClass( wnd )+1, TxtBuff );
+        GetCmdEntry( WndNameTab, WndClass( wnd ), TxtBuff );
         ConfigLine( TxtBuff );
     }
 }
@@ -435,7 +433,7 @@ static unsigned MapKey( const char *start, unsigned len )
 }
 
 
-wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
+wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
 {
     wnd_macro           **owner,*curr;
     bool                is_main;
@@ -443,8 +441,10 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
     owner = &WndMacroList;
     for( ;; ) {
         curr = *owner;
-        if( curr == NULL ) break;
-        if( curr->key == key && curr->class == class ) break;
+        if( curr == NULL )
+            break;
+        if( curr->key == key && curr->wndcls == wndcls )
+            break;
         owner = &curr->link;
     }
     if( cmds != NULL ) {
@@ -455,7 +455,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
             }
             curr->key = key;
-            curr->class = class;
+            curr->wndcls = wndcls;
             curr->link = NULL;
             curr->menu = NULL;
             *owner = curr;
@@ -464,7 +464,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
             FreeCmdList( curr->cmd );
         }
         curr->cmd = cmds;
-        curr->menu = AddMenuAccel( KeyName( key ), cmds->buff, class, &is_main );
+        curr->menu = AddMenuAccel( KeyName( key ), cmds->buff, wndcls, &is_main );
         if( curr->menu == NULL ) {
             curr->type = MACRO_COMMAND;
         } else if( is_main ) {
@@ -487,7 +487,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
 
 extern void MacroSet( void )
 {
-    wnd_class   class;
+    wnd_class   wndcls;
     cmd_list    *cmds;
     unsigned    key;
     const char  *start;
@@ -498,7 +498,7 @@ extern void MacroSet( void )
     int         i;
 
 
-    class = ReqWndName();
+    wndcls = ReqWndName();
     key = 0;
     if( ScanItem( TRUE, &start, &len ) ) {
         key = MapKey( start, len );
@@ -523,18 +523,19 @@ extern void MacroSet( void )
     } else {
         cmds = NULL;
     }
-    MacAddDel( key, class, cmds );
+    MacAddDel( key, wndcls, cmds );
 }
 
 extern  void    MacroConf( void )
 {
     char        wnd_name[20];
-    wnd_macro     *mac;
+    wnd_macro   *mac;
     char        *fmt;
 
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
-        GetCmdEntry( WndNameTab, mac->class+1, wnd_name );
-        if( TxtBuff[ 0 ] == NULLCHAR ) break;
+        GetCmdEntry( WndNameTab, mac->wndcls, wnd_name );
+        if( TxtBuff[0] == NULLCHAR )
+            break;
         fmt = isspace( mac->key ) ? "%s {%s} {" : "%s %s {";
         Format( TxtBuff, fmt, wnd_name, KeyName( mac->key ) );
         ConfigLine( TxtBuff );
@@ -600,7 +601,7 @@ static const char SearchSettings[] = {
 };
 
 enum {
-    SEARCH_IGNORE = 1,
+    SEARCH_IGNORE,
     SEARCH_RESPECT,
     SEARCH_RX,
     SEARCH_NORX
@@ -645,11 +646,9 @@ extern void SearchConf( void )
 
     ptr = TxtBuff;
     *ptr++ = '/';
-    ptr = GetCmdEntry( SearchSettings,
-                       WndGetSrchIgnoreCase() ? SEARCH_IGNORE : SEARCH_RESPECT, ptr );
+    ptr = GetCmdEntry( SearchSettings, WndGetSrchIgnoreCase() ? SEARCH_IGNORE : SEARCH_RESPECT, ptr );
     *ptr++ = '/';
-    ptr = GetCmdEntry( SearchSettings,
-                       WndGetSrchRX() ? SEARCH_RX : SEARCH_NORX, ptr );
+    ptr = GetCmdEntry( SearchSettings, WndGetSrchRX() ? SEARCH_RX : SEARCH_NORX, ptr );
     ptr = StrCopy( " {", ptr );
     ptr = StrCopy( WndGetSrchMagicChars(), ptr );
     ptr = StrCopy( "}", ptr );

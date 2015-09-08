@@ -45,7 +45,22 @@ extern "C" {
 
 */
 
-#define DWARF_IMPL_VERSION  2   /* uint_16 */
+#define DWARF_IMPL_VERSION          2
+
+#define DWARF_WATCOM_PRODUCER       DWARF_WATCOM_PRODUCER_V2
+
+#define DWARF_WATCOM_PRODUCER_V3    "V2.0 WATCOM"
+#define DWARF_WATCOM_PRODUCER_V2    "V1.0 WATCOM"
+#define DWARF_WATCOM_PRODUCER_V1    "WATCOM"
+
+/* Watcom producer versions enumeration constant */
+typedef enum {
+    VER_ERROR = -1,
+    VER_NONE,
+    VER_V1,     /* Watcom 10.x */
+    VER_V2,     /* Watcom 11.0 and early Open Watcom */
+    VER_V3,     /* Open Watcom 2.0 and newer */
+} df_ver;
 
 /*
     IMPORTANT:
@@ -189,7 +204,8 @@ typedef enum {
     DW_LNS_negate_stmt,
     DW_LNS_set_basic_block,
     DW_LNS_const_add_pc,
-    DW_LNS_fixed_advance_pc
+    DW_LNS_fixed_advance_pc,
+    DW_LNS_hi_user      = 0xff
 }dw_lns;
 
 /* extended opcode encodings: figure 35 */
@@ -198,14 +214,18 @@ typedef enum {
     DW_LNE_end_sequence = 1,
     DW_LNE_set_address,
     DW_LNE_define_file,
-#if 1
+    DW_LNE_set_discriminator,   /* Dwarf V4 */
+    DW_LNE_lo_user      = 0x80, /* Dwarf V3 */
+    DW_LNE_hi_user      = 0xff, /* Dwarf V3 */
+
+    /* WATCOM extension */
     /*
     //  Carl Young - 2004-07-05
     //  Despite recognizing the need for this extended opcode, I disagree with its use. Dwarf 3
     //  may yet add more extended instructions which will screw us over using enumeration value 4!
     */
-    DW_LNE_set_segment
-#endif
+    DW_LNE_WATCOM_set_segment_OLD  = DW_LNE_set_discriminator, /* for backward compatibility */
+    DW_LNE_WATCOM_set_segment      = DW_LNE_lo_user + 0,       /* new definition compatible with Dwarf 3 and higher */
 }dw_lne;
 
 /* Macinfo type encodings: figure 36 */
@@ -258,7 +278,6 @@ typedef enum {
 
 /* handy constants section */
 
-#define COMPILE_UNIT_HDR_SIZE   11    // 4 + 2 + 4 + 1
 #define DWLINE_OPCODE_BASE      10
 
 // these next three constants do not have to be defined this way, but it
@@ -267,19 +286,6 @@ typedef enum {
 #define DW_MIN_INSTR_LENGTH     1
 #define DWLINE_BASE             (-1)
 #define DWLINE_RANGE            4
-
-/* *****NOTE*******NOTE******** BIG KLUDGE FOLLOWS *****NOTE*****NOTE******
- *
- * in the dwarf reading library, we assume that the abbrev codes are unique -
- * i.e. that a particular abbreviation code corresponds to only one kind
- * of abbreviation.  This used to be true, since the dwarf writing library was
- * the only thing we had generating dwarf.  Now that the linker is doing it,
- * we have a problem of conflicting abbrev codes.  So... until the reading
- * library assumption is removed, we have to keep the abbrev code spaces
- * separate!  This next constant is used in the dwarf reading library for this.
-***************************************************************************/
-
-#define LAST_LINKER_ABBREV 4
 
 /* handy structures section */
 
@@ -295,12 +301,41 @@ typedef struct {
     unsigned_8  standard_opcode_lengths[DWLINE_OPCODE_BASE - 1];
 } _WCUNALIGNED stmt_prologue;
 
+#define STMT_PROLOGUE_HDR_VERSION               4     // 4
+#define STMT_PROLOGUE_HDR_PROLOGUE_LEN          6     // 4 + 2
+#define STMT_PROLOGUE_HDR_MIN_INS_LEN           10    // 4 + 2 + 4
+#define STMT_PROLOGUE_HDR_DEF_IN_STMT           11    // 4 + 2 + 4 + 1
+#define STMT_PROLOGUE_HDR_LINE_BASE             12    // 4 + 2 + 4 + 1 + 1
+#define STMT_PROLOGUE_HDR_LINE_RANGE            13    // 4 + 2 + 4 + 1 + 1 + 1
+#define STMT_PROLOGUE_HDR_OPCODE_BASE           14    // 4 + 2 + 4 + 1 + 1 + 1 + 1
+#define STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS   15    // 4 + 2 + 4 + 1 + 1 + 1 + 1 + 1
+
+// !!!! WARNING !!!!
+// In Dwarf V4 was specified arange triple structure in different field order
+// { selector, offset, length }.
+// It is big issue, because it can not be simply derived what version was used
+// for records creation.
+// Version of this record is same from Dwarf V2 even if it was changed in V4.
+// Dwarf comitee probably think that changes for segmented architectures are
+// minor nowdays and don't take care about it.
+// Therefore we have hadache how to resolve this backward compatible way.
 
 typedef struct {
     unsigned_32 offset;
     unsigned_16 segment;
     unsigned_32 length;
-} _WCUNALIGNED segmented_arange_tuple;
+} _WCUNALIGNED segmented_arange_tuple_v2;
+
+typedef struct {
+    unsigned_16 segment;
+    unsigned_32 offset;
+    unsigned_32 length;
+} _WCUNALIGNED segmented_arange_tuple_v4;
+
+typedef union {
+    segmented_arange_tuple_v2   v2;
+    segmented_arange_tuple_v4   v4;
+} segmented_arange_tuple;
 
 typedef struct {
     unsigned_32 offset;
@@ -327,6 +362,11 @@ typedef struct {
     unsigned_32 abbrev_offset;
     unsigned_8  addr_size;
 } _WCUNALIGNED compuhdr_prologue;
+
+#define COMPILE_UNIT_HDR_VERSION        4     // 4
+#define COMPILE_UNIT_HDR_ABBREV_OFFSET  6     // 4 + 2
+#define COMPILE_UNIT_HDR_ADDR_SIZE      10    // 4 + 2 + 4
+#define COMPILE_UNIT_HDR_SIZE           11    // 4 + 2 + 4 + 1
 
 typedef struct {
     unsigned_32 length;

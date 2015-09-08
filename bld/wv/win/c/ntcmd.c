@@ -36,7 +36,7 @@
 #include <windows.h>
 #endif
 
-extern unsigned         Lookup(const char *,const char *, unsigned);
+extern int              Lookup( const char *, const char *, size_t );
 
 static const char SysOptNameTab[] = {
     "Popups\0"
@@ -47,7 +47,7 @@ static const char SysOptNameTab[] = {
 };
 
 enum {
-    OPT_POPUPS = 1,
+    OPT_POPUPS,
     OPT_ALIGN_TRAP,
     OPT_ALIGN_EMULATE
 };

@@ -102,7 +102,7 @@ extern int              AddrComp( address, address );
 extern unsigned         Execute( bool, bool );
 extern void             GetCurrOpcode( void );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             ConfigLine( char * );
 extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );
@@ -523,8 +523,8 @@ void PerformTrace( void )
     NullStatus( &DbgTmpBrk );
     switch( TraceState.state ) {
     case TS_ACTIVE:
-        GetCmdEntry( LevelTab, TraceState.cur_level + 1, level );
-        GetCmdEntry( TraceTab2, TraceState.type + 1, over );
+        GetCmdEntry( LevelTab, TraceState.cur_level, level );
+        GetCmdEntry( TraceTab2, TraceState.type, over );
         Format( TxtBuff, "%s/%s/%s", GetCmdName( CMD_TRACE ), level, over );
         RecordEvent( TxtBuff );
         ret = DoTrace( TraceState.cur_level );
@@ -642,21 +642,21 @@ void ProcTrace( void )
     trace_cmd_type      trace_type;
     address             addr;
 
-    type_index = 0;
-    level_index = 0;
+    type_index = -1;
+    level_index = -1;
     if( CurrToken == T_DIV ) {
         Scan();                         /* try first set of commands */
         level_index = ScanCmd( LevelTab );
-        if( level_index == 0 ) {
+        if( level_index < 0 ) {
             type_index = ScanCmd( TraceTab2 );
-            if( type_index == 0 ) {
+            if( type_index < 0 ) {
                 Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
             }
         } else {
             if( CurrToken == T_DIV ) {  /* do second set of commands */
                 Scan();
                 type_index = ScanCmd( TraceTab2 );
-                if( type_index == 0 ) {
+                if( type_index < 0 ) {
                     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
                 }
             }
@@ -665,8 +665,8 @@ void ProcTrace( void )
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
     ReqEOC();
-    trace_level = level_index == 0 ? DbgLevel : level_index-1;
-    trace_type = type_index == 0 ? TRACE_OVER : type_index-1;
+    trace_level = ( level_index < 0 ) ? DbgLevel : level_index;
+    trace_type = ( type_index < 0 ) ? TRACE_OVER : type_index;
     ExecTrace( trace_type, trace_level );
 }
 
@@ -691,13 +691,14 @@ void LevelSet( void )
     int trace_level;
 
     trace_level = ScanCmd( LevelTab );
-    if( trace_level == 0 ) Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+    if( trace_level < 0 )
+        Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
     ReqEOC();
-    DbgLevel = trace_level - 1;
+    DbgLevel = trace_level;
 }
 
 void LevelConf( void )
 {
-    GetCmdEntry( LevelTab, DbgLevel + 1, TxtBuff );
+    GetCmdEntry( LevelTab, DbgLevel, TxtBuff );
     ConfigLine( TxtBuff );
 }

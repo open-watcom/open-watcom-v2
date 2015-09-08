@@ -38,8 +38,10 @@
 #include "rcldstr.h"
 #include "wresset2.h"
 #include "iortns.h"
-#include "clibext.h"
 #include "clibint.h"
+
+#include "clibext.h"
+
 
 extern HANDLE_INFO  Instance;
 

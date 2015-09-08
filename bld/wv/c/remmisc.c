@@ -40,6 +40,8 @@
 #include "trpld.h"
 #include "dbgio.h"
 #include "strutil.h"
+#include "trapglbl.h"
+#include "filermt.h"
 
 #include "clibext.h"
 
@@ -48,16 +50,6 @@ extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
 extern void             StartupErr( const char * );
 //extern void             TrapErrTranslate( char *, int );
-extern void             FiniCoreSupp( void );
-extern bool             InitCoreSupp( void );
-extern bool             InitFileSupp( void );
-extern bool             InitFileInfoSupp( void );
-extern bool             InitEnvSupp( void );
-extern bool             InitOvlSupp( void );
-extern bool             InitThreadSupp( void );
-extern bool             InitRunThreadSupp( void );
-extern bool             InitCapabilities( void );
-extern bool             InitAsyncSupp( void );
 
 unsigned int            MaxPacketLen;
 
@@ -94,6 +86,7 @@ void FiniSuppServices( void )
 #endif
 
 static bool InitTrapError;
+
 void InitTrap( const char *parms )
 {
     in_mx_entry         in[1];

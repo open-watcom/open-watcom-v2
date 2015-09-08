@@ -34,8 +34,7 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "trpthrd.h"
-
-extern trap_shandle     GetSuppId( char * );
+#include "trapglbl.h"
 
 #define DEFAULT_TID     1
 

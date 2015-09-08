@@ -42,6 +42,7 @@
 #include "wlink.h"
 #include "wlnkmsg.h"
 #include "cmdline.h"
+
 #include "clibext.h"
 
 #define PREFIX_SIZE 8

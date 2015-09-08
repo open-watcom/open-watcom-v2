@@ -169,14 +169,14 @@ Pool::Pool( size_t size, unsigned b_size )
     : _block( b_size ? b_size : BLOCK_SIZE ),
       _size( size > sizeof( void * ) ? size : sizeof( void * ) )
 {
-    unsigned char *index;
-    _array = new unsigned char[_block * _size + sizeof( unsigned char * )];
+    char *index;
+    _array = new char[_block * _size + sizeof( char * )];
 
     for( index = _array; index < _array + ( _block - 1 ) * _size; index += _size ) {
         *((void **)index) = (void *)( index + _size );
     }
     *((void **)index) = NULL;
-    *((unsigned char **)( index + _size )) = NULL;
+    *((char **)( index + _size )) = NULL;
 
     _pfree = (void *)_array;
 }
@@ -188,10 +188,10 @@ Pool::Pool( size_t size, unsigned b_size )
 
 Pool::~Pool()
 {
-    unsigned char *temp;
+    char *temp;
     do {
         temp = _array;
-        _array = *((unsigned char **)( _array + _block * _size ));
+        _array = *((char **)( _array + _block * _size ));
         delete[] temp;
     } while( _array != NULL );
 }
@@ -206,16 +206,17 @@ void *Pool::get()
     void    *result;
 
     if( _pfree == NULL ) {
-        unsigned char *index;
-        unsigned char *temp = new unsigned char[_block * _size + sizeof( unsigned char * )];
-    
+        char *index;
+        char *temp = new char[_block * _size + sizeof( char * )];
+
         for( index = temp; index < temp + ( _block - 1 ) * _size; index += _size ) {
             *((void **)index) = (void *)( index + _size );
         }
         *((void **)index) = NULL;
-        *((unsigned char **)( index + _size )) = _array;
-    
-        _pfree = (void *)( _array = temp );
+        *((char **)( index + _size )) = _array;
+
+        _array = temp;
+        _pfree = (void *)temp;
     }
     result = _pfree;
     _pfree = *((void **)_pfree);

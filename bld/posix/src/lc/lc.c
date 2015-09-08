@@ -66,6 +66,7 @@
 
 #include "clibext.h"
 
+
 #define LINE_WIDTH      80      /* FIXME: should really determine screen width*/
 #define COLUMN_WIDTH    16
 #define GUTTER_WIDTH    2

@@ -53,7 +53,9 @@
 #endif
 #include "asminsd.h"
 #include "asmopsd.gh"
+
 #include "clibext.h"
+
 
 extern bool             match_phase_1( void );
 extern bool             ptr_operator( memtype, bool );
@@ -703,7 +705,7 @@ static asm_cpu comp_opt( asm_token direct )
         return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
     default:
         // not found
-        return( EMPTY );
+        return( P_EMPTY );
     }
 }
 
@@ -800,7 +802,7 @@ bool cpu_directive( asm_token token )
 {
     asm_cpu     temp;
 
-    if( (temp = comp_opt( token )) != EMPTY ) {
+    if( (temp = comp_opt( token )) != P_EMPTY ) {
         if( token == T_DOT_NO87 ) {
             Code->info.cpu &= ~P_FPU_MASK;                 // turn off FPU bits
         } else if( temp & P_EXT_MASK ) {

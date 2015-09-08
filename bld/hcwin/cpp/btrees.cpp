@@ -457,8 +457,8 @@ int Btree::dump( OutFile *dest )
     };
 
     // Write the magic number and header information.
-    dest->write( _magic, 1, _magNumSize );
-    dest->write( header, sizeof( uint_16 ), 6 );
+    dest->write( _magic, _magNumSize );
+    dest->write( header, 6, sizeof( uint_16 ) );
     dest->write( _totalEntries );
 
     // Dump all of the pages recursively.

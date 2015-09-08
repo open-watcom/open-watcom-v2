@@ -29,10 +29,6 @@
 ****************************************************************************/
 
 
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
-
 extern void             Error( char *, ... );
 extern void             Dump( char *, ... );
 extern void             OutStartSect( char *, unsigned short );

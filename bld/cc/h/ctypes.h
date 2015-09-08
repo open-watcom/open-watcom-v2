@@ -122,6 +122,7 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
 #define MASK_FUNC           (MASK_LANGUAGES|FLAG_INLINE|FLAG_LOADDS|FLAG_EXPORT|FLAG_SAVEREGS)
 
 typedef enum sym_flags {
+    SYM_NONE                = 0x00,     /* no symbol */
     SYM_FUNCTION            = 0x01,     /* ON => function, OFF => variable */
     SYM_REFERENCED          = 0x02,     /* symbol was referenced in program */
     SYM_TYPE_GIVEN          = 0x04,     /* a ret type was specified for this func */

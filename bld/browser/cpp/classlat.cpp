@@ -60,12 +60,12 @@ DerivationPtr * ClassLattice::newPtr( ClassLattice * cls,
 // it creates the root node of the lattice, and the _flatClasses list
 
 ClassLattice::ClassLattice( Symbol * sym, bool relax )
-        : _handle( sym->getHandle() )
+        : _drhandle( sym->getHandle() )
         , _module( sym->getModule() )
         , _name( WBRStrDup( sym->name() ) )
         , _basesLoaded( FALSE )
         , _derivedsLoaded( FALSE )
-        , _effAccess( (dr_access) 0 )
+        , _effAccess( (dr_access)0 )
         , _virtual( VIRT_NOT_SET )
         , _relaxedVirt( relax )
         , _level( 0 )
@@ -76,10 +76,10 @@ ClassLattice::ClassLattice( Symbol * sym, bool relax )
 }
 
 // Internal ctor, used to create non-root nodes
-ClassLattice::ClassLattice( dr_handle hdl, Module * mod, char * name,
+ClassLattice::ClassLattice( dr_handle drhdl, Module * mod, char * name,
                             ClassList * vlist, dr_access acc,
                             dr_virtuality virt, bool relaxVirt, int level )
-        : _handle( hdl )
+        : _drhandle( drhdl )
         , _module( mod )
         , _name( name )
         , _basesLoaded( FALSE )
@@ -117,14 +117,13 @@ ClassLattice::~ClassLattice( void )
 
 }
 
-ClassLattice * ClassLattice::newLattice( dr_handle hdl, Module * mod,
+ClassLattice * ClassLattice::newLattice( dr_handle drhdl, Module * mod,
                                          char * name, ClassList * vlist,
                                          dr_access acc, dr_virtuality virt,
                                          int level )
 //-------------------------------------------------------------------------
 {
-    return new ClassLattice( hdl, mod, name, vlist, acc, virt, _relaxedVirt,
-                             level );
+    return new ClassLattice( drhdl, mod, name, vlist, acc, virt, _relaxedVirt, level );
 }
 
 void ClassLattice::deleteLattice( void )
@@ -150,14 +149,14 @@ char * ClassLattice::name( void ) const
 bool ClassLattice::isEqual( WObject const * obj ) const
 //-----------------------------------------------------
 {
-    return _handle == ((ClassLattice *)obj)->_handle;
+    return _drhandle == ((ClassLattice *)obj)->_drhandle;
 }
 
 Symbol * ClassLattice::makeSymbol( void )
 //---------------------------------------
 {
     char * name = WBRStrDup( _name );
-    return Symbol::defineSymbol( DR_SYM_CLASS, _handle, 0L, _module, name );
+    return Symbol::defineSymbol( DR_SYM_CLASS, _drhandle, DR_HANDLE_NUL, _module, name );
 }
 
 void ClassLattice::enumerateBases( BaseCB callback, void * obj )
@@ -183,7 +182,7 @@ void ClassLattice::loadBases( void )
 {
     if( !_basesLoaded ) {
         _module->setModule();
-        DRBaseSearch( _handle, this, baseHook );
+        DRBaseSearch( _drhandle, this, baseHook );
         _basesLoaded = TRUE;
     }
 }
@@ -266,7 +265,7 @@ void ClassLattice::joinLattice( ClassLattice * lattTo )
  * in the lattice, and if so returns a pointer to it.
  */
 
-ClassLattice * ClassLattice::joinTo( dr_handle hdl, dr_virtuality virt,
+ClassLattice * ClassLattice::joinTo( dr_handle drhdl, dr_virtuality virt,
                                      dr_access effAccess, int level )
 //---------------------------------------------------------------------------
 {
@@ -274,7 +273,7 @@ ClassLattice * ClassLattice::joinTo( dr_handle hdl, dr_virtuality virt,
     for( int i = _flatClasses->count(); i > 0 && ret == NULL; i -= 1 ) {
         ClassLattice * test = (*_flatClasses)[ i - 1 ];
 
-        if( test->_handle == hdl ) {
+        if( test->_drhandle == drhdl ) {
             switch( test->_virtual ) {
             case VIRT_NOT_SET:
                 test->_virtual = (VirtLevel) virt;
@@ -326,7 +325,7 @@ void ClassLattice::adjustLevelsUp( int levelDiff )
     _level += levelDiff;
 }
 
-static bool ClassLattice::baseHook( dr_sym_type, dr_handle handle, char * name,
+static bool ClassLattice::baseHook( dr_sym_type, dr_handle drhdl, char * name,
                                    dr_handle inheritHandle, void * obj )
 //----------------------------------------------------------------------------
 {
@@ -345,13 +344,13 @@ static bool ClassLattice::baseHook( dr_sym_type, dr_handle handle, char * name,
         effAccess = me->_effAccess;
     }
 
-    addnode = me->joinTo( handle, virtuality, effAccess, me->_level - 1 );
+    addnode = me->joinTo( drhdl, virtuality, effAccess, me->_level - 1 );
 
     if( addnode != NULL ) {
         WBRFree( name );
     } else {
         // NYI - _module isn't necessarily what we want it to be!
-        addnode = me->newLattice( handle, me->_module, name, me->_flatClasses,
+        addnode = me->newLattice( drhdl, me->_module, name, me->_flatClasses,
                                   effAccess, virtuality, me->_level - 1 );
     }
 
@@ -403,12 +402,12 @@ void ClassLattice::loadDeriveds( void )
 {
     if( !_derivedsLoaded ) {
         _module->setModule();
-        DRDerivedSearch( _handle, this, deriveHook );
+        DRDerivedSearch( _drhandle, this, deriveHook );
         _derivedsLoaded = TRUE;
     }
 }
 
-static bool ClassLattice::deriveHook( dr_sym_type, dr_handle handle,
+static bool ClassLattice::deriveHook( dr_sym_type, dr_handle drhdl,
                                      char * name, dr_handle inheritHandle,
                                      void * obj )
 //-------------------------------------------------------------------------
@@ -428,12 +427,12 @@ static bool ClassLattice::deriveHook( dr_sym_type, dr_handle handle,
         effAccess = me->_effAccess;
     }
 
-    addnode = me->joinTo( handle, virtuality, effAccess, me->_level + 1 );
+    addnode = me->joinTo( drhdl, virtuality, effAccess, me->_level + 1 );
 
     if( addnode != NULL ) {
         WBRFree( name );
     } else {
-        addnode = me->newLattice( handle, me->_module, name, me->_flatClasses,
+        addnode = me->newLattice( drhdl, me->_module, name, me->_flatClasses,
                                   access, (dr_virtuality) VIRT_NOT_SET,
                                   me->_level + 1 );
     }

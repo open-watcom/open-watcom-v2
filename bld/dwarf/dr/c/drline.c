@@ -24,66 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  DWARF statement program virtual machine.
+* Description:  DWARF statement program virtual machine (.debug_line section).
 *
 ****************************************************************************/
 
 
 #include "drpriv.h"
-#include "drutils.h"
 #include <string.h>
+#include "drutils.h"
 #include "walloca.h"
+
 #include "clibext.h"
 
-
-static unsigned_32 ReadVWord( dr_handle where, int size )
-/*******************************************************/
-//Read an int
-{
-    unsigned_32 ret;
-
-    switch( size ) {
-    case 1:
-        ret = DWRVMReadByte( where );
-        break;
-    case 2:
-        ret = DWRVMReadWord( where );
-        break;
-    case 4:
-        ret = DWRVMReadDWord( where );
-        break;
-    default:
-        ret = 0;
-        break;
-    }
-    return( ret );
-}
-
-static void InitState( dr_line_data *state, uint_16 seg, bool is_stmt )
-/*********************************************************************/
-// Start state
-{
-    state->seg = seg;
-    state->offset = 0;
-    state->file = 1;
-    state->line = 1;
-    state->col = 0;
-    state->is_stmt = is_stmt;
-    state->basic_blk = FALSE;
-    state->end_seq = FALSE;
-    state->addr_set = FALSE;
-}
-
-static dr_handle  DefineFile( dr_handle start, dr_line_file *df )
-/***************************************************************/
-{
-
-    df->name = DWRCopyString( &start );
-    df->dir = DWRVMReadULEB128( &start );       // directory index
-    df->time = DWRVMReadULEB128( &start );  // time
-    df->len = DWRVMReadULEB128( &start );       // length
-    return( start );
-}
 
 typedef struct { /* stmt program read info */
     dr_handle   start;
@@ -96,8 +48,8 @@ typedef struct { /* stmt program read info */
     unsigned_8  def_is_stmt;
     unsigned_8  opcode_base;
     unsigned_8  *op_lens; /* NULL if no new opcodes */
-    unsigned    file_idx;
-    unsigned    dir_idx;
+    dr_fileidx  file_idx;
+    dr_fileidx  dir_idx;
 } prog_rdr;
 
 typedef struct line_info {
@@ -106,87 +58,120 @@ typedef struct line_info {
 } line_info;
 
 
+static void InitState( line_info *info )
+/**************************************/
+// Start state
+{
+    info->state.seg = info->rdr.seg;
+    info->state.offset = 0;
+    info->state.file = 1;
+    info->state.line = 1;
+    info->state.col = 0;
+    info->state.is_stmt = info->rdr.def_is_stmt;
+    info->state.basic_blk = FALSE;
+    info->state.end_seq = FALSE;
+    info->state.addr_set = TRUE;  // address starts at 0
+}
+
 static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                                           DRLFILEWLK file, void *file_data )
 /**************************************************************************/
-//Run the statement program
+// Run the statement program
 // On each row append (as blathered about in DWARF spec) call the wlk
 {
-    dr_handle      curr;
-    dr_handle      finish;
-    unsigned_8     value;
-    unsigned       length;
-    unsigned_8     min_ins_len;
-    signed_8       line_base;
-    unsigned_8     line_range;
-    unsigned_8     opcode_base;
-    dr_line_file   df;
-    bool           cont;
+    dr_handle       curr;
+    dr_handle       finish;
+    int             value;
+    unsigned        length;
+    int             min_ins_len;
+    int             line_base;
+    int             line_range;
+    int             opcode_base;
+    dr_line_file    df;
+    bool            cont;
+    dw_lns          value_lns;
+    dw_lne          value_lne;
+    char            *name_buf;
+    int             name_buf_len;
+    int             curr_len;
 
+    name_buf = NULL;
+    name_buf_len = 0;
+    InitState( info );
     curr = info->rdr.curr;
     finish = info->rdr.finish;
     min_ins_len = info->rdr.min_ins_len;
     line_base = info->rdr.line_base;
     line_range = info->rdr.line_range;
     opcode_base = info->rdr.opcode_base;
-    info->state.addr_set = TRUE;  // address starts at 0
     cont = TRUE;
-    while( curr < finish ) {    // now go through the statement program
-        value = DWRVMReadByte( curr );
+    while( cont && curr < finish ) {    // now go through the statement program
+        value_lns = DWRVMReadByte( curr );
         curr++;
-        if( value == 0 ) {      // it's an extended opcode
+        if( value_lns == 0 ) {      // it's an extended opcode
             length = DWRVMReadULEB128( &curr );
-            value = DWRVMReadByte( curr );
-            switch( value ) {
+            value_lne = DWRVMReadByte( curr );
+            curr++;
+            --length;
+            switch( value_lne ) {
             case DW_LNE_end_sequence:
-                curr++;
                 info->state.end_seq = TRUE;
                 /* append a row */
                 if( cue != NULL ) {
                     cont = cue( cue_data, &info->state );
                     if( !cont ) {
-                        goto end_loop;
+                        break;
                     }
                 }
-                InitState( &info->state, info->rdr.seg,info->rdr.def_is_stmt );
+                InitState( info );
                 break;
             case DW_LNE_set_address:
-                curr++;
-                --length;
-                info->state.offset = ReadVWord( curr, length );
+                info->state.offset = DWRReadInt( curr, length );
                 info->state.addr_set = TRUE;
                 curr += length;
                 break;
-            case DW_LNE_set_segment:
-                curr++;
-                --length;
-                info->state.seg = ReadVWord( curr, length );
+            case DW_LNE_WATCOM_set_segment_OLD:
+            case DW_LNE_WATCOM_set_segment:
+                info->state.seg = (uint_16)DWRReadInt( curr, length );
                 curr += length;
                 break;
             case DW_LNE_define_file:
-                /* call file walker */
                 ++info->rdr.file_idx;
-                if( file != NULL ) {
-                    DefineFile( curr+1, &df );
-                    df.index = info->rdr.file_idx;
-                    cont = file( file_data, &df );
-                    if( !cont ) {
-                        goto end_loop;
+                if( file == NULL ) {
+                    curr += length;
+                } else {
+                    curr_len = DWRVMGetStrBuff( curr, name_buf, name_buf_len );
+                    if( curr_len > name_buf_len ) {
+                        /* extend name buffer */
+                        if( name_buf != NULL )
+                            DWRFREE( name_buf );
+                        name_buf_len = curr_len;
+                        if( name_buf_len < 256 )
+                            name_buf_len = 256;
+                        name_buf = DWRALLOC( name_buf_len );
+                        curr_len = DWRVMGetStrBuff( curr, name_buf, name_buf_len );
                     }
+                    curr += curr_len;
+                    df.name = name_buf;                             // directory path
+                    df.dir = (uint_16)DWRVMReadULEB128( &curr );    // directory index
+                    df.time = DWRVMReadULEB128( &curr );            // time
+                    df.len = DWRVMReadULEB128( &curr );             // length
+                    df.index = (filetab_idx)info->rdr.file_idx;     // index
+                    /* call file walker */
+                    cont = file( file_data, &df );
                 }
-                curr += length;
                 break;
             default:
                 curr += length;
             }
-        } else if( value < opcode_base ) {  // it is a standard opcode
-            switch( value ) {
+        } else if( value_lns < opcode_base ) {  // it is a standard opcode
+            switch( value_lns ) {
             case DW_LNS_copy:
                 /* append a row */
                 if( cue != NULL ) {
                     cont = cue( cue_data, &info->state );
                     if( !cont ) {
-                        goto end_loop;
+                        break;
                     }
                 }
                 info->state.addr_set = FALSE;
@@ -199,10 +184,10 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 info->state.line += DWRVMReadSLEB128( &curr );
                 break;
             case DW_LNS_set_file:
-                info->state.file = DWRVMReadULEB128( &curr );
+                info->state.file = (uint_16)DWRVMReadULEB128( &curr );
                 break;
             case DW_LNS_set_column:
-                info->state.col = DWRVMReadULEB128( &curr );
+                info->state.col = (uint_16)DWRVMReadULEB128( &curr );
                 break;
             case DW_LNS_negate_stmt:
                 info->state.is_stmt = !info->state.is_stmt;
@@ -212,35 +197,34 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 break;
             case DW_LNS_const_add_pc:
                 value = 255 - opcode_base;
-                info->state.offset += value/line_range*min_ins_len;
+                info->state.offset += value / line_range * min_ins_len;
                 break;
             case DW_LNS_fixed_advance_pc:
                 info->state.offset += DWRVMReadWord( curr );
                 curr += 2;
                 break;
             default: //op codes not processed
-                value = info->rdr.op_lens[value];
-                while( value > 0 ) {
+                for( value = info->rdr.op_lens[value_lns - 1]; value > 0; --value ) {
                     DWRVMSkipLEB128( &curr );
-                    value--;
                 }
             }
         } else { /* special opcodes */
-            value -= opcode_base;
+            value = value_lns - opcode_base;
             info->state.offset += value / line_range * min_ins_len;
-            info->state.line += value % line_range + line_base;
+            info->state.line += ( value % line_range ) + line_base;
             /* append a row */
             if( cue != NULL ) {
                 cont = cue( cue_data, &info->state );
                 if( !cont ) {
-                    goto end_loop;
+                    break;
                 }
             }
             info->state.addr_set = FALSE;
             info->state.basic_blk = FALSE;
         }
-    } end_loop:;
+    }
     info->rdr.curr = curr;
+    DWRFREE( name_buf );
     return( cont );
 }
 
@@ -249,30 +233,33 @@ static dr_handle InitProgInfo( prog_rdr *rdr, dr_handle start, uint_16 seg )
 /**************************************************************************/
 // Init statement program info
 {
-    dr_handle   prog;
+    unsigned        len;
+    dr_handle       pos;
+    unsigned        index;
 
     rdr->seg = seg;
-    rdr->finish = start + DWRVMReadDWord( start ) + 4;
-    start += 4 + 2; /*skip len & version*/
-    prog = DWRVMReadDWord( start );
-    start += 4;
-    prog += start;
-    rdr->start = prog;
-    rdr->curr = prog;
-    rdr->min_ins_len = DWRVMReadByte( start );
-    start += 1;
-    rdr->def_is_stmt = DWRVMReadByte( start );
-    start += 1;
-    rdr->line_base = DWRVMReadByte( start );
-    start += 1;
-    rdr->line_range = DWRVMReadByte( start );
-    start += 1;
-    rdr->opcode_base = DWRVMReadByte( start );
-    rdr->op_lens = NULL;
-    start += 1;
-    rdr->file_idx = 0;
+    rdr->finish = start + 4 + DWRVMReadDWord( start );
+    rdr->start = start + STMT_PROLOGUE_HDR_PROLOGUE_LEN + 4 + DWRVMReadDWord( start + STMT_PROLOGUE_HDR_PROLOGUE_LEN );
+    rdr->curr = rdr->start;
+    rdr->min_ins_len = DWRVMReadByte( start + STMT_PROLOGUE_HDR_MIN_INS_LEN );
+    rdr->def_is_stmt = DWRVMReadByte( start + STMT_PROLOGUE_HDR_DEF_IN_STMT );
+    rdr->line_base   = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_BASE );
+    rdr->line_range  = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_RANGE );
+    rdr->opcode_base = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
+    len = rdr->opcode_base - 1;
+    rdr->op_lens = DWRALLOC( len );
+    pos = start + STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS;
+    for( index = 0; index < len; index++ ) {
+        rdr->op_lens[index] = DWRVMReadByte( pos++ );
+    }
     rdr->dir_idx = 0;
-    return( start );
+    rdr->file_idx = 0;
+    return( pos );
+}
+
+static void FiniProgInfo( prog_rdr *rdr )
+{
+    DWRFREE( rdr->op_lens );
 }
 
 extern dr_handle  DRGetStmtList( dr_handle ccu )
@@ -281,12 +268,11 @@ extern dr_handle  DRGetStmtList( dr_handle ccu )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &ccu );
+    abbrev = DWRSkipTag( &ccu ) + 1;
     if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) ) {
-        ccu = DWRReadConstant( abbrev, ccu );
-        ccu += DWRCurrNode->sections[DR_DEBUG_LINE].base;
+        ccu = DWRCurrNode->sections[DR_DEBUG_LINE].base + DWRReadConstant( abbrev, ccu );
     } else {
-        ccu = 0;
+        ccu = DR_HANDLE_NUL;
     }
     return( ccu );
 }
@@ -296,17 +282,11 @@ bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
 // Run the statement program
 {
     line_info   info;
-    int         index;
     bool        ret;
 
     stmt = InitProgInfo( &info.rdr, stmt, seg );
-    info.rdr.op_lens = __alloca( info.rdr.opcode_base - 1 );
-    for( index = 0; index < info.rdr.opcode_base - 1; index++ ) {
-        info.rdr.op_lens[index] = DWRVMReadByte( stmt );
-        stmt++;
-    }
-    InitState( &info.state, seg, info.rdr.def_is_stmt );
     ret = WlkStateProg( &info, wlk, d, NULL, NULL );
+    FiniProgInfo( &info.rdr );
     return( ret );
 }
 
@@ -316,49 +296,71 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
 // Run the statement program
 {
     line_info       info;
-    int             index;
     unsigned_8      value;
     dr_line_dir     dd;
     dr_line_file    df;
     bool            cont;
+    char            *name_buf;
+    int             name_buf_len;
+    int             curr_len;
 
+    name_buf = NULL;
+    name_buf_len = 0;
     stmt = InitProgInfo( &info.rdr, stmt, 0 );
-    info.rdr.op_lens = __alloca( info.rdr.opcode_base - 1 );
-    for( index = 0; index < info.rdr.opcode_base - 1; index++ ) {
-        info.rdr.op_lens[index] = DWRVMReadByte( stmt );
-        stmt++;
-    }
     cont = TRUE;
-    index = 0;
-    while( stmt < info.rdr.start ) {            // get directory table
+    while( cont && stmt < info.rdr.start ) {    // get directory table
         value = DWRVMReadByte( stmt );
-        if( value == 0 )
+        if( value == 0 ) {
+            stmt++;
             break;
-        ++index;
-        dd.name = DWRCopyString( &stmt );
-        dd.index = index;
+        }
+        curr_len = DWRVMGetStrBuff( stmt, name_buf, name_buf_len );
+        if( curr_len > name_buf_len ) {
+            /* extend name buffer */
+            if( name_buf != NULL )
+                DWRFREE( name_buf );
+            name_buf_len = curr_len;
+            if( name_buf_len < 256 )
+                name_buf_len = 256;
+            name_buf = DWRALLOC( name_buf_len );
+            curr_len = DWRVMGetStrBuff( stmt, name_buf, name_buf_len );
+        }
+        stmt += curr_len;
+        info.rdr.dir_idx++;
+        dd.name = name_buf;
+        dd.index = (filetab_idx)info.rdr.dir_idx;
+        /* call directory walker */
         cont = dir( dir_data, &dd );
-        if( !cont ) {
-            return( cont );
-        }
     }
-    info.rdr.dir_idx = index;
-    stmt++;
-    index = 0;
-    while( stmt < info.rdr.start ) {            // get filename table
+    while( cont && stmt < info.rdr.start ) {    // get filename table
         value = DWRVMReadByte( stmt );
         if( value == 0 )
             break;
-        ++index;
-        stmt = DefineFile( stmt, &df );
-        df.index = index;
-        cont = file( file_data, &df );
-        if( !cont ) {
-            return( cont );
+        curr_len = DWRVMGetStrBuff( stmt, name_buf, name_buf_len );
+        if( curr_len > name_buf_len ) {
+            /* extend name buffer */
+            if( name_buf != NULL )
+                DWRFREE( name_buf );
+            name_buf_len = curr_len;
+            if( name_buf_len < 256 )
+                name_buf_len = 256;
+            name_buf = DWRALLOC( name_buf_len );
+            curr_len = DWRVMGetStrBuff( stmt, name_buf, name_buf_len );
         }
+        stmt += curr_len;
+        info.rdr.file_idx++;
+        df.name = name_buf;                             // directory path
+        df.dir = (uint_16)DWRVMReadULEB128( &stmt );    // directory index
+        df.time = DWRVMReadULEB128( &stmt );            // time
+        df.len = DWRVMReadULEB128( &stmt );             // length
+        df.index = (filetab_idx)info.rdr.file_idx;      // index
+        /* call file walker */
+        cont = file( file_data, &df );
     }
-    info.rdr.file_idx = index;
-    InitState( &info.state, 0, info.rdr.def_is_stmt );
-    WlkStateProg( &info, NULL, NULL, file, file_data );
+    if( cont ) {
+        WlkStateProg( &info, NULL, NULL, file, file_data );
+    }
+    DWRFREE( name_buf );
+    FiniProgInfo( &info.rdr );
     return( cont );
 }

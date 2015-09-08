@@ -32,12 +32,14 @@
 
 #include "wfilenam.hpp"
 #include "wresstr.hpp"
-extern "C" {
-    #include "clibext.h"
-};
 #include "wfiledlg.hpp"
 
-static  const char          *FilterList = "All files(*.*)\0*.*\0\0";
+#include "clibext.h"
+
+
+#define WFileBufSize    WMaxFiles * _MAX_PATH
+
+static  const char      *FilterList = "All files(*.*)\0*.*\0\0";
 
 
 WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )
@@ -45,6 +47,7 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )
 /***************************/
 
     _fileName = new char[WFileBufSize];
+    _dirName = new char[_MAX_PATH];
     makeDialog( filter );
 }
 
@@ -70,6 +73,7 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, WResourceId filter_id )
     } while( filter[i++] );
 
     _fileName = new char[WFileBufSize];
+    _dirName = new char[_MAX_PATH];
     makeDialog( buffer );
 }
 
@@ -96,6 +100,7 @@ WEXPORT WFileDialog::~WFileDialog() {
 /***********************************/
 
     delete [] _fileName;
+    delete [] _dirName;
 }
 
 

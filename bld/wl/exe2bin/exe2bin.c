@@ -38,10 +38,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
-
 #include "watcom.h"             // unsigned_16, ..., endian-macros, ...
 #include "exedos.h"             // dos_exe_header, ...
 #include "banner.h"             // Watcom banner
+
 #include "clibext.h"
 
 

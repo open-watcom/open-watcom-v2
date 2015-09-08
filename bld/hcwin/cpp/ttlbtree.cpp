@@ -135,8 +135,7 @@ TTLRec::~TTLRec()
 
 uint_32 TTLRec::size()
 {
-    size_t result = 5 + strlen( _title );
-    return result;
+    return( (uint_32)( 5 + strlen( _title ) ) );
 }
 
 
@@ -145,7 +144,7 @@ uint_32 TTLRec::size()
 int TTLRec::dump( OutFile * dest )
 {
     dest->write( _offset );
-    dest->write( _title, 1, strlen( _title ) + 1 );
+    dest->write( _title, strlen( _title ) + 1 );
     return 1;
 }
 

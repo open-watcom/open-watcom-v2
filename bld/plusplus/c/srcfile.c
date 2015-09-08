@@ -30,9 +30,7 @@
 
 
 #include "plusplus.h"
-
 #include <errno.h>
-
 #include "wio.h"
 #include "memmgr.h"
 #include "fname.h"
@@ -53,6 +51,7 @@
 #include "pragdefn.h"
 #endif
 #include "brinfo.h"
+
 #include "clibext.h"
 
 
@@ -304,7 +303,8 @@ static SRCFILE srcFileAddUnique(// ADD NEW SOURCE FILE TO UNIQUE LIST
 
 static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     void *fp,                   // - system file control
-    char *name )                // - file name
+    char *name,                 // - file name
+    time_t ftime )
 {
     SRCFILE new_src;            // - new source file
     OPEN_FILE *old_act;         // - open-file information (old)
@@ -341,7 +341,7 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->ifndef_len = 0;
     new_src->sister = new_src;
     new_src->guard_state = GUARD_NULL;
-    new_src->time_stamp = 0;
+    new_src->time_stamp = ftime;
     MacroStateGet( &(new_src->macro_state) );
     if( srcFile == NULL ) {
         new_src->parent_locn = 0;
@@ -410,12 +410,13 @@ void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
 
 SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     void *fp,                   // - system file control
-    char *name )                // - file name
+    char *name,                 // - file name
+    time_t ftime )
 {
-    SRCFILE new_src;            // - new source file
-    OPEN_FILE *new_act;         // - open-file information (new)
+    SRCFILE     new_src;        // - new source file
+    OPEN_FILE   *new_act;       // - open-file information (new)
 
-    new_src = srcFileAlloc( fp, FNameAdd( name ) );
+    new_src = srcFileAlloc( fp, FNameAdd( name ), ftime );
     if( CompFlags.cpp_output ) {
         EmitLine( 1, new_src->name );
     }
@@ -431,7 +432,6 @@ SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     } else {
         SRCFILE old = srcFileAddUnique( new_src );
         if( old == NULL ) {
-            new_src->time_stamp = SysFileTime( fp );
             setJustOpenedGuardState();
         } else {
             new_src->time_stamp = old->time_stamp;
@@ -1742,7 +1742,7 @@ void SrcFileCmdLnDummyOpen(     // OPEN DUMMY FILE FOR COMMAND LINE
 {
     SRCFILE cmd_file;           // - command file
 
-    cmd_file = srcFileAlloc( NULL, NULL );
+    cmd_file = srcFileAlloc( NULL, NULL, 0 );
     set_srcFile( cmd_file );
     setGuardState( GUARD_IFNDEF );
 }

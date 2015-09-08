@@ -75,7 +75,7 @@ extern void DWRStackPush(                   // PUSH ITEM ON THE STACK
         stk->stack = DWRREALLOC( stk->stack, stk->size * sizeof( uint_32 ) );
     }
 
-    stk->stack[ stk->free ] = val;
+    stk->stack[stk->free] = val;
     stk->free += 1;
 }
 
@@ -88,7 +88,7 @@ extern uint_32 DWRStackPop(                 // POP ITEM OFF THE STACK
     }
 
     stk->free -= 1;
-    return stk->stack[ stk->free ];
+    return stk->stack[stk->free];
 }
 
 extern uint_32 DWRStackTop(                 // RETURN TOP ELEMENT OF STACK
@@ -98,7 +98,7 @@ extern uint_32 DWRStackTop(                 // RETURN TOP ELEMENT OF STACK
     if( stk->free == 0 ) {
         return 0;
     } else {
-        return stk->stack[ stk->free - 1 ];
+        return stk->stack[stk->free - 1];
     }
 }
 

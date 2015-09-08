@@ -575,7 +575,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
             done = TRUE;
             break;
         default :
-            if( ev <= EV_LAST_KEYBOARD ) {
+            if( iskeyboardchar( ev ) ) {
                 if( KeyboardSelect( ev, num, menu, desc ) ) {
                     if( ScrollPos != NO_SELECT && menu[ScrollPos].popup != NULL ) { // JD
                         done = createsubpopup( menu, left, right, keep_inside,

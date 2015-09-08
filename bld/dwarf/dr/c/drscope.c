@@ -34,14 +34,14 @@
 #include "drgettab.h"
 #include "drscope.h"
 
-static void ScopeBlockInit( scope_block *block )
+static void ScopeBlockInit( dr_scope_block *block )
 //************************************************************
 // link list of free entries together with entries[0] as first
 //************************************************************
 {
-    int i;
-    scope_entry *curr;
-    scope_entry *last;
+    int             i;
+    dr_scope_entry  *curr;
+    dr_scope_entry  *last;
 
     block->next = NULL;
     last = NULL;
@@ -53,17 +53,17 @@ static void ScopeBlockInit( scope_block *block )
     }
 }
 
-static scope_entry *AllocScopeEntry( scope_ctl *ctl )
+static dr_scope_entry *AllocScopeEntry( dr_scope_ctl *ctl )
 //****************************************************
 // get a free one alloc a new block if needed
 //****************************************************
 {
-    scope_entry *new;
+    dr_scope_entry  *new;
 
     if( ctl->free == NULL ) {
-        scope_block *block;
+        dr_scope_block *block;
 
-        block = DWRALLOC( sizeof( scope_block ) );
+        block = DWRALLOC( sizeof( dr_scope_block ) );
         ScopeBlockInit( block );
         block->next = ctl->next;
         ctl->next = block;
@@ -75,7 +75,7 @@ static scope_entry *AllocScopeEntry( scope_ctl *ctl )
     return( new );
 }
 
-static void ScopeCtlInit( scope_ctl *ctl )
+static void ScopeCtlInit( dr_scope_ctl *ctl )
 //**************************************************
 // Init local block, set free list, init result
 //**************************************************
@@ -85,16 +85,16 @@ static void ScopeCtlInit( scope_ctl *ctl )
     ctl->next = NULL;
 }
 
-static void ScopeCtlFini( scope_ctl *ctl )
+static void ScopeCtlFini( dr_scope_ctl *ctl )
 //*****************************************
 // Free any allocated blocks
 //*****************************************
 {
-    scope_block *curr;
+    dr_scope_block *curr;
 
     curr = ctl->next;
     while( curr != NULL ) {
-        scope_block *next;
+        dr_scope_block *next;
         next = curr->next;
         DWRFREE( curr );
         curr = next;
@@ -106,9 +106,9 @@ static bool AContainer( dr_handle enclose, int index, void *_df )
 // Add entry to list stop when found search entry
 //***************************************************************
 {
-    scope_entry     *new;
+    dr_scope_entry     *new;
     bool            cont;
-    scope_trail     *df = _df;
+    dr_scope_trail     *df = _df;
 
     index = index;
     new = AllocScopeEntry( &df->ctl );
@@ -123,7 +123,7 @@ static bool AContainer( dr_handle enclose, int index, void *_df )
     return( cont );
 }
 
-extern void DRGetScopeList( scope_trail *container, dr_handle of )
+extern void DRGetScopeList( dr_scope_trail *container, dr_handle of )
 //*********************************************************************
 // Walk in to of starting at ccu
 //*********************************************************************
@@ -139,7 +139,7 @@ extern void DRGetScopeList( scope_trail *container, dr_handle of )
     }
 }
 
-extern void DREndScopeList( scope_trail *container )
+extern void DREndScopeList( dr_scope_trail *container )
 //******************************************************
 // Free list
 //******************************************************

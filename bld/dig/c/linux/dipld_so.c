@@ -36,9 +36,8 @@
 #include "dipimp.h"
 #include "dipcli.h"
 #include "dipsys.h"
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
+
+#include "clibext.h"
 
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )

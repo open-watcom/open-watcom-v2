@@ -58,14 +58,14 @@ void FunctionSym::operator delete( void * mem )
     _pool.free( mem );
 }
 
-static bool FunctionSym::memberHook( dr_sym_type symtype, dr_handle handle,
-                                    char * name, dr_handle prt, void * info )
+static bool FunctionSym::memberHook( dr_sym_type symtype, dr_handle drhdl,
+                                char * name, dr_handle drhdl_prt, void * info )
 //---------------------------------------------------------------------------
 {
     FuncSearchData * data = ( FuncSearchData * ) info;
     Symbol *         sym;
 
-    sym = defineSymbol( symtype, handle, prt, data->me->getModule(), name );
+    sym = defineSymbol( symtype, drhdl, drhdl_prt, data->me->getModule(), name );
     data->list->add( sym );
 
     return TRUE;
@@ -124,7 +124,7 @@ static bool FunctionSym::callHook( dr_handle, dr_ref_info * ref, char * name,
     other = ref->dependent;
     stype = DRGetSymType( other );
     if( stype == DR_SYM_FUNCTION ) {
-        sym = Symbol::defineSymbol(stype, other, 0, data->me->getModule(),name);
+        sym = Symbol::defineSymbol(stype, other, DR_HANDLE_NUL, data->me->getModule(),name);
         data->list->add( sym );
     } else {
         WBRFree( name );

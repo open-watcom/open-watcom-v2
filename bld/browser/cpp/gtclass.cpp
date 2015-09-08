@@ -107,10 +107,10 @@ TreeClassNode::TreeClassNode( TreeWindow * prt, Symbol * sym )
 {
 };
 
-TreeClassNode::TreeClassNode( TreeWindow * prt, dr_handle hdl, Module * mod,
+TreeClassNode::TreeClassNode( TreeWindow * prt, dr_handle drhdl, Module * mod,
                               char * nm, ClassList * l, dr_access acc,
                               dr_virtuality v, int lvl )
-                : ClassLattice( hdl, mod, nm, l, acc, v, TRUE, lvl )
+                : ClassLattice( drhdl, mod, nm, l, acc, v, TRUE, lvl )
                 , TreeNode( prt )
 //--------------------------------------------------------------------------
 {
@@ -153,14 +153,13 @@ bool TreeClassNode::isRelated( TreeNode * node )
     return ret;
 }
 
-ClassLattice *  TreeClassNode::newLattice(  dr_handle hdl, Module *mod,
+ClassLattice *  TreeClassNode::newLattice(  dr_handle drhdl, Module *mod,
                                             char *nm, ClassList *l,
                                             dr_access acc, dr_virtuality v,
                                             int lvl )
 //-------------------------------------------------------------------------
 {
-    return (ClassLattice *) new TreeClassNode( _parent, hdl, mod, nm, l, acc,
-                                                v, lvl );
+    return (ClassLattice *) new TreeClassNode( _parent, drhdl, mod, nm, l, acc, v, lvl );
 }
 
 DerivationPtr * TreeClassNode::newPtr( ClassLattice * cls,
@@ -185,8 +184,7 @@ bool TreeClassNode::doParents( WVList& world, TreeClassList & roots,
 
         // remove a base from the world -- should be done for all bases
         for( j = world.count(); j > 0; j -= 1 ) {
-            if( ((Symbol *)world[ j - 1 ])->getHandle() ==
-                baseNode->getHandle() ) {
+            if( ((Symbol *)world[ j - 1 ])->getHandle() == baseNode->getHandle() ) {
                 delete world.removeAt( j - 1 );
                 break;
             }

@@ -47,7 +47,9 @@
 #include "pdata.h"
 #include "groups.h"
 #include "demangle.h"
+
 #include "clibext.h"
+
 
 #define SMALL_STRING_LEN        8
 #define TMP_TABLE_SIZE          29
@@ -466,11 +468,11 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
     }
     if( pass == 1 ) {
         error = DoPass1( sec->shnd, contents, size, sec_ref_list, sec->scan );
-        if( error != OKAY ) {
+        if( error != RC_OKAY ) {
             PrintErrorMsg( error, WHERE_PASS_ONE );
         }
     } else {
-        error = OKAY;
+        error = RC_OKAY;
         disassembly_errors = DoPass2( sec, contents, size, sec_label_list, sec_ref_list );
         if( !(DFormat & DFF_ASM) ) {
             if( disassembly_errors > 0 ) {
@@ -488,7 +490,7 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
                     PrintExterns( sec_externs );
                     FreeExterns( sec_externs );
                 } else {
-                    error = OUT_OF_MEMORY;
+                    error = RC_OUT_OF_MEMORY;
                     PrintErrorMsg( error, WHERE_GEN_EXTERNS );
                 }
             }
@@ -733,7 +735,7 @@ static return_val DealWithSection( section_ptr sec, unsigned pass )
 {
     orl_sec_size        size;
     unsigned_8          *contents;
-    return_val          error = OKAY;
+    return_val          error = RC_OKAY;
 
     switch( sec->type ) {
     case SECTION_TYPE_TEXT:
@@ -991,7 +993,7 @@ int main( int argc, char *argv[] )
     /* build the symbol table */
     for( sec = Sections.first; sec != NULL; sec = sec->next ) {
         error = DealWithSection( sec, 1 );
-        if( error != OKAY ) {
+        if( error != RC_OKAY ) {
             return( EXIT_FAILURE );
         }
     }
@@ -1008,7 +1010,7 @@ int main( int argc, char *argv[] )
     doPrologue();
     for( sec = Sections.first; sec != NULL; sec = sec->next ) {
         error = DealWithSection( sec, 2 );
-        if( error != OKAY ) {
+        if( error != RC_OKAY ) {
             return( EXIT_FAILURE );
         }
     }

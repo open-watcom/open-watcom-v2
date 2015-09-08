@@ -627,16 +627,16 @@ const char *ModImageName( mod_handle handle )
     }
 }
 
-static walk_result RegWalkList( mad_reg_set_data const *data, void *pdata )
+static walk_result RegWalkList( const mad_reg_set_data *data, void *pdata )
 {
 
-    *((mad_reg_set_data const **)pdata) = data;
+    *((const mad_reg_set_data **)pdata) = data;
     return( WR_STOP );
 }
 
 void RegFindData( mad_type_kind kind, const mad_reg_set_data **pdata )
 {
     *pdata = NULL;
-    MADRegSetWalk( kind, RegWalkList, pdata );
+    MADRegSetWalk( kind, RegWalkList, (void *)pdata );
 }
 

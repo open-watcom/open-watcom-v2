@@ -56,13 +56,13 @@ extern void DWRVMReset( void )
 extern dr_handle DWRVMAlloc( unsigned long len, int sect )
 /********************************************************/
 {
-    alloc_struct * nChunk;
+    alloc_struct *nChunk;
 
     if( len == 0 ) {
         return( 0 );
     }
 
-    nChunk = (alloc_struct *) DWRALLOC( len - 1 + sizeof( alloc_struct ) );
+    nChunk = (alloc_struct *)DWRALLOC( len - 1 + sizeof( alloc_struct ) );
     if( nChunk == NULL ) {
         DWREXCEPT( DREXCEP_OUT_OF_MMEM );
         return( 0 );
@@ -74,7 +74,7 @@ extern dr_handle DWRVMAlloc( unsigned long len, int sect )
     DWRSEEK( DWRCurrNode->file, sect, 0 );
     DWRREAD( DWRCurrNode->file, sect, nChunk->data, len );
 
-    return( (dr_handle) nChunk->data );
+    return( (dr_handle)nChunk->data );
 }
 
 bool DWRVMSectDone( dr_handle base, unsigned_32 size )
@@ -84,6 +84,7 @@ bool DWRVMSectDone( dr_handle base, unsigned_32 size )
     alloc_struct    **lnk;
     bool            ret;
 
+    size = size;
     lnk = &AllocHead;
     ret = FALSE;
     while( (walk = *lnk) != NULL ) {
@@ -122,62 +123,71 @@ bool DRSwap( void )
 }
 
 
-extern dr_handle ReadLEB128( dr_handle *vmptr, bool issigned )
-/************************************************************/
+unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
+/*******************************************************/
 // works for signed or unsigned
 {
-    char            *buf = (char *) *vmptr;
-    long            result = 0;
-    unsigned        shift = 0;
+    dr_handle       src;
+    unsigned_32     result;
+    unsigned        shift;
     char            b;
 
-    for( ;; ) {
-        b = *buf++;
-        result |= ( b & 0x7f ) << shift;
-        if( ( b & 0x80 ) == 0 ) break;
+    src = *vmptr;
+    result = 0;
+    shift = 0;
+    do {
+        b = *src++;
+        result |= (b & 0x7f) << shift;
         shift += 7;
+    } while( (b & 0x80) != 0 );
+    *vmptr = src;
+    if( issigned && (b & 0x40) != 0 && shift < 32 ) {
+        // we have to sign extend
+        result |= - ((signed_32)( 1 << shift ));
     }
-
-    *vmptr = (dr_handle) buf;
-    if( issigned && (b & 0x40) ) {      // we have to sign extend
-        result |= - ((long)(1 << (shift + 7)));
-    }
-
     return( result );
 }
 
-
-extern unsigned DWRStrLen( dr_handle hdl )
-/****************************************/
-{
-    return( strlen( (const char *) hdl ) );
-}
-
-extern void DWRGetString( char * buf, dr_handle * hdlp )
+#if 0
+static void DWRVMGetString( char *buf, dr_handle *hdlp )
 /******************************************************/
 {
     uint len;
 
-    len = DWRStrLen( (*hdlp) ) + 1;
-    memcpy( buf, (const char *)(*hdlp), len );
-    *hdlp = (dr_handle) ((const char *) *hdlp + len );
+    len = DWRVMStrLen( *hdlp ) + 1;
+    memcpy( buf, *hdlp, len );
+    *hdlp += len;
+}
+#endif
+
+char *DWRVMCopyString( dr_handle *info )
+/**************************************/
+{
+    size_t      len;
+    char        *dst;
+    dr_handle   src;
+
+    src = *info;
+    len = strlen( src ) + 1;
+    *info += len;
+    dst = DWRALLOC( len );
+    return( memcpy( dst, src, len ) );
 }
 
-extern unsigned DWRGetStrBuff( dr_handle drstr, char *buf, unsigned max )
+extern unsigned DWRVMGetStrBuff( dr_handle str, char *buf, unsigned max )
 /***********************************************************************/
 {
     unsigned    len;
-    char        *curr;
 
-    curr = (char *)drstr;
     len = 0;
     for( ;; ) {
         if( len < max ) {
-           *buf++ = *curr;
+           *buf++ = *str;
         }
         ++len;
-        if( *curr == '\0' ) break;
-        ++curr;
+        if( *str == '\0' )
+            break;
+        ++str;
     }
     return( len );
 }
@@ -195,7 +205,9 @@ extern unsigned_16 DWRVMReadWord( dr_handle hdl )
 
 extern unsigned_32 DWRVMReadDWord( dr_handle hdl )
 /************************************************/
-{    unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));
+{
+    unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));
+
     if( DWRCurrNode->byte_swap ) {
         SWAP_32( dword );
     }

@@ -41,6 +41,7 @@
 #include "dfhash.h"
 #include "exeelf.h"
 #include "tistrail.h"
+
 #include "clibext.h"
 
 
@@ -351,7 +352,7 @@ static walk_result ModGlbSymHash( imp_image_handle *ii, imp_mod_handle im, void 
 // Add module's global syms to the name hash
 {
     d = d;
-    DRWalkModFunc( IM2MODI( ii, im )->cu_tag, FALSE, AModHash, ii );   /* load hash */
+    DRWalkModFunc( IMH2MODI( ii, im )->cu_tag, FALSE, AModHash, ii );   /* load hash */
     return( WR_CONTINUE );
 }
 
@@ -419,7 +420,7 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
             return( FALSE );
         }
     }
-    modinfo = IM2MODI( ii, info->im );
+    modinfo = IMH2MODI( ii, info->im );
     if( arange->is_start ) {
         if( modinfo->is_segment ) {
             info->low_pc = 0;

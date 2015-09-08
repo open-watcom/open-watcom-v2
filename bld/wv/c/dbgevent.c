@@ -46,7 +46,7 @@ extern void             RecordPointStart( void );
 extern void             RecordNewProg( void );
 extern void             PointFini( void );
 extern int              GetStackPos( void );
-extern char             *GetCmdName( int index );
+extern char             *GetCmdName( wd_cmd cmd );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
@@ -273,7 +273,7 @@ void RecordGo( const char *p )
     RecordEvent( p );
 }
 
-void RecordCommand( const char *startpos, int cmd )
+void RecordCommand( const char *startpos, wd_cmd cmd )
 {
     const char  *endpos;
     char        *p;

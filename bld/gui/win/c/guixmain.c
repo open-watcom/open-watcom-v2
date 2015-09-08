@@ -32,11 +32,13 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
+
 #ifdef __WATCOMC__
 #include "clibint.h"
 #else
 #include "clibext.h"
 #endif
+
 
 // This makes sure that the main routine is actially linked in
 bool    GUIMainTouched = false;

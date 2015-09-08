@@ -62,7 +62,7 @@ extern void             ProcACmd( void );
 extern void             CheckBPErrors( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
-extern gui_colour_set   *GetWndColours( wnd_class class );
+extern gui_colour_set   *GetWndColours( wnd_class wndcls );
 extern bool             WndDlgTxt( const char * );
 extern a_window         *WndSrchOpen( const char * );
 extern void             *GetWndFont( a_window * );
@@ -76,7 +76,7 @@ extern char             LookUpCtrlKey( unsigned key );
 extern bool             MacKeyHit( a_window *wnd, unsigned key );
 extern gui_coord        *WndMainClientSize( void );
 extern void             FingClose( void );
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern void             SetUpdateFlags( update_list );
 extern void             ScrnSpawnStart( void );
 extern void             ScrnSpawnEnd( void );
@@ -158,7 +158,6 @@ static void ToWndChooseNew( a_window *p )
 
 static void (*WndJmpTab[])( a_window * ) =
 {
-    &WndBadCmd,
     &WndClose,
     &WndCursorStart,
     &WndCursorEnd,
@@ -267,13 +266,17 @@ static void WndBadCmd( a_window *wnd )
 
 void ProcWindow( void )
 {
+    int         cmd;
     a_window    *wnd = WndFindActive();
-    unsigned    cmd;
 
     cmd = ScanCmd( WindowNameTab );
     ReqEOC();
     if( wnd != NULL ) {
-        WndJmpTab[ cmd ]( wnd );
+        if( cmd < 0 ) {
+            WndBadCmd( wnd );
+        } else {
+            WndJmpTab[cmd]( wnd );
+        }
     }
 }
 
@@ -354,12 +357,12 @@ void WndDebug( void )
 }
 
 
-void WndRedraw( wnd_class class )
+void WndRedraw( wnd_class wndcls )
 {
     a_window    *wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( WndClass( wnd ) == class ) {
+        if( WndClass( wnd ) == wndcls ) {
             WndZapped( wnd );
         }
     }
@@ -427,9 +430,9 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
     }
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         if( mac->key == key ) {
-            if( mac->class == WND_ALL ) {
+            if( mac->wndcls == WND_ALL ) {
                 all = mac;
-            } else if( mac->class == WndClass( wnd ) ) {
+            } else if( mac->wndcls == WndClass( wnd ) ) {
                 ProcessMacro( mac );
                 return( TRUE );
             }
@@ -562,7 +565,7 @@ void WndSetOpenNoShow( void )
 }
 
 extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
-                                    wnd_class class, void *extra,
+                                    wnd_class wndcls, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
 {
@@ -571,12 +574,12 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     char        *p;
 
     WndInitCreateStruct( &info );
-    WndPosToRect( &WndPosition[ class ], &info.rect, WndMainClientSize() );
-    if( (wnd = WndFindClass( NULL, class )) != NULL ) {
+    WndPosToRect( &WndPosition[wndcls], &info.rect, WndMainClientSize() );
+    if( (wnd = WndFindClass( NULL, wndcls )) != NULL ) {
         info.rect.x += WndMaxCharX( wnd );
         info.rect.y += WndMaxCharY( wnd );
     }
-    switch( class ) {
+    switch( wndcls ) {
     case WND_VARIABLE: // let it draw with it's 'natural' spacing before shrink
         info.rect.x = info.rect.y = 0;
         info.rect.width = info.rect.height = WND_APPROX_SIZE;
@@ -594,9 +597,9 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
         if( *p++ == '\0' ) break;
     }
     info.info = wndinfo;
-    info.class = class;
+    info.class = wndcls;
     info.extra = extra;
-    info.colour = GetWndColours( class );
+    info.colour = GetWndColours( wndcls );
     info.title_size = title_size;
     info.style |= GUI_INIT_INVISIBLE;
 #if defined(__GUI__) && defined(__OS2__)
@@ -613,7 +616,7 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     if( _IsOff( SW_OPEN_NO_SHOW ) ) {
         WndForcePaint( wnd );
         if( info.rect.width == 0 || info.rect.height == 0 ) {
-            WndShrinkToMouse( wnd, WndMetrics[ class ] );
+            WndShrinkToMouse( wnd, WndMetrics[wndcls] );
         }
         if( _IsOff( SW_RUNNING_PROFILE ) ) {
             WndShowWindow( wnd );
@@ -625,9 +628,9 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
 }
 
 extern a_window *DbgWndCreate( const char *title, wnd_info *info,
-                               wnd_class class, void *extra, gui_resource *icon )
+                               wnd_class wndcls, void *extra, gui_resource *icon )
 {
-    return( DbgTitleWndCreate( title, info, class, extra, icon, 0, TRUE ) );
+    return( DbgTitleWndCreate( title, info, wndcls, extra, icon, 0, TRUE ) );
 }
 
 static char **RXErrTxt[] = {

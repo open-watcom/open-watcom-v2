@@ -73,6 +73,7 @@
 
 #include "clibext.h"
 
+
 #define global
 #include "copfiles.h"   // ensures globals are allocated
 #undef  global

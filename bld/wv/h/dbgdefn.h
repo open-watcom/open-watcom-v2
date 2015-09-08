@@ -173,12 +173,11 @@ typedef struct {
 #define OVL_MAP_CURR    0
 #define OVL_MAP_EXE     1
 
-enum {
-    CMD_NIL,
+typedef enum {
     #define pick( a,b,c ) a,
     #include "dbgcmd.h"
     #undef pick
-};
+} wd_cmd;
 
 enum {
     ACTION_NONE,

@@ -117,7 +117,7 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
     tool = tool;
 #endif
     int icount = _switches.count();
-    bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[MASK_SIZE] != ' ' );
+    bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[(size_t)MASK_SIZE] != ' ' );
     if( fixed_version == 0 || !isSetable ) {
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];

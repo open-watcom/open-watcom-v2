@@ -72,7 +72,7 @@ extern void *renew( void *p, size_t size );
 
 class Pool
 {
-    unsigned char *_array;
+    char    *_array;
     void    *_pfree;
 
     const unsigned  _block;
@@ -137,7 +137,8 @@ template<class T>
 void *Buffer<T>::resize( size_t size )
 {
     if( size == 0 ) {
-        if( _data ) delete[] _data;
+        if( _data )
+            delete[] _data;
         _data = NULL;
     } else {
         _data = (T*)renew( _data, size * sizeof( T ) );

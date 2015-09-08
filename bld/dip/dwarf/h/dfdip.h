@@ -43,11 +43,11 @@
 #define SEG_FLAT  MAP_FLAT_CODE_SELECTOR
 #define SEG_DATA  MAP_FLAT_DATA_SELECTOR
 
-#define IMX2IM(imx)         (imx + IMH_BASE)
-#define IM2IMX(im)          (im - IMH_BASE)
+#define IMX2IMH(imx)        (imx + IMH_BASE)
+#define IMH2IMX(im)         (im - IMH_BASE)
 
 #define IMX2MODI(ii,imx)    ((ii)->mod_map+(imx))
-#define IM2MODI(ii,im)      IMX2MODI(ii,IM2IMX(im))
+#define IMH2MODI(ii,im)     IMX2MODI(ii,IMH2IMX(im))
 
 typedef imp_mod_handle  im_idx;
 

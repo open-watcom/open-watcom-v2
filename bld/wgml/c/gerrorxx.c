@@ -32,6 +32,7 @@
 
 #include "clibext.h"
 
+
 typedef struct {
     locflags    location;
     char        tagname[TAG_NAME_LENGTH + 1];

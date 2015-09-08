@@ -961,7 +961,7 @@ extern void OutTOCRec( label_handle label )
     label_handle    toc_lbl;
 
     if( owlTocSect == NULL ) {
-        owlTocSect = OWLSectionInit( owlFile, ".reldata", OWL_SEC_ATTR_DATA|OWL_SEC_ATTR_PERM_READ|OWL_SEC_ATTR_PERM_WRITE, 8 );
+        owlTocSect = OWLSectionInit( owlFile, ".reldata", OWL_SECTION_DATA, 8 );
     }
     dot_lbl = GetWeirdPPCDotDotLabel( label );
     toc_lbl = RTLabel( RT_TOC_NAME );

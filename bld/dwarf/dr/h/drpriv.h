@@ -38,16 +38,18 @@
 #define TRUE  (1==1)
 #endif
 
+#define DWARF_VER_INVALID(x)   ((x) != DWARF_IMPL_VERSION)
+
 enum {
     TAB_IDX_FNAME,
     TAB_IDX_PATH
 };
 
-typedef unsigned_16     file_tab_idx;
+typedef unsigned_16     filetab_idx;
 
 typedef struct {
-    file_tab_idx        fnameidx;
-    file_tab_idx        pathidx;
+    filetab_idx         fnameidx;
+    filetab_idx         pathidx;
 } fileidx_entry;
 
 typedef struct {
@@ -58,7 +60,7 @@ typedef struct {
 } filetab_entry;
 
 typedef struct {
-    file_tab_idx        len;
+    filetab_idx         len;
     filetab_entry       *tab;
 } file_table;
 
@@ -72,13 +74,15 @@ typedef struct {
     dr_handle           base;
 } sect_info;
 
+typedef unsigned        dr_abbrev_idx;
+
 typedef struct COMPUNIT_INFO {
     struct COMPUNIT_INFO        *next;
     dr_handle                   start;
     dr_handle                   end;
     file_table                  filetab;
-    unsigned                    numabbrevs;
-    dr_handle                   abbrev_start;   // offset into abbrev section
+    dr_abbrev_idx               numabbrevs;
+    unsigned_32                 abbrev_start;   // offset into abbrev section
     dr_handle                   *abbrevs;       // variable length array
     unsigned                    *abbrev_refs;   // abbrevs reference counter
 } compunit_info;
@@ -89,13 +93,12 @@ struct dr_dbg_info {
     sect_info           sections[DR_DEBUG_NUM_SECTS];
     compunit_info       compunit;
     compunit_info       *last_ccu;
+    df_ver              wat_producer_ver;
     unsigned_8          addr_size;
-    unsigned_8          wat_version;// compatibility flag for non-standard data
     bool                byte_swap;
 };
 
 extern struct dr_dbg_info * DWRCurrNode;
-#define DWARF_VERSION 2
 
 #define ABBREV_TABLE_GUESS 500
 #define ABBREV_TABLE_INCREMENT 100

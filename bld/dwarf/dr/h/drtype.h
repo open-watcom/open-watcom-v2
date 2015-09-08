@@ -136,11 +136,11 @@ typedef struct {
     dr_val32 bit_size;
 } dr_bitfield;
 
-extern bool             DRGetTypeInfo( dr_handle entry,  dr_typeinfo *info );
+extern bool             DRGetTypeInfo( dr_handle entry, dr_typeinfo *info );
 extern dr_handle        DRGetTypeAT( dr_handle entry );
 extern dr_handle        DRSkipTypeChain( dr_handle entry );
-extern bool             DRWalkStruct( dr_handle mod,  DRWLKBLK *wlks, void *d );
-extern bool             DRWalkArraySibs( dr_handle mod,  DRWLKBLK *wlks, void *d );
+extern bool             DRWalkStruct( dr_handle mod, const DRWLKBLK *wlks, void *d );
+extern bool             DRWalkArraySibs( dr_handle mod, const DRWLKBLK *wlks, void *d );
 extern bool             DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d );
 extern bool             DRConstValAT( dr_handle var, uint_32 *ret );
 extern dr_array_stat    DRGetArrayInfo( dr_handle array, dr_array_info *info );

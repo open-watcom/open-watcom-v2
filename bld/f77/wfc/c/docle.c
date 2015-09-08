@@ -35,6 +35,9 @@
 //
 
 #include "ftnstd.h"
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "global.h"
 #include "cioconst.h"
 #include "fcgbls.h"
@@ -44,10 +47,9 @@
 #include "comio.h"
 #include "inout.h"
 #include "cspawn.h"
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+
 #include "clibext.h"
+
 
 extern  void            CompProg(void);
 extern  void            MsgBuffer(uint,char *,...);

@@ -82,7 +82,7 @@ extern bool Dmp_mdbg_head( void );
  */
 extern const char *Getname( uint_32, readable_name *, size_t );
 extern uint_8 *DecodeULEB128( const uint_8 *, uint_32 * );
-extern uint_8 *DecodeLEB128( const uint_8 *, int_32 * );
+extern uint_8 *DecodeSLEB128( const uint_8 *, int_32 * );
 uint_8 *find_abbrev( uint_32 start, uint_32 code );
 extern void dump_abbrevs( const uint_8 *input, uint length );
 extern void Dump_specific_section( uint, const uint_8 *, uint );
@@ -151,10 +151,12 @@ extern void dmp_data_line( char *, unsigned_16, unsigned_16 );
  * wdprs.c
  */
 extern void Puthex( unsigned_32, unsigned_16 );
-extern void Putdec( unsigned_16 );
-extern void Putdecs( signed_16 );
-extern void Putdecl( unsigned_16, unsigned_16 );
-extern void Putdecbz( unsigned_16, unsigned_16);
+extern void Putdec( unsigned_32 );
+extern void Putdecs( signed_32 );
+extern void Putdecl( unsigned_32, unsigned_16 );
+extern void Putdecsl( signed_32, unsigned_16 );
+extern void Putdecbz( unsigned_32, unsigned_16);
+extern void Putdecsbz( signed_32, unsigned_16);
 extern void Parse_option( void );
 extern uint_32 get_u32( uint_32 *src );
 extern int_32  get_s32( int_32 *src );

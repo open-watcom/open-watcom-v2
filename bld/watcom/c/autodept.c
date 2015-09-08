@@ -44,7 +44,9 @@
 #include <sys/stat.h>
 #include "watcom.h"
 #include "autodept.h"
+
 #include "clibext.h"
+
 
 enum {
     TIME_SEC_B  = 0,

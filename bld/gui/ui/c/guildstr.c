@@ -45,6 +45,7 @@
 
 #include "clibext.h"
 
+
 #if defined( __QNX__ ) || defined( __UNIX__ )
     #define _newline "\n"
 #else

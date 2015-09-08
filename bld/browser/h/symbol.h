@@ -67,7 +67,7 @@ public:
     const   char *      name();
 
             dr_handle   getParent() const { return _parent; }
-            dr_handle   getHandle() const { return _handle; }
+            dr_handle   getHandle() const { return _drhandle; }
             Module *    getModule() const { return _module; }
             bool        isDefined() const { return _defined; }
             bool        isAnonymous() const { return _anonymous; }
@@ -79,13 +79,13 @@ public:
 
 protected:
             void        getAnonName();
-            void        addDesc( char *name, int u_def, dr_handle handle, dr_sym_type st );
+            void        addDesc( char *name, int u_def, dr_handle drhdl, dr_sym_type st );
 
-    static  void        descCallBack( void *obj, char *name, int u_def, dr_handle hdl, dr_sym_type st );
+    static  void        descCallBack( void *obj, char *name, int u_def, dr_handle drhdl, dr_sym_type st );
 private:
     WVList *            _description;
 
-    dr_handle           _handle;
+    dr_handle           _drhandle;
     dr_handle           _parent;
     Module *            _module;        // FIXME -- this can be removed
     char *              _name;

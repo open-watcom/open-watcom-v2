@@ -35,7 +35,7 @@
 #include <malloc.h>
 #include "ms2wlink.h"
 #include "command.h"
-#include "watcom.h"
+
 #include "clibext.h"
 
 static void             (*MultiLine)( void ) = NULL;

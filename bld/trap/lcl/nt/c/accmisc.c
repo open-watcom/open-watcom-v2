@@ -423,7 +423,7 @@ trap_retval ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-static int tryPath( char *name, char *end, char *ext_list )
+static int tryPath( const char *name, char *end, const char *ext_list )
 {
     char    *p;
     BOOL    done;
@@ -447,15 +447,16 @@ static int tryPath( char *name, char *end, char *ext_list )
     return( -1 );
 }
 
-int FindFilePath( char *pgm, char *buffer, char *ext_list )
+int FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
-    char    *p;
-    char    *p2;
-    char    *p3;
-    BOOL    have_ext;
-    BOOL    have_path;
-    char    *envbuf;
-    DWORD   envlen;
+    const char  *p;
+    char        *p2;
+    const char  *p3;
+    BOOL        have_ext;
+    BOOL        have_path;
+    char        *envbuf;
+    DWORD       envlen;
+    int         rc;
 
     have_ext = FALSE;
     have_path = FALSE;
@@ -486,34 +487,30 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
         return( -1 );
     envbuf = LocalAlloc( LMEM_FIXED, envlen );
     GetEnvironmentVariable( "PATH", envbuf, envlen );
-    p = envbuf;
-    for( ;; ) {
-        if( *p == '\0' ) {
-            break;
-        }
+    rc = -1;
+    for( p = envbuf; *p != '\0'; ++p ) {
         p2 = buffer;
-        while( *p ) {
+        while( *p != '\0' ) {
             if( *p == ';' ) {
                 break;
             }
             *p2++ = *p++;
         }
-        if( p2[ -1] != '\\' && p2[ -1] != '/' ) {
+        if( p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
-        for( p3 = pgm; (*p2 = *p3) != 0; ++p2, ++p3 ) {
+        for( p3 = pgm; (*p2 = *p3) != '\0'; ++p2, ++p3 ) {
         }
         if( !tryPath( buffer, p2, ext_list ) ) {
-            LocalFree( envbuf );
-            return( 0 );
+            rc = 0;
+            break;
         }
         if( *p == '\0' ) {
             break;
         }
-        ++p;
     }
     LocalFree( envbuf );
-    return( -1 );
+    return( rc );
 }
 
 trap_retval ReqSplit_cmd( void )

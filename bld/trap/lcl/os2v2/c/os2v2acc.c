@@ -54,6 +54,7 @@
 #include "exeos2.h"
 #include "exeflat.h"
 #include "x86cpu.h"
+#include "os2extx.h"
 
 uDB_t                   Buff;
 static BOOL             stopOnSecond;
@@ -120,8 +121,8 @@ static unsigned_32      lastEIP;
 static unsigned_32      lastESP;
 
 
-bool    ExpectingAFault;
-char    OS2ExtList[] = {".exe\0"};
+bool        ExpectingAFault;
+const char  OS2ExtList[] = OS2EXTLIST;
 
 static bool Is32BitSeg( unsigned seg )
 {
@@ -135,13 +136,12 @@ static bool Is32BitSeg( unsigned seg )
 /*
  * RecordModHandle - save module handle for later reference
  */
-static void RecordModHandle( ULONG value )
+static void RecordModHandle( HMODULE value )
 {
     if( ModHandles == NULL ) {
-        DosAllocMem( (PPVOID)&ModHandles, sizeof(ULONG) * 512, PAG_COMMIT | PAG_READ | PAG_WRITE );
-        }
-    ModHandles[NumModHandles] = value;
-    ++NumModHandles;
+        DosAllocMem( (PPVOID)&ModHandles, sizeof( HMODULE ) * 512, PAG_COMMIT | PAG_READ | PAG_WRITE );
+    }
+    ModHandles[NumModHandles++] = value;
 }
 
 
@@ -216,11 +216,11 @@ static BOOL FindNewHeader( char *name, HFILE *hdl,
 
 #define MAX_OBJECTS     128
 
-static ULONG            LastMTE;
+static HMODULE          LastMTE;
 static unsigned         NumObjects;
 static object_record    ObjInfo[MAX_OBJECTS];
 
-static void GetObjectInfo( ULONG mte )
+static void GetObjectInfo( HMODULE mte )
 {
     HFILE               hdl;
     ULONG               new_head;

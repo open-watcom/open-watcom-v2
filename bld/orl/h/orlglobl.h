@@ -36,6 +36,11 @@
 
 #define ORLENTRY
 
+#define ORL_FUNCS_READ(x,a,b)   (x)->funcs->read(a,b)
+#define ORL_FUNCS_SEEK(x,a,b,c) (x)->funcs->seek(a,b,c)
+#define ORL_FUNCS_ALLOC(x,a)    (x)->funcs->alloc(a)
+#define ORL_FUNCS_FREE(x,a)     (x)->funcs->free(a)
+
 typedef uint_32                         orl_file_offset;
 typedef uint_32                         orl_file_size;
 

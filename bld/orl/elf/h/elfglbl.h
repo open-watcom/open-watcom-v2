@@ -33,6 +33,7 @@
 #ifndef ELF_GLOBAL_INCLUDED
 #define ELF_GLOBAL_INCLUDED
 
+#include "orl.h"
 #include "orlintnl.h"
 #include "elftype.h"
 

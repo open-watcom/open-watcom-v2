@@ -107,9 +107,9 @@ enum {
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_386
 #elif defined( _M_X64 )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_X64
-#elif defined(__AXP__)
+#elif defined( _M_AXP )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_AXP
-#elif defined(__ARMEL__)
+#elif defined( _M_ARM )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM
 #else
 #error missing host architecture check

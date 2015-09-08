@@ -37,7 +37,7 @@
 #include "dbgscan.h"
 
 
-extern char         *GetCmdName( int );
+extern char         *GetCmdName( wd_cmd cmd );
 
 
 static handle       LogHndl;
@@ -187,7 +187,6 @@ static const char LogNameTab[] = {
 
 
 static void (* const LogJmpTab[])( void ) = {
-    &BadLog,
     &LogAppend,
     &LogStart
 };
@@ -199,6 +198,8 @@ static void (* const LogJmpTab[])( void ) = {
 
 void ProcLog( void )
 {
+    int     cmd;
+
     if( ScanEOC() ) {
         LogEnd();
     } else if( CurrToken == T_GT ) {
@@ -206,7 +207,12 @@ void ProcLog( void )
         LogAppend();
     } else if( CurrToken == T_DIV ) {
         Scan();
-        (*LogJmpTab[ ScanCmd( LogNameTab ) ])();
+        cmd = ScanCmd( LogNameTab );
+        if( cmd < 0 ) {
+            BadLog();
+        } else {
+            (*LogJmpTab[cmd])();
+        }
     } else {
         LogStart();
     }

@@ -214,7 +214,7 @@ DetailView * ViewManager::findDetailView( const Symbol * sym,
     return findDetailView( sym->getHandle(), vt );
 }
 
-DetailView * ViewManager::findDetailView( dr_handle hdl, DetailView::ViewType vt )
+DetailView * ViewManager::findDetailView( dr_handle drhdl, DetailView::ViewType vt )
 //--------------------------------------------------------------------------------
 {
     int             i;
@@ -223,7 +223,7 @@ DetailView * ViewManager::findDetailView( dr_handle hdl, DetailView::ViewType vt
     for( i = 0; i < _detailViews->entries(); i += 1 ) {
         testView = (*_detailViews)[ i ];
 
-        if( ( testView->symHandle() == hdl ) && ( testView->viewType() == vt ) ) {
+        if( ( testView->symHandle() == drhdl ) && ( testView->viewType() == vt ) ) {
             return testView;
         }
     }

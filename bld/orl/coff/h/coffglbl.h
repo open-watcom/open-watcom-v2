@@ -33,6 +33,7 @@
 #ifndef COFF_GLOBAL_INCLUDED
 #define COFF_GLOBAL_INCLUDED
 
+#include "orl.h"
 #include "orlintnl.h"
 #include "cofftype.h"
 #include "coffimpl.h"

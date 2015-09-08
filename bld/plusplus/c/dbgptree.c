@@ -83,9 +83,8 @@ struct prline                   // PRINT LINE BUFFERING
     COL width;                  // - buffer size
 };
 
-typedef struct _decorated DECORATED;
 typedef struct _decorated {     // DECORATED NODES
-    DECORATED * next;           // - next in ring
+    struct _decorated * next;   // - next in ring
     NODE* node;                 // - decorated node
 } DECORATED;
 

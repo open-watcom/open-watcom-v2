@@ -34,9 +34,25 @@
     #include <string.h>
     #include <malloc.h>
     #define INCL_WINSHELLDATA
-    extern "C" {
     #include <os2.h>
-    }
+#elif defined( __WINDOWS__ ) || defined( __NT__ )
+    #include <windows.h>
+#elif defined( __UNIX__ )
+    #include <stdio.h>
+    #include <string.h>
+    #include <stdlib.h>
+    #include "watcom.h"
+    #include "clibext.h"
+#elif defined( __DOS__ )
+    #include <stdio.h>
+    #include <string.h>
+    #include <stdlib.h>
+    #include "clibext.h"
+#else
+    #error UNSUPPORTED OS
+#endif
+
+#if defined( __OS2__ )
 
     // just use the os/2 user .ini file
     int MyGetProfileString( const char *dir, const char *filename, const char *section,
@@ -49,8 +65,9 @@
         dir = dir; filename = filename;
         return( PrfWriteProfileString( HINI_USERPROFILE, section, key, string ) );
     }
+
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
-    #include <windows.h>
+
     int MyGetProfileString( const char *dir, const char *filename, const char *section,
                             const char *key, const char *def, char *buffer, int len )
     {
@@ -63,12 +80,8 @@
         dir =dir; // ignored in this model
         return(WritePrivateProfileString(section,key,string,filename));
     }
+
 #elif defined( __UNIX__ )
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "watcom.h"
-#include "clibext.h"
 
     int MyGetProfileString( const char *dir, const char *filename, const char *section,
                             const char *key, const char *def, char *buffer, int len )
@@ -131,11 +144,8 @@
         fclose( fp );
         return( 1 );
     }
+
 #elif defined( __DOS__ )
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "clibext.h"
 
     int MyGetProfileString( const char *dir, const char *filename, const char *section,
                             const char *key, const char *def, char *buffer, int len )
@@ -188,6 +198,5 @@
         fclose( fp );
         return( 1 );
     }
-#else
-    #error UNSUPPORTED OS
+
 #endif

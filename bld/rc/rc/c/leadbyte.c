@@ -31,14 +31,15 @@
 
 
 #include <stdlib.h>
-#include "watcom.h"
-#include "leadbyte.h"
-#include "clibext.h"
-#include "rccore.h"
-
 #ifdef __NT__
+    #include <windows.h>
+    #include "bool.h"
+    #include "watcom.h"
+    #include "pass2.h"
+    #include "sharedio.h"
+    #include "param.h"
+    #include "leadbyte.h"
 
-#include <windows.h>
 
 void SetNativeLeadBytes( void ) {
 /*********************************/
@@ -70,4 +71,5 @@ int NativeDBStringToUnicode( int len, const char *str, char *buf ) {
     }
     return( ret * 2 );
 }
+
 #endif

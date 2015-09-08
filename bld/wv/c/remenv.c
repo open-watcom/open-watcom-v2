@@ -35,8 +35,7 @@
 #include "dbgio.h"
 #include "trpcore.h"
 #include "trpenv.h"
-
-extern trap_shandle     GetSuppId( char * );
+#include "trapglbl.h"
 
 #define SUPP_ENV_SERVICE( in, request )         \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \

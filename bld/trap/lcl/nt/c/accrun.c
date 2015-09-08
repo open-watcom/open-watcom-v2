@@ -280,7 +280,7 @@ static int handleInt1( DWORD state )
             return( COND_WATCH );
         }
     } else {
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
         HANDLE      proc;
         DWORD       written;
         opcode_type brk_opcode;

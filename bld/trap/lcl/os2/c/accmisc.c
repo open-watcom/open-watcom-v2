@@ -45,6 +45,7 @@
 #include "trperr.h"
 #include "os2err.h"
 #include "doserr.h"
+#include "os2extx.h"
 
 /*
  * globals
@@ -57,9 +58,9 @@ char            UtilBuff[BUFF_SIZE];
 HFILE           SaveStdIn;
 HFILE           SaveStdOut;
 bool            CanExecTask;
-ULONG           *ModHandles = NULL;
-USHORT          NumModHandles = 0;
-int             CurrModHandle = 0;
+HMODULE         *ModHandles = NULL;
+unsigned        NumModHandles = 0;
+unsigned        CurrModHandle = 0;
 ULONG           ExceptNum;
 HMODULE         ThisDLLModHandle;
 scrtype         Screen;
@@ -456,7 +457,7 @@ static void DOSEnvLkup( char *src, char *dst )
     }
 }
 
-char *StrCopy( char *src, char *dst )
+char *StrCopy( const char *src, char *dst )
 {
     strcpy( dst, src );
     return( strlen( dst ) + dst );
@@ -534,7 +535,7 @@ trap_retval ReqFile_run_cmd( void )
 }
 
 
-long TryPath( char *name, char *end, char *ext_list )
+long TryPath( const char *name, char *end, const char *ext_list )
 {
     long        rc;
     char        *p;
@@ -548,22 +549,25 @@ long TryPath( char *name, char *end, char *ext_list )
 
     done = 0;
     do {
-        if( *ext_list == '\0' ) done = 1;
+        if( *ext_list == '\0' )
+            done = 1;
         for( p = end; *p = *ext_list; ++p, ++ext_list )
             {}
         count = 1;
         rc = DosFindFirst(name, &hdl, 0, &info.d, sizeof( info ), &count, 0);
-        if( rc == 0 ) return( 0 );
+        if( rc == 0 ) {
+            return( 0 );
+        }
     } while( !done );
     return( 0xffff0000 | rc );
 }
 
-long FindFilePath( char *pgm, char *buffer, char *ext_list )
+long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
     char    *p;
     char    *p2;
     char    *p3;
-    long  rc;
+    long    rc;
     int     have_ext;
     int     have_path;
 
@@ -582,15 +586,18 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
             break;
         }
     }
-    if( have_ext ) ext_list = "";
+    if( have_ext )
+        ext_list = "";
     rc = TryPath( buffer, p2, ext_list );
-    if( rc == 0 || have_path ) return( rc );
-    if( DosScanEnv( "PATH", &p ) != 0 ) return( rc );
-    for(;;) {
-        if( *p == '\0' ) break;
+    if( rc == 0 || have_path )
+        return( rc );
+    if( DosScanEnv( "PATH", &p ) != 0 )
+        return( rc );
+    for( ; *p != '\0'; ) {
         p2 = buffer;
         while( *p ) {
-            if( *p == ';' ) break;
+            if( *p == ';' )
+                break;
             *p2++ = *p++;
         }
         if( p2[-1] != '\\' && p2[-1] != '/' ) {
@@ -599,20 +606,20 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
         for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
             {}
         rc = TryPath( buffer, p2, ext_list );
-        if( rc == 0 ) break;
-        if( *p == '\0' ) break;
+        if( rc == 0 )
+            break;
+        if( *p == '\0' )
+            break;
         ++p;
     }
     return( rc );
 }
 
-extern char    OS2ExtList[];
-
 trap_retval ReqFile_string_to_fullpath( void )
 {
-    char               *ext_list;
-    char               *name;
-    char               *fullname;
+    const char                  *ext_list;
+    char                        *name;
+    char                        *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
 

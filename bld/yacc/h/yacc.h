@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include "bool.h"
-#include "clibext.h"
 
 enum {
     TOKEN_EOF           = 0x0000,

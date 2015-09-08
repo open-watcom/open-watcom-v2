@@ -45,6 +45,7 @@
 
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 
+extern int  Lookup( const char *, const char *, size_t );
 extern void WndDirty(void);
 extern void StartupErr( const char * );
 
@@ -1175,7 +1176,7 @@ static const char ScreenNameTab[] = {
 };
 
 enum {
-    OPT_MONO = 1,
+    OPT_MONO,
     OPT_COLOR,
     OPT_COLOUR,
     OPT_EGA43,

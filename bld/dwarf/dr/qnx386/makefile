@@ -1,7 +1,7 @@
-#pmake: os_qnx cpu_386
+#pmake: nobuild os_qnx cpu_386
 host_os  = qnx
 host_cpu = 386
 
-inline_vmem = 1
+use_virtmem = 1
 
 !include ../master.mif

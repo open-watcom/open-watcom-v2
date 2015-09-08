@@ -43,7 +43,7 @@
 
 extern type_display     *TypeDisplay;
 
-extern char             *GetCmdName( int );
+extern const char       *GetCmdName( wd_cmd cmd );
 extern char             *GetCmdEntry( const char *, int, char * );
 
 static const char TypeSettings[] = {
@@ -74,7 +74,7 @@ static const char TypeSettings[] = {
 };
 
 enum {
-    TY_ONTOP = 1,
+    TY_ONTOP,
     TY_HASTOP,
     TY_AUTOEXPAND,
     TY_ISSTRUCT,

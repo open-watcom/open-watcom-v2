@@ -51,6 +51,7 @@
 #include "objio.h"
 #include "mapio.h"
 #include "pathlist.h"
+
 #include "clibext.h"
 
 
@@ -149,13 +150,13 @@ static void WalkModList( section *sect, void *rtn )
 /*************************************************/
 {
     CurrSect = sect;
-    WalkList( (node *) sect->mods, rtn );
+    WalkList( (node *)sect->mods, (void (*)(void *))rtn );
 }
 
 void WalkMods( void (*rtn)( mod_entry * ) )
 /************************************************/
 {
-    ParmWalkAllSects( WalkModList, rtn );
+    ParmWalkAllSects( WalkModList, (void *)rtn );
     CurrSect = Root;
     WalkList( (node *)LibModules, (void (*)(void *))rtn );
 }
@@ -173,14 +174,14 @@ void SectWalkClass( section *sect, void *rtn )
 
     CurrSect = sect;
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
-        WalkClass( class, rtn );
+        WalkClass( class, (void (*)(seg_leader *))rtn );
     }
 }
 
 void WalkLeaders( void (*rtn)( seg_leader * ) )
 /****************************************************/
 {
-    ParmWalkAllSects( SectWalkClass, rtn );
+    ParmWalkAllSects( SectWalkClass, (void *)rtn );
 }
 
 seg_leader *FindSegment( section *sect, char *name )

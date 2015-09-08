@@ -33,23 +33,9 @@
 typedef enum
  {
         /* one character command line delimiters */
-    T_LT,
-    T_GT,
-    T_MUL,
-    T_DIV,
-    T_LEFT_PAREN,
-    T_RIGHT_PAREN,
-    T_COMMA,
-    T_LEFT_BRACE,
-    T_RIGHT_BRACE,
-    T_EXCLAMATION,
-    T_QUESTION,
-    T_CMD_SEPARATOR,
-    T_LEFT_BRACKET,
-    T_RIGHT_BRACKET,
-    T_TILDE,
-    T_SHARP,
-    T_LINE_SEPARATOR,
+    #define pick(t,c)   t,
+    #include "_dbgtok.h"
+    #undef pick
         /* numbers & names for expressions and command lines */
     T_INT_NUM,
     T_REAL_NUM,

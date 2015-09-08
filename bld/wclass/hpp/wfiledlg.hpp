@@ -42,6 +42,7 @@ extern "C" {
     #include "guifdlg.h"
 }
 
+
 #define WMaxFiles       32      // for multi-select file dialogs
 
 #define WFOpenNew       OFN_HIDEREADONLY | OFN_PATHMUSTEXIST
@@ -49,8 +50,6 @@ extern "C" {
 #define WFOpenExisting  OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | \
                         OFN_FILEMUSTEXIST
 #define WFSaveDefault   OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT
-
-#define WFileBufSize    WMaxFiles*_MAX_PATH
 
 WCLASS WFileDialog  : public WDialog {
     public:
@@ -69,10 +68,10 @@ WCLASS WFileDialog  : public WDialog {
                                               unsigned style=WFSaveDefault );
     private:
         open_file_name  _ofn;
-        WWindow*        _parent;
-        char *          _fileName;
+        WWindow         *_parent;
+        char            *_fileName;
         char            _titleName[128];
-        char            _dirName[_MAX_PATH];
+        char            *_dirName;
         void            makeDialog( const char *filter );
         void            init( const char *filename, const char *title );
 };

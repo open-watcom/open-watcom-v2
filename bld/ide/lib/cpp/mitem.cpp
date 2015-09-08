@@ -42,8 +42,10 @@ extern "C" {
 #ifndef __UNIX__
     #include <dos.h>
 #endif
-    #include "clibext.h"
 };
+
+#include "clibext.h"
+
 
 Define( MItem )
 

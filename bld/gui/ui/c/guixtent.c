@@ -34,7 +34,9 @@
 #include <stdlib.h>
 #include "guiwind.h"
 #include "guiscale.h"
+
 #include "clibext.h"
+
 
 gui_ord GUIGetExtentX( gui_window * wnd, const char * text, size_t length )
 {

@@ -110,22 +110,21 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
     }
     path = DRGetProducer( cu_tag );
     if( path != NULL ) {
+        df_ver wat_producer_ver;
 
-        df_ver version;
-
-        if( strcmp( path, "V2.0 WATCOM" ) == 0 ) {
-            version = VER_V3;
-        } else if( strcmp( path, "V1.0 WATCOM" ) == 0 ) {
-            version = VER_V2;
-        } else if( strcmp( path, "WATCOM" ) == 0 ) {
-            version = VER_V1;
+        if( memcmp( path, DWARF_WATCOM_PRODUCER_V3, sizeof( DWARF_WATCOM_PRODUCER_V3 ) - 1 ) == 0 ) {
+            wat_producer_ver = VER_V3;
+        } else if( memcmp( path, DWARF_WATCOM_PRODUCER_V2, sizeof( DWARF_WATCOM_PRODUCER_V2 ) - 1 ) == 0 ) {
+            wat_producer_ver = VER_V2;
+        } else if( memcmp( path, DWARF_WATCOM_PRODUCER_V1, sizeof( DWARF_WATCOM_PRODUCER_V1 ) - 1 ) == 0 ) {
+            wat_producer_ver = VER_V1;
         } else {
-            version = VER_NONE;
+            wat_producer_ver = VER_NONE;
         }
-        if( mod->version == VER_NONE ) {
-            mod->version = version;
-        } else if( mod->version != version ) {
-            mod->version = VER_ERROR;
+        if( mod->wat_producer_ver == VER_NONE ) {
+            mod->wat_producer_ver = wat_producer_ver;
+        } else if( mod->wat_producer_ver != wat_producer_ver ) {
+            mod->wat_producer_ver = VER_ERROR;
         }
         DCFree( path );
     }
@@ -159,7 +158,6 @@ dip_status     InitModMap( imp_image_handle *ii )
     dip_status  ret;
 
     ret = DS_OK;
-    ii->mod_count = 0;
     InitModList( &list );
     InitAddrSym( ii->addr_sym );
     DRSetDebug( ii->dwarf->handle ); /* set dwarf to image */
@@ -167,11 +165,13 @@ dip_status     InitModMap( imp_image_handle *ii )
     DRDbgClear( ii->dwarf->handle ); /* clear some mem */
     ii->mod_count = list.count;
     ii->mod_map = FiniModInfo( &list );
-    if( list.version == VER_V1 ) {
-        DRDbgOldVersion( ii->dwarf->handle, 1 );
-    } else if( list.version == VER_V2 ) {
-        DRDbgOldVersion( ii->dwarf->handle, 2 );
-    } else if( list.version == VER_ERROR ) {
+    if( list.wat_producer_ver == VER_V3 ) {
+        DRDbgWatProducerVer( ii->dwarf->handle, VER_V3 );
+    } else if( list.wat_producer_ver == VER_V2 ) {
+        DRDbgWatProducerVer( ii->dwarf->handle, VER_V2 );
+    } else if( list.wat_producer_ver == VER_V1 ) {
+        DRDbgWatProducerVer( ii->dwarf->handle, VER_V1 );
+    } else if( list.wat_producer_ver == VER_ERROR ) {
         DCStatus( DS_INFO_BAD_VERSION );
         ret = DS_FAIL | DS_INFO_BAD_VERSION;
     }
@@ -229,15 +229,15 @@ imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
     modinfo = ii->mod_map;
     for( i = 0; i < ii->mod_count; ++i ) {
         if( mod_handle == modinfo->mod_handle ) {
-            return( IMX2IM( i ) );
+            return( IMX2IMH( i ) );
         }
         ++modinfo;
     }
     return( IMH_NOMOD );
 }
 
-imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
-/*********************************************************************/
+imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle dr_sym )
+/*****************************************************************/
 // find the imp_mod_handle where a dwarf dbginfo comes from
 {
     im_idx      i;
@@ -249,25 +249,25 @@ imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
     modinfo = ii->mod_map + 1;
     last = ii->mod_count - 1;
     for( i = 0; i < last; ++i ) {
-        if( mod_handle < modinfo->mod_handle ) {
+        if( dr_sym < modinfo->mod_handle ) {
             break;
         }
         ++modinfo;
     }
-    return( IMX2IM( i ) );
+    return( IMX2IMH( i ) );
 }
 
-imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_handle )
-/******************************************************************************/
-// Look up cu_handle in mod_map
+imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_tag )
+/******************************************************************/
+// Look up cu_tag in mod_map
 {
     im_idx      i;
     mod_info    *modinfo;
 
     modinfo = ii->mod_map;
     for( i = 0; i < ii->mod_count; ++i ) {
-        if( cu_handle == modinfo->cu_tag ) {
-            return( IMX2IM( i ) );
+        if( cu_tag == modinfo->cu_tag ) {
+            return( IMX2IMH( i ) );
         }
         ++modinfo;
     }
@@ -283,7 +283,7 @@ walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
     ret = WR_CONTINUE;
     for( i = 0; i < ii->mod_count; ++i ) {
         saved = DRGetDebug();
-        ret = wk( ii, IMX2IM( i ), d );
+        ret = wk( ii, IMX2IMH( i ), d );
         DRSetDebug( saved );
         if( ret != WR_CONTINUE ) {
             break;
@@ -304,7 +304,7 @@ walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, vo
     for( i = 0; i < ii->mod_count; ++i ) {
         if( src == modinfo->has_pubnames ) {
             saved = DRGetDebug();
-            ret = wk( ii, IMX2IM( i ), d );
+            ret = wk( ii, IMX2IMH( i ), d );
             DRSetDebug( saved );
             if( ret != WR_CONTINUE ) {
                 break;
@@ -324,7 +324,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
     ret = WR_CONTINUE;
     for( i = 0; i < ii->mod_count; ++i ) {
         saved = DRGetDebug();
-        ret = wk( ii, IMX2IM( i ), d );
+        ret = wk( ii, IMX2IMH( i ), d );
         DRSetDebug( saved );
         if( ret != WR_CONTINUE ) {
             break;
@@ -339,11 +339,11 @@ unsigned    DIGENTRY DIPImpModName( imp_image_handle *ii,
     char        *name;
     unsigned    len;
 
-    if( im == IMH_NOMOD || (name = IM2MODI( ii, im )->name) == NULL ) {
+    if( im == IMH_NOMOD || (name = IMH2MODI( ii, im )->name) == NULL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
-    len = NameCopy( buff, name, buff_size );
+    len = NameCopy( buff, name, buff_size, 0 );
     return( len );
 }
 
@@ -355,7 +355,7 @@ char    *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
         DCStatus( DS_FAIL );
         return( NULL );
     }
-    switch( IM2MODI( ii, im )->lang ) {
+    switch( IMH2MODI( ii, im )->lang ) {
     case DR_LANG_UNKNOWN:
 //      ret = "unknown";
         ret = "c";
@@ -468,7 +468,7 @@ address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
     address     a;
     dr_handle   stmts;
 
-    if( im != IMH_NOMOD && (stmts = IM2MODI( ii, im )->stmts) != 0 ) {
+    if( im != IMH_NOMOD && (stmts = IMH2MODI( ii, im )->stmts) != DR_HANDLE_NUL ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
         walk.ii = ii;
         walk.im = im;
@@ -498,18 +498,18 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
         DCStatus( ret );
         return( ret );
     }
-    modinfo = IM2MODI( ii, im );
+    modinfo = IMH2MODI( ii, im );
     switch( hk ) {
     case HK_IMAGE:
         break;
     case HK_TYPE:
-        if( modinfo->stmts != 0 ) {
+        if( modinfo->stmts != DR_HANDLE_NUL ) {
             ret = DS_OK;
         }
         break;
     case HK_CUE:
         stmts = modinfo->stmts;
-        if( stmts != 0 ) {  // need to get rid of stmts for file with no cues
+        if( stmts != DR_HANDLE_NUL ) {  // need to get rid of stmts for file with no cues
             l_walk_info walk;
             address     a;
 
@@ -546,7 +546,7 @@ dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     mod_info    *modinfo;
 
 //TODO: finish
-    modinfo = IM2MODI( ii, im );
+    modinfo = IMH2MODI( ii, im );
     ti->size = modinfo->addr_size;
     switch( dk ) {
     case DK_INT:
@@ -595,22 +595,24 @@ dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     return( DS_OK );
 }
 
-unsigned    NameCopy( char *buff, const char *from, unsigned buff_size )
-/**********************************************************************/
+unsigned    NameCopy( char *buff, const char *from, unsigned buff_size, unsigned len )
+/************************************************************************************/
 {
-    unsigned    len;
+    unsigned    new_len;
 
-    len = strlen( from );
+    new_len = len + strlen( from );
     if( buff_size > 0 ) {
         --buff_size;
-        if( buff_size > len )
-            buff_size = len;
+        if( buff_size > new_len )
+            buff_size = new_len;
+        buff_size -= len;
+        buff += len;
         while( buff_size-- > 0 ) {
             *buff++ = *from++;
         }
         *buff = '\0';
     }
-    return( len );
+    return( new_len );
 }
 
 void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
@@ -620,6 +622,6 @@ void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
 
     im = Dwarf2Mod( ii, mod_handle );
     if( im != IMH_NOMOD ) {
-        IM2MODI( ii, im )->has_pubnames = TRUE;
+        IMH2MODI( ii, im )->has_pubnames = TRUE;
     }
 }

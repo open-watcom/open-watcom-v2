@@ -43,6 +43,7 @@
 #include <direct.h>
 #endif
 #include "wio.h"
+
 #include "clibext.h"
 
 
@@ -126,13 +127,13 @@ void WEXPORT MComponent::readSelf( WObjectFile& p )
     if( p.version() > 31 ) {
         p.readObject( &_items );
     }
-    if( _mask[1] == 'v' ) {
+    if( _mask[(size_t)1] == 'v' ) {
         //turn VP targets into MFC targets - VP targets no longer exist
         _mask.setChar( 1, 'm' );
         WFileName fn;
         _filename.noPath( fn );
         WString ruletag;
-        if( _mask[0] == 'w' ) {
+        if( *_mask == 'w' ) {
             ruletag = "WEXE";
         } else {
             ruletag = "NEXE";

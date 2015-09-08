@@ -36,7 +36,7 @@
 RKD RkdForTypeId(       // GET RKD FOR TYPE ID
     type_id id )        // - id
 {
-    RKD retn;           // - RKD for id
+    RKD retn = RKD_ERROR;   // - RKD for id
 
     switch( id ) {
       case TYP_ERROR :

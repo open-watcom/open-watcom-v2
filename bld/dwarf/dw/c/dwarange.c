@@ -35,13 +35,13 @@
 #include "dwarange.h"
 
 void DWENTRY DWAddress(
-    dw_client                   cli,
-    uint_32                     len )
+    dw_client   cli,
+    uint_32     len )
 {
-    char                        buf[ sizeof( uint_32 ) ];
+    char    buf[sizeof( uint_32 )];
 
     CLIReloc2( DW_DEBUG_ARANGES, DW_W_ARANGE_ADDR );
-    if( cli->offset_size  == sizeof( uint_32 ) ){
+    if( cli->offset_size == sizeof( uint_32 ) ){
         WriteU32( buf, len );
     }else{
         WriteU16( buf, len );
@@ -51,12 +51,12 @@ void DWENTRY DWAddress(
 
 
 void InitDebugAranges(
-    dw_client                   cli )
+    dw_client   cli )
 {
-    char                        buf[ sizeof( uint_32 )];
+    char    buf[sizeof( uint_16 )];
 
     CLISeek( DW_DEBUG_ARANGES, sizeof( uint_32 ), DW_SEEK_CUR );
-    WriteU32( buf, 2 );
+    WriteU16( buf, 2 );
     CLIWrite( DW_DEBUG_ARANGES, buf, sizeof( uint_16 ) );
     CLIReloc3( DW_DEBUG_ARANGES, DW_W_SECTION_POS, DW_DEBUG_INFO );
     buf[0] = cli->offset_size;
@@ -66,21 +66,19 @@ void InitDebugAranges(
 
 
 void FiniDebugAranges(
-    dw_client                   cli )
+    dw_client   cli )
 {
-    static char const  zeros[ sizeof( uint_32 ) ] = { 0 };
-    long                        size;
-    char                        buf[ sizeof( uint_32 ) ];
+    static char const   zeros[sizeof( uint_32 )] = { 0 };
+    long                size;
+    char                buf[sizeof( uint_32 )];
 
     CLIWrite( DW_DEBUG_ARANGES, zeros, cli->offset_size );
     CLIWrite( DW_DEBUG_ARANGES, zeros, cli->segment_size  );
     CLIWrite( DW_DEBUG_ARANGES, zeros, cli->offset_size );
 
-    size = CLITell( DW_DEBUG_ARANGES ) - sizeof( uint_32 )
-        - cli->section_base[ DW_DEBUG_ARANGES ];
+    size = CLITell( DW_DEBUG_ARANGES ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_ARANGES];
     WriteU32( buf, size );
-    CLISeek( DW_DEBUG_ARANGES, cli->section_base[ DW_DEBUG_ARANGES ],
-        DW_SEEK_SET );
+    CLISeek( DW_DEBUG_ARANGES, cli->section_base[DW_DEBUG_ARANGES], DW_SEEK_SET );
     CLIWrite( DW_DEBUG_ARANGES, buf, sizeof( buf ) );
     CLISeek( DW_DEBUG_ARANGES, 0, DW_SEEK_END );
 }

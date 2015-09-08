@@ -41,8 +41,8 @@ template<class Type> class WCPtrSortedVector;
 class ClassMember {
 public:
             ClassMember( Symbol * sym, const char * text );
-            ClassMember( Symbol * sym, dr_handle parent, const char * text );
-            ClassMember( dr_handle parent,  dr_access access, const char * text );
+            ClassMember( Symbol * sym, dr_handle drhdl_prt, const char * text );
+            ClassMember( dr_handle drhdl_prt,  dr_access access, const char * text );
             ~ClassMember() { delete _symbol; }
 
     bool    operator == ( const ClassMember & other ) const;

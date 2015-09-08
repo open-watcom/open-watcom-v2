@@ -33,6 +33,7 @@
 
 #include "clibext.h"
 
+
 #define MAX_ERR_LEN     1020
 
 static  char    err_buf[MAX_ERR_LEN + 2];   // +2 for \n and \0

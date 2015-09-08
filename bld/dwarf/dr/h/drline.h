@@ -46,16 +46,16 @@ typedef struct { /* current state of stmt prog */
 
 /* walk directory and  file names */
 typedef struct {
-    uint_16  index;
-    char*    name;
-    uint_16  dir;
-    uint_32  time;
-    uint_32  len;
+    uint_16     index;
+    char        *name;
+    uint_16     dir;
+    uint_32     time;
+    uint_32     len;
 } dr_line_file;
 
 typedef struct {
-    uint_16  index;
-    char*    name;
+    uint_16     index;
+    char        *name;
 } dr_line_dir;
 
 typedef bool (*DRCUEWLK)( void *, dr_line_data * );

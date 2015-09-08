@@ -618,12 +618,12 @@ extern  void    GenProlog( void )
             QuickSave( HW_SP, OP_PUSH );
             GenPushC( CurrProc->parms.size );
             GenUnkPush( &CurrProc->targ.stack_check );
-        if( NeedStackCheck() ) {
-            RTCall( RT_THUNK_STK, ATTR_POP );
-        } else {
-            RTCall( RT_THUNK, ATTR_POP );
-        }
-        CurrProc->parms.base += WORD_SIZE;
+            if( NeedStackCheck() ) {
+                RTCall( RT_THUNK_STK, ATTR_POP );
+            } else {
+                RTCall( RT_THUNK, ATTR_POP );
+            }
+            CurrProc->parms.base += WORD_SIZE;
         }
     }
 #endif

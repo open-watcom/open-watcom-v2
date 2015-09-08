@@ -48,20 +48,22 @@
 /* NB The following are sort of fake.  We are hiding the contents of
    the file-specific section and symbol handles from the ORL
    level, allowing it only to check their type. */
-struct orl_sec_handle_struct {
-    orl_file_format                     type;
-};
-typedef struct orl_sec_handle_struct * orl_sec_handle;
 
-struct orl_symbol_handle_struct {
-    orl_file_format                     type;
-};
-typedef struct orl_symbol_handle_struct * orl_symbol_handle;
+#define ORL_SEC_TYPE(x)     (((orli_sec_handle)x)->type)
+#define ORL_SYMBOL_TYPE(x)  (((orli_symbol_handle)x)->type)
+#define ORL_GROUP_TYPE(x)   (((orli_group_handle)x)->type)
 
-struct orl_group_handle_struct {
+typedef struct orli_sec_handle_struct {
     orl_file_format                     type;
-};
-typedef struct orl_group_handle_struct * orl_group_handle;
+} * orli_sec_handle;
+
+typedef struct orli_symbol_handle_struct {
+    orl_file_format                     type;
+} * orli_symbol_handle;
+
+typedef struct orli_group_handle_struct {
+    orl_file_format                     type;
+} * orli_group_handle;
 
 #include "orlcomon.h"
 

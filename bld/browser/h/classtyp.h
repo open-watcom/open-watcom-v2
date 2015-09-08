@@ -47,9 +47,9 @@ class Module;
 class ClassType : public Symbol
 {
 public:
-                 ClassType( dr_handle h, dr_handle p,
+                 ClassType( dr_handle drhdl, dr_handle drhdl_prt,
                             Module * m, char * name )
-                    : Symbol( h, p, m, name ) {}
+                    : Symbol( drhdl, drhdl_prt, m, name ) {}
     virtual     ~ClassType() {}
 
     virtual dr_sym_type symtype() const { return DR_SYM_CLASS; }

@@ -44,13 +44,14 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
  * array of pointers to it.
  */
 {
-    unsigned        maxnum;
-    unsigned        sizealloc;
-    unsigned        oldsize;
+    dr_abbrev_idx   maxnum;
+    dr_abbrev_idx   sizealloc;
+    dr_abbrev_idx   oldsize;
+    dr_abbrev_idx   i;
     dr_handle       start;
     dr_handle       finish;
     dr_handle       *abbrevs;
-    unsigned        code;
+    dr_abbrev_idx   code;
     compunit_info   *cu;
 
     // if a previous compilation unit shares the same table, reuse it
@@ -64,22 +65,28 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
         }
     }
     sizealloc = ABBREV_TABLE_GUESS;
-    abbrevs = DWRALLOC( sizealloc * sizeof(dr_handle) );
-    memset( abbrevs, 0, sizealloc * sizeof(dr_handle) );
+    abbrevs = DWRALLOC( sizealloc * sizeof( dr_handle ) );
+    for( i = 0; i < sizealloc; ++i ) {
+        abbrevs[i] = DR_HANDLE_NUL;
+    }
     maxnum = 0;
     start = dbg->sections[DR_DEBUG_ABBREV].base + compunit->abbrev_start;
     finish = dbg->sections[DR_DEBUG_ABBREV].base + dbg->sections[DR_DEBUG_ABBREV].size;
     while( start < finish ) {
         code = DWRVMReadULEB128( &start );
-        if( code == 0 ) break;                  // indicates end of table
-        if( code > maxnum ) maxnum = code;
+        if( code == 0 )
+            break;                  // indicates end of table
+        if( code > maxnum )
+            maxnum = code;
         if( code >= sizealloc ) {
             oldsize = sizealloc;
             sizealloc = code + ABBREV_TABLE_INCREMENT;
-            abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof(dr_handle) );
-            memset( &abbrevs[oldsize], 0, (sizealloc - oldsize) * sizeof(dr_handle) );
+            abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( dr_handle ) );
+            for( i = oldsize; i < sizealloc; ++i ) {
+                abbrevs[i] = DR_HANDLE_NUL;
+            }
         }
-        if( abbrevs[code] == 0 ) {
+        if( abbrevs[code] == DR_HANDLE_NUL ) {
             abbrevs[code] = start;
         }
         DWRVMSkipLEB128( &start );              // skip tag
@@ -91,11 +98,11 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     }
     if( sizealloc > maxnum ) {  // reduce size to actual amount needed
         /* abbrev[0] not used but we want abbrev[code] = start to work */
-        abbrevs = DWRREALLOC( abbrevs, (maxnum + 1) * sizeof(dr_handle) );
+        abbrevs = DWRREALLOC( abbrevs, ( maxnum + 1 ) * sizeof( dr_handle ) );
     }
     compunit->numabbrevs = maxnum + 1;
     compunit->abbrevs = abbrevs;
-    compunit->abbrev_refs = DWRALLOC( sizeof(unsigned) );
+    compunit->abbrev_refs = DWRALLOC( sizeof( unsigned ) );
     *compunit->abbrev_refs = 1;
 }
 
@@ -104,28 +111,30 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
 {
     dr_dbg_handle       dbg;
     int                 i;
+    unsigned long       size;
 
-    dbg = DWRALLOC( sizeof(struct dr_dbg_info) );
+    dbg = DWRALLOC( sizeof( struct dr_dbg_info ) );
     DWRCurrNode = dbg;    /* must be set for DWRVMAlloc in virtstub.c */
-    if( dbg == NULL ) return( NULL );
+    if( dbg == NULL )
+        return( NULL );
     dbg->next = NULL;
     dbg->file = file;
     dbg->addr_size = 0;
-    dbg->wat_version = 0; /* zero means not Watcom DWARF */
+    dbg->wat_producer_ver = VER_NONE;
     dbg->byte_swap = byteswap;
     dbg->last_ccu = &dbg->compunit;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
-        dbg->sections[i].size = *sizes;
-        if( *sizes != 0 ) {
-            dbg->sections[i].base = DWRVMAlloc( *sizes, i );
-            if( dbg->sections[i].base == 0 ) {
+        size = sizes[i];
+        dbg->sections[i].size = size;
+        if( size != 0 ) {
+            dbg->sections[i].base = DWRVMAlloc( size, i );
+            if( dbg->sections[i].base == DR_HANDLE_NUL ) {
                 DWRFREE( dbg );
                 return( NULL );
             }
         } else {
-            dbg->sections[i].base = 0;
+            dbg->sections[i].base = DR_HANDLE_NUL;
         }
-        sizes++;
     }
     return( dbg );
 }
@@ -136,6 +145,7 @@ bool  DRDbgClear( dr_dbg_handle dbg )
     bool                ret;
     int                 i;
 
+    dbg = dbg;
     ret = FALSE;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         DWRVMSwap( dbg->sections[i].base, dbg->sections[i].size, &ret );
@@ -150,15 +160,15 @@ extern void DRDbgDone( dr_dbg_handle dbg )
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         DWRVMSectDone( dbg->sections[i].base, dbg->sections[i].size );
-        dbg->sections[i].base = 0;
+        dbg->sections[i].base = DR_HANDLE_NUL;
         dbg->sections[i].size = 0;
     }
 }
 
-extern void DRDbgOldVersion( dr_dbg_handle dbg, int version )
-/***********************************************************/
+extern void DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
+/***************************************************************************/
 {
-    dbg->wat_version = version;
+    dbg->wat_producer_ver = wat_producer_ver;
 }
 
 static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
@@ -168,8 +178,6 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     compunit_info       *next;
     dr_handle           start;
     dr_handle           finish;
-    unsigned_32         length;
-    unsigned_32         abbrev_offset;
     unsigned_16         version;
     unsigned_8          addr_size;
     unsigned_8          curr_addr_size;
@@ -177,32 +185,31 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     compunit = &DWRCurrNode->compunit;
     start = DWRCurrNode->sections[DR_DEBUG_INFO].base;
     finish = start + DWRCurrNode->sections[DR_DEBUG_INFO].size;
-    addr_size = DWRVMReadByte( start + 10 );
+    addr_size = DWRVMReadByte( start + COMPILE_UNIT_HDR_ADDR_SIZE );
     for( ;; ) {
         compunit->next = NULL;
         compunit->start = start;
-        length = DWRVMReadDWord( start );
-        compunit->end          = start + length + sizeof(unsigned_32);
-        version = DWRVMReadWord( start + sizeof(unsigned_32) );
-        if( version != DWARF_VERSION ) DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        abbrev_offset = DWRVMReadDWord( start + sizeof(unsigned_32) + sizeof(unsigned_16) );
-        curr_addr_size = DWRVMReadByte( start + 10 );
+        compunit->end = start + sizeof( unsigned_32 ) + DWRVMReadDWord( start );
+        version = DWRVMReadWord( start + COMPILE_UNIT_HDR_VERSION );
+        if( DWARF_VER_INVALID( version ) )
+            DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
+        compunit->abbrev_start = DWRVMReadDWord( start + COMPILE_UNIT_HDR_ABBREV_OFFSET );
+        curr_addr_size = DWRVMReadByte( start + COMPILE_UNIT_HDR_ADDR_SIZE );
         if( curr_addr_size != addr_size ) {
             addr_size = 0;
         }
-        compunit->abbrev_start = abbrev_offset;
         ReadCUAbbrevTable( dbg, compunit );
         if( read_ftab ) {
             DWRInitFileTable( &compunit->filetab );
             DWRScanFileTable( start, &FileNameTable, &compunit->filetab );
         } else {
-            compunit->filetab.len  = 0;
-            compunit->filetab.tab  = NULL;
+            compunit->filetab.len = 0;
+            compunit->filetab.tab = NULL;
         }
-
-        start += length + sizeof(unsigned_32);
-        if( start >= finish ) break;
-        next = DWRALLOC( sizeof(compunit_info) );
+        if( compunit->end >= finish )
+            break;
+        start = compunit->end;
+        next = DWRALLOC( sizeof( compunit_info ) );
         compunit->next = next;
         compunit = next;
     }
@@ -247,7 +254,8 @@ void DRDbgFini( dr_dbg_handle dbg )
         next = compunit->next;
         DWRFiniFileTable( &compunit->filetab, FALSE );
         if( compunit->abbrevs != NULL ) {
-            if( --(*compunit->abbrev_refs) == 0 ) {
+            --(*compunit->abbrev_refs);
+            if( *compunit->abbrev_refs == 0 ) {
                 DWRFREE( compunit->abbrevs );
                 DWRFREE( compunit->abbrev_refs );
             }

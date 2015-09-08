@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
-typedef unsigned_8 inp_rtn_action; enum {
+typedef enum {
         INP_RTN_INIT,
         INP_RTN_EOL,
         INP_RTN_FINI
-};
+} inp_rtn_action;
 
-typedef unsigned_16 input_type; enum {
+typedef enum {
         INP_NIL         = 0x0000,
         INP_NORMAL      = 0x0000,
         INP_BREAK_POINT = 0x0001,
@@ -48,7 +48,7 @@ typedef unsigned_16 input_type; enum {
         INP_HOLD        = 0x0080,
         INP_HOOK        = 0x0100,
         INP_REPLAYED    = 0x0200,
-};
+} input_type;
 
 typedef void *inp_data_handle;
 

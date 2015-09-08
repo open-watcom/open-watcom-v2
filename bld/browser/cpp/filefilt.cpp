@@ -363,8 +363,8 @@ bool FileFilter::enabled( const char * file )
     return entry->_enabled;
 }
 
-bool FileFilter::matches( dr_handle hdl )
-//---------------------------------------
+bool FileFilter::matches( dr_handle drhdl )
+//-----------------------------------------
 {
     if( _matchesAll == FFMNotSet ) {
         _matchesAll = matchesAll();
@@ -374,7 +374,7 @@ bool FileFilter::matches( dr_handle hdl )
         return TRUE;
     }
 
-    return enabled( DRGetFileName( hdl ) );
+    return enabled( DRGetFileName( drhdl ) );
 }
 
 uint FileFilter::matchesAll()

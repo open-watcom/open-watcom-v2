@@ -37,6 +37,9 @@
 #include "watcom.h"
 #include "srcmgt.h"
 
+#include "clibext.h"
+
+
 #define SM_CR                   '\r'
 #define SM_LF                   '\n'
 #define SM_TAB                  '\t'

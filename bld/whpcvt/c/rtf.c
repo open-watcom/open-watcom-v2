@@ -30,6 +30,9 @@
 
 #include "whpcvt.h"
 
+#include "clibext.h"
+
+
 #define MAX_LISTS       20
 
 enum {

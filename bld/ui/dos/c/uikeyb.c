@@ -190,7 +190,7 @@ EVENT intern keyboardevent( void )
             }
         }
 #ifdef FD6
-        if( ev > EV_LAST_KEYBOARD ) {\
+        if( !iskeyboardchar( ev ) ) {
             ev = EV_NO_EVENT;
         }
 #endif

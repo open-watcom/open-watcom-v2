@@ -30,12 +30,9 @@
 
 
 #include "plusplus.h"
-
 #include "compcfg.h"
-
 #include <ctype.h>
 #include "wio.h"
-
 #include "memmgr.h"
 #include "preproc.h"
 #include "macro.h"
@@ -54,10 +51,10 @@
 #include "pdefn2.h"
 #include "initdefs.h"
 #include "brinfo.h"
-
 #include "cmdlnprs.gh"
 #include "cmdlnprs.h"
 #include "cmdlnsys.h"
+
 #include "clibext.h"
 
 
@@ -299,19 +296,19 @@ static char *reduceToOneString( OPT_STRING **h )
         if( s->data[0] != '\0' ) {
             *h = s->next;
             OPT_CLEAN_STRING( h );
-	    /* HACK: Whoever wrote this assumed that strcpy() did a byte-by-byte copy.
-	     *       GCC's version however may use DWORD-sized copies instead.
-	     *       If source and dest overlap there is NO guarantee of data integrity.
-	     *       To avoid corrupting the string, use memmove() instead.
-	     *
-	     *  NTS: So why can't we just go and return s->data instead of strcpy'ing
-	     *       over the struct with it's own string data? Why this bizarre code
-	     *       in the first place? --J.C. */
-	    {
+            /* HACK: Whoever wrote this assumed that strcpy() did a byte-by-byte copy.
+             *       GCC's version however may use DWORD-sized copies instead.
+             *       If source and dest overlap there is NO guarantee of data integrity.
+             *       To avoid corrupting the string, use memmove() instead.
+             *
+             *  NTS: So why can't we just go and return s->data instead of strcpy'ing
+             *       over the struct with it's own string data? Why this bizarre code
+             *       in the first place? --J.C. */
+            {
                 int l = strlen(s->data)+1; /* string + NUL */
                 p = (char *)s;
-	        memmove(p,s->data,l);
-	    }
+                memmove(p,s->data,l);
+            }
         } else {
             OPT_CLEAN_STRING( h );
             p = NULL;

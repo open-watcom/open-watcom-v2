@@ -35,12 +35,14 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "wf77aux.h"
 #include "iflookup.h"
 #include "cpopt.h"
-#include <string.h>
+
 #include "clibext.h"
+
 
 extern  void            CopyAuxInfo(aux_info *,aux_info *);
 extern  aux_info        *NewAuxEntry(char *,int);

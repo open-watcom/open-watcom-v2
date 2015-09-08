@@ -122,7 +122,7 @@ void DTVSymbolRefs::event( ViewEvent ve, View * view )
             int             i;
             int             maxRows = getRows() + _topIndex;
             DetailView *    dtv = (DetailView *) view;
-            dr_handle       handle = dtv->symHandle();
+            dr_handle       drhdl = dtv->symHandle();
 
             if( _users.count() < maxRows ) {
                 maxRows = _users.count();
@@ -134,7 +134,7 @@ void DTVSymbolRefs::event( ViewEvent ve, View * view )
                 if( sym == NULL ) {
                     break;
                 }
-                if( handle == sym->getHandle() ) {
+                if( drhdl == sym->getHandle() ) {
                     invalidateRow( i - _topIndex );
                     break;
                 }

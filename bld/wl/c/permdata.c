@@ -49,6 +49,7 @@
 #include "wlnkmsg.h"
 #include "objcalc.h"
 #include "permdata.h"
+
 #include "clibext.h"
 
 stringtable             PermStrings;

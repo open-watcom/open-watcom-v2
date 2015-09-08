@@ -42,7 +42,9 @@ BMX:  Image file handling
 #endif
 #include "bmx.h"
 #include "compress.h"
+
 #include "clibext.h"
+
 
 // Magic numbers for the supported image formats.
 #define BITMAP_MAGIC    0x4D42
@@ -59,8 +61,8 @@ Bitmap::Bitmap( InFile *fp ) : Bmx( fp )
     uint_32 filesize;
 
     _fp->reset();
-    _fp->readbuf( &magic, 1, sizeof( uint_16 ) );
-    _fp->readbuf( &filesize, 1, sizeof( uint_32 ) );
+    _fp->read( &magic );
+    _fp->read( &filesize );
     _fp->reset( 0, SEEK_END );
     _fileSize = (uint_32)_fp->tell();
     _isValidImage = ( magic == BITMAP_MAGIC && filesize == _fileSize );
@@ -90,25 +92,25 @@ uint_32 Bitmap::size()
     _fp->open();
     _fp->reset( 10 );   // size of unneeded header info.
 
-    _fp->readbuf( &_pixOffset, 1, sizeof( uint_32 ) );
-    _fp->readbuf( &_headSize, 1, sizeof( uint_32 ) );
+    _fp->read( &_pixOffset );
+    _fp->read( &_headSize );
 
     if( _headSize == BIH_SIZE ) {
 
         // If _headSize==0x28, this bitmap uses a BitmapInfoHeader
         // and RBG quads.
 
-        _fp->readbuf( &_width, 1, sizeof( uint_32 ) );
-        _fp->readbuf( &_height, 1, sizeof( uint_32 ) );
+        _fp->read( &_width );
+        _fp->read( &_height );
 
-        _fp->readbuf( &_planes, 1, sizeof( uint_16 ) );
-        _fp->readbuf( &_bitsPerPix, 1, sizeof( uint_16 ) );
+        _fp->read( &_planes );
+        _fp->read( &_bitsPerPix );
 
-        _fp->readbuf( &_compression, 1, sizeof( uint_32 ) );
-        _fp->readbuf( &_imageSize, 1, sizeof( uint_32 ) );
-        _fp->readbuf( &_xpels, 1, sizeof( uint_32 ) );
-        _fp->readbuf( &_ypels, 1, sizeof( uint_32 ) );
-        _fp->readbuf( &_colsUsed, 1, sizeof( uint_32 ) );
+        _fp->read( &_compression );
+        _fp->read( &_imageSize );
+        _fp->read( &_xpels );
+        _fp->read( &_ypels );
+        _fp->read( &_colsUsed );
 
         if( _colsUsed == 0 ) {
             // We can calculate _colsUsed from _bitsPerPix, except
@@ -118,21 +120,22 @@ uint_32 Bitmap::size()
             }
         }
 
-        _fp->readbuf( &_colsImportant, 1, sizeof(uint_32) );
+        _fp->read( &_colsImportant );
         _dataPos = _fp->tell();
         _fp->reset( sizeof( uint_32 ) * _colsUsed, SEEK_CUR );
 
     } else {
+        uint_16 u16data;
 
         // The other case is _headSize==0x0C, meaning this bitmap
         // uses a BitmapCoreHeader and RGB triples.
 
-        _width = 0;
-        _fp->readbuf( &_width, 1, sizeof( uint_16 ) );
-        _height = 0;
-        _fp->readbuf( &_height, 1, sizeof( uint_16 ) );
-        _fp->readbuf( &_planes, 1, sizeof( uint_16 ) );
-        _fp->readbuf( &_bitsPerPix, 1, sizeof( uint_16 ) );
+        _fp->read( &u16data );
+        _width = u16data;
+        _fp->read( &u16data );
+        _height = u16data;
+        _fp->read( &_planes );
+        _fp->read( &_bitsPerPix );
 
         // Again, calculate _colsUsed from _bitsPerPix, unless
         // this is a 24-bit bitmap.
@@ -166,12 +169,12 @@ uint_32 Bitmap::size()
     CompWriter  riter;
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
-    size_t      blocksize;
-    uint_32     count;
+    unsigned    blocksize;
+    unsigned    count;
 
     _pixSize = 0;
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
-        blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
+        blocksize = (unsigned)_fp->read( buffer, BLOCK_SIZE );
         _pixSize += reader.compress( buffer, blocksize );
     }
 
@@ -256,13 +259,13 @@ int Bitmap::dump( OutFile *dest )
     _fp->reset( _dataPos );
     if( _headSize == BIH_SIZE ) {
         for( uint_32 i = 0; i < _colsUsed; i++ ) {
-            _fp->readbuf( &colour, 1, sizeof( uint_32 ) );
+            _fp->read( &colour );
             dest->write( colour );
         }
     } else {
         colour = 0;
         for( uint_32 i = 0; i < _colsUsed; i++ ) {
-            _fp->readbuf( &colour, 3 );
+            _fp->read( &colour, 3 );
             dest->write( colour );
         }
     }
@@ -270,11 +273,11 @@ int Bitmap::dump( OutFile *dest )
     CompOutFile riter( dest );
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
-    size_t      blocksize;
-    uint_32     count;
+    unsigned    blocksize;
+    unsigned    count;
 
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
-        blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
+        blocksize = (unsigned)_fp->read( buffer, BLOCK_SIZE );
         reader.compress( buffer, blocksize );
     }
 
@@ -294,7 +297,7 @@ SegGraph::SegGraph( InFile * fp ) : Bmx( fp )
     uint_16 magic;
 
     _fp->reset();
-    _fp->readbuf( &magic, 1, sizeof( uint_16 ) );
+    _fp->read( &magic );
     _isValidImage = ( magic == SHG1_MAGIC || magic == SHG2_MAGIC );
     _fp->reset( 0, SEEK_END );
     _size = (uint_32)_fp->tell();
@@ -310,8 +313,8 @@ int SegGraph::dump( OutFile *dest )
     size_t  this_block;
 
     _fp->open();
-    while( (this_block = _fp->readbuf( block, BLOCK_SIZE )) != 0 ) {
-        dest->write( block, 1, this_block );
+    while( (this_block = _fp->read( block, BLOCK_SIZE )) != 0 ) {
+        dest->write( block, this_block );
     }
 
     return 1;
@@ -436,7 +439,7 @@ void HFBitmaps::note( char const name[] )
         return;
     }
     bmp->reset();
-    bmp->readbuf( &magic, 1, 2 );
+    bmp->read( &magic );
     switch( magic ) {
     case BITMAP_MAGIC:
     case SHG1_MAGIC:
@@ -478,7 +481,7 @@ uint_16 HFBitmaps::use( char const name[] )
     static char filename[9] = "|bm";
 
     // Check to see if this bitmap has already been referenced.
-    
+
     result = (uint_16)0;
     for( current = _usedFiles; current != NULL; current = current->_next ) {
         if( stricmp( name, current->_name ) == 0 )
@@ -510,7 +513,7 @@ uint_16 HFBitmaps::use( char const name[] )
         if( !current->_image->validImage() ) {
             throw ImageNotValid();  // EXCEPTION
         }
-    
+
         if( temp != NULL ) {
             temp->_next = current->_next;
         } else {
@@ -524,26 +527,26 @@ uint_16 HFBitmaps::use( char const name[] )
             bmp->open( name, true );
             chdir( _startDir );
         }
-    
+
         if( bmp->bad() ) {
             delete bmp;
             throw ImageNotFound();  // EXCEPTION
         } else {
             uint_16 magic;
-    
+
             bmp->reset();
-            bmp->readbuf( &magic, 1, sizeof( uint_16 ) );
+            bmp->read( &magic );
             switch( magic ) {
             case BITMAP_MAGIC:
             case SHG1_MAGIC:
             case SHG2_MAGIC:
                 break;
-    
+
             default:
                 throw ImageNotSupported();  // EXCEPTION
             }
             bmp->reset();
-    
+
             current = new Image;
             current->_name = new char[strlen( name ) + 1];
             strcpy( current->_name, name );

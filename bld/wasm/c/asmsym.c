@@ -37,11 +37,9 @@
 #include "hash.h"
 #include "myassert.h"
 #endif
+
 #include "clibext.h"
 
-#ifdef __USE_BSD
-#define stricmp strcasecmp
-#endif
 
 #if defined( _STANDALONE_ )
 

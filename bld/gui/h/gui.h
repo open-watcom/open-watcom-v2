@@ -143,8 +143,6 @@ typedef enum {
     GUI_EDIT_MLE,
     GUI_NUM_CONTROL_CLASSES
 } gui_control_class;
-#define GUI_FIRST_CONTROL_CLASS GUI_PUSH_BUTTON
-#define GUI_LAST_CONTROL_CLASS  GUI_EDIT_MLE
 
 typedef enum {
     #define pick(e,n)   e,
@@ -152,8 +150,6 @@ typedef enum {
     #undef pick
     GUI_FIRST_UNUSED
 } gui_attr;
-#define GUI_FIRST_ATTR  GUI_MENU_PLAIN
-#define GUI_LAST_ATTR   GUI_CONTROL_BACKGROUND
 #define GUI_NUM_ATTRS   GUI_FIRST_UNUSED
 
 typedef enum {
@@ -204,30 +200,28 @@ typedef struct gui_menu_struct {
 } gui_menu_struct;
 
 typedef enum {
-        GUI_BAD_COLOUR = -1,
-        GUI_BLACK,
-        GUI_BLUE,
-        GUI_GREEN,
-        GUI_CYAN,
-        GUI_RED,
-        GUI_MAGENTA,
-        GUI_BROWN,
-        GUI_WHITE,
-        GUI_GREY,
-        GUI_BRIGHT_BLUE,
-        GUI_BRIGHT_GREEN,
-        GUI_BRIGHT_CYAN,
-        GUI_BRIGHT_RED,
-        GUI_BRIGHT_MAGENTA,
-        GUI_BRIGHT_YELLOW,
-        GUI_BRIGHT_WHITE,
-        GUIEX_DLG_BKGRND,
-        GUIEX_WND_BKGRND,
-        GUIEX_HIGHLIGHT,
-        GUIEX_HIGHLIGHTTEXT,
-        GUI_NUM_COLOURS,
-        GUI_FIRST_COLOUR = GUI_BLACK,
-        GUI_LAST_COLOUR = GUIEX_HIGHLIGHTTEXT
+    GUI_BAD_COLOUR = -1,
+    GUI_BLACK,
+    GUI_BLUE,
+    GUI_GREEN,
+    GUI_CYAN,
+    GUI_RED,
+    GUI_MAGENTA,
+    GUI_BROWN,
+    GUI_WHITE,
+    GUI_GREY,
+    GUI_BRIGHT_BLUE,
+    GUI_BRIGHT_GREEN,
+    GUI_BRIGHT_CYAN,
+    GUI_BRIGHT_RED,
+    GUI_BRIGHT_MAGENTA,
+    GUI_BRIGHT_YELLOW,
+    GUI_BRIGHT_WHITE,
+    GUIEX_DLG_BKGRND,
+    GUIEX_WND_BKGRND,
+    GUIEX_HIGHLIGHT,
+    GUIEX_HIGHLIGHTTEXT,
+    GUI_NUM_COLOURS,
 } gui_colour;
 
 typedef struct gui_colour_set {

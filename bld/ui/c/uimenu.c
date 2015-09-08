@@ -38,7 +38,9 @@
 #include "uibox.h"
 #include "uishift.h"
 #include "uigchar.h"
+
 #include "clibext.h"
+
 
 #define         TABCHAR                 '\t'
 #define         TITLE_OFFSET            2
@@ -409,7 +411,7 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
     auto        int                     mouseon;
 
     newevent = ev;
-    if( ev > EV_NO_EVENT && ev <= EV_LAST_KEYBOARD ){
+    if( iskeyboardchar( ev ) ){
         /* this allows alt numeric keypad stuff to not activate the menus */
         Menu->altpressed = FALSE;
     }
@@ -535,7 +537,7 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                 case EV_NO_EVENT :
                     break;
                 default :
-                    if( ev <= EV_LAST_KEYBOARD ) {
+                    if( iskeyboardchar( ev ) ) {
                         if( process_char( ev, &desc, &menu, &select ) ) {
                             break;
                         }

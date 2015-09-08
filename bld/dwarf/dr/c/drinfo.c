@@ -34,27 +34,16 @@
 #include "drgettab.h"
 #include "drscope.h"
 
-static dw_tagnum GetTag( dr_handle entry )
-{
-    dr_handle   abbrev;
-    dw_tagnum   tag;
-
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
-    return( tag );
-}
-
 
 static dr_language GetLanguage( dr_handle abbrev, dr_handle mod )
 /***************************************************************/
 {
     dr_language result;
-    unsigned    lang;
+    dw_langnum  lang;
 
     result = DR_LANG_UNKNOWN;
     if( DWRScanForAttrib( &abbrev, &mod, DW_AT_language ) ) {
-        lang = DWRReadConstant( abbrev, mod );
+        lang = (dw_langnum)DWRReadConstant( abbrev, mod );
         switch( lang ) {
         case DW_LANG_C89:
         case DW_LANG_C:
@@ -72,14 +61,11 @@ static dr_language GetLanguage( dr_handle abbrev, dr_handle mod )
     return( result );
 }
 
-static bool CheckLanguage( dr_handle abbrev, dr_handle mod, mod_scan_info *x,
-                           void *_data )
-/***************************************************************************/
+static bool CheckLanguage( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void *data )
+/****************************************************************************************/
 {
-    dr_language *data = _data;
-
     x = x;
-    *data = GetLanguage( abbrev, mod );
+    *(dr_language *)data = GetLanguage( abbrev, mod );
     return( FALSE );        // do not continue processing
 }
 
@@ -89,8 +75,7 @@ dr_language DRGetLanguageAT( dr_handle entry )
     dr_handle   abbrev;
     dr_language result;
 
-    abbrev = DWRGetAbbrev( &entry );
-
+    abbrev = DWRSkipTag( &entry ) + 1;
     result = GetLanguage( abbrev, entry );
     return( result );
 }
@@ -101,9 +86,9 @@ dr_model DRGetMemModelAT( dr_handle entry )
     dr_handle   abbrev;
     dr_model    retval;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_WATCOM_memory_model ) ) {
-        retval = DWRReadConstant( abbrev, entry );
+        retval = (dr_model)DWRReadConstant( abbrev, entry );
     } else {
         retval = DR_MODEL_NONE;
     }
@@ -116,10 +101,10 @@ char *DRGetProducer( dr_handle entry )
     dr_handle   abbrev;
     char       *name;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_producer ) ) {
         name = DWRReadString( abbrev, entry );
-    }else{
+    } else {
         name = NULL;
     }
     return( name );
@@ -140,14 +125,14 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
 /**********************************************************************************************/
 {
     dr_handle   abbrev;
-    unsigned    form;
+    dw_formnum  form;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, attrib ) ) {
         form = DWRVMReadULEB128( &abbrev );
         switch( form ) {
         case DW_FORM_string:
-            length = DWRGetStrBuff( entry, buff, length );
+            length = DWRVMGetStrBuff( entry, buff, length );
             break;
         case DW_FORM_strp: {
             unsigned_32 offset;
@@ -155,7 +140,7 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
 
             offset = ReadConst( DW_FORM_data4, entry );
             dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-            length = DWRGetStrBuff( dbgsec_str, buff, length );
+            length = DWRVMGetStrBuff( dbgsec_str, buff, length );
             break;
             }
         default:
@@ -179,7 +164,7 @@ char * DRGetName( dr_handle entry )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     return( DWRGetName( abbrev, entry ) );
 }
 
@@ -189,36 +174,34 @@ unsigned DRGetNameBuff( dr_handle entry, char *buff, unsigned length )
     return( GetNameBuffAttr( entry, buff, length, DW_AT_name ) );
 }
 
-unsigned DRGetScopedNameBuff( dr_handle entry,
-                                     char     *buff,
-                                     unsigned  max )
-/***************************************************/
+unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
+/***********************************************************************/
 {
     dr_handle       of;
-    scope_trail     container;
-    scope_entry     *curr;
+    dr_scope_trail  container;
+    dr_scope_entry  *curr;
     unsigned        total;
     unsigned        length;
 
     of = DRGetContaining( entry );
-    if( of == 0 ) {
+    if( of == DR_HANDLE_NUL ) {
         of = entry;
     }
     DRGetScopeList( &container, of );
     curr = container.head;
     if( curr != NULL  ) {
-        scope_entry    *outside;
+        dr_scope_entry  *outside;
 
         if( of == entry ) {         //bump from list
             curr = curr->next;
         }
         outside = NULL;
         while( curr != NULL ) {     //reverse list to outer scope first
-            scope_entry    *next;
-            dw_tagnum     tag;
+            dr_scope_entry  *next;
+            dw_tagnum       tag;
 
             next = curr->next;
-            tag = GetTag( curr->handle );
+            tag = DWRGetTag( curr->handle );
             switch( tag ){
             case DW_TAG_class_type:
             case DW_TAG_union_type:
@@ -264,11 +247,11 @@ long DRGetColumn( dr_handle entry )
 /*********************************/
 // NYI: this is not going to work for macros.
 {
-    unsigned long retval;
-    dr_handle     abbrev;
+    long        retval;
+    dr_handle   abbrev;
 
     retval = -1;        // signifies no column available
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_column ) ) {
         retval = DWRReadConstant( abbrev, entry );
     }
@@ -279,11 +262,11 @@ long DRGetLine( dr_handle entry )
 /**************************************/
 // NYI: this is not going to work for macros.
 {
-    unsigned long retval;
-    dr_handle     abbrev;
+    long        retval;
+    dr_handle   abbrev;
 
     retval = -1;        // signifies no column available
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_line ) ) {
         retval = DWRReadConstant( abbrev, entry );
     }
@@ -298,9 +281,9 @@ extern char *DRGetFileName( dr_handle entry )
     dr_fileidx          fileidx;
 
     name = NULL;
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_file ) ) {
-        fileidx = DWRReadConstant( abbrev, entry );
+        fileidx = (dr_fileidx)DWRReadConstant( abbrev, entry );
         name = DWRFindFileName( fileidx, entry );
     }
     return( name );
@@ -311,7 +294,7 @@ void DRGetFileNameList( DRFNAMECB callback, void *data )
 {
     compunit_info       *compunit;
     dr_fileidx          fileidx;
-    file_tab_idx        ftidx;
+    filetab_idx         ftidx;
     char                *name;
 
     compunit = &DWRCurrNode->compunit;
@@ -334,7 +317,7 @@ char *DRIndexFileName( dr_handle mod, dr_fileidx fileidx  )
 {
     compunit_info       *compunit;
     char                *name;
-    file_tab_idx        ftidx;
+    filetab_idx         ftidx;
 
     compunit = DWRFindCompileInfo( mod );
     ftidx = DWRIndexFile( fileidx - 1, &compunit->filetab );
@@ -347,9 +330,9 @@ dr_access DRGetAccess( dr_handle entry )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_accessibility ) ) {
-        return( DWRReadConstant( abbrev, entry ) );
+        return( (dr_access)DWRReadConstant( abbrev, entry ) );
     }
     return( DR_ACCESS_PUBLIC );
 }
@@ -359,7 +342,7 @@ bool DRIsStatic( dr_handle entry )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_external ) ) {
         return( DWRReadFlag( abbrev, entry ) == 0 );
     }
@@ -371,7 +354,7 @@ bool DRIsArtificial( dr_handle entry )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_artificial ) ) {
         return( DWRReadFlag( abbrev, entry ) != 0 );
     }
@@ -383,43 +366,34 @@ bool DRIsSymDefined( dr_handle entry )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     return( !DWRScanForAttrib( &abbrev, &entry, DW_AT_declaration ) );
 }
 
 bool DRIsMemberStatic( dr_handle entry )
 /**************************************/
 {
-    dr_handle   abbrev;
-    dw_tagnum   tag;
+    dw_tagnum       tag;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
+    tag = DWRGetTag( entry );
     return( tag == DW_TAG_variable );
 }
 
 bool DRIsFunc( dr_handle entry )
 /******************************/
 {
-    dr_handle   abbrev;
-    dw_tagnum   tag;
+    dw_tagnum       tag;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
+    tag = DWRGetTag( entry );
     return( tag == DW_TAG_subprogram );
 }
 
 bool DRIsParm( dr_handle entry )
 /******************************/
 {
-    dr_handle   abbrev;
-    dw_tagnum   tag;
+    dw_tagnum       tag;
 
-    abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
+    tag = DWRGetTag( entry );
     return( tag == DW_TAG_formal_parameter );
 }
 
@@ -428,9 +402,9 @@ dr_virtuality DRGetVirtuality( dr_handle entry )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_virtuality ) ) {
-        return( DWRReadConstant( abbrev, entry ) );
+        return( (dr_virtuality)DWRReadConstant( abbrev, entry ) );
     }
     return( DR_VIRTUALITY_NONE );
 }
@@ -440,7 +414,7 @@ unsigned DRGetByteSize( dr_handle entry )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_byte_size ) ) {
         return( DWRReadConstant( abbrev, entry ) );
     }
@@ -454,7 +428,7 @@ bool DRGetLowPc( dr_handle entry, uint_32 *num )
     uint_32     offset;
     bool        ret;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_low_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
@@ -472,7 +446,7 @@ bool DRGetHighPc( dr_handle entry, uint_32 *num )
     uint_32     offset;
     bool        ret;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_high_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
@@ -489,11 +463,11 @@ dr_handle DRGetContaining( dr_handle entry )
     dr_handle   abbrev;
     dr_handle   ret;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_containing_type ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = 0;
+        ret = DR_HANDLE_NUL;
     }
     return( ret );
 }
@@ -503,9 +477,9 @@ dr_handle DRWalkParent( dr_search_context * context )
 // get past relative
 {
     dr_handle   prev;
-    stack_op      op;
+    stack_op    op;
 
-    op = DWRContext( &context->stack, 0 );
+    op = DWRContextOP( &context->stack, 0 );
     switch( op ) {
     case DO_NOTHING:
         prev = DWRContext( &context->stack, 1 );
@@ -517,7 +491,7 @@ dr_handle DRWalkParent( dr_search_context * context )
         prev = context->functionhdl;
         break;
     default:
-        prev = 0;
+        prev = DR_HANDLE_NUL;
         break;
     }
     return( prev );
@@ -539,11 +513,11 @@ static bool CheckAFunc( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void 
     return( d->wlk( mod, d->d, x->context ) );
 }
 
-static unsigned_16 const BlockTags[] = {
+static const dw_tagnum BlockTags[] = {
     DW_TAG_subprogram, DW_TAG_lexical_block, 0
 };
 
-static unsigned_16 const EntryTags[] = {
+static const dw_tagnum EntryTags[] = {
     DW_TAG_subprogram, DW_TAG_label, DW_TAG_variable, 0
 };
 
@@ -563,7 +537,7 @@ bool DRWalkModFunc( dr_handle mod, bool blocks, DRWLKMODF wlk, void *d )
     return( ret );
 }
 
-static unsigned_16 const TypeTags[] = { // any type
+static const dw_tagnum TypeTags[] = { // any type
     DW_TAG_array_type,
     DW_TAG_enumeration_type,
     DW_TAG_pointer_type,
@@ -602,26 +576,26 @@ bool DRWalkScope( dr_handle mod, DRWLKBLK wlk, void *d )
     return( DWRWalkScope( mod, &BlockTags[1], wlk, d ) );
 }
 
-static unsigned_16 const CodeDataTags[] = {
+static const dw_tagnum CodeDataTags[] = {
     DW_TAG_subprogram, DW_TAG_variable, DW_TAG_label,
     DW_TAG_WATCOM_namespace, DW_TAG_formal_parameter, 0
 };
 
-static unsigned_16 const ParmTags[] = {
+static const dw_tagnum ParmTags[] = {
     DW_TAG_formal_parameter, 0
 };
 
-static unsigned_16 const CTypeTags[] = {    // visible c type names
+static const dw_tagnum CTypeTags[] = {    // visible c type names
     DW_TAG_typedef, 0
 };
 
-static unsigned_16 const CPPTypeTags[] = {  // visible c++ type names
+static const dw_tagnum CPPTypeTags[] = {  // visible c++ type names
     DW_TAG_base_type, DW_TAG_typedef,
     DW_TAG_enumeration_type, DW_TAG_class_type,
     DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-static unsigned_16 const * const SrchTags[DR_SRCH_LAST] = {
+static const dw_tagnum * const SrchTags[DR_SRCH_LAST] = {
     CodeDataTags,
     FunctionTags,
     ClassTags,
@@ -638,7 +612,7 @@ static unsigned_16 const * const SrchTags[DR_SRCH_LAST] = {
 bool DRWalkBlock( dr_handle mod, dr_srch what, DRWLKBLK wlk, void *d )
 /********************************************************************/
 {
-    unsigned_16 const   *tags;
+    const dw_tagnum     *tags;
     DRWLKBLK            wlks[MAX_TAG_WLK];
     int                 index;
 
@@ -659,7 +633,7 @@ bool DRStartScopeAT( dr_handle entry, uint_32 *num )
     uint_32     offset;
     bool        ret;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_start_scope ) ) {
         offset =  DWRReadConstant( abbrev, entry );
         *num = offset;
@@ -683,11 +657,11 @@ dr_handle DRDebugPCHDef( dr_handle entry )
     dr_handle   abbrev;
     dr_handle   ret;
 
-    abbrev = DWRGetAbbrev( &entry );
+    abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_base_types ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = 0;
+        ret = DR_HANDLE_NUL;
     }
     return( ret );
 }
@@ -698,7 +672,7 @@ dr_handle DRDebugPCHDef( dr_handle entry )
     dr_tag_type tagtype;
     dw_tagnum   tag;
 
-    tag = GetTag( entry );
+    tag = DWRGetTag( entry );
     switch( tag ) {
     case DW_TAG_subprogram:
         tagtype =  DR_TAG_FUNCTION;

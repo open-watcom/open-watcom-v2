@@ -42,11 +42,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include "wio.h"
+
 #include "clibext.h"
 
-static unsigned char *buff;
 
-static char usage[] = "Usage: inp.file out.file\n";
+static unsigned char *buff;
 
 int main(int argc, char *argv[])
 {
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
         fp = fopen( argv[2], "w" );
         stat( argv[1], &bufstat );
     } else {
-        printf( usage );
+        printf( "Usage: inp.file out.file\n" );
         return( 1 );
     }
     buff = malloc( bufstat.st_size );

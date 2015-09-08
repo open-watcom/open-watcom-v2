@@ -31,34 +31,32 @@
 
 
 /*stuff for makeing a list of conatainging tags*/
-enum scope_list{
+enum dr_scope_list{
     SCOPE_BLOCK_SIZE = 10
 };
 
-typedef struct scope_entry  scope_entry;
-struct scope_entry {
-    scope_entry *next;
-    dr_handle      handle;
-};
-typedef struct scope_block  scope_block;
-struct scope_block{
-    scope_block *next;
-    scope_entry  entries[SCOPE_BLOCK_SIZE];
-};
+typedef struct dr_scope_entry {
+    struct dr_scope_entry   *next;
+    dr_handle               handle;
+} dr_scope_entry;
 
-typedef struct{
-    scope_block *next;
-    scope_entry *free;
-    scope_block  first[1];
-}scope_ctl;
+typedef struct dr_scope_block {
+    struct dr_scope_block   *next;
+    dr_scope_entry          entries[SCOPE_BLOCK_SIZE];
+} dr_scope_block;
 
-typedef struct scope_trail  scope_trail;
-struct scope_trail {
-    dr_handle      target;
-    scope_entry *head;  //don't return this list
-    scope_ctl    ctl;
-};
+typedef struct dr_scope_ctl {
+    dr_scope_block  *next;
+    dr_scope_entry  *free;
+    dr_scope_block  first[1];
+} dr_scope_ctl;
+
+typedef struct dr_scope_trail {
+    dr_handle       target;
+    dr_scope_entry  *head;  //don't return this list
+    dr_scope_ctl    ctl;
+} dr_scope_trail;
 
 
-extern void DRGetScopeList( scope_trail *container, dr_handle  of );
-extern void DREndScopeList( scope_trail *container );
+extern void DRGetScopeList( dr_scope_trail *container, dr_handle  of );
+extern void DREndScopeList( dr_scope_trail *container );

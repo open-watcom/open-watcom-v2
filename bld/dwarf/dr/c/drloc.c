@@ -40,27 +40,6 @@ static dw_locop_op const LocOpr[] = {
 #undef DW_LOC_OP
 };
 
-static unsigned_32 ReadVWord( dr_handle where, int size )
-//Read an int
-{
-    unsigned_32 ret;
-
-    switch( size ) {
-    case 1:
-        ret = DWRVMReadByte( where );
-        break;
-    case 2:
-        ret = DWRVMReadWord( where );
-        break;
-    case 4:
-        ret = DWRVMReadDWord( where );
-        break;
-    default:
-        ret = 0;
-        break;
-    }
-    return( ret );
-}
 static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
 /*****************************************************************/
 {
@@ -70,17 +49,16 @@ static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
 
     result = 0;
     shift = 0;
-    for( ;; ) {
+    do {
         in = *input++;
-        result |= ( in & 0x7f ) << shift;
-        if( ( in & 0x80 ) == 0 ) break;
+        result |= (in & 0x7f) << shift;
         shift += 7;
-    }
+    } while( (in & 0x80) != 0 );
     *value = result;
     return( (uint_8 *)input );
 }
 
-static uint_8 *DecodeLEB128( const uint_8 *input, uint_32 *value )
+static uint_8 *DecodeSLEB128( const uint_8 *input, int_32 *value )
 /****************************************************************/
 {
     int_32      result;
@@ -89,18 +67,18 @@ static uint_8 *DecodeLEB128( const uint_8 *input, uint_32 *value )
 
     result = 0;
     shift = 0;
-    for( ;; ) {
+    do {
         in = *input++;
         result |= ( in & 0x7f ) << shift;
         shift += 7;
-        if( ( in & 0x80 ) == 0 ) break;
+    } while( (in & 0x80) != 0 );
+    if( ( shift < 32 ) && (in & 0x40) != 0 ) {
+        result |= - ((int_32)( 1 << shift ));
     }
-    if( ( shift < 32 ) && ( in & 0x40 ) ) {
-        result |= - ( 1 << shift );
-    }
-    *value = (uint_32)result;
+    *value = result;
     return( (uint_8 *)input );
 }
+
 //TODO: check stack bounds
 static void DoLocExpr( unsigned_8       *p,
                        int              length,
@@ -116,7 +94,8 @@ static void DoLocExpr( unsigned_8       *p,
     uint_32         op2;
     uint_32         stk1;
     uint_32         stk2;
-    uint_32         tmp;
+    uint_32         utmp;
+    int_32          stmp;
     uint_32         stack[100];
     uint_32         *top;
     uint_32         *stk_top;
@@ -126,11 +105,12 @@ static void DoLocExpr( unsigned_8       *p,
 #define Push( a )    (--a)
 #define IsEmpty( a, b )  ( (a) == (b) )
 
+    var = var;
     end = &p[length];
     stk_top = &stack[100];
     top = stk_top;
     if( callbck->init!= NULL  ) {
-        kind = callbck->init( d, &tmp );
+        kind = callbck->init( d, &utmp );
         switch( kind ){
         case DR_LOC_NONE:
              kind = DR_LOC_ADDR;
@@ -138,7 +118,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DR_LOC_REG:
         case DR_LOC_ADDR:
             Push( top );
-            top[0] = tmp;
+            top[0] = utmp;
         }
     } else {
         kind = DR_LOC_ADDR;
@@ -150,7 +130,7 @@ static void DoLocExpr( unsigned_8       *p,
     while( p  < end ) {
         op = *p;
         ++p;
-        opr = LocOpr[ op ];
+        opr = LocOpr[op];
         /* decode operands */
         switch( opr ) {
         case DW_LOP_NOOP:
@@ -198,32 +178,32 @@ static void DoLocExpr( unsigned_8       *p,
             p += sizeof(uint_32);
             break;
         case DW_LOP_U128:
-            p = DecodeULEB128( p, &tmp );
-            op1 = tmp;
+            p = DecodeULEB128( p, &utmp );
+            op1 = utmp;
             break;
         case DW_LOP_S128:
-            p = DecodeLEB128( p, &tmp );
-            op1 = tmp;
+            p = DecodeSLEB128( p, &stmp );
+            op1 = stmp;
             break;
         case DW_LOP_U128_S128:
-            p = DecodeULEB128( p, &tmp );
-            op1 = tmp;
-            p = DecodeLEB128( p, &tmp );
-            op2 = tmp;
+            p = DecodeULEB128( p, &utmp );
+            op1 = utmp;
+            p = DecodeSLEB128( p, &stmp );
+            op2 = stmp;
             break;
         case DW_LOP_LIT1:
-            op1 = op-DW_OP_lit0;
+            op1 = op - DW_OP_lit0;
             op = DW_OP_lit0;
             break;
         case DW_LOP_REG1:
-            op1 = op-DW_OP_reg0;
+            op1 = op - DW_OP_reg0;
             op = DW_OP_reg0;
             break;
         case DW_LOP_BRG1:
-            op1 = op-DW_OP_breg0;
+            op1 = op - DW_OP_breg0;
             op = DW_OP_breg0;
-            p = DecodeLEB128( p, &tmp );
-            op2 = tmp;
+            p = DecodeSLEB128( p, &stmp );
+            op2 = stmp;
             break;
         case DW_LOP_STK2:
             stk2 = top[0];
@@ -286,7 +266,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DW_OP_bregx:
             /* get contents of reg op1 */
             Push( top );
-            if( !callbck->reg( d, top, op1 ) ) {
+            if( !callbck->reg( d, top, (uint_16)op1 ) ) {
                 return;
             }
             top[0] += op2;
@@ -325,7 +305,7 @@ static void DoLocExpr( unsigned_8       *p,
         case DW_OP_deref_size:
             /* dref addr */
             if( kind == DR_LOC_REG ) {  // indirect of reg name
-                if( !callbck->reg( d, top, top[0] ) ) {
+                if( !callbck->reg( d, top, (uint_16)top[0] ) ) {
                     return;
                 }
                 kind = DR_LOC_ADDR;
@@ -341,7 +321,7 @@ static void DoLocExpr( unsigned_8       *p,
             /*  xdref addr */
             stk1 = top[0];
             Pop( top );
-            if( !callbck->drefx( d, top, stk1, top[0], op1 ) ) {
+            if( !callbck->drefx( d, top, stk1, top[0], (uint_16)op1 ) ) {
                 return;
             }
             break;
@@ -442,9 +422,8 @@ static void DoLocExpr( unsigned_8       *p,
     return;
 }
 
-static dr_handle SearchLocList( uint_32 start, uint_32 context,
-                                uint addr_size )
-/*************************************************************/
+static dr_handle SearchLocList( uint_32 start, uint_32 context, uint addr_size )
+/******************************************************************************/
 // Search loc list for context return start of loc_expr block or NULL
 {
     uint_32     low;
@@ -453,23 +432,24 @@ static dr_handle SearchLocList( uint_32 start, uint_32 context,
     dr_handle   p;
 
     p =  DWRCurrNode->sections[DR_DEBUG_LOC].base;
-    if( p == 0 ) {
+    if( p == DR_HANDLE_NUL ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
-        return( 0 );
+        return( DR_HANDLE_NUL );
     }
     p += start;
     for( ;; ) {
-        low = ReadVWord( p, addr_size );
-        p+= addr_size;
-        high = ReadVWord( p, addr_size );
-        p+= addr_size;
+        low = DWRReadInt( p, addr_size );
+        p += addr_size;
+        high = DWRReadInt( p, addr_size );
+        p += addr_size;
         if( low == high && low == 0 ) {
-            p = 0;
+            p = DR_HANDLE_NUL;
             break;
         }
-        if( low <= context && context < high ) break;
+        if( low <= context && context < high )
+            break;
         len = DWRVMReadWord( p );
-        p+= sizeof(uint_16);
+        p += sizeof( uint_16 );
         p += len;
     }
     return( p );
@@ -479,12 +459,12 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
                                     dr_loc_callbck *callbck, void *d )
 /**********************************************************************/
 {
-    unsigned    form;
+    dw_formnum  form;
     uint_32     size;
     uint_8      loc_buff[256];
     uint_8      *expr;
     bool        ret;
-    dr_handle   loclist;
+    uint_32     loclist;
     uint_32     context;
     int         addr_size;
 
@@ -519,7 +499,7 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
             }
             loclist =  DWRVMReadDWord( info );
             info = SearchLocList( loclist, context, addr_size );
-            if( info == 0 ) {
+            if( info == DR_HANDLE_NUL ) {
                 ret = FALSE;
                 goto exit;
             }
@@ -555,18 +535,15 @@ exit:
 bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
 /******************************************************************/
 {
-    dw_tagnum   tag;
-    dw_atnum    at;
-    dr_handle   abbrev;
-    dr_handle   sym = var;
-    bool        ret;
+    dw_tagnum       tag;
+    dw_atnum        at;
+    dr_handle       abbrev;
+    dr_handle       sym = var;
+    bool            ret;
 
-    abbrev = DWRVMReadULEB128( &var );
-    abbrev = DWRLookupAbbrev( var, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
-    ++abbrev; /* skip child flag */
+    tag = DWRReadTag( &var, &abbrev );
+    abbrev++;   /* skip child flag */
     switch( tag ) {
-        break;
     case DW_TAG_member:
     case DW_TAG_inheritance:
         at = DW_AT_data_member_location;
@@ -589,7 +566,7 @@ bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
             int         addr_size;
 
             addr_size = DWRGetAddrSize( DWRFindCompileUnit( var ) );
-            DoLocExpr( dummy_loc, sizeof(dummy_loc), addr_size, callbck, d, var );
+            DoLocExpr( dummy_loc, sizeof( dummy_loc ), addr_size, callbck, d, var );
             ret = TRUE;
         } else {
             ret = FALSE;
@@ -601,16 +578,14 @@ bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
 bool DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d )
 /******************************************************************/
 {
-    dw_tagnum   tag;
-    dw_atnum    at;
-    dr_handle   abbrev;
-    dr_handle   sym = var;
-    bool        ret;
+    dw_tagnum       tag;
+    dw_atnum        at;
+    dr_handle       abbrev;
+    dr_handle       sym = var;
+    bool            ret;
 
-    abbrev = DWRVMReadULEB128( &var );
-    abbrev = DWRLookupAbbrev( var, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
-    ++abbrev; /* skip child flag */
+    tag = DWRReadTag( &var, &abbrev );
+    abbrev++;   /* skip child flag */
     switch( tag ) {
     case DW_TAG_common_block:
     case DW_TAG_formal_parameter:
@@ -635,14 +610,11 @@ bool DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d )
 bool DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d )
 /*******************************************************************/
 {
-    dr_handle   abbrev;
-    dr_handle   sym = var;
-    bool        ret;
+    dr_handle       abbrev;
+    dr_handle       sym = var;
+    bool            ret;
 
-    abbrev = DWRVMReadULEB128( &var );
-    abbrev = DWRLookupAbbrev( var, abbrev );
-    DWRVMReadULEB128( &abbrev );    /* skip tag */
-    ++abbrev;                       /* skip child flag */
+    abbrev = DWRSkipTag( &var ) + 1;
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
@@ -656,7 +628,7 @@ extern dr_handle DRStringLengthAT( dr_handle str )
 {
     dr_handle   abbrev;
 
-    abbrev = DWRGetAbbrev( &str );
+    abbrev = DWRSkipTag( &str ) + 1;
     if( DWRScanForAttrib( &abbrev, &str, DW_AT_string_length ) ) {
          return( str );
     } else {
@@ -671,7 +643,7 @@ bool DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
     dr_handle   sym = var;
     bool        ret;
 
-    abbrev = DWRGetAbbrev( &var );
+    abbrev = DWRSkipTag( &var ) + 1;
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_return_addr ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
@@ -687,7 +659,7 @@ bool DRSegLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
     dr_handle   sym = var;
     bool        ret;
 
-    abbrev = DWRGetAbbrev( &var );
+    abbrev = DWRSkipTag( &var ) + 1;
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_segment ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {

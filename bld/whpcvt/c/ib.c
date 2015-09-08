@@ -32,6 +32,9 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "clibext.h"
+
+
 #define MAX_LISTS       20
 
 enum {

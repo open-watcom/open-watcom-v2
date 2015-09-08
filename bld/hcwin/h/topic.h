@@ -168,7 +168,7 @@ class HFTopic : public Dumpable
     bool        _haveCleanedUp;
 
     // A private function called by the appendAttr() functions.
-    void        addZero( unsigned index );
+    void        addZero( size_t index );
 
     // Assignment of HFTopic's is not allowed.
     HFTopic( HFTopic const & ) {};

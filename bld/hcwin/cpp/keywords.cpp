@@ -184,7 +184,7 @@ uint_32 KWKey::size()
 
 int KWKey::dump( OutFile * dest )
 {
-    dest->write( _keyword, 1, strlen( _keyword ) + 1 );
+    dest->write( _keyword, strlen( _keyword ) + 1 );
     return 1;
 }
 
@@ -217,8 +217,7 @@ KWRec::~KWRec()
 
 uint_32 KWRec::size()
 {
-    size_t len = strlen( _keyword ) + 1 + sizeof( uint_16 ) + sizeof( uint_32 );
-    return len;
+    return( (uint_32)( strlen( _keyword ) + 1 + sizeof( uint_16 ) + sizeof( uint_32 ) ) );
 }
 
 
@@ -227,7 +226,7 @@ uint_32 KWRec::size()
 int KWRec::dump( OutFile * dest )
 {
     size_t len = strlen( _keyword ) + 1;
-    dest->write( _keyword, 1, len );
+    dest->write( _keyword, len );
     dest->write( _count );
     dest->write( _dataOffset );
     return 1;

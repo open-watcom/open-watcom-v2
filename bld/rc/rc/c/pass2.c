@@ -34,7 +34,6 @@
 #include "errors.h"
 #include "rcstrblk.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exeutil.h"
 #include "exeseg.h"
@@ -43,6 +42,7 @@
 #include "exerespe.h"
 #include "exelxobj.h"
 #include "exereslx.h"
+
 
 /*
  * copyStubFile - copy from the begining of the file to the start of

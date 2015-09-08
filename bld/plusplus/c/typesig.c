@@ -183,7 +183,7 @@ static void typeSigAccess(      // HANDLE ACCESS FOR TYPE-SIGNATURE
 static unsigned typeSigNameSize(// COMPUTE SIZE OF NAME IN TYPE SIGNATURE
     THROBJ thr )                // - category of object
 {
-    unsigned size;              // - size of mangled name in type signature
+    unsigned size = 0;          // - size of mangled name in type signature
 
     switch( thr ) {
       case THROBJ_SCALAR :

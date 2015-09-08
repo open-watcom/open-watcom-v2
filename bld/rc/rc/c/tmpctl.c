@@ -91,5 +91,5 @@ extern void TmpCtlInitStatics( void )
 /***********************************/
 {
     numTmpNames = 0;
-    memset( tmpFileNames, 0, sizeof( tmpFileNames ) );
+    memset( (void *)tmpFileNames, 0, sizeof( tmpFileNames ) );
 }

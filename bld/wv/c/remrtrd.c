@@ -36,10 +36,10 @@
 #include "trapaccs.h"
 #include "madinter.h"
 #include "dui.h"
+#include "trapglbl.h"
 
 #define DEFAULT_TID     1
 
-extern trap_shandle     GetSuppId( char * );
 extern void             CheckForNewThreads( bool set_exec );
 extern void             GetSysConfig( void );
 

@@ -57,13 +57,7 @@ typedef enum {
         DBG_PREDEF_SYM,
         DBG_PCH_SYM,
         DBG_SYM_ACCESS,
-        __UNUSED_AUX_CLASS_13,
-        __UNUSED_AUX_CLASS_14,
-        __UNUSED_AUX_CLASS_15,
-        __UNUSED_AUX_CLASS_16,
-        __UNUSED_AUX_CLASS_17,
-        __UNUSED_AUX_CLASS_18,
-        __UNUSED_AUX_CLASS_19,
+        DBG_DWARF_PRODUCER,
         #include "cgauxc.h"
         __LAST_AUX_CLASS
 } aux_class;

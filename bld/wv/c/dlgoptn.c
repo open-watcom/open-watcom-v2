@@ -36,13 +36,11 @@
 #include "dbgerr.h"
 #include "dlgoptn.h"
 #include "dbgscan.h"
-
-extern bool             SupportsExactBreakpoints;
+#include "trapglbl.h"
 
 extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
 extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 extern void             LookCaseSet( bool respect );
-extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
 
 static void GetDlgStatus( gui_window *gui )
 {
@@ -66,11 +64,7 @@ static void GetDlgStatus( gui_window *gui )
     }
     NewCurrRadix( old );
 
-    /* Don't change config if it is just the trap file that does not support the option! */
-    if( SupportsExactBreakpoints ) {
-        _SwitchSet( SW_BREAK_ON_WRITE, GUIIsChecked( gui, CTL_OPT_BR_ON_WRITE ) );
-        CapabilitiesSetExactBreakpointSupport( _IsOn( SW_BREAK_ON_WRITE ) ? TRUE : FALSE );
-    }
+    SetCapabilitiesExactBreakpointSupport( GUIIsChecked( gui, CTL_OPT_BR_ON_WRITE ), TRUE );
 }
 
 
@@ -88,12 +82,13 @@ static void SetDlgStatus( gui_window *gui )
     DlgSetLong( gui, CTL_OPT_RADIX, old );
     DlgSetLong( gui, CTL_OPT_DCLICK, WndGetDClick() );
     NewCurrRadix( old );
-    GUIEnableControl( gui, CTL_OPT_BR_ON_WRITE, SupportsExactBreakpoints );
+    GUIEnableControl( gui, CTL_OPT_BR_ON_WRITE, IsExactBreakpointsSupported() );
     GUISetChecked( gui, CTL_OPT_NOHEX, _IsOn( SW_DONT_EXPAND_HEX ) );
-    if( SupportsExactBreakpoints )
+    if( IsExactBreakpointsSupported() ) {
         GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, _IsOn( SW_BREAK_ON_WRITE ) );
-    else
+    } else {
         GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, FALSE );
+    }
 }
 
 

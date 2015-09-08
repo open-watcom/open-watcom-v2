@@ -46,6 +46,7 @@ name_386_nt       = $(wres_dir)/flat386/$(name_model_conv)
 
 name_i86 = $(name_i86_$(memory_model_i86))
 name_386 = $(name_386_$(host_os))
+name_arm = $(wres_dir)/$(host_os)arm/_s/wres.lib
 name_axp = $(wres_dir)/$(host_os)axp/_s/wres.lib
 name_ppc = $(wres_dir)/$(host_os)ppc/_s/wres.lib
 name_mps = $(wres_dir)/$(host_os)mps/_s/wres.lib

@@ -30,6 +30,11 @@
 
 
 #include "guiwind.h"
+#include <string.h>
+#ifdef __WATCOMC__
+    #include <process.h>
+#endif
+#include <stdlib.h>
 #include "guix.h"
 #include "guiscale.h"
 #include "guixloop.h"
@@ -46,12 +51,9 @@
 #include "guizlist.h"
 #include "guistr.h"
 #include "guiextnm.h"
-#include <string.h>
-#ifdef __WATCOMC__
-    #include <process.h>
-#endif
-#include <stdlib.h>
+
 #include "clibext.h"
+
 
 extern bool GUIMainTouched;
 

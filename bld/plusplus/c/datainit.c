@@ -383,7 +383,11 @@ static bool dataInitCheckHugeAlign( TYPE type )
         base_type = ArrayType( type );
     }
     base_size = CgMemorySize( type );
-    return( ((TARGET_UINT_MAX + 1) % base_size) != 0 );
+#if _CPU == 8086
+    return( ( (TARGET_UINT_MAX + 1) % base_size ) != 0 );
+#else
+    return( FALSE );
+#endif
 }
 
 static TYPE dtorableObjectType( // GET TYPE OF DTORABLE OBJECT (AT ROOT) ELEMENT
@@ -1319,8 +1323,12 @@ static void dataInitRunTimeCallHuge( target_size_t position, target_size_t diff 
 
     while( diff != 0 && currInit->state != DS_ERROR ) {
         dataInitCheckHugeSegment( position );
+#if _CPU == 8086
         position %= (TARGET_UINT_MAX + 1);
         increment = TARGET_UINT_MAX + 1 - position;
+#else
+        increment = - position;
+#endif
         if( increment > diff ) {
             increment = diff;
         }
@@ -1572,8 +1580,12 @@ static void dataInitPadOutHuge( INITIALIZE_INFO *top )
     position = top->base + top->offset;
     while( diff != 0 ) {
         dataInitCheckHugeSegment( position );
+#if _CPU == 8086
         position %= (TARGET_UINT_MAX + 1);
         increment = TARGET_UINT_MAX + 1 - position;
+#else
+        increment = - position;
+#endif
         if( increment > diff ) {
             increment = diff;
         }

@@ -44,7 +44,6 @@ extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
 extern void             PointFini( void );
 extern int              GetStackPos( void );
-extern char             *GetCmdName( int index );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern  a_window        *WndSrcInspect( address addr );

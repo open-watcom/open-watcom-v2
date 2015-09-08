@@ -35,8 +35,9 @@
 #include "dbtable.h"
 #include "write.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
+
+#include "clibext.h"
 
 
 typedef struct {

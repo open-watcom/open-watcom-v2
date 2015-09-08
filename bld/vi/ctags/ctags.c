@@ -34,16 +34,17 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
-
 #if defined( __UNIX__ )
     #include <dirent.h>
     #include <sys/stat.h>
 #else
     #include <direct.h>
 #endif
-#include "clibext.h"
 #include "ctags.h"
 #include "banner.h"
+
+#include "clibext.h"
+
 
 static const char       *usageMsg[] = {
     "Usage: ctags [-?adempstqvxy] [-z[a,c,f]] [-f<fname>] [files] [@optfile]",

@@ -108,8 +108,9 @@ static bool ACueFile( void *_info, dr_line_file *curr )
     bool            cont;
     int             i;
 
+    cont = TRUE;
     if( info->index == curr->index ) {
-        if( curr->name ) {
+        if( curr->name != NULL ) {
             if( curr->dir != 0) {
                 for( i = 0; i < info->num_dirs; i++ ) {
                     if( info->dirs[i].index == curr->dir ) {
@@ -121,23 +122,21 @@ static bool ACueFile( void *_info, dr_line_file *curr )
                     strcpy( info->ret, info->dirs[i].name );
                     strcat( info->ret, "/");
                     strcat( info->ret, curr->name );
-                    DCFree( curr->name );
                 } else {
                     /* This should be an error, but it isn't fatal as we should
                      * never get here in practice.
                      */
-                    info->ret = curr->name;
+                    info->ret = DCAlloc( strlen( curr->name ) + 1 );
+                    strcpy( info->ret, curr->name );
                 }
             } else {
-                info->ret = curr->name;
+                info->ret = DCAlloc( strlen( curr->name ) + 1 );
+                strcpy( info->ret, curr->name );
             }
         } else {
             info->ret = NULL;
         }
         cont = FALSE;
-    } else {
-        cont = TRUE;
-        DCFree( curr->name );
     }
     return( cont  );
 }
@@ -148,7 +147,7 @@ static bool ACueDir( void *_info, dr_line_dir *curr )
 {
     file_walk_name  *info = _info;
 
-    if( info ) {
+    if( info != NULL ) {
         info->dirs = DCRealloc( info->dirs, sizeof( dr_line_dir ) * (info->num_dirs + 1) );
         info->dirs[info->num_dirs].index = curr->index;
         info->dirs[info->num_dirs].name = DCAlloc( strlen( curr->name ) + 1 );
@@ -174,25 +173,23 @@ static bool IsRelPathname( const char *name )
 }
 
 
-unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned buff_size )
-/********************************************************************/
+unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                                          char *buff, unsigned buff_size )
+/************************************************************************/
 {
     char            *name;
-    char            *dir_path;
     file_walk_name  wlk;
     unsigned        len;
-    unsigned        dir_len;
     dr_handle       stmts;
-    dr_handle       cu_handle;
+    dr_handle       cu_tag;
     int             i;
     mod_info        *modinfo;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into dwarf */
-    modinfo = IM2MODI( ii, ic->im );
+    modinfo = IMH2MODI( ii, ic->im );
     stmts = modinfo->stmts;
-    cu_handle = modinfo->cu_tag;
-    if( stmts == 0 || cu_handle == 0 ) {
+    cu_tag = modinfo->cu_tag;
+    if( stmts == DR_HANDLE_NUL || cu_tag == DR_HANDLE_NUL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -215,27 +212,13 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     }
     // If compilation unit has a DW_AT_comp_dir attribute, we need to
     // stuff that in front of the file pathname, unless that is absolute
-    dir_len = DRGetCompDirBuff( cu_handle, NULL, 0 );
-    if( (dir_len > 1) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
-        if( buff_size == 0 ) {
-            len = NameCopy( buff, name, buff_size ) + dir_len;
-        } else {
-            dir_path = DCAlloc( dir_len );
-            if( dir_path == NULL ) {
-                DCStatus( DS_FAIL );
-                return( 0 );
-            }
-            DRGetCompDirBuff( cu_handle, dir_path, dir_len );
-            len = NameCopy( buff, dir_path, buff_size );
-            DCFree( dir_path );
-            if( buff_size > len + 1 ) {
-                len += NameCopy( buff + len, "/", 1 + 1 );
-                len += NameCopy( buff + len, name, buff_size - len );
-            }
-        }
+    len = DRGetCompDirBuff( cu_tag, buff, buff_size );
+    if( ( len > 1 ) && IsRelPathname( name ) ) {  // Ignore empty comp dirs
+        len = NameCopy( buff, "/", buff_size, len );
     } else {
-        len = NameCopy( buff, name, buff_size );
+        len = 0;
     }
+    len = NameCopy( buff, name, buff_size, len );
     DCFree( name );
     return( len );
 }
@@ -299,7 +282,6 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
     dr_dbg_handle   saved;
 
     ic = fc->ic;
-    DCFree( curr->name );
     ic->a = NilAddr;
     ic->im = fc->im;
     if( FirstCue( fc->stmts, curr->index, ic ) ) {
@@ -328,8 +310,8 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
     dr_handle       stmts;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IM2MODI( ii, im )->stmts;
-    if( stmts == 0 ) {
+    stmts = IMH2MODI( ii, im )->stmts;
+    if( stmts == DR_HANDLE_NUL ) {
         DCStatus( DS_FAIL );
         return( WR_CONTINUE );
     }
@@ -417,8 +399,8 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
     address         map_addr;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IM2MODI( ii, src->im )->stmts;
-    if( stmts == 0 ) {
+    stmts = IMH2MODI( ii, src->im )->stmts;
+    if( stmts == DR_HANDLE_NUL ) {
         DCStatus( DS_FAIL );
         return( DS_ERR|DS_FAIL  );
     }
@@ -522,8 +504,8 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
         return( SR_NONE );
     }
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    stmts = IM2MODI( ii, im )->stmts;
-    if( stmts == 0 ) {
+    stmts = IMH2MODI( ii, im )->stmts;
+    if( stmts == DR_HANDLE_NUL ) {
         return( SR_NONE );
     }
     map_addr = addr;
@@ -588,8 +570,8 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
         return( SR_NONE );
     }
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IM2MODI( ii, im )->stmts;
-    if( stmts == 0 ) {
+    stmts = IMH2MODI( ii, im )->stmts;
+    if( stmts == DR_HANDLE_NUL ) {
         return( SR_NONE );
     }
     cue_map= ii->cue_map;

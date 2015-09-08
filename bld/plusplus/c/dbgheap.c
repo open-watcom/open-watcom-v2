@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 #ifdef __WATCOMC__
+#include <malloc.h>
 #include <process.h>
 #endif
 

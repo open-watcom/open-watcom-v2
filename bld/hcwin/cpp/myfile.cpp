@@ -38,7 +38,9 @@ MYFILE:  Special purpose file handling
 #include <ctype.h>
 #include <stdlib.h>
 #include "myfile.h"
+
 #include "clibext.h"
+
 
 const uint_8 File::_isOpen = 0x10;
 

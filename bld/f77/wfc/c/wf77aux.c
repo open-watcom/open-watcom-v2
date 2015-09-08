@@ -30,6 +30,10 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "global.h"
 #include "fcgbls.h"
 #include "wf77aux.h"
@@ -42,11 +46,9 @@
 #include "inout.h"
 #include "cspawn.h"
 #include "asmstmt.h"
-#include <string.h>
-#include <ctype.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+
 #include "clibext.h"
+
 
 extern  int             KwLookUp(char **,int,char *,int,bool);
 extern  int             MkHexConst(char *,char *,int);

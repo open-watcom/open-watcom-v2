@@ -48,7 +48,6 @@
   #include <dos.h>
   #include <direct.h>
 #endif
-
 #include "wio.h"
 #include "watcom.h"
 #include "gui.h"
@@ -65,7 +64,9 @@
 #include "wpack.h"
 #endif
 #include "errno.h"
+
 #include "clibext.h"
+
 
 #if defined( WINNT ) || defined( WIN )
     #define UNC_SUPPORT

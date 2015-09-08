@@ -41,8 +41,9 @@
 #include "preproc.h"
 #include "rcspawn.h"
 #include "iortns.h"
-#include "clibext.h"
 #include "rccore.h"
+#include "rcmem.h"
+#include "rcrtns.h"
 
 
 static char             rcStrBuf[1024];
@@ -196,6 +197,8 @@ extern void RcFatalError( unsigned int errornum, ... )
         ResCloseFile( CurrResFile.handle );
         remove( CurrResFile.filename );
         UnregisterTmpFile( CurrResFile.filename );
+        RCFREE( CurrResFile.filename );
+        CurrResFile.filename = NULL;
     }
 #if !defined( WRDLL )
     CloseAllFiles();

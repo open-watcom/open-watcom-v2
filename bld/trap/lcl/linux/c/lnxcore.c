@@ -42,7 +42,7 @@
 #include "mad.h"
 #include "madregs.h"
 
-extern unsigned FindFilePath( int exe, char *name, char *result );
+extern unsigned FindFilePath( int exe, const char *name, char *result );
 
 #ifdef __BIG_ENDIAN__
     #define SWAP_16     CONV_LE_16

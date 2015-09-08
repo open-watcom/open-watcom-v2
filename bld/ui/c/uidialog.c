@@ -35,12 +35,13 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
-
 #include "uidef.h"
 #include "uimenu.h"
 #include "uidialog.h"
 #include "uigchar.h"
+
 #include "clibext.h"
+
 
 #define CTRL_BUF_LEN    80
 

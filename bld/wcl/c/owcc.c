@@ -56,6 +56,7 @@
 
 #include "clibext.h"
 
+
 #if defined(__UNIX__)
 #define strfcmp strcmp
 #else

@@ -35,12 +35,12 @@
 #include "dbglit.h"
 #include "spawn.h"
 #include "dui.h"
-#include "trpcapb.h"
 #include "strutil.h"
 #include "dbgscan.h"
 #include "madinter.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "trapglbl.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -67,9 +67,7 @@ extern void             FiniMenus( void );
 extern void             FiniPaint( void );
 extern void             FiniToolBar( void );
 extern void             FiniTrace( void );
-extern void             FiniTrap( void );
-extern char             *GetCmdEntry( const char *tab, int index, char *buff );
-extern trap_shandle     GetSuppId( char * );
+extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
 extern void             InitBPs( void );
@@ -90,7 +88,6 @@ extern void             InitMemWindow( void );
 extern void             InitMenus( void );
 extern void             InitPaint( void );
 extern void             InitToolBar( void );
-extern void             InitTrap( const char * );
 extern void             LangSetFini( void );
 extern bool             LangSetInit( void );
 extern void             LoadProg( void );
@@ -151,17 +148,8 @@ extern void             WndMemInit( void );
 
 extern int              ScanSavePtr;
 
-extern bool             Supports8ByteBreakpoints;
-extern bool             SupportsExactBreakpoints;
-
 OVL_EXTERN void         ProcNil( void );
 
-
-/* Internal - to be moved */
-bool CapabilitiesGet8ByteBreakpointSupport( void );
-bool CapabilitiesGetExactBreakpointSupport( void );
-bool CapabilitiesSet8ByteBreakpointSupport( bool status );
-bool CapabilitiesSetExactBreakpointSupport( bool status );
 
 #define pick( a, b, c ) extern void b( void );
 #include "dbgcmd.h"
@@ -173,20 +161,18 @@ static const char CmdNameTab[] = {
     #undef pick
 };
 
-
-
 static void ( * const CmdJmpTab[] )( void ) = {
-    &ProcNil,
     #define pick( a, b, c ) &b,
     #include "dbgcmd.h"
     #undef pick
 };
 
 
-char *GetCmdName( int index )
+char *GetCmdName( wd_cmd cmd )
 {
-    static char buff[ MAX_CMD_NAME+1 ];
-    GetCmdEntry( CmdNameTab, index, buff );
+    static char buff[MAX_CMD_NAME + 1];
+
+    GetCmdEntry( CmdNameTab, (int)cmd, buff );
     return( buff );
 }
 
@@ -295,7 +281,7 @@ void ChkBreak( void )
 
 void ProcACmd( void )
 {
-    unsigned cmd;
+    int     cmd;
 
     ChkBreak();
     CmdStart = ScanPos();
@@ -333,8 +319,12 @@ void ProcACmd( void )
         break;
     default:
         cmd = ScanCmd( CmdNameTab );
-        if( cmd == 0 && _IsOn( SW_IMPLICIT ) ) {
-            ProcInvoke();
+        if( cmd < 0 ) {
+            if( _IsOn( SW_IMPLICIT ) ) {
+                ProcInvoke();
+            } else {
+                ProcNil();
+            }
         } else {
             (*CmdJmpTab[ cmd ])();
         }
@@ -447,116 +437,4 @@ void DebugFini( void )
     _Free( TrapParms );
     FiniLiterals();
     FiniLocalInfo();
-}
-
-/*
- *  Find if the current trap file supports the capabilities service
- */
-trap_shandle    SuppCapabilitiesId = 0;
-
-bool InitCapabilities( void )
-{
-    /* Always reset in case of trap switch */
-    Supports8ByteBreakpoints = FALSE;
-    SupportsExactBreakpoints = FALSE;
-
-    SuppCapabilitiesId = GetSuppId( CAPABILITIES_SUPP_NAME );
-    if( SuppCapabilitiesId == 0 ) 
-        return( FALSE );
-
-    CapabilitiesGet8ByteBreakpointSupport();
-    CapabilitiesGetExactBreakpointSupport();
-
-    if( Supports8ByteBreakpoints )
-        CapabilitiesSet8ByteBreakpointSupport( TRUE );
-
-    if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
-        CapabilitiesSetExactBreakpointSupport( TRUE );
-
-    return( TRUE );
-}
-
-#define SUPP_CAPABILITIES_SERVICE( in, request )   \
-        in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
-        in.supp.id              = SuppCapabilitiesId;       \
-        in.req                  = request;
-
-bool CapabilitiesGet8ByteBreakpointSupport( void )
-{
-    capabilities_get_8b_bp_req  acc;
-    capabilities_get_8b_bp_ret  ret;
-
-    if( SuppCapabilitiesId == 0 ) 
-        return( FALSE );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( FALSE );
-    } else {
-        Supports8ByteBreakpoints = TRUE;   /* The trap supports 8 byte breakpoints */
-        return( TRUE );
-    }
-}
-
-bool CapabilitiesSet8ByteBreakpointSupport( bool status )
-{
-    capabilities_set_8b_bp_req  acc;
-    capabilities_set_8b_bp_ret  ret;
-
-    if( SuppCapabilitiesId == 0 ) 
-        return( FALSE );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_8B_BP );
-    acc.status = status ? TRUE : FALSE;
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( FALSE );
-    } else {
-        Supports8ByteBreakpoints = ret.status ? TRUE : FALSE;
-        return( TRUE );
-    }
-}
-
-bool CapabilitiesGetExactBreakpointSupport( void )
-{
-    capabilities_get_8b_bp_req  acc;
-    capabilities_get_8b_bp_ret  ret;
-
-
-    if( SuppCapabilitiesId == 0 ) 
-        return( FALSE );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( FALSE );
-    } else {
-        /* The trap may support it, but it is not possible currently */
-        SupportsExactBreakpoints = ret.status ? TRUE : FALSE;        
-        return( TRUE );
-    }
-}
-
-bool CapabilitiesSetExactBreakpointSupport( bool status )
-{
-    capabilities_set_8b_bp_req  acc;
-    capabilities_set_8b_bp_ret  ret;
-
-    if( SuppCapabilitiesId == 0 ) 
-        return( FALSE );
-
-    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
-    acc.status = status ? TRUE : FALSE;
-
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.err != 0 ) {
-        return( FALSE );
-    } else {
-        _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? TRUE : FALSE ); 
-        return( TRUE );
-    }
 }

@@ -30,11 +30,14 @@
 
 
 #include "plusplus.h"
-
 #include <setjmp.h>
 #include <stdarg.h>
 #include <errno.h>
-
+#if defined(__UNIX__)
+ #include <unistd.h>
+#else
+ #include <direct.h>
+#endif
 #include "preproc.h"
 #include "memmgr.h"
 #include "srcfile.h"
@@ -44,12 +47,8 @@
 #include "hfile.h"
 #include "dw.h"
 #include "exeelf.h"
+#include "dwarfid.h"
 
-#if defined(__UNIX__)
- #include <unistd.h>
-#else
- #include <direct.h>
-#endif
 #include "clibext.h"
 
 
@@ -394,7 +393,7 @@ extern dw_client DwarfInit( void )
     }
     info.language = DWLANG_CPP;
     info.compiler_options = DW_CM_BROWSER;
-    info.producer_name = "WATCOM C++ V1";
+    info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs.reloc = &dw_reloc;
     info.funcs.write = &dw_write;

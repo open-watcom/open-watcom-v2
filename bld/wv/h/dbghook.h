@@ -31,21 +31,11 @@
 
 
 /* Note: We've got problems if there are more than 32 hook_types */
-typedef unsigned_8 hook_type; enum {
-    HOOK_PROG_START,
-    HOOK_PROG_END,
-    HOOK_DLL_START,
-    HOOK_DLL_END,       /* not used yet */
-    HOOK_EXEC_START,
-    HOOK_EXEC_END,
-    HOOK_SRC_START,
-    HOOK_SRC_END,
-    HOOK_NEW_MODULE,
-    HOOK_QUIT,
-    HOOK_LAST  = HOOK_QUIT,
-    HOOK_FIRST = HOOK_PROG_START,
-    HOOK_NUM   = HOOK_LAST - HOOK_FIRST + 1
-};
-
+typedef enum {
+    #define pick(e,name)    e,
+    #include "_dbghook.h"
+    #undef pick
+    HOOK_NUM,
+} hook_type;
 
 extern void             HookNotify( bool, hook_type );

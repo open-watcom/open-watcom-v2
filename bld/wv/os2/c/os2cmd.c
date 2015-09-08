@@ -39,7 +39,7 @@
 
 #if 0
 extern unsigned     GetValue( void );
-extern unsigned     Lookup( const char *, const char *, unsigned );
+extern int          Lookup( const char *, const char *, size_t );
 
 
 static const char SysOptNameTab[] = {
@@ -47,7 +47,7 @@ static const char SysOptNameTab[] = {
     ""
 };
 
-enum { OPT_LINES = 1 };
+enum { OPT_LINES };
 #endif
 
 

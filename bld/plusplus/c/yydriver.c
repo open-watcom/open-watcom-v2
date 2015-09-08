@@ -64,7 +64,7 @@ typedef union {
     symbol_flag         flags_acc;
     CLASS_INIT          flags_cls;
     bool                segm_cast;
-    YYTOKENTYPE         token;
+    CGOP                token;
     TYPE                type;
     BASE_CLASS          *base;
     DECL_SPEC           *dspec;

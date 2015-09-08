@@ -36,7 +36,9 @@
 #endif
 #include "wio.h"
 #include "banner.h"
+
 #include "clibext.h"
+
 
 #if defined( USE_TEXT_MSGS )
 
@@ -142,7 +144,7 @@ void MsgPrintf( int resourceid )
 
     PrintBanner();
     MsgGet( resourceid, msgbuf );
-    printf( msgbuf );
+    printf( "%s", msgbuf );
 }
 
 void MsgPrintf1( int resourceid, const char *token )

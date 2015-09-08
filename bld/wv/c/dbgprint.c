@@ -76,7 +76,7 @@ extern void             AddSubscript( void );
 extern void             EndSubscript( void );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 extern unsigned         ProgPeek( address, void *, unsigned int );
-extern char             *GetCmdName( int );
+extern char             *GetCmdName( wd_cmd cmd );
 
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )
@@ -983,10 +983,10 @@ void ProcPrint( void )
     if( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( PrintOps ) ) {
-        case 1:
+        case 0:
             DoPrintList( TRUE );
             break;
-        case 2:
+        case 1:
             GraphicDisplay();
             break;
         default:

@@ -57,13 +57,16 @@ typedef struct rad_str {
     char             radstr[1];         /* first byte is length */
 } rad_str;
 
-extern unsigned         Lookup( const char *, const char *, unsigned );
+extern int              Lookup( const char *, const char *, size_t );
 extern unsigned int     ReqExpr( void );
 extern void             ConfigLine( char * );
 extern void             DbgUpdate( update_list );
 
-
-static const char CmdLnDelimTab[] = { "<>*/(),{}!?;[]~#\0" };
+static const char CmdLnDelimTab[] = {
+    #define pick(t,c)   c
+    #include "_dbgtok.h"
+    #undef pick
+};
 
 typedef union {
         unsigned_64     int_val;
@@ -168,9 +171,9 @@ unsigned ScanLen( void )
  * ScanCmd -- scan a command start of current token, looking up in given table
  */
 
-unsigned ScanCmd( const char *cmd_table )
+int ScanCmd( const char *cmd_table )
 {
-    unsigned    ind;
+    int         ind;
     const char  *saveptr;
 
     saveptr = ScanPtr;
@@ -179,10 +182,10 @@ unsigned ScanCmd( const char *cmd_table )
         ++ScanPtr;
     }
     ind = Lookup( cmd_table, TokenStart, ScanPtr - TokenStart );
-    if( ind != 0 ) {
-        Scan();
-    } else {
+    if( ind < 0 ) {
         ScanPtr = saveptr;
+    } else {
+        Scan();
     }
     return( ind );
 }
@@ -237,8 +240,8 @@ static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
     data.len = 0;
     data.th = MAD_NIL_TYPE_HANDLE;
     MADTypeWalk( tk, FindTypeName, &data );
-    if( data.th == MAD_NIL_TYPE_HANDLE ) return( MAD_NIL_TYPE_HANDLE );
-    ReScan( data.start + data.len );
+    if( data.th != MAD_NIL_TYPE_HANDLE )
+        ReScan( data.start + data.len );
     return( data.th );
 }
 
@@ -415,6 +418,35 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
         if( *ScanPtr == TRAP_PARM_SEPARATOR ) break;
         if( *ScanPtr == ';' ) break;
         if( *ScanPtr == NULLCHAR ) break;
+        ++ScanPtr;
+    }
+    *len = ScanPtr - TokenStart;
+    Scan();
+    return( TRUE );
+}
+
+
+/*
+ * ScanItemDelim - scan to one of delimiter characters or EOC
+ */
+
+bool ScanItemDelim( const char *delim, bool blank_delim, const char **start, size_t *len )
+{
+    if( ScanEOC() ) {
+        *start = NULL;
+        *len   = 0;
+        return( FALSE );
+    }
+    if( ScanQuote( start, len ) )
+        return( TRUE );
+    *start = TokenStart;
+    for( ;; ) {
+        if( blank_delim && isspace( *ScanPtr ) )
+            break;
+        if( strchr( delim, *ScanPtr ) != NULL )
+            break;
+        if( *ScanPtr == NULLCHAR )
+            break;
         ++ScanPtr;
     }
     *len = ScanPtr - TokenStart;

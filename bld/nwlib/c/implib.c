@@ -32,7 +32,9 @@
 #include "wlib.h"
 #include "ar.h"
 #include "coff.h"
+
 #include "clibext.h"
+
 
 // must correspond to defines in implib.h
 static char *procname[ 5 ] = { "", "AXP", "PPC", "X86","" };

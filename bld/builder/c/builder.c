@@ -39,8 +39,10 @@
 #endif
 #include "watcom.h"
 #include "builder.h"
+
 #include "clibext.h"
 #include "bldstruc.h"
+
 
 #define DEFCTLNAME      "builder.ctl"
 #define DEFCTLENV       "BUILDER_CTL"

@@ -42,7 +42,6 @@
     #include <sys/utime.h>
     #include <direct.h>
 #endif
-
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
 #endif
@@ -67,6 +66,7 @@
 #endif
 
 #include "clibext.h"
+
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 

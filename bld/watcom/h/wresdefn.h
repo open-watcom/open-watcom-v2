@@ -80,6 +80,23 @@
 
 #if !defined( WIN_GUI )
 
+/* Dialog box button identifiers */
+#define IDOK                1
+#define IDCANCEL            2
+#define IDABORT             3
+#define IDRETRY             4
+#define IDIGNORE            5
+#define IDYES               6
+#define IDNO                7
+#if (WINVER >= 0x0400)
+    #define IDCLOSE         8
+    #define IDHELP          9
+#endif
+#if (WINVER >= 0x0500)
+    #define IDTRYAGAIN      10
+    #define IDCONTINUE      11
+#endif
+
 /* Window Styles */
 
 #define WS_OVERLAPPED       0x00000000L

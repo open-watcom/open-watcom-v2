@@ -31,25 +31,23 @@
 
 
 
-
-extern void  InitCueList( cue_list *ctl );
-extern  seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, dword offset );
-extern  void AddCue( seg_cue *ctl, dr_line_data *new );
-extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret );
 typedef enum{
     LOOK_LOW,         // look for next lower than cue
     LOOK_HIGH,        // look for next higher than cue
     LOOK_CLOSEST,     // look for lower or equal to cue
     LOOK_FILE,        // look for any cue with file
-}dfline_search;
+} dfline_search;
+
 typedef enum{
     LINE_NOT,
     LINE_FOUND,
     LINE_CLOSEST,
     LINE_WRAPPED,
-}dfline_find;
-extern   dfline_find FindCue( cue_list    *list,
-                              cue_item    *item,
-                              dfline_search what );
+} dfline_find;
 
-extern void  FiniCueInfo( cue_list *list );
+extern void         InitCueList( cue_list *ctl );
+extern seg_cue      *InitSegCue( cue_list *ctl, addr_seg seg, dword offset );
+extern void         AddCue( seg_cue *ctl, dr_line_data *new );
+extern int          FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret );
+extern dfline_find  FindCue( cue_list *list, cue_item *item, dfline_search what );
+extern void         FiniCueInfo( cue_list *list );

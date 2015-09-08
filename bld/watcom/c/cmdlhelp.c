@@ -35,9 +35,9 @@
 #include <ctype.h>
 #include <assert.h>
 #include "cmdlhelp.h"
-#ifndef __WATCOMC__
-  #include "clibext.h"
-#endif
+
+#include "clibext.h"
+
 
 int BuildQuotedFName( char *dst, size_t maxlen, const char *path, const char *filename, const char *quote_char )
 /*****************************************************************************************************************/

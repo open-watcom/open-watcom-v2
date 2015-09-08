@@ -51,6 +51,7 @@
 #include "dbgwat.h"
 #include "ring.h"
 #include "loadnov.h"
+
 #include "clibext.h"
 
 char            *SymFileName;
@@ -461,7 +462,7 @@ static bool DoLineWalk( void *info, void *cbfn )
 void DBILineWalk( lineinfo *lines, void (*cbfn)( lineinfo * ) )
 /*************************************************************/
 {
-    RingLookup( lines, DoLineWalk, cbfn );
+    RingLookup( lines, DoLineWalk, (void *)cbfn );
 }
 
 virt_mem DBIAlloc( virt_mem_size size )
@@ -506,9 +507,9 @@ void DBIP2Start( section *sect )
     if( LinkFlags & OLD_DBI_FLAG ) {
         ODBIP2Start( sect );
     } else if( LinkFlags & DWARF_DBI_FLAG ) {
-        SectWalkClass( sect, DwarfGenAddrInfo );
+        SectWalkClass( sect, (void *)DwarfGenAddrInfo );
     } else if( LinkFlags & CV_DBI_FLAG ) {
-        SectWalkClass( sect, CVGenAddrInfo );
+        SectWalkClass( sect, (void *)CVGenAddrInfo );
     }
 }
 

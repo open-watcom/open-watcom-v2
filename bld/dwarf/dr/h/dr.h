@@ -92,7 +92,14 @@ typedef enum {
     DR_VIRTUALITY_VIRTUAL = 1
 } dr_virtuality;
 
-#define DR_HANDLE_VOID  ((dr_handle)-1)     /* special handle denoting void type */
+#define DR_HANDLE_VOID  ((dr_handle)(pointer_int)-1)        /* special handle denoting void type */
+#define DR_HANDLE_NUL   ((dr_handle)(pointer_int)0)
+
+#if defined( USE_VIRTMEM )
+typedef unsigned long   dr_handle;
+#else
+typedef char            *dr_handle;
+#endif
 
 struct WDRRoutines {                                        /* defaults */
 /* I/O routines */
@@ -107,8 +114,6 @@ struct WDRRoutines {                                        /* defaults */
 
 typedef struct COMPUNIT_INFO    *dr_cu_handle;
 typedef struct dr_dbg_info      *dr_dbg_handle;
-
-typedef unsigned long           dr_handle;
 
 typedef unsigned                dr_fileidx;
 

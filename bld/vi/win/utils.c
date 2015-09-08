@@ -30,6 +30,10 @@
 
 
 #include "vi.h"
+#include <assert.h>
+#ifdef __NT__
+    #include <commctrl.h>
+#endif
 #include <dos.h>
 #include "color.h"
 #include "font.h"
@@ -37,11 +41,10 @@
 #include "banner.h"
 #include "aboutdlg.h"
 #include "win.h"
-#include <assert.h>
-#ifdef __NT__
-    #include <commctrl.h>
-#endif
+#include "viabout.h"
+
 #include "clibext.h"
+
 
 static char windowBordersG[] =  {
 #if defined( __UNIX__ )

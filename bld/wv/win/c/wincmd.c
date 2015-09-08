@@ -34,7 +34,7 @@
 #include "dosscrn.h"
 
 
-extern unsigned         Lookup(const char *,const char *, unsigned);
+extern int              Lookup( const char *, const char *, size_t );
 extern unsigned long    GetMemory( void );
 
 static const char SysOptNameTab[] = {
@@ -42,7 +42,7 @@ static const char SysOptNameTab[] = {
     "Popups\0"
 };
 
-enum { OPT_MONO = 1,
+enum { 
     OPT_NOSNOW,
     OPT_POPUPS
 };

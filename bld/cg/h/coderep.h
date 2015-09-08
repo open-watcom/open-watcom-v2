@@ -36,6 +36,7 @@
 #include "cg.h"
 #include "bckdef.h"
 #include "typclass.h"
+#include "blocknum.h"
 #include "name.h"
 #include "opcodes.h"
 #include "inslist.h"

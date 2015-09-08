@@ -35,10 +35,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "walloca.h"
-
 #include "coffimpl.h"
 #include "cofforl.h"
+
 #include "clibext.h"
+
 
 /* note before you use this for anything make sure that the values below
 are large enough for your purposes (particularly the num sections and symbols.
@@ -495,15 +496,16 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym * import
         break;
     }
 
+    type = 0;
     ordinal = import->ordinal;
     if( import->type == IMPORT_OBJECT_ORDINAL) {
 /* .idata$5 section data - ordinal */
         AddDataImpLib( coff_file_hnd, &ordinal, sizeof(ordinal) );
         type = 0x8000;
-        AddDataImpLib( coff_file_hnd, &type, sizeof(type) );
+        AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
 /* .idata$4 section data - ordinal */
         AddDataImpLib( coff_file_hnd, &ordinal, sizeof(ordinal) );
-        AddDataImpLib( coff_file_hnd, &type, sizeof(type) );
+        AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
     } else {
         switch( import->processor ) {
         case IMAGE_FILE_MACHINE_ALPHA:
@@ -551,8 +553,7 @@ int convert_import_library(coff_file_handle coff_file_hnd)
 
     i_hdr = (coff_import_object_header*)coff_file_hnd->f_hdr_buffer;
     sym.processor = i_hdr->machine;
-    sym.exportedName = coff_file_hnd->coff_hnd->funcs->read( coff_file_hnd->file,
-        i_hdr->size_of_data );
+    sym.exportedName = ORL_FUNCS_READ( coff_file_hnd->coff_hnd, coff_file_hnd->file, i_hdr->size_of_data );
     sym.DLLName = sym.exportedName + strlen( sym.exportedName ) + 1;
     sym.time_date_stamp = i_hdr->time_date_stamp;
     sym.type = i_hdr->name_type;

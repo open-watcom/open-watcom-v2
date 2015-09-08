@@ -913,7 +913,7 @@ static CD_DESCR** refCiPtr      // GET REF TO CD_DESCR PTR IN CLASSINFO
 static void cacheAdd(           // ADD TO A CACHE
     CD_DESCR* info )            // - to be added to a cache
 {
-    CD_DESCR** ring;            // - ring for type of descriptor
+    CD_DESCR** ring = NULL;     // - ring for type of descriptor
 
     *( refCiPtr( info->orig_type, info->opt ) ) = info;
     switch( info->opt ) {

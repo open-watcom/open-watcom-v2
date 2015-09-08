@@ -642,7 +642,7 @@ static size_t MIPSInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         break;
     case DI_MIPS_BEQ:
-        if( ins->op[0].base == DR_MIPS_r0 && ins->op[0].base == DR_MIPS_r0 ) {
+        if( ins->op[0].base == DR_MIPS_r0 && ins->op[1].base == DR_MIPS_r0 ) {
             new = "b";
             ins->op[0].type  = ins->op[2].type;
             ins->op[0].base  = ins->op[2].base;
@@ -701,7 +701,7 @@ static size_t MIPSOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         if( op->base >= DR_MIPS_r0 && op->base <= DR_MIPS_ra ) {
             op->base += DR_MIPS_ar0 - DR_MIPS_r0;
         }
-        if( op->index >= DR_MIPS_r0 && op->base <= DR_MIPS_ra ) {
+        if( op->index >= DR_MIPS_r0 && op->index <= DR_MIPS_ra ) {
             op->index += DR_MIPS_ar0 - DR_MIPS_r0;
         }
     }

@@ -283,7 +283,7 @@ void CreateUnnamedLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label_
 
     entry = MemAlloc( sizeof( label_entry_struct ) );
     if( !entry ) {
-        return_struct->error = OUT_OF_MEMORY;
+        return_struct->error = RC_OUT_OF_MEMORY;
         return;
     }
     entry->offset = loc;
@@ -295,10 +295,10 @@ void CreateUnnamedLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label_
         sec_label_list = (label_list) *data_ptr;
         entry = addLabel( sec_label_list, entry, 0 );
         return_struct->entry = entry;
-        return_struct->error = OKAY;
+        return_struct->error = RC_OKAY;
     } else {
         // error!!!! the label list should have been created
-        return_struct->error = ERROR;
+        return_struct->error = RC_ERROR;
     }
     return;
 }
@@ -311,7 +311,7 @@ void CreateAbsoluteLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label
 
     entry = MemAlloc( sizeof( label_entry_struct ) );
     if( !entry ) {
-        return_struct->error = OUT_OF_MEMORY;
+        return_struct->error = RC_OUT_OF_MEMORY;
         return;
     }
     entry->offset = loc;
@@ -323,10 +323,10 @@ void CreateAbsoluteLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label
         sec_label_list = (label_list) *data_ptr;
         entry = addLabel( sec_label_list, entry, 0 );
         return_struct->entry = entry;
-        return_struct->error = OKAY;
+        return_struct->error = RC_OKAY;
     } else {
         // error!!!! the label list should have been created
-        return_struct->error = ERROR;
+        return_struct->error = RC_ERROR;
     }
     return;
 }

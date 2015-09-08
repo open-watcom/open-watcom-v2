@@ -31,7 +31,7 @@
 
 
 #ifndef wresource_definitions
-#define resource_definitions
+#define wresource_definitions
 
 #include "_windows.hpp"
 

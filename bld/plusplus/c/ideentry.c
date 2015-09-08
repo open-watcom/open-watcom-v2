@@ -31,19 +31,18 @@
 
 
 #include "plusplus.h"
-
 #include <ctype.h>
-
+#ifdef __WATCOMC__
+#include <malloc.h>     /* For _heapmin() */
+#endif
 #include "memmgr.h"
 #include "idedll.h"
 #include "ideentry.h"
 #include "cgmisc.h"
 #include "fmtsym.h"
 
-#ifdef __WATCOMC__
-#include <malloc.h>     /* For _heapmin() */
-#endif
 #include "clibext.h"
+
 
 #ifndef NDEBUG
 // #undef DbgVerify

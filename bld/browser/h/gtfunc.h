@@ -88,14 +88,14 @@ class TreeFuncNode : public TreeCycleNode
 
 public:
             TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
-                          dr_handle hdl, Module * mod, char * name,
+                          dr_handle drhdl, Module * mod, char * name,
                           TreeCycleList * flatNode = NULL,
                           TreeRefList * ref = NULL );
     virtual ~TreeFuncNode();
     void *              operator new( size_t );
     void                operator delete( void * );
 
-    virtual uint_32     getHandle( void ) const { return _handle; }
+    virtual dr_handle   getHandle( void ) const { return _drhandle; }
     virtual char *      name();
     virtual Symbol *    makeSymbol( void );
     virtual PaintInfo * getPaintInfo( void );
@@ -108,7 +108,7 @@ public:
 
 private:
             dr_sym_type     _symType;
-            dr_handle       _handle;
+            dr_handle       _drhandle;
             Module*         _module;
             char *          _name;
             char *          _decName;

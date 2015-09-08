@@ -33,7 +33,9 @@
 #include "vi.h"
 #include <stddef.h>
 #include "posix.h"
+
 #include "clibext.h"
+
 
 /*
  * compare - quicksort comparison

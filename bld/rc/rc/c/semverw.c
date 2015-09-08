@@ -37,8 +37,9 @@
 #include "wresdefn.h"
 #include "layer0.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
+
+#include "clibext.h"
 
 
 /*** Forward References ***/
@@ -458,8 +459,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                strerror( err_code )  );
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
     RCFREE( info );
     FreeVerBlockNest( nest );

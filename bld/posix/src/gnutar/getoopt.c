@@ -49,7 +49,9 @@
 #endif
 #include "getoopt.h"    /* local copy of getopt */
 #include "port.h"
+
 #include "clibext.h"
+
 
 int getoldopt( int argc, char **argv, char *optstring )
 {

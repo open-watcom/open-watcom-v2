@@ -31,7 +31,9 @@
 
 
 #include "vi.h"
+
 #include "clibext.h"
+
 
 #if FSYS_CASE_SENSITIVE
     #define file_cmp    strcmp

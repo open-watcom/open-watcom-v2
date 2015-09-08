@@ -1,4 +1,4 @@
-#pmake/50: build os_win cpu_i86
+#pmake/50: build cxx os_win cpu_i86
 host_os  = win
 host_cpu = i86
 

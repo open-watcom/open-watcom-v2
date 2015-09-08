@@ -33,6 +33,7 @@
 #ifndef OMF_GLOBAL_INCLUDED
 #define OMF_GLOBAL_INCLUDED
 
+#include "orl.h"
 #include "orlintnl.h"
 #include "omftype.h"
 

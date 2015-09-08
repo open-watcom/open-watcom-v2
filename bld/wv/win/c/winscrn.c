@@ -46,7 +46,7 @@
 
 extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
 
-extern unsigned     Lookup(const char *,const char *, unsigned);
+extern int          Lookup( const char *, const char *, size_t );
 extern bool         HasEquals( void );
 extern unsigned     GetValue( void );
 
@@ -327,7 +327,7 @@ static const char ScreenOptNameTab[] = {
 };
 
 enum {
-    OPT_MONO = 1,
+    OPT_MONO,
     OPT_COLOR,
     OPT_COLOUR,
     OPT_EGA43,

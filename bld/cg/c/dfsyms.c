@@ -505,6 +505,20 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     }
 }
 
+static const char *SetDwarfProducer( void )
+{
+    const char  *name;
+
+#if 0      // disable this feature for now, to have compatibility with OW 1.9
+    name = (const char *)FEAuxInfo( NULL, DBG_DWARF_PRODUCER );
+    if( name == NULL )
+        name = "";
+#else
+    name = "";
+#endif
+    return( name );
+}
+
 extern  void    DFObjInitDbgInfo( void ) {
 /*****************************************************/
 /* called by objinit to init segments and dwarf writing library */
@@ -524,10 +538,9 @@ extern  void    DFObjInitDbgInfo( void ) {
     if( !_IsModel( DBG_LOCALS | DBG_TYPES ) ){
         return;
     }
-    info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
-    info.producer_name = "WATCOM";
+    info.producer_name = SetDwarfProducer();
     info.language = SetLang();
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;
@@ -593,7 +606,7 @@ extern  void    DFObjLineInitDbgInfo( void ) {
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
-    info.producer_name = "WATCOM";
+    info.producer_name = SetDwarfProducer();
     info.language = SetLang();
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;

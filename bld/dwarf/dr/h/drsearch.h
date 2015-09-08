@@ -39,7 +39,7 @@
 typedef struct {
     int         size;   /* available room */
     int         free;   /* next free entry */
-    uint_32 *   stack;  /* values */
+    dr_handle   *stack; /* values */
 } dr_context_stack;
 
 typedef struct {
@@ -54,8 +54,8 @@ typedef struct {
 typedef struct {
     dr_handle           handle;         /* symbol's handle */
     dr_sym_type         type;           /* symbol's type */
-    char *              name;           /* symbol's name */
-    dr_search_context * context;        /* context to resume search */
+    char                *name;          /* symbol's name */
+    dr_search_context   *context;       /* context to resume search */
 } dr_sym_context;
 
 typedef bool (*DRSYMSRCH)( dr_sym_context *, void * );

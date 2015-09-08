@@ -59,7 +59,7 @@ trap_retval ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-long TryPath(char *name, char *end, char *ext_list)
+long TryPath( const char *name, char *end, const char *ext_list )
 {
     long         rc;
     char         *p;
@@ -76,13 +76,14 @@ long TryPath(char *name, char *end, char *ext_list)
             ;
         count = 1;
         rc = DosFindFirst(name, &hdl, FILE_NORMAL, &info, sizeof(info), &count, FIL_STANDARD);
-        if (rc == 0)
+        if (rc == 0) {
             return 0;
+        }
     } while (!done);
     return 0xffff0000 | rc;
 }
 
-long FindFilePath(char *pgm, char *buffer, char *ext_list)
+long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
     char    *p;
     char    *p2;

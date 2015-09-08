@@ -1,4 +1,5 @@
 #include "grep.h"
+
 GREPDLG DIALOG 6, 18, 174, 62
 STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Files Being Searched"

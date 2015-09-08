@@ -1,9 +1,6 @@
 # DWARF DR library finder.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-inline_vmem_nt_386  = vm
-inline_vmem_nt_axp  = vm
-inline_vmem_os2_386 = vm
 
 #
 # DWARF library
@@ -11,12 +8,12 @@ inline_vmem_os2_386 = vm
 dwarfr_lib_386       = $(dwarfr_dir)/osi386/dwarfr.lib
 dwarfr_lib_axp       = $(dwarfr_dir)/osiaxp/dwarfr.lib
 dwarfr_lib_x64       = $(dwarfr_dir)/osix64/dwarfr.lib
-dwarfr_lib_nt_386vm  = $(dwarfr_dir)/osi386vm/dwarfr.lib
-dwarfr_lib_nt_axpvm  = $(dwarfr_dir)/osiaxpvm/dwarfr.lib
-dwarfr_lib_os2_386vm = $(dwarfr_dir)/osi386vm/dwarfr.lib
-dwarfr_lib_win_i86   = $(dwarfr_dir)/wini86/dwarfr.lib
-dwarfr_lib_os2_i86   = $(dwarfr_dir)/os2i86/dwarfr.lib
+
+# these host use dwarf library with virtual memory emulation
+dwarfr_lib_dos_386   = $(dwarfr_dir)/dos386/dwarfr.lib
 dwarfr_lib_qnx_386   = $(dwarfr_dir)/qnx386/dwarfr.lib
+dwarfr_lib_os2_i86   = $(dwarfr_dir)/os2i86/dwarfr.lib
+dwarfr_lib_win_i86   = $(dwarfr_dir)/wini86/dwarfr.lib
 
 #
 # DWARF run-time DLL used
@@ -25,8 +22,8 @@ dwarfr_lib_qnx_386   = $(dwarfr_dir)/qnx386/dwarfr.lib
 !endif
 
 #
-!ifdef dwarfr_lib_$(host_os)_$(host_cpu)$(inline_vmem_$(host_os)_$(host_cpu))
-dwarfr_lib = $(dwarfr_lib_$(host_os)_$(host_cpu)$(inline_vmem_$(host_os)_$(host_cpu)))
+!ifdef dwarfr_lib_$(host_os)_$(host_cpu)
+dwarfr_lib = $(dwarfr_lib_$(host_os)_$(host_cpu))
 !else
 dwarfr_lib = $(dwarfr_lib_$(host_cpu))
 !endif

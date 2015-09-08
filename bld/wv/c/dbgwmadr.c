@@ -42,7 +42,6 @@
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
 extern void             WndInspect( const char *item );
-extern char             *GetCmdName( int index );
 extern void             PushAddr( address val );
 extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
@@ -482,14 +481,14 @@ void MadRegChangeOptions( a_window *wnd )
     WndZapped( wnd );
 }
 
-extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class class, gui_resource *icon )
+extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class wndcls, gui_resource *icon )
 {
     reg_window  *reg;
     a_window    *wnd;
 
     reg = WndMustAlloc( sizeof( reg_window ) );
     reg->kind = kind;
-    wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, class, reg, icon );
+    wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, wndcls, reg, icon );
     if( wnd == NULL )
         return( NULL );
     return( wnd );

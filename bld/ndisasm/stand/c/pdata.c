@@ -136,8 +136,10 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
     descriptor_struct   descriptor;
     bool                is32bit;
 
-    if( pass == 1 ) return( OKAY );
-    if( size == 0 ) return( OKAY );
+    if( pass == 1 )
+        return( RC_OKAY );
+    if( size == 0 )
+        return( RC_OKAY );
 
     is32bit = ( size >= 0x10000 );
 
@@ -186,5 +188,5 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
         BufferConcatNL();
         printDescriptor( loop, &descriptor, &r_entry );
     }
-    return( OKAY );
+    return( RC_OKAY );
 }

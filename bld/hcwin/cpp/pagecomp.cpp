@@ -76,13 +76,13 @@ int main( int argc, char *argv[] )
     Buffer<char>        block(FILE_BLOCK_SIZE);
     Buffer<int>         pagebreaks( input.size() / FILE_BLOCK_SIZE + 1 );
 
-    size_t      amount_read = 0;
-    int         amount_written = 0;
+    unsigned    amount_read = 0;
+    unsigned    amount_written = 0;
     CompWriter  trashcan;
     CompReader  compactor( &trashcan );
-    int i=0;
+    int i = 0;
 
-    for( int num_pages=0 ;; num_pages++ ) {
+    for( int num_pages = 0 ;; num_pages++ ) {
         amount_read = input.get_block( block );
         if( amount_read == 0 )
             break;

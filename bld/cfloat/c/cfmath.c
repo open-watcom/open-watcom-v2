@@ -232,13 +232,13 @@ int     CFTest( cfloat *f ) {
 int     CFAccess( cfloat *f, int index ) {
 /****************************************/
 
-    return( f->mant[index] - '0' );
+    return( *(f->mant + index) - '0' );
 }
 
 void    CFDeposit( cfloat *f, int index, int data ) {
 /***************************************************/
 
-    f->mant[index] = (char)data + '0';
+    *(f->mant + index) = (char)data + '0';
 }
 
 void    CFClean( cfloat *f ) {
@@ -249,17 +249,17 @@ void    CFClean( cfloat *f ) {
     int         new_len;
 
     for( new_len = f->len; new_len > 0; --new_len ) {
-        if( f->mant[new_len - 1] != '0' )
+        if( *(f->mant + new_len - 1) != '0' )
             break;
         if( new_len == 1 ) { /* it's zero!*/
             f->exp = 1;
             f->sign = 0;
             f->len = 1;
-            f->mant[1] = NULLCHAR;
+            *(f->mant + 1) = NULLCHAR;
             return;
         }
     }
-    f->mant[new_len] = NULLCHAR;
+    *(f->mant + new_len) = NULLCHAR;
     headindex = 0;
     head = f->mant;
     while( *head == '0' ) {
@@ -275,5 +275,5 @@ void    CFClean( cfloat *f ) {
         new_len = CF_MAX_PREC;
     }
     f->len = new_len;
-    f->mant[new_len] = NULLCHAR;
+    *(f->mant + new_len) = NULLCHAR;
 }

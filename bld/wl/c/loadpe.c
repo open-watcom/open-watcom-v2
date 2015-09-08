@@ -33,9 +33,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
-#ifdef __BSD__
-#include <unistd.h>
-#endif
 #include "linkstd.h"
 #include "exeos2.h"
 #include "loados2.h"
@@ -60,18 +57,16 @@
 #include "permdata.h"
 #include "loadpe.h"
 #include "reserr.h"
-#include "wres.h"
 #include "exerespe.h"
 #include "impexp.h"
 #include "toc.h"
 #include "objstrip.h"
 #include "rcrtns.h"
-#include "clibext.h"
-#include "pass2.h"
-#include "param.h"
+#include "pass2l1.h"
 #include "sharedio.h"
 #include "exeutil.h"
 
+#include "clibext.h"
 
 #define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
 #define I386_TRANSFER_OP2       0x25    /* second byte of a "JMP [FOO]" */
@@ -867,7 +862,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
         DoAddResource( FmtData.resource );
         FmtData.resource = NULL;
     }
-    status = OpenResFiles( (ExtraRes *)FmtData.u.pe.resources, &rinfo, &allopen, RC_TARGET_OS_WIN32, Root->outfile->fname );
+    status = OpenResFiles( (ExtraRes *)FmtData.u.pe.resources, &rinfo, &allopen, EXE_TYPE_PE, Root->outfile->fname );
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;

@@ -67,7 +67,7 @@ orl_return OMFENTRY OmfFini( omf_handle oh )
         err = OmfRemoveFileLinks( oh->first_file_hnd );
         if( err != ORL_OKAY ) return( err );
     }
-    oh->funcs->free( oh );
+    ORL_FUNCS_FREE( oh, oh );
     return( ORL_OKAY );
 }
 
@@ -79,7 +79,7 @@ orl_return OMFENTRY OmfFileInit( omf_handle oh, void *file, omf_file_handle *pof
 
     assert( oh );
 
-    ofh = oh->funcs->alloc( sizeof( omf_file_handle_struct ) );
+    ofh = ORL_FUNCS_ALLOC( oh, sizeof( omf_file_handle_struct ) );
     if( ofh == NULL )
         return( ORL_OUT_OF_MEMORY );
 

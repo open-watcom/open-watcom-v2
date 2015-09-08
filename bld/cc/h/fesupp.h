@@ -39,7 +39,7 @@
 #define __FESUPP_H__
 
 #include "cvars.h"
-#include "clibext.h"
+
 
 // MACRO DEFINITIONS
 

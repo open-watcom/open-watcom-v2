@@ -31,10 +31,8 @@
 
 
 #include "plusplus.h"
-
 #include "compcfg.h"
 #include "tgtenv.h"
-
 #include "cgfront.h"
 #include "cgback.h"
 #include "cgdata.h"
@@ -47,6 +45,7 @@
 #include "dbgsupp.h"
 #include "initdefs.h"
 #include "cgbackut.h"
+
 #include "clibext.h"
 
 

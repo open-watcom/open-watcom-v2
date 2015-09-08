@@ -61,20 +61,20 @@ ClassMember::ClassMember( Symbol * sym, const char * text )
     _access = DRGetAccess( _symbol->getHandle() );
 }
 
-ClassMember::ClassMember( Symbol * sym, dr_handle prt, const char * text )
+ClassMember::ClassMember( Symbol * sym, dr_handle drhdl_prt, const char * text )
             : _symbol( sym )
             , _text( text )
-            , _parent( prt )
+            , _parent( drhdl_prt )
 //------------------------------------------------------------------------
 {
     _access = DRGetAccess( _symbol->getHandle() );
 }
 
-ClassMember::ClassMember( dr_handle parent, dr_access access, const char * text )
+ClassMember::ClassMember( dr_handle drhdl_prt, dr_access access, const char * text )
             : _symbol( NULL )
             , _text( text )
             , _access( access )
-            , _parent( parent )
+            , _parent( drhdl_prt )
 //---------------------------------------------------------------
 {
 }
@@ -96,7 +96,7 @@ bool ClassMember::operator< ( const ClassMember & o ) const
             if( _access < o._access ) {
                 return TRUE;
             } else {
-                if( _access == o._parent ) {
+                if( _access == o._access ) {
 
                     if( (_symbol == NULL) && (o._symbol != NULL) ) {
                         return TRUE;
@@ -265,7 +265,7 @@ void DTViewClass::addDescriptions()
 {
     int             i;
     ClassMember *   mem;
-    dr_access       prevAccess = (dr_access) 0;
+    dr_access       prevAccess = (dr_access)0;
     dr_handle       prevParent = _symbol->getHandle();
     char *          tmpName;
     WCPtrOrderedVector<ClassMember> desc;
@@ -273,15 +273,14 @@ void DTViewClass::addDescriptions()
     for( i = 0; i < _members->entries(); i += 1 ) {
         mem  = (*_members)[ i ];
         if( mem->_parent != prevParent ) {
-            prevAccess = (dr_access) 0;
+            prevAccess = (dr_access)0;
             prevParent = mem->_parent;
-            if( mem->_parent ) {
+            if( mem->_parent != DR_HANDLE_NUL ) {
                 tmpName = DRGetName( mem->_parent );
             } else {
                 tmpName = NULL;
             }
-            desc.append( new ClassMember( mem->_parent, (dr_access) 0,
-                                tmpName ) );
+            desc.append( new ClassMember( mem->_parent, (dr_access)0, tmpName ) );
             WBRFree( tmpName );
         }
         if( mem->_access != prevAccess ) {

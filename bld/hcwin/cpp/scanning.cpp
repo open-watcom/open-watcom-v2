@@ -55,7 +55,7 @@ Scanner::Scanner( InFile *src )
     tokens[1] = new Token;
     tokens[0] = new Token;
     if( !src->bad() ) {
-        _maxBuf = src->readbuf( _buffer, BUF_SIZE );
+        _maxBuf = src->read( _buffer, BUF_SIZE );
         _curPos = 0;
         getToken( tokens[1] );
         getToken( tokens[2] );
@@ -81,16 +81,17 @@ inline int Scanner::nextch()
         return( S_ENDC );
     }
     if( _curPos == _maxBuf ) {
-        _maxBuf = _source->readbuf( _buffer, BUF_SIZE );
+        _maxBuf = _source->read( _buffer, BUF_SIZE );
         if( _maxBuf == 0 ) {
             return( S_ENDC );
         } else {
             _curPos = 0;
         }
     } else if( _curPos == _maxBuf - 1 ) {
-        _buffer[0] = _buffer[_curPos];
-        _maxBuf = _source->readbuf( _buffer + 1, BUF_SIZE - 1 ) + 1;
-        _curPos = 0;
+        size_t  newPos = 0;
+        _buffer[newPos] = _buffer[_curPos];
+        _maxBuf = _source->read( _buffer + 1, BUF_SIZE - 1 ) + 1;
+        _curPos = newPos;
     }
     return( _buffer[_curPos++] );
 }
@@ -205,11 +206,11 @@ void Scanner::pullCommand( Token * tok )
 {
     int     current = 0;
     char    num_string[7];
-    int     i;
+    size_t  i = 0;
 
-    tok->_text[0] = static_cast<char>(nextch());
+    tok->_text[i] = static_cast<char>(nextch());
 
-    for( i=1; i<BUF_SIZE-1; i++ ) {
+    for( i = 1; i < BUF_SIZE - 1; i++ ) {
         current = nextch();
         if( !islower( current ) )
             break;
@@ -243,10 +244,10 @@ void Scanner::pullCommand( Token * tok )
 
 void Scanner::pullText( Token * tok )
 {
-    tok->_text[0] = static_cast<char>(nextch());
 
-    int     i;
+    size_t  i = 0;
     int     current;
+    tok->_text[i] = static_cast<char>(nextch());
 
     current = 0;
     for( i = 1; i < BUF_SIZE - 1; ) {
@@ -274,7 +275,7 @@ void Scanner::pullText( Token * tok )
         tok->_text[i++] = static_cast<char>(current);
     }
     tok->_text[i] = '\0';
-    tok->_value = i;
+    tok->_value = (int)i;
     if( current != S_ENDC && i < BUF_SIZE - 1 ) {
         putback( current );
     }

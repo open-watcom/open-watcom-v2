@@ -36,7 +36,9 @@
 #include <time.h>
 #include "getopt.h"
 #include "misc.h"
+
 #include "clibext.h"
+
 
 static const char *usageTxt[] = {
     "Usage:\tdate [-?u] [\"+format\"]",

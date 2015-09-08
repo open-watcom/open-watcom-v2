@@ -30,14 +30,12 @@
 
 
 #include "plusplus.h"
-
 #include <stdarg.h>
 #if defined(__UNIX__)
  #include <dirent.h>
 #else
  #include <direct.h>
 #endif
-
 #include "wio.h"
 #include "preproc.h"
 #include "memmgr.h"
@@ -52,7 +50,10 @@
 #include "brinfo.h"
 #include "autodept.h"
 #include "iopath.h"
+#include "sysdep.h"
+
 #include "clibext.h"
+
 
 typedef struct buf_alloc BUF_ALLOC;
 struct buf_alloc {              // BUF_ALLOC -- allocated buffer
@@ -376,14 +377,16 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 {
     pch_absorb pch_OK;          // - pre-compiled header load status
     FILE *fp;                   // - file pointer
+    time_t ftime;
 #ifdef OPT_BR
     bool might_browse;          // - true ==> might browse, if right file type
 #endif
 
     if( SrcFileProcessOnce( name ) ) {
-        SrcFileOpen( NULL, name );
+        SrcFileOpen( NULL, name, 0 );
         return( TRUE );
     }
+    ftime = SysFileTime( name );
     fp = SrcFileFOpen( name, SFO_SOURCE_FILE );
     if( fp == NULL ) {
         return( FALSE );
@@ -396,16 +399,16 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
         pch_OK = PCHeaderAbsorb( name );
         if( pch_OK != PCHA_OK ) {
             SrcFileSetCreatePCHeader();
-            SrcFileOpen( fp, name );
+            SrcFileOpen( fp, name, ftime );
 #ifdef OPT_BR
             might_browse = TRUE;
 #endif
         } else {
-            SrcFileOpen( NULL, name );
+            SrcFileOpen( NULL, name, 0 );
             fclose( fp );
         }
     } else {
-        SrcFileOpen( fp, name );
+        SrcFileOpen( fp, name, ftime );
         if( typ == FT_SRC ) {
             SetSrcFilePrimary();
         }
@@ -544,7 +547,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                 return( FALSE );
             }
             WholeFName = FNameAdd( "stdin" );
-            stdin_srcfile = SrcFileOpen( stdin, WholeFName );
+            stdin_srcfile = SrcFileOpen( stdin, WholeFName, 0 );
             SrcFileNotAFile( stdin_srcfile );
             retn = TRUE;
             break;

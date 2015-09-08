@@ -31,7 +31,9 @@
 
 
 #include "vi.h"
+
 #include "clibext.h"
+
 
 extern char *helpFiles[1];
 extern int  nHelpFiles;

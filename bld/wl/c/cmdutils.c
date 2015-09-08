@@ -32,6 +32,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#if !defined( __UNIX__ )
+#include <direct.h>
+#endif
 #include "wio.h"
 #include "walloca.h"
 #include "linkstd.h"
@@ -43,9 +46,7 @@
 #include "fileio.h"
 #include "ideentry.h"
 #include "cmdline.h"
-#if !defined( __UNIX__ )
-#include <direct.h>
-#endif
+
 #include "clibext.h"
 
 #define _LinkerPrompt "WLINK>"

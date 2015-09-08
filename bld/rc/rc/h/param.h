@@ -42,11 +42,6 @@
 #define DB_SIMPLIFIED_CHINESE   4
 #define MB_UTF8                 5
 
-typedef struct ExtraRes {
-    struct ExtraRes     *next;
-    char                 name[_MAX_PATH];
-}ExtraRes;
-
 typedef struct FRStrings {
     struct FRStrings    *next;
     char                *findString; /* points to the string to find */
@@ -86,12 +81,12 @@ struct RCParams {
     unsigned    MBCharSupport   : 3;    /* which of the zk switches is set */
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;
-    char        InFileName[_MAX_PATH];
-    char        InExeFileName[_MAX_PATH];
-    char        OutResFileName[_MAX_PATH];
-    char        OutExeFileName[_MAX_PATH];
-    char        CodePageFile[_MAX_PATH];
-    char        PrependString[_MAX_PATH];
+    char        *InFileName;
+    char        *InExeFileName;
+    char        *OutResFileName;
+    char        *OutExeFileName;
+    char        *CodePageFile;
+    char        *PrependString;
     char        **CPPArgs;    /* temporary until preprocessing done inline */
     ExtraRes    *ExtraResFiles;
     FRStrings   *FindReplaceStrings;

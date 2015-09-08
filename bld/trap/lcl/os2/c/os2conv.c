@@ -54,7 +54,7 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset );
 extern dos_debug        Buff;
 
 
-extern unsigned short   ThisDLLModHandle;
+extern HMODULE          ThisDLLModHandle;
 extern ULONG            ExceptNum;
 
 extern unsigned short __pascal __far Dos16SelToFlat();

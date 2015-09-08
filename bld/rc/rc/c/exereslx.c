@@ -38,10 +38,10 @@
 #include "os2res.h"
 #include "wrmergdi.h"
 #include "rcrtns.h"
-#include "clibext.h"
 #include "rccore.h"
 #include "exeutil.h"
 #include "exereslx.h"
+
 
 static int CompareLXResIdName( const void *e1, const void *e2 )
 /*************************************************************/

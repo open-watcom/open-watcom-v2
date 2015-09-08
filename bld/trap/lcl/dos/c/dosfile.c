@@ -173,7 +173,7 @@ trap_retval ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-static tiny_ret_t TryPath( char *name, char *end, const char *ext_list )
+static tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
 {
     tiny_ret_t  rc;
     char        *p;

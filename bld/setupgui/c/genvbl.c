@@ -35,7 +35,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
-
+#ifdef __NT__
+    #include <windows.h>
+#endif
 #include "wio.h"
 #include "gui.h"
 #include "guiutil.h"
@@ -46,11 +48,9 @@
 #include "dynarray.h"
 #include "hash.h"
 #include "genvbl.h"
+
 #include "clibext.h"
 
-#ifdef __NT__
-    #include <windows.h>
-#endif
 
 // If too slow make hash size bigger
 #define HASH_SIZE   1021

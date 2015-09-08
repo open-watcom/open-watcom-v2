@@ -34,11 +34,12 @@
 #include <string.h>
 #if defined( __WATCOMC__ )
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
 #include "iopath.h"
 #include "autoenv.h"
+
+#include "clibext.h"
+
 
 #if defined( __LINUX__ ) && defined( _M_X64 )
     #define PRIMARY_PATH    "binl64"

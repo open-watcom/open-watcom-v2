@@ -217,6 +217,12 @@ This command turns off the resume option in the breakpoint:
 Break/UnResume <brkid>
 .code end
 .np
+This command turns on/off the breakpoint for appropriate image(DLL) load:
+.code begin
+Break/Image [/Clear] <image(DLL) name>
+.code end
+.np
+
 The Break options are:
 .begnote $break $compact
 .note /Set (default)

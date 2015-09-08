@@ -69,6 +69,7 @@
 #include "permdata.h"
 #include "ideentry.h"
 #include "overlays.h"
+
 #include "clibext.h"
 
 seg_leader      *StackSegPtr;

@@ -64,7 +64,7 @@ public:
     virtual ~TreeRefNode();
 
     virtual int         getLevel( void ) const;
-    virtual uint_32     getHandle( void ) const { return _ref->getHandle(); }
+    virtual dr_handle   getHandle( void ) const { return _ref->getHandle(); }
     virtual char *      name() { return _ref->name(); }
     virtual bool        isRelated( TreeNode * rel ) { return _ref->isRelated( rel ); }
     virtual bool        isReference( void ) const { return TRUE; }
