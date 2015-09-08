@@ -59,7 +59,7 @@ static bool addChar( char ch )
 /*
  * Expand - expand local variables
  */
-void Expand( char *odata, const char *data, vlist *vl )
+char *Expand( char *odata, const char *data, vlist *vl )
 {
     char        result[MAX_SRC_LINE];
     char        varname[MAX_SRC_LINE];
@@ -74,113 +74,108 @@ void Expand( char *odata, const char *data, vlist *vl )
     int         obpos;
 
     if( recurseDepth >= 3 ) {
-        if( odata != data )
+        if( odata != data ) {
             strcpy( odata, data );
-        return;
-    }
-    obpos = bPos;
-    obptr = bPtr;
-    recurseDepth++;
-    bPos = 0;
-    bPtr = result;
+        }
+    } else {
+        obpos = bPos;
+        obptr = bPtr;
+        recurseDepth++;
+        bPos = 0;
+        bPtr = result;
 
-    for( ;; ) {
-        ch = *data++;
-        if( ch == '%' ) {
-            if( *data == '%' ) {
-                if( !addChar( '%' ) ) {
-                    break;
-                }
-                data++;
-                continue;
-            }
-            has_var = false;
-            if( *data != '(' ) {
-                varname[0] = *data++;
-                varname[1] = 0;
-            } else {
-                data++;
-                paren_level = 1;
-                ptr = varname;
-                for( ;; ) {
-                    ch = *data++;
-                    if( ch == 0 ) {
+        for( ;; ) {
+            ch = *data++;
+            if( ch == '%' ) {
+                if( *data == '%' ) {
+                    if( !addChar( '%' ) ) {
                         break;
                     }
-                    if( ch == '%' ) {
-                        has_var = true;
-                    } else if( ch == '(' ) {
-                        paren_level++;
-                    } else if( ch == ')' ) {
-                        paren_level--;
-                        if( paren_level == 0 ) {
-                            break;
+                    data++;
+                    continue;
+                }
+                has_var = false;
+                if( *data != '(' ) {
+                    varname[0] = *data++;
+                    varname[1] = 0;
+                } else {
+                    data++;
+                    paren_level = 1;
+                    ptr = varname;
+                    while( (ch = *data++) != '\0' ) {
+                        if( ch == '%' ) {
+                            has_var = true;
+                        } else if( ch == '(' ) {
+                            paren_level++;
+                        } else if( ch == ')' ) {
+                            paren_level--;
+                            if( paren_level == 0 ) {
+                                break;
+                            }
+                        }
+                        *ptr++ = ch;
+                    }
+                    *ptr = 0;
+                }
+                if( has_var ) {
+                    Expand( varname, varname, vl );
+                }
+
+                v = VarFind( varname, vl );
+                if( v != NULL ) {
+                    ptr = v->value;
+                    if( EditFlags.CompileScript && !EditFlags.CompileAssignmentsDammit ) {
+                        if( varname[0] >= 'A' && varname[0] <= 'Z' ) {
+                            ptr = varname;
                         }
                     }
-                    *ptr++ = ch;
+                } else {
+                    ptr = varname;
                 }
-                *ptr = 0;
-            }
-            if( has_var ) {
-                Expand( varname, varname, vl );
-            }
+                done = false;
+                need_closebracket = false;
+                if( ptr == varname ) {
+                    if( !addChar( '%' ) ) {
+                        done = true;
+                    } else if( varname[1] != 0 ) {
+                        if( !addChar( '(' ) ) {
+                            done = true;
+                        } else {
+                            need_closebracket = true;
+                        }
+                    }
+                }
 
-            v = VarFind( varname, vl );
-            if( v != NULL ) {
-                ptr = v->value;
-                if( EditFlags.CompileScript && !EditFlags.CompileAssignmentsDammit ) {
-                    if( varname[0] >= 'A' && varname[0] <= 'Z' ) {
-                        ptr = varname;
+                while( !done && *ptr != '\0' ) {
+                    if( !addChar( *ptr ) ) {
+                        done = true;
+                        break;
+                    }
+                    ptr++;
+                }
+                if( done ) {
+                    break;
+                }
+                if( need_closebracket ) {
+                    if( !addChar( ')' ) ) {
+                        done = true;
+                        break;
                     }
                 }
             } else {
-                ptr = varname;
-            }
-            done = false;
-            need_closebracket = false;
-            if( ptr == varname ) {
-                if( !addChar( '%' ) ) {
-                    done = true;
-                } else if( varname[1] != 0 ) {
-                    if( !addChar( '(' ) ) {
-                        done = true;
-                    } else {
-                        need_closebracket = true;
-                    }
-                }
-            }
-
-            while( !done ) {
-                if( *ptr == 0 ) {
+                if( !addChar( ch ) ) {
                     break;
                 }
-                if( !addChar( *ptr ) ) {
-                    done = true;
+                if( ch == 0 ) {
                     break;
                 }
-                ptr++;
-            }
-            if( done ) {
-                break;
-            }
-            if( need_closebracket ) {
-                if( !addChar( ')' ) ) {
-                    done = true;
-                    break;
-                }
-            }
-        } else {
-            if( !addChar( ch ) ) {
-                break;
-            }
-            if( ch == 0 ) {
-                break;
             }
         }
+        memcpy( odata, result, bPos );
+        recurseDepth--;
+        bPos = obpos;
+        bPtr = obptr;
     }
-    memcpy( odata, result, bPos );
-    recurseDepth--;
-    bPos = obpos;
-    bPtr = obptr;
+    return( odata );
 
 } /* Expand */

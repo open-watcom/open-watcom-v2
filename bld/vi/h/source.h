@@ -198,7 +198,7 @@ extern void     CSContinue( void );
 extern void     CSQuif( void );
 
 /* srcexpnd.c */
-extern void     Expand( char *, const char *, vlist * );
+extern char     *Expand( char *, const char *, vlist * );
 
 /* srcexpr.c */
 extern vi_rc    SrcExpr( sfile *, vlist * );
