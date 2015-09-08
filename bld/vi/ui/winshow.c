@@ -176,7 +176,7 @@ void WindowTitle( window_id id, char *name )
 /*
  * WindowTitleInactive - set window title, inactive border
  */
-void WindowTitleInactive( window_id id, char *name )
+void WindowTitleInactive( window_id id, const char *name )
 {
     WindowTitleAOI( id, name, false );
 

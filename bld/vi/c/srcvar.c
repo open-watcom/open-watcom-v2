@@ -42,7 +42,7 @@
 /*
  * VarAddGlobalStr
  */
-void VarAddGlobalStr( char *name, char *val )
+void VarAddGlobalStr( const char *name, const char *val )
 {
     VarAddStr( name, val, NULL );
 
@@ -83,7 +83,7 @@ void SetModifiedVar( bool val )
 /*
  * VarAddGlobalLong
  */
-void VarAddGlobalLong( char *name, long val )
+void VarAddGlobalLong( const char *name, long val )
 {
     char ibuff[MAX_NUM_STR];
 
@@ -95,7 +95,7 @@ void VarAddGlobalLong( char *name, long val )
 /*
  * VarAddStr - add a new variable
  */
-void VarAddStr( char *name, char *val, vlist *vl )
+void VarAddStr( const char *name, const char *val, vlist *vl )
 {
     vars        *new, *curr, *head;
     bool        glob;
@@ -193,7 +193,7 @@ bool VarName( char *name, vlist *vl )
 /*
  * VarFind - locate data for a specific variable name
  */
-vars * VarFind( char *name, vlist *vl )
+vars * VarFind( const char *name, vlist *vl )
 {
     vars        *curr;
 

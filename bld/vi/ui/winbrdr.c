@@ -289,7 +289,7 @@ void SetBorderGadgets( window_id wn, bool how )
 /*
  * WindowBorderData - set up window border data
  */
-void WindowBorderData( window_id wn, char *data, int col )
+void WindowBorderData( window_id wn, const char *data, int col )
 {
     wind        *w;
 

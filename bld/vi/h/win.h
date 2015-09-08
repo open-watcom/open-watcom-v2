@@ -137,8 +137,8 @@ extern void     FinishWindows( void );
 
 /* win/display.c */
 extern void     ScreenPage( int page );
-extern void     WindowTitleAOI( window_id id, char *title, bool active );
-extern void     WindowTitle( window_id id, char *title );
+extern void     WindowTitleAOI( window_id id, const char *title, bool active );
+extern void     WindowTitle( window_id id, const char *title );
 extern void     ClearWindow( window_id id );
 extern vi_rc    DisplayLineInWindow( window_id id, int line, char *text );
 extern void     ShiftWindowUpDown( window_id id, int lines );
@@ -159,7 +159,7 @@ extern void     WindowAuxUpdate( window_id id, int x, int y );
 extern void     DrawBorder( window_id id );
 extern void     PushMouseEventHandler( mouse_callback cb );
 extern void     PopMouseEventHandler( void );
-extern void     WindowBorderData( window_id id, char *c, int x );
+extern void     WindowBorderData( window_id id, const char *c, int x );
 extern vi_rc    ResizeWindowRelative( window_id id, int p1, int p2, int p3, int p4, bool flags );
 extern vi_rc    ResizeWindow( window_id id, int p1, int p2, int p3, int p4, bool flags );
 extern void     RestoreInterrupts( void );
@@ -223,7 +223,7 @@ extern void     WindowAuxUpdate( window_id, int, int );
 /* winbrdr.c */
 extern void     DrawBorder( window_id );
 extern void     SetBorderGadgets( window_id, bool );
-extern void     WindowBorderData( window_id, char *, int );
+extern void     WindowBorderData( window_id, const char *, int );
 extern void     SetGadgetString( char *str );
 
 /* windisp.c */
@@ -294,7 +294,7 @@ extern void     MoveWindowToFrontDammit( window_id, bool );
 extern void     InactiveWindow( window_id );
 extern void     ActiveWindow( window_id );
 extern void     WindowTitleAOI( window_id wn, char *title, bool active );
-extern void     WindowTitleInactive( window_id, char * );
+extern void     WindowTitleInactive( window_id, const char * );
 extern void     WindowTitle( window_id, char * );
 extern void     ClearWindow( window_id );
 extern void     SetGenericWindowCursor( window_id, int, int );

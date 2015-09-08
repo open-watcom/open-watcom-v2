@@ -71,7 +71,7 @@ char            *WordDefnDefault = "::..\\\\__09AZaz";
 /*
  * SetConfigFileName
  */
-void SetConfigFileName( char *fn )
+void SetConfigFileName( const char *fn )
 {
     AddString2( &cfgFN, fn );
 
@@ -91,7 +91,7 @@ void FiniConfigFileName( void )
 {
     MemFree( cfgFN );
 
-} /* SetConfigFileName */
+} /* FiniConfigFileName */
 
 /*
  * checkFlags - check for command line flags

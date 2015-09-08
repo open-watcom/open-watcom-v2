@@ -247,13 +247,13 @@ extern void     SrcGet( char *, vlist * );
 extern vi_rc    SrcNextWord( char *, vlist * );
 
 /* srcvar.c */
-extern void     VarAddGlobalStr( char *, char * );
+extern void     VarAddGlobalStr( const char *, const char * );
 extern void     VarAddRandC( void );
-extern void     VarAddGlobalLong( char *, long );
-extern void     VarAddStr( char *, char *, vlist * );
+extern void     VarAddGlobalLong( const char *, long );
+extern void     VarAddStr( const char *, const char *, vlist * );
 extern void     VarListDelete( vlist * );
 extern bool     VarName( char *, vlist * );
-extern vars     *VarFind( char *, vlist * );
+extern vars     *VarFind( const char *, vlist * );
 
 extern bool     RunWindowsCommand( char *, vi_rc *, vlist * );
 

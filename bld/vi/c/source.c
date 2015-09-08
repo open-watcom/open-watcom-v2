@@ -43,15 +43,15 @@
 
 static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
 static vi_rc    initSource( vlist *, char *);
-static vi_rc    barfScript( char *, sfile *, vlist *, unsigned *, char *);
-static void     addResidentScript( char *, sfile *, labels * );
-static resident *residentScript( char * );
-static void     finiSourceErrFile( char * );
+static vi_rc    barfScript( const char *, sfile *, vlist *, unsigned *, char *);
+static void     addResidentScript( const char *, sfile *, labels * );
+static resident *residentScript( const char * );
+static void     finiSourceErrFile( const char * );
 
 /*
  * Source - main driver
  */
-vi_rc Source( char *fn, char *data, unsigned *ln )
+vi_rc Source( const char *fn, char *data, unsigned *ln )
 {
     undo_stack  *atomic = NULL;
     labels      *lab, lb;
@@ -441,7 +441,7 @@ void SourceError( char *msg )
 /*
  * finiSourceErrFile - close up error file
  */
-static void finiSourceErrFile( char *fn )
+static void finiSourceErrFile( const char *fn )
 {
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        path[FILENAME_MAX];
@@ -467,7 +467,7 @@ static void finiSourceErrFile( char *fn )
 /*
  * barfScript - write a compiled script
  */
-static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
+static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
 {
     sfile       *curr;
     FILE        *foo;
@@ -590,7 +590,7 @@ static resident *resHead = NULL;
 /*
  * addResidentScript - add a script to the resident list
  */
-static void addResidentScript( char *fn, sfile *sf, labels *lab )
+static void addResidentScript( const char *fn, sfile *sf, labels *lab )
 {
     resident    *tmp;
 
@@ -640,7 +640,7 @@ void DeleteResidentScripts( void )
 /*
  * residentScript - check for a resident script
  */
-static resident *residentScript( char *fn )
+static resident *residentScript( const char *fn )
 {
     resident    *tmp = resHead;
 

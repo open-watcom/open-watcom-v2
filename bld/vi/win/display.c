@@ -60,7 +60,7 @@ void ScreenPage( int page )
     AllowDisplay = ( pageCnt == 0 );
 }
 
-void WindowTitleAOI( window_id id, char *title, bool active )
+void WindowTitleAOI( window_id id, const char *title, bool active )
 {
     active = active;
     if( !BAD_ID( id ) ) {
@@ -68,7 +68,7 @@ void WindowTitleAOI( window_id id, char *title, bool active )
     }
 }
 
-void WindowTitle( window_id id, char *title )
+void WindowTitle( window_id id, const char *title )
 {
     WindowTitleAOI( id, title, false );
 }

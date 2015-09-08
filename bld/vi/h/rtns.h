@@ -436,7 +436,7 @@ linenum GetHiddenLineCount( linenum s, linenum e );
 linenum GetHiddenLineBreaks( linenum s, linenum e );
 
 /* hist.c */
-void    LoadHistory( char *cmd );
+void    LoadHistory( const char *cmd );
 void    SaveHistory( void );
 void    CLHistInit( int );
 void    FilterHistInit( int );
@@ -453,7 +453,7 @@ void    IDEGetKeys( void );
 
 /* init.c */
 void    InitializeEditor( void );
-void    SetConfigFileName( char *fn );
+void    SetConfigFileName( const char *fn );
 char    *GetConfigFileName( void );
 void    FiniConfigFileName( void );
 
@@ -749,7 +749,7 @@ vi_rc   SelectAll( void );
 vi_rc Shift( linenum, linenum, char, bool );
 
 /* source.c */
-vi_rc   Source( char *, char *, unsigned * );
+vi_rc   Source( const char *, char *, unsigned * );
 void    FileSPVAR( void );
 void    SourceError( char *msg );
 void    DeleteResidentScripts( void );
@@ -759,7 +759,7 @@ long    MySpawn( const char * );
 void    ResetSpawnScreen( void );
 
 /* srcvar.c */
-void    VarAddGlobalStr( char *, char * );
+void    VarAddGlobalStr( const char *, const char * );
 void    VarFini( void );
 
 /* status.c */

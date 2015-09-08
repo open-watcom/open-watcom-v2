@@ -41,7 +41,7 @@ static int          currHist;
 /*
  * setEditText - set the specified edit window's text
  */
-static void setEditText( HWND hwnd, char *tmp )
+static void setEditText( HWND hwnd, const char *tmp )
 {
     int     len;
 

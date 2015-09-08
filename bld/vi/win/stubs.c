@@ -49,7 +49,7 @@ void WindowAuxUpdate( window_id id, int x, int y ) { id=id;x=x;y=y; }
 void DrawBorder( window_id id ) { id=id; }
 void PushMouseEventHandler( mouse_callback cb ) { cb=cb; }
 void PopMouseEventHandler( void ) {}
-void WindowBorderData( window_id id, char *c, int x ) { id=id;c=c;x=x; }
+void WindowBorderData( window_id id, const char *c, int x ) { id=id;c=c;x=x; }
 vi_rc ResizeWindowRelative( window_id id, int p1, int p2, int p3, int p4, bool flags ) {
     id=id;p1=p1;p2=p2;p3=p3;p4=p4;flags=flags;
     return( ERR_NO_ERR );

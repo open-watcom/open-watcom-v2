@@ -61,7 +61,7 @@ static void updateHist( history_data *hist, char *str )
 /*
  * LoadHistory - load history from file
  */
-void LoadHistory( char *cmd )
+void LoadHistory( const char *cmd )
 {
     FILE        *f;
     char        str[MAX_INPUT_LINE];
