@@ -85,7 +85,7 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 /*
  * PickATag - create dialog to select a specific tag
  */
-int PickATag( int clist, char **list, char *tagname )
+int PickATag( int clist, char **list, const char *tagname )
 {
     FARPROC     proc;
     int         rc;

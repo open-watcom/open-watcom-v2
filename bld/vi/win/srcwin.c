@@ -120,7 +120,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
     switch( token ) {
     case T_SETMAINSIZE:
         if( vl != NULL ) {
-            Expand( str, vl );
+            Expand( str, str, vl );
         }
         *result = ERR_INVALID_COMMAND;
         if( !GetDWORD( str, &left ) ){
@@ -184,7 +184,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
     case T_PROMPT_THIS_FILE_FOR_SAVE:
         {
             if( vl != NULL ) {
-                Expand( str, vl );
+                Expand( str, str, vl );
             }
             if( PromptThisFileForSave( str ) ) {
                 *result = ERR_NO_ERR;
@@ -196,7 +196,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         }
     case T_INPUT_BOOL:
         if( vl != NULL ) {
-            Expand( str, vl );
+            Expand( str, str, vl );
         }
         SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         if( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK ) {
@@ -242,7 +242,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         return( rc );
     case T_WINHELP:
         if( vl != NULL ) {
-            Expand( str, vl );
+            Expand( str, str, vl );
         }
         *result = ERR_INVALID_COMMAND;
         if( NextWord1( str, tmp ) <= 0 ) {

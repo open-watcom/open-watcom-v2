@@ -234,7 +234,7 @@ vi_rc TryCompileableToken( int token, char *data, bool iscmdline )
         break;
     case PCL_T_SET:
         if( iscmdline ) {
-            Expand( data, NULL );
+            Expand( data, data, NULL );
         }
         rc = Set( data );
         break;
@@ -376,7 +376,7 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_EVAL:
-        Expand( dataBuff, NULL );
+        Expand( dataBuff, dataBuff, NULL );
         i = setjmp( jmpaddr );
         if( i != 0 ) {
             rc = (vi_rc)i;

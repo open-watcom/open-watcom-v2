@@ -102,7 +102,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &hdl  ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -118,7 +118,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         /*
          * syntax: dderet retval
          */
-        Expand( str, vl );
+        Expand( str, str, vl );
         jmprc = setjmp( jmpaddr );
         if( jmprc == 0 ) {
             StartExprParse( str, jmpaddr );
@@ -132,7 +132,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         /*
          * syntax: ddeserver <serverhandle>
          */
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &hdl  ) ) {
             rc = ERR_INVALID_DDE;
         } else {
@@ -156,7 +156,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        Expand( tmp2, vl );
+        Expand( tmp2, tmp2, vl );
         if( !CreateStringHandle( tmp2, &hdl ) ) {
             rc = ERR_DDE_FAIL;
         } else {
@@ -169,7 +169,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         /*
          * syntax: deleteddestring <handle>
          */
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &hdl ) ) {
             rc = ERR_INVALID_DDE;
         } else {
@@ -185,7 +185,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &data ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -207,7 +207,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &hdl ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -234,7 +234,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &serverhdl ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -255,7 +255,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         /*
          * syntax: ddedisconnect <hconv>
          */
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &hconv ) ) {
             rc = ERR_INVALID_DDE;
         } else {
@@ -271,7 +271,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( !GetDWORD( str, &hconv ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -298,7 +298,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         /*
          * syntax: ddepoke "<data>" <conv> <strhandle>
          */
-        Expand( str, vl );
+        Expand( str, str, vl );
         if( GetStringWithPossibleQuote( str, tmp1 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;

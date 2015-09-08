@@ -329,8 +329,7 @@ vi_rc GetNewValueDialog( char *value )
     if( st[0] == 0 ) {
         return( NO_VALUE_ENTERED );
     }
-    Expand( st, NULL );
-    strcpy( value, st );
+    Expand( value, st, NULL );
     return( ERR_NO_ERR );
 
 } /* GetNewValueDialog */

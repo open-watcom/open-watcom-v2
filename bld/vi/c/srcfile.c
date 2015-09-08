@@ -61,9 +61,9 @@ vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
         return( ERR_SRC_INVALID_OPEN );
     }
     if( curr->hasvar ) {
-        Expand( name, vl );
-        Expand( id, vl );
-        Expand( type, vl );
+        Expand( name, name, vl );
+        Expand( id, id, vl );
+        Expand( type, type, vl );
     }
     if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_OPEN );
@@ -137,7 +137,7 @@ vi_rc SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
         return( ERR_SRC_INVALID_READ );
     }
     if( curr->hasvar ) {
-        Expand( id, vl );
+        Expand( id, id, vl );
     }
     if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_READ );
@@ -197,8 +197,8 @@ vi_rc SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
         return( ERR_SRC_INVALID_WRITE );
     }
     if( curr->hasvar ) {
-        Expand( id, vl );
-        Expand( v1, vl );
+        Expand( id, id, vl );
+        Expand( v1, v1, vl );
     }
     if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_WRITE );
@@ -232,7 +232,7 @@ vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, char *data )
         return( ERR_SRC_INVALID_CLOSE );
     }
     if( curr->hasvar ) {
-        Expand( id, vl );
+        Expand( id, id, vl );
     }
     if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_CLOSE );

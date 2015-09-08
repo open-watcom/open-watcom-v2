@@ -121,7 +121,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
                 EliminateFirstN( data, 1 );
             }
         }
-        Expand( v1, vl );
+        Expand( v1, v1, vl );
     } else {
         if( NextWord1( data, v1 ) <= 0 ) {
             return( ERR_SRC_INVALID_ASSIGN );
@@ -147,12 +147,12 @@ vi_rc SrcAssign( char *data, vlist *vl )
                 if( NextWord1( data, v1 ) <= 0 ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
-                Expand( v1, vl );
+                Expand( v1, v1, vl );
                 i = atoi( v1 ) - 1;
                 if( NextWord1( data, v1 ) <= 0 ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
-                Expand( v1, vl );
+                Expand( v1, v1, vl );
                 j = atoi( v1 ) - 1;
                 if( v == NULL ) {
                     v1[0] = 0;
@@ -172,7 +172,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
                 if( NextWord1( data, v1 ) <= 0 ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
-                Expand( v1, vl );
+                Expand( v1, v1, vl );
                 if( v == NULL ) {
                     j = -1;
                 } else {
@@ -188,7 +188,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
                 break;
             }
         } else {
-            Expand( v1, vl );
+            Expand( v1, v1, vl );
         }
 
     }

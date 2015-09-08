@@ -59,11 +59,11 @@ static bool addChar( char ch )
 /*
  * Expand - expand local variables
  */
-void Expand( char *data, vlist *vl )
+void Expand( char *odata, const char *data, vlist *vl )
 {
     char        result[MAX_SRC_LINE];
     char        varname[MAX_SRC_LINE];
-    char        *ptr, *odata;
+    char        *ptr;
     int         paren_level;
     char        ch;
     bool        done;
@@ -79,7 +79,6 @@ void Expand( char *data, vlist *vl )
         return;
     }
     recurseDepth++;
-    odata = data;
 
     bPos = 0;
     bPtr = result;
@@ -122,7 +121,7 @@ void Expand( char *data, vlist *vl )
                 *ptr = 0;
             }
             if( has_var ) {
-                Expand( varname, vl );
+                Expand( varname, varname, vl );
             }
 
             v = VarFind( varname, vl );

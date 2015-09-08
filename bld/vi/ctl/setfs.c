@@ -226,7 +226,7 @@ static void dlgDataFini( void )
     MemFree( dlgDataArray );
 }
 
-static void filldlgData( dlg_data *data, char *match, info *useInfo )
+static void filldlgData( dlg_data *data, const char *match, info *useInfo )
 {
     // setup default values
     memset( useInfo, 0, sizeof( info ) );

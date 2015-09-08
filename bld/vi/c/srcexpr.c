@@ -50,12 +50,13 @@ vi_rc SrcExpr( sfile *sf, vlist *vl )
     vars        *v;
 
     strcpy( tmp, sf->arg1 );
-    strcpy( v1, sf->arg2 );
     if( !VarName( tmp, vl ) ) {
         return( ERR_SRC_INVALID_EXPR );
     }
     if( sf->hasvar ) {
-        Expand( v1, vl  );
+        Expand( v1, sf->arg2, vl  );
+    } else {
+        strcpy( v1, sf->arg2 );
     }
     i = setjmp( jmpaddr );
     if( i != 0 ) {

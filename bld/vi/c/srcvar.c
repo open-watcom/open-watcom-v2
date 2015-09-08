@@ -184,7 +184,7 @@ bool VarName( char *name, vlist *vl )
         name[strlen( name ) - 1] = 0;
     }
     if( strchr( name, '%' ) != NULL ) {
-        Expand( name, vl );
+        Expand( name, name, vl );
     }
     return( true );
 

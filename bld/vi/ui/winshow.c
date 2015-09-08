@@ -143,7 +143,7 @@ void ActiveWindow( window_id a ) { a = a; }
 /*
  * WindowTitleAOI - set the title of a window, active or inactive
  */
-void WindowTitleAOI( window_id wn, char *title, bool active )
+void WindowTitleAOI( window_id wn, const char *title, bool active )
 {
     wind        *w;
 
@@ -167,7 +167,7 @@ void WindowTitleAOI( window_id wn, char *title, bool active )
 /*
  * WindowTitle - set window title, active border
  */
-void WindowTitle( window_id id, char *name )
+void WindowTitle( window_id id, const char *name )
 {
     WindowTitleAOI( id, name, true );
 

@@ -164,7 +164,7 @@ vi_rc Source( const char *fn, char *data, unsigned *ln )
 
         if( EditFlags.Appending ) {
             if( curr->hasvar) {
-                Expand( tmp, &vl );
+                Expand( tmp, tmp, &vl );
             }
             rc = AppendAnother( tmp );
         } else if( cTokenID == PCL_T_ENDFILETYPESOURCE ) {
@@ -182,7 +182,7 @@ vi_rc Source( const char *fn, char *data, unsigned *ln )
             break;
         } else if( curr->token > SRC_T_NULL ) {
             if( curr->hasvar) {
-                Expand( tmp, &vl );
+                Expand( tmp, tmp, &vl );
             }
             rc = TryCompileableToken( cTokenID, tmp, false );
             if( rc == NOT_COMPILEABLE_TOKEN ) {
@@ -267,7 +267,7 @@ vi_rc Source( const char *fn, char *data, unsigned *ln )
                 }
     #endif
                 if( curr->hasvar ) {
-                    Expand( tmp, &vl );
+                    Expand( tmp, tmp, &vl );
                 }
                 LastRC = RunCommandLine( tmp );
                 if( LastRC == DO_NOT_CLEAR_MESSAGE_WINDOW ) {
@@ -532,7 +532,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, cha
             } else {
                 if( curr->token != SRC_T_IF ) {
                     if( curr->hasvar ) {
-                        Expand( tmp, vl );
+                        Expand( tmp, tmp, vl );
                         curr->hasvar = false;
                         k = strlen( curr->data );
                         for( i = 0; i < k; i++ ) {
