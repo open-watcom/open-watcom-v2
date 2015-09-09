@@ -39,6 +39,8 @@
 #include "clibext.h"
 
 
+#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
+
 extern char _NEAR   META[];
 
 /*
@@ -186,6 +188,9 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
         if( fgets( buff, MAX_STR, f ) == NULL )  {
             break;
         }
+        for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
+            buff[i - 1] = '\0';
+        }
         p = GetNextWord1( buff, tag );
         if( *tag == '\0' ) {
             continue;
@@ -215,7 +220,6 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
     if( *fname == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );
     }
-    p[strlen( p ) - 1] = 0;
     p = SkipLeadingSpaces( p );
     if( p[0] == 0 ) {
         return( ERR_INVALID_TAG_FOUND );
@@ -303,6 +307,9 @@ vi_rc LocateTag( const char *str, char *fname, char *buff )
         if( fgets( buff, MAX_STR, f ) == NULL )  {
             fclose( f );
             return( ERR_TAG_NOT_FOUND );
+        }
+        for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
+            buff[i - 1] = '\0';
         }
         GetNextWord1( buff, tag );
         if( *tag == '\0' ) {
