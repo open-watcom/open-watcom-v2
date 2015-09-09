@@ -298,6 +298,7 @@ void AutoSaveInit( void )
     int         off;
 //    int         old_len;
     int         i;
+    char        *p;
 
     /*
      * initialize tmpname
@@ -348,19 +349,19 @@ void AutoSaveInit( void )
             }
             f = fdopen( handle, "r" );
             if( f != NULL ) {
-                while( fgets( path2, FILENAME_MAX, f ) != NULL ) {
-                    for( i = strlen( path2 ); i && isWSorCtrlZ( path2[i - 1] ); --i ) {
-                        path2[i - 1] = '\0';
+                while( (p = fgets( path2, FILENAME_MAX, f )) != NULL ) {
+                    for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
+                        p[i - 1] = '\0';
                     }
-                    NextWord1( path2, path );
-                    RemoveLeadingSpaces( path2 );
+                    p = GetNextWord1( p, path );
+                    p = SkipLeadingSpaces( p );
                     NewFile( path, false );
-                    AddString2( &(CurrentFile->name), path2 );
+                    AddString2( &(CurrentFile->name), p );
                     SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
                     FileSPVAR();
                     CurrentFile->modified = true;
                     CurrentFile->check_readonly = true;
-                    FTSRunCmds( path2 );
+                    FTSRunCmds( p );
                     cnt++;
                 }
                 fclose( f );
@@ -452,6 +453,7 @@ void RemoveFromAutoSaveList( void )
     char        data[FILENAME_MAX];
 //    bool        found;
     int         i;
+    char        *p;
 
     if( EditVars.AutoSaveInterval == 0 ) {
         return;
@@ -478,17 +480,17 @@ void RemoveFromAutoSaveList( void )
         fclose( f );
         return;
     }
-    while( fgets( path2, FILENAME_MAX, f ) != NULL ) {
-        for( i = strlen( path2 ); i && isWSorCtrlZ( path2[i - 1] ); --i ) {
-            path2[i - 1] = '\0';
+    while( (p = fgets( path2, FILENAME_MAX, f )) != NULL ) {
+        for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
+            p[i - 1] = '\0';
         }
-        NextWord1( path2, data );
-        RemoveLeadingSpaces( path2 );
-        if( !strcmp( path, path2 ) ) {
-            MakeTmpPath( path2, CurrentFile->as_name );
-            if( !strcmp( data, path2 ) ) {
+        p = GetNextWord1( p, data );
+        p = SkipLeadingSpaces( p );
+        if( strcmp( path, p ) == 0 ) {
+            p = MakeTmpPath( path2, CurrentFile->as_name );
+            if( strcmp( data, p ) == 0 ) {
 //                found = true;
-                remove( path2 );
+                remove( p );
                 while( fgets( data, FILENAME_MAX, f ) != NULL ) {
                     for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {
                         data[i - 1] = '\0';
@@ -498,7 +500,7 @@ void RemoveFromAutoSaveList( void )
                 break;
             }
         }
-        MyFprintf( f2, "%s %s\n", data, path2 );
+        MyFprintf( f2, "%s %s\n", data, p );
     }
     fclose( f );
     fclose( f2 );

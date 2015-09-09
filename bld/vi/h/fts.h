@@ -52,7 +52,7 @@ typedef struct ft_src {
 extern void         FTSInit( void );
 extern void         FTSFini( void );
 extern vi_rc        FTSStart( char * );
-extern vi_rc        FTSAddCmd( char *, int );
+extern vi_rc        FTSAddCmd( const char *, int );
 extern vi_rc        FTSAddBoolean( bool, const char * );
 extern vi_rc        FTSAddChar( char, const char * );
 extern vi_rc        FTSAddInt( int, const char * );

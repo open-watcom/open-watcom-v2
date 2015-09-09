@@ -32,7 +32,26 @@
 
 #include "vi.h"
 
-static bool isIgnorable( char, char * );
+
+/*
+ * isIgnorable - test if a character is ignorable
+ */
+static bool isIgnorable( char c, const char *ign )
+{
+    while( *ign != 0 ) {
+        if( *ign == ' ' ) {
+            if( isspace( c ) ) {
+                return( true );
+            }
+        } else if( c == *ign ) {
+            return( true );
+        }
+        ign++;
+    }
+
+    return( false );
+
+} /* isIgnorable */
 
 /*
  * RemoveLeadingSpaces - remove leading spaces from a string
@@ -184,7 +203,7 @@ int NextWordSlash( char *buff, char *res )
 /*
  * NextWord - get next word in buff
  */
-int NextWord( char *buff, char *res, char *ign )
+int NextWord( char *buff, char *res, const char *ign )
 {
     int         j = 0, k = 0, sl;
     char        c;
@@ -238,26 +257,6 @@ int NextWord( char *buff, char *res, char *ign )
     return( j );
 
 } /* NextWord */
-
-/*
- * isIgnorable - test if a character is ignorable
- */
-static bool isIgnorable( char c, char *ign )
-{
-    while( *ign != 0 ) {
-        if( *ign == ' ' ) {
-            if( isspace( c ) ) {
-                return( true );
-            }
-        } else if( c == *ign ) {
-            return( true );
-        }
-        ign++;
-    }
-
-    return( false );
-
-} /* isIgnorable */
 
 /*
  * EliminateFirstN - eliminate first n chars from buff

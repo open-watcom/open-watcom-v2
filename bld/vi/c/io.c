@@ -268,19 +268,22 @@ void VerifyTmpDir( void )
 /*
  * MakeTmpPath - make a path to a file from TmpDir
  */
-void MakeTmpPath( char *out, const char *in )
+char *MakeTmpPath( char *out, const char *in )
 {
+    char    *p;
+
     out[0] = 0;
     if( EditVars.TmpDir == NULL ) {
         char *env_tmpdir = getenv( "tmp" );
         if( env_tmpdir != NULL ) {
-            StrMerge( 3, out, env_tmpdir, FILE_SEP_STR, in );
+            p = StrMerge( 3, out, env_tmpdir, FILE_SEP_STR, in );
         } else {
-            StrMerge( 3, out, altTmpDir, FILE_SEP_STR, in );
+            p = StrMerge( 3, out, altTmpDir, FILE_SEP_STR, in );
         }
     } else {
-        StrMerge( 3, out, EditVars.TmpDir, FILE_SEP_STR, in );
+        p = StrMerge( 3, out, EditVars.TmpDir, FILE_SEP_STR, in );
     }
+    return( p );
 
 } /* MakeTmpPath */
 

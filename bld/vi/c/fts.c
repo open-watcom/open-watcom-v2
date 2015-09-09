@@ -73,7 +73,7 @@ vi_rc FTSStart( char *data )
 /*
  * FTSAddCmd - add a 1-line command to the current (tail) fts
  */
-vi_rc FTSAddCmd( char *data, int tok )
+vi_rc FTSAddCmd( const char *data, int tok )
 {
     char    cmd_data[MAX_STR];
     cmd_ll  *cmd;
@@ -88,7 +88,7 @@ vi_rc FTSAddCmd( char *data, int tok )
         case SRC_T_NULL + PCL_T_SET + 1:
             strcpy( cmd_data, "set " );
             if( EditFlags.ScriptIsCompiled ) {
-                NextWord1( data, cmd_data + 4 );
+                data = GetNextWord1( data, cmd_data + 4 );
                 ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
             }
             break;

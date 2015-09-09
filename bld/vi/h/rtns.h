@@ -469,7 +469,7 @@ void    FileLower( char *str );
 bool    FileTemplateMatch( const char *, const char * );
 char    *StripPath( const char * );
 void    VerifyTmpDir( void );
-void    MakeTmpPath( char *out, const char *in );
+char    *MakeTmpPath( char *out, const char *in );
 
 /* key.c */
 vi_key  GetVIKey( vi_key ch, int scan, bool shift );
@@ -655,7 +655,7 @@ void    TranslateTabs( char * );
 vi_rc   GetStringWithPossibleSlash( char *, char * );
 vi_rc   GetStringWithPossibleQuote( char *, char * );
 vi_rc   GetStringWithPossibleQuote2( char *, char *, bool );
-int     NextWord( char *, char *, char *);
+int     NextWord( char *, char *, const char *);
 int     NextWordSlash( char *, char * );
 int     NextWord1( char *, char * );
 char    *GetNextWord1( const char *, char * );
