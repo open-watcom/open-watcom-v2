@@ -60,26 +60,23 @@ void RemoveLeadingSpaces( char *buff )
 {
     int k = 0;
 
-    if( buff[0] == '\0' ) {
-        return;
-    }
-    while( isspace( buff[k] ) ) {
-        k++;
-    }
-    if( k ) {
-        EliminateFirstN( buff, k );
+    if( buff[0] != '\0' ) {
+        while( isspace( buff[k] ) )
+            k++;
+        if( k ) {
+            EliminateFirstN( buff, k );
+        }
     }
 
 } /* RemoveLeadingSpaces */
 
 /*
- * SkipLeadingSpaces - remove leading spaces from a string
+ * SkipLeadingSpaces - skip leading spaces in a string
  */
 char *SkipLeadingSpaces( const char *buff )
 {
-    while( isspace( *buff ) ) {
+    while( isspace( *buff ) )
         buff++;
-    }
     return( (char *)buff );
 
 } /* SkipLeadingSpaces */
@@ -172,21 +169,19 @@ int NextWord1( char *buff, char *res )
  */
 char *GetNextWord1( const char *buff, char *res )
 {
-    int         j;
     char        c;
 
-    while( isspace( *buff ) ) {
+    while( isspace( *buff ) )
         ++buff;
-    }
     /*
      * get word
      */
-    for( j = 0; (c = *buff) != '\0'; ++buff ) {
+    for( ; (c = *buff) != '\0'; ++buff ) {
         if( isspace( c ) )
             break;
-        res[j++] = c;
+        *res++ = c;
     }
-    res[j] = '\0';
+    *res = '\0';
     return( (char *)buff );
 
 } /* GetNextWord1 */
@@ -257,6 +252,58 @@ int NextWord( char *buff, char *res, const char *ign )
     return( j );
 
 } /* NextWord */
+
+/*
+ * GetNextWord - get next word in buff
+ */
+char *GetNextWord( const char *buff, char *res, const char *ign )
+{
+    int         sl;
+    char        c;
+
+    /*
+     * past any leading ignorable chars (if ignore list has single
+     * character, then only skip past FIRST ignorable char)
+     */
+    sl = strlen( ign );
+    if( sl == 1 ) {
+        if( isIgnorable( *buff, ign ) ) {
+            ++buff;
+        }
+    } else {
+        while( isIgnorable( *buff, ign ) ) {
+            ++buff;
+        }
+    }
+    /*
+     * get word
+     */
+    for( ; (c = *buff) != '\0'; ++buff ) {
+        /*
+         * look for escaped delimiters
+         */
+        if( c == '\\' && sl == 1 ) {
+            if( buff[1] == ign[0] ) {
+                ++buff;
+                *res++ = *buff;
+                continue;
+            }
+            if( buff[1] == '\\' ) {
+                ++buff;
+                *res++ = '\\';
+                *res++ = '\\';
+                continue;
+            }
+        }
+        if( isIgnorable( c, ign ) ) {
+            break;
+        }
+        *res++ = c;
+    }
+    *res = '\0';
+    return( (char *)buff );
+
+} /* GetNextWord */
 
 /*
  * EliminateFirstN - eliminate first n chars from buff

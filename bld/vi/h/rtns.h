@@ -649,13 +649,14 @@ vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( char * );
 
 /* parse.c */
-void    RemoveLeadingSpaces( char *);
-char    *SkipLeadingSpaces( const char *);
+void    RemoveLeadingSpaces( char * );
+char    *SkipLeadingSpaces( const char * );
 void    TranslateTabs( char * );
 vi_rc   GetStringWithPossibleSlash( char *, char * );
 vi_rc   GetStringWithPossibleQuote( char *, char * );
 vi_rc   GetStringWithPossibleQuote2( char *, char *, bool );
 int     NextWord( char *, char *, const char *);
+char    *GetNextWord( const char *, char *, const char *);
 int     NextWordSlash( char *, char * );
 int     NextWord1( char *, char * );
 char    *GetNextWord1( const char *, char * );
