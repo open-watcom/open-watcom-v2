@@ -38,7 +38,7 @@
 
 static volatile int     exit_thread;
 
-void WINAPI TimerThread( LPVOID param )
+static DWORD WINAPI TimerThread( LPVOID param )
 {
     char        date[80];
 
@@ -76,7 +76,7 @@ void WINAPI TimerThread( LPVOID param )
             MyVioShowBuf( ClockStart - Scrn, nchars );
         }
     }
-    ExitThread( 0 );
+    return( 0 );
 }
 
 BOOL WINAPI BreakHandler( DWORD type )
@@ -98,7 +98,7 @@ void SetInterrupts( void )
     DWORD       tid;
 
     exit_thread = false;
-    CreateThread( NULL, 1024, (DWORD (WINAPI *)( LPVOID param ))TimerThread, NULL, 0, &tid );
+    CreateThread( NULL, 1024, TimerThread, NULL, 0, &tid );
     SetConsoleCtrlHandler( BreakHandler, TRUE );
 }
 
