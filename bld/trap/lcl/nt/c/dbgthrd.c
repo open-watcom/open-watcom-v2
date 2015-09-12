@@ -235,7 +235,7 @@ static void RequestDone( void )
     }
 }
 
-static DWORD WINAPI ControlFunc( void *parm )
+static DWORD WINAPI ControlFunc( LPVOID parm )
 {
     parm = parm;
     for( ;; ) {
@@ -762,7 +762,7 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
 
         Shared.requestsem = CreateSemaphore( NULL, 0, 1, NULL );
         Shared.requestdonesem = CreateSemaphore( NULL, 0, 1, NULL );
-        Shared.hThread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)ControlFunc, NULL, 0, &tid );
+        Shared.hThread = CreateThread( NULL, 0, ControlFunc, NULL, 0, &tid );
         if( Shared.hThread == NULL ) {
             MessageBox( NULL, "Error creating thread!", TRP_The_WATCOM_Debugger, MB_APPLMODAL + MB_OK );
         }

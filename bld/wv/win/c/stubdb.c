@@ -154,7 +154,7 @@ enum {
 
 bool RequestDone;
 
-DWORD WINAPI ControlFunc( void *parm )
+DWORD WINAPI ControlFunc( LPVOID parm )
 {
     parm = parm;
     do {
@@ -203,7 +203,7 @@ int main( int argc, char **argv )
     Requestsem = CreateSemaphore( NULL, 0, 1, NULL );
     Requestdonesem = CreateSemaphore( NULL, 0, 1, NULL );
     ReleaseSemaphore( Requestdonesem, 1, NULL ); // signal req done
-    hThread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)ControlFunc, NULL, 0, &tid );
+    hThread = CreateThread( NULL, 0, ControlFunc, NULL, 0, &tid );
     if (hThread == NULL) {
         MessageBox( NULL, "Error creating thread!", "Stubugger", MB_APPLMODAL+MB_OK );
     }

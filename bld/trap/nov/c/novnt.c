@@ -244,7 +244,7 @@ static char *InitServer( void )
     memset( &address, 0, sizeof( address ) );
     address.sa_family = AF_IPX;
     bind( ResponderSocket, (struct sockaddr *)&address, sizeof( address ) );
-    ResponderThreadHandle = CreateThread( NULL, 0, &Responder, NULL, 0, &tid );
+    ResponderThreadHandle = CreateThread( NULL, 0, Responder, NULL, 0, &tid );
     if( ResponderThreadHandle == NULL )
         return( "No responder thread" );
     register_bindery( ServerName, TRUE );

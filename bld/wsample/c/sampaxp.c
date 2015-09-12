@@ -442,7 +442,7 @@ static void mySetThreadContext( DWORD id, CONTEXT *pc )
 /*
  * TimerThread - handle timer ticks
  */
-DWORD __stdcall TimerThread( LPVOID parms )
+DWORD WINAPI TimerThread( LPVOID parms )
 {
     CONTEXT con;
     int i;
@@ -569,8 +569,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     loadProg( prog, utilBuff );
     tid = debugEvent.dwThreadId;
 
-    tth = CreateThread( NULL, 2048, (LPVOID) TimerThread, NULL,
-                0, &ttid );
+    tth = CreateThread( NULL, 2048, TimerThread, NULL, 0, &ttid );
     if( !tth ) {
         internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
     }
