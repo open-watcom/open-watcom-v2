@@ -24,16 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Macros to mask differences between various flavours of Windows.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef WWINDOWS_H_INCLUDED
-#define WWINDOWS_H_INCLUDED
-
-#include <windows.h>
-#include "wi163264.h"
-#include "winexprt.h"
-
+#if defined( _M_I86 ) && defined( __WINDOWS__ )
+#define WINEXPORT       __declspec(dllexport)
+#else
+#define WINEXPORT
 #endif

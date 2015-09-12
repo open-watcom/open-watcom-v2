@@ -73,6 +73,4 @@
 
 #define CALLBACK EXPENTRY
 
-#define WINEXPORT
-
 #endif // PM1632_H

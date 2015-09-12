@@ -175,10 +175,4 @@
 #define FARmemcpy       memcpy
 #endif
 
-#if defined( _M_I86 ) && defined( __WINDOWS__ )
-#define WINEXPORT       __declspec(dllexport)
-#else
-#define WINEXPORT
-#endif
-
 #endif /* !defined(__NT__) */
