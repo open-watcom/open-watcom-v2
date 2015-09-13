@@ -178,7 +178,7 @@ extern unsigned sleep( unsigned );
 extern void __GetNTAccessAttr( unsigned rwmode, unsigned long *desired_access, unsigned long *attr );
 extern void __GetNTShareAttr( int mode, unsigned long *share_mode );
 
-extern int      getopt( int __argc, char * const __argv[], const char *__optstring );
+extern int      getopt( int argc, char * const argv[], const char *optstring );
 /* Globals used and set by getopt() */
 extern char   *optarg;
 extern int    optind;
