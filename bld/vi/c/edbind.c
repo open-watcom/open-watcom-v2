@@ -263,39 +263,15 @@ void Usage( char *msg )
 } /* Usage */
 
 /*
- * EliminateFirstN - eliminate first n chars from buff
+ * SkipLeadingSpaces - skip leading spaces in a string
  */
-static void EliminateFirstN( char *buff, short n  )
+char *SkipLeadingSpaces( const char *buff )
 {
-    char        *buff2;
+    while( isspace( *buff ) )
+        ++buff;
+    return( (char *)buff );
 
-    buff2 = &buff[n];
-    while( *buff2 != 0 ) {
-        *buff++ = *buff2++;
-    }
-    *buff = 0;
-
-} /* EliminateFirstN */
-
-/*
- * RemoveLeadingSpaces - remove leading spaces from a string
- */
-void RemoveLeadingSpaces( char *buff )
-{
-    short       k = 0;
-
-    if( buff[0] == 0 ) {
-        return;
-    }
-    while( isspace( buff[k] ) ) {
-        k++;
-    }
-    if( k == 0 ) {
-        return;
-    }
-    EliminateFirstN( buff, k );
-
-} /* RemoveLeadingSpaces */
+} /* SkipLeadingSpaces */
 
 /*
  * MyAlloc - allocate memory, failing if cannot
@@ -318,6 +294,7 @@ int main( int argc, char *argv[] )
     char                *buff = NULL;
     char                *buff2, *buff3;
     char                *buffn, *buffs;
+    char                *ptr;
     int                 i, bytes, j, k, sl;
     FILE                *f;
     struct stat         fs;
@@ -392,19 +369,19 @@ int main( int argc, char *argv[] )
         if( f == NULL ) {
             Abort( "Could not open %s", bindfile );
         }
-        while( fgets( buff3, MAX_LINE_LEN, f ) != NULL ) {
-            for( i = strlen( buff3 ); i && isWSorCtrlZ( buff3[i - 1] ); --i ) {
-                buff3[i - 1] = '\0';
+        while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
+            for( i = strlen( ptr ); i && isWSorCtrlZ( ptr[i - 1] ); --i ) {
+                ptr[i - 1] = '\0';
             }
-            if( buff3[0] == '\0' ) {
+            if( ptr[0] == '\0' ) {
                 continue;
             }
-            RemoveLeadingSpaces( buff3 );
-            if( buff3[0] == '#' ) {
+            ptr = SkipLeadingSpaces( ptr );
+            if( ptr[0] == '#' ) {
                 continue;
             }
-            dats[FileCount] = MyAlloc( strlen( buff3 ) + 1 );
-            strcpy( dats[FileCount], buff3 );
+            dats[FileCount] = MyAlloc( strlen( ptr ) + 1 );
+            strcpy( dats[FileCount], ptr );
             FileCount++;
             if( FileCount >= MAX_DATA_FILES ) {
                 Abort( "Too many files to bind!" );
@@ -451,22 +428,22 @@ int main( int argc, char *argv[] )
             setvbuf( f, buff2, _IOFBF, 32000 );
             bytes = lines = 0;
             index[j] = cnt;
-            while( fgets( buff3, MAX_LINE_LEN, f ) != NULL ) {
+            while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
                 unsigned    len;
 
-                for( len = strlen( buff3 ); len && isWSorCtrlZ( buff3[len - 1] ); --len )
-                    buff3[len - 1] = '\0';
-                if( buff3[0] == '\0' ) {
+                for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len )
+                    ptr[len - 1] = '\0';
+                if( ptr[0] == '\0' ) {
                     continue;
                 }
-                RemoveLeadingSpaces( buff3 );
-                if( buff3[0] == '#' ) {
+                ptr = SkipLeadingSpaces( ptr );
+                if( ptr[0] == '#' ) {
                     continue;
                 }
-                len = strlen( buff3 );
+                len = strlen( ptr );
                 *buffn = (char)len;
                 buffn++;
-                memcpy( buffn, buff3, len );
+                memcpy( buffn, ptr, len );
                 buffn += len;
                 cnt += len + 1;
                 lines++;
