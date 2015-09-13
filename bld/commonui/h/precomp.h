@@ -36,6 +36,7 @@
     #define INCL_GPILCIDS
     #define INCL_GPIPRIMITIVES
     #include <wos2.h>
+    #include "winexprt.h"
 #else
     #ifdef __WINDOWS__
         #define INCLUDE_TOOLHELP_H
