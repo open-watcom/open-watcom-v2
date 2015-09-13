@@ -67,27 +67,24 @@ static void putMessage( void )
 /*
  * getOneSetVal - get a single set value
  */
-static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
-                           bool want_boolstr )
+static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_boolstr )
 {
     char        *str, *fign;
     cursor_type ct;
     int         i, j;
 
-    tmpstr[0] = 0;
-    if( !isnonbool ) {
-        j = (int) ((bool *)&EditFlags)[token];
+    str = tmpstr;
+    *str = 0;
+    if( isbool ) {
+        j = (int)((bool *)&EditFlags)[token];
         if( want_boolstr ) {
             str = BoolStr[j];
         } else {
-            str = tmpstr;
-            sprintf( tmpstr, "%d", j );
+            sprintf( str, "%d", j );
         }
     } else {
         switch( token ) {
         case SETVAR_T_STATUSSECTIONS:
-            str = tmpstr;
-            *str = 0;
             for( i = 0; i < EditVars.NumStatusSections; i++ ) {
                 char        buff[16];
                 sprintf( buff, "%d ", EditVars.StatusSections[i] );
@@ -101,11 +98,9 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
             str = EditVars.StatusString;
             break;
         case SETVAR_T_TILECOLOR:
-            str = tmpstr;
             break;
         case SETVAR_T_FIGNORE:
             fign = EditVars.FIgnore;
-            str = tmpstr;
             for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
                 strcat( str, fign );
                 fign += EXTENSION_LENGTH;
@@ -155,8 +150,7 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
             } else {
                 ct = EditVars.InsertCursorType;
             }
-            str = tmpstr;
-            MySprintf( tmpstr, "%d %d", ct.height, ct.width );
+            MySprintf( str, "%d %d", ct.height, ct.width );
             break;
         default:
             j = 0;
@@ -290,8 +284,7 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
                 j = EditVars.ToolBarColor;
                 break;
             }
-            str = tmpstr;
-            sprintf( tmpstr, "%d ", j );
+            sprintf( str, "%d ", j );
             break;
         }
     }
@@ -340,7 +333,7 @@ vi_rc GetNewValueDialog( char *value )
 /*
  * processSetToken - set value for set token
  */
-static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
+static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
 {
     char        fn[MAX_STR], str[MAX_STR];
 #ifndef VICOMP
@@ -350,7 +343,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
     vi_rc       rc = ERR_NO_ERR;
     int         clr;
     bool        newset;
-    bool        set_bool_flag, toggle, *ptr;
+    bool        toggle, *ptr;
     jmp_buf     jmpaddr;
     cursor_type ct;
     char        *name;
@@ -363,7 +356,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 
 #ifdef VICOMP
     winflag = winflag;
-    isnonbool = isnonbool;
+    isbool = isbool;
 #endif
     /*
      * set up value for boolean set commands
@@ -377,12 +370,20 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 #ifndef VICOMP
     if( !(*winflag) ) {
         toggle = true;
-        set_bool_flag = !isnonbool;
     } else {
         toggle = false;
 #endif
+#ifdef VICOMP
         if( j >= SETVAR_T_ ) {
+#else
+        if( isbool || j >= SETVAR_T_ ) {
+#endif
 #ifndef VICOMP
+            if( isbool ) {
+                j += SETVAR_T_;
+            } else {
+                isbool = true;
+            }
             if( EditFlags.CompileScript ) {
 #endif
                 if( !bvalue ) {
@@ -393,10 +394,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 return( ERR_NO_ERR );
 #ifndef VICOMP
             }
-            set_bool_flag = true;
             j -= SETVAR_T_;
-        } else {
-            set_bool_flag = false;
 #endif
         }
 #ifndef VICOMP
@@ -406,7 +404,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
     /*
      * process boolean settings
      */
-    if( set_bool_flag ) {
+    if( isbool ) {
         if( j >= SETFLAG_T_ ) {
             return( ERR_INVALID_SET_COMMAND );
         }
@@ -1054,19 +1052,19 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 vi_rc SettingSelected( char *item, char *value, int *winflag )
 {
     int         id;
-    bool        isnonbool;
+    bool        isbool;
 
     id = Tokenize( TokensSetVar, item, false );
     if( id != TOK_INVALID ) {
-        isnonbool = true;
+        isbool = false;
     } else {
         id = Tokenize( TokensSetFlag, item, false );
         if( id == TOK_INVALID ) {
             return( ERR_INVALID_SET_COMMAND );
         }
-        isnonbool = false;
+        isbool = true;
     }
-    return( processSetToken( id, value, winflag, isnonbool ) );
+    return( processSetToken( id, value, winflag, isbool ) );
 
 } /* SettingSelected */
 
@@ -1110,12 +1108,12 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
     for( i = 0; i < tc1; i++ ) {
         sdata[i] = MemAlloc( sizeof( set_data ) );
         AddString( &(sdata[i]->setting), GetTokenStringCVT( TokensSetVar, i, settokstr, true ) );
-        AddString( &(sdata[i]->val), getOneSetVal( i, true, tmpstr, true ) );
+        AddString( &(sdata[i]->val), getOneSetVal( i, false, tmpstr, true ) );
     }
     for( i = 0; i < tc2; i++ ) {
         sdata[tc1 + i] = MemAlloc( sizeof( set_data ) );
         AddString( &(sdata[tc1 + i]->setting), GetTokenStringCVT( TokensSetFlag, i, settokstr, true ) );
-        AddString( &(sdata[tc1 + i]->val), getOneSetVal( i, false, tmpstr, true ) );
+        AddString( &(sdata[tc1 + i]->val), getOneSetVal( i, true, tmpstr, true ) );
     }
     qsort( sdata, tc, sizeof( set_data * ), compareString );
     for( i = 0; i < tc; i++ ) {
@@ -1261,14 +1259,14 @@ char *GetASetVal( char *token )
 
     j = Tokenize( TokensSetVar, token, false );
     if( j != TOK_INVALID ) {
-        return( getOneSetVal( j, true, tmpstr, false ) );
+        return( getOneSetVal( j, false, tmpstr, false ) );
     }
     j = Tokenize( TokensSetFlagShort, token, false );
     if( j == TOK_INVALID ) {
         j = Tokenize( TokensSetFlag, token, false );
     }
     if( j != TOK_INVALID ) {
-        return( getOneSetVal( j, false, tmpstr, false ) );
+        return( getOneSetVal( j, true, tmpstr, false ) );
     }
     return( "" );
 

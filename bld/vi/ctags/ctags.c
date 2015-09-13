@@ -335,8 +335,7 @@ static void processOptionFile( char *fname )
         printf( "Could not open option file %s\n", fname );
         return;
     }
-    while( fgets( option, sizeof( option ), optfile ) != NULL ) {
-        ptr = option;
+    while( (ptr = fgets( option, sizeof( option ), optfile )) != NULL ) {
         while( isspace( *ptr ) ) {
             ptr++;
         }
