@@ -64,7 +64,7 @@ vi_rc SrcIf( sfile **sf, vlist *vl )
 /*
  * GetErrorTokenValue
  */
-vi_rc GetErrorTokenValue( int *value, char *str )
+vi_rc GetErrorTokenValue( int *value, const char *str )
 {
     int     i;
     vi_rc   rc;

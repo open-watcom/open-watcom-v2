@@ -67,12 +67,11 @@ int nHelpFiles = sizeof( helpFiles ) / sizeof( char * );
 vi_rc DoHelpOnContext( void )
 {
     //Until we have a global context string, use thi local
-    char *context_str = "Contents";
-    DoHelp( context_str );
+    DoHelp( "Contents" );
     return( ERR_NO_ERR );
 }
 
-vi_rc DoHelp( char *data )
+vi_rc DoHelp( const char *data )
 {
     // Use the windows help till we get one of our own
     LPSTR vi_chmfile = "editor.chm";
@@ -84,7 +83,7 @@ vi_rc DoHelp( char *data )
     LPSTR win_helpfile = "win31wh.hlp";
 #endif
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     if( !strcmp( data, "OnHelp" ) ) {
         WWinHelp( Root, NULL, HELP_HELPONHELP, (HELP_DATA)0 );
     } else if( !strcmp( data, "Contents" ) ) {
@@ -108,7 +107,7 @@ vi_rc DoHelpOnContext( void )
     return( ERR_NO_ERR );
 }
 
-vi_rc DoHelp( char *data )
+vi_rc DoHelp( const char *data )
 {
     char        *hfile;
     char        *tstr;
@@ -118,7 +117,7 @@ vi_rc DoHelp( char *data )
     char        tmp[MAX_STR];
     int         i;
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     token = Tokenize( helpCmds, data, false );
     if( token == TOK_INVALID ) {
         if( data[0] == 0 ) {

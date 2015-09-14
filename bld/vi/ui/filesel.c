@@ -671,15 +671,14 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             if( sfd->checkres != NULL ) {
                 line    *cline;
                 fcb     *cfcb;
-                char    data[64];
+                char    *ptr;
 
                 i = cln - 1;
                 GimmeLinePtr( cln, sfd->f, &cfcb, &cline );
-                strcpy( data, cline->data );
-                RemoveLeadingSpaces( data );
+                ptr = SkipLeadingSpaces( cline->data );
                 winflag = false;
                 strcpy( tmp, sfd->vals[i] );
-                rc = sfd->checkres( data, tmp, &winflag );
+                rc = sfd->checkres( ptr, tmp, &winflag );
                 if( winflag ) {
                     if( winflag == 2 ) {
                         winflag = true;

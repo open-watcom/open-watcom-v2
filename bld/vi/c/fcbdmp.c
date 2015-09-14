@@ -419,13 +419,13 @@ vi_rc DumpMemory( void )
         MaxMemFree, MaxMemFreeAfterInit, maxStatic );
 #endif
 
-    mem2 = (EditVars.MaxSwapBlocks - SwapBlocksInUse) * (long) MAX_IO_BUFFER;
+    mem2 = (EditVars.MaxSwapBlocks - SwapBlocksInUse) * (long)MAX_IO_BUFFER;
     MySprintf( tmp, freeBytes, "Dsk", mem2,
         (int) ((100L * mem2) / ((long)EditVars.MaxSwapBlocks * (long)MAX_IO_BUFFER)) );
 #ifdef _M_I86
 #ifndef NOXTD
     if( XMemCtrl.inuse ) {
-        mem1 = XMemCtrl.amount_left - XMemCtrl.allocated * (long) MAX_IO_BUFFER;
+        mem1 = XMemCtrl.amount_left - XMemCtrl.allocated * (long)MAX_IO_BUFFER;
         MySprintf( tmp2, freeBytes, "XTD", mem1,
             (int) ((100L * mem1) / XMemCtrl.amount_left) );
     } else {

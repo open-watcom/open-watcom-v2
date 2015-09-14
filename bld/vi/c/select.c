@@ -137,7 +137,7 @@ vi_rc SelectItem( selectitem *si )
  * SelectItemAndValue - select item from list and give it a value
  */
 vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
-                        int maxlist, vi_rc (*updatertn)( char *, char *, int * ),
+                        int maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
                         int indent, char **vals, int valoff )
 {
 //    int                 j;

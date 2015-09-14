@@ -261,7 +261,7 @@ vi_rc TryCompileableToken( int token, char *data, bool iscmdline )
 /*
  * RunCommandLine - run a command line command
  */
-vi_rc RunCommandLine( char *cl )
+vi_rc RunCommandLine( const char *cl )
 {
     int         i, x, y, x2, y2;
     bool        n1f, n2f;

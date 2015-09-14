@@ -236,7 +236,7 @@ extern vi_rc    InvokeMenuHook( int menunum, int line );
 
 /* srcif.c */
 extern vi_rc    SrcIf( sfile **, vlist * );
-extern vi_rc    GetErrorTokenValue( int *, char * );
+extern vi_rc    GetErrorTokenValue( int *, const char * );
 extern vi_rc    ReadErrorTokens( void );
 
 /* srcinp.c */

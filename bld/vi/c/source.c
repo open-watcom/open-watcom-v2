@@ -175,7 +175,7 @@ vi_rc Source( const char *fn, char *data, unsigned *ln )
             if( curr->data != NULL ) {
                 int     ret;
                 GetErrorTokenValue( &ret, curr->data );
-                rc = ret;
+                rc = (vi_rc)ret;
             } else {
                 rc = ERR_NO_ERR;
             }

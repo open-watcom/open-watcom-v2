@@ -77,8 +77,8 @@ vi_rc   ReadAFile( linenum, char * );
 
 /* clset.c */
 vi_rc   Set( char * );
-char    *GetASetVal( char *token );
-vi_rc   SettingSelected( char *item, char *value, int *winflag );
+char    *GetASetVal( const char *token );
+vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */
 vi_rc   TwoPartSubstitute( char *, char *, int, int );
@@ -90,7 +90,7 @@ void    InitCommandLine( void );
 vi_rc   ProcessCommandLine( void );
 vi_rc   FancyProcessCommandLine( void );
 vi_rc   TryCompileableToken( int token, char *data, bool iscmdline );
-vi_rc   RunCommandLine( char * );
+vi_rc   RunCommandLine( const char * );
 vi_rc   ProcessWindow( int, char * );
 void    FiniCommandLine( void );
 void    EditRCSCurrentFile( void );
@@ -425,7 +425,7 @@ vi_rc GetSortDir( const char *, bool );
 void    GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds );
 
 /* help.c */
-vi_rc DoHelp( char *data );
+vi_rc DoHelp( const char *data );
 vi_rc DoHelpOnContext( void );
 
 /* hide.c */
@@ -677,8 +677,8 @@ void    GetEndString( char *data, char *res );
 void    ParseConfigFile( char * );
 
 /* parsecl.c */
-vi_rc ParseCommandLine( char *, linenum *, bool *, linenum *, bool *, int *, char * );
-vi_rc GetAddress( char *, linenum * );
+vi_rc ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
+vi_rc GetAddress( const char **, linenum * );
 
 /* printf.c */
 void    MySprintf( char *, const char *, ... );
@@ -714,7 +714,7 @@ void    FiniSavebufs( void );
 
 /* select.c */
 vi_rc SelectItem( selectitem *si );
-vi_rc SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(char *, char *, int * ), int, char **, int );
+vi_rc SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(const char *, char *, int * ), int, char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );

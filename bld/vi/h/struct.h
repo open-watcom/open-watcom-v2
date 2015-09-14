@@ -537,7 +537,7 @@ typedef struct {
     window_info *wi;                // info describing window to create
     linenum     sl;                 // selected line
     char        *title;             // title of window
-    vi_rc       (*checkres)(char *, char *, int * ); // check if selected
+    vi_rc       (*checkres)(const char *, char *, int * ); // check if selected
                                     // change is valid
     int         *allow_rl;          // allow cursor right/left (for menu bar)
     hilst       *hilite;           // chars to highlight

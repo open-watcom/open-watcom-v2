@@ -104,15 +104,14 @@ static char strCmmsg[] = "%l lines %s after line %l";
 vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
 {
     vi_rc       rc = ERR_INVALID_COMMAND, i;
-    char        word[MAX_STR], wordback[MAX_STR];
+    char        word[MAX_STR];
     linenum     addr, tlines;
     fcb         *cfcb;
     line        *cline;
     fcb_list    fcblist;
 
-    NextWord1( data, word );
-    strcpy( wordback, word );
-    if( GetAddress( word, &addr ) ) {
+    GetNextWord1( data, word );
+    if( GetAddress( &data, &addr ) != ERR_NO_ERR ) {
         addr = -1;
     }
     tlines = n2 - n1 + 1;
@@ -257,8 +256,8 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
             ReDisplayScreen();
             DoVersion();
         }
-        if( wordback[0] != 0 ) {
-            rc = EditFile( wordback, ( tkn == EX_T_VISUAL_DMT ) );
+        if( word[0] != 0 ) {
+            rc = EditFile( word, ( tkn == EX_T_VISUAL_DMT ) );
         } else {
             rc = ERR_NO_ERR;
         }

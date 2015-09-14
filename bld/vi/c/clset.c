@@ -399,7 +399,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
         }
 #ifndef VICOMP
     }
-    *winflag = false;
+    *winflag = 0;
 
     /*
      * process boolean settings
@@ -461,7 +461,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
         case SETFLAG_T_WINDOWGADGETS:
             EditFlags.WindowGadgets = newset;
             ResetAllWindows();
-            *winflag = true;
+            *winflag = 1;
             redisplay = true;
             break;
         case SETFLAG_T_REALTABS:
@@ -522,7 +522,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             if( newset != EditFlags.LineNumbers ) {
                 EditFlags.LineNumbers = newset;
                 rc = LineNumbersSetup();
-                *winflag = true;
+                *winflag = 1;
             }
             break;
         case SETFLAG_T_CURRENTSTATUS:
@@ -574,20 +574,18 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             strcpy( save, value );
         }
 #endif /* VICOMP */
-        RemoveLeadingSpaces( value );
+        value = SkipLeadingSpaces( value );
 #ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
 #endif
             if( value[0] == '=' ) {
-                EliminateFirstN( value, 1 );
-                RemoveLeadingSpaces( value );
+                value = SkipLeadingSpaces( value + 1 );
             }
 #ifndef VICOMP
         }
 #endif
         if( value[0] == '"' ) {
-            NextWord( value, fn, "\"" );
-            EliminateFirstN( value, 1 );
+            value = GetNextWord( value + 1, fn, "\"" );
         } else {
             k = strlen( value );
             for( i = 0; i < k; i++ ) {
@@ -598,7 +596,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                     break;
                 }
             }
-            NextWord1( value, fn );
+            value = GetNextWord1( value, fn );
         }
         k = strlen( value );
         for( i = 0; i < k; i++ ) {
@@ -625,24 +623,28 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             case SETVAR_T_OVERSTRIKECURSORTYPE:
             case SETVAR_T_INSERTCURSORTYPE:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                if( NextWord1( value, fn ) <= 0 ) {
+                value = GetNextWord1( value, fn );
+                if( *fn == '\0' ) {
                     break;
                 }
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 break;
             case SETVAR_T_TILECOLOR:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                if( NextWord1( value, fn ) <= 0 ) {
+                value = GetNextWord1( value, fn );
+                if( *fn == '\0' ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
-                if( NextWord1( value, str ) <= 0 ) {
+                value = GetNextWord1( value, str );
+                if( *str == '\0' ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
                 StrMerge( 4, WorkLine->data, fn, SingleBlank, str, SingleBlank );
                 break;
             case SETVAR_T_STATUSSECTIONS:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                while( NextWord1( value, fn ) > 0 ) {
+                value = GetNextWord1( value, fn );
+                while( *fn != '\0' ) {
 #ifdef VICOMP
                     int k;
 #endif
@@ -651,6 +653,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                         break;
                     }
                     StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                    value = GetNextWord1( value, fn );
                 }
                 break;
             default:
@@ -675,7 +678,8 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( short ) * (EditVars.NumStatusSections + 1) );
                 EditVars.StatusSections[EditVars.NumStatusSections] = k;
                 EditVars.NumStatusSections++;
-                if( NextWord1( value, fn ) <= 0 ) {
+                value = GetNextWord1( value, fn );
+                if( *fn == '\0' ) {
                     break;
                 }
             }
@@ -716,11 +720,13 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             if( clr > EditVars.MaxTileColors ) {
                 return( ERR_INVALID_SET_COMMAND );
             }
-            if( NextWord1( value, fn ) <= 0 ) {
+            value = GetNextWord1( value, fn );
+            if( *fn == '\0' ) {
                 return( ERR_INVALID_SET_COMMAND );
             }
             EditVars.TileColors[clr].foreground = atoi( fn );
-            if( NextWord1( value, fn ) <= 0 ) {
+            value = GetNextWord1( value, fn );
+            if( *fn == '\0' ) {
                 return( ERR_INVALID_SET_COMMAND );
             }
             EditVars.TileColors[clr].background = atoi( fn );
@@ -821,7 +827,8 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             StartExprParse( fn, jmpaddr );
             ct.height = GetConstExpr();
-            if( NextWord1( value, fn ) <= 0 ) {
+            value = GetNextWord1( value, fn );
+            if( *fn == '\0' ) {
                 ct.width = 100;
             } else {
                 i = setjmp( jmpaddr );
@@ -1049,7 +1056,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
 /*
  * SettingSelected - a setting was selected from the dialog
  */
-vi_rc SettingSelected( char *item, char *value, int *winflag )
+vi_rc SettingSelected( const char *item, char *value, int *winflag )
 {
     int         id;
     bool        isbool;
@@ -1252,7 +1259,7 @@ vi_rc Set( char *name )
 /*
  * GetASetVal - get set val data
  */
-char *GetASetVal( char *token )
+char *GetASetVal( const char *token )
 {
     int         j;
     char        tmpstr[MAX_STR];
