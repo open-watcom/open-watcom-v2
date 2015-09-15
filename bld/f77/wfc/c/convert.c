@@ -177,8 +177,8 @@ static  void    CnI2C( itnode *it, uint dummy ) {
 //===================================
 
     dummy = dummy;
-    it->value.complex.realpart = it->value.intstar4;
-    it->value.complex.imagpart = 0;
+    it->value.scomplex.realpart = it->value.intstar4;
+    it->value.scomplex.imagpart = 0;
 }
 
 
@@ -186,7 +186,7 @@ static  void    CnR2C( itnode *it, uint dummy ) {
 //===================================
 
     dummy = dummy;
-    it->value.complex.imagpart = 0;
+    it->value.scomplex.imagpart = 0;
 }
 
 
@@ -194,8 +194,8 @@ static  void    CnD2C( itnode *it, uint dummy ) {
 //===================================
 
     dummy = dummy;
-    it->value.complex.realpart = it->value.dble;
-    it->value.complex.imagpart = 0;
+    it->value.scomplex.realpart = it->value.dble;
+    it->value.scomplex.imagpart = 0;
 }
 
 
@@ -203,8 +203,8 @@ static  void    CnE2C( itnode *it, uint dummy ) {
 //===================================
 
     dummy = dummy;
-    it->value.complex.realpart = it->value.extended;
-    it->value.complex.imagpart = 0;
+    it->value.scomplex.realpart = it->value.extended;
+    it->value.scomplex.imagpart = 0;
 }
 
 
@@ -212,8 +212,8 @@ static  void    CnQ2C( itnode *it, uint dummy ) {
 //===================================
 
     dummy = dummy;
-    it->value.dcomplex.realpart = it->value.complex.realpart;
-    it->value.dcomplex.imagpart = it->value.complex.imagpart;
+    it->value.dcomplex.realpart = it->value.scomplex.realpart;
+    it->value.dcomplex.imagpart = it->value.scomplex.imagpart;
 }
 
 
@@ -265,8 +265,8 @@ static  void    CnC2Q( itnode *it, uint dummy ) {
 //====================================
 
     dummy = dummy;
-    it->value.dcomplex.imagpart = it->value.complex.imagpart;
-    it->value.dcomplex.realpart = it->value.complex.realpart;
+    it->value.dcomplex.imagpart = it->value.scomplex.imagpart;
+    it->value.dcomplex.realpart = it->value.scomplex.realpart;
 }
 
 
@@ -319,8 +319,8 @@ static  void    CnC2X( itnode *it, uint dummy ) {
 //====================================
 
     dummy = dummy;
-    it->value.xcomplex.imagpart = it->value.complex.imagpart;
-    it->value.xcomplex.realpart = it->value.complex.realpart;
+    it->value.xcomplex.imagpart = it->value.scomplex.imagpart;
+    it->value.xcomplex.realpart = it->value.scomplex.realpart;
 }
 
 

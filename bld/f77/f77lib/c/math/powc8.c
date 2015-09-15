@@ -49,7 +49,7 @@ extern  single          EXP(single);
 extern  single          ATAN2(single,single);
 
 
-complex C8Pow( single a, single b, single c, single d ) {
+scomplex C8Pow( single a, single b, single c, single d ) {
 //=======================================================
 
 // Return the real part of the result of taking one
@@ -58,9 +58,9 @@ complex C8Pow( single a, single b, single c, single d ) {
 
     single      u;
     single      v;
-    complex     arg1;
-    complex     arg2;
-    complex     res;
+    scomplex    arg1;
+    scomplex    arg2;
+    scomplex    res;
 
     if( ( a == 0 ) && ( b == 0 ) ) {
         if( d == 0 ) {

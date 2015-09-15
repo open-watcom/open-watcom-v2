@@ -39,13 +39,13 @@
 #include "ftnstd.h"
 #include "ifenv.h"
 
-complex CEXP( single rp, single ip ) {
+scomplex CEXP( single rp, single ip ) {
 //====================================
 
 // Return the exponential of arg.
 // exp( x + iy ) = exp( x ) * cis( y )
 
-    complex     result;
+    scomplex    result;
 
     result.realpart = exp( rp );
     result.imagpart = result.realpart * sin( ip );
@@ -53,7 +53,7 @@ complex CEXP( single rp, single ip ) {
     return( result );
 }
 
-complex XCEXP( complex *arg ) {
+scomplex XCEXP( scomplex *arg ) {
 //=============================
 
     return( CEXP( arg->realpart, arg->imagpart ) );

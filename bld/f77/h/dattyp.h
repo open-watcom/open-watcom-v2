@@ -55,10 +55,10 @@ typedef    long double  extended;       // extended precision
 
 typedef    unsigned_32  ftnoption;
 
-typedef struct complex {         // single precision complex
+typedef struct scomplex {        // single precision complex
     single      realpart;
     single      imagpart;
-} complex;
+} scomplex;
 
 typedef struct dcomplex {        // double precision complex
     double      realpart;
@@ -92,7 +92,7 @@ typedef union ftn_type {
     single              single;
     double              dble;
     extended            extended;
-    struct complex      complex;
+    struct scomplex     scomplex;
     struct dcomplex     dcomplex;
     struct xcomplex     xcomplex;
     struct cstring      cstring;

@@ -110,10 +110,10 @@ static  void    UnFmtItem( void *s ) {
         *(extended PGM *)(IORslt.pgm_ptr) = *(extended *)s;
         break;
     case PT_CPLX_8:
-        ((complex PGM *)(IORslt.pgm_ptr))->imagpart =
-                        ((complex *)s)->imagpart;
-        ((complex PGM *)(IORslt.pgm_ptr))->realpart =
-                        ((complex *)s)->realpart;
+        ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart =
+                        ((scomplex *)s)->imagpart;
+        ((scomplex PGM *)(IORslt.pgm_ptr))->realpart =
+                        ((scomplex *)s)->realpart;
         break;
     case PT_CPLX_16:
         ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart =

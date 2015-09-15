@@ -390,8 +390,8 @@ static  void    InCplx( void ) {
     for(;;) {
         switch( IOCB->typ ) {
         case PT_CPLX_8:
-            ((complex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
-            ((complex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
+            ((scomplex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
+            ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
             break;
         case PT_CPLX_16:
             ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;

@@ -112,7 +112,7 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start ) {
         if( size == sizeof( double ) ) return( TRUE );
         if( size == sizeof( extended ) ) return( TRUE );
     } else if( typ == FT_COMPLEX ) {
-        if( size == sizeof( complex ) ) return( TRUE );
+        if( size == sizeof( scomplex ) ) return( TRUE );
         if( size == sizeof( dcomplex ) ) return( TRUE );
         if( size == sizeof( xcomplex ) ) return( TRUE );
     } else if( typ == FT_CHAR ) {

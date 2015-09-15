@@ -591,24 +591,24 @@ static int     IsOption( char *cmd, size_t cmd_len, char *opt ) {
  *
  */
 
-static DIR  *parent = NULL;  /* we need this across invocations */
-static char *path = NULL;
-static char *pattern = NULL;
+static DIR  *wildparent = NULL;  /* we need this across invocations */
+static char *wildpath = NULL;
+static char *wildpattern = NULL;
 
 void DoWildCardClose( void )
 /*********************************/
 {
-    if( path != NULL ) {
-        free( path );
-        path = NULL;
+    if( wildpath != NULL ) {
+        free( wildpath );
+        wildpath = NULL;
     }
-    if( pattern != NULL ) {
-        free( pattern );
-        pattern = NULL;
+    if( wildpattern != NULL ) {
+        free( wildpattern );
+        wildpattern = NULL;
     }
-    if( parent != NULL ) {
-        closedir( parent );
-        parent = NULL;
+    if( wildparent != NULL ) {
+        closedir( wildparent );
+        wildparent = NULL;
     }
 }
 
@@ -625,25 +625,25 @@ const char *DoWildCard( const char *base )
             return( base );
         }
         // create directory name and pattern
-        path = MemAlloc( _MAX_PATH );
-        pattern = MemAlloc( _MAX_PATH );
-        strcpy( path, base );
-        _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        _makepath( path, pg.drive, pg.dir, ".", NULL );
+        wildpath = MemAlloc( _MAX_PATH );
+        wildpattern = MemAlloc( _MAX_PATH );
+        strcpy( wildpath, base );
+        _splitpath2( wildpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        _makepath( wildpath, pg.drive, pg.dir, ".", NULL );
         // create file name pattern
-        _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
-        parent = opendir( path );
-        if( parent == NULL ) {
+        _makepath( wildpattern, NULL, NULL, pg.fname, pg.ext );
+        wildparent = opendir( wildpath );
+        if( wildparent == NULL ) {
             DoWildCardClose();
             return( NULL );
         }
     }
-    if( parent == NULL ) {
+    if( wildparent == NULL ) {
         return( NULL );
     }
-    while( (entry = readdir( parent )) != NULL ) {
+    while( (entry = readdir( wildparent )) != NULL ) {
         if( ISVALIDENTRY( entry ) ) {
-            if( fnmatch( pattern, entry->d_name, FNM_OPTIONS ) == 0 ) {
+            if( fnmatch( wildpattern, entry->d_name, FNM_OPTIONS ) == 0 ) {
                 break;
             }
         }
@@ -652,9 +652,9 @@ const char *DoWildCard( const char *base )
         DoWildCardClose();
         return( NULL );
     }
-    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
-    return( path );
+    _splitpath2( wildpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( wildpath, pg.drive, pg.dir, entry->d_name, NULL );
+    return( wildpath );
 }
 
 static char *FindToolPath( tool_type utl )

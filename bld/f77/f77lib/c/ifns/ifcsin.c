@@ -39,7 +39,7 @@
 #include "ftnstd.h"
 #include "ifenv.h"
 
-complex CSIN( single rp, single ip ) {
+scomplex CSIN( single rp, single ip ) {
 //====================================
 
 // Return the sine of arg.
@@ -47,14 +47,14 @@ complex CSIN( single rp, single ip ) {
 //             = cis(x) exp(-y) /2i - cis(-x) exp(y) /2i
 //             = sin(x)* cosh(y) + i cos(x)*sinh(y)
 
-    complex result;
+    scomplex    result;
 
     result.realpart = sin( rp ) * cosh( ip );
     result.imagpart = cos( rp ) * sinh( ip );
     return( result );
 }
 
-complex XCSIN( complex *arg ) {
+scomplex XCSIN( scomplex *arg ) {
 //=============================
 
     return( CSIN( arg->realpart, arg->imagpart ) );

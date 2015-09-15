@@ -58,7 +58,7 @@ single  CABS( single rp, single ip ) {
     }
 }
 
-single  XCABS( complex *arg ) {
+single  XCABS( scomplex *arg ) {
 //=============================
 
     return( CABS( arg->realpart, arg->imagpart ) );

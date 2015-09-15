@@ -40,7 +40,7 @@
 #include "ifenv.h"
 
 
-complex CLOG( single rp, single ip ) {
+scomplex CLOG( single rp, single ip ) {
 //====================================
 
 // Return the logarithm (base e) of arg.
@@ -48,14 +48,14 @@ complex CLOG( single rp, single ip ) {
 // Thus x*x + y*y = exp(2u) or u = 0.5 ln(x*x + y*y)
 // Also y/x = tan(v)  so  v = atan2(y,x)
 
-    complex     result;
+    scomplex    result;
 
     result.realpart = 0.5 * log( rp*rp + ip*ip );
     result.imagpart = atan2( ip, rp );
     return( result );
 }
 
-complex XCLOG( complex *arg ) {
+scomplex XCLOG( scomplex *arg ) {
 //=============================
 
     return( CLOG( arg->realpart, arg->imagpart ) );

@@ -754,9 +754,9 @@ void            PushCmplxConst( sym_id sym ) {
     char        fmt_buff[80];
 
     if( sym->u.cn.typ == FT_COMPLEX ) {
-        CnvS2S( &sym->u.cn.value.complex.imagpart, fmt_buff );
+        CnvS2S( &sym->u.cn.value.scomplex.imagpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_SINGLE ) );
-        CnvS2S( &sym->u.cn.value.complex.realpart, fmt_buff );
+        CnvS2S( &sym->u.cn.value.scomplex.realpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_SINGLE ) );
     } else if( sym->u.cn.typ == FT_DCOMPLEX ) {
         CnvD2S( &sym->u.cn.value.dcomplex.imagpart, fmt_buff );

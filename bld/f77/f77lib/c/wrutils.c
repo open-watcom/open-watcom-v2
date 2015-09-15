@@ -245,8 +245,8 @@ void    IOItemResult( char PGM *src, PTYPE typ ) {
         *(extended *)(&IORslt) = *(extended *)src;
         break;
     case PT_CPLX_8:
-        ((complex *)(&IORslt))->imagpart = ((complex *)src)->imagpart;
-        ((complex *)(&IORslt))->realpart = ((complex *)src)->realpart;
+        ((scomplex *)(&IORslt))->imagpart = ((scomplex *)src)->imagpart;
+        ((scomplex *)(&IORslt))->realpart = ((scomplex *)src)->realpart;
         break;
     case PT_CPLX_16:
         ((dcomplex *)(&IORslt))->imagpart = ((dcomplex *)src)->imagpart;

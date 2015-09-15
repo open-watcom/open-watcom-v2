@@ -304,7 +304,7 @@ static  void    NmlOut( void ) {
                 IORslt.extended = **(extended PGM * PGM *)nml;
                 break;
             case PT_CPLX_8:
-                IORslt.complex = **(complex PGM * PGM *)nml;
+                IORslt.scomplex = **(scomplex PGM * PGM *)nml;
                 break;
             case PT_CPLX_16:
                 IORslt.dcomplex = **(dcomplex PGM * PGM *)nml;

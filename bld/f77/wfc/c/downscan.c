@@ -352,11 +352,11 @@ static  void    BuildCplx( int real_sign, int imag_sign ) {
     } else {
         CITNode->typ = FT_COMPLEX;
         if( CnvFloat( itptr, PRECISION_SINGLE ) ) {
-            val->complex.realpart = real_sign * itptr->value.extended;
+            val->scomplex.realpart = real_sign * itptr->value.extended;
         }
         itptr = itptr->link;
         if( CnvFloat( itptr, PRECISION_SINGLE ) ) {
-            val->complex.imagpart = imag_sign * itptr->value.extended;
+            val->scomplex.imagpart = imag_sign * itptr->value.extended;
         }
     }
     stop = itptr;

@@ -38,19 +38,19 @@
 #include "ifenv.h"
 
 
-complex CONJG( single rp, single ip ) {
+scomplex CONJG( single rp, single ip ) {
 //=====================================
 
 // Return the complex conjugate of arg.
 
-    complex     result;
+    scomplex    result;
 
     result.realpart = rp;
     result.imagpart = -ip;
     return( result );
 }
 
-complex XCONJG( complex *arg ) {
+scomplex XCONJG( scomplex *arg ) {
 //==============================
 
     return( CONJG( arg->realpart, arg->imagpart ) );

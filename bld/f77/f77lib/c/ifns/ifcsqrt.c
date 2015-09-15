@@ -40,7 +40,7 @@
 #include "ifenv.h"
 
 
-complex CSQRT( single rp, single ip ) {
+scomplex CSQRT( single rp, single ip ) {
 //=====================================
 
 // Return the complex square root of "arg".
@@ -49,7 +49,7 @@ complex CSQRT( single rp, single ip ) {
     single      t;
     single      x;
     single      y;
-    complex     result;
+    scomplex    result;
 
     // treat the imaginary number as a vector [magnitude m,angle 2*theta]
     // square root is equal to [magnitude sqrt(m),angle theta]
@@ -100,7 +100,7 @@ complex CSQRT( single rp, single ip ) {
     return( result );
 }
 
-complex XCSQRT( complex *arg ) {
+scomplex XCSQRT( scomplex *arg ) {
 //==============================
 
     return( CSQRT( arg->realpart, arg->imagpart ) );

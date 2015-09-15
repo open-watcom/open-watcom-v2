@@ -364,9 +364,9 @@ void    R_FIFloat( void ) {
             *(extended PGM *)(IORslt.pgm_ptr) = value;
         } else if( typ  == PT_CPLX_8 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
-                ((complex PGM *)(IORslt.pgm_ptr))->realpart = value;
+                ((scomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
             } else {
-                ((complex PGM *)(IORslt.pgm_ptr))->imagpart = value;
+                ((scomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
             }
         } else if( typ  == PT_CPLX_16 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
@@ -404,9 +404,9 @@ bool    GetReal( extended *value ) {
         if( typ  == PT_REAL_4 ) {
             short_flt = &IORslt.single;
         } else if( IOCB->flags & IOF_FMTREALPART ) {     // PT_CPLX_8
-            short_flt = &IORslt.complex.realpart;
+            short_flt = &IORslt.scomplex.realpart;
         } else {
-            short_flt = &IORslt.complex.imagpart;
+            short_flt = &IORslt.scomplex.imagpart;
         }
         *value = *short_flt;
         defined = !UndefRealRtn( short_flt );
@@ -597,9 +597,9 @@ void    R_FIHex( void ) {
         ptr = IORslt.pgm_ptr;
         if( typ == PT_CPLX_8 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
-                ptr = &((complex *)ptr)->realpart;
+                ptr = &((scomplex *)ptr)->realpart;
             } else {
-                ptr = &((complex *)ptr)->imagpart;
+                ptr = &((scomplex *)ptr)->imagpart;
             }
         } else if( typ == PT_CPLX_16 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
@@ -643,7 +643,7 @@ void    FOHex( uint width ) {
 
     if( IOCB->typ == PT_CPLX_8 ) {
         if( !(IOCB->flags & IOF_FMTREALPART) ) {
-            IORslt.complex.realpart = IORslt.complex.imagpart;
+            IORslt.scomplex.realpart = IORslt.scomplex.imagpart;
         }
     } else if( IOCB->typ == PT_CPLX_16 ) {
         if( !(IOCB->flags & IOF_FMTREALPART) ) {

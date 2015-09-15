@@ -196,33 +196,33 @@ void    DivE( ftn_type *opnd1, ftn_type *opnd2 ) {
 void    AddC( ftn_type *x, ftn_type *y ) {
 //========================================
 
-    complex     result;
+    scomplex    result;
 
-    result.realpart = x->complex.realpart + y->complex.realpart;
-    result.imagpart = x->complex.imagpart + y->complex.imagpart;
-    x->complex = result;
+    result.realpart = x->scomplex.realpart + y->scomplex.realpart;
+    result.imagpart = x->scomplex.imagpart + y->scomplex.imagpart;
+    x->scomplex = result;
 }
 
 
 void    SubC( ftn_type *x, ftn_type *y ) {
 //======================================
 
-    complex     result;
+    scomplex    result;
 
-    result.realpart = x->complex.realpart - y->complex.realpart;
-    result.imagpart = x->complex.imagpart - y->complex.imagpart;
-    x->complex = result;
+    result.realpart = x->scomplex.realpart - y->scomplex.realpart;
+    result.imagpart = x->scomplex.imagpart - y->scomplex.imagpart;
+    x->scomplex = result;
 }
 
 
 void    MulC( ftn_type *x, ftn_type *y ) {
 //======================================
 
-    complex     result;
+    scomplex    result;
 
-    result.realpart = x->complex.realpart * y->complex.realpart - x->complex.imagpart * y->complex.imagpart;
-    result.imagpart = x->complex.realpart * y->complex.imagpart + x->complex.imagpart * y->complex.realpart;
-    x->complex = result;
+    result.realpart = x->scomplex.realpart * y->scomplex.realpart - x->scomplex.imagpart * y->scomplex.imagpart;
+    result.imagpart = x->scomplex.realpart * y->scomplex.imagpart + x->scomplex.imagpart * y->scomplex.realpart;
+    x->scomplex = result;
 }
 
 
@@ -230,14 +230,14 @@ void    DivC( ftn_type *x, ftn_type *y ) {
 //======================================
 
     single      bottom;
-    complex     result;
+    scomplex    result;
 
-    bottom = y->complex.realpart * y->complex.realpart + y->complex.imagpart * y->complex.imagpart;
-    result.realpart = x->complex.realpart * y->complex.realpart + x->complex.imagpart * y->complex.imagpart;
-    result.imagpart = x->complex.imagpart * y->complex.realpart - x->complex.realpart * y->complex.imagpart;
+    bottom = y->scomplex.realpart * y->scomplex.realpart + y->scomplex.imagpart * y->scomplex.imagpart;
+    result.realpart = x->scomplex.realpart * y->scomplex.realpart + x->scomplex.imagpart * y->scomplex.imagpart;
+    result.imagpart = x->scomplex.imagpart * y->scomplex.realpart - x->scomplex.realpart * y->scomplex.imagpart;
     result.realpart /= bottom;
     result.imagpart /= bottom;
-    x->complex = result;
+    x->scomplex = result;
 }
 
 
@@ -376,8 +376,8 @@ void    XENeg( ftn_type *opnd1, ftn_type *opnd2 ) {
 void    XCNeg( ftn_type *opnd1, ftn_type *opnd2 ) {
 //=================================================
 
-    opnd1->complex.realpart = -opnd2->complex.realpart;
-    opnd1->complex.imagpart = -opnd2->complex.imagpart;
+    opnd1->scomplex.realpart = -opnd2->scomplex.realpart;
+    opnd1->scomplex.imagpart = -opnd2->scomplex.imagpart;
 }
 
 
@@ -428,8 +428,8 @@ void    XEPlus( ftn_type *opnd1, ftn_type *opnd2 ) {
 void    XCPlus( ftn_type *opnd1, ftn_type *opnd2 ) {
 //==================================================
 
-    opnd1->complex.realpart = opnd2->complex.realpart;
-    opnd1->complex.imagpart = opnd2->complex.imagpart;
+    opnd1->scomplex.realpart = opnd2->scomplex.realpart;
+    opnd1->scomplex.imagpart = opnd2->scomplex.imagpart;
 }
 
 
@@ -598,8 +598,8 @@ void    XCCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
     int         cmp;
 
     cmp = 2;
-    if( ( opnd1->complex.realpart == opnd2->complex.realpart ) &&
-        ( opnd1->complex.imagpart == opnd2->complex.imagpart ) ) {
+    if( ( opnd1->scomplex.realpart == opnd2->scomplex.realpart ) &&
+        ( opnd1->scomplex.imagpart == opnd2->scomplex.imagpart ) ) {
         cmp = 1;
     }
     opnd1->logstar4 = res[ cmp ];
@@ -678,8 +678,8 @@ static  void    InitOne( TYPE typ, ftn_type *one ) {
         one->extended = 1;
         break;
     case FT_COMPLEX:
-        one->complex.realpart = 1;
-        one->complex.imagpart = 0;
+        one->scomplex.realpart = 1;
+        one->scomplex.imagpart = 0;
         break;
     case FT_DCOMPLEX:
         one->dcomplex.realpart = 1;
@@ -706,8 +706,8 @@ static  bool    ZeroBase( TYPE typ, ftn_type *base ) {
     case FT_TRUE_EXTENDED:
         return( base->extended == 0 );
     case FT_COMPLEX:
-        return( ( base->complex.realpart == 0 ) &&
-                ( base->complex.imagpart == 0 ) );
+        return( ( base->scomplex.realpart == 0 ) &&
+                ( base->scomplex.imagpart == 0 ) );
     case FT_DCOMPLEX:
         return( ( base->dcomplex.realpart == 0 ) &&
                 ( base->dcomplex.imagpart == 0 ) );

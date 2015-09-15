@@ -78,8 +78,8 @@ static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE typ ) {
         *(extended *)(dst) = *(extended *)src;
         break;
     case PT_CPLX_8:
-        ((complex *)(dst))->imagpart = ((complex *)src)->imagpart;
-        ((complex *)(dst))->realpart = ((complex *)src)->realpart;
+        ((scomplex *)(dst))->imagpart = ((scomplex *)src)->imagpart;
+        ((scomplex *)(dst))->realpart = ((scomplex *)src)->realpart;
         break;
     case PT_CPLX_16:
         ((dcomplex *)(dst))->imagpart = ((dcomplex *)src)->imagpart;
@@ -196,7 +196,7 @@ static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
             amt &= -sizeof( extended );
             break;
         case PT_CPLX_8:
-            amt &= -sizeof( complex );
+            amt &= -sizeof( scomplex );
             break;
         case PT_CPLX_16:
             amt &= -sizeof( dcomplex );
