@@ -38,7 +38,6 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
   #include <process.h>
 #endif
-#include "source.h"
 #include "posix.h"
 #include "win.h"
 

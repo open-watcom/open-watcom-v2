@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <setjmp.h>
 #include <time.h>
-#include "source.h"
 #include "expr.h"
 #include "rxsupp.h"
 

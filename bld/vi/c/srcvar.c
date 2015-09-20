@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <stddef.h>
 #include "rxsupp.h"
-#include "source.h"
 
 #include "clibext.h"
 

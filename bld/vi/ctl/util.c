@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include "util.h"
-#include "source.h"
 
 vi_rc UtilUpdateBoolean( bool old, bool val, char *name )
 {

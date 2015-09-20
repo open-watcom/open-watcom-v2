@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <malloc.h>
-#include "source.h"
 #include "stack.h"
 
 void main( int argc, char *argv[] )

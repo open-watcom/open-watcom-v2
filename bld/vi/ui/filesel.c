@@ -34,7 +34,6 @@
 #include "posix.h"
 #include "win.h"
 #include "menu.h"
-#include "source.h"
 
 extern int      CurrentMenuNumber;
 

@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "parsecl.h"
 #include "win.h"
 #ifdef __WIN__

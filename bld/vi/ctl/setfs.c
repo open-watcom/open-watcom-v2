@@ -30,7 +30,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "setfs.h"
 #include "stddef.h"
 #include "ctltype.h"

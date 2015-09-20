@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 
 #define FreeLabel( a ) MemFree( a )
 

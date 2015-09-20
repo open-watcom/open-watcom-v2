@@ -33,7 +33,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include "posix.h"
-#include "source.h"
 #include "specio.h"
 
 #include "clibext.h"

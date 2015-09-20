@@ -31,7 +31,6 @@
 
 #include "vi.h"
 #include <malloc.h>
-#include "source.h"
 #include "menu.h"
 #include <assert.h>
 

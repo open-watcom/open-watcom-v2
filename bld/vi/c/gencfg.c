@@ -33,7 +33,6 @@
 #include "vi.h"
 #include "menu.h"
 #include "parsecl.h"
-#include "source.h"
 #include "sstyle.h"
 #include "banner.h"
 #include "fts.h"

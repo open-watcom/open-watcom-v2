@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <errno.h>
 #include "posix.h"
-#include "source.h"
 #include "win.h"
 
 #include "clibext.h"

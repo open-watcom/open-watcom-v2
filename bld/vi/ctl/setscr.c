@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "setscr.h"
 #include "stddef.h"
 #include "ctltype.h"

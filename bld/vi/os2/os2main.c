@@ -30,7 +30,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #ifndef __OS2V2__
     #include <malloc.h>
 #endif

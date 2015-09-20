@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 #include "win.h"
 #ifdef __WIN__
     #include "winrtns.h"

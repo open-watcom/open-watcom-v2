@@ -34,7 +34,6 @@
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
-#include "source.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif

@@ -49,6 +49,7 @@
 #include "struct.h"
 #include "mouse.h"
 #include "globals.h"
+#include "source.h"
 #include "rtns.h"
 #include "rtns2.h"
 #include "dc.h"

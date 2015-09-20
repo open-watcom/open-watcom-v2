@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include "rtns.h"
-#include "source.h"
 
 /*
  * SrcNextWord - get next word in a variable, putting result into another

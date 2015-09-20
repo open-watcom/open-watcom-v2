@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <stddef.h>
-#include "source.h"
 #include "ddedef.h"
 #include "wprocmap.h"
 

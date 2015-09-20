@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 
 /*
  * FindStartOfALine - do just that
@@ -90,7 +89,7 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
             WorkLine->len--;
         }
         j = FindStartOfALine( nline ) - 1;
-	    k = 0;
+        k = 0;
         if( !(j == 0 && nline->data[0] == ' ') ) {
             if( WorkLine->len != 0 ) {
                 WorkLine->data[WorkLine->len] = ' ';

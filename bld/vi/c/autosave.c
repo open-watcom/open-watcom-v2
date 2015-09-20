@@ -38,7 +38,6 @@
 #include "sopen.h"
 #include "posix.h"
 #include "win.h"
-#include "source.h"
 #include "fts.h"
 #ifdef __WIN__
   #include "winrtns.h"

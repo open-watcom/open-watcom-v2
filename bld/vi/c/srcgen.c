@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 #include "parsecl.h"
 #include "ex.h"
 #include "specio.h"

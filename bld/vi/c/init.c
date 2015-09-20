@@ -32,7 +32,6 @@
 #include "vi.h"
 #include "rxsupp.h"
 #include "fcbmem.h"
-#include "source.h"
 #include "win.h"
 #include "menu.h"
 #include "getopt.h"

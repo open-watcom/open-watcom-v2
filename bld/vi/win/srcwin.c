@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <malloc.h>
 #include <setjmp.h>
-#include "source.h"
 #include "expr.h"
 #include "srcwin.h"
 #include "wwinhelp.h"

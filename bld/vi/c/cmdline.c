@@ -36,13 +36,11 @@
     #include <i86.h>
 #endif
 #include "parsecl.h"
-#include "source.h"
 #include "rxsupp.h"
 #include "ex.h"
 #include "win.h"
 #include "expr.h"
 #include "menu.h"
-#include "source.h"
 #include "sstyle.h"
 #include "fts.h"
 #include "rcs.h"

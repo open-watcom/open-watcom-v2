@@ -34,7 +34,6 @@
 #include "mouse.h"
 #include "menu.h"
 #include "win.h"
-#include "source.h"
 
 static bool dragThumb;
 

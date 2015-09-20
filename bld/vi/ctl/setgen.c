@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "setgen.h"
 #include "stddef.h"
 #include "ctltype.h"

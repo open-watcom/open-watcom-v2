@@ -33,7 +33,6 @@
 #include "vi.h"
 #include "walloca.h"
 #include "win.h"
-#include "source.h"
 #include "mouse.h"
 #ifdef __WIN__
     #include "utils.h"

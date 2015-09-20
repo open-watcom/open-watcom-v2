@@ -34,7 +34,6 @@
 #ifdef _M_I86
     #include <i86.h>
 #endif
-#include "source.h"
 #include "menu.h"
 #include "win.h"
 #include "rxsupp.h"

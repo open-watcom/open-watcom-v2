@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 
 
 /*

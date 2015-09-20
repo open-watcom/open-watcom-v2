@@ -32,7 +32,6 @@
 #include "vi.h"
 #include "win.h"
 #include "mouse.h"
-#include "source.h"
 #include "myprtf.h"
 
 static  bool    cursorNeedsDisplay = false;

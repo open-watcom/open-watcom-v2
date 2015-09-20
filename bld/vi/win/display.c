@@ -36,7 +36,6 @@
 #include "color.h"
 #include "font.h"
 #include "utils.h"
-#include "source.h"
 #include "sstyle.h"
 
 static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,

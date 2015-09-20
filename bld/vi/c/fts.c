@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <stddef.h>
 #include "fts.h"
-#include "source.h"
 #include <assert.h>
 #include "parsecl.h"
 
