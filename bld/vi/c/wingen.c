@@ -70,7 +70,7 @@ vi_rc NewWindow2( window_id *wn, window_info *wi )
 /*
  * Message1 - display message on line 1
  */
-void Message1( char *str, ... )
+void Message1( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
@@ -95,7 +95,7 @@ void Message1( char *str, ... )
 /*
  * Message1Box - display message on line 1 (differs from Message1 only on Windows)
  */
-void Message1Box( char *str, ... )
+void Message1Box( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
@@ -120,7 +120,7 @@ void Message1Box( char *str, ... )
 /*
  * Message2 - display message on line 2
  */
-void Message2( char *str, ... )
+void Message2( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];

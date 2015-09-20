@@ -87,7 +87,7 @@ void SetGadgetString( char *str )
 /*
  * WriteText - write a length specified string to a window
  */
-void WriteText( HWND hwnd, int x, int y, type_style *style, char * text, int len )
+void WriteText( HWND hwnd, int x, int y, type_style *style, const char * text, int len )
 {
     HDC     hdc;
 #ifdef __WINDOWS_386__
@@ -108,7 +108,7 @@ void WriteText( HWND hwnd, int x, int y, type_style *style, char * text, int len
 /*
  * WriteString - write a null delimited string to a window
  */
-void WriteString( HWND hwnd, int x, int y, type_style *style, char *text )
+void WriteString( HWND hwnd, int x, int y, type_style *style, const char *text )
 {
     WriteText( hwnd, x, y, style, text, strlen( text ) );
 

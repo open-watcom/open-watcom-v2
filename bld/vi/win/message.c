@@ -51,7 +51,7 @@ WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
 static char *ClassName = "MessageWindow";
 static char msgString1[MAX_STR];
 static char msgString2[MAX_STR];
-static void msgString( int, char * );
+static void msgString( int, const char * );
 
 static bool Init( window *w, void *parm )
 {
@@ -130,7 +130,7 @@ window_id NewMsgWindow( void )
     return( msg );
 }
 
-static void msgString( int line_no, char *str )
+static void msgString( int line_no, const char *str )
 {
     int     height;
     RECT    rect;
@@ -149,7 +149,7 @@ static void msgString( int line_no, char *str )
     WriteString( MessageWindow, 0, rect.top, WIN_STYLE( &MessageBar ), str );
 }
    
-void Message1( char *fmt, ... )
+void Message1( const char *fmt, ... )
 {
     va_list     args;
     char        tmp[MAX_STR];
@@ -162,7 +162,7 @@ void Message1( char *fmt, ... )
     msgString( 1, tmp );
 }
 
-void Message1Box( char *fmt, ... )
+void Message1Box( const char *fmt, ... )
 {
     va_list     args;
     char        tmp[MAX_STR];
@@ -174,7 +174,7 @@ void Message1Box( char *fmt, ... )
     MessageBox( Root, tmp, NULL, MB_OK );
 }
 
-void Message2( char *fmt, ... )
+void Message2( const char *fmt, ... )
 {
     va_list     args;
     char        tmp[MAX_STR];

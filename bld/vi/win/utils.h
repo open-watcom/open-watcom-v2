@@ -53,8 +53,8 @@ enum drawUpDown {
 
 extern int  TextWidth( HWND, char *, int, int );
 extern int  StringWidth( HWND, char *, int );
-extern void WriteText( HWND, int, int, type_style *, char *, int );
-extern void WriteString( HWND, int, int, type_style *, char *);
+extern void WriteText( HWND, int, int, type_style *, const char *, int );
+extern void WriteString( HWND, int, int, type_style *, const char *);
 extern HDC  TextGetDC( HWND, type_style *);
 extern void TextReleaseDC( HWND, HDC );
 extern int  MyTextExtent( HWND, type_style *, char *, unsigned );
