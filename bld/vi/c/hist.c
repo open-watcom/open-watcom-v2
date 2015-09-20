@@ -52,7 +52,7 @@ typedef enum {
 static void updateHist( history_data *hist, const char *str )
 {
     if( hist->curr < hist->max ) {
-        AddString2( &hist->data[hist->curr], str );
+        ReplaceString( &hist->data[hist->curr], str );
         hist->curr++;
     }
 
@@ -110,7 +110,7 @@ void LoadHistory( const char *cmd )
         break;
     }
     if( cmd != NULL ) {
-        AddString2( &EditVars.CLHist.data[EditVars.CLHist.curr % EditVars.CLHist.max], cmd );
+        ReplaceString( &EditVars.CLHist.data[EditVars.CLHist.curr % EditVars.CLHist.max], cmd );
         EditVars.CLHist.curr++;
     }
 

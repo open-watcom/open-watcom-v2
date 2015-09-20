@@ -73,7 +73,7 @@ vi_rc AddLabel( sfile *sf, labels *labs, label lbl )
     /*
      * set name and position of label
      */
-    AddString( &(labs->name[labs->cnt]), lbl );
+    labs->name[labs->cnt] = DupString( lbl );
     labs->pos[labs->cnt] = sf;
     labs->cnt++;
     return( ERR_NO_ERR );

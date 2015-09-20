@@ -80,7 +80,7 @@ void UpdateLastFileList( char *fname )
     }
 
     // add in the next available spot
-    AddString2( &(h->data[h->curr % h->max]), buff );
+    ReplaceString( &(h->data[h->curr % h->max]), buff );
     h->curr += 1;
 
 } /* UpdateLastFileList */

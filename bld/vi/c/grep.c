@@ -74,7 +74,7 @@ vi_rc DoFGREP( const char *dirlist, const char *string, bool ci )
     vi_rc       rc;
 
     origString = string;
-    AddString( &sString, string );
+    sString = DupString( string );
     isFgrep = true;
     caseIgn = ci;
     for( i = 0; i < sizeof( table ); i++ ) {
@@ -104,7 +104,7 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
     if( RegExpError ) {
         return( RegExpError );
     }
-    AddString( &sString, string );
+    sString = DupString( string );
     origString = string;
     isFgrep = false;
     rc = doGREP( dirlist );
@@ -144,7 +144,7 @@ static vi_rc getFile( char *fname )
     } else {
         strcpy( dir, origString );
     }
-    AddString2( &(EditVars.FindHist.data[EditVars.FindHist.curr % EditVars.FindHist.max] ), origString );
+    ReplaceString( &(EditVars.FindHist.data[EditVars.FindHist.curr % EditVars.FindHist.max] ), origString );
     EditVars.FindHist.curr += 1;
     ColorFind( dirptr, FINDFL_NOERROR );
     SetLastFind( origString );
@@ -618,7 +618,7 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wn )
                 }
 #endif
 #endif
-                AddString( &(list[*clist]), data );
+                list[*clist] = DupString( data );
                 (*clist)++;
 
             } else if( rc != ERR_NO_ERR ) {

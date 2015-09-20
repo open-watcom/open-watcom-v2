@@ -146,11 +146,11 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             break;
         case IDOK:
             GetDlgItemText( hwnd, SNOOP_STRING, snoop, MAX_INPUT_LINE );
-            AddString2( &snoopData.find, snoop );
+            ReplaceString( &snoopData.find, snoop );
             GetDlgItemText( hwnd, SNOOP_EXT, snoop, MAX_INPUT_LINE );
-            AddString2( &snoopData.ext, snoop );
+            ReplaceString( &snoopData.ext, snoop );
             GetDlgItemText( hwnd, SNOOP_PATH, snoop, MAX_INPUT_LINE );
-            AddString2( &snoopData.path, snoop );
+            ReplaceString( &snoopData.path, snoop );
             snoopData.case_ignore = IsDlgButtonChecked( hwnd, SNOOP_IGNORE_CASE );
             snoopData.use_regexp = IsDlgButtonChecked( hwnd, SNOOP_REGULAR_EXPRESSIONS );
             // RemoveEditSubClass( hwnd, SNOOP_STRING );
@@ -186,7 +186,7 @@ bool GetSnoopStringDialog( fancy_find **ff )
      * all other values are saved from the last fgrep before
      */
     snoopData.case_ignore = EditFlags.CaseIgnore;
-    AddString2( &snoopData.ext, EditVars.GrepDefault );
+    ReplaceString( &snoopData.ext, EditVars.GrepDefault );
     *ff = &snoopData; /* data is no longer copied */
     proc = MakeDlgProcInstance( SnoopDlgProc, InstanceHandle );
 #ifdef __NT__

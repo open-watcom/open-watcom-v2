@@ -316,7 +316,7 @@ static bool addHistory( input_buffer *input )
 
     h = input->history;
     if( h != NULL && input->buffer[0] != 0 ) {
-        AddString2( &(h->data[h->curr % h->max]), input->buffer );
+        ReplaceString( &(h->data[h->curr % h->max]), input->buffer );
         h->curr += 1;
         return( true );
     }

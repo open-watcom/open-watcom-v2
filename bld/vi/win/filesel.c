@@ -214,7 +214,7 @@ char *GetInitialFileName( void )
     rc = SelectFileOpen( "", &path, NULL, false );
     ShowStartupDialog();
     if( rc == ERR_NO_ERR && path[0] != 0 ) {
-        AddString( &ptr, path );
+        ptr = DupString( path );
     } else {
         ptr = NULL;
     }

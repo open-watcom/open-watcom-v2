@@ -178,7 +178,7 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
     for( ;; ) {
         p = SkipLeadingSpaces( p );
         taglist = MemReAlloc( taglist, sizeof( char * ) * ( tagcnt + 1 ) );
-        AddString( &taglist[tagcnt], p );
+        taglist[tagcnt] = DupString( p );
         i = 0;
         while( !isspace( taglist[tagcnt][i] ) ) {
             i++;

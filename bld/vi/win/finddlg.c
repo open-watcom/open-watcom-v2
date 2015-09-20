@@ -119,7 +119,7 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
                 ptr = h->data[curr % h->max];
             }
             if( ptr == NULL || strcmp( ptr, findData.find ) ) {
-                AddString2( &(h->data[h->curr % h->max]), findData.find );
+                ReplaceString( &(h->data[h->curr % h->max]), findData.find );
                 h->curr += 1;
             }
             GetWindowRect( hwnd, &pos );

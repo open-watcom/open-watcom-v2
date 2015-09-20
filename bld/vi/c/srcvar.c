@@ -120,7 +120,7 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
     curr = head;
     while( curr != NULL ) {
         if( !strcmp( curr->name, name ) ) {
-            AddString2( &curr->value, val );
+            ReplaceString( &curr->value, val );
             curr->len = len;
 #ifndef VICOMP
             if( glob && !EditFlags.CompileAssignmentsDammit ) {
@@ -138,7 +138,7 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
     name_len = strlen( name );
     new = MemAlloc( offsetof( vars, name ) + name_len + 1 );
     memcpy( new->name, name, name_len + 1 );
-    AddString( &new->value, val );
+    new->value = DupString( val );
     new->len = len;
 
     if( glob ) {

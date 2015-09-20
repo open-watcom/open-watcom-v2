@@ -51,7 +51,7 @@ static void getEXEName( char *name )
     } else {
         _makepath( tmppath, drive, dir, fname, ".exe" );
         _searchenv( tmppath, "PATH", path );
-        AddString( &EXEName, path );
+        EXEName = DupString( path );
     }
 
 } /* getEXEName */

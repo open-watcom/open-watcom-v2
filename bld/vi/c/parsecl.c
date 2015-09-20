@@ -176,6 +176,7 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
 } /* ParseCommandLine */
 
 #define NUM_STACK_SIZE  30
+
 /*
  * GetAddress - parse to obtain line number
  */
@@ -212,101 +213,105 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
     }
     numptr = nument = 0;
     csign = numsign = 1;
-    numinprog = stopnum = endparse = false;
+    numinprog = stopnum = false;
 
+    endparse = false;
     while( !endparse ) {
         c = *buff;
-        if( c >= '0' && c <= '9' ) {
+        switch( c ) {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
             currnum[numptr++] = c;
             numinprog = true;
-        } else {
-            switch( c ) {
-            case '/':
-            case '?':
-                {
-                    if( numinprog ) {
-                        return( NO_NUMBER );
-                    }
-                    tmp = StaticAlloc();
-                    st[0] = c;
-                    st[1] = 0;
-                    buff = GetNextWord( buff, tmp, st );
-                    if( c == '?' ) {
-                        fl = FINDFL_BACKWARDS | FINDFL_NEXTLINE;
-                    } else {
-                        fl = FINDFL_FORWARD | FINDFL_NEXTLINE;
-                    }
-                    rc = GetFind( tmp, &pos, &len, fl );
-                    numstack[nument] = pos.line;
-                    stopnum = true;
-                    StaticFree( tmp );
-                    if( rc != ERR_NO_ERR ) {
-                        return( rc );
-                    }
-                    if( *buff == 0 ) {
-                        --buff;
-                    }
-                    break;
-                }
-
-            case '\'':
-                if( numinprog ) {
-                    return( NO_NUMBER );
-                }
-                j = buff[1] - 'a';
-                rc = VerifyMark( j + 1, true );
-                if( rc != ERR_NO_ERR ) {
-                    return( rc );
-                }
-                numstack[nument] = MarkList[j].p.line;
-                stopnum = true;
-                ++buff;
-                break;
-            case '+':
-                csign = 1;
-                if( numinprog ) {
-                    stopnum = true;
-                } else {
-                    numsign = 1;
-                }
-                break;
-            case '-':
-                if( numinprog ) {
-                    stopnum = true;
-                    csign = -1;
-                } else {
-                    numsign = -1;
-                    csign = 1;
-                }
-                break;
-            case '.':
-                if( numinprog ) {
-                    return( NO_NUMBER );
-                }
-                numstack[nument] = CurrentPos.line;
-                stopnum = true;
-                break;
-            case '$':
-                if( numinprog ) {
-                    return( NO_NUMBER );
-                }
-                rc = CFindLastLine( &numstack[nument] );
-                if( rc != ERR_NO_ERR ) {
-                    return( rc );
-                }
-                stopnum = true;
-                break;
-            default:
-                endparse = true;
-                if( numinprog ) {
-                    stopnum = true;
-                }
-                break;
+            break;
+        case '/':
+        case '?':
+            if( numinprog ) {
+                return( NO_NUMBER );
             }
-        }
-        if( !endparse ) {
+            tmp = StaticAlloc();
+            st[0] = c;
+            st[1] = 0;
+            buff = GetNextWord( buff, tmp, st );
+            if( c == '?' ) {
+                fl = FINDFL_BACKWARDS | FINDFL_NEXTLINE;
+            } else {
+                fl = FINDFL_FORWARD | FINDFL_NEXTLINE;
+            }
+            rc = GetFind( tmp, &pos, &len, fl );
+            numstack[nument] = pos.line;
+            stopnum = true;
+            StaticFree( tmp );
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
+            }
+            if( *buff == 0 )
+                --buff;
+            break;
+        case '\'':
+            if( numinprog ) {
+                return( NO_NUMBER );
+            }
+            j = buff[1] - 'a';
+            rc = VerifyMark( j + 1, true );
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
+            }
+            numstack[nument] = MarkList[j].p.line;
+            stopnum = true;
             ++buff;
+            break;
+        case '+':
+            csign = 1;
+            if( numinprog ) {
+                stopnum = true;
+            } else {
+                numsign = 1;
+            }
+            break;
+        case '-':
+            if( numinprog ) {
+                stopnum = true;
+                csign = -1;
+            } else {
+                numsign = -1;
+                csign = 1;
+            }
+            break;
+        case '.':
+            if( numinprog ) {
+                return( NO_NUMBER );
+            }
+            numstack[nument] = CurrentPos.line;
+            stopnum = true;
+            break;
+        case '$':
+            if( numinprog ) {
+                return( NO_NUMBER );
+            }
+            rc = CFindLastLine( &numstack[nument] );
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
+            }
+            stopnum = true;
+            break;
+        default:
+            --buff;
+            endparse = true;
+            if( numinprog ) {
+                stopnum = true;
+            }
+            break;
         }
+        ++buff;
 
         /*
          * check if a number was being scanned
@@ -329,9 +334,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
     for( i = 0; i < nument; i++ ) {
         sum += numstack[i];
     }
-
     *num = sum;
-
     return( ERR_NO_ERR );
 
 } /* GetAddress */

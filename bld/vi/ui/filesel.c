@@ -690,7 +690,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     MoveWindowToFront( cWin );
                 }
                 if( rc == ERR_NO_ERR ) {
-                    AddString2( &(sfd->vals[i]), tmp );
+                    ReplaceString( &(sfd->vals[i]), tmp );
                     redraw = true;
                 }
                 break;

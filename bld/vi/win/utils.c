@@ -80,7 +80,7 @@ void SetGadgetString( char *str )
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );
         memcpy( EditVars.GadgetString, str, i );
     } else {
-        AddString2( &EditVars.GadgetString, windowBordersG );
+        ReplaceString( &EditVars.GadgetString, windowBordersG );
     }
 }
 

@@ -52,7 +52,7 @@ extern char _NEAR TokensEx[];
  */
 /* ex.c */
 extern vi_rc    EnterExMode( void );
-extern vi_rc    ProcessEx( linenum, linenum, bool, int, char * );
+extern vi_rc    ProcessEx( linenum, linenum, bool, int, const char * );
 
 /* exappend.c */
 extern vi_rc    Append( linenum, bool );

@@ -33,36 +33,37 @@
 #include "vi.h"
 
 /*
- * AddString2 - free a string, then allocate new one
+ * ReplaceString - free a string, then allocate new one
  */
-void AddString2( char **where, const char *str )
+void ReplaceString( char **where, const char *str )
 {
 
     MemFree( *where );
-    AddString( where, str );
+    *where = DupString( str );
 
-} /* AddString2 */
+} /* ReplaceString */
 
 /*
- * AddString - allocate a string, and copy it in
+ * DupString - allocate a string, and copy it in
  */
-void AddString( char **where, const char *str )
+char *DupString( const char *str )
 {
-    int sl;
+    int     sl;
+    char    *ptr;
 
     if( str == NULL )  {
         sl = 1;
+        str = "";
     } else {
         sl = strlen( str ) + 1;
     }
-
-    *where = MemAlloc( sl );
-
-    if( str != NULL ) {
-        memcpy( *where, str, sl );
+    ptr = MemAlloc( sl );
+    if( ptr != NULL ) {
+        memcpy( ptr, str, sl );
     }
+    return( ptr );
 
-} /* AddString */
+} /* DupString */
 
 void DeleteString( char **string )
 {

@@ -203,10 +203,10 @@ static void dlgDataToGlobal( dlg_data *data )
      * language specific variables with extra handling
      */
     if( strcmp( EditVars.TagFileName, data->TagFileName ) ) {
-        AddString2( &EditVars.TagFileName, data->TagFileName );
+        ReplaceString( &EditVars.TagFileName, data->TagFileName );
     }
     if( strcmp( EditVars.GrepDefault, data->GrepDefault ) ) {
-        AddString2( &EditVars.GrepDefault, data->GrepDefault );
+        ReplaceString( &EditVars.GrepDefault, data->GrepDefault );
     }
 }
 

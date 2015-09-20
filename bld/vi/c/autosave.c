@@ -356,7 +356,7 @@ void AutoSaveInit( void )
                     p = GetNextWord1( p, path );
                     p = SkipLeadingSpaces( p );
                     NewFile( path, false );
-                    AddString2( &(CurrentFile->name), p );
+                    ReplaceString( &(CurrentFile->name), p );
                     SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
                     FileSPVAR();
                     CurrentFile->modified = true;

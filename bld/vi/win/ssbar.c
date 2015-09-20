@@ -109,7 +109,7 @@ void destroyBlock( int i, char *start )
         start += 2;
         strcat( new_ss, start );
     }
-    AddString2( &EditVars.StatusString, new_ss );
+    ReplaceString( &EditVars.StatusString, new_ss );
 
     totalRedraw();
 }
@@ -154,7 +154,7 @@ void splitBlock( int i, char *start )
     new_ss[start - EditVars.StatusString] = '\0';
     strcat( new_ss, "$[ " );
     strcat( new_ss, start );
-    AddString2( &EditVars.StatusString, new_ss );
+    ReplaceString( &EditVars.StatusString, new_ss );
 
     totalRedraw();
 }
@@ -205,7 +205,7 @@ void buildNewItem( char *start, int id )
         }
     }
     strcat( new_ss, start );
-    AddString2( &EditVars.StatusString, new_ss );
+    ReplaceString( &EditVars.StatusString, new_ss );
 
     totalRedraw();
 }
@@ -214,7 +214,7 @@ void buildDefaults( void )
 {
     short   def_sections[] = DEFAULT_STATUSSECTIONS;
 
-    AddString2( &EditVars.StatusString, DEFAULT_STATUSSTRING );
+    ReplaceString( &EditVars.StatusString, DEFAULT_STATUSSTRING );
 
     EditVars.NumStatusSections = NARRAY( def_sections );
     EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( def_sections ) );

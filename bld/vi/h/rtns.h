@@ -33,8 +33,8 @@
 void    AbandonHopeAllYeWhoEnterHere( vi_rc );
 
 /* addstr.c */
-void    AddString( char **, const char * );
-void    AddString2( char **, const char * );
+void    ReplaceString( char **, const char * );
+char    *DupString( const char * );
 void    DeleteString( char ** );
 
 /* alias.c */

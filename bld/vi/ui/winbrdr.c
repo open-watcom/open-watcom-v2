@@ -75,7 +75,7 @@ void SetGadgetString( char *str )
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );
         memcpy( EditVars.GadgetString, str, i );
     } else {
-        AddString2( &EditVars.GadgetString, WindowBordersG );
+        ReplaceString( &EditVars.GadgetString, WindowBordersG );
     }
 }
 
@@ -295,7 +295,7 @@ void WindowBorderData( window_id wn, const char *data, int col )
 
     w = Windows[wn];
     if( w->has_border ) {
-        AddString2( &(w->borderdata), data );
+        ReplaceString( &(w->borderdata), data );
         w->bordercol = col;
     }
 

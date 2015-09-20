@@ -99,7 +99,7 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
                 ptr = h->data[curr % h->max];
             }
             if( ptr == NULL || strcmp( ptr, cmdStr ) ) {
-                AddString2( &(h->data[h->curr % h->max]), cmdStr );
+                ReplaceString( &(h->data[h->curr % h->max]), cmdStr );
                 h->curr += 1;
             }
             RemoveEditSubClass( hwnd, CMD_EDIT );

@@ -65,7 +65,7 @@ static void genItem( int token, label where )
     tsf->branchcond = COND_FALSE;
 
     if( where != NULL ) {
-        AddString( &(tsf->data), where );
+        tsf->data = DupString( where );
     }
 
     InsertLLItemAfter( (ss **)&tmpTail, (ss *)tmpTail, (ss *)tsf );
@@ -143,7 +143,7 @@ void GenTestCond( void )
 #ifndef VICOMP
     } else {
         genItem( SRC_T_IF, NULL );
-        AddString( &tmpTail->arg1, v1 );
+        tmpTail->arg1 = DupString( v1 );
     }
 #endif
 
@@ -207,8 +207,8 @@ static void genExpr( void )
          */
         genItem( SRC_T_EXPR, NULL );
         tmpTail->u.oper = oper;
-        AddString( &tmpTail->arg1, v1 );
-        AddString( &tmpTail->arg2, v2 );
+        tmpTail->arg1 = DupString( v1 );
+        tmpTail->arg2 = DupString( v2 );
     }
 #endif
 
@@ -223,7 +223,7 @@ label NewLabel( void )
     label       tmp;
 
     MySprintf( buff, "_l_%l", CurrentSrcLabel++ );
-    AddString( &tmp, buff );
+    tmp = DupString( buff );
     return( tmp );
 
 } /* NewLabel */
@@ -353,7 +353,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             /*
              * get parm
              */
-            AddString( &CurrentSrcData, tmp );
+            CurrentSrcData = DupString( tmp );
             freeSrcData = true;
 
             /*

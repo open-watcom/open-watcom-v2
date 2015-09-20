@@ -221,13 +221,13 @@ static void getConfigFilePaths( void )
 #else
     GetWindowsDirectory( path, FILENAME_MAX );
 #endif
-    AddString2( &iniPath, path );           /* these freed in WriteProfile */
+    ReplaceString( &iniPath, path );           /* these freed in WriteProfile */
     VarAddGlobalStr( "IniPath", iniPath );  /* make accessable to scripts */
     strcat( path, "\\" INI_FILE );
-    AddString2( &iniFile, path);
+    ReplaceString( &iniFile, path);
     strcpy( path, iniPath );
     strcat( path, "\\" CONFIG_INI );
-    AddString2( &cfgFile, path);
+    ReplaceString( &cfgFile, path);
 
 } /* getConfigFilePaths */
 

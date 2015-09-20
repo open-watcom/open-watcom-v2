@@ -156,8 +156,8 @@ vi_rc AddMatchString( char *data )
     if( NextWordSlash( data, st2 ) <= 0 ) {
         return( ERR_INVALID_MATCH );
     }
-    AddString( &(MatchData[MatchCount]), st );
-    AddString( &(MatchData[MatchCount + 1]), st2 );
+    MatchData[MatchCount] = DupString( st );
+    MatchData[MatchCount + 1] = DupString( st2 );
     MatchCount += 2;
     Message1( "match pair \"%s\"-\"%s\" added", st, st2 );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );

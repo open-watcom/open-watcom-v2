@@ -73,7 +73,7 @@ char            *WordDefnDefault = "::..\\\\__09AZaz";
  */
 void SetConfigFileName( const char *fn )
 {
-    AddString2( &cfgFN, fn );
+    ReplaceString( &cfgFN, fn );
 
 } /* SetConfigFileName */
 
@@ -161,11 +161,11 @@ static void checkFlags( int *argc, char *argv[], char *start[],
             break;
         case 'c':
             EditFlags.BoundData = false;
-            AddString2( &cfgFN, OptArg );
+            ReplaceString( &cfgFN, OptArg );
             break;
         case 'd':
             EditFlags.BoundData = false;
-            AddString2( &cfgFN, "" );
+            ReplaceString( &cfgFN, "" );
             break;
         case 'k':
             keysToPush = OptArg;
@@ -266,7 +266,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     GetCWD1( &CurrentDirectory );
     SetCWD( HomeDirectory );
     if( cfgFN == NULL ){
-        AddString( &cfgFN, CFG_NAME );
+        cfgFN = DupString( CFG_NAME );
     }
 
     checkFlags( &argc, argv, startup, startup_parms, &startcnt );
@@ -329,14 +329,14 @@ static void doInitializeEditor( int argc, char *argv[] )
      * more misc. setup
      */
     if( EditVars.WordDefn == NULL ) {
-        AddString( &EditVars.WordDefn, &WordDefnDefault[6] );
+        EditVars.WordDefn = DupString( &WordDefnDefault[6] );
         InitWordSearch( EditVars.WordDefn );
     }
     if( EditVars.WordAltDefn == NULL ) {
-        AddString( &EditVars.WordAltDefn, WordDefnDefault );
+        EditVars.WordAltDefn = DupString( WordDefnDefault );
     }
     if( EditVars.TagFileName == NULL ) {
-        AddString( &EditVars.TagFileName, "tags" );
+        EditVars.TagFileName = DupString( "tags" );
     }
     DotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
     AltDotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
@@ -543,7 +543,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     }
     for( i = 0; i < startcnt; i++ ) {
         GetFromEnv( startup[i], tmp );
-        AddString2( &cfgFN, tmp );
+        ReplaceString( &cfgFN, tmp );
         if( cfgFN[0] != 0 ) {
             if( startup_parms[i] != NULL ) {
                 parm = startup_parms[i];
@@ -571,7 +571,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         LoadHistory( cmd );
     }
     if( EditVars.GrepDefault == NULL ) {
-        AddString( &EditVars.GrepDefault, "*.(c|h)" );
+        EditVars.GrepDefault = DupString( "*.(c|h)" );
     }
     if( goCmd[0] != 0 ) {
         KeyAddString( goCmd );
@@ -593,7 +593,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     VarAddGlobalStr( "OS386", "1" );
 #endif
     if( EditVars.StatusString == NULL ) {
-        AddString( &EditVars.StatusString, "L:$6L$nC:$6C" );
+        EditVars.StatusString = DupString( "L:$6L$nC:$6C" );
     }
     UpdateStatusWindow();
 #ifdef __WIN__

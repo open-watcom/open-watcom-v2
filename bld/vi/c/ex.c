@@ -101,7 +101,7 @@ static char strCmmsg[] = "%l lines %s after line %l";
 /*
  * ProcessEx - process an ex command
  */
-vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
+vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, const char *data )
 {
     vi_rc       rc = ERR_INVALID_COMMAND, i;
     char        word[MAX_STR];
@@ -111,6 +111,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
     fcb_list    fcblist;
 
     GetNextWord1( data, word );
+    data = word;
     if( GetAddress( &data, &addr ) != ERR_NO_ERR ) {
         addr = -1;
     }

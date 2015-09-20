@@ -690,12 +690,12 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             break;
         case SETVAR_T_FILEENDSTRING:
-            AddString2( &EditVars.FileEndString, fn );
+            ReplaceString( &EditVars.FileEndString, fn );
             ResetAllWindows();
             redisplay = true;
             break;
         case SETVAR_T_STATUSSTRING:
-            AddString2( &EditVars.StatusString, fn );
+            ReplaceString( &EditVars.StatusString, fn );
             if( StatusWindow != NO_WINDOW ) {
                 ClearWindow( StatusWindow );
                 UpdateStatusWindow();
@@ -705,7 +705,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             break;
         case SETVAR_T_GREPDEFAULT:
-            AddString2( &EditVars.GrepDefault, fn );
+            ReplaceString( &EditVars.GrepDefault, fn );
             break;
         case SETVAR_T_TILECOLOR:
             if( EditVars.TileColors == NULL ) {
@@ -743,7 +743,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             ResetAllWindows();
             break;
         case SETVAR_T_SHELLPROMPT:
-            AddString2( &EditVars.SpawnPrompt, fn );
+            ReplaceString( &EditVars.SpawnPrompt, fn );
             if( msgFlag ) {
                 MySprintf( fn, "prompt string set to %s", EditVars.SpawnPrompt );
             }
@@ -769,14 +769,14 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             break;
         case SETVAR_T_HISTORYFILE:
-            AddString2( &EditVars.HistoryFile, fn );
+            ReplaceString( &EditVars.HistoryFile, fn );
             if( msgFlag ) {
                 MySprintf( fn, "history file set to %s", EditVars.HistoryFile );
             }
             break;
 
         case SETVAR_T_TAGFILENAME:
-            AddString2( &EditVars.TagFileName, fn );
+            ReplaceString( &EditVars.TagFileName, fn );
             if( msgFlag ) {
                 MySprintf( fn, "tag file name set to %s", EditVars.TagFileName );
             }
@@ -784,7 +784,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
 
         case SETVAR_T_FILENAME:
             if( CurrentFile != NULL ) {
-                AddString2( &(CurrentFile->name), fn );
+                ReplaceString( &(CurrentFile->name), fn );
                 SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
                 if( msgFlag ) {
                     MySprintf( fn, "filename set to %s", CurrentFile->name );
@@ -793,27 +793,27 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             break;
         case SETVAR_T_TMPDIR:
-            AddString2( &EditVars.TmpDir, fn );
+            ReplaceString( &EditVars.TmpDir, fn );
             VerifyTmpDir();
             if( msgFlag ) {
                 MySprintf( fn, "tmpdir set to %s", EditVars.TmpDir );
             }
             break;
         case SETVAR_T_WORD:
-            AddString2( &EditVars.WordDefn, fn );
+            ReplaceString( &EditVars.WordDefn, fn );
             InitWordSearch( EditVars.WordDefn );
             if( msgFlag ) {
                 MySprintf( fn, "word set to %s", EditVars.WordDefn );
             }
             break;
         case SETVAR_T_WORDALT:
-            AddString2( &EditVars.WordAltDefn, fn );
+            ReplaceString( &EditVars.WordAltDefn, fn );
             if( msgFlag ) {
                 MySprintf( fn, "wordalt set to %s", EditVars.WordAltDefn );
             }
             break;
         case SETVAR_T_MAGICSTRING:
-            AddString2( &EditVars.Majick, fn );
+            ReplaceString( &EditVars.Majick, fn );
             if( msgFlag ) {
                 MySprintf( fn, "magicstring set to %s", EditVars.Majick );
             }
@@ -1114,13 +1114,13 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
 
     for( i = 0; i < tc1; i++ ) {
         sdata[i] = MemAlloc( sizeof( set_data ) );
-        AddString( &(sdata[i]->setting), GetTokenStringCVT( TokensSetVar, i, settokstr, true ) );
-        AddString( &(sdata[i]->val), getOneSetVal( i, false, tmpstr, true ) );
+        sdata[i]->setting = DupString( GetTokenStringCVT( TokensSetVar, i, settokstr, true ) );
+        sdata[i]->val = DupString( getOneSetVal( i, false, tmpstr, true ) );
     }
     for( i = 0; i < tc2; i++ ) {
         sdata[tc1 + i] = MemAlloc( sizeof( set_data ) );
-        AddString( &(sdata[tc1 + i]->setting), GetTokenStringCVT( TokensSetFlag, i, settokstr, true ) );
-        AddString( &(sdata[tc1 + i]->val), getOneSetVal( i, true, tmpstr, true ) );
+        sdata[tc1 + i]->setting = DupString( GetTokenStringCVT( TokensSetFlag, i, settokstr, true ) );
+        sdata[tc1 + i]->val = DupString( getOneSetVal( i, true, tmpstr, true ) );
     }
     qsort( sdata, tc, sizeof( set_data * ), compareString );
     for( i = 0; i < tc; i++ ) {

@@ -254,13 +254,13 @@ void VerifyTmpDir( void )
             char buf[FILENAME_MAX];
             strcpy( buf, env_tmpdir );
             buf[strlen( buf ) - 1] = '\0';
-            AddString2( &EditVars.TmpDir, buf );
+            ReplaceString( &EditVars.TmpDir, buf );
         } else {
-            AddString2( &EditVars.TmpDir, env_tmpdir );
+            ReplaceString( &EditVars.TmpDir, env_tmpdir );
         }
     } else {
         // _mkdir( altTmpDir, DIRFLAGS );
-        AddString2( &EditVars.TmpDir, altTmpDir );
+        ReplaceString( &EditVars.TmpDir, altTmpDir );
     }
 
 } /* VerifyTmpDir */

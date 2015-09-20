@@ -44,7 +44,7 @@ void GetCWD1( char **str )
     char        bob[FILENAME_MAX];
 
     GetCWD2( bob, FILENAME_MAX );
-    AddString( str, bob );
+    *str = DupString( bob );
 
 } /* GetCWD1 */
 

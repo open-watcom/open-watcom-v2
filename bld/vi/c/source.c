@@ -595,7 +595,7 @@ static void addResidentScript( const char *fn, sfile *sf, labels *lab )
     resident    *tmp;
 
     tmp = MemAlloc( sizeof( resident ) );
-    AddString( &tmp->fn, fn );
+    tmp->fn = DupString( fn );
     tmp->sf = sf;
     memcpy( &tmp->lab, lab, sizeof( labels ) );
     tmp->scriptcomp = EditFlags.ScriptIsCompiled;

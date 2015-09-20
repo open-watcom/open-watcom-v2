@@ -178,7 +178,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
         if( !ff.use_regexp ) {
             /* we need to add the string without any changes */
             if( !EditFlags.NoReplaceSearchString ) {
-                AddString2( &lastFindStr, st );
+                ReplaceString( &lastFindStr, st );
                 lastFindWasRegExp = false;
             }
             MakeExpressionNonRegular( st );
@@ -526,12 +526,12 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
                 pos->column -= 2;
             }
         }
-        AddString2( &sStr, lastFind );
+        ReplaceString( &sStr, lastFind );
     } else {
         if( !(flags & FINDFL_NOCHANGE) ) {
-            AddString2( &lastFind, st );
+            ReplaceString( &lastFind, st );
         }
-        AddString2( &sStr, st );
+        ReplaceString( &sStr, st );
         *pos = CurrentPos;
         if( flags & FINDFL_FORWARD ) {
             pos->column += 0;
@@ -630,7 +630,7 @@ vi_rc ColorFind( const char *data, find_type findfl )
  */
 void SetLastFind( const char *newLastFind )
 {
-    AddString2( &lastFind, newLastFind );
+    ReplaceString( &lastFind, newLastFind );
 
 } /* SetLastFind */
 
@@ -684,7 +684,7 @@ vi_rc FancyDoReplace( void )
         MakeExpressionNonRegular( find );
         // MakeExpressionNonRegular( replace );
     }
-    AddString2( &lastReplace, replace );
+    ReplaceString( &lastReplace, replace );
 
     EditFlags.LastSearchWasForward = is_forward;
 
