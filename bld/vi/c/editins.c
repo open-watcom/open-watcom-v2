@@ -285,7 +285,6 @@ vi_rc IMEnter( void )
 
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
-    abbrevCnt = 0;
 
     /*
      * truncate the working line
@@ -570,7 +569,6 @@ vi_rc IMSpace( void )
 {
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
-    abbrevCnt = 0;
     return( insertChar( false, true ) );
 
 } /* IMSpace */
@@ -588,7 +586,6 @@ vi_rc IMTabs( void )
 
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
-    abbrevCnt = 0;
     switch( LastEvent ) {
     case VI_KEY( TAB ):
         if( EditFlags.RealTabs ) {

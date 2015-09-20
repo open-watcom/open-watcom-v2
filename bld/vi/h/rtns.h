@@ -38,12 +38,12 @@ char    *DupString( const char * );
 void    DeleteString( char ** );
 
 /* alias.c */
-vi_rc   SetAlias( char * );
-vi_rc   CheckAlias( char *, char * );
-bool    CheckAbbrev( char *, int * );
-vi_rc   Abbrev( char * );
-vi_rc   UnAbbrev( char * );
-vi_rc   UnAlias( char * );
+vi_rc   SetAlias( const char * );
+vi_rc   CheckAlias( const char *, char * );
+bool    CheckAbbrev( const char *, int * );
+vi_rc   Abbrev( const char * );
+vi_rc   UnAbbrev( const char * );
+vi_rc   UnAlias( const char * );
 
 /* autosave.c */
 void    DoAutoSave( void );

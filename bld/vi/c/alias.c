@@ -37,15 +37,16 @@ static alias_list *abHead, *abTail;
 /*
  * setGenericAlias - define an alias/abbreviation
  */
-static vi_rc setGenericAlias( char *what, alias_list **head, alias_list **tail )
+static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **tail )
 {
     alias_list  *curr;
     char        str[MAX_STR];
 
-    if( NextWord1( what, str ) <= 0 ) {
+    what = GetNextWord1( what, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_ALIAS );
     }
-    RemoveLeadingSpaces( what );
+    what = SkipLeadingSpaces( what );
 
     /*
      * see if alias is already in list: if so, and there is expansion data,
@@ -79,28 +80,30 @@ static vi_rc setGenericAlias( char *what, alias_list **head, alias_list **tail )
 /*
  * checkGenericAlias - check command line for aliases/abbrevs
  */
-static alias_list *checkGenericAlias( char *str, alias_list *head )
+static alias_list *checkGenericAlias( const char *str, size_t len, alias_list *head )
 {
     alias_list  *curr;
 
+    if( len == 0 )
+        len = strlen( str );
     for( curr = head; curr != NULL; curr = curr->next ) {
-        if( !strcmp( str, curr->alias ) ) {
-            return( curr );
+        if( memcmp( str, curr->alias, len ) == 0 && curr->alias[len] == '\0' ) {
+            break;
         }
     }
-    return( NULL );
+    return( curr );
 
 } /* checkGenericAlias */
 
 /*
  * removeGenericAlias
  */
-static vi_rc removeGenericAlias( char *which, alias_list **head, alias_list **tail )
+static vi_rc removeGenericAlias( const char *which, alias_list **head, alias_list **tail )
 {
     alias_list  *curr;
 
-    RemoveLeadingSpaces( which );
-    curr = checkGenericAlias( which, *head );
+    which = SkipLeadingSpaces( which );
+    curr = checkGenericAlias( which, 0, *head );
     if( curr == NULL ) {
         return( ERR_NO_SUCH_ALIAS );
     }
@@ -114,7 +117,7 @@ static vi_rc removeGenericAlias( char *which, alias_list **head, alias_list **ta
 /*
  * SetAlias - set an alias
  */
-vi_rc SetAlias( char *what )
+vi_rc SetAlias( const char *what )
 {
     return( setGenericAlias( what, &alHead, &alTail ) );
 
@@ -123,7 +126,7 @@ vi_rc SetAlias( char *what )
 /*
  * UnAlias
  */
-vi_rc UnAlias( char *what )
+vi_rc UnAlias( const char *what )
 {
     return( removeGenericAlias( what, &alHead, &alTail ) );
 
@@ -132,11 +135,11 @@ vi_rc UnAlias( char *what )
 /*
  * CheckAlias - check for an alias
  */
-vi_rc CheckAlias( char *str, char *what )
+vi_rc CheckAlias( const char *str, char *what )
 {
     alias_list  *al;
 
-    al = checkGenericAlias( str, alHead );
+    al = checkGenericAlias( str, 0, alHead );
     if( al == NULL ) {
         return( ALIAS_NOT_FOUND );
     }
@@ -148,7 +151,7 @@ vi_rc CheckAlias( char *str, char *what )
 /*
  * Abbrev - set an abbreviation
  */
-vi_rc Abbrev( char *what )
+vi_rc Abbrev( const char *what )
 {
     vi_rc   rc;
 
@@ -163,7 +166,7 @@ vi_rc Abbrev( char *what )
 /*
  * UnAbbrev - remove an abbreviation
  */
-vi_rc UnAbbrev( char *abbrev )
+vi_rc UnAbbrev( const char *abbrev )
 {
     vi_rc   rc;
 
@@ -178,10 +181,11 @@ vi_rc UnAbbrev( char *abbrev )
 /*
  * CheckAbbrev - look for an abbreviation, and expand it
  */
-bool CheckAbbrev( char *data, int *ccnt )
+bool CheckAbbrev( const char *data, int *ccnt )
 {
     int         i, j, owl, col;
     alias_list  *curr;
+    size_t      len;
 
     if( EditFlags.Modeless ) {
         return( false );
@@ -190,18 +194,18 @@ bool CheckAbbrev( char *data, int *ccnt )
     /*
      * get the current string, and matching alias
      */
-    if( *ccnt == 0 ) {
+    len = *ccnt;
+    *ccnt = 0;
+    if( len == 0 ) {
         return( false );
     }
-    data[*ccnt] = 0;
-    curr = checkGenericAlias( data, abHead );
+    curr = checkGenericAlias( data, len, abHead );
     if( curr == NULL ) {
         return( false );
     }
 
-    i = CurrentPos.column - 1 - (*ccnt);
+    i = CurrentPos.column - 1 - len;
     j = CurrentPos.column - 2;
-    *ccnt = 0;
 
     /*
      * replace with full form

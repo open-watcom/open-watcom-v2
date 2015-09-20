@@ -154,7 +154,7 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
     if( *tres == '\0' ) {
         return( ERR_NO_ERR );
     }
-    if( !CheckAlias( tres, tmp ) ) {
+    if( CheckAlias( tres, tmp ) == ERR_NO_ERR ) {
         strcat( tmp, buff );
         buff = GetNextWord( tmp, tres, pDelims );
         if( *tres == '\0' ) {
