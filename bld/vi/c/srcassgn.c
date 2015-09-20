@@ -85,12 +85,12 @@ vi_rc SrcAssign( char *data, vlist *vl )
     if( data[0] == '/' || data[0] == '"' ) {
         check_end = false;
         if( data[0] == '"' ) {
-            NextWord( data, v1, "\"" );
+            NextWord( data, v1, SingleQuote );
             if( data[0] == '"' ) {
                 check_end = true;
             }
         } else {
-            NextWordSlash( data, v1 );
+            NextWord( data, v1, SingleSlash );
             if( data[0] == '/' ) {
                 check_end = true;
             }

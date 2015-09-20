@@ -49,15 +49,15 @@ static long _NEAR   cExpr11( void );
 static long _NEAR   cExpr12( void );
 static token        nextToken( void );
 
-static char     wasString;
-static char     lastString[TBUFF_SIZE];
-static int      nextCh;
-static token    currToken;
-static char     tokenBuff[TBUFF_SIZE];
-static long     constantVal;
-static char     *exprData;
-static jmp_buf  abortAddr;
-static int      tokenBuffCnt;
+static char         wasString;
+static char         lastString[TBUFF_SIZE];
+static int          nextCh;
+static token        currToken;
+static char         tokenBuff[TBUFF_SIZE];
+static long         constantVal;
+static const char   *exprData;
+static jmp_buf      abortAddr;
+static int          tokenBuffCnt;
 
 #define str( a ) #a
 
@@ -121,7 +121,7 @@ static void nextChar( void )
 /*
  * StartExprParse - get read to parse an expression
  */
-void StartExprParse( char *data, jmp_buf abort_addr )
+void StartExprParse( const char *data, jmp_buf abort_addr )
 {
     exprData = data;
     memcpy( abortAddr, abort_addr, sizeof( jmp_buf ) );

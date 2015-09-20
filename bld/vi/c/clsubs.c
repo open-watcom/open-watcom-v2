@@ -218,10 +218,10 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
     if( rstr == NULL ) {
         return( ERR_NO_STACK );
     }
-    if( NextWordSlash( data, sstr ) < 0 ) {
+    if( NextWord( data, sstr, SingleSlash ) < 0 ) {
         return( ERR_INVALID_SUBS_CMD );
     }
-    if( NextWordSlash( data, rstr ) < 0 ) {
+    if( NextWord( data, rstr, SingleSlash ) < 0 ) {
         return( ERR_INVALID_SUBS_CMD );
     }
     slen = NextWord1( data, flag );

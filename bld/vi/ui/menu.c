@@ -75,7 +75,7 @@ static menu     *floatMenus[MAX_FLOAT_MENUS] = { NULL, NULL, NULL, NULL };
 /*
  * getMenuName - get name of menu, including '&' character
  */
-static void getMenuName( char *res, char *str, int slen, int hioff )
+static void getMenuName( char *res, const char *str, int slen, int hioff )
 {
     int i;
 
@@ -200,7 +200,7 @@ static void freeMenu( menu *menu )
 /*
  * findMenu - locate pointer to a given menu
  */
-static menu *findMenu( char *str, menu ***predef_menu )
+static menu *findMenu( const char *str, menu ***predef_menu )
 {
 //    int         len;
     menu        *res;
@@ -236,7 +236,7 @@ static menu *findMenu( char *str, menu ***predef_menu )
 /*
  * StartMenu - start a new top level menu
  */
-vi_rc StartMenu( char *data )
+vi_rc StartMenu( const char *data )
 {
     char        str[MAX_STR];
     menu        *tmp;
@@ -247,8 +247,8 @@ vi_rc StartMenu( char *data )
     bool        need_hook;
     menu        **predef_menu;
 
-    GetStringWithPossibleQuote( data, str );
-    RemoveLeadingSpaces( data );
+    GetStringWithPossibleQuoteC( &data, str );
+    data = SkipLeadingSpaces( data );
     need_hook = false;
     if( data[0] != 0 ) {
         need_hook = true;
@@ -349,7 +349,7 @@ vi_rc ViEndMenu( void )
 /*
  * MenuItem - add new item current menu
  */
-vi_rc MenuItem( char *data )
+vi_rc MenuItem( const char *data )
 {
     char        str[MAX_STR];
     int         len;
@@ -361,8 +361,8 @@ vi_rc MenuItem( char *data )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    GetStringWithPossibleQuote( data, str );
-    RemoveLeadingSpaces( data );
+    GetStringWithPossibleQuoteC( &data, str );
+    data = SkipLeadingSpaces( data );
     ch = extractMenuStr( str, &hioff );
     len = strlen( str );
     size = sizeof( menu_item ) + len + strlen( data ) + 2;
@@ -387,7 +387,7 @@ vi_rc MenuItem( char *data )
 /*
  * DoItemDelete - delete an item from a menu
  */
-vi_rc DoItemDelete( char *data )
+vi_rc DoItemDelete( const char *data )
 {
     menu        *cmenu, **predef_menu;
     char        mname[MAX_STR];
@@ -398,12 +398,12 @@ vi_rc DoItemDelete( char *data )
     if( currMenu != NULL ) {
         return( ERR_INVALID_MENU );
     }
-    NextWord1( data, mname );
+    data = GetNextWord1( data, mname );
     cmenu = findMenu( mname, &predef_menu );
     if( cmenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    NextWord1( data, str );
+    data = GetNextWord1( data, str );
     id = atoi( str );
     if( id < 0 ) {
         id = cmenu->itemcnt - 1;
@@ -440,7 +440,7 @@ vi_rc DoItemDelete( char *data )
 /*
  * AddMenuItem - add a menu item to an already created menu
  */
-vi_rc AddMenuItem( char *data )
+vi_rc AddMenuItem( const char *data )
 {
     menu        *cmenu, **predef_menu;
     char        mname[MAX_STR];
@@ -449,7 +449,7 @@ vi_rc AddMenuItem( char *data )
     if( currMenu != NULL ) {
         return( ERR_INVALID_MENU );
     }
-    NextWord1( data, mname );
+    data = GetNextWord1( data, mname );
     cmenu = findMenu( mname, &predef_menu );
     if( cmenu == NULL ) {
         return( ERR_INVALID_MENU );
@@ -465,7 +465,7 @@ vi_rc AddMenuItem( char *data )
 /*
  * DoMenuDelete - delete an existing menu
  */
-vi_rc DoMenuDelete( char *data )
+vi_rc DoMenuDelete( const char *data )
 {
     menu        *cmenu, **predef_menu;
     char        mname[MAX_STR];
@@ -473,7 +473,7 @@ vi_rc DoMenuDelete( char *data )
     if( currMenu != NULL ) {
         return( ERR_INVALID_MENU );
     }
-    NextWord1( data, mname );
+    data = GetNextWord1( data, mname );
     cmenu = findMenu( mname, &predef_menu );
     if( cmenu == NULL ) {
         return( ERR_INVALID_MENU );
@@ -508,8 +508,7 @@ static void addFileList( menu *cmenu )
     MenuItem( buff );
 
     for( cnt = 1, cinfo = InfoHead; cinfo != NULL && cnt < 10; cinfo = cinfo->next, ++cnt ) {
-        MySprintf( buff, "\"&%d %s\" edit %s", cnt,
-                   cinfo->CurrentFile->name, cinfo->CurrentFile->name );
+        MySprintf( buff, "\"&%d %s\" edit %s", cnt, cinfo->CurrentFile->name, cinfo->CurrentFile->name );
         MenuItem( buff );
     }
     if( cinfo != NULL ) {
@@ -902,7 +901,7 @@ vi_rc DoFloatMenu( int id, int slen, int x1, int y1 )
 /*
  * ActivateFloatMenu - activate floating menu
  */
-vi_rc ActivateFloatMenu( char *data )
+vi_rc ActivateFloatMenu( const char *data )
 {
     char        str[MAX_STR];
     int         id, slen, x1, y1;
@@ -911,19 +910,23 @@ vi_rc ActivateFloatMenu( char *data )
      * get input syntax :
      * FLOATMENU id slen x1 y1
      */
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     id = atoi( str );
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     slen = atoi( str );
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     x1 = atoi( str );
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     y1 = atoi( str );

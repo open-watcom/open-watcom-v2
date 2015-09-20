@@ -150,10 +150,10 @@ vi_rc AddMatchString( char *data )
         return( ERR_TOO_MANY_MATCH_STRINGS );
     }
     RemoveLeadingSpaces( data );
-    if( NextWordSlash( data, st ) <= 0 ) {
+    if( NextWord( data, st, SingleSlash ) <= 0 ) {
         return( ERR_INVALID_MATCH );
     }
-    if( NextWordSlash( data, st2 ) <= 0 ) {
+    if( NextWord( data, st2, SingleSlash ) <= 0 ) {
         return( ERR_INVALID_MATCH );
     }
     MatchData[MatchCount] = DupString( st );

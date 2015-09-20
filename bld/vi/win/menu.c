@@ -32,6 +32,7 @@
 #include "vi.h"
 #include <malloc.h>
 #include "source.h"
+#include "menu.h"
 #include <assert.h>
 
 /* The following value comes from Petzold - page 344 */
@@ -71,16 +72,13 @@ static menu     mainMenu = { NULL, NULL, NULL, NULL, 0, 0, 0 };
 static menu     *rootMenu = &mainMenu;
 static menu     *currMenu = NULL;
 
-/* Forward declarations */
-int InitMenu( void );
-
 /* utility functions used in rest of module */
 
 /*
  * compareName - a case insensitive strcmp which ignores the embedded '&'
  *               characters used to indicate hot keys in menu names
  */
-static int compareName( char *dst, char *src )
+static int compareName( const char *dst, const char *src )
 {
     do {
         while( *src == HOT_KEY_CHAR ) {
@@ -100,7 +98,7 @@ static int compareName( char *dst, char *src )
 /*
  * getHotKey - get the hot key specified in a string
  */
-static vi_key getHotKey( char *str )
+static vi_key getHotKey( const char *str )
 {
     if( str == NULL ) {
         return( 0 );
@@ -209,7 +207,7 @@ static bool isSpecialMenuPtr( menu *cmenu )
 /*
  * specialMenu - check if a name is a special menu name
  */
-static menu *specialMenu( char *name )
+static menu *specialMenu( const char *name )
 {
     menu            *m;
     special_menu    *s;
@@ -255,7 +253,7 @@ static vi_rc specialMenuCommand( UINT w )
 /*
  * addMenuToMenu - adds a main level menu item
  */
-static menu *addMenuToMenu( menu *m, char *name, char *help )
+static menu *addMenuToMenu( menu *m, const char *name, const char *help )
 {
     menu        *new;
     int         name_len;
@@ -281,7 +279,7 @@ static menu *addMenuToMenu( menu *m, char *name, char *help )
 /*
  * add an item to a menu structure
  */
-static item *addItemToMenu( menu *m, char *name, char *help, char *cmd, bool append )
+static item *addItemToMenu( menu *m, const char *name, const char *help, const char *cmd, bool append )
 {
     item        *new;
     int         cmd_len;
@@ -343,7 +341,7 @@ static item *findItem( menu *m, int offset )
 /*
  * findMenu - look for a menu with a particular name
  */
-static menu *findMenu( menu *parent, char *name )
+static menu *findMenu( menu *parent, const char *name )
 {
     menu    *m;
 
@@ -507,7 +505,7 @@ static void makeMenu( menu *parent, menu *m )
 /*
  * StartMenu - start a new menu; MenuItem will be used to add to this
  */
-int StartMenu( char *data )
+vi_rc StartMenu( const char *data )
 {
     char        name[MAX_STR];
     char        help[MAX_STR];
@@ -517,9 +515,9 @@ int StartMenu( char *data )
         return( ERR_INVALID_MENU );
     }
 
-    GetStringWithPossibleQuote( data, name );
-    GetStringWithPossibleQuote( data, help );
-    RemoveLeadingSpaces( data );
+    GetStringWithPossibleQuoteC( &data, name );
+    GetStringWithPossibleQuoteC( &data, help );
+    data = SkipLeadingSpaces( data );
     need_hook = false;
     if( data[0] != 0 ) {
         need_hook = true;
@@ -539,7 +537,7 @@ int StartMenu( char *data )
 /*
  * MenuItem - add an item to the current menu
  */
-int MenuItem( char *data )
+vi_rc MenuItem( const char *data )
 {
     char        name[MAX_STR];
     char        help[MAX_STR];
@@ -547,9 +545,9 @@ int MenuItem( char *data )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    GetStringWithPossibleQuote( data, name );
-    GetStringWithPossibleQuote( data, help );
-    RemoveLeadingSpaces( data );
+    GetStringWithPossibleQuoteC( &data, name );
+    GetStringWithPossibleQuoteC( &data, help );
+    data = SkipLeadingSpaces( data );
     TranslateTabs( name );
     addItemToMenu( currMenu, name, help, data, false );
     return( ERR_NO_ERR );
@@ -559,17 +557,17 @@ int MenuItem( char *data )
 /*
  * AddMenuItem - add an item to a specific menu
  */
-int AddMenuItem( char *data )
+vi_rc AddMenuItem( const char *data )
 {
     char        menu_name[MAX_STR];
     char        name[MAX_STR];
     char        help[MAX_STR];
     menu        *m;
 
-    GetStringWithPossibleQuote( data, menu_name );
-    GetStringWithPossibleQuote( data, name );
-    GetStringWithPossibleQuote( data, help );
-    RemoveLeadingSpaces( data );
+    GetStringWithPossibleQuoteC( &data, menu_name );
+    GetStringWithPossibleQuoteC( &data, name );
+    GetStringWithPossibleQuoteC( &data, help );
+    data = SkipLeadingSpaces( data );
     m = findMenu( rootMenu, menu_name );
     if( m != NULL ) {
         addItemToMenu( m, name, help, data, false );
@@ -612,7 +610,7 @@ vi_rc DoMenuChar( void )
 /*
  * ViEndMenu - stop adding a top level menu
  */
-int ViEndMenu( void )
+vi_rc ViEndMenu( void )
 {
     vi_key  key;
 
@@ -642,17 +640,17 @@ int ViEndMenu( void )
 /*
  * DoItemDelete - delete an item from a menu
  */
-int DoItemDelete( char *data )
+vi_rc DoItemDelete( const char *data )
 {
     menu    *m;
     char    name[MAX_STR];
     char    parm[MAX_STR];
     int     offset;
 
-    NextWord1( data, name );
+    data = GetNextWord1( data, name );
     m = findMenu( rootMenu, name );
     if( m != NULL ) {
-        NextWord1( data, parm );
+        data = GetNextWord1( data, parm );
         offset = atoi( parm );
         if( freeItem( m, offset ) ) {
             InitMenu();
@@ -666,11 +664,11 @@ int DoItemDelete( char *data )
 /*
  * DoMenuDelete - handle deleting a menu
  */
-int DoMenuDelete( char *data )
+vi_rc DoMenuDelete( const char *data )
 {
     menu    *m;
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     m = specialMenu( data );
     if( m == NULL ) {
         m = findMenu( rootMenu, data );
@@ -687,7 +685,7 @@ int DoMenuDelete( char *data )
 /*
  * Initialize our menus
  */
-int InitMenu( void )
+vi_rc InitMenu( void )
 {
     menu    *m;
 
@@ -712,7 +710,7 @@ int InitMenu( void )
 
 } /* InitMenu */
 
-int FiniMenu( void )
+void FiniMenu( void )
 {
     menu    *m, *next;
 
@@ -730,7 +728,6 @@ int FiniMenu( void )
             // DestroyMenu( rootMenu->menu_handle );
         }
     }
-    return( 0 );
 }
 
 
@@ -782,7 +779,7 @@ static int doFloatMenu( int id, int x, int y )
 /*
  * ActivateFloatMenu - activate floating menu
  */
-int ActivateFloatMenu( char *data )
+vi_rc ActivateFloatMenu( const char *data )
 {
     char        str[MAX_STR];
     int         id, len, x, y;
@@ -791,19 +788,23 @@ int ActivateFloatMenu( char *data )
      * get input syntax :
      * FLOATMENU id len x y
      */
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     id = atoi( str );
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     len = atoi( str );
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     x = atoi( str );
-    if( NextWord1( data, str ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
     y = atoi( str );
@@ -845,7 +846,7 @@ vi_rc MenuCommand( UINT w )
 
 } /* MenuCommand */
 
-static void tabs_to_slash_t( char *buffer, char *text )
+static void tabs_to_slash_t( char *buffer, const char *text )
 {
     while( *text != 0 ) {
         if( *text == '\t' ) {
@@ -978,7 +979,7 @@ static void initMenuBottom( menu *cmenu, bool add_line )
 /*
  * addToMenuBottom - add a file to the bottom of a special menu
  */
-static bool addToMenuBottom( char *fname, bool checkit )
+static bool addToMenuBottom( const char *fname, bool checkit )
 {
     item        *citem;
     char        data[MAX_STR];
@@ -1134,7 +1135,7 @@ void ResetMenuBits( void )
 /*
  * MenuItemFileList - add the Window List menu item
  */
-int MenuItemFileList( void )
+vi_rc MenuItemFileList( void )
 {
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
@@ -1147,7 +1148,7 @@ int MenuItemFileList( void )
 /*
  * MenuItemLastFiles - add the Last Files menu item
  */
-int MenuItemLastFiles( void )
+vi_rc MenuItemLastFiles( void )
 {
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
@@ -1241,7 +1242,7 @@ void SetMenuHelpString( char *str )
 } /* SetMenuHelpString */
 
 
-int DoWindowGadgetMenu( void )
+vi_rc DoWindowGadgetMenu( void )
 {
     SendMessage( CurrentWindow, WM_SYSCOMMAND, 0xF100, 0x0000002DL );
     return( ERR_NO_ERR );

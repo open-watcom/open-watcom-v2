@@ -67,4 +67,4 @@ typedef enum {
 #define TBUFF_SIZE      256
 
 extern long GetConstExpr( void );
-void        StartExprParse( char *data, jmp_buf abort_addr );
+void        StartExprParse( const char *data, jmp_buf abort_addr );

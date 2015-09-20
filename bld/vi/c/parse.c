@@ -135,6 +135,41 @@ vi_rc GetStringWithPossibleQuote( char *data, char *st )
 } /* GetStringWithPossibleQuote */
 
 /*
+ * GetStringWithPossibleQuoteC2
+ */
+vi_rc GetStringWithPossibleQuoteC2( const char **pdata, char *st, bool allow_slash )
+{
+    const char  *data;
+
+    data = SkipLeadingSpaces( *pdata );
+    if( allow_slash && data[0] == '/' ) {
+        data = GetNextWord( data, st, SingleSlash );
+        if( *data == '/' ) {
+            ++data;
+        }
+    } else if( data[0] == '"' ) {
+        data = GetNextWord( data, st, SingleQuote );
+        if( *data == '"' ) {
+            ++data;
+        }
+    } else {
+        data = GetNextWord1( data, st );
+    }
+    *pdata = data;
+    if( *st == '\0' ) {
+        return( ERR_NO_STRING );
+    }
+    return( ERR_NO_ERR );
+
+} /* GetStringWithPossibleQuoteC2 */
+
+vi_rc GetStringWithPossibleQuoteC( const char **data, char *st )
+{
+    return( GetStringWithPossibleQuoteC2( data, st, true ) );
+
+} /* GetStringWithPossibleQuote */
+
+/*
  * NextWord1 - get next space delimited word in buff
  */
 int NextWord1( char *buff, char *res )
@@ -185,15 +220,6 @@ char *GetNextWord1( const char *buff, char *res )
     return( (char *)buff );
 
 } /* GetNextWord1 */
-
-/*
- * NextWordSlash - next slash delimited word
- */
-int NextWordSlash( char *buff, char *res )
-{
-    return( NextWord( buff, res, SingleSlash ) );
-
-} /* NextWordSlash */
 
 /*
  * NextWord - get next word in buff

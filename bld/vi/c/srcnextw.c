@@ -62,7 +62,7 @@ vi_rc SrcNextWord( char *data, vlist *vl )
     v = VarFind( v1, vl );
     RemoveLeadingSpaces( v->value );
     if( v->value[0] == '"' ) {
-        NextWord( v->value, str, "\"" );
+        NextWord( v->value, str, SingleQuote );
         EliminateFirstN( v->value, 1 );
     } else {
         NextWord1( v->value, str );

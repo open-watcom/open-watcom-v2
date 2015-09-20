@@ -63,7 +63,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         return( ERR_NO_STACK );
     }
     RemoveLeadingSpaces( data );
-    if( NextWordSlash( data, sstr ) < 0 ) {
+    if( NextWord( data, sstr, SingleSlash ) < 0 ) {
         return( ERR_INVALID_GLOBAL_CMD );
     }
     RemoveLeadingSpaces( data );
