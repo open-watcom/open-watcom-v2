@@ -172,12 +172,10 @@ static void *doMemAllocUnsafe( unsigned size, void *who )
         tmp = trySwap( size, 1, who );
         if( tmp == NULL ) {
             SwapAllWindows();
-            tmp = getMem( size, who );
-            while( tmp == NULL ) {
+            while( (tmp = getMem( size, who )) == NULL ) {
                 if( !TossUndos() ) {
                     return( NULL );
                 }
-                tmp = getMem( size, who );
             }
         }
     }

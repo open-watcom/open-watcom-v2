@@ -47,7 +47,7 @@ static  char        *firstChar;
 void InitMkLine( char *text )
 {
     firstChar = text;
-    while( *text && isspace( *text ) ) {
+    while( *text != '\0' && isspace( *text ) ) {
         text++;
     }
     firstNonWS = text;
@@ -146,7 +146,7 @@ static void getComment( ss_block *ss_new, char *start )
     char    *text = start + 1;
 
     // everything is a comment until the end of line
-    while( *text ) {
+    while( *text != '\0' ) {
         text++;
     }
     ss_new->type = SE_COMMENT;
@@ -170,7 +170,7 @@ static void getMacro( ss_block *ss_new, char *start, int skip )
             ++text;
         }
 
-        while( *text && nesting && (isalnum( *text ) || (*text == '_')
+        while( *text != '\0' && nesting && (isalnum( *text ) || (*text == '_')
             || (*text == '(') || (*text == ')') || (*text == '$')
             || (*text == '&') || (*text == '[')) ) {
             if( *text == '(' ) {
@@ -181,17 +181,17 @@ static void getMacro( ss_block *ss_new, char *start, int skip )
             }
             ++text;
         }
-    } else if( *text && isalnum( *text ) ) {
+    } else if( *text != '\0' && isalnum( *text ) ) {
         // parse a non-parenthesized macro
         ++text;
-        while( *text && (isalnum( *text ) || (*text == '_')) ) {
+        while( *text != '\0' && (isalnum( *text ) || (*text == '_')) ) {
             ++text;
         }
     } else {
         bool    quit = false;
 
         // let's try a special macro
-        while( *text && !quit ) {
+        while( *text != '\0' && !quit ) {
             switch( *text ) {
             case '^':
             case '[':

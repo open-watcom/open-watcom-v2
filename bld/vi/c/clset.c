@@ -642,8 +642,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 break;
             case SETVAR_T_STATUSSECTIONS:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                value = GetNextWord1( value, fn );
-                while( *fn != '\0' ) {
+                for( value = GetNextWord1( value, fn ); *fn != '\0'; value = GetNextWord1( value, fn ) ) {
 #ifdef VICOMP
                     int k;
 #endif
@@ -652,7 +651,6 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                         break;
                     }
                     StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                    value = GetNextWord1( value, fn );
                 }
                 break;
             default:

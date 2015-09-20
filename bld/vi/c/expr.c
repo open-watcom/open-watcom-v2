@@ -341,13 +341,11 @@ static token nextToken( void )
             if( tokenBuff[0] == '.' ) {
                 strcpy( tokenBuff, GetASetVal( &tokenBuff[1] ) );
                 constantVal = strtol( tokenBuff, NULL, 0 );
-                j = tokenBuffCnt - 1;
-                while( j >= 0 ) {
+                for( j = tokenBuffCnt - 1; j >= 0; --j ) {
                     if( !isdigit( tokenBuff[j] ) ) {
                         currToken = T_STRING;
                         break;
                     }
-                    j--;
                 }
            } else if( !strcmp( tokenBuff, "config" ) ) {
                 constantVal = EditFlags.Color * 100 + EditFlags.BlackAndWhite * 10 +

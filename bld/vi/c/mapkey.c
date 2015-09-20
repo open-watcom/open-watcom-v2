@@ -225,7 +225,7 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
     }
     cstack = UndoStack;
     StartUndoGroup( cstack );
-    while( total > 0 ) {
+    for( ; total > 0; --total ) {
         /*
          * set up key map to run
          */
@@ -258,7 +258,6 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
         if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
             break;
         }
-        total--;
     }
 
     TryEndUndoGroup( cstack );
@@ -387,13 +386,12 @@ vi_rc AddKeyMap( key_map *scr, char *data )
     /*
      * copy in key map data
      */
-    sdata = scr->data;
-    while( *p != '\0' ) {
-        c = *p++;
+    for( sdata = scr->data; (c = *p) != '\0'; ++p, ++sdata ) {
         if( c == '\\' ) {
-            c = *p++;
+            ++p;
+            c = *p;
             switch( c ) {
-            case 0:
+            case '\0':
                 return( ERR_INVALID_MAP );
             case '<':
                 *sdata = extractViKeyToken( &p );
@@ -429,9 +427,8 @@ vi_rc AddKeyMap( key_map *scr, char *data )
         } else {
             *sdata = c;
         }
-        sdata++;
     }
-    *sdata = 0;
+    *sdata = '\0';
 
     return( ERR_NO_ERR );
 

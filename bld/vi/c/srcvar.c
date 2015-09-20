@@ -116,8 +116,7 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
      * see if we can just update an existing copy
      */
     len = strlen( val );
-    curr = head;
-    while( curr != NULL ) {
+    for( curr = head; curr != NULL; curr = curr->next ) {
         if( !strcmp( curr->name, name ) ) {
             ReplaceString( &curr->value, val );
             curr->len = len;
@@ -128,7 +127,6 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
 #endif
             return;
         }
-        curr = curr->next;
     }
 
     /*
@@ -158,12 +156,10 @@ void VarListDelete( vlist *vl )
 {
     vars *curr, *next;
 
-    curr = vl->head;
-    while( curr != NULL ) {
+    for( curr = vl->head; curr != NULL; curr = next ) {
         next = curr->next;
         MemFree( curr->value );
         MemFree( curr );
-        curr = next;
     }
 
 } /* VarListDelete */
@@ -201,12 +197,10 @@ vars * VarFind( const char *name, vlist *vl )
      */
     if( name[0] < 'A' || name[0] > 'Z' ) {
         if( vl != NULL ) {
-            curr = vl->head;
-            while( curr != NULL ) {
+            for( curr = vl->head; curr != NULL; curr = curr->next ) {
                 if( !strcmp( name, curr->name ) ) {
                     return( curr );
                 }
-                curr = curr->next;
             }
         }
         return( NULL );
@@ -215,12 +209,10 @@ vars * VarFind( const char *name, vlist *vl )
     /*
      * search globals
      */
-    curr = VarHead;
-    while( curr != NULL ) {
+    for( curr = VarHead; curr != NULL; curr = curr->next ) {
         if( !strcmp( name, curr->name ) ) {
             return( curr );
         }
-        curr = curr->next;
     }
     return( NULL );
 
@@ -232,12 +224,10 @@ void VarFini( void )
 {
     vars *curr, *next;
 
-    curr = VarHead;
-    while( curr != NULL ) {
+    for( curr = VarHead; curr != NULL; curr = next ) {
         next = curr->next;
         MemFree( curr->value );
         MemFree( curr );
-        curr = next;
     }
 }
 
@@ -247,11 +237,9 @@ void VarDump( void ){
     int         count = 0;
     FILE        *f = fopen( "C:\\vi.out", "a+t" );
 
-    curr = VarHead;
-    while( curr != NULL ) {
+    for( curr = VarHead; curr != NULL; curr = curr->next ) {
         // fprintf( f,"N:%s V:%s %x\n", curr->name, curr->value, curr->next );
         count++;
-        curr = curr->next;
     }
     if( count == 13 ) {
         count = 13;
@@ -265,7 +253,7 @@ void VarSC( char *str )
     /// DEBUG BEGIN
     {
         vars    *currn = VarHead;
-        if( currn ) {
+        if( currn != NULL ) {
             while( currn->next != NULL ) {
                 currn = currn->next;
             }

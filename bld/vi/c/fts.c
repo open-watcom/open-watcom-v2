@@ -410,7 +410,7 @@ void FTSInit( void )
  */
 void FTSFini( void )
 {
-    while( ftsHead ) {
+    while( ftsHead != NULL ) {
         FTSKill( ftsHead );
     }
 

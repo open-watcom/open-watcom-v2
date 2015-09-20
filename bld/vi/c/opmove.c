@@ -305,14 +305,13 @@ vi_rc MoveTab( range *r, long count )
     r->line_based = false;
     len = VirtualLineLen( CurrentLine->data );
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
-    while( count ) {
+    for( ; count > 0; --count ) {
         i = Tab( vc, EditVars.TabAmount );
         vc += i;
         if( vc > len ) {
             r->start.column = len;
             return( ERR_NO_SUCH_COLUMN );
         }
-        count -= 1;
     }
     r->start.column = RealColumnOnCurrentLine( vc );
     return( ERR_NO_ERR );
@@ -332,14 +331,13 @@ vi_rc MoveShiftTab( range *r, long count )
     r->start.line = CurrentPos.line;
     r->line_based = false;
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
-    while( count ) {
+    for( ; count > 0; --count ) {
         i = ShiftTab( vc, EditVars.TabAmount );
         vc -= i;
         if( vc < 1 ) {
             r->start.column = 1;
             return( ERR_NO_SUCH_COLUMN );
         }
-        count -= 1;
     }
     r->start.column = RealColumnOnCurrentLine( vc );
     return( ERR_NO_ERR );

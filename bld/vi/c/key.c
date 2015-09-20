@@ -496,10 +496,8 @@ void KeyAddString( char *str )
 
     rc = AddKeyMap( &scr, str );
     if( rc == ERR_NO_ERR ) {
-        s = scr.data;
-        while( *s != 0 ) {
+        for( s = scr.data; *s != 0; ++s ) {
             KeyAdd( *s );
-            s++;
         }
     }
     MemFree( scr.data );

@@ -198,7 +198,7 @@ static void getNumber( ss_block *ss_new, char *start )
         *text = 0;
         nchars = atoi( start );
         text++;
-        while( *text && nchars != 0 ) {
+        while( *text != '\0' && nchars != 0 ) {
             nchars--;
             text++;
         }
@@ -282,18 +282,23 @@ static void getSymbol( ss_block *ss_new, int length )
 
 static void getLiteral( ss_block *ss_new, char *start, int skip )
 {
-    char    *text = start + skip;
+    char    *text;
     char    lastchar = '\0';
-    bool    empty = true;
+    bool    empty;
     bool    multiLine = flags.inString;
     line    *line;
     fcb     *fcb;
     char    *data;
     vi_rc   rc;
-squashed:
-    while( *text && *text != '\'' ) {
+
+    empty = true;
+    for( text = start + skip; *text != '\0'; ++text ) {
+        if( text[0] == '\'' ) {
+            if( text[1] != '\'' )
+                break;
+            ++text;
+        }
         empty = false;
-        text++;
     }
     flags.inString = false;
     if( *text == '\0' ) {
@@ -319,10 +324,6 @@ squashed:
         text++;
         lastchar = tolower( *text );
         switch( lastchar ) {
-        case '\'':
-            text++;
-            empty = false;
-            goto squashed;
         case 'c':
             text++;
             ss_new->type = SE_STRING;
@@ -355,7 +356,8 @@ squashed:
 static void getComment( ss_block *ss_new, char *start )
 {
     char    *text = start + 1;
-    while( *text ) {
+
+    while( *text != '\0' ) {
         text++;
     }
     ss_new->type = SE_COMMENT;
@@ -381,9 +383,9 @@ static void getLabelOrWS( ss_block *ss_new, char *start, int text_col )
         text++;
         text_col++;
     }
-    if( *text && text_col <= 4 ) {
+    if( *text != '\0' && text_col <= 4 ) {
         ss_new->type = SE_JUMPLABEL;
-        while( *text && text_col <= 4 ) {
+        while( *text != '\0' && text_col <= 4 ) {
             if( !isdigit( *text ) && !isspace( *text ) ) {
                 text++;
                 ss_new->type = SE_INVALIDTEXT;
@@ -452,7 +454,7 @@ void InitFORTRANFlags( linenum line_no )
         if( iscomment( *text ) ) {
             continue;
         }
-        while( *text ) {
+        while( *text != '\0' ) {
             if( *text == '!' ) {
                 // rest of line is part of a comment
                 break;
@@ -474,6 +476,7 @@ void InitFORTRANFlags( linenum line_no )
 void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
 {
     int length = 0;
+
     if( start[0] == '\0' ) {
         if( text_col == 0 ) {
             // line is empty -

@@ -166,12 +166,11 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
  */
 static void outputMatchData( FILE *f, char *str )
 {
-    while( *str ) {
+    for( ; *str != '\0'; ++str ) {
         if( *str == '/' ) {
             fputc( '\\', f );
         }
         fputc( *str, f );
-        str++;
     }
     fputc( '/', f );
 

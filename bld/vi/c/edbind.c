@@ -308,8 +308,7 @@ int main( int argc, char *argv[] )
     bind_size           *index;
     bind_size           *entries;
 
-    j = argc - 1;
-    while( j > 0 ) {
+    for( j = argc - 1; j > 0; --j ) {
         if( argv[j][0] == '/' || argv[j][0] == '-' ) {
             sl = strlen( argv[j] );
             for( i = 1; i < sl; i++ ) {
@@ -333,7 +332,6 @@ int main( int argc, char *argv[] )
             }
             argc--;
         }
-        j--;
     }
     Banner();
 

@@ -85,9 +85,10 @@ static int trimWorkLine( void )
 
     len = 0;
     if( EditFlags.CMode || EditFlags.RemoveSpaceTrailing ) {
-        i = WorkLine->len - 1;
-        while( i >= 0 && WHITE_SPACE( WorkLine->data[i] ) ) {
-            i--;
+        for( i = WorkLine->len - 1; i >= 0; --i ) {
+            if( !WHITE_SPACE( WorkLine->data[i] ) ) {
+                break;
+            }
         }
         if( i == -1 ) {
             len = VirtualLineLen( WorkLine->data );

@@ -287,17 +287,18 @@ static long doExec( char *std_in, char *std_out, const char *cmd )
     strcpy( buffer, cmd );
     s = buffer;
     for( i = 0; i < MAX_ARGS; i++ ) {
-        while( isspace( *s ) ) s++;
+        while( isspace( *s ) )
+            s++;
         if( *s == 0 ) {
             argv[i] = NULL;
             break;
         }
         argv[i] = s;
-        while( *s && !isspace( *s ) ) {
+        while( *s != '\0' && !isspace( *s ) ) {
             s++;
         }
-        if( *s ) {
-            *s++ = 0;
+        if( *s != '\0' ) {
+            *s++ = '\0';
         } else {
             argv[i + 1] = NULL;
             break;
@@ -735,12 +736,11 @@ char *StrMerge( int cnt, char *str, ... )
     char        *n;
 
     va_start( arg, str );
-    while( cnt > 0 ) {
+    for( ; cnt > 0; --cnt ) {
         n = va_arg( arg, char * );
         if( n != NULL ) {
             strcat( str, n );
         }
-        cnt--;
     }
     va_end( arg );
     return( str );

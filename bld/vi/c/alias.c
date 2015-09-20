@@ -51,8 +51,7 @@ static vi_rc setGenericAlias( char *what, alias_list **head, alias_list **tail )
      * see if alias is already in list: if so, and there is expansion data,
      * then replace the data, else delete the item
      */
-    curr = *head;
-    while( curr != NULL ) {
+    for( curr = *head; curr != NULL; curr = curr->next ) {
         if( !strcmp( str, curr->alias ) ) {
             MemFree( curr->expand );
             if( what == NULL ) {
@@ -62,7 +61,6 @@ static vi_rc setGenericAlias( char *what, alias_list **head, alias_list **tail )
                 curr->expand = DupString( what );
             }
         }
-        curr = curr->next;
     }
 
     /*
@@ -85,12 +83,10 @@ static alias_list *checkGenericAlias( char *str, alias_list *head )
 {
     alias_list  *curr;
 
-    curr = head;
-    while( curr != NULL ) {
+    for( curr = head; curr != NULL; curr = curr->next ) {
         if( !strcmp( str, curr->alias ) ) {
             return( curr );
         }
-        curr = curr->next;
     }
     return( NULL );
 

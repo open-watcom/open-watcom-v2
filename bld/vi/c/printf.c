@@ -77,7 +77,7 @@ static void basePrintf( const char *in, va_list al )
     char        buff[MAX_STR], *tmp;
 
     cin = *in;
-    while( cin ) {
+    while( cin != '\0' ) {
         if( cin == '%' ) {
             in++;
             switch( *in ) {
@@ -176,7 +176,7 @@ copyloop:
 copyloop1:
                 tmp = buff;
 copyloop2:
-                while( *tmp ) {
+                while( *tmp != '\0' ) {
                     barfChar( *tmp++ );
                 }
                 break;

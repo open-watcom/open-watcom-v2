@@ -67,7 +67,7 @@ static void getText( ss_block *ss_new, char *text )
         return;
     }
 
-    while( *text ) {
+    while( *text != '\0' ) {
         text++;
     }
     ss_new->type = SE_TEXT;
@@ -187,11 +187,9 @@ void addSelection( ss_block *ss_start, linenum line_no )
             return;
         }
         ss2 = ss_copy;
-        ss = ss_start;
-        while( ss->end < sel_start_col ) {
+        for( ss = ss_start; ss->end < sel_start_col; ++ss ) {
             *ss2 = *ss;
             ss2++;
-            ss++;
         }
         ss_save = *ss;
         if( (ss == ss_start && sel_start_col > 0) ||
@@ -260,9 +258,7 @@ void addSelection( ss_block *ss_start, linenum line_no )
 
     // select from far left to end of selection
     if( sel_end_line == line_no && sel_end_col != 0 ) {
-        ss = ss_start;
-        while( ss->end < sel_end_col ) {
-            ss++;
+        for( ss = ss_start; ss->end < sel_end_col; ++ss ) {
             i++;
         }
         ss2 = ss_start + 1;
@@ -294,9 +290,7 @@ void fixSelection( ss_block *ss_start, int start_col )
     ss_block    *ss;
     int         i = MAX_SS_BLOCKS;
 
-    ss = ss_start;
-    while( ss->end < start_col ) {
-        ss++;
+    for( ss = ss_start; ss->end < start_col; ++ss ) {
         i--;
     }
     if( ss == ss_start ) {
@@ -384,10 +378,8 @@ void SSDifBlock( ss_block *ss_old, char *text, int start_col,
     }
 
     // change origin of ->ends from text[0] to text[start_col]
-    ss_inc = ss_old;
-    while( ss_inc->end != BEYOND_TEXT ) {
+    for( ss_inc = ss_old; ss_inc->end != BEYOND_TEXT; ++ss_inc ) {
         ss_inc->end -= start_col;
-        ss_inc++;
     }
 }
 

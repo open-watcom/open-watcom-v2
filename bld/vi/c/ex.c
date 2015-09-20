@@ -185,8 +185,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, const char *data )
         if( !EditFlags.ExMode ) {
             return( ERR_ONLY_VALID_IN_EX_MODE );
         }
-        rc = CGimmeLinePtr( n1, &cfcb, &cline );
-        while( !rc ) {
+        for( rc = CGimmeLinePtr( n1, &cfcb, &cline ); rc == ERR_NO_ERR; rc = CGimmeNextLinePtr( &cfcb, &cline ) ) {
             if( EditFlags.LineNumbers ) {
                 MyPrintf( "%M %s\n", n1, cline->data );
             } else {
@@ -196,7 +195,6 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, const char *data )
                 break;
             }
             n1++;
-            rc = CGimmeNextLinePtr( &cfcb, &cline );
         }
         break;
     case EX_T_MARK:

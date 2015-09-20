@@ -103,12 +103,10 @@ bool MarkOnLine( line *line, unsigned no )
     if( line->u.ld.mark == no ) {
         return( true );
     }
-    m = MARK_PTR( line->u.ld.mark );
-    while( m->next != NO_MARK ) {
+    for( m = MARK_PTR( line->u.ld.mark ); m->next != NO_MARK; m = MARK_PTR( m->next ) ) {
         if( m->next == no ) {
             return( true );
         }
-        m = MARK_PTR( m->next );
     }
     return( false );
 
@@ -144,14 +142,12 @@ vi_rc RemoveMarkFromLine( unsigned no )
         if( line->u.ld.mark == no ) {
             line->u.ld.mark = mark->next;
         } else {
-            curr = MARK_PTR( line->u.ld.mark );
-            while( curr->next != no ) {
+            for( curr = MARK_PTR( line->u.ld.mark ); curr->next != no; curr = MARK_PTR( curr->next ) ) {
                 if( curr->next == NO_MARK ) {
                     /* we have run through the linked list and not found it */
                     /* so we must have a lost mark here */
                     return( ERR_MARK_NOT_SET );
                 }
-                curr = MARK_PTR( curr->next );
             }
             /* remove it from the linked list */
             curr->next = mark->next;

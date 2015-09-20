@@ -338,14 +338,12 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
 
     VarListDelete( vl );
 
-    curr = sf;
-    while( curr != NULL ) {
+    for( curr = sf; curr != NULL; curr = tmp ) {
         tmp = curr->next;
         MemFree( curr->data );
         MemFree( curr->arg1 );
         MemFree( curr->arg2 );
         MemFree( curr );
-        curr = tmp;
     }
 
     /*
@@ -612,25 +610,20 @@ void DeleteResidentScripts( void )
     resident    *tmp, *tmp_next;
     sfile       *curr, *next;
 
-    for( tmp = resHead; tmp != NULL; ) {
+    for( tmp = resHead; tmp != NULL; tmp = tmp_next ) {
         tmp_next = tmp->next;
 
         MemFreeList( tmp->lab.cnt, tmp->lab.name );
         MemFree( tmp->lab.pos );
-
-        curr = tmp->sf;
-        while( curr != NULL ) {
+        for( curr = tmp->sf; curr != NULL; curr = next ) {
             next = curr->next;
             MemFree( curr->data );
             MemFree( curr->arg1 );
             MemFree( curr->arg2 );
             MemFree( curr );
-            curr = next;
         }
         MemFree( tmp->fn );
         MemFree( tmp );
-
-        tmp = tmp_next;
     }
 
 } /* DeleteResidentScripts */
@@ -641,13 +634,12 @@ void DeleteResidentScripts( void )
  */
 static resident *residentScript( const char *fn )
 {
-    resident    *tmp = resHead;
+    resident    *tmp;
 
-    while( tmp != NULL ) {
+    for( tmp = resHead; tmp != NULL; tmp = tmp->next ) {
         if( !stricmp( fn, tmp->fn ) ) {
             break;
         }
-        tmp = tmp->next;
     }
     return( tmp );
 

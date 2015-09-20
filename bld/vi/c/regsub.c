@@ -95,10 +95,8 @@ bool RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                     buff[i] = 0;
                     j = atoi( buff ) - 1;
                     *dst = 0;
-                    i = VirtualLineLen( dest );
-                    while( i < j ) {
+                    for( i = VirtualLineLen( dest ); i < j; ++i ) {
                         *dst++ = ' ';
-                        i++;
                     }
                     break;
                 case '#':
@@ -202,9 +200,8 @@ bool RegSub( regexp *prog, char *source, char *dest, linenum lineno )
             }
             dst += len;
         }
-
     }
-    *dst++ = 0;
+    *dst = 0;
     StaticFree( tmp );
     return( splitit );
 

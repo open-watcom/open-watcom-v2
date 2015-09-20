@@ -63,13 +63,9 @@ static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool wr
     /*
      * copy data into buffer
      */
-    while( s <= e ) {
-
-        data = cline->data;
-        while( *data != 0 ) {
-            *buff = *data;
-            buff++;
-            data++;
+    for( ; s <= e; ++s ) {
+        for( data = cline->data; *data != '\0'; ++data ) {
+            *buff++ = *data;
         }
         len += cline->len;
         if( s != e || last_eol ) {
@@ -81,8 +77,6 @@ static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool wr
             len++;
         }
         cline = cline->next;
-        s++;
-
     }
 
     /*

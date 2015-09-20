@@ -67,9 +67,9 @@ static vi_rc goToLine( linenum lineno, bool relcurs )
         } else {
             lineno = s - 1;
         }
-        i = CGimmeLinePtr( lineno, &cfcb, &cline );
-        if( i ) {
-            return( i );
+        rc = CGimmeLinePtr( lineno, &cfcb, &cline );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
 #endif

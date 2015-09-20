@@ -55,7 +55,7 @@
 #ifndef __NT__
 bool isMultipleFiles( char *altname )
 {
-    while( *altname && *altname != ' ' ) {
+    while( *altname != '\0' && *altname != ' ' ) {
         altname++;
     }
     return( *altname == ' ' );
@@ -63,10 +63,10 @@ bool isMultipleFiles( char *altname )
 #else
 bool isMultipleFiles( char *altname )
 {
-    while( *altname ) {
+    while( *altname != '\0' ) {
         altname++;
     }
-    return( altname[0] == 0 && altname[1] != 0 );
+    return( altname[0] == '\0' && altname[1] != '\0' );
 }
 
 /*
@@ -77,11 +77,11 @@ static void EliminateFirstNT( char *buff, int n  )
     char        *buff2;
 
     buff2 = &buff[n];
-    while( buff2[0] != 0 || buff2[1] != 0 ) {
+    while( buff2[0] != '\0' || buff2[1] != '\0' ) {
         *buff++ = *buff2++;
     }
-    buff[0] = 0;
-    buff[1] = 0;
+    buff[0] = '\0';
+    buff[1] = '\0';
 
 } /* EliminateFirstNT */
 
@@ -163,10 +163,9 @@ vi_rc EditFile( char *name, bool dammit )
         }
         len = strlen( fn );
         if( len > 0 ) {
-            i = len - 1;
             strcpy( mask, fn );
             cnt = 0;
-            while( i >= 0 ) {
+            for( i = len - 1; i >= 0; --i ) {
                 if( fn[i] == FILE_SEP ) {
                     for( j = i + 1; j <= len; j++ ) {
                         mask[j - (i + 1)] = fn[j];
@@ -174,7 +173,6 @@ vi_rc EditFile( char *name, bool dammit )
                     cnt = i;
                     break;
                 }
-                i--;
             }
             fn[cnt] = 0;
         }
@@ -347,7 +345,7 @@ vi_rc EditFile( char *name, bool dammit )
 
     } while( NextWord1FN( name, fn ) > 0 );
 
-    if( altname ) {
+    if( altname != NULL ) {
         MemFree( altname );
     }
     MemFree( fn );
@@ -399,7 +397,7 @@ vi_rc EditFileFromList( void )
         return( rc );
     }
 
-    while( repeat ) {
+    while( repeat > 0 ) {
 
         /*
          * set up for this pass

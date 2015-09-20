@@ -123,6 +123,7 @@ void UpdateStatusWindow( void )
     int         line;
     char        numstr[12];
     int         format;
+    char        c;
 
     if( StatusWindow == NO_WINDOW ||
         EditFlags.DisplayHold ||
@@ -132,13 +133,12 @@ void UpdateStatusWindow( void )
         return;
     }
 
-    str = EditVars.StatusString;
     res = result;
     line = 1;
     format = FMT_LEFT;
     EditFlags.ModeInStatusLine = false;
-    while( *str ) {
-        if( *str == '$' ) {
+    for( str = EditVars.StatusString; (c = *str) != '\0'; ++str ) {
+        if( c == '$' ) {
             str++;
             ptr = str;
             while( isdigit( *str ) ) {
@@ -151,7 +151,10 @@ void UpdateStatusWindow( void )
             }
             use_num = false;
             num = 0;
-            switch( *str++ ) {
+            c = *str;
+            if( c == '\0' )
+                break;
+            switch( c ) {
             case '$':
                 *res++ = '$';
                 break;
@@ -231,16 +234,16 @@ void UpdateStatusWindow( void )
                     digits--;
                 }
                 ptr = numstr;
-                while( *ptr ) {
+                while( *ptr != '\0' ) {
                     *res++ = *ptr++;
                 }
             }
         } else {
-            *res++ = *str++;
+            *res++ = c;
         }
     }
+    *res = 0;
     if( res != result ) {
-        *res = 0;
         StatusLine( line, result, format );
     }
 

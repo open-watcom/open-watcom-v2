@@ -339,7 +339,7 @@ bool FileTemplateMatch( const char *name, const char *template )
     for( ;; ) {
         if( *template == '*' ) {
             if( !inExtension ) {
-                while( *(name + 1) && *(name + 1) != '.' ) {
+                while( name[1] != '\0' && name[1] != '.' ) {
                     name++;
                 }
                 inExtension = true;

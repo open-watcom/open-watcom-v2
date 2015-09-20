@@ -96,7 +96,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
         }
         if( check_end ) {
             EliminateFirstN( data, 1 );
-            while( data[0] != 0 ) {
+            while( data[0] != '\0' ) {
                 switch( data[0] ) {
                 case 't':
                     timeflag = true;

@@ -110,12 +110,10 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew,
     char        buff[MAX_STR * 2];
     vi_rc       rc;
 
-    i = start;
-    while( !isspace( data[i] ) && i >= 0 ) {
+    for( i = start; !isspace( data[i] ) && i >= 0; --i ) {
         if( (data[i] == ':' || data[i] == '/' || data[i] == '\\') && newstart < 0 ) {
             newstart = i + 1;
         }
-        i--;
     }
     if( newstart < 0 ) {
         newstart = i + 1;
@@ -184,12 +182,10 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew,
         lastFilec = mouseFilec;
         break;
     }
-    while( lastFilec >= DirFileCount ) {
-        lastFilec -= DirFileCount;
+    for( ; lastFilec >= DirFileCount; lastFilec -= DirFileCount ) {
         hasWrapped = true;
     }
-    while( lastFilec < 0 ) {
-        lastFilec += DirFileCount;
+    for( ; lastFilec < 0; lastFilec += DirFileCount ) {
         hasWrapped = true;
     }
 

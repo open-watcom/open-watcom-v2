@@ -418,7 +418,7 @@ static vi_key historyFilter( input_buffer *input, vi_key event )
 
 static bool insertString( input_buffer *input, char *str )
 {
-    while( *str ) {
+    while( *str != '\0' ) {
         if( !insertChar( input, *str++ ) ) {
             return( false );
         }

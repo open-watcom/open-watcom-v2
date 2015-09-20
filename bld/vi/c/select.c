@@ -49,8 +49,8 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
     /*
      * copy data into buffer and create fcbs
      */
-    j = boff = 0;
-    while( j < maxlist ) {
+    boff = 0;
+    for( j = 0; j < maxlist; ++j ) {
         strcpy( dd, list[j] );
         if( makelower ) {
             FileLower( dd );
@@ -70,7 +70,6 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
         ReadBuffer[boff + k + indent] = CR;
         ReadBuffer[boff + k + indent + 1] = LF;
         boff += k + indent + 2;
-        j++;
     }
 
     CreateFcbData( *cfile, boff );

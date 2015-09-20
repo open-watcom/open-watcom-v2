@@ -38,15 +38,12 @@
  */
 static bool isIgnorable( char c, const char *ign )
 {
-    while( *ign != 0 ) {
-        if( *ign == ' ' ) {
-            if( isspace( c ) ) {
-                return( true );
-            }
-        } else if( c == *ign ) {
+    char    ci;
+
+    while( (ci = *ign++) != '\0' ) {
+        if( ci == c || ci == ' ' && isspace( c ) ) {
             return( true );
         }
-        ign++;
     }
 
     return( false );
@@ -204,7 +201,7 @@ int NextWord1( char *buff, char *res )
  */
 char *GetNextWord1( const char *buff, char *res )
 {
-    char        c;
+    char    c;
 
     while( isspace( *buff ) )
         ++buff;
@@ -339,10 +336,10 @@ void EliminateFirstN( char *buff, int n )
     char        *buff2;
 
     buff2 = &buff[n];
-    while( *buff2 != 0 ) {
+    while( *buff2 != '\0' ) {
         *buff++ = *buff2++;
     }
-    *buff = 0;
+    *buff = '\0';
 
 } /* EliminateFirstN */
 
@@ -436,7 +433,7 @@ int Tokenize( const char *Tokens, const char *token, bool entireflag )
             t++;
             tkn++;
         }
-        while( *t != 0 ) {
+        while( *t != '\0' ) {
             t++;
         }
         i++;

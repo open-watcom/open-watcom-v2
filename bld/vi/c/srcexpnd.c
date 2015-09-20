@@ -145,12 +145,11 @@ char *Expand( char *odata, const char *data, vlist *vl )
                     }
                 }
 
-                while( !done && *ptr != '\0' ) {
-                    if( !addChar( *ptr ) ) {
+                while( !done && (ch = *ptr++) != '\0' ) {
+                    if( !addChar( ch ) ) {
                         done = true;
                         break;
                     }
-                    ptr++;
                 }
                 if( done ) {
                     break;
