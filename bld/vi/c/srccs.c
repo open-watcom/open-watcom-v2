@@ -74,7 +74,7 @@ static void Push( cstype type )
     TOS->end = NewLabel();
     TOS->top = NewLabel();
     TOS->type = type;
-    TOS->srcline = CurrentSrcLine;
+    TOS->sline = CurrentSrcLine;
 
 } /* Push */
 
@@ -120,7 +120,7 @@ vi_rc CSFini( void )
 #endif
         while( TOS->type != CS_EOS ) {
             iserr = true;
-            MyError( "unfinished c.s. at line %u", TOS->srcline );
+            MyError( "unfinished c.s. at line %u", TOS->sline );
             Pop();
         }
 

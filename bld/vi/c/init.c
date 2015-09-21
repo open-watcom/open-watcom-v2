@@ -213,7 +213,7 @@ static void checkFlags( int *argc, char *argv[], char *start[],
 static void doInitializeEditor( int argc, char *argv[] )
 {
     int         i, arg, cnt, ocnt, startcnt = 0;
-    unsigned    ln;
+    srcline     sline;
     int         k, j;
     char        tmp[FILENAME_MAX], c[1];
     char        buff[MAX_STR], file[MAX_STR], **list;
@@ -294,10 +294,10 @@ static void doInitializeEditor( int argc, char *argv[] )
     WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLine + 2 );
     WorkLine->len = -1;
 
-    ln = 0;
+    sline = 0;
     if( cfgFN[0] != 0 ) {
         c[0] = 0;
-        rc = Source( cfgFN, c, &ln );
+        rc = Source( cfgFN, c, &sline );
         if( rc == ERR_FILE_NOT_FOUND ) {
 #ifdef __WIN__
             CloseStartupDialog();
@@ -557,12 +557,12 @@ static void doInitializeEditor( int argc, char *argv[] )
                 }
             }
 #endif
-            ln = 0;
-            rc = Source( cfgFN, parm, &ln );
+            sline = 0;
+            rc = Source( cfgFN, parm, &sline );
         }
     }
     if( rc > ERR_NO_ERR ) {
-        Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), ln, cfgFN );
+        Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), sline, cfgFN );
     }
     if( argc == 1 ) {
         LoadHistory( NULL );

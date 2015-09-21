@@ -51,7 +51,7 @@ typedef struct ft_src {
 
 extern void         FTSInit( void );
 extern void         FTSFini( void );
-extern vi_rc        FTSStart( char * );
+extern vi_rc        FTSStart( const char * );
 extern vi_rc        FTSAddCmd( const char *, int );
 extern vi_rc        FTSAddBoolean( bool, const char * );
 extern vi_rc        FTSAddChar( char, const char * );
@@ -66,7 +66,7 @@ extern ft_src       *FTSGetNext( ft_src * );
 extern template_ll  *FTSGetFirstTemplate( ft_src * );
 extern template_ll  *FTSGetNextTemplate( template_ll * );
 extern ft_src       *FTSMatchTemplate( template_ll * );
-extern ft_src       *FTSMatchTemplateData( char * );
+extern ft_src       *FTSMatchTemplateData( const char * );
 extern void         FTSKill( ft_src * );
 
 #endif

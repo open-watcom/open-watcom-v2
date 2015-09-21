@@ -59,7 +59,7 @@ static void genItem( int token, label where )
     tsf->arg2 = NULL;
     tsf->data = NULL;
     tsf->token = token;
-    tsf->line = CurrentSrcLine;
+    tsf->sline = CurrentSrcLine;
     tsf->hasvar = hasVar;
     tsf->branchcond = COND_FALSE;
 
@@ -266,7 +266,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
      * init control
      */
     CSInit();
-    CurrentSrcLine = 0L;
+    CurrentSrcLine = 0;
 
     tsf = MemAlloc( sizeof( sfile ) );
     tsf->next = NULL;

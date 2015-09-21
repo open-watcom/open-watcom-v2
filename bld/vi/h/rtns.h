@@ -752,7 +752,7 @@ vi_rc   SelectAll( void );
 vi_rc Shift( linenum, linenum, char, bool );
 
 /* source.c */
-vi_rc   Source( const char *, char *, unsigned * );
+vi_rc   Source( const char *, char *, srcline * );
 void    FileSPVAR( void );
 void    SourceError( char *msg );
 void    DeleteResidentScripts( void );

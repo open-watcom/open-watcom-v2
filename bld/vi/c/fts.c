@@ -42,7 +42,7 @@ static  ft_src  *ftsTail;
 /*
  * FTSStart - start a new fts; EditFlags.FileTypeSource will suck in commands
  */
-vi_rc FTSStart( char *data )
+vi_rc FTSStart( const char *data )
 {
     char        template_data[MAX_STR];
     template_ll *templatePtr;
@@ -51,7 +51,7 @@ vi_rc FTSStart( char *data )
     fts = MemAlloc( sizeof( ft_src ) );
     fts->cmd_head = fts->cmd_tail = NULL;
     fts->template_head = fts->template_tail = NULL;
-    while( NextWord1( data, template_data ) > 0 ) {
+    for( data = GetNextWord1( data, template_data ); *template_data != '\0'; data = GetNextWord1( data, template_data ) ) {
         templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&fts->template_head, (ss **)&fts->template_tail, (ss *)templatePtr );
@@ -355,7 +355,7 @@ void deleteTemplateList( template_ll *template_head )
 /*
  * FTSMatchTemplateData - return fts of entry with given template data
  */
-ft_src *FTSMatchTemplateData( char *data )
+ft_src *FTSMatchTemplateData( const char *data )
 {
     char            template_data[MAX_STR];
     template_ll     *templatePtr;
@@ -364,7 +364,7 @@ ft_src *FTSMatchTemplateData( char *data )
 
     // build a template list
     template_head = template_tail = NULL;
-    while( NextWord1( data, template_data ) > 0 ) {
+    for( data = GetNextWord1( data, template_data ); *template_data != '\0'; data = GetNextWord1( data, template_data ) ) {
         templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&template_head, (ss **)&template_tail, (ss *)templatePtr );

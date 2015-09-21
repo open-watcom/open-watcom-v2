@@ -184,7 +184,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf )
 /*
  * writeScript - write a compiled script
  */
-static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
+static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, char *vn )
 {
     sfile       *curr;
     FILE        *foo;
@@ -212,7 +212,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, ch
     /*
      * process all lines
      */
-    *ln = 1;
+    *sline = 1;
     for( curr = sf->next; curr != NULL; curr = curr->next ) {
 
         token = curr->token;
@@ -229,7 +229,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, ch
             MyFprintf( foo, " %d", curr->branchcond );
         }
         MyFprintf( foo, "\n" );
-        *ln += 1;
+        *sline += 1;
 
     }
     fclose( foo );
@@ -290,7 +290,7 @@ static vi_rc Compile( const char *fn, char *data )
     sfile       *sf;
     char        sname[FILENAME_MAX];
     vi_rc       rc;
-    unsigned    ln = 0;
+    srcline     sline = 0;
 
     WorkLine = MemAlloc( sizeof( line ) + MaxLine + 2 );
     WorkLine->len = -1;
@@ -305,12 +305,12 @@ static vi_rc Compile( const char *fn, char *data )
         lab = &lb;
         memset( lab, 0, sizeof( labels ) );
         rc = PreProcess( fn, &sf, lab );
-        ln = CurrentSrcLine;
+        sline = CurrentSrcLine;
         if( SourceErrCount > 0 ) {
             printf( "Compile of %s finished, %d errors encountered\n", fn, SourceErrCount );
         }
         if( rc == ERR_NO_ERR && SourceErrCount == 0 ) {
-            rc = writeScript( fn, sf, &vl, &ln, sname );
+            rc = writeScript( fn, sf, &vl, &sline, sname );
             finiSource( lab, &vl, sf );
         }
     }

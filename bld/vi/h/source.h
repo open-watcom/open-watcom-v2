@@ -67,8 +67,9 @@ enum {
 #define SRC_HOOK_MOUSE_CHARSEL  0x0100
 #define SRC_HOOK_DDE            0x0200
 
-typedef int     hooktype;
-typedef char    *label;
+typedef int         hooktype;
+typedef char        *label;
+typedef unsigned    srcline;
 
 typedef enum {
     CS_IF,          /* an if/elseif block */
@@ -93,7 +94,7 @@ typedef struct cs_entry {
     label               alt;
     label               end;
     cstype              type;
-    unsigned            srcline;
+    srcline             sline;
 } cs_entry;
 
 struct sfile;
@@ -150,7 +151,7 @@ typedef struct sfile {
         expr_oper   oper;
     } u;
     bool            hasvar;
-    unsigned        line;
+    srcline         sline;
     char            *data;
 } sfile;
 
@@ -171,7 +172,7 @@ extern char         *ErrorTokens;
 extern int          *ErrorValues;
 extern vars         *VarHead, *VarTail;
 extern long         CurrentSrcLabel;
-extern unsigned     CurrentSrcLine;
+extern srcline      CurrentSrcLine;
 extern int          CurrentSrcToken;
 extern char         *CurrentSrcData;
 

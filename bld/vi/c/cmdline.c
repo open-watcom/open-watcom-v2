@@ -392,7 +392,7 @@ vi_rc RunCommandLine( const char *cl )
     case PCL_T_LOAD:
         {
             char        *tstr;
-            unsigned    ln;
+            srcline     sline;
 
             if( NextWord1( dataBuff, st ) <= 0 ) {
                 rc = ERR_NO_FILE_SPECIFIED;
@@ -417,8 +417,8 @@ vi_rc RunCommandLine( const char *cl )
             if( tkn == PCL_T_LOAD ) {
                 EditFlags.LoadResidentScript = true;
             }
-            ln = 0;
-            rc = Source( st, dataBuff, &ln );
+            sline = 0;
+            rc = Source( st, dataBuff, &sline );
 
             EditFlags.LoadResidentScript = false;
             EditFlags.CompileScript = false;
@@ -428,7 +428,7 @@ vi_rc RunCommandLine( const char *cl )
                 LastError = rc;
             }
             if( rc > ERR_NO_ERR ) {
-                Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), ln, st );
+                Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), sline, st );
             } else {
                 if( rc != DO_NOT_CLEAR_MESSAGE_WINDOW ) {
                     if( tkn != PCL_T_SOURCE ) {
@@ -438,7 +438,7 @@ vi_rc RunCommandLine( const char *cl )
                             tstr = strCompile;
                         }
                         Message1( "Script \"%s\" %s, %u lines generated, %d errors",
-                                        st, tstr, ln, SourceErrCount );
+                                        st, tstr, sline, SourceErrCount );
                         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
                     }
                 }

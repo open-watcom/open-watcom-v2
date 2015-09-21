@@ -80,7 +80,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
      * loop until string found
      */
     data = &cline->data[scol];
-    while( !(found = RegExec( CurrentRegularExpression, data, (data == cline->data) )) ) {
+    while( (found = RegExec( CurrentRegularExpression, data, (data == cline->data) )) == 0 ) {
         if( RegExpError != ERR_NO_ERR ) {
             return( RegExpError );
         }

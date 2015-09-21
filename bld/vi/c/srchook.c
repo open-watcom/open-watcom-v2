@@ -98,7 +98,7 @@ vars *GetHookVar( hooktype num )
 static vi_rc srcHook( hooktype num, vi_rc lastrc )
 {
     vars        *v;
-    unsigned    ln;
+    srcline     sline;
     vi_rc       rc;
 
     if( hookRun & num ) {
@@ -125,7 +125,7 @@ static vi_rc srcHook( hooktype num, vi_rc lastrc )
          */
         hookRun |= num;
         LastRetCode = lastrc;
-        rc = Source( v->value, srcHookData, &ln );
+        rc = Source( v->value, srcHookData, &sline );
 
         /*
          * if we had a command hook, look for replacement variable

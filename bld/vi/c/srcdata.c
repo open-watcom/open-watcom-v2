@@ -53,5 +53,5 @@ char        *ErrorTokens;
 int         *ErrorValues;
 vars        *VarHead, *VarTail;
 long        CurrentSrcLabel;
-unsigned    CurrentSrcLine;
+srcline     CurrentSrcLine;
 char        *CurrentSrcData;

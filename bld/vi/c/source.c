@@ -42,7 +42,7 @@
 
 static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
 static vi_rc    initSource( vlist *, char *);
-static vi_rc    barfScript( const char *, sfile *, vlist *, unsigned *, char *);
+static vi_rc    barfScript( const char *, sfile *, vlist *, srcline *, char *);
 static void     addResidentScript( const char *, sfile *, labels * );
 static resident *residentScript( const char * );
 static void     finiSourceErrFile( const char * );
@@ -50,7 +50,7 @@ static void     finiSourceErrFile( const char * );
 /*
  * Source - main driver
  */
-vi_rc Source( const char *fn, char *data, unsigned *ln )
+vi_rc Source( const char *fn, char *data, srcline *sline )
 {
     undo_stack  *atomic = NULL;
     labels      *lab, lb;
@@ -129,7 +129,7 @@ vi_rc Source( const char *fn, char *data, unsigned *ln )
      * if we were compiling, dump results and go back
      */
     if( EditFlags.CompileScript ) {
-        rc = barfScript( fn, sf, &vl, ln, sname );
+        rc = barfScript( fn, sf, &vl, sline, sname );
         finiSource( lab, &vl, sf, NULL );
         return( rc );
     }
@@ -280,9 +280,9 @@ vi_rc Source( const char *fn, char *data, unsigned *ln )
         AppendAnother( "." );
     }
     if( curr != NULL ) {
-        *ln = curr->line;
+        *sline = curr->sline;
     } else {
-        *ln = CurrentSrcLine;
+        *sline = CurrentSrcLine;
         rc = ERR_NO_ERR;
     }
     EditFlags.WatchForBreak = wfb;
@@ -464,7 +464,7 @@ static void finiSourceErrFile( const char *fn )
 /*
  * barfScript - write a compiled script
  */
-static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
+static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, char *vn )
 {
     sfile       *curr;
     FILE        *foo;
@@ -489,7 +489,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, cha
     }
     MyFprintf( foo, "VBJ__\n" );
     curr = sf;
-    *ln = 1;
+    *sline = 1;
 
     /*
      * process all lines
@@ -573,7 +573,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, cha
             MyFprintf( foo, " %d", curr->branchcond );
         }
         MyFprintf( foo, "\n" );
-        *ln += 1;
+        *sline += 1;
 
     }
     fclose( foo );
