@@ -138,7 +138,6 @@ void GenerateTagsFile( char *fname )
 {
     FILE        *f;
     int         i;
-    long        total;
 
     qsort( tagList, TagCount, sizeof( char * ),
            (int (*)( const void*, const void* ))CompareStrings );
@@ -146,10 +145,8 @@ void GenerateTagsFile( char *fname )
     if( f == NULL ) {
         ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
     }
-    if( tagList == NULL ) {
-        total = 0;
-    } else {
-        total = TagCount * sizeof( char * );
+    if( tagList != NULL ) {
+        total += TagCount * sizeof( char * );
     }
     for( i = 0; i < TagCount; i++ ) {
         fprintf( f, "%s\n", tagList[i] );
