@@ -452,9 +452,9 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             break;
         case SETFLAG_T_STATUSINFO:
             EditFlags.StatusInfo = newset;
-#ifdef __WIN__
+  #ifdef __WIN__
             ResizeRoot();
-#endif
+  #endif
             rc = NewStatusWindow();
             break;
         case SETFLAG_T_WINDOWGADGETS:
@@ -473,39 +473,39 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             break;
         case SETFLAG_T_TOOLBAR:
             EditFlags.Toolbar = newset;
-#ifdef __WIN__
+  #ifdef __WIN__
             ResizeRoot();
-#endif
+  #endif
             break;
         case SETFLAG_T_COLORBAR:
             EditFlags.Colorbar = newset;
-#ifdef __WIN__
+  #ifdef __WIN__
             if( Root == NULL ) {
                 EditFlags.Colorbar = false;
             } else {
                 RefreshColorbar();
             }
-#endif
+  #endif
             break;
         case SETFLAG_T_SSBAR:
             EditFlags.SSbar = newset;
-#ifdef __WIN__
+  #ifdef __WIN__
             if( Root == NULL ) {
                 EditFlags.SSbar = false;
             } else {
                 RefreshSSbar();
             }
-#endif
+  #endif
             break;
         case SETFLAG_T_FONTBAR:
             EditFlags.Fontbar = newset;
-#ifdef __WIN__
+  #ifdef __WIN__
             if( Root == NULL ) {
                 EditFlags.Fontbar = false;
             } else {
                 RefreshFontbar();
             }
-#endif
+  #endif
             break;
         case SETFLAG_T_MARKLONGLINES:
             EditFlags.MarkLongLines = newset;
@@ -537,11 +537,11 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             redisplay = true;
             break;
         case SETFLAG_T_LASTEOL:
-#ifndef __WIN__
+  #ifndef __WIN__
             *ptr = true;
             toggle = false;
             break;
-#endif
+  #endif
         default:
             *ptr = newset;
             break;
@@ -950,14 +950,14 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 SwapBlockInit( i );
                 break;
             case SETVAR_T_MAXEMSK:
-#ifndef NOEMS
+  #ifndef NOEMS
                 EMSBlockInit( i );
-#endif
+  #endif
                 break;
             case SETVAR_T_MAXXMSK:
-#ifndef NOXMS
+  #ifndef NOXMS
                 XMSBlockInit( i );
-#endif
+  #endif
                 break;
             case SETVAR_T_MAXFILTERHISTORY:
                 FilterHistInit( i );
@@ -1007,24 +1007,24 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 break;
             case SETVAR_T_TOOLBARBUTTONHEIGHT:
                 EditVars.ToolBarButtonHeight = i;
-#ifdef __WIN__
+  #ifdef __WIN__
                 ResizeRoot();
-#endif
+  #endif
                 break;
             case SETVAR_T_TOOLBARBUTTONWIDTH:
                 EditVars.ToolBarButtonWidth = i;
-#ifdef __WIN__
+  #ifdef __WIN__
                 ResizeRoot();
-#endif
+  #endif
                 break;
             case SETVAR_T_TOOLBARCOLOR:
                 EditVars.ToolBarColor = i;
-#ifdef __WIN__
+  #ifdef __WIN__
                 if( GetToolbarWindow() != NULL ) {
                     InvalidateRect( GetToolbarWindow(), NULL, TRUE );
                     UpdateWindow( GetToolbarWindow() );
                 }
-#endif
+  #endif
                 break;
             default:
                 return( ERR_INVALID_SET_COMMAND );
@@ -1078,7 +1078,8 @@ typedef struct {
     char        *val;
 } set_data;
 
-#ifndef __WIN__
+  #ifndef __WIN__
+
 /*
  * compareString - quicksort comparison
  */
@@ -1136,7 +1137,7 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
     return( tc );
 
 } /* getSetInfo */
-#endif
+  #endif
 #endif /* VICOMP */
 
 /*
@@ -1183,7 +1184,7 @@ vi_rc Set( char *name )
         if( !EditFlags.WindowsStarted ) {
             return( ERR_NO_ERR );
         }
-#ifndef __WIN__
+  #ifndef __WIN__
         tc = getSetInfo( &vals, &list, &longest );
         tmp = setw_info.y2;
         i = setw_info.y2 - setw_info.y1 + 1;
@@ -1199,7 +1200,7 @@ vi_rc Set( char *name )
         MemFreeList( tc, vals );
         MemFreeList( tc, list );
         ReDisplayScreen();
-#endif
+  #endif
 #endif /* VICOMP */
         return( rc );
     } else {
@@ -1212,14 +1213,13 @@ vi_rc Set( char *name )
 #ifndef VICOMP
             if( !EditFlags.ScriptIsCompiled ) {
 #endif
-                if( tolower( fn[0] ) == 'n' && tolower( fn[1] ) == 'o' ) {
-                    EliminateFirstN( fn, 2 );
-                    i = -1;
-                } else {
-                    i = 1;
-                }
+                i = 1;
                 j = Tokenize( TokensSetVar, fn, false );
                 if( j == TOK_INVALID ) {
+                    if( tolower( fn[0] ) == 'n' && tolower( fn[1] ) == 'o' ) {
+                        EliminateFirstN( fn, 2 );
+                        i = -1;
+                    }
                     j = Tokenize( TokensSetFlagShort, fn, false );
                     if( j == TOK_INVALID ) {
                         j = Tokenize( TokensSetFlag, fn, false );
