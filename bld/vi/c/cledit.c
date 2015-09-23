@@ -43,17 +43,17 @@
 #if defined( __WIN__ ) && defined( __NT__ )
 
 /* on NT, we have \0 instead of spaces to delimit single file names and \0\0 to end the string */
-#define NextWord1FN     NextWordNT
+#define GetNextFileName GetNextWordNT
 
 #else
 
-#define NextWord1FN     NextWord1
+#define GetNextFileName GetNextWord1
 
 #endif
 
 #ifdef __WIN__
 #ifndef __NT__
-bool isMultipleFiles( char *altname )
+bool isMultipleFiles( const char *altname )
 {
     while( *altname != '\0' && *altname != ' ' ) {
         altname++;
@@ -61,7 +61,7 @@ bool isMultipleFiles( char *altname )
     return( *altname == ' ' );
 }
 #else
-bool isMultipleFiles( char *altname )
+bool isMultipleFiles( const char *altname )
 {
     while( *altname != '\0' ) {
         altname++;
@@ -70,59 +70,30 @@ bool isMultipleFiles( char *altname )
 }
 
 /*
- * EliminateFirstNT - eliminate first n chars from buff for \0\0-strings
+ * GetNextWordNT - get next \0 delimited word in buff, final delimitier is \0\0
  */
-static void EliminateFirstNT( char *buff, int n  )
+static char *GetNextWordNT( const char *buff, char *res )
 {
-    char        *buff2;
+    char        c;
 
-    buff2 = &buff[n];
-    while( buff2[0] != '\0' || buff2[1] != '\0' ) {
-        *buff++ = *buff2++;
-    }
-    buff[0] = '\0';
-    buff[1] = '\0';
-
-} /* EliminateFirstNT */
-
-/*
- * NextWordNT - get next \0 delimited word in buff, final delimitier is \0\0
- */
-static int NextWordNT( char *buff, char *res )
-{
-    int         j, k = 0;
-    char        c, cnext;
-
-    if( buff[k] == 0 && buff[k + 1] == 0 ) {
-        res[0] = 0;
-        return( -1 );
-    }
-    j = 0;
-
-    /*
-     * get word
-     */
-    for( ;; ) {
-        c = buff[k];
-        cnext = buff[k + 1];
-        if( c == 0 ) {
-            res[j] = 0;
-            EliminateFirstNT( buff, k + 1 );
-            return( j );
-        } else {
-            res[j++] = c;
-            k++;
+    for( ; (c = buff[0]) != '\0' || buff[1] != '\0'; ) {
+        if( c == '\0' ) {
+            break;
         }
+        *res++ = c;
+        ++buff;
     }
+    *res = '\0';
+    return( (char *)buff );
 
-} /* NextWordNT */
+} /* GetNextWordNT */
 #endif
 #endif
 
 /*
  * EditFile - read a file into text
  */
-vi_rc EditFile( char *name, bool dammit )
+vi_rc EditFile( const char *name, bool dammit )
 {
     char        *fn, **list, *currfn;
     int         i, cnt, ocnt;
@@ -134,8 +105,10 @@ vi_rc EditFile( char *name, bool dammit )
     char        mask[FILENAME_MAX];
     bool        reset_dir;
     int         index;
-    char        *altname = NULL;
+    char        *paltname = NULL;
+    const char  *altname = NULL;
     vi_rc       rc;
+    bool        alt = false;
 
     fn = MemAlloc( FILENAME_MAX );
 
@@ -144,14 +117,14 @@ vi_rc EditFile( char *name, bool dammit )
      */
     strcpy( cdir, CurrentDirectory );
     reset_dir = false;
-    RemoveLeadingSpaces( name );
+    name = SkipLeadingSpaces( name );
     if( name[0] == '$' ) {
-        EliminateFirstN( name, 1 );
+        ++name;
         usedir = true;
     }
     fn[0] = 0;
 //    if( NextWord1FN( name, fn ) <= 0 )
-    if( GetStringWithPossibleQuote2( name, fn, false ) != ERR_NO_ERR ) {
+    if( GetStringWithPossibleQuoteC2( &name, fn, false ) != ERR_NO_ERR ) {
         usedir = true;
         mask[0] = '*';
         mask[1] = 0;
@@ -181,11 +154,11 @@ vi_rc EditFile( char *name, bool dammit )
         } else {
 #ifdef __WIN__
             if( name[0] == '\0' ) {
-                altname = MemAlloc( 1000 );
-                rc = SelectFileOpen( CurrentDirectory, &altname, mask, true );
-                NextWord1FN( altname, fn );  // if multiple, kill path
+                paltname = MemAlloc( 1000 );
+                rc = SelectFileOpen( CurrentDirectory, &paltname, mask, true );
+                altname = GetNextFileName( paltname, fn );  // if multiple, kill path
                 if( isMultipleFiles( altname ) ) {
-                    NextWord1FN( altname, fn ); // get 1st name
+                    altname = GetNextFileName( altname + 1, fn ); // get 1st name
                 }
             } else {
                 rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
@@ -194,8 +167,9 @@ vi_rc EditFile( char *name, bool dammit )
             rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
 #endif
         }
-        if( altname ) {
+        if( altname != NULL ) {
             name = altname;
+            alt = true;
         }
 
         if( rc != ERR_NO_ERR || fn[0] == 0 ) {
@@ -342,11 +316,15 @@ vi_rc EditFile( char *name, bool dammit )
             ClearBreak();
             break;
         }
+#ifdef __WIN__
+        if( alt && isMultipleFiles( name ) )
+            ++name;
+#endif
+        name = GetNextFileName( name, fn );
+    } while( *fn != '\0' );
 
-    } while( NextWord1FN( name, fn ) > 0 );
-
-    if( altname != NULL ) {
-        MemFree( altname );
+    if( paltname != NULL ) {
+        MemFree( paltname );
     }
     MemFree( fn );
 

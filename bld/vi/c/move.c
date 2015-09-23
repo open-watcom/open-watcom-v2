@@ -457,7 +457,7 @@ vi_rc SetCurrentColumn( int newcol )
 /*
  * LocateCmd - parse a locate command (format: locate r,c[,len])
  */
-vi_rc LocateCmd( char *data )
+vi_rc LocateCmd( const char *data )
 {
     char        tmp[MAX_STR];
     linenum     r;
@@ -469,12 +469,13 @@ vi_rc LocateCmd( char *data )
         return( ERR_INVALID_LOCATE );
     }
 #endif
-
-    if( NextWord1( data, tmp ) <= 0 ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_INVALID_LOCATE );
     }
     r = atol( tmp );
-    if( NextWord1( data, tmp ) <= 0 ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_INVALID_LOCATE );
     }
     c = atoi( tmp );
@@ -485,7 +486,8 @@ vi_rc LocateCmd( char *data )
     }
     len = 0;
     if( *data != 0 ) {
-        if( NextWord1( data, tmp ) <= 0 ) {
+        data = GetNextWord1( data, tmp );
+        if( *tmp == '\0' ) {
             return( ERR_INVALID_LOCATE );
         }
         len = atoi( tmp );

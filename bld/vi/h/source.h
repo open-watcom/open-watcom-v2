@@ -256,6 +256,6 @@ extern void     VarListDelete( vlist * );
 extern bool     VarName( char *, vlist * );
 extern vars     *VarFind( const char *, vlist * );
 
-extern bool     RunWindowsCommand( char *, vi_rc *, vlist * );
+extern bool     RunWindowsCommand( const char *, vi_rc *, vlist * );
 
 #endif

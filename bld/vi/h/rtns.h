@@ -64,7 +64,7 @@ vi_rc   DoLineSubstitute( event **, event ** );
 vi_rc   DoChangeLineEnd( event **, event ** );
 
 /* cledit.c */
-vi_rc   EditFile( char *, bool );
+vi_rc   EditFile( const char *, bool );
 vi_rc   EditFileFromList( void );
 vi_rc   OpenWindowOnFile( char *data );
 
@@ -646,7 +646,7 @@ void    ValidateCurrentColumn( void );
 bool    CheckCurrentColumn( void );
 int     ShiftTab( int, int );
 vi_rc   SetCurrentColumn( int );
-vi_rc   LocateCmd( char * );
+vi_rc   LocateCmd( const char * );
 
 /* parse.c */
 void    RemoveLeadingSpaces( char * );

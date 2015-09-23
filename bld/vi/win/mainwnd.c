@@ -125,32 +125,26 @@ window_id CreateMainWindow( HANDLE inst )
 /*
  * SetInitialWindowSize - process -P command line parm
  */
-void SetInitialWindowSize( char *arg )
+void SetInitialWindowSize( const char *arg )
 {
     DWORD       a;
-    char        *str;
-    int         len;
 
-    len = strlen( arg );
-    str = alloca( len );
-    strcpy( str, arg );
-
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initX = a;
 
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initY = a;
 
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initWidth = a;
 
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initHeight = a;

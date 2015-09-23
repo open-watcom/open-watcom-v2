@@ -79,14 +79,15 @@ enum {
 /*
  * GetDWORD - get a dword from a string
  */
-bool GetDWORD( char *str, LPVOID res )
+bool GetDWORD( const char **str, DWORD *res )
 {
     char        hdlstr[MAX_STR];
 
-    if( NextWord1( str, hdlstr ) <= 0  ) {
+    *str = GetNextWord1( *str, hdlstr );
+    if( *hdlstr == '\0'  ) {
         return( false );
     }
-    *((DWORD *)res) = strtoul( hdlstr, NULL, 10 );
+    *res = strtoul( hdlstr, NULL, 10 );
     return( true );
 
 } /* GetDWORD */
@@ -94,44 +95,44 @@ bool GetDWORD( char *str, LPVOID res )
 /*
  * RunWindowsCommand - try to run a Windows specific command
  */
-bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
+bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
 {
     char        str[MAX_INPUT_LINE];
     char        tmp[MAX_INPUT_LINE];
     char        tmp2[MAX_INPUT_LINE];
     char        *ext;
+    char        *ptr;
     int         token;
     bool        rc;
     DWORD       left, top, width, height;
 
-    if( tmp == NULL || str == NULL ) {
+    if( cmd == NULL ) {
         return( false );
     }
-    strcpy( str, cmd );
-    RemoveLeadingSpaces( str );
-    if( NextWord1( str, tmp ) <= 0 ) {
+    cmd = GetNextWord1( cmd, tmp );
+    if( *tmp == '\0' ) {
         return( false );
     }
     token = Tokenize( winTokens, tmp, false );
-    if( token == -1 ) {
+    if( token == TOK_INVALID ) {
         return( false );
     }
     switch( token ) {
     case T_SETMAINSIZE:
         if( vl != NULL ) {
-            Expand( str, str, vl );
+            cmd = Expand( tmp, cmd, vl );
         }
         *result = ERR_INVALID_COMMAND;
-        if( !GetDWORD( str, &left ) ){
+        if( !GetDWORD( &cmd, &left ) ){
             return( true );
         }
-        if( !GetDWORD( str, &top ) ){
+        if( !GetDWORD( &cmd, &top ) ){
             return( true );
         }
-        if( !GetDWORD( str, &width ) ){
+        if( !GetDWORD( &cmd, &width ) ){
             return( true );
         }
-        if( !GetDWORD( str, &height ) ){
+        if( !GetDWORD( &cmd, &height ) ){
             return( true );
         }
         ShowWindow( Root, SW_SHOWNORMAL );
@@ -183,9 +184,9 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
     case T_PROMPT_THIS_FILE_FOR_SAVE:
         {
             if( vl != NULL ) {
-                Expand( str, str, vl );
+                cmd = Expand( tmp, cmd, vl );
             }
-            if( PromptThisFileForSave( str ) ) {
+            if( PromptThisFileForSave( cmd ) ) {
                 *result = ERR_NO_ERR;
                 return( true );
             } else {
@@ -195,10 +196,10 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         }
     case T_INPUT_BOOL:
         if( vl != NULL ) {
-            Expand( str, str, vl );
+            cmd = Expand( tmp, cmd, vl );
         }
         SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-        if( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK ) {
+        if( MessageBox( Root, cmd, EditorName, MB_OKCANCEL ) == IDOK ) {
             *result = ERR_NO_ERR;
             SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
             SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
@@ -209,7 +210,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         *result = ERR_FILE_MODIFIED;
         return( true );
     case T_QUERY_FILE:
-        if( QueryFile( str ) ) {
+        if( QueryFile( cmd ) ) {
             *result = 1;
         } else {
             *result = 0;
@@ -221,7 +222,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         return( true );
     case T_EDITFILE:
         *result = 1;
-        rc = EditFile( str, false ) == ERR_NO_ERR;
+        rc = EditFile( cmd, false ) == ERR_NO_ERR;
 #ifdef __NT__
         SetForegroundWindow( Root );
 #else
@@ -231,7 +232,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         return( rc );
     case T_LOCATE:
         *result = 1;
-        rc = LocateCmd( str ) == ERR_NO_ERR;
+        rc = LocateCmd( cmd ) == ERR_NO_ERR;
 #ifdef __NT__
         SetForegroundWindow( Root );
 #else
@@ -241,21 +242,23 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         return( rc );
     case T_WINHELP:
         if( vl != NULL ) {
-            Expand( str, str, vl );
+            cmd = Expand( tmp, cmd, vl );
         }
         *result = ERR_INVALID_COMMAND;
-        if( NextWord1( str, tmp ) <= 0 ) {
+        cmd = GetNextWord1( cmd, str );
+        if( *str == '\0' ) {
             return( true );
         }
-        token = Tokenize( helpTokens, tmp, false );
-        if( token == -1 ) {
+        token = Tokenize( helpTokens, str, false );
+        if( token == TOK_INVALID ) {
             return( true );
         }
-        if( NextWord1( str, tmp ) <= 0 ) {
+        cmd = GetNextWord1( cmd, str );
+        if( *str == '\0' ) {
             return( true );
         }
-        RemoveLeadingSpaces( str );
-        strcpy( tmp2, tmp );
+        ptr = SkipLeadingSpaces( str );
+        strcpy( tmp2, ptr );
         ext = strstr( tmp2, ".hlp" );
         if( ext != NULL ) {
             strcpy( ext, ".chm" );
@@ -282,7 +285,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         return( true );
     }
     if( vl != NULL ) {
-        if( RunDDECommand( token, str, tmp, result, vl ) ) {
+        if( RunDDECommand( token, cmd, tmp, result, vl ) ) {
             return( true );
         }
     }

@@ -63,20 +63,6 @@ static bool     saveConfig;
 #endif
 
 /*
- * getInt - parse an int from a string
- */
-static bool getInt( char *str, STUPIDINT *i )
-{
-    DWORD       tmp;
-    bool        rc;
-
-    rc = GetDWORD( str, &tmp );
-    *i = (STUPIDINT) tmp;
-    return( rc );
-
-} /* getInt */
-
-/*
  * getProfileString - get a string from the profile
  */
 static void getProfileString( char *key, char *initial, char *buffer )
@@ -91,12 +77,20 @@ static void getProfileString( char *key, char *initial, char *buffer )
 static void getProfileRect( char *key, char *initial, RECT *r )
 {
     char        str[MAX_STR];
+    DWORD       tmp;
+    bool        rc;
+    const char  *ptr;
 
     getProfileString( key, initial, str );
-    getInt( str, &r->left );
-    getInt( str, &r->top );
-    getInt( str, &r->right );
-    getInt( str, &r->bottom );
+    ptr = str;
+    rc = GetDWORD( &ptr, &tmp );
+    r->left = (STUPIDINT)tmp;
+    rc = GetDWORD( &ptr, &tmp );
+    r->top = (STUPIDINT)tmp;
+    rc = GetDWORD( &ptr, &tmp );
+    r->right = (STUPIDINT)tmp;
+    rc = GetDWORD( &ptr, &tmp );
+    r->bottom = (STUPIDINT)tmp;
 
 } /* getProfileRect */
 

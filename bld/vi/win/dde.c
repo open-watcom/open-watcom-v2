@@ -50,7 +50,7 @@ UINT            ServerCount;
 bool            UseDDE;
 
 #ifdef __WINDOWS_386__
-typedef HDDEDATA (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, DWORD, DWORD );
+typedef HDDEDATA (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, ULONG_PTR, ULONG_PTR );
 static FARPROC MakeFnCallbackProcInstance( PFNCALLBACKx fn, HINSTANCE instance )
 {
     instance = instance;
@@ -65,8 +65,8 @@ static FARPROC MakeFnCallbackProcInstance( PFNCALLBACKx fn, HINSTANCE instance )
  * DDECallback - callback routine for DDE
  */
 WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
-                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, DWORD data1,
-                             DWORD data2 )
+                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, ULONG_PTR data1,
+                             ULONG_PTR data2 )
 {
     char        tmp[64];
     vi_rc       rc;
@@ -102,28 +102,32 @@ WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
 /*
  * CreateStringHandle - build a kept string handle
  */
-bool CreateStringHandle( char *name, HSZ *hdl )
+bool CreateStringHandle( const char *name, HSZ *hdl )
 {
     hsz_list    *hlptr;
     int         len;
     HSZ         ohdl;
+    char        buff[256];
 
     if( hdl == NULL ) {
         hdl = &ohdl;
     }
-
-    *hdl = DdeCreateStringHandle( DDEInstId, name, 0 );
+    len = strlen( name );
+    if( len > 255 )
+        len = 255;
+    memcpy( buff, name, len );
+    buff[len] = '\0';
+    *hdl = DdeCreateStringHandle( DDEInstId, buff, 0 );
     if( *hdl == 0 ) {
         return( false );
     }
     if( !DdeKeepStringHandle( DDEInstId, *hdl ) ) {
         return( false );
     }
-    len = strlen( name );
     hlptr = MemAlloc( offsetof( hsz_list, string ) + len + 1 );
 
     hlptr->hsz = *hdl;
-    memcpy( hlptr->string, name, len + 1 );
+    memcpy( hlptr->string, buff, len + 1 );
     AddLLItemAtEnd( (ss **)&hszHead, (ss **)&hszTail, (ss *)hlptr );
     return( true );
 
