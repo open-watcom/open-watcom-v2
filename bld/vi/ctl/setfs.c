@@ -261,7 +261,7 @@ static void fillFileType( HWND hwndDlg )
         template1 = template = FTSGetFirstTemplate( fts );
         str[0] = '\0';
         strLen = 0;
-        while( template ) {
+        while( template != NULL ) {
             strLen += strlen( template->data ) + 2;
             if( strLen > sizeof( str ) ) {
                 break;
@@ -368,7 +368,7 @@ static void writeSettings( HWND hwndDlg )
         FTSEnd();
         MemFree( template );
     }
-    if( CurrentFile ) {
+    if( CurrentFile != NULL ) {
         FTSRunCmds( CurrentFile->name );
     }
 }
