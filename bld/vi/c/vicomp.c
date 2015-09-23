@@ -297,7 +297,7 @@ static vi_rc Compile( const char *fn, char *data )
     LastRC = LastRetCode;
     vl.head = vl.tail = NULL;
     sname[0] = 0;
-    NextWord1( data, sname );
+    GetNextWord1( data, sname );
     rc = initSource( &vl );
     if( rc == ERR_NO_ERR ) {
         SourceErrCount = 0;
