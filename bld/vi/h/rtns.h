@@ -69,7 +69,7 @@ vi_rc   EditFileFromList( void );
 vi_rc   OpenWindowOnFile( char *data );
 
 /* clglob.c */
-vi_rc   Global( linenum, linenum, char *, int );
+vi_rc   Global( linenum, linenum, const char *, int );
 void    ProcessingMessage( linenum );
 
 /* clread.c */
@@ -660,6 +660,7 @@ int     NextWord( char *, char *, const char *);
 char    *GetNextWord( const char *, char *, const char *);
 int     NextWord1( char *, char * );
 char    *GetNextWord1( const char *, char * );
+char    *GetNextWord2( const char *, char *, char );
 void    EliminateFirstN( char *, int );
 int     Tokenize( const char *, const char *, bool );
 int     GetLongestTokenLength( const char * );

@@ -318,7 +318,7 @@ vi_rc GetNewValueDialog( char *value )
     if( !ret ) {
         return( NO_VALUE_ENTERED );
     }
-    if( st[0] == 0 ) {
+    if( *st == 0 ) {
         return( NO_VALUE_ENTERED );
     }
     Expand( value, st, NULL );
@@ -577,38 +577,30 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
 #ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
 #endif
-            if( value[0] == '=' ) {
+            if( *value == '=' ) {
                 value = SkipLeadingSpaces( value + 1 );
             }
 #ifndef VICOMP
         }
 #endif
-        if( value[0] == '"' ) {
-            value = GetNextWord( value + 1, fn, "\"" );
+        if( *value == '"' ) {
+            value = GetNextWord( value, fn, "\"" );
+            if( *value == '"' ) {
+                ++value;
+            }
+            value = SkipLeadingSpaces( value );
+            if( *value == ',' ) {
+                ++value;
+            }
         } else {
-            k = strlen( value );
-            for( i = 0; i < k; i++ ) {
-                if( value[i] == ' ' )
-                    break;
-                if( value[i] == ',' ) {
-                    value[i] = ' ';
-                    break;
-                }
-            }
-            value = GetNextWord1( value, fn );
-        }
-        k = strlen( value );
-        for( i = 0; i < k; i++ ) {
-            if( value[i] == ',' ) {
-                value[i] = ' ';
-            }
+            value = GetNextWord2( value, fn, ',' );
         }
 #ifndef VICOMP
         if( EditFlags.CompileScript ) {
 #endif
             sprintf( str, "%d", j );
             strcat( WorkLine->data, str );
-            if( fn[0] == '\0' )
+            if( *fn == '\0' )
                 return( ERR_NO_ERR );
             switch( j ) {
             case SETVAR_T_STATUSSTRING:
@@ -630,7 +622,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 break;
             case SETVAR_T_TILECOLOR:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                value = GetNextWord1( value, fn );
+                value = GetNextWord2( value, fn, ',' );
                 if( *fn == '\0' ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
@@ -642,10 +634,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 break;
             case SETVAR_T_STATUSSECTIONS:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                for( value = GetNextWord1( value, fn ); *fn != '\0'; value = GetNextWord1( value, fn ) ) {
-#ifdef VICOMP
-                    int k;
-#endif
+                for( value = GetNextWord2( value, fn, ',' ); *fn != '\0'; value = GetNextWord2( value, fn, ',' ) ) {
                     k = atoi( fn );
                     if( k <= 0 ) {
                         break;
@@ -675,7 +664,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( short ) * (EditVars.NumStatusSections + 1) );
                 EditVars.StatusSections[EditVars.NumStatusSections] = k;
                 EditVars.NumStatusSections++;
-                value = GetNextWord1( value, fn );
+                value = GetNextWord2( value, fn, ',' );
                 if( *fn == '\0' ) {
                     break;
                 }
@@ -717,7 +706,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             if( clr > EditVars.MaxTileColors ) {
                 return( ERR_INVALID_SET_COMMAND );
             }
-            value = GetNextWord1( value, fn );
+            value = GetNextWord2( value, fn, ',' );
             if( *fn == '\0' ) {
                 return( ERR_INVALID_SET_COMMAND );
             }
@@ -746,7 +735,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             break;
         case SETVAR_T_FIGNORE:
-            if( fn[0] == 0 ) {
+            if( *fn == 0 ) {
                 MemFreePtr( (void **)&EditVars.FIgnore );
                 EditVars.CurrFIgnore = 0;
                 if( msgFlag ) {
@@ -824,7 +813,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             StartExprParse( fn, jmpaddr );
             ct.height = GetConstExpr();
-            value = GetNextWord1( value, fn );
+            value = GetNextWord2( value, fn, ',' );
             if( *fn == '\0' ) {
                 ct.width = 100;
             } else {

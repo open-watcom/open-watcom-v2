@@ -37,7 +37,7 @@
 /*
  * Global - perform global command
  */
-vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
+vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
 {
     char        *sstr, *cmd, *linedata;
     bool        match;
@@ -62,12 +62,14 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
     if( cmd == NULL || sstr == NULL ) {
         return( ERR_NO_STACK );
     }
-    RemoveLeadingSpaces( data );
-    if( NextWord( data, sstr, SingleSlash ) < 0 ) {
+    data = SkipLeadingSpaces( data );
+    data = GetNextWord( data, sstr, SingleSlash );
+    if( *sstr == '\0' ) {
         return( ERR_INVALID_GLOBAL_CMD );
     }
-    RemoveLeadingSpaces( data );
-    EliminateFirstN( data, 1 );
+    if( *data == '/' )
+        ++data;
+    data = SkipLeadingSpaces( data );
 
     /*
      * verify last line
@@ -95,7 +97,6 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
     SaveCurrentFilePos();
     StartUndoGroup( UndoStack );
     EditFlags.DisplayHold = true;
-    strcpy( sstr, data );
 
     /*
      * pass one - find all matches
@@ -192,7 +193,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
             /*
             * build command line
             */
-            strcpy( cmd, sstr );
+            strcpy( cmd, data );
             rc = RunCommandLine( cmd );
             if( rc > ERR_NO_ERR ) {
                 break;

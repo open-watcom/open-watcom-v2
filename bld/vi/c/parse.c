@@ -57,7 +57,7 @@ void RemoveLeadingSpaces( char *buff )
 {
     int k = 0;
 
-    if( buff[0] != '\0' ) {
+    if( *buff != '\0' ) {
         while( isspace( buff[k] ) )
             k++;
         if( k ) {
@@ -73,7 +73,7 @@ void RemoveLeadingSpaces( char *buff )
 char *SkipLeadingSpaces( const char *buff )
 {
     while( isspace( *buff ) )
-        buff++;
+        ++buff;
     return( (char *)buff );
 
 } /* SkipLeadingSpaces */
@@ -100,23 +100,23 @@ void TranslateTabs( char *buff )
 /*
  * GetStringWithPossibleQuote2
  */
-vi_rc GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
+vi_rc GetStringWithPossibleQuote2( char *buff, char *st, bool allow_slash )
 {
     int     len;
 
-    RemoveLeadingSpaces( data );
-    if( allow_slash && data[0] == '/' ) {
-        len = NextWord( data, st, SingleSlash );
+    RemoveLeadingSpaces( buff );
+    if( allow_slash && *buff == '/' ) {
+        len = NextWord( buff, st, SingleSlash );
         if( len >= 0 ) {
-            EliminateFirstN( data, 1 );
+            EliminateFirstN( buff, 1 );
         }
-    } else if( data[0] == '"' ) {
-        len = NextWord( data, st, SingleQuote );
+    } else if( *buff == '"' ) {
+        len = NextWord( buff, st, SingleQuote );
         if( len >= 0 ) {
-            EliminateFirstN( data, 1 );
+            EliminateFirstN( buff, 1 );
         }
     } else {
-        len = NextWord1( data, st );
+        len = NextWord1( buff, st );
     }
     if( len <= 0 ) {
         return( ERR_NO_STRING );
@@ -125,34 +125,35 @@ vi_rc GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
 
 } /* GetStringWithPossibleQuote2 */
 
-vi_rc GetStringWithPossibleQuote( char *data, char *st )
+vi_rc GetStringWithPossibleQuote( char *buff, char *st )
 {
-    return( GetStringWithPossibleQuote2( data, st, true ) );
+    return( GetStringWithPossibleQuote2( buff, st, true ) );
 
 } /* GetStringWithPossibleQuote */
 
 /*
  * GetStringWithPossibleQuoteC2
  */
-vi_rc GetStringWithPossibleQuoteC2( const char **pdata, char *st, bool allow_slash )
+vi_rc GetStringWithPossibleQuoteC2( const char **pbuff, char *st, bool allow_slash )
 {
-    const char  *data;
+    const char  *buff = *pbuff;
 
-    data = SkipLeadingSpaces( *pdata );
-    if( allow_slash && data[0] == '/' ) {
-        data = GetNextWord( data, st, SingleSlash );
-        if( *data == '/' ) {
-            ++data;
+    while( isspace( *buff ) )
+        ++buff;
+    if( allow_slash && *buff == '/' ) {
+        buff = GetNextWord( buff, st, SingleSlash );
+        if( *buff == '/' ) {
+            ++buff;
         }
-    } else if( data[0] == '"' ) {
-        data = GetNextWord( data, st, SingleQuote );
-        if( *data == '"' ) {
-            ++data;
+    } else if( *buff == '"' ) {
+        buff = GetNextWord( buff, st, SingleQuote );
+        if( *buff == '"' ) {
+            ++buff;
         }
     } else {
-        data = GetNextWord1( data, st );
+        buff = GetNextWord1( buff, st );
     }
-    *pdata = data;
+    *pbuff = buff;
     if( *st == '\0' ) {
         return( ERR_NO_STRING );
     }
@@ -160,9 +161,9 @@ vi_rc GetStringWithPossibleQuoteC2( const char **pdata, char *st, bool allow_sla
 
 } /* GetStringWithPossibleQuoteC2 */
 
-vi_rc GetStringWithPossibleQuoteC( const char **data, char *st )
+vi_rc GetStringWithPossibleQuoteC( const char **pbuff, char *st )
 {
-    return( GetStringWithPossibleQuoteC2( data, st, true ) );
+    return( GetStringWithPossibleQuoteC2( pbuff, st, true ) );
 
 } /* GetStringWithPossibleQuote */
 
@@ -178,7 +179,7 @@ int NextWord1( char *buff, char *res )
         k++;
     }
     if( buff[k] == '\0' ) {
-        res[0] = '\0';
+        *res = '\0';
         return( -1 );
     }
 
@@ -219,6 +220,37 @@ char *GetNextWord1( const char *buff, char *res )
 } /* GetNextWord1 */
 
 /*
+ * GetNextWord2 - get next space or alternate character delimited word in buff
+ */
+char *GetNextWord2( const char *buff, char *res, char alt_delim )
+{
+    char    c;
+
+    while( isspace( *buff ) )
+        ++buff;
+    /*
+     * get word
+     */
+    for( ; (c = *buff) != '\0'; ++buff ) {
+        if( c == alt_delim ) {
+            break;
+        }
+        if( isspace( c ) ) {
+            ++buff;
+            while( isspace( *buff ) )
+                buff++;
+            break;
+        }
+        *res++ = c;
+    }
+    *res = '\0';
+    if( *buff == alt_delim )
+        ++buff;
+    return( (char *)buff );
+
+} /* GetNextWord2 */
+
+/*
  * NextWord - get next word in buff
  */
 int NextWord( char *buff, char *res, const char *ign )
@@ -241,7 +273,7 @@ int NextWord( char *buff, char *res, const char *ign )
         }
     }
     if( buff[k] == '\0' ) {
-        res[0] = '\0';
+        *res = '\0';
         return( -1 );
     }
 
