@@ -53,7 +53,7 @@
 
 #ifdef __WIN__
 #ifndef __NT__
-static bool isMultipleFiles( char *altname )
+static bool isMultipleFiles( const char *altname )
 {
     while( *altname != '\0' && *altname != ' ' ) {
         altname++;
@@ -61,7 +61,7 @@ static bool isMultipleFiles( char *altname )
     return( *altname == ' ' );
 }
 #else
-static bool isMultipleFiles( char *altname )
+static bool isMultipleFiles( const char *altname )
 {
     while( *altname != '\0' ) {
         altname++;
@@ -77,11 +77,11 @@ static char *GetNextWordNT( const char *buff, char *res )
     char        c;
 
     for( ; (c = buff[0]) != '\0' || buff[1] != '\0'; ) {
+        ++buff;
         if( c == '\0' ) {
             break;
         }
         *res++ = c;
-        ++buff;
     }
     *res = '\0';
     return( (char *)buff );
@@ -105,10 +105,8 @@ vi_rc EditFile( const char *name, bool dammit )
     char        mask[FILENAME_MAX];
     bool        reset_dir;
     int         index;
-    char        *paltname = NULL;
-    const char  *altname = NULL;
+    char        *altname = NULL;
     vi_rc       rc;
-    bool        alt = false;
 
     fn = MemAlloc( FILENAME_MAX );
 
@@ -154,14 +152,12 @@ vi_rc EditFile( const char *name, bool dammit )
         } else {
 #ifdef __WIN__
             if( name[0] == '\0' ) {
-                paltname = MemAlloc( 1000 );
-                rc = SelectFileOpen( CurrentDirectory, &paltname, mask, true );
-                altname = GetNextFileName( paltname, fn );  // if multiple, kill path
-                if( isMultipleFiles( altname ) ) {
-                    altname = GetNextFileName( altname + 1, fn ); // get 1st name
+                altname = MemAlloc( 1000 );
+                rc = SelectFileOpen( CurrentDirectory, &altname, mask, true );
+                name = GetNextFileName( altname, fn );  // if multiple, kill path
+                if( isMultipleFiles( name ) ) {
+                    name = GetNextFileName( name, fn ); // get 1st name
                 }
-                name = altname;
-                alt = true;
             } else {
                 rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
             }
@@ -314,15 +310,11 @@ vi_rc EditFile( const char *name, bool dammit )
             ClearBreak();
             break;
         }
-#ifdef __WIN__
-        if( alt && isMultipleFiles( name ) )
-            ++name;
-#endif
         name = GetNextFileName( name, fn );
     } while( *fn != '\0' );
 
-    if( paltname != NULL ) {
-        MemFree( paltname );
+    if( altname != NULL ) {
+        MemFree( altname );
     }
     MemFree( fn );
 
