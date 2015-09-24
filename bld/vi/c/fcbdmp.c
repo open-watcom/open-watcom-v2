@@ -76,7 +76,7 @@ vi_rc HeapCheck( void )
     i = _heapchk();
     Message1( "_heapchk has returned" );
     HeapMsg( i );
-    if( GetKeyboard() == 'q' ) {
+    if( GetKeyboard() == VI_KEY( q ) ) {
         return( ERR_NO_ERR );
     }
     hinfo._pentry = NULL;
@@ -129,7 +129,7 @@ vi_rc FcbDump( void )
         WPrintfLine( fw, lc++, "    next=%W,prev=%W", cfcb->next, cfcb->prev );
 
         if( lc > 22 || cfcb->next == NULL ) {
-            if( GetKeyboard() == 'q' ) {
+            if( GetKeyboard() == VI_KEY( q ) ) {
                 break;
             }
             ClearWindow( fw );
@@ -176,7 +176,7 @@ vi_rc FcbThreadDump( void )
             abs( cfcb->in_extended_memory ),abs( cfcb->in_ems_memory ),
             abs( cfcb->in_xms_memory ), abs( cfcb->swapped ) );
         if( lc > 22 || cfcb->thread_next == NULL ) {
-            if( GetKeyboard() == 'q' ) {
+            if( GetKeyboard() == VI_KEY( q ) ) {
                 break;
             }
             ClearWindow( fw );
@@ -245,7 +245,7 @@ vi_rc SanityCheck( void )
                         tfcbcnt );
                     WPrintfLine( fw, lc + 1, MSG_PRESSANYKEY );
                 }
-                if( GetKeyboard() == 'q' ) {
+                if( GetKeyboard() == VI_KEY( q ) ) {
                     break;
                 }
                 ClearWindow( fw );

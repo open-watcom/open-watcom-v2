@@ -322,7 +322,7 @@ static void make_short_name( char *name, int len, char *buffer )
     int     newlen;
 
     len -= 2; /* for 2 quotes */
-    strcpy( buffer, "\"" );
+    strcpy( buffer, SingleQuote );
     start = strchr( name, '\\' );
     if( start ) {
         for( end = name + strlen( name ) - 1; *end != '\\'; end-- );
@@ -331,13 +331,13 @@ static void make_short_name( char *name, int len, char *buffer )
             strncat( buffer, name, start - name + 1 );
             strcat( buffer, "..." );
             strcat( buffer, end );
-            strcat( buffer, "\"" );
+            strcat( buffer, SingleQuote );
             return;
         }
     }
     strcat( buffer, "..." );
     strncat( buffer, name + strlen(name) - len + 3, len - 3 );
-    strcat( buffer, "\"" );
+    strcat( buffer, SingleQuote );
 }
 
 /*

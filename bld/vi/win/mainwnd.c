@@ -238,7 +238,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
                 if( DragQueryFile( hfileinfo, i, buff + 1, FILENAME_MAX ) == (UINT)-1 ) {
                     break;
                 }
-                strcat( buff, "\"" );
+                strcat( buff, SingleQuote );
                 rc = EditFile( buff, false );
                 if( rc > ERR_NO_ERR ) {
                     Error( GetErrorMsg( rc ) );

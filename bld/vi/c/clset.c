@@ -584,7 +584,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
         }
 #endif
         if( *value == '"' ) {
-            value = GetNextWord( value, fn, "\"" );
+            value = GetNextWord( value, fn, SingleQuote );
             if( *value == '"' ) {
                 ++value;
             }

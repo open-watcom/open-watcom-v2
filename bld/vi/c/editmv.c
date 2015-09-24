@@ -234,13 +234,13 @@ vi_rc MovePosition( void )
     lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
     key = GetNextEvent( false );
     switch( key ) {
-    case '.':
+    case VI_KEY( DOT ):
         LeftTopPos.line = lne - lines / 2;
         break;
     case VI_KEY( ENTER ):
         LeftTopPos.line = lne;
         break;
-    case '-':
+    case VI_KEY( MINUS ):
         LeftTopPos.line = lne - lines + 1;
         break;
     default:

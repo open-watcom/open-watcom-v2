@@ -198,12 +198,12 @@ void DoAutoSave( void )
  */
 static bool handleKey( vi_key key )
 {
-    if( key == 'i' ) {
+    if( key == VI_KEY( i ) ) {
         EditFlags.IgnoreLostFiles = true;
-    } else if( key == 'r' ) {
+    } else if( key == VI_KEY( r ) ) {
         EditFlags.RecoverLostFiles = true;
         EditFlags.NoInitialFileLoad = true;
-    } else if( key == 'q' ) {
+    } else if( key == VI_KEY( q ) ) {
         noEraseFileList = true;
         ExitEditor( -1 );
     } else {
