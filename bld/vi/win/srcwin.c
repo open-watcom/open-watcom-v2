@@ -99,7 +99,6 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
 {
     char        str[MAX_INPUT_LINE];
     char        tmp[MAX_INPUT_LINE];
-    char        tmp2[MAX_INPUT_LINE];
     char        *ext;
     char        *ptr;
     int         token;
@@ -258,8 +257,7 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
             return( true );
         }
         ptr = SkipLeadingSpaces( str );
-        strcpy( tmp2, ptr );
-        ext = strstr( tmp2, ".hlp" );
+        ext = strstr( ptr, ".hlp" );
         if( ext != NULL ) {
             strcpy( ext, ".chm" );
         }
@@ -268,16 +266,22 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
             if( str[0] == 0 ) {
                 return( true );
             }
-            if( !WHtmlHelp( Root, tmp2, HELP_KEY, (HELP_DATA)str ) ) {
-                WWinHelp( Root, tmp, HELP_KEY, (HELP_DATA)str );
+            if( !WHtmlHelp( Root, ptr, HELP_KEY, (HELP_DATA)cmd ) ) {
+                if( ext != NULL ) {
+                    strcpy( ext, ".hlp" );
+                }
+                WWinHelp( Root, ptr, HELP_KEY, (HELP_DATA)cmd );
             }
             break;
         case WINHELP_PARTIALKEY:
             if( str[0] == 0 ) {
                 return( true );
             }
-            if( !WHtmlHelp( Root, tmp2, HELP_PARTIALKEY, (HELP_DATA)str ) ) {
-                WWinHelp( Root, tmp, HELP_PARTIALKEY, (HELP_DATA)str );
+            if( !WHtmlHelp( Root, ptr, HELP_PARTIALKEY, (HELP_DATA)cmd ) ) {
+                if( ext != NULL ) {
+                    strcpy( ext, ".hlp" );
+                }
+                WWinHelp( Root, ptr, HELP_PARTIALKEY, (HELP_DATA)cmd );
             }
             break;
         }
