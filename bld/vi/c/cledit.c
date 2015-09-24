@@ -53,7 +53,7 @@
 
 #ifdef __WIN__
 #ifndef __NT__
-bool isMultipleFiles( const char *altname )
+static bool isMultipleFiles( char *altname )
 {
     while( *altname != '\0' && *altname != ' ' ) {
         altname++;
@@ -61,7 +61,7 @@ bool isMultipleFiles( const char *altname )
     return( *altname == ' ' );
 }
 #else
-bool isMultipleFiles( const char *altname )
+static bool isMultipleFiles( char *altname )
 {
     while( *altname != '\0' ) {
         altname++;
@@ -160,16 +160,14 @@ vi_rc EditFile( const char *name, bool dammit )
                 if( isMultipleFiles( altname ) ) {
                     altname = GetNextFileName( altname + 1, fn ); // get 1st name
                 }
+                name = altname;
+                alt = true;
             } else {
                 rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
             }
 #else
             rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
 #endif
-        }
-        if( altname != NULL ) {
-            name = altname;
-            alt = true;
         }
 
         if( rc != ERR_NO_ERR || fn[0] == 0 ) {
