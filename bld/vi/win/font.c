@@ -273,44 +273,46 @@ void InitFonts( void )
     customFont( &Fonts[FONT_COURIERBOLD], &CourierBold );
 }
 
-static bool getInt( STUPIDNTINT *dest, char *data )
+static bool getInt( STUPIDNTINT *dest, const char **data )
 {
     char        tmp[MAX_STR];
 
-    if( NextWord1( data, tmp ) <= 0 ) {
+    *data = GetNextWord1( *data, tmp );
+    if( *tmp == '\0' ) {
         return( false );
     }
     *dest = atoi( tmp );
     return( true );
 }
 
-static bool getByte( BYTE *dest, char *data )
+static bool getByte( BYTE *dest, const char **data )
 {
     char        tmp[MAX_STR];
 
-    if( NextWord1( data, tmp ) <= 0 ) {
+    *data = GetNextWord1( *data, tmp );
+    if( *tmp == '\0' ) {
         return( false );
     }
     *dest = (BYTE)atoi( tmp );
     return( true );
 }
 
-static bool getLogFont( LOGFONT *l, char *data )
+static bool getLogFont( LOGFONT *l, const char *data )
 {
-    return( getInt( &l->lfHeight, data ) &&
-            getInt( &l->lfWidth, data ) &&
-            getInt( &l->lfEscapement, data ) &&
-            getInt( &l->lfOrientation, data ) &&
-            getInt( &l->lfWeight, data ) &&
-            getByte( &l->lfItalic, data ) &&
-            getByte( &l->lfUnderline, data ) &&
-            getByte( &l->lfStrikeOut, data ) &&
-            getByte( &l->lfCharSet, data ) &&
-            getByte( &l->lfOutPrecision, data ) &&
-            getByte( &l->lfClipPrecision, data ) &&
-            getByte( &l->lfQuality, data ) &&
-            getByte( &l->lfPitchAndFamily, data ) &&
-            GetStringWithPossibleQuote( data, &l->lfFaceName[0] ) == ERR_NO_ERR );
+    return( getInt( &l->lfHeight, &data ) &&
+            getInt( &l->lfWidth, &data ) &&
+            getInt( &l->lfEscapement, &data ) &&
+            getInt( &l->lfOrientation, &data ) &&
+            getInt( &l->lfWeight, &data ) &&
+            getByte( &l->lfItalic, &data ) &&
+            getByte( &l->lfUnderline, &data ) &&
+            getByte( &l->lfStrikeOut, &data ) &&
+            getByte( &l->lfCharSet, &data ) &&
+            getByte( &l->lfOutPrecision, &data ) &&
+            getByte( &l->lfClipPrecision, &data ) &&
+            getByte( &l->lfQuality, &data ) &&
+            getByte( &l->lfPitchAndFamily, &data ) &&
+            GetStringWithPossibleQuoteC( &data, &l->lfFaceName[0] ) == ERR_NO_ERR );
 }
 
 static bool userPickFont( LOGFONT *l, HWND parent )
@@ -383,12 +385,12 @@ void PickFont( font_type index, HWND parent )
 /*
  * SetFont - process a set font command
  */
-vi_rc SetFont( char *data )
+vi_rc SetFont( const char *data )
 {
     LOGFONT     l;
     STUPIDNTINT index;
 
-    if( !getInt( &index, data ) ) {
+    if( !getInt( &index, &data ) ) {
         return( ERR_INVALID_FONT );
     }
     if( index >= MAX_FONTS || index < 0 ) {

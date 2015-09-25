@@ -44,7 +44,7 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     orig = orig;
     oldPath[0] = 0;

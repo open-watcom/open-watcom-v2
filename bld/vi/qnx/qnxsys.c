@@ -71,7 +71,7 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory - save the current directory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     orig = orig;
     oldPath[0] = 0;

@@ -562,12 +562,12 @@ void    ReplaceLLItem( ss **, ss **, ss *, ss * );
 bool    ValidateLL( ss *, ss * );
 
 /* mapkey.c */
-vi_rc   MapKey( int flag, char *data );
+vi_rc   MapKey( int flag, const char *data );
 vi_rc   DoKeyMap( vi_key );
 void    DoneInputKeyMap( void );
 vi_rc   StartInputKeyMap( vi_key );
 vi_rc   RunKeyMap( key_map *, long );
-vi_rc   AddKeyMap( key_map *, char * );
+vi_rc   AddKeyMap( key_map *, const char * );
 void    InitKeyMaps( void );
 vi_rc   ExecuteBuffer( void );
 char    *LookUpCharToken( vi_key ch, bool want_single );
@@ -589,7 +589,7 @@ void    SetMarkContext( void );
 /* match.c */
 vi_rc   DoMatching( range *, long count );
 vi_rc   FindMatch( i_mark * );
-vi_rc   AddMatchString( char * );
+vi_rc   AddMatchString( const char * );
 void    MatchInit( void );
 void    MatchFini( void );
 

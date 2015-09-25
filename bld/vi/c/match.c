@@ -142,18 +142,20 @@ vi_rc FindMatch( i_mark *pos1 )
 /*
  * AddMatchString - add another match string
  */
-vi_rc AddMatchString( char *data )
+vi_rc AddMatchString( const char *data )
 {
     char        st[MAX_STR], st2[MAX_STR];
 
     if( MatchCount >= MAX_SEARCH_STRINGS * 2 - 2 ) {
         return( ERR_TOO_MANY_MATCH_STRINGS );
     }
-    RemoveLeadingSpaces( data );
-    if( NextWord( data, st, SingleSlash ) <= 0 ) {
+    data = SkipLeadingSpaces( data );
+    data = GetNextWord( data, st, SingleSlash );
+    if( *st == '\0' ) {
         return( ERR_INVALID_MATCH );
     }
-    if( NextWord( data, st2, SingleSlash ) <= 0 ) {
+    data = GetNextWord( data, st2, SingleSlash );
+    if( *st2 == '\0' ) {
         return( ERR_INVALID_MATCH );
     }
     MatchData[MatchCount] = DupString( st );

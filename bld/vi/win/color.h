@@ -35,6 +35,5 @@ extern HBRUSH   ColorBrush( vi_color );
 extern HPEN     ColorPen( vi_color );
 extern void     InitColors( void );
 extern void     FiniColors( void );
-extern vi_rc    SetAColor( char * );
 extern void     PickColor( vi_color, HWND );
 extern COLORREF GetRGB( vi_color );

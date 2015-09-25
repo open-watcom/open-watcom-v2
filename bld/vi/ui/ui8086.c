@@ -109,7 +109,7 @@ void RestoreCursor( void )
 
 } /* RestoreCursor */
 
-vi_rc SetFont( char *data )
+vi_rc SetFont( const char *data )
 {
     data = data;
     return( ERR_NO_ERR );
@@ -288,25 +288,29 @@ void FiniColors( void )
 /*
  * SetAColor - perform a setcolor command
  */
-vi_rc SetAColor( char *data )
+vi_rc SetAColor( const char *data )
 {
     rgb         c;
     int         clr;
     char        token[MAX_STR];
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     clr = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     c.red = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     c.green = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     c.blue = atoi( token );

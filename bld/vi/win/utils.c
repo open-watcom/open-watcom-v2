@@ -458,13 +458,13 @@ static char oldDrive;
 /*
  * PushDirectory - save the current drive/directory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     unsigned    c;
 
     oldPath[0] = 0;
     _dos_getdrive( &c );
-    oldDrive = (char) c;
+    oldDrive = (char)c;
     if( orig[1] == ':' ) {
         ChangeDrive( orig[0] );
     }

@@ -364,7 +364,7 @@ void NewToolBar( RECT *rect )
 /*
  * AddBitmapToToolBar - add a toolbar item ([temp], bitmap, help & command)
  */
-vi_rc AddBitmapToToolBar( char *data )
+vi_rc AddBitmapToToolBar( const char *data )
 {
     char                file[FILENAME_MAX];
     char                help[MAX_STR];
@@ -375,16 +375,16 @@ vi_rc AddBitmapToToolBar( char *data )
 
     dont_save[0] = 0;
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */
-        GetStringWithPossibleQuote( data, dont_save );
+        GetStringWithPossibleQuoteC( &data, dont_save );
     }
 
-    GetStringWithPossibleQuote( data, file );
-    GetStringWithPossibleQuote( data, help );
+    GetStringWithPossibleQuoteC( &data, file );
+    GetStringWithPossibleQuoteC( &data, help );
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     cmd_len = strlen( data );
     name_len = strlen( file );
     item = MemAlloc( sizeof( tool_item ) + cmd_len + name_len + strlen( help ) + 2 );
@@ -419,13 +419,13 @@ vi_rc AddBitmapToToolBar( char *data )
 /*
  * DeleteFromToolBar - delete an item from the toolbar
  */
-vi_rc DeleteFromToolBar( char *data )
+vi_rc DeleteFromToolBar( const char *data )
 {
     char    buffer[MAX_STR];
     int     index;
     ss      *p;
 
-    NextWord1( data, buffer );
+    GetNextWord1( data, buffer );
     index = atoi( buffer );
     // index should be (base 1) index of tool in list
     if( index > 0 ) {

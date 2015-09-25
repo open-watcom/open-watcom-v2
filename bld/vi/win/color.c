@@ -30,6 +30,7 @@
 
 
 #include "vi.h"
+#include "color.h"
 
 typedef struct color {
     long        rgb;
@@ -170,28 +171,32 @@ static void setUpColor( vi_color index, COLORREF *rgb )
 /*
  * SetAColor - set a new color
  */
-vi_rc SetAColor( char *data )
+vi_rc SetAColor( const char *data )
 {
     char        token[MAX_STR];
     int         index;
     int         red, blue, green;
     COLORREF    rgb;
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     index = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         if( !chooseColor( index, &rgb, Root ) ) {
             return( ERR_NO_ERR );
         }
     } else {
         red = atoi( token );
-        if( NextWord1( data, token ) <= 0 ) {
+        data = GetNextWord1( data, token );
+        if( *token == '\0' ) {
             return( ERR_INVALID_SETCOLOR );
         }
         green = atoi( token );
-        if( NextWord1( data, token ) <= 0 ) {
+        data = GetNextWord1( data, token );
+        if( *token == '\0' ) {
             return( ERR_INVALID_SETCOLOR );
         }
         blue = atoi( token );

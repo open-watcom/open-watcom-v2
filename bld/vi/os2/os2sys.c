@@ -56,14 +56,14 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory - save the current directory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     STUPID_UINT         c;
     unsigned long       map;
 
     oldPath[0] = 0;
     DosQCurDisk( &c, &map );
-    oldDisk = (char) c;
+    oldDisk = (char)c;
     if( orig[1] == ':' ) {
         ChangeDrive( orig[0] );
     }

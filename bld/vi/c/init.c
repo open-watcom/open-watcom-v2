@@ -40,6 +40,7 @@
 #ifdef __WIN__
     #include "subclass.h"
     #include "utils.h"
+    #include "color.h"
 #endif
 #ifdef __NT__
     #include <windows.h>

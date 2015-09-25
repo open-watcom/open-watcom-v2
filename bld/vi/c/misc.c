@@ -40,6 +40,9 @@
 #endif
 #include "posix.h"
 #include "win.h"
+#ifdef __WIN__
+  #include "color.h"
+#endif
 
 #include "clibext.h"
 

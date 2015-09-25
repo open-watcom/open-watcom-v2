@@ -76,7 +76,7 @@ static vi_rc readKeyData( void )
 /*
  * MapKey - set up a key mapping
  */
-vi_rc MapKey( int flag, char *data )
+vi_rc MapKey( int flag, const char *data )
 {
     char        keystr[MAX_STR];
 #ifndef VICOMP
@@ -105,11 +105,11 @@ vi_rc MapKey( int flag, char *data )
         maps = KeyMaps;
     }
 #endif
-
-    if( NextWord1( data, keystr ) <= 0 ) {
+    data = GetNextWord1( data, keystr );
+    if( *keystr == '\0' ) {
         return( ERR_INVALID_MAP );
     }
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
 
     /*
      * get key we are using
@@ -368,7 +368,7 @@ vi_key extractViKeyToken( unsigned char **p )
 /*
  * AddKeyMap - add a specified key mapping
  */
-vi_rc AddKeyMap( key_map *scr, char *data )
+vi_rc AddKeyMap( key_map *scr, const char *data )
 {
     int             c;
     vi_key          *sdata;
