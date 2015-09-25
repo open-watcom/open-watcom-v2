@@ -99,11 +99,11 @@ static struct map events[] = {
     { 0xa0,     VI_KEY( HOME )          },
     { 0xa1,     VI_KEY( UP )            },
     { 0xa2,     VI_KEY( PAGEUP )        },
-    { 0xa3,     '-'                     },
+    { 0xa3,     VI_KEY( MINUS )         },
     { 0xa4,     VI_KEY( LEFT )          },
-    { 0xa5,     '5'                     },
+    { 0xa5,     VI_KEY( 5 )             },
     { 0xa6,     VI_KEY( RIGHT )         },
-    { 0xa7,     '+'                     },
+    { 0xa7,     VI_KEY( PLUS )          },
     { 0xa8,     VI_KEY( END )           },
     { 0xa9,     VI_KEY( DOWN )          },
     { 0xaa,     VI_KEY( PAGEDOWN )      },
@@ -115,11 +115,11 @@ static struct map events[] = {
     { 0xb0,     VI_KEY( CTRL_HOME )     },
     { 0xb1,     VI_KEY( CTRL_UP )       },
     { 0xb2,     VI_KEY( CTRL_PAGEUP )   },
-    { 0xb3,     '-'                     },
+    { 0xb3,     VI_KEY( MINUS )         },
     { 0xb4,     VI_KEY( CTRL_LEFT )     },
-    { 0xb5,     '5'                     },
+    { 0xb5,     VI_KEY( 5 )             },
     { 0xb6,     VI_KEY( CTRL_RIGHT )    },
-    { 0xb7,     '+'                     },
+    { 0xb7,     VI_KEY( PLUS )          },
     { 0xb8,     VI_KEY( CTRL_END )      },
     { 0xb9,     VI_KEY( CTRL_DOWN )     },
     { 0xba,     VI_KEY( CTRL_PAGEDOWN ) },
@@ -131,11 +131,11 @@ static struct map events[] = {
     { 0xc0,     VI_KEY( ALT_HOME )      },
     { 0xc1,     VI_KEY( ALT_UP )        },
     { 0xc2,     VI_KEY( ALT_PAGEUP )    },
-    { 0xc3,     '-'                     },
+    { 0xc3,     VI_KEY( MINUS )         },
     { 0xc4,     VI_KEY( ALT_LEFT )      },
-    { 0xc5,     '5'                     },
+    { 0xc5,     VI_KEY( 5 )             },
     { 0xc6,     VI_KEY( ALT_RIGHT )     },
-    { 0xc7,     '+'                     },
+    { 0xc7,     VI_KEY( PLUS )          },
     { 0xc8,     VI_KEY( ALT_END )       },
     { 0xc9,     VI_KEY( ALT_DOWN )      },
     { 0xca,     VI_KEY( ALT_PAGEDOWN )  },
@@ -144,7 +144,7 @@ static struct map events[] = {
 //    { 0xcd,   VI_KEY(   alt-prtscr )  },
     { 0xce,     VI_KEY( ALT_F11 )       },
     { 0xcf,     VI_KEY( ALT_F12 )       },
-    { 0xd0,     0x0a                    },
+    { 0xd0,     VI_KEY( CTRL_J )        },
     { 0xd1,     VI_KEY( ALT_F1 )        },
     { 0xd2,     VI_KEY( ALT_F2 )        },
     { 0xd3,     VI_KEY( ALT_F3 )        },
@@ -257,39 +257,37 @@ static int CompareEvents( const void *d1, const void *d2 )
 /*
  * BIOSGetKeyboard - get a keyboard char
  */
-vi_key BIOSGetKeyboard( int *scan )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
     unsigned char   ch;
     struct map      what;
     struct map      *ev;
-    vi_key          key;
+    unsigned        code;
 
     while( dev_read( QNXConHandle, &ch, 1, 0, 0, 0, Proxy, 0 ) <= 0 ) {
         WaitForProxy();
     }
     if( ch == 0xff ) {
-        key = VI_KEY( DUMMY );
+        code = VI_KEY( DUMMY );
         if( dev_read( QNXConHandle, &ch, 1, 0, 0, 0, Proxy, 0 ) > 0 ) {
             what.qnx = ch;
-            ev = bsearch( &what, events, sizeof( events )/sizeof( struct map ),
-                        sizeof( what ), CompareEvents );
+            ev = bsearch( &what, events, sizeof( events ) / sizeof( struct map ), sizeof( what ), CompareEvents );
             if( ev != NULL ) {
-                key = ev->event;
+                code = ev->event;
             }
         }
     } else {
         if( ch == 127 ) {
             ch = 8; /* KLUDGE - bs comes through as del */
+        } else if( ch == 0xe0 ) {
+            ch = 0;
         }
-        key = ch;
+        code = ch;
     }
     if( scan != NULL ) {
         *scan = 0;
     }
-    if( key == 0xe0 ) {
-        return( 0 );
-    }
-    return( key );
+    return( code );
 
 } /* BIOSGetKeyboard */
 

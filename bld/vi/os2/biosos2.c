@@ -154,7 +154,7 @@ void BIOSNewCursor( char ch, char notused )
 /*
  * BIOSGetKeyboard - get a keyboard char
  */
-vi_key BIOSGetKeyboard( int *scan )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
     KBDKEYINFO      info;
 

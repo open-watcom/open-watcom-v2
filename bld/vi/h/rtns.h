@@ -472,12 +472,12 @@ void    VerifyTmpDir( void );
 char    *MakeTmpPath( char *out, const char *in );
 
 /* key.c */
-vi_key  GetVIKey( vi_key ch, int scan, bool shift );
+vi_key  GetVIKey( unsigned code, unsigned scan, bool shift );
 vi_key  GetNextEvent( bool );
 vi_key  GetKey( bool );
 void    ClearBreak( void );
 bool    NonKeyboardEventsPending( void );
-void    KeyAdd( vi_key ch );
+void    KeyAdd( vi_key key );
 void    KeyAddString( char *str );
 void    AddCurrentMouseEvent( void );
 
@@ -570,7 +570,7 @@ vi_rc   RunKeyMap( key_map *, long );
 vi_rc   AddKeyMap( key_map *, const char * );
 void    InitKeyMaps( void );
 vi_rc   ExecuteBuffer( void );
-char    *LookUpCharToken( vi_key ch, bool want_single );
+char    *LookUpCharToken( vi_key key, bool want_single );
 void    FiniKeyMaps( void );
 
 /* mark.c */

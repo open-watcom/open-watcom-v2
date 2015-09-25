@@ -46,7 +46,7 @@ extern unsigned long    BIOSGetVideoMode( void );
 extern void             BIOSUpdateScreen( unsigned, unsigned );
 // keyboard functions
 extern int              BIOSKeyboardInit( void );
-extern unsigned short   BIOSTestKeyboard( void );
-extern vi_key           BIOSGetKeyboard( int * );
+extern unsigned         BIOSTestKeyboard( void );
+extern unsigned         BIOSGetKeyboard( unsigned * );
 extern bool             BIOSKeyboardHit( void );
 

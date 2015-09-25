@@ -299,6 +299,8 @@ typedef enum vi_key {
 #define VI_KEY_HANDLED          VI_KEY( NULL )
 #define VI_KEY_DUMMY            MAX_EVENTS
 
+#define C2VIKEY(x)      ((vi_key)(unsigned char)(x))
+
 enum border_char {
     #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) enum,
     #include "borders.h"

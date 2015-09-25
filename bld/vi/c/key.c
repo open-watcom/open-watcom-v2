@@ -139,30 +139,24 @@ static vi_key getOverrideKey( void )
 /*
  * GetVIKey - return a VI equivalent of a given key/scan code
  */
-vi_key GetVIKey( vi_key ch, int scan, bool shift )
+vi_key GetVIKey( unsigned code, unsigned scan, bool shift )
 {
 #if !defined NO_TRANSLATE
     int     i;
 #endif
+    vi_key  key;
 
     if( EditFlags.EscapedInsertChar ) {
-        return( ch );
+        return( code );
     }
 
-    if( ch != 0 ) {
-        if( ch == 127 && scan == 14 ) {
-            return( VI_KEY( CTRL_BS ) );
+    if( code != 0 ) {
+        if( code == 127 && scan == 14 ) {
+            key = VI_KEY( CTRL_BS );
+        } else {
+            key = code;
         }
-        if( ch == 8 ) {
-            ch = VI_KEY( BS );
-        } else if( ch == 9 ) {
-            ch = VI_KEY( TAB );
-        } else if( ch == 13 ) {
-            ch = VI_KEY( ENTER );
-        } else if( ch == 27 ) {
-            ch = VI_KEY( ESC );
-        }
-        return( ch );
+        return( key );
     }
 #if !defined( NO_TRANSLATE )
 
@@ -276,7 +270,7 @@ vi_key GetVIKey( vi_key ch, int scan, bool shift )
     /* avoid warning about unused arguments */
     (void) scan;
     (void) shift;
-    return( ch );
+    return( key );
 #endif
 
 } /* GetVIKey */

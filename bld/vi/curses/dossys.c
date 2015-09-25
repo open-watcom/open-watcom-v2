@@ -326,9 +326,11 @@ void BIOSSetCursor( char page, char row, char col )
     refresh();
 }
 
-unsigned short BIOSGetKeyboard( int extended )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
-    extended = extended;
+    if( scan != NULL )
+        *scan = 0;
+    return( 0 );
 }
 
 /*

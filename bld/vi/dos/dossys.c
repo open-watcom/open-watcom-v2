@@ -464,17 +464,17 @@ bool KeyboardHit( void )
  */
 vi_key GetKeyboard( void )
 {
-    unsigned short  key;
-    int             scan;
-    bool            shift;
+    unsigned    code;
+    unsigned    scan;
+    bool        shift;
 
-    key = _BIOSGetKeyboard( EditVars.ExtendedKeyboard );
+    code = _BIOSGetKeyboard( EditVars.ExtendedKeyboard );
     shift = ShiftDown();
-    scan = key >> 8;
-    key &= 0xff;
-    if( key == 0xE0 && scan != 0 ) {
-        key = 0;
+    scan = code >> 8;
+    code &= 0xff;
+    if( code == 0xE0 && scan != 0 ) {
+        code = 0;
     }
-    return( GetVIKey( key, scan, shift ) );
+    return( GetVIKey( code, scan, shift ) );
 
 } /* GetKeyboard */

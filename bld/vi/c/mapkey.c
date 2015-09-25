@@ -337,12 +337,12 @@ void DoneInputKeyMap( void )
  * extractViKeyToken - extract the character token from a data string,
  *                    assumes we are pointing at <CHAR>
  */
-vi_key extractViKeyToken( unsigned char **p )
+static vi_key extractViKeyToken( const char **p )
 {
     char            str[MAX_STR];
     int             j;
     vi_rc           rc;
-    int             c;
+    char            c;
 
     
     for( j = 0; (c = **p) != '\0'; ++j ) {
@@ -358,7 +358,7 @@ vi_key extractViKeyToken( unsigned char **p )
     }
     j = Tokenize( charTokens, str, true );
     if( j == TOK_INVALID ) {
-        return( (unsigned char)str[0] );
+        return( C2VIKEY( str[0] ) );
     } else {
         return( keyVals[j] );
     }
@@ -370,12 +370,12 @@ vi_key extractViKeyToken( unsigned char **p )
  */
 vi_rc AddKeyMap( key_map *scr, const char *data )
 {
-    int             c;
+    char            c;
     vi_key          *sdata;
     int             len;
-    unsigned char   *p;
+    const char      *p;
 
-    p = (unsigned char *)data;
+    p = data;
     /*
      * get storage for key map
      */
@@ -416,19 +416,18 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
 #ifndef VICOMP
                 if( EditFlags.CompileScript ) {
 #endif
-                    *sdata = '\\';
-                    sdata++;
+                    *sdata++ = VI_KEY( BACKSLASH );
 #ifndef VICOMP
                 }
 #endif
-                *sdata = c;
+                *sdata = C2VIKEY( c );
                 break;
             }
         } else {
-            *sdata = c;
+            *sdata = C2VIKEY( c );
         }
     }
-    *sdata = '\0';
+    *sdata = VI_KEY( NULL );
 
     return( ERR_NO_ERR );
 
@@ -521,7 +520,7 @@ char *LookUpCharToken( vi_key key, bool want_single )
             return( "t" );
         case NO_ADD_TO_HISTORY_KEY:
             return( "h" );
-        case '\\':
+        case VI_KEY( BACKSLASH ):
             return( "\\" );
         }
     }

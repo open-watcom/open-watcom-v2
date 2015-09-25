@@ -202,22 +202,22 @@ int BIOSKeyboardInit( void )
 /*
  * BIOSGetKeyboard - get a keyboard char
  */
-vi_key BIOSGetKeyboard( int *scan )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
-    vi_key  key;
-    EVENT   ev;
+    unsigned    code;
+    EVENT       ev;
 
-    key = VI_KEY( DUMMY );
+    code = VI_KEY( DUMMY );
     do {
         ev = uieventsource( 0 );
         if ( ev < EV_FIRST_UNUSED ) {
-            key = vi_keys[ev];
+            code = vi_keys[ev];
         }
-    } while ( key == VI_KEY( DUMMY ) );
+    } while( code == VI_KEY( DUMMY ) );
     if( scan != NULL ) {
         *scan = 0;
     }
-    return( key );
+    return( code );
 
 } /* BIOSGetKeyboard */
 

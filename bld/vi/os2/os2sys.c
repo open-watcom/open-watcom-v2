@@ -282,17 +282,17 @@ void SetCursorBlinkRate( int cbr )
 
 vi_key GetKeyboard( void )
 {
-    unsigned short  key;
-    int             scan;
-    bool            shift;
+    unsigned    code;
+    unsigned    scan;
+    bool        shift;
 
-    key = BIOSGetKeyboard( &scan );
+    code = BIOSGetKeyboard( &scan );
     shift = ShiftDown();
-    key &= 0xff;
-    if( key == 0xE0 && scan != 0 ) {
-        key = 0;
+    code &= 0xff;
+    if( code == 0xE0 && scan != 0 ) {
+        code = 0;
     }
-    return( GetVIKey( key, scan, shift ) );
+    return( GetVIKey( code, scan, shift ) );
 }
 
 bool KeyboardHit( void )

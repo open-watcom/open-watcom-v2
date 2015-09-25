@@ -128,8 +128,8 @@ extern unsigned DosMaxAlloc( void );
     modify [ax bx];
 
 #pragma aux BIOSTestKeyboard = \
-        0xB8 0xff 0x12     /* mov     ax, 012ffh */ \
-        0xCD 0x16          /* int     016h */ \
+        "mov    ax,012ffh"     \
+        "int    016h"          \
     value[ax];
 
 #pragma aux BIOSGetRowCount = \
@@ -202,9 +202,9 @@ extern unsigned DosMaxAlloc( void );
     modify [ax bx];
 
 #pragma aux BIOSTestKeyboard = \
-        0x66 0xB8 0xff 0x12     /* mov ax, 012ffh */ \
-        0xCD 0x16               /* int 016h */ \
-    value[ax];
+        "mov eax, 012ffh"      \
+        "int 016h"             \
+    value[eax];
 
 #pragma aux BIOSGetRowCount = \
         0x66 0xB8 0x30 0x11     /* mov  ax, 01130h */ \

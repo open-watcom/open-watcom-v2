@@ -58,7 +58,7 @@ static void writeTitle( FILE *f, char *str )
 static void doMaps( FILE *f, key_map *maps, char *extra_str )
 {
     char        *map;
-    vi_key      *str;
+    vi_key      *keymap;
     int         i;
     int         j;
     int         len;
@@ -75,17 +75,18 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
             if( maps[i].no_input_window ) {
                 MyFprintf( f, "\\x" );
             }
-            str = maps[i].data;
+            keymap = maps[i].data;
             // len = strlen( str );
-            for( len = 0; str[len] != 0; len++ );
+            for( len = 0; keymap[len] != VI_KEY( NULL ); len++ )
+                ;
             len--;
 
             for( j = 0; j < len; j++ ) {
-                map = LookUpCharToken( str[j], true );
+                map = LookUpCharToken( keymap[j], true );
                 if( map == NULL ) {
-                    MyFprintf( f, "%c", str[j] );
+                    MyFprintf( f, "%c", (char)keymap[j] );
                 } else {
-                    if( map[1] == 0 ) {
+                    if( map[1] == '\0' ) {
                         MyFprintf( f, "\\%s", map );
                     } else {
                         MyFprintf( f, "\\<%s>", map );

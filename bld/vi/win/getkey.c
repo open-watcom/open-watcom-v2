@@ -271,7 +271,7 @@ bool WindowsKeyPush( WORD vk, WORD data )
     }
     key = MapVirtualKeyToVIKey( vk, data );
     if( key != VI_KEY( DUMMY ) ) {
-        keyBuffer[bufferTop] = GetVIKey( key, 0, false );
+        keyBuffer[bufferTop] = key;
         bufferTop = (bufferTop + 1) % KEY_BUFFER_SIZE;
         return( true );
     }
