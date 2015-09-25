@@ -53,11 +53,11 @@ static char         strLoad[] = "loaded";
 static char         strCompile[] = "compiled";
 static char         *dataBuff;
 
-static vi_rc        setWDimension( char * );
-static vi_rc        setWHilite( char * );
-static vi_rc        setWText( char * );
-static vi_rc        setWBorder( char * );
-static vi_rc        setSyntaxStyle( syntax_element, char * );
+static vi_rc        setWDimension( const char * );
+static vi_rc        setWHilite( const char * );
+static vi_rc        setWText( const char * );
+static vi_rc        setWBorder( const char * );
+static vi_rc        setSyntaxStyle( syntax_element, const char * );
 
 #if defined( VI_RCS ) && defined( __WINDOWS__ )
 static bool isOS2( void )
@@ -930,7 +930,7 @@ vi_rc RunCommandLine( const char *cl )
 /*
  * ProcessWindow - process window commands.
  */
-vi_rc ProcessWindow( int tkn, char *data )
+vi_rc ProcessWindow( int tkn, const char *data )
 {
     vi_rc       rc;
 
@@ -1075,7 +1075,7 @@ static void setStyle( type_style *style, vi_color tc1, vi_color tc2, font_type t
 /*
  * setWBorder - set window border
  */
-static vi_rc setWBorder( char *data )
+static vi_rc setWBorder( const char *data )
 {
     int         btype, bc1, bc2;
     bool        has_border;
@@ -1084,12 +1084,14 @@ static vi_rc setWBorder( char *data )
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    if( NextWord1( data,token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     btype = atoi( token );
     has_border = ( btype >= 0 );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         if( !has_border ) {
             wInfo->has_border = false;
             return( ERR_NO_ERR );
@@ -1097,7 +1099,8 @@ static vi_rc setWBorder( char *data )
         return( ERR_INVALID_WINDOW_SETUP );
     }
     bc1 = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     bc2 = atoi( token );
@@ -1112,7 +1115,7 @@ static vi_rc setWBorder( char *data )
 /*
  * setWText - set window text color
  */
-static vi_rc setWText( char *data )
+static vi_rc setWText( const char *data )
 {
     int         tc1, tc2, tc3;
     char        token[MAX_STR];
@@ -1120,16 +1123,19 @@ static vi_rc setWText( char *data )
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
     tc3 = FONT_DEFAULT;
-    if( NextWord1( data, token ) > 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token != '\0' ) {
         tc3 = atoi( token );
     }
     setStyle( &wInfo->text, tc1, tc2, tc3 );
@@ -1144,7 +1150,7 @@ static vi_rc setWText( char *data )
 /*
  * setWHilite - set window hilighting color
  */
-static vi_rc setWHilite( char *data )
+static vi_rc setWHilite( const char *data )
 {
     int         tc1, tc2, tc3;
     char        token[MAX_STR];
@@ -1152,16 +1158,19 @@ static vi_rc setWHilite( char *data )
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
     tc3 = FONT_DEFAULTBOLD;
-    if( NextWord1( data, token ) > 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token != '\0' ) {
         tc3 = atoi( token );
     }
     setStyle( &wInfo->hilight, tc1, tc2, tc3 );
@@ -1172,7 +1181,7 @@ static vi_rc setWHilite( char *data )
 /*
  * setWDimension - set window dimension
  */
-static vi_rc setWDimension( char *data )
+static vi_rc setWDimension( const char *data )
 {
     int         x1, y1, x2, y2;
     char        token[MAX_STR];
@@ -1188,25 +1197,29 @@ static vi_rc setWDimension( char *data )
         return( (vi_rc)i );
     }
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     x1 = GetConstExpr();
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     y1 = GetConstExpr();
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     x2 = GetConstExpr();
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
@@ -1234,7 +1247,7 @@ static vi_rc setWDimension( char *data )
 /*
  * setSyntaxStyle - set syntax style color
  */
-static vi_rc setSyntaxStyle( syntax_element style, char *data )
+static vi_rc setSyntaxStyle( syntax_element style, const char *data )
 {
     int         tc1, tc2, tc3;
     char        token[MAX_STR];
@@ -1242,16 +1255,19 @@ static vi_rc setSyntaxStyle( syntax_element style, char *data )
     if( wInfo != &editw_info ) {
         return( ERR_WIND_INVALID );
     }
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
     tc3 = FONT_DEFAULTBOLD;
-    if( NextWord1( data, token ) > 0 ) {
+    data = GetNextWord1( data,token );
+    if( *token != '\0' ) {
         tc3 = atoi( token );
     }
 

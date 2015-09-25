@@ -70,7 +70,7 @@ vi_rc Append( linenum n1, bool startundo )
 /*
  * AppendAnother
  */
-vi_rc AppendAnother( char *data )
+vi_rc AppendAnother( const char *data )
 {
     bool        dontmove = false;
     int         i;

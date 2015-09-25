@@ -37,7 +37,7 @@
 /*
  * AddNewLineAroundCurrent - put a new line on either side of the current line
  */
-void AddNewLineAroundCurrent( char *data, int copylen, insert_dir dir )
+void AddNewLineAroundCurrent( const char *data, int copylen, insert_dir dir )
 {
     bool        wasnull;
     /*
@@ -79,7 +79,7 @@ void AddNewLineAroundCurrent( char *data, int copylen, insert_dir dir )
 /*
  * InsertNewLine - do just that
  */
-void InsertNewLine( line *who, line_list *linelist, char *data, int copylen,
+void InsertNewLine( line *who, line_list *linelist, const char *data, int copylen,
                     insert_dir dir )
 {
     line        *cl;
@@ -104,7 +104,7 @@ void InsertNewLine( line *who, line_list *linelist, char *data, int copylen,
 /*
  * LineAlloc - allocate a line
  */
-line *LineAlloc( char *data, int len )
+line *LineAlloc( const char *data, int len )
 {
     line        *tmp;
 

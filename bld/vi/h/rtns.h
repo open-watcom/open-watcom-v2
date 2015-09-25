@@ -91,7 +91,7 @@ vi_rc   ProcessCommandLine( void );
 vi_rc   FancyProcessCommandLine( void );
 vi_rc   TryCompileableToken( int token, char *data, bool iscmdline );
 vi_rc   RunCommandLine( const char * );
-vi_rc   ProcessWindow( int, char * );
+vi_rc   ProcessWindow( int, const char * );
 void    FiniCommandLine( void );
 void    EditRCSCurrentFile( void );
 
@@ -535,10 +535,10 @@ bool  IsPastLastLine( linenum l );
 vi_rc ValidateCurrentLine( void );
 
 /* linenew.c */
-void    AddNewLineAroundCurrent( char *, int, insert_dir );
-void    InsertNewLine( line *, line_list *, char *, int, insert_dir );
+void    AddNewLineAroundCurrent( const char *, int, insert_dir );
+void    InsertNewLine( line *, line_list *, const char *, int, insert_dir );
 void    CreateNullLine( fcb * );
-line    *LineAlloc( char *, int );
+line    *LineAlloc( const char *, int );
 
 /* linenum.c */
 vi_rc LineNumbersSetup( void );
