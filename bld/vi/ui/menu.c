@@ -688,7 +688,6 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
     selectitem  si;
     menu        *tmenu;
     menu_item   *cmi;
-    char        cmd[MAX_INPUT_LINE];
     int         x1, y1, x2, y2;
     int         diff;
     int         xwid;
@@ -822,8 +821,7 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
     for( i = 0; i < resint; i++ ) {
         cmi = cmi->next;
     }
-    strcpy( cmd, cmi->cmd );
-    rc = RunCommandLine( cmd );
+    rc = RunCommandLine( cmi->cmd );
     if( cmenu->has_file_list ) {
         removeFileList( cmenu );
     }

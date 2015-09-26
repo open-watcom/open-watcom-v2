@@ -85,18 +85,11 @@ vi_rc HandleToolCommand( UINT id )
 {
     ss          *p;
     tool_item   *item;
-    int         len;
-    vi_rc       rc;
-    char        *str;
 
     for( p = toolBarHead; p != NULL; p = p->next ) {
         item = (tool_item *)p;
         if( item->id == id ) {
-            len = strlen( item->cmd ) + 1;
-            str = alloca( len );
-            memcpy( str, item->cmd, len );
-            rc = RunCommandLine( str );
-            return( rc );
+            return( RunCommandLine( item->cmd ) );
         }
     }
     return( MENU_COMMAND_NOT_HANDLED );

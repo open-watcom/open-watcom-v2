@@ -205,7 +205,6 @@ int FTSSearchFTIndex( const char *name )
 
 static vi_rc runCmds( ft_src *fts )
 {
-    char    cmd_data[MAX_STR];
     vi_rc   rc;
     cmd_ll  *cmd;
     bool    oldScript, oldQuiet, oldHold;
@@ -221,8 +220,7 @@ static vi_rc runCmds( ft_src *fts )
     EditFlags.DisplayHold = true;
 
     for( cmd = fts->cmd_head; cmd != NULL; cmd = cmd->next ) {
-        strcpy( cmd_data, cmd->data );
-        rc = RunCommandLine( cmd_data );
+        rc = RunCommandLine( cmd->data );
 #if 0
         if( rc != ERR_NO_ERR && rc != DO_NOT_CLEAR_MESSAGE_WINDOW ) {
             break;

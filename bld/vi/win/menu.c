@@ -138,18 +138,13 @@ UINT NextMenuId( void )
 static vi_rc handleMenuCommand( menu *m, UINT id )
 {
     item        *citem;
-    char        *str;
-    int         len;
     vi_rc       rc;
 
     for( citem = m->item_head; citem != NULL; citem = citem->next ) {
         if( citem->id == id ) {
             /* run this command */
-            len = strlen( citem->cmd ) + 1;
-            str = alloca( len );
-            memcpy( str, citem->cmd, len );
             IMEsc();
-            rc = RunCommandLine( str );
+            rc = RunCommandLine( citem->cmd );
 #ifdef __WIN__
             SetWindowCursorForReal();
 #endif
@@ -585,8 +580,6 @@ vi_rc DoMenuChar( void )
     vi_key      key;
     menu        *m;
     item        *citem;
-    char        *str;
-    int         len;
 
     key = LastEvent;
     for( m = rootMenu->item_head; m != NULL; m = m->next ) {
@@ -594,10 +587,7 @@ vi_rc DoMenuChar( void )
             key = GetNextEvent( true );
             for( citem = m->item_head; citem != NULL; citem = citem->next ) {
                 if( getHotKey( citem->name ) == key ) {
-                    len = strlen( citem->cmd ) + 1;
-                    str = alloca( len );
-                    memcpy( str, citem->cmd, len );
-                    return( RunCommandLine( str ) );
+                    return( RunCommandLine( citem->cmd ) );
                 }
             }
         }

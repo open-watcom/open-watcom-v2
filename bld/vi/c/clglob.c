@@ -39,7 +39,7 @@
  */
 vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
 {
-    char        *sstr, *cmd, *linedata;
+    char        *sstr, *linedata;
     bool        match;
     vi_rc       rc;
     vi_rc       rc1;
@@ -58,8 +58,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
         return( rc );
     }
     sstr = alloca( MAX_INPUT_LINE );
-    cmd = alloca( MAX_INPUT_LINE );
-    if( cmd == NULL || sstr == NULL ) {
+    if( sstr == NULL ) {
         return( ERR_NO_STACK );
     }
     data = SkipLeadingSpaces( data );
@@ -193,8 +192,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
             /*
             * build command line
             */
-            strcpy( cmd, data );
-            rc = RunCommandLine( cmd );
+            rc = RunCommandLine( data );
             if( rc > ERR_NO_ERR ) {
                 break;
             }
