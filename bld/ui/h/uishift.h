@@ -42,14 +42,14 @@
 #define         S_CAPS                  (unsigned char) 0x40
 #define         S_INSERT                (unsigned char) 0x80
 // OS2 Additions:
-#define         S_CTRL_L                (unsigned char) 0x100
-#define         S_ALT_L                 (unsigned char) 0x200
-#define         S_CTRL_R                (unsigned char) 0x400
-#define         S_ALT_R                 (unsigned char) 0x800
-#define         S_SCRL                  (unsigned char) 0x1000
-#define         S_NUM_D                 (unsigned char) 0x2000
-#define         S_CAPS_D                (unsigned char) 0x4000
-#define         S_SYSRQ                 (unsigned char) 0x8000
+#define         S_CTRL_L                (unsigned short) 0x100
+#define         S_ALT_L                 (unsigned short) 0x200
+#define         S_CTRL_R                (unsigned short) 0x400
+#define         S_ALT_R                 (unsigned short) 0x800
+#define         S_SCRL                  (unsigned short) 0x1000
+#define         S_NUM_D                 (unsigned short) 0x2000
+#define         S_CAPS_D                (unsigned short) 0x4000
+#define         S_SYSRQ                 (unsigned short) 0x8000
 // Additions for NEC windows:
 #define         S_KANJI_LOCK            (unsigned int) 0x100
 /* Shift Status Support

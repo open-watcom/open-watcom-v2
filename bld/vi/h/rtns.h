@@ -89,7 +89,7 @@ linenum SplitUpLine( linenum );
 void    InitCommandLine( void );
 vi_rc   ProcessCommandLine( void );
 vi_rc   FancyProcessCommandLine( void );
-vi_rc   TryCompileableToken( int token, char *data, bool iscmdline );
+vi_rc   TryCompileableToken( int token, const char *data, bool iscmdline );
 vi_rc   RunCommandLine( const char * );
 vi_rc   ProcessWindow( int, const char * );
 void    FiniCommandLine( void );
@@ -369,7 +369,7 @@ vi_rc   PopFileStack( void );
 void    FiniFileStack( void );
 
 /* filter.c */
-vi_rc DoGenericFilter( linenum, linenum, char * );
+vi_rc   DoGenericFilter( linenum, linenum, const char * );
 
 /* findcmd.c */
 void    HilightSearchString( i_mark *, int );
@@ -708,7 +708,7 @@ vi_rc   AddSelRgnToSavebufAndDelete( void );
 void    AddFcbsToSavebuf( fcb_list *, bool );
 vi_rc   SwitchSavebuf( void );
 vi_rc   DoSavebufNumber( void );
-vi_rc   SetSavebufNumber( char * );
+vi_rc   SetSavebufNumber( const char * );
 vi_rc   GetSavebufString( char ** );
 bool    IsEmptySavebuf( char ch );
 void    FiniSavebufs( void );
@@ -753,7 +753,7 @@ vi_rc   SelectAll( void );
 vi_rc Shift( linenum, linenum, char, bool );
 
 /* source.c */
-vi_rc   Source( const char *, char *, srcline * );
+vi_rc   Source( const char *, const char *, srcline * );
 void    FileSPVAR( void );
 void    SourceError( char *msg );
 void    DeleteResidentScripts( void );

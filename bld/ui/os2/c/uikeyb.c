@@ -124,19 +124,18 @@ EVENT intern keyboardevent( void )
     if( os2getkey( &keyInfo ) ) {
         scan  = keyInfo.chScan;
         ascii = keyInfo.chChar;
-        if( ascii == 0 || ascii == 224 ) {
-            ev = 256 + scan;
-        } else {
+        ev = scan + 0x100;
+        if( ascii != 0 && ascii != 0xE0 ) {
             ev = ascii;
             if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
                 ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
-                switch( ev + 0x100 ) {
+                switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_RETURN:
                 case EV_ESCAPE:
-                    ev += 0x100;
+                    ev = ascii + 0x100;
                     break;
                 }
             }

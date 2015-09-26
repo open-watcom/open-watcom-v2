@@ -34,6 +34,6 @@
 
 extern void __initerrno( void );
 
-_WCRTDATA unsigned  errno;
+int  errno;
 
 AXI( __initerrno, INIT_PRIORITY_LIBRARY )

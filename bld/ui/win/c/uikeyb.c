@@ -380,19 +380,18 @@ EVENT intern keyboardevent( void )
         key = getkey();
         scan = (unsigned char) ( key >> 8 ) ;
         ascii = (unsigned char) key;
-        if( ascii == 0 ) {
-            ev = 0x100 + scan;
-        } else {
+        ev = scan + 0x100;
+        if( ascii != 0 ) {
             ev = ascii;
             if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
                 ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
-                switch( ev + 0x100 ) {
+                switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_RETURN:
                 case EV_ESCAPE:
-                    ev += 0x100;
+                    ev = ascii + 0x100;
                     break;
                 }
             }

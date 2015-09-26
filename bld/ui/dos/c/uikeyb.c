@@ -164,27 +164,26 @@ EVENT intern keyboardevent( void )
         if( scan != 0 && ascii == 0xe0 ) {  /* extended keyboard */
             ascii = 0;
         }
+        ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
-        if( scan + 0x100 >= EV_HOME && scan + 0x100 <= EV_DELETE ) {
+        if( ev >= EV_HOME && ev <= EV_DELETE ) {
             if( ( newshift & S_NUM ) == 0 ) {
                 if( ( newshift & S_SHIFT ) != 0 ) {
                     ascii = 0;      /* wipe out digit */
                 }
             }
         }
-        if( ascii == 0 ) {
-            ev = 0x100 + scan;
-        } else {
+        if( ascii != 0 ) {
             ev = ascii;
             if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
                 ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
-                switch( ev + 0x100 ) {
+                switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_RETURN:
                 case EV_ESCAPE:
-                    ev += 0x100;
+                    ev = ascii + 0x100;
                     break;
                 }
             }

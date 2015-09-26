@@ -665,6 +665,7 @@ vi_rc EnterHexKey( void )
     int         i;
     char        st[MAX_STR], val;
     vi_rc       rc;
+    const char  *ptr;
 
     rc = ModificationTest();
     if( rc != ERR_NO_ERR ) {
@@ -674,8 +675,7 @@ vi_rc EnterHexKey( void )
         return( ERR_LINE_FULL );
     }
 
-    rc = PromptForString( "Enter the number of char to insert:", st,
-                          sizeof( st ) - 1, NULL );
+    rc = PromptForString( "Enter the number of char to insert:", st, sizeof( st ) - 1, NULL );
     if( rc != ERR_NO_ERR ) {
         if( rc == NO_VALUE_ENTERED ) {
             return( ERR_NO_ERR );
@@ -686,8 +686,8 @@ vi_rc EnterHexKey( void )
     /*
      * get value
      */
-    RemoveLeadingSpaces( st );
-    val = (char) strtol( st, NULL, 0 );
+    ptr = SkipLeadingSpaces( st );
+    val = (char)strtol( ptr, NULL, 0 );
     if( val == 0 ) {
         return( ERR_INVALID_VALUE );
     }

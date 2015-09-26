@@ -52,6 +52,7 @@ static window_info  *wInfo = NULL;
 static char         strLoad[] = "loaded";
 static char         strCompile[] = "compiled";
 static char         *dataBuff;
+static char         *tmpBuff;
 
 static vi_rc        setWDimension( const char * );
 static vi_rc        setWHilite( const char * );
@@ -85,6 +86,7 @@ static bool isOS2( void )
 void InitCommandLine( void )
 {
     dataBuff = MemAlloc( EditVars.MaxLine );
+    tmpBuff = MemAlloc( EditVars.MaxLine );
 
 } /* InitCommandLine */
 
@@ -94,6 +96,7 @@ void InitCommandLine( void )
 void FiniCommandLine( void )
 {
     MemFree( dataBuff );
+    MemFree( tmpBuff );
 
 } /* FiniCommandLine */
 
@@ -164,7 +167,7 @@ vi_rc FancyProcessCommandLine( void )
 /*
  * TryCompileableToken - process token that can also be compiled
  */
-vi_rc TryCompileableToken( int token, char *data, bool iscmdline )
+vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
 {
     vi_rc       rc = ERR_INVALID_COMMAND;
     bool        mflag;
@@ -232,7 +235,7 @@ vi_rc TryCompileableToken( int token, char *data, bool iscmdline )
         break;
     case PCL_T_SET:
         if( iscmdline ) {
-            Expand( data, data, NULL );
+            data = Expand( tmpBuff, data, NULL );
         }
         rc = Set( data );
         break;
@@ -271,6 +274,7 @@ vi_rc RunCommandLine( const char *cl )
     long        val;
     jmp_buf     jmpaddr;
     vi_rc       rc;
+    const char  *data;
 
     /*
      * parse command string
@@ -293,6 +297,7 @@ vi_rc RunCommandLine( const char *cl )
      */
     rc = ERR_INVALID_COMMAND;
     test1 = n1f || n2f;
+    data = dataBuff;
     switch( tkn ) {
     case PCL_T_ABOUT:
         rc = DoAboutBox();
@@ -304,11 +309,11 @@ vi_rc RunCommandLine( const char *cl )
         rc = PopFileStack();
         break;
     case PCL_T_EXECUTE:
-        RemoveLeadingSpaces( dataBuff );
-        if( *dataBuff != '\0' ) {
+        data = SkipLeadingSpaces( data );
+        if( *data != '\0' ) {
             key_map     scr;
 
-            rc = AddKeyMap( &scr, dataBuff );
+            rc = AddKeyMap( &scr, data );
             if( rc != ERR_NO_ERR ) {
                 break;
             }
@@ -318,13 +323,13 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_DELETEMENU:
-        rc = DoMenuDelete( dataBuff );
+        rc = DoMenuDelete( data );
         break;
     case PCL_T_DELETEMENUITEM:
-        rc = DoItemDelete( dataBuff );
+        rc = DoItemDelete( data );
         break;
     case PCL_T_ADDMENUITEM:
-        rc = AddMenuItem( dataBuff );
+        rc = AddMenuItem( data );
         break;
     case PCL_T_MAXIMIZE:
         rc = MaximizeCurrentWindow();
@@ -351,17 +356,17 @@ vi_rc RunCommandLine( const char *cl )
         rc = ERR_NO_ERR;
         break;
     case PCL_T_KEYADD:
-        RemoveLeadingSpaces( dataBuff );
-        KeyAddString( dataBuff );
+        data = SkipLeadingSpaces( data );
+        KeyAddString( data );
         rc = ERR_NO_ERR;
         break;
 
     case PCL_T_UNALIAS:
-        rc = UnAlias( dataBuff );
+        rc = UnAlias( data );
         break;
 
     case PCL_T_UNABBREV:
-        rc = UnAbbrev( dataBuff );
+        rc = UnAbbrev( data );
         break;
 
     case PCL_T_UNMAP:
@@ -370,16 +375,16 @@ vi_rc RunCommandLine( const char *cl )
         if( tkn == PCL_T_UNMAP_DMT ) {
             flag |= MAPFLAG_DAMMIT;
         }
-        rc = MapKey( flag, dataBuff );
+        rc = MapKey( flag, data );
         break;
 
     case PCL_T_EVAL:
-        Expand( dataBuff, dataBuff, NULL );
+        data = Expand( tmpBuff, data, NULL );
         i = setjmp( jmpaddr );
         if( i != 0 ) {
             rc = (vi_rc)i;
         } else {
-            StartExprParse( dataBuff, jmpaddr );
+            StartExprParse( data, jmpaddr );
             val = GetConstExpr();
             ltoa( val, st, EditVars.Radix );
             Message1( "%s", st );
@@ -394,7 +399,8 @@ vi_rc RunCommandLine( const char *cl )
             char        *tstr;
             srcline     sline;
 
-            if( NextWord1( dataBuff, st ) <= 0 ) {
+            data = GetNextWord1( data, st );
+            if( *st == '\0' ) {
                 rc = ERR_NO_FILE_SPECIFIED;
                 break;
             }
@@ -407,7 +413,8 @@ vi_rc RunCommandLine( const char *cl )
                         if( st[1] == 'A' ) {
                             EditFlags.CompileAssignmentsDammit = true;
                         }
-                        if( NextWord1( dataBuff, st) <= 0 ) {
+                        data = GetNextWord1( data, st);
+                        if( *st == '\0' ) {
                             rc = ERR_NO_FILE_SPECIFIED;
                             break;
                         }
@@ -418,7 +425,7 @@ vi_rc RunCommandLine( const char *cl )
                 EditFlags.LoadResidentScript = true;
             }
             sline = 0;
-            rc = Source( st, dataBuff, &sline );
+            rc = Source( st, data, &sline );
 
             EditFlags.LoadResidentScript = false;
             EditFlags.CompileScript = false;
@@ -448,7 +455,8 @@ vi_rc RunCommandLine( const char *cl )
 
     case PCL_T_GENCONFIG:
 #ifndef __WIN__
-        if( NextWord1( dataBuff,st ) >= 0 ) {
+        data = GetNextWord1( data,st );
+        if( *st != '\0' ) {
             rc = GenerateConfiguration( st, true );
         } else {
             rc = GenerateConfiguration( NULL, true );
@@ -497,7 +505,7 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_HELP:
-        rc = DoHelp( dataBuff );
+        rc = DoHelp( data );
         break;
 
     case PCL_T_VIEW:
@@ -505,12 +513,12 @@ vi_rc RunCommandLine( const char *cl )
         EditFlags.ViewOnly = true;
     case PCL_T_EDIT:
     case PCL_T_EDIT_DMT:
-        rc = EditFile( dataBuff, ( tkn == PCL_T_VIEW_DMT || tkn == PCL_T_EDIT_DMT ) );
+        rc = EditFile( data, ( tkn == PCL_T_VIEW_DMT || tkn == PCL_T_EDIT_DMT ) );
         EditFlags.ViewOnly = false;
         break;
 
     case PCL_T_OPEN:
-        rc = OpenWindowOnFile( dataBuff );
+        rc = OpenWindowOnFile( data );
         break;
 
     case PCL_T_HIDE:
@@ -519,7 +527,7 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_DELETE:
-        rc = SetSavebufNumber( dataBuff );
+        rc = SetSavebufNumber( data );
         if( rc != ERR_NO_ERR ) {
             break;
         }
@@ -538,7 +546,8 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_SAVEANDEXIT:
-        if( NextWord1( dataBuff, st ) >= 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st == '\0' ) {
             rc = SaveAndExit( st );
         } else {
             rc = SaveAndExit( NULL );
@@ -547,7 +556,7 @@ vi_rc RunCommandLine( const char *cl )
 
     case PCL_T_PUT:
     case PCL_T_PUT_DMT:
-        rc = SetSavebufNumber( dataBuff );
+        rc = SetSavebufNumber( data );
         if( rc != ERR_NO_ERR ) {
             break;
         }
@@ -563,7 +572,7 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_YANK:
-        rc = SetSavebufNumber( dataBuff );
+        rc = SetSavebufNumber( data );
         if( rc != ERR_NO_ERR ) {
             break;
         }
@@ -577,8 +586,7 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_SUBSTITUTE:
-        RemoveLeadingSpaces( dataBuff );
-        rc = Substitute( n1, n2, dataBuff );
+        rc = Substitute( n1, n2, data );
         break;
 
     case PCL_T_GLOBAL:
@@ -590,7 +598,7 @@ vi_rc RunCommandLine( const char *cl )
                 break;
             }
         }
-        rc = Global( n1,n2, dataBuff, ( tkn == PCL_T_GLOBAL_DMT ) );
+        rc = Global( n1,n2, data, ( tkn == PCL_T_GLOBAL_DMT ) );
         break;
 
     case PCL_T_WRITEQUIT:
@@ -598,7 +606,8 @@ vi_rc RunCommandLine( const char *cl )
             rc = NextFile();
         } else {
             CurrentFile->modified = true;
-            if( NextWord1( dataBuff, st ) >= 0 ) {
+            data = GetNextWord1( data, st );
+            if( *st != '\0' ) {
                 rc = SaveAndExit( st );
             } else {
                 rc = SaveAndExit( NULL );
@@ -609,13 +618,15 @@ vi_rc RunCommandLine( const char *cl )
     case PCL_T_WRITE:
     case PCL_T_WRITE_DMT:
         if( test1 ) {
-            if( NextWord1( dataBuff, st ) <= 0 ) {
+            data = GetNextWord1( data, st );
+            if( *st == '\0' ) {
                 rc = ERR_NO_FILE_SPECIFIED;
             } else {
                 rc = SaveFile( st, n1, n2, ( tkn == PCL_T_WRITE_DMT ) );
             }
         } else {
-            if( NextWord1( dataBuff, st ) >= 0 ) {
+            data = GetNextWord1( data, st );
+            if( st[0] != '\0' ) {
 #ifdef __WIN__
                 if( st[0] == '?' && st[1] == '\0' ) {
                     rc = SaveFileAs();
@@ -636,7 +647,7 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_READ:
-        rc = ReadAFile( n1, dataBuff );
+        rc = ReadAFile( n1, data );
         break;
 
     case PCL_T_QUIT:
@@ -657,7 +668,8 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_CD:
-        if( NextWord1( dataBuff, st ) > 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st != '\0' ) {
             rc = SetCWD( st );
         } else {
             rc = ERR_NO_ERR;
@@ -685,13 +697,13 @@ vi_rc RunCommandLine( const char *cl )
 
     case PCL_T_SYSTEM:
         if( n1f && n2f ) {
-            rc = DoGenericFilter( n1, n2, dataBuff );
+            rc = DoGenericFilter( n1, n2, data );
         } else {
-            RemoveLeadingSpaces( dataBuff );
-            if( dataBuff[0] == 0 ) {
+            data = SkipLeadingSpaces( data );
+            if( *data == 0 ) {
                 goto EVIL_SHELL;
             }
-            ExecCmd( NULL, NULL, dataBuff );
+            ExecCmd( NULL, NULL, data );
             rc = ERR_NO_ERR;
         }
         break;
@@ -701,7 +713,8 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_TILE:
-        if( NextWord1( dataBuff, st ) > 0 ) {
+        data = GetNextWord1( data, st );
+        if( st[0] != '\0' ) {
             if( st[0] == 'v' ) {
                 y = 1;
                 for( x = 0, cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
@@ -714,7 +727,8 @@ vi_rc RunCommandLine( const char *cl )
                 }
             } else {
                 x = atoi( st );
-                if( NextWord1( dataBuff, st ) < 0 ) {
+                data = GetNextWord1( data, st );
+                if( *st == '\0' ) {
                     break;
                 } else {
                     y = atoi( st );
@@ -738,7 +752,8 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_TAG:
-        if( NextWord1( dataBuff, st ) > 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st != '\0' ) {
             rc = TagHunt( st );
         }
         break;
@@ -747,22 +762,22 @@ vi_rc RunCommandLine( const char *cl )
         {
             bool        ci;
 
-            RemoveLeadingSpaces( dataBuff );
+            data = SkipLeadingSpaces( data );
             ci = EditFlags.CaseIgnore;
-            if( dataBuff[0] == '-' ) {
-                if( dataBuff[1] == 'c' ) {
+            if( data[0] == '-' ) {
+                if( data[1] == 'c' ) {
                     ci = false;
-                    EliminateFirstN( dataBuff, 2 );
-                    RemoveLeadingSpaces( dataBuff );
-                    rc = GetStringWithPossibleQuote( dataBuff, st );
-                } else if( dataBuff[1] == 'i' ) {
+                    data += 2;
+                    data = SkipLeadingSpaces( data );
+                    rc = GetStringWithPossibleQuoteC( &data, st );
+                } else if( data[1] == 'i' ) {
                     ci = true;
-                    EliminateFirstN( dataBuff, 2 );
-                    RemoveLeadingSpaces( dataBuff );
-                    rc = GetStringWithPossibleQuote( dataBuff, st );
-                } else if( dataBuff[1] == 'f' ) {
-                    EliminateFirstN( dataBuff, 2 );
-                    RemoveLeadingSpaces( dataBuff );
+                    data += 2;
+                    data = SkipLeadingSpaces( data );
+                    rc = GetStringWithPossibleQuoteC( &data, st );
+                } else if( data[1] == 'f' ) {
+                    data += 2;
+                    data = SkipLeadingSpaces( data );
 #ifdef __WIN__
                     // call fancy grep window
                     {
@@ -795,35 +810,39 @@ vi_rc RunCommandLine( const char *cl )
 #endif
                 }
             } else {
-                rc = GetStringWithPossibleQuote( dataBuff, st );
+                rc = GetStringWithPossibleQuoteC( &data, st );
             }
             if( rc != ERR_NO_STRING ) {
-                rc = DoFGREP( dataBuff, st, ci );
+                rc = DoFGREP( data, st, ci );
             }
         }
         break;
 
     case PCL_T_EGREP:
-        rc = GetStringWithPossibleQuote( dataBuff, st );
+        rc = GetStringWithPossibleQuoteC( &data, st );
         if( rc != ERR_NO_STRING ) {
-            rc = DoEGREP( dataBuff, st );
+            rc = DoEGREP( data, st );
         }
         break;
 
     case PCL_T_SIZE:
-        if( NextWord1( dataBuff, st ) <= 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st == '\0' ) {
             break;
         }
         x = atoi( st );
-        if( NextWord1( dataBuff, st ) <= 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st == '\0' ) {
             break;
         }
         y = atoi( st );
-        if( NextWord1( dataBuff, st ) <= 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st == '\0' ) {
             break;
         }
         x2 = atoi( st );
-        if( NextWord1( dataBuff, st ) <= 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st == '\0' ) {
             break;
         }
         y2 = atoi( st );
@@ -831,7 +850,8 @@ vi_rc RunCommandLine( const char *cl )
         break;
 
     case PCL_T_ECHO:
-        if( NextWord1( dataBuff, st ) <= 0 ) {
+        data = GetNextWord1( data, st );
+        if( *st == '\0' ) {
             break;
         }
         rc = ERR_NO_ERR;
@@ -843,14 +863,14 @@ vi_rc RunCommandLine( const char *cl )
             break;
         }
         x = atoi( st );
-        RemoveLeadingSpaces( dataBuff );
+        data = SkipLeadingSpaces( data );
         /*
          * FIXME: This is not good - I will definately have to
          * fix this code up. But right now I have to get the
          * editor ready for tomorrow. Brad.
          */
-        if( dataBuff[0] == '"' || dataBuff[0] == '/' ) {
-            GetStringWithPossibleQuote( dataBuff, st );
+        if( data[0] == '"' || data[0] == '/' ) {
+            GetStringWithPossibleQuoteC( &data, st );
             if( x > 2 ) {
                 /* this is obviously a sick individual */
                 Error( "Invalid Echo" );
@@ -865,11 +885,11 @@ vi_rc RunCommandLine( const char *cl )
                 /* this is obviously a sick individual */
                 Error( "Invalid Echo" );
             } else if( x == 1 ) {
-                Message1( dataBuff );
+                Message1( data );
             } else if( x == 2 ) {
-                Message2( dataBuff );
+                Message2( data );
             }
-            // DisplayLineInWindow( MessageWindow, x, dataBuff );
+            // DisplayLineInWindow( MessageWindow, x, data );
         }
         break;
 #ifdef VI_RCS
@@ -890,14 +910,14 @@ vi_rc RunCommandLine( const char *cl )
 #endif
     default:
         if( tkn >= 1000 ) {
-            rc = ProcessEx( n1, n2, n2f, tkn - 1000, dataBuff );
+            rc = ProcessEx( n1, n2, n2f, tkn - 1000, data );
             break;
         }
-        rc = TryCompileableToken( tkn, dataBuff, true );
+        rc = TryCompileableToken( tkn, data, true );
         if( rc != NOT_COMPILEABLE_TOKEN ) {
             break;
         }
-        rc = ProcessWindow( tkn, dataBuff );
+        rc = ProcessWindow( tkn, data );
         if( rc >= ERR_NO_ERR ) {
             break;
         }
@@ -1084,13 +1104,13 @@ static vi_rc setWBorder( const char *data )
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     btype = atoi( token );
     has_border = ( btype >= 0 );
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         if( !has_border ) {
             wInfo->has_border = false;
@@ -1099,7 +1119,7 @@ static vi_rc setWBorder( const char *data )
         return( ERR_INVALID_WINDOW_SETUP );
     }
     bc1 = atoi( token );
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
@@ -1123,18 +1143,18 @@ static vi_rc setWText( const char *data )
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
     tc3 = FONT_DEFAULT;
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token != '\0' ) {
         tc3 = atoi( token );
     }
@@ -1158,18 +1178,18 @@ static vi_rc setWHilite( const char *data )
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
     tc3 = FONT_DEFAULTBOLD;
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token != '\0' ) {
         tc3 = atoi( token );
     }
@@ -1197,28 +1217,28 @@ static vi_rc setWDimension( const char *data )
         return( (vi_rc)i );
     }
 
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     x1 = GetConstExpr();
 
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     y1 = GetConstExpr();
 
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     x2 = GetConstExpr();
 
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
@@ -1255,18 +1275,18 @@ static vi_rc setSyntaxStyle( syntax_element style, const char *data )
     if( wInfo != &editw_info ) {
         return( ERR_WIND_INVALID );
     }
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token == '\0' ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
     tc3 = FONT_DEFAULTBOLD;
-    data = GetNextWord1( data,token );
+    data = GetNextWord1( data, token );
     if( *token != '\0' ) {
         tc3 = atoi( token );
     }
@@ -1280,10 +1300,9 @@ void EditRCSCurrentFile( void )
     linenum row;
     int     col;
 
-    strcpy( dataBuff, CurrentFile->name );
     row = CurrentPos.line;
     col = CurrentPos.column;
-    EditFile( dataBuff, true );
+    EditFile( CurrentFile->name, true );
     GoToLineNoRelCurs( row );
     GoToColumnOnCurrentLine( col );
 }

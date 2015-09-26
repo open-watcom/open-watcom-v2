@@ -587,13 +587,13 @@ vi_rc DoSavebufNumber( void )
 /*
  * SetSavebufNumber - set savebuf number from a string
  */
-vi_rc SetSavebufNumber( char *data )
+vi_rc SetSavebufNumber( const char *data )
 {
     char        st[MAX_STR];
 
     SavebufNumber = NO_SAVEBUF;
-    if( NextWord1( data, st ) > 0 ) {
-
+    data = GetNextWord1( data, st );
+    if( st[0] != '\0' ) {
         if( st[1] != 0 ) {
             Error( GetErrorMsg( ERR_INVALID_SAVEBUF), st[0] );
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );

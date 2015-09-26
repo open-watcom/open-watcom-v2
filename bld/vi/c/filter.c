@@ -37,7 +37,7 @@
 /*
  * DoGenericFilter - filter some crap
  */
-vi_rc DoGenericFilter( linenum s, linenum e, char *cmd )
+vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
 {
     fcb         *cfcb, *tfcb;
     line        *cline;

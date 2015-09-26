@@ -41,7 +41,7 @@ static char pkwDelims[] = " /";
 /*
  * ParseCommandLine - parse a command line
  */
-vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2, bool *n2flag, int *token, char *data )
+vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2, bool *n2flag, int *token, char *data )
 {
     char        *tres, *tmp;
     int         j;
@@ -63,15 +63,15 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
     /*
      * change null command to '.'
      */
-    buff = SkipLeadingSpaces( buff );
-    if( *buff == 0 ) {
-        buff = ".";
+    cmdl = SkipLeadingSpaces( cmdl );
+    if( *cmdl == 0 ) {
+        cmdl = ".";
     }
 
     /*
      * check for magic '%' - all lines
      */
-    if( *buff == '%' ) {
+    if( *cmdl == '%' ) {
         *n1flag = true;
         *n2flag = true;
         *n1 = 1;
@@ -79,13 +79,13 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
-        buff = SkipLeadingSpaces( buff + 1 );
+        cmdl = SkipLeadingSpaces( cmdl + 1 );
     /*
      * check for magic '#' - selected region
      */
-    } else if( *buff == '#' || *buff == '@' ) {
+    } else if( *cmdl == '#' || *cmdl == '@' ) {
         if( !SelRgn.selected ) {
-            if( *buff == '#' ) {
+            if( *cmdl == '#' ) {
                 return( ERR_NO_SELECTION );
             } else {
                 // use @ in scripts (eg mcsel.vi) when
@@ -102,22 +102,22 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
             *n1 = SelRgn.start.line;
             *n2 = SelRgn.end.line;
         }
-        buff = SkipLeadingSpaces( buff + 1 );
+        cmdl = SkipLeadingSpaces( cmdl + 1 );
     /*
      * try to get line range
      */
     } else {
-        rc = GetAddress( &buff, &l );
+        rc = GetAddress( &cmdl, &l );
         if( rc > ERR_NO_ERR || rc == DO_NOT_CLEAR_MESSAGE_WINDOW ) {
             return( rc );
         }
         if( rc == ERR_NO_ERR ) {
             *n1flag = true;
             *n1 = l;
-            buff = SkipLeadingSpaces( buff );
-            if( *buff == ',' ) {
-                buff = SkipLeadingSpaces( buff + 1 );
-                rc = GetAddress( &buff, &l );
+            cmdl = SkipLeadingSpaces( cmdl );
+            if( *cmdl == ',' ) {
+                cmdl = SkipLeadingSpaces( cmdl + 1 );
+                rc = GetAddress( &cmdl, &l );
                 if( rc > ERR_NO_ERR ) {
                     return( rc );
                 }
@@ -141,8 +141,8 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
     /*
      * check for system token
      */
-    if( *buff == '!' ) {
-        strcpy( data, buff + 1 );
+    if( *cmdl == '!' ) {
+        strcpy( data, cmdl + 1 );
         *token = PCL_T_SYSTEM;
         return( ERR_NO_ERR );
     }
@@ -150,13 +150,13 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
     /*
      * get token and data
      */
-    buff = GetNextWord( buff, tres, pkwDelims );
+    cmdl = GetNextWord( cmdl, tres, pkwDelims );
     if( *tres == '\0' ) {
         return( ERR_NO_ERR );
     }
     if( CheckAlias( tres, tmp ) == ERR_NO_ERR ) {
-        strcat( tmp, buff );
-        buff = GetNextWord( tmp, tres, pDelims );
+        strcat( tmp, cmdl );
+        cmdl = GetNextWord( tmp, tres, pDelims );
         if( *tres == '\0' ) {
             return( ERR_NO_ERR );
         }
@@ -170,7 +170,7 @@ vi_rc ParseCommandLine( const char *buff, linenum *n1, bool *n1flag, linenum *n2
         }
     }
     *token = j;
-    strcpy( data, buff );
+    strcpy( data, cmdl );
     return( ERR_NO_ERR );
 
 } /* ParseCommandLine */

@@ -1019,7 +1019,7 @@ int main( int argc, char **argv )
     char    *dips[16] = { 0 };
     int     next_dip = 0;
     int     c;
-    char    *s;
+//    char    *s;
 
     /* Process command line options */
     if( argc < 2 ) {
@@ -1043,6 +1043,7 @@ int main( int argc, char **argv )
         }
     }
 
+#if 0
     /* Add default DIPs at end of list. */
     s = DIPDefaults;
     while( *s ) {
@@ -1052,6 +1053,7 @@ int main( int argc, char **argv )
         dips[next_dip++] = s;
         s += strlen( s ) + 1;
     }
+#endif
 
     /* Try to dump debug info for all remaining arguments */
     while( argv[optind] ) {

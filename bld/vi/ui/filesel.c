@@ -663,7 +663,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 
         evil_enter:
         case VI_KEY( ENTER ):
-        case ' ':
+        case VI_KEY( SPACE ):
             /*
              * see if we need to do a callback for this
              */
@@ -675,17 +675,9 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 i = cln - 1;
                 GimmeLinePtr( cln, sfd->f, &cfcb, &cline );
                 ptr = SkipLeadingSpaces( cline->data );
-                winflag = false;
                 strcpy( tmp, sfd->vals[i] );
                 rc = sfd->checkres( ptr, tmp, &winflag );
-                if( winflag ) {
-                    if( winflag == 2 ) {
-                        winflag = true;
-                    } else {
-                        winflag = false;
-                    }
-                }
-                if( winflag ) {
+                if( winflag == 2 ) {
                     MoveWindowToFront( cWin );
                 }
                 if( rc == ERR_NO_ERR ) {
@@ -707,7 +699,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             break;
 
         case VI_KEY( LEFT ):
-        case 'h':
+        case VI_KEY( h ):
             if( sfd->allow_rl != NULL ) {
                 *(sfd->allow_rl) = -1;
                 done = true;
@@ -715,7 +707,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             break;
 
         case VI_KEY( RIGHT ):
-        case 'l':
+        case VI_KEY( l ):
             if( sfd->allow_rl != NULL ) {
                 *(sfd->allow_rl) = 1;
                 done = true;
@@ -724,13 +716,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 
         evil_up:
         case VI_KEY( UP ):
-        case 'k':
+        case VI_KEY( k ):
             drawbord = adjustCLN( &cln, &pagetop, -1, endline, text_lines );
             break;
 
         evil_down:
         case VI_KEY( DOWN ):
-        case 'j':
+        case VI_KEY( j ):
             drawbord = adjustCLN( &cln, &pagetop, 1, endline, text_lines );
             break;
 
