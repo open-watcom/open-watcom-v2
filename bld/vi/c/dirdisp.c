@@ -103,8 +103,7 @@ static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi,
 /*
  * doFileComplete - complete file name
  */
-static vi_rc doFileComplete( char *data, int start, int max, bool getnew,
-                           vi_key key )
+static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key key )
 {
     int         i, j, k = 0, newstart = -1;
     char        buff[MAX_STR * 2];

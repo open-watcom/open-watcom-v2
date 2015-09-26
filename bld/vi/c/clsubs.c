@@ -114,7 +114,7 @@ static change_resp ChangePrompt( void )
         return( CHANGE_OK );
     }
 #else
-    vi_key      key = 0;
+    vi_key      key = VI_KEY( NULL );
 
     Message1( "Change? (y)es/(n)o/(a)ll/(q)uit" );
     for( ;; ) {

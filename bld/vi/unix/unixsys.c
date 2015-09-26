@@ -215,4 +215,3 @@ void MyVioShowBuf( unsigned offset, unsigned nchars )
 {
     BIOSUpdateScreen( offset, nchars );
 }
-

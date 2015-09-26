@@ -119,7 +119,7 @@ vi_rc MapKey( int flag, const char *data )
 #endif
         j = Tokenize( charTokens, keystr, true );
         if( j == TOK_INVALID ) {
-            key = (unsigned char)keystr[0];
+            key = C2VIKEY( keystr[0] );
         } else {
             key = keyVals[j];
         }
@@ -234,7 +234,8 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
             EditFlags.NoInputWindow = true;
         }
         // max = strlen( CurrentKeyMap );
-        for( max = 0; CurrentKeyMap[max] != 0; max++ );
+        for( max = 0; CurrentKeyMap[max] != VI_KEY( NULL ); max++ )
+            ;
 
         EditFlags.KeyMapInProgress = true;
         EditFlags.KeyMapMode = true;
@@ -375,7 +376,6 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
     int             len;
     const char      *p;
 
-    p = data;
     /*
      * get storage for key map
      */
@@ -386,7 +386,7 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
     /*
      * copy in key map data
      */
-    for( sdata = scr->data; (c = *p) != '\0'; ++p, ++sdata ) {
+    for( p = data, sdata = scr->data; (c = *p) != '\0'; ++p, ++sdata ) {
         if( c == '\\' ) {
             ++p;
             c = *p;

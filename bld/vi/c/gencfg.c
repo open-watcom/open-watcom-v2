@@ -61,7 +61,6 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
     vi_key      *keymap;
     int         i;
     int         j;
-    int         len;
 
     for( i = 0; i < MAX_EVENTS; i++ ) {
         if( maps[i].data != NULL ) {
@@ -76,12 +75,7 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
                 MyFprintf( f, "\\x" );
             }
             keymap = maps[i].data;
-            // len = strlen( str );
-            for( len = 0; keymap[len] != VI_KEY( NULL ); len++ )
-                ;
-            len--;
-
-            for( j = 0; j < len; j++ ) {
+            for( j = 0; keymap[j] != VI_KEY( NULL ); j++ ) {
                 map = LookUpCharToken( keymap[j], true );
                 if( map == NULL ) {
                     MyFprintf( f, "%c", (char)keymap[j] );

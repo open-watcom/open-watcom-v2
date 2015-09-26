@@ -45,8 +45,8 @@ static void BrkHandler( int sig_num )
     if( EditFlags.WatchForBreak ) {
         EditFlags.BreakPressed = true;
     }
-    KeyAdd( 3 );
-}
+    KeyAdd( VI_KEY( CTRL_C ) );
+} 
 
 static volatile int     exitThread;
 

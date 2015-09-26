@@ -39,6 +39,6 @@ void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
 void BIOSSetCursor( char page, char row, char col ) {}
 short BIOSGetCursor( char page ) { return 0; }
 int KeyboardInit( void ) { return 0; }
-unsigned BIOSGetKeyboard( unsigned *scan ) { if( scan != NULL ) *scan = 0; return 0; }
+unsigned BIOSGetKeyboard( unsigned *scan ) { if( scan != NULL ) *scan = 0; return VI_KEY( NULL ); }
 bool BIOSKeyboardHit( void ) { return 0; }
 void MyVioShowBuf( unsigned offset, unsigned nchars ) {}

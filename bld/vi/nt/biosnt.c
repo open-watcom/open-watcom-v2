@@ -247,8 +247,6 @@ unsigned BIOSGetKeyboard( unsigned *scan )
     bool                has_alt, has_shift, has_ctrl, has_capsl;
     map                 *ev, what;
     vi_key              key;
-    unsigned            code;
-    
 
     do {
         ReadConsoleInput( InputHandle, &ir, 1, &rd );
@@ -257,7 +255,7 @@ unsigned BIOSGetKeyboard( unsigned *scan )
         return( VI_KEY( MOUSEEVENT ) );
     }
     vk = ir.Event.KeyEvent.wVirtualKeyCode;
-    code = (unsigned char)ir.Event.KeyEvent.uChar.AsciiChar;
+    key = C2VIKEY( ir.Event.KeyEvent.uChar.AsciiChar );
     ss = ir.Event.KeyEvent.dwControlKeyState;
 
     has_shift = (ss & SHIFT_PRESSED) != 0;
@@ -266,7 +264,6 @@ unsigned BIOSGetKeyboard( unsigned *scan )
     has_capsl = (ss & CAPSLOCK_ON) != 0;
     what.vk = vk;
 
-    key = code;
     ev = bsearch( &what, events, sizeof( events ) / sizeof( events[0] ), sizeof( what ), CompareEvents );
     if( ev != NULL ) {
         if( has_ctrl && has_alt ) {
@@ -278,17 +275,17 @@ unsigned BIOSGetKeyboard( unsigned *scan )
         // Caps lock has efect to keys which generate character
         // don't apply to extended keys as down, up, page down,
         // page up, insert, end, delete, ....
-        } else if( has_shift ^ ( code == 0 && has_capsl ) ) {
-            if( code == 0 ) {
+        } else if( has_shift ^ ( key == VI_KEY( NULL ) && has_capsl ) ) {
+            if( key == VI_KEY( NULL ) ) {
                 key = ev->shift;
             }
         } else {
-            if( code == 0 ) {
+            if( key == VI_KEY( NULL ) ) {
                 key = ev->reg;
             }
         }
     }
-    if( key == 0 ) {    // ignore unknown keys
+    if( key == VI_KEY( NULL ) ) {    // ignore unknown keys
         key = VI_KEY( DUMMY );
     }
     if( scan != NULL ) {

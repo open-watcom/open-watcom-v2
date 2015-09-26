@@ -190,10 +190,10 @@ static vi_key ConvertWierdCharacter( WORD vk, WORD data )
 
     GetKeyboardState( keyboard_state );
     if( ToAscii( vk, scancode, keyboard_state, &newkey, 0 ) == 0 ) {
-        return( 0 );
+        return( VI_KEY( NULL ) );
     }
 
-    return( (vi_key)( newkey & 0xFF ) );
+    return( C2VIKEY( newkey ) );
 }
 
 vi_key MapVirtualKeyToVIKey( WORD vk, WORD data )

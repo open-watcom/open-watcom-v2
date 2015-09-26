@@ -262,32 +262,31 @@ unsigned BIOSGetKeyboard( unsigned *scan )
     unsigned char   ch;
     struct map      what;
     struct map      *ev;
-    unsigned        code;
+    vi_key          key;
 
     while( dev_read( QNXConHandle, &ch, 1, 0, 0, 0, Proxy, 0 ) <= 0 ) {
         WaitForProxy();
     }
     if( ch == 0xff ) {
-        code = VI_KEY( DUMMY );
+        key = VI_KEY( DUMMY );
         if( dev_read( QNXConHandle, &ch, 1, 0, 0, 0, Proxy, 0 ) > 0 ) {
             what.qnx = ch;
             ev = bsearch( &what, events, sizeof( events ) / sizeof( struct map ), sizeof( what ), CompareEvents );
             if( ev != NULL ) {
-                code = ev->event;
+                key = ev->event;
             }
         }
+    } else if( ch == 127 ) {
+        key = VI_KEY( CTRL_H ); /* KLUDGE - bs comes through as del */
+    } else if( ch == 0xe0 || ch == 0 ) {
+        key = VI_KEY( NULL );
     } else {
-        if( ch == 127 ) {
-            ch = 8; /* KLUDGE - bs comes through as del */
-        } else if( ch == 0xe0 ) {
-            ch = 0;
-        }
-        code = ch;
+        key = C2VIKEY( ch );
     }
     if( scan != NULL ) {
         *scan = 0;
     }
-    return( code );
+    return( key );
 
 } /* BIOSGetKeyboard */
 

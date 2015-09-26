@@ -478,7 +478,7 @@ vi_key  GetKey( bool );
 void    ClearBreak( void );
 bool    NonKeyboardEventsPending( void );
 void    KeyAdd( vi_key key );
-void    KeyAddString( char *str );
+void    KeyAddString( const char *str );
 void    AddCurrentMouseEvent( void );
 
 /* linecfb.c */

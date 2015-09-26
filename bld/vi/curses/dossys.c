@@ -330,7 +330,7 @@ unsigned BIOSGetKeyboard( unsigned *scan )
 {
     if( scan != NULL )
         *scan = 0;
-    return( 0 );
+    return( VI_KEY( NULL ) );
 }
 
 /*

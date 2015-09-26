@@ -237,7 +237,7 @@ static vi_key cursorKeyFilter( input_buffer *input, vi_key event )
 
     max_pos = strlen( input->buffer );
     switch( event ) {
-    case VI_KEY_HANDLED:
+    case VI_KEY( NULL ):
         break;
     case VI_KEY( HOME ):
         input->curr_pos = 0;
@@ -275,7 +275,7 @@ static vi_key cursorKeyFilter( input_buffer *input, vi_key event )
     default:
         return( event );
     }
-    return( VI_KEY_HANDLED );
+    return( VI_KEY( NULL ) );
 
 } /* cursorKeyFilter */
 
@@ -404,7 +404,7 @@ static vi_key historyFilter( input_buffer *input, vi_key event )
     default:
         return( event );
     }
-    return( VI_KEY_HANDLED );
+    return( VI_KEY( NULL ) );
 
 } /* historyFilter */
 
@@ -545,7 +545,7 @@ static vi_key specialKeyFilter( input_buffer *input, vi_key event )
         return( event );
         break;
     }
-    return( VI_KEY_HANDLED );
+    return( VI_KEY( NULL ) );
 
 } /* specialKeyFilter */
 
@@ -699,7 +699,7 @@ static bool getStringInWindow( input_buffer *input )
         event = historyFilter( input, event );
         event = specialKeyFilter( input, event );
         switch( event ) {
-        case VI_KEY_HANDLED:
+        case VI_KEY( NULL ):
             break;
         case VI_KEY( SHIFT_TAB ):
         case VI_KEY( TAB ):

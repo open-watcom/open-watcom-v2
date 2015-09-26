@@ -34,7 +34,7 @@
 #include "win.h"
 #include <assert.h>
 
-static vi_key   lastChar[2];
+static vi_key   lastKeys[2];
 
 static vi_rc checkLine( linenum *ln )
 {
@@ -488,8 +488,8 @@ static vi_rc doACharFind( range *r, bool forward, int num, long count )
     lc = LastEvent;
     rc = FindCharOnCurrentLine( forward, num, &c, count );
     if( rc == ERR_NO_ERR && c >= 0 ) {
-        lastChar[0] = lc;
-        lastChar[1] = LastEvent;
+        lastKeys[0] = lc;
+        lastKeys[1] = LastEvent;
         r->start.column = c;
         return( ERR_NO_ERR );
     }
@@ -559,13 +559,13 @@ static vi_rc moveToLastCFind( range *r, bool reverse, long count )
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    if( lastChar[0] == 0 ) {
+    if( lastKeys[0] == VI_KEY( NULL ) ) {
         return( ERR_NO_PREVIOUS_COMMAND );
     }
-    tmp[0] = lastChar[0];
-    tmp[1] = lastChar[1];
-    KeyAdd( lastChar[1] );
-    lastc = lastChar[0];
+    tmp[0] = lastKeys[0];
+    tmp[1] = lastKeys[1];
+    KeyAdd( lastKeys[1] );
+    lastc = lastKeys[0];
     if( reverse ) {
         if( islower( lastc ) ) {
             lastc = toupper( lastc );
@@ -574,8 +574,8 @@ static vi_rc moveToLastCFind( range *r, bool reverse, long count )
         }
     }
     rc = (EventList[lastc].rtn.move)( r, count );
-    lastChar[0] = tmp[0];
-    lastChar[1] = tmp[1];
+    lastKeys[0] = tmp[0];
+    lastKeys[1] = tmp[1];
     return( rc );
 
 } /* moveToLastCFind */

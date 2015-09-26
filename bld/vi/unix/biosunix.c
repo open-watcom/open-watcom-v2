@@ -189,7 +189,7 @@ static vi_key get_vi_key( EVENT ev )
 int BIOSKeyboardInit( void )
 {
     int i;
-    
+
     for( i = 0; i < EV_FIRST_UNUSED; i++ ) {
         vi_keys[i] = get_vi_key( i );
     }
@@ -204,20 +204,20 @@ int BIOSKeyboardInit( void )
  */
 unsigned BIOSGetKeyboard( unsigned *scan )
 {
-    unsigned    code;
+    vi_key      key;
     EVENT       ev;
 
-    code = VI_KEY( DUMMY );
+    key = VI_KEY( DUMMY );
     do {
         ev = uieventsource( 0 );
         if ( ev < EV_FIRST_UNUSED ) {
-            code = vi_keys[ev];
+            key = vi_keys[ev];
         }
-    } while( code == VI_KEY( DUMMY ) );
+    } while( key == VI_KEY( DUMMY ) );
     if( scan != NULL ) {
         *scan = 0;
     }
-    return( code );
+    return( key );
 
 } /* BIOSGetKeyboard */
 
@@ -233,7 +233,7 @@ bool BIOSKeyboardHit( void )
     _uisetcursor( row, col, C_NORMAL, attr );
     _ui_refresh( 0 );
     return( ( kb_wait( 0, 0 ) != 0 ) );
-    
+
 } /* BIOSKeyboardHit */
 
 /*

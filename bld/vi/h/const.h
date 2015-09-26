@@ -296,8 +296,6 @@ typedef enum vi_key {
 } vi_key;
 
 #define NO_ADD_TO_HISTORY_KEY   VI_KEY( CTRL_A )
-#define VI_KEY_HANDLED          VI_KEY( NULL )
-#define VI_KEY_DUMMY            MAX_EVENTS
 
 #define C2VIKEY(x)      ((vi_key)(unsigned char)(x))
 

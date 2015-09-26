@@ -301,7 +301,7 @@ static bool jumpToCoord( int row, int col )
 static void regionSelected( HWND id, int x, int y, bool dclick, bool popMenu )
 {
     int         row, col;
-    vi_key      tmp;
+    vi_key      save;
 
     MyKillCaret( id );
     ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
@@ -316,10 +316,10 @@ static void regionSelected( HWND id, int x, int y, bool dclick, bool popMenu )
      * or an '_' thingy.
      */
     if( popMenu ) {
-        tmp = LastEvent;
+        save = LastEvent;
         LastEvent = VI_KEY( FAKEMOUSE );
         DoSelectSelection( popMenu );
-        LastEvent = tmp;
+        LastEvent = save;
     } else {
         DoSelectSelection( popMenu );
     }
