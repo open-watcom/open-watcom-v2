@@ -136,7 +136,7 @@ static change_resp ChangePrompt( void )
  *                     doing substitute in 2 parts if it has to, that
  *                     appear as 1
  */
-vi_rc TwoPartSubstitute( char *find, char *replace, int prompt, int wrap )
+vi_rc TwoPartSubstitute( const char *find, const char *replace, int prompt, int wrap )
 {
     vi_rc   rc;
     long    changecnt, linecnt;
@@ -183,22 +183,28 @@ static void nextSearchStartPos( i_mark *pos, bool gflag, int rlen )
 /*
  * Substitute - perform substitution
  */
-vi_rc Substitute( linenum n1, linenum n2, char *data )
+vi_rc Substitute( linenum n1, linenum n2, const char *data )
 {
     char        *sstr, *rstr, *newr;
-    char        flag[20], *linedata;
+    char        c;
+    char        *linedata;
     bool        iflag = false;
     bool        gflag = false;
     bool        undoflag = false;
     bool        restline = false;
     bool        splitpending = false;
     bool        undoline = false;
-    int         i, rlen, slen;
+    int         rlen, slen;
     bool        splitme;
     long        changecnt = 0, linecnt = 0;
     linenum     llineno, ll, lastline = 0, extra;
     i_mark      pos;
     vi_rc       rc;
+
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
+    }
 
     LastSubstituteCancelled = 0;
     LastChangeCount = 0;
@@ -208,31 +214,27 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
     if( sstr == NULL ) {
         return( ERR_NO_STACK );
     }
-    strcpy( sstr, data );
-    rc = ModificationTest();
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-    strcpy( data, sstr );
     rstr = alloca( MAX_INPUT_LINE  );
     if( rstr == NULL ) {
         return( ERR_NO_STACK );
     }
-    if( NextWord( data, sstr, SingleSlash ) < 0 ) {
+    data = GetNextWord( data, sstr, SingleSlash );
+    if( *sstr == '\0' ) {
         return( ERR_INVALID_SUBS_CMD );
     }
-    if( NextWord( data, rstr, SingleSlash ) < 0 ) {
+    data = GetNextWord( data, rstr, SingleSlash );
+    if( *rstr == '\0' ) {
         return( ERR_INVALID_SUBS_CMD );
     }
-    slen = NextWord1( data, flag );
-    for( i = 0; i < slen; i++ ) {
-        switch( flag[i] ) {
-        case 'g':
+    if( *data == '/' )
+        ++data;
+    data = SkipLeadingSpaces( data );
+    while( (c = *data) != '\0' ) {
+        if( c == 'g' ) {
             gflag = true;
-            break;
-        case 'i':
-        case 'c':
+        } else if( c == 'i' && c == 'c' ) {
             iflag = true;
+        } else if( isspace( c ) ) {
             break;
         }
     }

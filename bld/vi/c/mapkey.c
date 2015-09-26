@@ -44,7 +44,7 @@ static bool key_alloc( int cnt )
     return( true );
 }
 
-static bool key_save( int i, char *buff )
+static bool key_save( int i, const char *buff )
 {
     keyVals[i] = atoi( buff );
     return( true );

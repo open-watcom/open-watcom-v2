@@ -36,17 +36,17 @@
 
 #define VBUFF_SIZE      4096
 
-static char     vBuff[VBUFF_SIZE];
-static long     currentLineNumber;
-static long     currentLinePos;
-static FILE     *inputFile;
-static char     *fileName;
-static char     lineBuffer[MAX_LINE + 2];
+static char         vBuff[VBUFF_SIZE];
+static long         currentLineNumber;
+static long         currentLinePos;
+static FILE         *inputFile;
+static const char   *fileName;
+static char         lineBuffer[MAX_LINE + 2];
 
 /*
  * StartFile - start a new file
  */
-void StartFile( char *fname )
+void StartFile( const char *fname )
 {
     inputFile = fopen( fname, "r" );
     if( inputFile == NULL ) {
@@ -177,7 +177,7 @@ char *GetCurrentLineDataPtr( void )
 /*
  * GetCurrentFileName - return pointer to current file name
  */
-char *GetCurrentFileName( void )
+const char *GetCurrentFileName( void )
 {
     return( fileName );
 

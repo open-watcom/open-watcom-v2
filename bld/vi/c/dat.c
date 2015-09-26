@@ -37,9 +37,9 @@
  * ReadDataFile - do just that
  */
 #ifdef VICOMP
-vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, char* ) )
+vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, const char * ) )
 #else
-vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, char* ), bool bounddata )
+vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, const char * ), bool bounddata )
 #endif
 {
     GENERIC_FILE        gf;

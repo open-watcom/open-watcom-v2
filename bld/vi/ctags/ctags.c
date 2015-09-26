@@ -205,7 +205,7 @@ static void doOption( int ch )
 /*
  * processFile - process a specified file
  */
-static void processFile( char *arg )
+static void processFile( const char *arg )
 {
     char        buff[_MAX_EXT + 5];
     char        *ext;
@@ -263,11 +263,11 @@ static void processFile( char *arg )
 /*
  * processFileList - process a possible file list
  */
-static void processFileList( char *ptr )
+static void processFileList( const char *ptr )
 {
     DIR                 *dirp;
     struct dirent       *dirent;
-    char                *tmp;
+    const char          *tmp;
     bool                has_wild = false;
     char                buff1[_MAX_PATH2];
     char                buff2[_MAX_PATH2];
@@ -323,11 +323,12 @@ static void processFileList( char *ptr )
 /*
  * processOptionFile - process an option file
  */
-static void processOptionFile( char *fname )
+static void processOptionFile( const char *fname )
 {
     FILE        *optfile;
     char        option[MAX_STR];
-    char        *ptr, *cmd, *arg;
+    char        *ptr;
+    char        *cmd, *arg;
     int         ch;
 
     optfile = fopen( fname, "r" );

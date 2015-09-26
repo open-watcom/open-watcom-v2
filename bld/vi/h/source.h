@@ -205,10 +205,10 @@ extern char     *Expand( char *, const char *, vlist * );
 extern vi_rc    SrcExpr( sfile *, vlist * );
 
 /* srcfile.c */
-extern vi_rc    SrcOpen( sfile *, vlist *, files *, char * );
-extern vi_rc    SrcRead( sfile *, files *, char *, vlist * );
-extern vi_rc    SrcWrite( sfile *, files *, char *, vlist * );
-extern vi_rc    SrcClose( sfile *, vlist *, files *, char * );
+extern vi_rc    SrcOpen( sfile *, vlist *, files *, const char * );
+extern vi_rc    SrcRead( sfile *, files *, const char *, vlist * );
+extern vi_rc    SrcWrite( sfile *, files *, const char *, vlist * );
+extern vi_rc    SrcClose( sfile *, vlist *, files *, const char * );
 
 /* srcgen.c */
 extern vi_rc    PreProcess( const char *, sfile **, labels * );

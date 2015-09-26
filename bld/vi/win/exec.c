@@ -87,14 +87,14 @@ long MySpawn( const char *cmd )
     int                 rc;
 
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[cmds.len] = 0;
+    cmds.cmd[cmds.len] = '\0';
     proc = MakeNotifyCallbackProcInstance( NotifyHandler, InstanceHandle );
     if( !NotifyRegister( (HANDLE)NULLHANDLE, (LPFNNOTIFYCALLBACK)proc, NF_NORMAL ) ) {
         FreeProcInstance( proc );
         return( -1L );
     }
     strcat( path, " " );
-    strcat( path, &(cmds.cmd[0]) );
+    strcat( path, cmds.cmd );
     inst = (HANDLE) WinExec( (LPCSTR)path, SW_SHOWNORMAL );
     if( inst > (HANDLE)32 ) {
         union REGS in_regs, out_regs;

@@ -461,19 +461,17 @@ vi_rc EditFileFromList( void )
 /*
  * OpenWindowOnFile - open a window on a file
  */
-vi_rc OpenWindowOnFile( char *data )
+vi_rc OpenWindowOnFile( const char *data )
 {
-    char        *name;
     vi_rc       rc;
     window_id   wn;
 
-    RemoveLeadingSpaces( data );
-    name = data;
+    data = SkipLeadingSpaces( data );
     if( data[0] == 0 ) {
-        name = NULL;
+        data = NULL;
     }
     wn = CurrentWindow;
-    rc = NewFile( name, true );
+    rc = NewFile( data, true );
     if( rc == ERR_NO_ERR ) {
         InactiveWindow( wn );
         DCDisplayAllLines();

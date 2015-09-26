@@ -202,7 +202,7 @@ static bool errmsg_alloc( int cnt )
     return( false );
 }
 
-static bool errmsg_save( int i, char *buff )
+static bool errmsg_save( int i, const char *buff )
 {
     i = i; buff = buff;
     return( true );

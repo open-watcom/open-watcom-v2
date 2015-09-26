@@ -86,7 +86,7 @@ typedef struct {
 /* command structure */
 typedef struct {
     unsigned char       len;
-    char                cmd[255];
+    char                cmd[256];
 } cmd_struct;
 
 /*

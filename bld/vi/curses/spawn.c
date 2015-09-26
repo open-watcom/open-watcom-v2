@@ -34,6 +34,7 @@
 #include <malloc.h>
 #include <dos.h>
 #include "fcbmem.h"
+#include "pragmas.h"
 
 void ResetSpawnScreen( void )
 {
@@ -321,46 +322,6 @@ static void CheckPointRestore( void )
     while( chkRead( &chk ) );
     cleanUp();
 }
-
-extern int DoSpawn( void *, void * );
-#pragma aux DoSpawn = \
-        "push   ds" \
-        "push   es" \
-        "push   si" \
-        "push   di" \
-        "mov    ds, dx"  /*  exe segment */ \
-        "mov    dx, ax"  /*  exe offset */ \
-        "mov    es, cx"  /*  parm block segment (offset in bx already) */ \
-        "mov    ax, 4b00h"  /*  exec process */ \
-        "int    21h" \
-        "jc     rcisright" \
-        "mov    ax, 4d00h" \
-        "int    21h" \
-        "xor    ah, ah" \
-        "rcisright:" \
-        "pop    di" \
-        "pop    si" \
-        "pop    es" \
-        "pop    ds" \
-    parm [dx ax] [cx bx] value [ax];
-
-extern int GetFcb( void *, void * );
-#pragma aux GetFcb = \
-        "push   ds" \
-        "push   es" \
-        "push   si" \
-        "push   di" \
-        "mov    ds, dx" /*  exe segment */ \
-        "mov    si, ax" /*  exe offset */ \
-        "mov    es, cx" /*  parm block segment (offset in bx already) */ \
-        "mov    di, bx" \
-        "mov    ax, 2901h" /*  parse filename/get fcb */ \
-        "int    21h" \
-        "pop    di" \
-        "pop    si" \
-        "pop    es" \
-        "pop    ds" \
-    parm [dx ax] [cx bx] value [ax];
 
 long MySpawn( const char *cmd )
 {

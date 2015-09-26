@@ -126,7 +126,7 @@ static int  totalBytes;
 /*
  * addDirData - add directory file data to current buffer
  */
-static void addDirData( file *cfile, char *str )
+static void addDirData( file *cfile, const char *str )
 {
     int k;
 

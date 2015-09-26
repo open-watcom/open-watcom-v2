@@ -184,7 +184,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf )
 /*
  * writeScript - write a compiled script
  */
-static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, char *vn )
+static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;

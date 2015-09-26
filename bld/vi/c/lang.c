@@ -217,7 +217,7 @@ static bool lang_alloc( int cnt )
     return( false );
 }
 
-static bool lang_save( int i, char *buff )
+static bool lang_save( int i, const char *buff )
 {
     i = i; buff = buff;
     return( true );

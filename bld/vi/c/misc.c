@@ -126,7 +126,7 @@ static void postSpawn( long rc )
 // ifdef __NT__
 #include "batcher.h"
 #include <conio.h>
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     int                 len;
     unsigned long       stat;
@@ -161,7 +161,7 @@ long ExecCmd( char *file_in, char *file_out, const char *cmd )
 #endif
 
 #ifdef __WIN__
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     file_in = file_in;
     file_out = file_out;
@@ -173,7 +173,7 @@ long ExecCmd( char *file_in, char *file_out, const char *cmd )
 }
 #else
 #ifndef __NT__
-static int doRedirect( int original, char * filename, int mode )
+static int doRedirect( int original, const char *filename, int mode )
 {
     int fh;
 
@@ -191,7 +191,7 @@ static int doRedirect( int original, char * filename, int mode )
 #define MAX_ARGS        128
 
 #ifdef __NT__
-static long doExec( char *std_in, char *std_out, const char *cmd )
+static long doExec( const char *std_in, const char *std_out, const char *cmd )
 {
     HANDLE      cp;
     long        st;
@@ -246,7 +246,7 @@ static long doExec( char *std_in, char *std_out, const char *cmd )
     return( st );
 }
 #else
-static long doExec( char *std_in, char *std_out, const char *cmd )
+static long doExec( const char *std_in, const char *std_out, const char *cmd )
 {
     long        st;
     int         save_in, new_in;
@@ -341,7 +341,7 @@ static long doExec( char *std_in, char *std_out, const char *cmd )
 #endif
 
 #if defined( __DOS__ )
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     if( file_in != NULL || file_out != NULL ) {
         SystemRC = doExec( file_in, file_out, cmd );
@@ -353,7 +353,7 @@ long ExecCmd( char *file_in, char *file_out, const char *cmd )
     return( SystemRC );
 }
 #else
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     return( doExec( file_in, file_out, cmd ) );
 }
@@ -433,7 +433,7 @@ bool PromptThisFileForSave( const char *filename )
         filename++;
     }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        if( SameFile( cinfo->CurrentFile->name, (char *)filename ) ) {
+        if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             if( cinfo->CurrentFile != NULL && cinfo->CurrentFile->dup_count == 0 &&
                 cinfo->CurrentFile->modified ) {
 
@@ -468,7 +468,7 @@ bool QueryFile( const char *filename )
         filename++;
     }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        if( SameFile( cinfo->CurrentFile->name, (char *)filename ) ) {
+        if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             return( true );
         }
     }

@@ -44,7 +44,7 @@ static bool     isCmdLine;
 /*
  * writeTitle - write a title for each section
  */
-static void writeTitle( FILE *f, char *str )
+static void writeTitle( FILE *f, const char *str )
 {
     if( isCmdLine ) {
         MyFprintf( f,"\n#\n# %s\n#\n", str );
@@ -55,7 +55,7 @@ static void writeTitle( FILE *f, char *str )
 /*
  * doMaps - write map commands
  */
-static void doMaps( FILE *f, key_map *maps, char *extra_str )
+static void doMaps( FILE *f, key_map *maps, const char *extra_str )
 {
     char        *map;
     vi_key      *keymap;
@@ -159,7 +159,7 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
 /*
  * outputMatchData - write out data associated with a match string
  */
-static void outputMatchData( FILE *f, char *str )
+static void outputMatchData( FILE *f, const char *str )
 {
     for( ; *str != '\0'; ++str ) {
         if( *str == '/' ) {
@@ -191,7 +191,7 @@ static void doHookAssign( FILE *f, hooktype num )
 /*
  * GenerateConfiguration - write out a config file
  */
-vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
+vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
 {
     FILE        *f;
     int         i;

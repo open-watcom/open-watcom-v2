@@ -114,13 +114,13 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
 
 } /* DoEGREP */
 
-static vi_rc getFile( char *fname )
+static vi_rc getFile( const char *fname )
 {
     char        dir[MAX_STR];
     char        *dirptr, ch;
     vi_rc       rc;
 
-    NextWord1( fname, dir );
+    fname = GetNextWord1( fname, dir );
     rc = EditFile( dir, false );
     if( rc != ERR_NO_ERR ) {
         return( rc );

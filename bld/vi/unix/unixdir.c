@@ -40,7 +40,7 @@
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
 {
     char        *tmpname;
     int         len;

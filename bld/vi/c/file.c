@@ -439,7 +439,7 @@ bool CFileReadOnly( void )
 /*
  * FileIOMessage - print message about file
  */
-void FileIOMessage( char *name, linenum lnecnt, long bytecnt )
+void FileIOMessage( const char *name, linenum lnecnt, long bytecnt )
 {
     if( !EditFlags.Quiet ){
         Message1( "\"%s\" %l lines, %l bytes", name, lnecnt, bytecnt );
@@ -450,16 +450,17 @@ void FileIOMessage( char *name, linenum lnecnt, long bytecnt )
 /*
  * IsTextFile - check if a file has .obj, .com,.bat, or .exe at the end
  */
-bool IsTextFile( char *file )
+bool IsTextFile( const char *file )
 {
     int         i, j;
-    char        *fign, *fend;
+    const char  *fign;
+    const char  *fend;
 
     i = strlen( file );
     fend = file + i;
     fign = EditVars.FIgnore;
     for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
-         if( !strcmp( fend - strlen( fign ), fign ) ) {
+         if( strcmp( fend - strlen( fign ), fign ) == 0 ) {
              return( false );
          }
          fign += EXTENSION_LENGTH;

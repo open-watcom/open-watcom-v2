@@ -43,19 +43,16 @@ extern int InternalCommandCount;
 
 void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
-    char        orgcmd[MAX_INPUT_LINE];
-    char        cmd[MAX_INPUT_LINE];
+    char        *cmd;
     char        full[FILENAME_MAX];
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        ext[_MAX_EXT];
     int         i;
     bool        is_internal;
 
-    strcpy( cmd, cmdl );
-    strcpy( orgcmd, cmd );
-    NextWord1( cmd, full );
     is_internal = false;
-
+    cmdl = SkipLeadingSpaces( cmdl );
+    cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
     _splitpath( full, drive, directory, name, ext );
     if( ext[0] != 0 ) {
@@ -65,7 +62,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     } else {
         if( drive[0] == 0 && directory[0] == 0 ) {
             for( i = 0; i < InternalCommandCount; i++ ) {
-                if( !stricmp( full, InternalCommands[i] ) ) {
+                if( stricmp( full, InternalCommands[i] ) == 0 ) {
                     is_internal = true;
                     break;
                 }
@@ -81,15 +78,15 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
             }
         }
     }
-    RemoveLeadingSpaces( cmd );
     _splitpath( full, drive, directory, name, ext );
-    if( !stricmp( ext, ExeExtensions[0] ) || is_internal ) {
+    if( stricmp( ext, ExeExtensions[0] ) == 0 || is_internal ) {
         strcpy( path, Comspec );
         strcpy( cmds->cmd, "/c " );
-        strcat( cmds->cmd, orgcmd );
+        strcat( cmds->cmd, cmdl );
     } else {
+        cmd = SkipLeadingSpaces( cmd );
         strcpy( cmds->cmd, cmd );
     }
     cmds->len = strlen( cmds->cmd );
-    cmds->cmd[cmds->len] = 0x0d;
+    cmds->cmd[cmds->len] = '\r';
 }

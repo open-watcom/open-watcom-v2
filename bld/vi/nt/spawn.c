@@ -57,7 +57,7 @@ long MySpawn( const char *cmd )
     PROCESS_INFORMATION pinfo;
 
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[cmds.len] = 0x00;
+    cmds.cmd[cmds.len] = '\0';
     strcat( path, " " );
     strcat( path, cmds.cmd );
 

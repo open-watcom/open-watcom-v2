@@ -107,7 +107,7 @@ void    RemoveEditSubClass( HWND hwnd, int id );
 vi_key  MapVirtualKeyToVIKey( WORD vk, WORD data );
 void    InitGrepDialog( void );
 void    FiniGrepDialog( void );
-bool    SetGrepDialogFile( char *str );
+bool    SetGrepDialogFile( const char *str );
 bool    GetCmdDialog( char *str, int len );
 bool    GetLineDialog( long * );
 void    RefreshColorbar( void );

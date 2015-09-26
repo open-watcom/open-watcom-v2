@@ -42,7 +42,7 @@
 
 static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
 static vi_rc    initSource( vlist *, char *);
-static vi_rc    barfScript( const char *, sfile *, vlist *, srcline *, char *);
+static vi_rc    barfScript( const char *, sfile *, vlist *, srcline *, const char *);
 static void     addResidentScript( const char *, sfile *, labels * );
 static resident *residentScript( const char * );
 static void     finiSourceErrFile( const char * );
@@ -464,7 +464,7 @@ static void finiSourceErrFile( const char *fn )
 /*
  * barfScript - write a compiled script
  */
-static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, char *vn )
+static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;

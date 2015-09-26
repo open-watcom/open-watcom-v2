@@ -1072,12 +1072,9 @@ typedef struct {
 /*
  * compareString - quicksort comparison
  */
-static int compareString( void const *_p1, void const *_p2 )
+static int compareString( void const *p1, void const *p2 )
 {
-    set_data * const *p1 = (set_data * const *)_p1;
-    set_data * const *p2 = (set_data * const *)_p2;
-
-    return( stricmp( (*p1)->setting,(*p2)->setting ) );
+    return( stricmp( (*(const set_data **)p1)->setting,(*(const set_data **)p2)->setting ) );
 
 } /* compareString */
 

@@ -93,7 +93,7 @@ void FiniGrepDialog( void )
 /*
  * SetGrepDialogFile - set the current file being used by the dialog
  */
-bool SetGrepDialogFile( char *str )
+bool SetGrepDialogFile( const char *str )
 {
     if( grepHwnd != NULL ) {
         SetDlgItemText( grepHwnd, GREP_CURRENT_FILE, str );

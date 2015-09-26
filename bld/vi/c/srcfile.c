@@ -40,7 +40,7 @@
 /*
  * SrcOpen - open a file
  */
-vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
+vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, const char *data )
 {
     int         i;
     char        name[MAX_SRC_LINE], id[MAX_SRC_LINE], type[MAX_SRC_LINE], t;
@@ -50,13 +50,16 @@ vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
      * validate open statement:
      * OPEN name,id,type
      */
-    if( NextWord1( data, name ) <= 0 ) {
+    data = GetNextWord1( data, name );
+    if( *name == '\0' ) {
         return( ERR_SRC_INVALID_OPEN );
     }
-    if( NextWord1( data, id ) <= 0 ) {
+    data = GetNextWord1( data, id );
+    if( *id == '\0' ) {
         return( ERR_SRC_INVALID_OPEN );
     }
-    if( NextWord1( data, type ) <= 0 ) {
+    data = GetNextWord1( data, type );
+    if( *type == '\0' ) {
         return( ERR_SRC_INVALID_OPEN );
     }
     if( curr->hasvar ) {
@@ -119,7 +122,7 @@ vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
 /*
  * SrcRead - read file
  */
-vi_rc SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
+vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
 {
     int         i;
     int         j;
@@ -129,10 +132,12 @@ vi_rc SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
      * validate read statement:
      * READ id,variable
      */
-    if( NextWord1( data, id ) <= 0 ) {
+    data = GetNextWord1( data, id );
+    if( *id == '\0' ) {
         return( ERR_SRC_INVALID_READ );
     }
-    if( NextWord1( data, v1 ) <= 0 ) {
+    data = GetNextWord1( data, v1 );
+    if( *v1 == '\0' ) {
         return( ERR_SRC_INVALID_READ );
     }
     if( curr->hasvar ) {
@@ -180,7 +185,7 @@ vi_rc SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
 /*
  * SrcWrite - write file
  */
-vi_rc SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
+vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
 {
     int         i;
     char        id[MAX_SRC_LINE], v1[MAX_SRC_LINE];
@@ -189,10 +194,11 @@ vi_rc SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
      * validate write statement:
      * WRITE id "string"
      */
-    if( NextWord1( data, id ) <= 0 ) {
+    data = GetNextWord1( data, id );
+    if( *id == '\0' ) {
         return( ERR_SRC_INVALID_WRITE );
     }
-    if( GetStringWithPossibleQuote( data, v1 ) != ERR_NO_ERR ) {
+    if( GetStringWithPossibleQuoteC( &data, v1 ) != ERR_NO_ERR ) {
         return( ERR_SRC_INVALID_WRITE );
     }
     if( curr->hasvar ) {
@@ -218,7 +224,7 @@ vi_rc SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
 /*
  * SrcClose - close a work file
  */
-vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, char *data )
+vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, const char *data )
 {
     int         i;
     char        id[MAX_SRC_LINE];
@@ -227,7 +233,8 @@ vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, char *data )
      * validate close statement:
      * CLOSE id
      */
-    if( NextWord1( data, id ) <= 0 ) {
+    data = GetNextWord1( data, id );
+    if( *id == '\0' ) {
         return( ERR_SRC_INVALID_CLOSE );
     }
     if( curr->hasvar ) {

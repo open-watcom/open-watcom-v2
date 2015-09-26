@@ -66,14 +66,14 @@ vi_rc   DoChangeLineEnd( event **, event ** );
 /* cledit.c */
 vi_rc   EditFile( const char *, bool );
 vi_rc   EditFileFromList( void );
-vi_rc   OpenWindowOnFile( char *data );
+vi_rc   OpenWindowOnFile( const char *data );
 
 /* clglob.c */
 vi_rc   Global( linenum, linenum, const char *, int );
 void    ProcessingMessage( linenum );
 
 /* clread.c */
-vi_rc   ReadAFile( linenum, char * );
+vi_rc   ReadAFile( linenum, const char * );
 
 /* clset.c */
 vi_rc   Set( char * );
@@ -81,8 +81,8 @@ char    *GetASetVal( const char *token );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */
-vi_rc   TwoPartSubstitute( char *, char *, int, int );
-vi_rc   Substitute( linenum, linenum, char * );
+vi_rc   TwoPartSubstitute( const char *, const char *, int, int );
+vi_rc   Substitute( linenum, linenum, const char * );
 linenum SplitUpLine( linenum );
 
 /* cmdline.c */
@@ -104,9 +104,9 @@ vi_rc   Cut( linenum, int, linenum, int, bool );
 
 /* dat.c */
 #ifdef VICOMP
-vi_rc   ReadDataFile( char *file, char **buffer, bool (*)( int ), bool (*)( int, char * ) );
+vi_rc   ReadDataFile( const char *file, char **buffer, bool (*)( int ), bool (*)( int, const char * ) );
 #else
-vi_rc   ReadDataFile( char *file, char **buffer, bool (*)( int ), bool (*)( int, char * ), bool );
+vi_rc   ReadDataFile( const char *file, char **buffer, bool (*)( int ), bool (*)( int, const char * ), bool );
 #endif
 
 /* delete.c */
@@ -150,7 +150,7 @@ struct dirent;
 vi_rc   MyGetFileSize( const char *, long * );
 void    FormatFileEntry( direct_ent *file, char *res );
 bool    IsDirectory( char *name );
-void    GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path );
+void    GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path );
 
 /* dotmode.c */
 vi_rc   DoDotMode( void );
@@ -322,8 +322,8 @@ bool    RestoreInfo( info * );
 vi_rc   DisplayFileStatus( void );
 void    CTurnOffFileDisplayBits( void );
 bool    CFileReadOnly( void );
-void    FileIOMessage( char *, linenum, long );
-bool    IsTextFile( char * );
+void    FileIOMessage( const char *, linenum, long );
+bool    IsTextFile( const char * );
 int     GimmeFileCount( void );
 
 /* filemove.c */
@@ -348,9 +348,9 @@ void    FreeEntireFile( file * );
 #ifdef __WIN__
 vi_rc   SaveFileAs( void );
 #endif
-vi_rc   SaveFile( char *, linenum, linenum, bool );
+vi_rc   SaveFile( const char *, linenum, linenum, bool );
 vi_rc   StartSaveExit( void );
-vi_rc   SaveAndExit( char *fname );
+vi_rc   SaveAndExit( const char *fname );
 bool    FileExitOptionSaveChanges( file * );
 bool    FilePromptForSaveChanges( file *f );
 vi_rc   FancyFileSave( void );
@@ -413,7 +413,7 @@ vi_rc   FileMatchInit( const char *wild );
 void    FileMatchFini( void );
 
 /* gencfg.c */
-vi_rc   GenerateConfiguration( char *fname, bool is_cmdline );
+vi_rc   GenerateConfiguration( const char *fname, bool is_cmdline );
 
 /* getautoi.c */
 int     GetAutoIndentAmount( char *, int, bool );
@@ -611,7 +611,7 @@ void    InitMem( void );
 void    FiniMem( void );
 
 /* misc.c */
-long    ExecCmd( char *, char *, const char * );
+long    ExecCmd( const char *, const char *, const char * );
 vi_rc   GetResponse( char *, char * );
 void    ExitWithVerify( void );
 bool    ExitWithPrompt( bool, bool );

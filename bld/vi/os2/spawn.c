@@ -92,18 +92,13 @@ long MySpawn( const char *cmd )
     RESULTCODES         returncodes;
     char                path[_MAX_PATH];
     char                all[_MAX_PATH + 128];
-    char                *dest, *src;
     cmd_struct          cmds;
 
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[cmds.len] = 0x00;
-
-    src = path;
-    dest = all;
-    while( *dest++ = *src++ );
-    src = cmds.cmd;
-    while( *dest++ = *src++ );
-    *dest = 0;
+    cmds.cmd[cmds.len] = '\0';
+    strcpy( all, path );
+    strcat( all, " " );
+    strcat( all, cmds.cmd );
 
     rc = DosExecPgm( NULL, 0, EXEC_SYNC, all, NULL, &returncodes, path );
     if( rc != 0 ) {

@@ -45,6 +45,9 @@ extern void DosSetVect( char, void (__interrupt *)( void ) );
 extern unsigned short _BIOSGetKeyboard( char );
 extern unsigned short _BIOSKeyboardHit( char );
 
+extern int DoSpawn( void *, void * );
+extern int GetFcb( void *, void * );
+
 #pragma aux In61 = 0xe4 0x61 value [al];
 #pragma aux Out61 = 0xe6 0x61 parm [al];
 #pragma aux Out43 = 0xe6 0x43 parm [al];
@@ -54,6 +57,45 @@ extern void JustAnInt28( void );
 #pragma aux JustAnInt28 = "int 28h";
 
 extern unsigned DosMaxAlloc( void );
+
+
+#pragma aux DoSpawn = \
+        "push   ds" \
+        "push   es" \
+        "push   si" \
+        "push   di" \
+        "mov    ds, dx"  /*  exe segment */ \
+        "mov    dx, ax"  /*  exe offset */ \
+        "mov    es, cx"  /*  parm block segment (offset in bx already) */ \
+        "mov    ax, 4b00h"  /*  exec process */ \
+        "int    21h" \
+        "jc     rcisright" \
+        "mov    ax, 4d00h" \
+        "int    21h" \
+        "xor    ah, ah" \
+        "rcisright:" \
+        "pop    di" \
+        "pop    si" \
+        "pop    es" \
+        "pop    ds" \
+    parm [dx ax] [cx bx] value [ax];
+
+#pragma aux GetFcb = \
+        "push   ds" \
+        "push   es" \
+        "push   si" \
+        "push   di" \
+        "mov    ds, dx" /*  exe segment */ \
+        "mov    si, ax" /*  exe offset */ \
+        "mov    es, cx" /*  parm block segment (offset in bx already) */ \
+        "mov    di, bx" \
+        "mov    ax, 2901h" /*  parse filename/get fcb */ \
+        "int    21h" \
+        "pop    di" \
+        "pop    si" \
+        "pop    es" \
+        "pop    ds" \
+    parm [dx ax] [cx bx] value [ax];
 
 #ifndef __CURSES__
 #pragma aux _BIOSGetKeyboard = \

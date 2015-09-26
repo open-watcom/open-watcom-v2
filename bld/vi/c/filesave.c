@@ -152,13 +152,13 @@ vi_rc SaveFileAs( void )
 /*
  * SaveFile - save data from current file
  */
-vi_rc SaveFile( char *name, linenum start, linenum end, bool dammit )
+vi_rc SaveFile( const char *name, linenum start, linenum end, bool dammit )
 {
     int         i;
     bool        existflag = false;
     bool        restpath = false;
     bool        makerw = false;
-    char        *fn;
+    const char  *fn;
     fcb         *cfcb, *sfcb, *efcb;
     linenum     s, e, lc;
     long        bc = 0;
@@ -330,7 +330,7 @@ vi_rc StartSaveExit( void )
 /*
  * SaveAndExit - save and exit a file
  */
-vi_rc SaveAndExit( char *fname )
+vi_rc SaveAndExit( const char *fname )
 {
     vi_rc   rc;
 
@@ -363,8 +363,7 @@ bool FilePromptForSaveChanges( file *f )
     vi_rc   rc;
 
 #ifdef __WIN__
-    MySprintf( buffer, "\"%s\" has been modified - save changes?",
-        f->name );
+    MySprintf( buffer, "\"%s\" has been modified - save changes?", f->name );
     BringWindowToTop( Root );
     SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
     if( MessageBox( Root, buffer, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
@@ -381,9 +380,8 @@ bool FilePromptForSaveChanges( file *f )
 #else
     char    response[MAX_SRC_LINE];
 
-//  MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?",
-    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no)?",
-        f->name );
+//  MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?", f->name );
+    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no)?", f->name );
     if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
         switch( response[0] ) {
         case 0:
@@ -438,8 +436,7 @@ bool FileExitOptionSaveChanges( file *f )
 #else
     char response[MAX_SRC_LINE];
 
-    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?",
-        f->name );
+    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?", f->name );
     if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
         switch( response[0] ) {
         case 0:

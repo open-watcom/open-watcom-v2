@@ -66,14 +66,14 @@ int     MyStricmp( char **buf, char *literal );
 void    ErrorMsgExit( const char *, ... );
 
 /* file.c */
-void    StartFile( char *fname );
+void    StartFile( const char *fname );
 void    EndFile( void );
 void    NewFileLine( void );
 int     GetChar( void );
 void    UnGetChar( int ch );
 void    RecordCurrentLineData( void );
 char    *GetCurrentLineDataPtr( void );
-char    *GetCurrentFileName( void );
+const char *GetCurrentFileName( void );
 bool    GetString( char *buff, int maxbuff );
 
 /* scanc.c */
@@ -86,8 +86,7 @@ void    ScanFortran( void );
 void    ScanAsm( void );
 
 /* taglist.c */
-void    AddTag( char *id );
-void    GenerateTagsFile( char *fname );
-int     CompareStrings( char **p1, char **p2 );
-void    ReadExtraTags( char *fname );
+void    AddTag( const char *id );
+void    GenerateTagsFile( const char *fname );
+void    ReadExtraTags( const char *fname );
 

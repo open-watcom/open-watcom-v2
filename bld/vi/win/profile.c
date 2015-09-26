@@ -65,7 +65,7 @@ static bool     saveConfig;
 /*
  * getProfileString - get a string from the profile
  */
-static void getProfileString( char *key, char *initial, char *buffer )
+static void getProfileString( const char *key, const char *initial, char *buffer )
 {
     GetPrivateProfileString( EditorName, key, initial, buffer, MAX_STR, iniFile );
 
@@ -74,7 +74,7 @@ static void getProfileString( char *key, char *initial, char *buffer )
 /*
  * getProfileRect - get a rectangle from the profile
  */
-static void getProfileRect( char *key, char *initial, RECT *r )
+static void getProfileRect( const char *key, const char *initial, RECT *r )
 {
     char        str[MAX_STR];
     DWORD       tmp;
@@ -97,7 +97,7 @@ static void getProfileRect( char *key, char *initial, RECT *r )
 /*
  * getProfileLong - get a long integer from the profile
  */
-static long getProfileLong( char *key )
+static long getProfileLong( const char *key )
 {
     char        buffer[32];
 
@@ -109,7 +109,7 @@ static long getProfileLong( char *key )
 /*
  * writeProfileString - write a string to the profile
  */
-static void writeProfileString( char *key, char *buffer )
+static void writeProfileString( const char *key, char *buffer )
 {
     WritePrivateProfileString( EditorName, key, buffer, iniFile );
 
@@ -118,7 +118,7 @@ static void writeProfileString( char *key, char *buffer )
 /*
  * writeProfileRect - write a rectangle to the profile
  */
-static void writeProfileRect( char *key, RECT *r )
+static void writeProfileRect( const char *key, RECT *r )
 {
     char        str[MAX_STR];
 
@@ -130,7 +130,7 @@ static void writeProfileRect( char *key, RECT *r )
 /*
  * writeProfileLong - write a long integer to the profile
  */
-static void writeProfileLong( char *key, long value )
+static void writeProfileLong( const char *key, long value )
 {
     char        str[MAX_STR];
 
