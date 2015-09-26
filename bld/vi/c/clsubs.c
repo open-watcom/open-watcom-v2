@@ -232,11 +232,10 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
     while( (c = *data) != '\0' ) {
         if( c == 'g' ) {
             gflag = true;
-        } else if( c == 'i' && c == 'c' ) {
+        } else if( c == 'i' || c == 'c' ) {
             iflag = true;
-        } else if( isspace( c ) ) {
-            break;
         }
+        ++data;
     }
     rc = CurrentRegComp( sstr );
     if( rc != ERR_NO_ERR ) {

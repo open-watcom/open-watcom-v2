@@ -84,7 +84,7 @@ vi_rc FTSAddCmd( const char *data, int tok )
     // Source gets cute & trashes "set "...
     if( tok >= SRC_T_NULL + 1 ) {
         switch( tok ) {
-        case SRC_T_NULL + PCL_T_SET + 1:
+        case SRC_T_NULL + 1 + PCL_T_SET:
             strcpy( cmd_data, "set " );
             if( EditFlags.ScriptIsCompiled ) {
                 data = GetNextWord1( data, cmd_data + 4 );

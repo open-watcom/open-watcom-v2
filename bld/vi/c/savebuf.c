@@ -574,7 +574,7 @@ vi_rc DoSavebufNumber( void )
     if( key == VI_KEY( ESC ) ) {
         return( ERR_NO_ERR );
     }
-    buff[0] = key;
+    buff[0] = (char)key;
     buff[1] = 0;
     rc = SetSavebufNumber( buff );
     if( rc == ERR_NO_ERR ) {

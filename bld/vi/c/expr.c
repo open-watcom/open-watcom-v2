@@ -109,8 +109,7 @@ static void nextChar( void )
     if( exprData == NULL ) {
         nextCh = 0;
     } else {
-        nextCh = *exprData;
-        exprData++;
+        nextCh = *exprData++;
         if( nextCh == 0 ) {
             exprData = NULL;
         }

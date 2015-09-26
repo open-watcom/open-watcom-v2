@@ -37,9 +37,9 @@
  * ReadDataFile - do just that
  */
 #ifdef VICOMP
-vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, const char * ) )
+vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool (*fn_save)(int, const char *) )
 #else
-vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, const char * ), bool bounddata )
+vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool (*fn_save)(int, const char *), bool bounddata )
 #endif
 {
     GENERIC_FILE        gf;
@@ -47,6 +47,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)( int ), bo
     char                token[MAX_STR], buff[MAX_STR];
     char                *buffdata;
     bool                hasvals;
+    const char          *ptr;
 
     /*
      * get file and buffer
@@ -82,11 +83,12 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)( int ), bo
             return( ERR_INVALID_DATA_FILE );
         }
         if( hasvals ) {
-            len = NextWord1( buff, token );
-            if( len <= 0 ) {
+            ptr = GetNextWord1( buff, token );
+            if( *token == '\0' ) {
                 SpecialFclose( &gf );
                 return( ERR_INVALID_DATA_FILE );
             }
+            len = strlen( token );
         } else {
             memcpy( token, buff, len + 1 );
         }
@@ -96,7 +98,8 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)( int ), bo
         size += len;
         buffdata[size] = 0;
         if( hasvals ) {
-            if( NextWord1( buff, token ) <= 0 ) {
+            ptr = GetNextWord1( ptr, token );
+            if( *token == '\0' ) {
                 SpecialFclose( &gf );
                 return( ERR_INVALID_DATA_FILE );
             }

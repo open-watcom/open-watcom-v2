@@ -298,7 +298,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
  * GetNewValueDialog - get a new value from the user
  */
 #ifndef __WIN__
-vi_rc GetNewValueDialog( char *value )
+vi_rc GetNewValueDialog( char *new, const char *value )
 {
     bool        ret;
     vi_rc       rc;
@@ -321,7 +321,7 @@ vi_rc GetNewValueDialog( char *value )
     if( *st == 0 ) {
         return( NO_VALUE_ENTERED );
     }
-    Expand( value, st, NULL );
+    Expand( new, st, NULL );
     return( ERR_NO_ERR );
 
 } /* GetNewValueDialog */
@@ -400,11 +400,11 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         }
 #ifndef VICOMP
     }
-    *winflag = 0;
 
     /*
      * process boolean settings
      */
+    *winflag = 0;
     if( isbool ) {
         if( j >= SETFLAG_T_ ) {
             return( ERR_INVALID_SET_COMMAND );
@@ -605,53 +605,51 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
 #endif
             sprintf( str, "%d", j );
             strcat( WorkLine->data, str );
-            if( *fn == '\0' ) {
-                *pvalue = value;
-                return( ERR_NO_ERR );
-            }
-            switch( j ) {
-            case SETVAR_T_STATUSSTRING:
-            case SETVAR_T_FILEENDSTRING:
-            case SETVAR_T_HISTORYFILE:
-            case SETVAR_T_TMPDIR:
-            case SETVAR_T_TAGFILENAME:
-                StrMerge( 4, WorkLine->data, SingleBlank, SingleQuote, fn, SingleQuote );
-                break;
-            case SETVAR_T_COMMANDCURSORTYPE:
-            case SETVAR_T_OVERSTRIKECURSORTYPE:
-            case SETVAR_T_INSERTCURSORTYPE:
-                StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                value = GetNextWord1( value, fn );
-                if( *fn == '\0' ) {
+            if( *fn != '\0' ) {
+                switch( j ) {
+                case SETVAR_T_STATUSSTRING:
+                case SETVAR_T_FILEENDSTRING:
+                case SETVAR_T_HISTORYFILE:
+                case SETVAR_T_TMPDIR:
+                case SETVAR_T_TAGFILENAME:
+                    StrMerge( 4, WorkLine->data, SingleBlank, SingleQuote, fn, SingleQuote );
                     break;
-                }
-                StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                break;
-            case SETVAR_T_TILECOLOR:
-                StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                value = GetNextWord2( value, fn, ',' );
-                if( *fn == '\0' ) {
-                    return( ERR_INVALID_SET_COMMAND );
-                }
-                value = GetNextWord1( value, str );
-                if( *str == '\0' ) {
-                    return( ERR_INVALID_SET_COMMAND );
-                }
-                StrMerge( 4, WorkLine->data, fn, SingleBlank, str, SingleBlank );
-                break;
-            case SETVAR_T_STATUSSECTIONS:
-                StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                for( value = GetNextWord2( value, fn, ',' ); *fn != '\0'; value = GetNextWord2( value, fn, ',' ) ) {
-                    k = atoi( fn );
-                    if( k <= 0 ) {
+                case SETVAR_T_COMMANDCURSORTYPE:
+                case SETVAR_T_OVERSTRIKECURSORTYPE:
+                case SETVAR_T_INSERTCURSORTYPE:
+                    StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                    value = GetNextWord1( value, fn );
+                    if( *fn == '\0' ) {
                         break;
                     }
                     StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                    break;
+                case SETVAR_T_TILECOLOR:
+                    StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                    value = GetNextWord2( value, fn, ',' );
+                    if( *fn == '\0' ) {
+                        return( ERR_INVALID_SET_COMMAND );
+                    }
+                    value = GetNextWord1( value, str );
+                    if( *str == '\0' ) {
+                        return( ERR_INVALID_SET_COMMAND );
+                    }
+                    StrMerge( 4, WorkLine->data, fn, SingleBlank, str, SingleBlank );
+                    break;
+                case SETVAR_T_STATUSSECTIONS:
+                    StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                    for( value = GetNextWord2( value, fn, ',' ); *fn != '\0'; value = GetNextWord2( value, fn, ',' ) ) {
+                        k = atoi( fn );
+                        if( k <= 0 ) {
+                            break;
+                        }
+                        StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                    }
+                    break;
+                default:
+                    StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                    break;
                 }
-                break;
-            default:
-                StrMerge( 2, WorkLine->data, SingleBlank, fn );
-                break;
             }
             *pvalue = value;
             return( ERR_NO_ERR );

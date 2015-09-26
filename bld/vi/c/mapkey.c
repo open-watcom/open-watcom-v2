@@ -338,19 +338,18 @@ void DoneInputKeyMap( void )
  * extractViKeyToken - extract the character token from a data string,
  *                    assumes we are pointing at <CHAR>
  */
-static vi_key extractViKeyToken( const char **p )
+static vi_key extractViKeyToken( const char **data )
 {
     char            str[MAX_STR];
     int             j;
     vi_rc           rc;
     char            c;
 
-    
-    for( j = 0; (c = **p) != '\0'; ++j ) {
-        (*p)++;
+    for( (*data)++, j = 0; (c = **data) != '\0'; ++j ) {
         if( c == '>' )
             break;
         str[j] = c;
+        (*data)++;
     }
     str[j] = '\0';
     rc = readKeyData();
@@ -374,7 +373,6 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
     char            c;
     vi_key          *sdata;
     int             len;
-    const char      *p;
 
     /*
      * get storage for key map
@@ -386,15 +384,15 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
     /*
      * copy in key map data
      */
-    for( p = data, sdata = scr->data; (c = *p) != '\0'; ++p, ++sdata ) {
+    for( sdata = scr->data; (c = *data) != '\0'; ++data, ++sdata ) {
         if( c == '\\' ) {
-            ++p;
-            c = *p;
+            ++data;
+            c = *data;
             switch( c ) {
             case '\0':
                 return( ERR_INVALID_MAP );
             case '<':
-                *sdata = extractViKeyToken( &p );
+                *sdata = extractViKeyToken( &data );
                 break;
             case 'h':
                 *sdata = NO_ADD_TO_HISTORY_KEY;

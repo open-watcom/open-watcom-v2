@@ -58,7 +58,7 @@ static bool isMultipleFiles( const char *altname )
     while( *altname != '\0' && *altname != ' ' ) {
         altname++;
     }
-    return( *altname == ' ' );
+    return( altname[0] == ' ' );
 }
 #else
 static bool isMultipleFiles( const char *altname )
@@ -120,12 +120,12 @@ vi_rc EditFile( const char *name, bool dammit )
         ++name;
         usedir = true;
     }
-    fn[0] = 0;
+    fn[0] = '\0';
 //    if( NextWord1FN( name, fn ) <= 0 )
-    if( GetStringWithPossibleQuoteC2( &name, fn, false ) != ERR_NO_ERR ) {
+    if( GetStringWithPossibleQuote2( &name, fn, false ) != ERR_NO_ERR ) {
         usedir = true;
         mask[0] = '*';
-        mask[1] = 0;
+        mask[1] = '\0';
     }
     if( usedir ) {
         if( EditFlags.ExMode ) {
@@ -145,9 +145,9 @@ vi_rc EditFile( const char *name, bool dammit )
                     break;
                 }
             }
-            fn[cnt] = 0;
+            fn[cnt] = '\0';
         }
-        if( fn[0] != 0 ) {
+        if( fn[0] != '\0' ) {
             rc = SelectFileOpen( fn, &fn, mask, true );
         } else {
 #ifdef __WIN__
@@ -166,7 +166,7 @@ vi_rc EditFile( const char *name, bool dammit )
 #endif
         }
 
-        if( rc != ERR_NO_ERR || fn[0] == 0 ) {
+        if( rc != ERR_NO_ERR || fn[0] == '\0' ) {
             MemFree( fn );
             SetCWD( cdir );
             return( rc );
@@ -193,7 +193,7 @@ vi_rc EditFile( const char *name, bool dammit )
                 reset_dir = true;
                 break;
             }
-            if( fn[0] == 0 ) {
+            if( fn[0] == '\0' ) {
                 reset_dir = true;
                 rc = ERR_NO_ERR;
                 break;

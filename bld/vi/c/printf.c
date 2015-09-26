@@ -158,7 +158,7 @@ copyloopa:
                 tmp = va_arg( al, char * );
                 strcpy( buff, tmp );
                 {
-                    int k, l;
+                    int k;
 
                     l = strlen( buff );
                     k = j - l;

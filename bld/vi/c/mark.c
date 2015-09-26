@@ -49,7 +49,7 @@ static vi_rc tryToFindMark( mark *, unsigned );
  */
 #define NO_MARK         0
 #define MARK_PTR( x )   (&MarkList[(x) - 1])
-#define KEY_TO_NO( c )  (((c) == '`' || (c) == '\'') ? MAX_MARKS + 1 : (c) - 'a' + 1)
+#define KEY_TO_NO( c )  (((c) == VI_KEY( GRAVE ) || (c) == VI_KEY( QUOTE )) ? MAX_MARKS + 1 : (c) - VI_KEY( a ) + 1)
 
 static mark *currContext;
 
@@ -67,7 +67,7 @@ vi_rc SetMark( void )
     if( key == VI_KEY( ESC ) ) {
         return( MARK_REQUEST_CANCELLED );
     }
-    if( key == '.' ) {
+    if( key == VI_KEY( DOT ) ) {
         if( EditFlags.MemorizeMode ) {
             return( DoDotMode() );
         } else {
@@ -77,7 +77,7 @@ vi_rc SetMark( void )
             return( ERR_NO_ERR );
         }
     }
-    if( key == '=' ) {
+    if( key == VI_KEY( EQUALS ) ) {
         if( EditFlags.AltMemorizeMode ) {
             return( DoAltDotMode() );
         } else {
@@ -162,7 +162,7 @@ vi_rc RemoveMarkFromLine( unsigned no )
 /*
  * SetGenericMark - set a mark at a generic line
  */
-vi_rc SetGenericMark( linenum num, int col, char mlet )
+vi_rc SetGenericMark( linenum num, int col, vi_key key )
 {
     unsigned    no;
     mark        *cmark;
@@ -178,7 +178,7 @@ vi_rc SetGenericMark( linenum num, int col, char mlet )
     /*
      * unmark the current line
      */
-    if( mlet == '!' ) {
+    if( key == VI_KEY( EXCLAMATION ) ) {
         no = mline->u.ld.mark;
         while( no != NO_MARK ) {
             no = unMark( MARK_PTR( no ) );
@@ -190,11 +190,11 @@ vi_rc SetGenericMark( linenum num, int col, char mlet )
     /*
      * get mark to  use
      */
-    if( mlet < 'a' || mlet > 'z' ) {
+    if( key < VI_KEY( a ) || key > VI_KEY( z ) ) {
         return( ERR_INVALID_MARK_RANGE );
     }
 
-    no = KEY_TO_NO( mlet );;
+    no = KEY_TO_NO( key );;
     cmark = MARK_PTR( no );
 
     /*
@@ -215,7 +215,7 @@ vi_rc SetGenericMark( linenum num, int col, char mlet )
     cmark->p.column = col;
     cmark->inuse = true;
 
-    Message1( "Mark '%c' set", mlet );
+    Message1( "Mark '%c' set", (char)key );
 
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 

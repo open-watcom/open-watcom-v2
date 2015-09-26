@@ -617,15 +617,14 @@ vi_rc RunCommandLine( const char *cmdl )
 
     case PCL_T_WRITE:
     case PCL_T_WRITE_DMT:
+        data = GetNextWord1( data, st );
         if( test1 ) {
-            data = GetNextWord1( data, st );
             if( *st == '\0' ) {
                 rc = ERR_NO_FILE_SPECIFIED;
             } else {
                 rc = SaveFile( st, n1, n2, ( tkn == PCL_T_WRITE_DMT ) );
             }
         } else {
-            data = GetNextWord1( data, st );
             if( st[0] != '\0' ) {
 #ifdef __WIN__
                 if( st[0] == '?' && st[1] == '\0' ) {
@@ -700,7 +699,7 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = DoGenericFilter( n1, n2, data );
         } else {
             data = SkipLeadingSpaces( data );
-            if( *data == 0 ) {
+            if( *data == '\0' ) {
                 goto EVIL_SHELL;
             }
             ExecCmd( NULL, NULL, data );

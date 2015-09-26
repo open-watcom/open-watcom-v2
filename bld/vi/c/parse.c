@@ -51,23 +51,6 @@ static bool isIgnorable( char c, const char *ign )
 } /* isIgnorable */
 
 /*
- * RemoveLeadingSpaces - remove leading spaces from a string
- */
-void RemoveLeadingSpaces( char *buff )
-{
-    int k = 0;
-
-    if( *buff != '\0' ) {
-        while( isspace( buff[k] ) )
-            k++;
-        if( k ) {
-            EliminateFirstN( buff, k );
-        }
-    }
-
-} /* RemoveLeadingSpaces */
-
-/*
  * SkipLeadingSpaces - skip leading spaces in a string
  */
 char *SkipLeadingSpaces( const char *buff )
@@ -100,41 +83,7 @@ void TranslateTabs( char *buff )
 /*
  * GetStringWithPossibleQuote2
  */
-vi_rc GetStringWithPossibleQuote2( char *buff, char *st, bool allow_slash )
-{
-    int     len;
-
-    RemoveLeadingSpaces( buff );
-    if( allow_slash && *buff == '/' ) {
-        len = NextWord( buff, st, SingleSlash );
-        if( len >= 0 ) {
-            EliminateFirstN( buff, 1 );
-        }
-    } else if( *buff == '"' ) {
-        len = NextWord( buff, st, SingleQuote );
-        if( len >= 0 ) {
-            EliminateFirstN( buff, 1 );
-        }
-    } else {
-        len = NextWord1( buff, st );
-    }
-    if( len <= 0 ) {
-        return( ERR_NO_STRING );
-    }
-    return( ERR_NO_ERR );
-
-} /* GetStringWithPossibleQuote2 */
-
-vi_rc GetStringWithPossibleQuote( char *buff, char *st )
-{
-    return( GetStringWithPossibleQuote2( buff, st, true ) );
-
-} /* GetStringWithPossibleQuote */
-
-/*
- * GetStringWithPossibleQuoteC2
- */
-vi_rc GetStringWithPossibleQuoteC2( const char **pbuff, char *st, bool allow_slash )
+vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slash )
 {
     const char  *buff = *pbuff;
 
@@ -159,43 +108,13 @@ vi_rc GetStringWithPossibleQuoteC2( const char **pbuff, char *st, bool allow_sla
     }
     return( ERR_NO_ERR );
 
-} /* GetStringWithPossibleQuoteC2 */
+} /* GetStringWithPossibleQuote2 */
 
-vi_rc GetStringWithPossibleQuoteC( const char **pbuff, char *st )
+vi_rc GetStringWithPossibleQuote( const char **pbuff, char *st )
 {
-    return( GetStringWithPossibleQuoteC2( pbuff, st, true ) );
+    return( GetStringWithPossibleQuote2( pbuff, st, true ) );
 
 } /* GetStringWithPossibleQuote */
-
-/*
- * NextWord1 - get next space delimited word in buff
- */
-int NextWord1( char *buff, char *res )
-{
-    int         j, k = 0;
-    char        c;
-
-    while( isspace( buff[k] ) ) {
-        k++;
-    }
-    if( buff[k] == '\0' ) {
-        *res = '\0';
-        return( -1 );
-    }
-
-    /*
-     * get word
-     */
-    for( j = 0; (c = buff[k]) != '\0'; ++k ) {
-        if( isspace( c ) )
-            break;
-        res[j++] = c;
-    }
-    res[j] = '\0';
-    EliminateFirstN( buff, k );
-    return( j );
-
-} /* NextWord1 */
 
 /*
  * GetNextWord1 - get next space delimited word in buff
@@ -251,64 +170,6 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
 } /* GetNextWord2 */
 
 /*
- * NextWord - get next word in buff
- */
-int NextWord( char *buff, char *res, const char *ign )
-{
-    int         j = 0, k = 0, sl;
-    char        c;
-
-    /*
-     * past any leading ignorable chars (if ignore list has single
-     * character, then only skip past FIRST ignorable char)
-     */
-    sl = strlen( ign );
-    if( sl == 1 ) {
-        if( isIgnorable( buff[0], ign ) ) {
-            k = 1;
-        }
-    } else {
-        while( isIgnorable( buff[k], ign ) ) {
-            k++;
-        }
-    }
-    if( buff[k] == '\0' ) {
-        *res = '\0';
-        return( -1 );
-    }
-
-    /*
-     * get word
-     */
-    for( ; (c = buff[k]) != '\0'; ++k ) {
-        /*
-         * look for escaped delimiters
-         */
-        if( c == '\\' && sl == 1 ) {
-            if( buff[k + 1] == ign[0] ) {
-                ++k;
-                res[j++] = buff[k];
-                continue;
-            }
-            if( buff[k + 1] == '\\' ) {
-                ++k;
-                res[j++] = '\\';
-                res[j++] = '\\';
-                continue;
-            }
-        }
-        if( isIgnorable( c, ign ) ) {
-            break;
-        }
-        res[j++] = c;
-    }
-    res[j] = '\0';
-    EliminateFirstN( buff, k );
-    return( j );
-
-} /* NextWord */
-
-/*
  * GetNextWord - get next word in buff
  */
 char *GetNextWord( const char *buff, char *res, const char *ign )
@@ -359,21 +220,6 @@ char *GetNextWord( const char *buff, char *res, const char *ign )
     return( (char *)buff );
 
 } /* GetNextWord */
-
-/*
- * EliminateFirstN - eliminate first n chars from buff
- */
-void EliminateFirstN( char *buff, int n )
-{
-    char        *buff2;
-
-    buff2 = &buff[n];
-    while( *buff2 != '\0' ) {
-        *buff++ = *buff2++;
-    }
-    *buff = '\0';
-
-} /* EliminateFirstN */
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 extern char toUpper( char );

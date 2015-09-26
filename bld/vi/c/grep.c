@@ -120,7 +120,7 @@ static vi_rc getFile( const char *fname )
     char        *dirptr, ch;
     vi_rc       rc;
 
-    fname = GetNextWord1( fname, dir );
+    GetNextWord1( fname, dir );
     rc = EditFile( dir, false );
     if( rc != ERR_NO_ERR ) {
         return( rc );
