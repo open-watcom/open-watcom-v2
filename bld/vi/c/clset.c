@@ -332,13 +332,12 @@ vi_rc GetNewValueDialog( char *value )
 /*
  * processSetToken - set value for set token
  */
-static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
+static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winflag, bool isbool )
 {
     char        fn[MAX_STR], str[MAX_STR];
 #ifndef VICOMP
     char        tmp[3];
     char        settokstr[TOK_MAX_LEN + 1];
-    char        save[MAX_STR];
     vi_rc       rc = ERR_NO_ERR;
     int         clr;
     bool        newset;
@@ -349,13 +348,16 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
     command_rtn fptr;
     event_bits  eb;
     bool        redisplay = false;
+    int         i;
 #endif
     bool        bvalue;
-    int         i, k;
+    int         k;
+    const char  *value;
 
 #ifdef VICOMP
     winflag = winflag;
     isbool = isbool;
+    new = new;
 #endif
     /*
      * set up value for boolean set commands
@@ -367,7 +369,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
         bvalue = true;
     }
 #ifndef VICOMP
-    if( !(*winflag) ) {
+    if( new != NULL ) {
         toggle = true;
     } else {
         toggle = false;
@@ -414,8 +416,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
         }
         switch( j ) {
         case SETFLAG_T_MODELESS:
-            if( (newset && !EditFlags.Modeless) ||
-                (!newset && EditFlags.Modeless) ) {
+            if( (newset && !EditFlags.Modeless) || (!newset && EditFlags.Modeless) ) {
                 for( k = 0; k < MAX_EVENTS; k++ ) {
                     fptr = EventList[k].rtn;
                     eb = EventList[k].b;
@@ -557,7 +558,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             MySprintf( fn, "%s%s set", tmp, GetTokenStringCVT( TokensSetFlag, j, settokstr, true ) );
         }
         if( toggle ) {
-            strcpy( save, BoolStr[newset] );
+            strcpy( new, BoolStr[newset] );
             (*winflag) += 1;
         }
 
@@ -565,12 +566,16 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
      * process value settings
      */
     } else {
+#endif /* VICOMP */
+        value = *pvalue;
+#ifndef VICOMP
         if( toggle ) {
-            rc = GetNewValueDialog( value );
+            strcpy( new, value );
+            rc = GetNewValueDialog( new );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            strcpy( save, value );
+            value = new;
         }
 #endif /* VICOMP */
         value = SkipLeadingSpaces( value );
@@ -600,8 +605,10 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
 #endif
             sprintf( str, "%d", j );
             strcat( WorkLine->data, str );
-            if( *fn == '\0' )
+            if( *fn == '\0' ) {
+                *pvalue = value;
                 return( ERR_NO_ERR );
+            }
             switch( j ) {
             case SETVAR_T_STATUSSTRING:
             case SETVAR_T_FILEENDSTRING:
@@ -646,6 +653,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 break;
             }
+            *pvalue = value;
             return( ERR_NO_ERR );
 #ifndef VICOMP
         }
@@ -1024,14 +1032,12 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isbool )
             }
             break;
         }
+        *pvalue = value;
     }
 
     if( msgFlag && rc == ERR_NO_ERR && !EditFlags.Quiet ) {
         setMessage( fn, redisplay );
         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
-    }
-    if( rc == ERR_NO_ERR && toggle ) {
-        strcpy( value, save );
     }
     return( rc );
 #endif /* VICOMP */
@@ -1057,7 +1063,7 @@ vi_rc SettingSelected( const char *item, char *value, int *winflag )
         }
         isbool = true;
     }
-    return( processSetToken( id, value, winflag, isbool ) );
+    return( processSetToken( id, value, (const char **)&value, winflag, isbool ) );
 
 } /* SettingSelected */
 
@@ -1129,11 +1135,13 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
 /*
  * Set - set editor control variable
  */
-vi_rc Set( char *name )
+vi_rc Set( const char *name )
 {
     char        fn[MAX_STR];
     vi_rc       rc = ERR_NO_ERR;
     int         j, i;
+    int         winflag;
+    const char  *pfn;
 #ifndef VICOMP
 #ifndef __WIN__
     short       tmp;
@@ -1151,21 +1159,14 @@ vi_rc Set( char *name )
     msgFlag = false;
     if( !EditFlags.ScriptIsCompiled ) {
 #endif
-        RemoveLeadingSpaces( name );
-        j = strlen( name );
-        for( i = 0; i < j; i++ ) {
-            if( name[i] == ' ' )
-                break;
-            if( name[i] == '=' ) {
-                name[i] = ' ';
-                break;
-            }
-        }
+        name = GetNextWord2( name, fn, '=' );
 #ifndef VICOMP
+    } else {
+        name = GetNextWord1( name, fn );
     }
 #endif
 
-    if( NextWord1( name, fn ) <=0 ) {
+    if( *fn == '\0' ) {
 #ifndef VICOMP
         if( !EditFlags.WindowsStarted ) {
             return( ERR_NO_ERR );
@@ -1199,35 +1200,35 @@ vi_rc Set( char *name )
 #ifndef VICOMP
             if( !EditFlags.ScriptIsCompiled ) {
 #endif
-                i = 1;
                 j = Tokenize( TokensSetVar, fn, false );
                 if( j == TOK_INVALID ) {
-                    if( tolower( fn[0] ) == 'n' && tolower( fn[1] ) == 'o' ) {
-                        EliminateFirstN( fn, 2 );
+                    pfn = fn;
+                    i = 1;
+                    if( tolower( pfn[0] ) == 'n' && tolower( pfn[1] ) == 'o' ) {
+                        pfn += 2;
                         i = -1;
                     }
-                    j = Tokenize( TokensSetFlagShort, fn, false );
+                    j = Tokenize( TokensSetFlagShort, pfn, false );
                     if( j == TOK_INVALID ) {
-                        j = Tokenize( TokensSetFlag, fn, false );
+                        j = Tokenize( TokensSetFlag, pfn, false );
                         if( j == TOK_INVALID ) {
                             return( ERR_INVALID_SET_COMMAND );
                         }
                     }
                     j += SETVAR_T_;
+                    j *= i;
                 }
-                j *= i;
 #ifndef VICOMP
             } else {
                 j = atoi( fn );
             }
 #endif
-            i = true;
-            rc = processSetToken( j, name, &i, false );
+            rc = processSetToken( j, NULL, &name, &winflag, false );
             if( rc > ERR_NO_ERR ) {
                 break;
             }
-            RemoveLeadingSpaces( name );
-        } while( NextWord1( name, fn ) > 0 );
+            name = GetNextWord2( name, fn, ',' );
+        } while( *fn != '\0' );
 #ifndef VICOMP
         if( msgFlag ) {
             putMessage();

@@ -76,7 +76,7 @@ void    ProcessingMessage( linenum );
 vi_rc   ReadAFile( linenum, const char * );
 
 /* clset.c */
-vi_rc   Set( char * );
+vi_rc   Set( const char * );
 char    *GetASetVal( const char *token );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
