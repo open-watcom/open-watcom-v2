@@ -79,8 +79,7 @@ void AddNewLineAroundCurrent( const char *data, int copylen, insert_dir dir )
 /*
  * InsertNewLine - do just that
  */
-void InsertNewLine( line *who, line_list *linelist, const char *data, int copylen,
-                    insert_dir dir )
+void InsertNewLine( line *who, line_list *linelist, const char *data, int copylen, insert_dir dir )
 {
     line        *cl;
 

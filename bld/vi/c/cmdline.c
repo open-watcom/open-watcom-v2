@@ -262,7 +262,7 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
 /*
  * RunCommandLine - run a command line command
  */
-vi_rc RunCommandLine( const char *cl )
+vi_rc RunCommandLine( const char *cmdl )
 {
     int         i, x, y, x2, y2;
     bool        n1f, n2f;
@@ -280,7 +280,7 @@ vi_rc RunCommandLine( const char *cl )
      * parse command string
      */
     tkn = TOK_INVALID;
-    rc = ParseCommandLine( cl, &n1, &n1f, &n2, &n2f, &tkn, dataBuff );
+    rc = ParseCommandLine( cmdl, &n1, &n1f, &n2, &n2f, &tkn, dataBuff );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }

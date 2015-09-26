@@ -678,8 +678,8 @@ void    GetEndString( char *data, char *res );
 void    ParseConfigFile( char * );
 
 /* parsecl.c */
-vi_rc ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
-vi_rc GetAddress( const char **, linenum * );
+vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
+vi_rc   GetAddress( const char **, linenum * );
 
 /* printf.c */
 void    MySprintf( char *, const char *, ... );
@@ -714,8 +714,8 @@ bool    IsEmptySavebuf( char ch );
 void    FiniSavebufs( void );
 
 /* select.c */
-vi_rc SelectItem( selectitem *si );
-vi_rc SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(const char *, char *, int * ), int, char **, int );
+vi_rc   SelectItem( selectitem *si );
+vi_rc   SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(const char *, char *, int * ), int, char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );
