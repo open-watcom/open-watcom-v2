@@ -44,12 +44,13 @@
  */
 static bool getVarName( const char **str, char *tmp1, vlist *vl )
 {
+    char    tmp[MAX_INPUT_LINE];
 
-    *str = GetNextWord1( *str, tmp1 );
-    if( *tmp1 == '\0' ) {
+    *str = GetNextWord1( *str, tmp );
+    if( *tmp == '\0' ) {
         return( false );
     }
-    if( !VarName( tmp1, vl ) ) {
+    if( !VarName( tmp1, tmp, vl ) ) {
         return( false );
     }
     return( true );
@@ -173,7 +174,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuoteC( &str, tmp2 ) != ERR_NO_ERR ) {
+        if( GetStringWithPossibleQuote( &str, tmp2 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -233,7 +234,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuoteC( &str, tmp2 ) != ERR_NO_ERR ) {
+        if( GetStringWithPossibleQuote( &str, tmp2 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -320,7 +321,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
          * syntax: ddepoke "<data>" <conv> <strhandle>
          */
         str = Expand( tmp3, str, vl );
-        if( GetStringWithPossibleQuoteC( &str, tmp1 ) != ERR_NO_ERR ) {
+        if( GetStringWithPossibleQuote( &str, tmp1 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }

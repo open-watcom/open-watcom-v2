@@ -768,12 +768,12 @@ vi_rc RunCommandLine( const char *cmdl )
                     ci = false;
                     data += 2;
                     data = SkipLeadingSpaces( data );
-                    rc = GetStringWithPossibleQuoteC( &data, st );
+                    rc = GetStringWithPossibleQuote( &data, st );
                 } else if( data[1] == 'i' ) {
                     ci = true;
                     data += 2;
                     data = SkipLeadingSpaces( data );
-                    rc = GetStringWithPossibleQuoteC( &data, st );
+                    rc = GetStringWithPossibleQuote( &data, st );
                 } else if( data[1] == 'f' ) {
                     data += 2;
                     data = SkipLeadingSpaces( data );
@@ -809,7 +809,7 @@ vi_rc RunCommandLine( const char *cmdl )
 #endif
                 }
             } else {
-                rc = GetStringWithPossibleQuoteC( &data, st );
+                rc = GetStringWithPossibleQuote( &data, st );
             }
             if( rc != ERR_NO_STRING ) {
                 rc = DoFGREP( data, st, ci );
@@ -818,7 +818,7 @@ vi_rc RunCommandLine( const char *cmdl )
         break;
 
     case PCL_T_EGREP:
-        rc = GetStringWithPossibleQuoteC( &data, st );
+        rc = GetStringWithPossibleQuote( &data, st );
         if( rc != ERR_NO_STRING ) {
             rc = DoEGREP( data, st );
         }
@@ -869,7 +869,7 @@ vi_rc RunCommandLine( const char *cmdl )
          * editor ready for tomorrow. Brad.
          */
         if( data[0] == '"' || data[0] == '/' ) {
-            GetStringWithPossibleQuoteC( &data, st );
+            GetStringWithPossibleQuote( &data, st );
             if( x > 2 ) {
                 /* this is obviously a sick individual */
                 Error( "Invalid Echo" );

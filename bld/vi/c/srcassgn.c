@@ -42,7 +42,7 @@
 /*
  * SrcAssign - assign a value to a variable
  */
-vi_rc SrcAssign( char *data, vlist *vl )
+vi_rc SrcAssign( const char *data, vlist *vl )
 {
     int         i, j, k, l;
     long        val;
@@ -67,35 +67,37 @@ vi_rc SrcAssign( char *data, vlist *vl )
      *  strchr %a ch
      *  substr %a n1 n2
      */
-    if( NextWord1( data, name ) <= 0 ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    if( !VarName( name, vl ) ) {
+    if( !VarName( name, tmp, vl ) ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    if( NextWord1( data, tmp ) <= 0 ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    if( stricmp( tmp, "=" ) ) {
+    if( stricmp( tmp, "=" ) != 0 ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
 
     if( data[0] == '/' || data[0] == '"' ) {
         check_end = false;
         if( data[0] == '"' ) {
-            NextWord( data, v1, SingleQuote );
+            data = GetNextWord( data, v1, SingleQuote );
             if( data[0] == '"' ) {
                 check_end = true;
             }
         } else {
-            NextWord( data, v1, SingleSlash );
+            data = GetNextWord( data, v1, SingleSlash );
             if( data[0] == '/' ) {
                 check_end = true;
             }
         }
         if( check_end ) {
-            EliminateFirstN( data, 1 );
+            ++data;
             while( data[0] != '\0' ) {
                 switch( data[0] ) {
                 case 't':
@@ -117,20 +119,22 @@ vi_rc SrcAssign( char *data, vlist *vl )
                     lnumflag = true;
                     break;
                 }
-                EliminateFirstN( data, 1 );
+                ++data;
             }
         }
         Expand( v1, v1, vl );
     } else {
-        if( NextWord1( data, v1 ) <= 0 ) {
+        data = GetNextWord1( data, v1 );
+        if( *v1 == '\0' ) {
             return( ERR_SRC_INVALID_ASSIGN );
         }
         j = Tokenize( StrTokens, v1, false );
         if( j != TOK_INVALID ) {
-            if( NextWord1( data, v1 ) <= 0 ) {
+            data = GetNextWord1( data, tmp );
+            if( *tmp == '\0' ) {
                 return( ERR_SRC_INVALID_ASSIGN );
             }
-            if( !VarName( v1, vl ) ) {
+            if( !VarName( v1, tmp, vl ) ) {
                 return( ERR_SRC_INVALID_ASSIGN );
             }
             v = VarFind( v1, vl );
@@ -143,12 +147,14 @@ vi_rc SrcAssign( char *data, vlist *vl )
                 }
                 break;
             case STR_T_SUBSTR:
-                if( NextWord1( data, v1 ) <= 0 ) {
+                data = GetNextWord1( data, v1 );
+                if( *v1 == '\0' ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
                 Expand( v1, v1, vl );
                 i = atoi( v1 ) - 1;
-                if( NextWord1( data, v1 ) <= 0 ) {
+                data = GetNextWord1( data, v1 );
+                if( *v1 == '\0' ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
                 Expand( v1, v1, vl );
@@ -168,7 +174,8 @@ vi_rc SrcAssign( char *data, vlist *vl )
                 }
                 break;
             case STR_T_STRCHR:
-                if( NextWord1( data, v1 ) <= 0 ) {
+                data = GetNextWord1( data, v1 );
+                if( *v1 == '\0' ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
                 Expand( v1, v1, vl );

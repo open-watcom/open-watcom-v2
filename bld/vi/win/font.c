@@ -312,7 +312,7 @@ static bool getLogFont( LOGFONT *l, const char *data )
             getByte( &l->lfClipPrecision, &data ) &&
             getByte( &l->lfQuality, &data ) &&
             getByte( &l->lfPitchAndFamily, &data ) &&
-            GetStringWithPossibleQuoteC( &data, &l->lfFaceName[0] ) == ERR_NO_ERR );
+            GetStringWithPossibleQuote( &data, &l->lfFaceName[0] ) == ERR_NO_ERR );
 }
 
 static bool userPickFont( LOGFONT *l, HWND parent )

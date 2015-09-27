@@ -298,7 +298,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
  * GetNewValueDialog - get a new value from the user
  */
 #ifndef __WIN__
-vi_rc GetNewValueDialog( char *new, const char *value )
+vi_rc GetNewValueDialog( char *value )
 {
     bool        ret;
     vi_rc       rc;
@@ -321,7 +321,7 @@ vi_rc GetNewValueDialog( char *new, const char *value )
     if( *st == 0 ) {
         return( NO_VALUE_ENTERED );
     }
-    Expand( new, st, NULL );
+    Expand( value, st, NULL );
     return( ERR_NO_ERR );
 
 } /* GetNewValueDialog */

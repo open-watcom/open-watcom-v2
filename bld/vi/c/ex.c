@@ -198,7 +198,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, const char *data )
         }
         break;
     case EX_T_MARK:
-        rc = SetGenericMark( n1, 1, word[0] );
+        rc = SetGenericMark( n1, 1, C2VIKEY( word[0] ) );
         break;
     case EX_T_MOVE:
         if( addr < 0 || IsPastLastLine( addr ) ) {

@@ -247,7 +247,7 @@ vi_rc StartMenu( const char *data )
     bool        need_hook;
     menu        **predef_menu;
 
-    GetStringWithPossibleQuoteC( &data, str );
+    GetStringWithPossibleQuote( &data, str );
     data = SkipLeadingSpaces( data );
     need_hook = false;
     if( data[0] != 0 ) {
@@ -361,7 +361,7 @@ vi_rc MenuItem( const char *data )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    GetStringWithPossibleQuoteC( &data, str );
+    GetStringWithPossibleQuote( &data, str );
     data = SkipLeadingSpaces( data );
     ch = extractMenuStr( str, &hioff );
     len = strlen( str );

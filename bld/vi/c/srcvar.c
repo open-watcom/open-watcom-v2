@@ -168,18 +168,26 @@ void VarListDelete( vlist *vl )
 /*
  * VarName - parse a variable name of the form %(foo)
  */
-bool VarName( char *name, vlist *vl )
+bool VarName( char *new, const char *name, vlist *vl )
 {
+    char    tmp[MAX_SRC_LINE];
+    size_t  len;
+
     if( name[0] != '%' || name[1] == 0 ) {
         return( false );
     }
-    EliminateFirstN( name, 1 );
+    ++name;
+    len = strlen( name );
     if( name[0] == '(' ) {
-        EliminateFirstN( name, 1 );
-        name[strlen( name ) - 1] = 0;
+        ++name;
+        len -= 2;
     }
-    if( strchr( name, '%' ) != NULL ) {
-        Expand( name, name, vl );
+    memcpy( tmp, name, len );
+    tmp[len] = '\0';
+    if( strchr( tmp, '%' ) != NULL ) {
+        Expand( new, tmp, vl );
+    } else {
+        strcpy( new, tmp );
     }
     return( true );
 

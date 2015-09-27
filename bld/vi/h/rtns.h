@@ -575,7 +575,7 @@ void    FiniKeyMaps( void );
 
 /* mark.c */
 vi_rc   SetMark( void );
-vi_rc   SetGenericMark( linenum, int, char );
+vi_rc   SetGenericMark( linenum, int, vi_key );
 vi_rc   GoMark( range *, long );
 vi_rc   GoMarkLine( range *, long );
 vi_rc   GetMark( linenum *, int * );
@@ -649,19 +649,15 @@ vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( const char * );
 
 /* parse.c */
-void    RemoveLeadingSpaces( char * );
 char    *SkipLeadingSpaces( const char * );
 void    TranslateTabs( char * );
-vi_rc   GetStringWithPossibleQuote( char *, char * );
-vi_rc   GetStringWithPossibleQuote2( char *, char *, bool );
-vi_rc   GetStringWithPossibleQuoteC( const char **, char * );
-vi_rc   GetStringWithPossibleQuoteC2( const char **, char *, bool );
+vi_rc   GetStringWithPossibleQuote( const char **, char * );
+vi_rc   GetStringWithPossibleQuote2( const char **, char *, bool );
 int     NextWord( char *, char *, const char *);
 char    *GetNextWord( const char *, char *, const char *);
 int     NextWord1( char *, char * );
 char    *GetNextWord1( const char *, char * );
 char    *GetNextWord2( const char *, char *, char );
-void    EliminateFirstN( char *, int );
 int     Tokenize( const char *, const char *, bool );
 int     GetLongestTokenLength( const char * );
 int     GetNumberOfTokens( const char * );

@@ -41,7 +41,7 @@
 
 
 static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
-static vi_rc    initSource( vlist *, char *);
+static vi_rc    initSource( vlist *, const char * );
 static vi_rc    barfScript( const char *, sfile *, vlist *, srcline *, const char *);
 static void     addResidentScript( const char *, sfile *, labels * );
 static resident *residentScript( const char * );
@@ -50,7 +50,7 @@ static void     finiSourceErrFile( const char * );
 /*
  * Source - main driver
  */
-vi_rc Source( const char *fn, char *data, srcline *sline )
+vi_rc Source( const char *fn, const char *data, srcline *sline )
 {
     undo_stack  *atomic = NULL;
     labels      *lab, lb;
@@ -84,7 +84,7 @@ vi_rc Source( const char *fn, char *data, srcline *sline )
     }
     if( EditFlags.CompileScript ) {
         sname[0] = 0;
-        NextWord1( data, sname );
+        data = GetNextWord1( data, sname );
     }
 
     /*
@@ -301,7 +301,7 @@ vi_rc Source( const char *fn, char *data, srcline *sline )
 /*
  * initSource - initialize language variables
  */
-static vi_rc initSource( vlist *vl, char *data )
+static vi_rc initSource( vlist *vl, const char *data )
 {
     int         j;
     char        tmp[MAX_SRC_LINE];
@@ -312,7 +312,7 @@ static vi_rc initSource( vlist *vl, char *data )
      * break up command line parms
      */
     all[0] = 0;
-    for( j = 1; GetStringWithPossibleQuote( data, tmp ) == ERR_NO_ERR; ++j ) {
+    for( j = 1; GetStringWithPossibleQuote( &data, tmp ) == ERR_NO_ERR; ++j ) {
         sprintf( name, "%d", j );
         VarAddStr( name, tmp, vl );
         StrMerge( 2, all, tmp, SingleBlank );

@@ -48,8 +48,8 @@ vi_rc SrcExpr( sfile *sf, vlist *vl )
     jmp_buf     jmpaddr;
     vars        *v;
 
-    strcpy( tmp, sf->arg1 );
-    if( !VarName( tmp, vl ) ) {
+    strcpy( v1, sf->arg1 );
+    if( !VarName( tmp, v1, vl ) ) {
         return( ERR_SRC_INVALID_EXPR );
     }
     if( sf->hasvar ) {

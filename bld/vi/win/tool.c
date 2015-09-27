@@ -371,11 +371,11 @@ vi_rc AddBitmapToToolBar( const char *data )
     data = SkipLeadingSpaces( data );
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */
-        GetStringWithPossibleQuoteC( &data, dont_save );
+        GetStringWithPossibleQuote( &data, dont_save );
     }
 
-    GetStringWithPossibleQuoteC( &data, file );
-    GetStringWithPossibleQuoteC( &data, help );
+    GetStringWithPossibleQuote( &data, file );
+    GetStringWithPossibleQuote( &data, help );
 
     data = SkipLeadingSpaces( data );
     cmd_len = strlen( data );

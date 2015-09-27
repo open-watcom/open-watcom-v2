@@ -127,27 +127,28 @@ vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
     int         i;
     int         j;
     char        id[MAX_SRC_LINE], v1[MAX_SRC_LINE];
+    char        tmp[MAX_SRC_LINE];
 
     /*
      * validate read statement:
      * READ id,variable
      */
-    data = GetNextWord1( data, id );
-    if( *id == '\0' ) {
-        return( ERR_SRC_INVALID_READ );
-    }
-    data = GetNextWord1( data, v1 );
-    if( *v1 == '\0' ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_READ );
     }
     if( curr->hasvar ) {
-        Expand( id, id, vl );
+        Expand( id, tmp, vl );
+    }
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
+        return( ERR_SRC_INVALID_READ );
     }
     if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_READ );
     }
     i = id[0] - '1';
-    if( !VarName( v1, vl ) ) {
+    if( !VarName( v1, tmp, vl ) ) {
         return( ERR_SRC_INVALID_READ );
     }
     if( fi->ft[i] == SRCFILE_NONE ) {
@@ -198,7 +199,7 @@ vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
     if( *id == '\0' ) {
         return( ERR_SRC_INVALID_WRITE );
     }
-    if( GetStringWithPossibleQuoteC( &data, v1 ) != ERR_NO_ERR ) {
+    if( GetStringWithPossibleQuote( &data, v1 ) != ERR_NO_ERR ) {
         return( ERR_SRC_INVALID_WRITE );
     }
     if( curr->hasvar ) {
