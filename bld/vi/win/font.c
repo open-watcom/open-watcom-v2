@@ -297,22 +297,22 @@ static bool getByte( BYTE *dest, const char **data )
     return( true );
 }
 
-static bool getLogFont( LOGFONT *l, const char *data )
+static bool getLogFont( LOGFONT *l, const char **data )
 {
-    return( getInt( &l->lfHeight, &data ) &&
-            getInt( &l->lfWidth, &data ) &&
-            getInt( &l->lfEscapement, &data ) &&
-            getInt( &l->lfOrientation, &data ) &&
-            getInt( &l->lfWeight, &data ) &&
-            getByte( &l->lfItalic, &data ) &&
-            getByte( &l->lfUnderline, &data ) &&
-            getByte( &l->lfStrikeOut, &data ) &&
-            getByte( &l->lfCharSet, &data ) &&
-            getByte( &l->lfOutPrecision, &data ) &&
-            getByte( &l->lfClipPrecision, &data ) &&
-            getByte( &l->lfQuality, &data ) &&
-            getByte( &l->lfPitchAndFamily, &data ) &&
-            GetStringWithPossibleQuote( &data, &l->lfFaceName[0] ) == ERR_NO_ERR );
+    return( getInt( &l->lfHeight, data ) &&
+            getInt( &l->lfWidth, data ) &&
+            getInt( &l->lfEscapement, data ) &&
+            getInt( &l->lfOrientation, data ) &&
+            getInt( &l->lfWeight, data ) &&
+            getByte( &l->lfItalic, data ) &&
+            getByte( &l->lfUnderline, data ) &&
+            getByte( &l->lfStrikeOut, data ) &&
+            getByte( &l->lfCharSet, data ) &&
+            getByte( &l->lfOutPrecision, data ) &&
+            getByte( &l->lfClipPrecision, data ) &&
+            getByte( &l->lfQuality, data ) &&
+            getByte( &l->lfPitchAndFamily, data ) &&
+            GetStringWithPossibleQuote( data, &l->lfFaceName[0] ) == ERR_NO_ERR );
 }
 
 static bool userPickFont( LOGFONT *l, HWND parent )
@@ -410,7 +410,7 @@ vi_rc SetFont( const char *data )
             return( ERR_NO_ERR );
         }
     } else {
-        if( !getLogFont( &l, data ) ) {
+        if( !getLogFont( &l, &data ) ) {
             return( ERR_INVALID_FONT );
         }
     }
