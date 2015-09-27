@@ -283,7 +283,7 @@ int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 } /* SpecialFgets */
 
 
-static vi_rc Compile( const char *fn, char *data )
+static vi_rc Compile( const char *fn, const char *data )
 {
     labels      *lab, lb;
     vlist       vl;
