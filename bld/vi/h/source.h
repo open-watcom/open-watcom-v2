@@ -174,14 +174,13 @@ extern vars         *VarHead, *VarTail;
 extern long         CurrentSrcLabel;
 extern srcline      CurrentSrcLine;
 extern int          CurrentSrcToken;
-extern char         *CurrentSrcData;
 
 /*
  * function prototypes
  */
  
 /* srcassgn.c */
-extern vi_rc    SrcAssign( char *, vlist * );
+extern vi_rc    SrcAssign( const char *, vlist * );
 
 /* srccs.c */
 extern void     CSInit( void );
@@ -241,11 +240,11 @@ extern vi_rc    GetErrorTokenValue( int *, const char * );
 extern vi_rc    ReadErrorTokens( void );
 
 /* srcinp.c */
-extern vi_rc    SrcInput( char *, vlist * );
-extern void     SrcGet( char *, vlist * );
+extern vi_rc    SrcInput( const char *, vlist * );
+extern void     SrcGet( const char *, vlist * );
 
 /* srcnextw.c */
-extern vi_rc    SrcNextWord( char *, vlist * );
+extern vi_rc    SrcNextWord( const char *, vlist * );
 
 /* srcvar.c */
 extern void     VarAddGlobalStr( const char *, const char * );
@@ -253,7 +252,7 @@ extern void     VarAddRandC( void );
 extern void     VarAddGlobalLong( const char *, long );
 extern void     VarAddStr( const char *, const char *, vlist * );
 extern void     VarListDelete( vlist * );
-extern bool     VarName( char *, vlist * );
+extern bool     VarName( char *, const char *, vlist * );
 extern vars     *VarFind( const char *, vlist * );
 
 extern bool     RunWindowsCommand( const char *, vi_rc *, vlist * );

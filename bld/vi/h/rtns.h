@@ -104,9 +104,9 @@ vi_rc   Cut( linenum, int, linenum, int, bool );
 
 /* dat.c */
 #ifdef VICOMP
-vi_rc   ReadDataFile( const char *file, char **buffer, bool (*)( int ), bool (*)( int, const char * ) );
+vi_rc   ReadDataFile( const char *file, char **buffer, bool(*)(int), bool(*)(int, const char *) );
 #else
-vi_rc   ReadDataFile( const char *file, char **buffer, bool (*)( int ), bool (*)( int, const char * ), bool );
+vi_rc   ReadDataFile( const char *file, char **buffer, bool(*)(int), bool(*)(int, const char *), bool );
 #endif
 
 /* delete.c */
@@ -653,9 +653,7 @@ char    *SkipLeadingSpaces( const char * );
 void    TranslateTabs( char * );
 vi_rc   GetStringWithPossibleQuote( const char **, char * );
 vi_rc   GetStringWithPossibleQuote2( const char **, char *, bool );
-int     NextWord( char *, char *, const char *);
 char    *GetNextWord( const char *, char *, const char *);
-int     NextWord1( char *, char * );
 char    *GetNextWord1( const char *, char * );
 char    *GetNextWord2( const char *, char *, char );
 int     Tokenize( const char *, const char *, bool );

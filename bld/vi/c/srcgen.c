@@ -37,9 +37,11 @@
 #include "specio.h"
 
 static sfile    *tmpTail;
-static bool     freeSrcData, hasVar;
+static bool     hasVar;
 static labels   *cLab;
 static jmp_buf  genExit;
+
+static char     *CurrentSrcData;
 
 void AbortGen( vi_rc rc )
 {
@@ -120,14 +122,15 @@ void GenLabel( label where )
  */
 void GenTestCond( void )
 {
-    char        v1[MAX_SRC_LINE];
+    char        tmp[MAX_SRC_LINE];
+    char        *v1;
 
     /*
      * process syntax of test condition
      * IF expr
      */
-    strcpy( v1, CurrentSrcData );
-    RemoveLeadingSpaces( v1 );
+    v1 = strcpy( tmp, CurrentSrcData );
+    v1 = SkipLeadingSpaces( v1 );
     if( v1[0] == 0 ) {
         AbortGen( ERR_SRC_INVALID_IF );
     }
@@ -153,7 +156,8 @@ void GenTestCond( void )
  */
 static void genExpr( void )
 {
-    char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
+    char        v1[MAX_SRC_LINE], tmp[MAX_SRC_LINE], tmp1[MAX_SRC_LINE];
+    char        *v2;
 #ifndef VICOMP
     expr_oper   oper = EXPR_EQ;
 #endif
@@ -162,10 +166,12 @@ static void genExpr( void )
      * get expression syntax :
      * EXPR %v = v1
      */
-    if( NextWord1( CurrentSrcData, v1 ) <= 0 ) {
+    CurrentSrcData = GetNextWord1( CurrentSrcData, v1 );
+    if( *v1 == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
-    if( NextWord1( CurrentSrcData, tmp ) <= 0 ) {
+    CurrentSrcData = GetNextWord1( CurrentSrcData, tmp );
+    if( *tmp == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
     if( tmp[1] == '=' && tmp[2] == 0 ) {
@@ -190,8 +196,8 @@ static void genExpr( void )
             AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
-    strcpy( v2, CurrentSrcData );
-    RemoveLeadingSpaces( v2 );
+    v2 = strcpy( tmp1, CurrentSrcData );
+    v2 = SkipLeadingSpaces( v2 );
     if( v2[0] == 0 ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
@@ -233,10 +239,12 @@ label NewLabel( void )
 vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 {
     GENERIC_FILE        gf;
-    int                 i, token, k, len;
+    int                 i, token, k;
     sfile               *tsf;
-    char                tmp[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
-    char                tmp3[MAX_SRC_LINE];
+    char                tmp1[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
+    char                *tmp3;
+    char                *tmp;
+    char                *tmp4;
     bool                ret;
 #ifdef VICOMP
     bool                AppendingFlag = false;
@@ -290,31 +298,22 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     /*
      * process each line
      */
-    while( SpecialFgets( tmp, MAX_SRC_LINE - 1, &gf ) >= 0 ) {
+    while( SpecialFgets( tmp1, MAX_SRC_LINE - 1, &gf ) >= 0 ) {
 
         /*
          * prepare this line
          */
         CurrentSrcLine++;
+        tmp = SkipLeadingSpaces( tmp1 );
 #ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
 #endif
-            RemoveLeadingSpaces( tmp );
-            k = strlen( tmp );
-            memcpy( tmp3, tmp, k + 1 );
-            if( (len = NextWord1( tmp, tmp2 )) <= 0 ) {
+            tmp3 = tmp;
+            tmp = GetNextWord1( tmp, tmp2 );
+            if( tmp2[0] == '\0' || tmp2[0] == '#' ) {
                 continue;
             }
-            if( tmp2[0] == '#' ) {
-                continue;
-            }
-            hasVar = false;
-            for( i = 0; i < k; i++ ){
-                if( tmp3[i] == '%' ) {
-                    hasVar = true;
-                    break;
-                }
-            }
+            hasVar = ( strchr( tmp3, '%' ) != NULL );
 
             /*
              * if we are appending (ie, an append token was encounterd
@@ -333,7 +332,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             }
 #ifndef VICOMP
         } else {
-            len = NextWord1( tmp, tmp2 );
+            tmp = GetNextWord1( tmp, tmp2 );
             hasVar = ( tmp2[0] != '0' );
             token = atoi( &tmp2[1] );
         }
@@ -343,7 +342,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
          */
         if( token != TOK_INVALID ) {
 
-            RemoveLeadingSpaces( tmp );
+            tmp = SkipLeadingSpaces( tmp );
             if( token > SRC_T_NULL ) {
                 genItem( token, tmp );
                 continue;
@@ -352,8 +351,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             /*
              * get parm
              */
-            CurrentSrcData = DupString( tmp );
-            freeSrcData = true;
+            tmp4 = CurrentSrcData = DupString( tmp );
 
             /*
              * process token
@@ -404,7 +402,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 if( token == SRC_T_GOTO ) {
 #ifndef VICOMP
                     if( EditFlags.ScriptIsCompiled ) {
-                        NextWord1( CurrentSrcData, tmp );
+                        CurrentSrcData = GetNextWord1( CurrentSrcData, tmp );
                         tmpTail->branchcond = atoi( CurrentSrcData );
                         strcpy( CurrentSrcData, tmp );
                     } else {
@@ -414,20 +412,18 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                     }
 #endif
                 }
-                tmpTail->data = CurrentSrcData;
-                freeSrcData = false;
+                tmpTail->data = DupString( CurrentSrcData );
                 break;
             }
-            if( freeSrcData ) {
-                MemFree( CurrentSrcData );
-            }
+            MemFree( tmp4 );
+
         /*
          * set all other tokens to be processed at run time
          */
         } else {
 #ifndef VICOMP
             if( EditFlags.ScriptIsCompiled ) {
-                RemoveLeadingSpaces( tmp );
+                tmp = SkipLeadingSpaces( tmp );
                 genItem( token, tmp );
                 continue;
             }
@@ -494,7 +490,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             case PCL_T_ACTIVEMENUWINDOW:
             case PCL_T_GREYEDMENUWINDOW:
             case PCL_T_ACTIVEGREYEDMENUWINDOW:
-                RemoveLeadingSpaces( tmp );
+                tmp = SkipLeadingSpaces( tmp );
                 token += SRC_T_NULL + 1;
                 genItem( token, tmp );
                 break;
@@ -534,7 +530,8 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                      */
                     token = Tokenize( TokensEx, tmp2, false );
                     if( token == TOK_INVALID ) {
-                        if( NextWord1( tmp, tmp2 ) >= 0 ) {
+                        tmp = GetNextWord1( tmp, tmp2 );
+                        if( *tmp2 != '\0' ) {
                             token = Tokenize( TokensEx, tmp2, false );
                             if( token == EX_T_APPEND ) {
                                 AppendingFlag = true;
@@ -543,7 +540,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                     }
                 }
                 if( tmp3[0] == '>' ) {
-                    tmp3[0] = ' ';
+                    ++tmp3;
                 }
                 genItem( TOK_INVALID, tmp3 );
                 break;

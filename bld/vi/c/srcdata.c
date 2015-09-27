@@ -54,4 +54,3 @@ int         *ErrorValues;
 vars        *VarHead, *VarTail;
 long        CurrentSrcLabel;
 srcline     CurrentSrcLine;
-char        *CurrentSrcData;
