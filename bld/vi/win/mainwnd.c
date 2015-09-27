@@ -315,9 +315,8 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             if( rc != MENU_COMMAND_NOT_HANDLED ) {
                 DCUpdateAll();
                 if( rc > ERR_NO_ERR ) {
-                    char        *msg;
-                    msg = GetErrorMsg( rc );
-                    Error( msg );
+                    buff = GetErrorMsg( rc );
+                    Error( buff );
                 }
             }
             SetWindowCursor();
@@ -347,13 +346,13 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
 #ifdef __NT__        
     case WM_MOUSEWHEEL:
         {
-            int     i, increment;
+            int     increment;
             ULONG   linesPerNotch;
             HWND    activeWnd;
-            
+
             activeWnd = (HWND)SendMessage( EditContainer, WM_MDIGETACTIVE, 0, 0 );
             SystemParametersInfo( SPI_GETWHEELSCROLLLINES, 0, &linesPerNotch, 0 );
-            
+
             increment = GET_WHEEL_DELTA_WPARAM( wparam ) / 120;
                 // see WM_MOUSEWHEEL-documentation for information about the "120"
 
