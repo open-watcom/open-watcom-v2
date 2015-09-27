@@ -239,7 +239,7 @@ label NewLabel( void )
 vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 {
     GENERIC_FILE        gf;
-    int                 i, token, k;
+    int                 i, token;
     sfile               *tsf;
     char                tmp1[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
     char                *tmp3;
