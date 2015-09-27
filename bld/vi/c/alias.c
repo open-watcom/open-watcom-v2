@@ -53,9 +53,9 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
      * then replace the data, else delete the item
      */
     for( curr = *head; curr != NULL; curr = curr->next ) {
-        if( !strcmp( str, curr->alias ) ) {
+        if( strcmp( str, curr->alias ) == 0 ) {
             MemFree( curr->expand );
-            if( what == NULL ) {
+            if( *what == '\0' ) {
                 MemFree( curr->alias );
                 MemFree( DeleteLLItem( (ss **)head, (ss **)tail, (ss *)curr ) );
             } else {
