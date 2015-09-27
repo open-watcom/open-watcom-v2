@@ -78,12 +78,12 @@ void FinishWindows( void )
     // Close down the windowing system.
 
     if( EditFlags.ZapColors ) {
-        int             i, total;
+        int     j, total;
 
         if( !EditFlags.Quiet && Scrn != NULL ) {
             total = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
-            for( i = 0; i < total; i++ ) {
-                Scrn[i].cinfo_attr = EditVars.ExitAttr;
+            for( j = 0; j < total; j++ ) {
+                Scrn[j].cinfo_attr = EditVars.ExitAttr;
             }
 #ifdef __VIO__
             MyVioShowBuf( 0, EditVars.WindMaxWidth * EditVars.WindMaxHeight );
