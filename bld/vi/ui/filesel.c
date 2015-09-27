@@ -528,13 +528,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         }
         key = GetNextEvent( true );
         if( hiflag && ((key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z )) ||
-                       (key >='a' && key <= 'z') || (key >= 'A' && key <= 'Z') ||
-                       (key >= '1' && key <= '9')) ) {
+                       (key >= VI_KEY( a ) && key <= VI_KEY( z )) || (key >= VI_KEY( A ) && key <= VI_KEY( Z )) ||
+                       (key >= VI_KEY( 1 ) && key <= VI_KEY( 9 ))) ) {
             i = 0;
             if( key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z ) ) {
                 key2 = key - VI_KEY( ALT_A ) + 'A';
-            } else if( key >= 'a' && key <= 'z' ) {
-                key2 = key - 'a' + 'A';
+            } else if( key >= VI_KEY( a ) && key <= VI_KEY( z ) ) {
+                key2 = key - VI_KEY( a ) + 'A';
             } else {
                 key2 = key;
             }
