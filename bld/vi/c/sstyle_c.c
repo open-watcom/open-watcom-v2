@@ -123,7 +123,8 @@ static void getHex( ss_block *ss_new, char *start )
         }
     }
     ss_new->len = text - start;
-    flags.inDeclspec = flags.inDeclspec2 = false;
+    flags.inDeclspec = false;
+    flags.inDeclspec2 = false;
 }
 
 static void getFloat( ss_block *ss_new, char *start, int skip, int command )
@@ -203,7 +204,8 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
         text++;
     }
     ss_new->len = text - start;
-    flags.inDeclspec = flags.inDeclspec2 = false;
+    flags.inDeclspec = false;
+    flags.inDeclspec2 = false;
 }
 
 static void getNumber( ss_block *ss_new, char *start, char top )
@@ -251,7 +253,8 @@ static void getNumber( ss_block *ss_new, char *start, char top )
             ss_new->len++;
         }
     }
-    flags.inDeclspec = flags.inDeclspec2 = false;
+    flags.inDeclspec = false;
+    flags.inDeclspec2 = false;
 }
 
 static void getWhiteSpace( ss_block *ss_new, char *start )
@@ -360,6 +363,7 @@ static void getPreprocessor( ss_block *ss_new, char *start )
             } else if( text[-1] != '\\' || text[-2] == '\\' ) {
                 withinQuotes = false;
             }
+            continue;
         }
         if( text[0] == '/' ) {
             if( text[1] == '*' && !withinQuotes ) {
@@ -429,7 +433,8 @@ static void getInvalidChar( ss_block *ss_new )
 {
     ss_new->type = SE_INVALIDTEXT;
     ss_new->len = 1;
-    flags.inDeclspec = flags.inDeclspec2 = false;
+    flags.inDeclspec = false;
+    flags.inDeclspec2 = false;
 }
 
 static void getCComment( ss_block *ss_new, char *start, int skip )
@@ -437,20 +442,15 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
     char    *text;
 
     lenCComment += skip;
+    flags.inCComment = true;
     for( text = start + skip; *text != '\0'; ++text ) {
-        if( text[0] == '*' && text[1] == '/' ) {
+        if( text[0] == '*' && text[1] == '/' && lenCComment > 1  ) {
             text += 2;
             lenCComment += 2;
+            flags.inCComment = false;
             break;
         }
         lenCComment++;
-    }
-    if( *text == '\0' ) {
-        // comment extends to next line
-        flags.inCComment = true;
-    } else {
-        // comment definitely done
-        flags.inCComment = false;
     }
     ss_new->type = SE_COMMENT;
     ss_new->len = text - start;

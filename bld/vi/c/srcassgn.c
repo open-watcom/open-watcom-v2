@@ -240,6 +240,8 @@ vi_rc SrcAssign( const char *data, vlist *vl )
         } else {
             v1 = ltoa( val, tmp1, EditVars.Radix );
         }
+    } else {
+        v1 = tmp;
     }
 
     VarAddStr( name, v1, vl );

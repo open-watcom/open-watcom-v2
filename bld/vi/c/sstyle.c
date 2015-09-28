@@ -362,7 +362,7 @@ void SSDifBlock( ss_block *ss_old, char *text, int start_col,
             text_col = ss_new.end + 1;
         } while( ss_new.end < start_col );
 
-        changed = memcmp( ss_inc, &ss_new, sizeof( ss_block ) ) != 0;
+        changed = ( memcmp( ss_inc, &ss_new, sizeof( ss_block ) ) != 0 );
         if( changed ) {
             memcpy( ss_inc, &ss_new, sizeof( ss_block ) );
         }
