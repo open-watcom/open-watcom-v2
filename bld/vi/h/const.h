@@ -125,7 +125,7 @@ typedef enum {
 #define MIN_STACK_K             10
 #define MAX_DUPLICATE_FILES     10
 
-#define MAX_IO_BUFFER   0x2000
+#define MAX_IO_BUFFER           0x2000
 
 #define MAPFLAG_DAMMIT          0x01
 #define MAPFLAG_UNMAP           0x02
