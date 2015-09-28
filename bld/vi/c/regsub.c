@@ -47,9 +47,10 @@ extern void Lead( char c, int num, char *buff );
 /*
  * RegSub - perform substitutions after a regexp match
  */
-bool RegSub( regexp *prog, char *source, char *dest, linenum lineno )
+bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
 {
-    char        *src, *dst, c;
+    const char  *src;
+    char        *dst, c;
     int         no, len;
     bool        splitit = false;
     bool        upper_flag = false;

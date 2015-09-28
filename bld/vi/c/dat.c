@@ -70,6 +70,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
     dcnt = atoi( buff );
     hasvals = fn_alloc( dcnt );
     buffdata = NULL;
+    ptr = NULL;
     size = 0;
 
     /*

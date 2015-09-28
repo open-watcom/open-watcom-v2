@@ -51,6 +51,6 @@ extern void     RegExpAttrRestore( void );
 extern bool     IsMagicCharRegular( char );
 
 /* regsub.c */
-extern bool     RegSub( regexp *, char *, char *, linenum );
+extern bool     RegSub( regexp *, const char *, char *, linenum );
 
 #endif

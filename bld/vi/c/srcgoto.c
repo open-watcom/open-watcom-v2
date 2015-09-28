@@ -36,7 +36,7 @@
 /*
  * SrcGoTo - goto processor
  */
-vi_rc SrcGoTo( sfile **sf, label lbl, labels *labs )
+vi_rc SrcGoTo( sfile **sf, const char *lbl, labels *labs )
 {
     int         i;
 

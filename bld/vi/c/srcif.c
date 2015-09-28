@@ -39,15 +39,15 @@
  */
 vi_rc SrcIf( sfile **sf, vlist *vl )
 {
-    char        v1[MAX_SRC_LINE];
+    char        tmp1[MAX_SRC_LINE];
+    const char  *v1;
     long        val;
     int         i;
     jmp_buf     jmpaddr;
 
+    v1 = (*sf)->arg1;
     if( (*sf)->hasvar ) {
-        Expand( v1, (*sf)->arg1, vl );
-    } else {
-        strcpy( v1, (*sf)->arg1 );
+        v1 = Expand( tmp1, v1, vl );
     }
     i = setjmp( jmpaddr );
     if( i != 0 ) {

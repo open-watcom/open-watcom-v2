@@ -35,13 +35,12 @@
 #include "parsecl.h"
 #include "ex.h"
 #include "specio.h"
+#include "source.h"
 
-static sfile    *tmpTail;
-static bool     hasVar;
-static labels   *cLab;
-static jmp_buf  genExit;
-
-static char     *CurrentSrcData;
+static sfile        *tmpTail;
+static bool         hasVar;
+static labels       *cLab;
+static jmp_buf      genExit;
 
 void AbortGen( vi_rc rc )
 {
@@ -49,9 +48,32 @@ void AbortGen( vi_rc rc )
 }
 
 /*
+ * initItems - generate a src file item
+ */
+static sfile *initItems( void )
+{
+    sfile       *tsf;
+
+    tsf = MemAlloc( sizeof( sfile ) );
+    tsf->next = NULL;
+    tsf->prev = NULL;
+    tsf->arg1 = NULL;
+    tsf->arg2 = NULL;
+    tsf->data = NULL;
+    tsf->token = SRC_T_NULL;
+    tsf->sline = 0;
+    tsf->hasvar = false;
+    tsf->branchcond = COND_FALSE;
+    tsf->data = NULL;
+    tmpTail = tsf;
+    return( tsf );
+
+} /* initItems */
+
+/*
  * genItem - generate a src file item
  */
-static void genItem( int token, label where )
+static void genItem( int token, const char *where )
 {
     sfile       *tsf;
 
@@ -76,7 +98,7 @@ static void genItem( int token, label where )
 /*
  * GenJmpIf - jump based on last expression result
  */
-void GenJmpIf( branch_cond when, label where )
+void GenJmpIf( branch_cond when, const char *where )
 {
 #ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled ) {
@@ -93,7 +115,7 @@ void GenJmpIf( branch_cond when, label where )
 /*
  * GenJmp - stick a jump before current statment
  */
-void GenJmp( label where )
+void GenJmp( const char *where )
 {
     genItem( SRC_T_GOTO, where );
     tmpTail->branchcond = COND_JMP;
@@ -102,9 +124,9 @@ void GenJmp( label where )
 } /* GenJmp */
 
 /*
- * GenLabel - stick a label before current statment
+ * GenLabel1 - stick a label before current statment
  */
-void GenLabel( label where )
+static const char *GenLabel1( const char *where )
 {
     vi_rc   rc;
 
@@ -113,24 +135,31 @@ void GenLabel( label where )
         AbortGen( rc );
     }
     tmpTail->hasvar = false;
-    strcpy( where, cLab->name[cLab->cnt - 1] );
+    return( cLab->name[cLab->cnt - 1] );
+
+} /* GenLabel */
+
+/*
+ * GenLabel - stick a label before current statment
+ */
+void GenLabel( char *where )
+{
+    strcpy( where, GenLabel1( where ) );
 
 } /* GenLabel */
 
 /*
  * GenTestCond - generate test condition for current statement
  */
-void GenTestCond( void )
+void GenTestCond( const char *data )
 {
-    char        tmp[MAX_SRC_LINE];
-    char        *v1;
+    const char  *v1;
 
     /*
      * process syntax of test condition
      * IF expr
      */
-    v1 = strcpy( tmp, CurrentSrcData );
-    v1 = SkipLeadingSpaces( v1 );
+    v1 = SkipLeadingSpaces( data );
     if( v1[0] == 0 ) {
         AbortGen( ERR_SRC_INVALID_IF );
     }
@@ -154,10 +183,10 @@ void GenTestCond( void )
 /*
  * genExpr - gen an expression assignment
  */
-static void genExpr( void )
+static void genExpr( const char *data )
 {
-    char        v1[MAX_SRC_LINE], tmp[MAX_SRC_LINE], tmp1[MAX_SRC_LINE];
-    char        *v2;
+    char        v1[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
+    const char  *v2;
 #ifndef VICOMP
     expr_oper   oper = EXPR_EQ;
 #endif
@@ -166,11 +195,11 @@ static void genExpr( void )
      * get expression syntax :
      * EXPR %v = v1
      */
-    CurrentSrcData = GetNextWord1( CurrentSrcData, v1 );
+    data = GetNextWord1( data, v1 );
     if( *v1 == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
-    CurrentSrcData = GetNextWord1( CurrentSrcData, tmp );
+    data = GetNextWord1( data, tmp );
     if( *tmp == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
@@ -196,8 +225,7 @@ static void genExpr( void )
             AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
-    v2 = strcpy( tmp1, CurrentSrcData );
-    v2 = SkipLeadingSpaces( v2 );
+    v2 = SkipLeadingSpaces( data );
     if( v2[0] == 0 ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
@@ -240,11 +268,9 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 {
     GENERIC_FILE        gf;
     int                 i, token;
-    sfile               *tsf;
     char                tmp1[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
     char                *tmp3;
     char                *tmp;
-    char                *tmp4;
     bool                ret;
 #ifdef VICOMP
     bool                AppendingFlag = false;
@@ -274,16 +300,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
      * init control
      */
     CSInit();
-    CurrentSrcLine = 0;
 
-    tsf = MemAlloc( sizeof( sfile ) );
-    tsf->next = NULL;
-    tsf->prev = NULL;
-    tsf->arg1 = NULL;
-    tsf->arg2 = NULL;
-    tsf->data = NULL;
-    tsf->token = SRC_T_NULL;
-    *sf = tmpTail = tsf;
+    *sf = initItems();
+
+    CurrentSrcLine = 0;
     cLab = lab;
 
     /*
@@ -351,26 +371,25 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             /*
              * get parm
              */
-            tmp4 = CurrentSrcData = DupString( tmp );
 
             /*
              * process token
              */
             switch( token ) {
             case SRC_T_EXPR:
-                genExpr();
+                genExpr( tmp );
                 break;
             case SRC_T_LABEL:
-                GenLabel( tmp );
+                GenLabel1( tmp );
                 break;
             case SRC_T_IF:
-                CSIf();
+                CSIf( tmp );
                 break;
             case SRC_T_QUIF:
-                CSQuif();
+                CSQuif( tmp );
                 break;
             case SRC_T_ELSEIF:
-                CSElseIf();
+                CSElseIf( tmp );
                 break;
             case SRC_T_ELSE:
                 CSElse();
@@ -386,10 +405,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 CSEndLoop();
                 break;
             case SRC_T_WHILE:
-                CSWhile();
+                CSWhile( tmp );
                 break;
             case SRC_T_UNTIL:
-                CSUntil();
+                CSUntil( tmp );
                 break;
             case SRC_T_BREAK:
                 CSBreak();
@@ -402,9 +421,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 if( token == SRC_T_GOTO ) {
 #ifndef VICOMP
                     if( EditFlags.ScriptIsCompiled ) {
-                        CurrentSrcData = GetNextWord1( CurrentSrcData, tmp );
-                        tmpTail->branchcond = atoi( CurrentSrcData );
-                        strcpy( CurrentSrcData, tmp );
+                        tmp = GetNextWord1( tmp, tmp2 );
+                        tmpTail->data = DupString( tmp2 );
+                        tmpTail->branchcond = atoi( tmp );
+                        break;
                     } else {
 #endif
                         tmpTail->branchcond = COND_JMP;
@@ -412,10 +432,9 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                     }
 #endif
                 }
-                tmpTail->data = DupString( CurrentSrcData );
+                tmpTail->data = DupString( tmp );
                 break;
             }
-            MemFree( tmp4 );
 
         /*
          * set all other tokens to be processed at run time
@@ -546,7 +565,6 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 break;
             }
         }
-
     }
 
     SpecialFclose( &gf );

@@ -142,8 +142,10 @@ typedef enum branch_cond {
 } branch_cond;
 
 typedef struct sfile {
-    struct sfile    *next, *prev;
-    char            *arg1, *arg2;
+    struct sfile    *next;
+    struct sfile    *prev;
+    char            *arg1;
+    char            *arg2;
     int             token;
     branch_cond     branchcond;
     union {
@@ -185,17 +187,17 @@ extern vi_rc    SrcAssign( const char *, vlist * );
 /* srccs.c */
 extern void     CSInit( void );
 extern vi_rc    CSFini( void );
-extern void     CSIf( void );
-extern void     CSElseIf( void );
+extern void     CSIf( const char *data );
+extern void     CSElseIf( const char *data );
 extern void     CSElse( void );
 extern void     CSEndif( void );
-extern void     CSWhile( void );
+extern void     CSWhile( const char *data );
 extern void     CSLoop( void );
 extern void     CSEndLoop( void );
-extern void     CSUntil( void );
+extern void     CSUntil( const char *data );
 extern void     CSBreak( void );
 extern void     CSContinue( void );
-extern void     CSQuif( void );
+extern void     CSQuif( const char *data );
 
 /* srcexpnd.c */
 extern char     *Expand( char *, const char *, vlist * );
@@ -211,19 +213,19 @@ extern vi_rc    SrcClose( sfile *, vlist *, files *, const char * );
 
 /* srcgen.c */
 extern vi_rc    PreProcess( const char *, sfile **, labels * );
-extern void     GenJmpIf( branch_cond, label );
-extern void     GenJmp( label );
-extern void     GenLabel( label );
-extern void     GenTestCond( void );
+extern void     GenJmpIf( branch_cond, const char *lbl );
+extern void     GenJmp( const char *lbl );
+extern void     GenLabel( char *lbl );
+extern void     GenTestCond( const char *data );
 extern label    NewLabel( void );
 extern void     AbortGen( vi_rc );
 
 /* srcgoto.c */
-extern vi_rc    SrcGoTo( sfile **, label, labels * );
+extern vi_rc    SrcGoTo( sfile **, const char *lbl, labels * );
 
 /* srclabel.c */
-extern vi_rc    AddLabel( sfile *, labels *, label );
-extern int      FindLabel( labels *labs, label lbl );
+extern vi_rc    AddLabel( sfile *, labels *, const char *lbl );
+extern int      FindLabel( labels *labs, const char *lbl );
 
 /* srchook.c */
 extern vi_rc    SourceHook( hooktype, vi_rc );
