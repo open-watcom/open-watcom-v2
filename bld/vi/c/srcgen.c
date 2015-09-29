@@ -153,14 +153,12 @@ void GenLabel( char *where )
  */
 void GenTestCond( const char *data )
 {
-    const char  *v1;
-
     /*
      * process syntax of test condition
      * IF expr
      */
-    v1 = SkipLeadingSpaces( data );
-    if( v1[0] == 0 ) {
+    data = SkipLeadingSpaces( data );
+    if( data[0] == 0 ) {
         AbortGen( ERR_SRC_INVALID_IF );
     }
 
@@ -170,11 +168,11 @@ void GenTestCond( const char *data )
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        genItem( SRC_T_IF, v1 );
+        genItem( SRC_T_IF, data );
 #ifndef VICOMP
     } else {
         genItem( SRC_T_IF, NULL );
-        tmpTail->arg1 = DupString( v1 );
+        tmpTail->arg1 = DupString( data );
     }
 #endif
 
@@ -186,7 +184,6 @@ void GenTestCond( const char *data )
 static void genExpr( const char *data )
 {
     char        v1[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
-    const char  *v2;
 #ifndef VICOMP
     expr_oper   oper = EXPR_EQ;
 #endif
@@ -225,14 +222,14 @@ static void genExpr( const char *data )
             AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
-    v2 = SkipLeadingSpaces( data );
-    if( v2[0] == 0 ) {
+    data = SkipLeadingSpaces( data );
+    if( data[0] == 0 ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        genItem( SRC_T_EXPR, StrMerge( 4, v1, SingleBlank, tmp, SingleBlank, v2 ) );
+        genItem( SRC_T_EXPR, StrMerge( 4, v1, SingleBlank, tmp, SingleBlank, data ) );
 #ifndef VICOMP
     } else {
         /*
@@ -241,7 +238,7 @@ static void genExpr( const char *data )
         genItem( SRC_T_EXPR, NULL );
         tmpTail->u.oper = oper;
         tmpTail->arg1 = DupString( v1 );
-        tmpTail->arg2 = DupString( v2 );
+        tmpTail->arg2 = DupString( data );
     }
 #endif
 
@@ -324,15 +321,15 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
          * prepare this line
          */
         CurrentSrcLine++;
-        tmp = SkipLeadingSpaces( tmp1 );
 #ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
 #endif
-            tmp3 = tmp;
-            tmp = GetNextWord1( tmp, tmp2 );
-            if( tmp2[0] == '\0' || tmp2[0] == '#' ) {
+            tmp = SkipLeadingSpaces( tmp1 );
+            if( tmp[0] == '\0' || tmp[0] == '#' ) {
                 continue;
             }
+            tmp3 = tmp;
+            tmp = GetNextWord1( tmp, tmp2 );
             hasVar = ( strchr( tmp3, '%' ) != NULL );
 
             /*
@@ -352,7 +349,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             }
 #ifndef VICOMP
         } else {
-            tmp = GetNextWord1( tmp, tmp2 );
+            tmp = GetNextWord1( tmp1, tmp2 );
             hasVar = ( tmp2[0] != '0' );
             token = atoi( &tmp2[1] );
         }
@@ -558,9 +555,8 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                         }
                     }
                 }
-                if( tmp3[0] == '>' ) {
+                if( tmp3[0] == '>' )
                     ++tmp3;
-                }
                 genItem( TOK_INVALID, tmp3 );
                 break;
             }
