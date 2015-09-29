@@ -95,30 +95,34 @@ static dyn_dim_type dynGetCRLFAutoDetect( HWND hwndDlg, bool initial )
     return( DYN_VISIBLE );
 }
 
-static bool dynIsLanguage( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsLanguage( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
 
     hwndDlg = hwndDlg;
-    lParam = lParam;
-    id = LOWORD( wParam );
-    cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+#ifdef __NT__
+    lparam = lparam;
+#endif
+    id = LOWORD( wparam );
+    cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == SETFS_LANGUAGESELECT && cmd == CBN_SELCHANGE ) {
         return( true );
     }
     return( false );
 }
 
-static bool dynIsCRLFAutoDetect( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsCRLFAutoDetect( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
 
     hwndDlg = hwndDlg;
-    lParam = lParam;
-    id = LOWORD( wParam );
-    cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+#ifdef __NT__
+    lparam = lparam;
+#endif
+    id = LOWORD( wparam );
+    cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == SETFS_CRLFAUTODETECT && cmd == BN_CLICKED ) {
         return( true );
     }
@@ -456,7 +460,7 @@ static long insertFT( HWND hwndDlg )
 /*
  * SetFSProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         index;
     HWND        ctlhwnd;
@@ -471,16 +475,16 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
         return( TRUE );
 
     case WM_COMMAND:
-        switch( LOWORD( wParam ) ) {
+        switch( LOWORD( wparam ) ) {
         case SETFS_FILETYPE:
-            cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+            cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == CBN_SELCHANGE ) {
 //                rc = ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, &oldData, &Ctl_setfs );
 //                assert( rc != 0 );
                 updateDialogSettings( hwndDlg, true );
             } else if( cmd == CBN_SETFOCUS ) {
                 // if we are getting the focus, something probably changed
-                ctlhwnd = GET_WM_COMMAND_HWND( wParam, lParam );
+                ctlhwnd = GET_WM_COMMAND_HWND( wparam, lparam );
                 index = SendMessage( ctlhwnd, CB_GETCURSEL, 0, 0L );
 
                 // this may bump focus back to a bad field
@@ -508,8 +512,8 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
             return( TRUE );
         }
 
-        ctl_dlg_process( &Ctl_setfs, wParam, lParam );
-        dyn_tpl_process( &Dyn_setfs, hwndDlg, wParam, lParam );
+        ctl_dlg_process( &Ctl_setfs, wparam, lparam );
+        dyn_tpl_process( &Dyn_setfs, hwndDlg, wparam, lparam );
     }
     return( FALSE );
 }

@@ -83,8 +83,8 @@ static bool ctl_rfloat_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
 // The *_modified functions will be called to query if the control element
 // was modified.
 //   first parameter: pointer to the control element data
-//   second parameter: the wParam of the message
-//   third parameter: the lParam of the message
+//   second parameter: the wparam of the message
+//   third parameter: the lparam of the message
 static bool ctl_check_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 static bool ctl_text_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 static bool ctl_combo_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
@@ -347,7 +347,9 @@ static bool ctl_check_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        cmd;
     WORD        id;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == elt->control && (cmd == BN_CLICKED || cmd == BN_DOUBLECLICKED) ) {
@@ -419,7 +421,9 @@ static bool ctl_combo_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        id;
     WORD        cmd;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == elt->control && (cmd == CBN_SELCHANGE || cmd == LBN_SELCHANGE) ) {
@@ -749,7 +753,9 @@ static bool ctl_radio_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        id;
     WORD        cmd;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id >= elt->control && id <= elt->info.radio.end_control &&
@@ -795,11 +801,14 @@ static bool ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 }
 
 static bool ctl_text_modified( ctl_elt *elt, WPI_PARAM1 wparam , WPI_PARAM2 lparam )
-/**********************************************************************/
+/**********************************************************************************/
 {
     WORD        id;
     WORD        cmd;
 
+#ifdef __NT__
+    lparam=lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
 

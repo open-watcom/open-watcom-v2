@@ -45,6 +45,7 @@ static char oldDir[_MAX_PATH];
 
 int FileSysNeedsCR( int handle )
 {
+    handle=handle;
     return( true );
 }
 

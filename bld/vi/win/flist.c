@@ -100,12 +100,14 @@ static int fillBox( HWND list_box )
     return( count );
 }
 
-WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND    list_box;
     bool    (*func)( info * );
 
-    l = l;
+#ifdef __NT__
+    lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( dlg );
@@ -115,7 +117,7 @@ WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
     case WM_COMMAND:
         list_box = GetDlgItem( dlg, ID_FILE_LIST );
         func = NULL;
-        switch( LOWORD( w ) ) {
+        switch( LOWORD( wparam ) ) {
         case ID_GOTO:
             func = doGoto;
             break;
@@ -127,7 +129,7 @@ WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
             EndDialog( dlg, ERR_NO_ERR );
             break;
         case ID_FILE_LIST:
-            if( GET_WM_COMMAND_CMD( w, l ) == LBN_DBLCLK ) {
+            if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_DBLCLK ) {
                 func = doGoto;
             }
             break;

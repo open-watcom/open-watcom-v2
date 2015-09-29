@@ -51,7 +51,9 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     char                *ptr;
     RECT                pos;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         if( findData.posx == -1 && findData.posy == -1 ) {

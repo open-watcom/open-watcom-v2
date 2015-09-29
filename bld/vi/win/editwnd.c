@@ -610,7 +610,9 @@ static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     int         text_lines;
     int         diff;
 
-    lparam = lparam;            // Shut up the compiler for the NT version
+#ifdef __NT__
+    lparam = lparam;
+#endif
     wd = DATA_FROM_ID( hwnd );
 
     oldTopOfPage = LeftTopPos.line;
@@ -674,7 +676,9 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     int newLeftColumn;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     EditFlags.ScrollCommand = true;
     switch( GET_WM_HSCROLL_CODE( wparam, lparam ) ) {
     case SB_LINEUP:
@@ -698,7 +702,7 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
         MoveScreenRightPageML();
         break;
     case SB_THUMBTRACK:
-        MoveScreenLeftRightML( GET_WM_HSCROLL_POS( lparam, wparam ) - 1 );
+        MoveScreenLeftRightML( GET_WM_HSCROLL_POS( wparam, lparam ) - 1 );
         break;
     }
     EditFlags.ScrollCommand = false;
@@ -763,7 +767,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             // losing focus
             cancelDrag();
             killsel = true;
-            win = (HWND) wparam;
+            win = (HWND)wparam;
             if( win != NULL ) {
                 tbwin = GetToolbarWindow();
                 if( win == Root || win == tbwin || win == CommandId ||

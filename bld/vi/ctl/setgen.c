@@ -75,15 +75,17 @@ static dyn_dim_type dynGetAutoSave( HWND hwndDlg, bool initial )
     return( DYN_DIM );
 }
 
-static bool dynIsAutoSave( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsAutoSave( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
 
     hwndDlg = hwndDlg;
-    lParam = lParam;
-    id = LOWORD( wParam );
-    cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+#ifdef __NT__
+    lparam = lparam;
+#endif
+    id = LOWORD( wparam );
+    cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == SETGEN_AUTOSAVE && cmd == BN_CLICKED ) {
         return( true );
     }
@@ -166,7 +168,7 @@ static void setdlgDataDefaults( void )
 /*
  * SetGenProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -177,7 +179,7 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
         return( TRUE );
 
     case WM_COMMAND:
-        switch( LOWORD( wParam ) ) {
+        switch( LOWORD( wparam ) ) {
         case SETGEN_DEFAULTS:
             setdlgDataDefaults();
             ctl_dlg_reset( GET_HINSTANCE( hwndDlg ),
@@ -197,8 +199,8 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
             return( TRUE );
         }
 
-        ctl_dlg_process( &Ctl_setgen, wParam, lParam );
-        dyn_tpl_process( &Dyn_setgen, hwndDlg, wParam, lParam );
+        ctl_dlg_process( &Ctl_setgen, wparam, lparam );
+        dyn_tpl_process( &Dyn_setgen, hwndDlg, wparam, lparam );
     }
 
     return( FALSE );

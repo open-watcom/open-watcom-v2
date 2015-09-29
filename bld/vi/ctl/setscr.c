@@ -86,7 +86,7 @@ static void setdlgDataDefaults( void )
 /*
  * SetScrProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -96,7 +96,7 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
         return( TRUE );
 
     case WM_COMMAND:
-        switch( LOWORD( wParam ) ) {
+        switch( LOWORD( wparam ) ) {
         case SETSCR_DEFAULTS:
             setdlgDataDefaults();
             ctl_dlg_reset( GET_HINSTANCE( hwndDlg ),
@@ -115,7 +115,7 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
             return( TRUE );
         }
 
-        ctl_dlg_process( &Ctl_setscr, wParam, lParam );
+        ctl_dlg_process( &Ctl_setscr, wparam, lparam );
     }
 
     return( FALSE );

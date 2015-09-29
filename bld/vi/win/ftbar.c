@@ -417,9 +417,9 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     int         i;
     WORD        cmd;
 
+#ifdef __NT__
     lparam = lparam;
-    wparam = wparam;
-    hwnd = hwnd;
+#endif
 
     switch( msg ) {
     case WM_INITDIALOG:

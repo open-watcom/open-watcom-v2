@@ -50,7 +50,9 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     history_data        *h;
     char                *ptr;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );

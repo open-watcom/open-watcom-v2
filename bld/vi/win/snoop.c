@@ -58,6 +58,7 @@ static PFNSHGPFIL   pfnSHGetPathFromIDList = NULL;
  */
 WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data )
 {
+    lparam=lparam;
     switch( msg ) {
     case BFFM_INITIALIZED:
         SendMessage( hwnd, BFFM_SETSELECTION, TRUE, data );
@@ -85,7 +86,9 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     LPITEMIDLIST        pidl;
 #endif
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );

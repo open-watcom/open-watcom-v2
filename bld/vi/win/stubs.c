@@ -42,7 +42,7 @@ bool DisplayMouse( bool p1 ) { p1=p1; return( false ); }
 void TurnOffCapsLock( void ) {}
 vi_rc HandleMouseEvent( void ) { return( ERR_NO_ERR ); }
 void SwapAllWindows( void ) {}
-void SetMouseSpeed( int i ) {}
+void SetMouseSpeed( int i ) { i=i; }
 void GetClockStart( void ) {}
 void GetSpinStart( void ) {}
 void WindowAuxUpdate( window_id id, int x, int y ) { id=id;x=x;y=y; }

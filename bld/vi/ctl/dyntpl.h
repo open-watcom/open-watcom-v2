@@ -102,7 +102,7 @@ typedef struct {
 // Routines to use a dynamic template with a dialog
 
 // MISSING!!! (???)
-bool dyn_tpl_button_check( int ctl, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+bool dyn_tpl_button_check( int ctl, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 // process changes
 void dyn_tpl_process( void *dyn, HWND dlg_hld, WPI_PARAM1 parm1, WPI_PARAM2 parm2 );
