@@ -37,7 +37,7 @@ extern DWORD            DDEInstId;
 extern UINT             ClipboardFormat;
 extern UINT             ServerCount;
 extern bool             UseDDE;
-extern DWORD            DDERet;
+extern HDDEDATA         DDERet;
 
 /* dde.c */
 bool    DDEInit( void );

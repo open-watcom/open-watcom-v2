@@ -136,6 +136,9 @@ vi_key GetVIKey( unsigned code, unsigned scan, bool shift )
 #endif
     vi_key  key;
 
+#if !( defined( __DOS__ ) || defined( __OS2__ ) )
+    scan=scan; shift=shift;
+#endif
     if( EditFlags.EscapedInsertChar ) {
         return( code );
     }

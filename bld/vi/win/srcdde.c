@@ -74,6 +74,38 @@ static bool GetHSZ( const char **str, HSZ *res )
 } /* GetHSZ */
 
 /*
+ * GetHCONV - get a HCONV from a string
+ */
+static bool GetHCONV( const char **str, HCONV *res )
+{
+    char        hdlstr[MAX_STR];
+
+    *str = GetNextWord1( *str, hdlstr );
+    if( *hdlstr == '\0'  ) {
+        return( false );
+    }
+    *res = (HCONV)strtoul( hdlstr, NULL, 10 );
+    return( true );
+
+} /* GetHCONV */
+
+/*
+ * GetHDDEDATA - get a HDDEDATA from a string
+ */
+static bool GetHDDEDATA( const char **str, HDDEDATA *res )
+{
+    char        hdlstr[MAX_STR];
+
+    *str = GetNextWord1( *str, hdlstr );
+    if( *hdlstr == '\0'  ) {
+        return( false );
+    }
+    *res = (HDDEDATA)strtoul( hdlstr, NULL, 10 );
+    return( true );
+
+} /* GetHDDEDATA */
+
+/*
  * RunDDECommand - try to run a Windows specific command
  */
 bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist *vl )
@@ -144,7 +176,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
         jmprc = setjmp( jmpaddr );
         if( jmprc == 0 ) {
             StartExprParse( str, jmpaddr );
-            DDERet = GetConstExpr();
+            DDERet = (HDDEDATA)GetConstExpr();
         } else {
             rc = ERR_INVALID_DDE;
         }
@@ -208,7 +240,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
             break;
         }
         str = Expand( tmp3, str, vl );
-        if( !GetHSZ( &str, &data ) ) {
+        if( !GetHDDEDATA( &str, &data ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -266,7 +298,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
             break;
         }
         hconv = DdeConnect( DDEInstId, serverhdl, topichdl, NULL );
-        if( hconv == (HDDEDATA)NULL ) {
+        if( hconv == (HCONV)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
             sprintf( tmp2, "%ld", (long)hconv );
@@ -278,7 +310,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
          * syntax: ddedisconnect <hconv>
          */
         str = Expand( tmp3, str, vl );
-        if( !GetHSZ( &str, &hconv ) ) {
+        if( !GetHCONV( &str, &hconv ) ) {
             rc = ERR_INVALID_DDE;
         } else {
             DdeDisconnect( hconv );
@@ -294,7 +326,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
             break;
         }
         str = Expand( tmp3, str, vl );
-        if( !GetHSZ( &str, &hconv ) ) {
+        if( !GetHCONV( &str, &hconv ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -325,7 +357,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( !GetHSZ( &str, &hconv ) ) {
+        if( !GetHCONV( &str, &hconv ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -338,7 +370,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
         if( data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
-            DdeClientTransaction( (LPBYTE) data, -1, hconv, hdl,
+            DdeClientTransaction( (LPBYTE)data, -1, hconv, hdl,
                                   ClipboardFormat, XTYP_POKE, TIME_OUT, NULL );
         }
         break;
