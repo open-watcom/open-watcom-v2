@@ -53,7 +53,7 @@ static bool hasMouseHandler;
 /*
  * FileCompleteMouseHandler - handle mouse events for file completion
  */
-bool FileCompleteMouseHandler( window_id id, int win_x, int win_y )
+static bool FileCompleteMouseHandler( window_id id, int win_x, int win_y )
 {
     if( id != dirWin ) {
         return( false );
@@ -217,7 +217,8 @@ void FileCompleteMouseClick( HWND hwnd, int x, int y, bool dclick )
     RECT        rect;
     window      *w;
 
-    if( BAD_ID( hwnd ) ) return;
+    if( BAD_ID( hwnd ) )
+        return;
     w = WINDOW_FROM_ID( hwnd );
     /* figure out which file_name the user clicked on */
     columns = calcColumns( hwnd );
@@ -273,7 +274,7 @@ static void getBounds( int *start, int *end )
     *end = ROW( last ) * maxJ + maxJ - 1;
 }
 
-void displayFiles( void )
+static void displayFiles( void )
 {
     int         i, start, end;
     int         column, right_edge, left_edge;

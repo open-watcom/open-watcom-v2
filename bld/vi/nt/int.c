@@ -79,7 +79,7 @@ static DWORD WINAPI TimerThread( LPVOID param )
     return( 0 );
 }
 
-BOOL WINAPI BreakHandler( DWORD type )
+static BOOL WINAPI BreakHandler( DWORD type )
 {
     switch( type ) {
     case CTRL_C_EVENT:

@@ -65,7 +65,7 @@ vi_rc NewStatusWindow( void )
 /*
  * StatusLine - display a line in the status window
  */
-void StatusLine( int line, char *str, int format )
+static void StatusLine( int line, char *str, int format )
 {
     int         len, width, blanks, i, j;
     type_style  *style;

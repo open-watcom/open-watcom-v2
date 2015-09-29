@@ -287,7 +287,7 @@ static int              rlMenuNum;
 /*
  * SelectLineMouseHandler - handle mouse events for line selector
  */
-bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
+static bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
 {
     int x, y, i;
 

@@ -117,7 +117,7 @@ vi_rc FindTag( const char *tag )
 /*
  * PickATag - pick a tag
  */
-int PickATag( int clist, char **list, const char *tagname )
+static int PickATag( int clist, char **list, const char *tagname )
 {
     window_info tw;
     int         i;
@@ -236,7 +236,7 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
  * SearchForTags - search up the directory tree to see if there are any
  *                 tagfiles kicking around
  */
-FILE *SearchForTags( void )
+static FILE *SearchForTags( void )
 {
     char    path[FILENAME_MAX];
     char    *eop;

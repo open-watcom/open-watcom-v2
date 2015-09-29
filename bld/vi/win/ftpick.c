@@ -36,6 +36,10 @@
 #include "sstyle.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK FtPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 extern  LOGFONT     CurLogfont;
 
 static  bool        haveCapture = false;
@@ -148,7 +152,7 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     return( 0 );
 }
 
-LRESULT drawCurLogfont( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+static LRESULT drawCurLogfont( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         hdc;

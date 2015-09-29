@@ -34,6 +34,10 @@
 #include "linedlg.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static char     lineStr[20];
 static char     lineLen = sizeof( lineStr ) - 1;
 static linenum  *lineVal;

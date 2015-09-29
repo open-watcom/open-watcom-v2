@@ -39,11 +39,14 @@
 #include "wprocmap.h"
 // #include "mdisim.h"
 
-char *EditWindowClassName = "Buffer Window";
 
+/* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK EditWindowProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l );
 
 extern HWND hColorbar, hFontbar, hSSbar;
+
+char *EditWindowClassName = "Buffer Window";
 
 static bool Init( window *, void * );
 static bool Fini( window *, void * );

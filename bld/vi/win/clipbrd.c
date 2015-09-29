@@ -42,6 +42,7 @@
 
 #include "vi.h"
 #include <dos.h>
+#include "win.h"
 
 #if defined( __NT__ )
 
@@ -74,7 +75,7 @@
  * getHugePointer - given a 16-bit far pointer and an offset, return the
  *                  far pointer
  */
-void __far *getHugePointer( void __far *ptr, unsigned off )
+static void __far *getHugePointer( void __far *ptr, unsigned off )
 {
     DWORD       poff;
     WORD        pseg;

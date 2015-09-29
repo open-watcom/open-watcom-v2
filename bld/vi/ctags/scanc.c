@@ -281,7 +281,7 @@ static void eatUntilClosingBracket( void )
  * eatStuffBeforeOpenBrace - eat allowable stuff before an opening brace
  *                           (#stuff, comments, '\')
  */
-bool eatStuffBeforeOpenBrace( int ch )
+static bool eatStuffBeforeOpenBrace( int ch )
 {
     if( ch == '#' ) {
         doPreProcessorDirective();

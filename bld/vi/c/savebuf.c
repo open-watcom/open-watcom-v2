@@ -31,13 +31,8 @@
 
 
 #include "vi.h"
+#include "win.h"
 
-#ifdef __WIN__
-extern int  AddLineToClipboard( char *data, int scol, int ecol );
-extern int  AddFcbsToClipboard( fcb_list *fcbs );
-extern int  GetClipboardSavebuf( savebuf *clip );
-extern bool IsClipboardEmpty( void );
-#endif
 
 /*
  * freeSavebuf - release savebuf data

@@ -34,6 +34,10 @@
 #include "cmd.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static char     *cmdStr;
 static int      cmdLen;
 

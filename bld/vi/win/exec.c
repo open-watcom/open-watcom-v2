@@ -35,15 +35,22 @@
 #include "wprocmap.h"
 #endif
 
-static bool     doneExec;
-static HMODULE  moduleHandle;
-static HMODULE  instanceHandle;
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data );
 
 #define MODULE_FROM_TASK( t )   (*((WORD __far *)MK_FP( (t), 0x1e )))
 #define INSTANCE_FROM_TASK( t ) (*((WORD __far *)MK_FP( (t), 0x1c )))
 
 #ifdef __WINDOWS_386__
 typedef BOOL (CALLBACK *LPFNNOTIFYCALLBACKx)( WORD, DWORD );
+#endif
+
+static bool     doneExec;
+static HMODULE  moduleHandle;
+static HMODULE  instanceHandle;
+
+#ifdef __WINDOWS_386__
 static FARPROC MakeNotifyCallbackProcInstance( LPFNNOTIFYCALLBACKx fn, HINSTANCE instance )
 {
     instance = instance;

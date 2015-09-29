@@ -132,7 +132,7 @@ static void getNextBlock( ss_block *ss_new, char *text, int text_col,
     }
 }
 
-void addSelection( ss_block *ss_start, linenum line_no )
+static void addSelection( ss_block *ss_start, linenum line_no )
 {
     int             sel_start_col, sel_end_col;
     int             sel_start_line, sel_end_line;
@@ -285,7 +285,7 @@ void addSelection( ss_block *ss_start, linenum line_no )
     // otherwise nothing is selected on this line
 }
 
-void fixSelection( ss_block *ss_start, int start_col )
+static void fixSelection( ss_block *ss_start, int start_col )
 {
     ss_block    *ss;
     int         i = MAX_SS_BLOCKS;

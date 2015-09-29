@@ -55,7 +55,7 @@ typedef struct {
     vi_key  cs;
 } keytable;
 
-int find_key_in_table( const void *pkey, const void *pbase )
+static int find_key_in_table( const void *pkey, const void *pbase )
 {
     WORD        vk = *(WORD *)pkey;
     keytable    *base = (keytable *)pbase;
@@ -157,12 +157,12 @@ bool ShiftDown( void )
 {
     return( (GetKeyState( VK_SHIFT ) & ~0x01) != 0 );
 }
-
+#if 0
 bool CapsDown( void )
 {
     return( (GetKeyState( VK_CAPITAL ) & 0x01) != 0  );
 }
-
+#endif
 bool CtrlDown( void )
 {
     return( (GetKeyState( VK_CONTROL ) & ~0x01) != 0 );

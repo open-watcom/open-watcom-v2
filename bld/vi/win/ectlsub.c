@@ -33,6 +33,10 @@
 #include "vi.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static WNDPROC      oldEditProc;
 static FARPROC      editProc;
 static history_data *hData;

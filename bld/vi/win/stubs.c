@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include <dos.h>
+#include "win.h"
 
 #if defined( __WATCOMC__ )
 #pragma off( unreferenced );

@@ -39,6 +39,10 @@
 #include "globals.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define WORDWIDTH               30
 #define TMPDIRWIDTH             129
 #define HISTORYFILEWIDTH        129
@@ -63,8 +67,9 @@ typedef struct {
     char        HistoryFile[HISTORYFILEWIDTH];
 } dlg_data;
 
-static  dlg_data    dlgData;
 extern  char        *WordDefnDefault;
+
+static  dlg_data    dlgData;
 
 static dyn_dim_type dynGetAutoSave( HWND hwndDlg, bool initial )
 {

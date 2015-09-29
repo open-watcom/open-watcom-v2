@@ -37,6 +37,10 @@
 #include "util.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define FILEENDSTRINGWIDTH      200
 
 typedef struct {

@@ -39,7 +39,10 @@
     #pragma library( "shell32" )
 #endif
 
+
+/* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );
+
 void                       DefaultWindows( RECT *, RECT * );
 
 RECT    RootRect;

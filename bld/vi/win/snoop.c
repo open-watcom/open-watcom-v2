@@ -38,18 +38,24 @@
 #endif
 #include "wprocmap.h"
 
-static fancy_find       snoopData =
-    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0, NULL, 0 };
+
+/* Local Windows CALLBACK function prototypes */
+#ifdef __NT__
+WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data );
+#endif
+WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #ifdef __NT__
-static HINSTANCE        hInstShell = NULL;
-
 typedef LPITEMIDLIST    (CALLBACK *PFNSHBFF)( LPBROWSEINFO );
 typedef BOOL            (CALLBACK *PFNSHGPFIL)( LPCITEMIDLIST, LPSTR );
 
-static PFNSHBFF     pfnSHBrowseForFolder = NULL;
-static PFNSHGPFIL   pfnSHGetPathFromIDList = NULL;
+static HINSTANCE        hInstShell = NULL;
+static PFNSHBFF         pfnSHBrowseForFolder = NULL;
+static PFNSHGPFIL       pfnSHGetPathFromIDList = NULL;
 #endif
+
+static fancy_find       snoopData =
+    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0, NULL, 0 };
 
 #ifdef __NT__
 

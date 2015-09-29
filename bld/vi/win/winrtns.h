@@ -35,10 +35,12 @@
 #define WINRTNS_INCLUDED
 
 #include "winhdr.h"
+
 void        DDEFini( void );
 void        MessageLoop( bool block );
 window_id   NewEditWindow( void );
 window_id   NewCommandWindow( void );
+void        FileCompleteMouseClick( HWND, int, int, bool );
 window_id   NewFileCompleteWindow( void );
 window_id   NewRepeatCountWindow( void );
 window_id   NewMsgWindow( void );
@@ -64,6 +66,7 @@ void        BarfFontData( FILE * );
 void        ResizeRoot( void );
 bool        RegisterContainerWindow( HANDLE );
 window_id   CreateMainWindow( HANDLE );
+bool        RegisterMainWindow( HANDLE );
 window_id   CreateContainerWindow( LPRECT );
 void        SetInitialWindowSize( const char * );
 void        SetInitialWindowRect( RECT *r );
@@ -92,9 +95,6 @@ void        StatusDisplay( char * );
 // Cursor.c
 void        GoodbyeCursor( HWND );
 
-// Tab_hell.c
-bool        CursorPositionOffRight( int vc );
-
 // Snoop.c
 bool        GetSnoopStringDialog( fancy_find **ff );
 
@@ -118,6 +118,7 @@ void    BarfToolBarData( FILE * );
 DWORD   GetEditStyle( bool is_max );
 void    EditDrawScrollBars( HWND hwnd );
 void    SetWindowTitle( HWND hwnd );
+void    FiniInstance( void );
 void    HandleMenuSelect( WPARAM wparam, LPARAM lparam );
 void    GetMenuHelpString( char *res );
 void    SetMenuHelpString( char *str );
@@ -141,9 +142,6 @@ bool    GetSetScrDialog( void );
 bool    GetSetGenDialog( void );
 void    CenterWindowInRoot( HWND );
 void    StatusWndSetSeparatorsWithArray( short *, int );
-
-// ideactiv.c
-void    StartIDE( HANDLE instance, BOOL dospawn );
 
 // filetype.c
 void    UpdateFileTypeIcon( HWND hwnd, const char *filename );

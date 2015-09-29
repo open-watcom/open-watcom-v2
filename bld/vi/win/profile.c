@@ -173,7 +173,7 @@ static void readInitialPosition( void )
 /*
  * writeInitialPosition - write out the initial position information
  */
-void writeInitialPosition( void )
+static void writeInitialPosition( void )
 {
     if( !EditFlags.SavePosition ) {
         memset( &RootRect, 0, sizeof( RECT ) );

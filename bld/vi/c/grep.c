@@ -49,6 +49,14 @@
 #include "clibext.h"
 
 
+/* Local Windows CALLBACK function prototypes */
+#ifdef __WIN__
+WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
+#ifdef __NT__
+WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
+#endif
+#endif
+
 #define isEOL(x)        ((x == CR) || (x == LF) || (x == CTRLZ))
 
 #define MAX_DISP 60

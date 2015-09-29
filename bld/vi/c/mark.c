@@ -96,7 +96,7 @@ vi_rc SetMark( void )
  *              given line. It simply follows the trail through the mark
  *              list until it finds a NO_MARK or the mark it is searching for.
  */
-bool MarkOnLine( line *line, unsigned no )
+static bool MarkOnLine( line *line, unsigned no )
 {
     mark        *m;
 
@@ -117,7 +117,7 @@ bool MarkOnLine( line *line, unsigned no )
  *                      happen to find it on. After this the mark is no
  *                      longer in use.
  */
-vi_rc RemoveMarkFromLine( unsigned no )
+static vi_rc RemoveMarkFromLine( unsigned no )
 {
     mark        *mark, *curr;
     fcb         *fcb;

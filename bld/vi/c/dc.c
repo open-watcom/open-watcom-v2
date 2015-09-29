@@ -322,7 +322,7 @@ void DCUpdateAll( void )
     }
 }
 
-void shaveRange( int *start, int *end )
+static void shaveRange( int *start, int *end )
 {
     int     tmp;
 

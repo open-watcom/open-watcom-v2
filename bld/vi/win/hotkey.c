@@ -34,6 +34,10 @@
 #include "subclass.h"
 #include "hotkey.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK HotkeyProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /*
  * HotkeyProc - pass hotkeys on to root for various modeless 'bars'
  */

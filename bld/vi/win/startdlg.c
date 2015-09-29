@@ -34,6 +34,10 @@
 #include "banner.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /*
  * StartupProc - callback routine for startup modeless dialog
  */

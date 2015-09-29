@@ -57,7 +57,7 @@ bool    qflag = false;
 char    _bf[] = "edbind.dat";
 char    *bindfile = _bf;
 
-void Banner( void )
+static void Banner( void )
 {
     if( qflag ) {
         return;
@@ -72,7 +72,7 @@ void Banner( void )
 /*
  * Abort - made a boo-boo
  */
-void Abort( char *str, ... )
+static void Abort( char *str, ... )
 {
     va_list     al;
 
@@ -87,7 +87,7 @@ void Abort( char *str, ... )
 /*
  * MyPrintf - do a printf
  */
-void MyPrintf( char *str, ... )
+static void MyPrintf( char *str, ... )
 {
     va_list     al;
 
@@ -102,7 +102,7 @@ void MyPrintf( char *str, ... )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
+static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
 {
     int                 h, i, newh;
     char                buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
@@ -225,7 +225,7 @@ static void GetFromEnv( char *what, char *path )
 /*
  * GetFromEnvAndOpen - search env and fopen a file
  */
-FILE *GetFromEnvAndOpen( char *inpath )
+static FILE *GetFromEnvAndOpen( char *inpath )
 {
     char tmppath[_MAX_PATH];
 
@@ -245,7 +245,7 @@ FILE *GetFromEnvAndOpen( char *inpath )
     #pragma aux Usage aborts;
 #endif
 
-void Usage( char *msg )
+static void Usage( char *msg )
 {
     if( msg != NULL ) {
         printf( "%s\n", msg );
@@ -265,7 +265,7 @@ void Usage( char *msg )
 /*
  * SkipLeadingSpaces - skip leading spaces in a string
  */
-char *SkipLeadingSpaces( const char *buff )
+static char *SkipLeadingSpaces( const char *buff )
 {
     while( isspace( *buff ) )
         ++buff;
@@ -276,7 +276,7 @@ char *SkipLeadingSpaces( const char *buff )
 /*
  * MyAlloc - allocate memory, failing if cannot
  */
-void *MyAlloc( unsigned size )
+static void *MyAlloc( unsigned size )
 {
     void        *tmp;
 

@@ -34,6 +34,11 @@
 #include "font.h"
 #include "utils.h"
 #include "wprocmap.h"
+#include "win.h"
+
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static bool Init( window *, void * );
 static bool Fini( window *, void * );
@@ -44,8 +49,6 @@ window RepeatCountWindow = {
     Init,
     Fini
 };
-
-WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char     *className = "RepeatWindow";
 static char     repString[MAX_STR];

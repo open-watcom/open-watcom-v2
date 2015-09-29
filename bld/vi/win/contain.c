@@ -33,10 +33,12 @@
 #include "window.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND, UINT, WPARAM, LPARAM );
+
 static char *className = "MDICLIENT";
 WNDPROC oldContainerProc;
-
-WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 
 /*

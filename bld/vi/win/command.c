@@ -36,6 +36,10 @@
 #include "win.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
+
 #define LIST_BOX        1000
 
 extern bool ReadingAString;
@@ -51,8 +55,6 @@ window CommandWindow = {
 };
 
 window_id CommandId = NO_WINDOW;
-
-WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *className = "CommandWindow";
 

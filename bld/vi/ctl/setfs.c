@@ -39,13 +39,16 @@
 #include <assert.h>
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define VI_LANG_FIRST   VI_LANG_LANG0
 #define VI_LANG_LAST    VI_LANG_LANG0 + LANG_MAX - 1
 
 #define TAGFILENAMEWIDTH        129
 #define GREPDEFAULTWIDTH        20
 #define FT_TITLE                "File Specific Options ("
-
 
 typedef struct {
     int         Language;

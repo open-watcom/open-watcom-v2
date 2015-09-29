@@ -33,6 +33,10 @@
 #include "asavedlg.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /*
  * ASaveDlgProc - callback routine for autosave response dialog
  */

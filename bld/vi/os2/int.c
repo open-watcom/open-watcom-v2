@@ -57,7 +57,7 @@ static unsigned char    __far thread_stack[TSTACK_SIZE];
 #define TSTACK_SIZE     10240
 #endif
 
-void TimerThread( void )
+static void TimerThread( void )
 {
     char        date[80];
 

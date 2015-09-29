@@ -36,6 +36,10 @@
 #include "myprtf.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
+
 static bool Init( window *, void * );
 static bool Fini( window *, void * );
 
@@ -45,8 +49,6 @@ window MessageBar = {
     Init,
     Fini
 };
-
-WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *ClassName = "MessageWindow";
 static char msgString1[MAX_STR];

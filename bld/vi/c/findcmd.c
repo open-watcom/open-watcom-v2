@@ -100,7 +100,7 @@ void ResetLastFind( info *inf )
 /*
  * GetFindForward - get position of forward find string
  */
-vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
+static vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
 {
     find_type   flags;
 
@@ -116,7 +116,7 @@ vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
 /*
  * GetFindBackwards - get backwards find position
  */
-vi_rc GetFindBackwards( char *st, i_mark *pos1, int *len1 )
+static vi_rc GetFindBackwards( char *st, i_mark *pos1, int *len1 )
 {
     find_type   flags;
 

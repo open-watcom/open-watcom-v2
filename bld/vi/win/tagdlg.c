@@ -34,6 +34,10 @@
 #include "tagdlg.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static int      tagCnt;
 static char     **tagList;
 

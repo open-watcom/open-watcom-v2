@@ -39,6 +39,11 @@
 #include <assert.h>
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define NARRAY( a )             (sizeof( a ) / sizeof( a[0] ))
 
 #define DEFAULT_STATUSSTRING    "Line:$5L$[Col:$3C$[Mode: $M$[$|$T$[$H"
@@ -50,11 +55,12 @@ enum buttonType {
 };
 
 HWND            hSSbar;
+
 static bool     haveCapture = false;
 static int      curItemID = -1;
 static HWND     mod_hwnd;
 
-char *findBlockString( int block )
+static char *findBlockString( int block )
 {
     char    *mod;
     int     i;
@@ -75,7 +81,7 @@ char *findBlockString( int block )
     return( mod );
 }
 
-void totalRedraw( void )
+static void totalRedraw( void )
 {
     StatusWndSetSeparatorsWithArray( EditVars.StatusSections, EditVars.NumStatusSections );
     UpdateStatusWindow();
@@ -83,7 +89,7 @@ void totalRedraw( void )
     UpdateWindow( StatusWindow );
 }
 
-void destroyBlock( int i, char *start )
+static void destroyBlock( int i, char *start )
 {
     char    new_ss[MAX_STR];
 
@@ -114,7 +120,7 @@ void destroyBlock( int i, char *start )
     totalRedraw();
 }
 
-void splitBlock( int i, char *start )
+static void splitBlock( int i, char *start )
 {
     char    new_ss[MAX_STR];
     int     diff;
@@ -159,7 +165,7 @@ void splitBlock( int i, char *start )
     totalRedraw();
 }
 
-void buildNewItem( char *start, int id )
+static void buildNewItem( char *start, int id )
 {
     char    new_ss[MAX_STR];
     char    *sz_content[] = { "$T", "$D", "Mode: $M",
@@ -210,7 +216,7 @@ void buildNewItem( char *start, int id )
     totalRedraw();
 }
 
-void buildDefaults( void )
+static void buildDefaults( void )
 {
     short   def_sections[] = DEFAULT_STATUSSECTIONS;
 
@@ -223,7 +229,7 @@ void buildDefaults( void )
     totalRedraw();
 }
 
-void buildNewStatusString( int block, int id )
+static void buildNewStatusString( int block, int id )
 {
     char    *mod;
 
@@ -338,7 +344,7 @@ WINEXPORT LRESULT CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wpara
     return( CallWindowProc( SubclassGenericFindOldProc( hwnd ), hwnd, msg, wparam, lparam ) );
 }
 
-void addSubclasses( HWND hwnd )
+static void addSubclasses( HWND hwnd )
 {
     int     i;
     for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
@@ -352,7 +358,7 @@ void addSubclasses( HWND hwnd )
     }
 }
 
-void removeSubclasses( HWND hwnd )
+static void removeSubclasses( HWND hwnd )
 {
     int     i;
     for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {

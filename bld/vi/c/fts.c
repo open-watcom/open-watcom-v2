@@ -340,7 +340,7 @@ ft_src *FTSMatchTemplate( template_ll *template_head )
 
 } /* FTSMatchTemplate */
 
-void deleteTemplateList( template_ll *template_head )
+static void deleteTemplateList( template_ll *template_head )
 {
     template_ll *tp, *tpnext;
 

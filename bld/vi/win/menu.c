@@ -575,7 +575,7 @@ vi_rc AddMenuItem( const char *data )
 /*
  * DoMenuChar - handle a menu activated by the keyboard
  */
-vi_rc DoMenuChar( void )
+static vi_rc DoMenuChar( void )
 {
     vi_key      key;
     menu        *m;
@@ -739,7 +739,7 @@ bool IsMenuHotKey( vi_key key )
 /*
  * doFloatMenu - create a floating popup menu
  */
-static int doFloatMenu( int id, int x, int y )
+static vi_rc doFloatMenu( int id, int x, int y )
 {
     menu        *m;
     HMENU       f;

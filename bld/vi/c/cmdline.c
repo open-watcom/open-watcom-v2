@@ -44,6 +44,9 @@
 #include "sstyle.h"
 #include "fts.h"
 #include "rcs.h"
+#ifdef __WIN__
+#include "ideactiv.h"
+#endif
 
 #include "clibext.h"
 

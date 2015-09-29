@@ -239,7 +239,7 @@ void VarFini( void )
     }
 }
 
-
+#if 0
 void VarDump( void ){
     vars        *curr;
     int         count = 0;
@@ -272,4 +272,6 @@ void VarSC( char *str )
     }
     /// DEBUG END
 }
+#endif
+
 #endif /* VICOMP */

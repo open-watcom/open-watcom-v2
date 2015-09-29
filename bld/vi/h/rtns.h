@@ -679,6 +679,7 @@ vi_rc   GetAddress( const char **, linenum * );
 void    MySprintf( char *, const char *, ... );
 void    MyPrintf( const char *, ... );
 void    MyFprintf( FILE *,const char *, ... );
+void    Lead( char c, int num, char *buff );
 
 /* readstr.c */
 bool    ReadStringInWindow( window_id, int, char *, char *, int, history_data * );
@@ -780,6 +781,8 @@ int     WinVirtualCursorPosition( char *, int );
 int     VirtualLineLen( char * );
 bool    AddLeadingTabSpace( short *, char *, int );
 bool    ConvertSpacesToTabsUpToColumn( int, char *, int, char *, int );
+bool    CursorPositionOffRight( int vc );
+
 
 /* tags.c */
 vi_rc GetCurrentTag( void );

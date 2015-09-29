@@ -34,6 +34,7 @@
 #include "winaux.h"
 #include "font.h"
 #include "wstatus.h"
+#include "win.h"
 
 window *Windows[] = {
     &StatusBar,
@@ -45,8 +46,6 @@ window *Windows[] = {
 };
 
 #define NUM_WINDOWS (sizeof( Windows ) / sizeof( window  * ))
-
-extern void FiniInstance( void );
 
 extern HWND hColorbar, hFontbar, hSSbar;
 

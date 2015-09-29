@@ -35,6 +35,10 @@
 #include "utils.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND, UINT, WPARAM, LPARAM );
+
 static bool Init( window *, void * );
 static bool Fini( window *, void * );
 
@@ -44,9 +48,6 @@ window FileCompleteWindow = {
     Init,
     Fini
 };
-
-void FileCompleteMouseClick( HWND, int, int, bool );
-WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *ClassName = "FileCompleteWindow";
 

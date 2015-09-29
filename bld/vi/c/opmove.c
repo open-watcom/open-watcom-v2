@@ -240,6 +240,7 @@ vi_rc MoveLineEnd( range *r, long count )
     }
 }
 
+#if 0
 vi_rc LineEndRange( range *r, long count )
 {
     if( CurrentLine == NULL ) {
@@ -252,6 +253,7 @@ vi_rc LineEndRange( range *r, long count )
     r->end.column = CurrentLine->len + 1;
     return( ERR_NO_ERR );
 }
+#endif
 
 vi_rc MoveStartOfLine( range *r, long count )
 {

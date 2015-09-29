@@ -99,7 +99,7 @@ static bool Fini( window *w, void *parm )
     return( true );
 }
 
-int setCursor( short x )
+static int setCursor( short x )
 {
     int     i;
     for( i = 0; i < EditVars.NumStatusSections; i++ ) {
@@ -112,7 +112,7 @@ int setCursor( short x )
     return( -1 );
 }
 
-void processMouseMove( WPARAM w, LPARAM l )
+static void processMouseMove( WPARAM w, LPARAM l )
 {
     int         deep, delta, maxmove, movedby, i, next;
     short       x;
@@ -172,7 +172,7 @@ void processMouseMove( WPARAM w, LPARAM l )
     UpdateWindow( StatusWindow );
 }
 
-void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
+static void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
 {
     RECT        rect;
 
@@ -188,7 +188,7 @@ void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
     }
 }
 
-void processLButtonUp( void )
+static void processLButtonUp( void )
 {
     if( capIndex != -1 ) {
         CursorOp( COP_ARROW );

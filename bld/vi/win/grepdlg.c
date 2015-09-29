@@ -33,6 +33,10 @@
 #include "grep.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static FARPROC  grepProc;
 static HWND     grepHwnd;
 static bool     cancelPressed;

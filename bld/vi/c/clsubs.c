@@ -34,6 +34,12 @@
 #include "rxsupp.h"
 #include "win.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+#ifdef __WIN__
+WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM lparam );
+#endif
+
 typedef enum {
     CHANGE_OK,
     CHANGE_NO,

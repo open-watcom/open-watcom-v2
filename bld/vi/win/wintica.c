@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include "win.h"
 // #include <malloc.h>
 
 /*
@@ -72,11 +73,8 @@ vi_rc WindowTile( int maxx, int maxy )
 /*
  * WindowCascade - cascade all edit windows
  */
-vi_rc WindowCascade( int x, int y )
+vi_rc WindowCascade( void )
 {
-    x = x;
-    y = y;
-
     SendMessage( EditContainer, WM_MDICASCADE, 0, 0L );
     return( ERR_NO_ERR );
 

@@ -34,6 +34,10 @@
 #include "repdlg.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static fancy_find findData =
     { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0 };
 

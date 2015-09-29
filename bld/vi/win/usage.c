@@ -34,6 +34,10 @@
 #include "usage.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static char     **usageList;
 static int      usageCnt;
 static char     *usageStr;

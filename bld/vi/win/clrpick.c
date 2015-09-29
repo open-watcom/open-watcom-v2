@@ -39,6 +39,10 @@
 #include "subclass.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK ClrPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define NUM_ACROSS      8
 #define NUM_DOWN        8
 #define NUM_COLOURS     (NUM_ACROSS * NUM_DOWN)
@@ -50,15 +54,15 @@
 #define INDEX_FROM_XY( x, y )   ((y) * NUM_ACROSS + (x))
 #define COLOUR_FROM_XY( x, y )  (RGBValues[INDEX_FROM_XY( x, y )])
 
-extern HWND hColorbar;
-int         Width;
-int         Height;
-
-
 typedef enum NewColourOps {
     NC_FORE,
     NC_BACK
 } NewColourOps;
+
+extern HWND hColorbar;
+
+int         Width;
+int         Height;
 
 static int              cursx = 0, cursy = 0;
 static COLORREF         RGBValues[NUM_COLOURS];
@@ -165,7 +169,7 @@ static void sendNewColour( NewColourOps op )
     }
 }
 
-void drawFocus( HDC hdc, RECT *rect, bool set )
+static void drawFocus( HDC hdc, RECT *rect, bool set )
 {
     HPEN        hDkGreyPen;
     HPEN        hWhitePen;

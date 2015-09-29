@@ -194,7 +194,7 @@ UINT FontTabWidth( font_type f )
     return( Fonts[f].avg_width * EditVars.HardTab );
 }
 
-UINT GetTextExtentX( HDC hdc, char *str, int cnt )
+static UINT GetTextExtentX( HDC hdc, char *str, int cnt )
 {
 #ifndef __NT__
     return( LOWORD( GetTextExtent( hdc, str, cnt ) ) );

@@ -56,7 +56,7 @@ size_t strlen( const char *__s );
 /*
  * displayLineInWindowGeneric - takes an ss_block directly
  */
-vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
+static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
                                 char *text, int start_col, ss_block *ss )
 {
     wind                *w;

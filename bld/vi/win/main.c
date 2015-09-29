@@ -34,6 +34,7 @@
 #include <process.h>
 #include <malloc.h>
 #endif
+#include "win.h"
 // #include "ole2def.h"
 #include "font.h"
 #include "color.h"
@@ -48,7 +49,6 @@ HINSTANCE       InstanceHandle;
 char            _NEAR EditorName[] = "Open Watcom Text Editor";
 static int      showHow;
 
-extern bool RegisterMainWindow( HANDLE );
 extern int  (*_main_entry_)( char *, char * );
 
 extern HWND     hColorbar, hFontbar, hSSbar;

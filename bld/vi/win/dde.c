@@ -35,6 +35,12 @@
 #include "ddedef.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
+                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, DWORD data1,
+                             DWORD data2 );
+
 typedef struct hsz_list {
     struct hsz_list     *next;
     struct hsz_list     *prev;

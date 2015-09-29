@@ -34,6 +34,10 @@
 #include "filelist.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l );
+
 static info *findInfo( char *file_name )
 {
     info    *i;

@@ -358,7 +358,7 @@ vi_rc ReselectRegion( void )
 /*
  * startSelectedRegion - start selection region area from keyboard
  */
-vi_rc startSelectedRegion( bool line_based )
+static vi_rc startSelectedRegion( bool line_based )
 {
     if( ShiftDown() && SelRgn.selected ) {
         EditFlags.Dragging = true;

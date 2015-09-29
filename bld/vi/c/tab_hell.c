@@ -30,6 +30,7 @@
 
 
 #include "vi.h"
+#include "win.h"
 
 long TabCnt;
 
