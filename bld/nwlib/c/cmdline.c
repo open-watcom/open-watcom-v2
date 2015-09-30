@@ -670,7 +670,7 @@ static void ParseOneArLine( char *c, operation *ar_mode )
             }
             //fall to default
         default:
-            if( ar_mode == OP_NONE ) {
+            if( *ar_mode == OP_NONE ) {
                 c = ParseArOption( c, ar_mode );
                 break;
             }
