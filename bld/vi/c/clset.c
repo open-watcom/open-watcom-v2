@@ -619,10 +619,9 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 case SETVAR_T_INSERTCURSORTYPE:
                     StrMerge( 2, WorkLine->data, SingleBlank, fn );
                     value = GetNextWord1( value, fn );
-                    if( *fn == '\0' ) {
-                        break;
+                    if( *fn != '\0' ) {
+                        StrMerge( 2, WorkLine->data, SingleBlank, fn );
                     }
-                    StrMerge( 2, WorkLine->data, SingleBlank, fn );
                     break;
                 case SETVAR_T_TILECOLOR:
                     StrMerge( 2, WorkLine->data, SingleBlank, fn );

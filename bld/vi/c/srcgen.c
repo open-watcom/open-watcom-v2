@@ -419,9 +419,8 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 #ifndef VICOMP
                     if( EditFlags.ScriptIsCompiled ) {
                         tmp = GetNextWord1( tmp, tmp2 );
-                        tmpTail->data = DupString( tmp2 );
                         tmpTail->branchcond = atoi( tmp );
-                        break;
+                        tmp = tmp2;
                     } else {
 #endif
                         tmpTail->branchcond = COND_JMP;

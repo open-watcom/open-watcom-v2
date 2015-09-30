@@ -141,7 +141,7 @@ vi_rc MapKey( int flag, const char *data )
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        if( !(flag & MAPFLAG_UNMAP) ) {
+        if( (flag & MAPFLAG_UNMAP) == 0 ) {
             key_map     scr;
 
             rc = AddKeyMap( &scr, data );
@@ -166,7 +166,7 @@ vi_rc MapKey( int flag, const char *data )
     maps[key].is_base = false;
     MemFree( maps[key].data );
     maps[key].data = NULL;
-    if( !(flag & MAPFLAG_UNMAP ) ) {
+    if( (flag & MAPFLAG_UNMAP) == 0 ) {
         if( flag & MAPFLAG_BASE ) {
             maps[key].is_base = true;
         }
