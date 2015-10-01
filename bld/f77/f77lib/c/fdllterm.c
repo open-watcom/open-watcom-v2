@@ -33,13 +33,11 @@
 // Default FORTRAN DLL termination routine.
 // Used if user does not write his own
 
-#if defined( _M_IX86 )
-  #pragma aux __fdll_terminate "^_"
-#endif
+#include "fdll.h"
 
 
-unsigned        __fdll_terminate( void ) {
-//==================================
+int __fdll_terminate( void ) {
+//===============================
 
     return( 1 );
 }

@@ -30,34 +30,11 @@
 
 
 #include "ftnstd.h"
-
 #include <stdlib.h>
-
-
-#if defined( _M_IX86 )
-  #pragma aux __fdll_initialize "^_"
-  #pragma aux __fdll_terminate "^_"
-#endif
-
-extern  int             __fdll_initialize(void);
-extern  int             __fdll_terminate(void);
-extern  int             __FInitDLL(void);
-extern  void            __FTermDLL(void);
+#include "fdll.h"
 
 
 #if defined( __NT__ )
-
-#include <windows.h>
-
-#if defined( _M_IX86 )
-  #pragma aux __fthrd_initialize "^_"
-  #pragma aux __fthrd_terminate "^_"
-#endif
-
-extern  int             __fthrd_initialize(void);
-extern  int             __fthrd_terminate(void);
-extern  int             __FInitThrd(void);
-extern  void            __FTermThrd(void);
 
 // Note: Suppose the user creates a DLL that contains C/C++ and FORTRAN
 // object files and LibMain() is written in C/C++ (i.e. it's his own or the
@@ -69,8 +46,8 @@ extern  void            __FTermThrd(void);
 // initialization and termination.
 
 
-INT     APIENTRY LibMain( HANDLE hdll, ULONG reason, LPVOID reserved ) {
-//======================================================================
+int   APIENTRY LibMain( HANDLE hdll, ULONG reason, LPVOID reserved ) {
+//====================================================================
 
     unsigned    rc;
 

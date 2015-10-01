@@ -36,6 +36,7 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rmemmgr.h"
+#include "fdll.h"
 
 static void NullTrapRtn( void ) {
 //=========================
@@ -51,7 +52,7 @@ static void __InitExceptionVectors( void ) {
 }
 
 
-unsigned        __FInitDLL( void ) {
+int        __FInitDLL( void ) {
 //============================
 
     __InitExceptionVectors();
