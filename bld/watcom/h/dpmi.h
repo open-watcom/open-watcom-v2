@@ -34,11 +34,14 @@
 
 #include "watcom.h"
 
+
+#define _INT            0xcd
+
 #if defined( __OSI__ ) && defined( __CALL31__ )
  extern  void   __Int31();
  #define _INT_31        "call __Int31"
 #else
- #define _INT_31        "int 0x31"
+ #define _INT_31        _INT 0x31
 #endif
 
 #if defined(__386__)
