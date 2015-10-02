@@ -67,7 +67,7 @@ intel16_bswap_large:
 ffs_386:
     bsf eax, [esp+4]
     jnz short @1
-    mov eax, -1
+    or eax, -1
 @1: inc eax
     ret
 

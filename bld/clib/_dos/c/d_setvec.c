@@ -44,8 +44,7 @@
         "push ds"           \
         "mov ds,ecx"        \
         "mov cl,al"         \
-        "mov al,04"         \
-        "mov ah,25h"        \
+        "mov ax,2504h"      \
         "int 21h"           \
         "pop ds"            \
         parm caller [al] [cx edx];

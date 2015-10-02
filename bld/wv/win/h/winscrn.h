@@ -256,30 +256,29 @@ extern void        _enablev( unsigned );
 #define _graph_read( reg )              _vga_read( GRA_PORT, reg )
 
 
-#pragma aux     _disablev =             /* disable video */     \
-                    0xec                /* in al,dx     */      \
-                    0xa8 0x08           /* test al,8    */      \
-                    0x74 0xfb           /* jz -5        */      \
-                    0xba 0xc0 0x03      /* mov dx,03c0  */      \
-                    0xb0 0x11           /* mov al,11    */      \
-                    0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
-                    0xee                /* out dx,al    */      \
-                    parm [dx]                                   \
-                    modify [ax dx];
+/* disable video */
+#pragma aux     _disablev = \
+    "L1: in   al,dx"    \
+        "test al,8"     \
+        "jz short L1"   \
+        "mov  dx,03c0h" \
+        "mov  al,11h"   \
+        "out  dx,al"    \
+        "xor  al,al"    \
+        "out  dx,al"    \
+    parm [dx] modify [ax dx];
 
-
-#pragma aux     _enablev =              /* enable video  */     \
-                    0xec                /* in al,dx     */      \
-                    0xa8 0x08           /* test al,8    */      \
-                    0x74 0xfb           /* jz -5        */      \
-                    0xba 0xc0 0x03      /* mov dx,03c0  */      \
-                    0xb0 0x31           /* mov al,31    */      \
-                    0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
-                    0xee                /* out dx,al    */      \
-                    parm [dx]                                   \
-                    modify [ax dx];
+/* enable video  */
+#pragma aux     _enablev = \
+    "L1: in   al,dx"    \
+        "test al,8"     \
+        "jz short L1"   \
+        "mov  dx,03c0h" \
+        "mov  al,31h"   \
+        "out  dx,al"    \
+        "xor  al,al"    \
+        "out  dx,al"    \
+    parm [dx] modify [ax dx];
 
 
 enum vid_state_info {
@@ -294,22 +293,22 @@ extern char        VIDGetRow( unsigned );
 extern void        VIDSetRow( unsigned, unsigned );
 extern void        VIDWait( void );
 
-#pragma aux VIDGetRow =                                         \
-0XB0 0X0F       /* mov    al,f                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-        parm caller [ dx ];
+#pragma aux VIDGetRow = \
+        "mov    al,0fh" \
+        "out    dx,al"  \
+        "inc    dx"     \
+        "in     al,dx"  \
+    parm caller [ dx ];
 
 
 #pragma aux VIDSetRow =                                         \
-0X88 0XC4       /* mov    ah,al                         */      \
-0XB0 0X0F       /* mov    al,f                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X8A 0XC4       /* mov    al,ah                         */      \
-0XEE            /* out    dx,al                         */      \
-        parm caller [ dx ] [ ax ];
+        "mov    ah,al"  \
+        "mov    al,0fh" \
+        "out    dx,al"  \
+        "inc    dx"     \
+        "mov    al,ah"  \
+        "out    dx,al"  \
+    parm caller [ dx ] [ ax ];
 
 #pragma aux VIDWait =                                           \
 0XEB 0X00       /* jmp    ip                            */      \

@@ -147,7 +147,7 @@ _hardretn_return:
         mov     CL,DL           ; move to CL for shift count
         inc     CL              ; +1
         mov     BL,DH           ; get top 2 bits for index
-        mov     BH,0            ;
+        xor     BH,BH           ;
         shl     BX,1            ; times 2
         mov     DX,errors[BX]   ; get bit mask of funcs that set error codes
         shl     DX,CL           ;

@@ -58,18 +58,18 @@
 
 _WCRTLINK pid_t __declspec( naked ) vfork( void )
 {
-__asm {
-    pop    edx;
-    mov    eax, 190;
-    int    80h;
-    push   edx;
-    cmp    eax, -125;
-    jb short L1;
-    neg    eax;
-    mov    _RWD_errno,eax;
-    mov    eax, -1;
-L1: ret;
-};
+    __asm {
+        pop    edx;         /* Get the return address off the stack */
+        mov    eax, 190;    /* SYS_vfork */
+        int    80h;
+        push   edx;
+        cmp    eax, -125;
+        jb short L1;
+        neg    eax;
+        mov    _RWD_errno,eax;
+        or     eax, -1;
+    L1: ret;
+    };
 }
 
 #endif

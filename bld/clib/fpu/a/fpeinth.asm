@@ -333,7 +333,7 @@ endproc GetInf
 Load    proc    near
         test    BH,04h          ; check if result is top element
         _if     e               ; if result is not top element
-          mov   DL,0            ; - indicate we are at the top
+          xor   DL,DL           ; - indicate we are at the top
         _else                   ; else
           mov   DL,BL           ; - get st(i)
           and   DL,07h          ; - . . .

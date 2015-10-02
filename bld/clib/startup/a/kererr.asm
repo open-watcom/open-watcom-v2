@@ -47,7 +47,7 @@ __kererr   PROC NEAR
         push eax
         call __get_errno_ptr    ; Get a pointer to Errno in magic memory.
         pop  [eax]              ; Save ker error in Errno.
-        mov eax,-1              ; Return -1
+        or eax,-1               ; Return -1
         ret
 __kererr ENDP
 

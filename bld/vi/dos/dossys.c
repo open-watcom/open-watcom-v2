@@ -401,14 +401,14 @@ void TurnOffCapsLock( void )
 
 extern short CheckRemovable( char );
 #pragma aux CheckRemovable = \
-        "mov    ax, 04408h" \
-        "int    021h" \
-        "cmp    ax, 0fh" \
-        "jne    ok" \
-        "mov    ax, 0" \
-        "jmp    done" \
-        "ok:    inc ax" \
-        "done:" \
+        "mov    ax,4408h" \
+        "int    21h"      \
+        "cmp    ax,0fh"   \
+        "jne short ok"    \
+        "xor    ax,ax"    \
+        "jmp short done"  \
+    "ok: inc    ax"       \
+    "done:"               \
     parm [bl] value[ax];
 
 /*

@@ -245,32 +245,29 @@ static void MouseRestoreState( addr_seg buff_rmseg, addr32_off buff_offset )
 }
 
 extern uint_16 MouseSaveSize( void );
-#pragma aux MouseSaveSize =                             \
-        " mov    ax, 15h        ",                      \
-        " int    33h "                                  \
-        modify exact [ ax bx ]                          \
-        value [ bx ];
+#pragma aux MouseSaveSize =     \
+        "mov    ax,15h"         \
+        "int    33h"            \
+    modify exact [ax bx] value [bx];
 
 extern display_configuration BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode =                           \
-        " push   ebp            "                       \
-        " mov    ax, 1a00h      "                       \
-        _INT_10                                         \
-        " cmp    al, 1ah        "                       \
-        " jz     end            "                       \
-        " mov    bx, 0          "                       \
-        " end:                  "                       \
-        " pop    ebp            "                       \
-        modify exact [ ax bx ]                          \
-        value [ bx ];
+#pragma aux BIOSDevCombCode =   \
+        "push   ebp"            \
+        "mov    ax,1a00h"       \
+        _INT_10                 \
+        "cmp    al,1ah"         \
+        "jz short end"          \
+        "xor    bx,bx"          \
+   "end: pop    ebp"            \
+        modify exact [ax bx] value [ bx ];
 
 extern void DoRingBell( void );
-#pragma aux DoRingBell =                                \
-        " push   ebp            "                       \
-        " mov    ax, 0e07h      "                       \
-        _INT_10                                         \
-        " pop    ebp            "                       \
-        modify exact [ ax ];
+#pragma aux DoRingBell =        \
+        "push   ebp"            \
+        "mov    ax,0e07h"       \
+        _INT_10                 \
+        "pop    ebp"            \
+        modify exact [ax];
 
 void Ring_Bell( void )
 {

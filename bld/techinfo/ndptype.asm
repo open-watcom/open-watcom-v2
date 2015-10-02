@@ -55,7 +55,7 @@ NDPType_ proc    near
         fninit                          ; initialize math coprocessor
         fnstcw  0[bp]                   ; store control word in memory
         mov     ax,[bp]                 ; delay CPU to synchronize with FPU
-        mov     al,0                    ; assume no coprocessor present
+        xor     al,al                   ; assume no coprocessor present
         mov     ah,3                    ; upper byte is 03h if
         cmp     ah,[bp+1]               ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present

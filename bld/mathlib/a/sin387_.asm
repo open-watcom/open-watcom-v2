@@ -81,7 +81,7 @@ endif
         mov     EBP,ESP         ; get access to stack
         push    EDX             ; push argument
         push    EAX             ; . . .
-        mov     AL,0            ; no octant adjustment required
+        xor     AL,AL           ; no octant adjustment required
 
 Sin8087:
         mov     DL,AL           ; save octant adjustment
@@ -93,7 +93,7 @@ Sin8087:
         cmp     AX,0100h        ; if number is negative
         _if     e               ; then
           fchs                  ; - make argument positive
-          cmp   DL,0            ; - if computing SIN function
+          test  DL,DL           ; - if computing SIN function
           _if   e               ; - then
             mov   DL,4          ; - - set octant adjustment
           _endif                ; - endif
@@ -103,7 +103,7 @@ Sin8087:
           fstsw AX              ; - store status word
           test  AX,0400h        ; - check C2
         _until  e               ; until C2 is clear
-        mov     AL,0            ; set octant # to 0
+        xor     AL,AL           ; set octant # to 0
         test    AH,02h          ; if C1 is on
         _if     ne              ; then
           or    AL,1            ; - set low order bit of octant

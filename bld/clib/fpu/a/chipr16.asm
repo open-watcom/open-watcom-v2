@@ -322,7 +322,7 @@ _frem_chk       PROC    FAR
         fstp    tbyte ptr [NUMER+bp]
         fld     dword ptr [STACK_SIZE+12+bp]
         fstp    tbyte ptr [DENOM+bp]
-        mov     dx, 0                   ; dx = 1 if denormal extended divisor
+        xor     dx, dx                  ; dx = 1 if denormal extended divisor
         call    fprem_common
 
         fstp    dword ptr [__fprem_result]
@@ -350,7 +350,7 @@ _drem_chk       PROC    FAR
         fstp    tbyte ptr [NUMER+bp]
         fld     qword ptr [STACK_SIZE+16+bp]
         fstp    tbyte ptr [DENOM+bp]
-        mov     dx, 0                   ; dx = 1 if denormal extended divisor
+        xor     dx, dx                  ; dx = 1 if denormal extended divisor
         call    fprem_common
         fstp    qword ptr [__fprem_result]
         mov     dx,ds
@@ -696,7 +696,7 @@ _frem1_chk      PROC    FAR
         fstp    tbyte ptr [NUMER+bp]
         fld     dword ptr [STACK_SIZE+12+bp]
         fstp    tbyte ptr [DENOM+bp]
-        mov     dx, 0                   ; dx = 1 if denormal extended divisor
+        xor     dx, dx                  ; dx = 1 if denormal extended divisor
         call    fprem1_common
 
         fstp    dword ptr [__fprem1_result]
@@ -724,7 +724,7 @@ _drem1_chk      PROC    FAR
         fstp    tbyte ptr [NUMER+bp]
         fld     qword ptr [STACK_SIZE+16+bp]
         fstp    tbyte ptr [DENOM+bp]
-        mov     dx, 0                   ; dx = 1 if denormal extended divisor
+        xor     dx, dx                  ; dx = 1 if denormal extended divisor
         call    fprem1_common
         fstp    qword ptr [__fprem1_result]
         mov     dx,ds

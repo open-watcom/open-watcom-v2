@@ -69,55 +69,49 @@ extern short MouseInt( unsigned short, unsigned short, unsigned short,
 
 extern unsigned char BIOSGetPage(void);
 #pragma aux BIOSGetPage =       \
-    "push   bp"                 \
-    "mov    ah,0fh"             \
-    _INT_10                     \
-    "mov    al,bh"              \
-    "mov    ah,0"               \
-    "pop    bp"                 \
-    parm caller [ ax ]          \
-    value [bh]                  \
-    modify [ bx ];
+        "push   bp"             \
+        "mov    ah,0fh"         \
+        _INT_10                 \
+        "mov    al,bh"          \
+        "xor    ah,ah"          \
+        "pop    bp"             \
+    parm caller [ax] value [bh] modify [bx];
 
 extern void BIOSSetMode(unsigned);
 #pragma aux BIOSSetMode =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X00       /* mov    ah,0                          */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ax ];
+        "push   bp"             \
+        "xor    ah,ah"          \
+        _INT_10                 \
+        "pop    bp"             \
+    parm caller [ax];
 
 extern unsigned char BIOSGetMode(void);
 #pragma aux BIOSGetMode =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X0F       /* mov    ah,f                          */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        "push   bp"             \
+        "mov    ah,0fh"         \
+        _INT_10                 \
+        "pop    bp"             \
+    parm caller [ax] modify [bx];
 
 extern unsigned char BIOSGetColumns(void);
 #pragma aux BIOSGetColumns =                                    \
-0X55            /* push   bp                            */      \
-0XB4 0X0F       /* mov    ah,f                          */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        value       [ah]                                        \
-        modify [ bx ];
+        "push   bp"             \
+        "mov    ah,0fh"         \
+        _INT_10                 \
+        "pop    bp"             \
+    parm caller [ax] value [ah] modify [bx];
 
 extern unsigned char BIOSGetRows(void);
 #pragma aux BIOSGetRows =                                       \
-0X06            /* push   es                            */      \
-0X55            /* push   bp                            */      \
-0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0XB7 0X00       /* mov    bh,0                          */      \
-_INT_10                                                         \
-0XFE 0XC2       /* inc    dl                            */      \
-0X5D            /* pop    bp                            */      \
-0X07            /* pop    es                            */      \
-        parm value [ dl ]                                       \
-        modify [ ax bx cx ];
+        "push   es"             \
+        "push   bp"             \
+        "mov    ax,1130h"       \
+        "xor    bh,bh"          \
+        _INT_10                 \
+        "inc    dl"             \
+        "pop    bp"             \
+        "pop    es"             \
+    parm value [dl] modify [ax bx cx];
 
 struct ega_info {
     unsigned char   mem;
@@ -131,75 +125,63 @@ extern struct ega_info BIOSEGAInfo( void );
 /* note : first 5 lines work but the the corresponding assembler code
           doesn't work so the comments must not match the code */
 #pragma aux BIOSEGAInfo =                       \
-0X55            /* push   bp                            */      \
-0XB4 0X12       /* mov    ah,12h                        */      \
-0XB3 0X10       /* mov    bl,10h                        */      \
-0XB7 0XFF       /* mov    bh,ff                         */      \
-_INT_10                                                         \
-    "xor    eax, eax"                                           \
-    "mov    ax,cx"                                              \
-    "shl    eax,10h"                                            \
-    "or     ax,bx"                                              \
-    "pop    ebp"                                                \
-        parm modify [ cx bx ];
+        "push   ebp"            \
+        "mov    ah,12h"         \
+        "mov    bx,0ff10h"      \
+        _INT_10                 \
+        "mov    eax,ecx"        \
+        "shl    eax,10h"        \
+        "or     ax,bx"          \
+        "pop    ebp"            \
+    parm modify [cx bx];
 #else
-#pragma aux BIOSEGAInfo =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X12       /* mov    ah,12h                        */      \
-0XB3 0X10       /* mov    bl,10h                        */      \
-0XB7 0XFF       /* mov    bh,ff                         */      \
-_INT_10                                                         \
-0X89 0XD8       /* mov    ax,bx                         */      \
-0X89 0XCA       /* mov    dx,cx                         */      \
-0X5D            /* pop    bp                            */      \
-        parm modify [ cx bx ];
+#pragma aux BIOSEGAInfo =       \
+        "push   bp"             \
+        "mov    ah,12h"         \
+        "mov    bx,0ff10h"      \
+        _INT_10                 \
+        "mov    ax,bx"          \
+        "mov    dx,cx"          \
+        "pop    bp"             \
+    parm modify [cx bx];
 #endif
 
 extern unsigned char BIOSSumming( char );
-#pragma aux BIOSSumming =                                 \
-0X55            /* push   bp                            */      \
-0XB4 0X12       /* mov    ah,12                         */      \
-0XB3 0X33       /* mov    bl,33                         */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm [al] value [ al ] modify [ cx bx dx ];
+#pragma aux BIOSSumming =       \
+        "push   bp"             \
+        "mov    ah,12h"         \
+        "mov    bl,33h"         \
+        _INT_10                 \
+        "pop    bp"             \
+    parm [al] value [al] modify [cx bx dx];
 
 extern unsigned short BIOSGetKeyboard( char );
 #pragma aux  BIOSGetKeyboard =  \
-_INT_16                         \
- parm[ah] value[ax];
+        _INT_16                 \
+    parm[ah] value[ax];
 
 
-extern unsigned short BIOSKeyboardHit( char );
-#ifdef __386__
-#pragma aux BIOSKeyboardHit = \
-_INT_16                                 \
- 0x74 0x06              /* jz      foo1 */ \
- 0x66 0xB8 0x01 0x00    /* mov     ax,1 */ \
- 0xEB 0x04              /* jmp     short foo2 */ \
- 0x66 0xB8 0x00 0x00    /* foo1:   mov     ax,0 */ \
- parm[ah] value[ax];
-#else
-#pragma aux BIOSKeyboardHit = \
-_INT_16                                 \
- 0x74 0x05              /* jz      foo1 */ \
- 0xB8 0x01 0x00         /* mov     ax,1 */ \
- 0xEB 0x03              /* jmp     short foo2 */ \
- 0xB8 0x00 0x00         /* foo1:   mov     ax,0 */ \
- parm[ah] value[ax];
-#endif
+extern unsigned char BIOSKeyboardHit( char );
+#pragma aux BIOSKeyboardHit =   \
+        _INT_16                 \
+        "jz short L1"           \
+        "mov    al,1"           \
+        "jmp short L2"          \
+    "L1: xor    al,al"          \
+    "L2:"                       \
+    parm[ah] value[al];
 
 extern unsigned short BIOSTestKeyboard(void);
 #ifdef __386__
-#pragma aux BIOSTestKeyboard = \
- 0x66 0xB8 0xff 0x12    /* mov     ax,012ffh */ \
-_INT_16                                         \
- value[ax];
+#pragma aux BIOSTestKeyboard =  \
+        "mov    ax,12ffh"       \
+        _INT_16                 \
+    value[ax];
 #else
-#pragma aux BIOSTestKeyboard = \
- 0xB8 0xff 0x12         /* mov     ax,012ffh */ \
-_INT_16                                         \
- value[ax];
+#pragma aux BIOSTestKeyboard =  \
+        "mov    ax,12ffh"       \
+        _INT_16                 \
+    value[ax];
 #endif
 
 extern unsigned short BIOSGetCharAttr( unsigned char page );
@@ -232,43 +214,37 @@ struct cursor_pos {
 
 extern struct cursor_pos  BIOSGetCurPos(unsigned char page);
 #pragma aux               BIOSGetCurPos =                       \
-0X55            /* push   bp                            */      \
-0XB4 0X03       /* mov    ah,3                          */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm caller [ bh ]                                      \
-        value [ dx ]                                            \
-        modify [ bx cx dx ];
+        "push   bp"             \
+        "mov    ah,3"           \
+        _INT_10                 \
+        "pop    bp"             \
+    parm caller [bh] value [dx] modify [bx cx dx];
 
 
 extern void BIOSSetCurPos(unsigned char row, unsigned char col, unsigned char page);
-#pragma aux BIOSSetCurPos =                                     \
-0X55            /* push   bp                            */      \
-0XB4 0X02       /* mov    ah,2                          */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm caller [ dh ] [dl] [ bh ]                          \
-        modify [ bx cx dx ];
+#pragma aux BIOSSetCurPos =     \
+        "push   bp"             \
+        "mov    ah,2"           \
+        _INT_10                 \
+        "pop    bp"             \
+    parm caller [dh] [dl] [bh] modify [bx cx dx];
 
 
 extern unsigned short BIOSGetCurTyp(unsigned char page);
-#pragma aux     BIOSGetCurTyp =                                 \
-0X55            /* push   bp                            */      \
-0XB4 0X03       /* mov    ah,3                          */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm caller [ bh ]                                      \
-        value [ cx ]                                            \
-        modify [ bx cx dx ];
+#pragma aux     BIOSGetCurTyp = \
+        "push   bp"             \
+        "mov    ah,3"           \
+        _INT_10                 \
+        "pop    bp"             \
+    parm caller [bh] value [cx] modify [bx cx dx];
 
 
 extern void BIOSSetCurTyp(unsigned char top_line, unsigned char bot_line);
 #pragma aux BIOSSetCurTyp =                                     \
-0X55            /* push   bp                            */      \
-0XB4 0X01       /* mov    ah,1                          */      \
-_INT_10                                                         \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ch ] [cl]                                 \
-        modify [ cx ];
+        "push   bp"             \
+        "mov    ah,1"           \
+        _INT_10                 \
+        "pop    bp"             \
+    parm caller [ch] [cl] modify [cx];
 
 #endif // _BIOSUI_H_

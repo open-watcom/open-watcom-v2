@@ -79,7 +79,7 @@ endif
         sahf                            ; set flags
         _guess                          ; guess: x is 0.0
           _quif ne                      ; - quit if not 0.0
-          mov   AL,0                    ; - indicate x==0.0 error
+          xor   AL,AL                   ; - indicate x==0.0 error
 pow_err1: fstp  st(0)                   ; - clean up 80x87 stack
 pow_err:  fstp  qword ptr datay         ; - store y
           mov   func,_AX                ; - push code

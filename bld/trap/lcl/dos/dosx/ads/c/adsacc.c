@@ -789,9 +789,9 @@ trap_retval ReqGet_next_alias( void )
 #if 0
 extern int GtKey();
 
-#pragma aux GtKey =                                            \
-0XB4 0X00       /* mov    ah,0                          */      \
-0XCD 0X16       /* int    16                            */      \
+#pragma aux GtKey = \
+    "xor    ah,ah"  \
+    "int    16"     \
 modify [ ax ];
 
 

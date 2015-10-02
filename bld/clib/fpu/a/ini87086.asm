@@ -58,7 +58,7 @@ __x87id proc near
         fninit                          ; use default infinity mode
         fnstcw  word ptr [BP-2]         ; save control word
         mov     AX,[BP-2]               ; delay CPU to sync with FPU if present
-        mov     AL,0                    ; assume no coprocessor present
+        xor     AL,AL                   ; assume no coprocessor present
         mov     AH,3                    ; upper byte is 03h if 
         cmp     byte ptr [BP-1],AH      ;   coprocessor is present
         jnz     nox87                   ; exit if no coprocessor present

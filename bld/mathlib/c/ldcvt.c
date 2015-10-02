@@ -98,7 +98,7 @@
                 "       ret"\
                 "L4:    pop     edx"\
                 "       pop     ecx"\
-                "       mov     al,0"\
+                "       xor     al,al"\
                 "       mov     [ebx],al"\
                 parm caller [eax] [ebx] value [ebx];
 #elif defined( _M_I86 )
@@ -134,7 +134,7 @@
                 "       inc     bx"\
                 "       ret"\
                 "L4:    pop     cx"\
-                "       mov     al,0"\
+                "       xor     al,al"\
                 "       mov     ss:[bx],al"\
                 parm caller [dx ax] [bx] value [bx];
 #else

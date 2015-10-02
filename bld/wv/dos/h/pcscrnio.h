@@ -30,153 +30,144 @@
 ****************************************************************************/
 
 
-#pragma aux BIOSSetPage =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X05       /* mov    ah,5                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ax ];
+#pragma aux BIOSSetPage =       \
+        "push   bp"             \
+        "mov    ah,5"           \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [ax];
 
 
 #pragma aux BIOSGetPage =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X0F       /* mov    ah,f                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X8A 0XC7       /* mov    al,bh                         */      \
-0XB4 0X00       /* mov    ah,0                          */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        "push   bp"             \
+        "mov    ah,0fH"         \
+        "int    10h"            \
+        "mov    al,bh"          \
+        "xor    ah,ah"          \
+        "pop    bp"             \
+    parm caller [ax] modify [bx];
 
 
 #pragma aux BIOSGetMode =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X0F       /* mov    ah,f                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        "push   bp"             \
+        "mov    ah,0fH"         \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [ax] modify [bx];
 
 
 #pragma aux BIOSSetMode =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X00       /* mov    ah,0                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ ax ];
+        "push   bp"             \
+        "xor    ah,ah"          \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [ax];
 
 
 #pragma aux BIOSGetCurPos =                                     \
-0X55            /* push   bp                            */      \
-0XB4 0X03       /* mov    ah,3                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ bx ]                                      \
-        value [ dx ]                                            \
-        modify [ bx cx dx ];
+        "push   bp"             \
+        "mov    ah,3"           \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [bx] value [dx] modify [bx cx dx];
 
 
 #pragma aux BIOSSetCurPos =                                     \
-0X55            /* push   bp                            */      \
-0XB4 0X02       /* mov    ah,2                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ dx ] [ bx ]                               \
-        modify [ bx cx dx ];
+        "push   bp"             \
+        "mov    ah,2"           \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [dx] [bx] modify [bx cx dx];
 
 
 #pragma aux BIOSGetCurTyp =                                     \
-0X55            /* push   bp                            */      \
-0XB4 0X03       /* mov    ah,3                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ bx ]                                      \
-        value [ cx ]                                            \
-        modify [ bx cx dx ];
+        "push   bp"             \
+        "mov    ah,3"           \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [bx] value [cx] modify [bx cx dx];
 
 
 #pragma aux BIOSSetCurTyp =                                     \
-0X55            /* push   bp                            */      \
-0XB4 0X01       /* mov    ah,1                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ cx ]                                      \
-        modify [ cx ];
+        "push   bp"             \
+        "mov    ah,1"           \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [cx] modify [cx];
 
 
 #pragma aux BIOSGetAttr =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X08       /* mov    ah,8                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm  [ bh ]                                            \
-        value [ ah ];
+        "push   bp"             \
+        "mov    ah,8"           \
+        "int    10h"            \
+        "pop    bp"             \
+    parm [bh] value [ah];
 
 
 #pragma aux BIOSSetAttr =                                       \
-0X55            /* push   bp                            */      \
-0X29 0XC9       /* sub    cx,cx                         */      \
-0xBA 0X50 0X32  /* mov    dx,$3250                      */      \
-0XB8 0X00 0X06  /* mov    ax,$600                       */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ bh ];
+        "push   bp"             \
+        "sub    cx,cx"          \
+        "mov    dx,3250h"       \
+        "mov    ax,600h"        \
+        "int    10h"            \
+        "pop    bp"             \
+    parm caller [bh];
 
 
 #pragma aux VIDGetRow =                                         \
-0XB0 0X0F       /* mov    al,f                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-        parm caller [ dx ];
+        "mov    al,0fh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "in     al,dx"          \
+    parm caller [dx];
 
 
 #pragma aux VIDSetRow =                                         \
-0X88 0XC4       /* mov    ah,al                         */      \
-0XB0 0X0F       /* mov    al,f                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X8A 0XC4       /* mov    al,ah                         */      \
-0XEE            /* out    dx,al                         */      \
-        parm caller [ dx ] [ ax ];
+        "mov    ah,al"          \
+        "mov    al,0fh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "mov    al,ah"          \
+        "out    dx,al"          \
+    parm caller [dx] [ax];
 
 
 #pragma aux VIDSetPos =                                         \
-0XB0 0X0F       /* mov    al,f                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X88 0XD8       /* mov    al,bl                         */      \
-0XEE            /* out    dx,al                         */      \
-0X4A            /* dec    dx                            */      \
-0XB0 0X0E       /* mov    al,e                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X8A 0XC7       /* mov    al,bh                         */      \
-0XEE            /* out    dx,al                         */      \
-        parm caller [ dx ] [ bx ];
+        "mov    al,0fh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "mov    al,bl"          \
+        "out    dx,al"          \
+        "dec    dx"             \
+        "mov    al,0eh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "mov    al,bh"          \
+        "out    dx,al"          \
+    parm caller [dx] [bx];
 
 
 #pragma aux VIDGetPos =                                         \
-0XB0 0X0F       /* mov    al,f                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-0X88 0XC4       /* mov    ah,al                         */      \
-0X4A            /* dec    dx                            */      \
-0XB0 0X0E       /* mov    al,e                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-0X86 0XE0       /* xchg   ah,al                         */      \
-        parm caller [ dx ] value [ ax ];
+        "mov    al,0fh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "in     al,dx"          \
+        "mov    ah,al"          \
+        "dec    dx"             \
+        "mov    al,0eh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "in     al,dx"          \
+        "xchg   ah,al"          \
+    parm caller [dx] value [ax];
 
 
 #pragma aux VIDGetCol =                                         \
-0XB0 0X0E       /* mov    al,e                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-        parm caller [ dx ];
+        "mov    al,0eh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "in     al,dx"          \
+    parm caller [dx];
 
 
 #pragma aux VIDWait =                                           \
@@ -185,87 +176,86 @@
 
 
 #pragma aux VIDSetCurTyp =                                      \
-0X50            /* push   ax                            */      \
-0XB0 0X0A       /* mov    al,a                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X8A 0XC4       /* mov    al,ah                         */      \
-0XEE            /* out    dx,al                         */      \
-0X4A            /* dec dx                               */      \
-0XB0 0X0B       /* mov    al,b                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X58            /* pop    ax                            */      \
-0XEE            /* out    dx,al                         */      \
-        parm caller [ dx ] [ ax ];
+        "push   ax"             \
+        "mov    al,0ah"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "mov    al,ah"          \
+        "out    dx,al"          \
+        "dec    dx"             \
+        "mov    al,0bh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "pop    ax"             \
+        "out    dx,al"          \
+    parm caller [dx] [ax];
 
 
 #pragma aux VIDGetCurTyp =                                      \
-0XB0 0X0B       /* mov    al,b                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-0X88 0XC4       /* mov    ah,al                         */      \
-0X4A            /* dec    dx                            */      \
-0XB0 0X0A       /* mov    al,a                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-0X86 0XE0       /* xchg   ah,al                         */      \
-        parm caller [ dx ] value [ ax ];
+        "mov    al,0bh"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "in     al,dx"          \
+        "mov    ah,al"          \
+        "dec    dx"             \
+        "mov    al,0ah"         \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "in     al,dx"          \
+        "xchg   ah,al"          \
+    parm caller [dx] value [ax];
 
 
 #pragma aux BIOSEGAInfo =                                       \
-0X55            /* push   bp                            */      \
-0XB4 0X12       /* mov    ah,12                         */      \
-0XB3 0X10       /* mov    bl,10                         */      \
-0XB7 0XFF       /* mov    bh,ff                         */      \
-0XCD 0X10       /* int    10                            */      \
-0X89 0XD8       /* mov    ax,bx                         */      \
-0X89 0XCA       /* mov    dx,cx                         */      \
-0X5D            /* pop    bp                            */      \
-        parm modify [ bx cx ];
+        "push   bp"             \
+        "mov    ah,12h"         \
+        "mov    bx,0ff0ah"      \
+        "int    10h"            \
+        "mov    ax,bx"          \
+        "mov    dx,cx"          \
+        "pop    bp"             \
+    parm modify [bx cx];
 
 
 #pragma aux BIOSGetRows =                                       \
-0X06            /* push   es                            */      \
-0X55            /* push   bp                            */      \
-0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0XB7 0X00       /* mov    bh,0                          */      \
-0XCD 0X10       /* int    10                            */      \
-0XFE 0XC2       /* inc    dl                            */      \
-0X5D            /* pop    bp                            */      \
-0X07            /* pop    es                            */      \
-        parm value [ dl ] modify [ ax bx cx ];
+        "push   es"             \
+        "push   bp"             \
+        "mov    ah,1130h"       \
+        "xor    bh,bh"          \
+        "int    10h"            \
+        "inc    dl"             \
+        "pop    bp"             \
+        "pop    es"             \
+    parm value [dl] modify [ax bx cx];
 
 
 #pragma aux BIOSGetPoints =                                     \
-0X06            /* push   es                            */      \
-0X55            /* push   bp                            */      \
-0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0XB7 0X00       /* mov    bh,0                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-0X07            /* pop    es                            */      \
-        parm value [ cx ] modify [ ax bx dx ];
+        "push   es"             \
+        "push   bp"             \
+        "mov    ah,1130h"       \
+        "xor    bh,bh"          \
+        "int    10h"            \
+        "pop    bp"             \
+        "pop    es"             \
+    parm value [cx] modify [ax bx dx];
 
 
 #pragma aux BIOSEGAChrSet =                                     \
-0X55            /* push   bp                            */      \
-0XB4 0X11       /* mov    ah,11                         */      \
-0XB3 0X00       /* mov    bl,0                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm [ al ] modify [ ax bx ];
+        "push   bp"             \
+        "mov    ah,11h"         \
+        "xor    bl,bl"          \
+        "int    10h"            \
+        "pop    bp"             \
+    parm [al] modify [ax bx];
 
 
 #pragma aux BIOSCharSet =                                       \
-0X87 0XF5       /* xchg   bp,si                         */      \
-0XB4 0X11       /* mov    ah,11                         */      \
-0XB3 0X00       /* mov    bl,0                          */      \
-0XCD 0X10       /* int    10                            */      \
-0X87 0XF5       /* xchg   bp,si                         */      \
-        parm [ al ] [ bh ] [ cx ] [ dx ] [ es ] [ si ] modify [ ax bx cx dx ];
+        "xchg   bp,si"          \
+        "mov    ah,11h"         \
+        "xor    bl,bl"          \
+        "int    10h"            \
+        "xchg   bp,si"          \
+    parm [al] [bh] [cx] [dx] [es] [si] modify [ax bx cx dx];
 
 enum ega_seqencer {
         SEQ_PORT        = 0x3c4,
@@ -363,17 +353,17 @@ enum ega_graphics_controller {
         /* bit N set to one causes that bit in each plane not to be written */
 };
 
-#pragma aux     _ega_write =            /* write ega/vga registers */   \
-                0xef                    /* out dx,ax */                 \
-                parm [dx] [al] [ah]                                     \
-                modify exact [];
+/* write ega/vga registers */
+#pragma aux     _ega_write =    \
+        "out    dx,ax"          \
+    parm [dx] [al] [ah] modify exact [];
 
-#pragma aux     _vga_read =             /* read vga registers */        \
-                0xee                    /* out dx,al    */              \
-                0x42                    /* inc    dx    */              \
-                0xec                    /* in al,dx     */              \
-                parm [dx] [al]                                          \
-                value [al];
+/* read vga registers */
+#pragma aux     _vga_read =                     \
+        "out    dx,al"          \
+        "inc    dx"             \
+        "in     al,dx"          \
+    parm [dx] [al] value [al];
 
 #define _seq_write( reg, val )          _ega_write( SEQ_PORT, reg, val )
 #define _graph_write( reg, val )        _ega_write( GRA_PORT, reg, val )
@@ -381,30 +371,29 @@ enum ega_graphics_controller {
 #define _graph_read( reg )              _vga_read( GRA_PORT, reg )
 
 
-#pragma aux     _disablev =             /* disable video */     \
-                    0xec                /* in al,dx     */      \
-                    0xa8 0x08           /* test al,8    */      \
-                    0x74 0xfb           /* jz -5        */      \
-                    0xba 0xc0 0x03      /* mov dx,03c0  */      \
-                    0xb0 0x11           /* mov al,11    */      \
-                    0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
-                    0xee                /* out dx,al    */      \
-                    parm [dx]                                   \
-                    modify [ax dx];
+/* disable video */
+#pragma aux     _disablev = \
+    "L1: in   al,dx"    \
+        "test al,8"     \
+        "jz short L1"   \
+        "mov  dx,03c0h" \
+        "mov  al,11h"   \
+        "out  dx,al"    \
+        "xor  al,al"    \
+        "out  dx,al"    \
+    parm [dx] modify [ax dx];
 
-
-#pragma aux     _enablev =              /* enable video  */     \
-                    0xec                /* in al,dx     */      \
-                    0xa8 0x08           /* test al,8    */      \
-                    0x74 0xfb           /* jz -5        */      \
-                    0xba 0xc0 0x03      /* mov dx,03c0  */      \
-                    0xb0 0x31           /* mov al,31    */      \
-                    0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
-                    0xee                /* out dx,al    */      \
-                    parm [dx]                                   \
-                    modify [ax dx];
+/* enable video  */
+#pragma aux     _enablev = \
+    "L1: in   al,dx"    \
+        "test al,8"     \
+        "jz short L1"   \
+        "mov  dx,03c0h" \
+        "mov  al,31h"   \
+        "out  dx,al"    \
+        "xor  al,al"    \
+        "out  dx,al"    \
+    parm [dx] modify [ax dx];
 
 
 enum vid_state_info {
@@ -414,37 +403,35 @@ enum vid_state_info {
         VID_STATE_ALL           = 0x7
 };
 
-#pragma aux     _vidstatesize = /* get video save size */       \
-        0xb8 0x00 0x1c          /* mov ax,1c00  */              \
-        0xcd 0x10               /* int 10       */              \
-        0x3c 0x1c               /* cmp al,1c    */              \
-        0x74 0x02               /* je $+2       */              \
-        0x31 0xdb               /* xor bx,bx    */              \
-        parm [cx]                                               \
-        value [bx]                                              \
-        modify exact [ax bx];
+/* get video save size */
+#pragma aux     _vidstatesize = \
+        "mov    ax,1c00h"       \
+        "int    10h"            \
+        "cmp    al,1ch"         \
+        "je short L1"           \
+        "xor    bx,bx"          \
+    "L1:"                       \
+    parm [cx] value [bx] modify exact [ax bx];
 
-#pragma aux     _vidstatesave = /* save video state */          \
-        0xb8 0x01 0x1c          /* mov ax,1c01  */              \
-        0xcd 0x10               /* int 10       */              \
-        parm [cx] [es] [bx]                                     \
-        modify exact [ax];
+/* save video state */
+#pragma aux     _vidstatesave = \
+        "mov    ax,1c01h"       \
+        "int    10h"            \
+    parm [cx] [es] [bx] modify exact [ax];
 
-#pragma aux     _vidstaterestore = /* restore video state */    \
-        0xb8 0x02 0x1c          /* mov ax,1c02  */              \
-        0xcd 0x10               /* int 10       */              \
-        parm [cx] [es] [bx]                                     \
-        modify exact [ax];
+/* restore video state */
+#pragma aux     _vidstaterestore = \
+        "mov    ax,1c02h"       \
+        "int    10h"            \
+    parm [cx] [es] [bx] modify exact [ax];
 
 
 
 
 #pragma aux Fillb =                                             \
-/*      Fillb( toseg, tooff, val, len );                */      \
-0XF3            /* rep                                  */      \
-0XAA            /* stosb                                */      \
-        parm    caller  [ es ] [ di ] [ ax ] [ cx ]             \
-        modify  [ di es ];
+/* Fillb( toseg, tooff, val, len ); */ \
+        "rep stosb"             \
+    parm caller [es] [di] [ax] [cx] modify [di es];
 
 
 
@@ -468,7 +455,7 @@ extern char        BIOSGetRows();
 extern unsigned    BIOSGetPoints();
 extern char        BIOSGetAttr();
 extern void        BIOSSetAttr( unsigned char );
-extern void             BIOSCharSet();
+extern void        BIOSCharSet();
 extern char        VIDGetCol();
 extern char        VIDGetRow();
 extern void        VIDWait();
@@ -476,7 +463,7 @@ extern void        VIDSetPos();
 extern void        VIDSetRow();
 extern void        VIDSetCol();
 extern void        VIDSetCurTyp();
-extern unsigned         VIDGetCurTyp();
+extern unsigned    VIDGetCurTyp();
 
 
 extern void        Fillb( unsigned, unsigned, unsigned, unsigned );
@@ -484,6 +471,6 @@ extern void        _ega_write( unsigned, char, char );
 extern char        _vga_read( unsigned, char );
 extern void        _disablev( unsigned );
 extern void        _enablev( unsigned );
-extern unsigned         _vidstatesize( unsigned );
-extern void             _vidstatesave( unsigned, unsigned, unsigned );
-extern void             _vidstaterestore( unsigned, unsigned, unsigned );
+extern unsigned    _vidstatesize( unsigned );
+extern void        _vidstatesave( unsigned, unsigned, unsigned );
+extern void        _vidstaterestore( unsigned, unsigned, unsigned );

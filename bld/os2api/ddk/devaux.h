@@ -146,7 +146,7 @@ typedef enum {
 
 USHORT DevHelp_SchedClock( PFN NEAR *SchedRoutineAddr );
 #pragma aux DevHelp_SchedClock =        \
-    "mov  dl,00h"                       \
+    "xor  dl,dl"                        \
     DEVHELP_CALL_NOCHECK                \
     parm caller [ax]                    \
     modify nomemory exact [ax dl];
@@ -195,7 +195,7 @@ USHORT DevHelp_ProcBlock( ULONG EventId, ULONG WaitTime, USHORT IntWaitFlag );
     "mov  dl,04h"                       \
     "call dword ptr [Device_Help]"      \
     "jc   error"                        \
-    "mov  ax,0"                         \
+    "xor  ax,ax"                         \
     "error:"                            \
     value [ax]                          \
     parm caller nomemory [ax bx] [di cx] [dh] \

@@ -363,7 +363,7 @@ extern short CheckRemovable( char );
         "int    021h" \
         "cmp    ax,0fh" \
         "jne    ok" \
-        "mov    ax,0" \
+        "xor    ax,ax" \
         "jmp    done" \
         "ok:    inc ax" \
         "done:" \

@@ -174,24 +174,25 @@ static char             EGA_Intensity[] = {
 
 extern long             GetVGAPalette( short func, short reg );
 #if defined ( __386__ )
-    #pragma aux GetVGAPalette = 0x55              /* push    ebp  */ \
-                                0xcd 0x10         /* int     10H  */ \
-                                0x5d              /* pop     ebp  */ \
-                                0x86 0xcd         /* xchg    cl,ch    */ \
-                                0x0f 0xb7 0xc1    /* movzx   eax,cx   */ \
-                                0xc1 0xe0 0x08    /* shl     eax,08H  */ \
-                                0x8a 0xc6         /* mov     al,dh    */ \
-                                parm caller [eax] [ebx] value [eax] \
-                                modify [ecx edx];
+    #pragma aux GetVGAPalette = \
+        "push    ebp"       \
+        "int     10H"       \
+        "pop     ebp"       \
+        "xchg    cl,ch"     \
+        "movzx   eax,cx"    \
+        "shl     eax,08H"   \
+        "mov     al,dh"     \
+        parm caller [eax] [ebx] value [eax] modify [ecx edx];
 #else
-    #pragma aux GetVGAPalette = 0x55          /* push bp */ \
-                                0xcd 0x10     /* int 10h */ \
-                                0x5d          /* pop bp  */ \
-                                0x88 0xec     /* mov ah,ch (green) */ \
-                                0x88 0xf0     /* mov al,dh (red)   */ \
-                                0x88 0xca     /* mov dl,cl (blue)  */ \
-                                0xb6 0x00     /* mov dh,0          */ \
-                                parm caller [ax] [bx] value [ax dx] modify [cx];
+    #pragma aux GetVGAPalette =         \
+        "push    bp"                    \
+        "int     10h"                   \
+        "pop     bp"                    \
+        "mov     ah,ch" /* (green) */   \
+        "mov     al,dh" /* (red)   */   \
+        "mov     dl,cl" /* (blue)  */   \
+        "xor     dh,dh" 				\
+        parm caller [ax] [bx] value [ax dx] modify [cx];
 #endif
 
 

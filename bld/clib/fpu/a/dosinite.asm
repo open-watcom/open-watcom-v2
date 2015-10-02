@@ -151,7 +151,7 @@ if 0
       cmp   byte ptr _Extender,X_PHARLAP_V4 ; - chk for v4 or higher
       _quif l                           ; - quit if not version 4 or higher
       mov   BL,7                        ; - interrupt #7
-      mov   ECX,0                       ; - read IDT
+      xor   ECX,ECX                     ; - read IDT
       lea   EDX,oldidt                  ; - point to save area
       mov   AX,253Dh                    ; - code to read/write IDT
       int   21h                         ; - read old value

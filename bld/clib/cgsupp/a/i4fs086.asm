@@ -76,7 +76,7 @@ U4FS    proc    near
         _until  c               ; until implied '1' bit shifted out
         mov     dl,ah           ; high bits of mantissa to dl
         mov     ah,al           ; low bits to ah
-        mov     al,0            ; zero the rest
+        xor     al,al           ; zero the rest
         shr     dx,1            ; move exponent & mantissa over
         rcr     ax,1            ; ...
         ret                     ; return

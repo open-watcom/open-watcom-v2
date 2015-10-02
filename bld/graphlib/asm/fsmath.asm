@@ -116,7 +116,7 @@ ret_op1:  ret                   ; - return
 
           _endif                ; - endif
           mov   CH,AH           ; - get shift count
-          mov   AH,0            ; - zero guard byte
+          xor   AH,AH           ; - zero guard byte
           _loop                 ; - loop (align fractions)
             shr   CL,1          ; - - shift over fraction
             rcr   DI,1          ; - - . . .
