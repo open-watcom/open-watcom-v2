@@ -89,7 +89,7 @@ endif
             _shl  CX,1          ; - - place sign in carry
             _quif ne            ; - - quit if not 0
             call  FPInvalidOp   ; - - process exception
-            mov   SI,0FFFFh     ; - - return NaN
+            mov   SI,0FFFFh     ; - - return QNaN
             mov   AX,0C000h     ; - - ...
           _admit                ; - admit: divide by 0
             mov   SI,AX         ; - - get exponent+sign of op1
