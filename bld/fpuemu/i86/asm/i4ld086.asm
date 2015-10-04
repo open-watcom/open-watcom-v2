@@ -39,17 +39,16 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __I4LD, __U4LD - convert 4-byte integer into long double
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  DX:AX - long
-;<>             SS:BX - pointer to long double operand 
-;<>   else
-;<>     input:  DX:AX - long
-;<>             DS:BX - pointer to long double operand
-;<>   endif
-;<>
+;  
+;   __I4LD, __U4LD - convert 4-byte integer into long double
+;  
+;       input:  DX:AX - long
+;ifdef _BUILDING_MATHLIB
+;               SS:BX - pointer to long double result
+;else
+;               DS:BX - pointer to long double result
+;endif
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 ;       __I4LD - convert long into long double

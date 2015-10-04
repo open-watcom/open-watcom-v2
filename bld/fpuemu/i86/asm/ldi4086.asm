@@ -39,19 +39,18 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __LDI4 - convert long double into 4-byte integer
-;<>          it is assumed that the long double has already been rounded
-;<>          to an integer by calling __frndint.
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  SS:AX - pointer to operand
-;<>     output: DX:AX - 4-byte integer
-;<>   else
-;<>     input:  DS:BX - pointer to operand
-;<>     output: DX:AX - 4-byte integer
-;<>   endif
-;<>
+;  
+;   __LDI4 - convert long double into 4-byte integer
+;            it is assumed that the long double has already been rounded
+;            to an integer by calling __frndint.
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to operand
+;else
+;       input:  DS:BX - pointer to operand
+;endif
+;       output: DX:AX - 4-byte integer
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         xdefp   __LDI4

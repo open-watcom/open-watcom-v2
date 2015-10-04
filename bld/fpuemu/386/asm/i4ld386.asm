@@ -41,11 +41,13 @@ endif
         xdefp   __I4LD
         xdefp   __U4LD
 
+;
 ;       __I4LD - convert long into long double
 ;       __U4LD - convert unsigned long into long double
-; input:
-;       EAX - long
-;       EDX - pointer to long double
+;
+;       input:  EAX - long
+;               EDX - pointer to long double result
+;
 
 __I4LD  proc    near
         push    EBX                     ; save EBX

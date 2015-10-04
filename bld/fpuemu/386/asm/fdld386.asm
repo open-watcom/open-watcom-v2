@@ -42,14 +42,15 @@ else
         xdefp   __EmuFDLD
 endif
 
+;
 ;       convert double to long double
-; input:
+;
 ;ifdef _BUILDING_MATHLIB
-;       EAX     pointer to double
-;       EDX     pointer to long double to be filled in
+;       input:  EAX - pointer to double
+;               EDX - pointer to long double to be filled in
 ;else
-;       EDX:EAX double
-;       EBX     pointer to long double to be filled in
+;       input:  EDX:EAX - double
+;               EBX     - pointer to long double to be filled in
 ;endif
 
 ifdef _BUILDING_MATHLIB

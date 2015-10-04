@@ -15,14 +15,15 @@ else
         xdefp   __EmuFSLD
 endif
 
+;
 ;       convert float to long double
-; input:
+;
 ;ifdef _BUILDING_MATHLIB
-;       SS:AX   pointer to float
-;       SS:DX   pointer to long double to be filled in
+;       input:  SS:AX   pointer to float
+;               SS:DX   pointer to long double to be filled in
 ;else
-;       DX:AX   float
-;       DS:BX   pointer to long double to be filled in
+;       input:  DX:AX   float
+;               DS:BX   pointer to long double to be filled in
 ;endif
 
 ifdef _BUILDING_MATHLIB

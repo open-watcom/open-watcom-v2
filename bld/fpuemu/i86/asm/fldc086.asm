@@ -10,15 +10,23 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __FLDC - long double comparison
-;<>     input:  AX - pointer to operand 1
-;<>             DX - pointer to operand 2
-;<>       if op1 > op2,  1 is returned in AX
-;<>       if op1 < op2, -1 is returned in AX
-;<>       if op1 = op2,  0 is returned in AX
-;<>       if either opnd is NaN, then 2 is returned in AX
-;<>
+;  
+;   __FLDC - long double comparison
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to operand 1
+;               SS:DX - pointer to operand 2
+;else
+;       input:  DS:AX - pointer to operand 1
+;               DS:DX - pointer to operand 2
+;endif
+;       output: AX - result
+;  
+;         if op1 > op2,  1 is returned in AX
+;         if op1 < op2, -1 is returned in AX
+;         if op1 = op2,  0 is returned in AX
+;         if either opnd is NaN, then 2 is returned in AX
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         xdefp   __FLDC

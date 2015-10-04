@@ -44,13 +44,14 @@ endif
         xdefp   __LDU4
         xdefp   __RLDU4
 
-;[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-;[]
-;[] __LDU4      convert long double [EAX] into 32-bit integer EAX
-;[]     Input:  EAX  - pointer to long double
-;[]     Output: EAX  - 32-bit integer
-;[]
-;[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;   __LDU4      convert long double [EAX] into 32-bit integer EAX
+;  
+;       Input:  EAX  - pointer to long double
+;       Output: EAX  - 32-bit integer
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;       convert floating double to 4-byte integer with rounding
 
         defp    __RLDU4

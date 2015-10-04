@@ -42,16 +42,17 @@ else
         xdefp   __EmuLDFS
 endif
 
-;       convert long double to float
-; input:
-;       EAX - pointer to long double
-;ifdef _BUILDING_MATHLIB
-;       EDX - pointer to float
-;else
-; output:
-;       EAX - float
-;endif
 ;
+;       convert long double to float
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  EAX - pointer to long double
+;               EDX - pointer to float result
+;else
+;       input:  EAX - pointer to long double
+;       output: EAX - float
+;endif
+
 ifdef _BUILDING_MATHLIB
 __iLDFS proc  near
 else

@@ -39,19 +39,19 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __LDI8 - convert long double into 8-byte integer with truncation
-;<>          it is assumed that the long double has already been rounded
-;<>          to an integer by calling __frndint.
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  SS:AX - pointer to long double operand 
-;<>             SS:DX - pointer to 8-byte integer
-;<>   else
-;<>     input:  DS:AX - pointer to long double operand
-;<>     output: AX:BX:CX:DX - 8-byte integer
-;<>   endif
-;<>
+;  
+;   __LDI8 - convert long double into 8-byte integer with truncation
+;            it is assumed that the long double has already been rounded
+;            to an integer by calling __frndint.
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to long double operand 
+;               SS:DX - pointer to 8-byte integer result
+;else
+;       input:  DS:AX - pointer to long double operand
+;       output: AX:BX:CX:DX - 8-byte integer
+;endif
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         xdefp   __LDI8

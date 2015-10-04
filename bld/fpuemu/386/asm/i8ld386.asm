@@ -39,17 +39,17 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __I8LD, __U8LD - convert 8-byte integer to long double
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  EAX - pointer to 8-byte integer
-;<>             EDX - pointer to long double operand 
-;<>   else
-;<>     input:  EDX:EAX - 8-byte integer
-;<>             EBX - pointer to long double operand
-;<>   endif
-;<>
+;  
+;   __I8LD, __U8LD - convert 8-byte integer to long double
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  EAX - pointer to 8-byte integer
+;               EDX - pointer to long double result
+;else
+;       input:  EDX:EAX - 8-byte integer
+;               EBX     - pointer to long double result
+;endif
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         xdefp   __I8LD

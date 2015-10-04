@@ -38,13 +38,16 @@ include struct.inc
 
         modstart  sqrt386
 
+;
+;       double __sqrtd( double );
+;
+;       input:  EDX:EAX - double
+;       output: EDX:EAX - double
+;
         xdefp   __sqrtd
 
-;
-;      double __sqrtd( double EDX EAX );
-;
-
         defp    __sqrtd
+
         push    EDX                     ; make double parm addressable
         push    EAX                     ; ...
         mov     EAX,ESP                 ; get address of first parm
@@ -61,18 +64,22 @@ include struct.inc
         pop     EAX                     ; pop double into return regs
         pop     EDX                     ; ...
         ret                             ; return
+
         endproc __sqrtd
 
 include fstatus.inc
 
 endif
 
+;
+;       void __sqrt( long double * );
+;
+;       input:  EAX - pointer to long double operand
+;
         xdefp   __sqrt
-;
-;       __sqrt( long double *EAX );
-;
 
         defp    __sqrt
+
         push    EDI             ; save EDI
         push    ESI             ; save ESI
         push    EDX             ; save EDX

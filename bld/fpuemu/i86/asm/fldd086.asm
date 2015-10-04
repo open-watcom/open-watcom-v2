@@ -16,13 +16,21 @@ endif
         xdefp   __FLDD
         xdefp   ___LDD
 
-; void __FLDD( long double *op1 , long double *op2, long double *result )
-;       AX - pointer to op1
-;       DX - pointer to op2
-;       BX - pointer for result
 ;
+; void __FLDD( long double *op1 , long double *op2, long double *result )
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to op1
+;               SS:DX - pointer to op2
+;               SS:BX - pointer for result
+;else
+;       input:  DS:AX - pointer to op1
+;               DS:DX - pointer to op2
+;               DS:BX - pointer for result
+;endif
 
         defp    __FLDD
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -50,19 +58,26 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDD
 
 
-; input:
-;       SI - pointer to op1
-;       DI - pointer to op2
-;       AX - exponent+sign of op1
-;       DX - exponent+sign of op2
-; output:
-;       SI - exponent+sign of result
-;       AX:BX:CX:DX - mantissa
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:SI - pointer to op1
+;               SS:DI - pointer to op2
+;else
+;       input:  DS:SI - pointer to op1
+;               DS:DI - pointer to op2
+;endif
+;               AX - exponent+sign of op1
+;               DX - exponent+sign of op2
+;       output: SI          - exponent+sign of result
+;               AX:BX:CX:DX - mantissa
+;
 
         defp    ___LDD
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS

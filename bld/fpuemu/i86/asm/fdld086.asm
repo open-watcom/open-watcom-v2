@@ -12,12 +12,15 @@ endif
 ;
 ;       convert double to long double
 ;
-ifdef _BUILDING_MATHLIB
-; input:
-;       SS:AX           pointer to double
-;       SS:DX           pointer to long double to be filled in
-;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to double
+;               SS:DX - pointer to long double to be filled in
+;else
+;       input:  AX:BX:CX:DX - double
+;               DS:SI       - pointer to long double to be filled in
+;endif
 
+ifdef _BUILDING_MATHLIB
         xdefp   __iFDLD
 __iFDLD  proc
         push    BX              ; save BX
@@ -31,10 +34,6 @@ __iFDLD  proc
         mov     BX,4[BP]        ; ...
         mov     AX,6[BP]        ; ...
 else
-; input:
-;       AX:BX:CX:DX     double
-;       DS:SI           pointer to long double to be filled in
-;
         xdefp   __EmuFDLD
 __EmuFDLD  proc    near
         push    DI              ; save DI

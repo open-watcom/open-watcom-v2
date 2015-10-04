@@ -44,11 +44,14 @@ endif
         xdefp   __FLDD
         xdefp   ___LDD
 
-; void __FLDD( long double *op1 , long double *op2, long double *result )
-;       EAX - pointer to op1
-;       EDX - pointer to op2
-;       EBX - pointer for result
 ;
+; void __FLDD( long double *op1 , long double *op2, long double *result )
+;
+;       input:  EAX - pointer to op1
+;               EDX - pointer to op2
+;               EBX - pointer for result
+;
+
 sign    equ     -8
 den     equ     sign-8
 quot    equ     den-12

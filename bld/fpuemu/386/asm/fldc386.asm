@@ -39,15 +39,18 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __FLDC - long double comparison
-;<>     input:  EAX - pointer to operand 1
-;<>             EDX - pointer to operand 2
-;<>       if op1 > op2,  1 is returned in EAX
-;<>       if op1 < op2, -1 is returned in EAX
-;<>       if op1 = op2,  0 is returned in EAX
-;<>       if either opnd is NaN, then 2 is returned in EAX
-;<>
+;
+;   __FLDC - long double comparison
+;  
+;       input:  EAX - pointer to operand 1
+;               EDX - pointer to operand 2
+;       output: AX - result
+;  
+;         if op1 > op2,  1 is returned in EAX
+;         if op1 < op2, -1 is returned in EAX
+;         if op1 = op2,  0 is returned in EAX
+;         if either opnd is NaN, then 2 is returned in EAX
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         xdefp   __FLDC

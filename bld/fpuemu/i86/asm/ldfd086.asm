@@ -11,11 +11,15 @@ endif
 ;
 ;       convert long double to double
 ;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to long double
+;               SS:DX - pointer to double result
+;else
+;       input:  DS:BX       - pointer to long double
+;       output: AX:BX:CX:DX - double
+;endif
+
 ifdef _BUILDING_MATHLIB
-; input:
-;       SS:AX - pointer to long double
-;       SS:DX - pointer to double
-;
         xdefp   __iLDFD
 __iLDFD proc
         push    BX              ; save registers
@@ -30,11 +34,6 @@ __iLDFD proc
         mov     DX, [BP]        ; get fraction
         mov     BX,4[BP]        ; get fraction
 else
-; input:
-;       DS:BX - pointer to long double
-; output:
-;       AX:BX:CX:DX - double
-;
         xdefp   __EmuLDFD
 __EmuLDFD  proc    near
         push    DI              ; save di

@@ -126,13 +126,13 @@ didnt_go:   _rcl  EDI,1         ; - - rotate 1 (if carry set) into quotient word
             _rcl  EDX,1         ; - - . . .
             jc    try
 
-;<> If bit 5 of dividend is set here, we didnt subtract the modulus from the
-;<> dividend (recall that the divisor has a 1 in the msb -- if we subtracted
-;<> it from the dividend without a borrow, the dividend would not have a one
-;<> in its msb to be shifted into bit 5 tested for in the condition above. If
-;<> we are rotating a bit into bit 5, the dividend is now big enough that we
-;<> can be sure of subtracting out the divisor without a borrow, as we have
-;<> shifted it left one digit.
+;   If bit 5 of dividend is set here, we didnt subtract the modulus from the
+;   dividend (recall that the divisor has a 1 in the msb -- if we subtracted
+;   it from the dividend without a borrow, the dividend would not have a one
+;   in its msb to be shifted into bit 5 tested for in the condition above. If
+;   we are rotating a bit into bit 5, the dividend is now big enough that we
+;   can be sure of subtracting out the divisor without a borrow, as we have
+;   shifted it left one digit.
             or    EDX,EDX       ; - - check top bit of dividend
           _until  ns            ; - until
           jmp   short didnt_go  ; - continue

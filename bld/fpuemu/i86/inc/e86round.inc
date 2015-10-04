@@ -1,9 +1,9 @@
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __frndint - round long double to integer using rounding control
-;<>     input:  AX - pointer to operand
-;<>             DX - rounding control
-;<>
+;  
+;   __frndint - round long double to integer using rounding control
+;       input:  AX - pointer to operand
+;               DX - rounding control
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         modstart e86round

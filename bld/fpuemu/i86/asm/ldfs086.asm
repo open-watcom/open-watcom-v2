@@ -14,19 +14,17 @@ else
         xdefp   __EmuLDFS
 endif
 
-
-;       convert long double to float
-;ifdef _BUILDING_MATHLIB
-; input:
-;       SS:AX - pointer to long double
-;       SS:DX - pointer to float
-;else
-; input:
-;       DS:BX - pointer to long double
-; output:
-;       DX:AX - float
-;endif
 ;
+;       convert long double to float
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to long double
+;               SS:DX - pointer to float result
+;else
+;       input:  DS:BX - pointer to long double
+;       output: DX:AX - float
+;endif
+
 ifdef _BUILDING_MATHLIB
 __iLDFS proc
         push    DS              ; save registers

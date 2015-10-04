@@ -44,16 +44,18 @@ else
         xdefp   __EmuLDFD
 endif
 
-;       convert long double to double
-; input:
-;       EAX - pointer to long double
+;
+; - convert long double to double
+;
 ;ifdef _BUILDING_MATHLIB
-;       EDX - pointer to double
+;       input:  EAX - pointer to long double
+;               EDX - pointer to double result
 ;else
-; output:
-;       EDX:EAX - double
+;       input:  EAX - pointer to long double
+;       output: EDX:EAX - double
 ;endif
 ;
+
 ifdef _BUILDING_MATHLIB
 __iLDFD proc    near
         push    ECX                     ; save ECX

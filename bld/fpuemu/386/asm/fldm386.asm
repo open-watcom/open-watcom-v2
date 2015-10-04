@@ -39,13 +39,13 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<>     long double math library
-;<>
-;<>     inputs: EAX - pointer to long double (op1)
-;<>             EDX - pointer to long double (op2)
-;<>             EBX - pointer to long double (result)
-;<>
+;  
+;       long double math library
+;  
+;       inputs: EAX - pointer to long double (op1)
+;               EDX - pointer to long double (op2)
+;               EBX - pointer to long double (result)
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         xdefp   __FLDM           ; 10-byte real multiply

@@ -45,13 +45,13 @@ include struct.inc
 endif
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<>     long double math library
-;<>
-;<>     inputs: EAX - pointer to long double (op1)
-;<>             EDX - pointer to long double (op2)
-;<>             EBX - pointer to long double (result)
-;<>
+;  
+;       long double math library
+;  
+;       input:  EAX - pointer to long double (op1)
+;               EDX - pointer to long double (op2)
+;               EBX - pointer to long double (result)
+;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         xdefp   __FLDA          ; add real*10 to real*10
@@ -207,6 +207,7 @@ addnan2:mov     EDX,ECX         ; return op2
         endproc ___LDS
 
         defp    ___LDA
+
         push    EDI             ; save EDI
         sub     EDI,EDI         ; indicate add
 __add:  add     SI,1            ; add 1 to exponent
@@ -401,6 +402,7 @@ add_oflow:                      ; handle overflow
         mov     EDX,80000000h   ; ...
         jmp     short _addret   ; return
 ;;      jmp     F8OverFlow      ; handle overflow
+
         endproc ___LDA
 
 

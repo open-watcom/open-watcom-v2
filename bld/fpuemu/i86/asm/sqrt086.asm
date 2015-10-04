@@ -9,12 +9,16 @@ include struct.inc
         xrefp   __iFDLD
         xrefp   __iLDFD
 
+;
+;       double __sqrtd( double );
+;
+;       input:  AX:BX:CX:DX - double
+;       output: AX:BX:CX:DX - double
+;
         xdefp   __sqrtd
 
-;
-;      double __sqrtd( double AX BX CX DX );
-;
         defp    __sqrtd
+
         sub     SP,2                ; do space for long double
         push    AX                  ; put double on stack
         push    BX                  ; ...
@@ -34,23 +38,29 @@ include struct.inc
         pop     AX                  ; ...
         add     SP,2                ; correct SP
         ret                         ; return
+
         endproc __sqrtd
 
 endif
 
+
+;
+;       void __sqrt( long double * );
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to long double
+;else
+;       input:  DS:AX - pointer to long double
+;endif
+
         xdefp   __sqrt
-;
-;       __sqrt( long double *AX );
-;
+
 ifdef _BUILDING_MATHLIB
-; input:
-;       SS:AX           pointer to long double
 PREG    equ     BP
 else
-; input:
-;       DS:AX           pointer to long double
 PREG    equ     DI
 endif
+
 __sqrt  proc    near
         push    BP                  ; save BP
         push    DI                  ; save DI

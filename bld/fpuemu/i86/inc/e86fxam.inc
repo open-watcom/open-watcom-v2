@@ -15,8 +15,7 @@ XAM_EMPTY       equ     41h
 XAM_DENORMAL    equ     44h
 
 ;
-;  input:
-;       AX - pointer to long double
+;       input:  AX - pointer to long double operand
 ;
         defp    __fxam
         push    BX                      ; save BX

@@ -69,12 +69,12 @@
 __EvalPoly endp
 
 
-;  input:
-;       long double in SI:EDX:EAX
-;       pointer to polynomial in CS:ECX
-;       degree of polynomial in EBX
-;  output:
-;       long double in SI:EDX:EAX
+;
+;       input:  SI:EDX:EAX - long double
+;               CS:ECX     - pointer to polynomial
+;               EBX        - degree of polynomial
+;       output: SI:EDX:EAX - long double
+;
 
         defp    __poly
         push    EBP                     ; save EBP
