@@ -743,12 +743,14 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
             BufferAlignToTab( PREFIX_SIZE_TABS );
         }
         BufferStore( "\t%s", name );
-        pos_tabs = ( DisInsNameMax( &DHnd ) + TAB_WIDTH ) / TAB_WIDTH + 1;
-        if( !(DFormat & DFF_ASM) ) {
-            pos_tabs += PREFIX_SIZE_TABS;
+        if( *ops != '\0' ) {
+            pos_tabs = ( DisInsNameMax( &DHnd ) + TAB_WIDTH ) / TAB_WIDTH + 1;
+            if( !(DFormat & DFF_ASM) ) {
+                pos_tabs += PREFIX_SIZE_TABS;
+            }
+            BufferAlignToTab( pos_tabs );
+            BufferConcat( ops );
         }
-        BufferAlignToTab( pos_tabs );
-        BufferConcat( ops );
         BufferConcatNL();
         BufferPrint();
     }
