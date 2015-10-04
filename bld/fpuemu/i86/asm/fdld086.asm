@@ -2,6 +2,7 @@ ifdef _BUILDING_MATHLIB
 
 include mdef.inc
 include struct.inc
+include shiftmac.inc
 
         modstart    fdld086, word
 endif
@@ -16,30 +17,6 @@ ifdef _BUILDING_MATHLIB
 ;       SS:AX           pointer to double
 ;       SS:DX           pointer to long double to be filled in
 ;
-
-SHIFT_LEFT_1    macro
-        _shl    DX,1            ; shift fraction << 1
-        _rcl    CX,1            ; ...
-        _rcl    BX,1            ; ...
-        _rcl    AX,1            ; ...
-        endm
-
-SHIFT_LEFT_8    macro
-        mov     AH,AL           ; shift fraction << 8
-        mov     AL,BH           ; ...
-        mov     BH,BL           ; ...
-        mov     BL,CH           ; ...
-        mov     CH,CL           ; ...
-        mov     CL,DH           ; ...
-        mov     DH,DL           ; ...
-        xor     DL,DL           ; ...
-        endm
-
-SHIFT_LEFT_16   macro
-        xchg    AX,DX           ; shift fraction << 16
-        xchg    AX,CX           ; ...
-        xchg    AX,BX           ; ...
-        endm
 
         xdefp   __iFDLD
 __iFDLD  proc
@@ -85,9 +62,9 @@ endif
           pushf                 ; - save sign (Carry flag)
           mov     AH,3 shl 6    ; - set AH for shift count 3
           _loop                 ; - loop shift fraction
-            SHIFT_LEFT_1        ; - - shift fraction << 1
+            qw_lshift_1         ; - - shift fraction << 1
           _until nc             ; - loop until count is not zero
-          SHIFT_LEFT_8          ; - and 8 more makes 11
+          qw_lshift_8           ; - and 8 more makes 11
           cmp     DI,7FFh SHL 1 ; - check entry exponent is NaN
           _if e                 ; - if entry exponent is NaN
             mov   DI,7FFFh SHL 1; - - adjust result exponent to 7FFFh (NaN)
@@ -105,18 +82,18 @@ endif
                 or  AX,AX       ; - - - - check fraction MSB
               _quif nz          ; - - - quit if not zero
                 sub DI,16 SHL 1 ; - - - - adjust result exponent
-                SHIFT_LEFT_16   ; - - - - shift fraction << 16
+                qw_lshift_16    ; - - - - shift fraction << 16
               _endloop          ; - - - endloop
               _loop             ; - - - loop shift fraction by 8 quantities
                 or  AH,AH       ; - - - - check fraction MSB
               _quif nz          ; - - - quit if not zero
                 sub DI,8 SHL 1  ; - - - - adjust result exponent
-                SHIFT_LEFT_8    ; - - - - shift fraction << 8
+                qw_lshift_8     ; - - - - shift fraction << 8
               _endloop          ; - - - endloop
               _loop             ; - - - loop shift fraction by 1
               _quif s           ; - - - quit if normalized (implied bit is set)
                 sub DI,1 SHL 1  ; - - - - adjust result exponent
-                SHIFT_LEFT_1    ; - - - - shift fraction << 1
+                qw_lshift_1     ; - - - - shift fraction << 1
               _endloop          ; - - - endloop
             _endif              ; - - endif
             or    AH,80h        ; - - turn on implied bit

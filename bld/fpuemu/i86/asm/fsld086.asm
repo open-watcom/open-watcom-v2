@@ -3,6 +3,7 @@ ifdef _BUILDING_MATHLIB
 
 include mdef.inc
 include struct.inc
+include shiftmac.inc
 
         xrefp   FPInvalidOp
 
@@ -23,22 +24,6 @@ endif
 ;       DX:AX   float
 ;       DS:BX   pointer to long double to be filled in
 ;endif
-
-SHIFT_LEFT_1    macro
-        _shl    AX,1            ; shift fraction << 1
-        _rcl    DX,1            ; ...
-        endm
-
-SHIFT_LEFT_8    macro
-        mov     DH,DL           ; shift fraction << 8
-        mov     DL,AH           ; ...
-        mov     AH,AL           ; ...
-        xor     AL,AL           ; ...
-        endm
-
-SHIFT_LEFT_16   macro
-        xchg    DX,AX           ; shift fraction << 16
-        endm
 
 ifdef _BUILDING_MATHLIB
 __iFSLD proc
@@ -92,18 +77,18 @@ endif
                 or  DX,DX       ; - - - - check fraction MSB
               _quif nz          ; - - - quit if not zero
                 sub   CX,16     ; - - - - adjust result exponent
-                SHIFT_LEFT_16   ; - - - - shift fraction << 16
+                dw_lshift_16    ; - - - - shift fraction << 16
               _endloop          ; - - - endloop
               _loop             ; - - - loop shift fraction by 8 quantities
                 or  DH,DH       ; - - - - check fraction MSB
               _quif nz          ; - - - quit if not zero
                 sub   CX,8      ; - - - - adjust result exponent
-                SHIFT_LEFT_8    ; - - - - shift fraction << 8
+                dw_lshift_8     ; - - - - shift fraction << 8
               _endloop          ; - - - endloop
               _loop             ; - - - loop shift fraction by 1
               _quif s           ; - - - quit if normalized (implied bit is set)
                 dec   CX;       ; - - - - adjust result exponent
-                SHIFT_LEFT_1    ; - - - - shift fraction << 1
+                dw_lshift_1     ; - - - - shift fraction << 1
               _endloop          ; - - - endloop
             _endif              ; - - endif
             or    DH,80h        ; - - turn on implied bit
