@@ -38,6 +38,9 @@ include struct.inc
 
 endif
 
+        xdefp   __I4LD
+        xdefp   __U4LD
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
 ;   __I4LD, __U4LD - convert 4-byte integer into long double
@@ -54,10 +57,8 @@ endif
 ;       __I4LD - convert long into long double
 ;       __U4LD - convert unsigned long into long double
 
-        xdefp   __I4LD
-        xdefp   __U4LD
-
         defp    __I4LD
+
         or      DX,DX           ; if number is negative
         _if     s               ; then
           not   DX              ; - negate the value
@@ -68,6 +69,7 @@ endif
         _else                   ; else
 
         defp    __U4LD          ; - convert unsigned long to long double
+
           push  CX              ; - save CX
           mov   CX,0401Eh       ; - set exponent
         _endif                  ; endif
@@ -112,8 +114,9 @@ ifdef _BUILDING_MATHLIB
 endif
         pop     CX              ; restore CX
         ret                     ; return
-__U4LD  endp
-__I4LD  endp
+
+        endproc __U4LD
+        endproc __I4LD
 
 
 ifdef _BUILDING_MATHLIB

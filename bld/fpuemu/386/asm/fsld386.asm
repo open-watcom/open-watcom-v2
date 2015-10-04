@@ -34,11 +34,13 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPInvalidOp
-
         modstart    fsld386, dword
 
+endif
 
+        xrefp   FPInvalidOp
+
+ifdef _BUILDING_MATHLIB
         xdefp   __iFSLD
 else
         xdefp   __EmuFSLD
@@ -56,10 +58,13 @@ endif
 ;endif
 
 ifdef _BUILDING_MATHLIB
-__iFSLD proc  near
+
+        defp    __iFSLD
+
         mov     EAX,[EAX]               ; get float value
 else
-__EmuFSLD proc  near
+
+        defp    __EmuFSLD
 endif
         push    ECX                     ; save ECX
         mov     ECX,EAX                 ; get exponent and sign
@@ -100,10 +105,11 @@ endif
         mov     8[EDX],CX               ; ...
         pop     ECX                     ; restore ECX
         ret                             ; return
+
 ifdef _BUILDING_MATHLIB
-__iFSLD endp
+        endproc __iFSLD
 else
-__EmuFSLD endp
+        endproc __EmuFSLD
 endif
 
 ifdef _BUILDING_MATHLIB

@@ -40,6 +40,7 @@
         xrefp   __OddPoly       ; evaluate polynomial
 
         xdefp   __fpatan        ; calc atan2(y,x)
+
 ;;/*
 ;;        atan - compute arctangent
 ;;
@@ -137,7 +138,9 @@ AtanPoly dt      0.0443895157187
 ;;      EDX - pointer to X
 ;;      EBX - pointer to result
 ;;
+
         defp    __fpatan
+
         push    EDI                     ; save registers
         push    ESI                     ; ...
         push    ECX                     ; ...
@@ -196,7 +199,9 @@ AtanPoly dt      0.0443895157187
         pop     ESI                     ; ...
         pop     EDI                     ; ...
         ret                             ; return
-__fpatan endp
+
+        endproc __fpatan
+
 ;;
 ;;
 ;;void atan( long double *x )
@@ -207,6 +212,7 @@ __fpatan endp
 ;;        register int    sgnx;
 ;;
         defp    __atan
+
         push    EDI                     ; save registers
         push    ESI                     ; ...
         push    ECX                     ; ...
@@ -375,5 +381,5 @@ __fpatan endp
         pop     ESI                     ; ...
         pop     EDI                     ; ...
         ret                             ; return
-__atan  endp
 
+        endproc __atan

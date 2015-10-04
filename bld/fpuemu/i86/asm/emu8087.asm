@@ -45,7 +45,7 @@ modstart        macro   modname
                 endm
 
 xdefp           macro   xsym
-ifdef _DEBUG
+ifndef NDEBUG
                 public  xsym
 endif
                 endm

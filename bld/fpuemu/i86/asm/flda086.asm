@@ -8,6 +8,12 @@ include struct.inc
 
 endif
 
+        xdefp   __FLDA          ; add real*10 to real*10
+        xdefp   __FLDS          ; subtract real*10 from real*10
+        xdefp   __FLDAC         ; add real*10 to real*10
+        xdefp   __FLDSC         ; subtract real*10 from real*10
+        xdefp   ___LDA          ; long double add routine
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
 ;       long double math library
@@ -23,12 +29,6 @@ endif
 ;endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-        xdefp   __FLDA          ; add real*10 to real*10
-        xdefp   __FLDS          ; subtract real*10 from real*10
-        xdefp   __FLDAC         ; add real*10 to real*10
-        xdefp   __FLDSC         ; subtract real*10 from real*10
-        xdefp   ___LDA          ; long double add routine
 
         defp    __FLDS
 

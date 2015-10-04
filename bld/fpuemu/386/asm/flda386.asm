@@ -44,6 +44,11 @@ include struct.inc
 
 endif
 
+        xdefp   __FLDA          ; add real*10 to real*10
+        xdefp   __FLDAC         ; add real*10 to real*10 (opnd 2 on stack)
+        xdefp   __FLDS          ; subtract real*10 from real*10
+        xdefp   ___LDA          ; long double add routine
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
 ;       long double math library
@@ -54,12 +59,8 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __FLDA          ; add real*10 to real*10
-        xdefp   __FLDAC         ; add real*10 to real*10 (opnd 2 on stack)
-        xdefp   __FLDS          ; subtract real*10 from real*10
-        xdefp   ___LDA          ; long double add routine
-
         defp    __FLDS
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -78,9 +79,12 @@ endif
         pop     ECX             ; restore ECX
         pop     ESI             ; restore ESI
         ret                     ; return
+
         endproc __FLDS
 
+
         defp    __FLDA
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -99,9 +103,12 @@ endif
         pop     ECX             ; restore ECX
         pop     ESI             ; restore ESI
         ret                     ; return
+
         endproc __FLDA
 
+
         defp    __FLDAC
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -120,10 +127,12 @@ endif
         pop     ECX             ; restore ECX
         pop     ESI             ; restore ESI
         ret     12              ; return and clean up stack
+
         endproc __FLDAC
 
 
         defp    ___LDS
+
         push    EDI             ; save EDI
         mov     EDI,80000000h   ; indicate subtract
         jmp     __add           ; do the add
@@ -204,7 +213,9 @@ addnan2:mov     EDX,ECX         ; return op2
         shr     ESI,16          ; shift exponent to bottom
         pop     EDI             ; restore EDI
         ret                     ; return
+
         endproc ___LDS
+
 
         defp    ___LDA
 

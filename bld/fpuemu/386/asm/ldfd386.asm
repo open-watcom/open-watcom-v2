@@ -34,11 +34,13 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPOverFlow
-
         modstart    ldfd386, dword
 
+endif
 
+        xrefp   FPOverFlow
+
+ifdef _BUILDING_MATHLIB
         xdefp   __iLDFD
 else
         xdefp   __EmuLDFD
@@ -57,13 +59,17 @@ endif
 ;
 
 ifdef _BUILDING_MATHLIB
-__iLDFD proc    near
+
+        defp    __iLDFD
+
         push    ECX                     ; save ECX
         push    EBX                     ; save EBX
         push    ESI                     ; save ESI
         push    EDX                     ; save address of double
 else
-__EmuLDFD proc  near
+
+        defp    __EmuLDFD
+
         push    ECX                     ; save ECX
         push    EBX                     ; save EBX
         push    ESI                     ; save ESI
@@ -151,13 +157,15 @@ ifdef _BUILDING_MATHLIB
         pop     EBX                     ; restore EBX
         pop     ECX                     ; restore ECX
         ret                             ; return
-__iLDFD endp
+
+        endproc __iLDFD
 else
         pop     ESI                     ; restore ESI
         pop     EBX                     ; restore EBX
         pop     ECX                     ; restore ECX
         ret                             ; return
-__EmuLDFD endp
+
+        endproc __EmuLDFD
 endif
 
 ifdef _BUILDING_MATHLIB

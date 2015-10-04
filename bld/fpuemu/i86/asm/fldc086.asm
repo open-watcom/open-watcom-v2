@@ -6,8 +6,9 @@ include struct.inc
 
         modstart    fldc086, word
 
-
 endif
+
+        xdefp   __FLDC
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
@@ -29,9 +30,8 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __FLDC
-
         defp    __FLDC
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS

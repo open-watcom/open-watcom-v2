@@ -49,7 +49,8 @@ endif
 ;               EDX - pointer to long double result
 ;
 
-__I4LD  proc    near
+        defp    __I4LD
+
         push    EBX                     ; save EBX
         mov     EBX,EDX                 ; save pointer to long double
         or      EAX,EAX                 ; if number is negative
@@ -60,7 +61,8 @@ __I4LD  proc    near
           pop   EBX                     ; - restore EBX
 ;       convert unsigned 32-bit integer to long double
 
-__U4LD:
+        defp    __U4LD
+
           push  EBX                     ; - save EBX
           mov   EBX,EDX                 ; - save pointer to long double
           mov   EDX,00003FFFh           ; - set exponent
@@ -89,7 +91,9 @@ __U4LD:
         pop     ECX                     ; restore ECX
         pop     EBX                     ; restore EBX
         ret                             ; return
-__I4LD  endp
+
+        endproc __U4LD
+        endproc __I4LD
 
 ifdef _BUILDING_MATHLIB
 

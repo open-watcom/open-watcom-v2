@@ -50,6 +50,7 @@ XAM_DENORMAL    equ     44h
 ;
 
         defp    __fxam
+
         push    EBX                     ; save EBX
         push    EDX                     ; save EDX
         mov     EBX,EAX                 ; get pointer to top of stack
@@ -110,5 +111,6 @@ XAM_DENORMAL    equ     44h
         pop     EDX                     ; restore EDX
         pop     EBX                     ; restore EBX
         ret                             ; return
-__fxam  endp
+
+        endproc __fxam
 

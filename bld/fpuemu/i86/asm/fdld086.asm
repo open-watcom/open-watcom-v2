@@ -5,9 +5,16 @@ include struct.inc
 include shiftmac.inc
 
         modstart    fdld086, word
+
 endif
 
         xrefp   FPInvalidOp
+
+ifdef _BUILDING_MATHLIB
+        xdefp   __iFDLD
+else
+        xdefp   __EmuFDLD
+endif
 
 ;
 ;       convert double to long double
@@ -21,8 +28,8 @@ endif
 ;endif
 
 ifdef _BUILDING_MATHLIB
-        xdefp   __iFDLD
-__iFDLD  proc
+        defp    __iFDLD
+
         push    BX              ; save BX
         push    CX              ; save CX
         push    DI              ; save DI
@@ -34,8 +41,8 @@ __iFDLD  proc
         mov     BX,4[BP]        ; ...
         mov     AX,6[BP]        ; ...
 else
-        xdefp   __EmuFDLD
-__EmuFDLD  proc    near
+        defp    __EmuFDLD
+
         push    DI              ; save DI
 endif
         ; 10-byte temporary result is placed into DI:AX:BX:CX:DX
@@ -112,7 +119,8 @@ ifdef _BUILDING_MATHLIB
         pop     CX              ; restore CX
         pop     BX              ; restore BX
         ret                     ; return
-__iFDLD  endp
+
+        endproc __iFDLD
 
         endmod
 
@@ -126,7 +134,8 @@ else
         mov     8[SI],DI        ; ...
         pop     DI              ; restore DI
         ret                     ; return
-__EmuFDLD  endp
+
+        endproc __EmuFDLD
 
         endf    equ <>
 

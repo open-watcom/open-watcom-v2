@@ -5,11 +5,13 @@ include mdef.inc
 include struct.inc
 include shiftmac.inc
 
-        xrefp   FPInvalidOp
-
         modstart    fsld086, word
 
+endif
 
+        xrefp   FPInvalidOp
+
+ifdef _BUILDING_MATHLIB
         xdefp   __iFSLD
 else
         xdefp   __EmuFSLD
@@ -27,7 +29,9 @@ endif
 ;endif
 
 ifdef _BUILDING_MATHLIB
-__iFSLD proc
+
+        defp    __iFSLD
+
         push    BP              ; save registers
         push    CX              ; ...
         push    DX              ; save return pointer
@@ -35,7 +39,9 @@ __iFSLD proc
         mov     AX,[BP]         ; get parm
         mov     DX,2[BP]        ; ...
 else
-__EmuFSLD proc  near
+
+        defp    __EmuFSLD
+
         push    CX              ; save registers
 endif
         ; 10-byte temporary result is placed into CX:DX:AX:0:0
@@ -109,7 +115,8 @@ ifdef _BUILDING_MATHLIB
         pop     CX              ; restore registers
         pop     BP              ; ...
         ret                     ; return
-__iFSLD endp
+
+        endproc __iFSLD
 else
         mov     8[BX],CX        ; save exponent
         mov     6[BX],DX        ; save high word of fraction
@@ -119,7 +126,8 @@ else
         mov     [BX],AX         ; ...
         pop     CX              ; restore registers
         ret                     ; return
-__EmuFSLD endp
+
+        endproc __EmuFSLD
 endif
 
 ifdef _BUILDING_MATHLIB

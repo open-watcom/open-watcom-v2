@@ -38,7 +38,9 @@
 ;       int fprem( long double *x, long double *modulus )
 ;                       EAX             EDX
 ;
+
         defp    __fprem
+
         _guess                  ; guess: number is 0
           cmp   word ptr 8[EAX],0; - quit if not 0
           _quif ne              ; - ...
@@ -92,10 +94,12 @@
         pop     ESI             ; restore ESI
         pop     EBP             ; restore EBP
         ret                     ; return
+
         endproc __fprem
 
 
         defp    ___fprem
+
         push    ESI             ; save sign of operand
         push    EDI             ; save high part of modulus
         and     ESI,00007FFFh   ; isolate exponent
@@ -173,5 +177,6 @@ _done:    sub   ESI,ESI         ; - set ESI to 0
           neg   EDI             ; - negate quotient
         _endif                  ; endif
         ret                     ; return
+
         endproc ___fprem
 

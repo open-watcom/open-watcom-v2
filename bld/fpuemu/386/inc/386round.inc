@@ -70,6 +70,7 @@ Masks   dd      07FFFFFFFh
         dd      000000000h
 
         defp    __frndint
+
         push    EDI             ; save EDI
         mov     EDI,EAX         ; point to operand
         sub     EBX,EBX         ; zero index register

@@ -12,6 +12,7 @@
         xrefp   __OddPoly       ; evaluate polynomial
 
         xdefp   __fpatan        ; calc atan2(y,x)
+
 ;;/*
 ;;        atan - compute arctangent
 ;;
@@ -110,7 +111,9 @@ sqrt3   dt      1.7320508075688772936
 ;;      DX - pointer to X
 ;;      BX - pointer to result
 ;;
+
         defp    __fpatan
+
         push    DI                      ; save registers
         push    SI                      ; ...
         push    CX                      ; ...
@@ -195,7 +198,9 @@ sqrt3   dt      1.7320508075688772936
         pop     SI                      ; ...
         pop     DI                      ; ...
         ret                             ; return
-__fpatan endp
+
+        endproc __fpatan
+
 ;;
 ;;
 ;;void atan( long double *x )
@@ -205,7 +210,9 @@ __fpatan endp
 ;;        register char   add_piby6;
 ;;        register int    sgnx;
 ;;
+
         defp    __atan
+
         push    DI                      ; save registers
         push    SI                      ; ...
         push    DX                      ; ...
@@ -344,5 +351,6 @@ atan_exit:
         pop     SI                      ; ...
         pop     DI                      ; ...
         ret                             ; return
-__atan  endp
+
+        endproc __atan
 

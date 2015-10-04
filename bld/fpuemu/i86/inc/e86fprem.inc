@@ -5,7 +5,9 @@
 
 ;       int __fprem( LD *x, LD *modulus )
 ;
+
         defp    __fprem
+
         push    SI              ; save SI
         push    DI              ; save DI
         push    CX              ; save CX
@@ -177,5 +179,6 @@ _return:
         pop     DI              ; ...
         pop     SI              ; ...
         ret                     ; return
+
         endproc __fprem
 

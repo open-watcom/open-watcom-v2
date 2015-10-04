@@ -38,6 +38,9 @@ include struct.inc
 
 endif
 
+        xdefp   __FLDM           ; 10-byte real multiply
+        xdefp   ___LDM           ; 10-byte real multiply
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
 ;       long double math library
@@ -48,12 +51,8 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __FLDM           ; 10-byte real multiply
-        xdefp   ___LDM           ; 10-byte real multiply
-
-;=====================================================================
-
         defp    __FLDM
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -163,11 +162,12 @@ mulnan2:sub     ESI,10000h      ; readjust high exponent
         mov     EAX,EBX         ; ...
         shr     ESI,16          ; shift exponent to bottom
         ret                     ; return
+
         endproc __FLDM
 
 
-
         defp    ___LDM
+
         add     SI,1            ; add 1 to exponent
         jc      mulnan1         ; quit if NaN
         jo      mulnan1         ; ...
@@ -305,6 +305,7 @@ mul_oflow:                      ; overflow
         mov     EDX,80000000h   ; set fraction
         sub     EAX,EAX         ; ...
         jmp     short _mulret   ; return
+
         endproc ___LDM
 
 ifdef _BUILDING_MATHLIB

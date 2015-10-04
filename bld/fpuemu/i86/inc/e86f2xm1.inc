@@ -1,7 +1,7 @@
 
-        xrefp   _COne            ; 1.0
-
         modstart  e86f2xm1
+
+        xrefp   _COne            ; 1.0
 
         xrefp   __FLDA          ; add
         xrefp   __FLDS          ; subtract
@@ -13,7 +13,6 @@
         xrefp   __FLDMC         ; multiply
 
         xdefp   __f2xm1         ; calc 2**x - 1
-
 
 ExpConsts   dt  1.0442737824274138403   ;/*   sqrt(sqrt(sqrt(sqrt(2))))  */
             dt  1.0905077326652576592   ;/*   sqrt(sqrt(sqrt(2)))        */
@@ -38,7 +37,9 @@ const2  dt      7.213503410844819
 ;;    double              b;
 ;;    double              ee;
 ;;
+
         defp    __f2xm1
+
         push    BP                      ; save EBP
         push    DI                      ; save registers
         push    SI                      ; ...
@@ -234,5 +235,6 @@ const2  dt      7.213503410844819
         pop     DI                      ; ...
         pop     BP                      ; ...
         ret                             ; return
-__f2xm1 endp
+
+        endproc __f2xm1
 

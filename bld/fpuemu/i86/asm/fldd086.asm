@@ -4,14 +4,12 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPDivZero
-        xrefp   FPInvalidOp
-
         modstart    fldd086, word
-
 
 endif
 
+        xrefp   FPDivZero
+        xrefp   FPInvalidOp
 
         xdefp   __FLDD
         xdefp   ___LDD

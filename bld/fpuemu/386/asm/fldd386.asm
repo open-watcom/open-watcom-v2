@@ -34,12 +34,12 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPDivZero
-        xrefp   FPInvalidOp
-
         modstart    fldd386, dword
 
 endif
+
+        xrefp   FPDivZero
+        xrefp   FPInvalidOp
 
         xdefp   __FLDD
         xdefp   ___LDD
@@ -59,6 +59,7 @@ lo      equ     0
 hi      equ     4
 
         defp    __FLDD
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -150,11 +151,12 @@ divnan2:sub     ESI,10000h      ; readjust high exponent
         mov     EAX,EBX         ; ...
         shr     ESI,16          ; get exponent of op2
         ret                     ; return
+
         endproc __FLDD
 
 
-
         defp    ___LDD
+
         add     SI,1            ; add 1 to exponent
         jc      divnan1         ; quit if NaN
         jo      divnan1         ; ...

@@ -4,9 +4,16 @@ include mdef.inc
 include struct.inc
 
         modstart    ldfd086, word
+
 endif
 
         xrefp   FPOverFlow
+
+ifdef _BUILDING_MATHLIB
+        xdefp   __iLDFD
+else
+        xdefp   __EmuLDFD
+endif
 
 ;
 ;       convert long double to double
@@ -20,8 +27,9 @@ endif
 ;endif
 
 ifdef _BUILDING_MATHLIB
-        xdefp   __iLDFD
-__iLDFD proc
+
+        defp    __iLDFD
+
         push    BX              ; save registers
         push    CX              ; ...
         push    DI              ; ...
@@ -34,8 +42,9 @@ __iLDFD proc
         mov     DX, [BP]        ; get fraction
         mov     BX,4[BP]        ; get fraction
 else
-        xdefp   __EmuLDFD
-__EmuLDFD  proc    near
+
+        defp    __EmuLDFD
+
         push    DI              ; save di
         mov     DI,8[BX]        ; get exponent and sign
         mov     AX,6[BX]        ; get fraction
@@ -148,7 +157,8 @@ ifdef _BUILDING_MATHLIB
         pop     CX              ; ...
         pop     BX              ; ...
         ret                     ; return
-__iLDFD endp
+
+        endproc __iLDFD
 
         endmod
 
@@ -157,7 +167,8 @@ __iLDFD endp
 else
         pop     DI              ; restore di
         ret                     ; return
-__EmuLDFD  endp
+
+        endproc __EmuLDFD
 
         endf    equ <>
 

@@ -4,11 +4,13 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPOverFlow
-
         modstart    ldfs086, word
 
+endif
 
+        xrefp   FPOverFlow
+
+ifdef _BUILDING_MATHLIB
         xdefp   __iLDFS
 else
         xdefp   __EmuLDFS
@@ -26,7 +28,9 @@ endif
 ;endif
 
 ifdef _BUILDING_MATHLIB
-__iLDFS proc
+
+        defp    __iLDFS
+
         push    DS              ; save registers
         push    BX              ; ...
         push    DX              ; save return pointer
@@ -34,7 +38,8 @@ __iLDFS proc
         pop     DS              ; ...
         mov     BX,AX           ; get parm
 else
-__EmuLDFS proc  near
+
+        defp    __EmuLDFS
 endif
         mov     DX,8[BX]        ; get exponent+sign
         mov     AX,DX           ; save sign
@@ -121,10 +126,12 @@ _ret_ldfs:                      ; function epilogue
         pop     BX              ; restore registers
         pop     DS              ; ...
         ret                     ; return
-__iLDFS endp
+
+        endproc __iLDFS
 else
         ret                     ; return
-__EmuLDFS endp
+
+        endproc __EmuLDFS
 endif
 
 ifdef _BUILDING_MATHLIB

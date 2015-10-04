@@ -38,6 +38,8 @@ include struct.inc
 
 endif
 
+        xdefp   __FLDC
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;
 ;   __FLDC - long double comparison
@@ -53,9 +55,8 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __FLDC
-
         defp    __FLDC
+
         push    EDI             ; save EDI
         push    ESI             ; save ESI
         _guess                  ; guess: op1 is not a NaN

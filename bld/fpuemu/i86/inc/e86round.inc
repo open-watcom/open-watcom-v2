@@ -30,6 +30,7 @@ Masks:  dw      07FFFh
         dw      00000h
 
         defp    __frndint
+
         push    DI              ; save DI
         mov     DI,AX           ; point to operand
         mov     BX,8[DI]        ; get exponent

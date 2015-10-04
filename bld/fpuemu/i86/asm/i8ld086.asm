@@ -38,6 +38,9 @@ include struct.inc
 
 endif
 
+        xdefp   __I8LD
+        xdefp   __U8LD
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
 ;   __I8LD, __U8LD - convert 8-byte integer into long double
@@ -52,18 +55,17 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __I8LD
-        xdefp   __U8LD
-
 ;       __I8LD - convert 8-byte integer into long double
 ;       __U8LD - convert unsigned 8-byte integer into long double
 
         defp    __U8LD
+
         push    DI              ; save DI
         mov     DI,1            ; unsigned value
         jmp     short cont1
 
         defp    __I8LD
+
         push    DI              ; save DI
         xor     DI,DI           ; signed value
 cont1:
@@ -159,8 +161,9 @@ else
 endif
         pop     DI              ; restore DI
         ret                     ; return
-__I8LD  endp
-__U8LD  endp
+
+        endproc __I8LD
+        endproc __U8LD
 
 
 ifdef _BUILDING_MATHLIB

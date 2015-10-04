@@ -1,26 +1,30 @@
 
+        modstart  e86poly
+
         xrefp   __FLDA          ; add
         xrefp   __FLDM          ; multiply
         xrefp   __FLDMC         ; multiply by constant from polynomial
 
-        modstart  e86poly
-
         xdefp   __EvalPoly      ; evaluate polynomial
-        xdefp   __OddPoly       ; evaluate odd degree polynomial
         xdefp   __Poly          ; evaluate polynomial
+        xdefp   __OddPoly       ; evaluate odd degree polynomial
+
 
 ;void __EvalPoly( LD *x, LD *poly, int degree )
 ;/*****************AX*******DX*********BX*****/
 ;    {
 ;        __Poly( x, poly, degree, x );
 ;    }
+
         defp    __EvalPoly
+
         push    CX                      ; save CX
         mov     CX,AX                   ; result goes back into x
         call    __Poly                  ; evaluate the polynomial
         pop     CX                      ; restore CX
         ret                             ; return
-__EvalPoly endp
+
+        endproc __EvalPoly
 
 
 ;void __Poly( LD *x, LD *poly, int degree, LD *result )
@@ -31,7 +35,9 @@ __EvalPoly endp
 ;
 ;    }
 ;
+
         defp    __Poly
+
         push    BP                      ; save BP
         push    SI                      ; save registers
         push    DI                      ; ...
@@ -83,7 +89,8 @@ __EvalPoly endp
         pop     SI                      ; ...
         pop     BP                      ; ...
         ret                             ; return
-__Poly  endp
+
+        endproc __Poly
 
 ;void __OddPoly( LD *x, LD *poly, int degree )
 ;/*****************AX******DX*********BX*****/
@@ -98,6 +105,7 @@ __Poly  endp
 ;    }
 
         defp    __OddPoly
+
         sub     SP,10                   ; allocate temporary
         push    AX                      ; save AX
         push    DX                      ; save DX
@@ -117,5 +125,6 @@ __Poly  endp
         call    __FLDM                  ; calculate result
         add     SP,10                   ; remove temp
         ret                             ; return
-__OddPoly endp
+
+        endproc __OddPoly
 

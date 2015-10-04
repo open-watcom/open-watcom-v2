@@ -36,7 +36,9 @@ include struct.inc
 
         modstart    ldfs386, dword
 
+endif
 
+ifdef _BUILDING_MATHLIB
         xdefp   __iLDFS
 else
         xdefp   __EmuLDFS
@@ -54,9 +56,11 @@ endif
 ;endif
 
 ifdef _BUILDING_MATHLIB
-__iLDFS proc  near
+
+        defp    __iLDFS
 else
-__EmuLDFS proc  near
+
+        defp    __EmuLDFS
 endif
         push    EDX                     ; save EDX
         push    ECX                     ; save ECX
@@ -116,10 +120,12 @@ endif
 ifdef _BUILDING_MATHLIB
         mov     [EDX],EAX               ; store float value
         ret                             ; return
-__iLDFS endp
+
+        endproc __iLDFS
 else
         ret                             ; return
-__EmuLDFS endp
+
+        endproc __EmuLDFS
 endif
 
 ifdef _BUILDING_MATHLIB

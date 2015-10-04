@@ -6,8 +6,11 @@ include struct.inc
 
         modstart    fldm086, word
 
-
 endif
+
+        xdefp   __FLDM           ; 10-byte real multiply
+        xdefp   __FLDMC
+        xdefp   ___LDM           ; 10-byte real multiply
 
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
@@ -25,13 +28,8 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __FLDM           ; 10-byte real multiply
-        xdefp   ___LDM           ; 10-byte real multiply
-
-
-;=====================================================================
-
         defp    __FLDM
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -57,9 +55,12 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDM
 
+
         defp    __FLDMC
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -92,9 +93,12 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDMC
 
+
         defp    mul_oflow       ; overflow
+
         mov     SI,CX           ; get sign
         or      SI,7FFFh        ; set exponent for infinity
         mov     AX,8000h        ; set fraction
@@ -105,6 +109,7 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc mul_oflow
 
 ;
@@ -113,6 +118,7 @@ endif
 ;               DX - sign+exponent of op2
 ;
         defp    mul_by_pow2
+
         mov     CX,AX           ; calc. sign of result
         xor     CX,DX           ; ...
         and     CX,8000h        ; ...
@@ -163,6 +169,7 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc mul_by_pow2
 
 
@@ -179,6 +186,7 @@ endif
 ;
 
         defp    ___LDM
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS

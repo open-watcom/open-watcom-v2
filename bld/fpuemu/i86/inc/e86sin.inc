@@ -1,4 +1,6 @@
 
+        modstart  e86sin
+
         xrefp   __FLDA          ; add
         xrefp   __FLDS          ; subtract
         xrefp   __FLDD          ; divide
@@ -12,11 +14,10 @@
         xrefp   __SinPoly       ; polynomial for sin
         xrefp   __CosPoly       ; polynomial for cos
 
-        modstart  e86sin
-
         xdefp   __sin           ; calc sin(fac1)
         xdefp   __cos           ; calc cos(fac1)
         xdefp   __tan           ; calc tan(fac1)
+
 
 ;;#include <stdio.h>
 ;;#include <math.h>
@@ -97,6 +98,7 @@ index   equ     iflag-2
 
 
         defp    __sincos
+
         push    BP                      ; save EBP
         push    DI                      ; save registers
         push    DX                      ; ...
@@ -401,44 +403,58 @@ __endif1:; _endif                       ; endif
         pop     DI                      ; ...
         pop     BP                      ; restore EBP
         ret                             ; return
-__sincos endp
+
+        endproc __sincos
+
 ;;    }
 ;;
 ;;
 ;;void sin( long double *x )
 ;;    {
 ;;        return _sincos( x, 0 );
+
         defp    __sin
+
         push    SI                      ; save registers
         sub     SI,SI                   ; indicate sin
         call    __sincos                ; evaluate sin
         pop     SI                      ; restore ESI
         ret                             ; return
-__sin   endp
+
+        endproc __sin
+
 ;;    }
 ;;
 ;;
 ;;void cos( long double *x )
 ;;    {
 ;;        return _sincos( x, 2 );
+
         defp    __cos
+
         push    SI                      ; save registers
         mov     SI,2                    ; indicate cos
         call    __sincos                ; evaluate cos
         pop     SI                      ; restore ESI
         ret                             ; return
-__cos   endp
+
+        endproc __cos
+
 ;;    }
 ;;
 ;;
 ;;void tan( long double *x )
 ;;    {
 ;;        return _sincos( x, 1 );
+
         defp    __tan
+
         push    SI                      ; save registers
         mov     SI,1                    ; indicate tan
         call    __sincos                ; evaluate tan
         pop     SI                      ; restore ESI
         ret                             ; return
-__tan   endp
+
+        endproc __tan
+
 ;;    }

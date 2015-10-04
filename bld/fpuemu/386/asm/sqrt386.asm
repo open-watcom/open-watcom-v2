@@ -33,10 +33,15 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
+        modstart  sqrt386
+
         xrefp   __iFDLD
         xrefp   __iLDFD
+endif
 
-        modstart  sqrt386
+        xdefp   __sqrt
+
+ifdef _BUILDING_MATHLIB
 
 ;
 ;       double __sqrtd( double );
@@ -76,7 +81,6 @@ endif
 ;
 ;       input:  EAX - pointer to long double operand
 ;
-        xdefp   __sqrt
 
         defp    __sqrt
 
@@ -181,6 +185,7 @@ sqrt9:  pop     EBX             ; restore EBX
         pop     ESI             ; restore ESI
         pop     EDI             ; restore EDI
         ret                     ; return to caller
+
         endproc __sqrt
 
 ifdef _BUILDING_MATHLIB

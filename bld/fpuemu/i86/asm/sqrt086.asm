@@ -8,6 +8,11 @@ include struct.inc
 
         xrefp   __iFDLD
         xrefp   __iLDFD
+endif
+
+        xdefp   __sqrt
+
+ifdef _BUILDING_MATHLIB
 
 ;
 ;       double __sqrtd( double );
@@ -53,15 +58,14 @@ endif
 ;       input:  DS:AX - pointer to long double
 ;endif
 
-        xdefp   __sqrt
-
 ifdef _BUILDING_MATHLIB
 PREG    equ     BP
 else
 PREG    equ     DI
 endif
 
-__sqrt  proc    near
+        defp    __sqrt
+
         push    BP                  ; save BP
         push    DI                  ; save DI
         push    SI                  ; save SI
@@ -357,6 +361,7 @@ sqrt9:  pop     BX                  ; restore BX
         pop     DI                  ; restore DI
         pop     BP                  ; restore BP
         ret                         ; return to caller
+
         endproc __sqrt
 
 ifdef _BUILDING_MATHLIB

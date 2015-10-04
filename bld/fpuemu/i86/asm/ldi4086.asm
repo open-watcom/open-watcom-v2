@@ -38,6 +38,9 @@ include struct.inc
 
 endif
 
+        xdefp   __LDI4
+        xdefp   __LDU4
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
 ;   __LDI4 - convert long double into 4-byte integer
@@ -53,11 +56,9 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __LDI4
-        xdefp   __LDU4
-
         defp    __LDI4
         defp    __LDU4
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    BX              ; save BX

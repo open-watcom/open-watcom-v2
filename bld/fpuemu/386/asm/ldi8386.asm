@@ -37,6 +37,8 @@ include struct.inc
 
 endif
 
+        xdefp   __LDI8
+
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;  
 ;   __LDI8 - convert long double into 8-byte integer with truncation
@@ -53,9 +55,8 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-        xdefp   __LDI8
-
         defp    __LDI8
+
         push    EBX             ; save EBX
 
 ;       high bit of BH is sign bit
