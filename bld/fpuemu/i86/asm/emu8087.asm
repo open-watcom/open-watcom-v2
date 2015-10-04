@@ -80,6 +80,8 @@ include cmpconst.inc
 include fpe86.inc
 include shiftmac.inc
 
+include normdw.asm
+include normqw.asm
 include flda086.asm
 include fldc086.asm
 include fldd086.asm

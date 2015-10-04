@@ -141,6 +141,8 @@
 !inject mulc20.obj   d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject mulc8.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject nan.obj      d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
+!inject normdw.obj   d16c                          wnc
+!inject normqw.obj   d16c                          wnc
 !inject nrbyint.obj  d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject nxtafter.obj d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject pow.obj      d16c      d32c      n32c      wnc     axp ntp op

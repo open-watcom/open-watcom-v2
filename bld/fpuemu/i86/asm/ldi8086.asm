@@ -33,6 +33,7 @@ ifdef _BUILDING_MATHLIB
 
 include mdef.inc
 include struct.inc
+include shiftmac.inc
 
         modstart    ldi8086, word
 
@@ -56,6 +57,30 @@ endif
 ;  
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+__qw_rshift     proc    near
+
+        _loop                   ; loop
+          cmp SI,16             ; - quit if < 16 bits to shift
+          _quif l               ; - ...
+          qw_rshift_16          ; - shift right 16 bits
+          sub SI,16             ; - adjust shift count
+        _endloop                ; endloop
+        cmp SI,8                ; if >= 8 bits to shift
+        _if ge                  ; then
+          qw_rshift_8           ; - shift right 8 bits
+          sub SI,8              ; - adjust shift count
+        _endif                  ; endif
+        or  SI,SI               ; if some bits to shift
+        _if nz                  ; then
+          _loop                 ; - loop
+            qw_rshift_1         ; - - shift right 1 bit
+            dec  SI             ; - - decrement shift count
+          _until nz             ; - loop if some bits to shift
+        _endif                  ; endif
+        ret                     ; return
+
+__qw_rshift     endp
+
         defp    __LDI8
 
         push    SI
@@ -73,9 +98,9 @@ endif
           cmp   AX,3FFFh        ; if number < 1.0
           _quif ae              ; then
           sub   AX,AX           ; - result is 0
-          cwd                   ; - ...
           mov   BX,AX           ; - ...
           mov   CX,AX           ; - ...
+          mov   DX,AX           ; - ...
         _admit
           cmp   AX,403Eh        ; if number too large
           _quif b               ; then
@@ -92,38 +117,7 @@ endif
           mov   CX,2[BX]        ; ...
           mov   DX,[BX]         ; get fraction
           mov   BX,4[BX]        ; ...
-          _loop                 ; loop
-            cmp SI,16           ; - quit if < 16 bits to shift
-            _quif l             ; - ...
-            mov DX,CX           ; - shift right 16
-            mov CX,BX           ; - ...
-            mov BX,AX           ; - ...
-            sub AX,AX           ; - ...
-            sub SI,16           ; - adjust shift count
-          _endloop              ; endloop
-          cmp   SI,8            ; if >= 8 bits to shift
-          _if ge                ; then
-            mov DL,DH           ; - shift right 8 bits
-            mov DH,CL           ; - ...
-            mov CL,CH           ; - ...
-            mov CH,BL           ; - ...
-            mov BL,BH           ; - ...
-            mov BH,AL           ; - ...
-            mov AL,AH           ; - ...
-            xor AH,AH           ; - ...
-            sub SI,8            ; - adjust shift count
-          _endif                ; endif
-          cmp   SI,0            ; if some bits to shift
-          _if ne                ; then
-            _loop               ; - loop (bit shift)
-              shr  AX,1         ; - - shift right 1 bit
-              rcr  BX,1         ; - - ...
-              rcr  CX,1         ; - - ...
-              rcr  DX,1         ; - - ...
-              dec  SI           ; - - decrement shift count
-            _until e            ; - until done
-          _endif                ; endif
-;
+          call __qw_rshift      ; shift fraction right
           pop   SI              ; get sign of the value
           or    SI,SI           ; if negative
           _if s                 ; then

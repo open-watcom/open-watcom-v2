@@ -10,6 +10,7 @@ include shiftmac.inc
 endif
 
         xrefp   FPInvalidOp
+        xrefp   __dw_normalize
 
 ifdef _BUILDING_MATHLIB
         xdefp   __iFSLD
@@ -80,23 +81,7 @@ endif
             cmp CX,3FFFh - 7Fh  ; - - check entry exponent is 0 (denormal number)
             _if e               ; - - if denormal number then normalize it
               inc CX            ; - - - adjust result exponent
-              _loop             ; - - - loop shift fraction by 16 quantities
-                or  DX,DX       ; - - - - check fraction MSB
-              _quif nz          ; - - - quit if not zero
-                sub   CX,16     ; - - - - adjust result exponent
-                dw_lshift_16    ; - - - - shift fraction << 16
-              _endloop          ; - - - endloop
-              _loop             ; - - - loop shift fraction by 8 quantities
-                or  DH,DH       ; - - - - check fraction MSB
-              _quif nz          ; - - - quit if not zero
-                sub   CX,8      ; - - - - adjust result exponent
-                dw_lshift_8     ; - - - - shift fraction << 8
-              _endloop          ; - - - endloop
-              _loop             ; - - - loop shift fraction by 1
-              _quif s           ; - - - quit if normalized (implied bit is set)
-                dec   CX;       ; - - - - adjust result exponent
-                dw_lshift_1     ; - - - - shift fraction << 1
-              _endloop          ; - - - endloop
+              call __dw_normalize; - - - normalize 32-bit fraction
             _endif              ; - - endif
             or    DH,80h        ; - - turn on implied bit
           _endif                ; - endif
