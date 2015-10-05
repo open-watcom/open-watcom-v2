@@ -85,7 +85,7 @@ extern int         DfltRecType( ftnfile * );
 extern void        DiscoFile( ftnfile * );
 extern void        DoFreeIn( void );
 extern void        DoOpen( void );
-extern bool        DoSubstring( intstar4, intstar4, uint );
+extern bool        DoSubstring( intstar4, intstar4, int );
 extern bool        DoSubscript( act_dim_list *, intstar4 *, intstar4 * );
 extern void        Drop( char );
 extern void        EndFilef( ftnfile * );
