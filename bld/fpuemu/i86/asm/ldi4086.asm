@@ -75,7 +75,7 @@ __dw_rshift     proc    near
           _loop                 ; - loop
             dw_rshift_1         ; - - shift right 1 bit
             dec  CL             ; - - decrement shift count
-          _until nz             ; - loop if some bits to shift
+          _until z              ; - loop if some bits to shift
         _endif                  ; endif
         ret                     ; return
 

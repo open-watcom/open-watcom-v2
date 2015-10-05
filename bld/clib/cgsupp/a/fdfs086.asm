@@ -47,11 +47,11 @@ include struct.inc
         defpe   __FDFS
         test    ax,07ff0h       ; check exponent
         je      retzero         ; if exponent = 0 then just return 0
+        mov     dh,ah           ; save sign bit in dh
+        and     dh,80h          ; clean rest of dh
         _shl    cx,1            ; shift number over
         _rcl    bx,1            ; ...
         _rcl    ax,1            ; shift out sign bit
-        xor     dh,dh           ; put 0 in dh
-        rcr     dh,1            ; save sign bit in dh
         add     ch,20h          ; round floating point number
         adc     bx,0            ; ...
         adc     ax,0            ; increment exponent if need be

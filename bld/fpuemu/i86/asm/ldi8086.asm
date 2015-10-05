@@ -75,7 +75,7 @@ __qw_rshift     proc    near
           _loop                 ; - loop
             qw_rshift_1         ; - - shift right 1 bit
             dec  SI             ; - - decrement shift count
-          _until nz             ; - loop if some bits to shift
+          _until z              ; - loop if some bits to shift
         _endif                  ; endif
         ret                     ; return
 
