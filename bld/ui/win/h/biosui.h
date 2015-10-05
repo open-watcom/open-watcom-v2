@@ -37,10 +37,10 @@
 #define SCREEN_OFFSET   0x4e
 #define SYSTEM_CLOCK    0x6c
 
-
+#define _INT_10         "int 10h"
 
 extern unsigned BIOSGetPage(void);
-#pragma aux BIOSGetPage =                                       \
+#pragma aux BIOSGetPage =       \
         "push   bp"             \
         "mov    ah,0fh"         \
         _INT_10                 \
@@ -51,7 +51,7 @@ extern unsigned BIOSGetPage(void);
 
 
 extern void        BIOSSetMode(unsigned);
-#pragma aux BIOSSetMode =                                       \
+#pragma aux BIOSSetMode =       \
         "push   bp"             \
         "xor    ah,ah"          \
         _INT_10                 \
@@ -60,19 +60,19 @@ extern void        BIOSSetMode(unsigned);
 
 
 
-#pragma aux BIOSGetMode =                                       \
+#pragma aux BIOSGetMode =       \
         "push   bp"             \
         "mov    ah,0fh"         \
         _INT_10                 \
         "pop    bp"             \
-        parm caller [ ax ]                                      \
+        parm caller [ ax ]      \
         modify [ bx ];
 
 extern char        BIOSGetMode(void);
 
 
 extern char        BIOSGetColumns(void);
-#pragma aux BIOSGetColumns =                                    \
+#pragma aux BIOSGetColumns =    \
         "push   bp"             \
         "mov    ah,0fh"         \
         _INT_10                 \
@@ -80,7 +80,7 @@ extern char        BIOSGetColumns(void);
     parm caller [ax] value [ah] modify [bx];
 
 extern char        BIOSGetRows(void);
-#pragma aux BIOSGetRows =                                       \
+#pragma aux BIOSGetRows =       \
         "push   es"             \
         "push   bp"             \
         "mov    ax,1130h"       \
@@ -93,7 +93,7 @@ extern char        BIOSGetRows(void);
 
 
 
-#pragma aux BIOSEGAInfo =                                       \
+#pragma aux BIOSEGAInfo =       \
         "push   bp"             \
         "mov    ah,12h"         \
         "mov    bx,0ff0ah"      \
@@ -114,7 +114,7 @@ extern struct ega_info BIOSEGAInfo( void );
 
 
 
-#pragma aux BIOSGetCurPos =                                     \
+#pragma aux BIOSGetCurPos =     \
         "push   bp"             \
         "mov    ah,3"           \
         _INT_10                 \
@@ -122,7 +122,7 @@ extern struct ega_info BIOSEGAInfo( void );
     parm caller [bx] value [dx] modify [bx cx dx];
 
 
-#pragma aux BIOSSetCurPos =                                     \
+#pragma aux BIOSSetCurPos =     \
         "push   bp"             \
         "mov    ah,2"           \
         _INT_10                 \
@@ -130,7 +130,7 @@ extern struct ega_info BIOSEGAInfo( void );
     parm caller [dh] [dl] [bx] modify [bx cx dx];
 
 
-#pragma aux BIOSGetCurTyp =                                     \
+#pragma aux BIOSGetCurTyp =     \
         "push   bp"             \
         "mov    ah,3"           \
         _INT_10                 \
@@ -138,7 +138,7 @@ extern struct ega_info BIOSEGAInfo( void );
     parm caller [bx] value [cx] modify [ bx cx dx ];
 
 
-#pragma aux BIOSSetCurTyp =                                     \
+#pragma aux BIOSSetCurTyp =     \
         "push   bp"             \
         "mov    ah,1"           \
         _INT_10                 \
