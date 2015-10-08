@@ -41,9 +41,11 @@
 #if !defined(_M_IX86) || defined(__FLAT__)
     typedef double                                      *m_dbl_arg;
     typedef int                                         *m_int_arg;
+    typedef char                                        *m_char_arg;
 #else
     typedef double __based( __segname( "_STACK" ) )     *m_dbl_arg;
     typedef int __based( __segname( "_STACK" ) )        *m_int_arg;
+    typedef char __based( __segname( "_STACK" ) )       *m_char_arg;
 #endif
 
 #if defined(_M_IX86)
@@ -57,6 +59,7 @@
     extern  double  __sqrt87( double );
     extern  double  __sqrtd( double );
     extern  void    _ModF( m_dbl_arg, m_dbl_arg );
+    extern  void    _ZBuf2F( m_char_arg, m_dbl_arg );
 
     extern  double  __pow87_err( double, double, unsigned char );
     extern  double  __math87_err( double, unsigned char );
@@ -79,6 +82,7 @@
     #pragma aux __sqrt87   "*"  parm [edx eax] value [edx eax];
     #pragma aux __sqrtd    "*"  parm [edx eax] value [edx eax];
     #pragma aux _ModF      "_*" parm caller [eax] [edx];
+    #pragma aux _ZBuf2F    "_*" parm caller [eax] [edx];
   #else
     #pragma aux _atan87    "_*" parm [ax bx cx dx] value [ax bx cx dx];
     #pragma aux _exp87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
@@ -89,6 +93,7 @@
     #pragma aux __sqrt87   "*"  parm [ax bx cx dx] value [ax bx cx dx];
     #pragma aux __sqrtd    "*"  parm [ax bx cx dx] value [ax bx cx dx];
     #pragma aux _ModF      "_*" parm caller [ax] [dx];
+    #pragma aux _ZBuf2F    "_*" parm caller [ax] [dx];
   #endif
  #endif
 
