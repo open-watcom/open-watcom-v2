@@ -45,7 +45,7 @@ static void windowSwapFileOpen( void )
     char    file[FILENAME_MAX];
     vi_rc   rc;
 
-    if( swapHandle < 0 ) {
+    if( swapHandle == -1 ) {
         tmpnam( swapName );
         MakeTmpPath( file, swapName );
         rc = FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, &swapHandle );
@@ -110,16 +110,15 @@ void SwapAllWindows( void )
     wind        *w;
 
     windowSwapFileOpen();
-    if( swapHandle < 0 ) {
-        return;
-    }
-    if( EditFlags.Verbose ) {
-        Message1( "Swapping window data" );
-    }
-    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        w = Windows[cinfo->CurrentWindow];
-        if( !TestVisible( w ) && !w->isswapped && w->accessed == 0 ) {
-            windowSwap( w );
+    if( swapHandle != -1 ) {
+        if( EditFlags.Verbose ) {
+            Message1( "Swapping window data" );
+        }
+        for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
+            w = Windows[cinfo->CurrentWindow];
+            if( !TestVisible( w ) && !w->isswapped && w->accessed == 0 ) {
+                windowSwap( w );
+            }
         }
     }
 
@@ -179,7 +178,7 @@ void WindowSwapFileClose( void )
 {
     char    file[FILENAME_MAX];
 
-    if( swapHandle >= 0 ) {
+    if( swapHandle != -1 ) {
         close( swapHandle );
         swapHandle = -1;
         MakeTmpPath( file, swapName );
