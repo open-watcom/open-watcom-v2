@@ -34,23 +34,24 @@
 #include "posix.h"
 #include "win.h"
 
-static char swapName[L_tmpnam];
-static int swapHandle = -1;
+static char     swapName[L_tmpnam];
+static int      swapHandle = -1;
 
 /*
  * windowSwapFileOpen - do just that
  */
 static void windowSwapFileOpen( void )
 {
+    char    file[FILENAME_MAX];
     vi_rc   rc;
 
-    if( swapHandle >= 0 ) {
-        return;
-    }
-
-    rc = TmpFileOpen( swapName, &swapHandle );
-    if( rc != ERR_NO_ERR ) {
-        swapHandle = -1;
+    if( swapHandle < 0 ) {
+        tmpnam( swapName );
+        MakeTmpPath( file, swapName );
+        rc = FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, &swapHandle );
+        if( rc != ERR_NO_ERR ) {
+            swapHandle = -1;
+        }
     }
 
 } /* windowSwapFileOpen */
@@ -176,6 +177,13 @@ void ReleaseWindow( wind *w )
  */
 void WindowSwapFileClose( void )
 {
-    TmpFileClose( swapHandle, swapName );
+    char    file[FILENAME_MAX];
+
+    if( swapHandle >= 0 ) {
+        close( swapHandle );
+        swapHandle = -1;
+        MakeTmpPath( file, swapName );
+        remove( file );
+    }
 
 } /* WindowSwapFileClose */

@@ -112,17 +112,17 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
  */
 static vi_rc swapFileOpen( void )
 {
+    char    file[FILENAME_MAX];
     vi_rc   rc;
 
-    if( swapFileHandle >= 0 ) {
-        return( ERR_NO_ERR );
+    if( swapFileHandle == -1 ) {
+        tmpnam( swapFileName );
+        MakeTmpPath( file, swapFileName );
+        rc = FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, &swapFileHandle ) );
+        if( rc != ERR_NO_ERR ) {
+            return( ERR_SWAP_FILE_OPEN );
+        }
     }
-
-    rc = TmpFileOpen( swapFileName, &swapFileHandle );
-    if( rc != ERR_NO_ERR ) {
-        return( ERR_SWAP_FILE_OPEN );
-    }
-
     return( ERR_NO_ERR );
 
 } /* swapFileOpen */
@@ -132,7 +132,14 @@ static vi_rc swapFileOpen( void )
  */
 void SwapFileClose( void )
 {
-    TmpFileClose( swapFileHandle, swapFileName );
+    char        file[FILENAME_MAX];
+
+    if( swapFileHandle != -1 ) {
+        close( swapFileHandle );
+        swapFileHandle = -1;
+        MakeTmpPath( file, swapFileName );
+        remove( file );
+    }
 
 } /* SwapFileClose */
 

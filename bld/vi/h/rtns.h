@@ -463,8 +463,6 @@ vi_rc   FileOpen( const char *, bool, int, int, int * );
 vi_rc   FileSeek( int, long );
 FILE    *GetFromEnvAndOpen( const char * );
 void    GetFromEnv( const char *, char * );
-vi_rc   TmpFileOpen( char *, int * );
-void    TmpFileClose( int, const char * );
 void    FileLower( char *str );
 bool    FileTemplateMatch( const char *, const char * );
 char    *StripPath( const char * );

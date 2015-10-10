@@ -288,35 +288,6 @@ char *MakeTmpPath( char *out, const char *in )
 } /* MakeTmpPath */
 
 /*
- * TmpFileOpen - open a tmp file
- */
-vi_rc TmpFileOpen( char *inname, int *_handle )
-{
-    char        file[FILENAME_MAX];
-
-    tmpnam( inname );
-    MakeTmpPath( file, inname );
-    return( FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, _handle ) );
-
-} /* TmpFileOpen */
-
-/*
- * TmpFileClose - close and delete a tmp file
- */
-void TmpFileClose( int handle, const char *name )
-{
-    char        file[FILENAME_MAX];
-
-    if( handle < 0 ) {
-        return;
-    }
-    close( handle );
-    MakeTmpPath( file, name );
-    remove( file );
-
-} /* TmpFileClose */
-
-/*
  * FileLower - change case of the file name
  */
 void FileLower( char *str )
