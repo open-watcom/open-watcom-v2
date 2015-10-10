@@ -259,14 +259,17 @@ vi_rc EditFile( const char *name, bool dammit )
                     char ext[_MAX_EXT];
 
                     _splitpath( il->CurrentFile->name, drive, dir, fname, ext );
-                    if( !strlen( drive ) ) {
+                    if( drive[0] == '\0' ) {
                         _splitpath( il->CurrentFile->home, drive, NULL, NULL, NULL );
                     }
-                    if( !strlen( dir ) ) {
-                        _splitpath( il->CurrentFile->home, NULL, dir, NULL, NULL );
-                    } else if( dir[0] != '\\' ) {
+                    strcpy( path, il->CurrentFile->home );
+                    if( path[0] != '\0' && path[strlen( path ) - 1] != ':' )
+                        strcat( path, FILE_SEP_STR );
+                    if( dir[0] == '\0' ) {
+                        _splitpath( path, NULL, dir, NULL, NULL );
+                    } else if( dir[0] != FILE_SEP ) {
                         char dir2[_MAX_DIR];
-                        _splitpath( il->CurrentFile->home, NULL, dir2, NULL, NULL );
+                        _splitpath( path, NULL, dir2, NULL, NULL );
                         strcat( dir2, dir );
                         strcpy( dir, dir2 );
                     }
