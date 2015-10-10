@@ -43,7 +43,6 @@ vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
     line        *cline;
     FILE        *f;
     vi_rc       rc;
-    char        realcmd[MAX_STR];
     char        filtin[L_tmpnam], filtout[L_tmpnam];
     fcb_list    fcblist;
 
@@ -91,8 +90,7 @@ vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
     StartUndoGroup( UndoStack );
     rc = DeleteLineRange( s, e, 0 );
     if( rc == ERR_NO_ERR ) {
-        strcpy( realcmd, filtout );
-        ReadAFile( s - 1, realcmd );
+        ReadAFile( s - 1, filtout );
         Message1( "%l lines filtered through %s", e - s + 1, cmd );
     }
     EndUndoGroup( UndoStack );
