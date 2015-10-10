@@ -218,7 +218,6 @@ void SwapBlockInit( int i )
 
 } /* SwapBlockInit */
 
-
 /*
  * SwapBlockFini
  */

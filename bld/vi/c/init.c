@@ -240,7 +240,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         if( watcom != NULL ) {
             char edpath[FILENAME_MAX];
 
-            sprintf( edpath, "%s%c%s", watcom, DIR_SEP, "eddat" );
+            sprintf( edpath, "%s%c%s", watcom, FILE_SEP, "eddat" );
 
             if( setenv( "EDPATH", edpath, 0 ) != 0 ) {
                 /*
