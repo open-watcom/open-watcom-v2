@@ -34,11 +34,12 @@
 #include <fcntl.h>
 #include "fcbmem.h"
 
-static char swapFileName[L_tmpnam];
+static vi_rc    swapFileOpen( void );
+static vi_rc    getNewSwapFilePosition( long * );
+static vi_rc    swapFileWrite( long *, int );
 
-static vi_rc  swapFileOpen( void );
-static vi_rc  getNewSwapFilePosition( long * );
-static vi_rc  swapFileWrite( long *, int );
+static char     swapFileName[L_tmpnam];
+static int      swapFileHandle = -1;
 
 /*
  * SwapToDisk - swap an fcb to disk from memory
@@ -88,7 +89,7 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    rc = FileSeek( SwapFileHandle, fb->offset );
+    rc = FileSeek( swapFileHandle, fb->offset );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -97,7 +98,7 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
      * read in the buffer, create lines
      */
     expect = FcbSize( fb );
-    len = read( SwapFileHandle, ReadBuffer, expect );
+    len = read( swapFileHandle, ReadBuffer, expect );
     if( len != expect ) {
         return( ERR_SWAP_FILE_READ );
     }
@@ -113,11 +114,11 @@ static vi_rc swapFileOpen( void )
 {
     vi_rc   rc;
 
-    if( SwapFileHandle >= 0 ) {
+    if( swapFileHandle >= 0 ) {
         return( ERR_NO_ERR );
     }
 
-    rc = TmpFileOpen( swapFileName, &SwapFileHandle );
+    rc = TmpFileOpen( swapFileName, &swapFileHandle );
     if( rc != ERR_NO_ERR ) {
         return( ERR_SWAP_FILE_OPEN );
     }
@@ -131,7 +132,7 @@ static vi_rc swapFileOpen( void )
  */
 void SwapFileClose( void )
 {
-    TmpFileClose( SwapFileHandle, swapFileName );
+    TmpFileClose( swapFileHandle, swapFileName );
 
 } /* SwapFileClose */
 
@@ -175,7 +176,7 @@ static vi_rc swapFileWrite( long *pos, int size )
             return( rc );
         }
     }
-    rc = FileSeek( SwapFileHandle, *pos );
+    rc = FileSeek( swapFileHandle, *pos );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -183,7 +184,7 @@ static vi_rc swapFileWrite( long *pos, int size )
     /*
      * write data
      */
-    i = write( SwapFileHandle, WriteBuffer, size );
+    i = write( swapFileHandle, WriteBuffer, size );
     if( i != size ) {
         return( ERR_SWAP_FILE_WRITE );
     }

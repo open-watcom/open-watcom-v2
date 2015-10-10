@@ -226,7 +226,6 @@ char            *HomeDirectory = NULL;
 char            *ReadBuffer = NULL;
 char            *WriteBuffer = NULL;
 unsigned char   *SwapBlocks = NULL;
-int             SwapFileHandle = -1;
 int             SwapBlockArraySize;
 int             SwapBlocksInUse;
 char            *Comspec = NULL;

@@ -145,7 +145,6 @@ extern bool             BoundData;
 
 /* file io globals */
 extern int              SwapBlocksInUse;
-extern int              SwapFileHandle;
 extern int              SwapBlockArraySize, XMemBlockArraySize;
 extern char             *ReadBuffer, *WriteBuffer;
 extern unsigned char    *XMemBlocks;
