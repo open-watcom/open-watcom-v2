@@ -55,7 +55,6 @@ static window_info  *wInfo = NULL;
 static char         strLoad[] = "loaded";
 static char         strCompile[] = "compiled";
 static char         *dataBuff;
-static char         *tmpBuff;
 
 static vi_rc        setWDimension( const char * );
 static vi_rc        setWHilite( const char * );
@@ -89,7 +88,6 @@ static bool isOS2( void )
 void InitCommandLine( void )
 {
     dataBuff = MemAlloc( EditVars.MaxLine );
-    tmpBuff = MemAlloc( EditVars.MaxLine );
 
 } /* InitCommandLine */
 
@@ -99,7 +97,6 @@ void InitCommandLine( void )
 void FiniCommandLine( void )
 {
     MemFree( dataBuff );
-    MemFree( tmpBuff );
 
 } /* FiniCommandLine */
 
@@ -238,7 +235,7 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
         break;
     case PCL_T_SET:
         if( iscmdline ) {
-            data = Expand( tmpBuff, data, NULL );
+            data = Expand( dataBuff, data, NULL );
         }
         rc = Set( data );
         break;
@@ -283,7 +280,7 @@ vi_rc RunCommandLine( const char *cmdl )
      * parse command string
      */
     tkn = TOK_INVALID;
-    rc = ParseCommandLine( cmdl, &n1, &n1f, &n2, &n2f, &tkn, dataBuff );
+    rc = ParseCommandLine( cmdl, &n1, &n1f, &n2, &n2f, &tkn, &data );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -300,7 +297,6 @@ vi_rc RunCommandLine( const char *cmdl )
      */
     rc = ERR_INVALID_COMMAND;
     test1 = n1f || n2f;
-    data = dataBuff;
     switch( tkn ) {
     case PCL_T_ABOUT:
         rc = DoAboutBox();
@@ -382,7 +378,7 @@ vi_rc RunCommandLine( const char *cmdl )
         break;
 
     case PCL_T_EVAL:
-        data = Expand( tmpBuff, data, NULL );
+        data = Expand( dataBuff, data, NULL );
         i = setjmp( jmpaddr );
         if( i != 0 ) {
             rc = (vi_rc)i;

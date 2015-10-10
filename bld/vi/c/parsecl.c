@@ -41,7 +41,7 @@ static char pkwDelims[] = " /";
 /*
  * ParseCommandLine - parse a command line
  */
-vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2, bool *n2flag, int *token, char *data )
+vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2, bool *n2flag, int *token, const char **data )
 {
     char        *tres, *tmp;
     int         j;
@@ -58,7 +58,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
     }
     *n1flag = false;
     *n2flag = false;
-    data[0] = 0;
+    *data = "";
 
     /*
      * change null command to '.'
@@ -142,7 +142,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
      * check for system token
      */
     if( *cmdl == '!' ) {
-        strcpy( data, cmdl + 1 );
+        *data = cmdl + 1;
         *token = PCL_T_SYSTEM;
         return( ERR_NO_ERR );
     }
@@ -170,7 +170,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
         }
     }
     *token = j;
-    strcpy( data, cmdl );
+    *data = cmdl;
     return( ERR_NO_ERR );
 
 } /* ParseCommandLine */

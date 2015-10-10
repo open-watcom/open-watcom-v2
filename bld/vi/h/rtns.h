@@ -670,7 +670,7 @@ void    GetEndString( char *data, char *res );
 void    ParseConfigFile( char * );
 
 /* parsecl.c */
-vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
+vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, const char ** );
 vi_rc   GetAddress( const char **, linenum * );
 
 /* printf.c */
