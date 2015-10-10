@@ -314,7 +314,7 @@ static bool checkPointMem( unsigned max )
     return( true );
 }
 
-static void CheckPointRestore( void )
+static void checkPointRestore( void )
 {
     dos_mem_block       *chk;
 
@@ -407,7 +407,7 @@ evil_goto:
     cp = checkPointMem( minMemoryLeft / 16 );
     rc = DoSpawn( path, &exeparm );
     if( cp ) {
-        CheckPointRestore();
+        checkPointRestore();
     }
 
     return( rc );
