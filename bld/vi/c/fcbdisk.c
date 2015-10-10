@@ -34,11 +34,13 @@
 #include <fcntl.h>
 #include "fcbmem.h"
 
+#define SWAP_FILE_NAME  "swXXXXXX"
+
 static vi_rc    swapFileOpen( void );
 static vi_rc    getNewSwapFilePosition( long * );
 static vi_rc    swapFileWrite( long *, int );
 
-static char     swapFileName[L_tmpnam];
+static char     swapFileName[sizeof( SWAP_FILE_NAME )];
 static int      swapFileHandle = -1;
 
 /*
@@ -112,16 +114,15 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
  */
 static vi_rc swapFileOpen( void )
 {
-    char    file[FILENAME_MAX];
-    vi_rc   rc;
+    char    file[_MAX_PATH];
 
     if( swapFileHandle == -1 ) {
-        tmpnam( swapFileName );
-        MakeTmpPath( file, swapFileName );
-        rc = FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, &swapFileHandle ) );
-        if( rc != ERR_NO_ERR ) {
+        MakeTmpPath( file, SWAP_FILE_NAME );
+        swapFileHandle = mkstemp( file );
+        if( swapFileHandle == -1 ) {
             return( ERR_SWAP_FILE_OPEN );
         }
+        memcpy( swapFileName, file + strlen( file ) - ( sizeof( SWAP_FILE_NAME ) - 1 ), sizeof( SWAP_FILE_NAME ) );
     }
     return( ERR_NO_ERR );
 
@@ -132,7 +133,7 @@ static vi_rc swapFileOpen( void )
  */
 void SwapFileClose( void )
 {
-    char        file[FILENAME_MAX];
+    char    file[_MAX_PATH];
 
     if( swapFileHandle != -1 ) {
         close( swapFileHandle );

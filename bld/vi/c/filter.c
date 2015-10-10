@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "win.h"
+#include "wio.h"
 
 
 /*
@@ -41,10 +42,10 @@ vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
 {
     fcb         *cfcb, *tfcb;
     line        *cline;
-    FILE        *f;
     vi_rc       rc;
-    char        filtin[L_tmpnam], filtout[L_tmpnam];
+    char        filtin[_MAX_PATH], filtout[_MAX_PATH];
     fcb_list    fcblist;
+    int         fh;
 
     rc = ModificationTest();
     if( rc != ERR_NO_ERR ) {
@@ -52,23 +53,20 @@ vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
     }
 
     /*
-     * get file
-     */
-    tmpnam( filtin );
-    tmpnam( filtout );
-    f = fopen( filtin, "w" );
-    if( f == NULL ) {
-        return( ERR_FILE_OPEN );
-    }
-
-    /*
      * filter on a line
      */
     rc = GetCopyOfLineRange( s, e, &fcblist );
     if( rc != ERR_NO_ERR ) {
-        fclose( f );
         return( rc );
     }
+
+    /*
+     * get file
+     */
+    MakeTmpPath( filtin, "vfXXXXXX" );
+    fh = mkstemp( filtin );
+    if( fh == -1 )
+        return( ERR_FILE_OPEN );
 
     /*
      * now, dump this crap to a tmp file
@@ -76,13 +74,25 @@ vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
     for( cfcb = fcblist.head; cfcb != NULL; cfcb = tfcb ) {
         FetchFcb( cfcb );
         for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
-            MyFprintf( f, "%s\n", cline->data );
+            write( fh, cline->data, strlen( cline->data ) );
+#if defined( __UNIX__ )
+            write( fh, "\n", 1 );
+#else
+            write( fh, "\r\n", 2 );
+#endif
         }
         tfcb = cfcb->next;
         FcbFree( cfcb );
     }
-    fclose( f );
+    close( fh );
 
+    MakeTmpPath( filtout, "vfXXXXXX" );
+    fh = mkstemp( filtout );
+    if( fh == -1 ) {
+        remove( filtin );
+        return( ERR_FILE_OPEN );
+    }
+    close( fh );
     /*
      * shell out to the given command
      */

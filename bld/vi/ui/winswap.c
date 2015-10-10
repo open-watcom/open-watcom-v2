@@ -34,25 +34,27 @@
 #include "posix.h"
 #include "win.h"
 
-static char     swapName[L_tmpnam];
+#define SWAP_FILE_NAME  "swXXXXXX"
+
+static char     swapName[sizeof( SWAP_FILE_NAME )];
 static int      swapHandle = -1;
 
 /*
  * windowSwapFileOpen - do just that
  */
-static void windowSwapFileOpen( void )
+static vi_rc windowSwapFileOpen( void )
 {
-    char    file[FILENAME_MAX];
-    vi_rc   rc;
+    char    file[_MAX_PATH];
 
     if( swapHandle == -1 ) {
-        tmpnam( swapName );
-        MakeTmpPath( file, swapName );
-        rc = FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, &swapHandle );
-        if( rc != ERR_NO_ERR ) {
-            swapHandle = -1;
+        MakeTmpPath( file, SWAP_FILE_NAME );
+        swapHandle = mkstemp( file );
+        if( swapHandle == -1 ) {
+            return( ERR_SWAP_FILE_OPEN );
         }
+        memcpy( swapName, file + strlen( file ) - ( sizeof( SWAP_FILE_NAME ) - 1 ), sizeof( SWAP_FILE_NAME ) );
     }
+    return( ERR_NO_ERR );
 
 } /* windowSwapFileOpen */
 
@@ -109,8 +111,7 @@ void SwapAllWindows( void )
     info        *cinfo;
     wind        *w;
 
-    windowSwapFileOpen();
-    if( swapHandle != -1 ) {
+    if( windowSwapFileOpen() == ERR_NO_ERR ) {
         if( EditFlags.Verbose ) {
             Message1( "Swapping window data" );
         }
@@ -176,7 +177,7 @@ void ReleaseWindow( wind *w )
  */
 void WindowSwapFileClose( void )
 {
-    char    file[FILENAME_MAX];
+    char    file[_MAX_PATH];
 
     if( swapHandle != -1 ) {
         close( swapHandle );
