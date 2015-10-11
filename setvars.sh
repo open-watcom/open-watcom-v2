@@ -6,14 +6,15 @@
 #       modify it as necessary for your own use!!
 
 # Change this to point your Open Watcom source tree
-export OWROOT=/home/ow/ow
+# 	Note: '=' sign in path is not allowed (build will fail)
+export OWROOT=`pwd`
 
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 
 # Set this entry to identify your toolchain used by build process
 # supported values are WATCOM GCC CLANG
-export OWTOOLS=WATCOM
+export OWTOOLS=GCC
 
 # Documentation related variables
 
