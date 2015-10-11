@@ -73,7 +73,6 @@ char *GetTermType( void )
 int intern initbios( void )
 {
     PossibleDisplay             *curr;
-    int                         error;
 
     if( UIConFile == NULL ) {
         char *tty;
@@ -87,8 +86,11 @@ int intern initbios( void )
         UIConHandle = fileno( UIConFile );
         fcntl( UIConHandle, F_SETFD, 1 );
     }
-    setupterm( GetTermType(), UIConHandle, &error );
-    if( error != 1 ) return( FALSE );
+
+    setupterm( GetTermType(), UIConHandle, (int *)0);
+    /* will report an error message and exit if any
+       problem with a terminfo */
+
     // Check to make sure terminal is suitable
     if( cursor_address == NULL || hard_copy ) {
         del_curterm( cur_term );
