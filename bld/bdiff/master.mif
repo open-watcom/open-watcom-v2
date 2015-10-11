@@ -29,10 +29,10 @@ all : $(all_execs)
 __subdir__=wcpatch
 !include subdrule.mif
 
-#extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
+extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
 
 wcpatch_objs = &
-    $+$(__subdir__)$-/dopatchw.obj &
+    $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj &
     $+$(__subdir__)$-/myio.obj &
     $+$(__subdir__)$-/wcptchio.obj &
@@ -58,10 +58,10 @@ wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 __subdir__=wpatch
 !include subdrule.mif
 
-#extra_cpp_wpatch_flags = -D_WPATCH
+extra_cpp_wpatch_flags = -D_WPATCH
 
 wpatch_objs = &
-    $+$(__subdir__)$-/dopatchp.obj &
+    $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj &
     $+$(__subdir__)$-/myio.obj &
     $+$(__subdir__)$-/oldfile.obj &
@@ -88,11 +88,11 @@ wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
 __subdir__=bpatch
 !include subdrule.mif
 
-#extra_cpp_bpatch_flags = -D_WPATCH
+extra_cpp_bpatch_flags = -D_WPATCH
 
 bpatch_objs = &
     $+$(__subdir__)$-/bpatch.obj &
-    $+$(__subdir__)$-/dopatchp.obj &
+    $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj &
     $+$(__subdir__)$-/myio.obj &
     $+$(__subdir__)$-/oldfile.obj &
@@ -118,11 +118,11 @@ bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
 __subdir__=bdump
 !include subdrule.mif
 
-#extra_cpp_bdump_flags = -DBDUMP
+extra_cpp_bdump_flags = -DBDUMP
 
 bdump_objs = &
     $+$(__subdir__)$-/bdump.obj &
-    $+$(__subdir__)$-/dopatchx.obj &
+    $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj &
     $+$(__subdir__)$-/myio.obj &
     $+$(__subdir__)$-/oldfile.obj &
@@ -148,12 +148,12 @@ bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
 __subdir__=bdiff
 !include subdrule.mif
 
-#extra_cpp_bdiff_flags = -DBDIFF
+extra_cpp_bdiff_flags = -DBDIFF
 
 bdiff_objs = &
     $+$(__subdir__)$-/bdiff.obj &
     $+$(__subdir__)$-/bdiffmem.obj &
-    $+$(__subdir__)$-/dopatchd.obj &
+    $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj &
     $+$(__subdir__)$-/myio.obj
 
@@ -175,7 +175,7 @@ bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 __subdir__=bpcmt
 !include subdrule.mif
 
-#extra_cpp_bpcmt_flags = -DBPCMT
+extra_cpp_bpcmt_flags = -DBPCMT
 
 bpcmt_objs = &
     $+$(__subdir__)$-/bpcmt.obj &
@@ -194,7 +194,7 @@ bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 __subdir__=bplevel
 !include subdrule.mif
 
-#extra_cpp_bplevel_flags = -DBPLEVEL
+extra_cpp_bplevel_flags = -DBPLEVEL
 
 bplevel_objs = &
     $+$(__subdir__)$-/bplevel.obj
