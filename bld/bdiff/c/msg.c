@@ -46,6 +46,8 @@
 #include "watcom.h"
 #include "msg.h"
 
+#include "clibext.h"
+
 #define STDOUT_HANDLE   ((int)1)
 
 static  HANDLE_INFO     hInstance = { 0 };

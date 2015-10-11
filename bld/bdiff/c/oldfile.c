@@ -32,6 +32,7 @@
 
 #include "bdiff.h"
 #include "msg.h"
+#include "oldfile.h"
 
 MY_FILE OldFile;
 

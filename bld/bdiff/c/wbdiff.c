@@ -38,6 +38,9 @@
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
+#include "oldfile.h"
+#include "newfile.h"
+#include "patchio.h"
 
 //#include "exeform.h"
 

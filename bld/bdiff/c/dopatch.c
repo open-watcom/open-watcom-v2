@@ -32,6 +32,9 @@
 #include "bdiff.h"
 #include "bool.h"
 #include "msg.h"
+#include "newfile.h"
+#include "oldfile.h"
+#include "patchio.h"
 
 extern void PatchError( int, ... );
 extern void FilePatchError( int, ... );
@@ -122,9 +125,8 @@ void SeekCheck( long pos, char *name )
 
     void FlushHoles( void )
     {
-        extern MY_FILE          NewFile;
-        extern void Input( MY_FILE *file, void *tmp, foff off, size_t len );
-        extern void Output( MY_FILE *file, void *tmp, foff off, size_t len );
+        extern void Input( MY_FILE *file, byte *tmp, foff off, size_t len );
+        extern void Output( MY_FILE *file, byte *tmp, foff off, size_t len );
 
         save_hole       *end;
         save_hole       *curr;
@@ -162,21 +164,16 @@ void SeekCheck( long pos, char *name )
 #endif
 
 #ifdef BDIFF
-    extern      char *PatchFile;
-    extern      char *OldFile;
-
     #define PatchName ""
 
-    static char *pat;
+    static byte *pat;
 
     #define OpenPatch()                 (pat=PatchFile,PATCH_RET_OKAY)
     #define InPatch( type )             (tmp=pat,pat+=sizeof(type),*(type*)tmp)
     #define ClosePatch()
 
-    #define OpenNew( len )              PATCH_RET_OKAY
     #define InNew( offset )             (*(hole*)(dest+offset))
     #define OutNew( offset, x, type )   *(type*)(dest+(offset))=(x)
-    #define CloseNew( len, checksum, havenew )  *havenew = TRUE, PATCH_RET_OKAY
 
     #define FindOld( name ) NULL
     #define SetOld( name ) NULL
@@ -196,20 +193,7 @@ void SeekCheck( long pos, char *name )
     int             DoBackup;
     int             PrintLevel;
 
-    #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), \
-                                          *(type*)tmp )
-
-    extern PATCH_RET_CODE OpenPatch( void );
-    extern PATCH_RET_CODE InputPatch( void *tmp, size_t len );
-    extern PATCH_RET_CODE OpenOld( foff len, int prompt, foff newsize, foff newsum );
-    extern PATCH_RET_CODE CloseOld( int havenew, int dobackup );
-    extern void ClosePatch( void );
-    extern char *FindOld( char * );
-    extern char *SetOld( char * );
-    extern byte InOld( foff );
-
-    extern PATCH_RET_CODE OpenNew( foff len );
-    extern PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew );
+    #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), *(type*)tmp )
 
     #define Dump( x )
     #define DOPROMPT    1
@@ -225,9 +209,9 @@ PATCH_RET_CODE InitPatch( char **target_given )
     char            *temp;
     PATCH_RET_CODE  ret;
 #ifdef BDIFF
-    char            *tmp;
+    byte            *tmp;
 #else
-    char            tmp[4];
+    byte            tmp[4];
 #endif
     ret = OpenPatch();
     if( ret != PATCH_RET_OKAY ) {
@@ -277,18 +261,17 @@ PATCH_RET_CODE InitPatch( char **target_given )
 
 PATCH_RET_CODE Execute( byte *dest )
 {
-    char        *tmp;
+    byte        *tmp;
 
 #else
 
 PATCH_RET_CODE Execute( void )
 {
-    char        tmp[4];
+    byte        tmp[4];
 
   #if defined(__386__)
     #if defined(_WPATCH)
 
-    extern MY_FILE NewFile;
     #define InNew( offset )             ( Input( &NewFile, tmp, offset, \
                                                  sizeof(hole)), \
                                           *(hole*)tmp )
@@ -298,7 +281,6 @@ PATCH_RET_CODE Execute( void )
 
     #else
 
-    extern byte         *NewFile;
     #define OutNew( off, x, type )      *(type*)(NewFile+off) = (x);
     #define InNew( off )                *(hole*)(NewFile+off)
 
@@ -316,8 +298,6 @@ PATCH_RET_CODE Execute( void )
     #define DOBACKUP    0
 
   #else
-
-    extern MY_FILE      NewFile;
 
     extern void Input( MY_FILE *file, void *tmp, foff off, size_t len );
     #define InNew( offset )             ( Input( &NewFile, tmp, offset, \
@@ -460,7 +440,7 @@ error1:
 
 #if !defined( BDIFF )
 
-extern PATCH_RET_CODE DoPatch( char *patchname,
+PATCH_RET_CODE DoPatch( char *patchname,
                    int doprompt,
                    int dobackup,
                    int printlevel,

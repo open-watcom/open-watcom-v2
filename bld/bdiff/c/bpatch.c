@@ -32,6 +32,8 @@
 
 #include "bdiff.h"
 #include <sys/stat.h>
+#include "newfile.h"
+#include "oldfile.h"
 
 MY_FILE         NewFile;
 
@@ -42,8 +44,6 @@ extern void MyOpen( MY_FILE *file, int handle, char *name );
 extern void Input( MY_FILE *file, void *tmp, foff off, size_t len );
 extern void MyClose( MY_FILE *file );
 extern void SameDate( char *file, char *as );
-extern char *SetOld( char * );
-extern foff CheckSumOld( foff );
 
 extern void FileCheck(int, char *);
 extern void SeekCheck(long, char *);

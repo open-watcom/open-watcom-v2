@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include "bdiff.h"
 #include "wpatchio.h"
+#include "patchio.h"
 
 FILE        *PatchF;
 short       PatchSize;
@@ -101,7 +102,7 @@ void ClosePatch()
 {
 }
 
-PATCH_RET_CODE InputPatch( void *tmp, size_t len )
+PATCH_RET_CODE InputPatch( byte *tmp, size_t len )
 {
     if( fread( tmp, len, 1, PatchF ) != 1 ) {
         FilePatchError( ERR_CANT_READ, PatchName );

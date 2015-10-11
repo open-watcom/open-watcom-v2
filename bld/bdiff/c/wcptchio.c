@@ -35,6 +35,7 @@
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
+#include "patchio.h"
 
 FILE        *PatchF;
 char *PatchName;
@@ -143,11 +144,11 @@ void ClosePatch()
 {
 }
 
-PATCH_RET_CODE InputPatch( void *tmp, size_t len )
+PATCH_RET_CODE InputPatch( byte *tmp, size_t len )
 {
     if( fread( tmp, len, 1, PatchF ) != 1 ) {
         FilePatchError( ERR_CANT_READ, PatchName );
-    return( PATCH_CANT_READ );
+        return( PATCH_CANT_READ );
     }
     return( PATCH_RET_OKAY );
 }

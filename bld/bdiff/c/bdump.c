@@ -31,19 +31,22 @@
 
 
 #include "bdiff.h"
+#include "newfile.h"
 
 #ifdef __WATCOMC__
 #pragma off(unreferenced);
 #endif
 
-byte *NewFile;
+byte    *NewFile;
 
-void OpenNew( foff len )
+PATCH_RET_CODE OpenNew( foff len )
 {
     len = len;
+    return( PATCH_RET_OKAY );
 }
 
-void CloseNew( foff len, foff actual_sum )
+PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
 {
-    len = len; actual_sum = actual_sum;
+    len = len; actual_sum = actual_sum; havenew = havenew;
+    return( PATCH_RET_OKAY );
 }

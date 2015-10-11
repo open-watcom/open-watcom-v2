@@ -33,13 +33,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
-
 #include "bdiff.h"
-//#include "exeform.h"
-
-#include "watcom.h"
-#include "symtab.h"
 #include "msg.h"
+#include "newfile.h"
+#include "oldfile.h"
+#include "patchio.h"
+#include "symtab.h"
+#include "watcom.h"
 
 #include "machtype.h"
 #ifdef USE_DBGINFO
@@ -100,10 +100,10 @@ char *NewSymName;
 //exe_info old;
 //exe_info new;
 
-byte *PatchFile;
+byte    *PatchFile;
 foff    PatchSize;
-byte *OldFile;
-byte *NewFile;
+byte    *OldFile;
+byte    *NewFile;
 int     AppendPatchLevel;
 char    *SyncString = NULL;
 
@@ -1727,4 +1727,16 @@ void dump( void )
     for( reg = HoleRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx  %8lx\n",reg->old_start,reg->new_start,reg->diff);
     }
+}
+
+PATCH_RET_CODE OpenNew( foff len )
+{
+    len = len;
+    return( PATCH_RET_OKAY );
+}
+
+PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
+{
+    len = len; actual_sum = actual_sum; havenew = havenew;
+    return( PATCH_RET_OKAY );
 }

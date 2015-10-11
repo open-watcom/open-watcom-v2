@@ -37,6 +37,7 @@
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
+#include "newfile.h"
 
 #include "clibext.h"
 
@@ -292,3 +293,14 @@ void DirCmpFiles( char *srcDir, char *srcFiles[],
     }
 }
 
+PATCH_RET_CODE OpenNew( foff len )
+{
+    len = len;
+    return( PATCH_RET_OKAY );
+}
+
+PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
+{
+    len = len; actual_sum = actual_sum; havenew = havenew;
+    return( PATCH_RET_OKAY );
+}
