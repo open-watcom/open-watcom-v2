@@ -5,6 +5,10 @@ proj_name = bdiff
 
 bdiff_autodepend = .AUTODEPENDS
 
+all_execs = bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.exe
+
+additional_cleanup_subdir = $(all_execs:.exe=)
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -17,53 +21,93 @@ inc_dirs = -I"../h"
 
 .ERASE
 
-all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.exe
+all : $(all_execs)
 
 #
 # WCPATCH. Create patch.
 #
-wobjs = dopatchw.obj msg.obj myio.obj wcptchio.obj wcpatch.obj bdiffmem.obj wbdiff.obj
+__subdir__=wcpatch
+!include subdrule.mif
 
-wcpatch.exe : $(wobjs) $(wres_lib) $(__MAKEFILES__)
+#extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
+
+wcpatch_objs = &
+    $+$(__subdir__)$-/dopatchw.obj &
+    $+$(__subdir__)$-/msg.obj &
+    $+$(__subdir__)$-/myio.obj &
+    $+$(__subdir__)$-/wcptchio.obj &
+    $+$(__subdir__)$-/wcpatch.obj &
+    $+$(__subdir__)$-/bdiffmem.obj &
+    $+$(__subdir__)$-/wbdiff.obj
+
+wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(wobjs) $(wres_lib) $(ldflags)
+        $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
 !else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(wobjs)) do @%append $^&.lnk file %i
+        @for %i in ($(wcpatch_objs)) do @%append $^&.lnk file %i
         $(linker) name $^@ @$^&.lnk
 !endif
+        $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
 # WPATCH. Apply patch.
 #
-yobjs = dopatchp.obj msg.obj myio.obj oldfile.obj wpatchio.obj wpatch.obj bdiffmem.obj bpatch.obj
+__subdir__=wpatch
+!include subdrule.mif
 
-wpatch.exe : $(yobjs) $(wres_lib) $(__MAKEFILES__)
+#extra_cpp_wpatch_flags = -D_WPATCH
+
+wpatch_objs = &
+    $+$(__subdir__)$-/dopatchp.obj &
+    $+$(__subdir__)$-/msg.obj &
+    $+$(__subdir__)$-/myio.obj &
+    $+$(__subdir__)$-/oldfile.obj &
+    $+$(__subdir__)$-/wpatchio.obj &
+    $+$(__subdir__)$-/wpatch.obj &
+    $+$(__subdir__)$-/bdiffmem.obj &
+    $+$(__subdir__)$-/bpatch.obj
+
+wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(yobjs) $(wres_lib) $(ldflags)
+        $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
 !else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(yobjs)) do @%append $^&.lnk file %i
+        @for %i in ($(wpatch_objs)) do @%append $^&.lnk file %i
         $(linker) name $^@ @$^&.lnk
 !endif
+        $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
 # BPATCH.
 #
-objs = bpatch.obj dopatchp.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
+__subdir__=bpatch
+!include subdrule.mif
 
-bpatch.exe : bpatch.res $(objs) $(wres_lib) $(__MAKEFILES__)
+#extra_cpp_bpatch_flags = -D_WPATCH
+
+bpatch_objs = &
+    $+$(__subdir__)$-/bpatch.obj &
+    $+$(__subdir__)$-/dopatchp.obj &
+    $+$(__subdir__)$-/msg.obj &
+    $+$(__subdir__)$-/myio.obj &
+    $+$(__subdir__)$-/oldfile.obj &
+    $+$(__subdir__)$-/patchio.obj &
+    $+$(__subdir__)$-/patmain.obj &
+    $+$(__subdir__)$-/bdiffmem.obj
+
+bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(wres_lib) $(ldflags)
+        $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
 !else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(objs)) do @%append $^&.lnk file %i
+        @for %i in ($(bpatch_objs)) do @%append $^&.lnk file %i
         $(linker) name $^@ @$^&.lnk
 !endif
         $(wstrip) -q -a -r $^@ . bpatch.res
@@ -71,33 +115,56 @@ bpatch.exe : bpatch.res $(objs) $(wres_lib) $(__MAKEFILES__)
 #
 # BDUMP.
 #
-xobjs = bdump.obj dopatchx.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
+__subdir__=bdump
+!include subdrule.mif
 
-bdump.exe : bpatch.res $(xobjs) $(wres_lib) $(__MAKEFILES__)
+#extra_cpp_bdump_flags = -DBDUMP
+
+bdump_objs = &
+    $+$(__subdir__)$-/bdump.obj &
+    $+$(__subdir__)$-/dopatchx.obj &
+    $+$(__subdir__)$-/msg.obj &
+    $+$(__subdir__)$-/myio.obj &
+    $+$(__subdir__)$-/oldfile.obj &
+    $+$(__subdir__)$-/patchio.obj &
+    $+$(__subdir__)$-/patmain.obj &
+    $+$(__subdir__)$-/bdiffmem.obj
+
+bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(xobjs) $(wres_lib) $(ldflags)
+        $(cl) $(clflags) $(bdump_objs) $(wres_lib) $(ldflags)
 !else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(xobjs)) do @%append $^&.lnk file %i
+        @for %i in ($(bdump_objs)) do @%append $^&.lnk file %i
         $(linker) name $^@ @$^&.lnk
 !endif
-        $(wstrip) -q -a -r $^@ . bpatch.res
+        $(wstrip) -q -a -r $^@ . bdump.res
 
 #
 # BDIFF.
 #
-dobjs = bdiff.obj bdiffmem.obj dopatchd.obj msg.obj myio.obj
+__subdir__=bdiff
+!include subdrule.mif
 
-bdiff.exe : $(dobjs) bdiff.res $(wres_lib) $(__MAKEFILES__)
+#extra_cpp_bdiff_flags = -DBDIFF
+
+bdiff_objs = &
+    $+$(__subdir__)$-/bdiff.obj &
+    $+$(__subdir__)$-/bdiffmem.obj &
+    $+$(__subdir__)$-/dopatchd.obj &
+    $+$(__subdir__)$-/msg.obj &
+    $+$(__subdir__)$-/myio.obj
+
+bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(dobjs) $(wres_lib) $(ldflags)
+        $(cl) $(clflags) $(bdiff_objs) $(wres_lib) $(ldflags)
 !else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(dobjs)) do @%append $^&.lnk file %i
+        @for %i in ($(bdiff_objs)) do @%append $^&.lnk file %i
         $(linker) name $^@ @$^&.lnk
 !endif
         $(wstrip) -q -a -r $^@ . bdiff.res
@@ -105,7 +172,14 @@ bdiff.exe : $(dobjs) bdiff.res $(wres_lib) $(__MAKEFILES__)
 #
 # BCMT
 #
-bpcmt_objs = bpcmt.obj bdiffmem.obj
+__subdir__=bpcmt
+!include subdrule.mif
+
+#extra_cpp_bpcmt_flags = -DBPCMT
+
+bpcmt_objs = &
+    $+$(__subdir__)$-/bpcmt.obj &
+    $+$(__subdir__)$-/bdiffmem.obj
 
 bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
@@ -117,7 +191,13 @@ bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 #
 # BLEVEL
 #
-bplevel_objs = bplevel.obj
+__subdir__=bplevel
+!include subdrule.mif
+
+#extra_cpp_bplevel_flags = -DBPLEVEL
+
+bplevel_objs = &
+    $+$(__subdir__)$-/bplevel.obj
 
 bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
@@ -142,3 +222,6 @@ bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
 
 bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
         $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@
+
+bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
+        $(rc_aui) -I.. -DBDUMP $[@ -fo=$^@
