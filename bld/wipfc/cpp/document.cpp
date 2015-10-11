@@ -952,7 +952,7 @@ std::wstring* Document::prepNameitName( const std::wstring& key )
     return name;
 }
 /***************************************************************************/
-std::uint16_t Document::getGroupById( const std::wstring& i )
+STD1::uint16_t Document::getGroupById( const std::wstring& i )
 {
     ControlGroup* grp( controls->getGroupById( i ) );
     if( !grp ) {
@@ -962,4 +962,3 @@ std::uint16_t Document::getGroupById( const std::wstring& i )
     else
         return grp->index() + 1;
 }
-

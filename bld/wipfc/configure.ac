@@ -1,8 +1,14 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT([wipfc], [2.0], [])
 AM_INIT_AUTOMAKE
-CPPFLAGS="-std=c++0x -D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
-CXXFLAGS="-pipe -g -Wall -march=native"
+
+# allow to use a plain gcc compiler (gcc-3.4.6)
+#CPPFLAGS="-std=c++0x -D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
+#CXXFLAGS="-pipe -g -Wall -march=native"
+
+CPPFLAGS="-D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
+CXXFLAGS="-pipe -g -Wall"
+
 AC_CONFIG_SRCDIR([cpp/main.cpp])
 AC_CONFIG_HEADERS([config.h])
 
