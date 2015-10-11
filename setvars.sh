@@ -6,7 +6,13 @@
 #       modify it as necessary for your own use!!
 
 # Change this to point your Open Watcom source tree
-# 	Note: '=' sign in path is not allowed (build will fail)
+#
+# 	Note: '=' sign in path is not allowed (build will fail).
+#	Try to keep a OWROOT path short and simple like
+#       /tmp/ow There is dosemu used to build some parts
+#	of the software. dosemu can hang if OWROOT is long
+#	or contain long names of the directories.
+
 export OWROOT=`pwd`
 
 # Subdirectory to be used for building OW build tools
