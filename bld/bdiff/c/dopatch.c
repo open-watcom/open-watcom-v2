@@ -46,7 +46,8 @@ void GetLevel( char *name )
 
     CurrLevel[0] = '\0';
     io = open( name, O_BINARY+O_RDONLY );
-    if( io == -1 ) return;
+    if( io == -1 )
+        return;
     if( lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L &&
         read( io, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) &&
         memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
@@ -58,14 +59,14 @@ void GetLevel( char *name )
 void FileCheck( int fd, char *name )
 {
     if( fd == -1 ) {
-    FilePatchError( ERR_CANT_OPEN, name );
+        FilePatchError( ERR_CANT_OPEN, name );
     }
 }
 
 void SeekCheck( long pos, char *name )
 {
     if( pos == -1 ) {
-    FilePatchError( ERR_IO_ERROR, name );
+        FilePatchError( ERR_IO_ERROR, name );
     }
 }
 
@@ -88,22 +89,23 @@ void SeekCheck( long pos, char *name )
         HoleArraySize = (64*1024L) / sizeof( save_hole ) - 1;
         for( ;; ) {
             HoleArray = _allocate( HoleArraySize*sizeof(save_hole) );
-            if( HoleArray != NULL ) break;
+            if( HoleArray != NULL )
+                break;
             HoleArraySize /= 2;
             if( HoleArraySize < 100 ) {
-        PatchError( ERR_MEMORY_OUT );
-        return( PATCH_NO_MEMORY );
+                PatchError( ERR_MEMORY_OUT );
+                return( PATCH_NO_MEMORY );
             }
         }
-    return( PATCH_RET_OKAY );
+        return( PATCH_RET_OKAY );
     }
 
     void FreeHoleArray( void )
     {
-    if( HoleArray != NULL ) {
-        _free( HoleArray );
-        HoleArray = NULL;
-    }
+        if( HoleArray != NULL ) {
+            _free( HoleArray );
+            HoleArray = NULL;
+        }
     }
 
     int HoleCompare( const void *_h1, const void *_h2 )
@@ -111,8 +113,10 @@ void SeekCheck( long pos, char *name )
         const save_hole *h1 = _h1;
         const save_hole *h2 = _h2;
 
-        if( h1->offset < h2->offset ) return( -1 );
-        if( h1->offset > h2->offset ) return( 1 );
+        if( h1->offset < h2->offset )
+            return( -1 );
+        if( h1->offset > h2->offset )
+            return( 1 );
         return( 0 );
     }
 
@@ -151,7 +155,7 @@ void SeekCheck( long pos, char *name )
 #else
 
     #define InitHoles()
-    #define AddHole( off, diff ) OutNew( (off), InNew( (off) )+(diff), hole );
+    #define AddHole( off, diff ) OutNew( (off), InNew( (off) ) + (diff), hole );
     #define FlushHoles()
     #define FreeHoleArray()
 
@@ -169,7 +173,7 @@ void SeekCheck( long pos, char *name )
     #define InPatch( type )             (tmp=pat,pat+=sizeof(type),*(type*)tmp)
     #define ClosePatch()
 
-    #define OpenNew( len )      PATCH_RET_OKAY
+    #define OpenNew( len )              PATCH_RET_OKAY
     #define InNew( offset )             (*(hole*)(dest+offset))
     #define OutNew( offset, x, type )   *(type*)(dest+(offset))=(x)
     #define CloseNew( len, checksum, havenew )  *havenew = TRUE, PATCH_RET_OKAY
@@ -227,17 +231,18 @@ PATCH_RET_CODE InitPatch( char **target_given )
 #endif
     ret = OpenPatch();
     if( ret != PATCH_RET_OKAY ) {
-    return( ret );
+        return( ret );
     }
     p = PATCH_SIGNATURE;
     compare_sig = 1;
     for( ;; ) {
         ch = InPatch( char );
-        if( ch == EOF_CHAR ) break;
+        if( ch == EOF_CHAR )
+            break;
         if( compare_sig ) {
             if( ch != *p ) {
-        PatchError( ERR_NOT_PATCHFILE, PatchName );
-        return( PATCH_RET_OKAY );
+                PatchError( ERR_NOT_PATCHFILE, PatchName );
+                return( PATCH_RET_OKAY );
             }
             ++p;
             if( ch == END_SIG_CHAR ) {
@@ -249,21 +254,22 @@ PATCH_RET_CODE InitPatch( char **target_given )
     for( ;; ) {
         *p = ch = InPatch( char );
         ++p;
-        if( ch == '\0' ) break;
+        if( ch == '\0' ) {
+            break;
+        }
     }
     if( (*target_given) != NULL ) {
         temp = SetOld( (*target_given) );
-    }
-    else {
-    temp = FindOld( target );
+    } else {
+        temp = FindOld( target );
     }
     if( temp ) {
-    *target_given = temp;
-    return( PATCH_RET_OKAY );
+        *target_given = temp;
+        return( PATCH_RET_OKAY );
     } else {
-    *target_given = NULL;
-    ClosePatch();
-    return( PATCH_CANT_OPEN_FILE );
+        *target_given = NULL;
+        ClosePatch();
+        return( PATCH_CANT_OPEN_FILE );
     }
 }
 
@@ -279,11 +285,9 @@ PATCH_RET_CODE Execute( void )
 {
     char        tmp[4];
 
+  #if defined(__386__)
+    #if defined(_WPATCH)
 
-#if defined(__386__)
-
-
-#if defined(_WPATCH)
     extern MY_FILE NewFile;
     #define InNew( offset )             ( Input( &NewFile, tmp, offset, \
                                                  sizeof(hole)), \
@@ -291,15 +295,18 @@ PATCH_RET_CODE Execute( void )
     #define OutNew( off, x, type )      *(type*)tmp = (x); \
                                                  Output( &NewFile, tmp, \
                                                          off, sizeof( type ) );
-#else
-  extern byte         *NewFile;
-  #define OutNew( off, x, type )      *(type*)(NewFile+off) = (x);
-  #define InNew( off )                *(hole*)(NewFile+off)
-#endif
-#elif defined(BDUMP)
+
+    #else
+
+    extern byte         *NewFile;
+    #define OutNew( off, x, type )      *(type*)(NewFile+off) = (x);
+    #define InNew( off )                *(hole*)(NewFile+off)
+
+    #endif
+  #elif defined(BDUMP)
 
     #define InNew( offset )             1
-    #define OutNew( off, x, type )      ( x )
+    #define OutNew( off, x, type )      //( x )
 
     #undef Dump
     #define Dump( x ) printf x
@@ -308,7 +315,7 @@ PATCH_RET_CODE Execute( void )
     #define DOPROMPT    0
     #define DOBACKUP    0
 
-#else
+  #else
 
     extern MY_FILE      NewFile;
 
@@ -323,8 +330,7 @@ PATCH_RET_CODE Execute( void )
                                                  Output( &NewFile, tmp, \
                                                          off, sizeof( type ) );
 
-#endif
-
+  #endif
 #endif
 
     patch_cmd   cmd;
@@ -339,7 +345,7 @@ PATCH_RET_CODE Execute( void )
     foff        new_offset;
     foff        old_offset;
     char        ch;
-    int     havenew;
+    int         havenew;
     PATCH_RET_CODE  ret;
     PATCH_RET_CODE  ret2;
 #ifdef BDIFF
@@ -354,21 +360,24 @@ PATCH_RET_CODE Execute( void )
     new_size = InPatch( foff );
     checksum = InPatch( foff );
     ret = OpenOld( old_size, DOPROMPT, new_size, checksum );
-    if( ret != PATCH_RET_OKAY ) goto error1;
+    if( ret != PATCH_RET_OKAY )
+        goto error1;
     ret = OpenNew( new_size );
-    if( ret != PATCH_RET_OKAY ) goto error2;
+    if( ret != PATCH_RET_OKAY )
+        goto error2;
     InitHoles();
     for( ;; ) {
-    #if defined( INSTALL_PROGRAM )
-        #if defined( WINNT ) || defined( WIN ) || defined( OS2 )
+#if defined( INSTALL_PROGRAM )
+    #if defined( WINNT ) || defined( WIN ) || defined( OS2 )
         if( StatusCancelled() ) {
-        ret = PATCH_RET_CANCEL;
-        goto error3;
+            ret = PATCH_RET_CANCEL;
+            goto error3;
         }
-        #endif
     #endif
+#endif
         cmd = InPatch( patch_cmd );
-        if( cmd == CMD_DONE ) break;
+        if( cmd == CMD_DONE )
+            break;
         switch( cmd ) {
         case CMD_DIFFS:
             new_offset = InPatch( foff );
@@ -414,7 +423,8 @@ PATCH_RET_CODE Execute( void )
                 Dump(( "Hole       new-%8.8lx diff-%8.8lx\n",new_offset,diff));
                 AddHole( new_offset, diff );
                 next = InPatch( byte );
-                if( next == 0 ) break;
+                if( next == 0 )
+                    break;
                 if( ( next & 0x80 ) == 0  ) {
                     new_offset += (foff)next & 0x7f;
                 } else if( ( next & 0x40 ) == 0 ) {
@@ -428,9 +438,9 @@ PATCH_RET_CODE Execute( void )
             }
             break;
         default:
-        PatchError( ERR_BAD_PATCHFILE, PatchName );
-        ret = PATCH_BAD_PATCH_FILE;
-        goto error3;
+            PatchError( ERR_BAD_PATCHFILE, PatchName );
+            ret = PATCH_BAD_PATCH_FILE;
+            goto error3;
         }
     }
     ret = PATCH_RET_OKAY;
@@ -439,7 +449,7 @@ error3:
     FreeHoleArray();
     ret2 = CloseNew( new_size, checksum, &havenew );
     if( ret == PATCH_RET_OKAY ) {
-    ret = ret2;
+        ret = ret2;
     }
 error2:
     CloseOld( havenew && DOPROMPT, DOBACKUP );
@@ -457,9 +467,9 @@ extern PATCH_RET_CODE DoPatch( char *patchname,
                    char *outfilename )
 {
     char        buffer[ sizeof( PATCH_LEVEL ) ];
-#ifndef _WPATCH
+  #ifndef _WPATCH
     char        *target = NULL;
-#endif
+  #endif
     PATCH_RET_CODE  ret;
 
     outfilename=outfilename;
@@ -468,60 +478,59 @@ extern PATCH_RET_CODE DoPatch( char *patchname,
     DoBackup = dobackup;
     PrintLevel = printlevel;
     NewName = tmpnam( NULL );
-#ifndef _WPATCH
+  #ifndef _WPATCH
     if( access( PatchName, R_OK ) != 0 ) {
         PatchError( ERR_CANT_FIND, PatchName );
         return( PATCH_CANT_FIND_PATCH );
     }
-#endif
-#if !defined( INSTALL_PROGRAM )
+  #endif
+  #if !defined( INSTALL_PROGRAM )
     if( PrintLevel ) {
         GetLevel( PatchName );
         if( CurrLevel[ 0 ] == '\0' ) {
-        Message( MSG_NOT_PATCHED, PatchName );
+            Message( MSG_NOT_PATCHED, PatchName );
         } else {
             Message( MSG_PATCHED_TO_LEVEL, PatchName, CurrLevel );
         }
-    return( PATCH_RET_OKAY );
+        return( PATCH_RET_OKAY );
     }
-#endif
+  #endif
     _splitpath( PatchName, NULL, NULL, NULL, buffer );
-#ifndef _WPATCH
+  #ifndef _WPATCH
     ret = InitPatch( &target );
-#else
+  #else
     ret = InitPatch( &outfilename );
-#endif
-    #if defined( INSTALL_PROGRAM )
-        if( ret != PATCH_RET_OKAY ) {
+  #endif
+  #if defined( INSTALL_PROGRAM )
+    if( ret != PATCH_RET_OKAY ) {
         return( ret );
-        }
+    }
     if( outfilename != NULL ) {
         strcpy( outfilename, target );
         PatchingFile( PatchName, outfilename );
     }
-    #endif
-#ifndef _WPATCH
+  #endif
+  #ifndef _WPATCH
     GetLevel( target );
     if( stricmp( buffer, CurrLevel ) <= 0 ) {
-    ClosePatch();
+        ClosePatch();
     #if !defined( INSTALL_PROGRAM )
         Message( MSG_ALREADY_PATCHED, target, CurrLevel );
     #endif
-    return( PATCH_ALREADY_PATCHED );
+        return( PATCH_ALREADY_PATCHED );
     } else {
-#endif
-    ret = Execute();
-    if( ret != PATCH_RET_OKAY ) {
-        return( ret );
+  #endif
+        ret = Execute();
+        if( ret != PATCH_RET_OKAY ) {
+            return( ret );
+        }
+  #ifndef _WPATCH
     }
-#ifndef _WPATCH
-    }
-#endif
-    #if !defined( INSTALL_PROGRAM ) && !defined( _WPATCH )
-        Message( MSG_SUCCESSFULLY_PATCHED, target, buffer );
-    #endif
+  #endif
+  #if !defined( INSTALL_PROGRAM ) && !defined( _WPATCH )
+    Message( MSG_SUCCESSFULLY_PATCHED, target, buffer );
+  #endif
     return( PATCH_RET_OKAY );
 }
 
 #endif
-

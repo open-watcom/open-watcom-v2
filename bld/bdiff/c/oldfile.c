@@ -49,20 +49,21 @@ extern void FilePatchError( int, ... );
 extern void FileCheck(int, char *);
 extern void SeekCheck(long, char *);
 
-static char     new_path[_MAX_PATH];
+static char     newName[_MAX_PATH];
 static char     new_fname[_MAX_FNAME];
 static char     new_ext[_MAX_EXT];
 
-static char     path[_MAX_PATH];
-static char     drive[_MAX_DRIVE];
-static char     dir[_MAX_DIR];
-static char     fname[_MAX_FNAME];
-static char     ext[_MAX_EXT];
+static char     oldName[_MAX_PATH];
+static char     old_drive[_MAX_DRIVE];
+static char     old_dir[_MAX_DIR];
+static char     old_fname[_MAX_FNAME];
+static char     old_ext[_MAX_EXT];
 
 char *SetOld( char *name )
 {
-    if( name != NULL ) strcpy( path, name );
-    return( path );
+    if( name != NULL )
+        strcpy( oldName, name );
+    return( oldName );
 }
 
 char *FindOld( char *name )
@@ -70,22 +71,21 @@ char *FindOld( char *name )
     char        temp[_MAX_PATH];
     int         retcode;
 
-    _splitpath( name, drive, dir, fname, ext );
-    _makepath( temp, "", "", fname, ext );
+    _splitpath( name, old_drive, old_dir, old_fname, old_ext );
+    _makepath( temp, "", "", old_fname, old_ext );
+#if defined( INSTALL_PROGRAM )
+    retcode = SecondaryPatchSearch( name, oldName );
+#else
     retcode = 1;
-    #if defined( INSTALL_PROGRAM )
-    {
-        retcode = SecondaryPatchSearch( name, path );
+#endif
+    if( retcode && oldName[0] == '\0' ) {
+        _searchenv( temp, "PATH", oldName );
     }
-    #endif
-    if( retcode && path[0] == '\0' ) {
-        _searchenv( temp, "PATH", path );
-    }
-    if( path[ 0 ] == '\0' ) {
+    if( oldName[0] == '\0' ) {
         FilePatchError( ERR_CANT_OPEN, temp );
         return( NULL );
     }
-    return( path );
+    return( oldName );
 }
 
 foff CheckSumOld( foff new_size )
@@ -112,9 +112,9 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
 
     prompt=prompt;
     _splitpath( NewName, NULL, NULL, new_fname, new_ext );
-    _splitpath( path, drive, dir, fname, ext );
-    _makepath( new_path, drive, dir, new_fname, new_ext );
-    NewName = new_path;
+    _splitpath( oldName, old_drive, old_dir, old_fname, old_ext );
+    _makepath( newName, old_drive, old_dir, new_fname, new_ext );
+    NewName = newName;
 #if !defined( INSTALL_PROGRAM )
     {
         char    temp[_MAX_PATH];
@@ -123,36 +123,39 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
         if( prompt && DoPrompt ) {
             for( ;; ) {
                 GetMsg( msgbuf, MSG_MODIFY );
-                cprintf( msgbuf, path );
-                while( kbhit() ) getch();
+                cprintf( msgbuf, oldName );
+                while( kbhit() )
+                    getch();
                 gets( temp );
                 if( tolower( temp[0] ) == 'n' ) {
                     PatchError( ERR_PATCH_ABORTED );
                 }
-                if( tolower( temp[0] ) == 'y' ) break;
+                if( tolower( temp[0] ) == 'y' ) {
+                    break;
+                }
             }
         }
     }
 #endif
-    handle = open( path, O_RDONLY+O_BINARY, 0 );
-    FileCheck( handle, path );
-    MyOpen( &OldFile, handle, path );
+    handle = open( oldName, O_RDONLY + O_BINARY, 0 );
+    FileCheck( handle, oldName );
+    MyOpen( &OldFile, handle, oldName );
     actual_len = lseek( handle, 0, SEEK_END );
-    SeekCheck( actual_len, path );
+    SeekCheck( actual_len, oldName );
     if( actual_len != len
-    && (actual_len + sizeof( PATCH_LEVEL )) != len
-    && (actual_len - sizeof( PATCH_LEVEL )) != len ) {
+      && (actual_len + sizeof( PATCH_LEVEL )) != len
+      && (actual_len - sizeof( PATCH_LEVEL )) != len ) {
         if( actual_len >= new_size ) {
             if( CheckSumOld( new_size ) == new_sum ) {
                 MyClose( &OldFile );
                 return( PATCH_ALREADY_PATCHED );
             }
         }
-        PatchError( ERR_WRONG_SIZE, path, actual_len, len );
+        PatchError( ERR_WRONG_SIZE, oldName, actual_len, len );
         MyClose( &OldFile );
         return( PATCH_BAD_LENGTH );
     }
-    SeekCheck( lseek( handle, 0, SEEK_SET ), path );
+    SeekCheck( lseek( handle, 0, SEEK_SET ), oldName );
     return( PATCH_RET_OKAY );
 }
 
@@ -160,7 +163,7 @@ byte InOld( foff offset )
 {
     byte        tmp;
 
-    Input( &OldFile, &tmp, offset, sizeof(byte) );
+    Input( &OldFile, &tmp, offset, sizeof( byte ) );
     return( tmp );
 }
 
@@ -170,17 +173,19 @@ PATCH_RET_CODE CloseOld( int havenew, int dobackup )
 
     MyClose( &OldFile );
     if( havenew ) {
-        _makepath( bak, drive, dir, fname, "bak" );
+        _makepath( bak, old_drive, old_dir, old_fname, "bak" );
         remove( bak );
-        if( rename( path, bak ) != 0 ) {
-            FilePatchError( ERR_CANT_RENAME, path, bak );
+        if( rename( oldName, bak ) != 0 ) {
+            FilePatchError( ERR_CANT_RENAME, oldName, bak );
             return( PATCH_CANT_RENAME );
         }
-        if( rename( NewName, path ) != 0 ) {
+        if( rename( NewName, oldName ) != 0 ) {
             FilePatchError( ERR_CANT_RENAME, NewName, bak );
             return( PATCH_CANT_RENAME );
         }
-        if( !dobackup ) remove( bak );
+        if( !dobackup ) {
+            remove( bak );
+        }
     }
     return( PATCH_RET_OKAY );
 }

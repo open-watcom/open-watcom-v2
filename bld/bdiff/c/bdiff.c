@@ -153,7 +153,7 @@ static foff EndNew;
 static int  NewCorrection;
 static byte *CurrPatch;
 static int Verbose;
-static char *NewName;
+static char *newName;
 static char *CommentFile;
 static char LevelBuff[64];
 
@@ -1479,7 +1479,7 @@ void WritePatchFile( char *name )
     CopyComment();
 
     OutPatch( EOF_CHAR, byte );
-    OutStr( NewName );
+    OutStr( newName );
     OutPatch( '\0', char );
     OutPatch( EndOld + OldCorrection, foff );
     size = EndNew;
@@ -1542,7 +1542,7 @@ algorithm ParseArgs( int argc, char **argv )
     char        *curr;
     algorithm   alg;
 
-    NewName = NULL;
+    newName = NULL;
     if( argc < 4 ) {
         Usage( argv[0] );
     }
@@ -1550,7 +1550,7 @@ algorithm ParseArgs( int argc, char **argv )
     OldSymName = NULL;
     NewSymName = NULL;
     CommentFile = NULL;
-    NewName = argv[1];
+    newName = argv[1];
     Verbose = 0;
     AppendPatchLevel = 1;
     while( *arg ) {
@@ -1562,7 +1562,7 @@ algorithm ParseArgs( int argc, char **argv )
             SyncString = strdup( curr+1 );
             break;
         case 'p':
-            NewName = curr + 1;
+            newName = curr + 1;
             break;
         case 'c':
             CommentFile = curr + 1;

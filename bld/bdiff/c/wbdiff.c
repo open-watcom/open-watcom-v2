@@ -157,7 +157,7 @@ static foff EndNew;
 static int  NewCorrection;
 static byte *CurrPatch;
 static int Verbose;
-static char *NewName;
+static char *newName;
 static char *CommentFile;
 static char LevelBuff[64];
 
@@ -1484,7 +1484,7 @@ void WritePatchFile( char *name )
     CopyComment();
 
     OutPatch( EOF_CHAR, byte );
-    OutStr( NewName );
+    OutStr( newName );
     OutPatch( '\0', char );
     OutPatch( EndOld + OldCorrection, foff );
     size = EndNew;
@@ -1590,7 +1590,7 @@ int DoBdiff( char *srcPath, char *tgtPath, char *name )
         HoleCount[ i ] = 0;
     }
 
-    NewName = name;
+    newName = name;
     EndOld = FileSize( srcPath, &OldCorrection );
     EndNew = FileSize( tgtPath, &NewCorrection );
 

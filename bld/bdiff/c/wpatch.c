@@ -87,7 +87,7 @@ void WPatchApply( char *PatchName, char *TgtPath )
         switch( flag ) {
             case PATCH_FILE_PATCHED:
                 printf( "Patching file %s\n", FullPath );
-                DoPatch( "", 0,0,0, FullPath );
+                DoPatch( "", 0, 0, 0, FullPath );
                 break;
             case PATCH_DIR_DELETED:
                 printf( "Deleting directory %s\n", FullPath );
