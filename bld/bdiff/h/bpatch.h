@@ -100,10 +100,6 @@
 int MsgInit( void );
 void MsgFini( void );
 
-/* From myio.c */
-void Input( MY_FILE *file, void *tmp, foff off, size_t len );
-void Output( MY_FILE *file, void *tmp, foff off, size_t len );
-
 typedef enum {
     PATCH_RET_OKAY,
     PATCH_NO_MEMORY,
@@ -121,4 +117,5 @@ typedef enum {
     PATCH_RET_CANCEL,
     PATCH_BAD_CHECKSUM
 } PATCH_RET_CODE;
+
 #endif

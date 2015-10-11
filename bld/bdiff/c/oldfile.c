@@ -33,15 +33,13 @@
 #include "bdiff.h"
 #include "msg.h"
 #include "oldfile.h"
+#include "myio.h"
 
 MY_FILE OldFile;
 
 extern char     *NewName;
 extern int      DoPrompt;
 
-extern void MyOpen( MY_FILE *file, int handle, char *name );
-extern void Input( MY_FILE *file, void *tmp, foff off, size_t len );
-extern void MyClose( MY_FILE *file );
 extern int  SecondaryPatchSearch( char *name, char *path );
 
 extern void PatchError( int, ... );

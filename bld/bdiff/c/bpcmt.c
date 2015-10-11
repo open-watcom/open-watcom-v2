@@ -77,7 +77,7 @@ void main( int argc, char *argv[] )
     }
 
     fpcmt = open( argv[1], O_RDONLY | O_BINARY, 0 );
-    if( fpin == -1 ) {
+    if( fpcmt == -1 ) {
         Fatal( "Unable to open '*' to read", argv[2] );
     }
 

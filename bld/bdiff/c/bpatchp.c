@@ -33,6 +33,7 @@
 #include "bdiff.h"
 #include "newfile.h"
 #include "oldfile.h"
+#include "myio.h"
 
 byte            *NewFile;
 
@@ -41,7 +42,6 @@ extern char     *PatchName;
 
 extern void     PatchError( int, ... );
 extern void     FilePatchError( int, ... );
-extern void     SameDate( char *file, char *as );
 
 extern void     FileCheck(int, char *);
 extern void     SeekCheck(long, char *);

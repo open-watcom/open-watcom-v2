@@ -35,6 +35,7 @@
 #include "newfile.h"
 #include "oldfile.h"
 #include "patchio.h"
+#include "myio.h"
 
 extern void PatchError( int, ... );
 extern void FilePatchError( int, ... );
@@ -125,9 +126,6 @@ void SeekCheck( long pos, char *name )
 
     void FlushHoles( void )
     {
-        extern void Input( MY_FILE *file, byte *tmp, foff off, size_t len );
-        extern void Output( MY_FILE *file, byte *tmp, foff off, size_t len );
-
         save_hole       *end;
         save_hole       *curr;
         hole    tmp;
@@ -299,13 +297,11 @@ PATCH_RET_CODE Execute( void )
 
   #else
 
-    extern void Input( MY_FILE *file, void *tmp, foff off, size_t len );
     #define InNew( offset )             ( Input( &NewFile, tmp, offset, \
                                                  sizeof(hole)), \
                                           *(hole*)tmp )
 
 
-    extern void Output( MY_FILE *file, void *tmp, foff off, size_t len );
     #define OutNew( off, x, type )      *(type*)tmp = (x); \
                                                  Output( &NewFile, tmp, \
                                                          off, sizeof( type ) );

@@ -34,16 +34,12 @@
 #include <sys/stat.h>
 #include "newfile.h"
 #include "oldfile.h"
+#include "myio.h"
 
 MY_FILE         NewFile;
 
 extern char     *NewName;
 extern char     *PatchName;
-
-extern void MyOpen( MY_FILE *file, int handle, char *name );
-extern void Input( MY_FILE *file, void *tmp, foff off, size_t len );
-extern void MyClose( MY_FILE *file );
-extern void SameDate( char *file, char *as );
 
 extern void FileCheck(int, char *);
 extern void SeekCheck(long, char *);

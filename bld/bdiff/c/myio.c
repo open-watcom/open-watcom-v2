@@ -37,6 +37,7 @@
 #else
 #include <sys/utime.h>
 #endif
+#include "myio.h"
 
 extern void     FileCheck(int, char *);
 extern void     SeekCheck(long, char *);
