@@ -152,8 +152,8 @@ static struct dir_info {
 
 static struct target_info {
     char                *name;
-    long                space_needed;
-    long                max_tmp_file;
+    uint_64             space_needed;
+    uint_64             max_tmp_file;
     int                 num_files;
     int                 supplimental;
     bool                needs_update;
@@ -693,8 +693,8 @@ static void GetDestDir( int i, char *buff, size_t buff_len )
     ConcatDirSep( buff );
 }
 
-int SecondaryPatchSearch( char *filename, char *buff, int Index )
-/***************************************************************/
+int SecondaryPatchSearch( const char *filename, char *buff, int Index )
+/*********************************************************************/
 {
 // search for patch output files (originals to be patched) in following order
 // 1.)  check .INF specified directory in PatchInfo structure (if it exists)
@@ -2617,14 +2617,14 @@ extern bool SimTargetNeedsUpdate( int i )
     return( TargetInfo[i].needs_update );
 }
 
-extern long SimTargetSpaceNeeded( int i )
-/***************************************/
+extern uint_64 SimTargetSpaceNeeded( int i )
+/******************************************/
 {
     return( TargetInfo[i].space_needed );
 }
 
-extern long SimMaxTmpFile( int i )
-/********************************/
+extern uint_64 SimMaxTmpFile( int i )
+/***********************************/
 {
     return( TargetInfo[i].max_tmp_file );
 }
@@ -3357,7 +3357,7 @@ void SimCalcAddRemove( void )
     bool                uninstall;
     bool                remove;
     long                diskette;
-    long                tmp_size = 0;
+    uint_64             tmp_size = 0;
     vhandle             reinstall;
 #if defined( __NT__ )
     char                ext[_MAX_EXT];
@@ -3588,16 +3588,15 @@ static bool CopyErrorDialog( int ret, int i, char *file )
 }
 
 
-static bool PatchErrorDialog( int ret, int i )
-/********************************************/
+static bool PatchErrorDialog( PATCH_RET_CODE ret, int i )
+/*******************************************************/
 {
     gui_message_return      guiret;
 
     if( ret != PATCH_RET_OKAY && ret != PATCH_CANT_FIND_PATCH ) {
         if( ret != PATCH_RET_CANCEL ) {
             // error, attempt to continue patch process
-            guiret = MsgBox ( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO,
-                              PatchInfo[i].srcfile );
+            guiret = MsgBox ( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO, PatchInfo[i].srcfile );
             if( guiret == GUI_RET_NO ) {
                 return( false );
             }
@@ -3794,12 +3793,12 @@ static void LogWriteMsgStr( log_state *ls, const char *msg_id, const char *str )
 }
 
 
-static int DoPatch( const char *src, char *dst, unsigned_32 flag )
-/****************************************************************/
+static int DoPatchFile( const char *src, char *dst, unsigned_32 flag )
+/********************************************************************/
 {
     // TODO: Perform some useful function here
-
-    return( 0 );
+     
+    return( DoPatch( src, 0, 0, 0, dst ) );
 }
 
 
@@ -3875,16 +3874,19 @@ extern bool PatchFiles( void )
                 }
 
                 if( go_ahead ) {
+                    PATCH_RET_CODE ret;
+
                     StatusLines( STAT_PATCHFILE, destfullpath );
                     StatusShow( true );
                     LogWriteMsgStr( log, "IDS_UNPACKING", destfullpath );
-                    if( DoPatch( srcfullpath, destfullpath, 0 ) == CFE_NOERROR ) {
+                    ret = DoPatchFile( srcfullpath, destfullpath, 0 );
+                    if( ret == PATCH_RET_OKAY ) {
                         ++count;
                         LogWriteMsg( log, "IDS_SUCCESS" );
                         break;
                     } else {
                         LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                        if( !PatchErrorDialog( CFE_ERROR, i ) ) {
+                        if( !PatchErrorDialog( ret, i ) ) {
                             LogWriteMsg( log, "IDS_PATCHABORT" );
                             LogFileClose( log );
                             return( false );
