@@ -32,11 +32,9 @@
 
 #include "bdiff.h"
 #include "patchio.h"
+#include "msg.h"
 
-FILE            *PatchFile;
-extern char     *PatchName;
-extern void     PatchError( int, ... );
-extern void     FilePatchError( int, ... );
+FILE        *PatchFile;
 
 PATCH_RET_CODE OpenPatch( void )
 {

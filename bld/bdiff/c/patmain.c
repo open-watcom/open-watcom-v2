@@ -32,8 +32,6 @@
 #include "bdiff.h"
 #include "msg.h"
 
-extern  PATCH_RET_CODE  DoPatch( char *, int, int, int, char * );
-
 
 static void PrintBanner( void )
 {
@@ -49,7 +47,7 @@ static void PrintBanner( void )
     }
 }
 
-void Usage( char *name )
+void Usage( const char *name )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
@@ -65,41 +63,6 @@ void Usage( char *name )
         printf( "\n" );
         printf( msgbuf );
     }
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-static void Err( int format, va_list args )
-{
-    char        msgbuf[MAX_RESOURCE_SIZE];
-
-    GetMsg( msgbuf, MSG_ERROR );
-    printf( msgbuf );
-    MsgPrintf( format, args);
-}
-
-void PatchError( int format, ... )
-{
-    va_list     args;
-
-    va_start( args, format );
-    Err( format, args );
-    printf( "\n" );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void FilePatchError( int format, ... )
-{
-    va_list     args;
-    int         err;
-
-    va_start( args, format );
-    err = errno;
-    Err( format, args );
-    printf( ": %s\n", strerror( err ) );
-    va_end( args );
     MsgFini();
     exit( EXIT_FAILURE );
 }

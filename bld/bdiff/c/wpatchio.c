@@ -35,23 +35,22 @@
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "patchio.h"
+#include "msg.h"
 
 FILE        *PatchF;
 short       PatchSize;
-extern char *PatchName;
-extern void PatchError( int, ... );
-extern void FilePatchError( int, ... );
 
 /************************************************************************
 The following functions are used by the wpatch utility to
 read in patches created by wcpatch.exe.
 *************************************************************************/
 
-void PatchReadOpen( char *name ) {
-    PatchName = name;
-    PatchF = fopen ( name, "rb" );
+void PatchReadOpen( const char *patch_name ) 
+{
+    PatchName = patch_name;
+    PatchF = fopen ( patch_name, "rb" );
     if ( PatchF == NULL ) {
-        FilePatchError( ERR_CANT_OPEN, PatchName );
+        FilePatchError( ERR_CANT_OPEN, patch_name );
     }
 }
 
@@ -59,18 +58,19 @@ void PatchReadClose( void ) {
     fclose( PatchF );
 }
 
-void PatchReadFile( short *Pflag, char *RelPath ) {
+void PatchReadFile( short *Pflag, char *RelPath )
+{
     fread( Pflag, sizeof(short), 1, PatchF );
     if (feof( PatchF)) {
         *Pflag = PATCH_EOF;
         return;
     }
     fgets( RelPath, PATCH_MAX_PATH_SIZE, PatchF );
-    RelPath[ strlen( RelPath ) - 1 ] = '\0'; /* remove newline char. */
+    RelPath[strlen( RelPath ) - 1] = '\0'; /* remove newline char. */
 }
 
 
-void PatchGetFile( char *path ) {
+void PatchGetFile( const char *path ) {
     FILE *outF;
     char filechar;
     off_t filesize;

@@ -107,10 +107,6 @@ byte    *NewFile;
 int     AppendPatchLevel;
 char    *SyncString = NULL;
 
-extern void     Execute( byte * );
-extern void     FileCheck( int fd, char *name );
-extern void     SeekCheck( long pos, char *name );
-
 #define MAX_DIFF        (1L<<17)
 #define MIN_DIFF        (1L<<7)
 #define MIN_EQUALITY    (1L<<6)
@@ -168,42 +164,7 @@ void SortHoleArray( void );
  * ================
  */
 
-static void Err( int format, va_list args )
-{
-    char        msgbuf[MAX_RESOURCE_SIZE];
-
-    GetMsg( msgbuf, MSG_ERROR );
-    printf( msgbuf );
-    MsgPrintf( format, args);
-}
-
-void PatchError( int format, ... )
-{
-    va_list     args;
-
-    va_start( args, format );
-    Err( format, args );
-    printf( "\n" );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void FilePatchError( int format, ... )
-{
-    va_list     args;
-    int         err;
-
-    va_start( args, format );
-    err = errno;
-    Err( format, args );
-    printf( ": %s\n", strerror( err ) );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void stats( char *format, ... )
+void stats( const char *format, ... )
 {
     va_list     arg;
 
@@ -224,7 +185,7 @@ void NotNull( void *p, char *str )
 }
 
 
-void Usage( char *name )
+void Usage( const char *name )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
@@ -241,7 +202,7 @@ void Usage( char *name )
     exit( EXIT_FAILURE );
 }
 
-void *ReadIn( char *name, foff buff_size, foff read_size )
+void *ReadIn( const char *name, foff buff_size, foff read_size )
 {
     int         fd;
     void        *buff;
@@ -257,7 +218,7 @@ void *ReadIn( char *name, foff buff_size, foff read_size )
 }
 
 
-foff FileSize( char *name, int *correction )
+foff FileSize( const char *name, int *correction )
 {
     foff        size;
     int         fd;
@@ -919,7 +880,7 @@ fpos_t ExeOverlayAccess( exe_form_t exe, uint_16 section, uint_16 *seg )
 }
 
 //#ifdef USE_DBGINFO
-void ProcessExe( char *name, char *sym_name, exe_info *exe )
+void ProcessExe( const char *name, char *sym_name, exe_info *exe )
 {
     unsigned num_blks;
     exe_mod *new_mod;
@@ -1065,7 +1026,7 @@ void SymbolicDiff( algorithm alg, char *old_exe, char *new_exe )
 #endif
 
 
-void VerifyCorrect( char *name )
+void VerifyCorrect( const char *name )
 {
 
     /* Try the patch file and ensure it produces new from old */
@@ -1154,7 +1115,7 @@ int OutVar( foff value, int really )
 }
 
 
-void OutStr( char *str )
+static void OutStr( const char *str )
 {
     for( ;; ) {
         if( *str == '\0' ) break;
@@ -1398,7 +1359,7 @@ void WriteDiffs( void )
 }
 
 
-void AddLevel( char *name )
+void AddLevel( const char *name )
 {
     memcpy( LevelBuff, PATCH_LEVEL, sizeof( PATCH_LEVEL ) );
     _splitpath( name, NULL, NULL, NULL, LevelBuff+PATCH_LEVEL_HEAD_SIZE );
@@ -1462,7 +1423,7 @@ void CopyComment( void )
     }
 }
 
-void WritePatchFile( char *name )
+void WritePatchFile( const char *name )
 {
 
     foff        size;
@@ -1473,7 +1434,8 @@ void WritePatchFile( char *name )
     NotNull( PatchFile, "patch file" );
     CurrPatch = PatchFile;
 
-    if( AppendPatchLevel ) AddLevel( name );
+    if( AppendPatchLevel )
+        AddLevel( name );
 
     OutStr( PATCH_SIGNATURE );
     CopyComment();
@@ -1677,25 +1639,19 @@ void main( int argc, char **argv )
     FreeHoleArray();
     VerifyCorrect( argv[2] );
 
-    stats( "similar regions:    %8lu bytes (%lu chunks)\n",
-            SimilarSize, NumSimilarities);
-    stats( "different regions:  %8lu bytes (%lu chunks)\n",
-            DiffSize, NumDiffs );
+    stats( "similar regions:    %8lu bytes (%lu chunks)\n", SimilarSize, NumSimilarities);
+    stats( "different regions:  %8lu bytes (%lu chunks)\n", DiffSize, NumDiffs );
     stats( "hole->diff savings: %8lu bytes\n", savings );
     stats( "number of holes:    %8lu\n", NumHoles );
-    stats( "(%lu headers + %lu single + %lu double + %lu triple)\n\n",
-           HoleHeaders, HoleCount[0], HoleCount[1], HoleCount[2] );
+    stats( "(%lu headers + %lu single + %lu double + %lu triple)\n\n", HoleHeaders, HoleCount[0], HoleCount[1], HoleCount[2] );
     stats( "old file: %8lu bytes   new file: %8lu bytes\n", EndOld, EndNew );
-    stats( "%lu%% of old executable referenced in patch file (largest amount is 100%%)\n",
-           (SimilarSize*100) / EndOld );
+    stats( "%lu%% of old executable referenced in patch file (largest amount is 100%%)\n", (SimilarSize*100) / EndOld );
     best_from_new = 0;
     if( EndNew > EndOld ) {
         best_from_new = EndNew - EndOld;
     }
-    stats( "%lu%% of new executable output to patch file (least amount is %lu%%)\n",
-           (DiffSize*100) / EndNew, (best_from_new*100) / EndNew );
-    stats( "%lu total patch file size (%lu%%)\n", CurrPatch - PatchFile,
-           ( ( CurrPatch - PatchFile ) * 100 ) / EndNew );
+    stats( "%lu%% of new executable output to patch file (least amount is %lu%%)\n", (DiffSize*100) / EndNew, (best_from_new*100) / EndNew );
+    stats( "%lu total patch file size (%lu%%)\n", CurrPatch - PatchFile, ( ( CurrPatch - PatchFile ) * 100 ) / EndNew );
 
     MsgFini();
     exit( EXIT_SUCCESS );

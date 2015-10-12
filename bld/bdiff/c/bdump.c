@@ -33,10 +33,6 @@
 #include "bdiff.h"
 #include "newfile.h"
 
-#ifdef __WATCOMC__
-#pragma off(unreferenced);
-#endif
-
 byte    *NewFile;
 
 PATCH_RET_CODE OpenNew( foff len )

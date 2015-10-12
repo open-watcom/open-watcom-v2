@@ -36,135 +36,10 @@
 #include "oldfile.h"
 #include "patchio.h"
 #include "myio.h"
-
-extern void PatchError( int, ... );
-extern void FilePatchError( int, ... );
-extern void PatchingFile( char *patchname, char *filename );
-
-static char CurrLevel[ sizeof( PATCH_LEVEL )  ];
-
-void GetLevel( char *name )
-{
-    int         io;
-    char        buffer[ sizeof( PATCH_LEVEL ) ];
-
-    CurrLevel[0] = '\0';
-    io = open( name, O_BINARY+O_RDONLY );
-    if( io == -1 )
-        return;
-    if( lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L &&
-        read( io, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) &&
-        memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
-        strcpy( CurrLevel, buffer + PATCH_LEVEL_HEAD_SIZE );
-    }
-    close( io );
-}
-
-void FileCheck( int fd, char *name )
-{
-    if( fd == -1 ) {
-        FilePatchError( ERR_CANT_OPEN, name );
-    }
-}
-
-void SeekCheck( long pos, char *name )
-{
-    if( pos == -1 ) {
-        FilePatchError( ERR_IO_ERROR, name );
-    }
-}
-
-#if !defined(BDIFF) && !defined(__386__) && !defined(BDUMP)
-
-    /* Real mode version. Buffer up the holes and apply in sorted order */
-
-    typedef struct {
-            foff        offset;
-            foff        diff;
-    } save_hole;
-
-    int         NumHoles;
-    save_hole   *HoleArray = NULL;
-    int         HoleArraySize;
-
-    PATCH_RET_CODE InitHoles( void )
-    {
-        NumHoles = 0;
-        HoleArraySize = (64*1024L) / sizeof( save_hole ) - 1;
-        for( ;; ) {
-            HoleArray = _allocate( HoleArraySize*sizeof(save_hole) );
-            if( HoleArray != NULL )
-                break;
-            HoleArraySize /= 2;
-            if( HoleArraySize < 100 ) {
-                PatchError( ERR_MEMORY_OUT );
-                return( PATCH_NO_MEMORY );
-            }
-        }
-        return( PATCH_RET_OKAY );
-    }
-
-    void FreeHoleArray( void )
-    {
-        if( HoleArray != NULL ) {
-            _free( HoleArray );
-            HoleArray = NULL;
-        }
-    }
-
-    int HoleCompare( const void *_h1, const void *_h2 )
-    {
-        const save_hole *h1 = _h1;
-        const save_hole *h2 = _h2;
-
-        if( h1->offset < h2->offset )
-            return( -1 );
-        if( h1->offset > h2->offset )
-            return( 1 );
-        return( 0 );
-    }
-
-    void FlushHoles( void )
-    {
-        save_hole       *end;
-        save_hole       *curr;
-        hole    tmp;
-
-        if( NumHoles != 0 ) {
-            qsort( HoleArray, NumHoles, sizeof( save_hole ), HoleCompare );
-            end = HoleArray + NumHoles;
-            for( curr = HoleArray; curr < end; ++curr ) {
-                Input( &NewFile, &tmp, curr->offset, sizeof(hole) );
-                tmp += curr->diff;
-                Output( &NewFile, &tmp, curr->offset, sizeof( hole ) );
-            }
-            NumHoles = 0;
-        }
-    }
-
-    void AddHole( foff offset, foff diff )
-    {
-        if( NumHoles == HoleArraySize ) {
-            FlushHoles();
-        }
-        HoleArray[ NumHoles ].offset = offset;
-        HoleArray[ NumHoles ].diff = diff;
-        NumHoles++;
-    }
-
-#else
-
-    #define InitHoles()
-    #define AddHole( off, diff ) OutNew( (off), InNew( (off) ) + (diff), hole );
-    #define FlushHoles()
-    #define FreeHoleArray()
-
-#endif
+#include "msg.h"
 
 #ifdef BDIFF
     #define PatchName ""
-
-    static byte *pat;
 
     #define OpenPatch()                 (pat=PatchFile,PATCH_RET_OKAY)
     #define InPatch( type )             (tmp=pat,pat+=sizeof(type),*(type*)tmp)
@@ -185,20 +60,187 @@ void SeekCheck( long pos, char *name )
 
 #else  /* Not BDIFF */
 
-    char            *PatchName;
-    char            *NewName;
-    int             DoPrompt;
-    int             DoBackup;
-    int             PrintLevel;
+  #if defined(__386__)
+    #if defined(_WPATCH) || defined( INSTALL_PROGRAM )
 
-    #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), *(type*)tmp )
+    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof(hole)), *(hole*)tmp )
+    #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
+
+    #else
+
+    #define OutNew( off, x, type )      *(type*)(NewFile+off) = (x);
+    #define InNew( off )                *(hole*)(NewFile+off)
+
+    #endif
 
     #define Dump( x )
     #define DOPROMPT    1
     #define DOBACKUP    DoBackup
+
+  #elif defined(BDUMP)
+
+    #define InNew( offset )             1
+    #define OutNew( off, x, type )      //( x )
+
+    #define Dump( x ) printf x
+    #define DOPROMPT    0
+    #define DOBACKUP    0
+
+  #else
+
+    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof(hole)), *(hole*)tmp )
+    #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
+
+    #define Dump( x )
+    #define DOPROMPT    1
+    #define DOBACKUP    DoBackup
+
+  #endif
+
+    #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), *(type*)tmp )
+
 #endif
 
-PATCH_RET_CODE InitPatch( char **target_given )
+#if defined( INSTALL_PROGRAM )
+extern bool             StatusCancelled( void );
+#endif
+extern void PatchingFile( const char *patchname, const char *filename );
+
+static char CurrLevel[sizeof( PATCH_LEVEL )];
+
+#if defined( BDIFF )
+
+static byte     *pat;
+
+#else
+
+const char      *PatchName;
+const char      *NewName;
+int             DoPrompt;
+int             DoBackup;
+int             PrintLevel;
+
+#endif
+
+#if !defined(BDIFF) && !defined(__386__) && !defined(BDUMP)
+
+/* Real mode version. Buffer up the holes and apply in sorted order */
+
+typedef struct {
+    foff        offset;
+    foff        diff;
+} save_hole;
+
+static int         NumHoles;
+static save_hole   *HoleArray = NULL;
+static int         HoleArraySize;
+
+static PATCH_RET_CODE InitHoles( void )
+{
+    NumHoles = 0;
+    HoleArraySize = (64*1024L) / sizeof( save_hole ) - 1;
+    for( ;; ) {
+        HoleArray = _allocate( HoleArraySize*sizeof(save_hole) );
+        if( HoleArray != NULL )
+            break;
+        HoleArraySize /= 2;
+        if( HoleArraySize < 100 ) {
+            PatchError( ERR_MEMORY_OUT );
+            return( PATCH_NO_MEMORY );
+        }
+    }
+    return( PATCH_RET_OKAY );
+}
+
+static void FreeHoleArray( void )
+{
+    if( HoleArray != NULL ) {
+        _free( HoleArray );
+        HoleArray = NULL;
+    }
+}
+
+static int HoleCompare( const void *_h1, const void *_h2 )
+{
+    const save_hole *h1 = _h1;
+    const save_hole *h2 = _h2;
+
+    if( h1->offset < h2->offset )
+        return( -1 );
+    if( h1->offset > h2->offset )
+        return( 1 );
+    return( 0 );
+}
+
+static void FlushHoles( void )
+{
+    save_hole       *end;
+    save_hole       *curr;
+    hole            tmp;
+
+    if( NumHoles != 0 ) {
+        qsort( HoleArray, NumHoles, sizeof( save_hole ), HoleCompare );
+        end = HoleArray + NumHoles;
+        for( curr = HoleArray; curr < end; ++curr ) {
+            Input( &NewFile, &tmp, curr->offset, sizeof(hole) );
+            tmp += curr->diff;
+            Output( &NewFile, &tmp, curr->offset, sizeof( hole ) );
+        }
+        NumHoles = 0;
+    }
+}
+
+static void AddHole( foff offset, foff diff )
+{
+    if( NumHoles == HoleArraySize ) {
+        FlushHoles();
+    }
+    HoleArray[NumHoles].offset = offset;
+    HoleArray[NumHoles].diff = diff;
+    NumHoles++;
+}
+
+#else
+
+#define InitHoles()
+#define AddHole( off, diff ) OutNew( (off), InNew( (off) ) + (diff), hole );
+#define FlushHoles()
+#define FreeHoleArray()
+
+#endif
+
+void GetLevel( const char *name )
+{
+    int         io;
+    char        buffer[sizeof( PATCH_LEVEL )];
+
+    CurrLevel[0] = '\0';
+    io = open( name, O_BINARY+O_RDONLY );
+    if( io == -1 )
+        return;
+    if( lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L &&
+        read( io, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) &&
+        memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+        strcpy( CurrLevel, buffer + PATCH_LEVEL_HEAD_SIZE );
+    }
+    close( io );
+}
+
+void FileCheck( int fd, const char *name )
+{
+    if( fd == -1 ) {
+        FilePatchError( ERR_CANT_OPEN, name );
+    }
+}
+
+void SeekCheck( long pos, const char *name )
+{
+    if( pos == -1 ) {
+        FilePatchError( ERR_IO_ERROR, name );
+    }
+}
+
+static PATCH_RET_CODE InitPatch( char **target_given )
 {
     char            *p;
     int             compare_sig;
@@ -267,46 +309,6 @@ PATCH_RET_CODE Execute( void )
 {
     byte        tmp[4];
 
-  #if defined(__386__)
-    #if defined(_WPATCH)
-
-    #define InNew( offset )             ( Input( &NewFile, tmp, offset, \
-                                                 sizeof(hole)), \
-                                          *(hole*)tmp )
-    #define OutNew( off, x, type )      *(type*)tmp = (x); \
-                                                 Output( &NewFile, tmp, \
-                                                         off, sizeof( type ) );
-
-    #else
-
-    #define OutNew( off, x, type )      *(type*)(NewFile+off) = (x);
-    #define InNew( off )                *(hole*)(NewFile+off)
-
-    #endif
-  #elif defined(BDUMP)
-
-    #define InNew( offset )             1
-    #define OutNew( off, x, type )      //( x )
-
-    #undef Dump
-    #define Dump( x ) printf x
-    #undef DOPROMPT
-    #undef DOBACKUP
-    #define DOPROMPT    0
-    #define DOBACKUP    0
-
-  #else
-
-    #define InNew( offset )             ( Input( &NewFile, tmp, offset, \
-                                                 sizeof(hole)), \
-                                          *(hole*)tmp )
-
-
-    #define OutNew( off, x, type )      *(type*)tmp = (x); \
-                                                 Output( &NewFile, tmp, \
-                                                         off, sizeof( type ) );
-
-  #endif
 #endif
 
     patch_cmd   cmd;
@@ -344,7 +346,7 @@ PATCH_RET_CODE Execute( void )
     InitHoles();
     for( ;; ) {
 #if defined( INSTALL_PROGRAM )
-    #if defined( WINNT ) || defined( WIN ) || defined( OS2 )
+    #if defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __OS2__ )
         if( StatusCancelled() ) {
             ret = PATCH_RET_CANCEL;
             goto error3;
@@ -436,15 +438,15 @@ error1:
 
 #if !defined( BDIFF )
 
-PATCH_RET_CODE DoPatch( char *patchname,
+PATCH_RET_CODE DoPatch( const char *patchname,
                    int doprompt,
                    int dobackup,
                    int printlevel,
                    char *outfilename )
 {
-    char        buffer[ sizeof( PATCH_LEVEL ) ];
+    char            buffer[sizeof( PATCH_LEVEL )];
   #ifndef _WPATCH
-    char        *target = NULL;
+    char            *target = NULL;
   #endif
     PATCH_RET_CODE  ret;
 
@@ -463,7 +465,7 @@ PATCH_RET_CODE DoPatch( char *patchname,
   #if !defined( INSTALL_PROGRAM )
     if( PrintLevel ) {
         GetLevel( PatchName );
-        if( CurrLevel[ 0 ] == '\0' ) {
+        if( CurrLevel[0] == '\0' ) {
             Message( MSG_NOT_PATCHED, PatchName );
         } else {
             Message( MSG_PATCHED_TO_LEVEL, PatchName, CurrLevel );

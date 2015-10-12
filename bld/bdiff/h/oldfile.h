@@ -36,8 +36,8 @@ extern byte             *OldFile;
 extern MY_FILE          OldFile;
 #endif
 
-extern char             *SetOld( char *name );
-extern char             *FindOld( char *name );
+extern char             *SetOld( const char *name );
+extern char             *FindOld( const char *name );
 extern foff             CheckSumOld( foff new_size );
 extern PATCH_RET_CODE   OpenOld( foff len, int prompt, foff new_size, foff new_sum );
 extern byte             InOld( foff offset );

@@ -48,9 +48,8 @@ struct {
     int origTgtDirLen;
 } glob;
 
-
 int     cmpStrings( const void *, const void * );
-void    WPatchApply( char *PatchName, char *TgtPath );
+void    WPatchApply( const char *patch_name, const char *TgtPath );
 void    DirDelete( char *tgtDir );
 void    DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag );
 void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
@@ -71,13 +70,13 @@ void main( int argc, char *argv[] )
     WPatchApply( argv[ 1 ], argv[ 2 ] );
 }
 
-void WPatchApply( char *PatchName, char *TgtPath )
+void WPatchApply( const char *patch_name, const char *TgtPath )
 {
     short   flag;
     char    RelPath[ PATCH_MAX_PATH_SIZE ];
     char    FullPath[ PATCH_MAX_PATH_SIZE ];
 
-    PatchReadOpen( PatchName );
+    PatchReadOpen( patch_name );
     for( ;; ) {
         PatchReadFile( &flag, RelPath );
         if ( flag == PATCH_EOF ) break;
@@ -182,39 +181,4 @@ int cmpStrings( const void *op1, const void *op2 )
     const char **p1 = (const char **) op1;
     const char **p2 = (const char **) op2;
     return( strcmp( *p1, *p2 ) );
-}
-
-static void Err( int format, va_list args )
-{
-    char        msgbuf[MAX_RESOURCE_SIZE];
-
-    GetMsg( msgbuf, MSG_ERROR );
-    printf( msgbuf );
-    MsgPrintf( format, args);
-}
-
-void PatchError( int format, ... )
-{
-    va_list     args;
-
-    va_start( args, format );
-    Err( format, args );
-    printf( "\n" );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void FilePatchError( int format, ... )
-{
-    va_list     args;
-    int         err;
-
-    va_start( args, format );
-    err = errno;
-    Err( format, args );
-    printf( ": %s\n", strerror( err ) );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
 }

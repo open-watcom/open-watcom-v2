@@ -144,3 +144,38 @@ void MsgFini( void )
         hInstance.handle = NIL_HANDLE;
     }
 }
+
+static void Err( int format, va_list args )
+{
+    char        msgbuf[MAX_RESOURCE_SIZE];
+
+    GetMsg( msgbuf, MSG_ERROR );
+    printf( msgbuf );
+    MsgPrintf( format, args);
+}
+
+void PatchError( int format, ... )
+{
+    va_list     args;
+
+    va_start( args, format );
+    Err( format, args );
+    printf( "\n" );
+    va_end( args );
+    MsgFini();
+    exit( EXIT_FAILURE );
+}
+
+void FilePatchError( int format, ... )
+{
+    va_list     args;
+    int         err;
+
+    va_start( args, format );
+    err = errno;
+    Err( format, args );
+    printf( ": %s\n", strerror( err ) );
+    va_end( args );
+    MsgFini();
+    exit( EXIT_FAILURE );
+}

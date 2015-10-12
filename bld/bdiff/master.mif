@@ -34,7 +34,6 @@ extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
 wcpatch_objs = &
     $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj &
-    $+$(__subdir__)$-/myio.obj &
     $+$(__subdir__)$-/wcptchio.obj &
     $+$(__subdir__)$-/wcpatch.obj &
     $+$(__subdir__)$-/bdiffmem.obj &
@@ -154,8 +153,7 @@ bdiff_objs = &
     $+$(__subdir__)$-/bdiff.obj &
     $+$(__subdir__)$-/bdiffmem.obj &
     $+$(__subdir__)$-/dopatch.obj &
-    $+$(__subdir__)$-/msg.obj &
-    $+$(__subdir__)$-/myio.obj
+    $+$(__subdir__)$-/msg.obj
 
 bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM__

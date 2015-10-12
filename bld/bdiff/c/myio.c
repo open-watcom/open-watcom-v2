@@ -37,15 +37,10 @@
 #else
 #include <sys/utime.h>
 #endif
+#include "msg.h"
 #include "myio.h"
 
-extern void     FileCheck(int, char *);
-extern void     SeekCheck(long, char *);
-
-extern void     PatchError( int, ... );
-extern void     FilePatchError( int, ... );
-
-void SameDate( char *file, char *as )
+void SameDate( const char *file, const char *as )
 {
     auto struct stat            statblk;
     auto struct utimbuf         utimebuf;
@@ -57,7 +52,7 @@ void SameDate( char *file, char *as )
     }
 }
 
-void MyOpen( MY_FILE *file, int handle, char *name )
+void MyOpen( MY_FILE *file, int handle, const char *name )
 {
     file->handle = handle;
     file->start = 0;

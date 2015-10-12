@@ -50,10 +50,10 @@ struct {
 } glob;
 
 int     cmpStrings( const void *, const void * );
-void    WPatchCreate( char *SrcDirName, char *TgtDirName, char *PatchName );
-void    DirRecurse( char *srcDir, char *tgtDir );
+void    WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name );
+void    DirRecurse( const char *srcDir, const char *tgtDir );
 void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
-void    DirCmpFiles( char *srcDir, char *srcFiles[], char *tgtDir, char *tgtFiles[], int Dirflag );
+void    DirCmpFiles( const char *srcDir, char *srcFiles[], const char *tgtDir, char *tgtFiles[], int Dirflag );
 
 
 void main( int argc, char *argv[] ) 
@@ -75,15 +75,15 @@ void main( int argc, char *argv[] )
     WPatchCreate( argv[ 1 ], argv[ 2 ], argv[ 3 ] );
 }
 
-void WPatchCreate( char *SrcDirName, char *TgtDirName, char *PatchName ) 
+void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name ) 
 {
-    PatchWriteOpen( PatchName );
+    PatchWriteOpen( patch_name );
     DirRecurse( SrcDirName, TgtDirName );
     PatchWriteClose();
 
 }
 
-void DirRecurse( char *srcDir, char *tgtDir ) 
+void DirRecurse( const char *srcDir, const char *tgtDir ) 
 {
     DIR     *srcdirp;
     DIR     *tgtdirp;
@@ -147,7 +147,7 @@ int cmpStrings( const void *op1, const void *op2 )
     return( strcmp( *p1, *p2 ) );
 }
 
-void FileCmp( char *SrcPath, char *TgtPath, char *name ) 
+void FileCmp( const char *SrcPath, const char *TgtPath, const char *name ) 
 {
     FILE    *srcF;
     FILE    *tgtF;
@@ -174,26 +174,26 @@ void FileCmp( char *SrcPath, char *TgtPath, char *name )
     }
 }
 
-void DirMarkDeleted( char *Path ) 
+void DirMarkDeleted( const char *Path ) 
 {
     printf( "Deleting directory %s\n", Path );
     PatchWriteFile( PATCH_DIR_DELETED, Path );
 }
 
-void FileMarkDeleted( char *Path ) 
+void FileMarkDeleted( const char *Path ) 
 {
     printf( "Deleting file %s\n", Path );
     PatchWriteFile( PATCH_FILE_DELETED, Path );
 }
 
-void FileMarkAdded( char *Path, int start ) 
+void FileMarkAdded( const char *Path, int start ) 
 {
     printf( "Adding file %s\n", Path );
-    PatchWriteFile( PATCH_FILE_ADDED, &Path[ start ] );
+    PatchWriteFile( PATCH_FILE_ADDED, &Path[start] );
     PatchAddFile( Path );
 }
 
-void DirMarkAdded( char *Path, int start ) 
+void DirMarkAdded( const char *Path, int start ) 
 {
     DIR     *dirp;
     char    *Files[ 1000 ];
@@ -202,7 +202,7 @@ void DirMarkAdded( char *Path, int start )
     int     index;
 
     printf( "Adding directory %s\n", Path );
-    PatchWriteFile( PATCH_DIR_ADDED, &Path[ start ] );
+    PatchWriteFile( PATCH_DIR_ADDED, &Path[start] );
 
     dirp = opendir( Path );
     if( dirp == NULL ) {
@@ -238,8 +238,8 @@ compared, and a patch is made if they do not match.
 
 */
 
-void DirCmpFiles( char *srcDir, char *srcFiles[],
-                  char *tgtDir, char *tgtFiles[], int Dirflag ) 
+void DirCmpFiles( const char *srcDir, char *srcFiles[],
+                  const char *tgtDir, char *tgtFiles[], int Dirflag ) 
 {
     int     indexSrc = 0;
     int     indexTgt = 0;

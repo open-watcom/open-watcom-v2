@@ -35,7 +35,7 @@
 #include <sys/stat.h>
 #include <sys/utime.h>
 
-void Usage( char *name )
+void Usage( const char *name )
 {
     printf( "Usage: %s <executable> <patch_file>\n", name );
     printf( "       Set the executable's patch level to that indicated\n" );

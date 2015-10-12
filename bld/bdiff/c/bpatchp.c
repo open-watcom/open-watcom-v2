@@ -34,17 +34,9 @@
 #include "newfile.h"
 #include "oldfile.h"
 #include "myio.h"
+#include "msg.h"
 
 byte            *NewFile;
-
-extern char     *NewName;
-extern char     *PatchName;
-
-extern void     PatchError( int, ... );
-extern void     FilePatchError( int, ... );
-
-extern void     FileCheck(int, char *);
-extern void     SeekCheck(long, char *);
 
 PATCH_RET_CODE OpenNew( foff len )
 {

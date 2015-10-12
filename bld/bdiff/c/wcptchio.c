@@ -36,61 +36,66 @@
 #include "wpatchio.h"
 #include "wpatch.h"
 #include "patchio.h"
+#include "msg.h"
 
 FILE        *PatchF;
-char *PatchName;
-extern void PatchError( int, ... );
-extern void FilePatchError( int, ... );
+const char  *PatchName;
 
 /************************************************************************
 The following functions are used by the wpatch utility to create patches,
 and then to read in the created patches.
 *************************************************************************/
 
-void PatchWriteOpen( char *name ) {
-
-    PatchName = name;
-    PatchF = fopen( name, "wb" );
+void PatchWriteOpen( const char *patch_name )
+{
+    PatchName = patch_name;
+    PatchF = fopen( patch_name, "wb" );
     if( PatchF == NULL ) {
-        FilePatchError( ERR_CANT_OPEN, PatchName );
+        FilePatchError( ERR_CANT_OPEN, patch_name );
     }
 }
 
 
-void PatchReadOpen( char *name ) {
-    PatchName = name;
-    PatchF = fopen ( name, "rb" );
+void PatchReadOpen( const char *patch_name )
+{
+    PatchName = patch_name;
+    PatchF = fopen ( patch_name, "rb" );
     if ( PatchF == NULL ) {
-        FilePatchError( ERR_CANT_OPEN, PatchName );
+        FilePatchError( ERR_CANT_OPEN, patch_name );
     }
 }
 
-void PatchWriteClose( void ) {
+void PatchWriteClose( void )
+{
     fclose( PatchF );
 }
 
-void PatchReadClose( void ) {
+void PatchReadClose( void )
+{
     fclose( PatchF );
 }
 
-void PatchWriteFile( short flag, char *RelPath ) {
+void PatchWriteFile( short flag, const char *RelPath )
+{
     fwrite( &flag, sizeof(short), 1, PatchF );
     fputs( RelPath, PatchF );
     fputc( '\n', PatchF );
 }
 
-void PatchReadFile( short *Pflag, char *RelPath ) {
+void PatchReadFile( short *Pflag, char *RelPath )
+{
     fread( Pflag, sizeof(short), 1, PatchF );
     if (feof( PatchF)) {
         *Pflag = PATCH_EOF;
         return;
     }
     fgets( RelPath, PATCH_MAX_PATH_SIZE, PatchF );
-    RelPath[ strlen( RelPath ) - 1 ] = '\0'; /* remove newline char. */
+    RelPath[strlen( RelPath ) - 1] = '\0'; /* remove newline char. */
 }
 
 
-void PatchAddFile( char *path ) {
+void PatchAddFile( const char *path )
+{
     FILE *inF;
     struct stat filestats;
     char filechar;
@@ -109,7 +114,8 @@ void PatchAddFile( char *path ) {
     fclose( inF );
 }
 
-void PatchGetFile( char *path ) {
+void PatchGetFile( const char *path )
+{
     FILE *outF;
     char filechar;
     off_t filesize;
@@ -131,7 +137,8 @@ void PatchGetFile( char *path ) {
 }
 
 
-void PatchWrite( void *patch, int size ) {
+void PatchWrite( void *patch, int size )
+{
     fwrite( patch, size, 1, PatchF );
 }
 

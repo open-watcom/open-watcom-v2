@@ -35,17 +35,9 @@
 #include "newfile.h"
 #include "oldfile.h"
 #include "myio.h"
+#include "msg.h"
 
 MY_FILE         NewFile;
-
-extern char     *NewName;
-extern char     *PatchName;
-
-extern void FileCheck(int, char *);
-extern void SeekCheck(long, char *);
-
-extern void PatchError( int, ... );
-extern void FilePatchError( int, ... );
 
 PATCH_RET_CODE OpenNew( foff len )
 {

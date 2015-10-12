@@ -41,12 +41,9 @@
 #include "oldfile.h"
 #include "newfile.h"
 #include "patchio.h"
-
-//#include "exeform.h"
-
-#include "watcom.h"
 #include "symtab.h"
 #include "msg.h"
+#include "watcom.h"
 
 #include "machtype.h"
 #ifdef USE_DBGINFO
@@ -107,16 +104,12 @@ byte *NewSymName;
 //exe_info old;
 //exe_info new;
 
-byte *PatchFile;
+byte    *PatchFile;
 foff    PatchSize;
-byte *OldFile;
-byte *NewFile;
+byte    *OldFile;
+byte    *NewFile;
 int     AppendPatchLevel;
 char    *SyncString = NULL;
-
-extern void     Execute( byte * );
-extern void     FileCheck( int fd, char *name );
-extern void     SeekCheck( long pos, char *name );
 
 #define MAX_DIFF        (1L<<17)
 #define MIN_DIFF        (1L<<7)
@@ -135,37 +128,37 @@ typedef struct region {
     int                 dependants;
 } region;
 
-static region   *SimilarRegions;
-static region   *DiffRegions;
-static region   *HoleRegions;
-static region  *HoleArray;
-static foff     SimilarSize;
-static foff     NumHoles;
-static foff     NumDiffs;
-static foff     DiffSize;
-static foff     HolesInRegion;
-static foff     NumSimilarities;
-static foff     HoleCount[3];
-static foff     HoleHeaders;
+static region       *SimilarRegions;
+static region       *DiffRegions;
+static region       *HoleRegions;
+static region       *HoleArray;
+static foff         SimilarSize;
+static foff         NumHoles;
+static foff         NumDiffs;
+static foff         DiffSize;
+static foff         HolesInRegion;
+static foff         NumSimilarities;
+static foff         HoleCount[3];
+static foff         HoleHeaders;
 
-static byte *OldCurr;
-static byte *NewCurr;
-static byte *TestOld;
-static byte *TestNew;
-static byte *SaveOld;
-static byte *SaveNew;
-static foff EndOld;
-static int  OldCorrection;
-static foff EndNew;
-static int  NewCorrection;
-static byte *CurrPatch;
-static int Verbose;
-static char *newName;
-static char *CommentFile;
-static char LevelBuff[64];
+static byte         *OldCurr;
+static byte         *NewCurr;
+static byte         *TestOld;
+static byte         *TestNew;
+static byte         *SaveOld;
+static byte         *SaveNew;
+static foff         EndOld;
+static int          OldCorrection;
+static foff         EndNew;
+static int          NewCorrection;
+static byte         *CurrPatch;
+static int          Verbose;
+static const char   *newName;
+static char         *CommentFile;
+static char         LevelBuff[64];
 
-static foff SyncOld = (foff)-1;
-static foff SyncNew = (foff)-1;
+static foff         SyncOld = (foff)-1;
+static foff         SyncNew = (foff)-1;
 
 /* Forward declarations */
 void SortHoleArray( void );
@@ -175,42 +168,7 @@ void SortHoleArray( void );
  * ================
  */
 
-static void Err( int format, va_list args )
-{
-    char        msgbuf[MAX_RESOURCE_SIZE];
-
-    GetMsg( msgbuf, MSG_ERROR );
-    printf( msgbuf );
-    MsgPrintf( format, args);
-}
-
-void PatchError( int format, ... )
-{
-    va_list     args;
-
-    va_start( args, format );
-    Err( format, args );
-    printf( "\n" );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void FilePatchError( int format, ... )
-{
-    va_list     args;
-    int         err;
-
-    va_start( args, format );
-    err = errno;
-    Err( format, args );
-    printf( ": %s\n", strerror( err ) );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void stats( char *format, ... )
+void stats( const char *format, ... )
 {
     va_list     arg;
 
@@ -231,7 +189,7 @@ void NotNull( void *p, char *str )
 }
 
 
-void Usage( char *name )
+void Usage( const char *name )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
@@ -248,7 +206,7 @@ void Usage( char *name )
     exit( EXIT_FAILURE );
 }
 
-void *ReadIn( char *name, foff buff_size, foff read_size )
+void *ReadIn( const char *name, foff buff_size, foff read_size )
 {
     int         fd;
     void        *buff;
@@ -265,7 +223,7 @@ void *ReadIn( char *name, foff buff_size, foff read_size )
 }
 
 
-foff FileSize( char *name, int *correction )
+foff FileSize( const char *name, int *correction )
 {
     foff        size;
     int         fd;
@@ -928,7 +886,7 @@ fpos_t ExeOverlayAccess( exe_form_t exe, uint_16 section, uint_16 *seg )
 }
 
 //#ifdef USE_DBGINFO
-void ProcessExe( char *name, char *sym_name, exe_info *exe )
+void ProcessExe( const char *name, char *sym_name, exe_info *exe )
 {
     unsigned num_blks;
     exe_mod *new_mod;
@@ -1074,7 +1032,7 @@ void SymbolicDiff( algorithm alg, char *old_exe, char *new_exe )
 #endif
 
 
-void VerifyCorrect( char *name )
+void VerifyCorrect( const char *name )
 {
 
     /* Try the patch file and ensure it produces new from old */
@@ -1163,7 +1121,7 @@ int OutVar( foff value, int really )
 }
 
 
-void OutStr( char *str )
+static void OutStr( const char *str )
 {
     for( ;; ) {
         if( *str == '\0' ) break;
@@ -1407,7 +1365,7 @@ void WriteDiffs( void )
 }
 
 
-void AddLevel( char *name )
+void AddLevel( const char *name )
 {
     memcpy( LevelBuff, PATCH_LEVEL, sizeof( PATCH_LEVEL ) );
     _splitpath( name, NULL, NULL, NULL, LevelBuff+PATCH_LEVEL_HEAD_SIZE );
@@ -1471,7 +1429,7 @@ void CopyComment( void )
     }
 }
 
-void WritePatchFile( char *name )
+void WritePatchFile( const char *name )
 {
 
     foff        size;
@@ -1481,7 +1439,8 @@ void WritePatchFile( char *name )
     NotNull( PatchFile, "patch file" );
     CurrPatch = PatchFile;
 
-    if( AppendPatchLevel ) AddLevel( name );
+    if( AppendPatchLevel )
+        AddLevel( name );
 
     OutStr( PATCH_SIGNATURE );
     CopyComment();
@@ -1571,7 +1530,7 @@ void ScanSyncString( void )
 }
 
 
-int DoBdiff( char *srcPath, char *tgtPath, char *name )
+int DoBdiff( const char *srcPath, const char *tgtPath, const char *name )
 {
     long       savings;
     foff        buffsize;

@@ -34,19 +34,13 @@
 #include "msg.h"
 #include "oldfile.h"
 #include "myio.h"
+#include "msg.h"
 
 MY_FILE OldFile;
 
-extern char     *NewName;
-extern int      DoPrompt;
-
-extern int  SecondaryPatchSearch( char *name, char *path );
-
-extern void PatchError( int, ... );
-extern void FilePatchError( int, ... );
-
-extern void FileCheck(int, char *);
-extern void SeekCheck(long, char *);
+#if defined( INSTALL_PROGRAM )
+extern int  SecondaryPatchSearch( const char *name, char *path );
+#endif
 
 static char     newName[_MAX_PATH];
 static char     new_fname[_MAX_FNAME];
@@ -58,14 +52,14 @@ static char     old_dir[_MAX_DIR];
 static char     old_fname[_MAX_FNAME];
 static char     old_ext[_MAX_EXT];
 
-char *SetOld( char *name )
+char *SetOld( const char *name )
 {
     if( name != NULL )
         strcpy( oldName, name );
     return( oldName );
 }
 
-char *FindOld( char *name )
+char *FindOld( const char *name )
 {
     char        temp[_MAX_PATH];
     int         retcode;

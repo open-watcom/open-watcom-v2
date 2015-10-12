@@ -36,3 +36,5 @@ extern void MsgFini( void );
 extern int  GetMsg( char *, int );
 extern void MsgPrintf( int resourceid, va_list arglist );
 extern void Message( int format, ... );
+extern void PatchError( int format, ... );
+extern void FilePatchError( int format, ... );
