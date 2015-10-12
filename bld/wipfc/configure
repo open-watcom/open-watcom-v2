@@ -2307,8 +2307,12 @@ am__tar='${AMTAR} chof - "$$tardir"'; am__untar='${AMTAR} xf -'
 
 
 
-CPPFLAGS="-std=c++0x -D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
-CXXFLAGS="-pipe -g -Wall -march=native"
+# allow to use a plain gcc compiler (gcc-3.4.6)
+#CPPFLAGS="-std=c++0x -D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
+#CXXFLAGS="-pipe -g -Wall -march=native"
+
+CPPFLAGS="-D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
+CXXFLAGS="-pipe -g -Wall"
 
 ac_config_headers="$ac_config_headers config.h"
 

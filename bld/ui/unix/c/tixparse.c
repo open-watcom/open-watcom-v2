@@ -498,6 +498,12 @@ int ti_read_tix( const char *termname )
             wctomb( ti_char_map[i], i );
         }
     }
+
+    #if 0
+    /* do not play woth utf8 mode setting: all VT are already configured
+       as needed. With this code on there is a problem with line drawing
+       on the linux console (framebuffer mode) */
+
     if( strncmp( termname, "linux", 5 ) == 0 ) {
         /* force UTF-8 mode if the locale is set that way; *
          * we may be on a new VT on the Linux console      */
@@ -511,6 +517,8 @@ int ti_read_tix( const char *termname )
         else
             write( UIConHandle, "\033%@", 3 );
     }
+    #endif
+
     if( strncmp( termname, "xterm", 5 ) == 0 ) {
         /* special xterm keys available in recent xterms */
         TrieAdd( EV_CTRL_CURSOR_UP, "\033[1;5A" );
