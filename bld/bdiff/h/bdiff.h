@@ -88,10 +88,6 @@ typedef struct {
 
 // Memory management
 
-#define _allocate( s )      bdiff_malloc( s )
-#define _reallocate( p, s ) bdiff_realloc( p, s )
-#define _free( p )          bdiff_free( p )
-
 extern void             *bdiff_malloc( size_t );
 extern void             *bdiff_realloc( void *, size_t );
 extern void             bdiff_free( void * );

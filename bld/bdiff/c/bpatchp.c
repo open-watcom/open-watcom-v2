@@ -40,7 +40,7 @@ byte            *NewFile;
 
 PATCH_RET_CODE OpenNew( foff len )
 {
-    NewFile = _allocate( len );
+    NewFile = bdiff_malloc( len );
     if( NewFile == NULL ) {
         //PatchError( ERR_USEREAL );
         return( PATCH_BAD_PATCH );
@@ -71,7 +71,7 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
             return( PATCH_RET_OKAY );
         } else {
             PatchError( ERR_WRONG_CHECKSUM, sum, actual_sum );
-            _free( NewFile );
+            bdiff_free( NewFile );
             NewFile = NULL;
             return( PATCH_BAD_CHECKSUM );
         }
@@ -81,13 +81,13 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
     if( write( fd, NewFile, len ) != len ) {
         *havenew = false;
         FilePatchError( ERR_CANT_WRITE, NewName );
-        _free( NewFile );
+        bdiff_free( NewFile );
         NewFile = NULL;
         return( PATCH_CANT_WRITE );
     }
     close( fd );
     SameDate( NewName, PatchName );
-    _free( NewFile );
+    bdiff_free( NewFile );
     NewFile = NULL;
     return( PATCH_RET_OKAY );
 }

@@ -136,7 +136,7 @@ static PATCH_RET_CODE InitHoles( void )
     NumHoles = 0;
     HoleArraySize = (64*1024L) / sizeof( save_hole ) - 1;
     for( ;; ) {
-        HoleArray = _allocate( HoleArraySize*sizeof(save_hole) );
+        HoleArray = bdiff_malloc( HoleArraySize*sizeof(save_hole) );
         if( HoleArray != NULL )
             break;
         HoleArraySize /= 2;
@@ -151,7 +151,7 @@ static PATCH_RET_CODE InitHoles( void )
 static void FreeHoleArray( void )
 {
     if( HoleArray != NULL ) {
-        _free( HoleArray );
+        bdiff_free( HoleArray );
         HoleArray = NULL;
     }
 }

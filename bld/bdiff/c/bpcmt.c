@@ -72,7 +72,7 @@ void main( int argc, char *argv[] )
     if( argv[1][0] == '?' && argv[1][1] == '\0' )
         Usage();
     bufsize = BUFSIZE;
-    while( ( Buffer = _allocate( bufsize ) ) == NULL ) {
+    while( ( Buffer = bdiff_malloc( bufsize ) ) == NULL ) {
         size = bufsize & (bufsize - 1);
         bufsize = size ? size : ( (bufsize << 1) | (bufsize << 2) );
         if( bufsize < MXFNAME ) {

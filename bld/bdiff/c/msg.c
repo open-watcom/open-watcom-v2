@@ -48,8 +48,6 @@
 
 #include "clibext.h"
 
-#define STDOUT_HANDLE   ((int)1)
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
@@ -68,7 +66,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
     }
 }
 
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, read, write, res_seek, tell, bdiff_malloc, bdiff_free );
 
 int GetMsg( char *buffer, int resourceid )
 {

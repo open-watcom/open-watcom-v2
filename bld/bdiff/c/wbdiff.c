@@ -211,7 +211,7 @@ void *ReadIn( const char *name, foff buff_size, foff read_size )
     int         fd;
     void        *buff;
 
-    buff = _allocate( buff_size );
+    buff = bdiff_malloc( buff_size );
     NotNull( buff, "file buffer" );
     fd = open( name, O_RDONLY+O_BINARY, 0 );
     FileCheck( fd, name );
@@ -229,6 +229,7 @@ foff FileSize( const char *name, int *correction )
     int         fd;
     char        buff[ sizeof( PATCH_LEVEL ) ];
 
+    size = 0;
     if( access( name, R_OK ) != 0 ) {
         PatchError( ERR_CANT_FIND, name );
     } else {
@@ -261,7 +262,7 @@ void AddRegion( region **owner, foff old_start, foff new_start, foff size )
 {
     region      *reg;
 
-    reg = _allocate( sizeof( region ) );
+    reg = bdiff_malloc( sizeof( region ) );
     NotNull( reg, "region" );
     reg->next = *owner;
     reg->old_start = old_start;
@@ -951,7 +952,7 @@ void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     curr_offset = section_head.mod_offset;
     while( curr_offset != section_head.gbl_offset ) {
         xread( exe->sym.fd, &mod_name, sizeof( mod_name ) );
-        new_mod = _allocate( sizeof( exe_mod ) + mod_name.name[0] );
+        new_mod = bdiff_malloc( sizeof( exe_mod ) + mod_name.name[0] );
         if( new_mod == NULL ) {
             GetMsg( msgbuf, ERR_MEMORY_OUT );
             puts( msgbuf );
@@ -989,7 +990,7 @@ void ProcessExe( const char *name, char *sym_name, exe_info *exe )
             if( found_mod == NULL ) {
                 fatal( MSG_DEBUG_INFO );
             }
-            new_blk = _allocate( sizeof( *new_blk ) );
+            new_blk = bdiff_malloc( sizeof( *new_blk ) );
             if( new_blk == NULL ) {
                 GetMsg( msgbuf, ERR_MEMORY_OUT );
                 puts( msgbuf );
@@ -1042,7 +1043,7 @@ void VerifyCorrect( const char *name )
 
     memset( NewFile, 0x00, EndNew );
     Execute( NewFile );
-    _free( OldFile );
+    bdiff_free( OldFile );
     real_new = ReadIn( name, EndNew, EndNew );
     if( real_new != NULL ) {
         if( memcmp( real_new, NewFile, EndNew ) != 0 ) {
@@ -1057,7 +1058,7 @@ void VerifyCorrect( const char *name )
                 ++NewFile;
             }
         }
-        _free( real_new );
+        bdiff_free( real_new );
     }
 }
 
@@ -1081,7 +1082,7 @@ void CheckPatch( int size )
     if( CurrPatch - PatchFile + size >= PatchSize ) {
     oldpatch = PatchFile;
     PatchSize += 10*1024;
-    PatchFile = _reallocate( PatchFile, PatchSize );
+    PatchFile = bdiff_realloc( PatchFile, PatchSize );
     NotNull( PatchFile, "patch file" );
     CurrPatch = PatchFile + ( CurrPatch - oldpatch );
     }
@@ -1255,6 +1256,9 @@ void ProcessHoleArray( int write_holes )
     foff        incr;
     int         size;
 
+    curr_start = 0;
+    curr_diff = 0;
+    curr_header = NULL;
     if( NumHoles != 0 ) {
         end = HoleArray + NumHoles - 1;
         first = true;
@@ -1334,7 +1338,7 @@ void WriteSimilars( void )
         OutPatch( curr->size, foff );
         junk = curr;
         curr = curr->next;
-        _free( junk );
+        bdiff_free( junk );
     }
 }
 
@@ -1360,7 +1364,7 @@ void WriteDiffs( void )
         }
         junk = curr;
         curr = curr->next;
-        _free( junk );
+        bdiff_free( junk );
     }
 }
 
@@ -1419,7 +1423,7 @@ void CopyComment( void )
         size = lseek( fd, 0, SEEK_END );
         SeekCheck( size, CommentFile );
         SeekCheck( lseek( fd, 0, SEEK_SET ), CommentFile );
-        comment = _allocate( size+1 );
+        comment = bdiff_malloc( size+1 );
         NotNull( comment, "comment file" );
         if( read( fd, comment, size ) != size ) {
             FilePatchError( ERR_CANT_READ, CommentFile );
@@ -1436,7 +1440,7 @@ void WritePatchFile( const char *name )
     foff        size;
 
     PatchSize = EndNew;
-    PatchFile = _allocate( PatchSize );
+    PatchFile = bdiff_malloc( PatchSize );
     NotNull( PatchFile, "patch file" );
     CurrPatch = PatchFile;
 
@@ -1476,14 +1480,14 @@ void MakeHoleArray( void )
     region      *curr;
 
     if( NumHoles == 0 ) return;
-    HoleArray = _allocate( sizeof( region ) * NumHoles );
+    HoleArray = bdiff_malloc( sizeof( region ) * NumHoles );
     NotNull( HoleArray, "sorted holes" );
     new_hole = HoleArray;
     for( reg = HoleRegions; reg != NULL; ) {
         curr = reg;
         reg = reg->next;
         *new_hole = *curr;
-        _free( curr );
+        bdiff_free( curr );
         ++new_hole;
     }
     HoleRegions = reg;
@@ -1498,7 +1502,7 @@ void SortHoleArray( void )
 void FreeHoleArray( void )
 {
     if( NumHoles != 0 ) {
-        _free( HoleArray );
+        bdiff_free( HoleArray );
     }
 }
 
