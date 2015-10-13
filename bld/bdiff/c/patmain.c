@@ -35,10 +35,10 @@
 
 static void PrintBanner( void )
 {
-    static int  banner_printed = 0;
+    static bool banner_printed = false;
 
     if( !banner_printed ) {
-        banner_printed = 1;
+        banner_printed = true;
         printf( banner1w( "BPATCH", _BPATCH_VERSION_ ) "\n" );
         printf( banner2 "\n" );
         printf( banner2a( "1990" ) "\n" );
@@ -71,9 +71,9 @@ void main( int argc, char **argv )
 {
     int         i;
     char        *target;
-    int         doprompt = 1;
-    int         dobackup = 1;
-    int         printlevel = 0;
+    bool        doprompt = true;
+    bool        dobackup = true;
+    bool        printlevel = false;
     char        *patchname = NULL;
 
     if( !MsgInit() ) exit( EXIT_FAILURE );
@@ -82,17 +82,17 @@ void main( int argc, char **argv )
         if( argv[ i ][ 0 ] == '-' ) {
             switch( tolower( argv[ i ][ 1 ] ) ) {
             case 'p':
-                doprompt = 0;
+                doprompt = false;
                 break;
             case 'b':
-                dobackup = 0;
+                dobackup = false;
                 break;
             case 'f':           /* specify full pathname of file to patch */
                 ++i;
                 target = argv[i];
                 break;
             case 'q':
-                printlevel = 1;
+                printlevel = true;
                 break;
             default:
                 Usage( argv[ 0 ] );

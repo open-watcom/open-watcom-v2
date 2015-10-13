@@ -57,14 +57,14 @@ PATCH_RET_CODE OpenNew( foff len )
     return( PATCH_RET_OKAY );
 }
 
-PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
+PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 {
     foff        sum;
     foff        actual_len;
     foff        off;
     char        ch;
 
-    *havenew = 1;
+    *havenew = true;
     if( NewFile.dirty ) {
         SeekCheck( lseek( NewFile.handle, NewFile.start, SEEK_SET ), NewName );
         if( write(NewFile.handle, NewFile.buff, NewFile.len ) != NewFile.len ) {
@@ -91,7 +91,7 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
     if( sum != actual_sum ) {
         if( CheckSumOld( len ) == actual_sum ) {
             remove( NewName );
-            *havenew = 0;
+            *havenew = false;
         } else {
             PatchError( ERR_WRONG_CHECKSUM, sum, actual_sum );
             return( PATCH_BAD_CHECKSUM );

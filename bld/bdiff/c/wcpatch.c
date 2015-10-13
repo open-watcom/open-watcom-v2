@@ -153,7 +153,7 @@ void FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
     FILE    *tgtF;
     char    srcchar;
     char    tgtchar;
-    char    different = 0;
+    bool    different = false;
 
     srcF = fopen( SrcPath, "rb" );
     tgtF = fopen( TgtPath, "rb" );
@@ -161,13 +161,13 @@ void FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
         srcchar = fgetc( srcF );
         tgtchar = fgetc( tgtF );
         if( srcchar != tgtchar ) {
-            different = 1;
+            different = true;
         }
-    } while( feof( srcF ) == FALSE && feof( tgtF ) == FALSE && different == 0 );
+    } while( feof( srcF ) == FALSE && feof( tgtF ) == FALSE && !different );
     fclose( srcF );
     fclose( tgtF );
 
-    if( different == 1 ) {
+    if( different ) {
         printf( "%s is different.  Patching...\n", name );
         PatchWriteFile( PATCH_FILE_PATCHED, &TgtPath[ glob.origTgtDirLen + 1 ] );
         DoBdiff( SrcPath, TgtPath, name );
@@ -299,7 +299,7 @@ PATCH_RET_CODE OpenNew( foff len )
     return( PATCH_RET_OKAY );
 }
 
-PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
+PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 {
     len = len; actual_sum = actual_sum; havenew = havenew;
     return( PATCH_RET_OKAY );

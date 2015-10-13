@@ -699,8 +699,8 @@ static void GetDestDir( int i, char *buff, size_t buff_len )
     ConcatDirSep( buff );
 }
 
-int SecondaryPatchSearch( const char *filename, char *buff )
-/**********************************************************/
+bool SecondaryPatchSearch( const char *filename, char *buff )
+/***********************************************************/
 {
 // search for patch output files (originals to be patched) in following order
 // 1.)  check .INF specified directory in PatchInfo structure (if it exists)

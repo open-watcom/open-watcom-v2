@@ -104,7 +104,7 @@ byte    *PatchFile;
 foff    PatchSize;
 byte    *OldFile;
 byte    *NewFile;
-int     AppendPatchLevel;
+bool    AppendPatchLevel;
 char    *SyncString = NULL;
 
 #define MAX_DIFF        (1L<<17)
@@ -148,7 +148,7 @@ static int  OldCorrection;
 static foff EndNew;
 static int  NewCorrection;
 static byte *CurrPatch;
-static int Verbose;
+static bool Verbose;
 static char *newName;
 static char *CommentFile;
 static char LevelBuff[64];
@@ -1244,14 +1244,14 @@ void ProcessHoleArray( int write_holes )
     hole        curr_diff;
     hole        diff;
     foff        curr_start;
-    int         first;
+    bool        first;
     foff        iters;
     foff        incr;
     int         size;
 
     if( NumHoles != 0 ) {
         end = HoleArray + NumHoles - 1;
-        first = 1;
+        first = true;
         for( curr = HoleArray; curr <= end; ++curr ) {
             diff = curr->diff;
             prev = curr;
@@ -1278,7 +1278,7 @@ void ProcessHoleArray( int write_holes )
                     OutPatch( iters, foff );
                     OutPatch( incr, foff );
                 }
-                first = 0;
+                first = false;
                 curr = end_iters - 1;
                 curr_start = curr->new_start;
                 curr_diff = 0;
@@ -1288,7 +1288,7 @@ void ProcessHoleArray( int write_holes )
                     if( !first ) {
                         OutPatch( 0, byte );
                     }
-                    first = 0;
+                    first = false;
                     HoleHeaders++;
                     OutPatch( CMD_HOLES, patch_cmd );
                     OutPatch( curr->new_start, foff );
@@ -1392,7 +1392,8 @@ foff Sum( void )
 
     sum = 0;
     end = EndNew;
-    if( AppendPatchLevel ) end += sizeof( PATCH_LEVEL );
+    if( AppendPatchLevel )
+        end += sizeof( PATCH_LEVEL );
     for( i = 0; i != end; ++i ) {
         sum += NewFile[ i ];
     }
@@ -1445,13 +1446,15 @@ void WritePatchFile( const char *name )
     OutPatch( '\0', char );
     OutPatch( EndOld + OldCorrection, foff );
     size = EndNew;
-    if( AppendPatchLevel ) size += sizeof( PATCH_LEVEL );
+    if( AppendPatchLevel )
+        size += sizeof( PATCH_LEVEL );
     OutPatch( size, foff );
     OutPatch( Sum(), foff );
 
     WriteSimilars();
     WriteDiffs();
-    if( AppendPatchLevel ) WriteLevel();
+    if( AppendPatchLevel )
+        WriteLevel();
     ProcessHoleArray( 1 );
 
     OutPatch( CMD_DONE, byte );
@@ -1513,8 +1516,8 @@ algorithm ParseArgs( int argc, char **argv )
     NewSymName = NULL;
     CommentFile = NULL;
     newName = argv[1];
-    Verbose = 0;
-    AppendPatchLevel = 1;
+    Verbose = false;
+    AppendPatchLevel = true;
     while( *arg ) {
         curr = *arg;
         if( *curr != '-' && *curr != '/' ) Usage( argv[0] );
@@ -1530,10 +1533,10 @@ algorithm ParseArgs( int argc, char **argv )
             CommentFile = curr + 1;
             break;
         case 'v':
-            Verbose = 1;
+            Verbose = true;
             break;
         case 'l':
-            AppendPatchLevel = 0;
+            AppendPatchLevel = false;
             break;
         case 'd':
             if( tolower( curr[1] ) == 'o' ) {
@@ -1691,7 +1694,7 @@ PATCH_RET_CODE OpenNew( foff len )
     return( PATCH_RET_OKAY );
 }
 
-PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
+PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 {
     len = len; actual_sum = actual_sum; havenew = havenew;
     return( PATCH_RET_OKAY );

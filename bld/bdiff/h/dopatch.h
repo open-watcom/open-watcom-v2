@@ -32,9 +32,9 @@
 #if !defined( BDIFF )
 extern const char       *PatchName;
 extern const char       *NewName;
-extern int              DoPrompt;
-extern int              DoBackup;
-extern int              PrintLevel;
+extern bool             DoPrompt;
+extern bool             DoBackup;
+extern bool             PrintLevel;
 #endif
 
 extern void             GetLevel( const char *name );
@@ -44,5 +44,5 @@ extern void             SeekCheck( long pos, const char *name );
 extern PATCH_RET_CODE   Execute( byte *dest );
 #else
 extern PATCH_RET_CODE   Execute( void );
-extern PATCH_RET_CODE   DoPatch( const char *patchname, int doprompt, int dobackup, int printlevel, char *outfilename );
+extern PATCH_RET_CODE   DoPatch( const char *patchname, bool doprompt, bool dobackup, bool printlevel, char *outfilename );
 #endif

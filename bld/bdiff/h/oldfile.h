@@ -41,4 +41,4 @@ extern char             *FindOld( const char *name );
 extern foff             CheckSumOld( foff new_size );
 extern PATCH_RET_CODE   OpenOld( foff len, int prompt, foff new_size, foff new_sum );
 extern byte             InOld( foff offset );
-extern PATCH_RET_CODE   CloseOld( int havenew, int dobackup );
+extern PATCH_RET_CODE   CloseOld( bool havenew, bool dobackup );

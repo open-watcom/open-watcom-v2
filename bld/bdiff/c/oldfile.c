@@ -59,16 +59,14 @@ char *SetOld( const char *name )
 char *FindOld( const char *name )
 {
     char        temp[_MAX_PATH];
-    int         retcode;
 
     _splitpath( name, old_drive, old_dir, old_fname, old_ext );
     _makepath( temp, "", "", old_fname, old_ext );
 #if defined( INSTALL_PROGRAM )
-    retcode = SecondaryPatchSearch( name, oldName );
+    if( SecondaryPatchSearch( name, oldName ) && oldName[0] == '\0' ) {
 #else
-    retcode = 1;
+    if( oldName[0] == '\0' ) {
 #endif
-    if( retcode && oldName[0] == '\0' ) {
         _searchenv( temp, "PATH", oldName );
     }
     if( oldName[0] == '\0' ) {
@@ -157,7 +155,7 @@ byte InOld( foff offset )
     return( tmp );
 }
 
-PATCH_RET_CODE CloseOld( int havenew, int dobackup )
+PATCH_RET_CODE CloseOld( bool havenew, bool dobackup )
 {
     char        bak[_MAX_PATH];
 

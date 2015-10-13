@@ -56,8 +56,8 @@
     #define CloseOld( havenew, dobackup )
 
     #define Dump( x )
-    #define DOPROMPT                    1
-    #define DOBACKUP                    1
+    #define DOPROMPT                    true
+    #define DOBACKUP                    true
 
 #else  /* Not BDIFF */
 
@@ -75,7 +75,7 @@
     #endif
 
     #define Dump( x )
-    #define DOPROMPT                    1
+    #define DOPROMPT                    true
     #define DOBACKUP                    DoBackup
 
   #elif defined(BDUMP)
@@ -84,8 +84,8 @@
     #define OutNew( off, x, type )      //( x )
 
     #define Dump( x )                   printf x
-    #define DOPROMPT                    0
-    #define DOBACKUP                    0
+    #define DOPROMPT                    false
+    #define DOBACKUP                    false
 
   #else
 
@@ -93,7 +93,7 @@
     #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
 
     #define Dump( x )
-    #define DOPROMPT                    1
+    #define DOPROMPT                    true
     #define DOBACKUP                    DoBackup
 
   #endif
@@ -112,9 +112,9 @@ static byte     *pat;
 
 const char      *PatchName;
 const char      *NewName;
-int             DoPrompt;
-int             DoBackup;
-int             PrintLevel;
+bool            DoPrompt;
+bool            DoBackup;
+bool            PrintLevel;
 
 #endif
 
@@ -239,7 +239,7 @@ void SeekCheck( long pos, const char *name )
 static PATCH_RET_CODE InitPatch( char **target_given )
 {
     char            *p;
-    int             compare_sig;
+    bool            compare_sig;
     char            target[FILENAME_MAX];
     char            ch;
     char            *temp;
@@ -254,7 +254,7 @@ static PATCH_RET_CODE InitPatch( char **target_given )
         return( ret );
     }
     p = PATCH_SIGNATURE;
-    compare_sig = 1;
+    compare_sig = true;
     while( (ch = InPatch( char )) != EOF_CHAR ) {
         if( compare_sig ) {
             if( ch != *p ) {
@@ -263,7 +263,7 @@ static PATCH_RET_CODE InitPatch( char **target_given )
             }
             ++p;
             if( ch == END_SIG_CHAR ) {
-                compare_sig = 0;
+                compare_sig = false;
             }
         }
     }
@@ -311,14 +311,14 @@ PATCH_RET_CODE Execute( void )
     foff            new_offset;
     foff            old_offset;
     char            ch;
-    int             havenew;
+    bool            havenew;
     PATCH_RET_CODE  ret;
     PATCH_RET_CODE  ret2;
 #ifdef BDIFF
     char            *dummy = NULL;
 #endif
 
-    havenew = 1;
+    havenew = true;
 #ifdef BDIFF
     InitPatch( &dummy );
 #endif
@@ -428,9 +428,9 @@ error1:
 
 PATCH_RET_CODE DoPatch(
     const char  *patchname,
-    int         doprompt,
-    int         dobackup,
-    int         printlevel,
+    bool        doprompt,
+    bool        dobackup,
+    bool        printlevel,
     char        *outfilename )
 {
     char            buffer[sizeof( PATCH_LEVEL )];

@@ -57,7 +57,7 @@ void MyOpen( MY_FILE *file, int handle, const char *name )
     file->handle = handle;
     file->start = 0;
     file->len = 0;
-    file->dirty = 0;
+    file->dirty = false;
     file->name = name;
 }
 
@@ -87,7 +87,7 @@ void InBuffer( MY_FILE *file, foff off, size_t len, size_t eob )
         SeekCheck( lseek( file->handle, off, SEEK_SET ), file->name );
         file->start = off;
         file->len = read( file->handle, file->buff, BUFFER_SIZE );
-        file->dirty = 0;
+        file->dirty = false;
     }
 }
 
@@ -104,5 +104,5 @@ void Output( MY_FILE *file, void *tmp, foff off, size_t len )
     if( file->len < off - file->start + len ) {
         file->len = off-file->start+len;
     }
-    file->dirty = 1;
+    file->dirty = true;
 }

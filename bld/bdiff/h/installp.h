@@ -30,9 +30,7 @@
 
 
 #if defined( INSTALL_PROGRAM )
-#include "bool.h"
-
-extern int      SecondaryPatchSearch( const char *name, char *path );
+extern bool     SecondaryPatchSearch( const char *name, char *path );
 extern bool     PatchStatusCancelled( void );
 extern void     PatchingFileStatusShow( const char *patchname, const char *filename );
 #endif

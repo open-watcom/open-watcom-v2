@@ -37,4 +37,4 @@ extern MY_FILE          NewFile;
 #endif
 
 extern PATCH_RET_CODE OpenNew( foff len );
-extern PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew );
+extern PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew );

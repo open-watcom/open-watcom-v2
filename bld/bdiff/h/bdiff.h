@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "wio.h"
 
 #include "banner.h"
@@ -77,8 +78,8 @@ typedef struct {
         foff            start;
         unsigned        len;
         int             handle;
-        int             dirty;
         const char      *name;
+        bool            dirty;
         char            buff[BUFFER_SIZE];
 } MY_FILE;
 
