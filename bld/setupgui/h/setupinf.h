@@ -52,6 +52,9 @@ typedef enum {
     AM_AFTER
 } append_mode;
 
+typedef unsigned long long      disk_size;
+typedef signed long long        disk_ssize;
+
 extern void             CheckStateVars();
 extern char             *SimGetTargetDriveLetter( int parm );
 extern bool             SimFileAdd( int parm );
@@ -78,10 +81,10 @@ extern void             SimSetTargTempDisk( int parm, char disk );
 extern char             *SimGetTargTempDisk( int parm );
 extern int              SimGetTargNumFiles( int parm );
 extern int              SimNumTargets( void );
-extern uint_64          SimTargetSpaceNeeded( int parm );
+extern disk_size        SimTargetSpaceNeeded( int parm );
 extern void             SimTargetDir( int i, char *buff, size_t buff_len );
 extern void             SimTargetDirName( int i, char *buff, size_t buff_len );
-extern uint_64          SimMaxTmpFile( int i );
+extern disk_size        SimMaxTmpFile( int i );
 extern int              SimNumDirs( void );
 extern void             SimDirNoSlash( int parm, char *buff, size_t buff_len );
 extern unsigned char    SimDirUsed( int parm );

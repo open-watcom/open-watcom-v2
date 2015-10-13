@@ -46,7 +46,6 @@
     #include <windows.h>
 #endif
 #include "wio.h"
-#include "watcom.h"
 #include "gui.h"
 #include "guistr.h"
 #include "guidlg.h"
@@ -63,7 +62,9 @@
 #include "iopath.h"
 #ifdef PATCH
     #include "bdiff.h"
+    #include "installp.h"
 #endif
+#include "watcom.h"
 
 #include "clibext.h"
 
@@ -152,8 +153,8 @@ static struct dir_info {
 
 static struct target_info {
     char                *name;
-    uint_64             space_needed;
-    uint_64             max_tmp_file;
+    disk_size           space_needed;
+    disk_size           max_tmp_file;
     int                 num_files;
     int                 supplimental;
     bool                needs_update;
@@ -334,6 +335,11 @@ static char             *RawBufPos;
 extern gui_coord        GUIScale;
 static int              MaxWidthChars;
 static int              CharWidth;
+
+#ifdef PATCH
+static int              patchDirIndex = 0;	// used in secondary search during patch
+#endif
+
 
 #define MAX_WINDOW_WIDTH 90
 
@@ -592,7 +598,7 @@ static int EvalExprTree( tree_node *tree, bool is_minimal )
         break;
     case OP_EXIST:
         ReplaceVars( buff, sizeof( buff ), (char *)tree->u.left );
-        value = access( buff, F_OK ) == 0;
+        value = ( access( buff, F_OK ) == 0 );
         break;
     case OP_VAR:
         value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
@@ -693,8 +699,8 @@ static void GetDestDir( int i, char *buff, size_t buff_len )
     ConcatDirSep( buff );
 }
 
-int SecondaryPatchSearch( const char *filename, char *buff, int Index )
-/*********************************************************************/
+int SecondaryPatchSearch( const char *filename, char *buff )
+/**********************************************************/
 {
 // search for patch output files (originals to be patched) in following order
 // 1.)  check .INF specified directory in PatchInfo structure (if it exists)
@@ -702,15 +708,15 @@ int SecondaryPatchSearch( const char *filename, char *buff, int Index )
 // 2b)  if not found in %DstDir%\destdir just try %DstDir%
 // 3.)  check system path
 
-// this function performs the first two checks, findold() in OLDFILE.C does
-// system path search, if first two searches fail and this function returns
-// nonzero.
+// this function performs the first two checks
+// findold() in OLDFILE.C (bdiff project) does system path search
+// if first two searches fail and this function returns nonzero.
 
     char                path[_MAX_PATH];
     char                ext[_MAX_EXT];
 
     buff[0] = '\0';
-    GetDestDir( Index, path, sizeof( path ) );
+    GetDestDir( patchDirIndex, path, sizeof( path ) );
     strcat( path, filename );
     if( access( path, F_OK ) == 0 ) {
         strcpy( buff, path );
@@ -731,8 +737,8 @@ int SecondaryPatchSearch( const char *filename, char *buff, int Index )
     return( buff[0] != '\0' );
 }
 
-void PatchingFile( const char *patchname, const char *path )
-/**********************************************************/
+void PatchingFileStatusShow( const char *patchname, const char *path )
+/********************************************************************/
 {
     char        buff[200];
 
@@ -741,6 +747,12 @@ void PatchingFile( const char *patchname, const char *path )
     strcat( buff, path );
     StatusLines( STAT_PATCHFILE, buff );
     StatusShow( true );
+}
+
+bool PatchStatusCancelled( void )
+/*******************************/
+{
+    return( StatusCancelled() );
 }
 #endif
 
@@ -2617,14 +2629,14 @@ extern bool SimTargetNeedsUpdate( int i )
     return( TargetInfo[i].needs_update );
 }
 
-extern uint_64 SimTargetSpaceNeeded( int i )
-/******************************************/
+extern disk_size SimTargetSpaceNeeded( int i )
+/********************************************/
 {
     return( TargetInfo[i].space_needed );
 }
 
-extern uint_64 SimMaxTmpFile( int i )
-/***********************************/
+extern disk_size SimMaxTmpFile( int i )
+/*************************************/
 {
     return( TargetInfo[i].max_tmp_file );
 }
@@ -3357,7 +3369,7 @@ void SimCalcAddRemove( void )
     bool                uninstall;
     bool                remove;
     long                diskette;
-    uint_64             tmp_size = 0;
+    disk_size           tmp_size = 0;
     vhandle             reinstall;
 #if defined( __NT__ )
     char                ext[_MAX_EXT];
@@ -3544,15 +3556,16 @@ bool SimCalcTargetSpaceNeeded( void )
 
 
 #ifdef PATCH
+
 static void AddFileName( int i, char *buffer, int rename )
 /********************************************************/
 {
     ConcatDirSep( buffer );
     if( !rename ) {
-        if( PatchInfo[i].destfile ) {
+        if( PatchInfo[i].destfile != NULL ) {
             strcat( buffer, PatchInfo[i].destfile );
         } else {
-            if( PatchInfo[i].srcfile ) {
+            if( PatchInfo[i].srcfile != NULL ) {
                 strcat( buffer, PatchInfo[i].srcfile );
             }
         }
@@ -3818,7 +3831,6 @@ extern bool PatchFiles( void )
     gui_message_return  guiret;
     int                 count;  // count successful patches
     const char          *appname;
-    int                 Index;  // used in secondary search during patch
     bool                go_ahead;
     char                exetype[3];
     log_state           logstate;
@@ -3850,7 +3862,7 @@ extern bool PatchFiles( void )
         log->do_log = false;
     }
 
-    for( i = 0; i < SetupInfo.patch_files.num; i++, Index = -1 ) {
+    for( i = 0; i < SetupInfo.patch_files.num; i++ ) {
         destfullpath[0] = srcfullpath[0] = '\0';
         if( !EvalCondition( PatchInfo[i].condition ) ) {
             StatusAmount( i + 1, SetupInfo.patch_files.num );
@@ -3859,12 +3871,10 @@ extern bool PatchFiles( void )
         switch( PatchInfo[i].command ) {
 
         case PATCH_FILE:
-            Index = i;              // used in secondary search
             GetSourcePath( i, srcfullpath, sizeof( srcfullpath ) );
-
             if( access( srcfullpath, R_OK ) == 0 ) {
-                GetDestDir( i, destfullpath, sizeof( destfullpath ) );
-                go_ahead = SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath, Index );
+                patchDirIndex = i;	 // used in secondary search during patch
+                go_ahead = SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath );
                 if( go_ahead ) {
                     if( PatchInfo[i].exetype[0] != '.' &&
                         ExeType( destfullpath, exetype ) &&
@@ -3975,13 +3985,13 @@ extern bool PatchFiles( void )
         }
 
         StatusAmount( i + 1, SetupInfo.patch_files.num );
-        if( StatusCancelled() ) {
+        if( PatchStatusCancelled() ) {
             LogWriteMsg( log, "IDS_PATCHABORT" );
             LogFileClose( log );
             return( false );
         }
     }
-    StatusCancelled(); /* make sure display gets updated */
+    PatchStatusCancelled(); /* make sure display gets updated */
 
     if( count == 0 ) {
         LogWriteMsg( log, "IDS_NO_FILES_PATCHED" );
@@ -4008,7 +4018,7 @@ void MsgPut( int resourceid, va_list arglist )
         argbuf[i] = va_arg( arglist, char * );
     }
     switch( resourceid ) {
-#if !defined( __UNIX__ )
+  #if !defined( __UNIX__ )
     case ERR_TWO_NAMES:
         messageid = "IDS_TWONAMES";
         break;
@@ -4051,7 +4061,7 @@ void MsgPut( int resourceid, va_list arglist )
     case ERR_CANT_GET_ATTRIBUTES:
         messageid = "IDS_NOATTRIBUTES";
         break;
-#endif
+  #endif
     default:
         messageid = "IDS_ERROR";
     }
@@ -4066,10 +4076,10 @@ void PatchError( int format, ... )
 
     // don't give error message if the patch file cant be found
     // just continue
-#if !defined( __UNIX__ )
+  #if !defined( __UNIX__ )
     if( format == ERR_CANT_FIND )
         return;
-#endif
+  #endif
     if( GetVariableIntVal( "Debug" ) != 0 ) {
         va_start( args, format );
         MsgPut( format, args );
@@ -4082,17 +4092,18 @@ void FilePatchError( int format, ... )
 {
     va_list     args;
 
-#if !defined( __UNIX__ )
+  #if !defined( __UNIX__ )
     if( format == ERR_CANT_FIND )
         return;
     if( format == ERR_CANT_OPEN )
         return;
-#endif
+  #endif
     va_start( args, format );
     MsgPut( format, args );
     va_end( args );
 }
-#endif
+
+#endif  /* PATCH */
 
 
 /* ********** Free up all structures associated with this file ******* */

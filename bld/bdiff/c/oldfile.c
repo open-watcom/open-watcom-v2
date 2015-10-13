@@ -35,12 +35,9 @@
 #include "oldfile.h"
 #include "myio.h"
 #include "msg.h"
+#include "installp.h"
 
 MY_FILE OldFile;
-
-#if defined( INSTALL_PROGRAM )
-extern int  SecondaryPatchSearch( const char *name, char *path );
-#endif
 
 static char     newName[_MAX_PATH];
 static char     new_fname[_MAX_FNAME];

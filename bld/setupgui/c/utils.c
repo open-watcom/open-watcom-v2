@@ -240,7 +240,7 @@ bool ModifyUninstall( bool uninstall )
 }
 
 typedef struct {
-    uint_64             free_space;
+    disk_size           free_space;
     unsigned long       cluster_size;
     bool                use_target_for_tmp_file;
     bool                fixed;
@@ -586,9 +586,9 @@ static int GetDriveInfo( char drive, bool removable )
                 free_clusters = *(ULONG *)(fsinfobuf + (3 * sizeof( ULONG )));
                 bytes_per_sector = *(USHORT *)(fsinfobuf + (4 * sizeof( ULONG )));
                 info->cluster_size = sectors_per_cluster * bytes_per_sector;
-                info->free_space = (uint_64)free_clusters * (ULONG)info->cluster_size;
+                info->free_space = (disk_size)free_clusters * (ULONG)info->cluster_size;
             } else {
-                info->free_space = (uint_64)-1;
+                info->free_space = (disk_size)-1;
             }
             info->fixed = false;
             info->diskette = false;
@@ -636,9 +636,9 @@ static int GetDriveInfo( char drive, bool removable )
             if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
                                   &free_clusters, &total_clusters ) ) {
                 info->cluster_size = bytes_per_sector * sectors_per_cluster;
-                info->free_space = (uint_64)free_clusters * (uint_64)info->cluster_size;
+                info->free_space = (disk_size)free_clusters * (disk_size)info->cluster_size;
             } else {
-                info->free_space = (uint_64)-1;
+                info->free_space = (disk_size)-1;
             }
             drive_type = GetDriveType( root );
             info->diskette = ( drive_type == DRIVE_REMOVABLE );
@@ -652,7 +652,7 @@ static int GetDriveInfo( char drive, bool removable )
             info->diskette = false;
             info->fixed = false;
             info->cluster_size = 0;
-            info->free_space = (uint_64)-1;
+            info->free_space = (disk_size)-1;
             r.w.ax = 0x440E;    // get logical drive
             r.w.bx = drive_num;
             intdos( &r, &r );
@@ -681,7 +681,7 @@ static int GetDriveInfo( char drive, bool removable )
                 info->cluster_size = (unsigned long)FreeSpace.sectors_per_cluster *
                                      FreeSpace.bytes_per_sector;
                 info->free_space = FreeSpace.avail_clusters *
-                                   (uint_64)info->cluster_size;
+                                   (disk_size)info->cluster_size;
                 /* If reported cluster size is ridiculously large, it's likely faked; assume the
                  * real cluster size is much smaller - 4096 should be a conservative estimate.
                  */
@@ -690,11 +690,11 @@ static int GetDriveInfo( char drive, bool removable )
                 }
             } else if( removable ) { // diskette not present
                 info->cluster_size = 0;
-                info->free_space = (uint_64)-1;
+                info->free_space = (disk_size)-1;
             } else {
                 /* doesn't work on network drive - assume 4K cluster, max free */
                 info->cluster_size = 4096;
-                info->free_space = (uint_64)-1;
+                info->free_space = (disk_size)-1;
             }
         }
 #endif
@@ -718,7 +718,7 @@ static int GetDriveInfo( char drive, bool removable )
        // (new installation) and you have insufficient rights to drive root
             } else {
                 info->cluster_size = 1;
-                info->free_space = (uint_64)-1;
+                info->free_space = (disk_size)-1;
 #endif
             }
         }
@@ -727,7 +727,7 @@ static int GetDriveInfo( char drive, bool removable )
     return( drive_num );
 }
 
-uint_64 GetFreeDiskSpace( char drive, bool removable )
+disk_size GetFreeDiskSpace( char drive, bool removable )
 /****************************************************/
 {
     return( Drives[GetDriveInfo( drive, removable )].free_space );
@@ -812,7 +812,7 @@ bool GetRootFromPath( char *root, const char *path )
     }
 }
 
-uint_64 FreeSpace( const char *path )
+disk_size FreeSpace( const char *path )
 /***********************************/
 {
 #ifdef __NT__
@@ -825,14 +825,14 @@ uint_64 FreeSpace( const char *path )
     if( GetRootFromPath( root, path ) ) {
         if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
                               &avail_clusters, &total_clusters ) ) {
-            return( (uint_64)sectors_per_cluster * (uint_64)bytes_per_sector * (uint_64)avail_clusters );
+            return( (disk_size)sectors_per_cluster * (disk_size)bytes_per_sector * (disk_size)avail_clusters );
         }
     }
 #else
     struct diskfree_t info;
     if( isalpha( *path ) ) {
         if( _getdiskfree( toupper( *path ) - 'A' + 1, &info ) == 0 ) {
-            return( (uint_64)info.sectors_per_cluster * (uint_64)info.bytes_per_sector * (uint_64)info.avail_clusters );
+            return( (disk_size)info.sectors_per_cluster * (disk_size)info.bytes_per_sector * (disk_size)info.avail_clusters );
         }
     }
 #endif
@@ -1174,9 +1174,9 @@ bool CheckDrive( bool issue_message )
 //check if there is enough disk space
 {
     bool                ret;
-    uint_64             free_disk_space;
-    uint_64             disk_space_needed;
-    uint_64             max_tmp_file;
+    disk_size           free_disk_space;
+    disk_size           disk_space_needed;
+    disk_size           max_tmp_file;
     int                 max_targs;
     int                 i, j, targ_num;
     char                *disks[MAX_DRIVES];
@@ -1189,9 +1189,9 @@ bool CheckDrive( bool issue_message )
     char                drive_freesp[20];
     struct {
         char                *drive;
-        uint_64     needed;
-        uint_64     max_tmp;
-        uint_64     free;
+        disk_size   needed;
+        disk_size   max_tmp;
+        disk_size   free;
         int         num_files;
     }                   space[MAX_DRIVES];
 #ifdef UNC_SUPPORT
@@ -1268,7 +1268,7 @@ bool CheckDrive( bool issue_message )
             space[i].max_tmp = max_tmp_file;
             space[i].num_files = SimGetTargNumFiles( targ_num );
 #if !defined( __UNIX__ )
-            if( (int_64)disk_space_needed > 0 && free_disk_space < disk_space_needed + max_tmp_file ) {
+            if( (disk_ssize)disk_space_needed > 0 && free_disk_space < disk_space_needed + max_tmp_file ) {
                 for( drive = 'c'; drive <= 'z'; ++drive ) {
                     if( drive == tolower( *disks[i] ) )
                         continue;
@@ -1291,7 +1291,7 @@ bool CheckDrive( bool issue_message )
                 }
             }
             if( issue_message ) {
-                if( (int_64)disk_space_needed > 0 && free_disk_space < disk_space_needed ) {
+                if( (disk_ssize)disk_space_needed > 0 && free_disk_space < disk_space_needed ) {
     #ifdef UNC_SUPPORT
                     if( TEST_UNC( disks[i] ) ) {
                         if( DriveInfoIsAvailable( disks[i] ) ) {
@@ -1333,7 +1333,7 @@ bool CheckDrive( bool issue_message )
                 sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC" ),
                          toupper( *space[i].drive ) );
             }
-            if( (int_64)space[i].needed < 0 ) {
+            if( (disk_ssize)space[i].needed < 0 ) {
                 catnum( buff, -space[i].needed );
                 strcat( buff, GetVariableStrVal( "IDS_DRIVE_FREED" ) );
             } else {

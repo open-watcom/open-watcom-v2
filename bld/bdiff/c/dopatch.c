@@ -37,6 +37,7 @@
 #include "patchio.h"
 #include "myio.h"
 #include "msg.h"
+#include "installp.h"
 
 #ifdef BDIFF
     #define PatchName ""
@@ -48,15 +49,15 @@
     #define InNew( offset )             (*(hole*)(dest+offset))
     #define OutNew( offset, x, type )   *(type*)(dest+(offset))=(x)
 
-    #define FindOld( name ) NULL
-    #define SetOld( name ) NULL
+    #define FindOld( name )             NULL
+    #define SetOld( name )              NULL
     #define OpenOld( len, prompt, newsize, newsum ) PATCH_RET_OKAY
     #define InOld( offset )             (*(byte*)(OldFile+offset))
     #define CloseOld( havenew, dobackup )
 
     #define Dump( x )
-    #define DOPROMPT    1
-    #define DOBACKUP    1
+    #define DOPROMPT                    1
+    #define DOBACKUP                    1
 
 #else  /* Not BDIFF */
 
@@ -74,17 +75,17 @@
     #endif
 
     #define Dump( x )
-    #define DOPROMPT    1
-    #define DOBACKUP    DoBackup
+    #define DOPROMPT                    1
+    #define DOBACKUP                    DoBackup
 
   #elif defined(BDUMP)
 
     #define InNew( offset )             1
     #define OutNew( off, x, type )      //( x )
 
-    #define Dump( x ) printf x
-    #define DOPROMPT    0
-    #define DOBACKUP    0
+    #define Dump( x )                   printf x
+    #define DOPROMPT                    0
+    #define DOBACKUP                    0
 
   #else
 
@@ -92,19 +93,14 @@
     #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
 
     #define Dump( x )
-    #define DOPROMPT    1
-    #define DOBACKUP    DoBackup
+    #define DOPROMPT                    1
+    #define DOBACKUP                    DoBackup
 
   #endif
 
     #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), *(type*)tmp )
 
 #endif
-
-#if defined( INSTALL_PROGRAM )
-extern bool             StatusCancelled( void );
-#endif
-extern void PatchingFile( const char *patchname, const char *filename );
 
 static char CurrLevel[sizeof( PATCH_LEVEL )];
 
@@ -259,10 +255,7 @@ static PATCH_RET_CODE InitPatch( char **target_given )
     }
     p = PATCH_SIGNATURE;
     compare_sig = 1;
-    for( ;; ) {
-        ch = InPatch( char );
-        if( ch == EOF_CHAR )
-            break;
+    while( (ch = InPatch( char )) != EOF_CHAR ) {
         if( compare_sig ) {
             if( ch != *p ) {
                 PatchError( ERR_NOT_PATCHFILE, PatchName );
@@ -275,13 +268,8 @@ static PATCH_RET_CODE InitPatch( char **target_given )
         }
     }
     p = target;
-    for( ;; ) {
-        *p = ch = InPatch( char );
-        ++p;
-        if( ch == '\0' ) {
-            break;
-        }
-    }
+    while( (*p++ = InPatch( char )) != '\0' )
+        ;
     if( (*target_given) != NULL ) {
         temp = SetOld( (*target_given) );
     } else {
@@ -301,33 +289,33 @@ static PATCH_RET_CODE InitPatch( char **target_given )
 
 PATCH_RET_CODE Execute( byte *dest )
 {
-    byte        *tmp;
+    byte            *tmp;
 
 #else
 
 PATCH_RET_CODE Execute( void )
 {
-    byte        tmp[4];
+    byte            tmp[4];
 
 #endif
 
-    patch_cmd   cmd;
-    byte        next;
-    hole        diff;
-    foff        size;
-    foff        incr;
-    foff        iters;
-    foff        old_size;
-    foff        new_size;
-    foff        checksum;
-    foff        new_offset;
-    foff        old_offset;
-    char        ch;
-    int         havenew;
+    patch_cmd       cmd;
+    byte            next;
+    hole            diff;
+    foff            size;
+    foff            incr;
+    foff            iters;
+    foff            old_size;
+    foff            new_size;
+    foff            checksum;
+    foff            new_offset;
+    foff            old_offset;
+    char            ch;
+    int             havenew;
     PATCH_RET_CODE  ret;
     PATCH_RET_CODE  ret2;
 #ifdef BDIFF
-    char        *dummy = NULL;
+    char            *dummy = NULL;
 #endif
 
     havenew = 1;
@@ -347,7 +335,7 @@ PATCH_RET_CODE Execute( void )
     for( ;; ) {
 #if defined( INSTALL_PROGRAM )
     #if defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __OS2__ )
-        if( StatusCancelled() ) {
+        if( PatchStatusCancelled() ) {
             ret = PATCH_RET_CANCEL;
             goto error3;
         }
@@ -438,11 +426,12 @@ error1:
 
 #if !defined( BDIFF )
 
-PATCH_RET_CODE DoPatch( const char *patchname,
-                   int doprompt,
-                   int dobackup,
-                   int printlevel,
-                   char *outfilename )
+PATCH_RET_CODE DoPatch(
+    const char  *patchname,
+    int         doprompt,
+    int         dobackup,
+    int         printlevel,
+    char        *outfilename )
 {
     char            buffer[sizeof( PATCH_LEVEL )];
   #ifndef _WPATCH
@@ -485,7 +474,7 @@ PATCH_RET_CODE DoPatch( const char *patchname,
     }
     if( outfilename != NULL ) {
         strcpy( outfilename, target );
-        PatchingFile( PatchName, outfilename );
+        PatchingFileStatusShow( PatchName, outfilename );
     }
   #endif
   #ifndef _WPATCH
