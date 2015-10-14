@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "sdkasm.h"
 
 static DisAsmRtns       *CurRtns;

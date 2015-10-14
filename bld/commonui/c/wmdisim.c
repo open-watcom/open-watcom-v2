@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #ifdef __WINDOWS_386__
     #include <malloc.h>
 #endif

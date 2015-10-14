@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <ctype.h>
 #include <string.h>
 #include "watcom.h"

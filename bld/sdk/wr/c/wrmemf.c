@@ -37,6 +37,7 @@
 #include "wrdmsgi.h"
 #include "memflags.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

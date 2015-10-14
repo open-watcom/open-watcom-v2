@@ -46,6 +46,7 @@
 #include "editsym.h"
 #include "addsym.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

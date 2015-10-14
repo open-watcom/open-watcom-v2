@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "precomp.h"
+#include "commonui.h"
 #include "watcom.h"
 #include "macros.h"
 #ifdef __OS2_PM__

@@ -41,7 +41,7 @@
     #define _NEAR
 #endif
 
-#include "precomp.h"
+#include "commonui.h"
 #include "bool.h"
 #define MSG_RC_BASE     0
 #include "rcstr.gh"

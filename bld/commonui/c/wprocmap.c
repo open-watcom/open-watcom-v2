@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "wprocmap.h"
 
 #if defined( __WINDOWS_386__ )

@@ -40,6 +40,7 @@
 #include "wrdmsgi.h"
 #include "selft.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

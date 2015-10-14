@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "wmsg.h"
 #include "ldstr.h"
 #include "rcstr.gh"

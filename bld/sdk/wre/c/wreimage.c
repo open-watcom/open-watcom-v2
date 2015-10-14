@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <sys/types.h>
 #include <fcntl.h>
 #include <stdio.h>

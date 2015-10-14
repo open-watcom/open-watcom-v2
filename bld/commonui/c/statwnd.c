@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
