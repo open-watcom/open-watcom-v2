@@ -32,8 +32,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "refproc.h"
 #include "hashtabl.h"
 #include "memfuncs.h"

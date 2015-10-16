@@ -34,8 +34,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "demangle.h"
 #include "labproc.h"
 #include "memfuncs.h"

@@ -38,8 +38,8 @@
     #include <process.h>
 #endif
 #include "wio.h"
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "init.h"
 #include "buffer.h"
 #include "memfuncs.h"

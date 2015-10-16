@@ -29,9 +29,6 @@
 ****************************************************************************/
 
 
-#include "bool.h"
-#include "distypex.h"
-
 typedef enum {
     DHR_DONE,
     DHR_CONTINUE,
@@ -66,6 +63,27 @@ struct dis_cpu_data {
     unsigned char       inssize_inc;
 };
 
-unsigned        DisGetString( unsigned, char *, bool );
-char            *DisAddReg( dis_register, char *, dis_format_flags );
-char            *DisOpFormat( dis_handle *, void *, dis_dec_ins *, dis_format_flags, unsigned, char *, unsigned );
+#if DISCPU & DISCPU_axp
+#include "disaxp.h"
+#endif
+#if DISCPU & DISCPU_ppc
+#include "disppc.h"
+#endif
+#if DISCPU & DISCPU_x86
+#include "disx86.h"
+#endif
+#if DISCPU & DISCPU_x64
+#include "disx64.h"
+#endif
+#if DISCPU & DISCPU_jvm
+#include "disjvm.h"
+#endif
+#if DISCPU & DISCPU_sparc
+#include "dissparc.h"
+#endif
+#if DISCPU & DISCPU_mips
+#include "dismips.h"
+#endif
+
+extern const dis_ins_descript   DisInstructionTable[];
+extern const unsigned short     DisRefTypeTable[];

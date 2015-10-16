@@ -31,17 +31,10 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
 #include "dis.h"
-
-#include "bool.h"
+#include "distypes.h"
+#include "dissparc.h"
 #include "sparcenc.h"
-
-extern long SEX( unsigned long v, unsigned bit );
-
-extern const dis_range          SPARCRangeTable[];
-extern const int                SPARCRangeTablePos[];
-extern const unsigned char      SPARCMaxInsName;
 
 #define _SparcReg( x )          ( (x) + DR_SPARC_r0 )
 #define _SparcFReg( x )         ( (x) + DR_SPARC_f0 )
@@ -56,7 +49,7 @@ dis_handler_return SPARCSetHi( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = SEX( code.sethi.imm22, 21 );
+    ins->op[0].value = DisSEX( code.sethi.imm22, 21 );
     ins->op[1].type = DO_REG;
     ins->op[1].base = _SparcReg( code.sethi.rd );
     ins->num_ops = 2;
@@ -71,7 +64,7 @@ dis_handler_return SPARCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type = DO_RELATIVE;
-    ins->op[0].value = ( SEX( code.branch.disp22, 21 ) ) * sizeof( ins->opcode );
+    ins->op[0].value = ( DisSEX( code.branch.disp22, 21 ) ) * sizeof( ins->opcode );
     if( code.branch.anul != 0 ) {
         ins->flags.u.sparc |= DIF_SPARC_ANUL;
     }
@@ -90,8 +83,8 @@ dis_handler_return SPARCCall( dis_handle *h, void *d, dis_dec_ins *ins )
     // BartoszP 16.10.2005
     // SPARC Architecture Manual says:
     // CALL saves self address not next instruction into the %o7 register
-    //ins->op[0].value = ( SEX( code.call.disp, 29 ) + 1) * sizeof( ins->opcode );
-    ins->op[0].value = ( SEX( code.call.disp, 29 ) ) * sizeof( ins->opcode );
+    //ins->op[0].value = ( DisSEX( code.call.disp, 29 ) + 1) * sizeof( ins->opcode );
+    ins->op[0].value = ( DisSEX( code.call.disp, 29 ) ) * sizeof( ins->opcode );
     ins->num_ops     = 1;
     return( DHR_DONE );
 }
@@ -110,7 +103,7 @@ dis_handler_return SPARCOp3( dis_handle *h, void *d, dis_dec_ins *ins )
     if( code.op3.imm != 0 ) {
         ins->op[ 1 ].type = DO_IMMED;
         ins->op[ 1 ].base = DR_NONE;
-        ins->op[ 1 ].value = SEX( code.op3imm.simm13, 12 );
+        ins->op[ 1 ].value = DisSEX( code.op3imm.simm13, 12 );
     } else {
         ins->op[ 1 ].type = DO_REG;
         ins->op[ 1 ].base = _SparcReg( code.op3.rs2 );
@@ -144,7 +137,7 @@ static void doSparcMem( dis_handle *h, void *d, dis_operand *op, sparc_ins code 
     op->index = DR_NONE;
     op->value = 0;
     if( code.op3.imm != 0 ) {
-        op->value = SEX( code.op3imm.simm13, 12 );
+        op->value = DisSEX( code.op3imm.simm13, 12 );
     } else {
         // NYI: should check for asi and stuff it into op
         op->index = _SparcReg( code.op3.rs2 );

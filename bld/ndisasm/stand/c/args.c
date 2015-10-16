@@ -34,8 +34,8 @@
 #include <ctype.h>
 #include <string.h>
 #include "wio.h"
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "banner.h"
 #include "args.h"
 #include "buffer.h"

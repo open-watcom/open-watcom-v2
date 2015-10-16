@@ -30,8 +30,8 @@
 
 
 #include <string.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "pass1.h"
 #include "labproc.h"
 #include "refproc.h"

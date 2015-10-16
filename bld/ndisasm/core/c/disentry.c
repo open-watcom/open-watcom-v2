@@ -32,8 +32,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
 #include "dis.h"
+#include "distypes.h"
 #include "distbls.gh"
 
 #include "clibext.h"
@@ -61,7 +61,7 @@ extern const dis_cpu_data       SPARCData;
 extern const dis_cpu_data       MIPSData;
 #endif
 
-long SEX( unsigned long v, unsigned bit )
+long DisSEX( unsigned long v, unsigned bit )
 {
     unsigned long chk;
 
@@ -74,10 +74,10 @@ long SEX( unsigned long v, unsigned bit )
 
 #define LENGTH_BIT      0x80
 
-unsigned DisGetString( unsigned index, char *buff, bool to_upper )
+size_t DisGetString( size_t index, char *buff, bool to_upper )
 {
-    unsigned            len;
-    unsigned            i;
+    size_t              len;
+    size_t              i;
     const unsigned char *src;
     int                 c;
 
@@ -96,12 +96,6 @@ unsigned DisGetString( unsigned index, char *buff, bool to_upper )
     }
     *buff = '\0';
     return( len );
-}
-
-dis_handler_return DisDummyHandler( dis_handle *h, void *d, dis_dec_ins *ins )
-{
-    h = h; d = d; ins = ins;
-    return( DHR_INVALID );
 }
 
 dis_return DisInit( dis_cpu cpu, dis_handle *h, bool swap_bytes )

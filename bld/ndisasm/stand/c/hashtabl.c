@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "dis.h"
 #include "global.h"
 #include "hashtabl.h"
 #include "memfuncs.h"

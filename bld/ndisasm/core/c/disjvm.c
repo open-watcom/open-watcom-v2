@@ -31,14 +31,9 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
 #include "dis.h"
-
-extern long SEX( unsigned long v, unsigned bit );
-
-extern const dis_range          JVMRangeTable[];
-extern const int                JVMRangeTablePos[];
-extern const unsigned char      JVMMaxInsName;
+#include "distypes.h"
+#include "distjvm.h"
 
 static unsigned GetUByte( void *d, unsigned off )
 {
@@ -80,12 +75,12 @@ static unsigned long GetULong( void *d, unsigned off )
 
 static int GetSByte( void *d, unsigned off )
 {
-    return( SEX( GetUByte( d, off ), 7 ) );
+    return( DisSEX( GetUByte( d, off ), 7 ) );
 }
 
 static int GetSShort( void *d, unsigned off )
 {
-    return( SEX( GetUShort( d, off ), 15 ) );
+    return( DisSEX( GetUShort( d, off ), 15 ) );
 }
 
 dis_handler_return JVMSByte( dis_handle *h, void *d, dis_dec_ins *ins )

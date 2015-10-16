@@ -31,8 +31,8 @@
 
 
 #include <string.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "pdata.h"
 #include "buffer.h"
 #include "print.h"

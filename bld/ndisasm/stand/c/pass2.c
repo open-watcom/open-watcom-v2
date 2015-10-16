@@ -31,8 +31,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "pass2.h"
 #include "buffer.h"
 #include "srcmix.h"

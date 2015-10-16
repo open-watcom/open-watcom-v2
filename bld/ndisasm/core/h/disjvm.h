@@ -24,31 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  External disassembler routines.
+* Description:  Instruction decoding for Java Virtual Machine.
 *
 ****************************************************************************/
 
 
-#include "distypex.h"
+extern const dis_range          JVMRangeTable[];
+extern const int                JVMRangeTablePos[];
+extern const unsigned char      JVMMaxInsName;
 
-/*
-        Disassembler routines
-*/
-extern dis_return           DisInit( dis_cpu, dis_handle *, bool );
-extern unsigned             DisInsNameMax( dis_handle * );
-extern unsigned             DisInsSizeInc( dis_handle * );
-extern void                 DisDecodeInit( dis_handle *, dis_dec_ins * );
-extern dis_return           DisDecode( dis_handle *, void *, dis_dec_ins * );
-extern dis_return           DisFormat( dis_handle *, void *, dis_dec_ins *, dis_format_flags, char *ins, unsigned ins_len, char *opers, unsigned opers_len );
-extern char                 *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags, unsigned i, char *p, unsigned buff_len );
-extern void                 DisFini( dis_handle * );
-extern long                 DisSEX( unsigned long v, unsigned bit );
-extern size_t               DisGetString( size_t index, char *buff, bool to_upper );
-extern char                 *DisAddReg( dis_register reg, char *dst, dis_format_flags flags );
-
-/*
-        Client routines
-*/
-extern dis_return   DisCliGetData( void *d, unsigned off, unsigned size, void *data );
-extern unsigned     DisCliGetAlign( void *d, unsigned off, unsigned align );
-extern size_t       DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff, unsigned buff_len );
+extern dis_handler_return JVMSByte( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMSShort( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMUByte( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMUShort( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMNull( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMIInc( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMWIndex( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMWide( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMMultiANewArray( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMBrShort( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMBrInt( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMTableSwitch( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMLookupSwitch( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return JVMInterface( dis_handle *h, void *d, dis_dec_ins *ins );

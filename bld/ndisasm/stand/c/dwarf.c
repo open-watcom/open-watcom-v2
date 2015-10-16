@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "watcom.h"
+#include "dis.h"
 #include "global.h"
 #include "dwarf.h"
 #include "orl.h"

@@ -24,31 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  External disassembler routines.
+* Description:  Instruction decoding for Sun SPARC architecture.
 *
 ****************************************************************************/
 
 
-#include "distypex.h"
+extern const dis_range          SPARCRangeTable[];
+extern const int                SPARCRangeTablePos[];
+extern const unsigned char      SPARCMaxInsName;
 
-/*
-        Disassembler routines
-*/
-extern dis_return           DisInit( dis_cpu, dis_handle *, bool );
-extern unsigned             DisInsNameMax( dis_handle * );
-extern unsigned             DisInsSizeInc( dis_handle * );
-extern void                 DisDecodeInit( dis_handle *, dis_dec_ins * );
-extern dis_return           DisDecode( dis_handle *, void *, dis_dec_ins * );
-extern dis_return           DisFormat( dis_handle *, void *, dis_dec_ins *, dis_format_flags, char *ins, unsigned ins_len, char *opers, unsigned opers_len );
-extern char                 *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags, unsigned i, char *p, unsigned buff_len );
-extern void                 DisFini( dis_handle * );
-extern long                 DisSEX( unsigned long v, unsigned bit );
-extern size_t               DisGetString( size_t index, char *buff, bool to_upper );
-extern char                 *DisAddReg( dis_register reg, char *dst, dis_format_flags flags );
-
-/*
-        Client routines
-*/
-extern dis_return   DisCliGetData( void *d, unsigned off, unsigned size, void *data );
-extern unsigned     DisCliGetAlign( void *d, unsigned off, unsigned align );
-extern size_t       DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff, unsigned buff_len );
+extern dis_handler_return SPARCSetHi( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCBranch( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCCall( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCOp3( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCMem( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCFPop2( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCFPop3( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCMemF( dis_handle *h, void *d, dis_dec_ins *ins );
+extern dis_handler_return SPARCMemC( dis_handle *h, void *d, dis_dec_ins *ins );

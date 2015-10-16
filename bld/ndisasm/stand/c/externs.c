@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "dis.h"
 #include "global.h"
 #include "externs.h"
 #include "buffer.h"

@@ -32,8 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "main.h"
 #include "init.h"
 #include "fini.h"
