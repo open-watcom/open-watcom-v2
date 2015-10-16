@@ -32,22 +32,8 @@
 
 #ifndef PM1632_H
 #define PM1632_H
-#ifdef __FLAT__
-    #define PM1632WinQueryWindow( hwnd, query ) WinQueryWindow( hwnd, query )
-    #define PM1632WinQueryCapture( parm ) WinQueryCapture( parm )
-    #define PM1632WinQueryFocus( parm ) WinQueryFocus( parm )
-    #define PM1632SWP_FLAG( swp ) ( (swp).fl)
-    #define PM1632_WINDOW_MSG   ULONG
-    #define PM1632_BITMAPINFO2          BITMAPINFO2
-    #define PM1632_BITMAPINFOHEADER2    BITMAPINFOHEADER2
-    #define PM1632_RGB2                 RGB2
-    #define PM1632WinWindowFromPoint( hwnd, pt, bool ) WinWindowFromPoint( hwnd, pt, bool )
-    #define TPM_LEFTALIGN               0
-    #define TPM_LEFTBUTTON              PU_MOUSEBUTTON1
-    #define TPM_RIGHTBUTTON             PU_MOUSEBUTTON2
-    #define PM1632_APIRET               APIRET
-    #define PM1632_FILESIZETYPE         ULONG
-#else
+
+#ifdef _M_I86
     #define PM1632WinQueryWindow( hwnd, query ) WinQueryWindow( hwnd, query, 0 )
     #define PM1632WinQueryCapture( parm ) WinQueryCapture( parm, 0 )
     #define PM1632WinQueryFocus( parm ) WinQueryFocus( parm, 0 )
@@ -69,6 +55,21 @@
 // lets do it here
     #define CF_MMPMFIRST                10
     #define CF_MMPMLAST                 19
+#else
+    #define PM1632WinQueryWindow( hwnd, query ) WinQueryWindow( hwnd, query )
+    #define PM1632WinQueryCapture( parm ) WinQueryCapture( parm )
+    #define PM1632WinQueryFocus( parm ) WinQueryFocus( parm )
+    #define PM1632SWP_FLAG( swp ) ( (swp).fl)
+    #define PM1632_WINDOW_MSG   ULONG
+    #define PM1632_BITMAPINFO2          BITMAPINFO2
+    #define PM1632_BITMAPINFOHEADER2    BITMAPINFOHEADER2
+    #define PM1632_RGB2                 RGB2
+    #define PM1632WinWindowFromPoint( hwnd, pt, bool ) WinWindowFromPoint( hwnd, pt, bool )
+    #define TPM_LEFTALIGN               0
+    #define TPM_LEFTBUTTON              PU_MOUSEBUTTON1
+    #define TPM_RIGHTBUTTON             PU_MOUSEBUTTON2
+    #define PM1632_APIRET               APIRET
+    #define PM1632_FILESIZETYPE         ULONG
 #endif
 
 #define CALLBACK EXPENTRY
