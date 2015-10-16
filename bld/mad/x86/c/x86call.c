@@ -269,7 +269,7 @@ static int GetBPFromStack( address *where, address *value )
 }
 
 
-address GetFarAddr( address *return_location )
+static address GetFarAddr( address *return_location )
 {
     address addr;
 

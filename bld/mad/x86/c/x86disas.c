@@ -464,7 +464,7 @@ static dword RegValue( const mad_registers *mr, int idx )
     return( *reg & mask );
 }
 
-int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )
+static int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )
 {
     if( dd->ins.flags.u.x86 & DIF_X86_CS ) {
         return( DR_X86_cs );
@@ -491,7 +491,7 @@ int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )
     }
 }
 
-walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *wk, const mad_registers *mr, void *d )
+static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
     mad_type_handle     th;
     address             addr;
