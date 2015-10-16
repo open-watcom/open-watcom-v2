@@ -670,7 +670,10 @@ extern WPI_COLOUR _wpi_setbackcolour( WPI_PRES, WPI_COLOUR );
     #define _wpi_getbackcolour( pres ) GpiQueryBackColor( pres )
 
 extern BOOL _wpi_textout( WPI_PRES pres, int left, int top, LPCSTR text, ULONG
-                                                                        len );
+
+extern BOOL _wpi_exttextout( WPI_PRES pres, int left, int top, UINT options,
+                      WPI_RECT *rect, LPCSTR text, ULONG len, LPINT spacing )
+
     #define _wpi_getdeffm( fm ) memset( &fm, 0, sizeof( FONTMETRICS ) )
 
     #define _wpi_getfontattrs2( fm, attr ) \
