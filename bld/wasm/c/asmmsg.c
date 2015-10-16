@@ -29,17 +29,16 @@
 ****************************************************************************/
 
 
-#if defined( _STANDALONE_ )
-
 #include "asmglob.h"
 #include <stdarg.h>
 #include "directiv.h"
 #include "asminput.h"
 #include "fatal.h"
 #include "errout.h"
+#include "wompwasm.h"
+#include "standalo.h"
 
 void                    OpenErrFile( void );
-void                    print_include_file_nesting_structure( void );
 
 //    WngLvls[level] // warning levels associated with warning messages
 //    CompFlags.errout_redirected
@@ -258,4 +257,3 @@ void PrintStats( void )
 #endif
     fflush( stdout );                   /* 27-feb-90 for QNX */
 }
-#endif

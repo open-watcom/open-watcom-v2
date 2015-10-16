@@ -48,8 +48,6 @@ typedef enum if_state {
                                everything until we see an endif */
 } if_state;
 
-extern const asm_ins    ASMFAR *get_instruction( char *string );
-
 extern int          MacroExitState;
 
 static if_state     CurState = ACTIVE;

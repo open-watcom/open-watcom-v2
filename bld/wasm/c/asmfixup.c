@@ -33,7 +33,6 @@
 #include "asmglob.h"
 #include "asmalloc.h"
 #include "asmfixup.h"
-#include "fppatch.h"
 #if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "myassert.h"
@@ -51,15 +50,15 @@ struct asmfixup         *InsFixups[OPND_MAX];
 #if defined( _STANDALONE_ )
 
 static char *FPPatchName[] = {
-#define pick_fp(enum,name,alt_name) name,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) name,
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 static char *FPPatchAltName[] = {
-#define pick_fp(enum,name,alt_name) alt_name,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) alt_name,
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 void add_frame( void )

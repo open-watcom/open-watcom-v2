@@ -349,6 +349,7 @@ extern bool             EnumDef( token_idx );         // handles enumerated valu
 extern bool             Ret( token_idx, token_idx, bool ); // emit return statement from procedure
 extern bool             WritePrologue( const char * ); // emit prologue statement after the
                                                 // declaration of a procedure
+extern bool             GetQueueMacroHidden( void );
 extern bool             MacroDef( token_idx, bool );  // define a macro
 extern bool             MacroEnd( bool );       // end a macro
 extern bool             Startup( token_idx );         // handle .startup & .exit
@@ -366,6 +367,16 @@ extern void             ModuleFini( void );
 extern bool             ModuleEnd( token_idx );       // handle END statement
 
 extern bool             Locals( token_idx );          // handle [NO]LOCALS statement
+
+extern bool             ChangeCurrentLocation( bool relative, int_32 value, bool select_data );
+extern bool             OrgDirective( token_idx i );
+extern bool             AlignDirective( asm_token directive, token_idx i );
+extern bool             ForDirective( token_idx, irp_type );
+
+extern void             DefFlatGroup( void );
+extern bool             SymIs32( struct asm_sym *sym );
+
+extern bool             directive( token_idx, asm_token );
 
 extern void             ProcStackInit( void );
 extern void             ProcStackFini( void );
@@ -419,6 +430,7 @@ extern void             FlushCurrSeg( void );
 extern const FNAME      *AddFlist( char const *filename );
 extern void             OutSelect( bool );
 extern void             WriteObjModule( void );
+extern void             AddLinnumDataRef( void );
 
 /*---------------------------------------------------------------------------
  *   included from asmline.c

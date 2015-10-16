@@ -151,5 +151,6 @@ extern bool     cpu_directive( asm_token );
 extern bool     AsmParse( const char *curline );
 extern bool     NextArrayElement( bool *next );
 extern bool     data_init( token_idx, token_idx );
+extern bool     match_phase_1( void );
 
 #endif

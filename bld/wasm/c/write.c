@@ -49,6 +49,7 @@
 #include "asmfixup.h"
 #include "condasm.h"
 #include "myassert.h"
+#include "standalo.h"
 
 #include "clibext.h"
 
@@ -64,10 +65,7 @@
 
 #define MAX_REC_LENGTH 0xFFFEL
 
-extern void             set_cpu_parameters( void );
-extern void             set_fpu_parameters( void );
 extern void             CmdlParamsInit( void );
-extern void             PrintStats( void );
 
 extern symbol_queue     Tables[];       // tables of definitions
 extern unsigned         BufSize;
@@ -585,7 +583,7 @@ static void write_header( char *name )
     write_record( objr, true );
 }
 
-void get_frame( fixup *fixnode, struct asmfixup *fixup )
+static void get_frame( fixup *fixnode, struct asmfixup *fixup )
 /*************************************************************/
 {
     if( fixup->frame == NULL ) {

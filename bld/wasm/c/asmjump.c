@@ -36,13 +36,13 @@
   #include "directiv.h"
   #include "asminput.h"
 #endif
+#include "asmjump.h"
 
 /* prototypes */
 bool ptr_operator( memtype mem_type, bool fix_mem_type );
 
 #if defined( _STANDALONE_ )
 
-extern bool             SymIs32( struct asm_sym *sym );
 extern void             check_assume( struct asm_sym *sym, prefix_reg default_reg );
 extern void             find_frame( struct asm_sym *sym );
 

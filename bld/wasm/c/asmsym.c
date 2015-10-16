@@ -36,6 +36,7 @@
 #include "queues.h"
 #include "hash.h"
 #include "myassert.h"
+#include "asmstruc.h"
 #endif
 
 #include "clibext.h"
@@ -52,7 +53,6 @@ static char             dots[] = " . . . . . . . . . . . . . . . .";
 #ifdef DEBUG_OUT
 void    DumpASym( void );   /* Forward declaration */
 #endif
-extern asm_sym          *FindStructureMember( asm_sym *symbol , const char *name );
 
 #else
 
@@ -531,7 +531,7 @@ static struct asm_sym **SortAsmSyms( void )
     return( syms );
 }
 
-const char *get_seg_align( seg_info *seg )
+static const char *get_seg_align( seg_info *seg )
 /****************************************/
 {
     switch( seg->align ) {

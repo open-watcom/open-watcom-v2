@@ -40,6 +40,7 @@
 #include "asminput.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "standalo.h"
 
 #include "clibext.h"
 #include "pathgrp.h"

@@ -39,11 +39,10 @@
 #include "directiv.h"
 #include "asminput.h"
 #include "myassert.h"
+#include "macro.h"
 
 #include "clibext.h"
 
-
-extern bool             GetQueueMacroHidden( void );
 
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended

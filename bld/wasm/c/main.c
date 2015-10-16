@@ -48,6 +48,7 @@
     #include "ostype.h"
 #endif
 #include "directiv.h"
+#include "standalo.h"
 
 #include "clibext.h"
 #include "pathgrp.h"
@@ -55,7 +56,6 @@
 
 extern void             Fatal( unsigned msg, ... );
 extern void             DelErrFile( void );
-extern void             AsmBufferInit( void );
 
 File_Info               AsmFiles;       // files information
 pobj_state              pobjState;      // object file information for WOMP
@@ -1163,7 +1163,6 @@ static void do_init_stuff( char **cmdline )
     if( !MsgInit() )
         exit(1);
 
-    AsmBufferInit();
     add_constant( "WASM=" BANSTR( _BANVER ), true );
     ForceInclude = AsmStrDup( getenv( "FORCE" ) );
     do_envvar_cmdline( "WASM" );
@@ -1231,7 +1230,7 @@ int main( void )
     return( Options.error_count ); /* zero if no errors */
 }
 
-void set_cpu_parameters( void )
+static void set_cpu_parameters( void )
 /*****************************/
 {
     asm_token   token;
@@ -1266,7 +1265,7 @@ void set_cpu_parameters( void )
     cpu_directive( token );
 }
 
-void set_fpu_parameters( void )
+static void set_fpu_parameters( void )
 /*****************************/
 {
     asm_token   token;

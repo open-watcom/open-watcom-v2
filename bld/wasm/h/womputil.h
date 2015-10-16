@@ -35,5 +35,6 @@
 extern pobj_state       pobjState;
 
 extern void write_record( obj_rec *objr, bool kill );
+extern void ObjWriteError( void );
 
 #endif

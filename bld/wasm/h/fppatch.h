@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 typedef enum {
-#define pick_fp(enum,name,alt_name) enum,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) enum,
+    #include "fppatche.h"
+    #undef pick_fp
     FPP_NUMBER_OF_TYPES
 } fp_patches;
