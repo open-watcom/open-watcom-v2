@@ -61,7 +61,7 @@ static struct {
     unsigned_8          data[256];
 } Buff;
 
-unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
+static unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
 {
     unsigned long       bpos;
     unsigned long       npos = 0;
@@ -87,7 +87,7 @@ unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     return( Buff.fpos );
 }
 
-unsigned BRead( dig_fhandle h, void *b, unsigned s )
+static unsigned BRead( dig_fhandle h, void *b, unsigned s )
 {
     unsigned    got;
     unsigned    want;

@@ -33,16 +33,13 @@
 #include "dipwat.h"
 #include <ctype.h>
 #include "demangle.h"
+#include "watldsym.h"
+#include "watlcl.h"
+#include "watgbl.h"
+#include "watmod.h"
 
 #include "clibext.h"
 
-
-extern void             AddressMap( imp_image_handle *, addr_ptr * );
-extern section_info     *FindInfo( imp_image_handle *, imp_mod_handle );
-extern unsigned         ModOff2Idx(section_info *, unsigned);
-extern search_result    LookupLclAddr( imp_image_handle *, address, imp_sym_handle * );
-extern void             LocationCreate( location_list *, location_type, void * );
-extern void             SetGblLink( imp_sym_handle *, void * );
 
 static unsigned         GblNameOff;
 

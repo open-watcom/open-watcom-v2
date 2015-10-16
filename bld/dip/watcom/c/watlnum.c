@@ -32,6 +32,10 @@
 
 #include "dipwat.h"
 #include "dbcue.h"
+#include "wataddr.h"
+#include "watlcl.h"
+#include "watmod.h"
+#include "wattype.h"
 
 #define NO_LINE         ((unsigned_16)-1)
 
@@ -45,17 +49,6 @@ typedef union {
     v2_line_segment     v2;
     v3_line_segment     v3;
 } line_segment;
-
-extern void             *InfoLoad(imp_image_handle *, imp_mod_handle,unsigned,unsigned,void (*)());
-extern void             InfoUnlock(void);
-extern void             InfoSpecUnlock(void *);
-extern unsigned         InfoSize( imp_image_handle *, imp_mod_handle,unsigned int, unsigned );
-extern mem_block        FindSegBlock( imp_image_handle *, imp_mod_handle,unsigned long );
-extern mod_info         *ModPointer( imp_image_handle *, imp_mod_handle );
-extern unsigned         PrimaryCueFile( imp_image_handle *, imp_cue_handle *, char *, unsigned );
-extern void             *FindSpecCueTable( imp_image_handle *, imp_mod_handle, void ** );
-
-extern address          NilAddr;
 
 static line_segment     *LinStart;
 static line_segment     *LinEnd;

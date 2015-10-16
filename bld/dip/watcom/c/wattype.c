@@ -32,26 +32,11 @@
 #include "dipwat.h"
 #include "wattype.h"
 #include "walloca.h"
+#include "watlcl.h"
+#include "watgbl.h"
 
 #include "clibext.h"
 
-
-extern void             *InfoLoad(imp_image_handle *, imp_mod_handle, unsigned, unsigned, void (*)() );
-extern void             InfoSpecUnlock( void * );
-extern void             InfoSpecLock( void * );
-extern unsigned int     InfoSize(imp_image_handle *,imp_mod_handle,unsigned, unsigned );
-extern byte             *GetIndex( byte *, unsigned * );
-extern byte             *SkipLocation( loc_expr );
-extern location_info    InfoLocation( loc_expr );
-extern void             LocationAdd( location_list *, long );
-extern void             LocationTrunc( location_list *, unsigned );
-extern void             LocationCreate( location_list *, location_type, void * );
-extern dip_status       EvalLocation( imp_image_handle *, location_context *, loc_expr, location_list * );
-extern void             PushBaseLocation( location_list * );
-extern byte             *GetAddress( imp_image_handle *, byte *, address *, int );
-extern type_kind        GblTypeClassify( unsigned );
-extern dip_status       SymHdl2LclInfo( imp_image_handle *, imp_sym_handle *, sym_info * );
-extern search_result    LookupLclAddr( imp_image_handle *, address, imp_sym_handle * );
 
 #define NEXT_TYPE( p )  ((p) + *(p))
 

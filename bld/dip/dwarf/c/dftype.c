@@ -36,6 +36,7 @@
 #include "dfmodinf.h"
 #include "dfloc.h"
 #include "dfclean.h"
+#include "dftype.h"
 
 #include "clibext.h"
 

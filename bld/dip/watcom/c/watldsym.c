@@ -31,24 +31,12 @@
 
 
 #include "dipwat.h"
-
-
-extern void             InfoClear( imp_image_handle * );
-extern dip_status       MakeGblLst(section_info * );
-extern dip_status       InitDemand(imp_image_handle *);
-extern unsigned         GblSymSplit( info_block *, section_info * );
-extern void             GblSymFini(section_info *);
-extern unsigned         ModInfoSplit( info_block *, section_info * );
-extern void             ModInfoFini(section_info *);
-extern unsigned         AddrInfoSplit( info_block *, section_info * );
-extern void             AddrInfoFini(section_info *);
-extern dip_status       AdjustMods(section_info *,unsigned long );
-extern void             AdjustAddrInit( void );
-extern void             AdjustAddrs( section_info * );
-extern void             AdjustSyms( section_info * );
-extern void             SetModBase( imp_image_handle * );
-extern void             ClearTypeCache( imp_image_handle * );
-
+#include "wataddr.h"
+#include "watlcl.h"
+#include "watgbl.h"
+#include "wattype.h"
+#include "watmod.h"
+#include "watldsym.h"
 
 
 static void FreeInfBlks( info_block *blk )

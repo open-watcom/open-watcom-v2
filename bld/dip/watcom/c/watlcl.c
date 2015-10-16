@@ -30,31 +30,15 @@
 
 
 #include "dipwat.h"
+#include "wataddr.h"
+#include "watldsym.h"
+#include "watmod.h"
+#include "wattype.h"
+#include "watgbl.h"
 #include "watlcl.h"
 
 #include "clibext.h"
 
-
-extern void             *InfoLoad(imp_image_handle *, imp_mod_handle, unsigned, unsigned, void (*)() );
-extern void             InfoSpecUnlock( void * );
-extern unsigned int     InfoSize(imp_image_handle *,imp_mod_handle,unsigned, unsigned );
-extern address          FindModBase(imp_image_handle *, imp_mod_handle);
-extern void             AddressMap( imp_image_handle *, addr_ptr * );
-extern section_info     *FindInfo( imp_image_handle *, imp_mod_handle );
-extern byte             *SkipLocation( loc_expr );
-extern dip_status       EvalLocation( imp_image_handle *, location_context *, loc_expr, location_list * );
-extern walk_result      WalkTypeSymList( imp_image_handle *, imp_type_handle *, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern dip_status       FindTypeHandle( imp_image_handle *, imp_mod_handle, unsigned, imp_type_handle * );
-extern search_result    LookupTypeName( imp_image_handle *, imp_mod_handle, lookup_item *, imp_type_handle * );
-extern search_result    SearchMbr( imp_image_handle *, imp_type_handle *, lookup_item *, void * );
-extern void             LocationCreate( location_list *, location_type, void * );
-extern search_result    LookupGblAddr( imp_image_handle *, address, imp_sym_handle * );
-extern dip_status       SymHdl2GblInfo( imp_image_handle *, imp_sym_handle *, sym_info * );
-extern dip_status       Link2GblHdl( imp_image_handle *, void *, imp_sym_handle * );
-extern unsigned         RegSize( unsigned );
-
-
-extern address          NilAddr;
 
 typedef struct lclinfo {
     section_info        *inf;

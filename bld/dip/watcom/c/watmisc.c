@@ -35,46 +35,9 @@
 #endif
 #include "demangle.h"
 #include "walloca.h"
-
-
-extern void             InfoUnlock( void );
-extern dip_status       InfoRelease( void );
-extern void             FiniDemand( void );
-extern search_result    LookupLclAddr( imp_image_handle *, address, imp_sym_handle * );
-extern search_result    LookupGblAddr( imp_image_handle *, address, imp_sym_handle * );
-extern unsigned         SymHdl2CstName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2TypName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2MbrName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2GblName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2ObjGblName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2LclName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern dip_status       SymHdl2CstValue( imp_image_handle *, imp_sym_handle *, void * );
-extern dip_status       SymHdl2CstType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2TypType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2MbrType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2LclType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2GblType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2MbrLoc( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
-extern dip_status       SymHdl2LclLoc( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
-extern dip_status       SymHdl2GblLoc( imp_image_handle *, imp_sym_handle *, location_list * );
-extern dip_status       SymHdl2GblInfo( imp_image_handle *, imp_sym_handle *, sym_info * );
-extern dip_status       SymHdl2LclInfo( imp_image_handle *, imp_sym_handle *, sym_info * );
-extern dip_status       SymHdl2MbrInfo( imp_image_handle *, imp_sym_handle *, sym_info *, location_context *  );
-extern dip_status       SymHdl2LclParmLoc( imp_image_handle *, imp_sym_handle *, location_context *, location_list *, unsigned );
-extern search_result    SearchGbl( imp_image_handle *, imp_mod_handle, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchLclScope( imp_image_handle *, imp_mod_handle, address *, lookup_item *, void * );
-extern search_result    SearchLclMod( imp_image_handle *, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchEnumName( imp_image_handle *, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchTypeName( imp_image_handle *, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchMbr( imp_image_handle *, imp_type_handle *, lookup_item *, void * );
-extern dip_status       WalkLclModSymList( imp_image_handle *, imp_mod_handle, IMP_SYM_WKR *, imp_sym_handle *, void *, walk_result * );
-extern walk_result      WalkGblModSymList( imp_image_handle *, imp_mod_handle, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern walk_result      WalkScopedSymList( imp_image_handle *, address *, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern walk_result      WalkBlockSymList( imp_image_handle *, scope_block *, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern walk_result      WalkTypeSymList( imp_image_handle *, imp_type_handle *, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern void             KillLclLoadStack(void);
-extern void             KillTypeLoadStack(void);
-extern dip_status       Lcl2GblHdl( imp_image_handle *, imp_sym_handle *, imp_sym_handle * );
+#include "watlcl.h"
+#include "wattype.h"
+#include "watgbl.h"
 
 
 const char DIPImpName[] = "WATCOM";
@@ -258,7 +221,7 @@ static search_result SearchFileScope( imp_image_handle *ii,
     }
 }
 
-search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
+static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
                          void *source, lookup_item *li, location_context *lc, void *d )
 {
     imp_mod_handle      im;
@@ -455,7 +418,7 @@ typedef struct {
     void                *d;
 } sym_glue;
 
-walk_result WalkMySyms( imp_image_handle *ii,
+static walk_result WalkMySyms( imp_image_handle *ii,
                         imp_mod_handle im, void *d )
 {
     sym_glue    *wd = d;
@@ -465,7 +428,7 @@ walk_result WalkMySyms( imp_image_handle *ii,
     return( wr );
 }
 
-walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
+static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
                 void *t, IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;

@@ -35,8 +35,6 @@
 
 extern byte             *GetAddress( imp_image_handle *, byte *, address *, int );
 
-extern address          NilAddr;
-
 void LocationCreate( location_list *ll, location_type lt, void *d )
 {
     ll->num = 1;

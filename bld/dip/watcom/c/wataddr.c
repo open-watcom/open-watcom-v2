@@ -31,12 +31,10 @@
 
 
 #include "dipwat.h"
+#include "watmod.h"
+#include "watldsym.h"
+#include "wataddr.h"
 
-extern void             AddressMap( imp_image_handle *, addr_ptr * );
-extern unsigned         ModOff2Idx(section_info *, unsigned );
-extern section_info     *FindInfo( imp_image_handle *, imp_mod_handle );
-
-extern address          NilAddr;
 
 static unsigned         NonSectStart;
 static unsigned         NonSectEnd;
@@ -80,7 +78,7 @@ static struct {
  * AdjustAddrs -- adjust the addresses to reflect loader relocations
  */
 
-void AdjustAddrInit()
+void AdjustAddrInit( void )
 {
     NonSectStart = 0xffff;
     NonSectEnd = 0;

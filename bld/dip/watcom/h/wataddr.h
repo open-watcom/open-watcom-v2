@@ -24,47 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  Stub definitions to stop the C library from hauling in stuff
-*               we don't want.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#if defined(__NT__) || defined(__DOS__) || defined(__OS2__) || defined(__UNIX__)
-
-#include "clibsupp.h"
-
-#if defined( _M_IX86 )
-#if !defined( __NT__ )
-void __set_ERANGE() {};
-#endif
-
-#if defined( _M_I86 )
-void far __null_FPE_handler() {};
-void (*__FPE_handler)() = &__null_FPE_handler;
-#else
-void __FPE_exception( void );
-#pragma aux __FPE_exception "*_";
-void __FPE_exception() {};
-#endif
-
-/* WD looks for this symbol to determine module bitness */
-#if !defined( __NT__ )
-int __nullarea;
-#pragma aux __nullarea "*";
-#endif
-
-#elif defined(__AXP__)
-int DllMainCRTStartup()
-{
-    return( 1 );
-}
-#endif
-
-#endif
-
-#if defined( _M_IX86 )
-int fltused_;
-#elif defined(__AXP__)
-int _fltused_;
-#endif
+extern void                     AdjustAddrInit( void );
+extern void                     AdjustAddrs( section_info *inf );
+extern address                  FindModBase( imp_image_handle *ii, imp_mod_handle im );
+extern mem_block                FindSegBlock( imp_image_handle *ii, imp_mod_handle im,
+                                        unsigned long offset );
+extern unsigned                 AddrInfoSplit( info_block *curr, section_info *inf );
+extern void                     AddrInfoFini( section_info *inf );
+extern search_result DIGENTRY   DIPImpAddrMod( imp_image_handle *ii, address addr,
+                                        imp_mod_handle *imp );
+extern address DIGENTRY         DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im );

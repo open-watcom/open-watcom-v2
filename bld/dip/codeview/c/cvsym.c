@@ -1043,7 +1043,7 @@ static walk_result WalkAModule( imp_image_handle *ii,
     return( ScopeWalkFile( ii, cde->iMod, WalkGlue, d ) );
 }
 
-walk_result     DoWalkSymList( imp_image_handle *ii,
+static walk_result DoWalkSymList( imp_image_handle *ii,
                 symbol_source ss, void *source, IMP_SYM_WKR *wk,
                 imp_sym_handle *is, void *d )
 {
@@ -1736,7 +1736,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
 #define OPERATOR_TOKEN          "operator"
 #define DESTRUCTOR_TOKEN        "~"
 
-search_result   DoImpLookupSym( imp_image_handle *ii,
+static search_result   DoImpLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {

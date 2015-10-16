@@ -31,10 +31,10 @@
 
 #include "dipwat.h"
 #include <limits.h>
+#include "watlcl.h"
+#include "watmod.h"
+#include "watldsym.h"
 
-extern dip_status InfoRead(section_info *, unsigned long ,unsigned int ,void *);
-extern mod_info *ModPointer( imp_image_handle *, imp_mod_handle );
-extern section_info *FindInfo(imp_image_handle *, imp_mod_handle );
 
 /* WD looks for this symbol to determine module bitness */
 #if !defined( __WINDOWS__ )
@@ -102,7 +102,7 @@ struct walk_demand {
     unsigned long       max_size;
 };
 
-walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
+static walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
 {
     struct walk_demand  *wdd = d;
     unsigned long       size;
@@ -181,7 +181,7 @@ void FiniDemand( void )
     TimeStamp = 0;
 }
 
-walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
+static walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
 {
     unsigned            dmnd;
     mod_info            *mp;

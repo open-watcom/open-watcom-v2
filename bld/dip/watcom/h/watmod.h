@@ -24,47 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Stub definitions to stop the C library from hauling in stuff
-*               we don't want.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#if defined(__NT__) || defined(__DOS__) || defined(__OS2__) || defined(__UNIX__)
-
-#include "clibsupp.h"
-
-#if defined( _M_IX86 )
-#if !defined( __NT__ )
-void __set_ERANGE() {};
-#endif
-
-#if defined( _M_I86 )
-void far __null_FPE_handler() {};
-void (*__FPE_handler)() = &__null_FPE_handler;
-#else
-void __FPE_exception( void );
-#pragma aux __FPE_exception "*_";
-void __FPE_exception() {};
-#endif
-
-/* WD looks for this symbol to determine module bitness */
-#if !defined( __NT__ )
-int __nullarea;
-#pragma aux __nullarea "*";
-#endif
-
-#elif defined(__AXP__)
-int DllMainCRTStartup()
-{
-    return( 1 );
-}
-#endif
-
-#endif
-
-#if defined( _M_IX86 )
-int fltused_;
-#elif defined(__AXP__)
-int _fltused_;
-#endif
+extern section_info     *FindInfo( imp_image_handle *ii, imp_mod_handle im );
+extern mod_info         *ModPointer( imp_image_handle *ii, imp_mod_handle im );
+extern dip_status       AdjustMods( section_info *inf, unsigned long adjust );
+extern void             SetModBase( imp_image_handle *ii );
+extern void             ModInfoFini( section_info *inf );
+extern unsigned         ModInfoSplit( info_block *blk, section_info *inf );
+extern unsigned         ModOff2Idx( section_info *inf, unsigned off );
+extern walk_result      MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk,
+                                void *d );
+extern unsigned         PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                                char *buff, unsigned buff_size );
+extern walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
+                                void *d );
+extern char *DIGENTRY       DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im );
+extern dip_status DIGENTRY  DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
+                                handle_kind hk );
+extern unsigned DIGENTRY    DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
+                                char *buff, unsigned buff_size );

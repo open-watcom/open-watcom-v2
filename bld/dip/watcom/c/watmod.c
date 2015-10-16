@@ -31,6 +31,7 @@
 
 
 #include "dipwat.h"
+#include "watmod.h"
 
 #define MODINFO_SIZE(p) (sizeof( mod_info ) + (unsigned char)((mod_info *)(p))->name[0])
 

@@ -30,6 +30,7 @@
 
 
 #ifndef DBGLOC_INCLUDED
+#define DBGLOC_INCLUDED
 
 /* locations */
 
@@ -150,5 +151,14 @@ typedef union {
 
 typedef byte            *loc_expr;
 
-#define DBGLOC_INCLUDED
+extern void             LocationCreate( location_list *ll, location_type lt, void *d );
+extern void             LocationAdd( location_list *ll, long sbits );
+extern void             LocationTrunc( location_list *ll, unsigned bits );
+extern byte             *SkipLocation( loc_expr e );
+extern location_info    InfoLocation( loc_expr e );
+extern unsigned         RegSize( unsigned idx );
+extern void             PushBaseLocation( location_list *ll );
+extern dip_status       EvalLocation( imp_image_handle *ii, location_context *lc,
+                                loc_expr e, location_list *ll );
+
 #endif

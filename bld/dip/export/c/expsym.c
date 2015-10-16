@@ -43,7 +43,7 @@
 */
 
 
-walk_result     DoWalkSymList( imp_image_handle *ii,
+static walk_result     DoWalkSymList( imp_image_handle *ii,
                 symbol_source ss, void *source, IMP_SYM_WKR *wk,
                 imp_sym_handle *is, void *d )
 {
@@ -199,7 +199,7 @@ search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
 }
 
 
-search_result   DoLookupSym( imp_image_handle *ii,
+static search_result   DoLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {

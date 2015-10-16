@@ -36,6 +36,7 @@
 #include "dfaddsym.h"
 #include "dfsym.h"
 #include "dftype.h"
+#include "dfloc.h"
 
 
 dip_status SafeDCItemLocation( location_context *lc, context_item ci, location_list *ll ){

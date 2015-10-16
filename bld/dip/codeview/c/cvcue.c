@@ -324,7 +324,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
 
 #define NO_IDX  ((unsigned)-1)
 
-unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
+static unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
                         unsigned num_off,
                         addr_off  want_off,
                         addr_off *best_off,
@@ -375,7 +375,7 @@ unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
     return( hi_idx );
 }
 
-search_result SearchFile( imp_image_handle              *ii,
+static search_result SearchFile( imp_image_handle              *ii,
                           address                       addr,
                           imp_cue_handle                *ic,
                           virt_mem                      file_base,

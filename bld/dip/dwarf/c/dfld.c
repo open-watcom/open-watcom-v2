@@ -59,7 +59,7 @@ static char const * const SectionNames[DR_DEBUG_NUM_SECTS] = {
     ".WATCOM_references"
 };
 
-uint Lookup_section_name( const char *name )
+static uint Lookup_section_name( const char *name )
 /******************************************/
 {
     uint        sect;
