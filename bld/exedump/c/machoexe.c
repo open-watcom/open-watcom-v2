@@ -678,6 +678,7 @@ static void dmp_prog_sec( unsigned_32 start )
     }
 }
 
+#if 0
 bool Dmp_machlib_head( void )
 /***************************/
 {
@@ -720,11 +721,12 @@ bool Dmp_machlib_head( void )
     }
     return 1;
 }
+#endif
 
 /*
  * Dump the Mach-O command list.
  */
-void dmp_cmd_list( unsigned_32 start, int n )
+static void dmp_cmd_list( unsigned_32 start, int n )
 {
     int                         i;
     unsigned_32                 offset;

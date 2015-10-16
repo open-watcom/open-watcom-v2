@@ -262,8 +262,8 @@ static const_string_table regLocStrs[] =
 /*
  * dump_single_location_entry - dump a single location expression entry
  */
-unsigned_8 *dump_single_location_entry( unsigned_8 *buff )
-/********************************************************/
+static unsigned_8 *dump_single_location_entry( unsigned_8 *buff )
+/***************************************************************/
 {
     unsigned_8  type;
     addr32_ptr  *p32;
