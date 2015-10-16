@@ -33,3 +33,9 @@
 #include "msg.gh"
 
 #define MSG_LANG_SPACING    1000
+
+extern void    Fatal( int, char * );
+extern int     Msg_Init( void );
+extern int     Msg_Fini( void );
+extern void    Usage( void );
+extern void    Banner( void );
