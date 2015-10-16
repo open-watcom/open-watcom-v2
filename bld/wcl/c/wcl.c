@@ -282,8 +282,8 @@ static void killTmpEnv( char *env )
 }
 
 
-void print_banner( void )
-/***********************/
+static void print_banner( void )
+/******************************/
 {
     static int done;
 

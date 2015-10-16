@@ -414,7 +414,7 @@ void FindPath( const char *name, char *buf )
     }
 }
 
-int iswsOrOpt( char ch, char opt, char *Switch_Chars )
+static int iswsOrOpt( char ch, char opt, char *Switch_Chars )
 {
     if( ch == ' ' || ch == '\t' )
         return( 1 );

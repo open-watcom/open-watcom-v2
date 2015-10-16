@@ -322,7 +322,7 @@ static etool tools_f77_arch[TARGET_ARCH_COUNT] = {
     { BPRFX "wfcppc", BPRFX "wfcppc" EXE_EXT, NULL },   // ppc
 };
 
-void print_banner( void )
+static void print_banner( void )
 {
     static int  done;
 
@@ -369,7 +369,7 @@ static char *strfdup( const char *source )
     return( xlate_fname( MemStrDup( source ) ) );
 }
 
-void addccstring( char *string )
+static void addccstring( char *string )
 {
     char *op;
     int i;
@@ -387,7 +387,7 @@ void addccstring( char *string )
     CC_Opts[i+1] = NULL;
 }
 
-void addcclongopt( char *option, char *tail )
+static void addcclongopt( char *option, char *tail )
 {
     char    *op;
     size_t  len;
@@ -411,7 +411,7 @@ void addcclongopt( char *option, char *tail )
     MemFree( op );
 }
 
-void addccopt( char option, char *opt )
+static void addccopt( char option, char *opt )
 /*************************************/
 {
     char    *op;
@@ -473,6 +473,7 @@ static  FILE *OpenSpecsFile( void )
     return( specs );
 }
 
+#if 0
 /*static*/  int  ListSpecsFile( void )
 /************************************/
 {
@@ -496,6 +497,7 @@ static  FILE *OpenSpecsFile( void )
     fclose( specs );
     return( 0 );
 }
+#endif
 
 static  int  ConsultSpecsFile( const char *target )
 /*************************************************/
