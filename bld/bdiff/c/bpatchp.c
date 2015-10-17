@@ -51,10 +51,10 @@ PATCH_RET_CODE OpenNew( foff len )
 
 PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 {
-    foff        sum;
-    foff        off;
-    int         fd;
-    byte        *p;
+    foff            sum;
+    unsigned long   off;
+    int             fd;
+    byte            *p;
 
     *havenew = true;
     sum = 0;

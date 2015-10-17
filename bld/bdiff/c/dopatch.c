@@ -39,20 +39,11 @@
 #include "installp.h"
 
 #ifdef BDIFF
-    #define PatchName ""
-
-    #define OpenPatch()                 (pat=PatchFile,PATCH_RET_OKAY)
-    #define InPatch( type )             (tmp=pat,pat+=sizeof( type ),*(type *)tmp)
-    #define ClosePatch()
 
     #define InNew( offset )             (*(hole *)(dest+offset))
     #define OutNew( offset, x, type )   *(type *)(dest+(offset))=(x)
-
-    #define FindOld( name )             NULL
-    #define SetOld( name )              NULL
-    #define OpenOld( len, prompt, newsize, newsum ) PATCH_RET_OKAY
     #define InOld( offset )             OldFile[offset]
-    #define CloseOld( havenew, dobackup )
+    #define InPatch( type )             (tmp=pat,pat+=sizeof( type ),*(type *)tmp)
 
     #define Dump( x )
     #define DOPROMPT                    true
@@ -60,24 +51,7 @@
 
 #else  /* Not BDIFF */
 
-  #if defined(__386__)
-    #if defined(_WPATCH) || defined( INSTALL_PROGRAM )
-
-    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof( hole ) ), *(hole *)tmp )
-    #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
-
-    #else
-
-    #define OutNew( off, x, type )      *(type*)(NewFile+off) = (x);
-    #define InNew( off )                *(hole*)(NewFile+off)
-
-    #endif
-
-    #define Dump( x )
-    #define DOPROMPT                    true
-    #define DOBACKUP                    DoBackup
-
-  #elif defined(BDUMP)
+  #if defined(BDUMP)
 
     #define InNew( offset )             1
     #define OutNew( off, x, type )      //( x )
@@ -85,6 +59,23 @@
     #define Dump( x )                   printf x
     #define DOPROMPT                    false
     #define DOBACKUP                    false
+
+  #elif !defined( _M_I86 )
+    #if defined(_WPATCH) || defined( INSTALL_PROGRAM )
+
+    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof( hole ) ), *(hole *)tmp )
+    #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
+
+    #else
+
+    #define InNew( off )                *(hole*)(NewFile+off)
+    #define OutNew( off, x, type )      *(type*)(NewFile+off) = (x);
+
+    #endif
+
+    #define Dump( x )
+    #define DOPROMPT                    true
+    #define DOBACKUP                    DoBackup
 
   #else
 
@@ -101,13 +92,13 @@
 
 #endif
 
-static char CurrLevel[sizeof( PATCH_LEVEL )];
-
-#if defined( BDIFF )
+#ifdef BDIFF
 
 static byte     *pat;
 
 #else
+
+static char CurrLevel[sizeof( PATCH_LEVEL )];
 
 const char      *PatchName;
 const char      *NewName;
@@ -117,7 +108,7 @@ bool            PrintLevel;
 
 #endif
 
-#if !defined(BDIFF) && !defined(__386__) && !defined(BDUMP)
+#if defined( _M_I86 ) && !defined( BDIFF ) && !defined( BDUMP )
 
 /* Real mode version. Buffer up the holes and apply in sorted order */
 
@@ -130,7 +121,8 @@ static int         NumHoles;
 static save_hole   *HoleArray = NULL;
 static int         HoleArraySize;
 
-static PATCH_RET_CODE InitHoles( void )
+//static PATCH_RET_CODE InitHoles( void )
+PATCH_RET_CODE InitHoles( void )
 {
     NumHoles = 0;
     HoleArraySize = (64*1024L) / sizeof( save_hole ) - 1;
@@ -204,22 +196,24 @@ static void AddHole( foff offset, foff diff )
 
 #endif
 
+#ifndef BDIFF
 void GetLevel( const char *name )
 {
-    int         io;
+    int         fd;
     char        buffer[sizeof( PATCH_LEVEL )];
 
     CurrLevel[0] = '\0';
-    io = open( name, O_BINARY+O_RDONLY );
-    if( io == -1 )
+    fd = open( name, O_BINARY+O_RDONLY );
+    if( fd == -1 )
         return;
-    if( lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L &&
-        read( io, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) &&
+    if( lseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L &&
+        read( fd, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) &&
         memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
         strcpy( CurrLevel, buffer + PATCH_LEVEL_HEAD_SIZE );
     }
-    close( io );
+    close( fd );
 }
+#endif
 
 void FileCheck( int fd, const char *name )
 {
@@ -228,9 +222,9 @@ void FileCheck( int fd, const char *name )
     }
 }
 
-void SeekCheck( long pos, const char *name )
+void SeekCheck( unsigned long pos, const char *name )
 {
-    if( pos == -1 ) {
+    if( (long)pos == -1L ) {
         FilePatchError( ERR_IO_ERROR, name );
     }
 }
@@ -241,23 +235,31 @@ static PATCH_RET_CODE InitPatch( char **target_given )
     bool            compare_sig;
     char            target[FILENAME_MAX];
     char            ch;
-    char            *temp;
-    PATCH_RET_CODE  ret;
 #ifdef BDIFF
     byte            *tmp;
 #else
+    char            *temp;
+    PATCH_RET_CODE  ret;
     byte            tmp[4];
 #endif
+
+#ifdef BDIFF
+    target_given = target_given;
+    pat = PatchFile;
+#else
     ret = OpenPatch();
     if( ret != PATCH_RET_OKAY ) {
         return( ret );
     }
+#endif
     p = PATCH_SIGNATURE;
     compare_sig = true;
     while( (ch = InPatch( char )) != EOF_CHAR ) {
         if( compare_sig ) {
             if( ch != *p ) {
+#ifndef BDIFF
                 PatchError( ERR_NOT_PATCHFILE, PatchName );
+#endif
                 return( PATCH_RET_OKAY );
             }
             ++p;
@@ -269,12 +271,15 @@ static PATCH_RET_CODE InitPatch( char **target_given )
     p = target;
     while( (*p++ = InPatch( char )) != '\0' )
         ;
+#ifdef BDIFF
+    return( PATCH_RET_OKAY );
+#else
     if( (*target_given) != NULL ) {
         temp = SetOld( (*target_given) );
     } else {
         temp = FindOld( target );
     }
-    if( temp ) {
+    if( temp != NULL ) {
         *target_given = temp;
         return( PATCH_RET_OKAY );
     } else {
@@ -282,6 +287,7 @@ static PATCH_RET_CODE InitPatch( char **target_given )
         ClosePatch();
         return( PATCH_CANT_OPEN_FILE );
     }
+#endif
 }
 
 #ifdef BDIFF
@@ -312,27 +318,33 @@ PATCH_RET_CODE Execute( void )
     char            ch;
     bool            havenew;
     PATCH_RET_CODE  ret;
+#ifndef BDIFF
+#ifndef BDUMP
     PATCH_RET_CODE  ret2;
+#endif
+#endif
 #ifdef BDIFF
     char            *dummy = NULL;
-#endif
 
-    havenew = true;
-#ifdef BDIFF
     InitPatch( &dummy );
 #endif
+    havenew = true;
     old_size = InPatch( foff );
     new_size = InPatch( foff );
     checksum = InPatch( foff );
+#ifndef BDIFF
     ret = OpenOld( old_size, DOPROMPT, new_size, checksum );
     if( ret != PATCH_RET_OKAY )
         goto error1;
+#ifndef BDUMP
     ret = OpenNew( new_size );
     if( ret != PATCH_RET_OKAY )
         goto error2;
+#endif
+#endif
     InitHoles();
     for( ;; ) {
-#if defined( INSTALL_PROGRAM )
+#ifdef INSTALL_PROGRAM
     #if defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __OS2__ )
         if( PatchStatusCancelled() ) {
             ret = PATCH_RET_CANCEL;
@@ -403,7 +415,9 @@ PATCH_RET_CODE Execute( void )
             }
             break;
         default:
+#ifndef BDIFF
             PatchError( ERR_BAD_PATCHFILE, PatchName );
+#endif
             ret = PATCH_BAD_PATCH_FILE;
             goto error3;
         }
@@ -412,18 +426,22 @@ PATCH_RET_CODE Execute( void )
     FlushHoles();
 error3:
     FreeHoleArray();
+#ifndef BDIFF
+#ifndef BDUMP
     ret2 = CloseNew( new_size, checksum, &havenew );
     if( ret == PATCH_RET_OKAY ) {
         ret = ret2;
     }
 error2:
+#endif
     CloseOld( havenew && DOPROMPT, DOBACKUP );
 error1:
     ClosePatch();
+#endif
     return( ret );
 }
 
-#if !defined( BDIFF )
+#ifndef BDIFF
 
 PATCH_RET_CODE DoPatch(
     const char  *patchname,
@@ -450,7 +468,7 @@ PATCH_RET_CODE DoPatch(
         return( PATCH_CANT_FIND_PATCH );
     }
   #endif
-  #if !defined( INSTALL_PROGRAM )
+  #ifndef INSTALL_PROGRAM
     if( PrintLevel ) {
         GetLevel( PatchName );
         if( CurrLevel[0] == '\0' ) {
@@ -467,7 +485,7 @@ PATCH_RET_CODE DoPatch(
   #else
     ret = InitPatch( &outfilename );
   #endif
-  #if defined( INSTALL_PROGRAM )
+  #ifdef INSTALL_PROGRAM
     if( ret != PATCH_RET_OKAY ) {
         return( ret );
     }
@@ -480,7 +498,7 @@ PATCH_RET_CODE DoPatch(
     GetLevel( target );
     if( stricmp( buffer, CurrLevel ) <= 0 ) {
         ClosePatch();
-    #if !defined( INSTALL_PROGRAM )
+    #ifndef INSTALL_PROGRAM
         Message( MSG_ALREADY_PATCHED, target, CurrLevel );
     #endif
         return( PATCH_ALREADY_PATCHED );

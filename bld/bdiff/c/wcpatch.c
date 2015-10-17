@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include "wio.h"
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
@@ -291,16 +290,4 @@ void DirCmpFiles( const char *srcDir, char *srcFiles[],
             indexTgt += 1;
         }
     }
-}
-
-PATCH_RET_CODE OpenNew( foff len )
-{
-    len = len;
-    return( PATCH_RET_OKAY );
-}
-
-PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
-{
-    len = len; actual_sum = actual_sum; havenew = havenew;
-    return( PATCH_RET_OKAY );
 }

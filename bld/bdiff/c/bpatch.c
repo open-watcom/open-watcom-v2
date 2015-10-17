@@ -41,9 +41,9 @@ MY_FILE         NewFile;
 
 PATCH_RET_CODE OpenNew( foff len )
 {
-    int         handle;
-    char                        *name;
-    auto struct stat            statblk;
+    int                 fd;
+    char                *name;
+    auto struct stat    statblk;
 
     len = len;
     name = SetOld( NULL );
@@ -51,29 +51,29 @@ PATCH_RET_CODE OpenNew( foff len )
         PatchError( ERR_CANT_GET_ATTRIBUTES, name );
         return( PATCH_CANT_GET_ATTRIBUTES );
     }
-    handle = open(NewName, O_RDWR + O_BINARY + O_CREAT + O_TRUNC, statblk.st_mode);
-    FileCheck( handle, NewName );
-    MyOpen( &NewFile, handle, NewName );
+    fd = open( NewName, O_RDWR + O_BINARY + O_CREAT + O_TRUNC, statblk.st_mode);
+    FileCheck( fd, NewName );
+    MyOpen( &NewFile, fd, NewName );
     return( PATCH_RET_OKAY );
 }
 
 PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 {
-    foff        sum;
-    foff        actual_len;
-    foff        off;
-    byte        ch;
+    foff            sum;
+    unsigned long   actual_len;
+    foff            off;
+    byte            ch;
 
     *havenew = true;
     if( NewFile.dirty ) {
-        SeekCheck( lseek( NewFile.handle, NewFile.start, SEEK_SET ), NewName );
-        if( write(NewFile.handle, NewFile.buff, NewFile.len ) != NewFile.len ) {
+        SeekCheck( lseek( NewFile.fd, NewFile.start, SEEK_SET ), NewName );
+        if( write( NewFile.fd, NewFile.buff, NewFile.len ) != NewFile.len ) {
             MyClose( &NewFile );
             FilePatchError( ERR_CANT_WRITE, NewName );
             return( PATCH_CANT_WRITE );
         }
     }
-    actual_len = lseek( NewFile.handle, 0, SEEK_END );
+    actual_len = lseek( NewFile.fd, 0, SEEK_END );
     SeekCheck( actual_len, NewName );
     if( actual_len != len ) {
         MyClose( &NewFile );

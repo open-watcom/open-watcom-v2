@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if defined( BDIFF )
+#ifdef BDIFF
 extern byte     *PatchFile;
 #else
 extern FILE     *PatchFile;

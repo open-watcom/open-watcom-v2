@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if defined( BDIFF )
+#ifdef BDIFF
 extern byte             *OldFile;
 #else
 extern MY_FILE          OldFile;

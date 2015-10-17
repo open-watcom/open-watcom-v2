@@ -32,7 +32,7 @@
 
 #include "bdiff.h"
 #include <sys/stat.h>
-#if defined(__QNX__)
+#ifdef __QNX__
 #include <utime.h>
 #else
 #include <sys/utime.h>
@@ -52,9 +52,9 @@ void SameDate( const char *file, const char *as )
     }
 }
 
-void MyOpen( MY_FILE *file, int handle, const char *name )
+void MyOpen( MY_FILE *file, int fd, const char *name )
 {
-    file->handle = handle;
+    file->fd = fd;
     file->start = 0;
     file->len = 0;
     file->dirty = false;
@@ -64,29 +64,29 @@ void MyOpen( MY_FILE *file, int handle, const char *name )
 void MyClose( MY_FILE *file )
 {
     if( file->dirty ) {
-        SeekCheck( lseek( file->handle, file->start, SEEK_SET ), file->name );
-        if( write( file->handle, file->buff, file->len ) != (int)file->len ) {
+        SeekCheck( lseek( file->fd, file->start, SEEK_SET ), file->name );
+        if( write( file->fd, file->buff, file->len ) != (int)file->len ) {
             PatchError( ERR_CANT_WRITE, file->name );
         }
     }
-    close( file->handle );
+    close( file->fd );
 }
 
 void InBuffer( MY_FILE *file, foff off, size_t len, size_t eob )
 {
     if( off < file->start || off+len > file->start+eob ) {
         if( file->dirty ) {
-            SeekCheck(lseek( file->handle, file->start, SEEK_SET), file->name );
-            if( write( file->handle, file->buff, file->len ) != (int)file->len ) {
+            SeekCheck(lseek( file->fd, file->start, SEEK_SET), file->name );
+            if( write( file->fd, file->buff, file->len ) != (int)file->len ) {
                 PatchError( ERR_CANT_WRITE, file->name );
             }
         }
         if( ( off & ~(SECTOR_SIZE - 1) ) + BUFFER_SIZE > off + len ) {
             off &= ~(SECTOR_SIZE - 1);
         }
-        SeekCheck( lseek( file->handle, off, SEEK_SET ), file->name );
+        SeekCheck( lseek( file->fd, off, SEEK_SET ), file->name );
         file->start = off;
-        file->len = read( file->handle, file->buff, BUFFER_SIZE );
+        file->len = read( file->fd, file->buff, BUFFER_SIZE );
         file->dirty = false;
     }
 }

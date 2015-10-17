@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if !defined( __UNIX__ )
+#ifndef __UNIX__
 #include <conio.h>
 #include <process.h>
 #endif
@@ -42,13 +42,14 @@
 #include "bool.h"
 #include "wio.h"
 
+#include "watcom.h"
 #include "banner.h"
 #include "machtype.h"
 #include "patchsig.h"
 
-typedef unsigned long   foff;
-typedef signed long     foff_diff;
-typedef unsigned long   hole;
+typedef unsigned_32     foff;
+typedef signed_32       foff_diff;
+typedef unsigned_32     hole;
 
 #define IsHoleSize( x ) ( ( (x) & (sizeof( hole ) - 1) ) == 0 )
 
@@ -77,7 +78,7 @@ typedef enum {
 typedef struct {
         foff            start;
         unsigned        len;
-        int             handle;
+        int             fd;
         const char      *name;
         bool            dirty;
         char            buff[BUFFER_SIZE];

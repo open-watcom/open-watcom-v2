@@ -37,12 +37,10 @@
 #include <ctype.h>
 #include <process.h>
 #include <sys/types.h>
-#include "wio.h"
 #include "bdiff.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-#include "watcom.h"
 #include "msg.h"
 
 #include "clibext.h"

@@ -61,7 +61,7 @@ char *FindOld( const char *name )
 
     _splitpath( name, old_drive, old_dir, old_fname, old_ext );
     _makepath( temp, "", "", old_fname, old_ext );
-#if defined( INSTALL_PROGRAM )
+#ifdef INSTALL_PROGRAM
     if( SecondaryPatchSearch( name, oldName ) && oldName[0] == '\0' ) {
 #else
     if( oldName[0] == '\0' ) {
@@ -77,9 +77,9 @@ char *FindOld( const char *name )
 
 foff CheckSumOld( foff new_size )
 {
-    foff        off;
-    foff        sum;
-    byte        ch;
+    unsigned long   off;
+    foff            sum;
+    byte            ch;
 
     // Compute old checksum
     sum = 0;
@@ -92,15 +92,15 @@ foff CheckSumOld( foff new_size )
 
 PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
 {
-    int         handle;
-    foff        actual_len;
+    int             fd;
+    unsigned long   actual_len;
 
     prompt=prompt;
     _splitpath( NewName, NULL, NULL, new_fname, new_ext );
     _splitpath( oldName, old_drive, old_dir, old_fname, old_ext );
     _makepath( newName, old_drive, old_dir, new_fname, new_ext );
     NewName = newName;
-#if !defined( INSTALL_PROGRAM )
+#ifndef INSTALL_PROGRAM
     {
         char    temp[_MAX_PATH];
         char    msgbuf[MAX_RESOURCE_SIZE];
@@ -122,10 +122,10 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
         }
     }
 #endif
-    handle = open( oldName, O_RDONLY + O_BINARY, 0 );
-    FileCheck( handle, oldName );
-    MyOpen( &OldFile, handle, oldName );
-    actual_len = lseek( handle, 0, SEEK_END );
+    fd = open( oldName, O_RDONLY + O_BINARY, 0 );
+    FileCheck( fd, oldName );
+    MyOpen( &OldFile, fd, oldName );
+    actual_len = lseek( fd, 0, SEEK_END );
     SeekCheck( actual_len, oldName );
     if( actual_len != len
       && (actual_len + sizeof( PATCH_LEVEL )) != len
@@ -140,7 +140,7 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
         MyClose( &OldFile );
         return( PATCH_BAD_LENGTH );
     }
-    SeekCheck( lseek( handle, 0, SEEK_SET ), oldName );
+    SeekCheck( lseek( fd, 0, SEEK_SET ), oldName );
     return( PATCH_RET_OKAY );
 }
 

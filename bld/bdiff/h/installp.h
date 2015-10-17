@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined( INSTALL_PROGRAM )
+#ifdef INSTALL_PROGRAM
 extern bool     SecondaryPatchSearch( const char *name, char *path );
 extern bool     PatchStatusCancelled( void );
 extern void     PatchingFileStatusShow( const char *patchname, const char *filename );

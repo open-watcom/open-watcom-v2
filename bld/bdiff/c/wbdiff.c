@@ -33,8 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "wio.h"
-
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
@@ -43,7 +41,6 @@
 #include "patchio.h"
 #include "symtab.h"
 #include "msg.h"
-#include "watcom.h"
 
 #include "machtype.h"
 #ifdef USE_DBGINFO
@@ -226,9 +223,9 @@ void *ReadIn( const char *name, foff buff_size, foff read_size )
 
 foff FileSize( const char *name, int *correction )
 {
-    foff        size;
-    int         fd;
-    char        buff[sizeof( PATCH_LEVEL )];
+    unsigned long   size;
+    int             fd;
+    char            buff[sizeof( PATCH_LEVEL )];
 
     size = 0;
     if( access( name, R_OK ) != 0 ) {
@@ -614,7 +611,7 @@ void IOError( char *file )
 
 void xseek( int fd, fpos_t pos, int how )
 {
-    if( lseek( fd, pos, how ) < 0 ) {
+    if( lseek( fd, (long)pos, how ) < 0 ) {
         fatal( MSG_IO_ERR );
     }
 }
@@ -1435,9 +1432,9 @@ foff Sum( void )
 
 void CopyComment( void )
 {
-    int         fd;
-    foff        size;
-    char        *comment;
+    int             fd;
+    unsigned long   size;
+    char            *comment;
 
     if( CommentFile != NULL ) {
         fd = open( CommentFile, O_RDONLY | O_BINARY, 0 );
@@ -1568,7 +1565,7 @@ void ScanSyncString( void )
 
 int DoBdiff( const char *srcPath, const char *tgtPath, const char *name )
 {
-    long       savings;
+    long        savings;
     foff        buffsize;
     foff        best_from_new;
     int         i;

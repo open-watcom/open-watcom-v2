@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if !defined( BDIFF )
+#ifndef BDIFF
 extern const char       *PatchName;
 extern const char       *NewName;
 extern bool             DoPrompt;
@@ -39,7 +39,7 @@ extern bool             PrintLevel;
 
 extern void             GetLevel( const char *name );
 extern void             FileCheck( int fd, const char *name );
-extern void             SeekCheck( long pos, const char *name );
+extern void             SeekCheck( unsigned long pos, const char *name );
 #ifdef BDIFF
 extern PATCH_RET_CODE   Execute( byte *dest );
 #else

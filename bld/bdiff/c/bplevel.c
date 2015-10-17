@@ -45,7 +45,7 @@ void Usage( const char *name )
 
 void main( int argc, char **argv )
 {
-    int             io;
+    int             fd;
     unsigned long   pos;
     char            buffer[sizeof( PATCH_LEVEL )];
     static char     LevelBuff[] = PATCH_LEVEL;
@@ -56,24 +56,24 @@ void main( int argc, char **argv )
         Usage( argv[0] );
 
     stat( argv[1], &info );
-    io = open( argv[1], O_BINARY | O_RDWR );
-    if( io == -1 ) {
+    fd = open( argv[1], O_BINARY | O_RDWR );
+    if( fd == -1 ) {
         printf( "Can not open executable\n" );
         exit( EXIT_FAILURE );
     }
-    pos = lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END );
-    if( pos == (unsigned long)-1L  ) {
+    pos = lseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END );
+    if( pos == -1L  ) {
         printf( "Error seeking on executable\n" );
         exit( EXIT_FAILURE );
     }
-    if( read( io, buffer, sizeof( PATCH_LEVEL ) ) != sizeof( PATCH_LEVEL ) ||
+    if( read( fd, buffer, sizeof( PATCH_LEVEL ) ) != sizeof( PATCH_LEVEL ) ||
         memcmp( buffer, LevelBuff, PATCH_LEVEL_HEAD_SIZE ) != 0 ) {
         pos += sizeof( PATCH_LEVEL );
     }
-    lseek( io, pos, SEEK_SET );
+    lseek( fd, pos, SEEK_SET );
     _splitpath( argv[2], NULL, NULL, NULL, LevelBuff + PATCH_LEVEL_HEAD_SIZE );
-    write( io, LevelBuff, sizeof( LevelBuff ) );
-    close( io );
+    write( fd, LevelBuff, sizeof( LevelBuff ) );
+    close( fd );
     uinfo.actime = info.st_atime;
     uinfo.modtime = info.st_mtime;
     utime( argv[1], &uinfo );

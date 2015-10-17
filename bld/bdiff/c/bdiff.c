@@ -32,14 +32,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "wio.h"
 #include "bdiff.h"
 #include "newfile.h"
 #include "oldfile.h"
 #include "patchio.h"
 #include "msg.h"
 #include "symtab.h"
-#include "watcom.h"
 
 #include "machtype.h"
 #ifdef USE_DBGINFO
@@ -221,9 +219,9 @@ void *ReadIn( const char *name, foff buff_size, foff read_size )
 
 foff FileSize( const char *name, int *correction )
 {
-    foff        size;
-    int         fd;
-    char        buff[sizeof( PATCH_LEVEL )];
+    unsigned long   size;
+    int             fd;
+    char            buff[sizeof( PATCH_LEVEL )];
 
     size = 0;
     if( access( name, R_OK ) != 0 ) {
@@ -602,7 +600,7 @@ void IOError( char *file )
 
 void xseek( int fd, fpos_t pos, int how )
 {
-    if( lseek( fd, pos, how ) < 0 ) {
+    if( lseek( fd, (long)pos, how ) == -1L ) {
         fatal( MSG_IO_ERR );
     }
 }
@@ -1426,9 +1424,9 @@ foff Sum( void )
 
 void CopyComment( void )
 {
-    int         fd;
-    foff        size;
-    char        *comment;
+    int             fd;
+    unsigned long   size;
+    char            *comment;
 
     if( CommentFile != NULL ) {
         fd = open( CommentFile, O_RDONLY | O_BINARY, 0 );
@@ -1711,16 +1709,4 @@ void dump( void )
     for( reg = HoleRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx  %8lx\n",reg->old_start,reg->new_start,reg->diff);
     }
-}
-
-PATCH_RET_CODE OpenNew( foff len )
-{
-    len = len;
-    return( PATCH_RET_OKAY );
-}
-
-PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
-{
-    len = len; actual_sum = actual_sum; havenew = havenew;
-    return( PATCH_RET_OKAY );
 }

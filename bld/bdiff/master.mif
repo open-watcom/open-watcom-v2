@@ -120,7 +120,6 @@ __subdir__=bdump
 extra_cpp_bdump_flags = -DBDUMP
 
 bdump_objs = &
-    $+$(__subdir__)$-/bdump.obj &
     $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj &
     $+$(__subdir__)$-/myio.obj &
