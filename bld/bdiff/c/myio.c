@@ -37,8 +37,8 @@
 #else
 #include <sys/utime.h>
 #endif
-#include "msg.h"
 #include "myio.h"
+#include "msg.h"
 
 void SameDate( const char *file, const char *as )
 {
@@ -65,7 +65,7 @@ void MyClose( MY_FILE *file )
 {
     if( file->dirty ) {
         SeekCheck( lseek( file->handle, file->start, SEEK_SET ), file->name );
-        if( write( file->handle, file->buff, file->len ) != file->len ) {
+        if( write( file->handle, file->buff, file->len ) != (int)file->len ) {
             PatchError( ERR_CANT_WRITE, file->name );
         }
     }
@@ -77,12 +77,12 @@ void InBuffer( MY_FILE *file, foff off, size_t len, size_t eob )
     if( off < file->start || off+len > file->start+eob ) {
         if( file->dirty ) {
             SeekCheck(lseek( file->handle, file->start, SEEK_SET), file->name );
-            if( write( file->handle, file->buff, file->len ) != file->len ) {
+            if( write( file->handle, file->buff, file->len ) != (int)file->len ) {
                 PatchError( ERR_CANT_WRITE, file->name );
             }
         }
-        if( ( off & ~(SECTOR_SIZE-1) ) + BUFFER_SIZE > off + len ) {
-            off &= ~(SECTOR_SIZE-1);
+        if( ( off & ~(SECTOR_SIZE - 1) ) + BUFFER_SIZE > off + len ) {
+            off &= ~(SECTOR_SIZE - 1);
         }
         SeekCheck( lseek( file->handle, off, SEEK_SET ), file->name );
         file->start = off;
@@ -94,15 +94,15 @@ void InBuffer( MY_FILE *file, foff off, size_t len, size_t eob )
 void Input( MY_FILE *file, void *tmp, foff off, size_t len )
 {
     InBuffer( file, off, len, file->len );
-    memcpy( tmp, &file->buff[ off - file->start ], len );
+    memcpy( tmp, &file->buff[off - file->start], len );
 }
 
 void Output( MY_FILE *file, void *tmp, foff off, size_t len )
 {
     InBuffer( file, off, len, BUFFER_SIZE );
-    memcpy( &file->buff[ off - file->start ], tmp, len );
+    memcpy( &file->buff[off - file->start], tmp, len );
     if( file->len < off - file->start + len ) {
-        file->len = off-file->start+len;
+        file->len = (unsigned)( off - file->start + len );
     }
     file->dirty = true;
 }

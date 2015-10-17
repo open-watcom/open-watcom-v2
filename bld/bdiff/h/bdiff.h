@@ -46,11 +46,11 @@
 #include "machtype.h"
 #include "patchsig.h"
 
-typedef unsigned long foff;
-typedef signed long foff_diff;
-typedef unsigned long hole;
+typedef unsigned long   foff;
+typedef signed long     foff_diff;
+typedef unsigned long   hole;
 
-#define IsHoleSize( x ) ( ( (x) & (sizeof(hole)-1) ) == 0 )
+#define IsHoleSize( x ) ( ( (x) & (sizeof( hole ) - 1) ) == 0 )
 
 #define WORD_MAX        65535
 

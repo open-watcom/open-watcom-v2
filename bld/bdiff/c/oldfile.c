@@ -31,13 +31,12 @@
 
 
 #include "bdiff.h"
-#include "msg.h"
 #include "oldfile.h"
 #include "myio.h"
 #include "msg.h"
 #include "installp.h"
 
-MY_FILE OldFile;
+MY_FILE         OldFile;
 
 static char     newName[_MAX_PATH];
 static char     new_fname[_MAX_FNAME];
@@ -80,14 +79,12 @@ foff CheckSumOld( foff new_size )
 {
     foff        off;
     foff        sum;
-    char        ch;
+    byte        ch;
 
     // Compute old checksum
-    off = 0;
     sum = 0;
-    while( off != new_size ) {
+    for( off = 0; off < new_size; ++off ) {
         Input( &OldFile, &ch, off, 1 );
-        ++off;
         sum += ch;
     }
     return( sum );

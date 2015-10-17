@@ -47,12 +47,13 @@ void main( int argc, char **argv )
 {
     int             io;
     unsigned long   pos;
-    char            buffer[ sizeof( PATCH_LEVEL ) ];
+    char            buffer[sizeof( PATCH_LEVEL )];
     static char     LevelBuff[] = PATCH_LEVEL;
     struct stat     info;
     struct utimbuf  uinfo;
 
-    if( argc != 3 ) Usage( argv[0] );
+    if( argc != 3 )
+        Usage( argv[0] );
 
     stat( argv[1], &info );
     io = open( argv[1], O_BINARY | O_RDWR );
@@ -70,7 +71,7 @@ void main( int argc, char **argv )
         pos += sizeof( PATCH_LEVEL );
     }
     lseek( io, pos, SEEK_SET );
-    _splitpath( argv[2], NULL, NULL, NULL, LevelBuff+PATCH_LEVEL_HEAD_SIZE );
+    _splitpath( argv[2], NULL, NULL, NULL, LevelBuff + PATCH_LEVEL_HEAD_SIZE );
     write( io, LevelBuff, sizeof( LevelBuff ) );
     close( io );
     uinfo.actime = info.st_atime;

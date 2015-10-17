@@ -38,3 +38,5 @@ extern void MsgPrintf( int resourceid, va_list arglist );
 extern void Message( int format, ... );
 extern void PatchError( int format, ... );
 extern void FilePatchError( int format, ... );
+extern void IOError( char *file );
+extern void Fatal( int format, ... );

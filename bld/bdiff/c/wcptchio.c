@@ -60,7 +60,7 @@ void PatchReadOpen( const char *patch_name )
 {
     PatchName = patch_name;
     PatchF = fopen ( patch_name, "rb" );
-    if ( PatchF == NULL ) {
+    if( PatchF == NULL ) {
         FilePatchError( ERR_CANT_OPEN, patch_name );
     }
 }
@@ -77,15 +77,15 @@ void PatchReadClose( void )
 
 void PatchWriteFile( short flag, const char *RelPath )
 {
-    fwrite( &flag, sizeof(short), 1, PatchF );
+    fwrite( &flag, sizeof( short ), 1, PatchF );
     fputs( RelPath, PatchF );
     fputc( '\n', PatchF );
 }
 
 void PatchReadFile( short *Pflag, char *RelPath )
 {
-    fread( Pflag, sizeof(short), 1, PatchF );
-    if (feof( PatchF)) {
+    fread( Pflag, sizeof( short ), 1, PatchF );
+    if( feof( PatchF ) ) {
         *Pflag = PATCH_EOF;
         return;
     }
@@ -98,18 +98,19 @@ void PatchAddFile( const char *path )
 {
     FILE *inF;
     struct stat filestats;
-    char filechar;
+    int ch;
 
     inF = fopen( path, "rb" );
-    if ( fstat( fileno( inF ), &filestats ) == -1 ) {
+    if( fstat( fileno( inF ), &filestats ) == -1 ) {
         printf( "Error opening file %s.\n", path );
         exit( -1 );
     }
-    fwrite( &filestats.st_size, sizeof(off_t), 1, PatchF );
+    fwrite( &filestats.st_size, sizeof( off_t ), 1, PatchF );
     for( ;; ) {
-        filechar = fgetc( inF );
-        if (feof( inF )) break;
-        fputc( filechar, PatchF );
+        ch = fgetc( inF );
+        if( feof( inF ) )
+            break;
+        fputc( ch, PatchF );
     }
     fclose( inF );
 }
@@ -117,21 +118,19 @@ void PatchAddFile( const char *path )
 void PatchGetFile( const char *path )
 {
     FILE *outF;
-    char filechar;
-    off_t filesize;
+    int ch;
+    off_t fsize;
     off_t count;
 
     outF = fopen( path, "rb" );
-    if ( outF == NULL ) {
+    if( outF == NULL ) {
         printf( "Error opening file %s.\n", path );
         exit( -1 );
     }
-    fread( &filesize, sizeof(off_t), 1, PatchF );
-    count = filesize;
-    while ( count > 0 ) {
-        filechar = fgetc( PatchF );
-        fputc( filechar, outF );
-        count -= 1;
+    fread( &fsize, sizeof( off_t ), 1, PatchF );
+    for( count = fsize; count > 0; --count ) {
+        ch = fgetc( PatchF );
+        fputc( ch, outF );
     }
     fclose( outF );
 }

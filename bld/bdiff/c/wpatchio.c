@@ -49,7 +49,7 @@ void PatchReadOpen( const char *patch_name )
 {
     PatchName = patch_name;
     PatchF = fopen ( patch_name, "rb" );
-    if ( PatchF == NULL ) {
+    if( PatchF == NULL ) {
         FilePatchError( ERR_CANT_OPEN, patch_name );
     }
 }
@@ -60,8 +60,8 @@ void PatchReadClose( void ) {
 
 void PatchReadFile( short *Pflag, char *RelPath )
 {
-    fread( Pflag, sizeof(short), 1, PatchF );
-    if (feof( PatchF)) {
+    fread( Pflag, sizeof( short ), 1, PatchF );
+    if( feof( PatchF ) ) {
         *Pflag = PATCH_EOF;
         return;
     }
@@ -72,21 +72,19 @@ void PatchReadFile( short *Pflag, char *RelPath )
 
 void PatchGetFile( const char *path ) {
     FILE *outF;
-    char filechar;
-    off_t filesize;
+    int ch;
+    off_t fsize;
     off_t count;
 
     outF = fopen( path, "wb" );
-    if ( outF == NULL ) {
+    if( outF == NULL ) {
         printf( "Error opening file %s.\n", path );
         exit( -1 );
     }
-    fread( &filesize, sizeof(off_t), 1, PatchF );
-    count = filesize;
-    while ( count > 0 ) {
-        filechar = fgetc( PatchF );
-        fputc( filechar, outF );
-        count -= 1;
+    fread( &fsize, sizeof( off_t ), 1, PatchF );
+    for( count = fsize; count > 0; --count ) {
+        ch = fgetc( PatchF );
+        fputc( ch, outF );
     }
     fclose( outF );
 }
@@ -94,7 +92,7 @@ void PatchGetFile( const char *path ) {
 
 PATCH_RET_CODE OpenPatch()
 {
-//    fread( &PatchSize, sizeof(short), 1, PatchF );
+//    fread( &PatchSize, sizeof( short ), 1, PatchF );
     return( PATCH_RET_OKAY );
 }
 

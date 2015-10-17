@@ -51,7 +51,7 @@ PATCH_RET_CODE OpenNew( foff len )
         PatchError( ERR_CANT_GET_ATTRIBUTES, name );
         return( PATCH_CANT_GET_ATTRIBUTES );
     }
-    handle = open(NewName, O_RDWR+O_BINARY+O_CREAT+O_TRUNC, statblk.st_mode);
+    handle = open(NewName, O_RDWR + O_BINARY + O_CREAT + O_TRUNC, statblk.st_mode);
     FileCheck( handle, NewName );
     MyOpen( &NewFile, handle, NewName );
     return( PATCH_RET_OKAY );
@@ -62,7 +62,7 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
     foff        sum;
     foff        actual_len;
     foff        off;
-    char        ch;
+    byte        ch;
 
     *havenew = true;
     if( NewFile.dirty ) {
@@ -80,11 +80,9 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
         PatchError( ERR_WRONG_SIZE, NewName, actual_len, len );
         return( PATCH_BAD_LENGTH );
     }
-    off = 0;
     sum = 0;
-    while( off != len ) {
+    for( off = 0; off < len; ++off ) {
         Input( &NewFile, &ch, off, 1 );
-        ++off;
         sum += ch;
     }
     MyClose( &NewFile );

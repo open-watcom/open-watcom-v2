@@ -54,16 +54,13 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
     foff        sum;
     foff        off;
     int         fd;
-    char        *p;
+    byte        *p;
 
     *havenew = true;
-    off = 0;
     sum = 0;
     p = NewFile;
-    while( off != len ) {
-        sum += *p;
-        ++p;
-        ++off;
+    for( off = 0; off < len; ++off ) {
+        sum += *p++;
     }
     if( sum != actual_sum ) {
         *havenew = false;
@@ -76,7 +73,7 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
             return( PATCH_BAD_CHECKSUM );
         }
     }
-    fd = open( NewName, O_BINARY+O_WRONLY+O_CREAT+O_TRUNC, S_IRWXU );
+    fd = open( NewName, O_BINARY + O_WRONLY + O_CREAT + O_TRUNC, S_IRWXU );
     FileCheck( fd, NewName );
     if( write( fd, NewFile, len ) != len ) {
         *havenew = false;

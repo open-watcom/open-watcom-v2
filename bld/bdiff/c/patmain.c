@@ -30,6 +30,7 @@
 
 
 #include "bdiff.h"
+#include "wpatchio.h"
 #include "msg.h"
 
 
@@ -59,7 +60,8 @@ void Usage( const char *name )
     printf( "\n" );
     for( i = i + 1; i <= MSG_USAGE_LAST; i++ ) {
         GetMsg( msgbuf, i );
-        if( msgbuf[ 0 ] == 0 ) break;
+        if( msgbuf[0] == 0 )
+            break;
         printf( "\n" );
         printf( msgbuf );
     }
@@ -76,11 +78,13 @@ void main( int argc, char **argv )
     bool        printlevel = false;
     char        *patchname = NULL;
 
-    if( !MsgInit() ) exit( EXIT_FAILURE );
-    if( argc < 2 ) Usage( argv[0] );
-    for( i = 1; argv[ i ] != NULL; ++i ) {
-        if( argv[ i ][ 0 ] == '-' ) {
-            switch( tolower( argv[ i ][ 1 ] ) ) {
+    if( !MsgInit() )
+        exit( EXIT_FAILURE );
+    if( argc < 2 )
+        Usage( argv[0] );
+    for( i = 1; argv[i] != NULL; ++i ) {
+        if( argv[i][0] == '-' ) {
+            switch( tolower( argv[i][1] ) ) {
             case 'p':
                 doprompt = false;
                 break;
@@ -95,11 +99,11 @@ void main( int argc, char **argv )
                 printlevel = true;
                 break;
             default:
-                Usage( argv[ 0 ] );
+                Usage( argv[0] );
                 break;
             }
-        } else if( argv[ i ][ 0 ] == '?' ) {
-            Usage( argv[ 0 ] );
+        } else if( argv[i][0] == '?' ) {
+            Usage( argv[0] );
         } else {
             if( patchname != NULL ) {
                 if( doprompt ) {
@@ -107,7 +111,7 @@ void main( int argc, char **argv )
                 }
                 PatchError( ERR_TWO_NAMES );
             }
-            patchname = argv[ i ];
+            patchname = argv[i];
         }
     }
     PrintBanner();

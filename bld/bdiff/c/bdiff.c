@@ -34,10 +34,10 @@
 #include <string.h>
 #include "wio.h"
 #include "bdiff.h"
-#include "msg.h"
 #include "newfile.h"
 #include "oldfile.h"
 #include "patchio.h"
+#include "msg.h"
 #include "symtab.h"
 #include "watcom.h"
 
@@ -94,8 +94,8 @@ char ext[_MAX_EXT];
 
 char buff[BUFF_SIZE];
 
-char *OldSymName;
-char *NewSymName;
+char    *OldSymName;
+char    *NewSymName;
 
 //exe_info old;
 //exe_info new;
@@ -105,7 +105,6 @@ foff    PatchSize;
 byte    *OldFile;
 byte    *NewFile;
 bool    AppendPatchLevel;
-char    *SyncString = NULL;
 
 #define MAX_DIFF        (1L<<17)
 #define MIN_DIFF        (1L<<7)
@@ -124,34 +123,35 @@ typedef struct region {
     int                 dependants;
 } region;
 
-static region   *SimilarRegions = NULL;
-static region   *DiffRegions = NULL;
-static region   *HoleRegions = NULL;
-static region  *HoleArray;
-static foff     SimilarSize = 0;
-static foff     NumHoles = 0;
-static foff     NumDiffs = 0;
-static foff     DiffSize = 0;
-static foff     HolesInRegion = 0;
-static foff     NumSimilarities = 0;
-static foff     HoleCount[3] = { 0, 0, 0 };
-static foff     HoleHeaders = 0;
+static const char   *SyncString = NULL;
+static region       *SimilarRegions = NULL;
+static region       *DiffRegions = NULL;
+static region       *HoleRegions = NULL;
+static region       *HoleArray;
+static foff         SimilarSize = 0;
+static foff         NumHoles = 0;
+static foff         NumDiffs = 0;
+static foff         DiffSize = 0;
+static foff         HolesInRegion = 0;
+static foff         NumSimilarities = 0;
+static foff         HoleCount[3] = { 0, 0, 0 };
+static foff         HoleHeaders = 0;
 
-static byte *OldCurr;
-static byte *NewCurr;
-static byte *TestOld;
-static byte *TestNew;
-static byte *SaveOld;
-static byte *SaveNew;
-static foff EndOld;
-static int  OldCorrection;
-static foff EndNew;
-static int  NewCorrection;
-static byte *CurrPatch;
-static bool Verbose;
-static char *newName;
-static char *CommentFile;
-static char LevelBuff[64];
+static byte         *OldCurr;
+static byte         *NewCurr;
+static byte         *TestOld;
+static byte         *TestNew;
+static byte         *SaveOld;
+static byte         *SaveNew;
+static foff         EndOld;
+static int          OldCorrection;
+static foff         EndNew;
+static int          NewCorrection;
+static byte         *CurrPatch;
+static bool         Verbose;
+static char         *newName;
+static char         *CommentFile;
+static char         LevelBuff[64];
 
 static foff SyncOld = (foff)-1;
 static foff SyncNew = (foff)-1;
@@ -195,7 +195,8 @@ void Usage( const char *name )
     printf( msgbuf, name );
     for( i = i + 1; i <= MSG_USAGE_LAST; i++ ) {
         GetMsg( msgbuf, i );
-        if( msgbuf[0] == 0 ) break;
+        if( msgbuf[0] == '\0' )
+            break;
         puts( msgbuf );
     }
     MsgFini();
@@ -209,7 +210,7 @@ void *ReadIn( const char *name, foff buff_size, foff read_size )
 
     buff = bdiff_malloc( buff_size );
     NotNull( buff, "file buffer" );
-    fd = open( name, O_RDONLY+O_BINARY, 0 );
+    fd = open( name, O_RDONLY + O_BINARY, 0 );
     FileCheck( fd, name );
     if( read( fd, buff, read_size ) != read_size ) {
         FilePatchError( ERR_CANT_READ, name );
@@ -222,13 +223,13 @@ foff FileSize( const char *name, int *correction )
 {
     foff        size;
     int         fd;
-    char        buff[ sizeof( PATCH_LEVEL ) ];
+    char        buff[sizeof( PATCH_LEVEL )];
 
     size = 0;
     if( access( name, R_OK ) != 0 ) {
         PatchError( ERR_CANT_FIND, name );
     } else {
-        fd = open( name, O_RDONLY+O_BINARY, 0 );
+        fd = open( name, O_RDONLY + O_BINARY, 0 );
         FileCheck( fd, name );
         size = lseek( fd, 0, SEEK_END );
         SeekCheck( size, name );
@@ -287,7 +288,8 @@ void AddSimilar( foff old_start, foff new_start, foff size )
 
 void AddDiff( foff new_start, foff size )
 {
-    if( size == 0 ) return;
+    if( size == 0 )
+        return;
     DiffSize += size;
     if( DiffRegions ) {
         foff last_new;
@@ -299,14 +301,14 @@ void AddDiff( foff new_start, foff size )
         }
     }
     NumDiffs++;
-    AddRegion( &DiffRegions, -1, new_start, size );
+    AddRegion( &DiffRegions, (foff)-1, new_start, size );
 }
 
 
 void AddSimilarDiff( foff old_start, foff new_start, foff size )
 {
     if( SimilarRegions != NULL ) {
-        if( old_start+size < EndOld || new_start+size < EndNew ) {
+        if( old_start + size < EndOld || new_start + size < EndNew ) {
             if( SimilarRegions->new_start >= ( new_start + size ) ) {
                 AddDiff( new_start + size,
                      SimilarRegions->new_start - ( new_start + size ) );
@@ -335,6 +337,12 @@ void AddHole( foff old_start, foff new_start )
  * =====================================================================
  */
 
+#define _Check()               (*TestOld == *TestNew)
+#define _CheckHole( count )    (TestOld[count * sizeof( hole )] == TestNew[count * sizeof( hole )])
+
+#define _Next()                 ++TestOld;++TestNew
+#define _NextHole( count )      TestOld += count * sizeof( hole );TestNew += count * sizeof( hole )
+
 int TheSameIgnoringHoles( void )
 {
     int         i;
@@ -343,42 +351,30 @@ int TheSameIgnoringHoles( void )
 
     /* sync two file pointers up to an identical byte */
 
-    for( i = 0; ; ++i ) {
-        if( i == sizeof(hole)+1 ) {
-            return( 0 );
-        }
-        if( *TestOld == *TestNew ) {
-            break;
-        }
-        ++TestOld;
-        ++TestNew;
-    }
-
-    /* find out if TestOld and TestNew are similar for length MIN_EQUALITY */
-
-    end_old = TestOld + MIN_EQUALITY;
-    end_new = TestNew + MIN_EQUALITY;
-    for(;;) {
-        if( TestOld >= end_old ) return( 1 );
-        if( TestNew >= end_new ) return( 1 );
-        if( *TestOld != *TestNew ) {
-            if( TestOld[sizeof(hole)] != TestNew[sizeof(hole)] ) {
-                if( TestOld[2*sizeof(hole)] != TestNew[2*sizeof(hole)] ) {
-                    if( TestOld[3*sizeof(hole)] != TestNew[3*sizeof(hole)] ) {
-                        return( 0 );
-                    }
-                    TestOld += sizeof(hole);
-                    TestNew += sizeof(hole);
+    for( i = 0; i < sizeof( hole ) + 1; ++i ) {
+        if( _Check() ) {
+            /* find out if TestOld and TestNew are similar for length MIN_EQUALITY */
+        
+            end_old = TestOld + MIN_EQUALITY;
+            end_new = TestNew + MIN_EQUALITY;
+            for( ; TestOld < end_old && TestNew < end_new; ) {
+                if( _Check() ) {
+                    _Next();
+                } else if( _CheckHole( 1 ) ) {
+                    _NextHole( 1 );
+                } else if( _CheckHole( 2 ) ) {
+                    _NextHole( 2 );
+                } else if( _CheckHole( 3 ) ) {
+                    _NextHole( 3 );
+                } else {
+                    return( 0 );
                 }
-                TestOld += sizeof(hole);
-                TestNew += sizeof(hole);
             }
-            TestOld += sizeof(hole)-1;
-            TestNew += sizeof(hole)-1;
+            return( 1 );
         }
-        ++TestOld;
-        ++TestNew;
+        _Next();
     }
+    return( 0 );
 }
 
 int AreasAreSimilar( foff_diff adjust, foff_diff backup_amt )
@@ -392,51 +388,54 @@ int AreasAreSimilar( foff_diff adjust, foff_diff backup_amt )
      * NewCurr by adjust (the shift between the two areas)
      */
 
-#define AddAndCheck( size ) if( TestOld + size >= OldCurr ) break; \
-                            if( TestNew + size >= NewCurr ) break; \
-                            TestOld += size;    \
-                            TestNew += size;
+#define _AddAndCheck() \
+    if( TestOld + 1 >= OldCurr ) break; \
+    if( TestNew + 1 >= NewCurr ) break; \
+    _Next();
 
+#define _AddAndCheckHole( count ) \
+    if( TestOld + count * sizeof( hole ) >= OldCurr ) break; \
+    if( TestNew + count * sizeof( hole ) >= NewCurr ) break; \
+    _NextHole( count );
 
     /* check boundary conditions */
 
-    if( OldCurr < OldFile + backup_amt ) return( 0 );
-    if( NewCurr < NewFile + backup_amt ) return( 0 );
+    if( OldCurr < OldFile + backup_amt )
+        return( 0 );
+    if( NewCurr < NewFile + backup_amt )
+        return( 0 );
     TestOld = OldCurr - backup_amt;
     TestNew = NewCurr - backup_amt;
     TestNew -= adjust;
-    if( TestOld < OldFile || TestOld >= OldCurr ) return( 0 );
-    if( TestNew < NewFile || TestNew >= NewCurr ) return( 0 );
+    if( TestOld < OldFile || TestOld >= OldCurr )
+        return( 0 );
+    if( TestNew < NewFile || TestNew >= NewCurr )
+        return( 0 );
     if( TheSameIgnoringHoles() ) {
-
-        if( TestOld >= OldCurr ) return( 0 );
-        if( TestNew >= NewCurr ) return( 0 );
+        if( TestOld >= OldCurr )
+            return( 0 );
+        if( TestNew >= NewCurr )
+            return( 0 );
 
         lastold = TestOld;
         lastnew = TestNew;
 
         /* Move forward as long as two files are similar */
 
-        for(;;) {
-            if( *TestOld == *TestNew ) {
+        for( ;; ) {
+            if( _Check() ) {
                 lastold = TestOld;
                 lastnew = TestNew;
-                AddAndCheck( 1 );
-                continue;
+                _AddAndCheck();
+            } else if( _CheckHole( 1 ) ) {
+                _AddAndCheckHole( 1 );
+            } else if( _CheckHole( 2 ) ) {
+                _AddAndCheckHole( 2 );
+            } else if( _CheckHole( 3 ) ) {
+                _AddAndCheckHole( 3 );
+            } else {
+                break;
             }
-            if( TestOld[sizeof(hole)] == TestNew[sizeof(hole)] ) {
-                AddAndCheck( sizeof( hole ) );
-                continue;
-            }
-            if( TestOld[2*sizeof(hole)] == TestNew[2*sizeof(hole)] ) {
-                AddAndCheck( 2*sizeof( hole ) );
-                continue;
-            }
-            if( TestOld[3*sizeof(hole)] == TestNew[3*sizeof(hole)] ) {
-                AddAndCheck( 3*sizeof( hole ) );
-                continue;
-            }
-            break;
         }
 
         OldCurr = lastold;
@@ -450,11 +449,12 @@ int AreasAreSimilar( foff_diff adjust, foff_diff backup_amt )
 
 static void CheckSyncPoint( void )
 {
-    if( SyncOld == (foff)-1 ) return;
-    if( SaveOld >= OldFile+SyncOld && OldCurr < OldFile+SyncOld ||
-        SaveNew >= NewFile+SyncNew && NewCurr < NewFile+SyncNew ) {
-        OldCurr = OldFile+SyncOld;
-        NewCurr = NewFile+SyncNew;
+    if( SyncOld == (foff)-1 )
+        return;
+    if( SaveOld >= OldFile + SyncOld && OldCurr < OldFile + SyncOld ||
+        SaveNew >= NewFile + SyncNew && NewCurr < NewFile + SyncNew ) {
+        OldCurr = OldFile + SyncOld;
+        NewCurr = NewFile + SyncNew;
         stats( "\r\nJumped SyncPoint\r\n" );
     }
 }
@@ -472,8 +472,9 @@ int ReSync( void )
     SaveOld = OldCurr; SaveNew = NewCurr;
     j = 0;
     for( backup = MIN_DIFF; backup <= MAX_DIFF; backup += backup ) {
-        if( backup > OldCurr-OldFile || backup > NewCurr-NewFile ) return( 0 );
-        stats( "\rResync %8.8lx:%8.8lx %c ", OldCurr-OldFile, NewCurr-NewFile, spin[j] );
+        if( backup > OldCurr - OldFile || backup > NewCurr - NewFile )
+            return( 0 );
+        stats( "\rResync %8.8lx:%8.8lx %c ", OldCurr - OldFile, NewCurr - NewFile, spin[j] );
         ++j; j &= 3;
         for( i = 0; i <= backup; ++i ) {
             if( AreasAreSimilar( i, backup ) ) {
@@ -496,28 +497,28 @@ int TryBackingUp( int backup )
 {
     int         i;
 
-    if( OldCurr-backup < OldFile ) return( 0 );
-    if( NewCurr-backup < NewFile ) return( 0 );
-    for( i = 0; ; ++i ) {
-        if( i == sizeof( hole ) ) {
-            return( 0 );
+    if( OldCurr - backup < OldFile )
+        return( 0 );
+    if( NewCurr - backup < NewFile )
+        return( 0 );
+    for( i = 0; i < sizeof( hole ); ++i ) {
+        if( *(OldCurr - backup - i) == *(NewCurr - backup - i) ) {
+            ++OldCurr;
+            ++NewCurr;
+            for( ; backup >= sizeof( hole ); backup -= sizeof( hole ) ) {
+                OldCurr -= sizeof( hole );
+                NewCurr -= sizeof( hole );
+                AddHole( OldCurr - OldFile, NewCurr - NewFile );
+            }
+            if( backup != 0 ) {
+                OldCurr -= backup;
+                NewCurr -= backup;
+                AddDiff( NewCurr - NewFile, backup );
+            }
+            return( 1 );
         }
-        if( *(OldCurr-backup-i) == *(NewCurr-backup-i) ) break;
     }
-    ++OldCurr;
-    ++NewCurr;
-    while( backup >= sizeof( hole ) ) {
-        OldCurr -= sizeof( hole );
-        NewCurr -= sizeof( hole );
-        AddHole( OldCurr - OldFile, NewCurr - NewFile );
-        backup -= sizeof( hole );
-    }
-    if( backup != 0 ) {
-        OldCurr -= backup;
-        NewCurr -= backup;
-        AddDiff( NewCurr - NewFile, backup );
-    }
-    return( 1 );
+    return( 0 );
 }
 
 
@@ -533,27 +534,26 @@ void FindRegions( void )
     OldCurr = OldFile + EndOld + 1;
     NewCurr = NewFile + EndNew + 1;
     AddSimilarDiff( EndOld + 1, EndNew + 1, 0 );
-    OldCurr = OldFile + (EndOld-1);
-    NewCurr = NewFile + (EndNew-1);
+    OldCurr = OldFile + ( EndOld - 1 );
+    NewCurr = NewFile + ( EndNew - 1 );
     old_hi = OldCurr;
-    for(;;) {
+    for( ;; ) {
         if( *OldCurr != *NewCurr ) {
-            if( !TryBackingUp(sizeof(hole))
-             && !TryBackingUp(2*sizeof(hole))
-             && !TryBackingUp(3*sizeof(hole)) ) {
+            if( !TryBackingUp( sizeof( hole ) )
+             && !TryBackingUp( 2 * sizeof( hole ) )
+             && !TryBackingUp( 3 * sizeof( hole ) ) ) {
                 ++OldCurr;
                 ++NewCurr;
-                AddSimilarDiff(OldCurr-OldFile, NewCurr-NewFile,
-                           (old_hi-OldCurr)+1);
-                if( !ReSync() ) break;
-                stats( "%8.8lx:%8.8lx\n", OldCurr-OldFile, NewCurr-NewFile );
+                AddSimilarDiff( OldCurr - OldFile, NewCurr - NewFile, ( old_hi - OldCurr ) + 1 );
+                if( !ReSync() )
+                    break;
+                stats( "%8.8lx:%8.8lx\n", OldCurr - OldFile, NewCurr - NewFile );
                 old_hi = OldCurr;
                 continue;
             }
         }
         if( OldCurr == OldFile || NewCurr == NewFile ) {
-            AddSimilarDiff( OldCurr - OldFile,
-                        NewCurr - NewFile, (old_hi-OldCurr) + 1 );
+            AddSimilarDiff( OldCurr - OldFile, NewCurr - NewFile, ( old_hi - OldCurr ) + 1 );
             break;
         }
         --OldCurr;
@@ -573,10 +573,10 @@ void FindRegions( void )
 
 void printd( char *p )
 {
-    int i;
+    int len;
 
-    for( i = *(p++); i != 0; --i ) {
-        stats( "%c", *(p++) );
+    for( len = (byte)(*p++); len > 0; --len ) {
+        stats( "%c", *p++ );
     }
 }
 
@@ -639,14 +639,14 @@ int cmp_mod_name( exe_mod *m1, exe_mod *m2 )
     int comp;
 
     if( m1->name[0] == m2->name[0] ) {
-        return( memcmp( &(m1->name[1]), &(m2->name[1]), m2->name[0] ) );
-    } else if( m1->name[0] < m2->name[0] ) {
-        comp = memcmp( &(m1->name[1]), &(m2->name[1]), m1->name[0] );
+        return( memcmp( &(m1->name[1]), &(m2->name[1]), (byte)m2->name[0] ) );
+    } else if( (byte)m1->name[0] < (byte)m2->name[0] ) {
+        comp = memcmp( &(m1->name[1]), &(m2->name[1]), (byte)m1->name[0] );
         if( comp == 0 ) {
             comp = -1;
         }
     } else {
-        comp = memcmp( &(m1->name[1]), &(m2->name[1]), m2->name[0] );
+        comp = memcmp( &(m1->name[1]), &(m2->name[1]), (byte)m2->name[0] );
         if( comp == 0 ) {
             comp = 1;
         }
@@ -665,16 +665,17 @@ int TestBlock( foff old_off, foff new_off, foff len )
     foff matches;
     foff holes;
 
-    pold = &OldFile[ old_off ];
-    pnew = &NewFile[ new_off ];
+    pold = &OldFile[old_off];
+    pnew = &NewFile[new_off];
     matches = 0;
     holes = 0;
     o = pold;
     n = pnew;
-    old_stop = &pold[ len ];
-    new_stop = &pnew[ len ];
-    for(;;) {
-        if( o >= old_stop || n >= new_stop ) break;
+    old_stop = &pold[len];
+    new_stop = &pnew[len];
+    for( ;; ) {
+        if( o >= old_stop || n >= new_stop )
+            break;
         if( *o == *n ) {
             ++o;
             ++n;
@@ -683,7 +684,8 @@ int TestBlock( foff old_off, foff new_off, foff len )
         }
         o += sizeof( hole );
         n += sizeof( hole );
-        if( o >= old_stop || n >= new_stop ) break;
+        if( o >= old_stop || n >= new_stop )
+            break;
         if( *o == *n ) {
             ++holes;
         }
@@ -692,8 +694,9 @@ int TestBlock( foff old_off, foff new_off, foff len )
         AddSimilar( old_off, new_off, len );
         o = pold;
         n = pnew;
-        for(;;) {
-            if( o >= old_stop || n >= new_stop ) break;
+        for( ;; ) {
+            if( o >= old_stop || n >= new_stop )
+                break;
             if( *o == *n ) {
                 ++o;
                 ++n;
@@ -706,7 +709,7 @@ int TestBlock( foff old_off, foff new_off, foff len )
                 AddDiff( n - NewFile, new_stop - n );
                 break;
             }
-            AddHole( (o-sizeof(hole)) - OldFile, (n-sizeof(hole)) - NewFile );
+            AddHole( ( o - sizeof( hole ) ) - OldFile, ( n - sizeof( hole ) ) - NewFile );
         }
         return( 1 );
     }
@@ -722,17 +725,19 @@ int FindBlockInOld( foff new_off, foff len )
     byte *old_stop;
     byte *new_stop;
 
-    pnew = &NewFile[ new_off ];
-    new_stop = &pnew[ len ];
-    pold = &OldFile[ 0 ];
-    old_stop = &OldFile[ EndOld ];
-    for(;;) {
-        if( pold >= old_stop ) break;
+    pnew = &NewFile[new_off];
+    new_stop = &pnew[len];
+    pold = &OldFile[0];
+    old_stop = &OldFile[EndOld];
+    for( ;; ) {
+        if( pold >= old_stop )
+            break;
         o = memchr( pold, *pnew, old_stop - pold );
-        if( o == NULL ) break;
+        if( o == NULL )
+            break;
         pold = o + 1;
         n = pnew;
-        for(;;) {
+        for( ;; ) {
             if( o >= old_stop || n >= new_stop ) {
                 if( TestBlock( ( pold - 1 ) - OldFile, new_off, len ) ) {
                     return( 1 );
@@ -752,7 +757,9 @@ int FindBlockInOld( foff new_off, foff len )
                 }
                 break;
             }
-            if( *o != *n ) break;
+            if( *o != *n ) {
+                break;
+            }
         }
     }
     AddDiff( new_off, len );
@@ -777,7 +784,7 @@ int both_walker( exe_blk *new_blk, void *parm )
     }
     if( last->last_offset != new_blk->start ) {
         len = new_blk->start - last->last_offset;
-        stats( "[%lx-%lx) ???",last->last_offset, last->last_offset + len );
+        stats( "[%lx-%lx) ???", last->last_offset, last->last_offset + len );
         if( FindBlockInOld( last->last_offset, len ) ) {
             stats( "\n" );
         } else {
@@ -798,7 +805,7 @@ int both_walker( exe_blk *new_blk, void *parm )
         return( 0 );
     }
     /* find an exact match in length if possible */
-    for( old_blk = old_mod->blocks; old_blk; old_blk = old_blk->next ) {
+    for( old_blk = old_mod->blocks; old_blk != NULL; old_blk = old_blk->next ) {
         if( old_blk->length == -1 ) {
             continue;
         }
@@ -810,7 +817,7 @@ int both_walker( exe_blk *new_blk, void *parm )
             }
         }
     }
-    for( old_blk = old_mod->blocks; old_blk; old_blk = old_blk->next ) {
+    for( old_blk = old_mod->blocks; old_blk != NULL; old_blk = old_blk->next ) {
         if( old_blk->length == -1 || old_blk->length == new_blk->length ) {
             continue;
         }
@@ -943,10 +950,12 @@ void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     exe->mods_by_name = SymInit( cmp_mod_name );
     mod_list = first_section + section_head.mod_offset;
     xseek( exe->sym.fd, mod_list, SEEK_SET );
-    curr_offset = section_head.mod_offset;
-    while( curr_offset != section_head.gbl_offset ) {
+    for( curr_offset = section_head.mod_offset;
+         curr_offset != section_head.gbl_offset;
+         curr_offset += sizeof( mod_name ) + (byte)mod_name.name[0]
+        ) {
         xread( exe->sym.fd, &mod_name, sizeof( mod_name ) );
-        new_mod = bdiff_malloc( sizeof( exe_mod ) + mod_name.name[0] );
+        new_mod = bdiff_malloc( sizeof( exe_mod ) + (byte)mod_name.name[0] );
         if( new_mod == NULL ) {
             GetMsg( msgbuf, ERR_MEMORY_OUT );
             puts( msgbuf );
@@ -956,10 +965,9 @@ void ProcessExe( const char *name, char *sym_name, exe_info *exe )
         new_mod->blocks = NULL;
         new_mod->mod_offset = curr_offset - section_head.mod_offset;
         new_mod->name[0] = mod_name.name[0];
-        xread( exe->sym.fd, &new_mod->name[1], mod_name.name[0] );
+        xread( exe->sym.fd, &new_mod->name[1], (byte)mod_name.name[0] );
         SymAdd( exe->mods_by_offset, new_mod );
         SymAdd( exe->mods_by_name, new_mod );
-        curr_offset += sizeof( mod_name ) + mod_name.name[0];
     }
     if( exe == &new ) {
         new.blks = SymInit( cmp_blk );
@@ -970,13 +978,13 @@ void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     exe->form = ExeForm( exe->fd, 0, exe );
     addr_list = first_section + section_head.addr_offset;
     xseek( exe->sym.fd, addr_list, SEEK_SET );
-    curr_offset = section_head.addr_offset;
-    while( curr_offset != section_head.section_size ) {
+    for( curr_offset = section_head.addr_offset;
+         curr_offset != section_head.section_size;
+         curr_offset += sizeof( seg_info ) - sizeof( addr_info )
+        ) {
         xread( exe->sym.fd, &seg_desc, sizeof(seg_info) - sizeof(addr_info) );
-        curr_offset += sizeof( seg_info ) - sizeof( addr_info );
-        num_blks = seg_desc.num;
         seg_addr = seg_desc.base;
-        while( num_blks != 0 ) {
+        for( num_blks = seg_desc.num; num_blks != 0; --num_blks ) {
             xread( exe->sym.fd, &seg_chunk, sizeof( seg_chunk ) );
             curr_offset += sizeof( seg_chunk );
             tmp_mod.mod_offset = seg_chunk.mod;
@@ -1002,7 +1010,6 @@ void ProcessExe( const char *name, char *sym_name, exe_info *exe )
             if( exe == &new ) {
                 SymAdd( new.blks, new_blk );
             }
-            --num_blks;
         }
     }
 }
@@ -1042,12 +1049,13 @@ void VerifyCorrect( const char *name )
     if( real_new != NULL ) {
         if( memcmp( real_new, NewFile, EndNew ) != 0 ) {
             offset = 0;
-            for(;;) {
+            for( ;; ) {
                 if( *real_new != *NewFile ) {
                     PatchError( ERR_PATCH_BUNGLED, offset, *real_new, *NewFile );
                 }
                 ++offset;
-                if( offset >= EndNew ) break;
+                if( offset >= EndNew )
+                    break;
                 ++real_new;
                 ++NewFile;
             }
@@ -1061,10 +1069,14 @@ int HoleCompare(const void *_h1, const void *_h2)
     const region *h1 = _h1;
     const region *h2 = _h2;
 
-    if( h1->diff < h2->diff ) return( -1 );
-    if( h1->diff > h2->diff ) return( 1 );
-    if( h1->new_start < h2->new_start ) return( -1 );
-    if( h1->new_start > h2->new_start ) return( 1 );
+    if( h1->diff < h2->diff )
+        return( -1 );
+    if( h1->diff > h2->diff )
+        return( 1 );
+    if( h1->new_start < h2->new_start )
+        return( -1 );
+    if( h1->new_start > h2->new_start )
+        return( 1 );
     return( 0 );
 }
 
@@ -1118,23 +1130,23 @@ int OutVar( foff value, int really )
 
 static void OutStr( const char *str )
 {
-    for( ;; ) {
-        if( *str == '\0' ) break;
+    for( ; *str != '\0'; ++str ) {
         OutPatch( *str, char );
-        ++str;
     }
 }
 
 
-#define MIN_ITERS (sizeof(patch_cmd)+sizeof(hole)+sizeof(foff)+sizeof(foff))
+#define MIN_ITERS (sizeof( patch_cmd ) + sizeof( hole ) + sizeof( foff ) + sizeof( foff ))
 
 int FOffCompare(const void *_h1, const void *_h2)
 {
     const region *h1 = _h1;
     const region *h2 = _h2;
 
-    if( h1->new_start < h2->new_start ) return( -1 );
-    if( h1->new_start > h2->new_start ) return( 1 );
+    if( h1->new_start < h2->new_start )
+        return( -1 );
+    if( h1->new_start > h2->new_start )
+        return( 1 );
     return( 0 );
 }
 
@@ -1174,14 +1186,18 @@ long HolesToDiffs( void )
             /* find two holes which are the same small amount apart */
 
             for( ;; ) {
-                if( curr >= end ) break;
+                if( curr >= end )
+                    break;
                 if( next->old_start - curr->old_start
-                 != next->new_start - curr->new_start ) break;
-                if( next->old_start - curr->old_start <= RUN_SIZE ) break;
+                  != next->new_start - curr->new_start )
+                    break;
+                if( next->old_start - curr->old_start <= RUN_SIZE )
+                    break;
                 ++next;
                 ++curr;
             }
-            if( curr >= end ) break;
+            if( curr >= end )
+                break;
 
             /* extend this run while holes are the same small distance apart */
 
@@ -1189,26 +1205,33 @@ long HolesToDiffs( void )
             for( ;; ) {
                 ++next;
                 ++curr;
-                if( curr >= end ) break;
+                if( curr >= end )
+                    break;
                 if( next->old_start - curr->old_start
-                 != next->new_start - curr->new_start ) break;
-                if( next->old_start - curr->old_start > RUN_SIZE ) break;
+                 != next->new_start - curr->new_start )
+                    break;
+                if( next->old_start - curr->old_start > RUN_SIZE ) {
+                    break;
+                }
             }
-            if( curr >= end ) break;
+            if( curr >= end )
+                break;
 
             /* convert to a difference region if it would make patch smaller */
 
             hole_size = 0;
             diff_size = 2*sizeof(foff)+sizeof(patch_cmd)
-            + curr->new_start - run_start->new_start + sizeof(hole);
+            + curr->new_start - run_start->new_start + sizeof( hole );
             for( run = run_start; run <= curr; ++run ) {
-                if( run->dependants == 1 ) hole_size += run->size;
+                if( run->dependants == 1 ) {
+                    hole_size += run->size;
+                }
             }
             if( hole_size > diff_size ) {
                 savings += hole_size - diff_size;
                 AddRegion( &DiffRegions, run_start->old_start,
                            run_start->new_start,
-                           curr->new_start-run_start->new_start+sizeof(hole) );
+                           curr->new_start - run_start->new_start + sizeof( hole ) );
                 for( run = run_start; run <= curr; ++run ) {
                     ++dead_holes;
                     run->diff = 0;
@@ -1263,9 +1286,10 @@ void ProcessHoleArray( int write_holes )
             incr = 0;
             iters = 1;
             for( end_iters = curr + 1; end_iters <= end; ++end_iters ) {
-                if( diff != end_iters->diff ) break;
-                if( incr != 0
-                 && incr != end_iters->new_start - prev->new_start ) break;
+                if( diff != end_iters->diff )
+                    break;
+                if( incr != 0 && incr != end_iters->new_start - prev->new_start )
+                    break;
                 incr = end_iters->new_start - prev->new_start;
                 ++iters;
                 prev = end_iters;
@@ -1306,7 +1330,7 @@ void ProcessHoleArray( int write_holes )
             } else {
                 size = OutVar( curr->new_start - curr_start, write_holes );
                 if( write_holes ) {
-                    HoleCount[ size ]++;
+                    HoleCount[size]++;
                 } else {
                     curr->size = size;
                     curr_header->dependants++;
@@ -1314,7 +1338,9 @@ void ProcessHoleArray( int write_holes )
                 curr_start = curr->new_start;
             }
         }
-        if( write_holes ) OutPatch( 0, byte );
+        if( write_holes ) {
+            OutPatch( 0, byte );
+        }
     }
 }
 
@@ -1323,16 +1349,15 @@ void WriteSimilars( void )
     /* write similar regions out to the patch file */
 
     region      *curr;
-    region      *junk;
+    region      *next;
 
-    for( curr = SimilarRegions; curr != NULL; ) {
+    for( curr = SimilarRegions; curr != NULL; curr = next ) {
+        next = curr->next;
         OutPatch( CMD_SAMES, patch_cmd );
         OutPatch( curr->new_start, foff );
         OutPatch( curr->old_start, foff );
         OutPatch( curr->size, foff );
-        junk = curr;
-        curr = curr->next;
-        bdiff_free( junk );
+        bdiff_free( curr );
     }
 }
 
@@ -1341,24 +1366,21 @@ void WriteDiffs( void )
     /* write difference regions out to the patch file */
 
     region      *curr;
-    region      *junk;
+    region      *next;
     foff        curr_start;
     foff        size;
 
-    for( curr = DiffRegions; curr != NULL; ) {
+    for( curr = DiffRegions; curr != NULL; curr = next ) {
+        next = curr->next;
         curr_start = curr->new_start;
         size = curr->size;
         OutPatch( CMD_DIFFS, patch_cmd );
         OutPatch( curr_start, foff );
         OutPatch( size, foff );
-        while( size != 0 ) {
-            OutPatch( NewFile[ curr_start ], byte );
-            --size;
-            ++curr_start;
+        for( ; size != 0; --size ) {
+            OutPatch( NewFile[curr_start++], byte );
         }
-        junk = curr;
-        curr = curr->next;
-        bdiff_free( junk );
+        bdiff_free( curr );
     }
 }
 
@@ -1379,12 +1401,9 @@ void WriteLevel( void )
     OutPatch( CMD_DIFFS, patch_cmd );
     OutPatch( EndNew, foff );
     OutPatch( sizeof( PATCH_LEVEL ), foff );
-    size = sizeof( PATCH_LEVEL );
     buff = LevelBuff;
-    while( size != 0 ) {
-        OutPatch( *buff, char );
-        --size;
-        ++buff;
+    for( size = sizeof( PATCH_LEVEL ); size != 0; --size ) {
+        OutPatch( *buff++, char );
     }
 }
 
@@ -1399,7 +1418,7 @@ foff Sum( void )
     if( AppendPatchLevel )
         end += sizeof( PATCH_LEVEL );
     for( i = 0; i != end; ++i ) {
-        sum += NewFile[ i ];
+        sum += NewFile[i];
     }
     return( sum );
 }
@@ -1417,13 +1436,13 @@ void CopyComment( void )
         size = lseek( fd, 0, SEEK_END );
         SeekCheck( size, CommentFile );
         SeekCheck( lseek( fd, 0, SEEK_SET ), CommentFile );
-        comment = bdiff_malloc( size+1 );
+        comment = bdiff_malloc( size + 1 );
         NotNull( comment, "comment file" );
         if( read( fd, comment, size ) != size ) {
             FilePatchError( ERR_CANT_READ, CommentFile );
         }
         close( fd );
-        comment[ size ] = '\0';
+        comment[size] = '\0';
         OutStr( comment );
     }
 }
@@ -1475,22 +1494,19 @@ void WritePatchFile( const char *name )
 
 void MakeHoleArray(void)
 {
-    region      *reg;
     region      *new_hole;
     region      *curr;
 
-    if( NumHoles == 0 ) return;
+    if( NumHoles == 0 )
+        return;
     HoleArray = bdiff_malloc( sizeof( region ) * NumHoles );
     NotNull( HoleArray, "sorted holes" );
     new_hole = HoleArray;
-    for( reg = HoleRegions; reg != NULL; ) {
-        curr = reg;
-        reg = reg->next;
-        *new_hole = *curr;
+    while( (curr = HoleRegions) != NULL ) {
+        HoleRegions = curr->next;
+        *new_hole++ = *curr;
         bdiff_free( curr );
-        ++new_hole;
     }
-    HoleRegions = reg;
 }
 
 void SortHoleArray( void )
@@ -1515,20 +1531,19 @@ algorithm ParseArgs( int argc, char **argv )
     if( argc < 4 ) {
         Usage( argv[0] );
     }
-    arg = argv + 4;
     OldSymName = NULL;
     NewSymName = NULL;
     CommentFile = NULL;
     newName = argv[1];
     Verbose = false;
     AppendPatchLevel = true;
-    while( *arg ) {
-        curr = *arg;
-        if( *curr != '-' && *curr != '/' ) Usage( argv[0] );
+    for( arg = argv + 4; (curr = *arg) != NULL; ++arg ) {
+        if( *curr != '-' && *curr != '/' )
+            Usage( argv[0] );
         ++curr;
         switch( tolower( curr[0] ) ) {
         case 's':
-            SyncString = strdup( curr+1 );
+            SyncString = strdup( curr + 1 );
             break;
         case 'p':
             newName = curr + 1;
@@ -1555,7 +1570,6 @@ algorithm ParseArgs( int argc, char **argv )
             Usage( argv[0] );
             break;
         }
-        ++arg;
     }
     alg = ALG_NOTHING;
 #ifdef USE_DBGINFO
@@ -1578,25 +1592,31 @@ foff FindSyncString( byte *file, foff end )
     len = strlen( SyncString );
     end -= len;
     for( i = 0; i < end; ++i ) {
-        if( file[i] != SyncString[0] ) continue;
-        if( memcmp( SyncString, file+i, len ) != 0 ) continue;
+        if( file[i] != (byte)SyncString[0] )
+            continue;
+        if( memcmp( SyncString, file + i, len ) != 0 )
+            continue;
         return( i );
     }
-    return( -1 );
+    return( (foff)-1 );
 }
 
 void ScanSyncString( void )
 {
-    if( SyncString == NULL ) return;
-    SyncOld = FindSyncString( OldFile, EndOld );
-    SyncNew = FindSyncString( NewFile, EndNew );
-    if( SyncOld == (foff)-1 || SyncNew == (foff)-1 ) {
-        fatal( ERR_NO_SYNCSTRING );
-    }
-    while( OldFile[SyncOld] == NewFile[SyncNew] ) {
-        ++SyncOld; ++SyncNew;
-        if( SyncOld == EndOld ) break;
-        if( SyncNew == EndNew ) break;
+    if( SyncString != NULL ) {
+        SyncOld = FindSyncString( OldFile, EndOld );
+        SyncNew = FindSyncString( NewFile, EndNew );
+        if( SyncOld == (foff)-1 || SyncNew == (foff)-1 ) {
+            fatal( ERR_NO_SYNCSTRING );
+        }
+        while( OldFile[SyncOld] == NewFile[SyncNew] ) {
+            ++SyncOld; ++SyncNew;
+            if( SyncOld == EndOld )
+                break;
+            if( SyncNew == EndNew ) {
+                break;
+            }
+        }
     }
 }
 
@@ -1608,7 +1628,8 @@ void main( int argc, char **argv )
     foff        best_from_new;
     algorithm   alg;
 
-    if( !MsgInit() ) exit( EXIT_FAILURE );
+    if( !MsgInit() )
+        exit( EXIT_FAILURE );
     alg = ParseArgs( argc, argv );
 
     EndOld = FileSize( argv[1], &OldCorrection );

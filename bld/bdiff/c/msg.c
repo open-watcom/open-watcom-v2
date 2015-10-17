@@ -38,7 +38,6 @@
 #include <process.h>
 #include <sys/types.h>
 #include "wio.h"
-
 #include "bdiff.h"
 #include "wressetr.h"
 #include "wresset2.h"
@@ -52,7 +51,7 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
@@ -95,19 +94,18 @@ int MsgInit( void )
     return( 0 );
 }
 
-static void OrderMsg ( int order[], int num_arg, char *msg_ptr )
+static void OrderMsg( int order[], int num_arg, char *msg_ptr )
 {
     int         i = 0;
 
-    msg_ptr = strpbrk( msg_ptr, "%" );
-    while( msg_ptr != NULL && i < num_arg ) {
+    while( (msg_ptr = strpbrk( msg_ptr, "%")) != NULL ) {
+        if( i >= num_arg )
+            break;
         msg_ptr++;
         if( isdigit( *msg_ptr ) ) {
-            order[i] = atoi( msg_ptr ) - 1;
-            i++;
+            order[i++] = atoi( msg_ptr ) - 1;
         }
         msg_ptr++;
-        msg_ptr = strpbrk( msg_ptr, "%" );
     }
 }
 

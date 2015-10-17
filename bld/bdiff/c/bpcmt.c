@@ -91,7 +91,7 @@ void main( int argc, char *argv[] )
         _makepath( outfile, drive, dir, "__", TmpExt );
         if( access( outfile, 0 ) != 0 )
             break;
-        TmpExt[ 0 ]++;
+        TmpExt[0]++;
         if( TmpExt[0] > 'Z' ) {
             Fatal( "Cannot create temporary file", NULL );
         }
@@ -133,10 +133,7 @@ void main( int argc, char *argv[] )
     if( size != 0 )
         fwrite( pos, 1, size, fpout );
     /* transfer patch file */
-    for( ;; ) {
-        size = fread( Buffer, 1, bufsize, fpin );
-        if( size == 0 )
-            break;
+    while( (size = fread( Buffer, 1, bufsize, fpin )) != 0 ) {
         fwrite( Buffer, 1, size, fpout );
     }
     fclose( fpin );
@@ -153,13 +150,12 @@ void main( int argc, char *argv[] )
 static void Fatal( char *reason, char *insert )
 /* the reason doesn't have to be good */
 {
-    while( *reason ) {
+    for( ; *reason; ++reason ) {
         if( *reason == '*' ) {
             fputs( insert, stdout );
         } else {
             fputc( *reason, stdout );
         }
-        ++reason;
     }
     puts( "\nbpcmt aborted" );
     exit( EXIT_FAILURE );
@@ -170,9 +166,8 @@ static void Usage( void )
 {
     char **text;
 
-    text = Usetext;
-    while( *text ) {
-        puts( *text++ );
+    for( text = Usetext; *text != NULL; ++text ) {
+        puts( *text );
     }
     exit( EXIT_FAILURE );
 }

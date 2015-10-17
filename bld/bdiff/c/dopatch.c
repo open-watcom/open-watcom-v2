@@ -31,9 +31,8 @@
 
 #include "bdiff.h"
 #include "bool.h"
-#include "msg.h"
-#include "newfile.h"
 #include "oldfile.h"
+#include "newfile.h"
 #include "patchio.h"
 #include "myio.h"
 #include "msg.h"
@@ -43,16 +42,16 @@
     #define PatchName ""
 
     #define OpenPatch()                 (pat=PatchFile,PATCH_RET_OKAY)
-    #define InPatch( type )             (tmp=pat,pat+=sizeof(type),*(type*)tmp)
+    #define InPatch( type )             (tmp=pat,pat+=sizeof( type ),*(type *)tmp)
     #define ClosePatch()
 
-    #define InNew( offset )             (*(hole*)(dest+offset))
-    #define OutNew( offset, x, type )   *(type*)(dest+(offset))=(x)
+    #define InNew( offset )             (*(hole *)(dest+offset))
+    #define OutNew( offset, x, type )   *(type *)(dest+(offset))=(x)
 
     #define FindOld( name )             NULL
     #define SetOld( name )              NULL
     #define OpenOld( len, prompt, newsize, newsum ) PATCH_RET_OKAY
-    #define InOld( offset )             (*(byte*)(OldFile+offset))
+    #define InOld( offset )             OldFile[offset]
     #define CloseOld( havenew, dobackup )
 
     #define Dump( x )
@@ -64,7 +63,7 @@
   #if defined(__386__)
     #if defined(_WPATCH) || defined( INSTALL_PROGRAM )
 
-    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof(hole)), *(hole*)tmp )
+    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof( hole ) ), *(hole *)tmp )
     #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
 
     #else
@@ -89,7 +88,7 @@
 
   #else
 
-    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof(hole)), *(hole*)tmp )
+    #define InNew( offset )             ( Input( &NewFile, tmp, offset, sizeof( hole ) ), *(hole *)tmp )
     #define OutNew( off, x, type )      *(type*)tmp = (x); Output( &NewFile, tmp, off, sizeof( type ) );
 
     #define Dump( x )
@@ -98,7 +97,7 @@
 
   #endif
 
-    #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), *(type*)tmp )
+    #define InPatch( type )             ( InputPatch( tmp, sizeof( type ) ), *(type *)tmp )
 
 #endif
 
@@ -136,7 +135,7 @@ static PATCH_RET_CODE InitHoles( void )
     NumHoles = 0;
     HoleArraySize = (64*1024L) / sizeof( save_hole ) - 1;
     for( ;; ) {
-        HoleArray = bdiff_malloc( HoleArraySize*sizeof(save_hole) );
+        HoleArray = bdiff_malloc( HoleArraySize * sizeof( save_hole ) );
         if( HoleArray != NULL )
             break;
         HoleArraySize /= 2;
@@ -178,7 +177,7 @@ static void FlushHoles( void )
         qsort( HoleArray, NumHoles, sizeof( save_hole ), HoleCompare );
         end = HoleArray + NumHoles;
         for( curr = HoleArray; curr < end; ++curr ) {
-            Input( &NewFile, &tmp, curr->offset, sizeof(hole) );
+            Input( &NewFile, &tmp, curr->offset, sizeof( hole ) );
             tmp += curr->diff;
             Output( &NewFile, &tmp, curr->offset, sizeof( hole ) );
         }
