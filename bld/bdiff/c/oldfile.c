@@ -36,12 +36,11 @@
 #include "msg.h"
 #include "installp.h"
 
+#include "clibext.h"
+
 MY_FILE         OldFile;
 
 static char     newName[_MAX_PATH];
-static char     new_fname[_MAX_FNAME];
-static char     new_ext[_MAX_EXT];
-
 static char     oldName[_MAX_PATH];
 static char     old_drive[_MAX_DRIVE];
 static char     old_dir[_MAX_DIR];
@@ -90,16 +89,24 @@ foff CheckSumOld( foff new_size )
     return( sum );
 }
 
+#define TEMP_FILE_NAME  "bdXXXXXX"
+
 PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
 {
-    int             fd;
+    FILE            *fd;
+    int             fh;
     unsigned long   actual_len;
 
     prompt=prompt;
-    _splitpath( NewName, NULL, NULL, new_fname, new_ext );
     _splitpath( oldName, old_drive, old_dir, old_fname, old_ext );
-    _makepath( newName, old_drive, old_dir, new_fname, new_ext );
-    NewName = newName;
+    _makepath( newName, old_drive, old_dir, TEMP_FILE_NAME, "" );
+    fh = mkstemp( newName );
+    if( fh == -1 ) {
+        NewName = "";
+    } else {
+        close( fh );
+        NewName = newName;
+    }
 #ifndef INSTALL_PROGRAM
     {
         char    temp[_MAX_PATH];
@@ -122,11 +129,11 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
         }
     }
 #endif
-    fd = open( oldName, O_RDONLY + O_BINARY, 0 );
+    fd = fopen( oldName, "rb" );
     FileCheck( fd, oldName );
     MyOpen( &OldFile, fd, oldName );
-    actual_len = lseek( fd, 0, SEEK_END );
-    SeekCheck( actual_len, oldName );
+    SeekCheck( fseek( fd, 0, SEEK_END ), oldName );
+    actual_len = ftell( fd );
     if( actual_len != len
       && (actual_len + sizeof( PATCH_LEVEL )) != len
       && (actual_len - sizeof( PATCH_LEVEL )) != len ) {
@@ -140,7 +147,7 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
         MyClose( &OldFile );
         return( PATCH_BAD_LENGTH );
     }
-    SeekCheck( lseek( fd, 0, SEEK_SET ), oldName );
+    SeekCheck( fseek( fd, 0, SEEK_SET ), oldName );
     return( PATCH_RET_OKAY );
 }
 

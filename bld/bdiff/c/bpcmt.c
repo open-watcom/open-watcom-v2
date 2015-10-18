@@ -30,16 +30,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
-#include <fcntl.h>
 #include "bdiff.h"
 
 

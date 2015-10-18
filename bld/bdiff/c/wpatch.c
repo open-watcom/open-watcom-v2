@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <direct.h>
-#include <io.h>
 #include "bdiff.h"
+#include <direct.h>
 #include "wpatchio.h"
 #include "msg.h"
 
@@ -44,8 +41,8 @@
 #define FALSE 0
 
 struct {
-    int origSrcDirLen;
-    int origTgtDirLen;
+    size_t origSrcDirLen;
+    size_t origTgtDirLen;
 } glob;
 
 int     cmpStrings( const void *, const void * );

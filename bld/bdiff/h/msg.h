@@ -38,5 +38,6 @@ extern void MsgPrintf( int resourceid, va_list arglist );
 extern void Message( int format, ... );
 extern void PatchError( int format, ... );
 extern void FilePatchError( int format, ... );
-extern void IOError( char *file );
-extern void Fatal( int format, ... );
+extern void FileCheck( FILE *fd, const char *name );
+extern void SeekCheck( int rc, const char *name );
+extern void ReadCheck( size_t rc, size_t size, const char *name );

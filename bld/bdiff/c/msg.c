@@ -29,14 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <process.h>
-#include <sys/types.h>
 #include "bdiff.h"
 #include "wressetr.h"
 #include "wresset2.h"
@@ -45,12 +37,10 @@
 
 #include "clibext.h"
 
+#define NO_RES_MESSAGE "Error: could not open message resource file."
+
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-
-#define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
-
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -87,7 +77,7 @@ int MsgInit( void )
             }
         }
     }
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    printf( "%s\n", NO_RES_MESSAGE );
     MsgFini();
     return( 0 );
 }
@@ -172,4 +162,25 @@ void FilePatchError( int format, ... )
     va_end( args );
     MsgFini();
     exit( EXIT_FAILURE );
+}
+
+void FileCheck( FILE *fd, const char *name )
+{
+    if( fd == NULL ) {
+        FilePatchError( ERR_CANT_OPEN, name );
+    }
+}
+
+void SeekCheck( int rc, const char *name )
+{
+    if( rc != 0 ) {
+        FilePatchError( ERR_IO_ERROR, name );
+    }
+}
+
+void ReadCheck( size_t rc, size_t size, const char *name )
+{
+    if( rc != size ) {
+        FilePatchError( ERR_IO_ERROR, name );
+    }
 }

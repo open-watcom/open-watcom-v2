@@ -31,7 +31,6 @@
 
 
 #include "bdiff.h"
-#include <sys/stat.h>
 #include "newfile.h"
 #include "oldfile.h"
 #include "myio.h"
@@ -41,7 +40,7 @@ MY_FILE         NewFile;
 
 PATCH_RET_CODE OpenNew( foff len )
 {
-    int                 fd;
+    FILE                *fd;
     char                *name;
     auto struct stat    statblk;
 
@@ -51,7 +50,7 @@ PATCH_RET_CODE OpenNew( foff len )
         PatchError( ERR_CANT_GET_ATTRIBUTES, name );
         return( PATCH_CANT_GET_ATTRIBUTES );
     }
-    fd = open( NewName, O_RDWR + O_BINARY + O_CREAT + O_TRUNC, statblk.st_mode);
+    fd = fopen( NewName, "wb" );
     FileCheck( fd, NewName );
     MyOpen( &NewFile, fd, NewName );
     return( PATCH_RET_OKAY );
@@ -66,15 +65,15 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 
     *havenew = true;
     if( NewFile.dirty ) {
-        SeekCheck( lseek( NewFile.fd, NewFile.start, SEEK_SET ), NewName );
-        if( write( NewFile.fd, NewFile.buff, NewFile.len ) != NewFile.len ) {
+        SeekCheck( fseek( NewFile.fd, NewFile.start, SEEK_SET ), NewName );
+        if( fwrite( NewFile.buff, 1, NewFile.len, NewFile.fd ) != NewFile.len ) {
             MyClose( &NewFile );
             FilePatchError( ERR_CANT_WRITE, NewName );
             return( PATCH_CANT_WRITE );
         }
     }
-    actual_len = lseek( NewFile.fd, 0, SEEK_END );
-    SeekCheck( actual_len, NewName );
+    SeekCheck( fseek( NewFile.fd, 0, SEEK_END ), NewName );
+    actual_len = ftell( NewFile.fd );
     if( actual_len != len ) {
         MyClose( &NewFile );
         PatchError( ERR_WRONG_SIZE, NewName, actual_len, len );

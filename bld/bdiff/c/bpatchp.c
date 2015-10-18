@@ -53,7 +53,7 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 {
     foff            sum;
     unsigned long   off;
-    int             fd;
+    FILE            *fd;
     byte            *p;
 
     *havenew = true;
@@ -73,16 +73,16 @@ PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
             return( PATCH_BAD_CHECKSUM );
         }
     }
-    fd = open( NewName, O_BINARY + O_WRONLY + O_CREAT + O_TRUNC, S_IRWXU );
+    fd = fopen( NewName, "wb" );
     FileCheck( fd, NewName );
-    if( write( fd, NewFile, len ) != len ) {
+    if( fwrite( NewFile, 1, len, fd ) != len ) {
         *havenew = false;
         FilePatchError( ERR_CANT_WRITE, NewName );
         bdiff_free( NewFile );
         NewFile = NULL;
         return( PATCH_CANT_WRITE );
     }
-    close( fd );
+    fclose( fd );
     SameDate( NewName, PatchName );
     bdiff_free( NewFile );
     NewFile = NULL;

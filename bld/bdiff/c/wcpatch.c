@@ -29,11 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <direct.h>
 #include "bdiff.h"
+#include <direct.h>
 #include "wpatchio.h"
 #include "wpatch.h"
 #include "newfile.h"
@@ -189,14 +186,14 @@ void FileMarkDeleted( const char *Path )
     PatchWriteFile( PATCH_FILE_DELETED, Path );
 }
 
-void FileMarkAdded( const char *Path, int start ) 
+void FileMarkAdded( const char *Path, size_t start ) 
 {
     printf( "Adding file %s\n", Path );
     PatchWriteFile( PATCH_FILE_ADDED, &Path[start] );
     PatchAddFile( Path );
 }
 
-void DirMarkAdded( const char *Path, int start ) 
+void DirMarkAdded( const char *Path, size_t start ) 
 {
     DIR     *dirp;
     char    *Files[1000];

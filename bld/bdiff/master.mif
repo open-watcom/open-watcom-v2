@@ -9,15 +9,17 @@ all_execs = bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpa
 
 additional_cleanup_subdir = $(all_execs:.exe=)
 
+#debug_bdiff = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
 !include wres.mif
 
-.c : ../c
+.c : ../c;$(watcom_dir)/c
 
-inc_dirs = -I"../h"
+inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h"
 
 .ERASE
 
@@ -30,6 +32,9 @@ __subdir__=wcpatch
 !include subdrule.mif
 
 extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
+!ifdef debug_bdiff
+extra_cpp_wcpatch_flags += -DUSE_DBGINFO
+!endif
 
 wcpatch_objs = &
     $+$(__subdir__)$-/dopatch.obj &
@@ -37,7 +42,12 @@ wcpatch_objs = &
     $+$(__subdir__)$-/wcptchio.obj &
     $+$(__subdir__)$-/wcpatch.obj &
     $+$(__subdir__)$-/bdiffmem.obj &
-    $+$(__subdir__)$-/wbdiff.obj
+    $+$(__subdir__)$-/wbdiff.obj &
+    $+$(__subdir__)$-/diff.obj
+
+!ifdef debug_bdiff
+wcpatch_objs += $+$(__subdir__)$-/symtab.obj
+!endif
 
 wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM__
@@ -147,12 +157,20 @@ __subdir__=bdiff
 !include subdrule.mif
 
 extra_cpp_bdiff_flags = -DBDIFF
+!ifdef debug_bdiff
+extra_cpp_bdiff_flags += -DUSE_DBGINFO
+!endif
 
 bdiff_objs = &
     $+$(__subdir__)$-/bdiff.obj &
+    $+$(__subdir__)$-/diff.obj &
     $+$(__subdir__)$-/bdiffmem.obj &
     $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj
+
+!ifdef debug_bdiff
+bdiff_objs += $+$(__subdir__)$-/symtab.obj
+!endif
 
 bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM__

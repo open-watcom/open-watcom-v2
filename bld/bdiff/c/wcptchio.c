@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
@@ -136,17 +134,17 @@ void PatchGetFile( const char *path )
 }
 
 
-void PatchWrite( void *patch, int size )
+void PatchWrite( void *patch, size_t size )
 {
     fwrite( patch, size, 1, PatchF );
 }
 
-PATCH_RET_CODE OpenPatch()
+PATCH_RET_CODE OpenPatch( void )
 {
     return( PATCH_RET_OKAY );
 }
 
-void ClosePatch()
+void ClosePatch( void )
 {
 }
 

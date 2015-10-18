@@ -39,7 +39,7 @@
 
 #define PATCH_MAX_PATH_SIZE     250
 
-extern void PatchWrite( void *patch, int size );
+extern void PatchWrite( void *patch, size_t size );
 extern void PatchWriteOpen( const char *name );
 extern void PatchWriteClose( void );
 extern void PatchWriteFile( short flag, const char *RelPath );

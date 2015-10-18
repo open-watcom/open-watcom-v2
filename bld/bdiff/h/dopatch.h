@@ -38,8 +38,6 @@ extern bool             PrintLevel;
 #endif
 
 extern void             GetLevel( const char *name );
-extern void             FileCheck( int fd, const char *name );
-extern void             SeekCheck( unsigned long pos, const char *name );
 #ifdef BDIFF
 extern PATCH_RET_CODE   Execute( byte *dest );
 #else

@@ -30,7 +30,6 @@
 
 
 #include "bdiff.h"
-#include "bool.h"
 #include "oldfile.h"
 #include "newfile.h"
 #include "patchio.h"
@@ -199,35 +198,21 @@ static void AddHole( foff offset, foff diff )
 #ifndef BDIFF
 void GetLevel( const char *name )
 {
-    int         fd;
+    FILE        *fd;
     char        buffer[sizeof( PATCH_LEVEL )];
 
     CurrLevel[0] = '\0';
-    fd = open( name, O_BINARY+O_RDONLY );
-    if( fd == -1 )
+    fd = fopen( name, "rb" );
+    if( fd == NULL )
         return;
-    if( lseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L &&
-        read( fd, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) &&
+    if( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) == 0 &&
+        fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) == sizeof( PATCH_LEVEL ) &&
         memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
         strcpy( CurrLevel, buffer + PATCH_LEVEL_HEAD_SIZE );
     }
-    close( fd );
+    fclose( fd );
 }
 #endif
-
-void FileCheck( int fd, const char *name )
-{
-    if( fd == -1 ) {
-        FilePatchError( ERR_CANT_OPEN, name );
-    }
-}
-
-void SeekCheck( unsigned long pos, const char *name )
-{
-    if( (long)pos == -1L ) {
-        FilePatchError( ERR_IO_ERROR, name );
-    }
-}
 
 static PATCH_RET_CODE InitPatch( char **target_given )
 {
@@ -461,7 +446,6 @@ PATCH_RET_CODE DoPatch(
     DoPrompt = doprompt;
     DoBackup = dobackup;
     PrintLevel = printlevel;
-    NewName = tmpnam( NULL );
   #ifndef _WPATCH
     if( access( PatchName, R_OK ) != 0 ) {
         PatchError( ERR_CANT_FIND, PatchName );

@@ -31,7 +31,7 @@
 
 
 extern void     SameDate( const char *file, const char *as );
-extern void     MyOpen( MY_FILE *file, int fd, const char *name );
+extern void     MyOpen( MY_FILE *file, FILE *fd, const char *name );
 extern void     MyClose( MY_FILE *file );
 extern void     InBuffer( MY_FILE *file, foff off, size_t len, size_t eob );
 extern void     Input( MY_FILE *file, void *tmp, foff off, size_t len );

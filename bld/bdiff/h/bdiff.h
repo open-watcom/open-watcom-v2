@@ -39,9 +39,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined( __WATCOMC__ ) || defined( __QNX__ )
+#include <utime.h>
+#else
+#include <sys/utime.h>
+#endif
 #include "bool.h"
 #include "wio.h"
-
 #include "watcom.h"
 #include "banner.h"
 #include "machtype.h"
@@ -77,8 +81,8 @@ typedef enum {
 
 typedef struct {
         foff            start;
-        unsigned        len;
-        int             fd;
+        size_t          len;
+        FILE            *fd;
         const char      *name;
         bool            dirty;
         char            buff[BUFFER_SIZE];

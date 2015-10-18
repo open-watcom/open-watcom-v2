@@ -31,12 +31,6 @@
 
 
 #include "bdiff.h"
-#include <sys/stat.h>
-#ifdef __QNX__
-#include <utime.h>
-#else
-#include <sys/utime.h>
-#endif
 #include "myio.h"
 #include "msg.h"
 
@@ -52,7 +46,7 @@ void SameDate( const char *file, const char *as )
     }
 }
 
-void MyOpen( MY_FILE *file, int fd, const char *name )
+void MyOpen( MY_FILE *file, FILE *fd, const char *name )
 {
     file->fd = fd;
     file->start = 0;
@@ -64,29 +58,29 @@ void MyOpen( MY_FILE *file, int fd, const char *name )
 void MyClose( MY_FILE *file )
 {
     if( file->dirty ) {
-        SeekCheck( lseek( file->fd, file->start, SEEK_SET ), file->name );
-        if( write( file->fd, file->buff, file->len ) != (int)file->len ) {
+        SeekCheck( fseek( file->fd, file->start, SEEK_SET ), file->name );
+        if( fwrite( file->buff, 1, file->len, file->fd ) != file->len ) {
             PatchError( ERR_CANT_WRITE, file->name );
         }
     }
-    close( file->fd );
+    fclose( file->fd );
 }
 
 void InBuffer( MY_FILE *file, foff off, size_t len, size_t eob )
 {
     if( off < file->start || off+len > file->start+eob ) {
         if( file->dirty ) {
-            SeekCheck(lseek( file->fd, file->start, SEEK_SET), file->name );
-            if( write( file->fd, file->buff, file->len ) != (int)file->len ) {
+            SeekCheck( fseek( file->fd, file->start, SEEK_SET), file->name );
+            if( fwrite( file->buff, 1, file->len, file->fd ) != file->len ) {
                 PatchError( ERR_CANT_WRITE, file->name );
             }
         }
         if( ( off & ~(SECTOR_SIZE - 1) ) + BUFFER_SIZE > off + len ) {
             off &= ~(SECTOR_SIZE - 1);
         }
-        SeekCheck( lseek( file->fd, off, SEEK_SET ), file->name );
+        SeekCheck( fseek( file->fd, off, SEEK_SET ), file->name );
         file->start = off;
-        file->len = read( file->fd, file->buff, BUFFER_SIZE );
+        file->len = fread( file->buff, 1, BUFFER_SIZE, file->fd );
         file->dirty = false;
     }
 }
