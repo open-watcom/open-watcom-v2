@@ -75,6 +75,12 @@
 #ifndef RT_DLGINCLUDE
 #define RT_DLGINCLUDE       17
 #endif
+#ifndef RT_HTML
+#define RT_HTML             23
+#endif
+#ifndef RT_MANIFEST
+#define RT_MANIFEST         24
+#endif
 
 #define RT_TOOLBAR          0xF1
 

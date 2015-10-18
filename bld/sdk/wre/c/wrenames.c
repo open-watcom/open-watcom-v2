@@ -81,6 +81,8 @@ WRETypeName WRETypeNames[] = {
     { (uint_16)(pointer_int)RT_MESSAGETABLE, WRE_MESSAGETABLENAME,   FALSE },
     { (uint_16)(pointer_int)RT_VERSION,      WRE_VERSIONNAME,        FALSE },
     { (uint_16)(pointer_int)RT_DLGINCLUDE,   WRE_DLGINCLUDENAME,     FALSE },
+    { (uint_16)(pointer_int)RT_HTML,         WRE_HTMLNAME,           FALSE },
+    { (uint_16)(pointer_int)RT_MANIFEST,     WRE_MANIFESTNAME,       FALSE },
     { 0,                                     0,                      FALSE }
 };
 

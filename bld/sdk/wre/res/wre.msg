@@ -295,6 +295,12 @@ pick(   WRE_VERSIONNAME,
 pick(   WRE_DLGINCLUDENAME,
         "Dialog Include Resources",
         "Dialog Include Resources" )
+pick(   WRE_HTMLNAME,
+        "Html Resources",
+        "Html Resources" )
+pick(   WRE_MANIFESTNAME,
+        "Manifest file Resource",
+        "Manifest file Resource" )
 pick(   WRE_TOTALTEXT_NONE,
         "No Resources",
         "No Resources" )
