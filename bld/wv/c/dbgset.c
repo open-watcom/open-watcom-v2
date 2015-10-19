@@ -46,6 +46,7 @@
 #include "trapglbl.h"
 #include "dbgmain.h"
 #include "dbginvk.h"
+#include "dbgcall.h"
 
 #include "clibext.h"
 
@@ -54,10 +55,8 @@ extern char             *GetCmdEntry( const char *, int, char * );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
-extern void             CallSet( void );
 extern void             LookSet( void );
 extern void             LevelSet( void );
-extern void             CallConf( void );
 extern void             LookConf( void );
 extern void             LevelConf( void );
 extern void             DoConfig( const char *,const char *,void (**)(void), void (**)(void) );

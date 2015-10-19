@@ -48,15 +48,13 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgcall2.h"
 
 
 extern address          AddrAdd( address, long );
 extern int              AddrComp( address, address );
 extern long             AddrDiff( address, address );
 extern void             LclLValue( stack_entry * );
-extern void             FreezeRegs( void );
-extern bool             PerformCall( address, bool, unsigned int );
-extern void             UnFreezeRegs( void );
 extern void             SetRegSP( address );
 extern stack_entry      *StkEntry( int );
 extern char             *DupStringEntry( char *, unsigned long );

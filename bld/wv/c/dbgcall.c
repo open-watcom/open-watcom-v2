@@ -42,6 +42,8 @@
 #include "dbgscan.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgcall.h"
+#include "dbgcall2.h"
 
 
 extern stack_entry  *ExprSP;
@@ -52,10 +54,7 @@ extern void         ChkPrintList( void );
 extern void         DoPrintList( bool );
 extern void         ConfigLine( char * );
 extern void         PushSym( void * );
-extern void         FreezeRegs( void );
-extern bool         PerformExplicitCall( address, mad_string, unsigned int );
 extern void         NormalExpr( void );
-extern void         UnFreezeRegs( void );
 extern void         ParseRegSet( bool, location_list *, dip_type_info * );
 
 

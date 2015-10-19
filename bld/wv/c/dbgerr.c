@@ -41,11 +41,11 @@
 #include "dbgutil.h"
 #include "dbgstk.h"
 #include "dbgexpr.h"
+#include "dbgcall2.h"
 
 
 extern int              ScanSavePtr;
 
-extern void             UnFreezeRegs( void );
 extern void             CmdError( void );
 extern void             CaptureError( void );
 extern void             BrkCmdError( void );

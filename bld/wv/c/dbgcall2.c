@@ -39,6 +39,7 @@
 #include "dbgexpr4.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgcall2.h"
 
 
 extern stack_entry      *ExprSP;

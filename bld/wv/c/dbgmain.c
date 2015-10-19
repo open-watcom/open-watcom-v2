@@ -46,6 +46,7 @@
 #include "dbgmain.h"
 #include "dbginvk.h"
 #include "dbghook.h"
+#include "dbgcall.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -54,7 +55,6 @@ extern void             FingFront( void );
 extern void             FingOpen( void );
 extern void             FiniAboutMessage( void );
 extern void             FiniBrowse( void );
-extern void             FiniCall( void );
 extern void             FiniCmd( void );
 extern void             FiniDLLList( void );
 extern void             FiniDbgInfo( void );
@@ -101,7 +101,6 @@ extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
 extern void             ProcBreak( void );
-extern void             ProcCall( void );
 extern void             ProcCapture( void );
 extern void             ProcDisplay( void );
 extern void             ProcDo( void );
