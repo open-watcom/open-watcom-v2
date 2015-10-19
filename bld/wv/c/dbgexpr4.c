@@ -42,6 +42,7 @@
 #include "madinter.h"
 #include "i64.h"
 #include "dbgutil.h"
+#include "dbgmemor.h"
 
 
 extern void             BinOp( stack_entry *, stack_entry * );

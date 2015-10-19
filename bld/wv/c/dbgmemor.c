@@ -38,6 +38,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmemor.h"
 
 extern char             *GetCmdName( wd_cmd cmd );
 extern unsigned         ProgPeek( address, void *, unsigned int );

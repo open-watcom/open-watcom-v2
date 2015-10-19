@@ -41,6 +41,7 @@
 #include "madinter.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
+#include "dbgmemor.h"
 
 
 extern void             OptMemAddr( memory_expr, address *);

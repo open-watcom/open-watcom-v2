@@ -76,9 +76,4 @@ typedef enum {
 } item_type;
 #define IT_TYPE_MASK    ~(IT_ERR | IT_IO | IT_DEC | IT_INC)
 
-
-extern item_type    ItemGetMAD( address *, item_mach *, item_type, mad_type_handle );
-extern item_type    ItemPutMAD( address *, const item_mach *, item_type, mad_type_handle );
-extern unsigned     ItemSize( item_type );
-
 #endif

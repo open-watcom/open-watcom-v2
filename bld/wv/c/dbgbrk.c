@@ -48,6 +48,7 @@
 #include "madinter.h"
 #include "dbgutil.h"
 #include "trapglbl.h"
+#include "dbgmemor.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );

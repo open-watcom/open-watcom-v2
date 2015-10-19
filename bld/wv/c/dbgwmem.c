@@ -45,6 +45,7 @@
 #include "dbgscan.h"
 #include "madinter.h"
 #include "dbgutil.h"
+#include "dbgmemor.h"
 
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
@@ -53,7 +54,6 @@ extern bool             DlgLongExpr( const char *title, long * );
 extern bool             DlgDataAddr( const char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
 extern long             AddrDiff( address a, address b );
-extern unsigned         ChangeMemUndoable( address addr, const void *data, unsigned len );
 extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( const char *title, char *buff );
 extern int              AddrComp(address,address);
@@ -63,7 +63,6 @@ extern bool             DlgScanGivenAddr( const char *str, address *value );
 extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
-extern unsigned         ProgPeekWrap(address addr,char * buff,unsigned length );
 
 
 typedef gui_ord (MEMHEADER)(a_window *,int);

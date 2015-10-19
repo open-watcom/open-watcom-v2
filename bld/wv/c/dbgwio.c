@@ -42,6 +42,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmemor.h"
 
 
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );

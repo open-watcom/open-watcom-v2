@@ -24,68 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Access to program memory.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgio.h"
-#include "dbglit.h"
-#include "dbgerr.h"
-#include "dbgmem.h"
-#include "dbgitem.h"
-#include "mad.h"
-#include "dbgutil.h"
-#include "dbgmemor.h"
-
-
-static walk_result MemRefDisp( address a, mad_type_handle th,
-                        mad_memref_kind mk, void *d )
-{
-    char                *p = TxtBuff;
-    item_mach           item;
-    unsigned            max;
-
-    d = d;
-    if( mk & MMK_IMPLICIT ) return( WR_CONTINUE );
-    if( p[0] != '\0' ) {
-        p = &p[strlen( p )];
-        *p++ = ' ';
-    }
-    p = StrAddr( &a, p, TXT_LEN - ( p - TxtBuff ) );
-#ifdef EXPERIMENTAL
-    //MAD: can be more explicit about transfer direction
-    switch( mk & (MMK_READ|MMK_WRITE) ) {
-    case 0:
-        *p = '\x1b';
-        break;
-    case MMK_READ:
-        *p = '\x1b';
-        break;
-    case MMK_WRITE:
-        *p = '\x1a';
-        break;
-    case MMK_READ|MMK_WRITE:
-        *p = '\x1d';
-        break;
-    }
-#else
-    *p = '=';
-#endif
-    ++p;
-    ItemGetMAD( &a, &item, IT_NIL, th );
-    max = TXT_LEN - ( p - TxtBuff );
-    MADTypeHandleToString( CurrRadix, th, &item, p, &max );
-    return( WR_CONTINUE );
-}
-
-bool InsMemRef( mad_disasm_data *dd )
-{
-    TxtBuff[0] = '\0';
-    MADDisasmMemRefWalk( dd, MemRefDisp, &DbgRegs->mr, NULL );
-    return( TxtBuff[0] != '\0' );
-}
-
+extern void         ChangeMemUndoable( address addr, const void *item, unsigned size );
+extern unsigned     ProgPeekWrap(address addr,char * buff,unsigned length );
+extern unsigned     ItemSize( item_type typ );
+extern item_type    ItemGetMAD( address *addr, item_mach *item, item_type ops, mad_type_handle th );
+extern item_type    ItemPutMAD( address *addr, const item_mach *item, item_type ops, mad_type_handle th );
