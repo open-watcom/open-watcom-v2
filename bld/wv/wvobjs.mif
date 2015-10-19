@@ -32,7 +32,7 @@ eng_objs = &
     $(_subdir_)dbgloc.obj &
     $(_subdir_)dbglog.obj &
     $(_subdir_)dbgmain.obj &
-    $(_subdir_)dbgmem.obj &
+    $(_subdir_)dbgmemor.obj &
     $(_subdir_)memtypes.obj &
     $(_subdir_)dbgmisc.obj &
     $(_subdir_)dbgovl.obj &
