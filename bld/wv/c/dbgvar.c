@@ -44,6 +44,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexpr4.h"
 
 #include "clibext.h"
 
@@ -63,9 +64,6 @@ extern void             SwapStack( int entry );
 extern void             ExprPurge( void );
 extern void             SetTokens( bool );
 extern void             PushNum( long );
-extern void             DoPlus( void );
-extern void             DoPoints( type_kind );
-extern void             DoAssign( void );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
@@ -75,7 +73,6 @@ extern void             BreakOnExprSP( const char * );
 extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
-extern void             DoGivenField( sym_handle *member_hdl );
 extern void             StartSubscript( void );
 extern void             AddSubscript( void );
 extern void             EndSubscript( void );

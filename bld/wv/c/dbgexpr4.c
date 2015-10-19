@@ -43,6 +43,7 @@
 #include "i64.h"
 #include "dbgutil.h"
 #include "dbgmemor.h"
+#include "dbgexpr4.h"
 
 
 extern void             BinOp( stack_entry *, stack_entry * );

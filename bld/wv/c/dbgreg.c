@@ -44,6 +44,8 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgstk.h"
+#include "dbgexpr4.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
@@ -56,7 +58,6 @@ extern bool             TraceModifications( MAD_MEMREF_WALKER *wk, void *d );
 extern void             LocationCreate( location_list *ll, location_type lt, void *d );
 extern dip_status       LocationAssign( location_list *dst, location_list *src, unsigned long len, bool sign_extend );
 extern void             PushLocation( location_list *ll, dip_type_info *ti );
-extern void             DoAssign( void );
 extern void             MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti );
 
 static int              StackPos;

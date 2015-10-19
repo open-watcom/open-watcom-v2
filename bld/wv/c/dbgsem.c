@@ -42,6 +42,7 @@
 #include "dbgscan.h"
 #include "numscan.h"
 #include "madinter.h"
+#include "dbgexpr4.h"
 
 #include "clibext.h"
 
@@ -69,26 +70,6 @@ enum {
     SEM_MECHANISM   = 0xe0,
 };
 
-extern void             DoPlus( void );
-extern void             DoMinus( void );
-extern void             DoMul( void );
-extern void             DoDiv( void );
-extern void             DoMod( void );
-extern void             DoAnd( void );
-extern void             DoOr( void );
-extern void             DoXor( void );
-extern void             DoShift( void );
-extern void             DoAddr( void );
-extern void             DoFAddr( void );
-extern void             DoPoints( type_kind );
-extern void             DoConvert( void );
-extern void             DoLConvert( void );
-extern void             DoMakeComplex( void );
-extern void             DoStringConcat( void );
-extern void             DoField( void );
-extern void             DoScope( void );
-extern void             DoAssign( void );
-extern void             DoCall( unsigned int, bool );
 extern void             DupStack( void );
 extern void             SwapStack( int );
 extern unsigned         TstEQ( unsigned int );

@@ -42,10 +42,10 @@
 #include "numscan.h"
 #include "madinter.h"
 #include "dbgutil.h"
+#include "dbgexpr4.h"
 
 
 extern sym_list         *Disambiguate( sym_list *, location_context * );
-extern void             DoAPoints( stack_entry *, type_kind );
 extern void             ExprSetAddrInfo( stack_entry *, bool );
 extern void             FromItem( item_mach *, stack_entry * );
 extern void             FreeSymHandle( sym_list * );

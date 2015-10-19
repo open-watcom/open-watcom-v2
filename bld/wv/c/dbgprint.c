@@ -43,6 +43,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexpr4.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -57,13 +58,10 @@ extern void             NormalExpr( void );
 extern void             ExprValue( stack_entry * );
 extern void             PopEntry( void );
 extern void             DupStack( void );
-extern void             DoGivenField( sym_handle * );
 extern void             WriteToPgmScreen( const void *, unsigned );
 extern void             GraphicDisplay( void );
 extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern void             PushNum( long );
-extern void             DoPlus( void );
-extern void             DoPoints( type_kind );
 extern void             DefAddr( memory_expr, address * );
 extern void             ChkBreak( void );
 extern void             PushType( type_handle * );

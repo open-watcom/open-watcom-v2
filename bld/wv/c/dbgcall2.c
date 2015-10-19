@@ -36,13 +36,13 @@
 #include "dbgitem.h"
 #include "madinter.h"
 #include "dbgexec.h"
+#include "dbgexpr4.h"
 
 
 extern stack_entry      *ExprSP;
 
 
 extern void             DbgUpdate( update_list );
-extern void             DoAssign( void );
 extern stack_entry      *StkEntry( int );
 extern void             SwapStack( int );
 extern void             PopEntry( void );

@@ -40,6 +40,7 @@
 #include "madinter.h"
 #include "i64.h"
 #include "dbgscan.h"
+#include "dbgexpr4.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
@@ -51,12 +52,6 @@ extern sym_list         *ExprGetSymList( stack_entry *, bool );
 extern void             PurgeSymHandles( void );
 extern void             ConvertTo( stack_entry *,type_kind, type_modifier, unsigned );
 extern void             ClassNum( stack_entry * );
-extern void             DoXor( void );
-extern void             DoPlus( void );
-extern void             DoMinus( void );
-extern void             DoMul( void );
-extern void             DoPoints( type_kind );
-extern void             DoConvert( void );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern void             LocationCreate( location_list *, location_type, void * );

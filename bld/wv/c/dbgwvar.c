@@ -45,6 +45,7 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"
+#include "dbgexpr4.h"
 
 extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
@@ -60,9 +61,6 @@ extern void             DupStack( void );
 extern void             SwapStack( int entry );
 extern void             ExprPurge( void );
 extern void             SetTokens( bool );
-extern void             DoPlus( void );
-extern void             DoPoints( type_kind );
-extern void             DoAssign( void );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
