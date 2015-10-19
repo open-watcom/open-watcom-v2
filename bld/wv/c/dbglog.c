@@ -35,6 +35,7 @@
 #include "dbgio.h"
 #include "dbgerr.h"
 #include "dbgscan.h"
+#include "dbglog.h"
 
 
 extern char         *GetCmdName( wd_cmd cmd );

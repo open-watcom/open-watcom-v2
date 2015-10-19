@@ -42,6 +42,7 @@
 #include "dbgsrc.h"
 #include "trapglbl.h"
 #include "dbgcmdln.h"
+#include "dbglog.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -92,8 +93,6 @@ extern void             InitToolBar( void );
 extern void             LangSetFini( void );
 extern bool             LangSetInit( void );
 extern void             LoadProg( void );
-extern void             LogFini( void );
-extern void             LogInit( void );
 extern void             PathFini( void );
 extern void             PathInit( void );
 extern void             PointFini( void );
@@ -115,7 +114,6 @@ extern void             ProcHook( void );
 extern void             ProcIf( void );
 extern void             ProcInput( void );
 extern void             ProcInvoke( void );
-extern void             ProcLog( void );
 extern void             ProcNew( void );
 extern void             ProcPaint( void );
 extern void             ProcPrint( void );

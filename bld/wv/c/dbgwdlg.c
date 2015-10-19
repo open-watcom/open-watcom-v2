@@ -34,10 +34,10 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
+#include "dbglog.h"
 
 #define MAX_DLG_LINES 30000U
 
-extern void             LogLine( const char * );
 extern int              PageSize( int );
 extern void             SetLogMenuItems( bool active );
 extern void             DbgUpdate( update_list );
