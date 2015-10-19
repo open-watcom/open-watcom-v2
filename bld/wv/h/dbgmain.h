@@ -24,106 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  RDOS startup module
+* Description:  Debugger mainline.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <process.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <direct.h>
-#include <stdarg.h>
-#include "rdos.h"
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgwind.h"
-#include "dbgmem.h"
-#include "autoenv.h"
-#include "strutil.h"
-#include "dbgmain.h"
-
-#include "clibint.h"
-
-static char       CmdData[256];
-
-void GUImain( void )
-{
-    const char *cmdline;
-
-    // fix up env vars if necessary
-    watcom_setup_env();
-
-    cmdline = RdosGetCmdLine();
-    if( cmdline ) {
-        while( *cmdline != 0 && *cmdline != ' ' && *cmdline != 0x9 ) 
-            cmdline++;
-    
-        strcpy( CmdData, cmdline );
-    } else
-        CmdData[0] = 0;
-
-    DebugMain();
-}
-
-
-int GUISysInit( int param )
-{
-    param=param;
-    return( 1 );
-}
-
-void GUISysFini( void  )
-{
-    DebugFini();
-}
-
-void WndCleanUp( void )
-{
-}
-
-char *GetCmdArg( int num )
-{
-    if( num != 0 ) return( NULL );
-    return( CmdData );
-}
-
-void SetCmdArgStart( int num, char *ptr )
-{
-    num = num;
-
-    if( ptr )
-        strcpy( CmdData, ptr );
-    else
-        CmdData[0] = 0;
-}
-
-void KillDebugger( int ret_code )
-{
-    RdosUnloadExe( ret_code );
-}
-
-void GrabHandlers( void )
-{
-}
-
-void RestoreHandlers( void )
-{
-}
-
-long _fork( const char *cmd, size_t len )
-{
-    cmd = cmd; len = len;
-    return( 0 );
-}
-
-bool TBreak( void )
-{
-    return( false );
-}
-
-void SysSetMemLimit( void )
-{
-}
+extern char *GetCmdName( wd_cmd cmd );
+extern void DebugInit( void );
+extern void ReportTask( task_status task, unsigned code );
+extern void ChkBreak( void );
+extern void ProcACmd( void );
+extern void DebugMain( void );
+extern void DebugExit( void );
+extern void DebugFini( void );

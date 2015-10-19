@@ -47,15 +47,13 @@
 #include "autoenv.h"
 #include "dbglit.h"
 #include "strutil.h"
+#include "dbgmain.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
 #endif
 #include "clibext.h"
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
-extern void     DebugExit(void);
 extern void     StartupErr( const char *err );
 extern void     NewConsoleTitle( void );
 

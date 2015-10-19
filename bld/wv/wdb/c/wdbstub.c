@@ -88,6 +88,7 @@ Done:
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "dbgexec.h"
+#include "dbgmain.h"
 
 enum {
     REQ_NONE,
@@ -103,8 +104,6 @@ extern void             BrkClearAll( void );
 extern void             BrkDisableAll( void );
 extern void             BrkEnableAll( void );
 extern void             CallResults( void );
-extern void             DebugFini( void );
-extern void             DebugMain( void );
 extern void             DlgCmd( void );
 extern void             DoCmd(char*);
 extern void             DoInput( void );

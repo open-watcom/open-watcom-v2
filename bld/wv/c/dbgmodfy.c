@@ -45,6 +45,7 @@
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
 #include "dbgexpr.h"
+#include "dbgmain.h"
 
 
 extern void             OptMemAddr( memory_expr, address *);
@@ -53,7 +54,6 @@ extern void             NormalExpr( void );
 extern unsigned         ReqExpr( void );
 extern void             SetDataDot( address addr );
 extern address          GetDataDot( void );
-extern char             *GetCmdName( wd_cmd cmd );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern bool             AdvMachState( int );
 

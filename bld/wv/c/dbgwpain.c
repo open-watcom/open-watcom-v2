@@ -35,6 +35,7 @@
 #include "dbgerr.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
 
 
 extern wnd_class        ReqWndName( void );
@@ -43,7 +44,6 @@ extern char             *GetCmdEntry( const char *, int, char * );
 extern bool             WndDlgTxt( const char *buff );
 extern char             *GetWndFont( a_window * );
 extern bool             ScanStatus( void );
-extern const char       *GetCmdName( wd_cmd cmd );
 
 
 extern const char       WndNameTab[];

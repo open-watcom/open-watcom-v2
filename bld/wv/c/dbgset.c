@@ -44,6 +44,7 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "trapglbl.h"
+#include "dbgmain.h"
 
 #include "clibext.h"
 
@@ -77,7 +78,6 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern char             *GetCmdName( wd_cmd cmd );
 extern void             AddrFloat( address * );
 
 extern const char       WndNameTab[];

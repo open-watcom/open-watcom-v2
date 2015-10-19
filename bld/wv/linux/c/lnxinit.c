@@ -41,6 +41,7 @@
 #include <signal.h>
 #include "dbgdefn.h"
 #include "strutil.h"
+#include "dbgmain.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
@@ -51,9 +52,6 @@ unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 #endif
 
-
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 
 extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;

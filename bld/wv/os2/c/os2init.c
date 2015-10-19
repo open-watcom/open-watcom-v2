@@ -41,9 +41,8 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "strutil.h"
+#include "dbgmain.h"
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
 
 static char             *cmdStart;

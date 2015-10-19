@@ -35,9 +35,8 @@
 #include <setjmp.h>
 #include "tinyio.h"
 #include "dbgdefn.h"
+#include "dbgmain.h"
 
-extern void             DebugMain( void );
-extern void             DebugFini( void );
 extern void             WndRefresh( void );
 
 static void (interrupt *_old10)();

@@ -38,9 +38,9 @@
 #include "dbgscan.h"
 #include "dbgmad.h"
 #include "dbgexec.h"
+#include "dbgmain.h"
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
-extern void             DebugExit( void );
 extern void             DlgSource( void );
 extern void             ProcSearchAll( void );
 extern void             ProcWndSearch( a_window * );
@@ -75,7 +75,6 @@ extern void             FontChange( void );
 extern void             ToggleHardMode( void );
 extern void             WndDumpPrompt( a_window * );
 extern void             WndDumpLog( a_window * );
-extern const char       *GetCmdName( wd_cmd cmd );
 extern void             DlgWndSet( void );
 extern bool             VarInfoRelease( void );
 extern void             SkipToAddr( address );

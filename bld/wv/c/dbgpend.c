@@ -40,10 +40,10 @@
 #include "spawn.h"
 #include "dui.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
 
 
 extern void             NewLang( const char *lang );
-extern void             ProcACmd( void );
 extern bool             IsInternalMod( mod_handle );
 extern bool             HookPendingPush( void );
 

@@ -48,6 +48,7 @@
 #include "filelcl.h"
 #include "filermt.h"
 #include "dbgsrc.h"
+#include "dbgmain.h"
 
 #include "clibext.h"
 
@@ -60,7 +61,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
 extern bool             KillProgOvlay( void );
-extern void             ReportTask( task_status, unsigned );
 extern void             BPsDeac( void );
 extern void             BPsUnHit( void );
 extern unsigned         DoLoad( const char *, unsigned long * );
@@ -98,7 +98,6 @@ extern address          GetRegSP( void );
 extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );
-extern char             *GetCmdName( wd_cmd cmd );
 extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern void             RecordEvent( const char * );
 extern bool             HookPendingPush( void );

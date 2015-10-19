@@ -37,6 +37,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
@@ -46,7 +47,6 @@ extern bool             WndDlgTxt( const char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
-extern const char       *GetCmdName( wd_cmd cmd );
 extern bool             HookPendingPush( void );
 
 extern a_window         *WndMain;

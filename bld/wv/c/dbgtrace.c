@@ -42,6 +42,7 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "dbgexec.h"
+#include "dbgmain.h"
 
 
 enum {
@@ -102,7 +103,6 @@ extern long             GetDataLong( void );
 extern int              AddrComp( address, address );
 extern void             GetCurrOpcode( void );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern const char       *GetCmdName( wd_cmd cmd );
 extern void             ConfigLine( char * );
 extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );

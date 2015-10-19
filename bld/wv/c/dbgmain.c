@@ -43,6 +43,7 @@
 #include "trapglbl.h"
 #include "dbgcmdln.h"
 #include "dbglog.h"
+#include "dbgmain.h"
 
 
 // This list of extern functions is in alphabetic order.:

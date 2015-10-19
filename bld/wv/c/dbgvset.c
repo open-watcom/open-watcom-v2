@@ -40,10 +40,10 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
 
 extern type_display     *TypeDisplay;
 
-extern const char       *GetCmdName( wd_cmd cmd );
 extern char             *GetCmdEntry( const char *, int, char * );
 
 static const char TypeSettings[] = {

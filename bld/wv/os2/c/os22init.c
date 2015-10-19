@@ -42,10 +42,8 @@
 #include "dbgdata.h"
 #include "autoenv.h"
 #include "strutil.h"
+#include "dbgmain.h"
 
-
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 
 char            *CmdData;
 

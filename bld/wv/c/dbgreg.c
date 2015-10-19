@@ -48,10 +48,10 @@
 #include "dbgexpr4.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgmain.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
-extern char             *GetCmdName( wd_cmd cmd );
 extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );
 extern bool             DlgIncompleteUndo( void );

@@ -44,14 +44,13 @@
 #include <signal.h>
 #include "dbgdefn.h"
 #include "strutil.h"
+#include "dbgmain.h"
 
 #include "clibint.h"
 
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 extern void     __qnx_exit( int );
 
 extern int      DbgConHandle; /* Debugger console file handle */

@@ -43,6 +43,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgexec.h"
+#include "dbgmain.h"
 
 
 extern bool             AdvMachState( int );
@@ -76,7 +77,6 @@ extern bool             CheckStackPos( void );
 extern void             RecordEvent( const char *p );
 extern void             RecordGo( const char *p );
 extern void             CheckEventRecorded( void );
-extern char             *GetCmdName( wd_cmd cmd );
 extern void             RecordAsynchEvent( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern char             *GetLastImageName( void );
@@ -92,7 +92,6 @@ extern void             NameThread( dtid_t tid, const char *name );
 extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             DlgScanDataAddr( const char *str, address *value );
 extern bool             DlgScanLong( const char *str, long *value );
-extern void             ProcACmd( void );
 extern bool             SymUserModLoad( char *fname, address *loadaddr );
 extern bool             SymUserModUnload( char *fname );
 extern bool             HaveRemoteAsync( void );

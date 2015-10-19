@@ -38,9 +38,8 @@
 #include "dsxutil.h"
 #include "dbglit.h"
 #include "dbgcmdln.h"
+#include "dbgmain.h"
 
-extern void                     DebugMain( void );
-extern void                     DebugFini( void );
 extern void                     StartupErr( const char * );
 extern void                     SaveOrigVectors( void );
 extern void                     RestoreOrigVectors( void );

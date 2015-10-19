@@ -39,13 +39,13 @@
 #include "dbgio.h"
 #include "dbgscan.h"
 #include "trapglbl.h"
+#include "dbgmain.h"
 
 
 extern long         _fork( const char *, size_t );
 extern rc_erridx    RemoteFork( const char *,size_t );
 extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
-extern const char   *GetCmdName( wd_cmd cmd );
 
 static const char SystemOps[] = { "Remote\0Local\0" };
 

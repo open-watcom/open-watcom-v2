@@ -39,6 +39,7 @@
 #include "dbgmad.h"
 #include "dbgscan.h"
 #include "madinter.h"
+#include "dbgmain.h"
 
 
 extern void             AsmExam( void );
@@ -51,7 +52,6 @@ extern void             WndIOInspect( address *, mad_type_handle );
 extern void             WndAddrInspect( address );
 extern void             SetDataDot( address );
 extern address          GetDataDot( void );
-extern char             *GetCmdName( wd_cmd cmd );
 
 
 /*

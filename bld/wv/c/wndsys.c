@@ -46,6 +46,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -58,7 +59,6 @@ extern bool             DebugScreen( void );
 extern bool             DebugScreenRecover( void );
 extern void             RemoteSetUserScreen( void );
 extern void             RemoteSetDebugScreen( void );
-extern void             ProcACmd( void );
 extern void             CheckBPErrors( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
@@ -76,7 +76,6 @@ extern char             LookUpCtrlKey( unsigned key );
 extern bool             MacKeyHit( a_window *wnd, unsigned key );
 extern gui_coord        *WndMainClientSize( void );
 extern void             FingClose( void );
-extern const char       *GetCmdName( wd_cmd cmd );
 extern void             SetUpdateFlags( update_list );
 extern void             ScrnSpawnStart( void );
 extern void             ScrnSpawnEnd( void );

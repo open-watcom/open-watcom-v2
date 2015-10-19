@@ -47,6 +47,7 @@
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
+#include "dbgmain.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -61,13 +62,11 @@ extern void             NormalExpr( void );
 extern void             WriteToPgmScreen( const void *, unsigned );
 extern void             GraphicDisplay( void );
 extern void             DefAddr( memory_expr, address * );
-extern void             ChkBreak( void );
 extern void             SetTokens( bool );
 extern void             MakeMemoryAddr( bool, memory_expr, address * );
 extern void             AddrFix( address * );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 extern unsigned         ProgPeek( address, void *, unsigned int );
-extern char             *GetCmdName( wd_cmd cmd );
 
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )

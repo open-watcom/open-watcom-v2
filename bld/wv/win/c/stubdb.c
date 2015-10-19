@@ -47,13 +47,12 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "dbgexec.h"
+#include "dbgmain.h"
 
 extern void             DoCmd(char*);
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern address          GetCodeDot( void );
 extern void             *WndAsmInspect(address addr);
-extern void             DebugMain( void );
-extern void             DebugFini( void );
 extern void             DoInput(void);
 extern void             DlgCmd( void );
 extern address          GetCodeDot( void );

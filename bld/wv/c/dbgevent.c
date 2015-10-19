@@ -40,13 +40,13 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
 
 
 extern void             RecordPointStart( void );
 extern void             RecordNewProg( void );
 extern void             PointFini( void );
 extern int              GetStackPos( void );
-extern char             *GetCmdName( wd_cmd cmd );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );

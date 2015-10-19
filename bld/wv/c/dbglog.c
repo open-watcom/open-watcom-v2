@@ -36,9 +36,7 @@
 #include "dbgerr.h"
 #include "dbgscan.h"
 #include "dbglog.h"
-
-
-extern char         *GetCmdName( wd_cmd cmd );
+#include "dbgmain.h"
 
 
 static handle       LogHndl;

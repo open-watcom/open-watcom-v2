@@ -39,6 +39,7 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
@@ -53,7 +54,6 @@ extern void             ConfigEvent( void );
 extern void             ConfigCalls( void );
 extern void             InvokeAFile( const char * );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern char             *GetCmdName( wd_cmd cmd );
 
 
 /*

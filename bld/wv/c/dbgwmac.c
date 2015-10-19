@@ -42,11 +42,11 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
 
 extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
 extern wnd_macro        *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds );
-extern const char       *GetCmdName( wd_cmd cmd );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
 extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);

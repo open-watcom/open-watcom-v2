@@ -51,6 +51,7 @@
 #include "dbgmemor.h"
 #include "dbgexec.h"
 #include "dbgexpr2.h"
+#include "dbgmain.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -84,7 +85,6 @@ extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern void             InvokeAFile( const char * );
 extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern char             *GetCmdName( wd_cmd cmd );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern void             RecordEvent( const char *p );

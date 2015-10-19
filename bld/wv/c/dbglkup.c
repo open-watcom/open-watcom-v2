@@ -38,6 +38,7 @@
 #include "dbgio.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
 
 #include "clibext.h"
 
@@ -47,7 +48,6 @@ extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( const char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );
 extern unsigned         ProgPoke( address, const void *, unsigned );
-extern char             *GetCmdName( wd_cmd cmd );
 
 
 typedef struct lookup_list {

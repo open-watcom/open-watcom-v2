@@ -48,11 +48,10 @@
 #include "autoenv.h"
 #include "strutil.h"
 #include "guiwin.h"
+#include "dbgmain.h"
 
 #include "clibint.h"
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 extern void     HookInQueue( void );
 extern void     HookOutQueue( void );
 static BOOL     PASCAL GetCommandData( HWND );

@@ -40,6 +40,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
 
 #include "clibext.h"
 
@@ -74,7 +75,6 @@ extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             WndDlgTxt( const char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
-extern const char       *GetCmdName( wd_cmd cmd );
 extern void             DbgUpdate( update_list );
 
 extern const char       WndNameTab[];
