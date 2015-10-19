@@ -40,6 +40,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgmain.h"
+#include "dbginvk.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
@@ -52,8 +53,6 @@ extern void             ConfigFlip( void );
 extern void             ConfigHook( void );
 extern void             ConfigEvent( void );
 extern void             ConfigCalls( void );
-extern void             InvokeAFile( const char * );
-extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
 
 
 /*

@@ -48,3 +48,12 @@ typedef struct invokes {
     char                *buff;
     char                name[1];
 } invokes;
+
+
+extern void ImplicitSet( void );
+extern void ImplicitConf( void );
+extern void Invoke( const char *invfile, int len, char_ring *parmlist );
+extern void ProfileInvoke( char *name );
+extern void ProcInvoke( void );
+extern void CreateInvokeFile( const char *name, void(*rtn)(void) );
+extern void InvokeAFile( const char *name );

@@ -44,6 +44,7 @@
 #include "dbgcmdln.h"
 #include "dbglog.h"
 #include "dbgmain.h"
+#include "dbginvk.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -114,7 +115,6 @@ extern void             ProcHelp( void );
 extern void             ProcHook( void );
 extern void             ProcIf( void );
 extern void             ProcInput( void );
-extern void             ProcInvoke( void );
 extern void             ProcNew( void );
 extern void             ProcPaint( void );
 extern void             ProcPrint( void );
@@ -129,7 +129,6 @@ extern void             ProcTrace( void );
 extern void             ProcView( void );
 extern void             ProcWhile( void );
 extern void             ProcWindow( void );
-extern void             ProfileInvoke( char * );
 extern void             RecordFini( void );
 extern void             RecordInit( void );
 extern void             ReleaseProgOvlay( bool );

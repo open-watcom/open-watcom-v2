@@ -53,12 +53,12 @@ extern handle           LocalFullPathOpen( const char *name, unsigned name_len, 
  * ImplicitSet - set implicit/explicit invoke file processing
  */
 
-extern void ImplicitSet( void )
+void ImplicitSet( void )
 {
     _SwitchSet( SW_IMPLICIT, SwitchOnOff() );
 }
 
-extern void ImplicitConf( void )
+void ImplicitConf( void )
 {
     ShowSwitch( _IsOn( SW_IMPLICIT ) );
 }

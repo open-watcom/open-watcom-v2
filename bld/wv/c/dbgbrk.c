@@ -52,6 +52,7 @@
 #include "dbgexec.h"
 #include "dbgexpr2.h"
 #include "dbgmain.h"
+#include "dbginvk.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -83,8 +84,6 @@ extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( const char *, int, char * );
-extern void             InvokeAFile( const char * );
-extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern void             RecordEvent( const char *p );

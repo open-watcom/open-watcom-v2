@@ -41,6 +41,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgmain.h"
+#include "dbginvk.h"
 
 
 extern void             RecordPointStart( void );
@@ -49,8 +50,6 @@ extern void             PointFini( void );
 extern int              GetStackPos( void );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
-extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern void             InvokeAFile( const char * );
 extern unsigned         ReqExpr( void );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
