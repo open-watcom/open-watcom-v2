@@ -45,6 +45,7 @@
 #include "dbgutil.h"
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
+#include "dbgexpr2.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -56,7 +57,6 @@
 
 extern void             ChkExpr( void );
 extern void             NormalExpr( void );
-extern void             ExprValue( stack_entry * );
 extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             WriteToPgmScreen( const void *, unsigned );

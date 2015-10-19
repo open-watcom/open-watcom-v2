@@ -44,6 +44,7 @@
 #include "madinter.h"
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
+#include "dbgexpr2.h"
 
 #include "clibext.h"
 
@@ -88,11 +89,6 @@ extern void             PushType( type_handle * );
 extern void             PushInt( int );
 extern void             PopEntry( void );
 extern void             MakeAddr( void );
-extern void             ExprValue( stack_entry * );
-extern bool             NameResolve( stack_entry *, bool );
-extern void             LValue( stack_entry * );
-extern void             RValue( stack_entry * );
-extern void             LRValue( stack_entry * );
 extern void             ParseRegSet( bool, location_list *, dip_type_info * );
 extern void             MoveSP( int );
 extern stack_entry      *StkEntry( int );

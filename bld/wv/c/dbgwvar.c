@@ -46,6 +46,7 @@
 #include "strutil.h"
 #include "dbgutil.h"
 #include "dbgexpr4.h"
+#include "dbgexpr2.h"
 
 extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
@@ -55,7 +56,6 @@ extern void             PrintString( void );
 extern void             ForcePrintString( void );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
-extern void             ExprValue( stack_entry * );
 extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             SwapStack( int entry );

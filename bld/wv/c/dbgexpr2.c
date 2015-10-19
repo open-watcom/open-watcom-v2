@@ -44,6 +44,7 @@
 #include "dbgutil.h"
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
+#include "dbgexpr2.h"
 
 
 extern sym_list         *Disambiguate( sym_list *, location_context * );

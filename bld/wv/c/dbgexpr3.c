@@ -41,8 +41,8 @@
 #include "i64.h"
 #include "dbgutil.h"
 #include "dbgexpr3.h"
+#include "dbgexpr2.h"
 
-extern void             RValue(stack_entry *);
 extern void             MoveTH( stack_entry *, stack_entry * );
 extern bool             AllocatedString( stack_entry * );
 extern void             LocationCreate( location_list *, location_type, void * );

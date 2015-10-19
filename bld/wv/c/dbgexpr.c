@@ -42,20 +42,15 @@
 #include "dbgscan.h"
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
+#include "dbgexpr2.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
 extern int              AddrComp( address , address );
-extern void             RValue( stack_entry * );
-extern void             LValue( stack_entry * );
-extern sym_list         *ExprGetSymList( stack_entry *, bool );
 extern void             PurgeSymHandles( void );
-extern void             ClassNum( stack_entry * );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern void             LocationCreate( location_list *, location_type, void * );
-extern void             ClassifyEntry( stack_entry *, dip_type_info * );
-extern void             ExprSymbol( stack_entry *, sym_handle * );
 extern address          GetRegIP( void );
 extern address          GetRegSP( void );
 extern address          GetRegBP( void );

@@ -45,6 +45,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgexpr4.h"
+#include "dbgexpr2.h"
 
 #include "clibext.h"
 
@@ -57,7 +58,6 @@ extern void             PrintString( void );
 extern void             ForcePrintString( void );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
-extern void             ExprValue( stack_entry * );
 extern void             PopEntry( void );
 extern void             DupStack( void );
 extern void             SwapStack( int entry );
@@ -87,7 +87,6 @@ extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             DbgUpdate( update_list );
 extern bool             AdvMachState( int );
-extern void             LValue( stack_entry * );
 
 
 extern stack_entry      *ExprSP;

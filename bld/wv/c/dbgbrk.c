@@ -50,6 +50,7 @@
 #include "trapglbl.h"
 #include "dbgmemor.h"
 #include "dbgexec.h"
+#include "dbgexpr2.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -102,7 +103,6 @@ extern bool             DlgScanCodeAddr( const char *str, address *value );
 extern void             DoInput( void );
 extern void             DbgUpdate( update_list );
 extern void             CheckForNewThreads( bool );
-extern void             LValue( stack_entry * );
 
 
 extern char_ring        *DLLList;

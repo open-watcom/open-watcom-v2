@@ -38,15 +38,14 @@
 #include "i64.h"
 #include "dbgscan.h"
 #include "dbgexpr3.h"
+#include "dbgexpr2.h"
 
 
 extern void             PushInt( int );
 extern void             SwapStack( int );
 extern void             MakeAddr( void );
 extern void             PopEntry( void );
-extern void             ExprValue( stack_entry * );
 extern void             DefAddr( memory_expr, address * );
-extern void             ExprResolve( stack_entry * );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );
 

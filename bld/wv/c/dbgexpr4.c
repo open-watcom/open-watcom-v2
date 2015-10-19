@@ -45,19 +45,12 @@
 #include "dbgmemor.h"
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
+#include "dbgexpr2.h"
 
 
 extern address          AddrAdd( address, long );
 extern int              AddrComp( address, address );
 extern long             AddrDiff( address, address );
-extern bool             NameResolve( stack_entry *, bool );
-extern void             SymResolve( stack_entry *entry );
-extern void             RValue( stack_entry * );
-extern void             LRValue( stack_entry * );
-extern void             LValue( stack_entry * );
-extern void             ExprResolve( stack_entry * );
-extern void             ClassifyEntry( stack_entry *, dip_type_info * );
-extern bool             ClassifyType( location_context *, type_handle *, dip_type_info * );
 extern void             LclLValue( stack_entry * );
 extern void             FreezeRegs( void );
 extern bool             PerformCall( address, bool, unsigned int );
@@ -80,7 +73,6 @@ extern bool             CreateSym( lookup_item *, dip_type_info * );
 extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );
 extern void             LocationCreate( location_list *, location_type, void * );
 extern void             LocationAdd( location_list *, unsigned long );
-extern void             ExprSymbol( stack_entry *, sym_handle * );
 extern void             CreateLC( stack_entry * );
 extern void             MoveLC( stack_entry *, stack_entry * );
 extern address          DefAddrSpaceForAddr( address );
