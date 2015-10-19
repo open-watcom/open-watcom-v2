@@ -37,10 +37,10 @@
 #include "dbgio.h"
 #include "dbgname.h"
 #include "dbgswtch.h"
+#include "dbgcmdln.h"
 
 
 extern int              Lookup( const char *, const char *, size_t );
-extern unsigned long    GetMemory( void );
 extern void             StartupErr( const char * );
 
 

@@ -42,6 +42,7 @@
 #include "dbgswtch.h"
 #include "dbginstr.h"
 #include "uidbg.h"
+#include "dbgcmdln.h"
 
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 

@@ -37,8 +37,8 @@
 #include "dbgdefn.h"
 #include "dsxutil.h"
 #include "dbglit.h"
+#include "dbgcmdln.h"
 
-extern void                     ProcCmd( void );
 extern void                     DebugMain( void );
 extern void                     DebugFini( void );
 extern void                     StartupErr( const char * );

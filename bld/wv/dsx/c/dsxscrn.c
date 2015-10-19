@@ -43,6 +43,7 @@
 #include "dbgscrn.h"
 #include "uidbg.h"
 #include "guigmous.h"
+#include "dbgcmdln.h"
 
 
 #define _64K                    (64UL*1024)
@@ -137,8 +138,6 @@ typedef struct {
     };
 } screen_info;
 
-extern bool                     HasEquals( void );
-extern unsigned                 GetValue( void );
 extern int                      Lookup( const char *, const char *, size_t );
 
 extern void                     StartupErr( const char * );

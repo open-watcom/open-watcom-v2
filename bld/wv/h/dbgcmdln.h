@@ -24,59 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  Command line parsing for Windows debugger.
+* Description:  Debugger command line processing.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dosscrn.h"
-#include "dbgcmdln.h"
-
-
-extern int              Lookup( const char *, const char *, size_t );
-
-static const char SysOptNameTab[] = {
-    "NOSNow\0"
-    "Popups\0"
-};
-
-enum { 
-    OPT_NOSNOW,
-    OPT_POPUPS
-};
-
-bool OptDelim( char ch )
-{
-    return( ch == '/' || ch == '-' );
-}
-
-
-/*
- * ProcSysOption -- process system option
- */
-
-bool ProcSysOption( const char *start, unsigned len, int pass )
-{
-    pass=pass;
-    switch( Lookup( SysOptNameTab, start, len ) ) {
-    case OPT_NOSNOW:
-        break;
-    case OPT_POPUPS:
-        _SwitchOn( SW_DETACHABLE_WINDOWS );
-        break;
-    default:
-        return( false );
-    }
-    return( true );
-}
-
-
-/*
- * ProcSysOptInit -- initial system options
- */
-
-void ProcSysOptInit( void )
-{
-}
+extern void             OptError( char *err );
+extern void             SkipSpaces( void );
+extern bool             HasEquals( void );
+extern void             WantEquals( void );
+extern unsigned long    GetValueLong( void );
+extern unsigned         GetValue( void );
+extern unsigned long    GetMemory( void );
+extern void             GetItem( char *buff );
+extern char             *GetFileName( int pass );
+extern void             GetRawItem( char *start );
+extern void             ProcCmd( void );

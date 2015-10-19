@@ -35,10 +35,10 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "dbgname.h"
+#include "dbgcmdln.h"
 
 
 #if 0
-extern unsigned     GetValue( void );
 extern int          Lookup( const char *, const char *, size_t );
 
 

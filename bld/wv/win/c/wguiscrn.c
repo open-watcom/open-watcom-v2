@@ -38,14 +38,13 @@
 #include "dosscrn.h"
 #include "dbgscrn.h"
 #include "guiwin.h"
+#include "dbgcmdln.h"
 
 extern void         *ExtraAlloc( size_t );
 extern void         ExtraFree( void * );
 extern void         SaveMainScreen( char * );
 extern void         RestoreMainScreen( char * );
 extern int          Lookup( const char *, const char *, size_t );
-extern bool         HasEquals( void );
-extern unsigned     GetValue( void );
 
 extern int              HardModeRequired;
 extern a_window         *WndMain;

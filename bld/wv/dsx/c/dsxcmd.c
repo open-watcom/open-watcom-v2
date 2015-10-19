@@ -38,6 +38,7 @@
 #include "dbgname.h"
 #include "dbgwind.h"
 #include "dpmi.h"
+#include "dbgcmdln.h"
 
 
 #define MAX_CMDLINE_LEN         128
@@ -45,7 +46,6 @@
 
 
 extern int              Lookup( const char *, const char *, size_t );
-extern unsigned long    GetMemory( void );
 
 
 extern unsigned_8       DPMICheck;

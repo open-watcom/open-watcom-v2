@@ -43,13 +43,11 @@
 #include "dbgscrn.h"
 #include "uidbg.h"
 #include "guigmous.h"
+#include "dbgcmdln.h"
 
 extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
 
 extern int          Lookup( const char *, const char *, size_t );
-extern bool         HasEquals( void );
-extern unsigned     GetValue( void );
-
 
 
 extern unsigned char    NECBIOSGetMode(void);

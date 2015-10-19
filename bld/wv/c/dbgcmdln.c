@@ -42,6 +42,7 @@
 #include "dbgscrn.h"
 #include "trpld.h"
 #include "strutil.h"
+#include "dbgcmdln.h"
 
 extern int              Lookup( const char *, const char *, size_t );
 extern bool             OptDelim( char );
@@ -131,7 +132,7 @@ enum {
 };
 
 
-void SetupChar( void )
+static void SetupChar( void )
 {
    CurrChar = *CurrArgp;
    if( CurrChar == NULLCHAR ) {
@@ -147,7 +148,7 @@ void SetupChar( void )
 }
 
 
-void NextChar( void )
+static void NextChar( void )
 {
     ++CurrArgp;
     SetupChar();

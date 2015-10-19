@@ -53,15 +53,12 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "guigmous.h"
+#include "dbgcmdln.h"
 
 extern void         StartupErr( const char * );
 extern void         ReleaseProgOvlay( bool );
 extern void         KillDebugger( int );
-extern unsigned     GetValue( void );
 extern int          Lookup( const char *, const char *, size_t );
-extern void         WantEquals(void);
-extern void         GetRawItem( char * );
-extern char         *GetFileName( int pass );
 
 extern unsigned     UIConHandle;
 extern char         *UITermType;

@@ -41,6 +41,7 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "trapglbl.h"
+#include "dbgcmdln.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -102,7 +103,6 @@ extern void             ProcAccel( void );
 extern void             ProcBreak( void );
 extern void             ProcCall( void );
 extern void             ProcCapture( void );
-extern void             ProcCmd( void );
 extern void             ProcDisplay( void );
 extern void             ProcDo( void );
 extern void             ProcError( void );

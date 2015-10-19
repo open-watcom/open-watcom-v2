@@ -58,14 +58,12 @@
 #include "strutil.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbgcmdln.h"
 
 extern void     StartupErr( const char * );
 extern void     ReleaseProgOvlay( bool );
 extern void     KillDebugger( int );
 extern int      Lookup( const char *, const char *, size_t );
-extern void     WantEquals(void);
-extern void     GetRawItem( char * );
-extern char     *GetFileName( int pass );
 
 extern char     *UITermType;
 
