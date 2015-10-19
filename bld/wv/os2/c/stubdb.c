@@ -49,6 +49,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgexec.h"
 
 
 extern void             DoCmd( char * );
@@ -59,7 +60,6 @@ extern void             DebugMain( void );
 extern void             DebugFini( void );
 extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern unsigned         Go( bool );
 extern void             ExprValue( stack_entry * );
 
 static bool             Done;

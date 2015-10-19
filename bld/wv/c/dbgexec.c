@@ -42,6 +42,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexec.h"
 
 
 extern bool             AdvMachState( int );

@@ -49,6 +49,7 @@
 #include "dbgutil.h"
 #include "trapglbl.h"
 #include "dbgmemor.h"
+#include "dbgexec.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -78,7 +79,6 @@ extern bool             RemoteSetWatch( address, unsigned, unsigned long * );
 extern void             RemoteRestoreWatch( address, unsigned );
 extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
-extern void             SetProgState( unsigned );
 extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern void             InvokeAFile( const char * );
@@ -90,7 +90,6 @@ extern void             RecordEvent( const char *p );
 extern void             SetRecord( bool on );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
-extern bool             SetMsgText( char *, unsigned * );
 extern void             WriteDbgRegs( void );
 extern void             BreakOnImageLoad( const char *name, unsigned len, bool clear );
 extern void             InitMappableAddr( mappable_addr *loc );

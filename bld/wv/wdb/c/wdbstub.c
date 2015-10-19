@@ -87,6 +87,7 @@ Done:
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgexec.h"
 
 enum {
     REQ_NONE,
@@ -111,7 +112,6 @@ extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern brkp             *GetBPAtIndex( int index );
 extern address          GetCodeDot( void );
 extern address          GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool exact );
-extern unsigned         Go( bool );
 extern void             GoToReturn( void );
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             LoadNewProg( const char *cmd, const char *parms );

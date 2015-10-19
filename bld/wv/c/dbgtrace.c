@@ -41,6 +41,7 @@
 #include "madinter.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgexec.h"
 
 
 enum {
@@ -99,7 +100,6 @@ extern void             OptMemAddr( memory_expr, address * );
 extern int_16           GetDataWord( void );
 extern long             GetDataLong( void );
 extern int              AddrComp( address, address );
-extern unsigned         Execute( bool, bool );
 extern void             GetCurrOpcode( void );
 extern char             *GetCmdEntry( const char *, int, char * );
 extern const char       *GetCmdName( wd_cmd cmd );

@@ -35,14 +35,13 @@
 #include "dbgstk.h"
 #include "dbgitem.h"
 #include "madinter.h"
+#include "dbgexec.h"
 
 
 extern stack_entry      *ExprSP;
 
 
-extern unsigned         ExecProg( bool, bool, bool );
 extern void             DbgUpdate( update_list );
-extern bool             ReportTrap( unsigned, bool );
 extern void             DoAssign( void );
 extern stack_entry      *StkEntry( int );
 extern void             SwapStack( int );

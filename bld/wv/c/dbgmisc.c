@@ -39,6 +39,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexec.h"
 
 
 extern unsigned int     ReqExpr( void );
@@ -46,7 +47,6 @@ extern unsigned_64      ReqU64Expr( void );
 extern void             ReqMemAddr( memory_expr ,address *);
 extern unsigned         OptExpr( unsigned );
 extern void             DebugExit( void );
-extern unsigned         Go( bool );
 extern void             PopEntry( void );
 extern void             NormalExpr( void );
 extern char             *GetCmdEntry( const char *, int , char * );

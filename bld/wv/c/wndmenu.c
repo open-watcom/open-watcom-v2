@@ -37,6 +37,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgmad.h"
+#include "dbgexec.h"
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             DebugExit( void );
@@ -49,7 +50,6 @@ extern void             DlgOptSet( void );
 extern void             DlgCmd( void );
 extern void             DoSystem( const char *, size_t, int );
 extern void             ExecTrace( trace_cmd_type, debug_level );
-extern unsigned         Go( bool );
 extern void             ReStart( void );
 extern bool             SetProgStartHook( bool );
 extern void             GoToReturn( void );
