@@ -45,7 +45,6 @@
 
 extern void             NewLang( const char *lang );
 extern bool             IsInternalMod( mod_handle );
-extern bool             HookPendingPush( void );
 
 
 static bool ProcPending( void )

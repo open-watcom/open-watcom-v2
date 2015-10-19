@@ -38,6 +38,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgmain.h"
+#include "dbghook.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
@@ -47,7 +48,6 @@ extern bool             WndDlgTxt( const char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
-extern bool             HookPendingPush( void );
 
 extern a_window         *WndMain;
 extern gui_coord        WndScreen;

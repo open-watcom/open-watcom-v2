@@ -41,6 +41,7 @@
 #include "dbgscan.h"
 #include "dbgmain.h"
 #include "dbginvk.h"
+#include "dbghook.h"
 
 
 extern unsigned int     OptExpr( unsigned int );
@@ -50,7 +51,6 @@ extern void             ConfigDisp( void );
 extern void             ConfigFont( void );
 extern void             ConfigPaint( void );
 extern void             ConfigFlip( void );
-extern void             ConfigHook( void );
 extern void             ConfigEvent( void );
 extern void             ConfigCalls( void );
 

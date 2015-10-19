@@ -68,7 +68,6 @@ extern a_window         *WndSrchOpen( const char * );
 extern void             *GetWndFont( a_window * );
 extern bool             AsmOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern bool             FileOpenGadget( a_window *, wnd_line_piece *, mod_handle );
-extern bool             HookPendingPush( void );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
 extern bool             IsInternalMod( mod_handle );
 extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );

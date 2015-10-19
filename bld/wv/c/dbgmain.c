@@ -45,6 +45,7 @@
 #include "dbglog.h"
 #include "dbgmain.h"
 #include "dbginvk.h"
+#include "dbghook.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -59,7 +60,6 @@ extern void             FiniDLLList( void );
 extern void             FiniDbgInfo( void );
 extern void             FiniFont( void );
 extern void             FiniGadget( void );
-extern void             FiniHook( void );
 extern void             FiniIOWindow( void );
 extern void             FiniLiterals( void );
 extern void             FiniLocalInfo( void );
@@ -82,7 +82,6 @@ extern void             InitDbgInfo( void );
 extern void             InitFont( void );
 extern void             InitGadget( void );
 extern void             InitHelp( void );
-extern void             InitHook( void );
 extern void             InitIOWindow( void );
 extern void             InitLiterals( void );
 extern void             InitLocalInfo( void );
@@ -112,7 +111,6 @@ extern void             ProcFlip( void );
 extern void             ProcFont( void );
 extern void             ProcGo( void );
 extern void             ProcHelp( void );
-extern void             ProcHook( void );
 extern void             ProcIf( void );
 extern void             ProcInput( void );
 extern void             ProcNew( void );
