@@ -47,6 +47,7 @@
 #include "dbgutil.h"
 #include "dbgexpr4.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
@@ -56,10 +57,6 @@ extern void             PrintString( void );
 extern void             ForcePrintString( void );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
-extern void             PopEntry( void );
-extern void             DupStack( void );
-extern void             SwapStack( int entry );
-extern void             ExprPurge( void );
 extern void             SetTokens( bool );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );
@@ -67,8 +64,6 @@ extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff
 extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
-extern void             FreezeStack( void );
-extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
 extern void             WndInspectExprSP( const char *item );
 extern void             InitMappableAddr( mappable_addr *loc );

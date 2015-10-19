@@ -39,11 +39,12 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
 
 
 extern int              ScanSavePtr;
 
-extern void             ExprPurge( void );
 extern void             UnFreezeRegs( void );
 extern void             CmdError( void );
 extern void             CaptureError( void );

@@ -45,15 +45,14 @@
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 
 extern sym_list         *Disambiguate( sym_list *, location_context * );
-extern void             ExprSetAddrInfo( stack_entry *, bool );
 extern void             FreeSymHandle( sym_list * );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );
 extern void             LocationCreate( location_list *, location_type, void * );
-extern void             CreateLC( stack_entry * );
 extern address          DefAddrSpaceForAddr( address );
 extern address          DefAddrSpaceForMod( mod_handle );
 

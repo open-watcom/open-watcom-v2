@@ -37,6 +37,7 @@
 #include "madinter.h"
 #include "dbgexec.h"
 #include "dbgexpr4.h"
+#include "dbgexpr.h"
 
 
 extern stack_entry      *ExprSP;
@@ -44,8 +45,6 @@ extern stack_entry      *ExprSP;
 
 extern void             DbgUpdate( update_list );
 extern stack_entry      *StkEntry( int );
-extern void             SwapStack( int );
-extern void             PopEntry( void );
 extern void             SetRegIP( address );
 extern void             SetRegSP( address );
 extern address          GetRegSP( void );

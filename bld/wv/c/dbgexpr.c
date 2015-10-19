@@ -43,6 +43,7 @@
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );

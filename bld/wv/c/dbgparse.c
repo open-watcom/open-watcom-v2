@@ -39,12 +39,9 @@
 #include "dbgscan.h"
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 
-extern void             PushInt( int );
-extern void             SwapStack( int );
-extern void             MakeAddr( void );
-extern void             PopEntry( void );
 extern void             DefAddr( memory_expr, address * );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );

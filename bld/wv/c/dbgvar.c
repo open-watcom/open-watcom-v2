@@ -46,6 +46,7 @@
 #include "dbgutil.h"
 #include "dbgexpr4.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 #include "clibext.h"
 
@@ -58,25 +59,14 @@ extern void             PrintString( void );
 extern void             ForcePrintString( void );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
-extern void             PopEntry( void );
-extern void             DupStack( void );
-extern void             SwapStack( int entry );
-extern void             ExprPurge( void );
 extern void             SetTokens( bool );
-extern void             PushNum( long );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( const char *);
 extern void             BreakOnExprSP( const char * );
-extern void             FreezeStack( void );
-extern void             UnFreezeStack( bool );
 extern void             PrintValue( void );
-extern void             StartSubscript( void );
-extern void             AddSubscript( void );
-extern void             EndSubscript( void );
-extern void             PushSymHandle( sym_handle * );
 extern void             SetUpExpr( unsigned addr_depth );
 extern bool             UnMapAddress( mappable_addr *loc, image_entry *image );
 extern remap_return     ReMapImageAddress( mappable_addr *loc, image_entry *image );

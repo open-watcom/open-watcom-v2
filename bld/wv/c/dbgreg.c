@@ -46,6 +46,7 @@
 #include "dbgutil.h"
 #include "dbgstk.h"
 #include "dbgexpr4.h"
+#include "dbgexpr.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
@@ -57,7 +58,6 @@ extern bool             TraceModifications( MAD_MEMREF_WALKER *wk, void *d );
 
 extern void             LocationCreate( location_list *ll, location_type lt, void *d );
 extern dip_status       LocationAssign( location_list *dst, location_list *src, unsigned long len, bool sign_extend );
-extern void             PushLocation( location_list *ll, dip_type_info *ti );
 extern void             MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti );
 
 static int              StackPos;
@@ -113,7 +113,6 @@ extern void             AddrSection( address *, unsigned );
 extern mad_reg_info     *LookupRegName( mad_reg_info *, lookup_item * );
 extern void             LocationAppend( location_list *, location_list * );
 extern dip_status       RegLocation( machine_state *regs, mad_reg_info const *ri, location_list *ll );
-extern void             InitLC( location_context *new, bool use_real_regs );
 extern address          DefAddrSpaceForAddr( address );
 
 

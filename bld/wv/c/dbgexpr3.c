@@ -42,9 +42,8 @@
 #include "dbgutil.h"
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
-extern void             MoveTH( stack_entry *, stack_entry * );
-extern bool             AllocatedString( stack_entry * );
 extern void             LocationCreate( location_list *, location_type, void * );
 extern address          DefAddrSpaceForAddr( address );
 

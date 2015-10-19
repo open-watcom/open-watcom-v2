@@ -38,14 +38,13 @@
 #include "spawn.h"
 #include "mad.h"
 #include "dbgscan.h"
+#include "dbgexpr.h"
 
 
 extern unsigned long    ReqLongExpr( void );
 extern void             ReqMemAddr( memory_expr, address * );
 extern void             NormalExpr( void );
 extern void             ChkExpr( void );
-extern void             FreezeStack( void );
-extern void             UnFreezeStack( bool );
 extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
 extern void             RawScanInit( void );
 

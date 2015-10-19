@@ -39,9 +39,10 @@
 #include "dbgio.h"
 #include "dui.h"
 #include "dbgutil.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
 
 extern void             BrkAddrRefresh( void );
-extern void             InitLC( location_context *new, bool use_real_regs );
 extern void             SetStackPos( location_context *lc, int pos );
 extern void             SymCompFini( void );
 extern address          GetCodeDot( void );

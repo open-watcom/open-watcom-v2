@@ -43,6 +43,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgexpr.h"
 
 extern bool             ScanSelectedExpr( const char * );
 extern void             BreakOnSelected( const char *item );
@@ -78,7 +79,6 @@ extern a_window         *AsmWndFind( a_window *asw, address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
 extern unsigned         ExprSize( stack_entry * );
 extern void             EvalLValExpr( int );
-extern void             PopEntry( void );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
 extern int              AddrComp( address a, address b );

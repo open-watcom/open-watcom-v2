@@ -41,6 +41,7 @@
 #include "srcmgt.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgexpr.h"
 
 #include "clibext.h"
 
@@ -57,7 +58,6 @@ extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern a_window         *DoWndMemOpen( address, mad_type_handle );
 extern a_window         *DoWndIOOpen( address*, mad_type_handle );
 extern a_window         *DoWndFuncOpen( bool is_global, mod_handle mod );
-extern void             DupStack( void );
 extern a_window         *DoWndFileOpen( const char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,
                                     wnd_class wndcls );

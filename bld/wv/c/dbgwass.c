@@ -42,6 +42,8 @@
 #include "madinter.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -73,7 +75,6 @@ extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern bool             DlgModName( const char *title, mod_handle *mod );
 extern void             WndVarInspect( const char * );
 extern void             SetUnderLine( a_window*, wnd_line_piece *);
-extern void             PushAddr( address );
 extern void             BreakOnExprSP( const char *comment );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 extern void             StepIntoFunction( const char * );

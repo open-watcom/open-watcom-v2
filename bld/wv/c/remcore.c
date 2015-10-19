@@ -40,6 +40,8 @@
 #include "trapaccs.h"
 #include "madinter.h"
 #include "trapglbl.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
 
 extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
@@ -53,7 +55,6 @@ extern void             GetSysConfig( void );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );
 extern void             InvalidateTblCache( void );
-extern void             InitLC( location_context *new, bool use_real_regs );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern void             RemoteSectTblRead( byte * );
 extern void             RemoteSectTblWrite( const byte * );

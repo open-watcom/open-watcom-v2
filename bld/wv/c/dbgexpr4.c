@@ -46,6 +46,7 @@
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 
 extern address          AddrAdd( address, long );
@@ -56,31 +57,18 @@ extern void             FreezeRegs( void );
 extern bool             PerformCall( address, bool, unsigned int );
 extern void             UnFreezeRegs( void );
 extern void             SetRegSP( address );
-extern void             CreateEntry( void );
-extern void             DeleteEntry( stack_entry * );
 extern stack_entry      *StkEntry( int );
-extern void             MoveSP( int );
-extern void             SwapStack( int );
 extern char             *DupStringEntry( char *, unsigned long );
-extern void             PushType( type_handle * );
-extern void             FreePgmStack( bool );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
-extern void             CombineEntries( stack_entry *, stack_entry *, stack_entry * );
-extern void             PushAddr( address );
-extern void             MoveTH( stack_entry *, stack_entry * );
 extern bool             CreateSym( lookup_item *, dip_type_info * );
 extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );
 extern void             LocationCreate( location_list *, location_type, void * );
 extern void             LocationAdd( location_list *, unsigned long );
-extern void             CreateLC( stack_entry * );
-extern void             MoveLC( stack_entry *, stack_entry * );
 extern address          DefAddrSpaceForAddr( address );
 extern address          GetRegSP( void );
 extern void             SetRegSP( address );
-extern void             ExprSetAddrInfo( stack_entry *, bool );
 extern void             AddrFix( address * );
-extern void             PushLocation( location_list *, dip_type_info * );
 
 extern stack_entry      *ExprSP;
 

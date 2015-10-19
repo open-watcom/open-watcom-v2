@@ -46,6 +46,7 @@
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -57,21 +58,13 @@
 
 extern void             ChkExpr( void );
 extern void             NormalExpr( void );
-extern void             PopEntry( void );
-extern void             DupStack( void );
 extern void             WriteToPgmScreen( const void *, unsigned );
 extern void             GraphicDisplay( void );
-extern void             PushNum( long );
 extern void             DefAddr( memory_expr, address * );
 extern void             ChkBreak( void );
-extern void             PushType( type_handle * );
-extern void             MoveSP( int );
 extern void             SetTokens( bool );
 extern void             MakeMemoryAddr( bool, memory_expr, address * );
 extern void             AddrFix( address * );
-extern void             StartSubscript( void );
-extern void             AddSubscript( void );
-extern void             EndSubscript( void );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern char             *GetCmdName( wd_cmd cmd );

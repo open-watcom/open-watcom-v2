@@ -45,6 +45,7 @@
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
 #include "clibext.h"
 
@@ -72,33 +73,10 @@ enum {
     SEM_MECHANISM   = 0xe0,
 };
 
-extern void             DupStack( void );
-extern void             SwapStack( int );
-extern unsigned         TstEQ( unsigned int );
-extern unsigned         TstLT( unsigned int );
-extern unsigned         TstTrue( unsigned int );
-extern unsigned         TstExist( unsigned int );
-extern void             PushName( lookup_item * );
-extern void             PushNum( long );
-extern void             PushNum64( unsigned_64 );
-extern void             PushRealNum( xreal );
-extern void             PushAddr( address );
-extern void             PushLocation( location_list *, dip_type_info * );
-extern void             PushString( void );
-extern void             PushType( type_handle * );
-extern void             PushInt( int );
-extern void             PopEntry( void );
-extern void             MakeAddr( void );
 extern void             ParseRegSet( bool, location_list *, dip_type_info * );
-extern void             MoveSP( int );
 extern stack_entry      *StkEntry( int );
 extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
-extern void             FreePgmStack( bool );
-extern void             MarkArrayOrder( bool );
-extern void             StartSubscript( void );
-extern void             AddSubscript( void );
-extern void             EndSubscript( void );
 extern address          GetDotAddr( void );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 extern void             PurgeSymHandles( void );

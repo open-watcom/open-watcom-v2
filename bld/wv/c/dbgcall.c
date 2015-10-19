@@ -40,6 +40,7 @@
 #include "strutil.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
+#include "dbgexpr.h"
 
 
 extern stack_entry  *ExprSP;
@@ -51,13 +52,9 @@ extern void         DoPrintList( bool );
 extern void         ConfigLine( char * );
 extern void         PushSym( void * );
 extern void         FreezeRegs( void );
-extern void         SwapStack( int );
 extern bool         PerformExplicitCall( address, mad_string, unsigned int );
 extern void         NormalExpr( void );
 extern void         UnFreezeRegs( void );
-extern void         PopEntry( void );
-extern void         FreePgmStack( bool );
-extern void         PushLocation( location_list *, dip_type_info * );
 extern void         ParseRegSet( bool, location_list *, dip_type_info * );
 extern void         LocationCreate( location_list *, location_type, void * );
 

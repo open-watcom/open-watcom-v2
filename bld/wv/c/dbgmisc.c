@@ -40,6 +40,8 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgexec.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
 
 
 extern unsigned int     ReqExpr( void );
@@ -47,7 +49,6 @@ extern unsigned_64      ReqU64Expr( void );
 extern void             ReqMemAddr( memory_expr ,address *);
 extern unsigned         OptExpr( unsigned );
 extern void             DebugExit( void );
-extern void             PopEntry( void );
 extern void             NormalExpr( void );
 extern char             *GetCmdEntry( const char *, int , char * );
 extern char             *GetCmdName( wd_cmd cmd );

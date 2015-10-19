@@ -40,6 +40,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgexpr3.h"
+#include "dbgexpr.h"
 
 /* to be moved to header files ! */
 extern bool             DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
@@ -47,11 +48,8 @@ extern bool             DlgNewWithSym( const char *title, char *buff, unsigned b
 extern void             ChkExpr( void );
 extern void             ReqMemAddr(memory_expr , address *);
 extern void             NormalExpr(void);
-extern void             FreezeStack();
-extern void             UnFreezeStack( bool );
 extern void             PrevError( const char * );
 extern char             *StrDouble(xreal*,char*);
-extern void             PopEntry(void);
 
 extern stack_entry      *ExprSP;
 

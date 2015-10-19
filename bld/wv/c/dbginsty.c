@@ -41,8 +41,8 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgexpr2.h"
+#include "dbgexpr.h"
 
-extern void             PopEntry(void);
 extern bool             IsInternalMod( mod_handle mod );
 extern void             AddrFloat( address * );
 extern void             MakeMemoryAddr( bool, memory_expr def_seg, address *out_val );

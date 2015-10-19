@@ -37,10 +37,10 @@
 #include "dbgstk.h"
 #include "dbgtback.h"
 #include "mad.h"
+#include "dbgexpr.h"
 
 extern bool                     TransOvlRetAddr(address *,unsigned int );
 extern void                     AddrFloat( address * );
-extern void                     InitLC( location_context *, bool );
 
 static unsigned                 OvlLevel;
 

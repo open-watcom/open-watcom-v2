@@ -44,10 +44,10 @@
 #include "dbgmemor.h"
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"
+#include "dbgexpr.h"
 
 
 extern void             OptMemAddr( memory_expr, address *);
-extern void             PopEntry( void );
 extern void             DbgUpdate( update_list );
 extern void             NormalExpr( void );
 extern unsigned         ReqExpr( void );
