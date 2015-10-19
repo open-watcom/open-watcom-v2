@@ -44,10 +44,9 @@
 #include "dbgutil.h"
 #include "dbgmemor.h"
 #include "dbgexpr4.h"
+#include "dbgexpr3.h"
 
 
-extern void             BinOp( stack_entry *, stack_entry * );
-extern void             AddOp( stack_entry *, stack_entry * );
 extern address          AddrAdd( address, long );
 extern int              AddrComp( address, address );
 extern long             AddrDiff( address, address );
@@ -57,7 +56,6 @@ extern void             RValue( stack_entry * );
 extern void             LRValue( stack_entry * );
 extern void             LValue( stack_entry * );
 extern void             ExprResolve( stack_entry * );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern void             ClassifyEntry( stack_entry *, dip_type_info * );
 extern bool             ClassifyType( location_context *, type_handle *, dip_type_info * );
 extern void             LclLValue( stack_entry * );
@@ -75,7 +73,6 @@ extern void             PushType( type_handle * );
 extern void             FreePgmStack( bool );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
-extern unsigned         ToItem( stack_entry *, item_mach * );
 extern void             CombineEntries( stack_entry *, stack_entry *, stack_entry * );
 extern void             PushAddr( address );
 extern void             MoveTH( stack_entry *, stack_entry * );

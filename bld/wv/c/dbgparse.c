@@ -37,12 +37,12 @@
 #include "dbgmem.h"
 #include "i64.h"
 #include "dbgscan.h"
+#include "dbgexpr3.h"
 
 
 extern void             PushInt( int );
 extern void             SwapStack( int );
 extern void             MakeAddr( void );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern void             PopEntry( void );
 extern void             ExprValue( stack_entry * );
 extern void             DefAddr( memory_expr, address * );

@@ -43,6 +43,7 @@
 #include "numscan.h"
 #include "madinter.h"
 #include "dbgexpr4.h"
+#include "dbgexpr3.h"
 
 #include "clibext.h"
 
@@ -97,7 +98,6 @@ extern void             MoveSP( int );
 extern stack_entry      *StkEntry( int );
 extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern void             FreePgmStack( bool );
 extern void             MarkArrayOrder( bool );
 extern void             StartSubscript( void );

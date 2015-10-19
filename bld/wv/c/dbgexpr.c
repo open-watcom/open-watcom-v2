@@ -41,16 +41,15 @@
 #include "i64.h"
 #include "dbgscan.h"
 #include "dbgexpr4.h"
+#include "dbgexpr3.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
-extern void             BinOp( stack_entry *, stack_entry * );
 extern int              AddrComp( address , address );
 extern void             RValue( stack_entry * );
 extern void             LValue( stack_entry * );
 extern sym_list         *ExprGetSymList( stack_entry *, bool );
 extern void             PurgeSymHandles( void );
-extern void             ConvertTo( stack_entry *,type_kind, type_modifier, unsigned );
 extern void             ClassNum( stack_entry * );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );

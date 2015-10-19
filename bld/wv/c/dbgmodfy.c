@@ -42,20 +42,20 @@
 #include "dbgmad.h"
 #include "dbgscan.h"
 #include "dbgmemor.h"
+#include "dbgexpr4.h"
+#include "dbgexpr3.h"
 
 
 extern void             OptMemAddr( memory_expr, address *);
 extern void             PopEntry( void );
 extern void             DbgUpdate( update_list );
 extern void             NormalExpr( void );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern unsigned         ReqExpr( void );
 extern void             SetDataDot( address addr );
 extern address          GetDataDot( void );
 extern char             *GetCmdName( wd_cmd cmd );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern bool             AdvMachState( int );
-extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
 
 extern stack_entry      *ExprSP;
 

@@ -43,11 +43,11 @@
 #include "madinter.h"
 #include "dbgutil.h"
 #include "dbgexpr4.h"
+#include "dbgexpr3.h"
 
 
 extern sym_list         *Disambiguate( sym_list *, location_context * );
 extern void             ExprSetAddrInfo( stack_entry *, bool );
-extern void             FromItem( item_mach *, stack_entry * );
 extern void             FreeSymHandle( sym_list * );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );

@@ -40,6 +40,7 @@
 #include "mad.h"
 #include "i64.h"
 #include "dbgutil.h"
+#include "dbgexpr3.h"
 
 extern void             RValue(stack_entry *);
 extern void             MoveTH( stack_entry *, stack_entry * );
@@ -75,7 +76,7 @@ typedef enum {
 } conv_class;
 
 
-conv_class ConvIdx( dip_type_info *info )
+static conv_class ConvIdx( dip_type_info *info )
 {
     unsigned    size;
 

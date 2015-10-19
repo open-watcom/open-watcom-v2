@@ -39,6 +39,7 @@
 #include "mad.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexpr3.h"
 
 /* to be moved to header files ! */
 extern bool             DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
@@ -50,7 +51,6 @@ extern void             FreezeStack();
 extern void             UnFreezeStack( bool );
 extern void             PrevError( const char * );
 extern char             *StrDouble(xreal*,char*);
-extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );
 extern void             PopEntry(void);
 
 extern stack_entry      *ExprSP;
