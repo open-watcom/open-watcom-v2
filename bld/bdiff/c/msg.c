@@ -177,10 +177,3 @@ void SeekCheck( int rc, const char *name )
         FilePatchError( ERR_IO_ERROR, name );
     }
 }
-
-void ReadCheck( size_t rc, size_t size, const char *name )
-{
-    if( rc != size ) {
-        FilePatchError( ERR_IO_ERROR, name );
-    }
-}

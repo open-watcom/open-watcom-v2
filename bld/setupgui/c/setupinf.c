@@ -337,7 +337,7 @@ static int              MaxWidthChars;
 static int              CharWidth;
 
 #ifdef PATCH
-static int              patchDirIndex = 0;	// used in secondary search during patch
+static int              patchDirIndex = 0;      // used in secondary search during patch
 #endif
 
 
@@ -3873,7 +3873,7 @@ extern bool PatchFiles( void )
         case PATCH_FILE:
             GetSourcePath( i, srcfullpath, sizeof( srcfullpath ) );
             if( access( srcfullpath, R_OK ) == 0 ) {
-                patchDirIndex = i;	 // used in secondary search during patch
+                patchDirIndex = i;       // used in secondary search during patch
                 go_ahead = SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath );
                 if( go_ahead ) {
                     if( PatchInfo[i].exetype[0] != '.' &&
@@ -4101,6 +4101,20 @@ void FilePatchError( int format, ... )
     va_start( args, format );
     MsgPut( format, args );
     va_end( args );
+}
+
+void FileCheck( FILE *fd, const char *name )
+{
+    if( fd == NULL ) {
+        FilePatchError( ERR_CANT_OPEN, name );
+    }
+}
+
+void SeekCheck( int rc, const char *name )
+{
+    if( rc != 0 ) {
+        FilePatchError( ERR_IO_ERROR, name );
+    }
 }
 
 #endif  /* PATCH */

@@ -40,4 +40,3 @@ extern void PatchError( int format, ... );
 extern void FilePatchError( int format, ... );
 extern void FileCheck( FILE *fd, const char *name );
 extern void SeekCheck( int rc, const char *name );
-extern void ReadCheck( size_t rc, size_t size, const char *name );

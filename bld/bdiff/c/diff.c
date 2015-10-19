@@ -154,6 +154,14 @@ static void NotNull( void *p, char *str )
 }
 
 
+static void ReadCheck( size_t rc, size_t size, const char *name )
+{
+    if( rc != size ) {
+        FilePatchError( ERR_IO_ERROR, name );
+    }
+}
+
+
 void *ReadIn( const char *name, size_t buff_size, size_t read_size )
 {
     FILE        *fd;
