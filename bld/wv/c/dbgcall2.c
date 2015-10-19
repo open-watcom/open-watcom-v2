@@ -38,6 +38,7 @@
 #include "dbgexec.h"
 #include "dbgexpr4.h"
 #include "dbgexpr.h"
+#include "dbgloc.h"
 
 
 extern stack_entry      *ExprSP;
@@ -52,7 +53,6 @@ extern machine_state    *AllocMachState( void );
 extern void             CopyMachState( machine_state *, machine_state * );
 extern void             FreeMachState( machine_state *);
 extern void             AddrFix( address * );
-extern void             LocationCreate( location_list *, location_type, void * );
 
 
 static machine_state    *FreezeRegSet = NULL;

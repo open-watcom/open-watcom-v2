@@ -46,6 +46,7 @@
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
+#include "dbgloc.h"
 
 #include "clibext.h"
 
@@ -80,7 +81,6 @@ extern void             AddChar( void );
 extern address          GetDotAddr( void );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 extern void             PurgeSymHandles( void );
-extern void             LocationAdd( location_list *, long );
 extern bool             IsInternalMod( mod_handle );
 extern sym_list         *Disambiguate( sym_list * );
 extern void             FreeSymHandle( sym_list * );

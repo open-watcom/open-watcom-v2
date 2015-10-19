@@ -41,6 +41,7 @@
 #include "dbgmad.h"
 #include "dbgscan.h"
 #include "dbgexpr.h"
+#include "dbgloc.h"
 
 
 extern stack_entry  *ExprSP;
@@ -56,7 +57,6 @@ extern bool         PerformExplicitCall( address, mad_string, unsigned int );
 extern void         NormalExpr( void );
 extern void         UnFreezeRegs( void );
 extern void         ParseRegSet( bool, location_list *, dip_type_info * );
-extern void         LocationCreate( location_list *, location_type, void * );
 
 
 #define MAX_PARMS       10

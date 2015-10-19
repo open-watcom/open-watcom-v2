@@ -44,6 +44,7 @@
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
+#include "dbgloc.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
@@ -51,7 +52,6 @@ extern int              AddrComp( address , address );
 extern void             PurgeSymHandles( void );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
-extern void             LocationCreate( location_list *, location_type, void * );
 extern address          GetRegIP( void );
 extern address          GetRegSP( void );
 extern address          GetRegBP( void );

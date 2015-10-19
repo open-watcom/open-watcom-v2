@@ -43,8 +43,8 @@
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
+#include "dbgloc.h"
 
-extern void             LocationCreate( location_list *, location_type, void * );
 extern address          DefAddrSpaceForAddr( address );
 
 extern stack_entry      *ExprSP;

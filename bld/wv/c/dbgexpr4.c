@@ -47,6 +47,7 @@
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
+#include "dbgloc.h"
 
 
 extern address          AddrAdd( address, long );
@@ -62,9 +63,6 @@ extern char             *DupStringEntry( char *, unsigned long );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
 extern bool             CreateSym( lookup_item *, dip_type_info * );
-extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );
-extern void             LocationCreate( location_list *, location_type, void * );
-extern void             LocationAdd( location_list *, unsigned long );
 extern address          DefAddrSpaceForAddr( address );
 extern address          GetRegSP( void );
 extern void             SetRegSP( address );
