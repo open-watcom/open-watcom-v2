@@ -42,6 +42,7 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "dbgexpr.h"
+#include "dbgbrk.h"
 
 #include "clibext.h"
 
@@ -79,7 +80,6 @@ extern bool             SrcHasFileOpen( a_window *wnd );
 extern address          ModFirstAddr( mod_handle mod );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
-extern bool             FindFirstCue( mod_handle mod, cue_handle *ch );
 
 extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];

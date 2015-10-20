@@ -48,6 +48,7 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgmain.h"
+#include "dbgbrk.h"
 
 #include "clibext.h"
 
@@ -66,7 +67,6 @@ extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( const char *);
-extern void             BreakOnExprSP( const char * );
 extern void             PrintValue( void );
 extern void             SetUpExpr( unsigned addr_depth );
 extern bool             UnMapAddress( mappable_addr *loc, image_entry *image );

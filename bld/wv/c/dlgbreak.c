@@ -40,23 +40,16 @@
 #include "madinter.h"
 #include "dbgutil.h"
 #include "trapglbl.h"
+#include "dbgbrk.h"
 
-extern bool             RemovePoint( brkp * );
-extern brkp             *FindBreak( address );
-extern brkp             *AddBreak( address );
 extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
 extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 extern bool             DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address* );
 extern bool             DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address* );
 extern void             PrevError( const char * );
 extern void             DbgUpdate( update_list flags );
-extern void             SetPointAddr( brkp *bp, address addr );
-extern void             GetBPText( brkp *bp, char *buff );
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 extern void             WndMsgBox( const char * );
-extern bool             BrkCheckWatchLimit( address loc, mad_type_handle );
-extern void             RecordNewPoint( brkp *bp );
-extern void             RecordClearPoint( brkp *bp );
 extern void             SetRecord( bool on );
 
 

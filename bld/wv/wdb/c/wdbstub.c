@@ -89,6 +89,7 @@ Done:
 #include "dbgsrc.h"
 #include "dbgexec.h"
 #include "dbgmain.h"
+#include "dbgbrk.h"
 
 enum {
     REQ_NONE,
@@ -99,18 +100,12 @@ enum {
 } Req = REQ_NONE;
 
 /* External Functions Used */
-extern brkp             *AddBreak( address addr );
-extern void             BrkClearAll( void );
-extern void             BrkDisableAll( void );
-extern void             BrkEnableAll( void );
 extern void             CallResults( void );
 extern void             DlgCmd( void );
 extern void             DoCmd(char*);
 extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern brkp             *GetBPAtIndex( int index );
 extern address          GetCodeDot( void );
-extern address          GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool exact );
 extern void             GoToReturn( void );
 extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             LoadNewProg( const char *cmd, const char *parms );
@@ -118,10 +113,8 @@ extern address          ModFirstAddr( mod_handle mod );
 extern void             PerformTrace( void );
 extern void             ProcCall( void );
 extern void             ProcGo( void );
-extern void             RemoveBPs( void );
 extern void             ReStart( void );
 extern void             ShowCalls( void );
-extern void             ShowBPs( void );
 extern void             ShowVarDisplay( void );
 extern void             TraceKill( void );
 extern var_node         *VarExpandNode( var_node *v );
@@ -130,8 +123,6 @@ extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, in
 extern void             *WndAsmInspect( address addr );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
-extern void             RemovePoint( brkp *bp );
-extern void             ActPoint( brkp *bp, bool act );
 
 volatile bool           BrkPending;
 

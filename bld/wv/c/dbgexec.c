@@ -45,15 +45,10 @@
 #include "dbgexec.h"
 #include "dbgmain.h"
 #include "dbgovl.h"
+#include "dbgbrk.h"
 
 
 extern bool             AdvMachState( int );
-extern bool             DispBPMsg( bool );
-extern bool             InsertBPs( bool );
-extern void             RemoveBPs( void );
-extern bool             InsertWPs( void );
-extern bool             UpdateWPs( void );
-extern unsigned         CheckBPs( unsigned, unsigned );
 extern unsigned         MakeProgRun( bool );
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );

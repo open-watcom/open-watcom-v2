@@ -38,6 +38,7 @@
 #include "modlist.h"
 #include "dbgio.h"
 #include "dbgutil.h"
+#include "dbgbrk.h"
 
 
 extern void             WndFuncInspect( mod_handle mod );
@@ -46,8 +47,6 @@ extern void             WndFileInspect( char *file, bool binary );
 extern a_window         *WndAsmInspect(address);
 extern bool             OpenGadget( a_window *, wnd_line_piece *, mod_handle, bool );
 extern bool             CheckOpenGadget( a_window*, wnd_row, bool, mod_handle, bool, int );
-extern void             ClearAllModBreaks( mod_handle handle );
-extern void             BreakAllModEntries( mod_handle handle );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern  bool            ModHasSourceInfo( mod_handle handle );
 extern address          ModFirstAddr( mod_handle mod );

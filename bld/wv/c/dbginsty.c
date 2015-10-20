@@ -43,12 +43,12 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgovl.h"
+#include "dbgbrk.h"
 
 extern bool             IsInternalMod( mod_handle mod );
 extern void             MakeMemoryAddr( bool, memory_expr def_seg, address *out_val );
 extern void             EvalLValExpr( int );
 extern void             NormalExpr(void);
-extern void             BreakOnExprSP(const char *);
 
 extern stack_entry      *ExprSP;
 

@@ -42,11 +42,10 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgshow.h"
+#include "dbgbrk.h"
 
 
 extern a_window         *WndFileInspect( char *name, bool binary );
-extern void             SaveBreaksToFile( const char * );
-extern void             RestoreBreaksFromFile( const char * );
 extern void             SaveReplayToFile( const char * );
 extern void             RestoreReplayFromFile( const char * );
 extern bool             OkToSaveReplay( void );

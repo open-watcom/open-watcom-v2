@@ -48,6 +48,7 @@
 #include "dbgsrc.h"
 #include "dbgexec.h"
 #include "dbgmain.h"
+#include "dbgbrk.h"
 
 extern void             DoCmd(char*);
 extern bool             InsMemRef( mad_disasm_data *dd );
@@ -722,7 +723,6 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void RemovePoint( brkp *bp );
 extern void DUIRemoveBreak( brkp *bp )
 /************************************/
 {

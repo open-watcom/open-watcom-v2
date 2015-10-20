@@ -48,6 +48,7 @@
 #include "dbghook.h"
 #include "dbgcall.h"
 #include "dbgshow.h"
+#include "dbgbrk.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -74,7 +75,6 @@ extern void             FiniToolBar( void );
 extern void             FiniTrace( void );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
-extern void             InitBPs( void );
 extern void             InitBrowse( void );
 extern bool             InitCmd( void );
 extern void             InitDLLList( void );
@@ -96,11 +96,9 @@ extern bool             LangSetInit( void );
 extern void             LoadProg( void );
 extern void             PathFini( void );
 extern void             PathInit( void );
-extern void             PointFini( void );
 extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
-extern void             ProcBreak( void );
 extern void             ProcCapture( void );
 extern void             ProcDisplay( void );
 extern void             ProcDo( void );

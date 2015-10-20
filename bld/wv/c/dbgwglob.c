@@ -36,11 +36,9 @@
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "namelist.h"
+#include "dbgbrk.h"
 
 
-extern brkp             *FindBreak(address);
-extern void             *AddBreak(address );
-extern void             RemoveBreak(address );
 extern void             GoToAddr( address addr );
 extern int              HasLinInfo( address );
 extern void             WndVarInspect( const char *);

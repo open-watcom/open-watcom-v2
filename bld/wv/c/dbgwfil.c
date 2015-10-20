@@ -44,21 +44,19 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "dbgexpr.h"
+#include "dbgbrk.h"
 
 extern bool             ScanSelectedExpr( const char * );
 extern void             BreakOnSelected( const char *item );
 
 extern a_window         *WndFileInspect( char *file, bool binary );
-extern brkp             *FindBreakByLine( mod_handle, cue_fileid, unsigned );
 extern void             WndFuncInspect( mod_handle mod );
-extern void             *AddBreak( address );
 extern bool             DlgBreak( address );
 extern void             WndInspect( const char * );
 extern a_window         *WndAsmInspect( address );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgLongExpr( const char *title, long *value );
 extern void             GoToAddr( address addr );
-extern void             ToggleBreak( address );
 extern void             SetCodeDot( address );
 extern address          GetCodeDot( void );
 extern a_window         *WndClassInspect( wnd_class wndcls );

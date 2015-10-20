@@ -51,6 +51,7 @@
 #include "dbgmain.h"
 #include "dbgshow.h"
 #include "dbgovl.h"
+#include "dbgbrk.h"
 
 #include "clibext.h"
 
@@ -63,8 +64,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
 extern bool             KillProgOvlay( void );
-extern void             BPsDeac( void );
-extern void             BPsUnHit( void );
 extern unsigned         DoLoad( const char *, unsigned long * );
 extern void             ClearMachState( void );
 extern void             SetupMachState( void );
@@ -81,7 +80,6 @@ extern unsigned         ReqExpr( void );
 extern void             ReqMemAddr( memory_expr, address * );
 extern void             SetNoSectSeg( void );
 extern void             TraceKill( void );
-extern void             ActPoint( brkp *, bool );
 extern void             AddAliasInfo( unsigned, unsigned );
 extern void             FreeAliasInfo( void );
 extern void             CheckSegAlias( void );
@@ -89,7 +87,6 @@ extern void             SetCodeDot( address );
 extern address          GetRegIP( void );
 extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( const char *name );
-extern void             SetPointAddr( brkp *bp, address addr );
 extern void             RemoteMapAddr( addr_ptr *, addr_off *, addr_off *, unsigned long handle );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
@@ -103,7 +100,6 @@ extern void             RecordEvent( const char * );
 extern const char       *CheckForPowerBuilder( const char * );
 extern mod_handle       LookupImageName( const char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
-extern bool             GetBPSymAddr( brkp *bp, address *addr );
 extern void             DbgUpdate( update_list );
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void));
 

@@ -42,6 +42,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgsrc.h"
+#include "dbgbrk.h"
 
 
 extern a_window         *WndMain;
@@ -105,7 +106,6 @@ extern bool             DlgInfoRelease( void );
 extern bool             VarInfoRelease( void );
 extern void             WndSrcOrAsmInspect( address );
 extern void             WndAddrInspect( address );
-extern void             RemovePoint( brkp *bp );
 extern unsigned         DlgAsyncRun( void );
 extern void             SetNumLines( int num );
 extern void             SetNumColumns( int num );

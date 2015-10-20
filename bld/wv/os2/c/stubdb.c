@@ -52,6 +52,7 @@
 #include "dbgexec.h"
 #include "dbgexpr2.h"
 #include "dbgmain.h"
+#include "dbgbrk.h"
 
 
 extern void             DoCmd( char * );
@@ -873,7 +874,6 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void RemovePoint( brkp *bp );
 extern void DUIRemoveBreak( brkp *bp )
 /************************************/
 {

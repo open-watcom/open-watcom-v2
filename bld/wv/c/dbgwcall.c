@@ -39,6 +39,7 @@
 #include "mad.h"
 #include "strutil.h"
 #include "dbgutil.h"
+#include "dbgbrk.h"
 
 
 extern a_window         *WndSrcInspect( address );
@@ -47,7 +48,6 @@ extern address          FindLclBlock( address addr );
 extern int              AddrComp( address, address );
 extern void             GoToAddr( address addr );
 extern bool             DlgBreak( address );
-extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup( address );
 extern void             SetStackPos( location_context *lc, int pos );
 extern int              GetStackPos( void );

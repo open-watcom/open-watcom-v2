@@ -33,6 +33,7 @@
 #include "dbgdata.h"
 #include "dlglist.h"
 #include "dbgsrc.h"
+#include "dbgbrk.h"
 
 #include "clibext.h"
 
@@ -40,7 +41,6 @@ char_ring               *DLLList;
 
 extern char             *GetLastImageName( void );
 extern void             RecordEvent( const char *p );
-extern void             GetBreakOnImageCmd( const char *, char *, bool );
 
 
 bool DLLMatch( void )

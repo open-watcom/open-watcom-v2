@@ -42,16 +42,14 @@
 #include "dbgutil.h"
 #include "dbgmain.h"
 #include "dbginvk.h"
+#include "dbgbrk.h"
 
 
-extern void             RecordPointStart( void );
 extern void             RecordNewProg( void );
-extern void             PointFini( void );
 extern int              GetStackPos( void );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern unsigned         ReqExpr( void );
-extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
 extern void             ProcInput( void );

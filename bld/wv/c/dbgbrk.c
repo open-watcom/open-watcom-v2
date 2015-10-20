@@ -55,6 +55,7 @@
 #include "dbginvk.h"
 #include "dbgshow.h"
 #include "dbgovl.h"
+#include "dbgbrk.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );

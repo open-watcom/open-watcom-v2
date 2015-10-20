@@ -39,6 +39,7 @@
 #include "dbgmad.h"
 #include "dbgexec.h"
 #include "dbgmain.h"
+#include "dbgbrk.h"
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             DlgSource( void );
@@ -57,9 +58,6 @@ extern void             DlgNewProg( void );
 extern bool             DlgBreak( address );
 extern void             BreakSave( bool );
 extern void             ReplaySave( bool );
-extern void             BrkEnableAll( void );
-extern void             BrkDisableAll( void );
-extern void             BrkClearAll( void );
 extern void             ConfigSave( bool );
 extern wnd_class        ReqWndName( void );
 extern void             FileBrowse( void );
@@ -80,7 +78,6 @@ extern bool             VarInfoRelease( void );
 extern void             SkipToAddr( address );
 extern void             GoToAddr( address );
 extern address          GetCodeDot( void );
-extern void             ToggleBreak( address );
 extern void             FuncNewMod( a_window *wnd, mod_handle mod );
 extern void             GlobNewMod( a_window *wnd, mod_handle mod );
 extern void             ModNewHandle( a_window *wnd, mod_handle mod );

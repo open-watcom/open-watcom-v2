@@ -44,6 +44,7 @@
 #include "dbgsrc.h"
 #include "dbgstk.h"
 #include "dbgexpr.h"
+#include "dbgbrk.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -58,11 +59,9 @@ extern void             GoToAddr( address addr );
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndAsmInspect( address addr );
 extern bool             DlgCodeAddr( const char *title, address *value );
-extern void             ToggleBreak(address);
 extern void             SetCodeDot(address);
 extern address          GetCodeDot(void);
 extern bool             HasLineInfo(address);
-extern brkp             *FindBreak(address);
 extern bool             SrcMoveDot( a_window *, address );
 extern void             SrcJoinAsm( a_window *, a_window * );
 extern void             SrcFreeAsm( a_window * );
@@ -75,7 +74,6 @@ extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern bool             DlgModName( const char *title, mod_handle *mod );
 extern void             WndVarInspect( const char * );
 extern void             SetUnderLine( a_window*, wnd_line_piece *);
-extern void             BreakOnExprSP( const char *comment );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 extern void             StepIntoFunction( const char * );
 extern void             BreakOnSelected( const char *item );

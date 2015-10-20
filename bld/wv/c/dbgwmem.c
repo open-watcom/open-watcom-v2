@@ -46,6 +46,7 @@
 #include "madinter.h"
 #include "dbgutil.h"
 #include "dbgmemor.h"
+#include "dbgbrk.h"
 
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
@@ -57,7 +58,6 @@ extern long             AddrDiff( address a, address b );
 extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( const char *title, char *buff );
 extern int              AddrComp(address,address);
-extern bool             BreakWrite( address addr, mad_type_handle, const char *comment );
 extern a_window         *WndAsmInspect(address addr);
 extern bool             DlgScanGivenAddr( const char *str, address *value );
 extern void             MemFiniTypes( mem_type_walk_data *data );

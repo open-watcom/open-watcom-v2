@@ -39,17 +39,15 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgbrk.h"
 
-extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
-extern void             PointFini( void );
 extern int              GetStackPos( void );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
 extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
 extern unsigned         ReqExpr( void );
-extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
 

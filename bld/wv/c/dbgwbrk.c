@@ -34,11 +34,11 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
+#include "dbgbrk.h"
 
 
 extern a_window         *WndAsmInspect(address);
 extern a_window         *WndSrcInspect(address);
-extern void             RemoveBreak(address);
 extern bool             DlgBreak(address);
 extern char             *AddrLineNum( address *addr, char *buff );
 extern char             *DeAliasAddrModName( address *addr, char *buff );
@@ -46,9 +46,6 @@ extern void             FileBreakGadget( a_window *, wnd_line_piece *line, bool 
 extern int              AddrComp(address,address);
 extern bool             OpenGadget( a_window *, wnd_line_piece *, mod_handle, bool );
 extern bool             CheckOpenGadget( a_window*, wnd_row, bool, mod_handle, bool, int );
-extern void             GetBPText( brkp *bp, char *buff );
-extern void             GetBPAddr( brkp *bp, char *buff );
-extern void             ActPoint( brkp *bp, bool act );
 
 enum {
     #ifdef OPENER_GADGET
