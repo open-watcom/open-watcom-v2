@@ -42,6 +42,7 @@
 #include "dbgscan.h"
 #include "dbgmain.h"
 #include "dbgshow.h"
+#include "dbgvset.h"
 
 
 extern type_display     *TypeDisplay;
@@ -100,7 +101,7 @@ enum {
     TY_STATIC,
 };
 
-char *Attributes( type_display *curr, char *p )
+static char *Attributes( type_display *curr, char *p )
 {
     type_display        *alias;
 

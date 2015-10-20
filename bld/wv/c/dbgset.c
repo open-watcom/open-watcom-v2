@@ -49,6 +49,7 @@
 #include "dbgcall.h"
 #include "dbgshow.h"
 #include "dbgovl.h"
+#include "dbgvset.h"
 
 #include "clibext.h"
 
@@ -147,7 +148,6 @@ static void     MMXConf( void );
 static void     XMMConf( void );
 extern void     DClickConf( void );
 extern void     TabConf( void );
-extern void     TypeConf( void );
 extern void     InputConf( void );
 extern void     MacroConf( void );
 static void     BellConf( void );
