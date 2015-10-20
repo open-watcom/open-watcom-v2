@@ -47,6 +47,7 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgsem.h"
 
 #include "clibext.h"
 

@@ -30,14 +30,10 @@
 ****************************************************************************/
 
 
-#include "watcom.h"
+#include "dbgdefn.h"
 #include "sslops.h"
+#include "dbgsem.h"
 
-extern unsigned int SSLSemantic(int ,unsigned int );
-extern int SSLError(unsigned int ,unsigned int );
-extern void SSLOutToken(unsigned int );
-extern unsigned int SSLNextToken(void );
-extern unsigned int SSLCurrToken(void );
 
 static unsigned char    *TblPtr;
 
