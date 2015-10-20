@@ -46,14 +46,13 @@
 #include <stddef.h>
 #include "strutil.h"
 #include "dbgloc.h"
+#include "dbgovl.h"
 
 #include "clibext.h"
 
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern int              SectIsLoaded( unsigned, int );
-extern void             AddrSection( address *, unsigned );
 extern bool             SameAddrSpace( address, address );
 extern mad_reg_info     *LookupRegName( mad_reg_info *, lookup_item * );
 extern wv_sym_entry     *LookupInternalName( lookup_item * );

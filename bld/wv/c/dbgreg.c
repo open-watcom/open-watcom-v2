@@ -49,6 +49,7 @@
 #include "dbgexpr.h"
 #include "dbgloc.h"
 #include "dbgmain.h"
+#include "dbgovl.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
@@ -93,21 +94,14 @@ extern void             StartupErr( const char * );
 extern unsigned         ReqExpr( void );
 extern void             DbgUpdate( update_list );
 extern void             FindAddrSectId( address *, int );
-extern void             SetStateOvlSect( machine_state *, unsigned int );
 extern unsigned int     RemoteOvlSectSize( void );
 extern void             ReleaseProgOvlay( bool );
-extern void             SectTblRead( machine_state * );
 extern char             *Rtrm( char * );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern thread_state     *FindThread( dtid_t );
-extern bool             InitOvlState( void );
-extern void             FiniOvlState( void );
 extern unsigned         ProgPoke( address addr, const void *data, unsigned len );
 extern unsigned         ProgPeek( address addr, void *data, unsigned len );
 extern void             SetCodeLoc( address );
-extern void             AddrFix( address * );
-extern void             AddrFloat( address * );
-extern void             AddrSection( address *, unsigned );
 extern mad_reg_info     *LookupRegName( mad_reg_info *, lookup_item * );
 extern dip_status       RegLocation( machine_state *regs, mad_reg_info const *ri, location_list *ll );
 extern address          DefAddrSpaceForAddr( address );

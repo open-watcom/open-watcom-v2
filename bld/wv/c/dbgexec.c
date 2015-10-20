@@ -44,6 +44,7 @@
 #include "dbgutil.h"
 #include "dbgexec.h"
 #include "dbgmain.h"
+#include "dbgovl.h"
 
 
 extern bool             AdvMachState( int );
@@ -58,7 +59,6 @@ extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
-extern void             SectTblRead( machine_state * );
 extern address          GetRegIP( void );
 extern bool             AddLibInfo( bool, bool * );
 extern unsigned         RemoteGetMsgText( char *buff, unsigned buff_len );
@@ -72,7 +72,6 @@ extern void             SetMemBefore( bool );
 extern void             SetMemAfter( bool );
 extern void             SetCodeDot( address );
 extern char             DlgFatal( void );
-extern void             InvalidateTblCache( void );
 extern bool             CheckStackPos( void );
 extern void             RecordEvent( const char *p );
 extern void             RecordGo( const char *p );

@@ -43,11 +43,11 @@
 #include "madinter.h"
 #include "madcli.h"
 #include "dbgutil.h"
+#include "dbgovl.h"
 
 #include "clibext.h"
 
 
-extern void             AddrSection( address *, unsigned );
 extern void             DbgUpdate( update_list );
 extern unsigned         ProgPeek( address, void *, unsigned );
 extern unsigned         ProgPoke( address, const void *, unsigned );

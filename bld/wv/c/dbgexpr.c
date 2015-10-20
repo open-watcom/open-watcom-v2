@@ -45,13 +45,12 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgovl.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
 extern int              AddrComp( address , address );
 extern void             PurgeSymHandles( void );
-extern void             AddrFloat( address * );
-extern void             AddrFix( address * );
 extern address          GetRegIP( void );
 extern address          GetRegSP( void );
 extern address          GetRegBP( void );

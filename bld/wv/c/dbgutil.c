@@ -46,6 +46,7 @@
 #include "madinter.h"
 #include "dbgmad.h"
 #include "dbgutil.h"
+#include "dbgovl.h"
 
 
 extern char             *Language;
@@ -54,8 +55,6 @@ extern char             *Language;
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             NewLang( const char * );
-extern void             AddrFloat( address * );
-extern void             AddrFix( address * );
 extern address          GetCodeDot( void );
 extern image_entry      *ImageEntry( mod_handle mh );
 extern image_entry      *ImagePrimary( void );

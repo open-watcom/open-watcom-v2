@@ -37,6 +37,7 @@
 #include "madinter.h"
 #include "dui.h"
 #include "dbgscan.h"
+#include "dbgovl.h"
 
 #include "clibext.h"
 
@@ -50,7 +51,6 @@ extern address          GetRegBP( void );
 extern address          GetDataDot( void );
 extern address          GetCodeDot( void );
 extern dtid_t           GetNextTID( void );
-extern void             AddrFix( address * );
 extern bool             IsInternalMod( mod_handle );
 
 

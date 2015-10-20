@@ -33,11 +33,7 @@
 #include "dbgdata.h"
 #include "trpovl.h"
 #include "trapglbl.h"
-
-extern void             RemapSection( unsigned, unsigned );
-extern void             InvalidateTblCache( void );
-extern void             AddrFix( address * );
-extern void             AddrFloat( address * );
+#include "dbgovl.h"
 
 
 static trap_shandle     SuppOvlId = 0;

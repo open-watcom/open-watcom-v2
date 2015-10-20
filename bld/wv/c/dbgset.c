@@ -48,6 +48,7 @@
 #include "dbginvk.h"
 #include "dbgcall.h"
 #include "dbgshow.h"
+#include "dbgovl.h"
 
 #include "clibext.h"
 
@@ -73,7 +74,6 @@ extern void             AsmChangeOptions( void );
 extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
-extern void             AddrFloat( address * );
 
 extern const char       WndNameTab[];
 extern margins          SrcMar;

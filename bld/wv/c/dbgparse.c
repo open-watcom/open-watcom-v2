@@ -40,11 +40,10 @@
 #include "dbgexpr3.h"
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
+#include "dbgovl.h"
 
 
 extern void             DefAddr( memory_expr, address * );
-extern void             AddrFix( address * );
-extern void             AddrFloat( address * );
 
 extern handle           LocalPathOpen( const char *, unsigned, const char * );
 extern int              SSLWalk( char *, unsigned, void **, unsigned int );

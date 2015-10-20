@@ -32,6 +32,7 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
+#include "dbgovl.h"
 
 typedef struct {
     addr_seg    first;

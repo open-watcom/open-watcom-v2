@@ -49,6 +49,7 @@
 #include "dbgexpr.h"
 #include "dbgloc.h"
 #include "dbgcall2.h"
+#include "dbgovl.h"
 
 
 extern address          AddrAdd( address, long );
@@ -64,7 +65,6 @@ extern bool             CreateSym( lookup_item *, dip_type_info * );
 extern address          DefAddrSpaceForAddr( address );
 extern address          GetRegSP( void );
 extern void             SetRegSP( address );
-extern void             AddrFix( address * );
 
 extern stack_entry      *ExprSP;
 

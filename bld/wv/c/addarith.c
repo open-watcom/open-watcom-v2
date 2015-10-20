@@ -34,6 +34,7 @@
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "mad.h"
+#include "dbgovl.h"
 
 
 typedef struct alias_info {
@@ -43,7 +44,6 @@ typedef struct alias_info {
 } alias_info;
 
 extern unsigned         HugeShift( void );
-extern void             AddrFix( address * );
 
 static alias_info               *HeadAliasTbl = NULL;
 

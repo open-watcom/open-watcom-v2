@@ -38,12 +38,10 @@
 #include "dbgtback.h"
 #include "mad.h"
 #include "dbgexpr.h"
+#include "dbgovl.h"
 
-extern bool                     TransOvlRetAddr(address *,unsigned int );
-extern void                     AddrFloat( address * );
 
 static unsigned                 OvlLevel;
-
 
 bool FixOvlRetAddr( address *return_addr )
 {

@@ -54,6 +54,7 @@
 #include "dbgmain.h"
 #include "dbginvk.h"
 #include "dbgshow.h"
+#include "dbgovl.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -64,7 +65,6 @@ extern unsigned int     ReqExpr( void );
 extern void             ReqMemAddr( memory_expr, address * );
 extern int              AddrComp( address, address );
 extern address          GetRegIP( void );
-extern int              SectIsLoaded( unsigned int, int  );
 extern dword            RemoteSetBreak( address );
 extern void             RemoteRestoreBreak( address, dword );
 OVL_EXTERN brkp         *TypePoint( memory_expr );

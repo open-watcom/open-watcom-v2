@@ -40,6 +40,7 @@
 #include "dbgexpr.h"
 #include "dbgloc.h"
 #include "dbgcall2.h"
+#include "dbgovl.h"
 
 
 extern stack_entry      *ExprSP;
@@ -53,7 +54,6 @@ extern address          GetRegSP( void );
 extern machine_state    *AllocMachState( void );
 extern void             CopyMachState( machine_state *, machine_state * );
 extern void             FreeMachState( machine_state *);
-extern void             AddrFix( address * );
 
 
 static machine_state    *FreezeRegSet = NULL;

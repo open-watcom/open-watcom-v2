@@ -40,12 +40,12 @@
 #include "dbgutil.h"
 #include "dbgmemor.h"
 #include "dbgmain.h"
+#include "dbgovl.h"
 
 extern unsigned         ProgPeek( address, void *, unsigned int );
 extern unsigned         ChangeMem( address, const void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );
 extern unsigned         PortPoke( unsigned, const void *, unsigned );
-extern void             AddrFix( address * );
 extern address          AddrAddWrap( address, long );
 extern void             RecordEvent( const char * );
 extern bool             AdvMachState( int );

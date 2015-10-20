@@ -42,19 +42,15 @@
 #include "trapglbl.h"
 #include "dbgstk.h"
 #include "dbgexpr.h"
+#include "dbgovl.h"
 
 extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
 extern int              SameAddrSpace( address, address );
-extern void             SectLoad( unsigned int );
 extern void             FreeThreads( void );
-extern void             RemapSection( unsigned, unsigned );
 extern void             CheckForNewThreads( bool );
 extern void             AddAliasInfo( unsigned, unsigned );
 extern void             GetSysConfig( void );
-extern void             AddrFix( address * );
-extern void             AddrFloat( address * );
-extern void             InvalidateTblCache( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern void             RemoteSectTblRead( byte * );
 extern void             RemoteSectTblWrite( const byte * );
