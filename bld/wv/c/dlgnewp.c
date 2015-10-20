@@ -35,11 +35,11 @@
 #include "guidlg.h"
 #include "dbgerr.h"
 #include "dlgnewp.h"
+#include "dbgpend.h"
 
 
 extern unsigned         GetProgName( char *where, unsigned len );
 extern unsigned         GetProgArgs( char *where, unsigned len );
-extern void             DoInput( void );
 
 extern void             LoadNewProg( const char *cmd, const char *parms );
 extern bool             ExeBrowse( void );

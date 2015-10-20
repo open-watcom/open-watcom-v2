@@ -41,6 +41,7 @@
 #include "dui.h"
 #include "dbgutil.h"
 #include "dbgmain.h"
+#include "dbgpend.h"
 
 
 extern void             NewLang( const char *lang );

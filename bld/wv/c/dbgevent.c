@@ -43,6 +43,7 @@
 #include "dbgmain.h"
 #include "dbginvk.h"
 #include "dbgbrk.h"
+#include "dbgpend.h"
 
 
 extern void             RecordNewProg( void );
@@ -52,7 +53,6 @@ extern address          GetRegIP( void );
 extern unsigned         ReqExpr( void );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
-extern void             ProcInput( void );
 extern void             DbgUpdate( update_list );
 
 

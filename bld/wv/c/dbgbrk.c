@@ -56,6 +56,7 @@
 #include "dbgshow.h"
 #include "dbgovl.h"
 #include "dbgbrk.h"
+#include "dbgpend.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -100,7 +101,6 @@ extern void             ReMapPoints( image_entry * );
 extern image_entry      *ImageEntry( mod_handle mh );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern bool             DlgScanCodeAddr( const char *str, address *value );
-extern void             DoInput( void );
 extern void             DbgUpdate( update_list );
 extern void             CheckForNewThreads( bool );
 

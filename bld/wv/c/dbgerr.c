@@ -43,6 +43,7 @@
 #include "dbgexpr.h"
 #include "dbgcall2.h"
 #include "dbgbrk.h"
+#include "dbgpend.h"
 
 
 extern int              ScanSavePtr;
@@ -54,7 +55,6 @@ extern void             DlgCmd( void );
 extern bool             SetProgStartHook( bool );
 extern void             StartupErr( const char * );
 extern void             Suicide( void );
-extern void             ProcInput( void );
 
 /*
  * Error - output error message and suicide

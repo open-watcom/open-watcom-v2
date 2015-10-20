@@ -54,12 +54,12 @@
 #include "dbgmain.h"
 #include "dbgbrk.h"
 #include "dbgass.h"
+#include "dbgpend.h"
 
 
 extern void             DoCmd( char * );
 extern address          GetCodeDot( void );
 extern void             *WndAsmInspect( address addr );
-extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 
 static bool             Done;

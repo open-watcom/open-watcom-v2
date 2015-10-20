@@ -91,6 +91,7 @@ Done:
 #include "dbgmain.h"
 #include "dbgbrk.h"
 #include "dbgass.h"
+#include "dbgpend.h"
 
 enum {
     REQ_NONE,
@@ -104,7 +105,6 @@ enum {
 extern void             CallResults( void );
 extern void             DlgCmd( void );
 extern void             DoCmd(char*);
-extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern address          GetCodeDot( void );
 extern void             GoToReturn( void );

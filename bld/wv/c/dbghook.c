@@ -44,15 +44,13 @@
 #include "dbgutil.h"
 #include "dbgmain.h"
 #include "dbgshow.h"
+#include "dbgpend.h"
 
 #define SET_HOOK_BIT(x)     HookPendingBits |= ((hook_bits)1 << x)
 #define RESET_HOOK_BIT(x)   HookPendingBits &= ~((hook_bits)1 << x)
 #define TEST_HOOK_BIT(x)    ((HookPendingBits & ((hook_bits)1 << x)) != 0)
 
 typedef unsigned long   hook_bits;
-
-extern void             DoProcPending(void);
-
 
 static hook_bits        HookPendingBits;
 static cmd_list         *HookCmdLists[HOOK_NUM];
