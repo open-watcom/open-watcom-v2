@@ -175,7 +175,7 @@ typedef struct {
 
 typedef enum {
     #define pick( a,b,c ) a,
-    #include "dbgcmd.h"
+    #include "_dbgcmd.h"
     #undef pick
 } wd_cmd;
 
