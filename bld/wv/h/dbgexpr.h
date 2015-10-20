@@ -37,6 +37,7 @@ extern void     DupLC( stack_entry *entry );
 extern void     CreateEntry( void );
 extern bool     AllocatedString( stack_entry *stk );
 extern void     DeleteEntry( stack_entry *old );
+extern stack_entry *StkEntry( int amount );
 extern void     MoveSP( int amount );
 extern void     SwapStack( int entry );
 extern void     FreezeStack( void );
