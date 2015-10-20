@@ -42,8 +42,8 @@
 #include "dbgdata.h"
 #include "strutil.h"
 #include "dbgmain.h"
+#include "envlkup.h"
 
-extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
 
 static char             *cmdStart;
 static volatile bool    BrkPending;

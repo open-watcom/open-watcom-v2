@@ -36,6 +36,7 @@
     #include <process.h>
 #endif
 #include "dbgdefn.h"
+#include "envlkup.h"
 
 #include "clibext.h"
 

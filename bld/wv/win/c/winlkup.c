@@ -34,6 +34,7 @@
 #include <windows.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
+#include "envlkup.h"
 
 
 #ifndef __NT__
@@ -55,6 +56,7 @@ const char *DOSEnvFind( const char *name )
     } while( *env != NULLCHAR );
     return( NULL );
 }
+#endif
 
 /*
  * EnvLkup -- lookup up string in environment area
@@ -62,6 +64,9 @@ const char *DOSEnvFind( const char *name )
 
 unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
+#ifdef __NT__
+    return( GetEnvironmentVariable( name, buff, buff_len ) );
+#else
     unsigned    len;
     const char  *env;
     int         output = 0;
@@ -86,14 +91,5 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         buff[len] = '\0';
     }
     return( len );
-}
-#else
-/*
- * EnvLkup -- lookup up string in environment area
- */
-
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
-{
-    return( GetEnvironmentVariable( name, buff, buff_len ) );
-}
 #endif
+}

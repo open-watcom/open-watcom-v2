@@ -34,6 +34,7 @@
 #include "watcom.h"
 #include "dpmi.h"
 #include "dsxutil.h"
+#include "envlkup.h"
 #ifdef __OSI__
   #include <stdlib.h>
 #else

@@ -48,6 +48,7 @@
 #include "tcerr.h"
 #include "digio.h"
 #include "trpld.h"
+#include "envlkup.h"
 
 
 extern trap_version     TrapVer;
@@ -76,9 +77,6 @@ typedef _Packed struct {
 static dos_memory               TrapMem;
 
 static void __far               *RawPMtoRMSwitchAddr;
-
-extern unsigned                 EnvLkup( const char *name, char *buff, unsigned buff_len );
-
 
 unsigned_8      DPMICheck = 0;
 

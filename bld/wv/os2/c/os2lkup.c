@@ -32,9 +32,9 @@
 
 #include "dbgdefn.h"
 #include <stddef.h>
-
 #define INCL_DOSMISC
 #include "os2.h"
+#include "envlkup.h"
 
 
 unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )

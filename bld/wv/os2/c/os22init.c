@@ -43,6 +43,7 @@
 #include "autoenv.h"
 #include "strutil.h"
 #include "dbgmain.h"
+#include "envlkup.h"
 
 
 char            *CmdData;

@@ -34,6 +34,7 @@
 #include "rdos.h"
 #include "dbgdefn.h"
 #include "dbgmem.h"
+#include "envlkup.h"
 
 
 unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )

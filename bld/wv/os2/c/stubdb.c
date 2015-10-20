@@ -55,6 +55,7 @@
 #include "dbgbrk.h"
 #include "dbgass.h"
 #include "dbgpend.h"
+#include "envlkup.h"
 
 
 extern void             DoCmd( char * );
@@ -846,8 +847,6 @@ bool DUIIsDBCS( void )
 {
     return( FALSE );
 }
-
-extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
 
 unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
 {

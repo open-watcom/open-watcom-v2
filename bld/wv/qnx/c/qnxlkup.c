@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dbgdefn.h"
+#include "envlkup.h"
 
 char *copy_char_to_buff( char *ptr, char c, char **end )
 {
