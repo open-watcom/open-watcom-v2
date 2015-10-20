@@ -43,11 +43,11 @@
 #include "dbgmain.h"
 #include "dbginvk.h"
 #include "dbgcall.h"
+#include "dbgshow.h"
 
 #include "clibext.h"
 
 
-extern char             *GetCmdEntry( const char *, int, char * );
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
@@ -55,7 +55,6 @@ extern void             LookSet( void );
 extern void             LevelSet( void );
 extern void             LookConf( void );
 extern void             LevelConf( void );
-extern void             ConfigLine( char * );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             LangInit( void );
@@ -70,7 +69,6 @@ extern void             AsmChangeOptions( void );
 extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
-extern void             ConfigCmdList( char *cmds, int indent );
 extern void             WndDlgTxt( const char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
 extern void             DbgUpdate( update_list );

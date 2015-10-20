@@ -43,6 +43,7 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgmain.h"
+#include "dbgshow.h"
 
 #define SET_HOOK_BIT(x)     HookPendingBits |= ((hook_bits)1 << x)
 #define RESET_HOOK_BIT(x)   HookPendingBits &= ~((hook_bits)1 << x)
@@ -50,8 +51,6 @@
 
 typedef unsigned long   hook_bits;
 
-extern char             *GetCmdEntry(const char *,int ,char *);
-extern void             ConfigCmdList( char *cmds, int indent );
 extern void             DoProcPending(void);
 
 

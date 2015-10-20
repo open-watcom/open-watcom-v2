@@ -39,11 +39,11 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgmain.h"
+#include "dbgshow.h"
 
 #include "clibext.h"
 
 
-extern void             ConfigLine( char * );
 extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( const char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );

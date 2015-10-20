@@ -41,11 +41,10 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgshow.h"
 
 
 extern a_window         *WndFileInspect( char *name, bool binary );
-extern void             SaveConfigToFile( const char * );
-extern void             RestoreConfigFromFile( char * );
 extern void             SaveBreaksToFile( const char * );
 extern void             RestoreBreaksFromFile( const char * );
 extern void             SaveReplayToFile( const char * );

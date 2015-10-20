@@ -43,6 +43,7 @@
 #include "dbgsrc.h"
 #include "dbgexec.h"
 #include "dbgmain.h"
+#include "dbgshow.h"
 
 
 enum {
@@ -102,8 +103,6 @@ extern int_16           GetDataWord( void );
 extern long             GetDataLong( void );
 extern int              AddrComp( address, address );
 extern void             GetCurrOpcode( void );
-extern char             *GetCmdEntry( const char *, int, char * );
-extern void             ConfigLine( char * );
 extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );
 extern address          GetRegIP( void );

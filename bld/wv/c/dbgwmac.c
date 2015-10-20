@@ -44,8 +44,8 @@
 #include "dbgutil.h"
 #include "dbgmain.h"
 #include "dbginvk.h"
+#include "dbgshow.h"
 
-extern char             *GetCmdEntry(const char *,int ,char *);
 extern char             *KeyName( unsigned key );
 extern wnd_macro        *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );

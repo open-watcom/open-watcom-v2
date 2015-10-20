@@ -41,10 +41,10 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgmain.h"
+#include "dbgshow.h"
+
 
 extern type_display     *TypeDisplay;
-
-extern char             *GetCmdEntry( const char *, int, char * );
 
 static const char TypeSettings[] = {
     "Ontop\0"

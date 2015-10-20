@@ -42,6 +42,7 @@
 #include "dbgmain.h"
 #include "dbginvk.h"
 #include "dbghook.h"
+#include "dbgshow.h"
 
 
 extern unsigned int     OptExpr( unsigned int );

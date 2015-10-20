@@ -47,6 +47,7 @@
 #include "dbgutil.h"
 #include "madinter.h"
 #include "madcli.h"
+#include "dbgshow.h"
 
 #include "clibext.h"
 
@@ -59,7 +60,6 @@ typedef struct rad_str {
 
 extern int              Lookup( const char *, const char *, size_t );
 extern unsigned int     ReqExpr( void );
-extern void             ConfigLine( char * );
 extern void             DbgUpdate( update_list );
 
 static const char CmdLnDelimTab[] = {

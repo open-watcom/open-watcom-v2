@@ -49,6 +49,7 @@
 #include "filermt.h"
 #include "dbgsrc.h"
 #include "dbgmain.h"
+#include "dbgshow.h"
 
 #include "clibext.h"
 
@@ -98,7 +99,6 @@ extern address          GetRegSP( void );
 extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );
-extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern void             RecordEvent( const char * );
 extern const char       *CheckForPowerBuilder( const char * );
 extern mod_handle       LookupImageName( const char *start, unsigned len );

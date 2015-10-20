@@ -41,9 +41,9 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgmain.h"
+#include "dbgshow.h"
 
 
-extern char             *GetCmdEntry(const char *,int ,char *);
 extern unsigned         ReqExpr( void );
 extern unsigned         OptExpr( void );
 extern void             WndUserAdd(char *,unsigned int );

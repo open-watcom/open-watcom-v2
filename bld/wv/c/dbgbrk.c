@@ -53,6 +53,7 @@
 #include "dbgexpr2.h"
 #include "dbgmain.h"
 #include "dbginvk.h"
+#include "dbgshow.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -83,7 +84,6 @@ extern void             RemoteRestoreWatch( address, unsigned );
 extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern bool             CheckBPIns( void );
-extern char             *GetCmdEntry( const char *, int, char * );
 extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern void             RecordEvent( const char *p );

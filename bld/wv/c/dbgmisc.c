@@ -43,6 +43,7 @@
 #include "dbgstk.h"
 #include "dbgexpr.h"
 #include "dbgmain.h"
+#include "dbgshow.h"
 
 
 extern unsigned int     ReqExpr( void );
@@ -50,7 +51,6 @@ extern unsigned_64      ReqU64Expr( void );
 extern void             ReqMemAddr( memory_expr ,address *);
 extern unsigned         OptExpr( unsigned );
 extern void             NormalExpr( void );
-extern char             *GetCmdEntry( const char *, int , char * );
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern address          GetRegIP( void );
