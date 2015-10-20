@@ -90,6 +90,7 @@ Done:
 #include "dbgexec.h"
 #include "dbgmain.h"
 #include "dbgbrk.h"
+#include "dbgass.h"
 
 enum {
     REQ_NONE,
@@ -107,7 +108,6 @@ extern void             DoInput( void );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern address          GetCodeDot( void );
 extern void             GoToReturn( void );
-extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             LoadNewProg( const char *cmd, const char *parms );
 extern address          ModFirstAddr( mod_handle mod );
 extern void             PerformTrace( void );

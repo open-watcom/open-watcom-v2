@@ -49,9 +49,9 @@
 #include "dbgexec.h"
 #include "dbgmain.h"
 #include "dbgbrk.h"
+#include "dbgass.h"
 
 extern void             DoCmd(char*);
-extern bool             InsMemRef( mad_disasm_data *dd );
 extern address          GetCodeDot( void );
 extern void             *WndAsmInspect(address addr);
 extern void             DoInput(void);

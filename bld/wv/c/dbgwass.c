@@ -45,6 +45,7 @@
 #include "dbgstk.h"
 #include "dbgexpr.h"
 #include "dbgbrk.h"
+#include "dbgass.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -82,7 +83,6 @@ extern address          ModFirstAddr( mod_handle mod );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
-extern bool             InsMemRef( mad_disasm_data *dd );
 extern void             DbgUpdate( update_list );
 
 
