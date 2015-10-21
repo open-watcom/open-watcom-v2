@@ -45,14 +45,13 @@
 #include "dbgcall.h"
 #include "dbgcall2.h"
 #include "dbgshow.h"
+#include "dbgprint.h"
 
 
 extern stack_entry  *ExprSP;
 
 
 extern void         CallExpr( address *);
-extern void         ChkPrintList( void );
-extern void         DoPrintList( bool );
 extern void         NormalExpr( void );
 extern void         ParseRegSet( bool, location_list *, dip_type_info * );
 

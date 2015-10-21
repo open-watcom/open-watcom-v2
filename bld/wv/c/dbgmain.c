@@ -50,6 +50,7 @@
 #include "dbgshow.h"
 #include "dbgbrk.h"
 #include "dbgpend.h"
+#include "dbgprint.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -112,7 +113,6 @@ extern void             ProcHelp( void );
 extern void             ProcIf( void );
 extern void             ProcNew( void );
 extern void             ProcPaint( void );
-extern void             ProcPrint( void );
 extern void             ProcQuit( void );
 extern void             ProcRegister( void );
 extern void             ProcRemark( void );

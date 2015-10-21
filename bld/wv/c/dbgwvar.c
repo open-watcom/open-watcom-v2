@@ -48,13 +48,9 @@
 #include "dbgexpr4.h"
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
+#include "dbgprint.h"
 
 extern void             ChkExpr( void );
-extern void             StartPrintBuff( char *buff, int len );
-extern void             EndPrintBuff( void );
-extern void             PrintChar( void );
-extern void             PrintString( void );
-extern void             ForcePrintString( void );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
 extern void             SetTokens( bool );
@@ -64,7 +60,6 @@ extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff
 extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
-extern void             PrintValue( void );
 extern void             WndInspectExprSP( const char *item );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );

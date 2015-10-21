@@ -49,16 +49,12 @@
 #include "dbgexpr.h"
 #include "dbgmain.h"
 #include "dbgbrk.h"
+#include "dbgprint.h"
 
 #include "clibext.h"
 
 extern image_entry      *ImageEntry( mod_handle mh );
 extern void             ChkExpr( void );
-extern void             StartPrintBuff( char *buff, int len );
-extern void             EndPrintBuff( void );
-extern void             PrintChar( void );
-extern void             PrintString( void );
-extern void             ForcePrintString( void );
 extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
 extern void             SetTokens( bool );
@@ -67,7 +63,6 @@ extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( const char *);
-extern void             PrintValue( void );
 extern void             SetUpExpr( unsigned addr_depth );
 extern bool             UnMapAddress( mappable_addr *loc, image_entry *image );
 extern remap_return     ReMapImageAddress( mappable_addr *loc, image_entry *image );

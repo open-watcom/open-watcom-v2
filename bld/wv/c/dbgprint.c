@@ -49,6 +49,7 @@
 #include "dbgexpr.h"
 #include "dbgmain.h"
 #include "dbgovl.h"
+#include "dbgprint.h"
 
 #define BUFLEN  UTIL_LEN
 
@@ -82,8 +83,6 @@ static bool             OutPgm;
 static bool             First;
 
 static const char PrintOps[] = { "Program\0Window\0" };
-
-extern void PrintValue( void );
 
 typedef enum { NUM_SIGNED, NUM_UNSIGNED, NUM_CHECK } sign_class;
 
