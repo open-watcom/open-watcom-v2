@@ -30,54 +30,10 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dui.h"
-#include "dbgdot.h"
-
-static address          CodeAddr;
-static address          DataAddr;
-
-extern void             DbgUpdate(update_list );
-
-address GetDotAddr( void )
-{
-    if( _IsOn( SW_DOT_IS_DATA ) ) {
-        return( DataAddr );
-    } else {
-        return( CodeAddr );
-    }
-}
-
-void SetCodeLoc( address addr )
-{
-    CodeAddr = addr;
-    DbgUpdate( UP_CODE_ADDR_CHANGE );
-}
-
-void SetDataLoc( address addr )
-{
-    DataAddr = addr;
-}
-
-void SetCodeDot( address addr )
-{
-    SetCodeLoc( addr );
-    _SwitchOff( SW_DOT_IS_DATA );
-}
-
-void SetDataDot( address addr )
-{
-    SetDataLoc( addr );
-    _SwitchOn( SW_DOT_IS_DATA );
-}
-
-address GetCodeDot( void )
-{
-    return( CodeAddr );
-}
-
-address GetDataDot( void )
-{
-    return( DataAddr );
-}
+extern address GetDotAddr( void );
+extern void SetCodeLoc( address addr );
+extern void SetDataLoc( address addr );
+extern void SetCodeDot( address addr );
+extern void SetDataDot( address addr );
+extern address GetCodeDot( void );
+extern address GetDataDot( void );

@@ -46,6 +46,7 @@
 #include "dbgexpr.h"
 #include "dbgbrk.h"
 #include "dbgass.h"
+#include "dbgdot.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -60,8 +61,6 @@ extern void             GoToAddr( address addr );
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndAsmInspect( address addr );
 extern bool             DlgCodeAddr( const char *title, address *value );
-extern void             SetCodeDot(address);
-extern address          GetCodeDot(void);
 extern bool             HasLineInfo(address);
 extern bool             SrcMoveDot( a_window *, address );
 extern void             SrcJoinAsm( a_window *, a_window * );

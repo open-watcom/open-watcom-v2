@@ -47,10 +47,10 @@
 #include "dbgutil.h"
 #include "dbgmemor.h"
 #include "dbgbrk.h"
+#include "dbgdot.h"
 
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );
-extern void             SetDataDot( address );
 extern bool             DlgLongExpr( const char *title, long * );
 extern bool             DlgDataAddr( const char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));

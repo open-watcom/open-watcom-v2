@@ -46,6 +46,7 @@
 #include "dbgshow.h"
 #include "dbgovl.h"
 #include "dbgparse.h"
+#include "dbgdot.h"
 
 
 enum {
@@ -110,9 +111,6 @@ extern address          GetRegIP( void );
 extern void             SetRegIP( address );
 extern address          GetRegSP( void );
 extern bool             RemoteOvlTransAddr( address * );
-extern void             SetCodeLoc( address );
-extern void             SetCodeDot( address );
-extern address          GetCodeDot( void );
 extern bool             IsSupportRoutine( sym_handle * );
 extern void             RecordEvent( const char *p );
 extern void             CheckEventRecorded( void );

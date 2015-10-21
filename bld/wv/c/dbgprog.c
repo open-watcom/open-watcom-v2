@@ -53,6 +53,7 @@
 #include "dbgovl.h"
 #include "dbgbrk.h"
 #include "dbgparse.h"
+#include "dbgdot.h"
 
 #include "clibext.h"
 
@@ -81,7 +82,6 @@ extern void             TraceKill( void );
 extern void             AddAliasInfo( unsigned, unsigned );
 extern void             FreeAliasInfo( void );
 extern void             CheckSegAlias( void );
-extern void             SetCodeDot( address );
 extern address          GetRegIP( void );
 extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( const char *name );

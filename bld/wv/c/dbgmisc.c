@@ -45,6 +45,7 @@
 #include "dbgmain.h"
 #include "dbgshow.h"
 #include "dbgparse.h"
+#include "dbgdot.h"
 
 
 extern void             FlipScreen( void );
@@ -64,7 +65,6 @@ extern void             RemoteThdName( dtid_t, char * );
 extern void             RemoteRunThdName( dtid_t, char * );
 extern void             TraceKill( void );
 extern address          ReturnAddress( void );
-extern void             SetCodeDot( address );
 extern bool             AdvMachState( int );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern int              AddrComp( address a, address b );

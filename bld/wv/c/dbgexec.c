@@ -46,6 +46,7 @@
 #include "dbgmain.h"
 #include "dbgovl.h"
 #include "dbgbrk.h"
+#include "dbgdot.h"
 
 
 extern bool             AdvMachState( int );
@@ -65,7 +66,6 @@ extern void             CheckForNewThreads( bool );
 extern void             CheckSegAlias( void );
 extern void             SetMemBefore( bool );
 extern void             SetMemAfter( bool );
-extern void             SetCodeDot( address );
 extern char             DlgFatal( void );
 extern bool             CheckStackPos( void );
 extern void             RecordEvent( const char *p );

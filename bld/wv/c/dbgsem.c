@@ -48,6 +48,7 @@
 #include "dbgexpr.h"
 #include "dbgloc.h"
 #include "dbgsem.h"
+#include "dbgdot.h"
 
 #include "clibext.h"
 
@@ -79,7 +80,6 @@ extern void             ParseRegSet( bool, location_list *, dip_type_info * );
 extern stack_entry      *StkEntry( int );
 extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
-extern address          GetDotAddr( void );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 extern void             PurgeSymHandles( void );
 extern bool             IsInternalMod( mod_handle );

@@ -47,11 +47,10 @@
 #include "dbgexpr.h"
 #include "dbgmain.h"
 #include "dbgparse.h"
+#include "dbgdot.h"
 
 
 extern void             DbgUpdate( update_list );
-extern void             SetDataDot( address addr );
-extern address          GetDataDot( void );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern bool             AdvMachState( int );
 

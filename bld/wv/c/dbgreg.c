@@ -51,6 +51,7 @@
 #include "dbgmain.h"
 #include "dbgovl.h"
 #include "dbgparse.h"
+#include "dbgdot.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
@@ -101,7 +102,6 @@ extern dtid_t           RemoteSetThread( dtid_t );
 extern thread_state     *FindThread( dtid_t );
 extern unsigned         ProgPoke( address addr, const void *data, unsigned len );
 extern unsigned         ProgPeek( address addr, void *data, unsigned len );
-extern void             SetCodeLoc( address );
 extern mad_reg_info     *LookupRegName( mad_reg_info *, lookup_item * );
 extern dip_status       RegLocation( machine_state *regs, mad_reg_info const *ri, location_list *ll );
 extern address          DefAddrSpaceForAddr( address );
