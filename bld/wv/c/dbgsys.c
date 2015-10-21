@@ -40,6 +40,7 @@
 #include "dbgscan.h"
 #include "trapglbl.h"
 #include "dbgmain.h"
+#include "dbgsys.h"
 
 
 extern long         _fork( const char *, size_t );

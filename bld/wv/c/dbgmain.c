@@ -51,6 +51,7 @@
 #include "dbgbrk.h"
 #include "dbgpend.h"
 #include "dbgprint.h"
+#include "dbgsys.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -117,7 +118,6 @@ extern void             ProcQuit( void );
 extern void             ProcRegister( void );
 extern void             ProcRemark( void );
 extern void             ProcSet( void );
-extern void             ProcSystem( void );
 extern void             ProcThread( void );
 extern void             ProcTrace( void );
 extern void             ProcView( void );

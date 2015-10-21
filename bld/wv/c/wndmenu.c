@@ -40,6 +40,9 @@
 #include "dbgexec.h"
 #include "dbgmain.h"
 #include "dbgbrk.h"
+#if !defined(__GUI__) && !defined(__WINDOWS__) && !defined(__NT__)
+#include "dbgsys.h"
+#endif
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             DlgSource( void );
@@ -49,7 +52,6 @@ extern void             ProcWndFindNext( a_window * );
 extern void             ProcWndFindPrev( a_window * );
 extern void             DlgOptSet( void );
 extern void             DlgCmd( void );
-extern void             DoSystem( const char *, size_t, int );
 extern void             ExecTrace( trace_cmd_type, debug_level );
 extern void             ReStart( void );
 extern bool             SetProgStartHook( bool );
