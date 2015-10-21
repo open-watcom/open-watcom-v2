@@ -45,6 +45,7 @@
 #include "dbgcall.h"
 #include "dbgshow.h"
 #include "dbgparse.h"
+#include "dbgwdlg.h"
 
 #include "clibext.h"
 
@@ -65,7 +66,6 @@ extern void             AsmChangeOptions( void );
 extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
-extern void             WndDlgTxt( const char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
 extern void             DbgUpdate( update_list );
 

@@ -48,6 +48,7 @@
 #include "dbgutil.h"
 #include "dbgmain.h"
 #include "dbgbrk.h"
+#include "dbgwdlg.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -63,7 +64,6 @@ extern void             RemoteSetDebugScreen( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
 extern gui_colour_set   *GetWndColours( wnd_class wndcls );
-extern bool             WndDlgTxt( const char * );
 extern a_window         *WndSrchOpen( const char * );
 extern void             *GetWndFont( a_window * );
 extern bool             AsmOpenGadget( a_window *, wnd_line_piece *, mod_handle );

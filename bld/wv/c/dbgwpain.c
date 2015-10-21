@@ -37,10 +37,10 @@
 #include "dbgscan.h"
 #include "dbgmain.h"
 #include "dbgshow.h"
+#include "dbgwdlg.h"
 
 
 extern wnd_class        ReqWndName( void );
-extern bool             WndDlgTxt( const char *buff );
 extern char             *GetWndFont( a_window * );
 extern bool             ScanStatus( void );
 

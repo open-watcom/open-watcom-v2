@@ -58,9 +58,6 @@
 #include "strutil.h"
 
 
-
-extern bool     VarInfoRelease( void );
-extern bool     DlgInfoRelease( void );
 extern void     PopErrBox( const char * );
 
 

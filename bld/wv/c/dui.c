@@ -45,6 +45,7 @@
 #include "dbgbrk.h"
 #include "dbgpend.h"
 #include "envlkup.h"
+#include "dbgwdlg.h"
 
 
 extern a_window         *WndMain;
@@ -78,7 +79,6 @@ extern void             FiniMemWindow( void );
 extern void             FiniToolBar( void );
 extern void             FiniFileMap( void );
 extern void             FiniScreen( void );
-extern void             WndDlgFini( void );
 extern void             SetTargMenuItems( void );
 extern void             SetBrkMenuItems( void );
 extern void             SetIOMenuItems( void );
@@ -91,7 +91,6 @@ extern void             AsyncNotify( void );
 extern void             RunThreadNotify( void );
 
 extern void             WndMsgBox( const char *text );
-extern bool             WndDlgTxt( const char *text );
 extern void             WndInfoBox( const char *text );
 extern void             WndUser( void );
 extern void             WndDebug( void );
@@ -101,7 +100,6 @@ extern void             PlayDead( bool );
 extern void             WndSysEnd( bool pause );
 extern void             WndSysStart( void );
 extern void             ProcPendingPaint( void );
-extern bool             DlgInfoRelease( void );
 extern bool             VarInfoRelease( void );
 extern void             WndSrcOrAsmInspect( address );
 extern void             WndAddrInspect( address );
@@ -373,8 +371,10 @@ void DUIProcPendingPaint( void )
 
 bool DUIInfoRelease( void )
 {
-    if( DlgInfoRelease() ) return( TRUE );
-    if( VarInfoRelease() ) return( TRUE );
+    if( DlgInfoRelease() )
+        return( TRUE );
+    if( VarInfoRelease() )
+        return( TRUE );
     return( FALSE );
 }
 

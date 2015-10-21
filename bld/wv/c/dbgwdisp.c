@@ -41,9 +41,9 @@
 #include "dbghook.h"
 #include "dbgshow.h"
 #include "dbgparse.h"
+#include "dbgwdlg.h"
 
 
-extern bool             WndDlgTxt( const char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );

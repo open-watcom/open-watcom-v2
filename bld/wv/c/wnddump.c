@@ -37,10 +37,10 @@
 #include "dbgadget.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgwdlg.h"
 
 
 extern char             *GetDmpName( void );
-extern bool             WndDlgTxt( const char *buff );
 
 extern gui_resource     WndGadgetArray[];
 

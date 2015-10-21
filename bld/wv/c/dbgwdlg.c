@@ -35,6 +35,7 @@
 #include "dbgwind.h"
 #include "dbgmem.h"
 #include "dbglog.h"
+#include "dbgwdlg.h"
 
 #define MAX_DLG_LINES 30000U
 

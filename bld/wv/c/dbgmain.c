@@ -135,7 +135,6 @@ extern void             SysFileInit( void );
 extern bool             TBreak( void );
 extern void             VarDisplayFini( void );
 extern void             VarDisplayInit( void );
-extern void             WndDlgFini( void );
 extern void             WndMemInit( void );
 
 extern int              ScanSavePtr;

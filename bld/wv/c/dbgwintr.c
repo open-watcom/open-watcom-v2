@@ -43,10 +43,10 @@
 #include "dbgmain.h"
 #include "dbgshow.h"
 #include "dbgparse.h"
+#include "dbgwdlg.h"
 
 
 extern void             WndUserAdd(char *,unsigned int );
-extern void             WndDlgTxt(const char *);
 extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
 extern void             SymCompFini( void );
 
