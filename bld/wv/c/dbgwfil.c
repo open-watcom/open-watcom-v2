@@ -45,6 +45,7 @@
 #include "dbgsrc.h"
 #include "dbgexpr.h"
 #include "dbgbrk.h"
+#include "dbgparse.h"
 
 extern bool             ScanSelectedExpr( const char * );
 extern void             BreakOnSelected( const char *item );
@@ -76,7 +77,6 @@ extern void             WndModInspect( mod_handle mod );
 extern a_window         *AsmWndFind( a_window *asw, address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
 extern unsigned         ExprSize( stack_entry * );
-extern void             EvalLValExpr( int );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
 extern int              AddrComp( address a, address b );

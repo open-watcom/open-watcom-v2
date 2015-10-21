@@ -24,63 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Expression parser (using .prs grammar files).
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgerr.h"
-#include "dbgscan.h"
-#include "dbgparse.h"
-
-
-extern bool             HasLinInfo(address );
-extern void             *WndAsmInspect(address);
-extern void             *WndSrcInspect(address);
-extern address          GetCodeDot( void );
-
-
-/*
- * DoAsmExam -- examine assembly on input from prompt window
- */
-
-/*
- * AsmExam -- process examine/assembly command
- */
-
-void AsmExam( void )
-{
-    address     addr;
-//    bool        prompt;
-
-    addr = GetCodeDot();
-    OptMemAddr( EXPR_CODE, &addr );
-//    prompt = TRUE;
-    ReqEOC();
-    WndAsmInspect( addr );
-}
-
-
-/*
- * DoSrcExam -- examine source on input from prompt window
- */
-
-/*
- * SrcExam -- process examine/source command
- */
-
-void SrcExam( void )
-{
-    address     addr;
-//    bool        prompt;
-
-    addr = GetCodeDot();
-    OptMemAddr( EXPR_CODE, &addr );
-//    prompt = TRUE;
-    ReqEOC();
-    WndSrcInspect( addr );
-}
+extern void         SetUpExpr( unsigned addr_depth );
+extern void         EvalLValExpr( unsigned addr_depth );
+extern void         EvalExpr( unsigned addr_depth );
+extern void         NormalExpr( void );
+extern void         ChkExpr( void );
+extern unsigned_64  ReqU64Expr( void );
+extern long         ReqLongExpr( void );
+extern unsigned     ReqExpr( void );
+#ifdef DEADCODE
+extern xreal        ReqXRealExpr( void );
+#endif
+extern unsigned     OptExpr( unsigned def_val );
+extern void         MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
+extern void         ReqMemAddr( memory_expr def_seg, address *out_val );
+extern void         CallExpr( address *out_val );
+extern void         OptMemAddr( memory_expr def_seg, address *def_val );
+extern void         SetTokens( bool parse_tokens );
+extern void         LangInit( void );
+extern void         LangFini( void );
+extern bool         LangLoad( const char *lang, unsigned langlen );

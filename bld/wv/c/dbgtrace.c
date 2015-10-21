@@ -45,6 +45,7 @@
 #include "dbgmain.h"
 #include "dbgshow.h"
 #include "dbgovl.h"
+#include "dbgparse.h"
 
 
 enum {
@@ -99,7 +100,6 @@ extern char             SecondByte;
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern void             OptMemAddr( memory_expr, address * );
 extern int_16           GetDataWord( void );
 extern long             GetDataLong( void );
 extern int              AddrComp( address, address );

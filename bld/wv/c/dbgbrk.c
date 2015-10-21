@@ -57,14 +57,12 @@
 #include "dbgovl.h"
 #include "dbgbrk.h"
 #include "dbgpend.h"
+#include "dbgparse.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern unsigned long    ReqLongExpr( void );
-extern unsigned int     ReqExpr( void );
-extern void             ReqMemAddr( memory_expr, address * );
 extern int              AddrComp( address, address );
 extern address          GetRegIP( void );
 extern dword            RemoteSetBreak( address );

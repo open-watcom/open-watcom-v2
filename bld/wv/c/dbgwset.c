@@ -44,12 +44,11 @@
 #include "dbginvk.h"
 #include "dbgcall.h"
 #include "dbgshow.h"
+#include "dbgparse.h"
 
 #include "clibext.h"
 
 
-extern unsigned         ReqExpr( void );
-extern unsigned         OptExpr( void );
 extern void             WndUserAdd( char *, unsigned int );
 extern void             LookSet( void );
 extern void             LevelSet( void );
@@ -57,9 +56,6 @@ extern void             LookConf( void );
 extern void             LevelConf( void );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
-extern void             LangInit( void );
-extern void             LangFini( void );
-extern bool             LangLoad( const char *, unsigned );
 extern void             WndRedraw( wnd_class );
 extern void             WndRestoreToFront( a_window* );
 extern wnd_class        ReqWndName( void );

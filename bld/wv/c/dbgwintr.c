@@ -42,10 +42,9 @@
 #include "dbgscan.h"
 #include "dbgmain.h"
 #include "dbgshow.h"
+#include "dbgparse.h"
 
 
-extern unsigned         ReqExpr( void );
-extern unsigned         OptExpr( void );
 extern void             WndUserAdd(char *,unsigned int );
 extern void             WndDlgTxt(const char *);
 extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );

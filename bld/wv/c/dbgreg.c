@@ -50,6 +50,7 @@
 #include "dbgloc.h"
 #include "dbgmain.h"
 #include "dbgovl.h"
+#include "dbgparse.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
@@ -91,7 +92,6 @@ static  int             NumStateEntries = 0;
 
 extern long             GetDataLong( void );
 extern void             StartupErr( const char * );
-extern unsigned         ReqExpr( void );
 extern void             DbgUpdate( update_list );
 extern void             FindAddrSectId( address *, int );
 extern unsigned int     RemoteOvlSectSize( void );

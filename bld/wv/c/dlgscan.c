@@ -39,12 +39,9 @@
 #include "mad.h"
 #include "dbgscan.h"
 #include "dbgexpr.h"
+#include "dbgparse.h"
 
 
-extern unsigned long    ReqLongExpr( void );
-extern void             ReqMemAddr( memory_expr, address * );
-extern void             NormalExpr( void );
-extern void             ChkExpr( void );
 extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
 extern void             RawScanInit( void );
 

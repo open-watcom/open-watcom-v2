@@ -44,13 +44,13 @@
 #include "dbginvk.h"
 #include "dbgbrk.h"
 #include "dbgpend.h"
+#include "dbgparse.h"
 
 
 extern void             RecordNewProg( void );
 extern int              GetStackPos( void );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );
-extern unsigned         ReqExpr( void );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
 extern void             DbgUpdate( update_list );

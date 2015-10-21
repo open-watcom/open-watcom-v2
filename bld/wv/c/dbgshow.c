@@ -43,9 +43,9 @@
 #include "dbginvk.h"
 #include "dbghook.h"
 #include "dbgshow.h"
+#include "dbgparse.h"
 
 
-extern unsigned int     OptExpr( unsigned int );
 extern int              AddrComp( address , address );
 extern void             ConfigSet( void );
 extern void             ConfigDisp( void );

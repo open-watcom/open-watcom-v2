@@ -49,11 +49,8 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgprint.h"
+#include "dbgparse.h"
 
-extern void             ChkExpr( void );
-extern void             NormalExpr( void );
-extern void             EvalLValExpr( int );
-extern void             SetTokens( bool );
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );

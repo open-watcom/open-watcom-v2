@@ -40,9 +40,9 @@
 #include "dbgmain.h"
 #include "dbghook.h"
 #include "dbgshow.h"
+#include "dbgparse.h"
 
 
-extern unsigned int     OptExpr( unsigned int );
 extern bool             WndDlgTxt( const char * );
 extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );

@@ -52,6 +52,7 @@
 #include "dbgshow.h"
 #include "dbgovl.h"
 #include "dbgbrk.h"
+#include "dbgparse.h"
 
 #include "clibext.h"
 
@@ -75,9 +76,6 @@ extern void             RemoteSplitCmd( char *, char **, char ** );
 extern void             SymInfoMvHdl( handle, handle );
 extern handle           PathOpen( const char *, unsigned, const char * );
 extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern void             ChkExpr( void );
-extern unsigned         ReqExpr( void );
-extern void             ReqMemAddr( memory_expr, address * );
 extern void             SetNoSectSeg( void );
 extern void             TraceKill( void );
 extern void             AddAliasInfo( unsigned, unsigned );

@@ -44,13 +44,9 @@
 #include "dbgexpr.h"
 #include "dbgmain.h"
 #include "dbgshow.h"
+#include "dbgparse.h"
 
 
-extern unsigned int     ReqExpr( void );
-extern unsigned_64      ReqU64Expr( void );
-extern void             ReqMemAddr( memory_expr ,address *);
-extern unsigned         OptExpr( unsigned );
-extern void             NormalExpr( void );
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern address          GetRegIP( void );
@@ -69,7 +65,6 @@ extern void             RemoteRunThdName( dtid_t, char * );
 extern void             TraceKill( void );
 extern address          ReturnAddress( void );
 extern void             SetCodeDot( address );
-extern void             ChkExpr( void );
 extern bool             AdvMachState( int );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern int              AddrComp( address a, address b );

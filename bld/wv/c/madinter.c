@@ -44,6 +44,7 @@
 #include "madcli.h"
 #include "dbgutil.h"
 #include "dbgovl.h"
+#include "dbgparse.h"
 
 #include "clibext.h"
 
@@ -57,8 +58,6 @@ extern void             ResizeRegData(void);
 extern void             ResizeTraceData(void);
 extern void             PendingToggles( void );
 extern bool             FixOvlRetAddr( address * );
-extern void             EvalExpr( unsigned addr_depth );
-extern void             MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );

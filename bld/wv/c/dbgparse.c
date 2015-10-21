@@ -41,6 +41,7 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgovl.h"
+#include "dbgparse.h"
 
 
 extern void             DefAddr( memory_expr, address * );
