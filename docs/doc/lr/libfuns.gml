@@ -855,7 +855,9 @@
 .fn7 _mktemp                    mktemp.gml      DOS       WIN32
 .fnw _wmktemp                   mktemp.gml      DOS       WIN32
 .fnc mktime                     mktime.gml      DOS QNX W WIN32
-.fnc mmap                       mmap.gml            QXO
+.fnc mlock                      mlock.gml       DOS QNX W WIN32
+.fnc mlockall                   mlockall.gml    DOS QNX W WIN32
+.fnc mmap                       mmap.gml        DOS QNX W WIN32
 .fnc modf                       modf.gml        DOS QNX W WIN32
 .fnc mount                      mount.gml           QXO
 .fnc mouse_close                ms_close.gml        QXO
@@ -888,7 +890,7 @@
 .fn7 _m_pmulhw                  mpmulhw.gml     DOS QNX W WIN32
 .fn7 _m_pmullw                  mpmullw.gml     DOS QNX W WIN32
 .fn7 _m_por                     mpor.gml        DOS QNX W WIN32
-.fnc mprotect                   mprot.gml           QXO
+.fnc mprotect                   mprotect.gml    DOS QNX W WIN32
 .fn7 _m_pslld                   mpslld.gml      DOS QNX W WIN32
 .fn7 _m_pslldi                  mpslldi.gml     DOS QNX W WIN32
 .fn7 _m_psllq                   mpsllq.gml      DOS QNX W WIN32
@@ -923,10 +925,13 @@
 .fnc _bmsize                    _msize.gml      DOS QNX W
 .fnf _fmsize                    _msize.gml      DOS QNX W
 .fnc _nmsize                    _msize.gml      DOS QNX W WIN32
+.fnc msync                      msync.gml       DOS QNX W WIN32
 .fnc mtob                       mtob.gml        NEC
 .fnf _fmtob                     mtob.gml        NEC
 .fn7 _m_to_int                  mtoint.gml      DOS QNX W WIN32
-.fnc munmap                     munmap.gml          QXO
+.fnc munlock                    munlock.gml     DOS QNX W WIN32
+.fnc munlockall                 munlall.gml     DOS QNX W WIN32
+.fnc munmap                     munmap.gml      DOS QNX W WIN32
 .fnc nan                        nanf.gml        DOS QNX W WIN32
 .fnc nanf                       nanf.gml        DOS QNX W WIN32
 .fnc nanl                       nanf.gml        DOS QNX W WIN32

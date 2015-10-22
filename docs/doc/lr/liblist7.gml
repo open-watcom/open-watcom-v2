@@ -954,8 +954,10 @@
 .sys _mktemp DOS16 DOS32 WIN16 WIN386 WIN32 OS216 OS216MT OS216DL OS232
 .sys mktime DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys mktimer QNX16 QNX32
+.sys mlock LNX32
+.sys mlockall LNX32
 .sys _mmap QNX32
-.sys mmap QNX32
+.sys mmap LNX32 QNX32
 .sys modf MATH
 .sys mount QNX16 QNX32
 .sys mouse_close QNX16 QNX32
@@ -1020,10 +1022,13 @@
 .sys _m_punpckldq MACRO
 .sys _m_punpcklwd MACRO
 .sys _m_pxor MACRO
+.sys msync LNX32
 .sys _msize DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys mtob DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS
 .sys _m_to_int MACRO
-.sys munmap QNX32
+.sys munlock LNX32
+.sys munlockall LNX32
+.sys munmap QNX32 LNX32
 .sys nan MATH
 .sys nanf MATH
 .sys nanl MATH
