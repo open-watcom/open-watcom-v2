@@ -31,8 +31,9 @@
 
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
+extern void raise( void );
 #pragma aux raise "__RAISE";
-void raise()    {}
+void raise( void )    {}
 #endif
 
 double _matherr( why, who, arg1, arg2, result )

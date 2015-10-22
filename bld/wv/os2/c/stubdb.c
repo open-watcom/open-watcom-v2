@@ -56,9 +56,9 @@
 #include "dbgass.h"
 #include "dbgpend.h"
 #include "envlkup.h"
+#include "dbgcmd.h"
 
 
-extern void             DoCmd( char * );
 extern address          GetCodeDot( void );
 extern void             *WndAsmInspect( address addr );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );

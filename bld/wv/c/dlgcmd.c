@@ -41,13 +41,13 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgcmd.h"
 
 extern bool             TBreak( void );
 extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
 extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );
-extern void             DoCmd(char*);
 
 
 static bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )
