@@ -33,9 +33,10 @@
 #include "dbgdefn.h"
 #include "sslops.h"
 #include "dbgsem.h"
+#include "dbgwalk.h"
 
 
-static unsigned char    *TblPtr;
+static byte     *TblPtr;
 
 enum {
         TERM_NORMAL,
@@ -62,7 +63,7 @@ static int GetSignedParm( op_code operation )
 {
     signed_16  parm;
 
-    parm = *((signed char *)TblPtr++);
+    parm = (signed char)*TblPtr++;
     if( operation & INS_LONG ) {
         parm &= 0xff;
         parm |= *TblPtr++ << 8;
@@ -71,7 +72,13 @@ static int GetSignedParm( op_code operation )
 }
 
 
-int SSLWalk( unsigned char *table, unsigned start, void **stk_bot, unsigned stk_size )
+static int GetWord( void )
+{
+    return( (unsigned_16)(*TblPtr++ | (*TblPtr++ << 8)) );
+}
+
+
+int SSLWalk( char *table, unsigned start, void **stk_bot, unsigned stk_size )
 {
     op_code         operation;
     unsigned        num_items;
@@ -86,7 +93,7 @@ int SSLWalk( unsigned char *table, unsigned start, void **stk_bot, unsigned stk_
 
     stk_ptr = stk_bot;
     stk_end = stk_bot + stk_size;
-    TblPtr = &table[start];
+    TblPtr = (byte *)( table + start );
     token = SSLCurrToken();
     for( ;; ) {
         operation = *TblPtr++;
@@ -94,7 +101,9 @@ int SSLWalk( unsigned char *table, unsigned start, void **stk_bot, unsigned stk_
         case INS_INPUT:
             wanted = GetParm( operation );
             if( token != wanted ) {
-                if( SSLError( TERM_SYNTAX, wanted ) ) return( TERM_SYNTAX );
+                if( SSLError( TERM_SYNTAX, wanted ) ) {
+                    return( TERM_SYNTAX );
+                }
             }
             token = SSLNextToken();
             break;
@@ -138,14 +147,15 @@ int SSLWalk( unsigned char *table, unsigned start, void **stk_bot, unsigned stk_
             SSLError( TERM_KILL, GetParm( operation ) );
             return( TERM_KILL );
         case INS_RETURN:
-            if( stk_ptr <= stk_bot ) return( TERM_NORMAL );
+            if( stk_ptr <= stk_bot )
+                return( TERM_NORMAL );
             TblPtr = *--stk_ptr;
             break;
         case INS_IN_CHOICE:
             for( num_items = *TblPtr++; num_items > 0; num_items-- ) {
                 if( token == GetParm( operation ) ) {
                     token = SSLNextToken();
-                    TblPtr = &table[ TblPtr[0] | (TblPtr[1] << 8) ];
+                    TblPtr = (byte *)( table + GetWord() );
                     break;
                 }
                 TblPtr += 2;
@@ -154,7 +164,7 @@ int SSLWalk( unsigned char *table, unsigned start, void **stk_bot, unsigned stk_
         case INS_CHOICE:
             for( num_items = *TblPtr++; num_items > 0; num_items-- ) {
                 if( result == GetParm( operation ) ) {
-                    TblPtr = &table[ TblPtr[0] | (TblPtr[1] << 8) ];
+                    TblPtr = (byte *)( table + GetWord() );
                     break;
                 }
                 TblPtr += 2;

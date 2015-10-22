@@ -42,12 +42,12 @@
 #include "dbgexpr.h"
 #include "dbgovl.h"
 #include "dbgparse.h"
+#include "dbgwalk.h"
 
 
 extern void             DefAddr( memory_expr, address * );
 
 extern handle           LocalPathOpen( const char *, unsigned, const char * );
-extern int              SSLWalk( char *, unsigned, void **, unsigned int );
 
 extern stack_entry      *ExprSP;
 
