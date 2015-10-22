@@ -37,6 +37,7 @@
 #include "dbgerr.h"
 #include "namelist.h"
 #include "dbgbrk.h"
+#include "wndsys.h"
 
 
 extern void             GoToAddr( address addr );

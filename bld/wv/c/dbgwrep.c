@@ -41,6 +41,7 @@
 #include "dbgutil.h"
 #include "dbgbrk.h"
 #include "dbgparse.h"
+#include "wndsys.h"
 
 extern void             RecordNewProg(void);
 extern int              GetStackPos( void );

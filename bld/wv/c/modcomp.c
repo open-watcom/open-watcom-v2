@@ -36,10 +36,10 @@
 #include "guidlg.h"
 #include "modlist.h"
 #include "strutil.h"
+#include "wndsys.h"
 
 
 extern char     *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff );
-extern void     WndMsgBox( const char * );
 
 static const char *ModGetName( const void *data_handle, int item )
 {

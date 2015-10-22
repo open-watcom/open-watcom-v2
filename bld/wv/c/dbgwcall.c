@@ -40,6 +40,7 @@
 #include "strutil.h"
 #include "dbgutil.h"
 #include "dbgbrk.h"
+#include "wndsys.h"
 
 
 extern a_window         *WndSrcInspect( address );

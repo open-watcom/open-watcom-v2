@@ -36,6 +36,7 @@
 #include "dbgwind.h"
 #include "sortlist.h"
 #include "strutil.h"
+#include "wndsys.h"
 
 
 extern bool             ReLoadSymInfo( image_entry *image );
@@ -45,7 +46,6 @@ extern bool             SymBrowse( char **name );
 extern void             WndGblFuncInspect( mod_handle mod );
 extern void             WndGblVarInspect( mod_handle mod );
 extern void             WndModListInspect( mod_handle mod );
-extern void             SetUnderLine( a_window *, wnd_line_piece * );
 extern char             *ImgSymName( image_entry *img, bool always );
 extern void             ImgSort(void);
 

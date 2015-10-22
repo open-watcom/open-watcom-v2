@@ -37,6 +37,7 @@
 #include "dbgadget.h"
 #include "namelist.h"
 #include "dbgbrk.h"
+#include "wndsys.h"
 
 
 extern a_window         *WndAsmInspect( address );

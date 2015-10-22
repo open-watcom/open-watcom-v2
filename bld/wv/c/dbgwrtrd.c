@@ -34,12 +34,12 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
+#include "wndsys.h"
 
 extern bool             RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize );
 extern void             RemoteUpdateRunThread( thread_state *thd );
 
 extern bool             IsThdCurr( thread_state *thd );
-extern void             SetUnderLine( a_window *, wnd_line_piece * );
 extern void             DbgUpdate( update_list );
 extern bool             HaveRemoteRunThread( void );
 extern void             RemotePollRunThread( void );

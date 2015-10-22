@@ -45,12 +45,12 @@
 #include "dbgmain.h"
 #include "dbginvk.h"
 #include "dbgshow.h"
+#include "wndsys.h"
 
 extern char             *KeyName( unsigned key );
 extern wnd_macro        *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
 extern void             FiniMacros( void );
-extern void             SetUnderLine( a_window *, wnd_line_piece * );
 
 extern const char       MainTab[];
 extern wnd_info         *WndInfoTab[];

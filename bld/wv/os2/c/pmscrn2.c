@@ -46,6 +46,7 @@
 #include "dbgscrn.h"
 #include "guigmous.h"
 #include "guiwin.h"
+#include "wndsys.h"
 
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
 
@@ -54,8 +55,6 @@ extern HMQ      GUIPMmq;
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
 extern void     TellHandles( HAB hab, HWND hwnd );
-extern void     SaveMainScreen( char * );
-extern void     RestoreMainScreen( char * );
 extern bool     IsTrapFilePumpingMessageQueue( void );
 
 

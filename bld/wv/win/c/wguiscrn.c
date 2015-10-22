@@ -39,11 +39,10 @@
 #include "dbgscrn.h"
 #include "guiwin.h"
 #include "dbgcmdln.h"
+#include "wndsys.h"
 
 extern void         *ExtraAlloc( size_t );
 extern void         ExtraFree( void * );
-extern void         SaveMainScreen( char * );
-extern void         RestoreMainScreen( char * );
 extern int          Lookup( const char *, const char *, size_t );
 
 extern int              HardModeRequired;

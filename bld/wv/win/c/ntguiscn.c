@@ -39,11 +39,10 @@
 #include "dbgscrn.h"
 #include "guiwin.h"
 #include "dbgmain.h"
+#include "wndsys.h"
 
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
-extern void     SaveMainScreen(char*);
-extern void     RestoreMainScreen(char*);
 extern void     TellHWND( HWND );
 
 extern a_window *WndMain;

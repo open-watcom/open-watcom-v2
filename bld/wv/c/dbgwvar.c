@@ -50,6 +50,7 @@
 #include "dbgexpr.h"
 #include "dbgprint.h"
 #include "dbgparse.h"
+#include "wndsys.h"
 
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );

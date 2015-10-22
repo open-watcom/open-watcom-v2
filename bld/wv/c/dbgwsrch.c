@@ -40,6 +40,7 @@
 #include "srcmgt.h"
 #include "strutil.h"
 #include "dbgsrc.h"
+#include "wndsys.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -50,8 +51,6 @@ extern a_window         *WndModInspect(mod_handle);
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
 extern int              ModCompare( mod_handle const *a, mod_handle const *b );
 extern bool             DlgSearchAll(char**,void*);
-extern bool             OpenGadget( a_window *, wnd_line_piece *, mod_handle, bool );
-extern bool             CheckOpenGadget( a_window*, wnd_row, bool, mod_handle, bool, int );
 
 #include "menudef.h"
 static gui_menu_struct SrchMenu[] = {

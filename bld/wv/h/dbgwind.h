@@ -97,34 +97,19 @@ typedef struct wnd_macro {
 
 extern wnd_metrics *WndMetrics[];
 
-extern void             WndInitScrnState(void);
-extern void             WndNewProg(void);
-extern void             WndStrt(void);
-extern void             WndShow(void);
-extern void             WndStop(void);
-extern void             WndUser(void);
-extern void             WndDebug(void);
+extern void         WndInitScrnState(void);
+extern void         WndNewProg(void);
+extern void         WndStrt(void);
+extern void         WndShow(void);
 
-extern void             WndSysStart(void);
-extern void             WndSysEnd(bool );
-extern void             WndRedraw(wnd_class );
-extern void             WndCodeBrk(address ,bool );
+extern void         WndCodeBrk(address ,bool );
 
-extern void             WndDoInput(void);
+extern void         WndDoInput(void);
 
-extern wnd_macro        *WndMacroList;
+extern wnd_macro    *WndMacroList;
 
-extern char             *WndClipItem;
+extern char         *WndClipItem;
 
-extern void             WndUpdate(update_list );
+extern void         WndUpdate(update_list );
 
-extern a_window *DbgWndCreate( const char *title, wnd_info *info,
-                               wnd_class wndcls, void * extra,
-                               gui_resource *icon );
-
-extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
-                                    wnd_class wndcls, void * extra,
-                                    gui_resource * icon,
-                                    int title_size, bool vdrag );
-
-extern bool     ChkFlags( wnd_update_list flags );
+extern bool         ChkFlags( wnd_update_list flags );

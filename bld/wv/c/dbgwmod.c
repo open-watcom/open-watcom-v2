@@ -39,14 +39,13 @@
 #include "dbgio.h"
 #include "dbgutil.h"
 #include "dbgbrk.h"
+#include "wndsys.h"
 
 
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndSrcInspect(address);
 extern void             WndFileInspect( char *file, bool binary );
 extern a_window         *WndAsmInspect(address);
-extern bool             OpenGadget( a_window *, wnd_line_piece *, mod_handle, bool );
-extern bool             CheckOpenGadget( a_window*, wnd_row, bool, mod_handle, bool, int );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern  bool            ModHasSourceInfo( mod_handle handle );
 extern address          ModFirstAddr( mod_handle mod );

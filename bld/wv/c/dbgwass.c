@@ -47,6 +47,7 @@
 #include "dbgbrk.h"
 #include "dbgass.h"
 #include "dbgdot.h"
+#include "wndsys.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -73,7 +74,6 @@ extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern bool             DlgModName( const char *title, mod_handle *mod );
 extern void             WndVarInspect( const char * );
-extern void             SetUnderLine( a_window*, wnd_line_piece *);
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 extern void             StepIntoFunction( const char * );
 extern void             BreakOnSelected( const char *item );
@@ -411,11 +411,13 @@ bool AsmOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod )
     for( curr = WndNext( NULL ); curr != NULL; curr = WndNext( curr ) ) {
         if( WndClass( curr ) != WND_ASSEMBLY ) continue;
         if( mod == WndAsm( curr )->mod ) {
-            if( line != NULL ) SetGadgetLine( wnd, line, GADGET_OPEN_ASSEMBLY );
+            if( line != NULL )
+                SetGadgetLine( wnd, line, GADGET_OPEN_ASSEMBLY );
             return( TRUE );
         }
     }
-    if( line != NULL ) SetGadgetLine( wnd, line, GADGET_CLOSED_ASSEMBLY );
+    if( line != NULL )
+        SetGadgetLine( wnd, line, GADGET_CLOSED_ASSEMBLY );
     return( FALSE );
 }
 

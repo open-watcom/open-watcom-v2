@@ -46,6 +46,7 @@
 #include "dbgpend.h"
 #include "envlkup.h"
 #include "dbgwdlg.h"
+#include "wndsys.h"
 
 
 extern a_window         *WndMain;
@@ -61,7 +62,6 @@ extern void             InitAboutMessage( void );
 extern void             InitIOWindow( void );
 extern void             InitMenus( void );
 extern void             InitHelp( void );
-extern void             InitGadget( void );
 extern void             InitPaint( void );
 extern void             InitBrowse( void );
 extern void             InitFont( void );
@@ -70,7 +70,6 @@ extern void             InitScreen( void );
 extern void             FiniMacros( void );
 extern void             FiniBrowse( void );
 extern void             FiniPaint( void );
-extern void             FiniGadget( void );
 extern void             FiniFont( void );
 extern void             FiniAboutMessage( void );
 extern void             FiniMenus( void );
@@ -90,15 +89,8 @@ extern void             InitSuppServices( void );
 extern void             AsyncNotify( void );
 extern void             RunThreadNotify( void );
 
-extern void             WndMsgBox( const char *text );
-extern void             WndInfoBox( const char *text );
-extern void             WndUser( void );
-extern void             WndDebug( void );
 extern a_window         *WndClassInspect( wnd_class wndcls );
-extern void             WndFlushKeys( void );
 extern void             PlayDead( bool );
-extern void             WndSysEnd( bool pause );
-extern void             WndSysStart( void );
 extern void             ProcPendingPaint( void );
 extern bool             VarInfoRelease( void );
 extern void             WndSrcOrAsmInspect( address );
@@ -110,7 +102,6 @@ extern void             InitRunThreadInfo( void );
 extern void             ScreenOptInit( void );
 extern bool             ScreenOption( const char *start, unsigned len, int pass );
 extern unsigned         ConfigScreen( void );
-extern void             WndProcWindow( void );
 
 #define TIMER_MS        250
 

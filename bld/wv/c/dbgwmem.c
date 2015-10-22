@@ -48,6 +48,7 @@
 #include "dbgmemor.h"
 #include "dbgbrk.h"
 #include "dbgdot.h"
+#include "wndsys.h"
 
 extern address          AddrAddWrap(address,long);
 extern unsigned         ProgPeek(address ,void *,unsigned int );

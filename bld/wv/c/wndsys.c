@@ -49,6 +49,7 @@
 #include "dbgmain.h"
 #include "dbgbrk.h"
 #include "dbgwdlg.h"
+#include "wndsys.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -81,13 +82,6 @@ extern void             ScrnSpawnEnd( void );
 
 extern void             WndDumpFile( a_window * );
 extern void             WndDumpLog( a_window * );
-extern void             ProcWndSearch( a_window * );
-extern void             ProcWndFindNext( a_window * );
-extern void             ProcWndFindPrev( a_window * );
-extern void             ProcWndPopUp( a_window * );
-extern void             ProcWndTabLeft( a_window * );
-extern void             ProcWndTabRight( a_window * );
-extern void             ProcPUINYI( a_window * );
 extern void             XDumpMenus( void );
 static void             WndBadCmd( a_window * );
 
@@ -450,7 +444,7 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
 }
 
 
-extern void WndSysInit( void )
+void WndSysInit( void )
 {
     ScrnState = DBG_SCRN_ACTIVE | DBG_SCRN_VISIBLE;
 
@@ -543,14 +537,14 @@ void WndFlushKeys( void )
     GUIFlushKeys();
 }
 
-extern void WndMsgBox( const char *msg )
+void WndMsgBox( const char *msg )
 {
     FingClose(); // close this if we have a startup error.  2x won't hurt
     WndDebug();
     WndDisplayMessage( msg, "", GUI_INFORMATION+GUI_SYSTEMMODAL);
 }
 
-extern void WndInfoBox( const char *msg )
+void WndInfoBox( const char *msg )
 {
     if( !( WndDlgTxt( msg ) || WndStatusText( msg ) ) ) {
         WndMsgBox( msg );

@@ -36,6 +36,7 @@
 #include "dbgmem.h"
 #include "dbglog.h"
 #include "dbgwdlg.h"
+#include "wndsys.h"
 
 #define MAX_DLG_LINES 30000U
 

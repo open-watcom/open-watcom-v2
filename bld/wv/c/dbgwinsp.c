@@ -44,6 +44,7 @@
 #include "dbgexpr.h"
 #include "dbgbrk.h"
 #include "dbgparse.h"
+#include "wndsys.h"
 
 #include "clibext.h"
 
@@ -74,7 +75,6 @@ extern void             FuncNewMod( a_window *wnd, mod_handle mod );
 extern void             GlobNewMod( a_window *wnd, mod_handle mod );
 extern void             MemNewAddr( a_window *wnd, address addr );
 extern void             IONewAddr( a_window *wnd, address *addr, int type );
-extern void             WndSetOpenNoShow( void );
 extern void             ModNewHandle( a_window *wnd, mod_handle handle );
 extern bool             SrcHasFileOpen( a_window *wnd );
 extern address          ModFirstAddr( mod_handle mod );

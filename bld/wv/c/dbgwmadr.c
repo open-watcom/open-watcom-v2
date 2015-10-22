@@ -40,6 +40,7 @@
 #include "madcli.h"
 #include "dbgstk.h"
 #include "dbgexpr.h"
+#include "wndsys.h"
 
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );

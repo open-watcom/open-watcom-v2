@@ -46,6 +46,7 @@
 #include "dbgexpr.h"
 #include "dbgbrk.h"
 #include "dbgparse.h"
+#include "wndsys.h"
 
 extern bool             ScanSelectedExpr( const char * );
 extern void             BreakOnSelected( const char *item );
@@ -69,7 +70,6 @@ extern void             AsmNewSrcNotify( a_window *, mod_handle, bool track );
 extern void             SkipToAddr( address );
 extern void             StepIntoFunction( const char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
-extern bool             DbgWndSearch( a_window *, bool, int );
 extern bool             DlgCodeAddr( const char *title, address *value );
 extern void             WndSrcInspect( address addr );
 extern bool             DlgModName( const char *title, mod_handle *mod );
@@ -391,11 +391,13 @@ bool FileOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod )
     for( curr = WndNext( NULL ); curr != NULL; curr = WndNext( curr ) ) {
         if( WndClass( curr ) != WND_SOURCE ) continue;
         if( mod == WndFile( curr )->mod ) {
-            if( line != NULL ) SetGadgetLine( wnd, line, GADGET_OPEN_SOURCE );
+            if( line != NULL )
+                SetGadgetLine( wnd, line, GADGET_OPEN_SOURCE );
             return( TRUE );
         }
     }
-    if( line != NULL ) SetGadgetLine( wnd, line, GADGET_CLOSED_SOURCE );
+    if( line != NULL )
+        SetGadgetLine( wnd, line, GADGET_CLOSED_SOURCE );
     return( FALSE );
 }
 
