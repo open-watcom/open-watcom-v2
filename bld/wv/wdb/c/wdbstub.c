@@ -117,8 +117,6 @@ extern void             ProcGo( void );
 extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
 extern void             TraceKill( void );
-extern var_node         *VarExpandNode( var_node *v );
-extern var_node         *VarFirstExpandNode( var_info *i, var_node *v );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
 extern void             *WndAsmInspect( address addr );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );

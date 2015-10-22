@@ -53,6 +53,7 @@
 #include "dbgprint.h"
 #include "dbgsys.h"
 #include "dbgprog.h"
+#include "dbgvar.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -124,8 +125,6 @@ extern void             SupportFini( void );
 extern void             SymCompFini( void );
 extern void             SysFileInit( void );
 extern bool             TBreak( void );
-extern void             VarDisplayFini( void );
-extern void             VarDisplayInit( void );
 extern void             WndMemInit( void );
 
 extern int              ScanSavePtr;
