@@ -62,6 +62,8 @@ extern void     WndSetOpenNoShow( void );
 extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo, wnd_class wndcls, void *extra, gui_resource *icon, int title_size, bool vdrag );
 extern a_window *DbgWndCreate( const char *title, wnd_info *info, wnd_class wndcls, void *extra, gui_resource *icon );
 extern void     WndRXError( int num );
+#if defined(__GUI__)
 extern void     SaveMainScreen( char *name );
 extern void     RestoreMainScreen( char *name );
 extern void     WndSetWndMainSize( wnd_create_struct *info );
+#endif

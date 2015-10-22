@@ -518,5 +518,5 @@ unsigned DUIConfigScreen( void )
 
 void DUIProcWindow( void )
 {
-     WndProcWindow();
+    WndProcWindow();
 }

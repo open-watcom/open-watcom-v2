@@ -46,6 +46,7 @@
 #include "dbgshow.h"
 #include "dbgparse.h"
 #include "dbgwdlg.h"
+#include "wndsys.h"
 
 #include "clibext.h"
 
@@ -57,7 +58,6 @@ extern void             LookConf( void );
 extern void             LevelConf( void );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
-extern void             WndRedraw( wnd_class );
 extern void             WndRestoreToFront( a_window* );
 extern wnd_class        ReqWndName( void );
 extern gui_menu_struct  *AddMenuAccel( const char *, const char *, wnd_class, bool * );
