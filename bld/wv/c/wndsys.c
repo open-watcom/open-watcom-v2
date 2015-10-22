@@ -262,7 +262,7 @@ static void WndBadCmd( a_window *wnd )
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
-void ProcWindow( void )
+void WndProcWindow( void )
 {
     int         cmd;
     a_window    *wnd = WndFindActive();

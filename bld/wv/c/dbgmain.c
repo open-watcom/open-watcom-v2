@@ -122,7 +122,6 @@ extern void             ProcThread( void );
 extern void             ProcTrace( void );
 extern void             ProcView( void );
 extern void             ProcWhile( void );
-extern void             ProcWindow( void );
 extern void             RecordFini( void );
 extern void             RecordInit( void );
 extern void             ReleaseProgOvlay( bool );
@@ -428,4 +427,9 @@ void DebugFini( void )
     _Free( TrapParms );
     FiniLiterals();
     FiniLocalInfo();
+}
+
+void ProcWindow( void )
+{
+    DUIProcWindow();
 }

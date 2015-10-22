@@ -86,3 +86,4 @@ extern void     DUIInitRunThreadInfo( void );
 extern void     DUIScreenOptInit( void );
 extern bool     DUIScreenOption( const char *start, unsigned len, int pass );
 extern unsigned DUIConfigScreen( void );
+extern void     DUIProcWindow( void );

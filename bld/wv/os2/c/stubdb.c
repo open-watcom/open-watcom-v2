@@ -588,7 +588,7 @@ void ProcView( void )
     FlushEOC();
 }
 
-void ProcWindow( void )
+void DUIProcWindow( void )
 {
     // stub for old UI
     FlushEOC();

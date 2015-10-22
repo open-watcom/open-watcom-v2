@@ -110,6 +110,7 @@ extern void             InitRunThreadInfo( void );
 extern void             ScreenOptInit( void );
 extern bool             ScreenOption( const char *start, unsigned len, int pass );
 extern unsigned         ConfigScreen( void );
+extern void             WndProcWindow( void );
 
 #define TIMER_MS        250
 
@@ -522,4 +523,9 @@ bool DUIScreenOption( const char *start, unsigned len, int pass )
 unsigned DUIConfigScreen( void )
 {
     return( ConfigScreen() );
+}
+
+void DUIProcWindow( void )
+{
+     WndProcWindow();
 }

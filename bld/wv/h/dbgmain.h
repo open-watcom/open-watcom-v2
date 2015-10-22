@@ -37,3 +37,4 @@ extern void ProcACmd( void );
 extern void DebugMain( void );
 extern void DebugExit( void );
 extern void DebugFini( void );
+extern void ProcWindow( void );
