@@ -31,6 +31,7 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
+#include "dipwv.h"
 #include "dbglit.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
@@ -50,6 +51,7 @@
 #include "dbgloc.h"
 #include "dbgcall2.h"
 #include "dbgovl.h"
+#include "dbg_dbg.h"
 
 
 extern address          AddrAdd( address, long );
@@ -61,7 +63,6 @@ extern stack_entry      *StkEntry( int );
 extern char             *DupStringEntry( char *, unsigned long );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
-extern bool             CreateSym( lookup_item *, dip_type_info * );
 extern address          DefAddrSpaceForAddr( address );
 extern address          GetRegSP( void );
 extern void             SetRegSP( address );

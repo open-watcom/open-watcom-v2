@@ -38,6 +38,7 @@
 #include "dui.h"
 #include "dbgscan.h"
 #include "dbgovl.h"
+#include "dbg_dbg.h"
 
 #include "clibext.h"
 
@@ -209,7 +210,7 @@ struct lookup_reg {
     const char          *name;
     unsigned            len;
     cmp_func            *cmp;
-    mad_reg_info const  *ri;
+    const mad_reg_info  *ri;
 };
 
 static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
@@ -224,7 +225,7 @@ static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
     return( WR_STOP );
 }
 
-mad_reg_info const *LookupRegName( mad_reg_info *parent, lookup_item *li )
+const mad_reg_info *LookupRegName( const mad_reg_info *parent, lookup_item *li )
 {
     struct lookup_reg   lr;
 

@@ -95,12 +95,12 @@ typedef struct {
 
 struct imp_sym_handle {
     wv_sym_entry        *p;
-    mad_reg_info        *ri;
+    const mad_reg_info  *ri;
 };
 
 struct imp_type_handle {
     wv_type_entry       t;
-    mad_reg_info        *ri;
+    const mad_reg_info  *ri;
 };
 
 #define WV_INT_MH       1

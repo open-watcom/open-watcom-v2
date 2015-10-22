@@ -52,6 +52,7 @@
 #include "dbgovl.h"
 #include "dbgparse.h"
 #include "dbgdot.h"
+#include "dbg_dbg.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
@@ -102,8 +103,7 @@ extern dtid_t           RemoteSetThread( dtid_t );
 extern thread_state     *FindThread( dtid_t );
 extern unsigned         ProgPoke( address addr, const void *data, unsigned len );
 extern unsigned         ProgPeek( address addr, void *data, unsigned len );
-extern mad_reg_info     *LookupRegName( mad_reg_info *, lookup_item * );
-extern dip_status       RegLocation( machine_state *regs, mad_reg_info const *ri, location_list *ll );
+extern dip_status       RegLocation( machine_state *regs, const mad_reg_info *ri, location_list *ll );
 extern address          DefAddrSpaceForAddr( address );
 
 
@@ -933,14 +933,14 @@ void GoHome( void )
 
 struct parsed_regs {
     struct parsed_regs  *prev;
-    mad_reg_info        *ri;
+    const mad_reg_info  *ri;
 };
 
 void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
 {
     lookup_item         li;
     struct parsed_regs  *list, *new;
-    mad_reg_info        *ri;
+    const mad_reg_info  *ri;
     location_list       reg_loc;
 
     li.scope.start = NULL;

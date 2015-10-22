@@ -47,6 +47,7 @@
 #include "strutil.h"
 #include "dbgloc.h"
 #include "dbgovl.h"
+#include "dbg_dbg.h"
 
 #include "clibext.h"
 
@@ -54,11 +55,6 @@
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern bool             SameAddrSpace( address, address );
-extern mad_reg_info     *LookupRegName( mad_reg_info *, lookup_item * );
-extern wv_sym_entry     *LookupInternalName( lookup_item * );
-extern wv_sym_entry     *LookupUserName( lookup_item * );
-extern void             InternalValue( unsigned, void * );
-extern void             PurgeUserNames(void);
 extern void             StartupErr( const char * );
 extern void             FreeImage( image_entry * );
 extern void             MapAddrForImage( image_entry *, addr_ptr * );
@@ -129,7 +125,7 @@ void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
     }
 }
 
-dip_status RegLocation( machine_state *regs, mad_reg_info const *ri, location_list *ll )
+dip_status RegLocation( machine_state *regs, const mad_reg_info *ri, location_list *ll )
 {
 
     if( regs == NULL || ri == NULL ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
@@ -613,7 +609,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     imp_type_handle     *it;
     imp_sym_handle      *is;
     wv_sym_entry        *se;
-    mad_reg_info        *ri;
+    const mad_reg_info  *ri;
 
     if( li->type != ST_NONE ) return( SR_NONE );
     if( li->scope.start != NULL ) return( SR_NONE );

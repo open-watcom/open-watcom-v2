@@ -61,7 +61,7 @@ static gui_menu_struct RegMenu[] = {
 
 typedef struct {
     unsigned char           standout;
-    mad_reg_info  const     *info;
+    const mad_reg_info      *info;
     gui_ord                 max_extent;
     gui_ord                 max_descript;
     unsigned char           max_value;

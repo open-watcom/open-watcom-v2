@@ -264,7 +264,7 @@ void ProcCall( void )
     location_list       ll;
     dip_type_info       ti;
     char                *p;
-    mad_reg_info const **parm_reg;
+    const mad_reg_info  **parm_reg;
 
     if( CurrToken == T_DIV ) {
         Scan();
