@@ -34,12 +34,12 @@
 #include "dlglist.h"
 #include "dbgsrc.h"
 #include "dbgbrk.h"
+#include "dbgprog.h"
 
 #include "clibext.h"
 
 char_ring               *DLLList;
 
-extern char             *GetLastImageName( void );
 extern void             RecordEvent( const char *p );
 
 

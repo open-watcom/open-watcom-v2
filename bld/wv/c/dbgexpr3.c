@@ -44,8 +44,8 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgprog.h"
 
-extern address          DefAddrSpaceForAddr( address );
 
 extern stack_entry      *ExprSP;
 

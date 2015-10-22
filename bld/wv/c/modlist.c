@@ -39,13 +39,12 @@
 #include "modlist.h"
 #include "strutil.h"
 #include "dbgbrk.h"
+#include "dbgprog.h"
 
 #include "clibext.h"
 
 
 extern bool             IsInternalMod( mod_handle mod );
-extern image_entry      *ImagePrimary(void);
-extern image_entry      *ImageEntry( mod_handle );
 
 extern  bool            ModHasSourceInfo( mod_handle handle )
 {

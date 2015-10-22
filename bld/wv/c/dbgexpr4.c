@@ -52,6 +52,7 @@
 #include "dbgcall2.h"
 #include "dbgovl.h"
 #include "dbg_dbg.h"
+#include "dbgprog.h"
 
 
 extern address          AddrAdd( address, long );
@@ -63,7 +64,6 @@ extern stack_entry      *StkEntry( int );
 extern char             *DupStringEntry( char *, unsigned long );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
-extern address          DefAddrSpaceForAddr( address );
 extern address          GetRegSP( void );
 extern void             SetRegSP( address );
 

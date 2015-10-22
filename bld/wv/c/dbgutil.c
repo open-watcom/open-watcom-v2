@@ -47,6 +47,7 @@
 #include "dbgmad.h"
 #include "dbgutil.h"
 #include "dbgovl.h"
+#include "dbgprog.h"
 
 
 extern char             *Language;
@@ -56,8 +57,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             NewLang( const char * );
 extern address          GetCodeDot( void );
-extern image_entry      *ImageEntry( mod_handle mh );
-extern image_entry      *ImagePrimary( void );
 
 
 unsigned DefaultSize( default_kind dk )

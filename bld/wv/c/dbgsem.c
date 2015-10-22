@@ -49,6 +49,7 @@
 #include "dbgloc.h"
 #include "dbgsem.h"
 #include "dbgdot.h"
+#include "dbgprog.h"
 
 #include "clibext.h"
 
@@ -85,7 +86,6 @@ extern void             PurgeSymHandles( void );
 extern bool             IsInternalMod( mod_handle );
 extern sym_list         *Disambiguate( sym_list * );
 extern void             FreeSymHandle( sym_list * );
-extern image_entry      *ImagePrimary( void );
 extern mod_handle       LookupImageName( const char *, unsigned );
 
 

@@ -39,10 +39,10 @@
 #include "dbgscrn.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbgprog.h"
 
 extern void         *ExtraAlloc( size_t );
 extern void         ExtraFree( void * );
-extern image_entry  *ImagePrimary(void);
 
 static unsigned ScrnLines=25;
 static unsigned ScrnColumns=80;

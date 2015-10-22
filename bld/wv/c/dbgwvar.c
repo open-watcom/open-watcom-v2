@@ -51,6 +51,7 @@
 #include "dbgprint.h"
 #include "dbgparse.h"
 #include "wndsys.h"
+#include "dbgprog.h"
 
 extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand * );
@@ -59,8 +60,6 @@ extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
 extern void             WndInspectExprSP( const char *item );
-extern void             InitMappableAddr( mappable_addr *loc );
-extern void             FiniMappableAddr( mappable_addr *loc );
 
 
 extern stack_entry      *ExprSP;

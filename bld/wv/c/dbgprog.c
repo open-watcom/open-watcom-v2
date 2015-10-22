@@ -54,6 +54,7 @@
 #include "dbgbrk.h"
 #include "dbgparse.h"
 #include "dbgdot.h"
+#include "dbgprog.h"
 
 #include "clibext.h"
 

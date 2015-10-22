@@ -36,12 +36,9 @@
 #include "dbgerr.h"
 #include "dlgnewp.h"
 #include "dbgpend.h"
+#include "dbgprog.h"
 
 
-extern unsigned         GetProgName( char *where, unsigned len );
-extern unsigned         GetProgArgs( char *where, unsigned len );
-
-extern void             LoadNewProg( const char *cmd, const char *parms );
 extern bool             ExeBrowse( void );
 
 static char             prog[UTIL_LEN];

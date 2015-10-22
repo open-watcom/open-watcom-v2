@@ -42,8 +42,8 @@
 #include "dbgbrk.h"
 #include "dbgparse.h"
 #include "wndsys.h"
+#include "dbgprog.h"
 
-extern void             RecordNewProg(void);
 extern int              GetStackPos( void );
 extern unsigned         UndoLevel( void );
 extern address          GetRegIP( void );

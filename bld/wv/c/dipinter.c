@@ -48,6 +48,7 @@
 #include "dbgloc.h"
 #include "dbgovl.h"
 #include "dbg_dbg.h"
+#include "dbgprog.h"
 
 #include "clibext.h"
 
@@ -56,10 +57,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern bool             SameAddrSpace( address, address );
 extern void             StartupErr( const char * );
-extern void             FreeImage( image_entry * );
-extern void             MapAddrForImage( image_entry *, addr_ptr * );
-extern image_entry      *ImageEntry( mod_handle );
-extern address          DefAddrSpaceForAddr( address );
 extern int              AddrComp( address, address );
 extern void             DeAlias( addr_ptr * );
 

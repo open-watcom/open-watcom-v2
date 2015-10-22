@@ -93,6 +93,7 @@ Done:
 #include "dbgass.h"
 #include "dbgpend.h"
 #include "envlkup.h"
+#include "dbgprog.h"
 
 enum {
     REQ_NONE,
@@ -109,12 +110,10 @@ extern void             DoCmd(char*);
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern address          GetCodeDot( void );
 extern void             GoToReturn( void );
-extern void             LoadNewProg( const char *cmd, const char *parms );
 extern address          ModFirstAddr( mod_handle mod );
 extern void             PerformTrace( void );
 extern void             ProcCall( void );
 extern void             ProcGo( void );
-extern void             ReStart( void );
 extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
 extern void             TraceKill( void );

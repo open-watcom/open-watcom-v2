@@ -52,6 +52,7 @@
 #include "dbgpend.h"
 #include "dbgprint.h"
 #include "dbgsys.h"
+#include "dbgprog.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -60,13 +61,11 @@ extern void             FingFront( void );
 extern void             FingOpen( void );
 extern void             FiniAboutMessage( void );
 extern void             FiniBrowse( void );
-extern void             FiniCmd( void );
 extern void             FiniDLLList( void );
 extern void             FiniDbgInfo( void );
 extern void             FiniFont( void );
 extern void             FiniIOWindow( void );
 extern void             FiniLiterals( void );
-extern void             FiniLocalInfo( void );
 extern void             FiniLook( void );
 extern void             FiniMachState( void );
 extern void             FiniMacros( void );
@@ -78,14 +77,12 @@ extern void             FiniTrace( void );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
 extern void             InitBrowse( void );
-extern bool             InitCmd( void );
 extern void             InitDLLList( void );
 extern void             InitDbgInfo( void );
 extern void             InitFont( void );
 extern void             InitHelp( void );
 extern void             InitIOWindow( void );
 extern void             InitLiterals( void );
-extern void             InitLocalInfo( void );
 extern void             InitLook( void );
 extern void             InitMachState( void );
 extern void             InitMemWindow( void );
@@ -94,7 +91,6 @@ extern void             InitPaint( void );
 extern void             InitToolBar( void );
 extern void             LangSetFini( void );
 extern bool             LangSetInit( void );
-extern void             LoadProg( void );
 extern void             PathFini( void );
 extern void             PathInit( void );
 extern void             PredefFini( void );
@@ -110,7 +106,6 @@ extern void             ProcFont( void );
 extern void             ProcGo( void );
 extern void             ProcHelp( void );
 extern void             ProcIf( void );
-extern void             ProcNew( void );
 extern void             ProcPaint( void );
 extern void             ProcQuit( void );
 extern void             ProcRegister( void );
@@ -122,7 +117,6 @@ extern void             ProcView( void );
 extern void             ProcWhile( void );
 extern void             RecordFini( void );
 extern void             RecordInit( void );
-extern void             ReleaseProgOvlay( bool );
 extern void             RestoreHandlers( void );
 extern void             StartupErr( const char * );
 extern void             Suicide( void );

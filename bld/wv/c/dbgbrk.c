@@ -58,6 +58,7 @@
 #include "dbgbrk.h"
 #include "dbgpend.h"
 #include "dbgparse.h"
+#include "dbgprog.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -92,11 +93,6 @@ extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern void             BreakOnImageLoad( const char *name, unsigned len, bool clear );
-extern void             InitMappableAddr( mappable_addr *loc );
-extern void             FiniMappableAddr( mappable_addr *loc );
-extern void             UnMapPoints( image_entry * );
-extern void             ReMapPoints( image_entry * );
-extern image_entry      *ImageEntry( mod_handle mh );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern bool             DlgScanCodeAddr( const char *str, address *value );
 extern void             DbgUpdate( update_list );

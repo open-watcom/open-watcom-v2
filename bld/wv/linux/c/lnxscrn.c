@@ -59,9 +59,9 @@
 #include "gui.h"
 #include "guigmous.h"
 #include "dbgcmdln.h"
+#include "dbgprog.h"
 
 extern void     StartupErr( const char * );
-extern void     ReleaseProgOvlay( bool );
 extern void     KillDebugger( int );
 extern int      Lookup( const char *, const char *, size_t );
 

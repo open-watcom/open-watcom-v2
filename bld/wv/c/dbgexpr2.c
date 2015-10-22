@@ -47,13 +47,12 @@
 #include "dbgexpr2.h"
 #include "dbgexpr.h"
 #include "dbgloc.h"
+#include "dbgprog.h"
 
 
 extern sym_list         *Disambiguate( sym_list *, location_context * );
 extern void             FreeSymHandle( sym_list * );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
-extern address          DefAddrSpaceForAddr( address );
-extern address          DefAddrSpaceForMod( mod_handle );
 
 
 static bool DefaultTypeInfo( dip_type_info *info )

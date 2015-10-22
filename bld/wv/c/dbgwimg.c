@@ -37,10 +37,9 @@
 #include "sortlist.h"
 #include "strutil.h"
 #include "wndsys.h"
+#include "dbgprog.h"
 
 
-extern bool             ReLoadSymInfo( image_entry *image );
-extern void             UnLoadSymInfo( image_entry *image, bool nofree );
 extern void             SetLastSym( char *to );
 extern bool             SymBrowse( char **name );
 extern void             WndGblFuncInspect( mod_handle mod );

@@ -47,6 +47,7 @@
 #include "dbgovl.h"
 #include "dbgbrk.h"
 #include "dbgdot.h"
+#include "dbgprog.h"
 
 
 extern bool             AdvMachState( int );
@@ -56,7 +57,6 @@ extern bool             TBreak( void );
 extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern address          GetRegIP( void );
-extern bool             AddLibInfo( bool, bool * );
 extern unsigned         RemoteGetMsgText( char *buff, unsigned buff_len );
 extern long             RemoteThawThread( dtid_t );
 extern long             RemoteFreezeThread( dtid_t );
@@ -73,21 +73,17 @@ extern void             RecordGo( const char *p );
 extern void             CheckEventRecorded( void );
 extern void             RecordAsynchEvent( void );
 extern dtid_t           RemoteSetThread( dtid_t );
-extern char             *GetLastImageName( void );
 extern bool             DLLMatch( void );
 extern bool             TraceSimulate( void );
 extern bool             TraceStart( bool );
 extern mad_trace_how    TraceHow( bool force_into );
 extern unsigned         TraceCheck( unsigned );
 extern void             TraceStop( bool );
-extern void             ReMapPoints( image_entry *);
 extern void             DbgUpdate( update_list );
 extern void             NameThread( dtid_t tid, const char *name );
 extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             DlgScanDataAddr( const char *str, address *value );
 extern bool             DlgScanLong( const char *str, long *value );
-extern bool             SymUserModLoad( char *fname, address *loadaddr );
-extern bool             SymUserModUnload( char *fname );
 extern bool             HaveRemoteAsync( void );
 extern unsigned         MakeAsyncRun( bool single );
 
