@@ -165,7 +165,8 @@ unsigned OptExpr( unsigned def_val )
 {
     if( CurrToken == T_COMMA
      || CurrToken == T_LEFT_BRACE
-     || ScanEOC() ) return( def_val );
+     || ScanEOC() )
+        return( def_val );
     return( ReqExpr() );
 }
 
@@ -180,7 +181,8 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
     switch( ExprSP->info.kind ) {
     case TK_ADDRESS:
     case TK_POINTER:
-        if( (ExprSP->info.modifier & TM_MOD_MASK) != TM_NEAR ) break;
+        if( (ExprSP->info.modifier & TM_MOD_MASK) != TM_NEAR )
+            break;
         /* fall through */
     default:
         DefAddr( def_seg, val );
@@ -192,7 +194,9 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
     }
     *val = ExprSP->v.addr;
     AddrFloat( val );
-    if( pops ) PopEntry();
+    if( pops ) {
+        PopEntry();
+    }
 }
 
 
@@ -233,15 +237,19 @@ void CallExpr( address *out_val )
 
 void OptMemAddr( memory_expr def_seg, address *def_val )
 {
-    if( CurrToken == T_COMMA || ScanEOC() ) return;
+    if( CurrToken == T_COMMA || ScanEOC() )
+        return;
     ReqMemAddr( def_seg, def_val );
 }
 
 
 void SetTokens( bool parse_tokens )
 {
-    if( parse_tokens ) ScanExpr( &ParseTokens );
-    else               ScanExpr( NULL );
+    if( parse_tokens ) {
+        ScanExpr( &ParseTokens );
+    } else {
+        ScanExpr( NULL );
+    }
 }
 
 
@@ -275,7 +283,8 @@ static unsigned ReadSection( handle filehndl, unsigned off )
     if( last > ParseTableSize ) {
         new = ParseTable;
         _Realloc( new, last );
-        if( new == NULL ) return( 0 );
+        if( new == NULL )
+            return( 0 );
         ParseTable = new;
         ParseTableSize = last;
     }
@@ -292,14 +301,17 @@ static bool ReadAllSections( handle filehndl )
 
     /* read rules */
     key_off = ReadSection( filehndl, 0 );
-    if( key_off == 0 ) return( FALSE );
+    if( key_off == 0 )
+        return( FALSE );
     /* read keywords */
     delim_off = ReadSection( filehndl, key_off );
-    if( delim_off == 0 ) return( FALSE );
+    if( delim_off == 0 )
+        return( FALSE );
     /* read delimiters */
-    if( ReadSection( filehndl, delim_off ) == 0 ) return( FALSE );
-    ParseTokens.keywords = &ParseTable[ key_off ];
-    ParseTokens.delims = &ParseTable[ delim_off ];
+    if( ReadSection( filehndl, delim_off ) == 0 )
+        return( FALSE );
+    ParseTokens.keywords = &ParseTable[key_off];
+    ParseTokens.delims = &ParseTable[delim_off];
     return( TRUE );
 }
 
@@ -309,7 +321,8 @@ bool LangLoad( const char *lang, unsigned langlen )
     bool        ret;
 
     filehndl = LocalPathOpen( lang, langlen, "prs" );
-    if( filehndl == NIL_HANDLE ) return( FALSE );
+    if( filehndl == NIL_HANDLE )
+        return( FALSE );
     ret = ReadAllSections( filehndl );
     FileClose( filehndl );
     return( ret );
