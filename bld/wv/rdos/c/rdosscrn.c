@@ -41,11 +41,9 @@
 #include "guigmous.h"
 #include "dbgprog.h"
 
-extern void         *ExtraAlloc( size_t );
-extern void         ExtraFree( void * );
 
-static unsigned ScrnLines=25;
-static unsigned ScrnColumns=80;
+static unsigned ScrnLines = 25;
+static unsigned ScrnColumns = 80;
 
 static char my_key = 0;
 static char debug_key = 0;

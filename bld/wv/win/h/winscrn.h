@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-extern void __far       *ExtraAlloc( size_t );
-extern void             ExtraFree( void __far * );
 extern void             win_uisetcolor( int );
 extern void             win_uisetmono( void );
 extern void             WindowsMessageLoop( int );

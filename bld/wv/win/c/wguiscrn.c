@@ -41,8 +41,7 @@
 #include "dbgcmdln.h"
 #include "wndsys.h"
 
-extern void         *ExtraAlloc( size_t );
-extern void         ExtraFree( void * );
+
 extern int          Lookup( const char *, const char *, size_t );
 
 extern int              HardModeRequired;

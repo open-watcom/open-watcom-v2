@@ -58,10 +58,28 @@
 #include "strutil.h"
 
 
+#if defined( __DOS__ ) && defined( __386__ )
+#if !defined(__OSI__)
+extern int _d16ReserveExt( int );
+#pragma aux _d16ReserveExt =    "mov cx,ax" \
+                                "shr eax,16" \
+                                "mov bx,ax" \
+                                "mov dx,1400H" \
+                                "mov ax,0ff00H" \
+                                "int 21H" \
+                                "ror eax,16" \
+                                "mov ax,dx" \
+                                "ror eax,16" \
+                                parm [ eax ] \
+                                value [ eax ] \
+                                modify [ ebx ecx edx ]
+#endif
+#endif
+
 extern void     PopErrBox( const char * );
 
-
 #ifdef TRMEM
+
 static  int             TrackFile;
 static _trmem_hdl       TRMemHandle;
 
@@ -290,7 +308,7 @@ void MemFini( void )
 #endif
 
 
-void MemExpand( void )
+static void MemExpand( void )
 {
     unsigned long   size;
     void            **link;
@@ -317,6 +335,19 @@ void MemExpand( void )
     }
 }
 
+void SysSetMemLimit( void )
+{
+#if defined( __DOS__ ) && defined( __386__ )
+#if !defined(__OSI__)
+    _d16ReserveExt( MemSize + 1*1024UL*1024UL );
+#endif
+    MemExpand();
+    if( _IsOff( SW_REMOTE_LINK ) && _IsOff( SW_KEEP_HEAP_ENABLED ) ) {
+        _heapenable( 0 );
+    }
+#endif
+}
+
 void MemInit( void )
 {
 #ifdef TRMEM
@@ -325,19 +356,24 @@ void MemInit( void )
     MemExpand();
 }
 
+#if defined( _M_I86 ) && defined( __OS2__ )
+void     __FAR *ExtraAlloc( size_t size )
+#elif defined( _M_I86 ) && defined( __WINDOWS__ )
+void     __far *ExtraAlloc( size_t size )
+#else
 void *ExtraAlloc( size_t size )
+#endif
 {
     return( TRMemAlloc( size ) );
 }
 
-
-void *ExtraRealloc( void *p, size_t size )
-{
-    return( TRMemRealloc( p, size ) );
-}
-
-
+#if defined( _M_I86 ) && defined( __OS2__ )
+void     ExtraFree( void __FAR *ptr )
+#elif defined( _M_I86 ) && defined( __WINDOWS__ )
+void     ExtraFree( void __far *ptr )
+#else
 void ExtraFree( void *ptr )
+#endif
 {
     if( ptr != NULL ) {
         TRMemFree( ptr );

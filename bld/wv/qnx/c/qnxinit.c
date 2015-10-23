@@ -182,10 +182,6 @@ long _fork( const char *cmd, size_t len )
     return( 0 );
 }
 
-void SysSetMemLimit( void )
-{
-}
-
 bool SysGUI( void )
 {
     return( FALSE );

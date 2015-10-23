@@ -42,9 +42,6 @@
 #include "guigmous.h"
 
 
-extern void     __FAR *ExtraAlloc( size_t );
-extern void     ExtraFree( void __FAR * );
-
 unsigned            NumLines;
 unsigned            NumColumns;
 static VIOMODEINFO  SaveMode;

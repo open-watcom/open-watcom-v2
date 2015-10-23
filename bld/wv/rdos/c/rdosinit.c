@@ -123,7 +123,3 @@ bool TBreak( void )
 {
     return( false );
 }
-
-void SysSetMemLimit( void )
-{
-}

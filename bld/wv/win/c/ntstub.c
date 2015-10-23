@@ -75,7 +75,3 @@ void SetNumColumns( int num )
 {
     num = num;
 }
-
-void SysSetMemLimit( void )
-{
-}

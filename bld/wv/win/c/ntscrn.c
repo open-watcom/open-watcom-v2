@@ -40,11 +40,9 @@
 #include "gui.h"
 #include "guigmous.h"
 
-extern void     *ExtraAlloc( size_t );
-extern void     ExtraFree( void * );
 
-static unsigned ScrnLines=50;
-static unsigned ScrnColumns=80;
+static unsigned ScrnLines = 50;
+static unsigned ScrnColumns = 80;
 HWND            DebuggerHwnd;
 HWND            HwndFore = NULL;
 

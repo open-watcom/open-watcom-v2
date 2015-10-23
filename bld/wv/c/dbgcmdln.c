@@ -51,7 +51,6 @@ extern void             ProcSysOptInit( void );
 extern bool             ProcSysOption( const char *, unsigned, int );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
-extern void             SysSetMemLimit( void );
 extern void             StartupErr( const char *err );
 
 

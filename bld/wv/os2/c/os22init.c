@@ -225,7 +225,3 @@ bool TBreak( void )
     BrkPending = false;
     return( ret );
 }
-
-void SysSetMemLimit( void )
-{
-}

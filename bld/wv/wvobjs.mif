@@ -109,8 +109,7 @@ eng_objs_dos386 = &
     $(_subdir_)dsxcmd.obj &
     $(_subdir_)dsxfilio.obj &
     $(_subdir_)dsxlkup.obj &
-    $(_subdir_)dsxhdlr.obj &
-    $(_subdir_)dsxmem.obj
+    $(_subdir_)dsxhdlr.obj
 
 eng_objs_linux = &
     $(_subdir_)lnxinit.obj &

@@ -55,8 +55,6 @@ extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 
 extern HMQ      GUIPMmq;
 
-extern void     __far *ExtraAlloc( size_t );
-extern void     ExtraFree( void __far * );
 extern void     TellHandles( void __far *hab, void __far *hwnd );
 extern bool     IsTrapFilePumpingMessageQueue( void );
 

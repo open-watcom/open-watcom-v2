@@ -52,4 +52,17 @@ extern void     MemFini( void );
 #define _AllocA( res, size )            res = __alloca( size )
 #define _Free( ptr )                    DbgFree( ptr )
 
+extern void SysSetMemLimit( void );
+
+#if defined( _M_I86 ) && defined( __OS2__ )
+extern void     __FAR *ExtraAlloc( size_t );
+extern void     ExtraFree( void __FAR * );
+#elif defined( _M_I86 ) && defined( __WINDOWS__ )
+extern void     __far *ExtraAlloc( size_t );
+extern void     ExtraFree( void __far * );
+#else
+extern void     *ExtraAlloc( size_t );
+extern void     ExtraFree( void *ptr );
+#endif
+
 #endif

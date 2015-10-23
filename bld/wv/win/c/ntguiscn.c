@@ -41,8 +41,6 @@
 #include "dbgmain.h"
 #include "wndsys.h"
 
-extern void     *ExtraAlloc( size_t );
-extern void     ExtraFree( void * );
 extern void     TellHWND( HWND );
 
 extern a_window *WndMain;
