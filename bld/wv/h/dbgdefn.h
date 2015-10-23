@@ -132,7 +132,7 @@ typedef unsigned_8 cnvaddr_option; enum {
 
 typedef unsigned_8 trace_cmd_type; enum {
     #define pick( a,b ) a,
-    #include "dbgtrace.h"
+    #include "_dbgtrac.h"
     #undef pick
 };
 

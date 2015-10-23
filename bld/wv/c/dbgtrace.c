@@ -126,7 +126,7 @@ static const char LevelTab[] = {
 
 static const char TraceTab2[] = {
     #define pick( a,b ) b
-    #include "dbgtrace.h"
+    #include "_dbgtrac.h"
     #undef pick
 };
 
