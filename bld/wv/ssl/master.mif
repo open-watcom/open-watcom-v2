@@ -8,6 +8,8 @@ skip_build: .symbolic
 !endif
 !endif
 
+!include cproj.mif
+
 prs_list = &
     fortran.prs &
     cpp.prs &
