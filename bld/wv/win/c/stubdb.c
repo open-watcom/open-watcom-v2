@@ -53,12 +53,12 @@
 #include "dbgpend.h"
 #include "envlkup.h"
 #include "dbgcmd.h"
+#include "dbgtrace.h"
 
 extern address          GetCodeDot( void );
 extern void             *WndAsmInspect(address addr);
 extern void             DlgCmd( void );
 extern address          GetCodeDot( void );
-extern void             ExecTrace( trace_cmd_type type, debug_level level );
 
 volatile bool           BrkPending;
 

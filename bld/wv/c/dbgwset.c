@@ -34,6 +34,7 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
+#include "madinter.h"
 #include "dbgmem.h"
 #include "wndregx.h"
 #include "dbgio.h"
@@ -47,15 +48,14 @@
 #include "dbgparse.h"
 #include "dbgwdlg.h"
 #include "wndsys.h"
+#include "dbgtrace.h"
 
 #include "clibext.h"
 
 
 extern void             WndUserAdd( char *, unsigned int );
 extern void             LookSet( void );
-extern void             LevelSet( void );
 extern void             LookConf( void );
-extern void             LevelConf( void );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             WndRestoreToFront( a_window* );

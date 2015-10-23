@@ -54,13 +54,13 @@
 #include "dbgdot.h"
 #include "dbg_dbg.h"
 #include "dbgprog.h"
+#include "dbgtrace.h"
 
 extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
 extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );
 extern bool             DlgIncompleteUndo( void );
-extern bool             TraceModifications( MAD_MEMREF_WALKER *wk, void *d );
 extern void             MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti );
 
 static int              StackPos;

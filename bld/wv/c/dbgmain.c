@@ -54,6 +54,7 @@
 #include "dbgsys.h"
 #include "dbgprog.h"
 #include "dbgvar.h"
+#include "dbgtrace.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -74,7 +75,6 @@ extern void             FiniMemWindow( void );
 extern void             FiniMenus( void );
 extern void             FiniPaint( void );
 extern void             FiniToolBar( void );
-extern void             FiniTrace( void );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
 extern void             InitBrowse( void );
@@ -113,7 +113,6 @@ extern void             ProcRegister( void );
 extern void             ProcRemark( void );
 extern void             ProcSet( void );
 extern void             ProcThread( void );
-extern void             ProcTrace( void );
 extern void             ProcView( void );
 extern void             ProcWhile( void );
 extern void             RecordFini( void );

@@ -45,12 +45,12 @@
 #endif
 #include "wndsys.h"
 #include "dbgprog.h"
+#include "dbgtrace.h"
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             DlgSource( void );
 extern void             DlgOptSet( void );
 extern void             DlgCmd( void );
-extern void             ExecTrace( trace_cmd_type, debug_level );
 extern void             GoToReturn( void );
 extern void             DlgNewProg( void );
 extern bool             DlgBreak( address );

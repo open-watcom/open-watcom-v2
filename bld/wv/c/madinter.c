@@ -45,6 +45,7 @@
 #include "dbgutil.h"
 #include "dbgovl.h"
 #include "dbgparse.h"
+#include "dbgtrace.h"
 
 #include "clibext.h"
 
@@ -55,7 +56,6 @@ extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             RemoteOvlTransAddr(address *);
 extern address          GetRegIP(void);
 extern void             ResizeRegData(void);
-extern void             ResizeTraceData(void);
 extern void             PendingToggles( void );
 extern bool             FixOvlRetAddr( address * );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );

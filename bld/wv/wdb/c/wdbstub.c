@@ -94,6 +94,7 @@ Done:
 #include "dbgpend.h"
 #include "envlkup.h"
 #include "dbgprog.h"
+#include "dbgtrace.h"
 
 enum {
     REQ_NONE,
@@ -106,16 +107,13 @@ enum {
 /* External Functions Used */
 extern void             CallResults( void );
 extern void             DlgCmd( void );
-extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern address          GetCodeDot( void );
 extern void             GoToReturn( void );
 extern address          ModFirstAddr( mod_handle mod );
-extern void             PerformTrace( void );
 extern void             ProcCall( void );
 extern void             ProcGo( void );
 extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
-extern void             TraceKill( void );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
 extern void             *WndAsmInspect( address addr );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );

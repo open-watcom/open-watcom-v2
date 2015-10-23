@@ -51,15 +51,14 @@
 #include "dbgovl.h"
 #include "dbgvset.h"
 #include "dbgparse.h"
+#include "dbgtrace.h"
 
 #include "clibext.h"
 
 
 extern void             WndUserAdd( char *, unsigned int );
 extern void             LookSet( void );
-extern void             LevelSet( void );
 extern void             LookConf( void );
-extern void             LevelConf( void );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             VarChangeOptions( void );

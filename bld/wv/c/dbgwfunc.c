@@ -34,17 +34,18 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
+#include "madinter.h"
 #include "dbgadget.h"
 #include "namelist.h"
 #include "dbgbrk.h"
 #include "wndsys.h"
+#include "dbgtrace.h"
 
 
 extern a_window         *WndAsmInspect( address );
 extern a_window         *WndSrcInspect( address );
 extern bool             DlgBreak( address );
 extern void             GoToAddr( address addr );
-extern bool             HasLineInfo( address );
 extern char             *FileBreakGadget( a_window *, wnd_line_piece *, bool curr, brkp *bp );
 extern address          GetCodeDot( void );
 extern search_result    DeAliasAddrMod( address a, mod_handle *mh );

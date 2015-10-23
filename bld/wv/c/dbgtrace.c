@@ -47,6 +47,7 @@
 #include "dbgovl.h"
 #include "dbgparse.h"
 #include "dbgdot.h"
+#include "dbgtrace.h"
 
 
 enum {

@@ -48,6 +48,7 @@
 #include "dbgbrk.h"
 #include "dbgdot.h"
 #include "dbgprog.h"
+#include "dbgtrace.h"
 
 
 extern bool             AdvMachState( int );
@@ -60,7 +61,6 @@ extern address          GetRegIP( void );
 extern unsigned         RemoteGetMsgText( char *buff, unsigned buff_len );
 extern long             RemoteThawThread( dtid_t );
 extern long             RemoteFreezeThread( dtid_t );
-extern bool             SourceStep( void );
 extern bool             SetUpTrace( bool );
 extern void             CheckForNewThreads( bool );
 extern void             CheckSegAlias( void );
@@ -74,11 +74,6 @@ extern void             CheckEventRecorded( void );
 extern void             RecordAsynchEvent( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern bool             DLLMatch( void );
-extern bool             TraceSimulate( void );
-extern bool             TraceStart( bool );
-extern mad_trace_how    TraceHow( bool force_into );
-extern unsigned         TraceCheck( unsigned );
-extern void             TraceStop( bool );
 extern void             DbgUpdate( update_list );
 extern void             NameThread( dtid_t tid, const char *name );
 extern unsigned         ProgPoke( address, const void *, unsigned );

@@ -55,6 +55,7 @@
 #include "dbgparse.h"
 #include "dbgdot.h"
 #include "dbgprog.h"
+#include "dbgtrace.h"
 
 #include "clibext.h"
 
@@ -79,7 +80,6 @@ extern void             SymInfoMvHdl( handle, handle );
 extern handle           PathOpen( const char *, unsigned, const char * );
 extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             SetNoSectSeg( void );
-extern void             TraceKill( void );
 extern void             AddAliasInfo( unsigned, unsigned );
 extern void             FreeAliasInfo( void );
 extern void             CheckSegAlias( void );
