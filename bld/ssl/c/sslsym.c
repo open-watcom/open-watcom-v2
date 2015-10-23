@@ -39,7 +39,7 @@
 symbol          *SymLst;
 
 
-static char LookupAndAdd( class typ, symbol **ptr )
+static bool LookupAndAdd( class typ, symbol **ptr )
 {
     symbol      **owner;
     symbol      *curr;
@@ -47,31 +47,29 @@ static char LookupAndAdd( class typ, symbol **ptr )
     if( CurrToken != T_NAME && CurrToken != T_LITERAL ) {
         Error( "expecting name" );
     }
-    owner = &SymLst;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) break;
+    for( owner = &SymLst; (curr = *owner) != NULL; owner = &curr->link ) {
         if( strcmp( curr->name, TokenBuff ) == 0 ) {
             *ptr = curr;
-            return( 0 );
+            return( false );
         }
         if( curr->alias != NULL && strcmp( curr->alias, TokenBuff ) == 0 ) {
             *ptr = curr;
-            return( 0 );
+            return( false );
         }
-        owner = &curr->link;
     }
     curr = calloc( 1, sizeof( symbol ) );
-    if( curr == NULL ) Error( "out of memory" );
+    if( curr == NULL )
+        Error( "out of memory" );
     *owner = curr;
     curr->link = NULL;
     curr->name = malloc( TokenLen + 1 );
-    if( curr->name == NULL ) Error( "out of memory" );
+    if( curr->name == NULL )
+        Error( "out of memory" );
     strcpy( curr->name, TokenBuff );
     curr->alias = NULL;
     curr->typ = typ;
     *ptr = curr;
-    return( 1 );
+    return( true );
 }
 
 
@@ -87,7 +85,8 @@ symbol  *NewSym( class typ )
 void NewAlias( symbol *sym )
 {
     sym->alias = malloc( TokenLen + 1 );
-    if( sym->alias == NULL ) Error( "out of memory" );
+    if( sym->alias == NULL )
+        Error( "out of memory" );
     strcpy( sym->alias, TokenBuff );
 }
 
@@ -140,14 +139,12 @@ static void AddToList( token_list *list, char *name, unsigned value )
     token_entry *curr;
     token_entry *new;
 
-    len = strlen( name )+(sizeof(char) + sizeof(unsigned short));
+    len = strlen( name ) + ( sizeof( char ) + sizeof( unsigned short ) );
     list->len += len;
-    owner = &list->head;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) break;
-        if( len > curr->len ) break;
-        owner = &curr->link;
+    for( owner = &list->head; (curr = *owner) != NULL; owner = &curr->link ) {
+        if( len > curr->len ) {
+            break;
+        }
     }
     new = malloc( sizeof( token_entry ) );
     new->link = curr;
@@ -160,7 +157,8 @@ static void AddToList( token_list *list, char *name, unsigned value )
 
 static void AddToken( char *name, unsigned value )
 {
-    if( name == NULL ) return;
+    if( name == NULL )
+        return;
     if( *name == '_' || isalnum( *name ) ) {
         AddToList( &Keywords, name, value );
     } else {

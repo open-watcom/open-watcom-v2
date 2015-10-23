@@ -43,7 +43,8 @@ static void ProcTokens( class typ, unsigned *next )
 
     WantColon();
     do {
-        if( CurrToken != T_NAME ) Error( "expecting name" );
+        if( CurrToken != T_NAME )
+            Error( "expecting name" );
         sym = NewSym( typ );
         Scan();
         switch( typ ) {
@@ -63,7 +64,9 @@ static void ProcTokens( class typ, unsigned *next )
             value = *next;
         }
         sym->v.token = value;
-        if( value >= *next ) *next = value + 1;
+        if( value >= *next ) {
+            *next = value + 1;
+        }
     } while( CurrToken != T_SEMI );
     Scan();
 }
@@ -102,7 +105,8 @@ static void ProcMech( unsigned *next )
 {
     symbol      *sym;
 
-    if( CurrToken != T_NAME ) Error( "expecting name" );
+    if( CurrToken != T_NAME )
+        Error( "expecting name" );
     Scan();
     WantColon();
     do {
@@ -114,7 +118,8 @@ static void ProcMech( unsigned *next )
             Scan();
             sym->v.sem.parm = Lookup( CLASS_TYPE );
             Scan();
-            if( CurrToken != T_RITE_PAREN ) Error( "expecting ')'" );
+            if( CurrToken != T_RITE_PAREN )
+                Error( "expecting ')'" );
             Scan();
         }
         if( CurrToken == T_GT_GT ) {
@@ -129,7 +134,9 @@ static void ProcMech( unsigned *next )
         } else {
             sym->v.sem.value = *next;
         }
-        if( sym->v.sem.value >= *next ) *next = sym->v.sem.value + 1;
+        if( sym->v.sem.value >= *next ) {
+            *next = sym->v.sem.value + 1;
+        }
     } while( CurrToken != T_SEMI );
     Scan();
 }
@@ -152,9 +159,12 @@ void Decls(void)
             Scan();
             if( CurrToken == T_OUTPUT ) {
                 Scan();
-                if( next_out > next_inp ) next_inp = next_out;
+                if( next_out > next_inp )
+                    next_inp = next_out;
                 ProcTokens( CLASS_INOUT, &next_inp );
-                if( next_inp > next_out ) next_out = next_inp;
+                if( next_inp > next_out ) {
+                    next_out = next_inp;
+                }
             } else {
                 ProcTokens( CLASS_INPUT, &next_inp );
             }
@@ -168,9 +178,9 @@ void Decls(void)
             ProcTokens( CLASS_ERROR, &next_err );
             break;
         case T_TYPE:
-             Scan();
-             ProcType();
-             break;
+            Scan();
+            ProcType();
+            break;
         case T_MECH:
             Scan();
             ProcMech( &next_sem );
