@@ -50,6 +50,7 @@
 #include "dbgbrk.h"
 #include "dbgwdlg.h"
 #include "wndsys.h"
+#include "remcore.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -60,8 +61,6 @@ extern bool             UsrScrnMode( void );
 extern bool             UserScreen( void );
 extern bool             DebugScreen( void );
 extern bool             DebugScreenRecover( void );
-extern void             RemoteSetUserScreen( void );
-extern void             RemoteSetDebugScreen( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
 extern gui_colour_set   *GetWndColours( wnd_class wndcls );

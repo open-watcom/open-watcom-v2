@@ -48,6 +48,7 @@
 #include "dbgparse.h"
 #include "dbgdot.h"
 #include "dbgtrace.h"
+#include "remcore.h"
 
 
 enum {
@@ -116,8 +117,6 @@ extern bool             IsSupportRoutine( sym_handle * );
 extern void             RecordEvent( const char *p );
 extern void             CheckEventRecorded( void );
 extern dtid_t           RemoteSetThread( dtid_t );
-extern void             ReadDbgRegs( void );
-extern void             WriteDbgRegs( void );
 
 static const char LevelTab[] = {
     #define pick( a,b ) b

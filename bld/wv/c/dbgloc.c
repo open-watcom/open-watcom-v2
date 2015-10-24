@@ -35,10 +35,9 @@
 #include "dbgdata.h"
 #include "mad.h"
 #include "dui.h"
+#include "remcore.h"
 
 extern address          AddrAdd( address, long );
-extern unsigned         ProgPeek( address, void *, unsigned );
-extern unsigned         ProgPoke( address, const void *, unsigned );
 extern unsigned         ChangeMem( address, const void *, unsigned );
 extern void             DbgUpdate( update_list );
 

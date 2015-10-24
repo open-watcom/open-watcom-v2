@@ -39,8 +39,9 @@
 #include "trapaccs.h"
 #include "madinter.h"
 #include "trapglbl.h"
+#include "remcore.h"
 
-extern void             GetSysConfig( void );
+
 extern dtid_t           RemoteSetThread( dtid_t );
 
 #define SUPP_ASYNC_SERVICE( in, request )        \

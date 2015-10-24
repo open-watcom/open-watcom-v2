@@ -36,9 +36,7 @@
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "dbgscan.h"
-
-
-extern bool Redirect(bool ,char *);
+#include "remcore.h"
 
 
 static void StdioRedirect( bool input )

@@ -47,13 +47,12 @@
 #include "dbgparse.h"
 #include "dbgtrace.h"
 #include "dbgtback.h"
+#include "remcore.h"
 
 #include "clibext.h"
 
 
 extern void             DbgUpdate( update_list );
-extern unsigned         ProgPeek( address, void *, unsigned );
-extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             RemoteOvlTransAddr(address *);
 extern address          GetRegIP(void);
 extern void             ResizeRegData(void);
@@ -61,7 +60,6 @@ extern void             PendingToggles( void );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );
-extern void             ClearMachineDataCache( void );
 
 static mad_status       MADStatus;
 

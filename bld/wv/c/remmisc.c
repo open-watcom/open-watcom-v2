@@ -42,6 +42,7 @@
 #include "strutil.h"
 #include "trapglbl.h"
 #include "filermt.h"
+#include "remcore.h"
 
 #include "clibext.h"
 

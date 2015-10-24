@@ -56,6 +56,7 @@
 #include "dbgdot.h"
 #include "dbgprog.h"
 #include "dbgtrace.h"
+#include "remcore.h"
 
 #include "clibext.h"
 
@@ -67,26 +68,20 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
-extern bool             KillProgOvlay( void );
-extern unsigned         DoLoad( const char *, unsigned long * );
 extern void             ClearMachState( void );
 extern void             SetupMachState( void );
-extern unsigned long    RemoteGetLibName( unsigned long, char *buff, unsigned buff_len );
 extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
-extern void             RemoteSplitCmd( char *, char **, char ** );
 extern void             SymInfoMvHdl( handle, handle );
 extern handle           PathOpen( const char *, unsigned, const char * );
 extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             SetNoSectSeg( void );
 extern void             AddAliasInfo( unsigned, unsigned );
 extern void             FreeAliasInfo( void );
-extern void             CheckSegAlias( void );
 extern address          GetRegIP( void );
 extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( const char *name );
-extern void             RemoteMapAddr( addr_ptr *, addr_off *, addr_off *, unsigned long handle );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );

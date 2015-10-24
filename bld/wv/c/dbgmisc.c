@@ -49,15 +49,13 @@
 #include "dbgdot.h"
 #include "dbgtrace.h"
 #include "dbgtback.h"
+#include "remcore.h"
 
 
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern address          GetRegIP( void );
 extern void             RecordSetRegIP( address );
-extern unsigned         RemoteReadUserKey( unsigned );
-extern void             ReadDbgRegs( void );
-extern void             WriteDbgRegs( void );
 extern dtid_t           RemoteGetNextThread( dtid_t, unsigned * );
 extern bool             HaveRemoteRunThread( void );
 extern dtid_t           RemoteGetNextRunThread( dtid_t tid );

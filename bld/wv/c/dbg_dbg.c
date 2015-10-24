@@ -39,13 +39,13 @@
 #include "dbgscan.h"
 #include "dbgovl.h"
 #include "dbg_dbg.h"
+#include "remcore.h"
 
 #include "clibext.h"
 
 typedef int     cmp_func( const void *, const void *, size_t );
 
 
-extern void             GetSysConfig( void );
 extern address          GetRegIP( void );
 extern address          GetRegSP( void );
 extern address          GetRegBP( void );

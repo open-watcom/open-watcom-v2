@@ -35,8 +35,8 @@
 #include "dbgio.h"
 #include "digtypes.h"
 #include "digcli.h"
+#include "remcore.h"
 
-extern unsigned         RemoteMachineData( address addr, unsigned, unsigned, const void *, unsigned, void * );
 
 void *DIGCLIENT DIGCliAlloc( size_t amount )
 {

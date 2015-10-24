@@ -41,13 +41,13 @@
 #include "dbgmain.h"
 #include "dbgshow.h"
 #include "dbgprog.h"
+#include "remcore.h"
 
 #include "clibext.h"
 
 
 extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( const char *, unsigned );
-extern unsigned         ProgPoke( address, const void *, unsigned );
 
 
 typedef struct lookup_list {

@@ -50,6 +50,9 @@
 #include "wndsys.h"
 #include "dbgtrace.h"
 #include "modlist.h"
+#include "remcore.h"
+#include "remcore.h"
+
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -57,8 +60,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern void             WndInspectExprSP( const char *item );
 extern int              AddrComp(address ,address );
-extern void             InitCache(address,unsigned);
-extern void             FiniCache(void);
 extern bool             DlgBreak(address);
 extern void             GoToAddr( address addr );
 extern void             WndFuncInspect( mod_handle mod );
@@ -72,7 +73,6 @@ extern a_window         *SrcWndFind( a_window*src, address addr,bool track );
 extern void             SkipToAddr( address );
 extern void             FileBreakGadget( a_window *,wnd_line_piece *line, bool curr, brkp *bp );
 extern a_window         *DoWndAsmOpen( address addr, bool track );
-extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern bool             DlgModName( const char *title, mod_handle *mod );
 extern void             WndVarInspect( const char * );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );

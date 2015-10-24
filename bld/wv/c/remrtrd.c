@@ -37,11 +37,12 @@
 #include "madinter.h"
 #include "dui.h"
 #include "trapglbl.h"
+#include "remcore.h"
+
 
 #define DEFAULT_TID     1
 
 extern void             CheckForNewThreads( bool set_exec );
-extern void             GetSysConfig( void );
 
 static trap_shandle     SuppRunThreadId = 0;
 

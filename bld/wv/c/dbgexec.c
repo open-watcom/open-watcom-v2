@@ -50,21 +50,17 @@
 #include "dbgprog.h"
 #include "dbgtrace.h"
 #include "dbgdll.h"
+#include "remcore.h"
 
 
 extern bool             AdvMachState( int );
-extern unsigned         MakeProgRun( bool );
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
-extern void             ReadDbgRegs( void );
-extern void             WriteDbgRegs( void );
 extern address          GetRegIP( void );
-extern unsigned         RemoteGetMsgText( char *buff, unsigned buff_len );
 extern long             RemoteThawThread( dtid_t );
 extern long             RemoteFreezeThread( dtid_t );
 extern bool             SetUpTrace( bool );
 extern void             CheckForNewThreads( bool );
-extern void             CheckSegAlias( void );
 extern void             SetMemBefore( bool );
 extern void             SetMemAfter( bool );
 extern char             DlgFatal( void );
@@ -76,7 +72,6 @@ extern void             RecordAsynchEvent( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern void             DbgUpdate( update_list );
 extern void             NameThread( dtid_t tid, const char *name );
-extern unsigned         ProgPoke( address, const void *, unsigned );
 extern bool             DlgScanDataAddr( const char *str, address *value );
 extern bool             DlgScanLong( const char *str, long *value );
 extern bool             HaveRemoteAsync( void );

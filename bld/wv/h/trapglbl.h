@@ -3,8 +3,6 @@ extern void InitTrap( const char *parms );
 extern void FiniTrap( void );
 extern void InitSuppServices( void );
 extern void FiniSuppServices( void );
-extern bool InitCoreSupp( void );
-extern void FiniCoreSupp( void );
 
 extern bool InitCapabilities( void );
 extern bool InitFileSupp( void );

@@ -60,6 +60,7 @@
 #include "dbgparse.h"
 #include "dbgprog.h"
 #include "dbgdll.h"
+#include "remcore.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -67,8 +68,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern int              AddrComp( address, address );
 extern address          GetRegIP( void );
-extern dword            RemoteSetBreak( address );
-extern void             RemoteRestoreBreak( address, dword );
 OVL_EXTERN brkp         *TypePoint( memory_expr );
 OVL_EXTERN brkp         *BadPoint( memory_expr );
 OVL_EXTERN brkp         *ImageBreak( memory_expr );
@@ -81,8 +80,6 @@ OVL_EXTERN brkp         *DeactivatePoint( memory_expr );
 OVL_EXTERN brkp         *SetBreak( memory_expr );
 OVL_EXTERN brkp         *SetWatch( memory_expr );
 OVL_EXTERN brkp         *SetPoint( memory_expr def_seg, mad_type_handle );
-extern bool             RemoteSetWatch( address, unsigned, unsigned long * );
-extern void             RemoteRestoreWatch( address, unsigned );
 extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern bool             CheckBPIns( void );
@@ -90,9 +87,6 @@ extern bool             DlgAreYouNuts( unsigned long );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern void             RecordEvent( const char *p );
 extern void             SetRecord( bool on );
-extern void             ReadDbgRegs( void );
-extern void             WriteDbgRegs( void );
-extern void             WriteDbgRegs( void );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern bool             DlgScanCodeAddr( const char *str, address *value );
 extern void             DbgUpdate( update_list );
