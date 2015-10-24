@@ -46,6 +46,7 @@
 #include "local.h"
 #include "remote.h"
 #include "filermt.h"
+#include "remfile.h"
 
 char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
 
@@ -91,7 +92,6 @@ typedef struct copyspec {
 extern  void            SysFileInit( void );
 extern  void            PathInit( void );
 extern  bool            InitTrap( const char * );
-extern  bool            InitFileSupp( void );
 extern  bool            InitRFXSupp( void );
 extern  void            FiniTrap( void );
 extern  void            InitInt( void );

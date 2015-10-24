@@ -43,6 +43,7 @@
 #include "trapglbl.h"
 #include "filermt.h"
 #include "remcore.h"
+#include "remfile.h"
 
 #include "clibext.h"
 

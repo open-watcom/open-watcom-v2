@@ -57,6 +57,7 @@
 #include "dbgprog.h"
 #include "dbgtrace.h"
 #include "remcore.h"
+#include "remfile.h"
 
 #include "clibext.h"
 
@@ -70,7 +71,6 @@ extern void             StdInNew( void );
 extern void             StdOutNew( void );
 extern void             ClearMachState( void );
 extern void             SetupMachState( void );
-extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             SymInfoMvHdl( handle, handle );

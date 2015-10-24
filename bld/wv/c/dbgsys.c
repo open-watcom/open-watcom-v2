@@ -41,10 +41,10 @@
 #include "trapglbl.h"
 #include "dbgmain.h"
 #include "dbgsys.h"
+#include "remfile.h"
 
 
 extern long         _fork( const char *, size_t );
-extern error_idx    RemoteFork( const char *,size_t );
 extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
 

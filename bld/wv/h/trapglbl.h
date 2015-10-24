@@ -5,7 +5,6 @@ extern void InitSuppServices( void );
 extern void FiniSuppServices( void );
 
 extern bool InitCapabilities( void );
-extern bool InitFileSupp( void );
 extern bool InitFileInfoSupp( void );
 extern bool InitEnvSupp( void );
 extern bool InitOvlSupp( void );
