@@ -48,6 +48,7 @@
 #include "dbgmain.h"
 #include "dbgparse.h"
 #include "dbgdot.h"
+#include "dbgmodfy.h"
 
 
 extern void             DbgUpdate( update_list );

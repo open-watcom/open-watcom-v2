@@ -57,6 +57,7 @@
 #include "dbgtrace.h"
 #include "dbgdll.h"
 #include "dbgexdat.h"
+#include "dbgmodfy.h"
 
 
 // This list of extern functions is in alphabetic order.:
