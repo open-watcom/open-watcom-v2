@@ -35,6 +35,7 @@
 #include "trapglbl.h"
 #include "dbgovl.h"
 #include "trpld.h"
+#include "removl.h"
 
 
 static trap_shandle     SuppOvlId = 0;

@@ -48,12 +48,12 @@
 #include "dbgtrace.h"
 #include "dbgtback.h"
 #include "remcore.h"
+#include "removl.h"
 
 #include "clibext.h"
 
 
 extern void             DbgUpdate( update_list );
-extern bool             RemoteOvlTransAddr(address *);
 extern address          GetRegIP(void);
 extern void             ResizeRegData(void);
 extern void             PendingToggles( void );

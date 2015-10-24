@@ -33,6 +33,7 @@
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "dbgovl.h"
+#include "removl.h"
 
 typedef struct {
     addr_seg    first;
@@ -40,12 +41,6 @@ typedef struct {
     signed_16   shift;
     unsigned_16 spacer;         /* to make a power of two */
 } section_info;
-
-extern void             RemoteSectTblRead( byte * );
-extern void             RemoteSectTblWrite( const byte * );
-extern bool             RemoteOvlRetAddr( address *, unsigned );
-extern bool             RemoteOvlSectPos( unsigned, mem_block * );
-extern unsigned         RemoteOvlSectSize( void );
 
 static void             *TblCache;
 static section_info     *OvlRemap;

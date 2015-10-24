@@ -46,6 +46,7 @@
 #include "filermt.h"
 #include "remcore.h"
 #include "remfile.h"
+#include "removl.h"
 
 #include "clibext.h"
 

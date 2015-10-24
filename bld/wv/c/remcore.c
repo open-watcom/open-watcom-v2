@@ -46,14 +46,13 @@
 #include "remcore.h"
 #include "dbgmisc.h"
 #include "trpld.h"
+#include "removl.h"
 
 
 extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
 extern int              SameAddrSpace( address, address );
 extern void             AddAliasInfo( unsigned, unsigned );
-extern void             RemoteSectTblRead( byte * );
-extern void             RemoteSectTblWrite( const byte * );
 
 extern unsigned         MaxPacketLen;
 extern unsigned         CurrRegSize;

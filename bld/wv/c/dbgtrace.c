@@ -50,6 +50,7 @@
 #include "dbgtrace.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "removl.h"
 
 
 enum {
@@ -113,7 +114,6 @@ extern void             WndPmtNormal( void );
 extern address          GetRegIP( void );
 extern void             SetRegIP( address );
 extern address          GetRegSP( void );
-extern bool             RemoteOvlTransAddr( address * );
 extern bool             IsSupportRoutine( sym_handle * );
 extern void             RecordEvent( const char *p );
 extern void             CheckEventRecorded( void );
