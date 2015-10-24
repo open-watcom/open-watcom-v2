@@ -34,6 +34,7 @@
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "remthrd.h"
+#include "remrtrd.h"
 #else
 #include "rfxdata.h"
 #endif

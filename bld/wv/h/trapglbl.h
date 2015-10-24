@@ -8,7 +8,6 @@ extern bool InitCapabilities( void );
 extern bool InitFileInfoSupp( void );
 extern bool InitEnvSupp( void );
 extern bool InitOvlSupp( void );
-extern bool InitRunThreadSupp( void );
 extern bool InitAsyncSupp( void );
 
 extern trap_shandle GetSuppId( char *name );

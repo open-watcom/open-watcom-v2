@@ -39,6 +39,7 @@
 #include "trapglbl.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "remrtrd.h"
 
 
 #define DEFAULT_TID     1

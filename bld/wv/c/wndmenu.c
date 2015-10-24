@@ -47,6 +47,7 @@
 #include "dbgprog.h"
 #include "dbgtrace.h"
 #include "dbgmisc.h"
+#include "remrtrd.h"
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             DlgSource( void );
@@ -84,7 +85,6 @@ extern void             UnknownScreen( void );
 extern bool             DlgCodeAddr( const char *title, address *value );
 extern bool             DlgDataAddr( const char *title, address *value );
 extern void             WndAddrInspect( address addr );
-extern bool             HaveRemoteRunThread( void );
 
 
 #include "menudef.h"
