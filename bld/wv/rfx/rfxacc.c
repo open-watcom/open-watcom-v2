@@ -278,7 +278,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
+error_idx RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 {
     if( set ) {
         rfx_setdatetime_req     acc;

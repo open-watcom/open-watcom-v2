@@ -869,7 +869,7 @@ static void WndNewProg( void )
     HookNotify( FALSE, HOOK_NEW_MODULE );
 }
 
-static int DoLoadProg( const char *task, const char *sym, unsigned *error )
+static int DoLoadProg( const char *task, const char *sym, error_idx *error )
 {
     open_access         loc;
     const char          *name;
@@ -921,7 +921,7 @@ static int DoLoadProg( const char *task, const char *sym, unsigned *error )
 
 void LoadProg( void )
 {
-    unsigned            error = 0;
+    error_idx           error = 0;
     int                 ret;
     unsigned long       system_handle;
     static char         NullProg[] = { NULLCHAR, NULLCHAR, ARG_TERMINATE };

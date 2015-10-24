@@ -220,7 +220,7 @@ OVL_EXTERN void ProcNil( void )
  *
  */
 
-void ReportTask( task_status task, unsigned code )
+void ReportTask( task_status task, error_idx code )
 {
     switch( task ) {
     case TASK_NEW:

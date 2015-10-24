@@ -388,12 +388,13 @@ error_idx LocalSetFileAttr( const char *name, long attr )
     return( StashErrCode( DosSetFileMode( name, attr, 0 ), OP_LOCAL ) );
 #else
     FILESTATUS3 fileinfo;
+    APIRET      rc;
 
-    if ( DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) ) )
-        return -1;
-
-    fileinfo.attrFile = attr;
-    return( StashErrCode( DosSetPathInfo( name, FIL_STANDARD,
-        &fileinfo, sizeof( fileinfo ) , 0), OP_LOCAL ) );
+    rc = DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) );
+    if( rc == 0 ) {
+        fileinfo.attrFile = attr;
+        rc = DosSetPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ), 0 );
+    }
+    return( StashErrCode( rc, OP_LOCAL ) );
 #endif
 }

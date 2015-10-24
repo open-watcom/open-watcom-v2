@@ -83,6 +83,7 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
     address             addr;
     char                *res;
     sym_handle          *sym;
+    error_idx           erridx;
     char                save_buff[UTIL_LEN + 1];
 
     while( *fmt != NULLCHAR ) {
@@ -129,8 +130,8 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
                 buff = AddrToIOString( &addr, buff, TXT_LEN ); // nyi - overflow?
                 break;
             case 'e':
-                val = va_arg( args, unsigned );
-                buff = SysErrMsg( val, buff );
+                erridx = va_arg( args, error_idx );
+                buff = SysErrMsg( erridx, buff );
                 break;
             case 'U':
                 buff = CnvULongDec( va_arg( args, unsigned long), buff, TXT_LEN );
