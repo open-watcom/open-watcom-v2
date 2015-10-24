@@ -510,14 +510,14 @@ long GetAttrs( const char *fn, int loc )
 int IsDevice( const char *fn, int loc )
 /*************************************/
 {
-    unsigned rc;
+    unsigned h;
 
     if( GetAttrs( fn, loc ) >= 0 )
         return( FALSE );
-    rc = FileOpen( fn, OP_READ | RFX2Acc( loc ) );
-    if( rc == NIL_HANDLE )
+    h = FileOpen( fn, OP_READ | RFX2Acc( loc ) );
+    if( h == NIL_HANDLE )
         return( FALSE );
-    FileClose( rc );
+    FileClose( h );
     return( TRUE );
 }
 

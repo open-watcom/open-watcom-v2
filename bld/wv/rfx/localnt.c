@@ -123,7 +123,7 @@ error_idx LocalRmDir( const char *name )
 }
 
 error_idx LocalSetDrv( int drv )
-/*****************************/
+/******************************/
 {
     unsigned    total;
 
@@ -160,7 +160,7 @@ long LocalGetFileAttr( const char *name )
     FILESTATUS3 fileinfo;
 
     if( DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) ) ) {
-        return( -1 );
+        return( -1L );
     }
     return( fileinfo.attrFile );
 #else
@@ -209,14 +209,18 @@ error_idx LocalDateTime( sys_handle fh, int *time, int *date, int set )
     ptime = (struct _FTIME *)time;
     if( set ) {
         rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 )
+            return( StashErrCode( rc, OP_LOCAL ) );
         fstatus.ftimeLastWrite = *ptime;
         fstatus.fdateLastWrite = *pdate;
         rc = DosSetFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 ) {
+            return( StashErrCode( rc, OP_LOCAL ) );
+        }
     } else {
         rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 )
+            return( StashErrCode( rc, OP_LOCAL ) );
         *ptime = fstatus.ftimeLastWrite;
         *pdate = fstatus.fdateLastWrite;
     }

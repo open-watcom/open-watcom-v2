@@ -178,14 +178,14 @@ long LocalGetFileAttr( const char *name )
     USHORT attr;
 
     if( DosQFileMode( name, &attr, 0 ) ) {
-        return( -1 );
+        return( -1L );
     }
     return( attr );
 #else
     FILESTATUS3 fileinfo;
 
     if( DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) ) ) {
-        return( -1 );
+        return( -1L );
     }
     return( fileinfo.attrFile );
 #endif
@@ -201,7 +201,7 @@ long LocalGetFreeSpace( int drv )
 #else
     if( DosQueryFSInfo( drv, 1, (PBYTE)&usage, sizeof( usage ) ) ) {
 #endif
-        return( -1 );
+        return( -1L );
     }
     return( usage.cbSector * usage.cSectorUnit * usage.cUnitAvail );
 }
