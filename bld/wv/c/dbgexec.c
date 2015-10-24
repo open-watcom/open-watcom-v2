@@ -52,14 +52,13 @@
 #include "dbgdll.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "remthrd.h"
 
 
 extern bool             AdvMachState( int );
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
 extern address          GetRegIP( void );
-extern long             RemoteThawThread( dtid_t );
-extern long             RemoteFreezeThread( dtid_t );
 extern bool             SetUpTrace( bool );
 extern void             SetMemBefore( bool );
 extern void             SetMemAfter( bool );

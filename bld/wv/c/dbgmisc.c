@@ -51,19 +51,17 @@
 #include "dbgtback.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "remthrd.h"
 
 
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern address          GetRegIP( void );
 extern void             RecordSetRegIP( address );
-extern dtid_t           RemoteGetNextThread( dtid_t, unsigned * );
 extern bool             HaveRemoteRunThread( void );
 extern dtid_t           RemoteGetNextRunThread( dtid_t tid );
 extern void             RemoteUpdateRunThread( thread_state *thd );
-extern dtid_t           RemoteSetThreadWithErr( dtid_t, unsigned * );
 extern dtid_t           RemoteSetRunThreadWithErr( dtid_t, unsigned * );
-extern void             RemoteThdName( dtid_t, char * );
 extern void             RemoteRunThdName( dtid_t, char * );
 extern bool             AdvMachState( int );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );

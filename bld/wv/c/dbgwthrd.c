@@ -37,8 +37,9 @@
 #include "dbgutil.h"
 #include "wndsys.h"
 #include "dbgmisc.h"
+#include "remthrd.h"
 
-extern void             RemoteThdName( dtid_t, char * );
+
 extern void             DbgUpdate( update_list );
 
 #include "menudef.h"

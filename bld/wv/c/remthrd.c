@@ -35,6 +35,7 @@
 #include "dbgio.h"
 #include "trpthrd.h"
 #include "trapglbl.h"
+#include "remthrd.h"
 
 #define DEFAULT_TID     1
 

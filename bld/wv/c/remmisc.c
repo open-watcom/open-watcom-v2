@@ -33,6 +33,7 @@
 #if !defined( BUILD_RFX )
 #include "dbgdata.h"
 #include "dbglit.h"
+#include "remthrd.h"
 #else
 #include "rfxdata.h"
 #endif
