@@ -32,7 +32,6 @@
 #include "sysdef.h"
 
 typedef int             handle;
-typedef error_idx       rc_erridx;
 
 typedef unsigned_8 seek_method; enum {
     DIO_SEEK_ORG,
