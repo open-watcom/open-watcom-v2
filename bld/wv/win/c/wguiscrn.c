@@ -40,11 +40,11 @@
 #include "guiwin.h"
 #include "dbgcmdln.h"
 #include "wndsys.h"
+#include "trpsys.h"
 
 
 extern int          Lookup( const char *, const char *, size_t );
 
-extern int              HardModeRequired;
 extern a_window         *WndMain;
 extern volatile bool    BrkPending;
 #ifdef __GUI__

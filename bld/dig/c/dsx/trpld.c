@@ -49,10 +49,8 @@
 #include "digio.h"
 #include "trpld.h"
 #include "envlkup.h"
+#include "trpsys.h"
 
-
-extern trap_version     TrapVer;
-extern trap_req_func    *ReqFunc;
 
 #define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
@@ -62,23 +60,39 @@ extern trap_req_func    *ReqFunc;
 #define PSP_ENVSEG_OFF          0x2c
 
 #define TRAP_SIGNATURE          0xdeaf
-typedef _Packed struct {
+
+#include "pushpck1.h"
+typedef struct {
     unsigned_16         sig;
     addr32_off          init;
     addr32_off          req;
     addr32_off          fini;
 } trap_file_header;
 
-typedef _Packed struct {
+typedef struct {
     memptr      ptr;
     unsigned_16 len;
 } mx_entry16;
 
-static dos_memory               TrapMem;
+typedef struct {
+    unsigned_16     remote;
+    unsigned_16     retcode;
+    trap_version    version;
+    addr32_off      errmsg_off;
+} trap_init_struct;
+#include "poppck.h"
 
-static void __far               *RawPMtoRMSwitchAddr;
+typedef enum {
+    IS_NONE,
+    IS_DPMI,
+    IS_RATIONAL
+} intr_state;
 
-unsigned_8      DPMICheck = 0;
+static dos_memory       TrapMem;
+
+static void             __far *RawPMtoRMSwitchAddr;
+
+unsigned char           DPMICheck = 0;
 
 //#define FULL_SAVE
 
@@ -106,12 +120,7 @@ static unsigned_8       PMExceptSaveList[EXCEPT_COUNT] = {
 static void __far *OrigPMExcepts[NUM_PM_SAVE_VECTS];
 static void __far *SavePMExcepts[NUM_PM_SAVE_VECTS];
 
-static enum {
-    IS_NONE,
-    IS_DPMI,
-    IS_RATIONAL
-}               IntrState = IS_NONE;
-
+static intr_state   IntrState = IS_NONE;
 
 extern void DoRawSwitchToRM( unsigned, unsigned, unsigned );
 #pragma aux DoRawSwitchToRM = \
@@ -165,24 +174,10 @@ static extension_routine __far *RSI_extensions;
 /* These are static because I'm not conversant with your inline asm
    facility, and this accomplished the desired result...
 */
-//static void *parmp;
+
 static P1616 _D32NullPtrCheck;
 
-#if 0
-void lookup_prep (void);
-#pragma aux lookup_prep = \
-    "sub eax, eax" \
-    "mov ebx, OFFSET pkg_name" \
-    "mov edx, OFFSET pkg_entry"
-
-void call_prep (void);
-#pragma aux call_prep = \
-    "mov eax, 2" \
-    "mov ebx, parmp" \
-    "mov edx, _D32NullPtrCheck"
-#endif
-
-P1616 __cdecl find_entry( void )
+static P1616 __cdecl find_entry( void )
 {
     P1616 retval = 0;
 
@@ -196,7 +191,7 @@ P1616 __cdecl find_entry( void )
 /* Returns 16:16 pointer to MONITOR array, describing state of hardware
    breakpoints.  You shouldn't care about the return value during your init.
 */
-int __cdecl D32NullPtrCheck( unsigned short on )
+static int __cdecl D32NullPtrCheck( unsigned short on )
 {
     static int  old_state;
     int         old;
@@ -216,7 +211,7 @@ int __cdecl D32NullPtrCheck( unsigned short on )
         RSI_extensions( 2, (void *)_D32NullPtrCheck, &on );
         old_state = on;
     }
-    return (old);
+    return( old );
 }
 
 void SaveOrigVectors( void )
@@ -296,7 +291,7 @@ static void GoToRealMode( void *rm_func )
 
 static uint_16 EnvAreaSize( char __far *envarea )
 {
-    char                __far *envptr;
+    char        __far *envptr;
 
     envptr = envarea;
     while( *envptr ) {
@@ -307,8 +302,8 @@ static uint_16 EnvAreaSize( char __far *envarea )
 
 static char *CopyEnv( void )
 {
-    char                __far *envarea;
-    uint_16             envsize;
+    char        __far *envarea;
+    uint_16     envsize;
 
 #ifdef __OSI__
     {
@@ -385,12 +380,7 @@ static char *SetTrapHandler( void )
 
 static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ver )
 {
-    _Packed struct {
-        unsigned_16     remote;
-        unsigned_16     retcode;
-        trap_version    version;
-        addr32_off      errmsg_off;
-    }                   __far *callstruct;
+    trap_init_struct    __far *callstruct;
 
     callstruct = (void __far *)PMData->parmarea;
     callstruct->remote = trap_ver->remote;
@@ -455,8 +445,7 @@ static char *ReadInTrap( tiny_handle_t fh )
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0;
          --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
-            if( TINY_ERROR( TinyRead( fh, relocbuff, sizeof( memptr ) *
-                                      NUM_BUFF_RELOCS ) ) ) {
+            if( TINY_ERROR( TinyRead( fh, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) ) {
                 return( TC_ERR_CANT_LOAD_TRAP );
             }
             relocnb = 0;

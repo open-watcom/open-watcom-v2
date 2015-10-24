@@ -38,11 +38,13 @@
 #include "trptypes.h"
 #include "tcerr.h"
 #include "trpld.h"
+#include "trpsys.h"
 
 void                    (TRAPENTRY*HookFunc)(LPVOID);
 void                    (TRAPENTRY*InfoFunction)(HWND);
 void                    (TRAPENTRY*UnLockInput)(void);
 void                    (TRAPENTRY*SetHardMode)(char);
+
 static int              (TRAPENTRY*HardModeCheck)(void);
 static int              (TRAPENTRY*GetHwndFunc)(void);
 

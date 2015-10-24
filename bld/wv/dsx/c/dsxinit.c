@@ -39,10 +39,9 @@
 #include "dbglit.h"
 #include "dbgcmdln.h"
 #include "dbgmain.h"
+#include "trpsys.h"
 
 extern void                     StartupErr( const char * );
-extern void                     SaveOrigVectors( void );
-extern void                     RestoreOrigVectors( void );
 
 static memptr                   OldInt1b;
 static memptr                   OldInt23;

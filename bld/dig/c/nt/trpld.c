@@ -37,6 +37,7 @@
 #include "trptypes.h"
 #include "tcerr.h"
 #include "trpld.h"
+#include "trpsys.h"
 
 typedef void (TRAPENTRY INFO_FUNC)( HWND );
 

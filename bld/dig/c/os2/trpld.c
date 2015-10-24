@@ -39,6 +39,7 @@
 #include "trptypes.h"
 #include "tcerr.h"
 #include "trpld.h"
+#include "trpsys.h"
 
 static HMODULE          TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
@@ -46,21 +47,23 @@ static trap_fini_func   *FiniFunc = NULL;
 static unsigned_16      (TRAPENTRY *InfoFunc)( void *, void * );
 static char             (TRAPENTRY *HardFunc)( char );
 
-bool IsTrapFilePumpingMessageQueue()
+bool IsTrapFilePumpingMessageQueue( void )
 {
     return( InfoFunc != NULL );
 }
 
 void TellHandles( void __far *hab, void __far *hwnd )
 {
-    if( InfoFunc == NULL ) return;
-    InfoFunc( hab, hwnd );
+    if( InfoFunc != NULL ) {
+        InfoFunc( hab, hwnd );
+    }
 }
 
 
 char TellHardMode( char hard )
 {
-    if( HardFunc == NULL ) return( 0 );
+    if( HardFunc == NULL )
+        return( 0 );
     return( HardFunc( hard ) );
 }
 
