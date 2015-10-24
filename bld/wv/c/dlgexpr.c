@@ -47,7 +47,6 @@
 /* to be moved to header files ! */
 extern bool             DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
 extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
-extern void             PrevError( const char * );
 extern char             *StrDouble(xreal*,char*);
 
 extern stack_entry      *ExprSP;

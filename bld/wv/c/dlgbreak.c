@@ -47,7 +47,6 @@ extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
 extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 extern bool             DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address* );
 extern bool             DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address* );
-extern void             PrevError( const char * );
 extern void             DbgUpdate( update_list flags );
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 extern void             SetRecord( bool on );

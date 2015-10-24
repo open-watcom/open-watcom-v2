@@ -38,3 +38,4 @@ typedef unsigned_8 dbg_err_flags; enum {
 };
 
 extern void Error( dbg_err_flags, char *, ... );
+extern void PrevError( const char *msg );
