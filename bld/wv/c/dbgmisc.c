@@ -48,6 +48,7 @@
 #include "dbgparse.h"
 #include "dbgdot.h"
 #include "dbgtrace.h"
+#include "dbgtback.h"
 
 
 extern void             FlipScreen( void );
@@ -65,7 +66,6 @@ extern dtid_t           RemoteSetThreadWithErr( dtid_t, unsigned * );
 extern dtid_t           RemoteSetRunThreadWithErr( dtid_t, unsigned * );
 extern void             RemoteThdName( dtid_t, char * );
 extern void             RemoteRunThdName( dtid_t, char * );
-extern address          ReturnAddress( void );
 extern bool             AdvMachState( int );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern int              AddrComp( address a, address b );

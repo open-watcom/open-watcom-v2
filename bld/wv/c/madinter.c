@@ -46,6 +46,7 @@
 #include "dbgovl.h"
 #include "dbgparse.h"
 #include "dbgtrace.h"
+#include "dbgtback.h"
 
 #include "clibext.h"
 
@@ -57,7 +58,6 @@ extern bool             RemoteOvlTransAddr(address *);
 extern address          GetRegIP(void);
 extern void             ResizeRegData(void);
 extern void             PendingToggles( void );
-extern bool             FixOvlRetAddr( address * );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );
