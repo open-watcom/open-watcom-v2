@@ -49,6 +49,7 @@
 #include "filermt.h"
 #include "trapglbl.h"
 #include "remfile.h"
+#include "trpld.h"
 
 
 extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
