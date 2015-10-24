@@ -55,6 +55,7 @@
 #include "dbgprog.h"
 #include "dbgvar.h"
 #include "dbgtrace.h"
+#include "dbgdll.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -63,7 +64,6 @@ extern void             FingFront( void );
 extern void             FingOpen( void );
 extern void             FiniAboutMessage( void );
 extern void             FiniBrowse( void );
-extern void             FiniDLLList( void );
 extern void             FiniDbgInfo( void );
 extern void             FiniFont( void );
 extern void             FiniIOWindow( void );
@@ -78,7 +78,6 @@ extern void             FiniToolBar( void );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
 extern void             InitBrowse( void );
-extern void             InitDLLList( void );
 extern void             InitDbgInfo( void );
 extern void             InitFont( void );
 extern void             InitHelp( void );

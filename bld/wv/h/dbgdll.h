@@ -24,22 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage list of dynamic libraries.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "guidlg.h"
-#include "dlglist.h"
-#include "dbgdll.h"
-
-
-void DlgBreakDLL( void )
-{
-    RecordClearDLLBreaks();
-    DlgList( LIT_DUI( DLL_Name ), FiniDLLList, AddDLLList, NextDLLList, DLLListName );
-    RecordSetDLLBreaks();
-}
+extern bool         DLLMatch( void );
+extern char         *DLLListName( char_ring *src );
+extern char_ring    *NextDLLList( char_ring *curr );
+extern void         AddDLLList( const char *start, unsigned len );
+extern void         BreakOnImageLoad( const char *name, unsigned len, bool clear );
+extern void         InitDLLList( void );
+extern void         FiniDLLList( void );
+extern void         RecordClearDLLBreaks( void );
+extern void         RecordSetDLLBreaks( void );

@@ -35,6 +35,7 @@
 #include "dbgsrc.h"
 #include "dbgbrk.h"
 #include "dbgprog.h"
+#include "dbgdll.h"
 
 #include "clibext.h"
 

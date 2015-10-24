@@ -49,6 +49,7 @@
 #include "dbgdot.h"
 #include "dbgprog.h"
 #include "dbgtrace.h"
+#include "dbgdll.h"
 
 
 extern bool             AdvMachState( int );
@@ -73,7 +74,6 @@ extern void             RecordGo( const char *p );
 extern void             CheckEventRecorded( void );
 extern void             RecordAsynchEvent( void );
 extern dtid_t           RemoteSetThread( dtid_t );
-extern bool             DLLMatch( void );
 extern void             DbgUpdate( update_list );
 extern void             NameThread( dtid_t tid, const char *name );
 extern unsigned         ProgPoke( address, const void *, unsigned );
