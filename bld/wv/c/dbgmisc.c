@@ -50,6 +50,7 @@
 #include "dbgtrace.h"
 #include "dbgtback.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
 
 extern void             FlipScreen( void );

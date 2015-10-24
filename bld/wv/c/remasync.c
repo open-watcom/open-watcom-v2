@@ -40,9 +40,8 @@
 #include "madinter.h"
 #include "trapglbl.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
-
-extern dtid_t           RemoteSetThread( dtid_t );
 
 #define SUPP_ASYNC_SERVICE( in, request )        \
         in.supp.core_req    = REQ_PERFORM_SUPPLEMENTARY_SERVICE;        \

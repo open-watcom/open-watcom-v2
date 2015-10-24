@@ -41,13 +41,13 @@
 #include "dbgutil.h"
 #include "dbgbrk.h"
 #include "wndsys.h"
+#include "dbgmisc.h"
 
 
 extern a_window         *WndSrcInspect( address );
 extern a_window         *WndAsmInspect( address );
 extern address          FindLclBlock( address addr );
 extern int              AddrComp( address, address );
-extern void             GoToAddr( address addr );
 extern bool             DlgBreak( address );
 extern unsigned         LineNumLkup( address );
 extern void             SetStackPos( location_context *lc, int pos );

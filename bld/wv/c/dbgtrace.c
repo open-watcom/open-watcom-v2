@@ -49,6 +49,7 @@
 #include "dbgdot.h"
 #include "dbgtrace.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
 
 enum {
@@ -116,7 +117,6 @@ extern bool             RemoteOvlTransAddr( address * );
 extern bool             IsSupportRoutine( sym_handle * );
 extern void             RecordEvent( const char *p );
 extern void             CheckEventRecorded( void );
-extern dtid_t           RemoteSetThread( dtid_t );
 
 static const char LevelTab[] = {
     #define pick( a,b ) b

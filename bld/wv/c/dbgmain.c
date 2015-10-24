@@ -58,6 +58,7 @@
 #include "dbgdll.h"
 #include "dbgexdat.h"
 #include "dbgmodfy.h"
+#include "dbgmisc.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -100,21 +101,12 @@ extern void             PredefInit( void );
 extern void             ProcAccel( void );
 extern void             ProcCapture( void );
 extern void             ProcDisplay( void );
-extern void             ProcDo( void );
-extern void             ProcError( void );
-extern void             ProcFlip( void );
 extern void             ProcFont( void );
-extern void             ProcGo( void );
 extern void             ProcHelp( void );
-extern void             ProcIf( void );
 extern void             ProcPaint( void );
-extern void             ProcQuit( void );
 extern void             ProcRegister( void );
-extern void             ProcRemark( void );
 extern void             ProcSet( void );
-extern void             ProcThread( void );
 extern void             ProcView( void );
-extern void             ProcWhile( void );
 extern void             RecordFini( void );
 extern void             RecordInit( void );
 extern void             RestoreHandlers( void );

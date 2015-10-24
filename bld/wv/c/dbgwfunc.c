@@ -40,12 +40,12 @@
 #include "dbgbrk.h"
 #include "wndsys.h"
 #include "dbgtrace.h"
+#include "dbgmisc.h"
 
 
 extern a_window         *WndAsmInspect( address );
 extern a_window         *WndSrcInspect( address );
 extern bool             DlgBreak( address );
-extern void             GoToAddr( address addr );
 extern char             *FileBreakGadget( a_window *, wnd_line_piece *, bool curr, brkp *bp );
 extern address          GetCodeDot( void );
 extern search_result    DeAliasAddrMod( address a, mod_handle *mh );

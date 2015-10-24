@@ -38,11 +38,10 @@
 #include "dui.h"
 #include "trapglbl.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
 
 #define DEFAULT_TID     1
-
-extern void             CheckForNewThreads( bool set_exec );
 
 static trap_shandle     SuppRunThreadId = 0;
 

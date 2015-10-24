@@ -95,6 +95,7 @@ Done:
 #include "envlkup.h"
 #include "dbgprog.h"
 #include "dbgtrace.h"
+#include "dbgmisc.h"
 
 enum {
     REQ_NONE,
@@ -108,9 +109,7 @@ enum {
 extern void             CallResults( void );
 extern void             DlgCmd( void );
 extern address          GetCodeDot( void );
-extern void             GoToReturn( void );
 extern void             ProcCall( void );
-extern void             ProcGo( void );
 extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );

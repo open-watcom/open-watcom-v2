@@ -61,6 +61,7 @@
 #include "dbgprog.h"
 #include "dbgdll.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -90,7 +91,6 @@ extern void             SetRecord( bool on );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 extern bool             DlgScanCodeAddr( const char *str, address *value );
 extern void             DbgUpdate( update_list );
-extern void             CheckForNewThreads( bool );
 
 
 extern char_ring        *DLLList;

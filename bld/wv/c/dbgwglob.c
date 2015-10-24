@@ -38,9 +38,9 @@
 #include "namelist.h"
 #include "dbgbrk.h"
 #include "wndsys.h"
+#include "dbgmisc.h"
 
 
-extern void             GoToAddr( address addr );
 extern int              HasLinInfo( address );
 extern void             WndVarInspect( const char *);
 extern void             WndAddrInspect(address);

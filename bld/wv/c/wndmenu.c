@@ -46,12 +46,12 @@
 #include "wndsys.h"
 #include "dbgprog.h"
 #include "dbgtrace.h"
+#include "dbgmisc.h"
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             DlgSource( void );
 extern void             DlgOptSet( void );
 extern void             DlgCmd( void );
-extern void             GoToReturn( void );
 extern void             DlgNewProg( void );
 extern bool             DlgBreak( address );
 extern void             BreakSave( bool );
@@ -63,7 +63,6 @@ extern void             LastMachState( void );
 extern void             LastStackPos( void );
 extern void             MoveStackPos( int by );
 extern void             PosMachState( int rel_pos );
-extern void             Flip( unsigned );
 extern void             WndAsmInspect( address );
 extern void             WndSrcInspect( address );
 extern void             DlgAbout( void );
@@ -73,8 +72,6 @@ extern void             WndDumpPrompt( a_window * );
 extern void             WndDumpLog( a_window * );
 extern void             DlgWndSet( void );
 extern bool             VarInfoRelease( void );
-extern void             SkipToAddr( address );
-extern void             GoToAddr( address );
 extern address          GetCodeDot( void );
 extern void             FuncNewMod( a_window *wnd, mod_handle mod );
 extern void             GlobNewMod( a_window *wnd, mod_handle mod );

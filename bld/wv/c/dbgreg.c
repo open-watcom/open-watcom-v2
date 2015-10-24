@@ -56,6 +56,7 @@
 #include "dbgprog.h"
 #include "dbgtrace.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
 
 extern int              AddrComp( address a, address b );
@@ -101,8 +102,6 @@ extern void             DbgUpdate( update_list );
 extern void             FindAddrSectId( address *, int );
 extern unsigned int     RemoteOvlSectSize( void );
 extern char             *Rtrm( char * );
-extern dtid_t           RemoteSetThread( dtid_t );
-extern thread_state     *FindThread( dtid_t );
 extern dip_status       RegLocation( machine_state *regs, const mad_reg_info *ri, location_list *ll );
 
 

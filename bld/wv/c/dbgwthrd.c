@@ -36,9 +36,8 @@
 #include "dbgwind.h"
 #include "dbgutil.h"
 #include "wndsys.h"
+#include "dbgmisc.h"
 
-extern bool             IsThdCurr( thread_state *thd );
-extern void             MakeThdCurr( thread_state * );
 extern void             RemoteThdName( dtid_t, char * );
 extern void             DbgUpdate( update_list );
 

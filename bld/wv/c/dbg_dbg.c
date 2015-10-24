@@ -40,6 +40,7 @@
 #include "dbgovl.h"
 #include "dbg_dbg.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
 #include "clibext.h"
 
@@ -51,7 +52,6 @@ extern address          GetRegSP( void );
 extern address          GetRegBP( void );
 extern address          GetDataDot( void );
 extern address          GetCodeDot( void );
-extern dtid_t           GetNextTID( void );
 extern bool             IsInternalMod( mod_handle );
 
 

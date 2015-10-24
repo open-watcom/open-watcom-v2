@@ -44,14 +44,13 @@
 #include "dbgexpr.h"
 #include "dbgovl.h"
 #include "remcore.h"
+#include "dbgmisc.h"
+
 
 extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
 extern int              SameAddrSpace( address, address );
-extern void             FreeThreads( void );
-extern void             CheckForNewThreads( bool );
 extern void             AddAliasInfo( unsigned, unsigned );
-extern dtid_t           RemoteSetThread( dtid_t );
 extern void             RemoteSectTblRead( byte * );
 extern void             RemoteSectTblWrite( const byte * );
 

@@ -46,7 +46,6 @@
 
 extern address          FindLclBlock( address addr );
 extern int              AddrComp(address ,address );
-extern void             GoToAddr( address addr );
 extern bool             DlgBreak(address);
 extern unsigned         LineNumLkup(address);
 extern void             SetStackPos( location_context *lc, int pos );

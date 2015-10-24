@@ -51,6 +51,7 @@
 #include "dbgtrace.h"
 #include "dbgdll.h"
 #include "remcore.h"
+#include "dbgmisc.h"
 
 
 extern bool             AdvMachState( int );
@@ -60,7 +61,6 @@ extern address          GetRegIP( void );
 extern long             RemoteThawThread( dtid_t );
 extern long             RemoteFreezeThread( dtid_t );
 extern bool             SetUpTrace( bool );
-extern void             CheckForNewThreads( bool );
 extern void             SetMemBefore( bool );
 extern void             SetMemAfter( bool );
 extern char             DlgFatal( void );
@@ -69,9 +69,7 @@ extern void             RecordEvent( const char *p );
 extern void             RecordGo( const char *p );
 extern void             CheckEventRecorded( void );
 extern void             RecordAsynchEvent( void );
-extern dtid_t           RemoteSetThread( dtid_t );
 extern void             DbgUpdate( update_list );
-extern void             NameThread( dtid_t tid, const char *name );
 extern bool             DlgScanDataAddr( const char *str, address *value );
 extern bool             DlgScanLong( const char *str, long *value );
 extern bool             HaveRemoteAsync( void );
