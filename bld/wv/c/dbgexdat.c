@@ -42,10 +42,9 @@
 #include "dbgmain.h"
 #include "dbgparse.h"
 #include "dbgdot.h"
+#include "dbgexins.h"
 
 
-extern void             AsmExam( void );
-extern void             SrcExam( void );
 extern void             WndMemInspect( address, char *, unsigned, mad_type_handle );
 extern void             WndIOInspect( address *, mad_type_handle );
 extern void             WndAddrInspect( address );
