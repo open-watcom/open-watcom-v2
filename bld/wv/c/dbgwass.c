@@ -49,6 +49,7 @@
 #include "dbgdot.h"
 #include "wndsys.h"
 #include "dbgtrace.h"
+#include "modlist.h"
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -78,7 +79,6 @@ extern char             *AddrToString( address *, mad_address_format, char *, un
 extern void             StepIntoFunction( const char * );
 extern void             BreakOnSelected( const char *item );
 extern void             GoHome(void);
-extern address          ModFirstAddr( mod_handle mod );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );

@@ -41,6 +41,7 @@
 #include "strutil.h"
 #include "dbgsrc.h"
 #include "wndsys.h"
+#include "modlist.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -49,7 +50,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndModInspect(mod_handle);
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
-extern int              ModCompare( mod_handle const *a, mod_handle const *b );
 extern bool             DlgSearchAll(char**,void*);
 
 #include "menudef.h"

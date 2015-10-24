@@ -46,6 +46,7 @@
 #include "dbgparse.h"
 #include "wndsys.h"
 #include "dbgtrace.h"
+#include "modlist.h"
 
 #include "clibext.h"
 
@@ -77,7 +78,6 @@ extern void             MemNewAddr( a_window *wnd, address addr );
 extern void             IONewAddr( a_window *wnd, address *addr, int type );
 extern void             ModNewHandle( a_window *wnd, mod_handle handle );
 extern bool             SrcHasFileOpen( a_window *wnd );
-extern address          ModFirstAddr( mod_handle mod );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern inspect_type     WndGetExprSPInspectType( address *paddr );
 

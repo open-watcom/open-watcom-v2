@@ -48,7 +48,6 @@ extern void             WndFileInspect( char *file, bool binary );
 extern a_window         *WndAsmInspect(address);
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern  bool            ModHasSourceInfo( mod_handle handle );
-extern address          ModFirstAddr( mod_handle mod );
 
 #include "menudef.h"
 static gui_menu_struct ModMenu[] = {

@@ -109,7 +109,6 @@ extern void             CallResults( void );
 extern void             DlgCmd( void );
 extern address          GetCodeDot( void );
 extern void             GoToReturn( void );
-extern address          ModFirstAddr( mod_handle mod );
 extern void             ProcCall( void );
 extern void             ProcGo( void );
 extern void             ShowCalls( void );
