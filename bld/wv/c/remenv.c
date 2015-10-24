@@ -36,6 +36,7 @@
 #include "trpcore.h"
 #include "trpenv.h"
 #include "trapglbl.h"
+#include "trpld.h"
 
 #define SUPP_ENV_SERVICE( in, request )         \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \

@@ -2,6 +2,7 @@
 #include "trapglbl.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
+#include "trpld.h"
 
 /*
  *  Find if the current trap file supports the capabilities service

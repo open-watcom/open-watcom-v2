@@ -50,6 +50,7 @@
 #include "guigmous.h"
 #include "guiwin.h"
 #include "wndsys.h"
+#include "trpld.h"
 
 extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 

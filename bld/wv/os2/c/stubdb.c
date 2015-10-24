@@ -58,6 +58,7 @@
 #include "envlkup.h"
 #include "dbgcmd.h"
 #include "dbgtrace.h"
+#include "trpld.h"
 
 
 extern address          GetCodeDot( void );

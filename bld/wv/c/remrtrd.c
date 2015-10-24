@@ -40,6 +40,7 @@
 #include "remcore.h"
 #include "dbgmisc.h"
 #include "remrtrd.h"
+#include "trpld.h"
 
 
 #define DEFAULT_TID     1

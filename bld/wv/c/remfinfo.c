@@ -37,6 +37,7 @@
 #include "trpfinfo.h"
 #include "filermt.h"
 #include "trapglbl.h"
+#include "trpld.h"
 
 #define SUPP_FILE_INFO_SERVICE( in, request )   \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \

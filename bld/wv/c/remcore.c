@@ -45,6 +45,7 @@
 #include "dbgovl.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "trpld.h"
 
 
 extern void             RestoreHandlers( void );

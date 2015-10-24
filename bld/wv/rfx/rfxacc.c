@@ -38,6 +38,7 @@
 #include "trprfx.h"
 #include "remote.h"
 #include "trapglbl.h"
+#include "trpld.h"
 
 extern char *TxtBuff;
 
