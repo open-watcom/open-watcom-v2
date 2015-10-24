@@ -47,7 +47,7 @@ extern void __buffered_keyboard_input( char * );
         parm caller [ds dx] \
         modify [ax];
 
-static rc_erridx DOSErrCode( tiny_ret_t rc )
+static error_idx DOSErrCode( tiny_ret_t rc )
 {
     if( TINY_OK( rc ) )
         return( 0 );
@@ -118,25 +118,25 @@ void LocalGetBuff( char *buff, unsigned size )
     *buff = '\0';
 }
 
-rc_erridx LocalRename( const char *from, const char *to )
+error_idx LocalRename( const char *from, const char *to )
 /*******************************************************/
 {
     return( DOSErrCode( TinyRename( from, to )) );
 }
 
-rc_erridx LocalMkDir( const char *name )
+error_idx LocalMkDir( const char *name )
 /**************************************/
 {
     return( DOSErrCode( TinyMakeDir( name )) );
 }
 
-rc_erridx LocalRmDir( const char *name )
+error_idx LocalRmDir( const char *name )
 /**************************************/
 {
     return( DOSErrCode( TinyRemoveDir( name )) );
 }
 
-rc_erridx LocalSetDrv( int drv )
+error_idx LocalSetDrv( int drv )
 /******************************/
 {
     TinySetCurrDrive( drv );
@@ -149,7 +149,7 @@ int LocalGetDrv( void )
     return( TinyGetCurrDrive() );
 }
 
-rc_erridx LocalSetCWD( const char *name )
+error_idx LocalSetCWD( const char *name )
 /***************************************/
 {
     return( DOSErrCode( TinyChangeDir( name )) );
@@ -173,7 +173,7 @@ long LocalGetFreeSpace( int drv )
     return( TinyFreeSpace( drv ) );
 }
 
-rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
+error_idx LocalDateTime( sys_handle fh, int *time, int *date, int set )
 /*********************************************************************/
 {
     tiny_ftime_t *ptime;
@@ -194,13 +194,13 @@ rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
     return( DOSErrCode( rc) );
 }
 
-rc_erridx LocalGetCwd( int drv, char *where )
+error_idx LocalGetCwd( int drv, char *where )
 /*******************************************/
 {
     return( DOSErrCode( TinyGetCWDir( where, drv )) );
 }
 
-rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+error_idx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
 /****************************************************************************************/
 {
     info_len = info_len;
@@ -216,7 +216,7 @@ int LocalFindNext( void *info, unsigned info_len )
     return( TinyFindNext() );
 }
 
-rc_erridx LocalSetFileAttr( const char *name, long attr )
+error_idx LocalSetFileAttr( const char *name, long attr )
 /*******************************************************/
 {
     return( DOSErrCode( TinySetFileAttr( name, attr )) );

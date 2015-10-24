@@ -104,25 +104,25 @@ void LocalGetBuff( char *buff, unsigned size )
     }
 }
 
-rc_erridx LocalRename( const char *from, const char *to )
+error_idx LocalRename( const char *from, const char *to )
 /*******************************************************/
 {
     return( StashErrCode( rename( from, to ), OP_LOCAL ) );
 }
 
-rc_erridx LocalMkDir( const char *name )
+error_idx LocalMkDir( const char *name )
 /**************************************/
 {
     return( StashErrCode( mkdir( name ), OP_LOCAL ) );
 }
 
-rc_erridx LocalRmDir( const char *name )
+error_idx LocalRmDir( const char *name )
 /**************************************/
 {
     return( StashErrCode( rmdir( name ), OP_LOCAL ) );
 }
 
-rc_erridx LocalSetDrv( int drv )
+error_idx LocalSetDrv( int drv )
 /*****************************/
 {
     unsigned    total;
@@ -140,14 +140,14 @@ int LocalGetDrv( void )
     return( drive - 1 );
 }
 
-rc_erridx LocalGetCwd( int drive, char *where )
+error_idx LocalGetCwd( int drive, char *where )
 /*********************************************/
 {
     drive=drive;
     return( StashErrCode( getcwd( where, 256 ) == NULL, OP_LOCAL ) );
 }
 
-rc_erridx LocalSetCWD( const char *name )
+error_idx LocalSetCWD( const char *name )
 /***************************************/
 {
     return( StashErrCode( chdir( name ), OP_LOCAL ) );
@@ -169,7 +169,7 @@ long LocalGetFileAttr( const char *name )
 #endif
 }
 
-rc_erridx LocalSetFileAttr( const char *name, long attr )
+error_idx LocalSetFileAttr( const char *name, long attr )
 /*******************************************************/
 {
 #if 0
@@ -196,7 +196,7 @@ long LocalGetFreeSpace( int drv )
     return( dfre.avail_clusters * dfre.sectors_per_cluster * dfre.bytes_per_sector );
 }
 
-rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
+error_idx LocalDateTime( sys_handle fh, int *time, int *date, int set )
 /*********************************************************************/
 {
 #if 0
@@ -238,7 +238,7 @@ static void makeDOSDTA( struct find_t *dos, trap_dta *trp )
     strcpy( trp->name, dos->name );
 }
 
-rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+error_idx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
 /****************************************************************************************/
 {
     unsigned        rc;

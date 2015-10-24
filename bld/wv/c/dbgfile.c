@@ -226,7 +226,7 @@ handle FileOpen( const char *name, open_access o )
     return( h );
 }
 
-rc_erridx FileClose( handle h )
+error_idx FileClose( handle h )
 {
     sys_handle  sys;
 
@@ -240,7 +240,7 @@ rc_erridx FileClose( handle h )
 }
 
 
-rc_erridx FileRemove( char const *name, open_access loc )
+error_idx FileRemove( char const *name, open_access loc )
 {
     name = FileLoc( name, &loc );
     if( loc & OP_REMOTE ) {

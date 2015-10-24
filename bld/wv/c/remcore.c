@@ -324,7 +324,7 @@ void ClearMachineDataCache( void )
  * DoLoad -- load in user program as an overlay
  */
 
-rc_erridx DoLoad( const char *args, unsigned long *phandle )
+error_idx DoLoad( const char *args, unsigned long *phandle )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

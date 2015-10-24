@@ -28,20 +28,20 @@
 *
 ****************************************************************************/
 
-extern rc_erridx LocalMkDir( const char * );
-extern rc_erridx LocalRmDir( const char * );
-extern rc_erridx LocalGetCwd( int, char * );
-extern rc_erridx LocalSetCWD( const char * );
+extern error_idx LocalMkDir( const char * );
+extern error_idx LocalRmDir( const char * );
+extern error_idx LocalGetCwd( int, char * );
+extern error_idx LocalSetCWD( const char * );
 extern int       LocalGetDrv( void );
-extern rc_erridx LocalSetDrv( int );
-extern rc_erridx LocalFindFirst( const char *, void *, unsigned, int );
+extern error_idx LocalSetDrv( int );
+extern error_idx LocalFindFirst( const char *, void *, unsigned, int );
 extern int       LocalFindNext( void *, unsigned );
 extern long      LocalGetFileAttr( const char * );
-extern rc_erridx LocalSetFileAttr( const char *, long );
+extern error_idx LocalSetFileAttr( const char *, long );
 extern long      LocalGetFreeSpace( int );
-extern rc_erridx LocalRename( const char *, const char * );
+extern error_idx LocalRename( const char *, const char * );
 extern void      LocalTime( int *hour, int *min, int *sec, int *hundredths );
 extern void      LocalDate( int *year, int *month, int *day, int *weekday );
-extern rc_erridx LocalDateTime( sys_handle, int *, int *, int );
+extern error_idx LocalDateTime( sys_handle, int *, int *, int );
 extern int       LocalInteractive( sys_handle );
 extern void      LocalGetBuff( char *, unsigned );

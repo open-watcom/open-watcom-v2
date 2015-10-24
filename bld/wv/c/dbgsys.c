@@ -44,7 +44,7 @@
 
 
 extern long         _fork( const char *, size_t );
-extern rc_erridx    RemoteFork( const char *,size_t );
+extern error_idx    RemoteFork( const char *,size_t );
 extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
 
@@ -53,7 +53,7 @@ static const char SystemOps[] = { "Remote\0Local\0" };
 void DoSystem( const char *cmd, size_t len, int loc )
 {
     long        rc;
-    rc_erridx   ret;
+    error_idx   ret;
     bool        chk;
 
     DUISysStart();

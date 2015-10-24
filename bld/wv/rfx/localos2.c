@@ -105,7 +105,7 @@ void LocalGetBuff( char *buff, unsigned size )
     buff[ length.cchIn ] = '\0';
 }
 
-rc_erridx LocalRename( const char *from, const char *to )
+error_idx LocalRename( const char *from, const char *to )
 /*******************************************************/
 {
 #ifdef _M_I86
@@ -115,7 +115,7 @@ rc_erridx LocalRename( const char *from, const char *to )
 #endif
 }
 
-rc_erridx LocalMkDir( const char *name )
+error_idx LocalMkDir( const char *name )
 /**************************************/
 {
 #ifdef _M_I86
@@ -125,7 +125,7 @@ rc_erridx LocalMkDir( const char *name )
 #endif
 }
 
-rc_erridx LocalRmDir( const char *name )
+error_idx LocalRmDir( const char *name )
 /**************************************/
 {
 #ifdef _M_I86
@@ -135,7 +135,7 @@ rc_erridx LocalRmDir( const char *name )
 #endif
 }
 
-rc_erridx LocalSetDrv( int drv )
+error_idx LocalSetDrv( int drv )
 /******************************/
 {
 #ifdef _M_I86
@@ -161,7 +161,7 @@ int LocalGetDrv( void )
     return( drive - 1 );
 }
 
-rc_erridx LocalSetCWD( const char *name )
+error_idx LocalSetCWD( const char *name )
 /***************************************/
 {
 #ifdef _M_I86
@@ -206,7 +206,7 @@ long LocalGetFreeSpace( int drv )
     return( usage.cbSector * usage.cSectorUnit * usage.cUnitAvail );
 }
 
-rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
+error_idx LocalDateTime( sys_handle fh, int *time, int *date, int set )
 /*********************************************************************/
 {
     struct _FILESTATUS fstatus;
@@ -244,7 +244,7 @@ rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
     return( 0 );
 }
 
-rc_erridx LocalGetCwd( int drive, char *where )
+error_idx LocalGetCwd( int drive, char *where )
 /*********************************************/
 {
     APIRET len;
@@ -272,7 +272,7 @@ static void makeDOSDTA( struct _FILEFINDBUF3 *os2, trap_dta *dos )
     strcpy( dos->name, os2->achName );
 }
 
-rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+error_idx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
 /****************************************************************************************/
 {
 #ifdef _M_I86
@@ -381,7 +381,7 @@ int CtrlCHit( void )
 }
 
 
-rc_erridx LocalSetFileAttr( const char *name, long attr )
+error_idx LocalSetFileAttr( const char *name, long attr )
 /*******************************************************/
 {
 #ifdef _M_I86

@@ -69,8 +69,8 @@ unsigned        WriteText( handle, const void *, unsigned );
 unsigned long   SeekStream( handle, long, seek_method );
 
 handle          FileOpen( char const *, open_access );
-rc_erridx       FileClose( handle );
-rc_erridx       FileRemove( char const *, open_access );
+error_idx       FileClose( handle );
+error_idx       FileRemove( char const *, open_access );
 open_access     FileHandleInfo( handle );
 const char      *FileLoc( char const *, open_access * );
 

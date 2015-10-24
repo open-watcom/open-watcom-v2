@@ -463,7 +463,7 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method 
     }
 }
 
-rc_erridx RemoteClose( sys_handle hdl )
+error_idx RemoteClose( sys_handle hdl )
 {
     file_close_req      acc;
     file_close_ret      ret;
@@ -489,7 +489,7 @@ rc_erridx RemoteClose( sys_handle hdl )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteErase( const char *name )
+error_idx RemoteErase( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -511,7 +511,7 @@ rc_erridx RemoteErase( const char *name )
 }
 
 #if !defined( BUILD_RFX )
-rc_erridx RemoteFork( const char *cmd, size_t len )
+error_idx RemoteFork( const char *cmd, size_t len )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

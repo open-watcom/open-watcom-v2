@@ -449,7 +449,7 @@ void SetDrv( int drive, int loc )
     }
 }
 
-rc_erridx RemoveDir( const char *name, int loc )
+error_idx RemoveDir( const char *name, int loc )
 /**********************************************/
 {
     if( loc == 1 ) {
@@ -459,7 +459,7 @@ rc_erridx RemoveDir( const char *name, int loc )
     }
 }
 
-rc_erridx SetDir( const char *name, int loc )
+error_idx SetDir( const char *name, int loc )
 /*******************************************/
 {
     if( loc == 1 ) {
@@ -469,7 +469,7 @@ rc_erridx SetDir( const char *name, int loc )
     }
 }
 
-rc_erridx GetDir( int drive, char *name, int loc )
+error_idx GetDir( int drive, char *name, int loc )
 /************************************************/
 {
     /* drive=0 means current drive A:=1, B:=2, etc. */
@@ -480,13 +480,13 @@ rc_erridx GetDir( int drive, char *name, int loc )
     }
 }
 
-rc_erridx Erase( const char *name, int loc )
+error_idx Erase( const char *name, int loc )
 /******************************************/
 {
     return( FileRemove( name, RFX2Acc( loc ) ) );
 }
 
-rc_erridx MakeDir( const char *name, int loc )
+error_idx MakeDir( const char *name, int loc )
 /********************************************/
 {
     if( loc == 1 ) {
@@ -522,7 +522,7 @@ int IsDevice( const char *fn, int loc )
 }
 
 
-rc_erridx FindFirst( const char *name, int loc, int attr )
+error_idx FindFirst( const char *name, int loc, int attr )
 /********************************************************/
 {
     if( loc == 1 ) {
@@ -542,7 +542,7 @@ int FindNext( int loc )
     }
 }
 
-rc_erridx Rename( const char *f1, const char *f2, int loc )
+error_idx Rename( const char *f1, const char *f2, int loc )
 /*********************************************************/
 {
     if( loc == 1 ) {
@@ -840,10 +840,10 @@ int ProcessArgv( int argc, char **argv, const char *cmd ) {
 /* RENAME                                                                 */
 /**************************************************************************/
 
-rc_erridx   Renamef( const char *fn1, int f1loc, const char *fn2, int f2loc )
+error_idx   Renamef( const char *fn1, int f1loc, const char *fn2, int f2loc )
 {
-    rc_erridx   retc;
-    rc_erridx   err;
+    error_idx   retc;
+    error_idx   err;
     char        *endpath;
 
     fn1 = _FileParse( fn1, &Parse1 );
@@ -1035,12 +1035,12 @@ void FiniCopy( handle in, const char *src_name, int src_loc,
 }
 
 
-rc_erridx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
+error_idx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
 {
     handle      in, out;
     unsigned    len;
     unsigned    written;
-    rc_erridx   retc;
+    error_idx   retc;
 
     WrtCopy( src, dst, src_loc, dst_loc );
     in = FileOpen( src, OP_READ | RFX2Acc( src_loc ) );
@@ -1083,7 +1083,7 @@ rc_erridx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
 
 void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
 {
-    rc_erridx   retc;
+    error_idx   retc;
     long        retl;
     char        *endptr;
     char        *endpath;
@@ -1130,9 +1130,9 @@ void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
     }
 }
 
-rc_erridx   CopyASpec( const char *f1, const char *f2, int f1loc, int f2loc )
+error_idx   CopyASpec( const char *f1, const char *f2, int f1loc, int f2loc )
 {
-    rc_erridx   retc;
+    error_idx   retc;
     char        *endptr;
     char        *endpath;
     unsigned    dst_cluster;
@@ -1192,7 +1192,7 @@ static void WildCopy( int recursive )
 {
     COPYPTR     list;
     int         first;
-    rc_erridx   errcod;
+    error_idx   errcod;
     int         none_in_root;
 
     first = 1;
@@ -1329,7 +1329,7 @@ static  void    DirClosef( dir_handle *h )
 extern  dir_handle      *DirOpenf( const char *fspec, int fnloc )
 {
     dir_handle  *h;
-    rc_erridx   retc;
+    error_idx   retc;
     long        retl;
     char        *append;
     file_parse  parse;
@@ -1628,9 +1628,9 @@ void ProcMakeDir( int argc, char **argv )
 /* ERASE/DELETE                                                           */
 /**************************************************************************/
 
-rc_erridx   Scratchf( const char *fn, int fnloc )
+error_idx   Scratchf( const char *fn, int fnloc )
 {
-    rc_erridx   retc;
+    error_idx   retc;
     char        *endptr;
 
     fn = _FileParse( fn, &Parse1 );
@@ -1729,7 +1729,7 @@ void ProcDelDir( int argc, char **argv )
     char        *tmp;
     int         recursive;
     int         i;
-    rc_erridx   retc;
+    error_idx   retc;
 
     recursive = 0;
     src = NULL;

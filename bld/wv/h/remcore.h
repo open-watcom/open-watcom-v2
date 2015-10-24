@@ -41,7 +41,7 @@ extern void             ReadDbgRegs( void );
 extern void             WriteDbgRegs( void );
 extern unsigned         ArgsLen( const char *args );
 extern void             ClearMachineDataCache( void );
-extern rc_erridx        DoLoad( const char *args, unsigned long *phandle );
+extern error_idx        DoLoad( const char *args, unsigned long *phandle );
 extern bool             KillProgOvlay( void );
 extern unsigned         MakeProgRun( bool single );
 extern bool             Redirect( bool input, char *hndlname );
