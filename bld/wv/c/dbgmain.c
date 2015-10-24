@@ -56,6 +56,7 @@
 #include "dbgvar.h"
 #include "dbgtrace.h"
 #include "dbgdll.h"
+#include "dbgexdat.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -100,7 +101,6 @@ extern void             ProcCapture( void );
 extern void             ProcDisplay( void );
 extern void             ProcDo( void );
 extern void             ProcError( void );
-extern void             ProcExamine( void );
 extern void             ProcFlip( void );
 extern void             ProcFont( void );
 extern void             ProcGo( void );

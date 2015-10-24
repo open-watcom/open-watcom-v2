@@ -43,6 +43,7 @@
 #include "dbgparse.h"
 #include "dbgdot.h"
 #include "dbgexins.h"
+#include "dbgexdat.h"
 
 
 extern void             WndMemInspect( address, char *, unsigned, mad_type_handle );
