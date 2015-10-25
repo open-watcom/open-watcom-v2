@@ -44,11 +44,10 @@
 #include "dbgshow.h"
 #include "dbgparse.h"
 #include "dbgwdlg.h"
+#include "symcomp.h"
 
 
 extern void             WndUserAdd(char *,unsigned int );
-extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
-extern void             SymCompFini( void );
 
 extern const char       WndNameTab[];
 

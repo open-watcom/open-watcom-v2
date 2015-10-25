@@ -35,6 +35,7 @@
 #include "dbglit.h"
 #include "namelist.h"
 #include "dui.h"
+#include "symcomp.h"
 
 #include "clibext.h"
 
@@ -48,7 +49,7 @@ typedef struct sorted_names {
     name_list           list;
 } sorted_names;
 
-sorted_names *SortedNames = NULL;
+static sorted_names *SortedNames = NULL;
 
 name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle mod )
 {
@@ -79,7 +80,7 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
 }
 
 
-extern void SymCompFini( void )
+void SymCompFini( void )
 {
     sorted_names        *curr, *next;
     for( curr = SortedNames; curr != NULL; curr = next ) {
@@ -90,7 +91,7 @@ extern void SymCompFini( void )
     SortedNames = NULL;
 }
 
-extern void SymCompMatches( name_list *list, char *match, unsigned *pfirst, unsigned *plast )
+void SymCompMatches( name_list *list, char *match, unsigned *pfirst, unsigned *plast )
 {
     unsigned            first,last;
     unsigned            len;

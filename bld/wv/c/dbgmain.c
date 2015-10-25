@@ -64,6 +64,8 @@
 #include "dbgreg.h"
 #include "dbgevent.h"
 #include "dbgset.h"
+#include "namelist.h"
+#include "symcomp.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -105,7 +107,6 @@ extern void             ProcView( void );
 extern void             RestoreHandlers( void );
 extern void             StartupErr( const char * );
 extern void             Suicide( void );
-extern void             SymCompFini( void );
 extern void             SysFileInit( void );
 extern bool             TBreak( void );
 extern void             WndMemInit( void );
