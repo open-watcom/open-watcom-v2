@@ -40,6 +40,7 @@
 #include "dbgscan.h"
 #include "dbgexpr.h"
 #include "dbgparse.h"
+#include "dlgscan.h"
 
 
 extern mod_handle       LookupModName( mod_handle, const char *, unsigned );

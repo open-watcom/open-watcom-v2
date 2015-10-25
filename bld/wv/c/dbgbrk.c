@@ -68,6 +68,7 @@
 #include "addarith.h"
 #include "dbginsty.h"
 #include "dbgevent.h"
+#include "dlgscan.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -90,7 +91,6 @@ extern bool             DlgBreak( address );
 extern bool             CheckBPIns( void );
 extern bool             DlgAreYouNuts( unsigned long );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
-extern bool             DlgScanCodeAddr( const char *str, address *value );
 extern void             DbgUpdate( update_list );
 
 
