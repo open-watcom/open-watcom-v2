@@ -24,60 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Symbol lookup, including some special symbols.
 *
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgio.h"
-#include "dbgname.h"
-#include "dbgcmdln.h"
-#include "dbglkup.h"
-
-
-#if 0
-static const char SysOptNameTab[] = {
-    "\0"
-    ""
-};
-
-enum { OPT_LINES };
-#endif
-
-
-bool OptDelim( char ch )
-{
-    return(  ch == '/' || ch == '-' );
-}
-
-/*
- * ProcSysOption -- process system option
- */
-
-bool ProcSysOption( const char *start, unsigned len, int pass )
-{
-    pass=pass;
-#if 0
-    switch( Lookup( SysOptNameTab, start, len ) ) {
-    default:
-        return( FALSE );
-    }
-    return( TRUE );
-#else
-    start=start;len=len;
-    return( FALSE );
-#endif
-}
-
-
-/*
- * ProcSysOptInit -- initial system options
- */
-
-void ProcSysOptInit( void )
-{
-}
+extern void         InitLook( void );
+extern void         FiniLook( void );
+extern void         LookCaseSet( bool respect );
+extern void         LookSet( void );
+extern void         LookConf( void );
+extern int          Lookup( const char *tokenlist,  const char *what, size_t tokenlen );
+extern mod_handle   LookupModName( mod_handle search, const char *start, unsigned len );
+extern mod_handle   LookupImageName( const char *start, unsigned len );
+extern sym_list     *LookupSymList( symbol_source ss, void *d, bool source_only, lookup_item *li );
+extern void         FreeSymHandle( sym_list *sl );
+extern void         PurgeSymHandles( void );
+extern bool         FindNullSym( mod_handle mh, address *addr );
+extern bool         SetWDPresent( mod_handle mh );

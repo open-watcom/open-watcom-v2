@@ -44,6 +44,7 @@
 #include "remcore.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 

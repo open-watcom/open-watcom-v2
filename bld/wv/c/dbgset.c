@@ -53,13 +53,12 @@
 #include "dbgparse.h"
 #include "dbgtrace.h"
 #include "dbgset.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 
 
 extern void             WndUserAdd( char *, unsigned int );
-extern void             LookSet( void );
-extern void             LookConf( void );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             VarChangeOptions( void );

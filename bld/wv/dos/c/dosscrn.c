@@ -43,10 +43,11 @@
 #include "dbginstr.h"
 #include "uidbg.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
+
 
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 
-extern int  Lookup( const char *, const char *, size_t );
 extern void WndDirty(void);
 extern void StartupErr( const char * );
 

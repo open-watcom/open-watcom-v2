@@ -64,6 +64,7 @@
 #include "addarith.h"
 #include "dbgevent.h"
 #include "dbgupdt.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 
@@ -86,11 +87,7 @@ extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );
-extern bool             FindNullSym( mod_handle, address * );
-extern bool             SetWDPresent( mod_handle );
 extern const char       *CheckForPowerBuilder( const char * );
-extern mod_handle       LookupImageName( const char *start, unsigned len );
-extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void));
 
 extern bool             DownLoadTask;

@@ -50,6 +50,7 @@
 #include "dbgshow.h"
 #include "dbgparse.h"
 #include "dbgupdt.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 
@@ -59,8 +60,6 @@ typedef struct rad_str {
     unsigned char    radval;
     char             radstr[1];         /* first byte is length */
 } rad_str;
-
-extern int              Lookup( const char *, const char *, size_t );
 
 static const char CmdLnDelimTab[] = {
     #define pick(t,c)   c

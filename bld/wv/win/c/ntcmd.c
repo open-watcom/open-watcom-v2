@@ -36,8 +36,8 @@
 #include <windows.h>
 #endif
 #include "dbgcmdln.h"
+#include "dbglkup.h"
 
-extern int              Lookup( const char *, const char *, size_t );
 
 static const char SysOptNameTab[] = {
     "Popups\0"

@@ -44,11 +44,10 @@
 #include "uidbg.h"
 #include "guigmous.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
+
 
 extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
-
-extern int          Lookup( const char *, const char *, size_t );
-
 
 extern unsigned char    NECBIOSGetMode(void);
 #pragma aux NECBIOSGetMode =                                    \

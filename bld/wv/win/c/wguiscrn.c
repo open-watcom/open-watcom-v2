@@ -41,9 +41,8 @@
 #include "dbgcmdln.h"
 #include "wndsys.h"
 #include "trpsys.h"
+#include "dbglkup.h"
 
-
-extern int          Lookup( const char *, const char *, size_t );
 
 extern a_window         *WndMain;
 extern volatile bool    BrkPending;

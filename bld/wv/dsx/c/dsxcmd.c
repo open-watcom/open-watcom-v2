@@ -39,14 +39,11 @@
 #include "dbgwind.h"
 #include "dpmi.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
 
 
 #define MAX_CMDLINE_LEN         128
 #define PSP_CMDTAIL_OFF         0x80
-
-
-extern int              Lookup( const char *, const char *, size_t );
-
 
 extern unsigned_8       DPMICheck;
 extern addr_seg         _psp;

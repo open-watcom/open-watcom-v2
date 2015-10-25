@@ -44,10 +44,10 @@
 #include "strutil.h"
 #include "dbgcmdln.h"
 #include "dbgprog.h"
+#include "dbglkup.h"
 
-extern int              Lookup( const char *, const char *, size_t );
+
 extern void             StartupErr( const char *err );
-
 
 static char             *(*GetArg)( int );
 static int              CurrArgc;

@@ -41,9 +41,8 @@
 #include "strutil.h"
 #include "dbgutil.h"
 #include "addarith.h"
+#include "dbglkup.h"
 
-
-extern void             FreeSymHandle( sym_list * );
 
 static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
 {

@@ -48,10 +48,7 @@
 #include "dbgexpr.h"
 #include "dbgloc.h"
 #include "dbgprog.h"
-
-
-extern void             FreeSymHandle( sym_list * );
-extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
+#include "dbglkup.h"
 
 
 static bool DefaultTypeInfo( dip_type_info *info )

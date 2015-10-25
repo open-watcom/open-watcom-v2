@@ -44,6 +44,7 @@
 #include "uidbg.h"
 #include "guigmous.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
 
 
 #define _64K                    (64UL*1024)
@@ -137,8 +138,6 @@ typedef struct {
         } save;
     };
 } screen_info;
-
-extern int                      Lookup( const char *, const char *, size_t );
 
 extern void                     StartupErr( const char * );
 extern bool                     UserScreen( void );

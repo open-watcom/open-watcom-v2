@@ -48,11 +48,11 @@
 #include "dbgovl.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbglkup.h"
+
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
-extern void             PurgeSymHandles( void );
-
 
 static stack_entry ExprBOS = {
     NULL, NULL,

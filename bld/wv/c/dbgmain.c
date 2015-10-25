@@ -67,6 +67,7 @@
 #include "namelist.h"
 #include "symcomp.h"
 #include "dbginit.h"
+#include "dbglkup.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -77,7 +78,6 @@ extern void             FiniAboutMessage( void );
 extern void             FiniBrowse( void );
 extern void             FiniFont( void );
 extern void             FiniIOWindow( void );
-extern void             FiniLook( void );
 extern void             FiniMacros( void );
 extern void             FiniMemWindow( void );
 extern void             FiniMenus( void );
@@ -89,7 +89,6 @@ extern void             InitBrowse( void );
 extern void             InitFont( void );
 extern void             InitHelp( void );
 extern void             InitIOWindow( void );
-extern void             InitLook( void );
 extern void             InitMemWindow( void );
 extern void             InitMenus( void );
 extern void             InitPaint( void );

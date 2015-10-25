@@ -50,13 +50,12 @@
 #include "wndsys.h"
 #include "dbgtrace.h"
 #include "dbgupdt.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 
 
 extern void             WndUserAdd( char *, unsigned int );
-extern void             LookSet( void );
-extern void             LookConf( void );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             WndRestoreToFront( a_window* );

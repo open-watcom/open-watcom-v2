@@ -53,6 +53,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 
@@ -80,16 +81,9 @@ enum {
     SEM_MECHANISM   = 0xe0,
 };
 
-extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
-extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
-extern void             PurgeSymHandles( void );
-extern void             FreeSymHandle( sym_list * );
-extern mod_handle       LookupImageName( const char *, unsigned );
-
 
 extern stack_entry      *ExprSP;
-
 
 #define type_bitsII     int
 

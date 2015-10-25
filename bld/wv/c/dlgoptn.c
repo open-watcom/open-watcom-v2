@@ -37,10 +37,10 @@
 #include "dlgoptn.h"
 #include "dbgscan.h"
 #include "trapglbl.h"
+#include "dbglkup.h"
 
 extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
 extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
-extern void             LookCaseSet( bool respect );
 
 static void GetDlgStatus( gui_window *gui )
 {

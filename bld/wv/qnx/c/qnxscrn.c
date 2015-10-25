@@ -56,10 +56,10 @@
 #include "dbgcmdln.h"
 #include "dbgprog.h"
 #include "dbginit.h"
+#include "dbglkup.h"
 
 
 extern void         StartupErr( const char * );
-extern int          Lookup( const char *, const char *, size_t );
 
 extern unsigned     UIConHandle;
 extern char         *UITermType;

@@ -41,9 +41,9 @@
 #include "dbgexpr.h"
 #include "dbgparse.h"
 #include "dlgscan.h"
+#include "dbglkup.h"
 
 
-extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
 extern void             RawScanInit( void );
 
 

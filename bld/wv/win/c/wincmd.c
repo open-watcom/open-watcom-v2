@@ -33,9 +33,8 @@
 #include "dbgdata.h"
 #include "dosscrn.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
 
-
-extern int              Lookup( const char *, const char *, size_t );
 
 static const char SysOptNameTab[] = {
     "NOSNow\0"

@@ -50,6 +50,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbginsty.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 
@@ -57,7 +58,6 @@ search_result           LineCue( mod_handle, cue_fileid,
                           unsigned long line, unsigned column, cue_handle *ch );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
 extern bool             WndVarAdd( a_window *, const char *, unsigned, bool );
 extern WNDOPEN          WndVarOpen;
 extern a_window         *DoWndAsmOpen( address addr, bool track );

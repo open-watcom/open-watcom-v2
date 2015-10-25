@@ -38,9 +38,9 @@
 #include "dbgname.h"
 #include "dbgswtch.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
 
 
-extern int              Lookup( const char *, const char *, size_t );
 extern void             StartupErr( const char * );
 
 
