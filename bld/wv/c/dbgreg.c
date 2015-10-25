@@ -60,6 +60,7 @@
 #include "removl.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 
 extern int              AddrComp( address a, address b );

@@ -52,6 +52,7 @@
 #include "dbgprog.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 #include "clibext.h"
 
@@ -79,7 +80,6 @@ enum {
     SEM_MECHANISM   = 0xe0,
 };
 
-extern void             ParseRegSet( bool, location_list *, dip_type_info * );
 extern stack_entry      *StkEntry( int );
 extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );

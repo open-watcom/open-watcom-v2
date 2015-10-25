@@ -53,13 +53,11 @@
 #include "dbgmisc.h"
 #include "remthrd.h"
 #include "remrtrd.h"
+#include "dbgreg.h"
 
 
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
-extern address          GetRegIP( void );
-extern void             RecordSetRegIP( address );
-extern bool             AdvMachState( int );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 extern int              AddrComp( address a, address b );
 

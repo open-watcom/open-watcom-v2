@@ -42,6 +42,7 @@
 #include "dbgbrk.h"
 #include "wndsys.h"
 #include "dbgmisc.h"
+#include "dbgreg.h"
 
 
 extern a_window         *WndSrcInspect( address );
@@ -50,8 +51,6 @@ extern address          FindLclBlock( address addr );
 extern int              AddrComp( address, address );
 extern bool             DlgBreak( address );
 extern unsigned         LineNumLkup( address );
-extern void             SetStackPos( location_context *lc, int pos );
-extern int              GetStackPos( void );
 
 extern address          FindNextIns( address a );
 extern void             InitTraceBack( cached_traceback * );

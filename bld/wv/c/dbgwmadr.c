@@ -41,6 +41,7 @@
 #include "dbgstk.h"
 #include "dbgexpr.h"
 #include "wndsys.h"
+#include "dbgreg.h"
 
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
@@ -50,8 +51,6 @@ extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, uns
                                    gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
 extern void             WndInspectExprSP( const char *item );
-extern void             RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mach );
-extern void             RegNewValue( const mad_reg_info *, item_mach const *, mad_type_handle  );
 
 
 #include "menudef.h"

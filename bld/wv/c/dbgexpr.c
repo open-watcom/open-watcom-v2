@@ -46,14 +46,12 @@
 #include "dbgexpr.h"
 #include "dbgloc.h"
 #include "dbgovl.h"
+#include "dbgreg.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
 extern int              AddrComp( address , address );
 extern void             PurgeSymHandles( void );
-extern address          GetRegIP( void );
-extern address          GetRegSP( void );
-extern address          GetRegBP( void );
 
 
 static stack_entry ExprBOS = {

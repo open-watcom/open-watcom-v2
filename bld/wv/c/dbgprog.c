@@ -60,6 +60,7 @@
 #include "remfile.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 #include "clibext.h"
 
@@ -71,8 +72,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
-extern void             ClearMachState( void );
-extern void             SetupMachState( void );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             SymInfoMvHdl( handle, handle );
@@ -81,13 +80,11 @@ extern handle           FullPathOpen( const char *name, unsigned name_len, const
 extern void             SetNoSectSeg( void );
 extern void             AddAliasInfo( unsigned, unsigned );
 extern void             FreeAliasInfo( void );
-extern address          GetRegIP( void );
 extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );
-extern address          GetRegSP( void );
 extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
 extern void             RecordStart( void );

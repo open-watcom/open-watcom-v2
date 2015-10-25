@@ -48,6 +48,8 @@
 #include "dbgtrace.h"
 #include "dbgmisc.h"
 #include "remrtrd.h"
+#include "dbgreg.h"
+
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             DlgSource( void );
@@ -60,10 +62,6 @@ extern void             ReplaySave( bool );
 extern void             ConfigSave( bool );
 extern wnd_class        ReqWndName( void );
 extern void             FileBrowse( void );
-extern void             LastMachState( void );
-extern void             LastStackPos( void );
-extern void             MoveStackPos( int by );
-extern void             PosMachState( int rel_pos );
 extern void             WndAsmInspect( address );
 extern void             WndSrcInspect( address );
 extern void             DlgAbout( void );
@@ -77,7 +75,6 @@ extern address          GetCodeDot( void );
 extern void             FuncNewMod( a_window *wnd, mod_handle mod );
 extern void             GlobNewMod( a_window *wnd, mod_handle mod );
 extern void             ModNewHandle( a_window *wnd, mod_handle mod );
-extern void             GoHome( void );
 extern void             DoProcHelp( gui_help_actions );
 extern void             DlgBreakDLL( void );
 extern bool             DebugScreen( void );

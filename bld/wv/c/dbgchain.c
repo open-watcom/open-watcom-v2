@@ -44,14 +44,13 @@
 #include "dbgbrk.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 
 extern address          FindLclBlock( address addr );
 extern int              AddrComp(address ,address );
 extern bool             DlgBreak(address);
 extern unsigned         LineNumLkup(address);
-extern void             SetStackPos( location_context *lc, int pos );
-extern int              GetStackPos( void );
 
 #define MODEST_CALL_LEVEL       20
 #define MODEST_INCREMENT        10

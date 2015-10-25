@@ -64,13 +64,13 @@
 #include "dbgmisc.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern int              AddrComp( address, address );
-extern address          GetRegIP( void );
 OVL_EXTERN brkp         *TypePoint( memory_expr );
 OVL_EXTERN brkp         *BadPoint( memory_expr );
 OVL_EXTERN brkp         *ImageBreak( memory_expr );

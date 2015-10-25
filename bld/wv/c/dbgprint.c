@@ -52,6 +52,7 @@
 #include "dbgparse.h"
 #include "dbgprint.h"
 #include "remcore.h"
+#include "dbgreg.h"
 
 
 #define BUFLEN  UTIL_LEN
@@ -64,7 +65,6 @@
 
 extern void             WriteToPgmScreen( const void *, unsigned );
 extern void             GraphicDisplay( void );
-extern void             DefAddr( memory_expr, address * );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 
 // Brian!!!! NYI NYI NYI

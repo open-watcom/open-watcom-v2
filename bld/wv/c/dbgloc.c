@@ -36,9 +36,9 @@
 #include "mad.h"
 #include "dui.h"
 #include "remcore.h"
+#include "dbgreg.h"
 
 extern address          AddrAdd( address, long );
-extern unsigned         ChangeMem( address, const void *, unsigned );
 extern void             DbgUpdate( update_list );
 
 

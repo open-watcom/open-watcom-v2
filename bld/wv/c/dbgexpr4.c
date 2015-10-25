@@ -55,19 +55,17 @@
 #include "dbgprog.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 
 extern address          AddrAdd( address, long );
 extern int              AddrComp( address, address );
 extern long             AddrDiff( address, address );
 extern void             LclLValue( stack_entry * );
-extern void             SetRegSP( address );
 extern stack_entry      *StkEntry( int );
 extern char             *DupStringEntry( char *, unsigned long );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
-extern address          GetRegSP( void );
-extern void             SetRegSP( address );
 
 extern stack_entry      *ExprSP;
 

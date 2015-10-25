@@ -42,12 +42,10 @@
 #include "dbgmain.h"
 #include "dbgovl.h"
 #include "remcore.h"
+#include "dbgreg.h"
 
-extern unsigned         ChangeMem( address, const void *, unsigned int );
 extern address          AddrAddWrap( address, long );
 extern void             RecordEvent( const char * );
-extern bool             AdvMachState( int );
-extern void             CollapseMachState( void );
 extern void             DbgUpdate( update_list );
 
 

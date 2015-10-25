@@ -43,15 +43,13 @@
 #include "dbgmisc.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 #include "clibext.h"
 
 typedef int     cmp_func( const void *, const void *, size_t );
 
 
-extern address          GetRegIP( void );
-extern address          GetRegSP( void );
-extern address          GetRegBP( void );
 extern address          GetDataDot( void );
 extern address          GetCodeDot( void );
 

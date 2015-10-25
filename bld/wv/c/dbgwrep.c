@@ -45,10 +45,9 @@
 #include "dbgprog.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
-extern int              GetStackPos( void );
-extern unsigned         UndoLevel( void );
-extern address          GetRegIP( void );
+
 extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
 extern char             *GetEventAddress( event_record *ev );

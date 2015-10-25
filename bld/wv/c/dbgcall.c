@@ -47,13 +47,10 @@
 #include "dbgshow.h"
 #include "dbgprint.h"
 #include "dbgparse.h"
+#include "dbgreg.h"
 
 
 extern stack_entry  *ExprSP;
-
-
-extern void         ParseRegSet( bool, location_list *, dip_type_info * );
-
 
 #define MAX_PARMS       10
 

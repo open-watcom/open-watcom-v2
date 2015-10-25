@@ -61,6 +61,7 @@
 #include "dbgmisc.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -73,7 +74,6 @@ extern void             FiniFont( void );
 extern void             FiniIOWindow( void );
 extern void             FiniLiterals( void );
 extern void             FiniLook( void );
-extern void             FiniMachState( void );
 extern void             FiniMacros( void );
 extern void             FiniMemWindow( void );
 extern void             FiniMenus( void );
@@ -87,7 +87,6 @@ extern void             InitHelp( void );
 extern void             InitIOWindow( void );
 extern void             InitLiterals( void );
 extern void             InitLook( void );
-extern void             InitMachState( void );
 extern void             InitMemWindow( void );
 extern void             InitMenus( void );
 extern void             InitPaint( void );
@@ -104,7 +103,6 @@ extern void             ProcDisplay( void );
 extern void             ProcFont( void );
 extern void             ProcHelp( void );
 extern void             ProcPaint( void );
-extern void             ProcRegister( void );
 extern void             ProcSet( void );
 extern void             ProcView( void );
 extern void             RecordFini( void );

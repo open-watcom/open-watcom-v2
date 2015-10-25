@@ -36,10 +36,7 @@
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "dlgstk.h"
-
-
-extern void LastStackPos( void );
-extern void LastMachState( void );
+#include "dbgreg.h"
 
 
 OVL_EXTERN bool StkOrHistoryEvent( gui_window *gui, gui_event gui_ev, void *param )

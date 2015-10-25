@@ -43,9 +43,8 @@
 #include "dbgovl.h"
 #include "dbgparse.h"
 #include "dbgwalk.h"
+#include "dbgreg.h"
 
-
-extern void             DefAddr( memory_expr, address * );
 
 extern handle           LocalPathOpen( const char *, unsigned, const char * );
 

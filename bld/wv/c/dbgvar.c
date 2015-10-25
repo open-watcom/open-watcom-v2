@@ -54,6 +54,7 @@
 #include "dbgprog.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 #include "clibext.h"
 
@@ -62,10 +63,8 @@ extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( const char *);
-extern void             CollapseMachState( void );
 extern void             RecordEvent( const char * );
 extern void             DbgUpdate( update_list );
-extern bool             AdvMachState( int );
 
 
 extern stack_entry      *ExprSP;

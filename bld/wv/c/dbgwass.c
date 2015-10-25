@@ -54,6 +54,7 @@
 #include "dbgmisc.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -77,7 +78,6 @@ extern bool             DlgModName( const char *title, mod_handle *mod );
 extern void             WndVarInspect( const char * );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 extern void             BreakOnSelected( const char *item );
-extern void             GoHome(void);
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );

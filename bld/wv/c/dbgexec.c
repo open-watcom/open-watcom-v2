@@ -54,17 +54,13 @@
 #include "dbgmisc.h"
 #include "remthrd.h"
 #include "remasync.h"
+#include "dbgreg.h"
 
 
-extern bool             AdvMachState( int );
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
-extern address          GetRegIP( void );
 extern bool             SetUpTrace( bool );
-extern void             SetMemBefore( bool );
-extern void             SetMemAfter( bool );
 extern char             DlgFatal( void );
-extern bool             CheckStackPos( void );
 extern void             RecordEvent( const char *p );
 extern void             RecordGo( const char *p );
 extern void             CheckEventRecorded( void );

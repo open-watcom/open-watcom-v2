@@ -53,6 +53,7 @@
 #include "removl.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgreg.h"
 
 
 enum {
@@ -113,9 +114,6 @@ extern int              AddrComp( address, address );
 extern void             GetCurrOpcode( void );
 extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );
-extern address          GetRegIP( void );
-extern void             SetRegIP( address );
-extern address          GetRegSP( void );
 extern bool             IsSupportRoutine( sym_handle * );
 extern void             RecordEvent( const char *p );
 extern void             CheckEventRecorded( void );

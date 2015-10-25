@@ -46,11 +46,9 @@
 #include "dbgpend.h"
 #include "dbgparse.h"
 #include "dbgprog.h"
+#include "dbgreg.h"
 
 
-extern int              GetStackPos( void );
-extern unsigned         UndoLevel( void );
-extern address          GetRegIP( void );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
 extern void             DbgUpdate( update_list );

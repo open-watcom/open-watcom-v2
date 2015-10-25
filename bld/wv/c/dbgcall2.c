@@ -41,6 +41,7 @@
 #include "dbgloc.h"
 #include "dbgcall2.h"
 #include "dbgovl.h"
+#include "dbgreg.h"
 
 
 extern stack_entry      *ExprSP;
@@ -48,12 +49,6 @@ extern stack_entry      *ExprSP;
 
 extern void             DbgUpdate( update_list );
 extern stack_entry      *StkEntry( int );
-extern void             SetRegIP( address );
-extern void             SetRegSP( address );
-extern address          GetRegSP( void );
-extern machine_state    *AllocMachState( void );
-extern void             CopyMachState( machine_state *, machine_state * );
-extern void             FreeMachState( machine_state *);
 
 
 static machine_state    *FreezeRegSet = NULL;
