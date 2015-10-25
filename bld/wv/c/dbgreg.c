@@ -63,6 +63,7 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgevent.h"
+#include "dbgupdt.h"
 
 
 extern bool             DlgUpTheStack( void );
@@ -101,7 +102,6 @@ static  int             NumStateEntries = 0;
 
 extern long             GetDataLong( void );
 extern void             StartupErr( const char * );
-extern void             DbgUpdate( update_list );
 extern void             FindAddrSectId( address *, int );
 extern char             *Rtrm( char * );
 

@@ -57,6 +57,7 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbginsty.h"
+#include "dbgupdt.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -80,7 +81,6 @@ extern char             *AddrToString( address *, mad_address_format, char *, un
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
-extern void             DbgUpdate( update_list );
 
 
 #include "menudef.h"

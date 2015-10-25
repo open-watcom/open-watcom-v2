@@ -49,6 +49,7 @@
 #include "madcli.h"
 #include "dbgshow.h"
 #include "dbgparse.h"
+#include "dbgupdt.h"
 
 #include "clibext.h"
 
@@ -60,7 +61,6 @@ typedef struct rad_str {
 } rad_str;
 
 extern int              Lookup( const char *, const char *, size_t );
-extern void             DbgUpdate( update_list );
 
 static const char CmdLnDelimTab[] = {
     #define pick(t,c)   c

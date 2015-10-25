@@ -42,11 +42,10 @@
 #include "dbgcall2.h"
 #include "dbgovl.h"
 #include "dbgreg.h"
+#include "dbgupdt.h"
 
 
 extern stack_entry      *ExprSP;
-
-extern void             DbgUpdate( update_list );
 
 static machine_state    *FreezeRegSet = NULL;
 static location_context FreezeContext;

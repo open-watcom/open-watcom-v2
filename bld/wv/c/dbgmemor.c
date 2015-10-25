@@ -45,9 +45,7 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgevent.h"
-
-
-extern void             DbgUpdate( update_list );
+#include "dbgupdt.h"
 
 
 //MAD: convert this stuff to work off of mad_type_handle's ?

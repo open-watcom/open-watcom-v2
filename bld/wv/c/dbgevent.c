@@ -47,9 +47,8 @@
 #include "dbgparse.h"
 #include "dbgprog.h"
 #include "dbgreg.h"
+#include "dbgupdt.h"
 
-
-extern void             DbgUpdate( update_list );
 
 event_record *EventList;
 static event_record **LastOwner;

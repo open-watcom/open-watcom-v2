@@ -51,9 +51,8 @@
 #include "dbgmodfy.h"
 #include "dbgreg.h"
 #include "dbgevent.h"
+#include "dbgupdt.h"
 
-
-extern void             DbgUpdate( update_list );
 
 extern stack_entry      *ExprSP;
 

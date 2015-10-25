@@ -38,9 +38,8 @@
 #include "remcore.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbgupdt.h"
 
-
-extern void             DbgUpdate( update_list );
 
 void LocationCreate( location_list *ll, location_type lt, void *d )
 {

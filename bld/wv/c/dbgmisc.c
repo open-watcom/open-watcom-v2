@@ -56,10 +56,10 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgevent.h"
+#include "dbgupdt.h"
 
 
 extern void             FlipScreen( void );
-extern void             DbgUpdate( update_list );
 
 static const char ElseifTab[]         = { "ELSEIF\0" };
 static const char ElseTab[]           = { "ELSE\0" };

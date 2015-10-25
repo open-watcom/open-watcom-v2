@@ -51,11 +51,11 @@
 #include "removl.h"
 #include "dbgreg.h"
 #include "dbgset.h"
+#include "dbgupdt.h"
 
 #include "clibext.h"
 
 
-extern void             DbgUpdate( update_list );
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );

@@ -63,6 +63,7 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgevent.h"
+#include "dbgupdt.h"
 
 #include "clibext.h"
 
@@ -90,7 +91,6 @@ extern bool             SetWDPresent( mod_handle );
 extern const char       *CheckForPowerBuilder( const char * );
 extern mod_handle       LookupImageName( const char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
-extern void             DbgUpdate( update_list );
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void));
 
 extern bool             DownLoadTask;

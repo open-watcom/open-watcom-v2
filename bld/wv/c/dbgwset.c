@@ -49,6 +49,7 @@
 #include "dbgwdlg.h"
 #include "wndsys.h"
 #include "dbgtrace.h"
+#include "dbgupdt.h"
 
 #include "clibext.h"
 
@@ -67,7 +68,6 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
-extern void             DbgUpdate( update_list );
 
 extern const char       WndNameTab[];
 extern margins          SrcMar;

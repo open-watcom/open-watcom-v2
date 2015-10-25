@@ -57,13 +57,13 @@
 #include "dbgreg.h"
 #include "dbgevent.h"
 #include "dlgscan.h"
+#include "dbgupdt.h"
 
 
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
 extern bool             SetUpTrace( bool );
 extern char             DlgFatal( void );
-extern void             DbgUpdate( update_list );
 
 static char             *MsgText;
 

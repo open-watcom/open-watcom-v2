@@ -37,12 +37,13 @@
 #include "dbglog.h"
 #include "dbgwdlg.h"
 #include "wndsys.h"
+#include "dbgupdt.h"
+
 
 #define MAX_DLG_LINES 30000U
 
 extern int              PageSize( int );
 extern void             SetLogMenuItems( bool active );
-extern void             DbgUpdate( update_list );
 
 typedef struct dlg_entry {
     struct dlg_entry        *prev;

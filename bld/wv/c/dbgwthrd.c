@@ -38,9 +38,8 @@
 #include "wndsys.h"
 #include "dbgmisc.h"
 #include "remthrd.h"
+#include "dbgupdt.h"
 
-
-extern void             DbgUpdate( update_list );
 
 #include "menudef.h"
 static gui_menu_struct TrdMenu[] = {

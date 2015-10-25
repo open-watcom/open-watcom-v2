@@ -45,6 +45,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "dbgupdt.h"
 
 extern void             SymCompFini( void );
 extern address          GetCodeDot( void );

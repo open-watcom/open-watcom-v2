@@ -53,6 +53,7 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbginsty.h"
+#include "dbgupdt.h"
 
 
 extern a_window         *WndFileInspect( char *file, bool binary );
@@ -80,7 +81,6 @@ extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
 extern unsigned         ExprSize( stack_entry * );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
-extern void             DbgUpdate( update_list );
 
 extern stack_entry      *ExprSP;
 

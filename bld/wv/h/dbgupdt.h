@@ -24,23 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Update debugger's internal state.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "guidlg.h"
-#include "dlglist.h"
-#include "diptypes.h"
-#include "dbgsrc.h"
-#include "dbgupdt.h"
-
-
-void DlgSource( void )
-{
-    DlgList( LIT_DUI( New_Source ), FiniSource, AddSourceSpec, NextSourceSpec, SourceName );
-    DbgUpdate( UP_NEW_SRC );
-}
+extern void DbgUpdate( update_list flags );
