@@ -84,7 +84,6 @@ extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 extern void             PurgeSymHandles( void );
-extern sym_list         *Disambiguate( sym_list * );
 extern void             FreeSymHandle( sym_list * );
 extern mod_handle       LookupImageName( const char *, unsigned );
 

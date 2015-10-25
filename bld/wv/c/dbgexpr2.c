@@ -50,7 +50,6 @@
 #include "dbgprog.h"
 
 
-extern sym_list         *Disambiguate( sym_list *, location_context * );
 extern void             FreeSymHandle( sym_list * );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 
