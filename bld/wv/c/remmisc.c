@@ -47,6 +47,7 @@
 #include "remcore.h"
 #include "remfile.h"
 #include "removl.h"
+#include "remasync.h"
 
 #include "clibext.h"
 

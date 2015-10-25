@@ -7,7 +7,6 @@ extern void FiniSuppServices( void );
 extern bool InitCapabilities( void );
 extern bool InitFileInfoSupp( void );
 extern bool InitEnvSupp( void );
-extern bool InitAsyncSupp( void );
 
 extern trap_shandle GetSuppId( char *name );
 

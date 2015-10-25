@@ -41,6 +41,7 @@
 #include "trapglbl.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "remasync.h"
 
 
 #define SUPP_ASYNC_SERVICE( in, request )        \
@@ -109,7 +110,7 @@ unsigned MakeAsyncRun( bool single )
     return( ret.conditions );
 }
 
-unsigned PollAsync( )
+unsigned PollAsync( void )
 {
     async_poll_req      acc;
     async_poll_ret      ret;
@@ -152,7 +153,7 @@ unsigned PollAsync( )
     return( ret.conditions );
 }
 
-unsigned StopAsync( )
+unsigned StopAsync( void )
 {
     async_stop_req      acc;
     async_stop_ret      ret;

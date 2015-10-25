@@ -53,6 +53,7 @@
 #include "remcore.h"
 #include "dbgmisc.h"
 #include "remthrd.h"
+#include "remasync.h"
 
 
 extern bool             AdvMachState( int );
@@ -71,8 +72,6 @@ extern void             RecordAsynchEvent( void );
 extern void             DbgUpdate( update_list );
 extern bool             DlgScanDataAddr( const char *str, address *value );
 extern bool             DlgScanLong( const char *str, long *value );
-extern bool             HaveRemoteAsync( void );
-extern unsigned         MakeAsyncRun( bool single );
 
 
 static char             *MsgText;
