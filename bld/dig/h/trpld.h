@@ -38,6 +38,14 @@ extern trap_req_func    *ReqFunc;
 extern char             *TrapTraceFileName;
 extern bool             TrapTraceFileFlush;
 
-extern int  OpenTrapTraceFile( void );
-extern int  CloseTrapTraceFile( void );
+extern int              OpenTrapTraceFile( void );
+extern int              CloseTrapTraceFile( void );
 #endif
+
+/* Client interface routines */
+extern char             *LoadDumbTrap( trap_version * );
+extern char             *LoadTrap( const char *, char *, trap_version * );
+extern void             TrapSetFailCallBack( void (*func)(void) );
+extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
+extern unsigned         TrapSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
+extern void             KillTrap(void);
