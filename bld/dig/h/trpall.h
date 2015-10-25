@@ -24,41 +24,53 @@
 *
 *  ========================================================================
 *
-* Description:  TRAP file OS extension global variable/function declaration
+* Description:  Internal debugger trap file OS specific implementation
+*               header file.
 *
 ****************************************************************************/
 
 
-#if defined( __OS2__ )
-extern bool     IsTrapFilePumpingMessageQueue( void );
-extern char     TellHardMode( char hard );
-  #if defined( _M_I86 )
-extern void     TellHandles( void __far *hab, void __far *hwnd );
-  #else
-extern void     TellHandles( HAB hab, HWND hwnd );
-  #endif
-#elif defined( __DOS__ )
-  #if defined( _M_I86 )
-  #else
-extern unsigned char    DPMICheck;
+#ifndef _TRPALL_H_INCLUDED
+#define _TRPALL_H_INCLUDED
 
-extern void     SaveOrigVectors( void );
-extern void     RestoreOrigVectors( void );
-  #endif
-#elif defined( __NT__ )
-extern void     TellHWND( HWND hwnd );
-extern void     TellInterrupt( void );
-extern bool     TellTerminate( void );
-#elif defined( __WINDOWS__ )
-extern int      HardModeRequired;
+#include "trpcore.h"
 
-extern void     (TRAPENTRY*HookFunc)(LPVOID);
-extern void     (TRAPENTRY*InfoFunction)(HWND);
-extern void     (TRAPENTRY*UnLockInput)(void);
-extern void     (TRAPENTRY*SetHardMode)(char);
+#ifdef WANT_FILE_INFO
+#include "trpfinfo.h"
+#endif
 
-extern void     TellHWND( HWND hwnd );
-extern void     DoHardModeCheck( void );
-extern bool     TellTerminate( void );
-#else
+#ifdef WANT_ENV
+#include "trpenv.h"
+#endif
+
+#ifdef WANT_ASYNC
+#include "trpasync.h"
+#endif
+
+#ifdef WANT_FILE
+#include "trpfile.h"
+#endif
+
+#ifdef WANT_OVL
+#include "trpovl.h"
+#endif
+
+#ifdef WANT_THREAD
+#include "trpthrd.h"
+#endif
+
+#ifdef WANT_RUN_THREAD
+#include "trprtrd.h"
+#endif
+
+#ifdef WANT_RFX
+#include "trprfx.h"
+#endif
+
+#ifdef WANT_CAPABILITIES
+#include "trpcapb.h"
+#endif
+
+#define BUFF_SIZE       256
+
 #endif

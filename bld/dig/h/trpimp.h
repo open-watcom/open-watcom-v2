@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#ifndef TRPIMP_H
-#define TRPIMP_H
+#ifndef _TRPIMP_H_INCLUDED
+#define _TRPIMP_H_INCLUDED
 
-#include "trpcore.h"
+#include "trpall.h"
 
 extern trap_retval ReqConnect(void);
 extern trap_retval ReqDisconnect(void);
@@ -71,34 +71,23 @@ extern trap_retval ReqWrite_regs(void);
 extern trap_retval ReqMachine_data(void);
 
 #ifdef WANT_FILE_INFO
-#include "trpfinfo.h"
-
 extern trap_retval ReqFileInfo_getdate(void);
 extern trap_retval ReqFileInfo_setdate(void);
-
 #endif
 
 #ifdef WANT_ENV
-#include "trpenv.h"
-
 extern trap_retval ReqEnv_getvar(void);
 extern trap_retval ReqEnv_setvar(void);
-
 #endif
 
 #ifdef WANT_ASYNC
-#include "trpasync.h"
-
 extern trap_retval ReqAsync_go(void);
 extern trap_retval ReqAsync_step(void);
 extern trap_retval ReqAsync_poll(void);
 extern trap_retval ReqAsync_stop(void);
-
 #endif
 
 #ifdef WANT_FILE
-#include "trpfile.h"
-
 extern trap_retval ReqFile_get_config(void);
 extern trap_retval ReqFile_open(void);
 extern trap_retval ReqFile_seek(void);
@@ -109,12 +98,9 @@ extern trap_retval ReqFile_close(void);
 extern trap_retval ReqFile_erase(void);
 extern trap_retval ReqFile_string_to_fullpath(void);
 extern trap_retval ReqFile_run_cmd(void);
-
 #endif
 
 #ifdef WANT_OVL
-#include "trpovl.h"
-
 extern trap_retval ReqOvl_state_size(void);
 extern trap_retval ReqOvl_get_data(void);
 extern trap_retval ReqOvl_read_state(void);
@@ -122,23 +108,17 @@ extern trap_retval ReqOvl_write_state(void);
 extern trap_retval ReqOvl_trans_vect_addr(void);
 extern trap_retval ReqOvl_trans_ret_addr(void);
 extern trap_retval ReqOvl_get_remap_entry(void);
-
 #endif
 
 #ifdef WANT_THREAD
-#include "trpthrd.h"
-
 extern trap_retval ReqThread_get_next(void);
 extern trap_retval ReqThread_set(void);
 extern trap_retval ReqThread_freeze(void);
 extern trap_retval ReqThread_thaw(void);
 extern trap_retval ReqThread_get_extra(void);
-
 #endif
 
 #ifdef WANT_RUN_THREAD
-#include "trprtrd.h"
-
 extern trap_retval ReqRunThread_info(void);
 extern trap_retval ReqRunThread_get_next(void);
 extern trap_retval ReqRunThread_get_runtime(void);
@@ -147,12 +127,9 @@ extern trap_retval ReqRunThread_set(void);
 extern trap_retval ReqRunThread_get_name(void);
 extern trap_retval ReqRunThread_stop(void);
 extern trap_retval ReqRunThread_signal_stop(void);
-
 #endif
 
 #ifdef WANT_RFX
-#include "trprfx.h"
-
 extern trap_retval ReqRfx_rename(void);
 extern trap_retval ReqRfx_mkdir(void);
 extern trap_retval ReqRfx_rmdir(void);
@@ -169,32 +146,13 @@ extern trap_retval ReqRfx_nametocannonical(void);
 extern trap_retval ReqRfx_findfirst(void);
 extern trap_retval ReqRfx_findnext(void);
 extern trap_retval ReqRfx_findclose(void);
-
 #endif
 
 #ifdef WANT_CAPABILITIES
-#include "trpcapb.h"
-
 extern trap_retval ReqCapabilities_get_8b_bp(void);
 extern trap_retval ReqCapabilities_set_8b_bp(void);
 extern trap_retval ReqCapabilities_get_exact_bp(void);
 extern trap_retval ReqCapabilities_set_exact_bp(void);
-
 #endif
-
-extern trap_elen        In_Mx_Num;
-extern trap_elen        Out_Mx_Num;
-extern in_mx_entry_p    In_Mx_Ptr;
-extern mx_entry_p       Out_Mx_Ptr;
-
-extern void             *GetInPtr( trap_elen );
-extern void             *GetOutPtr( trap_elen );
-extern trap_elen        GetTotalSize( void );
-
-#define BUFF_SIZE       256
-
-extern trap_init_func   TrapInit;
-extern trap_req_func    TrapRequest;
-extern trap_fini_func   TrapFini;
 
 #endif

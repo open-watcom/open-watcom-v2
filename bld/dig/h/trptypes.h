@@ -29,12 +29,11 @@
 ****************************************************************************/
 
 
-#ifndef TRPTYPES_H
+#ifndef _TRPTYPES_H_INCLUDED
+#define _TRPTYPES_H_INCLUDED
 
 #include "bool.h"
 #include "digtypes.h"
-#include "digpck.h"
-
 
 #if defined( __WATCOMC__ ) && defined( __WINDOWS__ )
     #define     TRAPENTRY   DIGFAR __pascal
@@ -59,6 +58,7 @@
 
 #define TRP_REQUEST(x)  *((access_req *)(x)[0].ptr)
 
+#include "digpck.h"
 typedef struct {
     unsigned_8      major;
     unsigned_8      minor;
@@ -75,7 +75,6 @@ typedef unsigned_32 trap_shandle;   /* supplementary service handle */
 typedef trap_elen   trap_retval;
 
 #include "pushpck1.h"
-
 typedef struct {
     access_req      core_req;
     trap_shandle    id;
@@ -87,7 +86,6 @@ typedef struct {
     char            path_separator[2];
     char            newline[2];
 } file_components;
-
 #include "poppck.h"
 
 typedef struct {
@@ -99,6 +97,7 @@ typedef struct {
     const void  *ptr;
     trap_elen   len;
 } in_mx_entry;
+#include "digunpck.h"
 
 typedef mx_entry        DIGFAR *mx_entry_p;
 typedef in_mx_entry     DIGFAR *in_mx_entry_p;
@@ -118,8 +117,17 @@ extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_
 extern unsigned         TrapSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
 extern void             KillTrap(void);
 
-#include "digunpck.h"
+extern trap_init_func   TrapInit;
+extern trap_req_func    TrapRequest;
+extern trap_fini_func   TrapFini;
 
-#define TRPTYPES_H
+extern trap_elen        In_Mx_Num;
+extern trap_elen        Out_Mx_Num;
+extern in_mx_entry_p    In_Mx_Ptr;
+extern mx_entry_p       Out_Mx_Ptr;
+
+extern void             *GetInPtr( trap_elen );
+extern void             *GetOutPtr( trap_elen );
+extern trap_elen        GetTotalSize( void );
 
 #endif
