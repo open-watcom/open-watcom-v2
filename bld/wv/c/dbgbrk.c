@@ -320,7 +320,7 @@ void GetBPText( brkp *bp, char *buff )
 }
 
 
-extern brkp *FindBreakByLine( mod_handle mod, cue_fileid id, unsigned line )
+brkp *FindBreakByLine( mod_handle mod, cue_fileid id, unsigned line )
 {
     brkp        *bp;
     mod_handle  brk_mod;
@@ -339,7 +339,7 @@ extern brkp *FindBreakByLine( mod_handle mod, cue_fileid id, unsigned line )
 }
 
 
-extern brkp *FindBreak( address addr )
+brkp *FindBreak( address addr )
 {
     brkp    *bp;
 
@@ -1152,7 +1152,7 @@ static brkp *AddPoint( address loc, mad_type_handle th, bool unmapped )
 }
 
 
-extern brkp *AddBreak( address addr )
+brkp *AddBreak( address addr )
 {
     brkp        *bp;
 
@@ -1170,7 +1170,7 @@ extern brkp *AddBreak( address addr )
 }
 
 
-extern void ToggleBreak( address addr )
+void ToggleBreak( address addr )
 {
     brkp        *bp;
 
@@ -1522,7 +1522,7 @@ bool BreakOnRawMemory( address addr, const char *comment, int size )
     return( SpawnP( BreakOnAddress, &s ) == 0 );
 }
 
-extern void BreakOnExprSP( const char *comment )
+void BreakOnExprSP( const char *comment )
 {
     address             addr;
     dip_type_info       tinfo;
