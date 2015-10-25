@@ -140,8 +140,3 @@ sys_handle LocalHandleSys( handle h )
 {
     return( h );
 }
-
-void PopErrBox( const char *buff )
-{
-    WriteText( STD_ERR, buff, strlen( buff ) );
-}
