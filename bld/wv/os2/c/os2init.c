@@ -44,6 +44,7 @@
 #include "dbgmain.h"
 #include "envlkup.h"
 #include "dbginit.h"
+#include "dbgcmdln.h"
 
 
 static char             *cmdStart;

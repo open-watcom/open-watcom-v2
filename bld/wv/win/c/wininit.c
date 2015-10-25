@@ -50,6 +50,7 @@
 #include "guiwin.h"
 #include "dbgmain.h"
 #include "dbginit.h"
+#include "dbgcmdln.h"
 
 #include "clibint.h"
 
