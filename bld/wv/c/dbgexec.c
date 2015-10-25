@@ -58,10 +58,10 @@
 #include "dbgevent.h"
 #include "dlgscan.h"
 #include "dbgupdt.h"
+#include "dbginit.h"
 
 
 extern void             DoSetWatchPnt( unsigned int, brkp * );
-extern bool             TBreak( void );
 extern bool             SetUpTrace( bool );
 extern char             DlgFatal( void );
 

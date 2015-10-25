@@ -40,6 +40,7 @@
 #include "gui.h"
 #include "guigmous.h"
 #include "dbgprog.h"
+#include "dbginit.h"
 
 
 static unsigned ScrnLines = 25;

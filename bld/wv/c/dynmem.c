@@ -56,6 +56,7 @@
 #include <stdio.h>
 #include "dip.h"
 #include "strutil.h"
+#include "dbginit.h"
 
 
 #if defined( __DOS__ ) && defined( __386__ )
@@ -75,8 +76,6 @@ extern int _d16ReserveExt( int );
                                 modify [ ebx ecx edx ]
 #endif
 #endif
-
-extern void     PopErrBox( const char * );
 
 #ifdef TRMEM
 
@@ -196,8 +195,10 @@ static void MemTrackFini( void )
  */
 
 #ifdef __WATCOMC__
+
 #ifdef __386__
 #define __fmemneed __nmemneed
+extern int __saveregs __fmemneed( size_t size );
 #endif
 
 int __saveregs __fmemneed( size_t size )
@@ -357,9 +358,9 @@ void MemInit( void )
 }
 
 #if defined( _M_I86 ) && defined( __OS2__ )
-void     __FAR *ExtraAlloc( size_t size )
+void __FAR *ExtraAlloc( size_t size )
 #elif defined( _M_I86 ) && defined( __WINDOWS__ )
-void     __far *ExtraAlloc( size_t size )
+void __far *ExtraAlloc( size_t size )
 #else
 void *ExtraAlloc( size_t size )
 #endif
@@ -368,9 +369,9 @@ void *ExtraAlloc( size_t size )
 }
 
 #if defined( _M_I86 ) && defined( __OS2__ )
-void     ExtraFree( void __FAR *ptr )
+void ExtraFree( void __FAR *ptr )
 #elif defined( _M_I86 ) && defined( __WINDOWS__ )
-void     ExtraFree( void __far *ptr )
+void ExtraFree( void __far *ptr )
 #else
 void ExtraFree( void *ptr )
 #endif

@@ -36,6 +36,7 @@
 #include "tinyio.h"
 #include "dbgdefn.h"
 #include "dbgmain.h"
+#include "dbginit.h"
 
 extern void             WndRefresh( void );
 
@@ -171,4 +172,9 @@ void SysMemInit( void )
 bool SysGUI( void )
 {
     return( FALSE );
+}
+
+void PopErrBox( const char *buff )
+{
+    WriteText( STD_ERR, buff, strlen( buff ) );
 }

@@ -42,8 +42,9 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgcmd.h"
+#include "dbginit.h"
 
-extern bool             TBreak( void );
+
 extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
 extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );

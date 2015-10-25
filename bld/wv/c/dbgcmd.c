@@ -40,9 +40,8 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgcmd.h"
+#include "dbginit.h"
 
-
-extern bool             TBreak( void );
 
 static bool DoneCmd( inp_data_handle buff, inp_rtn_action action )
 {

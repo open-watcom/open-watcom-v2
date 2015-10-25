@@ -40,6 +40,8 @@
 #include "dbgcmdln.h"
 #include "dbgmain.h"
 #include "trpsys.h"
+#include "dbginit.h"
+#include "dbgio.h"
 
 extern void                     StartupErr( const char * );
 
@@ -190,4 +192,9 @@ void WndCleanUp( void )
 bool SysGUI( void )
 {
     return( FALSE );
+}
+
+void PopErrBox( const char *buff )
+{
+    WriteText( STD_ERR, buff, strlen( buff ) );
 }

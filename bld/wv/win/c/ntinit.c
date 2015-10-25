@@ -48,6 +48,7 @@
 #include "dbglit.h"
 #include "strutil.h"
 #include "dbgmain.h"
+#include "dbginit.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"

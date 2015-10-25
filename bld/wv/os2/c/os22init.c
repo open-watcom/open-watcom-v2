@@ -44,6 +44,7 @@
 #include "strutil.h"
 #include "dbgmain.h"
 #include "envlkup.h"
+#include "dbginit.h"
 
 
 char            *CmdData;

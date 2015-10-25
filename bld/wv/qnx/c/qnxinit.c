@@ -45,8 +45,10 @@
 #include "dbgdefn.h"
 #include "strutil.h"
 #include "dbgmain.h"
+#include "dbginit.h"
 
 #include "clibint.h"
+
 
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;

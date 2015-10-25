@@ -55,6 +55,8 @@
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbgprog.h"
+#include "dbginit.h"
+
 
 extern void         StartupErr( const char * );
 extern void         KillDebugger( int );

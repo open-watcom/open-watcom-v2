@@ -40,6 +40,7 @@
 #include "dbgscrn.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbginit.h"
 
 
 unsigned            NumLines;

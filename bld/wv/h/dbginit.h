@@ -30,49 +30,16 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbginit.h"
-
-#if 0
-#pragma library( "nt" )
-#pragma library("kernel32")
-#pragma library("user32")
-int __stdcall LibMain( int hdll, int reason, void *reserved )
-{
-    return( 1 );
-}
+extern bool             TBreak( void );
+extern void             GUImain( void );
+extern int              GUISysInit( int param );
+extern void             GUISysFini( void );
+extern bool             SysGUI( void );
+extern void             WndCleanUp( void );
+#ifdef __WATCOMC__
+#pragma aux KillDebugger aborts;
 #endif
-
-void GrabHandlers( void )
-{
-}
-
-void RestoreHandlers( void )
-{
-}
-
-bool TBreak( void )
-{
-    return( false );
-}
-
-long _fork( const char *cmd, size_t len )
-{
-    cmd=cmd;len=len;
-    return( 0 );
-}
-
-const char *CheckForPowerBuilder( const char *name )
-{
-    return( name );
-}
-
-void SetNumLines( int num )
-{
-    num = num;
-}
-
-void SetNumColumns( int num )
-{
-    num = num;
-}
+extern void             KillDebugger( int rc );
+extern void             GrabHandlers( void );
+extern void             RestoreHandlers( void );
+extern void             PopErrBox( const char *buff );

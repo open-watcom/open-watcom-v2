@@ -44,6 +44,7 @@
 #include "autoenv.h"
 #include "strutil.h"
 #include "dbgmain.h"
+#include "dbginit.h"
 
 #include "clibint.h"
 

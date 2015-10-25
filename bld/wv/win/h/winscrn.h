@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-extern void             win_uisetcolor( int );
-extern void             win_uisetmono( void );
-extern void             WindowsMessageLoop( int );
-
 #ifndef __NT__
 static void SetupEGA( void );
 static void SaveScreen( void );

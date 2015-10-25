@@ -49,6 +49,7 @@
 #include "strutil.h"
 #include "guiwin.h"
 #include "dbgmain.h"
+#include "dbginit.h"
 
 #include "clibint.h"
 
