@@ -103,7 +103,7 @@ void RestoreHandlers( void )
     TinySetVect( 0x28, _old28 );
 }
 
-void KillDebugger( void )
+void KillDebugger( int rc )
 {
     RestoreHandlers();
     TinyTerminateProcess( 0 );

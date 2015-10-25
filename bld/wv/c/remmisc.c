@@ -49,12 +49,11 @@
 #include "removl.h"
 #include "remasync.h"
 #include "remenv.h"
+#include "dbginit.h"
 
 #include "clibext.h"
 
 
-extern void             RestoreHandlers( void );
-extern void             GrabHandlers( void );
 extern void             StartupErr( const char * );
 //extern void             TrapErrTranslate( char *, int );
 

@@ -47,6 +47,7 @@
 #include "remote.h"
 #include "filermt.h"
 #include "remfile.h"
+#include "dbginit.h"
 
 char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
 

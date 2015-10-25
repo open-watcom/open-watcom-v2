@@ -59,7 +59,6 @@
 
 
 extern void         StartupErr( const char * );
-extern void         KillDebugger( int );
 extern int          Lookup( const char *, const char *, size_t );
 
 extern unsigned     UIConHandle;

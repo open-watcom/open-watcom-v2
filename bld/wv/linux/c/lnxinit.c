@@ -131,7 +131,7 @@ void SetCmdArgStart( int num, char *ptr )
     cmdStart = ptr;
 }
 
-void KillDebugger( void )
+void KillDebugger( int rc )
 {
     exit( 0 );
 }

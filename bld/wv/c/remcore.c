@@ -48,10 +48,8 @@
 #include "trpld.h"
 #include "removl.h"
 #include "addarith.h"
+#include "dbginit.h"
 
-
-extern void             RestoreHandlers( void );
-extern void             GrabHandlers( void );
 
 extern unsigned         MaxPacketLen;
 extern unsigned         CurrRegSize;
