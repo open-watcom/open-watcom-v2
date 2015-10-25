@@ -42,6 +42,7 @@
 #include "bool.h"
 #include "rcsdll.hpp"
 #include "inifile.hpp"
+#include "dllmain.h"
 
 #include "clibext.h"
 
@@ -240,12 +241,12 @@ int CALLBACK WEP( int q )
 
 #elif defined( __OS2__ )
 
-int     __dll_initialize( void )
+unsigned __dll_initialize( void )
 {
     return( 1 );
 }
 
-int     __dll_terminate( void )
+unsigned __dll_terminate( void )
 {
     return( 1 );
 }

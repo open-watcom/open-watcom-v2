@@ -103,4 +103,8 @@ void    LogConfigure( void );
 void    LoadLogConfig( char *fname, char *section );
 void    SaveLogConfig( char *fname, char *section );
 
+WINEXPORT UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK LogExistsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #endif /* _LOG_H_INCLUDED */

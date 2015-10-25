@@ -38,15 +38,13 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "csutls.h"
+#include "csdep.h"
+#include "fcodes.h"
+#include "gflow.h"
 
 #include <string.h>
 
-extern  void            GBoolExpr( void );
-extern  void            GBrFalse( label_id );
-extern  void            FreeLabel( label_id );
-
-/* forward declarations */
-void DelCSNode(void);
 
 extern  char                *StmtKeywords[];
 static  const STMT __FAR    CSWords[] = {
@@ -69,7 +67,7 @@ static  const STMT __FAR    CSWords[] = {
 };
 
 
-csnode  *NewCSNode( int label_len )
+static csnode  *NewCSNode( int label_len )
 {
 // Allocate a new "csnode".
 

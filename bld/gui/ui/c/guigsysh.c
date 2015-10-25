@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
+#include "gui.h"
 
 extern unsigned GUIGetSysHandle( gui_window *wnd )
 {

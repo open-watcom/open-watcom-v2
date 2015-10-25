@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "symbol.h"
 #include "argument.h"
+#include "argchk.h"
 
 
 bool    InArgList( entry_pt *entry, sym_id sym_ptr ) {

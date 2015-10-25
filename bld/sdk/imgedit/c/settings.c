@@ -46,7 +46,7 @@ static BOOL     fWrapShift;
 /*
  * CurrentSettingsProc - display the current settings and allows for change
  */
-WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg,
+WINEXPORT WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg,
                                             WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     BOOL                err;

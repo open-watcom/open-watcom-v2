@@ -49,14 +49,14 @@
 /*
  * MarkPrint - call back function for processing marks
  */
-void MarkPrint( char *str ) {
+static void MarkPrint( char *str ) {
     LBStrPrintf( MainLBox, str );
 }
 
 /*
  * SaveExtra - save extra to file
  */
-void SaveExtra( FILE *f )
+static void SaveExtra( FILE *f )
 {
     time_t      tod;
 
@@ -112,7 +112,7 @@ BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 /*
  * QueryEnd - warn the user about the consequences of exitting
  */
-BOOL QueryEnd( HWND owner ) {
+static BOOL QueryEnd( HWND owner ) {
 
     INT_PTR     rc;
 

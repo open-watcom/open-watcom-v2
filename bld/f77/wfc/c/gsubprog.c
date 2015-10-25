@@ -43,23 +43,19 @@
 #include "prmcodes.h"
 #include "cpopt.h"
 #include "wf77aux.h"
+#include "auxlook.h"
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"
 #include "utility.h"
+#include "rstutils.h"
+#include "parmcode.h"
+#include "symtab.h"
+#include "cgmagic.h"
+#include "gstring.h"
+#include "gsubprog.h"
+#include "gflow.h"
 
-extern  label_id        NextLabel(void);
-extern  void            GLabel(label_id);
-extern  void            GStmtAddr(sym_id);
-extern  void            GBranch(label_id);
-extern  sym_id          SymLookup(char *,int);
-extern  char            *STGetName(sym_id,char *);
-extern  sym_id          GTempString(uint);
-extern  void            FreeLabel(label_id);
-extern  PCODE           ParmClass(itnode *);
-extern  aux_info        *AuxLookup(sym_id);
-extern  aux_info        *AuxLookupName(char *,int);
-extern  aux_info        *AuxLookupAdd(char *,int);
 
 extern  aux_info        ProgramInfo;
 
@@ -67,8 +63,6 @@ extern  aux_info        ProgramInfo;
 static  int     DumpArgInfo( itnode *node );
 static  void    SetArgAddrs( void );
 static  void    FinishCALL( itnode *sp );
-void    GNullRetIdx( void );
-
 
 
 void    GBegCall( itnode *itptr ) {

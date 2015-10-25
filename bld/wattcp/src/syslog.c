@@ -34,6 +34,7 @@
 #include "pcbsd.h"
 #include "pcbuf.h"
 #include "syslog2.h"
+#include "syslog.h"
 
 #if defined(USE_BSD_FUNC)
 

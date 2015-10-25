@@ -181,7 +181,7 @@ class TextHeader
 
     Buffer<uint_16> _tabStops;
     Buffer<uint_8>  _tabFlags;
-    size_t          _numStops, _maxStops;
+    uint_16         _numStops, _maxStops;
 
     uint_32 _border;
     uint_16 _spacing[6];

@@ -45,37 +45,27 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "argchk.h"
+#include "compprog.h"
+#include "compstmt.h"
+#include "proctbl.h"
+#include "cpsubpgm.h"
+#include "csutls.h"
+#include "impltab.h"
+#include "symtab.h"
+#include "declare.h"
+#include "cgmagic.h"
+#include "implicit.h"
+#include "rstmgr.h"
+#include "fcodes.h"
+#include "gflow.h"
+#include "gdbginfo.h"
+#include "gsublist.h"
+#include "gsubprog.h"
 
-extern  TYPE            MapTypes( TYPE, uint );
-extern  TYPE            ImplType( char);
-extern  bool            EmptyCSList( void );
-extern  sym_id          LkSym( void );
-extern  sym_id          LkProgram( void );
-extern  sym_id          LkBlkData( void );
-extern  void            FreeLabel( label_id );
-extern  void            FiniSubProg( void );
-extern  void            InitSubProg( void );
-extern  void            GSegLabel( void );
-extern  void            GPgmLabel( void );
-extern  void            GBranch( label_id );
-extern  void            GLabel( label_id );
-extern  void            GWarp( sym_id );
-extern  void            GEpilog( void );
-extern  void            GGotoEpilog( void );
-extern  void            GSPProlog( void );
-extern  void            GEPProlog( void );
-extern  void            GRetIdx( void );
-extern  void            GNullRetIdx( void );
-extern  void            GBlockLabel( void );
-extern  bool            LenSpec( TYPE,uint * );
-extern  label_id        NextLabel( void );
-extern  void            CkDefStmtNo( void );
-extern  bool            InArgList( entry_pt *,sym_id );
-extern  sym_id          STFnShadow( sym_id );
 extern  void            BIStartRBorEP( sym_id );
 extern  void            BIStartBlockData( sym_id );
 extern  void            BIStartSubroutine( void );
-extern  void            GSetSrcLine( void );
 
 /* forward declarations */
 static void CkSubEnd( void );

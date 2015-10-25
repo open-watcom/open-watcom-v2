@@ -127,7 +127,7 @@ static void Scrl( p_gadget gadget, gui_ord scroll_pos, bool scale,
     }
 }
 
-void SetScroll( p_gadget gadget, gui_ord pos )
+static void SetScroll( p_gadget gadget, gui_ord pos )
 {
    GUIScroll( (int)pos - gadget->pos, gadget );
 }

@@ -36,6 +36,7 @@
 #include "global.h"
 #include "wf77defs.h"
 #include "wf77aux.h"
+#include "auxlook.h"
 #include "fcgbls.h"
 #include "ecflags.h"
 #include "segsw.h"
@@ -50,6 +51,17 @@
 #include "fctypes.h"
 #include "cspawn.h"
 #include "stdio.h"
+#include "cbsize.h"
+#include "rstutils.h"
+#include "blips.h"
+#include "filescan.h"
+#include "rststruc.h"
+#include "errinit.h"
+#include "fcsyms.h"
+#include "forcstat.h"
+#include "rstmgr.h"
+#include "wf77info.h"
+#include "fcstack.h"
 
 #include "langenvd.h"
 #if _CPU == 386 || _CPU == 8086
@@ -75,20 +87,7 @@
 
 
 extern  int             MakeName(char *,char *,char *);
-extern  char            *SDExtn(char *,char *);
-extern  char            *SDFName(char *);
-extern  char            *STGetName(sym_id,char *);
-extern  char            *STExtractName(sym_id,char *);
 extern  intstar4        GetComBlkSize(sym_id);
-extern  aux_info        *AuxLookup(sym_id);
-extern  void            SendBlip(void);
-extern  void            SendStd(char *);
-extern  char            *STFieldName(sym_id,char *);
-extern  char            *ErrorInitializer(void);
-extern  bool            ForceStatic(unsigned_16);
-extern  sym_id          FindArgShadow(sym_id);
-extern  sym_id          STEqSetShadow(sym_id);
-extern  char *          StackBuffer(int *);
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
@@ -134,11 +133,6 @@ static  char * DBGNames[] = {
     #undef ONLY_BASE_TYPES
 };
 
-
-extern  sym_id                  STShadow(sym_id);
-extern  sym_id                  FindShadow(sym_id);
-extern  sym_id                  FindEqSetShadow(sym_id);
-extern  uint                    SymAlign(sym_id);
 
 /* Forward declarations */
 static  void    SegBytes( unsigned_32 size );

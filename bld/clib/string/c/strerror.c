@@ -293,10 +293,10 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_strerror,_wcserror)( const CHAR_TYPE *strErrMsg )
     if( strErrMsg != NULL ) {
         __F_NAME(strncpy,wcsncpy)( ERROR_MSG, strErrMsg, 94 );
         ERROR_MSG[94] = NULLCHAR;    // just in case more than 94
-        __F_NAME(strcat,wcscat)( ERROR_MSG, STRING(": ") );
+        __F_NAME(strcat,wcscat)( ERROR_MSG, STRING( ": " ) );
     }
     __F_NAME(strcat,wcscat)( ERROR_MSG, __F_NAME(strerror,wcserror)( errnum ) );
-    __F_NAME(strcat,wcscat)( ERROR_MSG, STRING("\n") );
+    __F_NAME(strcat,wcscat)( ERROR_MSG, STRING( "\n" ) );
     return( ERROR_MSG );
 }
 

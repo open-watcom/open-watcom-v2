@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#define static
+//#define static
 
 #include <string.h>
 #include <ctype.h>
@@ -246,7 +246,7 @@ _DBG_IPX(("RemoteDisco\r\n"));
     }
 }
 
-void ServRespESR( void )
+static void ServRespESR( void )
 {
     if( Completed( ServECB ) && !InUse( RespECB )
      && (ServHead.length == _SWAPINT( sizeof( IPXHeader ) )
@@ -324,7 +324,7 @@ static char InitServer( void )
 }
 
 
-int ASCIIZToLenStr( char *lstr, char *string )
+static int ASCIIZToLenStr( char *lstr, char *string )
 {
    int i;
 
@@ -335,7 +335,7 @@ int ASCIIZToLenStr( char *lstr, char *string )
     return( ( i == 255 ) && ( string[ 255 ] != 0 ) );
 }
 
-LONG ReadPropertyValue( char *objectName,
+static LONG ReadPropertyValue( char *objectName,
                         WORD objectType,
                         char *propertyName,
                         int  segmentNumber,

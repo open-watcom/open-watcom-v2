@@ -174,7 +174,7 @@ void EraseLog( void );
 void MakeLog( BOOL );
 
 /* notify.c */
-extern BOOL __export FAR PASCAL NotifyHandler( WORD, DWORD );
+WINEXPORT BOOL CALLBACK NotifyHandler( WORD, DWORD );
 void HandleNotify( WORD, DWORD );
 
 /* stack.c */
@@ -203,7 +203,7 @@ BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 void Death( DWORD msgid, ... );
 
 /* winproc.c */
-extern LONG __export FAR PASCAL WindowProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LONG CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
 
 /* drwatcom.c */
 void Alert( void );
@@ -215,6 +215,7 @@ void ShowDIPStatus( HWND hwnd );
 BOOL LoadTheDips( void );
 void FiniDipMsgs( void );
 BOOL IsDip( HINSTANCE );
+WINEXPORT BOOL CALLBACK ShowDipStatDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /* lognote.c */
 void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  );

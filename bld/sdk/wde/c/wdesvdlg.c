@@ -485,7 +485,7 @@ bool WdeSetMemFlagsText( uint_16 flags, char **text )
     return( TRUE );
 }
 
-bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, char **text )
+static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, char **text )
 {
     int         tlen;
     int         new_tlen;
@@ -598,7 +598,8 @@ bool WdeSetDialogFlagText( unsigned long flags, char **text )
     return( FALSE );
 }
 
-bool WdeSetEXFlagText( uint_32 flags, char **text )
+#if __NT__XX
+static bool WdeSetEXFlagText( uint_32 flags, char **text )
 {
     uint_32 mask;
 
@@ -647,6 +648,7 @@ bool WdeSetEXFlagText( uint_32 flags, char **text )
 
     return( FALSE );
 }
+#endif
 
 bool WdeSetControlFlagText( uint_8 class, unsigned long flags, char **text )
 {
@@ -721,7 +723,7 @@ bool WdeSetControlFlagText( uint_8 class, unsigned long flags, char **text )
     return( ok );
 }
 
-bool WdeSetCommControlFlagText( char *control_class, unsigned long flags, char **text )
+static bool WdeSetCommControlFlagText( char *control_class, unsigned long flags, char **text )
 {
     bool        ok;
 
@@ -1146,7 +1148,7 @@ char *WdeConstructDLGInclude( WdeResInfo *rinfo )
 
     return( include );
 }
-
+#if 0
 void WdeWriteDLGInclude( WdeResInfo *rinfo, FILE *fp )
 {
     char        *include;
@@ -1167,7 +1169,7 @@ void WdeWriteDLGInclude( WdeResInfo *rinfo, FILE *fp )
 
     WRMemFree( include );
 }
-
+#endif
 bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 {
     bool                ok;

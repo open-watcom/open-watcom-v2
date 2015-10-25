@@ -992,7 +992,7 @@ static void freeCostlyInfo( void ) {
 /*
  * DoCostlyRefresh
  */
-void DoCostlyRefresh( void *dum ) {
+static void DoCostlyRefresh( void *dum ) {
 
     dum = dum;
     WaitForSingleObject( costlyWriteMutex, INFINITE );
@@ -1014,7 +1014,7 @@ void RefreshCostlyInfo( void ) {
 /*
  * freeInfo - free all info except costly info and reset pointers to NULL
  */
-void freeInfo( void ) {
+static void freeInfo( void ) {
     if( titleIndex != NULL ) {
         MemFree( titleIndex );
         titleIndex = NULL;

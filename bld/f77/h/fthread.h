@@ -55,6 +55,7 @@ extern  unsigned        __FThreadDataOffset;
 extern  void            __FiniFThreadProcessing( void );
 extern  int             __InitFThreadProcessing( void );
 extern  void            __InitFThreadData( fthread_data * );
+extern  void            __InitMultiThreadIO( void );
 
 #endif
 

@@ -45,16 +45,15 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "arutls.h"
+#include "dsname.h"
+#include "rststruc.h"
+#include "symtab.h"
+#include "rstmgr.h"
 
 #include <string.h>
 
 extern  void            BIOutSymbol( sym_id ste_ptr );
-extern  void            ScanExpr( void );
-extern  void            AdvError(int);
-extern  sym_id          LkSym( void );
-extern  sym_id          LkField(sym_id);
-extern  sym_id          FindShadow(sym_id);
-extern  sym_id          FindStruct(char *,int);
 
 /* Forward declarations */
 static  void    CkFieldNoList( void );
@@ -66,7 +65,6 @@ static  void    SetTypeUsage( unsigned_16 type_usage );
 static  void    ScanningFunction( void );
 static  void    SubProg( void );
 static  void    CkIntrinsic( void );
-void             CkTypeDeclared( void );
 
 
 

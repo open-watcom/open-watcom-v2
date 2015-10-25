@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include "stdwin.h"
+#include "dbgrmsg.h"
 
 /*
  * hardModeDebugState

@@ -160,8 +160,10 @@ const char *RemoteLink( const char *parms, bool server )
         parms = DefLinkName;
     i = 0;
     for( ;; ) {
-        if( i >= sizeof( LinkName ) ) break;
-        if( *parms == '\0' ) break;
+        if( i >= sizeof( LinkName ) )
+            break;
+        if( *parms == '\0' )
+            break;
         LinkName[i++] = *parms++;
     }
     LinkName[i] = '\0';

@@ -31,7 +31,7 @@
 extern  void    (*FmtRealRtn)(char *,single *);
 extern  void    (*FmtDoubleRtn)(char *,double *);
 extern  void    (*FmtExtendedRtn)(char *,extended *);
-extern  void    (*SendStrRtn)(char PGM *,int);
+extern  void    (*SendStrRtn)(char PGM *,uint);
 extern  bool    (*UndefRealRtn)(single *);
 extern  bool    (*UndefDoubleRtn)(double *);
 extern  bool    (*UndefExtendedRtn)(extended *);

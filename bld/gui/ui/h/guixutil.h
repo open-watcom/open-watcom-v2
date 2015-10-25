@@ -33,15 +33,18 @@
 #ifndef _GUIXUTIL_H_
 #define _GUIXUTIL_H_
 
+extern bool GUISetupStruct( gui_window *, gui_create_info *, bool dialog );
+extern EVENT GUIWndGetEvent( VSCREEN * );
+
 extern void GUISetUseWnd( gui_window * );
 extern bool GUIPtInRect( SAREA *, ORD, ORD );
 extern bool GUIOverlap( SAREA *one, SAREA *two );
 extern bool GUISetArea( SAREA *, gui_rect *, gui_window *, bool check_min, bool adjust );
 extern bool GUISetDialogArea( gui_window *wnd, SAREA *area, gui_rect *ect, SAREA *parent );
 extern bool GUIIsOpen( gui_window * );
-extern char *GUIMakeEditCopy( char * buffer, int length );
-extern void GUIRedrawTitle( gui_window * wnd );
-extern void GUIMakeRelative( gui_window *wnd, gui_coord * point, gui_point *pt );
+extern char *GUIMakeEditCopy( char *buffer, int length );
+extern void GUIRedrawTitle( gui_window *wnd );
+extern void GUIMakeRelative( gui_window *wnd, gui_point *point, gui_point *pt );
 extern bool GUIJustSetWindowText( gui_window *wnd, const char *title );
 extern bool GUIInArea( ORD row, ORD col, SAREA *area );
 extern void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use );
@@ -51,4 +54,5 @@ extern bool GUISetCursor( gui_window *wnd );
 extern void GUIAdjustDialogArea( SAREA *area, int mult );
 extern void GUIGetSAREA( gui_window *wnd, SAREA *area );
 extern void GUIGetClientSAREA( gui_window *wnd, SAREA *sarea );
+
 #endif // _GUIXUTIL_H_

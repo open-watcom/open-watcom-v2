@@ -33,7 +33,6 @@
 #include "guiwinlp.h"
 #include "guixutil.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 int GUIWinMessageLoop( void )
 {

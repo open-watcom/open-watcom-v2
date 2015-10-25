@@ -268,7 +268,7 @@ static void ClearThreadBreak( struct TDebugThread *obj )
     obj->FHasBreak = FALSE;
 }
 
-int GetThreadMemoryModel( struct TDebugThread *obj )
+static int GetThreadMemoryModel( struct TDebugThread *obj )
 {
     int limit;
     int bitness;
@@ -1111,10 +1111,12 @@ int GetNextModule( struct TDebug *obj, int ModuleHandle )
         return 0;
 }
 
+#if 0
 int GetMemoryModel( struct TDebug *obj )
 {
     return obj->FMemoryModel;
 }
+#endif
 
 struct TDebugThread *LockThread( struct TDebug *obj, int ThreadID )
 {
@@ -1152,6 +1154,7 @@ void UnlockModule( struct TDebug *obj )
     RdosLeaveSection( obj->FSection );
 }
 
+#if 0
 int HasModule( struct TDebug *obj, const char *Name )
 {
     struct TDebugModule *m;
@@ -1170,8 +1173,9 @@ int HasModule( struct TDebug *obj, const char *Name )
 
     return found;
 }
+#endif
 
-void UpdateModules( struct TDebug *obj )
+static void UpdateModules( struct TDebug *obj )
 {
     struct TDebugModule *m;
     int model;
@@ -1196,6 +1200,7 @@ void UpdateModules( struct TDebug *obj )
     }
 }
 
+#if 0
 int IsBreak( struct TDebug *obj, int Sel, long Offset )
 {
     struct TDebugBreak *b;
@@ -1239,6 +1244,7 @@ int IsWatch( struct TDebug *obj, int Sel, long Offset )
 
     return ok;
 }
+#endif
 
 void AddBreak( struct TDebug *obj, int Sel, long Offset, int Hw )
 {
@@ -1364,7 +1370,7 @@ void ClearWatch( struct TDebug *obj, int Sel, long Offset, int Size )
     RdosLeaveSection( obj->FSection );
 }
 
-void DoTrace( struct TDebug *obj )
+static void DoTrace( struct TDebug *obj )
 {
     if ( ( obj->CurrentThread->Cs & 0x3 ) == 0x3 ) {
         SetupTrace( obj->CurrentThread );
@@ -1376,7 +1382,7 @@ void DoTrace( struct TDebug *obj )
     }
 }
 
-void DoGo( struct TDebug *obj )
+static void DoGo( struct TDebug *obj )
 {
     if ( ( obj->CurrentThread->Cs & 0x3 ) == 0x3 ) {
         SetupGo( obj->CurrentThread );
@@ -1608,7 +1614,7 @@ static void HandleFreeDll( struct TDebug *obj, int module )
     RemoveModule( obj, module );
 }
 
-void HandleKernelException( struct TDebug *obj, struct TKernelExceptionEvent *event, int thread )
+static void HandleKernelException( struct TDebug *obj, struct TKernelExceptionEvent *event, int thread )
 {
     struct TDebugThread *Thread;
 

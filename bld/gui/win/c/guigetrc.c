@@ -65,8 +65,7 @@ gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
     pos = *in_pos;
     GUIScaleToScreenRPt( &pos );
     width = pos.x / MAXXCHAR( GUItm );
-    while( ( width < strlen( text ) ) &&
-           ( GUIGetTextExtentX( wnd, text, width ) <= pos.x ) ) {
+    while( ( width < strlen( text ) ) && ( GUIGetTextExtentX( wnd, text, width ) <= pos.x ) ) {
         width++ ;
     }
     if( got_new ) {

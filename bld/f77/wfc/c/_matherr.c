@@ -34,10 +34,18 @@
 // _MATHERR     : math error handler
 //
 
-#include "ftnstd.h"
+#include <math.h>
 
-
-void    _matherr( void ) {
+#ifdef _MSC_VER
+int __cdecl _matherr( struct _exception *p ) {
 //==================
-
+    p = p;
+    return( 0 );
 }
+#else
+double _matherr( struct _exception *p ) {
+//==================
+    p = p;
+    return( 0.0 );
+}
+#endif

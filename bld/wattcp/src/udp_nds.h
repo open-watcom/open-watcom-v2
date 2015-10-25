@@ -8,4 +8,6 @@ extern int   priv_addr(DWORD ip);
 
 extern int   isaddr_dotless (const char *text, DWORD *ip);
 
+extern DWORD aton_dotless (const char *str);
+
 #endif

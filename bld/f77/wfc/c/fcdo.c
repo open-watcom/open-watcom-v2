@@ -41,14 +41,11 @@
 #include "symbol.h"
 #include "emitobj.h"
 #include "fctypes.h"
+#include "fcjmptab.h"
+#include "fcflow.h"
+#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-
-
-extern  cg_name         GetTypedValue(void);
-extern  cg_name         SymValue(sym_id);
-extern  cg_name         SymAddr(sym_id);
-extern  label_handle    GetLabel(label_id);
 
 
 void    FCDoBegin( void ) {

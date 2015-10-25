@@ -32,6 +32,7 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcgbls.h"
+#include "wf77cg.h"
 #include "wf77defs.h"
 #include "cg.h"
 #include "tmpdefs.h"
@@ -40,31 +41,25 @@
 #include "fltcnv.h"
 #include "emitobj.h"
 #include "fctypes.h"
+#include "fcstring.h"
+#include "fcstruct.h"
+#include "fcsyms.h"
+#include "fccmplx.h"
+#include "fccall.h"
+#include "forcstat.h"
+#include "cbsize.h"
+#include "cnvd2s.h"
+#include "tcmplx.h"
+#include "fcjmptab.h"
+#include "fcstack.h"
+#include "rstmgr.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 
 extern  pointer         ConstBack(sym_id);
-extern  void            CnvS2S(float *,char *);
-extern  void            CnvD2S(double *,char *);
-extern  void            CnvX2S(extended *,char *);
-extern  cg_name         StructRef(cg_name,int);
 extern  segment_id      GetGlobalSeg(unsigned_32);
-extern  bool            TypeCmplx(TYPE);
-extern  intstar4        GetComBlkSize(sym_id);
 extern  seg_offset      GetComOffset(unsigned_32);
-extern  cg_name         SCBPointer(cg_name);
-extern  void            CmplxAssign(sym_id,cg_type,cg_type);
-extern  void            PushCmplxConst(sym_id);
-extern  void            PushComplex(sym_id);
-extern  void            Cmplx2Scalar( void );
-extern  cg_type         CmplxBaseType(cg_type);
-extern  cg_name         VarAltSCB(sym_id);
-extern  cg_name         SubAltSCB(sym_id);
-extern  bool            SCBRequired(sym_id);
-extern  sym_id          FindEqSetShadow(sym_id);
-extern  sym_id          FindArgShadow(sym_id);
-extern  bool            ForceStatic(unsigned_16);
 
 
 void    InitStack( void ) {

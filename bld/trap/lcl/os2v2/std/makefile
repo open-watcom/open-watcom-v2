@@ -28,7 +28,7 @@ extra_objs =          &
         core.obj
 
 extra_linker = &
-        exp TellHandles_.4,TellHardMode_.5             &
+        exp TrapTellHandles_.4,TrapTellHardMode_.5     &
         imp _TempStack wdsplice, DoReadWord_ wdsplice  &
         imp DoWriteWord_ wdsplice, DoClose_ wdsplice   &
         imp DoOpen_ wdsplice, DoWritePgmScrn_ wdsplice &

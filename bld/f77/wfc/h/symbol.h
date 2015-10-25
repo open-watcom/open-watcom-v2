@@ -64,7 +64,7 @@ typedef back_handle     obj_addr;              // back handle
 
 typedef unsigned_32     db_handle;
 
-#include "struct.h"
+#include "structin.h"
 #include "namelist.h"
 
 // symbol table information for variables:

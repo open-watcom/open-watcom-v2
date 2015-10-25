@@ -36,11 +36,14 @@
 #if defined(__WATCOMC__)
     #include <process.h>
 #endif
-#if defined(__AXP__) && defined(__NT__)
-    #include <windows.h>
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+  #include <windows.h>
+#elif defined( __OS2__ )
+  #include <os2.h>
 #endif
 #include "banner.h"
-#include "trpimp.h"
+#include "trptypes.h"
+#include "trpld.h"
 #include "trperr.h"
 #include "packet.h"
 #include "servname.h"
@@ -66,7 +69,7 @@ void ServMessage( const char *msg )
     ServError( msg );
 }
 
-void Initialize( void )
+static void Initialize( void )
 {
 
     const char  *err;
@@ -89,7 +92,7 @@ void Initialize( void )
     }
 }
 
-void OpeningStatement( void )
+static void OpeningStatement( void )
 {
 #if defined( VERSION_ON_EXTRA_LINE )
     Output( banner1w1( SERVNAME ) "\r\n" );

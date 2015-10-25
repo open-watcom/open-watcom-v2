@@ -98,7 +98,7 @@ extern ZoomConfigInfo   ConfigInfo;
 extern char             *AppName;
 
 /* zmproc.c */
-WINEXPORT extern LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT LRESULT CALLBACK ZOOMMainWndProc( HWND, UINT, WPARAM, LPARAM );
 extern void DoAutoRefresh( HWND mainhwnd, BOOL on );
 
 /* zmscreen.c */
@@ -112,3 +112,4 @@ extern void FiniScreenBitmap( ScreenBitmap *info );
 extern void LoadConfig( void );
 extern void SaveConfig( void );
 extern void DoConfig( HWND hwnd );
+WINEXPORT BOOL CALLBACK ConfigDlgProc( HWND, UINT, WPARAM, LPARAM );

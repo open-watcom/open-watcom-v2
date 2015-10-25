@@ -45,3 +45,5 @@
 #define STRETCH_ROTATE              111
 #define CLIP_ROTATE                 112
 #define LEAVE_AREA                  113
+
+WINEXPORT WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );

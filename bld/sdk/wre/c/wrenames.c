@@ -134,7 +134,7 @@ char *WREGetResName( WResResNode *rnode, uint_16 type )
     return( WRGetResName( rnode, type ) );
 }
 
-bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
+static bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
 {
     char                *text;
     WRETypeName         *tn;

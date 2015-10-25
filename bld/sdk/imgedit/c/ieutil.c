@@ -34,6 +34,8 @@
 #include "iconinfo.h"
 #include "iemem.h"
 
+WINEXPORT BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam );
+
 static WPI_POINT        *windowCoords;
 static int              windowIndex;    // used to figure out window coordinates
 #ifdef __OS2_PM__
@@ -165,7 +167,7 @@ HBITMAP DuplicateBitmap( HBITMAP hbitmap )
 /*
  * IEStretchBlt
  */
-BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
+static BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
                                      int nWidthDest, int nHeightDest,
                    WPI_PRES hdcSrc, int nXOriginSrc, int nYOriginSrc,
                                     int nWidthSrc, int nHeightSrc,
@@ -493,7 +495,7 @@ void GrayEditOptions( void )
 /*
  * GetPosProc - get the position of all the child windows
  */
-BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
+WINEXPORT BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
 {
     WPI_RECT    windowrect;
     WPI_POINT   topleft;        // this ends up being bottom left for PM

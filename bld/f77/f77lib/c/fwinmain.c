@@ -32,6 +32,9 @@
 #include <stdlib.h>
 #ifdef __WINDOWS__
   #include <win386.h>
+  #ifdef SetForm
+    #undef SetForm
+  #endif
 #elif defined( __NT__ )
   // The mechanism used for mangling the runtime library conflicts with the
   // NT header files on one definition.  This should be avoided.
@@ -45,12 +48,12 @@
 #include "rtenv.h"
 #include "rundat.h"
 #include "errcod.h"
+#include "spawn.h"
 
 
 // Leave this forward declaration to avoid polluting "ftextfun.h"
 // with Windows headers just for one function
-
-extern  intstar4        FWINMAIN(HANDLE,HANDLE,LPSTR,int);
+#include "fmain.h"
 
 static  int             RetCode;
 static  HANDLE          PrevHandle;
@@ -66,7 +69,7 @@ static  void    CallFWINMAIN( void ) {
 }
 
 
-int     PASCAL  WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
+int PASCAL WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
                          int cmdshow ) {
 //===========================================================================
 

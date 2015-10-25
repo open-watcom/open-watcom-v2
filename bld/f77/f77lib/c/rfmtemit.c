@@ -41,7 +41,7 @@ void    R_FEmInit( void ) {
 
 }
 
-void    CheckHole( uint size ) {
+static void    CheckHole( uint size ) {
 //==============================
 
     if( IOCB->fmtlen < size ) {

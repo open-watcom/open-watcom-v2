@@ -37,10 +37,10 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
-
-extern  void            AdvError(int);
-extern  sym_id          LkSym(void);
-extern  void            GetFunctionShadow(void);
+#include "arutls.h"
+#include "dsname.h"
+#include "recog.h"
+#include "symtab.h"
 
 // Routines with names 'Rec...' attempt to recognize '...',
 //   returning true if found, else false

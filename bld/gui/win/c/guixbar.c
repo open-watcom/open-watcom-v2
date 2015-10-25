@@ -38,7 +38,7 @@
 #define SHADOW_OFFSET   3
 #define BAR_INSET       2
 
-bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
+static bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
                     bool selected, bool full_bar )
 {
     WPI_RECT    wnd_rect;
@@ -107,7 +107,7 @@ bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     return( true );
 }
 
-bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
+static bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
                     bool selected )
 {
     WPI_RECT    bar_rect;

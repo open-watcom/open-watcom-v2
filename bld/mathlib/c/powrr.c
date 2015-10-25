@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "mathlib.h"
+#include "ifprag.h"
 
 
 _WMRTLINK double _IF_PowRR( double base, double power )

@@ -1,4 +1,4 @@
-@echo off
+rem @echo off
 REM Script to build the Open Watcom tools
 set OWBUILDER_BOOTX_OUTPUT=%OWROOT%\bootx.log
 set NUL=NUL

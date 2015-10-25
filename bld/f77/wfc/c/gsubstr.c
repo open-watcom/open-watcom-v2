@@ -40,15 +40,17 @@
 #include "fcodes.h"
 #include "stmtsw.h"
 #include "emitobj.h"
+#include "gstring.h"
+#include "gsubstr.h"
 
-extern  sym_id          GTempString(uint);
 
 
-void    GBegSSStr( void ) {
-//===================
+void    GBegSSStr( itnode *func_node ) {
+//======================================
 
 // Start a substring operation on an array element.
 
+    func_node = func_node;
 }
 
 

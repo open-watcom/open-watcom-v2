@@ -43,11 +43,10 @@
 #include "rtdata.h"
 #include "rterrno.h"
 #include "iomode.h"
+#include "openflgs.h"
 #include "streamio.h"
 #include "thread.h"
 
-
-extern int      __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *, int * );
 
 
 #ifndef __NETWARE__

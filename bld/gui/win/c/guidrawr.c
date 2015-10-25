@@ -35,7 +35,6 @@
 #include "guicolor.h"
 #include "guixutil.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
                       bool fill, bool outline )
@@ -171,6 +170,10 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     case GUI_PEN_DASHDOTDOT :
         coord.x = 1;
         win_style = PS_DASHDOTDOT;
+        break;
+    default:
+        coord.x = 0;
+        win_style = 0;
         break;
     }
     pen = _wpi_createpen( win_style, coord.x, colour );

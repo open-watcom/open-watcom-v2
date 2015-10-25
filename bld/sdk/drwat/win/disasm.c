@@ -79,7 +79,7 @@ static int LongToHex( char *str, DWORD value, int len )
 /*
  * ConvertAddress - convert a address into a string
  */
-char * ConvertAddress( ADDRESS *addr, char *buff, int blen, int neartest )
+static char * ConvertAddress( ADDRESS *addr, char *buff, int blen, int neartest )
 {
     int         len;
     char        off[20];
@@ -125,7 +125,7 @@ char * ConvertAddress( ADDRESS *addr, char *buff, int blen, int neartest )
 /*
  * DrWatJmpLabel -- process a label
  */
-char *DrWatJmpLabel( DWORD offset, DWORD off )
+static char *DrWatJmpLabel( DWORD offset, DWORD off )
 {
     ADDRESS     addr;
 
@@ -141,7 +141,7 @@ char *DrWatJmpLabel( DWORD offset, DWORD off )
 /*
  * DrWatToStr -- convert integer to hex string
  */
-char *DrWatToStr( DWORD value, WORD length, DWORD off )
+static char *DrWatToStr( DWORD value, WORD length, DWORD off )
 {
 
     off = off;
@@ -156,7 +156,7 @@ char *DrWatToStr( DWORD value, WORD length, DWORD off )
 /*
  * DrWatToIndex -- convert to index
  */
-char *DrWatToIndex( unsigned long value, DWORD off )
+static char *DrWatToIndex( unsigned long value, DWORD off )
 {
 
     off = off;
@@ -173,7 +173,7 @@ char *DrWatToIndex( unsigned long value, DWORD off )
 /*
  * DrWatToBrStr -- convert to branch string
  */
-char *DrWatToBrStr( DWORD value, DWORD  off )
+static char *DrWatToBrStr( DWORD value, DWORD  off )
 {
     int  len;
 
@@ -191,7 +191,7 @@ char *DrWatToBrStr( DWORD value, DWORD  off )
 /*
  * DrWatToSegStr -- convert to segment string
  */
-char *DrWatToSegStr( DWORD value, WORD seg, DWORD off )
+static char *DrWatToSegStr( DWORD value, WORD seg, DWORD off )
 {
     ADDRESS     addr;
     off = off;
@@ -216,7 +216,7 @@ char *DrWatToSegStr( DWORD value, WORD seg, DWORD off )
  *    DrWatEndOfSegment  ; at end of segment ?
  */
 #ifdef __NT__
-short DrWatGetNextByte( void )
+static short DrWatGetNextByte( void )
 {
     char        byte;
 
@@ -225,7 +225,7 @@ short DrWatGetNextByte( void )
     return( UNREADABLE );
 } /* DrWatGetNextByte */
 
-short DrWatGetDataByte( void )
+static short DrWatGetDataByte( void )
 {
     char        byte;
 
@@ -236,8 +236,8 @@ short DrWatGetDataByte( void )
     }
     return( UNREADABLE );
 } /* DrWatGetDataByte */
-
-short DrWatGetNextWord( void )
+#if 0
+static short DrWatGetNextWord( void )
 {
     WORD        word;
 
@@ -248,8 +248,8 @@ short DrWatGetNextWord( void )
     return( UNREADABLE );
 
 } /* DrWatGetNextWord */
-
-short DrWatGetDataWord( void )
+#endif
+static short DrWatGetDataWord( void )
 {
     WORD        word;
 
@@ -261,8 +261,8 @@ short DrWatGetDataWord( void )
     return( UNREADABLE );
 
 } /* DrWatGetDataWord */
-
-long DrWatGetNextLong( void )
+#if 0
+static long DrWatGetNextLong( void )
 {
     DWORD       dword;
 
@@ -272,8 +272,8 @@ long DrWatGetNextLong( void )
     }
     return( UNREADABLE );
 } /* DrWatGetNextLong */
-
-long DrWatGetDataLong( void )
+#endif
+static long DrWatGetDataLong( void )
 {
     DWORD       dword;
 
@@ -285,7 +285,7 @@ long DrWatGetDataLong( void )
     return( UNREADABLE );
 } /* DrWatGetDataLong */
 
-char DrWatEndOfSegment( void )
+static char DrWatEndOfSegment( void )
 {
     char        byte;
 
@@ -338,7 +338,7 @@ RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
 }
 #else
 
-short DrWatGetNextByte( void )
+static short DrWatGetNextByte( void )
 {
     char        byte;
 
@@ -347,7 +347,7 @@ short DrWatGetNextByte( void )
 
 } /* DrWatGetNextByte */
 
-short DrWatGetDataByte( void )
+static short DrWatGetDataByte( void )
 {
     char        byte;
 
@@ -356,8 +356,8 @@ short DrWatGetDataByte( void )
     return( byte );
 
 } /* DrWatGetDataByte */
-
-short DrWatGetNextWord( void )
+#if 0
+static short DrWatGetNextWord( void )
 {
     WORD        word;
 
@@ -365,8 +365,8 @@ short DrWatGetNextWord( void )
     return( word );
 
 } /* DrWatGetNextWord */
-
-short DrWatGetDataWord( void )
+#endif
+static short DrWatGetDataWord( void )
 {
     WORD        word;
 
@@ -375,16 +375,16 @@ short DrWatGetDataWord( void )
     return( word );
 
 } /* DrWatGetDataWord */
-
-long DrWatGetNextLong( void )
+#if 0
+static long DrWatGetNextLong( void )
 {
     DWORD       dword;
 
     ReadMem( currentAddr.seg, currentAddr.offset, (LPSTR) &dword, 4 );
     return( dword );
 } /* DrWatGetNextLong */
-
-long DrWatGetDataLong( void )
+#endif
+static long DrWatGetDataLong( void )
 {
     DWORD       dword;
 
@@ -394,7 +394,7 @@ long DrWatGetDataLong( void )
 
 } /* DrWatGetDataLong */
 
-char DrWatEndOfSegment( void )
+static char DrWatEndOfSegment( void )
 {
 
     if( !IsValidSelector( currentAddr.seg ) ) {
@@ -408,20 +408,20 @@ char DrWatEndOfSegment( void )
 } /* DrWatEndOfSegment */
 #endif
 
-DWORD DrWatGetOffset( void )
+static DWORD DrWatGetOffset( void )
 {
     return( currentAddr.offset );
 
 } /* DrWatGetOffset */
 
-char *DrWatGetWtkInsName( unsigned ins ) {
+static char *DrWatGetWtkInsName( unsigned ins ) {
     ins = ins; return( "" );
 }
 
-void DrWatDoWtk( void ) {
+static void DrWatDoWtk( void ) {
 }
 
-int DrWatIsWtk() {
+static int DrWatIsWtk() {
     return( 0 );
 }
 
@@ -484,7 +484,7 @@ static void DisAsm( instruction *ins )
 /*
  * GetInsSize -- get the size of an instruction
  */
-unsigned GetInsSize( ADDRESS *addr )
+static unsigned GetInsSize( ADDRESS *addr )
 {
     instruction ins;
 

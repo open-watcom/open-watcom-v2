@@ -34,7 +34,7 @@
 
 typedef void _WCI86FAR thread_fn( void _WCI86FAR * );
 
-#if defined(_M_IX86)
+#if defined( _M_IX86 )
     #include "extfunc.h"
     #pragma aux (__outside_CLIB) thread_fn;
 #endif
@@ -73,6 +73,6 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif  // !defined( _M_I86 )
 
 #endif

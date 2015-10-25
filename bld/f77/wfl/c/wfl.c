@@ -59,6 +59,7 @@
 
 #include "clibext.h"
 #include "pathgrp.h"
+#include "inout.h"
 
 
 #if _CPU == 8086
@@ -205,7 +206,7 @@ static  void    PrintMsg( uint msg, ... ) {
 }
 
 
-static  void    PrtBanner( void ) {
+static  void    WflPrtBanner( void ) {
 //===========================
 
 #if defined( _BETAVER )
@@ -309,7 +310,7 @@ void    main( int argc, char *argv[] ) {
             rc = Parse( argc, argv );
             if( rc == 0 ) {
                 if( !Flags.quiet ) {
-                    PrtBanner();
+                    WflPrtBanner();
                 }
                 rc = CompLink();
             }
@@ -595,7 +596,7 @@ static DIR  *wildparent = NULL;  /* we need this across invocations */
 static char *wildpath = NULL;
 static char *wildpattern = NULL;
 
-void DoWildCardClose( void )
+static void DoWildCardClose( void )
 /*********************************/
 {
     if( wildpath != NULL ) {
@@ -612,7 +613,7 @@ void DoWildCardClose( void )
     }
 }
 
-const char *DoWildCard( const char *base )
+static const char *DoWildCard( const char *base )
 /***********************************************/
 {
     PGROUP          pg;
@@ -953,7 +954,7 @@ static  void    Usage( void ) {
 
     char        buff[LIST_BUFF_SIZE+1];
 
-    PrtBanner();
+    WflPrtBanner();
     puts( "" );
     MsgBuffer( CL_USAGE_LINE, buff );
     puts( buff );

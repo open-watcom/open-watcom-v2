@@ -62,4 +62,6 @@
 
 #endif
 
+#include "winexprt.h"
+
 #endif /* WOS2_H_INCLUDED */

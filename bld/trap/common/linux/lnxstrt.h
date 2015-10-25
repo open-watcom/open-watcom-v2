@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if !defined( BUILTIN_TRAP_FILE )
+#if !defined( __WATCOMC__ ) && !defined( BUILTIN_TRAP_FILE )
 extern void *_nmalloc( unsigned size );
 extern void *_nrealloc( void *ptr, unsigned size );
 extern void _nfree( void *ptr );

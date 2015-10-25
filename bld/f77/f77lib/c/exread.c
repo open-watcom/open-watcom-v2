@@ -60,7 +60,7 @@ static  void    ExRead( void ) {
 }
 
 
-int     DoRead( void ) {
+extern int     DoRead( void ) {
 //================
 
     IOCB->iostmt = IO_READ;

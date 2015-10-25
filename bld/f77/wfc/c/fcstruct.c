@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "symbol.h"
 #include "wf77defs.h"
+#include "fcstruct.h"
 #include "cg.h"
 #include "cgswitch.h"
 #include "cgprotos.h"

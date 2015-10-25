@@ -35,14 +35,14 @@
 
 bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
 {
-    gui_coord   coord;
+    gui_point   coord;
     ORD         row;
     ORD         col;
 
     if( uimouseinstalled() ) {
         uivmousepos( NULL, &row, &col );
-        coord.x = (gui_ord)col;
-        coord.y = (gui_ord)row;
+        coord.x = col;
+        coord.y = row;
     } else {
         coord.x = 0;
         coord.y = 0;

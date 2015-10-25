@@ -236,6 +236,10 @@ extern void FAR HandleMessage( LPMSG pmsg );
 /* spymdlgs.c */
 extern void DoMessageDialog( HWND hwnd, WORD wparam );
 extern void DoMessageSelDialog( HWND hwnd );
+extern WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+extern void DoSpyMsgDialog( HWND hwnd, int which );
+extern WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+extern WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* spymisc.c */
 extern void GetHexStr( LPSTR res, DWORD num, size_t padlen );
@@ -267,6 +271,7 @@ extern void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits );
 extern void FrameAWindow( HWND hwnd );
 extern void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  );
 extern HWND DoPickDialog( WORD );
+extern BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* spyproc.c */
 WINEXPORT extern LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
@@ -277,6 +282,9 @@ extern void ClearSelectedWindows( void );
 extern void AddSelectedWindow( HWND hwnd );
 extern void DoShowSelectedDialog( HWND hwnd, BOOL *spyall );
 extern void ShowFramedInfo( HWND hwnd, HWND framed );
+BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam );
+BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* spytool.c */
 extern void CreateSpyTool( HWND parent );
@@ -285,6 +293,7 @@ extern void SetOnOffTool( spystate ss );
 extern void ResizeSpyTool( WORD width, WORD height );
 extern void ShowSpyTool( BOOL show );
 extern void GetSpyToolRect( RECT *prect );
+extern bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
 
 /* spylog.c */
 extern void SpyLogTitle( FILE *f );

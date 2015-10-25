@@ -162,4 +162,8 @@ void    DumpMemAsm( MemWndInfo *info, int hdl );
 void    RegDisasmRtns( void );
 DWORD   GetInsCnt( MemWndInfo *info, DWORD offset );
 
+WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND, UINT, WPARAM, LPARAM );
+
 #endif /* _MEMWND_H_INCLUDED */

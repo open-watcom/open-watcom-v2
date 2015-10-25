@@ -50,7 +50,7 @@ unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
         switch( field->typ ) {
         case FLD_RADIO :
             radio = field->u.radio;
-            if( radio->group->value == ID2EV( id ) ) {
+            if( (EVENT)radio->group->value == ID2EV( id ) ) {
                 ret = GUI_CHECKED;
             }
             break;
@@ -92,8 +92,8 @@ bool GUISetChecked( gui_window * wnd, gui_ctl_id id, unsigned checked )
         if( checked ) {
             radio->group->value = ID2EV( id );
         } else {
-            if( radio->group->value == ID2EV( id ) ) {
-                radio->group->value = -1;
+            if( (EVENT)radio->group->value == ID2EV( id ) ) {
+                radio->group->value = (unsigned)-1;
             }
         }
         GUIRefreshControl( wnd, prev_radio_id );

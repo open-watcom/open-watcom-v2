@@ -204,3 +204,5 @@ sqrt087__flags=-fpi87
 sqrt387__flags=-fpi87
 tan087__flags=-fpi87
 tan387__flags=-fpi87
+efcvt_flags=-I"$(clib_dir)/h"
+_uefcvt_flags=-I"$(clib_dir)/h"

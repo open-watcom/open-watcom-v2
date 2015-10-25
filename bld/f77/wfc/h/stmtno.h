@@ -30,26 +30,14 @@
 ****************************************************************************/
 
 
-typedef struct stnumbers {
-    label_id            branches;       //  label on branch check routine
-    label_id            formats;        //  label on format check routine
-    bool                wild_goto;      //  true if assigned goto without list
-    bool                var_format;     //  true if variable used for format
-    bool                in_remote;      //  true if currently in REMOTE BLOCK
-    unsigned_16         blk_before;     //  CSHead->block before statement
-} stnumbers;
-
-#define SN_INIT         0x0000
-#define SN_DEFINED      0x0001
-#define SN_FORMAT       0x0002
-#define SN_BAD_BRANCH   0x0004
-#define SN_BRANCHED_TO  0x0008
-#define SN_AFTR_BRANCH  0x0010
-#define SN_ASSIGNED     0x0020
-#define SN_ONLY_DO_TERM 0x0040
-#define SN_IN_REMOTE    0x0080
-#define SN_EXECUTABLE   0x0100
-#define SN_IN_GOTO_LIST 0x0200  // appeared in assigned GOTO list
-#define SN_ADD_65535    0x0400  // add 65535 to statement number
-
-#define SN_INIT_MASK    ~SN_ADD_65535
+//extern intstar4    GetStmtNo( void );
+//extern sym_id      LookUp( unsigned_32 num );
+//extern void        Err( int errcod, sym_id sym_ptr );
+extern sym_id      LkUpStmtNo( void );
+extern sym_id      LkUpFormat( void );
+extern sym_id      FmtPointer( void );
+extern sym_id      LkUpAssign( void );
+extern unsigned_32 LkUpDoTerm( void );
+extern void        DefStmtNo( unsigned_32 num );
+extern void        Update( unsigned_32 num );
+extern void        InitStNumbers( void );

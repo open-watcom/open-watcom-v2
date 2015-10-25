@@ -32,11 +32,10 @@
 #include "auipvt.h"
 #include <stdlib.h>
 #include <string.h>
+#include "wnddlg.h"
 
 #include "clibext.h"
 
-
-extern gui_window *DlgGetParent( void );
 
 extern int DlgGetFileName( open_file_name *ofn )
 {

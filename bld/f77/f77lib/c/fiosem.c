@@ -32,6 +32,7 @@
 #include "ftnstd.h"
 
 #include <stddef.h>
+#include "ftextfun.h"
 
 #if defined( __OS2__ )
 

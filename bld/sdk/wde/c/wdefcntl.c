@@ -186,7 +186,7 @@ static DISPATCH_ITEM WdeControlActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeControlActions ) / sizeof( DISPATCH_ITEM ))
 
-void WdeControlModified ( WdeControlObject *obj )
+static void WdeControlModified ( WdeControlObject *obj )
 {
     if( obj != NULL && obj->parent != NULL && obj->parent != obj->base_obj ) {
         WdeDialogModified( obj->parent );

@@ -40,8 +40,8 @@
 #include "fcgbls.h"
 #include "emitobj.h"
 #include "types.h"
-
-extern  sym_id          STConst(void *,TYPE,uint);
+#include "rstconst.h"
+#include "gdata.h"
 
 
 label_id        GDataProlog( void ) {

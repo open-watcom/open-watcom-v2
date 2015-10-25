@@ -39,6 +39,7 @@
 #include "fio.h"
 
 #include <stddef.h>
+#include "external.h"
 
 extern  int             FlushBuffer(file_handle);
 

@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "rtinit.h"
+#include "setefgfm.h"
 
 #ifdef _M_I86
 unsigned _fltused_ = 1;
@@ -41,7 +42,5 @@ unsigned _fltused_ = 0;
 #if defined(_M_IX86)
   #pragma aux _fltused_ "*";
 #endif
-
-extern void __setEFGfmt( void );
 
 AXI( __setEFGfmt, INIT_PRIORITY_LIBRARY )

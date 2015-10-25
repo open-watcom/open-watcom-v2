@@ -39,6 +39,8 @@
 #include "cioconst.h"
 #include "ferror.h"
 #include "inout.h"
+#include "rstutils.h"
+#include "cmsgproc.h"
 
 #include <stdarg.h>
 #include <string.h>
@@ -64,7 +66,7 @@ static  void    ErrIssued( void ) {
     ProgSw |= PS_ERROR;
 }
 
-static  void    ErrHandler( char *err_type, int error, va_list args ) {
+static  void    errorHandler( char *err_type, int error, va_list args ) {
 // Handle errors ANY time
     int         column;
     int         contline;
@@ -166,7 +168,7 @@ void    Error( int code, ... ) {
     va_list     args;
 
     va_start( args, code );
-    ErrHandler( "*ERR*", code, args );
+    errorHandler( "*ERR*", code, args );
     va_end( args );
     ErrIssued();
 }
@@ -178,7 +180,7 @@ void    Warning( int code, ... ) {
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
     if( ( Options & OPT_WARN ) != 0 ) {
         va_start( args, code );
-        ErrHandler( "*WRN*", code, args );
+        errorHandler( "*WRN*", code, args );
         va_end( args );
     }
     WrnIssued();
@@ -191,7 +193,7 @@ void    Extension( int code, ... ) {
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
     if( ( Options & OPT_EXT ) != 0 ) {
         va_start( args, code );
-        ErrHandler( "*EXT*", code, args );
+        errorHandler( "*EXT*", code, args );
         va_end( args );
     }
     ExtIssued();
@@ -204,6 +206,6 @@ void    InfoError( int code, ... ) {
     NumErrors++;
     ProgSw |= PS_ERROR;
     va_start( args, code );
-    ErrHandler( "*ERR*", code, args );
+    errorHandler( "*ERR*", code, args );
     va_end( args );
 }

@@ -42,6 +42,14 @@
 #include "cg.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
+#include "ftextfun.h"
+#include "substr.h"
+#include "cnvd2s.h"
+#include "rststruc.h"
+#include "fcjmptab.h"
+#include "fcstack.h"
+
+extern  bool            IntType(PTYPE);
 
 // The following are to support a temporary fix so that constants dumped by
 // DATA statements provide the same precision for constants dumped by the code
@@ -55,21 +63,13 @@
 #include "fltcnv.h"
 #include "wf77defs.h"
 #include <string.h>
-extern  void            CnvS2S(float *,char *);
-extern  void            CnvD2S(double *,char *);
-extern  void            CnvX2S(extended *,char *);
 
 extern  void            DtInit(segment_id,seg_offset);
 extern  void            DtBytes(byte *,int);
 extern  void            DtIBytes(byte,int);
 extern  segment_id      GetDataSegId(sym_id);
 extern  seg_offset      GetDataOffset(sym_id);
-extern  void            DXPush(intstar4);
-extern  intstar4        DXPop(void);
-extern  bool            DoSubscript(act_dim_list *,intstar4 *,intstar4 *);
-extern  bool            DoSubstring(intstar4,intstar4,int);
 extern  void            FCodeSequence(void);
-extern  char            *STFieldName(sym_id,char *);
 extern  void            DtStartSequence(void);
 extern  void            DtFiniSequence(void);
 

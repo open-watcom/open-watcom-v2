@@ -132,9 +132,6 @@ char DrawingChars[DRAW_LAST];
 #define LRV_BAR( inact )        GET_CHAR( GUI_LR_VERT_BAR, inact )
 #define LRH_BAR( inact )        GET_CHAR( GUI_LR_HORZ_BAR, inact )
 
-/* includes from guixmain.c */
-extern gui_window *GUICurrWnd;
-
 #define TITLE_EXTRA_AMOUNT      4
 #define GADGET_WIDTH            3
 

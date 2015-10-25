@@ -90,3 +90,6 @@ extern  void            XCCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
 extern  void            XQCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
 extern  void            XXCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
 extern  void            XChCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
+
+extern void    GenExp( TYPE typ );
+extern void    ExpI( TYPE typ, ftn_type *base, intstar4 exponent );

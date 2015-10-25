@@ -35,6 +35,8 @@
 #include "global.h"
 #include "fio.h"
 #include "posio.h"
+#include "blips.h"
+#include "sdcio.h"
 
 #include <string.h>
 
@@ -48,7 +50,6 @@ extern  bool                    EOFile(file_handle);
 extern  int                     Errorf(file_handle);
 extern  char                    *ErrorMsg(file_handle);
 extern  void                    Scratchf(char *);
-extern  void                    CheckBlips(void);
 extern  void                    InitStd(void);
 extern  void                    SetIOBufferSize(uint);
 
@@ -119,20 +120,20 @@ void    SDClose( file_handle fp ) {
 }
 
 
-uint    SDRead( file_handle fp, byte *buff, uint len ) {
+uint    SDRead( file_handle fp, char *buff, uint len ) {
 //======================================================
 
-    return( FGetRec( fp, (char *)buff, len ) );
+    return( FGetRec( fp, buff, len ) );
 }
 
 
-void    SDWrite( file_handle fp, byte *buff, int len ) {
+void    SDWrite( file_handle fp, char *buff, int len ) {
 //======================================================
 
     if( fp == FStdOut ) {
         CheckBlips();
     }
-    FPutRec( fp, (char *)buff, len );
+    FPutRec( fp, buff, len );
 }
 
 

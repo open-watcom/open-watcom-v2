@@ -125,7 +125,6 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
 }
 
 
-extern void     GUISetModalDlgs(bool);
 extern  void    DlgCmd( void )
 {
     char        *cmd;

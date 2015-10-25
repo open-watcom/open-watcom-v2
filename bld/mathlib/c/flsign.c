@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <math.h>
 #include "xfloat.h"
+#include "ldfuncs.h"
 
 
 int __LDSign( long_double *ld )

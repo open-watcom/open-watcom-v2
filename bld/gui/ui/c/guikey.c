@@ -35,12 +35,11 @@
 #include "guixloop.h"
 #include "guixkey.h"
 
-extern gui_window *GUICurrWnd;
 
 bool GUIProcessAltMenuEvent( EVENT ev )
 {
     gui_key     key;
-    gui_coord   point;
+    gui_point   point;
     gui_window  *wnd;
     bool        top;
 

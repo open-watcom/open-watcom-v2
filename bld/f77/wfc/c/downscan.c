@@ -45,13 +45,14 @@
 #include "insert.h"
 #include "utility.h"
 #include "convert.h"
+#include "arutls.h"
+#include "downscan.h"
+#include "dsname.h"
+#include "stmtno.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-extern  void            MoveDown( void );
-extern  void            DSName( void );
-extern  sym_id          LkUpStmtNo( void );
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 extern  int             FmtS2F(char *,int,int,bool,int,int,reallong *,bool,int *,bool);
 

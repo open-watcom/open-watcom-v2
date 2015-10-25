@@ -33,6 +33,8 @@
 #include "imgedit.h"
 #include "ieclrpal.h"
 
+WINEXPORT WPI_DLGRESULT CALLBACK SelColorProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+
 static palette_box      screenColor;
 static palette_box      inverseColor;
 static palette_box      availColor[16];
@@ -113,7 +115,7 @@ static void selectColor( WPI_POINT *pt, HWND hwnd )
 /*
  * SelColorProc - select the color to represent the background
  */
-WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WINEXPORT WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     PAINTSTRUCT         ps;
     WPI_POINT           pt;

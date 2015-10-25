@@ -33,8 +33,6 @@
 #include "guiwind.h"
 #include "guixutil.h"
 
-extern gui_window       *GUICurrWnd;
-extern WPI_INST         GUIMainHInst;
 
 void GUIFlushKeys( void )
 {

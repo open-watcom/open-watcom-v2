@@ -40,6 +40,7 @@
 #include "trcback.h"
 #include "fthread.h"
 #include "thread.h"
+#include "spawn.h"
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
   #define __setjmp      Catch

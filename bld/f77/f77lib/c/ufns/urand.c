@@ -38,6 +38,7 @@
 #include "fmath.h"
 
 #include <stddef.h>
+#include "external.h"
 
 static  intstar4        a = { 2147437301 };
 static  intstar4        m = { -2147483648 };

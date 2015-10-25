@@ -37,8 +37,8 @@
 
 #define CLASS_LENGTH    8
 
-extern  WPI_INST        GUIMainHInst;
 extern  char            GUIClass[];
+extern  GUIENUMPROC     GUIEnumChildWindowsEnumFunc;
 
 typedef struct {
     gui_window          *parent;

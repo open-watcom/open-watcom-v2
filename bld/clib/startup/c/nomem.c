@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "exitwmsg.h"
+#include "nomem.h"
 
 _WCRTLINK void _Not_Enough_Memory( void )
 {

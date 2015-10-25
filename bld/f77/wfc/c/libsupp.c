@@ -43,21 +43,14 @@
 #include "omodes.h"
 #include "inout.h"
 #include "iopath.h"
+#include "mkname.h"
+#include "filescan.h"
+#include "sdcio.h"
+#include "libsupp.h"
 
 #include "clibext.h"
 
-
-extern  void            SDClose(file_handle);
-extern  file_handle     SDOpen(char *,int);
-extern  uint            SDRead(file_handle,char *,uint);
-extern  bool            SDError(file_handle,char *);
-extern  bool            SDEof(file_handle);
-extern  char            *SDSrcExtn(char *);
-extern  int             MakeName(char *,char *,char *);
-extern  int             CopyMaxStr(char *,char *,int);
-
 extern  char            ForExtn[];
-
 
 static  lib_handle FindSrcFile( char *fname ) {
 //=============================================

@@ -114,4 +114,6 @@ void    StatusWndFini( void );
     #define MAX_SECTIONS    20
 #endif
 
+WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+
 #endif /* _STATWND_H_INCLUDED */

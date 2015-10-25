@@ -36,4 +36,3 @@ bool GUIFirstCrack( void )
 {
     return( true );
 }
-

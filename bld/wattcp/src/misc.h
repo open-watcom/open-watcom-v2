@@ -41,6 +41,11 @@ extern BOOL valid_addr(DWORD addr, int len);
   #define watt_largecheck(s,ss,f,l) ((void)0)
 #endif
 
+extern unsigned long _w32_intel (unsigned long val);
+extern unsigned short _w32_intel16 (unsigned short val);
+
+extern int __cdecl ffs (int val);
+
 /*
  * Implemented in timer.c
  */

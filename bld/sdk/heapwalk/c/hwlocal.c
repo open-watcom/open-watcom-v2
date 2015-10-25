@@ -230,7 +230,7 @@ static BOOL AddToLocalHeapList( LOCALENTRY *item, unsigned i ) {
  * SaveLocalListState - save the top item and selected item in the
  *              list box so we can restore them later
  */
-BOOL SaveLocalListState( HWND boxhwnd, LocalStateStruct *info ) {
+static BOOL SaveLocalListState( HWND boxhwnd, LocalStateStruct *info ) {
 
     LRESULT     top, sel;
 

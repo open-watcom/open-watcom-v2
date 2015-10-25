@@ -54,7 +54,7 @@ static int              ModuleTop;
 /*
  * FindLib - find a shared lib entry in the list
  */
-lib_load_info *FindLib( addr_off dynsection )
+static lib_load_info *FindLib( addr_off dynsection )
 {
     unsigned    i;
 
@@ -65,7 +65,7 @@ lib_load_info *FindLib( addr_off dynsection )
     return( NULL );
 }
 
-struct link_map *FindLibInLinkMap( struct link_map *first_lmap, addr_off dyn_base )
+static struct link_map *FindLibInLinkMap( struct link_map *first_lmap, addr_off dyn_base )
 {
     struct link_map     lmap;
     struct link_map     *dbg_lmap;
@@ -100,7 +100,7 @@ void AddProcess( void )
 /*
  * AddLib - a new library has loaded
  */
-void AddLib( struct link_map *lmap )
+static void AddLib( struct link_map *lmap )
 {
     lib_load_info       *lli;
 
@@ -129,7 +129,7 @@ void AddLib( struct link_map *lmap )
     Out( "\n" );
 }
 
-void DelLib( addr_off dynsection )
+static void DelLib( addr_off dynsection )
 {
     unsigned    i;
 

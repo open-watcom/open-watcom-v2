@@ -42,26 +42,17 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "compstmt.h"
+#include "proctbl.h"
+#include "csutls.h"
+#include "symtab.h"
+#include "fcodes.h"
+#include "gflow.h"
+#include "cgmagic.h"
 
 extern void             BIOutSymbol( sym_id ste_ptr );
 extern void             BIStartRBorEP( sym_id ste_ptr );
 extern void             BIEndRBorEP( void );
-extern  label_id        NextLabel( void );
-extern  void            AddCSNode( byte );
-extern  void            DelCSNode( void );
-extern  bool            CheckCSList( byte );
-extern  void            Match( void );
-extern  bool            EmptyCSList( void );
-extern  void            CSExtn( void );
-extern  void            CSNoMore( void );
-extern  sym_id          LkSym( void );
-extern  void            GLabel( label_id );
-extern  void            GBranch( label_id );
-extern  void            GStartBlock( void );
-extern  void            GExecute( void );
-extern  void            GEndBlock( void );
-extern  void            ClearRem( void );
-extern  void            FreeLabel(label_id);
 
 #define RB_FLAGS (SY_USAGE | SY_SUBPROGRAM | SY_REMOTE_BLOCK)
 

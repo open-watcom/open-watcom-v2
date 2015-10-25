@@ -52,6 +52,8 @@
 #pragma off (unreferenced);
 #endif
 
+__declspec(dllexport) unsigned WINAPI _func_name( version_dll_num )( void );
+
 static char VersionStr[] = "Version Verification: "
                             _xstr( DLL_FILE_NAME )
                             " actual version "

@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <math.h>
+#include "mathlib.h"
 #include "ifprag.h"
 
 //      asinh(x) = log( x + sqrt(x*x + 1.0) );

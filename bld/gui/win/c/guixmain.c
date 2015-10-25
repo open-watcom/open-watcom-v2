@@ -31,6 +31,7 @@
 
 
 #include "guiwind.h"
+#include "guixwind.h"
 #include <stdlib.h>
 
 #ifdef __WATCOMC__
@@ -45,8 +46,6 @@ bool    GUIMainTouched = false;
 
 #if defined( __OS2_PM__ )
 
-extern int      GUIXMain( int argc, char *argv[] );
-
 /*
  * main - main entry point for PM
  */
@@ -58,9 +57,6 @@ int main( SHORT sArgc, CHAR *ppArgv[] )
 
 #else
 
-extern int  GUIXMain( int argc, char *argv[],
-                    WPI_INST inst, WPI_INST hPrevInstance, LPSTR lpCmdLine,
-                    int nShowCmd );
 /*
  * WinMain -- main windows message loop
  */

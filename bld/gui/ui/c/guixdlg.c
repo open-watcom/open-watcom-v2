@@ -455,7 +455,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             if( RadioGroup == NULL ) {
                 return( false );
             }
-            RadioGroup->value = -1;
+            RadioGroup->value = (unsigned)-1;
             RadioGroup->caption = GUIStrDup( ctl_info->text, &ok );
             if( !ok ) {
                 CleanUpRadioGroups();

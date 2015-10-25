@@ -169,7 +169,7 @@ static void WndDrawCursor( a_window *wnd, wnd_line_piece *line,
     }
 }
 
-void    WndPaintRows( a_window *wnd, wnd_row start_row, int num )
+static void    WndPaintRows( a_window *wnd, wnd_row start_row, int num )
 {
     wnd_row             row;
     wnd_row             row_to_get;

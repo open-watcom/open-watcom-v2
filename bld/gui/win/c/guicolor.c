@@ -38,7 +38,6 @@
 #include "guiwnclr.h"
 #include "guix.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 static int init_rgb = 0;
 
@@ -92,7 +91,7 @@ WPI_COLOUR GUIColours[] = {
 
 #define NUM_COLOURS ( sizeof( GUIColours ) / sizeof( WPI_COLOUR ) )
 
-void InitSystemRGB( void )
+static void InitSystemRGB( void )
 {
 #ifndef __OS2_PM__
     // All other colours are hardcoded.
@@ -147,7 +146,7 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
     return( false );
 }
 
-void SetBKBrush( gui_window *wnd )
+static void SetBKBrush( gui_window *wnd )
 {
     if (!init_rgb){
         InitSystemRGB();
@@ -176,6 +175,7 @@ static void ChangeBKBrush( gui_window *wnd )
 #endif
 }
 
+#if 0
 void GUICheckBKBrush( gui_window *wnd )
 {
     gui_rgb             rgb;
@@ -187,6 +187,7 @@ void GUICheckBKBrush( gui_window *wnd )
         ChangeBKBrush( wnd );
     }
 }
+#endif
 
 bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {

@@ -54,7 +54,7 @@ static FARPROC  EnumTaskProcInstance;
 /*
  * SubClassProc - handle all messages for the stopped task
  */
-long SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam )
+long __export FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam )
 {
     PAINTSTRUCT ps;
     HDC         dc;

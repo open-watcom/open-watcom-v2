@@ -64,3 +64,7 @@ HANDLE          module_handle;
 char            exepath[MAX_EXPATH + 1];
 } mod_ent;
 #endif
+
+WINEXPORT BOOL FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

@@ -42,25 +42,17 @@
 #include "comio.h"
 #include "inout.h"
 #include "iopath.h"
+#include "lang.h"
 #include "pathlist.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include "fmacros.h"
+#include "option.h"
 
 extern  char            *SkipBlanks( char * );
-extern  void            MacroDEFINE( char *,uint );
-extern  void            MacroUNDEFINE( char *,uint );
-extern  void            MacroIFDEF( char *,uint );
-extern  void            MacroIFNDEF( char *,uint );
-extern  void            MacroELIFDEF( char *,uint );
-extern  void            MacroELIFNDEF( char *,uint );
-extern  void            MacroELSE( void );
-extern  void            MacroENDIF( void );
 extern  void            ProcPragma( char * );
-extern  void            __UseChineseCharSet( void );
-extern  void            __UseJapaneseCharSet( void );
-extern  void            __UseKoreanCharSet( void );
 
 extern  character_set   CharSetInfo;
 

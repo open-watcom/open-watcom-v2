@@ -57,7 +57,7 @@ static  void    ExWrite( void ) {
 }
 
 
-int     DoWrite( void ) {
+extern int     DoWrite( void ) {
 //=================
 
     IOCB->iostmt = IO_WRITE;

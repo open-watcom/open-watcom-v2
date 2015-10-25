@@ -9,6 +9,7 @@
 #include "pcconfig.h"
 #include "pcbsd.h"
 #include "pctcp.h"
+#include "lookup.h"
 
 DWORD lookup_host (const char *host, char *ip_str)
 {

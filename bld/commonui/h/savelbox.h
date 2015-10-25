@@ -42,4 +42,6 @@ void    ReportSave( HWND parent, char *fname, char *appname, bool save_ok );
 bool    GetSaveFName( HWND mainhwnd, char *fname );
 bool    GenTmpFileName( char *tmpname, char *buf );
 
+WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #endif /* _SAVELBOX_H_INCLUDED */

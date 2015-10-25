@@ -315,7 +315,7 @@ void WFreeStringTableBlock( WStringBlock *block )
     }
 }
 
-void WFreeStringNode( WStringNode *node )
+static void WFreeStringNode( WStringNode *node )
 {
     WStringNode *n;
 

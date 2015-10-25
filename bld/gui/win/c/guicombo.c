@@ -34,12 +34,11 @@
 #include <string.h>
 #include "guicombo.h"
 #include "guicontr.h"
-//#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "wprocmap.h"
 
 extern  controls_struct GUIControls[];
-extern  WPI_INST        GUIMainHInst;
+extern  GUIENUMPROC     GUISubClassEditComboboxEnumFunc;
 
 typedef struct {
     bool        success;

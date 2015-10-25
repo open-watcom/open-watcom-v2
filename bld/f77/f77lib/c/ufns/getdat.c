@@ -39,6 +39,7 @@
 
 #include <stddef.h>
 #include <time.h>
+#include "external.h"
 
 extern  uint            __getctime(struct tm *);
 

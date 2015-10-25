@@ -36,10 +36,10 @@
 #include "errcod.h"
 #include "fmemmgr.h"
 #include "insert.h"
+#include "rstutils.h"
+#include "rststruc.h"
 
 #include <string.h>
-
-extern  uint                    AllocName(uint);
 
 
 static  sym_id  AddStruct( char *name, int length ) {

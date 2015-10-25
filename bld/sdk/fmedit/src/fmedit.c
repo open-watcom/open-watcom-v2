@@ -54,6 +54,7 @@
 #include "align.def"
 #include "space.def"
 #include "clip.def"
+#include "dllmain.h"
 
 WINEXPORT BOOL CALLBACK FMEditWndProc( HWND, UINT, WPARAM, LPARAM );
 

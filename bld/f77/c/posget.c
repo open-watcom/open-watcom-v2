@@ -343,15 +343,15 @@ uint    FGetRec( b_file *io, char *b, uint len ) {
     return( GetFixedRec( io, b, len ) );
 }
 
-
-uint    GetRec( char *b, uint len ) {
+#if 0
+static uint    GetRec( char *b, uint len ) {
 //===================================
 
 // Get a record from standard input device.
 
     return( FGetRec( FStdIn, b, len ) );
 }
-
+#endif
 
 char    GetStdChar( void ) {
 //====================

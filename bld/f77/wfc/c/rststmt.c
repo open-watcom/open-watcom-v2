@@ -32,8 +32,9 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fmemmgr.h"
+#include "rststmt.h"
+#include "cgmagic.h"
 
-extern  label_id                NextLabel(void);
 
 
 unsigned_32     GetStmtNum( sym_id sn ) {

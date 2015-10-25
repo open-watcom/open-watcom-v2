@@ -36,6 +36,7 @@
 #include "fltcnv.h"
 #include "target.h"
 #include "pgmacc.h"
+#include "chrutils.h"
 
 #include <ctype.h>
 

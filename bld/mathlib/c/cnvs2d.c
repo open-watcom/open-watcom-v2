@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include "xfloat.h"
 
 
 /* This routine is called from scnf.c */

@@ -39,6 +39,12 @@
 #include "inout.h"
 #include "boot77.h"
 #include "cle.h"
+#include "sdcio.h"
+#include "ftextfun.h"
+#include "sdcline.h"
+#include "fmacros.h"
+#include "option.h"
+#include "initopt.h"
 
 #if _CPU == 8086
 #define _NAME_  "wfc"
@@ -52,20 +58,7 @@
 #error Unknown System
 #endif
 
-extern  void            SDInitIO(void);
-extern  void            FiniProcCmd(void);
-extern  void            InitOptions(void);
-extern  void            CmdOption(char *);
-extern  bool            ParseCmdLine(char **,char **,char **, char *);
-extern  char            *Batch(char *,uint);
-extern  void            InitMacroProcessor(void);
-extern  void            FiniMacroProcessor(void);
-extern  void            SetDefaultOpts(void);
 extern  void            MsgBuffer(uint,char *,...);
-extern  void            ShowOptions(char *);
-extern  void            FIncludePathInit(void);
-extern  void            FIncludePathFini(void);
-extern  void            TOutBanner(void);
 
 extern  char            *UsageLines[];
 

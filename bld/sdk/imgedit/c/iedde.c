@@ -33,6 +33,7 @@
 #include "imgedit.h"
 #include <ddeml.h>
 #include "iemem.h"
+#include "iedde.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -418,7 +419,7 @@ HDDEDATA IECreateResData( img_node *node )
 /*
  * IEGetCurrentImageNode
  */
-img_node *IEGetCurrentImageNode( void )
+static img_node *IEGetCurrentImageNode( void )
 {
     img_node    *node;
     img_node    *root;
@@ -558,7 +559,7 @@ BOOL IEStartDDEEditSession( void )
 /*
  * IEHandlePokedData
  */
-void IEHandlePokedData( HDDEDATA hdata )
+static void IEHandlePokedData( HDDEDATA hdata )
 {
     void        *cmd;
     uint_32     size;

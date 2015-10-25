@@ -50,21 +50,13 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "cspawn.h"
+#include "sdcio.h"
 
 #define SWAP( x, y )    {x^=y^=x^=y;}
 
 static section_data             Sections[ DW_DEBUG_MAX ];
 static char                     initial_section_type;
 
-extern  file_handle     SDOpen(char *,int);
-extern  void            SDClose(file_handle);
-extern  void            SDSeek(file_handle,int,int);
-extern  uint            SDRead(file_handle,char *,uint);
-extern  void            SDWrite(file_handle,byte *,int);
-extern  bool            SDError(file_handle,char *);
-extern  bool            SDEof(file_handle);
-extern  void            SDScratch(char *);
-extern  void            SDSetAttr(file_attr);
 
 /* Forward declarations */
 static void chkIOErr( file_handle fp, int error, char *filename );
@@ -106,7 +98,7 @@ static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size ) {
         memcpy( ( cur_sec->u2.data + cur_sec->cur_offset ), block, size );
         break;
     case( FILE_SECTION ):
-        SDWrite( cur_sec->u1.fp, (byte *)block, size );
+        SDWrite( cur_sec->u1.fp, (char *)block, size );
         chkIOErr( cur_sec->u1.fp, SM_IO_WRITE_ERR, "temporary file" );
         break;
     default:

@@ -42,7 +42,7 @@
 /*
  * AppDebuggerErrMsg
  */
-void AppDebuggerErrMsg( void *_info ) {
+static void AppDebuggerErrMsg( void *_info ) {
 
     ProcAttatchInfo *info = _info;
     char        buf[100];

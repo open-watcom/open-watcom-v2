@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include "_exit.h"
 
 
 /* POSIX says _exit() and _Exit() "shall be functionally equivalent" */

@@ -47,6 +47,8 @@
 #include "grabfp87.h"
 #include "init8087.h"
 
+_WCRTLINK extern void _WCI86FAR __default_sigfpe_handler( int fpe_sig );
+
 #if defined( __WINDOWS_386__ )
 extern void __pascal _FloatingPoint( void );
 #endif
@@ -270,8 +272,8 @@ extern short __87present( void );
     "mov   ax, 1        "       \
 value [ ax ];
 
-extern void __chk8087( void )
-/*****************************/
+void __chk8087( void )
+/********************/
 {
     if( _RWD_8087 == 0 ) {
         if( __87present() ) {

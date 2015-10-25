@@ -14,6 +14,7 @@
 #include "misc.h"
 #include "pcconfig.h"
 #include "pcbsd.h"
+#include "getnet.h"
 
 #if defined(USE_BSD_FUNC)
 

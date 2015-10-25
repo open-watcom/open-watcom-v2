@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "symbol.h"
+#include "cbsize.h"
 
 
 void    SetComBlkSize( sym_id com, intstar4 com_size ) {

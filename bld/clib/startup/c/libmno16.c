@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <wos2.h>
 #include "initdll.h"
 
 

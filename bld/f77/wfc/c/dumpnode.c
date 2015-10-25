@@ -36,6 +36,8 @@
 
 #include <stdio.h>
 
+extern void    DumpLex( void );
+
 static  char    *Opn[] = {
     "OPN_PHI",
     "OPN_NAM",

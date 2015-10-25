@@ -41,4 +41,6 @@
 #define ABOUT_COPYRIGHT             109
 #define APPICON                     101
 
+WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #endif /* _ABOUT_H_INCLUDED */

@@ -42,6 +42,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "external.h"
 
 
 intstar4        __fortran FILESIZE( intstar4 *unit ) {

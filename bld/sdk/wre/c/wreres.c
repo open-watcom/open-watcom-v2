@@ -493,7 +493,7 @@ bool pleaseOpenFile( UINT msg )
     return( ok );
 }
 
-void WRESetCurrentRes( WREResInfo *res_info )
+static void WRESetCurrentRes( WREResInfo *res_info )
 {
     WRECurrentRes = res_info;
 }

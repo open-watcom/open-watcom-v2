@@ -38,8 +38,9 @@
 #include "iotype.h"
 #include "errcod.h"
 #include "thread.h"
+#include "spawn.h"
 
-void            __ReleaseIOSys( void ) {
+extern void            __ReleaseIOSys( void ) {
 //================================
 
     IOCB->flags &= ~IOF_ACTIVE;

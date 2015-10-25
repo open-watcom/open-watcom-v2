@@ -32,5 +32,7 @@
 
 #ifndef _GUIDOSCR_H_
 #define _GUIDOSCR_H_
+
 extern void GUIDoScroll( gui_window *wnd, int row_col, int bar );
+
 #endif // _GUIDOSCR_H_

@@ -33,9 +33,6 @@
 #include <stdlib.h>
 
 
-extern  WPI_INST        GUIMainHInst;
-
-
 void GUIDrainEvents( void )
 {
     WPI_QMSG    msg;

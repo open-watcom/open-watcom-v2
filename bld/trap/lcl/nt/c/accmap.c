@@ -280,7 +280,7 @@ void AddProcess( header_info *hi )
  * NameFromProcess - get fully qualified filename for last DLL
  * that was loaded in process. Intended for Win9x.
  */
-BOOL NameFromProcess( lib_load_info *lli, DWORD dwPID, char *name )
+static BOOL NameFromProcess( lib_load_info *lli, DWORD dwPID, char *name )
 {
     HANDLE          hModuleSnap = INVALID_HANDLE_VALUE;
     MODULEENTRY32   me32;
@@ -325,7 +325,7 @@ error_exit:
  * NameFromHandle - get fully qualified filename from file handle.
  * Intended for Windows NT.
  */
-BOOL NameFromHandle( HANDLE hFile, char *name )
+static BOOL NameFromHandle( HANDLE hFile, char *name )
 {
 #define BUFSIZE 512
     BOOL        bSuccess = FALSE;

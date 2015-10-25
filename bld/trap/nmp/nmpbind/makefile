@@ -9,6 +9,8 @@ proj_name = nmpbind
 nmpbind_autodepends = .AUTODEPEND
 !endif
 
+#memory_model_i86 = s
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

@@ -31,6 +31,8 @@
 
 
 #if defined(__NT__)
+typedef VOID CALLBACK GUITIMERPROC( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime );
+
 extern void GUIStartTimer( gui_window *wnd, gui_timer_id id, int msec );
 extern void GUIStopTimer( gui_window *wnd, gui_timer_id id );
 #endif

@@ -47,7 +47,7 @@
 #define DLG_X_MULT      4
 #define DLG_Y_MULT      14
 
-void GUIFreeDialogBoxControlPtrs( DialogBoxControl *dbc )
+static void GUIFreeDialogBoxControlPtrs( DialogBoxControl *dbc )
 {
     if( dbc ) {
         if( dbc->ClassID != NULL ) {
@@ -61,7 +61,7 @@ void GUIFreeDialogBoxControlPtrs( DialogBoxControl *dbc )
     }
 }
 
-void GUIFreeDialogBoxHeader( DialogBoxHeader *hdr )
+static void GUIFreeDialogBoxHeader( DialogBoxHeader *hdr )
 {
     if( hdr != NULL ) {
         if( hdr->MenuName != NULL ) {

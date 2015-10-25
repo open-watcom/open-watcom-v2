@@ -35,8 +35,7 @@
 //
 
 #include "rtinit.h"
-
-extern void     __UseChineseCharSet( void );
+#include "lang.h"
 
 AXI( __UseChineseCharSet, INIT_PRIORITY_LIBRARY );
 

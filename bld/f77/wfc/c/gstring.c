@@ -38,15 +38,16 @@
 #include "global.h"
 #include "fcodes.h"
 #include "opn.h"
+#include "optr.h"
 #include "emitobj.h"
 #include "utility.h"
+#include "upscan.h"
+#include "cgmagic.h"
+#include "gstring.h"
+#include "relops.h"
+#include "upcat.h"
+#include "declare.h"
 
-extern  int             AsgnCat(void);
-extern  void            CatArgs(int);
-extern  sym_id          StaticAlloc(uint,TYPE);
-extern  bool            OptimalChSize(uint);
-extern  void            GenChar1Op(itnode *);
-extern  TYPE            MapTypes(TYPE,uint);
 
 
 sym_id  GStartCat( int num_args, int size ) {

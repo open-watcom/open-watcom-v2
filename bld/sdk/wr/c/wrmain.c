@@ -55,6 +55,7 @@
 #include "wrdmsgi.h"
 #include "jdlg.h"
 #include "rcrtns.h"
+#include "dllmain.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

@@ -42,19 +42,15 @@
 #include "global.h"
 #include "recog.h"
 #include "utility.h"
+#include "compstmt.h"
+#include "proctbl.h"
+#include "csutls.h"
+#include "cgmagic.h"
+#include "fcodes.h"
+#include "rtconst.h"
+#include "gio.h"
+#include "gflow.h"
 
-extern  void            CSExtn(void);
-extern  void            AddCSNode(byte);
-extern  void            DelCSNode(void);
-extern  void            BlockLabel(void);
-extern  void            CSNoMore(void);
-extern  void            Match(void);
-extern  void            Recurse(void);
-extern  void            GBranch(label_id);
-extern  void            GLabel(label_id);
-extern  label_id        NextLabel(void);
-extern  void            GCheckEOF(label_id);
-extern  void            FreeLabel(label_id);
 
 
 void    CpAtEnd(void) {

@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <windows.h>
+#include "winstrt.h"
 
 int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {

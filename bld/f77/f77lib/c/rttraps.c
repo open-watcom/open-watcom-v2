@@ -55,10 +55,13 @@
 #include "ftextfun.h"
 #include "errcod.h"
 #include "rundat.h"
+#include "fptraps.h"
 #if defined( __NT__ )
   #include "enterdb.h"
 #endif
 #include "thread.h"
+#include "dosvect.h"
+#include "rttraps.h"
 
 #if defined( __OS2_286__ )
   #define       _handler        __interrupt __pascal __far
@@ -103,9 +106,6 @@ typedef void            (*fsig_func)( intstar4 );
         "mov  esp,eax"        \
         parm [eax] modify [esp];
 
-  extern unsigned long _dos_getrealvect(int);
-  extern void          _dos_setrealvect(int,unsigned long);
-  extern void          _dos_setvectp(int,void (__interrupt __far *)(void));
 #endif
 
 
@@ -324,14 +324,4 @@ void    R_TrapFini( void ) {
     DosSetVec( IntDivBy0, (PFN)ZSave, (PFN FAR *)&ZSave );
 #endif
     FPTrapFini();
-}
-
-extern void             (*_ExceptionInit)( void );
-extern void             (*_ExceptionFini)( void );
-
-void    __InitExceptionVectors( void ) {
-//================================
-
-    _ExceptionInit = &R_TrapInit;
-    _ExceptionFini = &R_TrapFini;
 }

@@ -33,6 +33,7 @@
 #include "guiwind.h"
 #include "guiscale.h"
 #include "guixutil.h"
+#include "guirect.h"
 
 void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool is_popup )
 {

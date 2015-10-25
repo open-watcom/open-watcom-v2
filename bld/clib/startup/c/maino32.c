@@ -54,12 +54,14 @@
 #include "fileacc.h"
 #include "heapacc.h"
 #include "trdlstac.h"
+#include "trdlist.h"
 #include "cinit.h"
 #include "osmainin.h"
+#include "cominit.h"
 #include "procfini.h"
 #include "_exit.h"
 
-extern unsigned         __hmodule;
+
 unsigned short          __saved_CS;
 
 static void __NullAccessRtn( int hdl ) { hdl = hdl; }
@@ -118,22 +120,20 @@ int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 #if defined(_M_IX86)
 #pragma aux __threadstksize "*"
 #endif
-unsigned        __threadstksize = { 0 };
+unsigned    __threadstksize = { 0 };
 
 typedef struct sys_info {
     unsigned long       version_major;
     unsigned long       version_minor;
 } sys_info;
 
-void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
+void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, thread_data *tdata,
                     unsigned hmod, char *env, char *cmd )
 /*******************************************************/
 {
-    thread_data                 *tdata;
     char                        *args;
     char                        *cmd_path;
 
-    tdata = ptr;
     for( args = cmd; *args != '\0'; ++args ); /* skip over program name */
     ++args;
 

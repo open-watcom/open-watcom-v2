@@ -45,12 +45,14 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "impltab.h"
+#include "declare.h"
+#include "proctbl.h"
+#include "implicit.h"
 
 #include <string.h>
 #include <limits.h>
 
-extern  bool            SetImplType(char,char,TYPE,uint);
-extern  TYPE            MapTypes(TYPE,uint);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 
 extern  character_set   CharSetInfo;

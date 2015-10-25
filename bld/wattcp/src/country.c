@@ -15,6 +15,7 @@
 #include "wattcp.h"
 #include "wdpmi.h"
 #include "misc.h"
+#include "country.h"
 
 char _country_info[35];
 

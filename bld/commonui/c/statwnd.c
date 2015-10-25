@@ -578,7 +578,7 @@ void StatusWndDraw3DBox( statwnd *sw, WPI_PRES pres )
 /*
  * outputText - output a text string
  */
-void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags,
+static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags,
                  int curr_block )
 {
     WPI_RECT    ir;

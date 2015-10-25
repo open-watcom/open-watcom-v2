@@ -67,7 +67,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
         return( ERR_INVALID_GLOBAL_CMD );
     }
     if( *data == '/' )
-    	++data;     // skip one slash character
+        ++data;     // skip one slash character
     data = SkipLeadingSpaces( data );
 
     /*

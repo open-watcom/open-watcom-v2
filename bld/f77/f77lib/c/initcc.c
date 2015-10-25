@@ -34,9 +34,10 @@
 // INITCC       : initializer to make unit 6 carriage control
 //
 
+#include "ftnstd.h"
 #include "rtinit.h"
+#include "runmain.h"
 
-extern void     __InitUnit6CC( void );
 
 AXI( __InitUnit6CC, INIT_PRIORITY_LIBRARY );
 

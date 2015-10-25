@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include "wddespy.h"
 #include <string.h>
 #include <stdio.h>
@@ -728,7 +727,7 @@ static void redispLinkTrk( DDETrackInfo *info, BOOL islink )
 /*
  * FreeLinkInfo - free memory holding information about a link
  */
-void FreeLinkInfo( LinkInfo *info )
+static void FreeLinkInfo( LinkInfo *info )
 {
     MemFree( info->service );
     MemFree( info->topic );

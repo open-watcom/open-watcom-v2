@@ -45,4 +45,12 @@ void    DestroyMonoFonts( void );
 HFONT   GetMonoFont( void );
 void    AllowVariableFonts( void );
 
+#if defined( __WINDOWS_386__ )
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT *_lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
+#elif defined( __WINDOWS__ )
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data );
+#else
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data );
+#endif
+
 #endif /* _FONT_H_INCLUDED */

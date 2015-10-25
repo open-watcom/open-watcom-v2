@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 
 #include <string.h>
+#include "external.h"
 
 extern  int             ___Argc;        // argument count
 extern  char            **___Argv;      // argument vector

@@ -428,21 +428,3 @@ unsigned char UIAPI uicheckshift( void )
 {
     return( ShiftState );
 }
-
-#if 0
-#define FORCE_WINDOWS_MESSAGE_LOOP
-#if defined( FORCE_WINDOWS_MESSAGE_LOOP )
-void WindowsMessageLoop( int yield )
-{
-MSG msg;
-
-        while( PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE | PM_NOYIELD ) ) {
-            GetMessage( &msg, NULL, 0, 0 );
-            TranslateMessage( &msg );
-            DispatchMessage( &msg );
-        }
-        if( yield ) Yield();
-
-} /* WindowsMessageLoop */
-#endif
-#endif

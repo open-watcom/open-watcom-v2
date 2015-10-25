@@ -30,7 +30,8 @@
 
 #include "ftnstd.h"
 #include "ftextvar.h"
-#include "scan.h"
+#include "scaninc.h"
+#include "lang.h"
 
 // Modified:    By:             Reason:
 // --------     ---             -------

@@ -32,9 +32,20 @@
 
 #ifndef _GUIXWIND_H_
 #define _GUIXWIND_H_
+
+extern bool GUIMainTouched;
+
 extern bool SendPointEvent( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
                             gui_window *wnd, gui_event gui_ev,
                             bool force_current );
 extern void GUIResizeBackground( gui_window *wnd, bool force_msg );
 extern void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size );
+#ifdef __OS2_PM__
+extern int GUIXMain( int argc, char *argv[] );
+#else
+extern int GUIXMain( int argc, char *argv[],
+              WPI_INST inst, WPI_INST hPrevInstance, LPSTR lpCmdLine,
+              int nShowCmd );
+#endif
+
 #endif // GUIXWIND_H_

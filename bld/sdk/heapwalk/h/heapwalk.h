@@ -30,7 +30,7 @@
 
 
 #define _WINDOWS_16_
-#include <windows.h>
+#include "commonui.h"
 #include <toolhelp.h>
 #include <stdio.h>
 #include "bool.h"
@@ -287,6 +287,7 @@ void PaintAllWindows( void );
 void InitPaintProc( void );
 void FiniPaintProc( void );
 void PositionListBox( ListBoxInfo *info, HWND parent );
+BOOL __export FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam );
 
 /* hwlist.c */
 void InitListStrTables( void );
@@ -309,6 +310,7 @@ void SortHeapList( void );
 
 /* hwdisp.c */
 BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL DialogDispProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 void ShowHeapObject( HWND lbhdl );
 
 /* hwsave.c */
@@ -319,12 +321,10 @@ void ShowSelector( HWND list );
 BOOL GlobDiscardObj( HWND list );
 BOOL GlobSetObjPos( HWND list, BOOL oldest );
 void RefreshAdd( HWND dialog, HWND lbhwnd );
-BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
-BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
-BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
+BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 void SetMenusForAdd( HWND hwnd, BOOL start );
 HWND StartAdd( HWND parent, ListBoxInfo *info );
 
@@ -351,11 +351,13 @@ void SortLocalHeapList( HWND, WORD );
 void ReadConfig( void );
 void SaveConfigFile( BOOL save_all_values );
 void HWConfigure( void );
+BOOL __export FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 
 /* hwinfo.c */
 void DisplayGlobHeapInfo( HWND parent );
 void DisplayMemManInfo( HWND parent );
 HWND DisplayLocalHeapInfo( HWND parent );
+BOOL __export FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 
 /* hwutil.c */
 void SetStaticText( HWND hwnd, int id, char *str );
@@ -365,8 +367,7 @@ HWND *MakePushWin( HWND hwnd, char *str, WORD cnt, ... );
 void KillPushWin( HWND *push );
 
 /* hwmonit */
-BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
+BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 void BeginMonitor( heap_list *item );
 
 /* hwtable */

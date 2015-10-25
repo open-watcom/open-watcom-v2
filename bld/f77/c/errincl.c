@@ -31,6 +31,8 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
+#include "blderr.h"
+#include "errinit.h"
 
 char __FAR *            __FAR *PGroupTable = GroupTable;
 char                    __FAR *PErrWord = ErrWord;

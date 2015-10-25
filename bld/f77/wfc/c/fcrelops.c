@@ -41,16 +41,15 @@
 #include "rtconst.h"
 #include "emitobj.h"
 #include "fctypes.h"
+#include "fcjmptab.h"
+#include "fcrelops.h"
+#include "fcstring.h"
+#include "source.h"
+#include "wf77aux.h"
+#include "fcrtns.h"
+#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-
-
-extern  void            XPush(cg_name);
-extern  cg_name         XPop(void);
-extern  cg_name         XPopValue(cg_type);
-extern  call_handle     InitCall(RTCODE);
-extern  cg_name         SCBPointer(cg_name);
-extern  cg_name         IntegerConstant(ftn_type *,uint);
 
 
 static  void    XCompare( cg_op op_code ) {

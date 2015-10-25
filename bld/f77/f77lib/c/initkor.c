@@ -35,8 +35,8 @@
 //
 
 #include "rtinit.h"
+#include "lang.h"
 
-extern void     __UseKoreanCharSet( void );
 
 AXI( __UseKoreanCharSet, INIT_PRIORITY_LIBRARY );
 

@@ -59,7 +59,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt );
 /*
  * MemWndGetDataByte
  */
-int_16 MemWndGetDataByte( void )
+static int_16 MemWndGetDataByte( void )
 {
     char            buf;
 
@@ -72,7 +72,7 @@ int_16 MemWndGetDataByte( void )
 /*
  * MemWndGetDataWord
  */
-int_16 MemWndGetDataWord( void )
+static int_16 MemWndGetDataWord( void )
 {
     int_16      buf;
 
@@ -85,7 +85,7 @@ int_16 MemWndGetDataWord( void )
 /*
  * MemWndGetNextByte
  */
-int_16 MemWndGetNextByte( void )
+static int_16 MemWndGetNextByte( void )
 {
     char            buf;
 
@@ -97,7 +97,7 @@ int_16 MemWndGetNextByte( void )
 /*
  * MemWndGetDataLong
  */
-int_32 MemWndGetDataLong( void )
+static int_32 MemWndGetDataLong( void )
 {
     int_32      buf;
 
@@ -110,7 +110,7 @@ int_32 MemWndGetDataLong( void )
 /*
  * MemWndEndOfSegment
  */
-char MemWndEndOfSegment( void )
+static char MemWndEndOfSegment( void )
 {
     return( _Offset > Limit );
 
@@ -119,7 +119,7 @@ char MemWndEndOfSegment( void )
 /*
  * MemWndGetOffset
  */
-DWORD MemWndGetOffset( void )
+static DWORD MemWndGetOffset( void )
 {
     return( _Offset );
 
@@ -129,7 +129,7 @@ DWORD MemWndGetOffset( void )
  * MemWndToStr - return a string of length 'length' containing 'value'
  *               in hex notation
  */
-char *MemWndToStr( uint_32 value, uint_16 len, DWORD addr )
+static char *MemWndToStr( uint_32 value, uint_16 len, DWORD addr )
 {
     int         i;
 
@@ -146,7 +146,7 @@ char *MemWndToStr( uint_32 value, uint_16 len, DWORD addr )
 /*
  * MemWndJmpLabel - return a string containing addr in segment:offset form
  */
-char *MemWndJmpLabel( uint_32 addr, DWORD off )
+static char *MemWndJmpLabel( uint_32 addr, DWORD off )
 {
     unsigned    len;
 
@@ -160,7 +160,7 @@ char *MemWndJmpLabel( uint_32 addr, DWORD off )
 /*
  * MemWndToBrStr - return a string representing 'value' in hex form enclosed in []
  */
-char *MemWndToBrStr( uint_32 value, DWORD addr )
+static char *MemWndToBrStr( uint_32 value, DWORD addr )
 {
     unsigned    len;
 
@@ -174,7 +174,7 @@ char *MemWndToBrStr( uint_32 value, DWORD addr )
 /*
  * MemWndToIndex - convert value to a hex string with a + or - at the beginning
  */
-char *MemWndToIndex( uint_32 value, uint_32 addr )
+static char *MemWndToIndex( uint_32 value, uint_32 addr )
 {
     char        sign[2];
 
@@ -194,7 +194,7 @@ char *MemWndToIndex( uint_32 value, uint_32 addr )
 /*
  * MemWndToSegStr - convert to seg:off form
  */
-char *MemWndToSegStr( DWORD value, WORD seg, DWORD addr )
+static char *MemWndToSegStr( DWORD value, WORD seg, DWORD addr )
 {
     unsigned    len;
 
@@ -208,7 +208,7 @@ char *MemWndToSegStr( DWORD value, WORD seg, DWORD addr )
 /*
  * MemWndGetWtkInsName
  */
-char *MemWndGetWtkInsName( unsigned ins )
+static char *MemWndGetWtkInsName( unsigned ins )
 {
     ins = ins;
     return( "" );
@@ -218,14 +218,14 @@ char *MemWndGetWtkInsName( unsigned ins )
 /*
  * MemWndDoWtk
  */
-void MemWndDoWtk( void )
+static void MemWndDoWtk( void )
 {
 } /* MemWndDoWtk */
 
 /*
  * MemWndIsWtk
  */
-int MemWndIsWtk( void )
+static int MemWndIsWtk( void )
 {
     return( 0 );
 

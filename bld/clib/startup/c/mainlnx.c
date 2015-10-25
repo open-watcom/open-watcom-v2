@@ -41,6 +41,7 @@
 #include "fileacc.h"
 #include "heapacc.h"
 #include "trdlstac.h"
+#include "osmain.h"
 #include "cinit.h"
 #include "_exit.h"
 
@@ -67,14 +68,14 @@ void                    (*_AccessTDList)(void)   = &__NullAccTDListRtn;
 void                    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
 #endif
 
-void __LinuxInit( struct thread_data *ptr )
-/*****************************************/
+void __LinuxInit( thread_data *tdata )
+/************************************/
 {
     unsigned    *tmp;
 
 #if defined( __MT__ )
-    __InitThreadData( ptr );
-    __FirstThreadData = ptr;
+    __InitThreadData( tdata );
+    __FirstThreadData = tdata;
 #endif
 
     // following is very tricky _STACKLOW intialization

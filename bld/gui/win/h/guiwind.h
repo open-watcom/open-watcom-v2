@@ -116,11 +116,7 @@ typedef struct gui_paint_info {
     int                 force_count;
 } gui_paint_info;
 
-#if defined( __GNUC__)
-struct gui_window {
-#else
 typedef struct gui_window {
-#endif
     HWND                hwnd;
     HWND                hwnd_frame;
     HWND                root;
@@ -161,7 +157,7 @@ typedef struct gui_window {
     WPI_RECT            hwnd_client;
     gui_paint_info      root_pinfo;
     gui_paint_info      hwnd_pinfo;
-};
+} gui_window;
 
 #define GUI_DO_HSCROLL( wnd )   ( ( ( wnd->scroll & GUI_HSCROLL ) != 0 ) && \
                                   ( ( wnd->style & GUI_HSCROLL_EVENTS ) == 0 ) )
@@ -188,6 +184,14 @@ typedef struct gui_window {
 #define NUM_EXTRA_WORDS         ( GUI_MDI_WORD + 1 )
 #define GUI_ISROOTWIN(wnd)      ( wnd->root != NULL )
 
+typedef BOOL CALLBACK GUIENUMPROC( HWND hwnd, WPI_PARAM2 lparam );
+
 #include "guix.h"
+
+extern gui_window       *GUICurrWnd;
+
+extern WPI_INST         GUIResHInst;
+extern WPI_INST         GUIMainHInst;
+extern char             GUIDefaultClassName[];
 
 #endif // _GUIWIND_H_

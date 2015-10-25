@@ -44,17 +44,16 @@
 #include "recog.h"
 #include "ferror.h"
 #include "utility.h"
+#include "ioiolist.h"
+#include "ioperm.h"
+#include "ioprockw.h"
+#include "proctbl.h"
+#include "ioutls.h"
+#include "symtab.h"
+#include "fcodes.h"
+#include "rtconst.h"
+#include "gio.h"
 
-extern  sym_id           LkSym( void );
-extern  void            InitIO( void );
-extern  void            FiniIO( void );
-extern  void            KeywordList( void );
-extern  void            Unit( void );
-extern  void            FormatIdd( void );
-extern  void            IOList( void );
-extern  bool            Permission(IOKW);
-extern  void            GStartIO( void );
-extern  void            GNullEofStmt( void );
 
 /* Forward declararations */
 static  void    UnitOrList( void );

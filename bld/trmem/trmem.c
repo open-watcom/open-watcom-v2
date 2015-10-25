@@ -487,6 +487,10 @@ void *_trmem_alloc( size_t size, _trmem_who who, _trmem_hdl hdl )
     entry_ptr   tr;
 
     hdl->alloc_no += 1;
+    if( hdl->alloc_no > 0xf700 ) {
+        hdl->alloc_no += 1;
+        hdl->alloc_no -= 1;
+    }
     if( size == 0 && ( hdl->flags & _TRMEM_ALLOC_SIZE_0 ) ) {
         trPrt( hdl, MSG_SIZE_ZERO, "Alloc", who );
         return ( NULL );

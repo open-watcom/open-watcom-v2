@@ -40,6 +40,7 @@
 #include "wf77aux.h"
 #include "iflookup.h"
 #include "cpopt.h"
+#include "auxlook.h"
 
 #include "clibext.h"
 

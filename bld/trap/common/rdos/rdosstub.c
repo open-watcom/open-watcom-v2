@@ -32,7 +32,8 @@
 
 #include "rdos.h"
 #include "trpimp.h"
+#include "trpimpxx.h"
 
-void InterruptProgram( void )
+void TRAPENTRY TrapTellInterrupt( void )
 {
 }

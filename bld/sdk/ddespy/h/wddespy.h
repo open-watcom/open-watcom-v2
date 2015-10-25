@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include "commonui.h"
 #include <stdlib.h>
 #define DDEMLDB
 #include <ddeml.h>

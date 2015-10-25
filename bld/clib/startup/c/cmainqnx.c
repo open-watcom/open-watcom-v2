@@ -50,6 +50,7 @@
 #include "cmain.h"
 #include "cinit.h"
 #include "rtdata.h"
+#include "nomem.h"
 
 extern int main( int, char **, char ** );
 #if defined( _M_I86 )

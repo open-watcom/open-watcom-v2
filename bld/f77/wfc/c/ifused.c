@@ -40,6 +40,7 @@
 
 #include "ftnstd.h"
 #include "global.h"
+#include "ifused.h"
 
 #include <string.h>
 

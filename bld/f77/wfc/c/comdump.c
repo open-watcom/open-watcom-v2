@@ -41,8 +41,9 @@
 #include "brseinfo.h"
 #include "ferror.h"
 #include "insert.h"
+#include "cbsize.h"
+#include "comdump.h"
 
-extern  void            SetComBlkSize(sym_id,intstar4);
 extern  void            BIStartComBlock( sym_id ste_ptr );
 extern  void            BIOutComSymbol( sym_id ste_ptr );
 extern  void            BIEndComBlock( void );

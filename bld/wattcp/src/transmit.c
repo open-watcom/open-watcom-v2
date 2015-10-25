@@ -8,6 +8,7 @@
  */
 
 #include "socket.h"
+#include "transmit.h"
 
 #if defined(USE_BSD_FUNC)
 

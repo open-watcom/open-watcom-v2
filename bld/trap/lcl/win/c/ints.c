@@ -36,6 +36,7 @@
 #include <dos.h>
 #include "cpuglob.h"
 #include "wdebug.h"
+#include "int32dll.h"
 
 #define MAX_ISTACK      4096
 

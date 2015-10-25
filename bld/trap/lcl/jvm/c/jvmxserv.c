@@ -43,6 +43,7 @@
 #include "packet.h"
 #include "javadbg.h"
 #include "servio.h"
+#include "dllmain.h"
 
 #ifdef DEBUG_TRAP
 #define _DBG1( x ) printf x ; fflush( stdout )

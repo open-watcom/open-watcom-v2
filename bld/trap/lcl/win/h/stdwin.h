@@ -120,11 +120,6 @@ extern BOOL                     WDebug386;
 extern WORD                     WPCount;
 extern HMODULE                  DebugeeModule;
 extern WORD                     WasInt32;
-extern void                     (FAR PASCAL *DoneWithInterrupt)( LPVOID );
-extern int                      (FAR PASCAL *GetDebugInterruptData)( LPVOID );
-extern void                     (FAR PASCAL *ResetDebugInterrupts32)( void );
-extern int                      (FAR PASCAL *SetDebugInterrupts32)( void );
-extern void                     (FAR PASCAL *DebuggerIsExecuting)( int );
 extern BOOL                     DebugDebugeeOnly;
 extern HTASK                    TaskAtFault;
 extern WORD                     Win386Sig[];
@@ -180,9 +175,12 @@ void SingleStepMode( void );
 /* dbgeemsg.c */
 void EnterSoftMode( void );
 void ExitSoftMode( void );
-//long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
+long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
 DWORD FAR PASCAL DebugHook( int ncode, WORD wparam, DWORD lparam );
 restart_opts DebugeeWaitForMessage( void );
+long FAR PASCAL DefaultProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
+BOOL FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, DWORD lparam );
+BOOL FAR PASCAL EnumChildWindowsFunc( HWND hwnd, DWORD lparam );
 
 /* dbghook.c */
 void FiniDebugHook( void );
@@ -201,7 +199,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 
 /* notify.c */
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
-void FAR PASCAL UnLockInput( void );
+//void FAR PASCAL UnLockInput( void );
 
 /* wgod.c */
 void StartWDebug386( void );

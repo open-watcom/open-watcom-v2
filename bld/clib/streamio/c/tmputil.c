@@ -38,6 +38,7 @@
 #include <process.h>
 #include "rtdata.h"
 #include "tmpfname.h"
+#include "tmpfile.h"
 
 
 static unsigned __GetTmpPath( char *buf )

@@ -42,4 +42,6 @@ typedef struct {
 bool    RegPushWin( HANDLE instance );
 HWND    CreatePushWin( HWND parent, char *txt, WORD id, HFONT font, HANDLE inst );
 
+WINEXPORT LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #endif /* _PUSHWIN_H_INCLUDED */

@@ -32,8 +32,10 @@
 #include <windows.h>
 #include <stdio.h>
 #include "trpimp.h"
+#include "trpimpxx.h"
 #include "trperr.h"
 #include "serial.h"
+#include "serlink.h"
 
 #define BREAK_TIME      4       // In DOS timer ticks, I think (55ms)
 
@@ -59,7 +61,7 @@ static size_t readCacheIndex;
 static DWORD readCacheLevel;
 
 
-void Trace(const char* fmt, ...)
+static void Trace(const char* fmt, ...)
 {
     va_list         va;
     static char     traceBuffer[1000];
@@ -162,11 +164,13 @@ void ResetSys( void )
     }
 }
 
-bool Terminate( void )
+#if !defined( SERVER )
+bool TRAPENTRY TrapTellTerminate( void )
 {
     ResetSys();
     return( TRUE );
 }
+#endif
 
 static void FlushWriteCache( void )
 {
@@ -229,7 +233,7 @@ void ClearCom( void )
     writeCacheLevel = 0;
 }
 
-
+#if 0
 void SendABreak( void )
 {
     EscapeCommFunction( hSerial, SETBREAK );
@@ -249,7 +253,7 @@ bool TestForBreak( void )
     }
     return( FALSE );
 }
-
+#endif
 
 int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
 

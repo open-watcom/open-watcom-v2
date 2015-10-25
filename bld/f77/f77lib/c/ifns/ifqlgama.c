@@ -39,6 +39,7 @@
 
 #include "ftnstd.h"
 #include "ifenv.h"
+#include "fgamma.h"
 
 static  const extended __FAR  p1[9] = {  6.304933722864032e02,
                            1.389482659233250e02,

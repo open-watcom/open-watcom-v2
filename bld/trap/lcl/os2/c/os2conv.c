@@ -47,6 +47,7 @@
 #include "dosdebug.h"
 #include "os2trap.h"
 #include "bsexcpt.h"
+#include "os2v2acc.h"
 
 extern USHORT           TaskFS;
 

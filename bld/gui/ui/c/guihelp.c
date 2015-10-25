@@ -36,8 +36,8 @@
 #include "bool.h"
 #include "help.h"
 #include "guistr.h"
+#include "guixwind.h"
 
-extern EVENT GUIAllEvents[];
 
 gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title )
 {

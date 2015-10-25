@@ -43,28 +43,23 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "hexcnv.h"
+#include "csloops.h"
+#include "proctbl.h"
+#include "data.h"
+#include "downscan.h"
+#include "ioiolist.h"
+#include "rststruc.h"
+#include "symtab.h"
+#include "upscan.h"
+#include "gdata.h"
+#include "fcodes.h"
+#include "rtconst.h"
+#include "gio.h"
 
 #include <ctype.h>
 #include <string.h>
 
-extern  label_id        GDataProlog(void);
-extern  void            GBegDList(void);
-extern  void            GDataItem(itnode *);
-extern  void            GEndDList(void);
-extern  void            GEndDSet(void);
-extern  void            GDataEpilog(label_id);
-extern  void            GEndVarSet(void);
-extern  void            GStopIO(void);
-extern  void            ListItem(void);
-extern  bool            StartImpDo(void);
-extern  void            FinishImpDo(void);
-extern  void            GetConst(void);
-extern  void            AddConst(itnode *);
-extern  sym_id          LkSym(void);
-extern  sym_id          SymFind(char *,int);
-extern  void            TermDo(void);
-extern  int             HSToB(char *,uint,char *);
-extern  bool            CalcStructSize(sym_id);
 
 /* Forward declarations */
 static  void    DoData( void );
@@ -74,8 +69,6 @@ static  void    VarList( void );
 static  void    ConList( void );
 static  void    CkFlags( void );
 static  void    GetSConst( void );
-
-int     MkHexConst( char *hex_data, char *dst, int hex_len );
 
 
 void    CpData(void) {

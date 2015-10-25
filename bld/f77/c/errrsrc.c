@@ -38,6 +38,7 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+#include "blderr.h"
 
 #include "clibext.h"
 
@@ -62,7 +63,7 @@ static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int
 // Client routines setup for wres library
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-int     LoadMsg( unsigned int msg, char *buffer, int buff_size ) {
+static int     LoadMsg( unsigned int msg, char *buffer, int buff_size ) {
 // Load a message into the specified buffer.  This function is called
 // by WLINK when linked with 16-bit version of WATFOR-77.
     if( !(ResFlags & RF_INITIALIZED) ) return( 0 );

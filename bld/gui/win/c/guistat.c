@@ -40,7 +40,7 @@
 #include "guistr.h"
 #include "guixutil.h"
 
-extern  WPI_INST        GUIMainHInst;
+
 statwnd                 *GUIStatusWnd;
 
 static void FreeStatus( void )

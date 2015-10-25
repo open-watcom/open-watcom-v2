@@ -38,13 +38,15 @@
 #include "xfflags.h"
 #include "rundat.h"
 #include "rmemmgr.h"
+#include "spawn.h"
+#include "initfthr.h"
+#include "external.h"
 #include "thread.h"
+#include "rttraps.h"
 
 
 extern  int             Spawn(void (*)(void));
 extern  void            Suicide(void);
-extern  void            R_TrapInit(void);
-extern  void            R_TrapFini(void);
 extern  unsigned        RTSysInit(void);
 
 typedef struct {

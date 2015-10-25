@@ -32,6 +32,8 @@
 
 #include "imgedit.h"
 
+WINEXPORT WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+
 static int      imgHeight;
 static int      imgWidth;
 static BOOL     stretchImage;
@@ -39,7 +41,7 @@ static BOOL     stretchImage;
 /*
  * ChangeSizeProc - change the size of the image being edited
  */
-WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg,
+WINEXPORT WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg,
                                        WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     BOOL        trnslate;

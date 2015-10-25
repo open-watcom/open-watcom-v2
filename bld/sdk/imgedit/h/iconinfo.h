@@ -44,3 +44,6 @@ typedef struct {
     short       height;
     short       bitcount;
 } icon_info_struct;
+
+WINEXPORT WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+WINEXPORT WPI_DLGRESULT CALLBACK SelExistingProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );

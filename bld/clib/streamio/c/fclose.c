@@ -41,6 +41,7 @@
 #include "streamio.h"
 #include "close.h"
 #include "flush.h"
+#include "tmpfile.h"
 
 
 #ifndef __UNIX__

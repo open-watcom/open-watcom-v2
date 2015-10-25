@@ -44,7 +44,6 @@
 #include "guiscale.h"
 #include "guistr.h"
 #include "guixwind.h"
-//#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "guipaint.h"
 #include "guimapky.h"
@@ -63,7 +62,6 @@ static  WPI_TEXTMETRIC  GUIDialogtm;                    /* tm of dialog font */
 static  gui_coord       SizeDialog      = { 128, 128 }; /* of test dialog        */
 static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog        */
 
-extern  WPI_INST        GUIMainHInst;
 extern  controls_struct GUIControls[];
 
 void GUISetJapanese( void )
@@ -282,7 +280,7 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd
  *                 boxes
  */
 
-WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+extern WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_ctl_id          id;
     bool                escape_pressed;
@@ -577,7 +575,7 @@ static void AdjustForFrame( gui_coord *pos, gui_coord *size )
 #endif
 }
 
-void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
+static void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
 {
     pos->x = rect->x;
     pos->y = rect->y;
@@ -721,7 +719,7 @@ static WPI_FONT         DlgFont;
  *
  */
 
-WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+extern WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_PRES            hdc;
     WPI_RECT            rect;

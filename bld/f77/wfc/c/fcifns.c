@@ -40,18 +40,14 @@
 #include "tmpdefs.h"
 #include "emitobj.h"
 #include "fctypes.h"
+#include "fcstring.h"
+#include "fctemp.h"
+#include "fcjmptab.h"
+#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 
-extern  void            XPush(cg_name);
-extern  cg_name         SCBLength(cg_name);
-extern  cg_name         XPop(void);
-extern  cg_name         XPopValue(cg_type);
-extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
-extern  tmp_handle      MkTmp(cg_name,cg_type);
-extern  cg_name         TmpPtr(tmp_handle,cg_type);
-extern  cg_name         SCBPointer(cg_name);
 extern  bool            IntType(PTYPE);
 
 /* Forward declarations */

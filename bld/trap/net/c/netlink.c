@@ -48,11 +48,15 @@
     #pragma library( "netapi32.lib" )
   #endif
     #define _FAR
+#elif defined( __WINDOWS__ )
+    #include <windows.h>
+    #define _FAR    __far
 #else
     #include "tinyio.h"
     #define _FAR    __far
 #endif
 #include "trptypes.h"
+//#include "trapxx.h"
 #include "trperr.h"
 #include "packet.h"
 
@@ -113,7 +117,7 @@ int             SkipEnum;
  * but having their own DOS client blow up when the ENUM NCB is submitted on
  * plain DOS. Sigh. We detect running under NT and behave accordingly.
  */
-byte GetLanaNum( void )
+static byte GetLanaNum( void )
 {
     LANA_ENUM   l_enum;
 
@@ -130,12 +134,15 @@ byte GetLanaNum( void )
     return( 0 );    /* Default if not running on NT. */
 }
 
-#ifdef __NT__
-bool Terminate( void )
+#if defined( __NT__ )
+#if !defined( SERVER )
+#include "trpimpxx.h"
+bool TRAPENTRY TrapTellTerminate( void )
 {
     // a sideways dive to terminate the link (with failure)
     return( FALSE );
 }
+#endif
 #endif
 
 trap_retval RemoteGet( void *data, trap_elen len )

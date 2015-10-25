@@ -44,6 +44,7 @@
 #include "fileacc.h"
 #include "openmode.h"
 #include "defwin.h"
+#include "openflgs.h"
 #include "streamio.h"
 #include "thread.h"
 

@@ -94,6 +94,7 @@ extern bool             WndIgnoreMouseMove( a_window *wnd );
 extern void             WndMouseMove( a_window *wnd, void *parm );
 extern void             WndRButtonUp( a_window *wnd, void *parm );
 extern void             WndLDblClk( a_window *wnd, void *parm );
+extern wnd_row          WndGetMouseRow( void );
 extern void             WndRButtonDown( a_window *wnd, void *parm );
 extern void             WndLButtonUp( a_window *wnd, void *parm );
 extern void             WndLButtonDown( a_window *wnd, void *parm );

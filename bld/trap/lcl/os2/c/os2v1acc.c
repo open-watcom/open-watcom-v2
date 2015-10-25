@@ -45,6 +45,7 @@
 #include "miscx87.h"
 #include "cpuglob.h"
 #include "os2extx.h"
+#include "os2v2acc.h"
 
 typedef void (*excfn)();
 
@@ -69,8 +70,8 @@ extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
 extern HMODULE          __far *ModHandles;
-extern unsigned         NumModHandles;
-extern unsigned         CurrModHandle;
+extern int              NumModHandles;
+extern int              CurrModHandle;
 extern int              ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 extern scrtype          Screen;

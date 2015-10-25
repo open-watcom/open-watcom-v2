@@ -50,6 +50,7 @@
 #include "mem.h"
 #include "srusuprt.h"
 #include "gen_cpp.h"
+#include "dllmain.h"
 
 #ifdef __NT__
     #define PBCMD "pbnt"

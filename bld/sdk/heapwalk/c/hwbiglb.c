@@ -76,7 +76,7 @@ static void CreateTheListBox( HWND parent, TBinfo *info, DWORD style ) {
     SendMessage( info->boxhwnd, WM_SETFONT, (WPARAM)info->font, 0L );
 }
 
-void SizeTheListBox( HWND hwnd, TBinfo *info ) {
+static void SizeTheListBox( HWND hwnd, TBinfo *info ) {
 
     WORD                width, height;
     RECT                area;

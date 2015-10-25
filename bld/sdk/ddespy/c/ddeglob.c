@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include "wddespy.h"
 
 HANDLE          Instance;

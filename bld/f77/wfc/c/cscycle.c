@@ -39,12 +39,12 @@
 #include "global.h"
 #include "insert.h"
 #include "utility.h"
+#include "proctbl.h"
+#include "csutls.h"
+#include "fcodes.h"
+#include "gflow.h"
+#include "cgmagic.h"
 
-extern  void            BlockLabel(void);
-extern  void            CSExtn(void);
-extern  itnode          *GetBlockLabel(void);
-extern  void            GBranch(label_id);
-extern  label_id        NextLabel(void);
 
 
 void    CpCycle(void) {

@@ -39,7 +39,7 @@
 #include "guimenus.h"
 #include "guixutil.h"
 
-extern  WPI_INST        GUIResHInst;
+
 extern  gui_menu_struct GUIHint[];
 
 /* total height/width taken up by outline around  bitmap, on button */
@@ -99,7 +99,7 @@ static gui_window *GetToolWnd( HWND hwnd )
     return( NULL );
 }
 
-void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, bool down )
+static void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, bool down )
 {
     gui_window          *wnd;
     gui_menu_styles     style;
@@ -115,7 +115,7 @@ void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, bool down )
  * GUIToolBarProc - hook message handler for the tool bar.
  */
 
-bool GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_window              *wnd;
     toolbarinfo             *toolbar;

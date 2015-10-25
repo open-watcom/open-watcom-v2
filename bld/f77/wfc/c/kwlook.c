@@ -32,8 +32,9 @@
 #include "ftnstd.h"
 #include "iodefs.h"
 #include "global.h"
+#include "kwlook.h"
+#include "kwlookup.h"
 
-extern  int             KwLookUp(char **,int,char *,int,bool);
 
 extern  char            *StmtKeywords[];
 extern  char            *IOKeywords[];

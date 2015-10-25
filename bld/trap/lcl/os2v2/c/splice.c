@@ -48,7 +48,7 @@ char __export XferBuff[XFERBUFF_SIZE];
 #define OPEN_CREATE  1
 #define OPEN_PRIVATE 2
 
-long OpenFile( char *name, ULONG mode, int flags )
+static long OpenFile( char *name, ULONG mode, int flags )
 {
     HFILE       hdl;
     ULONG       action;

@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "cpopt.h"
+#include "errinit.h"
 
 
 static  char            ForceError[] = { "__init_error" };

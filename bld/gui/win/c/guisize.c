@@ -187,12 +187,12 @@ bool GUIIsMaximized( gui_window *wnd )
     if( GUIMDI ) {
         maximized = GUIMDIMaximized( wnd );
     } else {
-        maximized = _wpi_iszoomed( GUIGetParentFrameHWND( wnd ) );
+        maximized = ( _wpi_iszoomed( GUIGetParentFrameHWND( wnd ) ) != 0 );
     }
     return( maximized );
 }
 
 bool GUIIsMinimized( gui_window *wnd )
 {
-    return( _wpi_isiconic( GUIGetParentFrameHWND( wnd ) ) );
+    return( _wpi_isiconic( GUIGetParentFrameHWND( wnd ) ) != 0 );
 }

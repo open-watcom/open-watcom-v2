@@ -33,6 +33,7 @@
 #include "guiwind.h"
 #include <stdlib.h>
 #include "guiscale.h"
+#include "guitextm.h"
 
 extern  WPI_TEXTMETRIC  GUItm;
 

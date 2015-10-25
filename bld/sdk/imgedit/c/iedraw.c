@@ -47,7 +47,7 @@ static void showGrid( HWND hwnd, WPI_PRES mempres );
 /*
  * GridEnumProc - used to grid all the children
  */
-BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam )
+WINEXPORT BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam )
 {
     lparam = lparam;
     if( _wpi_getowner( hwnd ) ) {
@@ -422,7 +422,7 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
 /*
  * DrawPt - actually draw the point on the drawing region (uses LineDDA)
  */
-void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
+static void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
 {
     HBRUSH      colorbrush;
     HBRUSH      oldbrush;

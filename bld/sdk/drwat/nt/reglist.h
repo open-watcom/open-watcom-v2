@@ -49,3 +49,4 @@ void InitRegList(void);
 HWND CreateRegList(CreateRegListData *data);
 mad_registers * RegListGetMadRegisters( HWND list );
 mad_reg_set_data * RegListGetMadRegSetData( HWND list );
+LRESULT CALLBACK RegListProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam);

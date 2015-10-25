@@ -159,7 +159,7 @@ static void InitMessageControls( void )
  * DisplayMessage - callback function for dialog box
  */
 
-bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
+static bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_message_return *ret;
     gui_ctl_id          id;
@@ -332,7 +332,7 @@ static int UpdateCols( gui_control_info *ctl_info, int cols )
  *               to the number of lines of text ( also adjusts cols )
  */
 
-int AdjustVert( int *cols, control_types controls_to_use,
+static int AdjustVert( int *cols, control_types controls_to_use,
                 gui_control_info *controls_info, int num_controls,
                 int num_string_controls )
 {

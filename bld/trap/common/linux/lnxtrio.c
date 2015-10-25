@@ -40,7 +40,7 @@
 #if defined(__WATCOMC__)
     #include <process.h>
 #endif
-#include "trpimp.h"
+#include "trptypes.h"
 #include "digio.h"
 #include "servio.h"
 

@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "pgmacc.h"
+#include "ftextfun.h"
 
 
 void    TrimStr( string PGM *src, string *res ) {

@@ -41,6 +41,7 @@
 #include <string.h>
 #include <process.h>
 #include <pgmacc.h>
+#include "external.h"
 
 
 intstar4        __fortran FGETENV( string PGM *env_var, string PGM *value ) {

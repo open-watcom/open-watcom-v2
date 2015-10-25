@@ -35,9 +35,7 @@
 //
 
 #include "rtinit.h"
-
-extern void     __InitBeginThread(void);
-extern void     __FiniBeginThread(void);
+#include "initfthr.h"
 
 AXI( __InitBeginThread, INIT_PRIORITY_THREAD );
 AYI( __FiniBeginThread, INIT_PRIORITY_LIBRARY );

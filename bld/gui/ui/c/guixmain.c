@@ -36,7 +36,6 @@
 #include "guixutil.h"
 #include "guicolor.h"
 #include "guixmain.h"
-#include "guisysfi.h"
 #include "guimenu.h"
 #include "guiwhole.h"
 #include "guiwnclr.h"
@@ -44,6 +43,7 @@
 #include "guiutil.h"
 #include "guigadgt.h"
 #include "guizlist.h"
+#include "guixwind.h"
 #ifdef __UNIX__
     #include <termios.h>
 #endif
@@ -59,8 +59,6 @@
     #include "clibext.h"
 #endif
 
-
-extern int GUIXMain( int argc, char * argv[] );
 
 // This makes sure that the main routine is actually linked in
 bool GUIMainTouched = false;

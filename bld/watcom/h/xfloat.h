@@ -147,6 +147,10 @@ _WMRTLINK extern int __Strtold(
                         const char *bufptr,
                         long_double *pld,
                         char **endptr );
+_WMRTLINK extern int __wStrtold(
+                        const wchar_t *bufptr,
+                        long_double *pld,
+                        wchar_t **endptr );
 #endif
 extern  int     __LDClass( long_double * );
 extern  void    __ZBuf2LD( buf_arg, ld_arg );
@@ -154,6 +158,8 @@ extern  void    _LDScale10x( ld_arg, int );
 _WMRTLINK extern void  __cnvd2ld( dbl_arg, ld_arg );
 _WMRTLINK extern void  __cnvs2d( char *buf, double *value );
 _WMRTLINK extern int   __cnvd2f( double *src, float *tgt );
+_WMRTLINK extern void (*__get__cnvd2ld( void ))( dbl_arg src, ld_arg dst );
+_WMRTLINK extern void (*__get__cnvs2d( void ))( char *, double * );
 #ifdef _LONG_DOUBLE_
 extern  void    __iLDFD( ld_arg, dbl_arg );
 extern  void    __iLDFS( ld_arg, flt_arg );

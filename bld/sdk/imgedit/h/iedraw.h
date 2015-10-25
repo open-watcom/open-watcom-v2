@@ -47,3 +47,5 @@
     #define SET_HWND_PARAM2( lp, hwnd )     lp = MAKELPARAM( hwnd, 0 )
     #define GET_HWND_PARAM2( lp )           (HWND)LOWORD( lp )
 #endif
+
+WINEXPORT BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam );

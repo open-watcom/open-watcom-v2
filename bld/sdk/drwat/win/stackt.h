@@ -46,3 +46,5 @@
 #define ST_SSBP                     531
 #define ST_PREVIOUS                 519
 #define ST_SOURCE_INFO              102
+
+WINEXPORT BOOL CALLBACK STDialog( HWND, UINT, WPARAM, LPARAM );

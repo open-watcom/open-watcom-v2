@@ -37,13 +37,12 @@
 #include "rterrno.h"
 #include "fileacc.h"
 #include "qread.h"
+#include "fillbuf.h"
 #include "streamio.h"
 #include "thread.h"
 
 
 #define DOS_EOF_CHAR    0x1a
-
-extern int  __fill_buffer( FILE * );    /* located in fgetc */
 
 
 _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )

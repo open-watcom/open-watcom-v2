@@ -49,3 +49,8 @@ extern void             TrapSetFailCallBack( void (*func)(void) );
 extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
 extern unsigned         TrapSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
 extern void             KillTrap(void);
+
+/* Client support routines */
+extern void             TrapSetFailCallBack( void (*func)(void) );
+extern void             TrapSetAccessCallBack( void (*func)(void) );
+extern void             TrapFailAllRequests( void );

@@ -1792,7 +1792,7 @@ void GUImain( void )
     //GUIInsertMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, 0, &ChildMenu, false );
 }
 
-bool GUIDeath ( void )
+bool GUIDeath( void )
 {
     return( true );
 }

@@ -41,10 +41,9 @@
 #include "recog.h"
 #include "insert.h"
 #include "utility.h"
-
-extern  sym_id          LkSym(void);
-extern  sym_id          LkNameList(void);
-extern  grp_entry       *STGroupEntry(void);
+#include "proctbl.h"
+#include "rstalloc.h"
+#include "symtab.h"
 
 
 void    CpNameList( void ) {

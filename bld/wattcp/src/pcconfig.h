@@ -65,5 +65,7 @@ extern int   is_ip_brdcast (const in_Header *ip);
 
 #define is_it(x) if (!strcmp(name,x))
 
+extern const char *ExpandVarStr (const char *str);
+
 #endif
 

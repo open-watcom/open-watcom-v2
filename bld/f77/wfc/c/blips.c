@@ -38,6 +38,7 @@
 #include "fcgbls.h"
 #include "cgflags.h"
 #include "posio.h"
+#include "blips.h"
 
 #include <string.h>
 

@@ -289,6 +289,7 @@ void WdeSetEditWithWResID( WResID *ip, HWND hDlg, int id )
     }
 }
 
+#if 0
 void WdeSetEditWithWResHelpID( WResHelpID *ip, HWND hDlg, int id )
 {
     char *cp;
@@ -303,6 +304,7 @@ void WdeSetEditWithWResHelpID( WResHelpID *ip, HWND hDlg, int id )
         WRMemFree( cp );
     }
 }
+#endif
 
 ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, bool *mod )
 {
@@ -362,7 +364,7 @@ WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *mod )
 
     return( rp );
 }
-
+#if 0
 WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
 {
     WResHelpID  *rp;
@@ -393,7 +395,7 @@ WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
 
     return( rp );
 }
-
+#endif
 int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, bool *mod )
 {
     return( (int_16)WdeGetSINT32FromEdit( hDlg, id, mod ) );

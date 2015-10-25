@@ -119,4 +119,11 @@ _WMRTLINK extern  complex  __zmath2err( unsigned int err_info, complex *arg1, co
 _WMRTLINK extern  dcomplex __qmath1err( unsigned int err_info, dcomplex *arg1 );
 _WMRTLINK extern  dcomplex __qmath2err( unsigned int err_info, dcomplex *arg1, dcomplex *arg2 );
 
+extern char *__cvt( double value,
+             int    ndigits,
+             int    *dec,
+             int    *sign,
+             int    fmt,
+             char   *buf );
+
 #endif

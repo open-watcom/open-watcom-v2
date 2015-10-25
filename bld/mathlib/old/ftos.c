@@ -34,6 +34,7 @@
 #include <math.h>
 #include <string.h>
 #include "xfloat.h"
+#include "mathlib.h"
 
 
 /*
@@ -74,7 +75,6 @@ General notes : If the resulting string will not fit in the
 */
 
 extern  double  _Scale10V( double, int );
-extern  char   *__cvt( double, int, int *, int *, int, char * );
 extern  int     __Nan_Inf( double, char * );
 
 #define SIG_DIGITS              17

@@ -35,7 +35,6 @@
 #include "guicolor.h"
 #include "guipaint.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 /*
  * GUIPaint -- respond to WM_PAINT message

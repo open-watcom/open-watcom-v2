@@ -93,19 +93,12 @@
 
 #if defined ( __NETWARE__ )
     #include "debugme.h"
-#else
-    #define _DBG_THREAD( x )
-    #define _DBG_DR( x )
-    #define _DBG_EVENT( x )
-    #define _DBG_IO( x )
-    #define _DBG_MISC( x )
-    #define _DBG_IPX( x )
-    #define _DBG_NET( x )
-    #define _DBG_REQ( x )
-    #define _DBG_ERROR( x )
 #endif
 
 #include "trptypes.h"
+#if !defined( SERVER ) && defined( __NT__ )
+  #include "trpimpxx.h"
+#endif
 #include "trperr.h"
 #include "packet.h"
 #include "ifi.h"
@@ -116,6 +109,18 @@
 #elif defined( __WINDOWS__ )
 #pragma library("winsock.lib")
 #endif
+#endif
+
+#if !defined ( __NETWARE__ )
+    #define _DBG_THREAD( x )
+    #define _DBG_DR( x )
+    #define _DBG_EVENT( x )
+    #define _DBG_IO( x )
+    #define _DBG_MISC( x )
+    #define _DBG_IPX( x )
+    #define _DBG_NET( x )
+    #define _DBG_REQ( x )
+    #define _DBG_ERROR( x )
 #endif
 
 #define DEFAULT_PORT    0x0DEB  /* 3563 */
@@ -188,7 +193,8 @@ static trp_socket           data_socket = INVALID_SOCKET;
 extern void     ServMessage( const char * );
 #endif
 
-bool Terminate( void )
+#if !defined( SERVER )
+static bool Terminate( void )
 {
 #ifdef __RDOS__
     RdosPushTcpConnection( data_socket );
@@ -203,6 +209,14 @@ bool Terminate( void )
     data_socket = INVALID_SOCKET;
     return( TRUE );    
 }
+
+#if defined( __NT__ )
+bool TRAPENTRY TrapTellTerminate( void )
+{
+    return( Terminate() );    
+}
+#endif
+#endif
 
 static int FullGet( void *get, int len )
 {

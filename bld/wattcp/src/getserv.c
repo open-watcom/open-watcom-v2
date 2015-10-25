@@ -16,6 +16,7 @@
 #include "language.h"
 #include "pcconfig.h"
 #include "pcbsd.h"
+#include "getserv.h"
 
 #if defined(USE_BSD_FUNC)
 

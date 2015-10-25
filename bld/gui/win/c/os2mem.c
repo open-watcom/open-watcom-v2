@@ -30,6 +30,7 @@
 
 #include "guiwind.h"
 #include "trmem.h"
+#include "os2dlg.h"
 
 extern _trmem_hdl   GUIMemHandle;
 

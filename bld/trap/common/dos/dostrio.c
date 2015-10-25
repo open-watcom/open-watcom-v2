@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "tinyio.h"
-#include "trpimp.h"
+#include "trptypes.h"
 #include "digio.h"
 #include "servio.h"
 

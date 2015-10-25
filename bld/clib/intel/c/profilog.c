@@ -56,8 +56,6 @@ HANDLE hDevice = INVALID_HANDLE_VALUE;
 #endif
 CRITICAL_SECTION __ProfCriticalSection;
 
-void __ProfUnwind( void _WCFAR * ); // forward decl
-
 static void profilog_init( void )
 {
     InitializeCriticalSection( &__ProfCriticalSection );

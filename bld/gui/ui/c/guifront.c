@@ -36,7 +36,6 @@
 #include "guixwind.h"
 #include "guizlist.h"
 
-extern gui_window *GUICurrWnd;
 
 void GUIBringToFront( gui_window * wnd )
 {

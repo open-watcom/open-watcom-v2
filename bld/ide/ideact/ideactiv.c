@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "wwindows.h"
 #include <string.h>
-#include "winexprt.h"
 #include "ideactiv.h"
 
 
@@ -43,7 +42,8 @@ WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam );
 #define IDE_WIN_CAP_LEN         15
 #define IDE_WINDOW_CAPTION      "Open Watcom IDE"
 
-WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam ) {
+WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
+{
     char        buf[256];
     BOOL        *found;
 

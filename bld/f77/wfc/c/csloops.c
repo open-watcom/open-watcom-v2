@@ -40,34 +40,21 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "compstmt.h"
+#include "proctbl.h"
+#include "csloops.h"
+#include "csutls.h"
+#include "dsname.h"
+#include "stmtno.h"
+#include "cgmagic.h"
+#include "gdo.h"
+#include "rstmgr.h"
+#include "fcodes.h"
+#include "gflow.h"
 
-extern  void            CkTypeDeclared( void );
-extern  void            AddCSNode(byte);
-extern  void            DelCSNode( void );
-extern  void            BlockLabel( void );
-extern  void            ColonLabel( void );
-extern  void            CSNoMore( void );
-extern  void            CSExtn( void );
-extern  void            Match( void );
-extern  void            CSCond(label_id);
-extern  void            GLabel(label_id);
-extern  void            GBranch(label_id);
-extern  label_id        NextLabel( void );
-extern  unsigned_32     LkUpDoTerm( void );
-extern  sym_id          STShadow(sym_id);
-extern  void            STUnShadow(sym_id);
-extern  void            Recurse( void );
-extern  void            GDoInit(TYPE);
-extern  void            GDoEnd( void );
-extern  void            FreeLabel(label_id);
-extern  void            RemKeyword(itnode *,int);
 extern  void            BIOutSymbol(sym_id);
 
-/* forward declarations */
-void InitDo( signed_32 term );
-void TermDo( void );
-void TermDoWhile( void );
-
+static void InitDo( signed_32 term );
 
 static void InitLoop( int loop_type )
 {
@@ -248,7 +235,7 @@ void CpEndDo( void )
     CSNoMore();
 }
 
-void InitDo( signed_32 term )
+static void InitDo( signed_32 term )
 {
 // Initialize a DO or implied DO.
 // Process "do i=e1,e2,e3" where e1, e2 and e3 are numeric expressions.

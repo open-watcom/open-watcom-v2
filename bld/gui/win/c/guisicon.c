@@ -33,7 +33,6 @@
 #include "guiwind.h"
 #include "guistr.h"
 
-extern  WPI_INST        GUIResHInst;
 
 /*
  * GUISetIcon --

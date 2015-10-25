@@ -31,6 +31,7 @@
 #include "ftnstd.h"
 #include "fio.h"
 #include "posio.h"
+#include "ftextfun.h"
 
 static  char            FFSeq[] = { LF, FF };     // for form feeds
 static  char            SpcSeq[] = { LF,          // for single spacing

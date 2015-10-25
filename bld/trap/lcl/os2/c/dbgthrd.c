@@ -48,6 +48,7 @@
 #include "softmode.h"
 #include "trptypes.h"
 #include "trperr.h"
+#include "dbgthrd.h"
 
 dos_debug __far         *DebugReqBuff;
 unsigned int            DebugReqResult;
@@ -205,7 +206,7 @@ unsigned int CallDosDebug( dos_debug __far *buff )
     return( DebugReqResult );
 }
 
-VOID DoDebugRequests( VOID )
+static VOID DoDebugRequests( VOID )
 {
     for( ;; ) {
         DosSemWait( &DebugReqSem, SEM_INDEFINITE_WAIT );

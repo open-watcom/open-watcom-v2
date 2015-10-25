@@ -45,19 +45,22 @@ typedef    signed_32    intstar4;       // 32-bit integer
 
 #ifndef __cplusplus
 typedef    float        real;
-typedef    real         single;         // single precision
+#endif
+//typedef    real         single;         // single precision
+typedef    float        single;         // single precision
 typedef    long double  extended;       // extended precision
 
+#ifndef __cplusplus
 typedef struct {         // single precision complex
     single      realpart;
     single      imagpart;
 } complex;
+#endif
 
 typedef struct {        // extended precision complex
     extended    realpart;
     extended    imagpart;
 } xcomplex;
-#endif
 
 typedef struct {        // double precision complex
     double      realpart;
@@ -88,6 +91,17 @@ _WMRTLINK extern dcomplex   _IF_C16Pow( double base_r, double base_i,
 _WMRTLINK extern dcomplex   _IF_C16PowI( double a, double b, intstar4 i );
 _WMRTLINK extern dcomplex   _IF_CDSIN( double r, double i );
 _WMRTLINK extern dcomplex   _IF_CDSQRT( double r, double i );
+
+_WMRTLINK extern xcomplex   _IF_C32Div( extended a, extended b, extended c, extended d );
+_WMRTLINK extern xcomplex   _IF_C32Mul( extended a, extended b, extended c, extended d );
+_WMRTLINK extern xcomplex   _IF_C32Pow( extended a, extended b, extended c, extended d );
+_WMRTLINK extern xcomplex   _IF_C32PowI( extended a, extended b, intstar4 i );
+
+_WMRTLINK extern complex    _IF_C8Div( single a, single b, single c, single d );
+_WMRTLINK extern complex    _IF_C8Mul( single a, single b, single c, single d );
+_WMRTLINK extern complex    _IF_C8Pow( single a, single b, single c, single d );
+_WMRTLINK extern complex    _IF_C8PowI( single a, single b, intstar4 i );
+
 
 #ifdef __cplusplus
 };

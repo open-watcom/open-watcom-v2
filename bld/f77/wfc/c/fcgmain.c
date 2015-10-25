@@ -44,6 +44,13 @@
 #include "wf77labe.h"
 #include "compcfg.h"
 #include "emitobj.h"
+#include "fcflow.h"
+#include "fcsyms.h"
+#include "tmpdefs.h"
+#include "fctemp.h"
+#include "inline.h"
+#include "fcstack.h"
+#include "gsegs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "cgcli.h"
@@ -56,18 +63,8 @@ extern  void            AllocSegs(void);
 extern  void            FiniSegs(void);
 extern  void            DefTypes(void);
 extern  void            DefStructs(void);
-extern  void            FreeGlobalSegs(void);
-extern  void            InitStack(void);
 extern  void            InitRtRtns(void);
 extern  void            FreeRtRtns(void);
-extern  void            InitInlinePragmas(void);
-extern  void            FreeInlinePragmas(void);
-extern  void            InitLabels(void);
-extern  void            FiniLabels(int);
-extern  void            FreeGlobalData(void);
-extern  void            FreeUsedBacks(bool);
-extern  void            InitTmps(void);
-extern  void            FiniTmps(void);
 extern  void            InitSubSegs(void);
 extern  char            *GetFullSrcName(void);
 
@@ -76,7 +73,10 @@ extern  void            (* __FAR FCJmpTab[])(void);
 /* Forward declarations */
 static  void    CGStart( void );
 static  void    InitCG( void );
-void    FCodeSequence( void );
+void            FCodeSequence( void );
+
+void            CGPurge(void);
+void            CGGenSub(void);
 
 
 cgflags_t               CGFlags = { 0 };

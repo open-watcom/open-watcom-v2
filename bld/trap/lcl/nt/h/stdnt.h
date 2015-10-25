@@ -165,11 +165,9 @@ struct msg_list {
 
 
 /*
- * global variables
+ * global variables prototypes
  */
 
-#define TRPGLOBAL extern
-#define TRPGLOBINIT( x )
 #include "globals.h"
 
 /*
@@ -204,8 +202,7 @@ void AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */
 int DebugExecute( DWORD state, int *tsc, bool );
-void InterruptProgram( void );
-void InterruptProgram( void );
+void Interrupt( void );
 bool Terminate( void );
 
 /* misc.c */

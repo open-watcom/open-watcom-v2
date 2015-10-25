@@ -80,3 +80,6 @@
 #define FLAG_I_MASK  ( 1 << 9 )
 #define FLAG_D_MASK  ( 1 << 10 )
 #define FLAG_O_MASK  ( 1 << 11 )
+
+WINEXPORT BOOL FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL FAR PASCAL StatDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

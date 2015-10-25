@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <wwindows.h>
 #include "spydll.h"
+#include "dllmain.h"
 
 typedef struct
 {
@@ -83,7 +84,7 @@ static void HandleMessage( MSG *data )
     }
 }
 
-BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID ptr )
 {
     reason = reason;
     ptr = ptr;

@@ -37,6 +37,7 @@
 #include "global.h"
 #include "fcgbls.h"
 #include "wf77aux.h"
+#include "auxlook.h"
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"
@@ -46,16 +47,15 @@
 #include "inout.h"
 #include "cspawn.h"
 #include "asmstmt.h"
+#include "chain.h"
+#include "data.h"
+#include "kwlookup.h"
+#include "symtab.h"
 
 #include "clibext.h"
 
 
-extern  int             KwLookUp(char **,int,char *,int,bool);
-extern  int             MkHexConst(char *,char *,int);
 extern  char            *SkipBlanks(char *);
-extern  aux_info        *AuxLookupName(char *,int);
-extern  sym_id          SymFind(char *,uint);
-extern  void            FreeChain(void *);
 
 static  aux_info        *CurrAux;
 static  char            *TokStart;

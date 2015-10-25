@@ -35,8 +35,8 @@
 #include "guimkey.h"
 #include "uishift.h"
 #include "guix.h"
+#include "guimapky.h"
 
-extern  gui_window      *GUICurrWnd;
 extern  gui_keystate    KeyState;
 
 void GUISetKeyState( void )

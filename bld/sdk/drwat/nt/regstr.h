@@ -54,3 +54,6 @@ void UpdateRegString( HWND string, HWND list, int x, int y, int width, int heigh
 void SetRegStringDestroyFlag( HWND hwnd );
 BOOL GetRegStringDestroyFlag( HWND hwnd );
 void InitRegString(void);
+void GetChildPos( HWND parent, HWND child, RECT *c_rect );
+BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam);
+LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

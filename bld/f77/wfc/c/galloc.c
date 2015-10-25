@@ -39,9 +39,9 @@
 #include "fcodes.h"
 #include "falloc.h"
 #include "emitobj.h"
+#include "allocate.h"
+#include "galloc.h"
 
-extern  void            DimArray(sym_id);
-extern  void            LoadSCB(sym_id);
 
 static  unsigned_16     allocFlags;
 static  obj_ptr         flagsLabel;

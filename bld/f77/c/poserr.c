@@ -66,7 +66,7 @@ int     Errorf( b_file *io ) {
 }
 
 
-bool    EOFile( b_file *io ) {
+bool    EOFile( a_file *io ) {
 // Check if end-of-file.
 
     if( io == NULL ) {

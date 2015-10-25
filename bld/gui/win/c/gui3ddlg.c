@@ -32,7 +32,6 @@
 #include "guiwind.h"
 #include "ctl3dcvr.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 bool GUI3DDialogInit( void )
 {

@@ -35,8 +35,8 @@
 //
 
 #include "ftnstd.h"
-
 #include <stddef.h>
+#include "external.h"
 
 extern  int             _grow_handles(int);
 

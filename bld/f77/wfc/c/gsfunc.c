@@ -39,8 +39,9 @@
 #include "fcodes.h"
 #include "opn.h"
 #include "emitobj.h"
+#include "gsfunc.h"
+#include "gstring.h"
 
-extern  sym_id          GTempString(uint);
 
 
 void    GSFArg( sym_id sym ) {

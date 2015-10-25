@@ -56,4 +56,8 @@ void    RegisterRtns( DisAsmRtns *rtns );
 void    MiscDoCode( instruction *, bool, DisAsmRtns * );
 void    MiscFormatIns( char *, instruction *, form_option, DisAsmRtns * );
 
+char    *GetWtkInsName( unsigned ins );
+void    DoWtk( void );
+int     IsWtk( void );
+
 #endif /* _SDKASM_H_INCLUDED */

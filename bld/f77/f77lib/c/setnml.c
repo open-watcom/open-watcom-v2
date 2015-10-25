@@ -35,13 +35,11 @@
 //
 
 #include "ftnstd.h"
+#include <stdarg.h>
 #include "rundat.h"
 #include "rtenv.h"
+#include "nmlio.h"
 
-#include <stdarg.h>
-
-extern  void                    NmlExec(void);
-extern  void                    NmlAddrs(va_list);
 
 extern  void                    (*FmtRoutine)( void );
 

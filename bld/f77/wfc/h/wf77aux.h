@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
+#include <time.h>
 #include "cgaux.h"
+#include "asmstmt.h"
 
 // The following describes argument information:
 
@@ -93,11 +95,26 @@ typedef struct arr_info {
     char                arr[1];
 } arr_info;
 
-#include <time.h>
-
 typedef struct dep_info {
     struct dep_info     *link;
     time_t              time_stamp;
     char                fn[1];
 } dep_info;
 
+
+
+extern void            InitAuxInfo( void );
+extern void            FiniAuxInfo( void );
+extern void            SubAuxInit( void );
+extern void            SubAuxFini( void );
+extern void            AddDependencyInfo( source_t *fi );
+extern void            DefaultLibInfo( void );
+extern aux_info        *NewAuxEntry( char *name, int name_len );
+extern void            Pragma( void );
+extern void            DoPragma( char *ptr );
+extern void            ProcPragma( char *ptr );
+extern void            CopyAuxInfo( aux_info *dst, aux_info *src );
+extern void            *AsmQuerySymbol( const char *name );
+extern enum sym_state  AsmQueryState( void *handle );
+extern enum sym_type   AsmQueryType( void *handle );
+extern uint_32         AsmQuerySPOffsetOf( void *handle );

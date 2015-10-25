@@ -32,13 +32,13 @@ ufns =
 # rt 
 !inject finittrd.obj                 nt nta ntp nov     o32     q32         l32       
 !inject ftermtrd.obj                 nt nta ntp nov     o32     q32         l32       
-!inject fthrdini.obj                 nt nta ntp nov     o32     q32         l32       
-!inject thrdutil.obj                 nt nta ntp nov     o32     q32         l32       
+!inject fthrdini.obj                 nt nta ntp nov     o32     q32
+!inject thrdutil.obj                 nt nta ntp nov     o32     q32
 # dep_rt
 !inject fiosem.obj                   nt nta ntp nov     o32     q32         l32       
 !inject initftrd.obj                 nt nta ntp nov     o32     q32         l32       
 # ufns 
-!inject fthread.obj                  nt nta ntp nov     o32     q32         l32       
+!inject fthread.obj                  nt nta ntp nov     o32     q32
 #===============================================================================
 
 

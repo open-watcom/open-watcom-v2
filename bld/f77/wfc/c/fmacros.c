@@ -37,6 +37,8 @@
 #include "cpopt.h"
 #include "fmemmgr.h"
 #include "ferror.h"
+#include "fmacros.h"
+#include <string.h>
 
 #include "clibext.h"
 

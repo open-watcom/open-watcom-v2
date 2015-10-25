@@ -37,18 +37,14 @@
 #include "progsw.h"
 #include "opn.h"
 #include "insert.h"
+#include "impltab.h"
+#include "rstnlist.h"
+#include "rststruc.h"
+#include "symtab.h"
+#include "declare.h"
+#include "rstmgr.h"
 
-extern  sym_id          STName(char *,int);
-extern  sym_id          STCommon(char *,int);
-extern  void            VSTInit(void);
 extern  sym_id          STNameSearch(char *,int);
-extern  void            InitImplTab(void);
-extern  TYPE            ImplType(char);
-extern  uint            ImplSize(char);
-extern  sym_id          FieldLookup(sym_id,char *,uint,intstar4 *);
-extern  sym_id          STNameList(char *,uint);
-extern  sym_id          FindNameList(char *,uint);
-extern  TYPE            MapTypes(TYPE,uint);
 
 #define PROG_LEN        5
 char    ProgName[ PROG_LEN+1 ] = { 'F','M','A','I','N',
