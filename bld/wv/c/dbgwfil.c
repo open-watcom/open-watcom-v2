@@ -56,6 +56,7 @@
 #include "dbgupdt.h"
 #include "dlgexpr.h"
 #include "dbgdot.h"
+#include "dbgwass.h"
 
 
 extern a_window         *WndFileInspect( char *file, bool binary );
@@ -66,14 +67,9 @@ extern a_window         *WndAsmInspect( address );
 extern int              DlgSearch( a_window *, void * );
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             WndVarInspect( const char * );
-extern void             AsmMoveDot( a_window *, address );
-extern void             AsmJoinSrc( a_window *, a_window * );
-extern void             AsmFreeSrc( a_window * );
-extern void             AsmNewSrcNotify( a_window *, mod_handle, bool track );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern void             WndSrcInspect( address addr );
 extern void             WndModInspect( mod_handle mod );
-extern a_window         *AsmWndFind( a_window *asw, address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
 extern unsigned         ExprSize( stack_entry * );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );

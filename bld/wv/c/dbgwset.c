@@ -51,6 +51,7 @@
 #include "dbgtrace.h"
 #include "dbgupdt.h"
 #include "dbglkup.h"
+#include "dbgwass.h"
 
 #include "clibext.h"
 
@@ -62,7 +63,6 @@ extern void             WndRestoreToFront( a_window* );
 extern wnd_class        ReqWndName( void );
 extern gui_menu_struct  *AddMenuAccel( const char *, const char *, wnd_class, bool * );
 extern void             VarChangeOptions( void );
-extern void             AsmChangeOptions( void );
 extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );

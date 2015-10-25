@@ -51,6 +51,7 @@
 #include "dipinter.h"
 #include "dbginsty.h"
 #include "dbglkup.h"
+#include "dbgwass.h"
 
 #include "clibext.h"
 
@@ -60,7 +61,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern bool             WndVarAdd( a_window *, const char *, unsigned, bool );
 extern WNDOPEN          WndVarOpen;
-extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern a_window         *DoWndMemOpen( address, mad_type_handle );
 extern a_window         *DoWndIOOpen( address*, mad_type_handle );
@@ -73,7 +73,6 @@ extern a_window         *DoWndModOpen( mod_handle handle );
 extern a_window         *DoWndGlobOpen( mod_handle handle );
 extern void             MemSetLength( a_window *wnd, unsigned size );
 extern void             MemSetFollow( a_window *wnd, char *follow );
-extern void             AsmMoveDot( a_window *wnd, address addr );
 extern bool             SrcMoveDot( a_window *wnd, address addr );
 extern void             FuncNewMod( a_window *wnd, mod_handle mod );
 extern void             GlobNewMod( a_window *wnd, mod_handle mod );

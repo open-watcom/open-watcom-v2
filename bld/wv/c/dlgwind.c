@@ -37,11 +37,11 @@
 #include "dlgwind.h"
 #include "dbgscan.h"
 #include "dlgexpr.h"
+#include "dbgwass.h"
 
 
 extern int              TabIntervalGet( void );
 extern void             TabIntervalSet( int );
-extern void             AsmChangeOptions( void );
 extern void             VarChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );

@@ -53,6 +53,7 @@
 #include "remcore.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgwass.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -68,7 +69,6 @@ extern bool             DlgSearchAll( char **, void * );
 extern gui_colour_set   *GetWndColours( wnd_class wndcls );
 extern a_window         *WndSrchOpen( const char * );
 extern void             *GetWndFont( a_window * );
-extern bool             AsmOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern bool             FileOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
 extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );

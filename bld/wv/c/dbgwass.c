@@ -59,6 +59,7 @@
 #include "dbginsty.h"
 #include "dbgupdt.h"
 #include "dlgexpr.h"
+#include "dbgwass.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -74,7 +75,6 @@ extern void             SrcFreeAsm( a_window * );
 extern void             SrcNewAsmNotify( a_window *, mod_handle, bool track );
 extern a_window         *SrcWndFind( a_window*src, address addr,bool track );
 extern void             FileBreakGadget( a_window *,wnd_line_piece *line, bool curr, brkp *bp );
-extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern void             WndVarInspect( const char * );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
