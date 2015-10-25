@@ -47,6 +47,8 @@ extern void     RestoreOrigVectors( void );
   #endif
 #elif defined( __NT__ )
 extern void     TellHWND( HWND hwnd );
+extern void     TellInterrupt( void );
+extern bool     TellTerminate( void );
 #elif defined( __WINDOWS__ )
 extern int      HardModeRequired;
 
@@ -55,5 +57,9 @@ extern void     (TRAPENTRY*InfoFunction)(HWND);
 extern void     (TRAPENTRY*UnLockInput)(void);
 extern void     (TRAPENTRY*SetHardMode)(char);
 extern void     DoHardModeCheck( void );
+
+extern void     TellHWND( HWND hwnd );
+extern void     DoHardModeCheck( void );
+extern bool     TellTerminate( void );
 #else
 #endif
