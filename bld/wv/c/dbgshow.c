@@ -47,9 +47,9 @@
 #include "dbgmisc.h"
 #include "addarith.h"
 #include "dbglist.h"
+#include "dbgset.h"
 
 
-extern void             ConfigSet( void );
 extern void             ConfigDisp( void );
 extern void             ConfigFont( void );
 extern void             ConfigPaint( void );

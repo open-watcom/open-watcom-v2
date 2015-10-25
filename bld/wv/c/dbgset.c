@@ -52,6 +52,7 @@
 #include "dbgvset.h"
 #include "dbgparse.h"
 #include "dbgtrace.h"
+#include "dbgset.h"
 
 #include "clibext.h"
 

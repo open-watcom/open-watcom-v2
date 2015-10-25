@@ -50,14 +50,13 @@
 #include "dbgprog.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgset.h"
 
 
 extern char             *Language;
 
-
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern void             NewLang( const char * );
 extern address          GetCodeDot( void );
 
 

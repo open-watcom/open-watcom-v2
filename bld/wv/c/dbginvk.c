@@ -40,12 +40,11 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "dbglog.h"
+#include "dbgset.h"
 
 #include "clibext.h"
 
 
-extern bool             SwitchOnOff( void );
-extern void             ShowSwitch( bool );
 extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 
 

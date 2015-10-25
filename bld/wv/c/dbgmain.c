@@ -63,6 +63,7 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "dbgevent.h"
+#include "dbgset.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -90,8 +91,6 @@ extern void             InitMemWindow( void );
 extern void             InitMenus( void );
 extern void             InitPaint( void );
 extern void             InitToolBar( void );
-extern void             LangSetFini( void );
-extern bool             LangSetInit( void );
 extern void             PathFini( void );
 extern void             PathInit( void );
 extern void             PredefFini( void );
@@ -102,12 +101,10 @@ extern void             ProcDisplay( void );
 extern void             ProcFont( void );
 extern void             ProcHelp( void );
 extern void             ProcPaint( void );
-extern void             ProcSet( void );
 extern void             ProcView( void );
 extern void             RestoreHandlers( void );
 extern void             StartupErr( const char * );
 extern void             Suicide( void );
-extern void             SupportFini( void );
 extern void             SymCompFini( void );
 extern void             SysFileInit( void );
 extern bool             TBreak( void );

@@ -56,6 +56,7 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgevent.h"
+#include "dbgset.h"
 
 
 enum {
@@ -115,7 +116,6 @@ extern long             GetDataLong( void );
 extern void             GetCurrOpcode( void );
 extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );
-extern bool             IsSupportRoutine( sym_handle * );
 
 static const char LevelTab[] = {
     #define pick( a,b ) b

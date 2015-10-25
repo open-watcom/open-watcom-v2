@@ -44,9 +44,8 @@
 #include "dbgpend.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgset.h"
 
-
-extern void             NewLang( const char *lang );
 
 static bool ProcPending( void )
 {
