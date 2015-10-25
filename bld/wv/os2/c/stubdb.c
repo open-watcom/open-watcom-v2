@@ -61,9 +61,9 @@
 #include "trpld.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgdot.h"
 
 
-extern address          GetCodeDot( void );
 extern void             *WndAsmInspect( address addr );
 
 static bool             Done;

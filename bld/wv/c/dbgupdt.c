@@ -48,8 +48,7 @@
 #include "dbgupdt.h"
 #include "namelist.h"
 #include "symcomp.h"
-
-extern address          GetCodeDot( void );
+#include "dbgdot.h"
 
 
 void DbgUpdate( update_list flags )

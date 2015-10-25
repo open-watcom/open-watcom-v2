@@ -99,6 +99,7 @@ Done:
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbginsty.h"
+#include "dbgdot.h"
 
 
 enum {
@@ -112,7 +113,6 @@ enum {
 /* External Functions Used */
 extern void             CallResults( void );
 extern void             DlgCmd( void );
-extern address          GetCodeDot( void );
 extern void             ProcCall( void );
 extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );

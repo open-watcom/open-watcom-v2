@@ -51,6 +51,8 @@
 #include "guiwin.h"
 #include "wndsys.h"
 #include "trpsys.h"
+#include "dbginit.h"
+
 
 extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 

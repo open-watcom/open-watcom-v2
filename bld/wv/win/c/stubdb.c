@@ -56,12 +56,11 @@
 #include "dbgtrace.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbgdot.h"
 
 
-extern address          GetCodeDot( void );
 extern void             *WndAsmInspect(address addr);
 extern void             DlgCmd( void );
-extern address          GetCodeDot( void );
 
 volatile bool           BrkPending;
 

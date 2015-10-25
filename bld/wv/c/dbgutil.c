@@ -51,14 +51,13 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgset.h"
+#include "dbgdot.h"
 
 
 extern char             *Language;
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern address          GetCodeDot( void );
-
 
 unsigned DefaultSize( default_kind dk )
 {

@@ -55,6 +55,7 @@
 #include "dbginsty.h"
 #include "dbgupdt.h"
 #include "dlgexpr.h"
+#include "dbgdot.h"
 
 
 extern a_window         *WndFileInspect( char *file, bool binary );
@@ -63,8 +64,6 @@ extern bool             DlgBreak( address );
 extern void             WndInspect( const char * );
 extern a_window         *WndAsmInspect( address );
 extern int              DlgSearch( a_window *, void * );
-extern void             SetCodeDot( address );
-extern address          GetCodeDot( void );
 extern a_window         *WndClassInspect( wnd_class wndcls );
 extern void             WndVarInspect( const char * );
 extern void             AsmMoveDot( a_window *, address );

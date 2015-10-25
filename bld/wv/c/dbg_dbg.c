@@ -44,15 +44,12 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "dbgdot.h"
 
 #include "clibext.h"
 
+
 typedef int     cmp_func( const void *, const void *, size_t );
-
-
-extern address          GetDataDot( void );
-extern address          GetCodeDot( void );
-
 
 typedef struct wv_sym_list      wv_sym_list;
 struct wv_sym_list {

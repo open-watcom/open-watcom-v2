@@ -37,12 +37,12 @@
 #include "dbgscan.h"
 #include "dbgparse.h"
 #include "dbgexins.h"
+#include "dbgdot.h"
 
 
 extern bool             HasLinInfo(address );
 extern void             *WndAsmInspect(address);
 extern void             *WndSrcInspect(address);
-extern address          GetCodeDot( void );
 
 
 /*

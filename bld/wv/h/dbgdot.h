@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-extern address GetDotAddr( void );
-extern void SetCodeLoc( address addr );
-extern void SetDataLoc( address addr );
-extern void SetCodeDot( address addr );
-extern void SetDataDot( address addr );
-extern address GetCodeDot( void );
-extern address GetDataDot( void );
+extern address  GetDotAddr( void );
+extern void     SetCodeLoc( address addr );
+extern void     SetDataLoc( address addr );
+extern void     SetCodeDot( address addr );
+extern void     SetDataDot( address addr );
+extern address  GetCodeDot( void );
+extern address  GetDataDot( void );

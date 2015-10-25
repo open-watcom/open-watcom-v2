@@ -50,6 +50,7 @@
 #include "remrtrd.h"
 #include "dbgreg.h"
 #include "dlgexpr.h"
+#include "dbgdot.h"
 
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
@@ -72,7 +73,6 @@ extern void             WndDumpPrompt( a_window * );
 extern void             WndDumpLog( a_window * );
 extern void             DlgWndSet( void );
 extern bool             VarInfoRelease( void );
-extern address          GetCodeDot( void );
 extern void             FuncNewMod( a_window *wnd, mod_handle mod );
 extern void             GlobNewMod( a_window *wnd, mod_handle mod );
 extern void             ModNewHandle( a_window *wnd, mod_handle mod );
