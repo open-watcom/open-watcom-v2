@@ -47,21 +47,17 @@
 #include "guigmous.h"
 #include "guiwin.h"
 #include "wndsys.h"
-#include "trpld.h"
+#include "trpsys.h"
 
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
 
-extern HMQ      GUIPMmq;
-
-extern void     TellHandles( HAB hab, HWND hwnd );
-extern bool     IsTrapFilePumpingMessageQueue( void );
-
+extern HMQ              GUIPMmq;
+extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;
 int                     ForceHardMode;
 bool                    ToldWinHandle = FALSE;
-extern a_window         *WndMain;
 //TODO: see if these two event sems could be replaced by single mutex
 HEV                     PumpMessageSem = NULLHANDLE;
 HEV                     PumpMessageDoneSem = NULLHANDLE;
