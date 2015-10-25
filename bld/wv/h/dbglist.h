@@ -30,29 +30,5 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgerr.h"
-#include "dbgmem.h"
-#include "dui.h"
-#include "dbglit.h"
-#include "dbgscan.h"
-#include "dbglist.h"
-
-
-extern void     ShowReplay( void );
-extern void     ShowCalls( void );
-extern void     ShowVarDisplay( void );
-
-void ConfigEvent( void )
-{
-    ReqEOC();
-    ShowReplay();
-}
-
-
-void ConfigCalls( void )
-{
-    ReqEOC();
-    ShowCalls();
-}
+extern void ConfigEvent( void );
+extern void ConfigCalls( void );

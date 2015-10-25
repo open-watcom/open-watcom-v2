@@ -46,14 +46,13 @@
 #include "dbgparse.h"
 #include "dbgmisc.h"
 #include "addarith.h"
+#include "dbglist.h"
 
 
 extern void             ConfigSet( void );
 extern void             ConfigDisp( void );
 extern void             ConfigFont( void );
 extern void             ConfigPaint( void );
-extern void             ConfigEvent( void );
-extern void             ConfigCalls( void );
 
 
 /*
