@@ -47,6 +47,8 @@
 #include "wndsys.h"
 #include "dbgtrace.h"
 #include "modlist.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 #include "clibext.h"
 

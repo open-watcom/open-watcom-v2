@@ -50,6 +50,8 @@
 #include "dbgsem.h"
 #include "dbgdot.h"
 #include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 #include "clibext.h"
 
@@ -83,7 +85,6 @@ extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
 extern void             PurgeSymHandles( void );
-extern bool             IsInternalMod( mod_handle );
 extern sym_list         *Disambiguate( sym_list * );
 extern void             FreeSymHandle( sym_list * );
 extern mod_handle       LookupImageName( const char *, unsigned );

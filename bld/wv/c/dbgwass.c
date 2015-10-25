@@ -52,6 +52,8 @@
 #include "modlist.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );

@@ -48,6 +48,8 @@
 #include "dbgparse.h"
 #include "wndsys.h"
 #include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern bool             ScanSelectedExpr( const char * );

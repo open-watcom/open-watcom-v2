@@ -58,6 +58,8 @@
 #include "dbgtrace.h"
 #include "remcore.h"
 #include "remfile.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 #include "clibext.h"
 
@@ -85,7 +87,6 @@ extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );
-extern char             *DIPMsgText( dip_status );
 extern address          GetRegSP( void );
 extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );

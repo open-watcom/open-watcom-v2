@@ -43,6 +43,8 @@
 #include "dbgparse.h"
 #include "wndsys.h"
 #include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 extern int              GetStackPos( void );
 extern unsigned         UndoLevel( void );

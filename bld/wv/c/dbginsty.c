@@ -45,9 +45,9 @@
 #include "dbgovl.h"
 #include "dbgbrk.h"
 #include "dbgparse.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
-
-extern bool             IsInternalMod( mod_handle mod );
 
 extern stack_entry      *ExprSP;
 

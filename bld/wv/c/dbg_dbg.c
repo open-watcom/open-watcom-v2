@@ -41,6 +41,8 @@
 #include "dbg_dbg.h"
 #include "remcore.h"
 #include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 #include "clibext.h"
 
@@ -52,7 +54,6 @@ extern address          GetRegSP( void );
 extern address          GetRegBP( void );
 extern address          GetDataDot( void );
 extern address          GetCodeDot( void );
-extern bool             IsInternalMod( mod_handle );
 
 
 typedef struct wv_sym_list      wv_sym_list;

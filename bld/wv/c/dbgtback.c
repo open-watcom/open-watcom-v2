@@ -39,6 +39,8 @@
 #include "mad.h"
 #include "dbgexpr.h"
 #include "dbgovl.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 static unsigned                 OvlLevel;

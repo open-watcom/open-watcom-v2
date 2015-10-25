@@ -42,6 +42,8 @@
 #include "strutil.h"
 #include "dbgutil.h"
 #include "dbgbrk.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern address          FindLclBlock( address addr );

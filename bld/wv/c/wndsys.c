@@ -51,6 +51,8 @@
 #include "dbgwdlg.h"
 #include "wndsys.h"
 #include "remcore.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -69,7 +71,6 @@ extern void             *GetWndFont( a_window * );
 extern bool             AsmOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern bool             FileOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
-extern bool             IsInternalMod( mod_handle );
 extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );
 extern char             LookUpCtrlKey( unsigned key );
 extern bool             MacKeyHit( a_window *wnd, unsigned key );

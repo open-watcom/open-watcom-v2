@@ -52,6 +52,8 @@
 #include "dbgprint.h"
 #include "dbgparse.h"
 #include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 #include "clibext.h"
 

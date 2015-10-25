@@ -59,6 +59,8 @@
 #include "dbgcmd.h"
 #include "dbgtrace.h"
 #include "trpld.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern address          GetCodeDot( void );

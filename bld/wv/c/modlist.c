@@ -40,11 +40,11 @@
 #include "strutil.h"
 #include "dbgbrk.h"
 #include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 #include "clibext.h"
 
-
-extern bool             IsInternalMod( mod_handle mod );
 
 extern  bool            ModHasSourceInfo( mod_handle handle )
 {

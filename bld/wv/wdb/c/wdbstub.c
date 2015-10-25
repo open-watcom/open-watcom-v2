@@ -96,6 +96,8 @@ Done:
 #include "dbgprog.h"
 #include "dbgtrace.h"
 #include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 enum {
     REQ_NONE,

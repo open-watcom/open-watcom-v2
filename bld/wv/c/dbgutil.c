@@ -48,6 +48,8 @@
 #include "dbgutil.h"
 #include "dbgovl.h"
 #include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern char             *Language;

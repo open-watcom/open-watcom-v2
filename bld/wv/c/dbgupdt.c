@@ -42,6 +42,8 @@
 #include "dbgstk.h"
 #include "dbgexpr.h"
 #include "dbgbrk.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 extern void             SetStackPos( location_context *lc, int pos );
 extern void             SymCompFini( void );

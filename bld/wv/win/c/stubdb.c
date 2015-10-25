@@ -54,6 +54,8 @@
 #include "envlkup.h"
 #include "dbgcmd.h"
 #include "dbgtrace.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 extern address          GetCodeDot( void );
 extern void             *WndAsmInspect(address addr);

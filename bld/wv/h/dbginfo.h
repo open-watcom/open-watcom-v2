@@ -114,10 +114,4 @@ typedef enum {
     REMAP_ERROR,
     REMAP_WRONG_IMAGE,
 } remap_return;
-
-search_result   DeAliasAddrMod( address, mod_handle * );
-search_result   DeAliasAddrSym( mod_handle, address, sym_handle * );
-search_result   DeAliasAddrScope( mod_handle, address, scope_block * );
-search_result   DeAliasAddrCue( mod_handle, address, cue_handle * );
-
 #endif

@@ -49,6 +49,7 @@
 #include "dbgovl.h"
 #include "dbg_dbg.h"
 #include "dbgprog.h"
+#include "dipinter.h"
 
 #include "clibext.h"
 

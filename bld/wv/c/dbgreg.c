@@ -58,6 +58,8 @@
 #include "remcore.h"
 #include "dbgmisc.h"
 #include "removl.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern int              AddrComp( address a, address b );
@@ -65,7 +67,6 @@ extern void             RecordEvent( const char *p );
 extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );
 extern bool             DlgIncompleteUndo( void );
-extern void             MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti );
 
 static int              StackPos;
 static bool             AlreadyWarnedUndo;
@@ -102,7 +103,6 @@ extern void             StartupErr( const char * );
 extern void             DbgUpdate( update_list );
 extern void             FindAddrSectId( address *, int );
 extern char             *Rtrm( char * );
-extern dip_status       RegLocation( machine_state *regs, const mad_reg_info *ri, location_list *ll );
 
 
 void DefAddr( memory_expr def_seg, address *addr )

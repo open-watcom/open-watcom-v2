@@ -53,6 +53,8 @@
 #include "dbgovl.h"
 #include "dbg_dbg.h"
 #include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern address          AddrAdd( address, long );

@@ -42,12 +42,10 @@
 #include "dbgshow.h"
 #include "dbgprog.h"
 #include "remcore.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 #include "clibext.h"
-
-
-extern bool             IsInternalMod( mod_handle );
-extern bool             IsInternalModName( const char *, unsigned );
 
 
 typedef struct lookup_list {

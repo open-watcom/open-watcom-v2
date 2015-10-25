@@ -42,11 +42,11 @@
 #include "dbgutil.h"
 #include "dbgmain.h"
 #include "dbgpend.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern void             NewLang( const char *lang );
-extern bool             IsInternalMod( mod_handle );
-
 
 static bool ProcPending( void )
 {

@@ -51,6 +51,8 @@
 #include "remcore.h"
 #include "dbgmisc.h"
 #include "removl.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 enum {
