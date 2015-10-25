@@ -36,8 +36,6 @@
 #include "dbginit.h"
 
 
-extern void PopErrBox( const char *buff );
-
 static jmp_buf  *ExitSP;
 
 /*

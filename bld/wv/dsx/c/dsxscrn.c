@@ -45,6 +45,7 @@
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
+#include "dbgerr.h"
 
 
 #define _64K                    (64UL*1024)
@@ -139,7 +140,6 @@ typedef struct {
     };
 } screen_info;
 
-extern void                     StartupErr( const char * );
 extern bool                     UserScreen( void );
 
 extern flip_types               FlipMech = 0;

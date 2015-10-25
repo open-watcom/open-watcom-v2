@@ -51,13 +51,13 @@
 #include "dbgprog.h"
 #include "dipinter.h"
 #include "addarith.h"
+#include "dbgerr.h"
 
 #include "clibext.h"
 
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern void             StartupErr( const char * );
 
 /*
  * Client support routines

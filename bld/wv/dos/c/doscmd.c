@@ -41,9 +41,6 @@
 #include "dbglkup.h"
 
 
-extern void             StartupErr( const char * );
-
-
 extern addr_seg         _psp;
 extern unsigned         OvlAreaSize;
 

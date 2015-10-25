@@ -90,18 +90,13 @@ typedef struct copyspec {
         int             dst_loc;
 } COPYSPEC, *COPYPTR;
 
-extern  void            SysFileInit( void );
-extern  void            PathInit( void );
 extern  bool            InitTrap( const char * );
 extern  bool            InitRFXSupp( void );
 extern  void            FiniTrap( void );
 extern  void            InitInt( void );
 extern  void            FiniInt( void );
 extern  int             CtrlCHit( void );
-extern  const char      *RealFName( const char *, open_access * );
-extern  sys_error       GetSystemErrCode( error_idx );
-extern  error_idx       GetLastErr( void );
-extern  sys_handle      GetSystemHandle( handle );
+extern  long            FreeSpace( char drive, int loc );
 
 extern  const char      *_FileParse( const char *name, file_parse *file );
 extern  char            *Squish( file_parse *parse, char *into );
@@ -373,7 +368,7 @@ char *MyStrDup( const char *str ) {
     return( new );
 }
 
-extern  char    *Copy( const void *s, void *d, unsigned len ) {
+char *Copy( const void *s, void *d, unsigned len ) {
 
     char        *dst = d;
     const char  *src = s;
@@ -384,7 +379,7 @@ extern  char    *Copy( const void *s, void *d, unsigned len ) {
     return( dst );
 }
 
-extern  char    *Fill( void *d, int len, char filler ) {
+char *Fill( void *d, int len, char filler ) {
 
     char *dst = d;
     while( len-- ) {
@@ -393,7 +388,7 @@ extern  char    *Fill( void *d, int len, char filler ) {
     return( dst );
 }
 
-extern char *CopyStr( const char *src, char *dst )
+char *CopyStr( const char *src, char *dst )
 {
     while( (*dst = *src) != '\0' ) {
         ++src;
@@ -402,7 +397,7 @@ extern char *CopyStr( const char *src, char *dst )
     return( dst );
 }
 
-extern  void    DItoD( long s, char *d ) {
+void DItoD( long s, char *d ) {
 
     if( s == 0 ) {
         *d = '0';
@@ -414,7 +409,7 @@ extern  void    DItoD( long s, char *d ) {
     }
 }
 
-extern  void    ItoD( unsigned int i, char *b ) {
+void ItoD( unsigned int i, char *b ) {
 
     b[ 1 ] = i % 10 + '0';
     i /= 10;
@@ -1327,7 +1322,7 @@ static  void    DirClosef( dir_handle *h )
     DbgFree( h );
 }
 
-extern  dir_handle      *DirOpenf( const char *fspec, int fnloc )
+dir_handle      *DirOpenf( const char *fspec, int fnloc )
 {
     dir_handle  *h;
     error_idx   retc;
@@ -1364,15 +1359,15 @@ extern  dir_handle      *DirOpenf( const char *fspec, int fnloc )
         }
     }
     if( append != NULL ) {
-        CopyStr( append, CopyStr( fspec, &h->path ) );
+        CopyStr( append, CopyStr( fspec, h->path ) );
     } else {
-        append = CopyStr( parse.drive, &h->path );
+        append = CopyStr( parse.drive, h->path );
         append = CopyStr( parse.path, append );
         append = CopyStr( parse.name, append );
         append = CopyStr( parse.ext, append );
     }
     if( GetFreeSpace( h, fnloc ) ) {
-        retc = FindFirst( &h->path, h->location, IO_SUBDIRECTORY );
+        retc = FindFirst( h->path, h->location, IO_SUBDIRECTORY );
         if( retc != 0 ) {
             SysSetErr( IO_FIND_ERROR );
             DirClosef( h );
@@ -1388,7 +1383,7 @@ extern  dir_handle      *DirOpenf( const char *fspec, int fnloc )
 }
 
 
-extern  void    DirReadf( dir_handle *h, char *buff, bool wide )
+void    DirReadf( dir_handle *h, char *buff, bool wide )
 {
     if( h->status == RFX_EOF ) {
         *buff = '\0';
@@ -1463,9 +1458,8 @@ int     GetFreeSpace( dir_handle *h, int loc )
 {
     char                *path;
     char                drive;
-    extern  long        FreeSpace();
 
-    path = &h->path;
+    path = h->path;
     if( path[ 1 ] == ':' ) {
         drive = tolower( path[ 0 ] ) - 'a' + 1;
     } else {
@@ -1801,7 +1795,7 @@ int ProcDrive( int argc, char **argv )
 /* FILE NAME PARSING                                                      */
 /**************************************************************************/
 
-extern  char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigned buff_len )
+char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigned buff_len )
 {
     while( src_len > 0 && buff_len > 0 ) {
         *buff++ = *src++;
@@ -1810,7 +1804,7 @@ extern  char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigne
     return( buff );
 }
 
-extern  const char    *_FileParse( const char *name, file_parse *file )
+const char    *_FileParse( const char *name, file_parse *file )
 {
     const char  *curr;
     const char  *dosname;
@@ -1881,7 +1875,7 @@ extern  const char    *_FileParse( const char *name, file_parse *file )
     return( dosname );
 }
 
-extern  void    CopyStrMax( const char *src, char *dst, unsigned max_len )
+void    CopyStrMax( const char *src, char *dst, unsigned max_len )
 {
     unsigned    len;
 
@@ -1894,7 +1888,7 @@ extern  void    CopyStrMax( const char *src, char *dst, unsigned max_len )
     }
 }
 
-extern  void    Replace( const char *frum, const char *to, char *into )
+void    Replace( const char *frum, const char *to, char *into )
 {
     while( *to != '\0' ) {
         switch( *to ) {
@@ -1923,12 +1917,12 @@ extern  void    Replace( const char *frum, const char *to, char *into )
     *into = '\0';
 }
 
-extern  void    FinishName( const char *fn, file_parse *parse, int loc, int addext )
+void    FinishName( const char *fn, file_parse *parse, int loc, int addext )
 {
     char        *endptr;
     long        rc;
 
-    endptr = &(parse->path[  strlen( parse->path )  ]);
+    endptr = &(parse->path[strlen( parse->path )]);
     parse->device = 0;
     if( parse->name[ 0 ] == '\0' ) {
         if( parse->ext[ 0 ] == '\0' ) {
@@ -1965,7 +1959,7 @@ extern  void    FinishName( const char *fn, file_parse *parse, int loc, int adde
     }
 }
 
-extern  char    *Squish( file_parse *parse, char *into )
+char    *Squish( file_parse *parse, char *into )
 {
     char        *endptr;
     char        *endpath;

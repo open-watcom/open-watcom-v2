@@ -45,9 +45,8 @@
 #include "dbgcmdln.h"
 #include "dbgprog.h"
 #include "dbglkup.h"
+#include "dbgerr.h"
 
-
-extern void             StartupErr( const char *err );
 
 static char             *(*GetArg)( int );
 static int              CurrArgc;

@@ -50,7 +50,6 @@
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             IsAbsolutePath( char *path );
 
 
 static const char AddTab[] = { "Add\0" };

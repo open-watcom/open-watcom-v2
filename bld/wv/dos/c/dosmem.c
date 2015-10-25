@@ -36,13 +36,13 @@
 #include "tinyio.h"
 #include "dosheap.h"
 
-unsigned            OvlAreaSize;
 
-extern void StartupErr( const char * );
 extern void __far _ovl_addarea( unsigned, unsigned );
 
 extern addr_seg     _psp;
 extern unsigned     _STACKTOP;
+
+unsigned            OvlAreaSize;
 
 void                *SyMemBeg;
 void                *SyMemEnd;

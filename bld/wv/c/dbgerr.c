@@ -46,6 +46,7 @@
 #include "dbgpend.h"
 #include "dbgprog.h"
 #include "dbglkup.h"
+#include "dbginit.h"
 
 
 extern int              ScanSavePtr;
@@ -53,7 +54,6 @@ extern int              ScanSavePtr;
 extern void             CmdError( void );
 extern void             CaptureError( void );
 extern void             DlgCmd( void );
-extern void             StartupErr( const char * );
 extern void             Suicide( void );
 
 /*
@@ -155,4 +155,11 @@ void PrevError( const char *msg )
     DUIWndDebug();
     RingBell();
     DUIErrorBox( msg );
+}
+
+void StartupErr( const char *err )
+/********************************/
+{
+    PopErrBox( err );
+    KillDebugger(1);
 }

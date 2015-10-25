@@ -50,11 +50,11 @@
 #include "remasync.h"
 #include "remenv.h"
 #include "dbginit.h"
+#include "dbgerr.h"
 
 #include "clibext.h"
 
 
-extern void             StartupErr( const char * );
 //extern void             TrapErrTranslate( char *, int );
 
 unsigned int            MaxPacketLen;

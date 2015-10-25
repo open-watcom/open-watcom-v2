@@ -48,6 +48,7 @@
 #include "dbgwdlg.h"
 #include "wndsys.h"
 #include "dlgexpr.h"
+#include "dbginit.h"
 
 
 extern a_window         *WndMain;
@@ -82,8 +83,6 @@ extern void             FiniScreen( void );
 extern void             SetTargMenuItems( void );
 extern void             SetBrkMenuItems( void );
 extern void             SetIOMenuItems( void );
-extern void             PopErrBox( const char *buff );
-extern void             KillDebugger( int ret_code );
 
 extern void             InitSuppServices( void );
 
@@ -430,14 +429,6 @@ void DUIRemoveBreak( brkp *bp )
 /***********************************/
 {
     RemovePoint( bp );
-}
-
-
-void StartupErr( const char *err )
-/********************************/
-{
-    PopErrBox( err );
-    KillDebugger(1);
 }
 
 void DUICopySize( void *cookie, unsigned long size )

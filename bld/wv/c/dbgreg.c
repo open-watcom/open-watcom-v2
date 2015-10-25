@@ -101,7 +101,6 @@ static  save_state      *StateLast;
 static  int             NumStateEntries = 0;
 
 extern long             GetDataLong( void );
-extern void             StartupErr( const char * );
 extern void             FindAddrSectId( address *, int );
 extern char             *Rtrm( char * );
 

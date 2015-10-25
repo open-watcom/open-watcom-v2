@@ -49,7 +49,6 @@
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 
 extern void WndDirty(void);
-extern void StartupErr( const char * );
 
 flip_types              FlipMech;
 mode_types              ScrnMode;

@@ -68,6 +68,7 @@
 #include "symcomp.h"
 #include "dbginit.h"
 #include "dbglkup.h"
+#include "dbgio.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -93,8 +94,6 @@ extern void             InitMemWindow( void );
 extern void             InitMenus( void );
 extern void             InitPaint( void );
 extern void             InitToolBar( void );
-extern void             PathFini( void );
-extern void             PathInit( void );
 extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
@@ -105,9 +104,7 @@ extern void             ProcHelp( void );
 extern void             ProcPaint( void );
 extern void             ProcView( void );
 extern void             RestoreHandlers( void );
-extern void             StartupErr( const char * );
 extern void             Suicide( void );
-extern void             SysFileInit( void );
 extern void             WndMemInit( void );
 
 extern int              ScanSavePtr;

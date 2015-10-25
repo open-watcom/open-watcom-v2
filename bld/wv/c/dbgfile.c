@@ -46,6 +46,7 @@
 #include "diptypes.h"
 #include "dbgsrc.h"
 #include "remfile.h"
+#include "dbgerr.h"
 
 
 #define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
@@ -53,8 +54,6 @@
 
 #define CHECK_PATH_SEP(c,i) (CHK_DIR_SEP((c),i) || CHK_DRV_SEP((c),i))
 #define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != '\0' && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
-
-extern void             StartupErr( const char * );
 
 static char_ring *LclPath;
 

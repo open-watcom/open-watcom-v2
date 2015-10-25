@@ -55,7 +55,7 @@
 #endif
 #include "clibext.h"
 
-extern void     StartupErr( const char *err );
+
 extern void     NewConsoleTitle( void );
 
 extern volatile bool    BrkPending;

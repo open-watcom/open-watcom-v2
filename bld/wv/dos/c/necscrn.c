@@ -42,10 +42,10 @@
 #include "dbgswtch.h"
 #include "dbginstr.h"
 
+
 extern unsigned inp(unsigned __port);
 extern unsigned outp(unsigned __port, unsigned __value);
 extern void WndDirty(void);
-extern void StartupErr( const char * );
 extern void uisetcurrpage(int);
 
 flip_types              FlipMech;

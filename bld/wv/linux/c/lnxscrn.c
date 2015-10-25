@@ -62,8 +62,8 @@
 #include "dbgprog.h"
 #include "dbginit.h"
 #include "dbglkup.h"
+#include "dbgerr.h"
 
-extern void     StartupErr( const char * );
 
 extern char     *UITermType;
 

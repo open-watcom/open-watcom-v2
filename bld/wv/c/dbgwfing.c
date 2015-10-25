@@ -38,7 +38,7 @@
 #include "strutil.h"
 #include "wndsys.h"
 
-extern void StartupErr( const char * );
+
 extern int WndNumColours;
 extern a_window *WndMain;
 

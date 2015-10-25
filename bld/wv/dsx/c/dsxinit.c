@@ -42,8 +42,8 @@
 #include "trpsys.h"
 #include "dbginit.h"
 #include "dbgio.h"
+#include "dbgerr.h"
 
-extern void                     StartupErr( const char * );
 
 static memptr                   OldInt1b;
 static memptr                   OldInt23;
@@ -128,7 +128,6 @@ static void Cleanup( void )
     }
 }
 
-#pragma aux KillDebugger aborts;
 void KillDebugger( int rc )
 {
     RestoreHandlers();

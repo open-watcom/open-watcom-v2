@@ -36,8 +36,8 @@
 #include "dbgwind.h"
 #endif
 #include "dbglit.h"
+#include "dbgerr.h"
 
-extern void     StartupErr( const char *err );
 
 #ifdef __GUI__
 extern a_window *WndMain;

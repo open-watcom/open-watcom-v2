@@ -59,8 +59,6 @@
 #include "dbglkup.h"
 
 
-extern void         StartupErr( const char * );
-
 extern unsigned     UIConHandle;
 extern char         *UITermType;
 

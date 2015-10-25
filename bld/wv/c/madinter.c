@@ -57,7 +57,6 @@
 
 
 extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
-extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );
 
 static mad_status       MADStatus;
