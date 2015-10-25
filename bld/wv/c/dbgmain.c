@@ -62,6 +62,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "dbgevent.h"
 
 
 // This list of extern functions is in alphabetic order.:
@@ -103,8 +104,6 @@ extern void             ProcHelp( void );
 extern void             ProcPaint( void );
 extern void             ProcSet( void );
 extern void             ProcView( void );
-extern void             RecordFini( void );
-extern void             RecordInit( void );
 extern void             RestoreHandlers( void );
 extern void             StartupErr( const char * );
 extern void             Suicide( void );

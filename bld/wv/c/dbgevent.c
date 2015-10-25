@@ -49,10 +49,7 @@
 #include "dbgreg.h"
 
 
-extern char             *GetEventAddress( event_record *ev );
-extern void             ReplayTo( event_record *ev );
 extern void             DbgUpdate( update_list );
-
 
 event_record *EventList;
 static event_record **LastOwner;

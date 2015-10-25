@@ -36,13 +36,12 @@
 #include "dbgbrk.h"
 #include "dbgprog.h"
 #include "dbgdll.h"
+#include "dbgevent.h"
 
 #include "clibext.h"
 
-char_ring               *DLLList;
 
-extern void             RecordEvent( const char *p );
-
+char_ring       *DLLList;
 
 bool DLLMatch( void )
 {

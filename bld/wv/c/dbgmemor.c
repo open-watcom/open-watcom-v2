@@ -44,9 +44,9 @@
 #include "remcore.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbgevent.h"
 
 
-extern void             RecordEvent( const char * );
 extern void             DbgUpdate( update_list );
 
 

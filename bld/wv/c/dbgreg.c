@@ -62,9 +62,9 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbgevent.h"
 
 
-extern void             RecordEvent( const char *p );
 extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );
 extern bool             DlgIncompleteUndo( void );

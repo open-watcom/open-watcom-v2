@@ -39,9 +39,9 @@
 #include "dbgscan.h"
 #include "dbglist.h"
 #include "dbgchain.h"
+#include "dbgevent.h"
 
 
-extern void     ShowReplay( void );
 extern void     ShowVarDisplay( void );
 
 void ConfigEvent( void )

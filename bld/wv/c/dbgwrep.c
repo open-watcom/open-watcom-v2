@@ -50,9 +50,6 @@
 
 extern  a_window        *WndSrcInspect( address addr );
 extern  a_window        *WndAsmInspect( address addr );
-extern char             *GetEventAddress( event_record *ev );
-extern void             ReplayTo( event_record *ev );
-
 
 enum {
     PIECE_ADDRESS,

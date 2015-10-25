@@ -50,10 +50,10 @@
 #include "dbgdot.h"
 #include "dbgmodfy.h"
 #include "dbgreg.h"
+#include "dbgevent.h"
 
 
 extern void             DbgUpdate( update_list );
-extern void             RecordCommand( const char *startpos, wd_cmd cmd );
 
 extern stack_entry      *ExprSP;
 

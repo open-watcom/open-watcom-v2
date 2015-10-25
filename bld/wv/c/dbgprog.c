@@ -62,6 +62,7 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbgevent.h"
 
 #include "clibext.h"
 
@@ -86,8 +87,6 @@ extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );
 extern bool             FindNullSym( mod_handle, address * );
 extern bool             SetWDPresent( mod_handle );
-extern void             RecordStart( void );
-extern void             RecordEvent( const char * );
 extern const char       *CheckForPowerBuilder( const char * );
 extern mod_handle       LookupImageName( const char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );

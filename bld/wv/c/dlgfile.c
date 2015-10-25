@@ -44,12 +44,10 @@
 #include "dbgshow.h"
 #include "dbgbrk.h"
 #include "remcore.h"
+#include "dbgevent.h"
 
 
 extern a_window         *WndFileInspect( char *name, bool binary );
-extern void             SaveReplayToFile( const char * );
-extern void             RestoreReplayFromFile( const char * );
-extern bool             OkToSaveReplay( void );
 extern void             FiniHelp( void );
 
 

@@ -55,16 +55,13 @@
 #include "remthrd.h"
 #include "remasync.h"
 #include "dbgreg.h"
+#include "dbgevent.h"
 
 
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
 extern bool             SetUpTrace( bool );
 extern char             DlgFatal( void );
-extern void             RecordEvent( const char *p );
-extern void             RecordGo( const char *p );
-extern void             CheckEventRecorded( void );
-extern void             RecordAsynchEvent( void );
 extern void             DbgUpdate( update_list );
 extern bool             DlgScanDataAddr( const char *str, address *value );
 extern bool             DlgScanLong( const char *str, long *value );
