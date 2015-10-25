@@ -42,6 +42,7 @@
 #include "remcore.h"
 #include "dbgmisc.h"
 #include "remasync.h"
+#include "trpld.h"
 
 
 #define SUPP_ASYNC_SERVICE( in, request )        \
