@@ -51,6 +51,7 @@
 #include "dbgreg.h"
 #include "dlgexpr.h"
 #include "dbgdot.h"
+#include "dbgwdisp.h"
 
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
@@ -67,7 +68,6 @@ extern void             FileBrowse( void );
 extern void             WndAsmInspect( address );
 extern void             WndSrcInspect( address );
 extern void             DlgAbout( void );
-extern void             FontChange( void );
 extern void             ToggleHardMode( void );
 extern void             WndDumpPrompt( a_window * );
 extern void             WndDumpLog( a_window * );

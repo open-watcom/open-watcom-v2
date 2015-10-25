@@ -49,6 +49,7 @@
 #include "wndsys.h"
 #include "dlgexpr.h"
 #include "dbginit.h"
+#include "dbgwdisp.h"
 
 
 extern a_window         *WndMain;
@@ -66,13 +67,11 @@ extern void             InitMenus( void );
 extern void             InitHelp( void );
 extern void             InitPaint( void );
 extern void             InitBrowse( void );
-extern void             InitFont( void );
 extern void             InitFileMap( void );
 extern void             InitScreen( void );
 extern void             FiniMacros( void );
 extern void             FiniBrowse( void );
 extern void             FiniPaint( void );
-extern void             FiniFont( void );
 extern void             FiniAboutMessage( void );
 extern void             FiniMenus( void );
 extern void             FiniIOWindow( void );

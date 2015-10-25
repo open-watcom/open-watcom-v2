@@ -40,13 +40,13 @@
 #include "dbgutil.h"
 #include "dbgbrk.h"
 #include "wndsys.h"
+#include "dbgwfil.h"
 
 
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndSrcInspect(address);
 extern void             WndFileInspect( char *file, bool binary );
 extern a_window         *WndAsmInspect(address);
-extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern  bool            ModHasSourceInfo( mod_handle handle );
 
 #include "menudef.h"

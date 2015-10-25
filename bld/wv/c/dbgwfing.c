@@ -37,6 +37,7 @@
 #include "guidlg.h"
 #include "strutil.h"
 #include "wndsys.h"
+#include "dbgwfing.h"
 
 
 extern int WndNumColours;

@@ -42,6 +42,7 @@
 #include "dbgshow.h"
 #include "dbgparse.h"
 #include "dbgwdlg.h"
+#include "dbgwdisp.h"
 
 
 extern wnd_class        ReqWndName( void );

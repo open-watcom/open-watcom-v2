@@ -57,6 +57,7 @@
 #include "dlgexpr.h"
 #include "dbgdot.h"
 #include "dbgwass.h"
+#include "dbgwfil.h"
 
 
 extern a_window         *WndFileInspect( char *file, bool binary );
@@ -70,7 +71,6 @@ extern void             WndVarInspect( const char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern void             WndSrcInspect( address addr );
 extern void             WndModInspect( mod_handle mod );
-extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
 extern unsigned         ExprSize( stack_entry * );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
@@ -892,7 +892,6 @@ extern a_window *DoWndSrcOpen( cue_handle *ch, bool track )
 }
 
 
-extern WNDOPEN WndSrcOpen;
 extern a_window *WndSrcOpen( void )
 {
     mod_handle  mod;

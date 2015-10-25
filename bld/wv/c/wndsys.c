@@ -54,6 +54,9 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgwass.h"
+#include "dbgwdisp.h"
+#include "dbgwfil.h"
+#include "dbgwfing.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -68,14 +71,10 @@ extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
 extern gui_colour_set   *GetWndColours( wnd_class wndcls );
 extern a_window         *WndSrchOpen( const char * );
-extern void             *GetWndFont( a_window * );
-extern bool             FileOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
 extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );
 extern char             LookUpCtrlKey( unsigned key );
 extern bool             MacKeyHit( a_window *wnd, unsigned key );
-extern gui_coord        *WndMainClientSize( void );
-extern void             FingClose( void );
 extern void             SetUpdateFlags( update_list );
 extern void             ScrnSpawnStart( void );
 extern void             ScrnSpawnEnd( void );

@@ -38,12 +38,10 @@
 #include "dbgmain.h"
 #include "dbgshow.h"
 #include "dbgwdlg.h"
+#include "dbgwdisp.h"
 
 
 extern wnd_class        ReqWndName( void );
-extern char             *GetWndFont( a_window * );
-extern bool             ScanStatus( void );
-
 
 extern const char       WndNameTab[];
 

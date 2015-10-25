@@ -37,13 +37,13 @@
 #include "dbgbrk.h"
 #include "wndsys.h"
 #include "addarith.h"
+#include "dbgwfil.h"
 
 
 extern a_window         *WndAsmInspect(address);
 extern a_window         *WndSrcInspect(address);
 extern bool             DlgBreak(address);
 extern char             *AddrLineNum( address *addr, char *buff );
-extern void             FileBreakGadget( a_window *, wnd_line_piece *line, bool curr, brkp *bp );
 
 enum {
     #ifdef OPENER_GADGET

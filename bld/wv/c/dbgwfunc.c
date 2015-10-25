@@ -44,12 +44,12 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgdot.h"
+#include "dbgwfil.h"
 
 
 extern a_window         *WndAsmInspect( address );
 extern a_window         *WndSrcInspect( address );
 extern bool             DlgBreak( address );
-extern char             *FileBreakGadget( a_window *, wnd_line_piece *, bool curr, brkp *bp );
 
 #include "menudef.h"
 static gui_menu_struct FuncMenu[] = {

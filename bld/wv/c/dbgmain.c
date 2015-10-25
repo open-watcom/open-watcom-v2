@@ -69,15 +69,13 @@
 #include "dbginit.h"
 #include "dbglkup.h"
 #include "dbgio.h"
+#include "dbgwfing.h"
 
 
 // This list of extern functions is in alphabetic order.:
-extern void             FingClose( void );
 extern void             FingFront( void );
-extern void             FingOpen( void );
 extern void             FiniAboutMessage( void );
 extern void             FiniBrowse( void );
-extern void             FiniFont( void );
 extern void             FiniIOWindow( void );
 extern void             FiniMacros( void );
 extern void             FiniMemWindow( void );
@@ -87,7 +85,6 @@ extern void             FiniToolBar( void );
 extern void             GrabHandlers( void );
 extern void             InitAboutMessage( void );
 extern void             InitBrowse( void );
-extern void             InitFont( void );
 extern void             InitHelp( void );
 extern void             InitIOWindow( void );
 extern void             InitMemWindow( void );
@@ -98,11 +95,8 @@ extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
 extern void             ProcCapture( void );
-extern void             ProcDisplay( void );
-extern void             ProcFont( void );
 extern void             ProcHelp( void );
 extern void             ProcPaint( void );
-extern void             ProcView( void );
 extern void             RestoreHandlers( void );
 extern void             Suicide( void );
 extern void             WndMemInit( void );
