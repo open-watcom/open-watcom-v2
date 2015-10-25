@@ -46,10 +46,7 @@
 
 extern stack_entry      *ExprSP;
 
-
 extern void             DbgUpdate( update_list );
-extern stack_entry      *StkEntry( int );
-
 
 static machine_state    *FreezeRegSet = NULL;
 static location_context FreezeContext;

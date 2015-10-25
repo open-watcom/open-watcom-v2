@@ -80,7 +80,6 @@ enum {
     SEM_MECHANISM   = 0xe0,
 };
 
-extern stack_entry      *StkEntry( int );
 extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
 extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );

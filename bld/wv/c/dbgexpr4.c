@@ -60,7 +60,6 @@
 
 
 extern void             LclLValue( stack_entry * );
-extern stack_entry      *StkEntry( int );
 extern char             *DupStringEntry( char *, unsigned long );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
