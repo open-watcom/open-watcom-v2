@@ -50,16 +50,14 @@
 #include "dbgdot.h"
 #include "wndsys.h"
 #include "remcore.h"
+#include "addarith.h"
 
 
-extern address          AddrAddWrap(address,long);
 extern bool             DlgLongExpr( const char *title, long * );
 extern bool             DlgDataAddr( const char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
-extern long             AddrDiff( address a, address b );
 extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th );
 extern bool             DlgString( const char *title, char *buff );
-extern int              AddrComp(address,address);
 extern a_window         *WndAsmInspect(address addr);
 extern bool             DlgScanGivenAddr( const char *str, address *value );
 extern void             MemFiniTypes( mem_type_walk_data *data );

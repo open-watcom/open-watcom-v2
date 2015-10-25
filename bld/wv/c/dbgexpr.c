@@ -47,10 +47,10 @@
 #include "dbgloc.h"
 #include "dbgovl.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
-extern int              AddrComp( address , address );
 extern void             PurgeSymHandles( void );
 
 

@@ -43,8 +43,9 @@
 #include "dbgovl.h"
 #include "remcore.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
-extern address          AddrAddWrap( address, long );
+
 extern void             RecordEvent( const char * );
 extern void             DbgUpdate( update_list );
 

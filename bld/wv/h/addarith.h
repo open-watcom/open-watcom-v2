@@ -30,55 +30,11 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgwind.h"
-#include "dbgerr.h"
-#include "guidlg.h"
-#include "guipick.h"
-#include "dlgamb.h"
-#include "dui.h"
-#include "strutil.h"
-#include "dbgutil.h"
-#include "addarith.h"
-
-
-extern void             FreeSymHandle( sym_list * );
-
-static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
-{
-    dlg_pick    dlg;
-
-    text=text;
-    dlg.func = PickInit;
-    dlg.chosen = -1;
-    ResDlgOpen( &GUIPickEvent, &dlg, GUI_MAKEINTRESOURCE( DIALOG_AMBIG ) );
-    return( dlg.chosen );
-}
-
-static const char *SymPickText( const void *data_handle, int item )
-{
-    sym_list            *sym;
-    unsigned            len;
-    const char          *image_name;
-    const ambig_info    *ambig = data_handle;
-
-    sym = ambig->sym;
-    while( --item >= 0 ) {
-        sym = sym->next;
-    }
-    len = SymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );
-    if( len == 0 ) {
-        len = SymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
-    }
-    image_name = ModImageName( SymMod( SL2SH( sym ) ) );
-    if( *image_name != '\0' ) {
-        Format( &TxtBuff[ len ], " [%s]", image_name );
-    }
-    return( TxtBuff );
-}
-
-int DUIDisambiguate( const ambig_info *ambig, int count )
-{
-    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, count, SymPick ) );
-}
+extern void     AddAliasInfo( unsigned seg, unsigned alias );
+extern void     FreeAliasInfo( void );
+extern void     DeAlias( addr_ptr *a );
+extern int      AddrComp( address a, address b );
+extern address  AddrAdd( address a, long b );
+extern address  AddrAddWrap( address a, long b );
+extern long     AddrDiff( address a, address b );
+extern int      SameAddrSpace( address a, address b );

@@ -52,8 +52,9 @@
 #include "dbgparse.h"
 #include "wndsys.h"
 #include "dbgprog.h"
+#include "addarith.h"
 
-extern int              AddrComp( address, address );
+
 extern bool             DlgVarExpand( dlg_var_expand * );
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern WNDOPEN          WndVarOpen;

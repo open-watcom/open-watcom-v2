@@ -56,11 +56,9 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
-extern address          AddrAdd( address, long );
-extern int              AddrComp( address, address );
-extern long             AddrDiff( address, address );
 extern void             LclLValue( stack_entry * );
 extern stack_entry      *StkEntry( int );
 extern char             *DupStringEntry( char *, unsigned long );

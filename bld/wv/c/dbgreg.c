@@ -61,9 +61,9 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
-extern int              AddrComp( address a, address b );
 extern void             RecordEvent( const char *p );
 extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );

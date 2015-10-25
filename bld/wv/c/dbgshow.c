@@ -45,9 +45,9 @@
 #include "dbgshow.h"
 #include "dbgparse.h"
 #include "dbgmisc.h"
+#include "addarith.h"
 
 
-extern int              AddrComp( address , address );
 extern void             ConfigSet( void );
 extern void             ConfigDisp( void );
 extern void             ConfigFont( void );

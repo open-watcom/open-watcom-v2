@@ -45,10 +45,10 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
 extern address          FindLclBlock( address addr );
-extern int              AddrComp(address ,address );
 extern bool             DlgBreak(address);
 extern unsigned         LineNumLkup(address);
 

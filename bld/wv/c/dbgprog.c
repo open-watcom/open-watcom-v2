@@ -61,6 +61,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 #include "clibext.h"
 
@@ -78,8 +79,6 @@ extern void             SymInfoMvHdl( handle, handle );
 extern handle           PathOpen( const char *, unsigned, const char * );
 extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             SetNoSectSeg( void );
-extern void             AddAliasInfo( unsigned, unsigned );
-extern void             FreeAliasInfo( void );
 extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );

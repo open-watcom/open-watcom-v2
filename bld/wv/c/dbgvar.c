@@ -55,10 +55,10 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 #include "clibext.h"
 
-extern int              AddrComp( address, address );
 extern bool             DlgVarExpand( dlg_var_expand *);
 extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern void             WndVarNewWindow( char *);

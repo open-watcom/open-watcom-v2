@@ -54,12 +54,12 @@
 #include "remthrd.h"
 #include "remrtrd.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
 extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
 extern void             RecordCommand( const char *startpos, wd_cmd cmd );
-extern int              AddrComp( address a, address b );
 
 static const char ElseifTab[]         = { "ELSEIF\0" };
 static const char ElseTab[]           = { "ELSE\0" };

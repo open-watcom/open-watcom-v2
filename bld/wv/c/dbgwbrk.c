@@ -36,15 +36,14 @@
 #include "dbgadget.h"
 #include "dbgbrk.h"
 #include "wndsys.h"
+#include "addarith.h"
 
 
 extern a_window         *WndAsmInspect(address);
 extern a_window         *WndSrcInspect(address);
 extern bool             DlgBreak(address);
 extern char             *AddrLineNum( address *addr, char *buff );
-extern char             *DeAliasAddrModName( address *addr, char *buff );
 extern void             FileBreakGadget( a_window *, wnd_line_piece *line, bool curr, brkp *bp );
-extern int              AddrComp(address,address);
 
 enum {
     #ifdef OPENER_GADGET

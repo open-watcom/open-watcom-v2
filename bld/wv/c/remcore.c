@@ -47,12 +47,11 @@
 #include "dbgmisc.h"
 #include "trpld.h"
 #include "removl.h"
+#include "addarith.h"
 
 
 extern void             RestoreHandlers( void );
 extern void             GrabHandlers( void );
-extern int              SameAddrSpace( address, address );
-extern void             AddAliasInfo( unsigned, unsigned );
 
 extern unsigned         MaxPacketLen;
 extern unsigned         CurrRegSize;

@@ -51,6 +51,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
 extern bool             ScanSelectedExpr( const char * );
@@ -81,7 +82,6 @@ extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
 extern unsigned         ExprSize( stack_entry * );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
-extern int              AddrComp( address a, address b );
 extern void             DbgUpdate( update_list );
 
 extern stack_entry      *ExprSP;

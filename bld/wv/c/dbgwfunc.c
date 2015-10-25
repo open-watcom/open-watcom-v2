@@ -41,6 +41,8 @@
 #include "wndsys.h"
 #include "dbgtrace.h"
 #include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
 
 extern a_window         *WndAsmInspect( address );
@@ -48,7 +50,6 @@ extern a_window         *WndSrcInspect( address );
 extern bool             DlgBreak( address );
 extern char             *FileBreakGadget( a_window *, wnd_line_piece *, bool curr, brkp *bp );
 extern address          GetCodeDot( void );
-extern search_result    DeAliasAddrMod( address a, mod_handle *mh );
 
 
 #include "menudef.h"

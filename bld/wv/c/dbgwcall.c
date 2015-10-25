@@ -43,12 +43,12 @@
 #include "wndsys.h"
 #include "dbgmisc.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
 extern a_window         *WndSrcInspect( address );
 extern a_window         *WndAsmInspect( address );
 extern address          FindLclBlock( address addr );
-extern int              AddrComp( address, address );
 extern bool             DlgBreak( address );
 extern unsigned         LineNumLkup( address );
 

@@ -35,6 +35,7 @@
 #include "dbgmem.h"
 #include "mad.h"
 #include "dbgovl.h"
+#include "addarith.h"
 
 
 typedef struct alias_info {

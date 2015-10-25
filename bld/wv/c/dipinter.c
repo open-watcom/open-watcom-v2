@@ -50,16 +50,14 @@
 #include "dbg_dbg.h"
 #include "dbgprog.h"
 #include "dipinter.h"
+#include "addarith.h"
 
 #include "clibext.h"
 
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             SameAddrSpace( address, address );
 extern void             StartupErr( const char * );
-extern int              AddrComp( address, address );
-extern void             DeAlias( addr_ptr * );
 
 /*
  * Client support routines

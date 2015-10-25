@@ -54,6 +54,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
 enum {
@@ -110,7 +111,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern int_16           GetDataWord( void );
 extern long             GetDataLong( void );
-extern int              AddrComp( address, address );
 extern void             GetCurrOpcode( void );
 extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );

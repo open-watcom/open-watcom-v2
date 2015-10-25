@@ -40,11 +40,10 @@
 #include "namelist.h"
 #include "sortlist.h"
 #include "dbgutil.h"
+#include "addarith.h"
 
 #include "clibext.h"
 
-
-extern int              AddrComp( address a, address b );
 
 typedef struct a_symbol {
     struct a_symbol     *next;

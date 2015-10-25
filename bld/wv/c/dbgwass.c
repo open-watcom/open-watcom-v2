@@ -55,6 +55,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "addarith.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -62,7 +63,6 @@ extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern void             WndInspectExprSP( const char *item );
-extern int              AddrComp(address ,address );
 extern bool             DlgBreak(address);
 extern void             WndFuncInspect( mod_handle mod );
 extern a_window         *WndAsmInspect( address addr );
