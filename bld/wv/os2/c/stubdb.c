@@ -380,7 +380,7 @@ void DUIStatusText( const char *text )
     printf( "STA %s\n", text );
 }
 
-bool DlgGivenAddr( const char *title, address *value )
+bool DUIDlgGivenAddr( const char *title, address *value )
 {
     // needed when segment's don't map (from new/sym command)
     return( FALSE );

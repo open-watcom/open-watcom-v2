@@ -52,13 +52,10 @@
 #include "remcore.h"
 #include "addarith.h"
 #include "dlgscan.h"
+#include "dlgexpr.h"
 
 
-extern bool             DlgLongExpr( const char *title, long * );
-extern bool             DlgDataAddr( const char *title, address *value );
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
-extern bool             DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th );
-extern bool             DlgString( const char *title, char *buff );
 extern a_window         *WndAsmInspect(address addr);
 extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );

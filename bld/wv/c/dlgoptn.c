@@ -38,9 +38,8 @@
 #include "dbgscan.h"
 #include "trapglbl.h"
 #include "dbglkup.h"
+#include "dlgexpr.h"
 
-extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
-extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 
 static void GetDlgStatus( gui_window *gui )
 {

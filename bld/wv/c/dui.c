@@ -47,6 +47,7 @@
 #include "envlkup.h"
 #include "dbgwdlg.h"
 #include "wndsys.h"
+#include "dlgexpr.h"
 
 
 extern a_window         *WndMain;
@@ -519,4 +520,9 @@ unsigned DUIConfigScreen( void )
 void DUIProcWindow( void )
 {
     WndProcWindow();
+}
+
+bool DUIDlgGivenAddr( const char *title, address *value )
+{
+    return( DlgGivenAddr( title, value ) );
 }

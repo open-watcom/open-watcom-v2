@@ -82,7 +82,6 @@ extern void             SymInfoMvHdl( handle, handle );
 extern handle           PathOpen( const char *, unsigned, const char * );
 extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             SetNoSectSeg( void );
-extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
@@ -1397,7 +1396,7 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
         }
         mapped.mach.segment = NO_SEG;
         mapped.mach.offset = 0;
-        if( DlgGivenAddr( TxtBuff, &mapped ) ) {
+        if( DUIDlgGivenAddr( TxtBuff, &mapped ) ) {
             PostProcMapExpr( &mapped );
             mapped.mach.offset += offset;   // add offset back!
             *addr = mapped.mach;

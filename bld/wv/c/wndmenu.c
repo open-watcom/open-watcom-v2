@@ -49,6 +49,7 @@
 #include "dbgmisc.h"
 #include "remrtrd.h"
 #include "dbgreg.h"
+#include "dlgexpr.h"
 
 
 extern a_window         *WndClassInspect( wnd_class wndcls );
@@ -79,8 +80,6 @@ extern void             DoProcHelp( gui_help_actions );
 extern void             DlgBreakDLL( void );
 extern bool             DebugScreen( void );
 extern void             UnknownScreen( void );
-extern bool             DlgCodeAddr( const char *title, address *value );
-extern bool             DlgDataAddr( const char *title, address *value );
 extern void             WndAddrInspect( address addr );
 
 

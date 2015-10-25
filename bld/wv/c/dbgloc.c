@@ -39,6 +39,7 @@
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgupdt.h"
+#include "dbgloc.h"
 
 
 void LocationCreate( location_list *ll, location_type lt, void *d )

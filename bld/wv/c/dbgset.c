@@ -167,7 +167,6 @@ static void     XMMSet( void );
 extern void     DClickSet( void );
 static void     BellSet( void );
 extern void     TabSet( void );
-extern void     TypeSet( void );
 static void     LangSet( void );
 extern void     InputSet( void );
 extern void     MacroSet( void );

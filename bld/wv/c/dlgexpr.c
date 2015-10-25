@@ -43,9 +43,11 @@
 #include "dbgexpr.h"
 #include "dbgparse.h"
 #include "dlgscan.h"
+#include "dlgexpr.h"
 
 
 typedef bool rtn_func(const char *,void *);
+typedef bool dlg_func(const char *,char *,unsigned);
 
 /* to be moved to header files ! */
 extern bool             DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
@@ -74,30 +76,29 @@ static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, rtn_func *rtn
 }
 
 
-extern bool DlgGetLong( gui_window *gui, gui_ctl_id id, long *value )
+bool DlgGetLong( gui_window *gui, gui_ctl_id id, long *value )
 {
     return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanLong ) );
 }
 
-extern bool DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address *value )
+bool DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
     return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanCodeAddr ) );
 }
 
-extern bool DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address *value )
+bool DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
     return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanDataAddr ) );
 }
 
-extern void DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
+void DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
 {
     CnvLong( value, TxtBuff, TXT_LEN );
     GUISetText( gui, id, TxtBuff );
 }
 
 static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *title,
-                                   void *value, bool (*rtn)(const char*,void*),
-                                   bool (*dlg)(const char*,char*,unsigned) )
+                                   void *value, rtn_func *rtn, dlg_func *dlg )
 {
     bool        rc;
 

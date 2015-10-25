@@ -54,6 +54,7 @@
 #include "addarith.h"
 #include "dbginsty.h"
 #include "dbgupdt.h"
+#include "dlgexpr.h"
 
 
 extern a_window         *WndFileInspect( char *file, bool binary );
@@ -62,7 +63,6 @@ extern bool             DlgBreak( address );
 extern void             WndInspect( const char * );
 extern a_window         *WndAsmInspect( address );
 extern int              DlgSearch( a_window *, void * );
-extern bool             DlgLongExpr( const char *title, long *value );
 extern void             SetCodeDot( address );
 extern address          GetCodeDot( void );
 extern a_window         *WndClassInspect( wnd_class wndcls );
@@ -72,9 +72,7 @@ extern void             AsmJoinSrc( a_window *, a_window * );
 extern void             AsmFreeSrc( a_window * );
 extern void             AsmNewSrcNotify( a_window *, mod_handle, bool track );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
-extern bool             DlgCodeAddr( const char *title, address *value );
 extern void             WndSrcInspect( address addr );
-extern bool             DlgModName( const char *title, mod_handle *mod );
 extern void             WndModInspect( mod_handle mod );
 extern a_window         *AsmWndFind( a_window *asw, address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool track );

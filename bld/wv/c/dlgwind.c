@@ -36,10 +36,9 @@
 #include "dbgerr.h"
 #include "dlgwind.h"
 #include "dbgscan.h"
+#include "dlgexpr.h"
 
 
-extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
-extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 extern int              TabIntervalGet( void );
 extern void             TabIntervalSet( int );
 extern void             AsmChangeOptions( void );

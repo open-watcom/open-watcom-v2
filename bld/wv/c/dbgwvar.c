@@ -53,10 +53,10 @@
 #include "wndsys.h"
 #include "dbgprog.h"
 #include "addarith.h"
+#include "dlgexpr.h"
 
 
 extern bool             DlgVarExpand( dlg_var_expand * );
-extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
 extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
 extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
