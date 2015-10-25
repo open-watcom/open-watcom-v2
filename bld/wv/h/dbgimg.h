@@ -30,49 +30,5 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include <stddef.h>
-#include "dbgdata.h"
-#include "dbglit.h"
-#include "sortlist.h"
-#include "dbgprog.h"
-#include "dbgimg.h"
-
-
-extern void             SetLastSym( char *to );
-extern bool             SymBrowse( char **name );
-extern void             WndGblFuncInspect( mod_handle mod );
-extern void             WndGblVarInspect( mod_handle mod );
-extern void             WndModListInspect( mod_handle mod );
-
-
-char *ImgSymName( image_entry *img, bool always )
-{
-    if( img->dip_handle != NO_MOD || always ) {
-        if( img->sym_name != NULL ) {
-            return( img->sym_name );
-        } else {
-            return( img->image_name );
-        }
-    } else {
-        return( LIT_ENG( Empty ) );
-    }
-}
-
-static int ImageCompare( void *_pa, void *_pb )
-{
-    image_entry **pa = _pa;
-    image_entry **pb = _pb;
-
-    if( *pa == ImagePrimary() ) return( -1 );
-    if( *pb == ImagePrimary() ) return( 1 );
-    return( DIPImagePriority( (*pa)->dip_handle ) - DIPImagePriority( (*pb)->dip_handle ) );
-}
-
-void    ImgSort( void )
-{
-    DbgImageList = SortLinkedList( DbgImageList, offsetof( image_entry, link ),
-                                ImageCompare, DbgAlloc, DbgFree );
-}
-
-
+extern char     *ImgSymName( image_entry *img, bool always );
+extern void     ImgSort( void );

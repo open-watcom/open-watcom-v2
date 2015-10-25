@@ -38,6 +38,7 @@
 #include "strutil.h"
 #include "wndsys.h"
 #include "dbgprog.h"
+#include "dbgimg.h"
 
 
 extern void             SetLastSym( char *to );
@@ -45,8 +46,6 @@ extern bool             SymBrowse( char **name );
 extern void             WndGblFuncInspect( mod_handle mod );
 extern void             WndGblVarInspect( mod_handle mod );
 extern void             WndModListInspect( mod_handle mod );
-extern char             *ImgSymName( image_entry *img, bool always );
-extern void             ImgSort(void);
 
 #define TITLE_SIZE      2
 
