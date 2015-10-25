@@ -37,6 +37,8 @@
 #include "trpenv.h"
 #include "trapglbl.h"
 #include "trpld.h"
+#include "remenv.h"
+
 
 #define SUPP_ENV_SERVICE( in, request )         \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
