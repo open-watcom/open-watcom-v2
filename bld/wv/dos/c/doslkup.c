@@ -39,7 +39,7 @@
 
 extern  addr_seg    _psp;
 
-const char __far *DOSEnvFind( const char __far *name )
+static const char __far *DOSEnvFind( const char __far *name )
 {
     const char  __far *env;
     const char  __far *p;

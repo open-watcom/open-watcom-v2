@@ -112,3 +112,5 @@ extern unsigned_8       RMSegEnd[];
 
 extern void Boom( unsigned );
 #pragma aux Boom = "db 0xf, 0xff" parm [eax]
+
+extern const char *DOSEnvFind( const char *name );
