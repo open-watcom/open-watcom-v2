@@ -40,3 +40,10 @@ extern void             GetItem( char *buff );
 extern char             *GetFileName( int pass );
 extern void             GetRawItem( char *start );
 extern void             ProcCmd( void );
+
+/* these functions are defined in xxxcmd.c */
+extern bool             OptDelim( char );
+extern void             ProcSysOptInit( void );
+extern bool             ProcSysOption( const char *, unsigned, int );
+extern char             *GetCmdArg( int );
+extern void             SetCmdArgStart( int, char * );

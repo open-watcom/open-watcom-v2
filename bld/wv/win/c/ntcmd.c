@@ -35,6 +35,7 @@
 #ifdef __AXP__
 #include <windows.h>
 #endif
+#include "dbgcmdln.h"
 
 extern int              Lookup( const char *, const char *, size_t );
 

@@ -36,6 +36,7 @@
 #include "dbgio.h"
 #include "dbgname.h"
 #include "dbgmem.h"
+#include "dbgcmdln.h"
 
 
 bool OptDelim( char ch )

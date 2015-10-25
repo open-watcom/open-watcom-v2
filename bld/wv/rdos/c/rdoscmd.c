@@ -33,6 +33,7 @@
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "rdos.h"
+#include "dbgcmdln.h"
 
 bool OptDelim( char ch )
 {
