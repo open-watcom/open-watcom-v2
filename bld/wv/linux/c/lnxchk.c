@@ -31,10 +31,11 @@
 
 
 #include "dbgdefn.h"
+#include "dbgchk.h"
 
-bool CheckPointMem( unsigned psp, unsigned max, char *f_buff )
+bool CheckPointMem( unsigned max, char *f_buff )
 {
-    psp = psp; max = max; f_buff = f_buff;
+    max = max; f_buff = f_buff;
     return( FALSE );
 }
 

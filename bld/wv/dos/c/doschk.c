@@ -32,6 +32,7 @@
 
 #include "dbgdefn.h"
 #include "tinyio.h"
+#include "dbgchk.h"
 
 
 typedef struct {

@@ -31,6 +31,7 @@
 
 
 #include "dbgdefn.h"
+#include "dbgchk.h"
 
 
 bool CheckPointMem( unsigned max, char *f_buff )
