@@ -56,12 +56,12 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbginsty.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             WndEvalInspectExpr( const char *item, bool pop );
 extern void             WndInspectExprSP( const char *item );
 extern bool             DlgBreak(address);
 extern void             WndFuncInspect( mod_handle mod );
@@ -77,7 +77,6 @@ extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern bool             DlgModName( const char *title, mod_handle *mod );
 extern void             WndVarInspect( const char * );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
-extern void             BreakOnSelected( const char *item );
 extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
                                    gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
 extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );

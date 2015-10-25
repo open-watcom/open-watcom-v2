@@ -66,6 +66,7 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbginsty.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
@@ -87,7 +88,6 @@ extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern bool             CheckBPIns( void );
 extern bool             DlgAreYouNuts( unsigned long );
-extern inspect_type     WndGetExprSPInspectType( address *paddr );
 extern void             RecordEvent( const char *p );
 extern void             SetRecord( bool on );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );

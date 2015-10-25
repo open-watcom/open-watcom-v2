@@ -98,6 +98,7 @@ Done:
 #include "dbgmisc.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbginsty.h"
 
 enum {
     REQ_NONE,
@@ -116,8 +117,6 @@ extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
 extern void             *WndAsmInspect( address addr );
-extern bool             WndEvalInspectExpr( const char *item, bool pop );
-extern inspect_type     WndGetExprSPInspectType( address *paddr );
 
 volatile bool           BrkPending;
 

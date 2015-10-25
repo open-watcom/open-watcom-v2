@@ -52,10 +52,8 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbginsty.h"
 
-
-extern bool             ScanSelectedExpr( const char * );
-extern void             BreakOnSelected( const char *item );
 
 extern a_window         *WndFileInspect( char *file, bool binary );
 extern void             WndFuncInspect( mod_handle mod );

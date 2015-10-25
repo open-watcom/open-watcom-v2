@@ -47,6 +47,7 @@
 #include "dbgparse.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbginsty.h"
 
 
 extern stack_entry      *ExprSP;

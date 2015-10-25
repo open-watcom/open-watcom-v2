@@ -49,6 +49,7 @@
 #include "modlist.h"
 #include "dipimp.h"
 #include "dipinter.h"
+#include "dbginsty.h"
 
 #include "clibext.h"
 
@@ -80,8 +81,6 @@ extern void             MemNewAddr( a_window *wnd, address addr );
 extern void             IONewAddr( a_window *wnd, address *addr, int type );
 extern void             ModNewHandle( a_window *wnd, mod_handle handle );
 extern bool             SrcHasFileOpen( a_window *wnd );
-extern bool             WndEvalInspectExpr( const char *item, bool pop );
-extern inspect_type     WndGetExprSPInspectType( address *paddr );
 
 extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];
