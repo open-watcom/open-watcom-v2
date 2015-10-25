@@ -38,10 +38,10 @@
 #include "dbglit.h"
 #include "dbgscan.h"
 #include "dbglist.h"
+#include "dbgchain.h"
 
 
 extern void     ShowReplay( void );
-extern void     ShowCalls( void );
 extern void     ShowVarDisplay( void );
 
 void ConfigEvent( void )

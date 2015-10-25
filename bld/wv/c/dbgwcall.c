@@ -52,13 +52,6 @@ extern address          FindLclBlock( address addr );
 extern bool             DlgBreak( address );
 extern unsigned         LineNumLkup( address );
 
-extern address          FindNextIns( address a );
-extern void             InitTraceBack( cached_traceback * );
-extern call_chain       *GetCallChain( cached_traceback *tb, int row );
-extern void             UpdateTraceBack( cached_traceback *tb );
-extern void             FiniTraceBack( cached_traceback *tb );
-extern void             UnWindToFrame( call_chain *chain, int, int );
-
 #include "menudef.h"
 static gui_menu_struct CallMenu[] = {
     #include "menucall.h"
