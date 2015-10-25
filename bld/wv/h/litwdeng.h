@@ -30,30 +30,5 @@
 ****************************************************************************/
 
 
-#ifndef _DBGLIT_H_INCLUDED
-#define _DBGLIT_H_INCLUDED
-
-#include "dbgname.h"
-#include "banner.h"
-#include "litdef.h"
-
-#ifdef JAPANESE
-  #define pick(c,e,j) LITSTR( c, j )
-#else
-  #define pick(c,e,j) LITSTR( c, e )
-#endif
-
-#define LITSTR( x, y ) extern char *LIT_ENG( x );
-#include "wdeng.str"
-#undef LITSTR
-
-#define LITSTR( x, y ) extern char *LIT_DUI( x );
-#include "wddui.str"
-#undef LITSTR
-
-#undef pick
-
-extern void InitLiterals( void );
-extern void FiniLiterals( void );
-
-#endif /* _DBGLIT_H_INCLUDED */
+extern void InitEngineLiterals( void );
+extern void FiniEngineLiterals( void );

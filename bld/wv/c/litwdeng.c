@@ -35,6 +35,7 @@
 #include "dbgmem.h"
 #include "dui.h"
 #include "litdef.h"
+#include "litwdeng.h"
 
 #ifdef JAPANESE
   #define pick(c,e,j) LITSTR( c, j )
