@@ -407,8 +407,8 @@ static bool CreateBackgroundWnd( gui_window *wnd, gui_create_info *dlg_info )
     HWND                frame_hwnd;
     GUI_RECTDIM         left, top, right, bottom;
 
-    _wpi_getclientrect( wnd->root, &wnd->hwnd_client );
-    _wpi_getrectvalues( wnd->hwnd_client, &left, &top, &right, &bottom );
+    _wpi_getclientrect( wnd->root, &wnd->hwnd_client_rect );
+    _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
 
     style = BACKGROUND_STYLES;
 
@@ -457,7 +457,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     ULONG               flags;
     ULONG               show_flags;
     WPI_RECT            rect;
-    WPI_RECT            parent_client;
+    WPI_RECT            parent_client_rect;
 #else
     DWORD               exstyle;
 #endif
@@ -587,7 +587,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     if( frame_hwnd != NULLHANDLE ) {
         oldFrameProc = _wpi_subclasswindow( frame_hwnd, (WPI_PROC)GUIFrameProc );
         _wpi_setmenu( frame_hwnd, hmenu );
-        _wpi_getclientrect( parent_hwnd, &parent_client );
+        _wpi_getclientrect( parent_hwnd, &parent_client_rect );
         show_flags = SWP_SIZE | SWP_MOVE;
         WinSetWindowPos( frame_hwnd, HWND_TOP, pos.x, pos.y, size.x, size.y, show_flags );
         hwnd = frame_hwnd;
@@ -681,7 +681,7 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
 
     if( wnd->root == NULLHANDLE ) {
         if( wnd->hwnd != NULLHANDLE ) {
-            _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client );
+            _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client_rect );
         }
         return;
     }
@@ -698,8 +698,8 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
         s_height = _wpi_getheightrect( status );
     }
 
-    _wpi_getclientrect( wnd->root_frame, &wnd->root_client );
-    _wpi_getrectvalues( wnd->root_client, &left, &top, &right, &bottom );
+    _wpi_getclientrect( wnd->root_frame, &wnd->root_client_rect );
+    _wpi_getrectvalues( wnd->root_client_rect, &left, &top, &right, &bottom );
     bottom -= top;
     right  -= left;
     top = left = 0;
@@ -715,7 +715,7 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     /* if the root client is a separate window resize it too */
     _wpi_movewindow( wnd->hwnd, left, top, right - left, bottom - top, TRUE );
 
-    _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client );
+    _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client_rect );
 
     if( force_msg && ( wnd->flags & SENT_INIT ) ) {
         size.x = right - left;
@@ -908,7 +908,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             wnd->root_pinfo.normal_pres =
                 _wpi_createos2normpres( GUIMainHInst, hwnd );
 #endif
-            _wpi_getclientrect( wnd->root_frame, &wnd->root_client );
+            _wpi_getclientrect( wnd->root_frame, &wnd->root_client_rect );
             if( CreateBackgroundWnd( wnd, dlg_info ) ) {
                 return( 0 );
             }
@@ -957,7 +957,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         }
-        _wpi_getclientrect( hwnd, &wnd->hwnd_client );
+        _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
         GUISetRowCol( wnd, NULL );
         if( ( hwnd == wnd->hwnd ) && ( wnd->root == NULLHANDLE ) ) {
             GUIMDINewWindow( hwnd );

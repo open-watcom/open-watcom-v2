@@ -33,10 +33,10 @@
 /*
  * GUIGetFileName
  * --------------
- * returns: OFN_RC_FAILED_TO_INITIALIZE
- *          OFN_RC_NO_FILE_SELECTED
- *          OFN_RC_FILE_SELECTED
- *          OFN_RC_RUNTIME_ERROR
+ * returns: FN_RC_FAILED_TO_INITIALIZE
+ *          FN_RC_NO_FILE_SELECTED
+ *          FN_RC_FILE_SELECTED
+ *          FN_RC_RUNTIME_ERROR
  *
  * open_file_name structure
  * ------------------------
@@ -72,13 +72,13 @@
  * title - the title to be assigned to to dialog
  *
  * flags - flags to control the behavior of the dialog.  They are:
- *              OFN_OVERWRITEPROMPT - prompts the user if he selects a file
+ *              FN_OVERWRITEPROMPT - prompts the user if he selects a file
  *                                    that already exists
- *              OFN_HIDEREADONLY    - read only files will not be displayed.
- *              OFN_CHANGEDIR       - once the dialog is exited, the working
+ *              FN_HIDEREADONLY    - read only files will not be displayed.
+ *              FN_CHANGEDIR       - once the dialog is exited, the working
  *                                    directory will be the home directory
  *                                    of the selected file.
- *              OFN_ISSAVE          - getting a file name for saving
+ *              FN_ISSAVE          - getting a file name for saving
  *
  * initial_dir - used to specify the starting directory.  Using NULL will
  *               cause the current directory to be the starting directory.
@@ -90,44 +90,23 @@
 /* these are often part of comdlg.h - no need to
    define twice */
 
-#ifndef OFN_OVERWRITEPROMPT
-#define OFN_OVERWRITEPROMPT             0x00000002
-#endif
-
-#ifndef OFN_HIDEREADONLY
-#define OFN_HIDEREADONLY                0x00000004
-#endif
-
-#ifndef OFN_CHANGEDIR
-#define OFN_CHANGEDIR                   0x00000008
-#endif
-
-#ifndef OFN_ALLOWMULTISELECT
-#define OFN_ALLOWMULTISELECT            0x00000200
-#endif
-
-#ifndef OFN_PATHMUSTEXIST
-#define OFN_PATHMUSTEXIST               0x00000800
-#endif
-
-#ifndef OFN_FILEMUSTEXIST
-#define OFN_FILEMUSTEXIST               0x00001000
-#endif
-
-#ifndef OFN_WANT_LAST_PATH
-#define OFN_WANT_LAST_PATH              0x40000000
-#endif
-
-#ifndef OFN_ISSAVE
-#define OFN_ISSAVE                      0x80000000
-#endif
-
 enum {
-    OFN_RC_FAILED_TO_INITIALIZE,
-    OFN_RC_NO_FILE_SELECTED,
-    OFN_RC_FILE_SELECTED,
-    OFN_RC_RUNTIME_ERROR
+    FN_RC_FAILED_TO_INITIALIZE,
+    FN_RC_NO_FILE_SELECTED,
+    FN_RC_FILE_SELECTED,
+    FN_RC_RUNTIME_ERROR
 };
+
+typedef enum {
+    FN_OVERWRITEPROMPT  = 0x0001,
+    FN_HIDEREADONLY     = 0x0002,
+    FN_CHANGEDIR        = 0x0004,
+    FN_ALLOWMULTISELECT = 0x0008,
+    FN_PATHMUSTEXIST    = 0x0010,
+    FN_FILEMUSTEXIST    = 0x0020,
+    FN_WANT_LAST_PATH   = 0x0040,
+    FN_ISSAVE           = 0x0080,
+} fn_flags;
 
 typedef struct
 {
@@ -138,7 +117,7 @@ typedef struct
     char                *base_file_name;
     int                 max_base_file_name;
     char                *title;
-    unsigned long       flags;
+    fn_flags            flags;
     char                *initial_dir;
     char                *last_path;
 } open_file_name;

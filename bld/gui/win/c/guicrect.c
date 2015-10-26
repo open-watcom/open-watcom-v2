@@ -38,7 +38,7 @@ void GUIGetClientRect( gui_window *wnd, gui_rect *client )
     WPI_RECT    rect;
     GUI_RECTDIM left, top, right, bottom;
 
-    rect = wnd->hwnd_client;
+    rect = wnd->hwnd_client_rect;
     _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, (WPI_LPPOINT)&rect, 2 );
     _wpi_getwrectvalues( rect, &left, &top, &right, &bottom );
     top = _wpi_cvts_y( top );

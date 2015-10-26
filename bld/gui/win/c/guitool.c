@@ -259,7 +259,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     toolbar = wnd->toolbar;
     memset( toolbar, 0, sizeof( toolbarinfo ) );
     parent = wnd->root;
-    toolbar->fixedrect = wnd->hwnd_client;
+    toolbar->fixedrect = wnd->hwnd_client_rect;
     toolbar->bitmaps = (HBITMAP *)GUIMemAlloc( num_toolbar_items * sizeof( HBITMAP ) );
     if( toolbar->bitmaps == NULL ) {
         GUIMemFree( wnd->toolbar );
@@ -393,9 +393,9 @@ void GUIResizeToolBar( gui_window *wnd )
     GUI_RECTDIM t, h;
 
     if( wnd->toolbar != NULL ) {
-        rect = wnd->root_client;
+        rect = wnd->root_client_rect;
         if( wnd->root == NULLHANDLE ) {
-            rect = wnd->hwnd_client;
+            rect = wnd->hwnd_client_rect;
         }
         _wpi_rationalize_rect( &rect );
         if( wnd->toolbar->info.is_fixed ) {

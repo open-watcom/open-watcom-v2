@@ -99,7 +99,7 @@ void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     if( !bitmap ) {
         height = AVGYCHAR(GUItm);
     }
-    rect = wnd->hwnd_client;
+    rect = wnd->hwnd_client_rect;
     _wpi_getrectvalues( rect, &left, &top, &right, &bottom);
     _wpi_getpaintrect( wnd->ps, &paint_rect );
     _wpi_getwrectvalues( paint_rect, &paint_left, &paint_top, &paint_right,
@@ -146,7 +146,7 @@ void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     } else {
         right = nDrawX + lenx;
     }
-    nDrawY = _wpi_cvth_y_size( nDrawY, _wpi_getheightrect(wnd->hwnd_client), height );
+    nDrawY = _wpi_cvth_y_size( nDrawY, _wpi_getheightrect(wnd->hwnd_client_rect), height );
 
     _wpi_setrectvalues( &draw_rect, nDrawX, nDrawY, right, nDrawY+height );
     if( GUIIsRectInUpdateRect( wnd, &draw_rect ) ) {

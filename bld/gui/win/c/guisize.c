@@ -71,8 +71,8 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
 // The following is a bandaid 'till I find out why WM_SIZE's aren't
 // generated for PM GUI dialogs by this fuction
 #ifdef __OS2_PM__
-            _wpi_getclientrect( frame, &wnd->hwnd_client );
-            wnd->root_client = wnd->hwnd_client;
+            _wpi_getclientrect( frame, &wnd->hwnd_client_rect );
+            wnd->root_client_rect = wnd->hwnd_client_rect;
             GUISetRowCol( wnd, NULL );
             GUIScreenToScaleR( &size );
             GUIEVENTWND( wnd, GUI_RESIZE, &size );

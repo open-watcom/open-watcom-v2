@@ -412,8 +412,8 @@ void GUISetRowCol( gui_window *wnd, gui_coord *size )
     gui_coord   my_size;
 
     if( size == NULL ) {
-        my_size.y = _wpi_getheightrect( wnd->hwnd_client );
-        my_size.x = _wpi_getwidthrect( wnd->hwnd_client );
+        my_size.y = _wpi_getheightrect( wnd->hwnd_client_rect );
+        my_size.x = _wpi_getwidthrect( wnd->hwnd_client_rect );
     } else {
         my_size = *size;
     }
@@ -435,7 +435,7 @@ void GUIInvalidateResize( gui_window *wnd )
 
     if( ( wnd->flags & NEEDS_RESIZE_REDRAW ) &&
         ( wnd->old_rows != wnd->num_rows ) ) {
-        _wpi_getrectvalues( wnd->hwnd_client, &left, &top, &right, &bottom );
+        _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
         GUIGetMetrics( wnd );
         if( wnd->old_rows < wnd->num_rows ) {
             /* window grew */
@@ -479,7 +479,7 @@ void GUIMakeRelative( gui_window *wnd, WPI_POINT *pt, gui_point *point )
     WPI_RECT    rect;
     GUI_RECTDIM left, top, right, bottom;
 
-    rect = wnd->hwnd_client;
+    rect = wnd->hwnd_client_rect;
     _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, (WPI_LPPOINT)&rect, 2 );
     _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
     point->x = pt->x - left;

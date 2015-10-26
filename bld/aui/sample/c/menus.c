@@ -201,7 +201,7 @@ extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
     case MENU_GET_FILE:
         if( DlgFileBrowse( "Enter File Name", FilterList, FileBrowsed,
-                           sizeof( FileBrowsed ), OFN_OVERWRITEPROMPT ) ) {
+                           sizeof( FileBrowsed ), FN_OVERWRITEPROMPT ) ) {
             Say( FileBrowsed );
         }
         break;

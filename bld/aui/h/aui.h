@@ -317,7 +317,7 @@ extern void             DlgOpen( const char *title, int, int, gui_control_info *
 extern void             ResDlgOpen( GUICALLBACK *, void *, res_name_or_id dlg_id );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path,
-                                       unsigned len, unsigned long flags );
+                                       unsigned len, fn_flags flags );
 
 extern a_window         **WndFindOwner( a_window * );
 extern a_window         *WndFirst( void );

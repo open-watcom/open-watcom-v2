@@ -157,8 +157,8 @@ typedef struct gui_window {
     control_item        *controls;
     WPI_HICON           icon;
     popup_info          *popup;
-    WPI_RECT            root_client;
-    WPI_RECT            hwnd_client;
+    WPI_RECT            root_client_rect;
+    WPI_RECT            hwnd_client_rect;
     gui_paint_info      root_pinfo;
     gui_paint_info      hwnd_pinfo;
 };

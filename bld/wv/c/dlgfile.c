@@ -162,7 +162,7 @@ void FiniBrowse( void )
     LastRep = NULL;
 }
 
-static bool DoFileBrowse( char **last, char *title, char *filter, unsigned long flags )
+static bool DoFileBrowse( char **last, char *title, char *filter, fn_flags flags )
 {
     bool        rc;
 
@@ -225,7 +225,7 @@ bool WndShutDownHook( void )
 
 
 #define OFN_FLAGS( writing ) \
-    ( writing ? (OFN_HIDEREADONLY+OFN_ISSAVE+OFN_OVERWRITEPROMPT) : 0 )
+    ( writing ? (FN_HIDEREADONLY+FN_ISSAVE+FN_OVERWRITEPROMPT) : 0 )
 
 bool ConfigSave( bool writing )
 {

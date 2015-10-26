@@ -717,7 +717,7 @@ static bool setFileList( gui_window *gui, const char *ext )
         if( directory != NULL ) {
             while( ( dent = readdir( directory ) ) != NULL ) {
                 if( !isdir( dent, path ) ) {
-                    if( ( dlg->currOFN->flags & OFN_HIDEREADONLY ) && isrdonly( dent, path ) ) {
+                    if( ( dlg->currOFN->flags & FN_HIDEREADONLY ) && isrdonly( dent, path ) ) {
                         continue;
                     }
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
@@ -963,7 +963,7 @@ static process_rc processFileName( gui_window *gui )
         if( !goToDir( gui, path ) ) {
             return( PROCESS_FALSE );
         }
-        if( !rc && (dlg->currOFN->flags & OFN_OVERWRITEPROMPT) ) {
+        if( !rc && (dlg->currOFN->flags & FN_OVERWRITEPROMPT) ) {
             buff = alloca( strlen( txt ) + 100 );
             strcpy( buff, txt );
             strcat( buff, LIT( File_Exists_Replace ) );
@@ -1045,10 +1045,10 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
     case CTL_OK :
         prc = processFileName( gui );
         if( prc == PROCESS_TRUE ) {
-            dlg->dialogRC = OFN_RC_FILE_SELECTED;
+            dlg->dialogRC = FN_RC_FILE_SELECTED;
             GUICloseDialog( gui );
         } else if( prc == PROCESS_FAIL ) {
-            dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+            dlg->dialogRC = FN_RC_RUNTIME_ERROR;
             GUICloseDialog( gui );
         }
         break;
@@ -1094,7 +1094,7 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
         GUIMemFree( optr );
         goToDir( gui, path );
         if( !initDialog( gui, NULL, NULL ) ) {
-            dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+            dlg->dialogRC = FN_RC_RUNTIME_ERROR;
             GUICloseDialog( gui );
         } else {
             GUISetCurrSelect( gui, id, realsel );
@@ -1133,7 +1133,7 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
         InitTextList( gui, CTL_DRIVES, GetDriveTextList() );
 #endif
         if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], dlg->currOFN->file_name ) ) {
-            dlg->dialogRC = OFN_RC_FAILED_TO_INITIALIZE;
+            dlg->dialogRC = FN_RC_FAILED_TO_INITIALIZE;
             return( false );
         }
         dlg->initted = true;
@@ -1171,14 +1171,14 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
             path[2] = 0;
             goToDir( gui, path );
             if( !initDialog( gui, NULL, NULL ) ) {
-                dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+                dlg->dialogRC = FN_RC_RUNTIME_ERROR;
                 GUICloseDialog( gui );
             }
             break;
         case CTL_FILE_TYPES:
             sel = GUIGetCurrSelect( gui, id );
             if( !initDialog( gui, dlg->fileExtensions[sel], NULL ) ) {
-                dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+                dlg->dialogRC = FN_RC_RUNTIME_ERROR;
                 GUICloseDialog( gui );
             }
             break;
@@ -1206,18 +1206,18 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
     }
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     if( !buildDriveList() ) {
-        return( OFN_RC_FAILED_TO_INITIALIZE );
+        return( FN_RC_FAILED_TO_INITIALIZE );
     }
 #endif
     ok = buildFileTypesExts( &dlg, ofn->filter_list );
     if( !ok ) {
         dlg.currExt = NULL;
-        dlg.dialogRC = OFN_RC_FAILED_TO_INITIALIZE;
+        dlg.dialogRC = FN_RC_FAILED_TO_INITIALIZE;
     } else {
         dlg.currOFN = ofn;
         dlg.currExt = NULL;
         dlg.currExtIndex = ofn->filter_index;
-        dlg.dialogRC = OFN_RC_NO_FILE_SELECTED;
+        dlg.dialogRC = FN_RC_NO_FILE_SELECTED;
 
         getcwd( olddir, sizeof( olddir ) );
         goToDir( gui, ofn->initial_dir );
@@ -1225,7 +1225,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
                     dlgControls, NUM_CONTROLS, &GetFileNameEvent, &dlg );
 
-        if( !(ofn->flags & OFN_CHANGEDIR) ) {
+        if( !(ofn->flags & FN_CHANGEDIR) ) {
             goToDir( gui, olddir );
         }
     }
